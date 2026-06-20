@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Harbours — Vision Board</title>
+<style>
+  :root{
+    --sea-deep:#0e1f2c; --sea:#15324460; --slate:#2b4a5e; --slate2:#3a6076;
+    --teal:#6fa39c; --teal-d:#4f7d79; --fog:#c7d2d4; --fog-d:#9fb0b3;
+    --parch:#ece3cf; --parch-d:#d9c9a8; --wood:#6b4f3a; --wood-d:#42301f;
+    --buoy:#d65a3a; --buoy-y:#e0a83b; --red:#b5403a; --ink:#12222b; --cream:#f5efe2;
+    --shadow:0 6px 24px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--cream); line-height:1.55; -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #1d435a 0%, transparent 55%),
+      radial-gradient(900px 500px at 0% 10%, #123040 0%, transparent 50%),
+      linear-gradient(180deg,#0c1c28 0%, #0e2230 40%, #0b1a25 100%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+  h1,h2,h3,.serif{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
+  .eyebrow{font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--teal);font-weight:700}
+  section{padding:62px 0;border-top:1px solid #ffffff12}
+  .sec-title{font-size:1.9rem;letter-spacing:.01em;margin:.2em 0 .15em;color:var(--cream)}
+  .sec-sub{color:var(--fog-d);max-width:62ch;margin-bottom:30px;font-size:1.02rem}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;overflow:hidden;padding:90px 0 70px;text-align:center;border-top:none}
+  .hero .wrap{position:relative;z-index:2}
+  .hero h1{font-size:clamp(2.8rem,7vw,5.2rem);letter-spacing:.04em;line-height:1.02;
+    text-shadow:0 3px 30px rgba(0,0,0,.5)}
+  .hero h1 .amp{color:var(--buoy-y)}
+  .tagline{font-size:clamp(1.05rem,2.2vw,1.4rem);color:var(--fog);max-width:40ch;margin:18px auto 0;font-style:italic}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:26px}
+  .chip{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+    background:#ffffff14;border:1px solid #ffffff22;color:var(--fog);padding:7px 13px;border-radius:30px}
+  /* layered sea + horizon */
+  .waves{position:absolute;left:0;right:0;bottom:0;height:46%;z-index:1;opacity:.9}
+  .gull{position:absolute;color:#cfe0e2;opacity:.5;font-size:14px;z-index:2}
+  .compass{width:46px;height:46px;margin:0 auto 4px;display:block;opacity:.85}
+
+  /* ---------- PILLARS ---------- */
+  .grid{display:grid;gap:18px}
+  .pillars{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .pillar{background:linear-gradient(160deg,#ffffff0e,#ffffff05);border:1px solid #ffffff1c;
+    border-radius:14px;padding:22px 20px;box-shadow:var(--shadow);position:relative}
+  .pillar .num{font-family:Georgia,serif;font-size:2.1rem;color:var(--buoy-y);opacity:.55;line-height:1}
+  .pillar h3{font-size:1.16rem;margin:6px 0 7px;color:var(--cream)}
+  .pillar p{font-size:.93rem;color:var(--fog)}
+  .pillar::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:3px;background:var(--buoy)}
+
+  /* ---------- CORE LOOP ---------- */
+  .loop{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin-top:6px}
+  .node{background:#ffffff10;border:1px solid #ffffff20;border-radius:11px;padding:13px 15px;
+    text-align:center;min-width:118px;box-shadow:var(--shadow)}
+  .node .ic{font-size:1.5rem;display:block;margin-bottom:5px}
+  .node b{display:block;font-size:.86rem;letter-spacing:.02em}
+  .node span{font-size:.72rem;color:var(--fog-d)}
+  .arrow{color:var(--teal);font-size:1.3rem;opacity:.8}
+
+  /* ---------- LADDER ---------- */
+  .ladder{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+  .rung{display:grid;grid-template-columns:30px 150px 1fr 64px;align-items:center;gap:14px;
+    padding:11px 14px;border-radius:10px;background:#ffffff08;border:1px solid #ffffff12}
+  .rung:hover{background:#ffffff12}
+  .rung .t{font-family:Georgia,serif;color:var(--buoy-y);font-size:1.05rem;text-align:center}
+  .rung .nm{font-weight:700;color:var(--cream)}
+  .rung .nm small{display:block;font-weight:400;color:var(--fog-d);font-size:.78rem}
+  .rung .ds{font-size:.86rem;color:var(--fog)}
+  .rung .ln{text-align:right;font-size:.78rem;color:var(--teal);white-space:nowrap}
+  .boatbar{height:4px;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--buoy));margin-top:5px}
+
+  /* ---------- REGIONS ---------- */
+  .regions{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .region{background:#ffffff09;border:1px solid #ffffff18;border-radius:12px;padding:17px 18px;box-shadow:var(--shadow)}
+  .region .rn{font-family:Georgia,serif;font-size:1.12rem;color:var(--cream);display:flex;align-items:center;gap:8px}
+  .region .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .region p{font-size:.88rem;color:var(--fog);margin-top:6px}
+  .region .gate{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-d);margin-top:9px;font-weight:700}
+
+  /* ---------- SYSTEMS ---------- */
+  .systems{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .sys{background:linear-gradient(160deg,#13303f,#0f2531);border:1px solid #ffffff14;border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+  .sys h3{color:var(--buoy-y);font-size:1.08rem;margin-bottom:7px;display:flex;gap:8px;align-items:center}
+  .sys p{font-size:.9rem;color:var(--fog)}
+
+  /* ---------- ART / PALETTE ---------- */
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media(max-width:720px){.twocol{grid-template-columns:1fr}.rung{grid-template-columns:26px 1fr;}.rung .ds,.rung .ln{display:none}}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .sw{width:46px;height:46px;border-radius:8px;border:1px solid #ffffff22;position:relative}
+  .refs{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+  .ref{display:flex;gap:12px;align-items:baseline;font-size:.92rem}
+  .ref b{font-family:Georgia,serif;color:var(--cream);min-width:150px}
+  .ref span{color:var(--fog-d)}
+
+  .pull{font-family:Georgia,serif;font-size:1.35rem;line-height:1.5;color:var(--fog);
+    border-left:3px solid var(--buoy);padding:6px 0 6px 20px;margin:6px 0;max-width:60ch}
+  footer{padding:46px 0 60px;text-align:center;color:var(--fog-d);font-size:.85rem;border-top:1px solid #ffffff12}
+  .miniclock{display:inline-block;color:var(--teal)}
+</style>
+</head>
+<body>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <svg class="waves" viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#15384a" fill-opacity="0.7" d="M0,180 C240,120 480,240 720,200 C960,160 1200,250 1440,190 L1440,320 L0,320 Z"/>
+    <path fill="#0f2c3b" fill-opacity="0.85" d="M0,230 C260,180 520,280 780,240 C1020,205 1240,285 1440,235 L1440,320 L0,320 Z"/>
+    <path fill="#0a1f2b" d="M0,275 C300,240 560,300 840,272 C1080,248 1260,300 1440,278 L1440,320 L0,320 Z"/>
+  </svg>
+  <span class="gull" style="top:14%;left:22%">⌃</span>
+  <span class="gull" style="top:20%;left:27%;font-size:10px">⌃</span>
+  <span class="gull" style="top:11%;right:24%">⌃</span>
+  <div class="wrap">
+    <svg class="compass" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#e0a83b" stroke-width="2"/>
+      <polygon points="50,8 57,50 50,46 43,50" fill="#d65a3a"/>
+      <polygon points="50,92 43,50 50,54 57,50" fill="#c7d2d4"/>
+      <circle cx="50" cy="50" r="4" fill="#e0a83b"/>
+    </svg>
+    <div class="eyebrow">A Pixel-Art Fishing &amp; Trade RPG</div>
+    <h1>HIDDEN&nbsp;HARBOURS</h1>
+    <p class="tagline">Inherit your uncle's dory. Read the tides, the wind, and a market
+      that never sits still — and work your way from hauling handlines by hand to commanding a cargo fleet.</p>
+    <div class="chips">
+      <span class="chip">Atlantic Canada</span>
+      <span class="chip">Mobile-first</span>
+      <span class="chip">Unity 6.3</span>
+      <span class="chip">Tides &amp; Weather</span>
+      <span class="chip">Living Economy</span>
+      <span class="chip">Cozy · with teeth</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== PILLARS ===================== -->
+<section id="pillars">
+  <div class="wrap">
+    <div class="eyebrow">What the game is about</div>
+    <h2 class="sec-title">Five Design Pillars</h2>
+    <p class="sec-sub">Every feature has to serve at least one of these. They're the soul of the game and the tie-breaker for every decision.</p>
+    <div class="grid pillars">
+      <div class="pillar"><div class="num">1</div><h3>The Sea Has Moods</h3><p>Tide, wind, weather and the 24-hour clock are real forces you read and respect. The same cove is a different place at high water than at low, calm than gale.</p></div>
+      <div class="pillar"><div class="num">2</div><h3>From Dory to Dynasty</h3><p>A long, legible ladder of scale — start hauling line by hand in a borrowed dory, end directing a fleet and shipping freight. Growth you can <em>see</em>.</p></div>
+      <div class="pillar"><div class="num">3</div><h3>A Living Working Coast</h3><p>NPCs keep routines, the town runs to its own rhythm, the market breathes with supply and demand. The island is inhabited and reactive, with or without you.</p></div>
+      <div class="pillar"><div class="num">4</div><h3>Earn It, Then Automate It</h3><p>Do every job by hand first, so it has weight. Then hire crew and build infrastructure to automate the tedium — shifting from labourer to owner.</p></div>
+      <div class="pillar"><div class="num">5</div><h3>Cozy, but with Teeth</h3><p>Stardew warmth, but the sea is genuinely dangerous: run aground, capsize, lose a load, get lost in fog. Risk is what gives the coziness its stakes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CORE LOOP ===================== -->
+<section id="loop">
+  <div class="wrap">
+    <div class="eyebrow">The heartbeat</div>
+    <h2 class="sec-title">The Core Loop</h2>
+    <p class="sec-sub">The first thing we build (milestone&nbsp;0): take the dory out, catch fish, come back, sell. Everything else grows out of this.</p>
+    <div class="loop">
+      <div class="node"><span class="ic">🌅</span><b>Read the day</b><span>tide · wind · weather</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="ic">⛵</span><b>Sail out</b><span>navigate the forces</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="ic">🎣</span><b>Work the grounds</b><span>line · net · traps</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="ic">⚓</span><b>Return to harbour</b><span>beat the tide</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="ic">⚖️</span><b>Sell / refine / ship</b><span>read the market</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="ic">🛠️</span><b>Upgrade</b><span>bigger boat · staff</span></div>
+      <span class="arrow" style="transform:rotate(90deg)">↻</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LADDER ===================== -->
+<section id="ladder">
+  <div class="wrap">
+    <div class="eyebrow">Pillar 2 made concrete</div>
+    <h2 class="sec-title">From Dory to Dynasty</h2>
+    <p class="sec-sub">A true-to-scale ladder — boats are sized in real metres, so a tanker genuinely dwarfs the dory on screen. The top of the ladder branches (lobster specialist vs. offshore trawler) before converging into freight.</p>
+    <div class="ladder">
+      <div class="rung"><div class="t">0</div><div class="nm">The Dory<small>~4.5 m · uncle's</small></div><div class="ds">Oars and a small outboard. Tiny hold, inshore only, at the mercy of wind and tide.<div class="boatbar" style="width:5%"></div></div><div class="ln">START</div></div>
+      <div class="rung"><div class="t">1</div><div class="nm">Punt / Skiff<small>~6 m</small></div><div class="ds">Your first purchase. A little more reach, a little more hold.<div class="boatbar" style="width:9%"></div></div><div class="ln">Coddle Cove</div></div>
+      <div class="rung"><div class="t">2</div><div class="nm">Cape Islander<small>~13 m · longliner</small></div><div class="ds">The iconic Maritime workboat. Real range, lines and traps, a proper hold.<div class="boatbar" style="width:22%"></div></div><div class="ln">Inshore</div></div>
+      <div class="rung"><div class="t">3</div><div class="nm">Lobster Boat<small>~12 m · specialist</small></div><div class="ds">The shellfish / trap branch — high value, tide-and-season driven.<div class="boatbar" style="width:21%"></div></div><div class="ln">Branch</div></div>
+      <div class="rung"><div class="t">4</div><div class="nm">Side Dragger<small>~25 m · trawler</small></div><div class="ds">Offshore nets and a big hold. First boat that can safely work The Banks.<div class="boatbar" style="width:42%"></div></div><div class="ln">The Banks</div></div>
+      <div class="rung"><div class="t">5</div><div class="nm">Stern Trawler<small>~38 m · seiner</small></div><div class="ds">Larger, weather-capable offshore craft. Reaches storm-lashed Ironbound.<div class="boatbar" style="width:60%"></div></div><div class="ln">Ironbound</div></div>
+      <div class="rung"><div class="t">6</div><div class="nm">Coastal Freighter<small>~60 m · packet</small></div><div class="ds">Begins the commerce tier — bulk hauling and freight contracts.<div class="boatbar" style="width:78%"></div></div><div class="ln">Shipping Lanes</div></div>
+      <div class="rung"><div class="t">7</div><div class="nm">Coastal Tanker<small>~110 m · cargo ship</small></div><div class="ds">End-game logistics. Fleet command and a freight empire.<div class="boatbar" style="width:100%"></div></div><div class="ln">DYNASTY</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REGIONS ===================== -->
+<section id="regions">
+  <div class="wrap">
+    <div class="eyebrow">The Sablewick Banks</div>
+    <h2 class="sec-title">A Coast Worth Exploring</h2>
+    <p class="sec-sub">A small fictional archipelago off Atlantic Canada — handcrafted regions with their own identity, fish, NPCs and hazards, unlocked as you grow more capable.</p>
+    <div class="grid regions">
+      <div class="region"><div class="rn"><span class="dot" style="background:var(--teal)"></span>Coddle Cove</div><p>The home harbour — your uncle's cottage and wharf. Sheltered waters, beginner fish, where you learn the ropes.</p><div class="gate">Start</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:var(--buoy-y)"></span>The Sunkers</div><p>A field of submerged rocks and rich tide pools. Shellfish country — and a grounding hazard when the water drops.</p><div class="gate">Boat + tide-reading</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:var(--buoy)"></span>Port Greywick</div><p>The market town: auction house, shops, the shipwright, and most of the named cast. Your business hub.</p><div class="gate">Early story unlock</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:#8fae6a"></span>The Drownded Lands</div><p>Vast tidal flats that become <em>walkable seabed</em> at low tide — clams, wrecks and secrets — then flood again.</p><div class="gate">Tide mastery</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:#5aa0c2"></span>Fundy Rips</div><p>Narrows with ferocious tidal currents. Time the tide to transit, or be swept. Fast, prized pelagic fish.</p><div class="gate">Capable hull</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:#3a6076"></span>The Banks</div><p>Open offshore grounds — deepwater groundfish and big pelagics. You'll need a seaworthy boat to work them.</p><div class="gate">Offshore boat</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:#9fb0b3"></span>Ironbound</div><p>Cold, storm-lashed outer islands. End-game grounds with dangerous weather and rare, legendary catches.</p><div class="gate">Weather-capable boat</div></div>
+      <div class="region"><div class="rn"><span class="dot" style="background:#c7d2d4"></span>The Smother &amp; the Lanes</div><p>A permanent fog bank you navigate by instrument and sound — and the shipping lanes where the big ships run freight.</p><div class="gate">Late game</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SIGNATURE SYSTEMS ===================== -->
+<section id="systems">
+  <div class="wrap">
+    <div class="eyebrow">What makes it special</div>
+    <h2 class="sec-title">Signature Systems</h2>
+    <div class="grid systems">
+      <div class="sys"><h3>🌊 Tides &amp; the 24h Clock</h3><p>A real semidiurnal tide on a spring/neap cycle. Low tide opens the seabed and strands deep boats; high tide floods the flats. A tide table you learn to read is a core tool.</p></div>
+      <div class="sys"><h3>🧭 Wind &amp; Navigation</h3><p>Wind and tidal current pull physically on the hull. Heavier boats carry more momentum and are harder to turn and stop. Navigation is a skill, not a button.</p></div>
+      <div class="sys"><h3>⚠️ Danger &amp; Rescue</h3><p>Misread the depth and you ground. Overload in a gale and you broach. Break down offshore and you're stranded, exposed, until a tow comes — for a price.</p></div>
+      <div class="sys"><h3>⚖️ A Market That Breathes</h3><p>Supply and demand at Greywick. Land too much cod and the price craters; scarcity makes it spike. Store it, time it, refine it, or ship it somewhere hungrier.</p></div>
+      <div class="sys"><h3>👥 Staff &amp; Automation</h3><p>Do it by hand to learn it, then hire crew to run routes, process catch, and sell — turning the daily grind into a business you steer with policy.</p></div>
+      <div class="sys"><h3>🏚️ Homes &amp; Holdings</h3><p>Begin in your late uncle's cottage. Buy, upgrade and refurnish homes — then warehouses, processing plants and berths as the enterprise grows.</p></div>
+      <div class="sys"><h3>🐟 100 Fish, as Data</h3><p>A hundred species gated by region, depth, tide, time, season and weather — built as data so the catalogue can grow without touching code.</p></div>
+      <div class="sys"><h3>🗺️ Authored + Simulated</h3><p>Handcrafted regions and a named cast give the world its soul; simulated weather, spawns and crowds give it endless, lawful variety.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ART + REFERENCES ===================== -->
+<section id="art">
+  <div class="wrap">
+    <div class="eyebrow">Look, feel &amp; lineage</div>
+    <h2 class="sec-title">Art Direction</h2>
+    <div class="twocol">
+      <div>
+        <p class="sec-sub" style="margin-bottom:14px">¾ top-down pixel art (Stardew's readable structure) wrapped in the painterly parallax, fog and lantern-light of Kingdoms Two Crowns. One perspective for land, town and sea. A consistent scale — 32&nbsp;px to the metre — so the size fantasy reads true.</p>
+        <div class="eyebrow" style="color:var(--fog-d)">North Atlantic palette</div>
+        <div class="swatches">
+          <div class="sw" style="background:#0e1f2c" title="Deep sea"></div>
+          <div class="sw" style="background:#2b4a5e" title="Slate"></div>
+          <div class="sw" style="background:#4f7d79" title="Sea-glass"></div>
+          <div class="sw" style="background:#9fb0b3" title="Fog"></div>
+          <div class="sw" style="background:#d9c9a8" title="Sand"></div>
+          <div class="sw" style="background:#6b4f3a" title="Weathered wood"></div>
+          <div class="sw" style="background:#e0a83b" title="Buoy yellow"></div>
+          <div class="sw" style="background:#d65a3a" title="Buoy orange"></div>
+          <div class="sw" style="background:#b5403a" title="Painted red"></div>
+        </div>
+        <p style="font-size:.82rem;color:var(--fog-d);margin-top:10px">Slate seas and fog greys, weathered wood and sand — with saturated pops from lobster buoys, oilskins and painted hulls. The palette cools and darkens out toward Ironbound, and desaturates into the Smother.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="color:var(--fog-d)">We borrow, deliberately</div>
+        <div class="refs">
+          <div class="ref"><b>Stardew Valley</b><span>structure, readability, the cozy daily loop, relationships</span></div>
+          <div class="ref"><b>Kingdoms Two Crowns</b><span>painterly mood, parallax, light, a small craft vs. a big world</span></div>
+          <div class="ref"><b>Schedule&nbsp;I</b><span>owning the supply chain; hands-on, then delegated</span></div>
+          <div class="ref"><b>Big Ambitions</b><span>property empire, hiring &amp; managing staff, errands-to-enterprise</span></div>
+          <div class="ref"><b>Dredge</b><span>the quiet menace of fishing in bad weather</span></div>
+        </div>
+        <p class="pull" style="margin-top:22px">"You are not a hero. You're a young skipper who inherited very little and a lot of weather."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROADMAP STRIP ===================== -->
+<section id="road">
+  <div class="wrap">
+    <div class="eyebrow">How we get there without drowning</div>
+    <h2 class="sec-title">Built in Slices</h2>
+    <p class="sec-sub">This is a big vision — years of work if built all at once. So we build the smallest delightful thing first and grow it, keeping a playable game at every step.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+      <div class="node" style="min-width:0"><b>M0 · Greybox</b><span>Prove the fishing→sell loop is fun</span></div>
+      <div class="node" style="min-width:0"><b>M1 · Vertical Slice</b><span>Coddle Cove, made good. First soft launch.</span></div>
+      <div class="node" style="min-width:0"><b>M2 · Working Coast</b><span>More regions, weather &amp; danger, the market</span></div>
+      <div class="node" style="min-width:0"><b>M3 · Enterprise</b><span>Offshore, staff &amp; automation, contracts</span></div>
+      <div class="node" style="min-width:0"><b>M4 · Dynasty</b><span>Fleet, freight, the full 100 fish, ports</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="miniclock serif" style="font-size:1.1rem">⌛ 24h clock · semidiurnal tides · four seasons</div>
+    <p style="margin-top:10px">Hidden Harbours — concept &amp; vision board. Full design, architecture and the multi-agent
+    development plan live alongside this file in <span style="color:var(--teal)">docs/</span>,
+    <span style="color:var(--teal)">agents/</span> and <span style="color:var(--teal)">backlog/</span>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+# Hidden Harbours — Continuous Integration
+# Runs the Unity tests on every push/PR so `main` always stays green (CLAUDE.md rule 10,
+# agents/coordination.md §4-§5). Owned by qa-test.
+#
+# ONE-TIME SETUP (required before this can run):
+#   1. Activate a Unity license for CI. The easiest is a free Personal license:
+#      follow https://game.ci/docs/github/activation to generate a .ulf, then add these
+#      repository secrets (Settings > Secrets and variables > Actions):
+#        UNITY_LICENSE   = the full contents of the .ulf file
+#        UNITY_EMAIL     = your Unity account email
+#        UNITY_PASSWORD  = your Unity account password
+#   2. Update `unityVersion` below to the EXACT editor version you installed (e.g. 6000.3.4f1).
+#
+# Until those secrets exist, this workflow will fail at the test step — that's expected.
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    name: EditMode + PlayMode tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 6000.5.0f1   # matches the editor you installed (Unity 6.5)
+          testMode: all              # EditMode + PlayMode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: artifacts
