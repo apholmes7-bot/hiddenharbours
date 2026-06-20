@@ -1,17 +1,14 @@
 {
-    "name": "HiddenHarbours.Tests.EditMode",
-    "rootNamespace": "HiddenHarbours.Tests.EditMode",
+    "name": "HiddenHarbours.Tests.PlayMode",
+    "rootNamespace": "HiddenHarbours.Tests.PlayMode",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
+        "UnityEngine.UI",
         "HiddenHarbours.Core",
-        "HiddenHarbours.Environment",
-        "HiddenHarbours.Boats",
-        "HiddenHarbours.Fishing",
-        "HiddenHarbours.Economy",
         "HiddenHarbours.UI"
     ],
-    "includePlatforms": ["Editor"],
+    "includePlatforms": [],
     "precompiledReferences": ["nunit.framework.dll"],
     "defineConstraints": ["UNITY_INCLUDE_TESTS"],
     "overrideReferences": true,

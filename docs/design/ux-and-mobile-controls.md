@@ -418,6 +418,11 @@ gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
   final split with `../architecture/tech-architecture.md` before building the HUD.
   - *Caveat:* validate UI Toolkit runtime performance and input on target phones early (it's matured,
     but profile it for the HUD which renders every frame).
+  - *Pragmatic note (VS-17, ui-ux):* the **HUD v0** (clock/tide/wind/sea/money) is built in **uGUI**
+    (ScreenSpaceOverlay Canvas + `UnityEngine.UI.Text`, code-driven, no prefab) — the always-on,
+    no-alloc overlay is uGUI's sweet spot and it builds headless without a TMP-essentials import step.
+    This does **not** lock the project-wide uGUI-vs-UI-Toolkit split (open question #6) — that stays a
+    `lead-architect`/`tech-architecture.md` call; confirm before building the card screens.
 - **Responsive system:** define **breakpoints/anchored zones** (top read-only band, bottom thumb
   band, safe-area insets for notches/home-indicator). Lay out by **thumb-reach zones**, not absolute
   pixels. Honor device safe areas.
