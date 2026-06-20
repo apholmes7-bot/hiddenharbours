@@ -66,3 +66,25 @@ another lane's job to wire into the game:**
 | Fishing spot | `Sprites/FishingSpot.png` (32²) | *gameplay-systems* + *world-content* | the cast/fish interactable anchor (VS-13/20) |
 | Decor props | `Sprites/{LobsterBuoy,LobsterTrap,Barrel,Crate,WharfPost}.png` | *world-content* | wharf/cove decor placement (VS-20/24) |
 
+---
+
+## VS-24 — tile assets + the moving-shoreline & day/night rendering (art-pipeline)
+
+The rendering layer that drives the imported tiles/sprites. **art-pipeline owns these; world-content
+paints + places.**
+
+- **Tile assets** — run **Hidden Harbours ▸ Art ▸ Build Coddle Cove Tiles**
+  (`Art/Editor/TileAssetBuilder.cs`) to generate a plain `Tile` per terrain sprite and an autotiling
+  `Shoreline` `RuleTile` (edge/corner-by-neighbour) under `Tilesets/Tiles/`. ***world-content* then paints
+  the Coddle Cove tilemap with these.** (The Shoreline rule orientations are a sensible start — refine in
+  the Tile Palette if a sprite faces the wrong way.)
+- **Tide-aware moving shoreline** (the headline P1 visual) — `Code/Art/TideShoreline.cs` (assembly
+  `HiddenHarbours.Art`, Core-only). Attach to the water object; it reads the live tide via
+  `GameServices.Environment.Sample().TideHeight` and slides the waterline (low tide exposes shore, high
+  tide floods). Visual only — it never touches the tide sim (gameplay-systems').
+- **Cottage day↔night** — `Code/Art/CottageDayNight.cs`. Attach to the cottage `SpriteRenderer`, assign
+  `Cottage.png` / `CottageNight.png`; it swaps on `GameServices.Clock.HourOfDay`. No new Core hook needed.
+
+Both components read the sim through Core contracts only. EditMode tests for the pure mappings live in
+`Assets/Tests/EditMode/Art/`.
+

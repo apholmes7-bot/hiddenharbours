@@ -1,0 +1,9 @@
+{
+    "name": "HiddenHarbours.Art",
+    "rootNamespace": "HiddenHarbours.Art",
+    "references": [
+        "HiddenHarbours.Core"
+    ],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
