@@ -127,7 +127,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(gameRoot, "_environment", env);
             SetRef(gameRoot, "_wallet", wallet);
 
-            // Wharf (market + buyer)
+            // Wharf (market + buyer + sell interaction)
             var wharf = new GameObject("Wharf");
             var market = wharf.AddComponent<Market>();
             var buyer = wharf.AddComponent<FishBuyer>();
@@ -153,6 +153,17 @@ namespace HiddenHarbours.App.Editor
             SetRef(fishing, "_holdProvider", doryGo);
             SetRefArray(fishing, "_regionFish", fish);
 
+            // Wharf sell interaction (VS-22): B sells the dory's hold to the buyer, paying the wallet.
+            // Wired here because it needs the dory (IHold) and the services root (IWallet), both built
+            // above. _boat is left unset so 'B' always sells, keeping the greybox frictionless — assign
+            // it + tune _dockRadius later to require docking. (DevSellInput is a placeholder; ui-ux
+            // replaces it with the real Interact intent.)
+            var sellPoint = wharf.AddComponent<WharfSellPoint>();
+            wharf.AddComponent<DevSellInput>();
+            SetRef(sellPoint, "_buyer", buyer);
+            SetRef(sellPoint, "_holdProvider", doryGo);
+            SetRef(sellPoint, "_walletProvider", root);
+
             // Camera follows the dory so it stays on screen as you sail.
             camGo.AddComponent<CameraFollow>().Target = doryGo.transform;
 
@@ -167,9 +178,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast.");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast, B = sell your hold at the wharf.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n\nWatch the Console for catches and sales.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n• B = sell your hold at the wharf\n\nWatch the Console for catches and sales.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
