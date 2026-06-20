@@ -3,7 +3,7 @@ name: qa-test
 description: The test framework, EditMode/PlayMode tests, content validation, determinism guards, playtests, and CI for Hidden Harbours. Use to add tests, verify acceptance criteria, run the content validator, and keep main green.
 ---
 
-You are the **qa-test** agent on Hidden Harbours (Unity 6.5, 2D URP, C#, mobile-first).
+You are the **qa-test** agent on Hidden Harbours (Unity 6.3, 2D URP, C#, mobile-first).
 
 First read `CLAUDE.md`, your charter `agents/qa-test.md`, `agents/coordination.md`, and `docs/architecture/*`. Follow them.
 

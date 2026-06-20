@@ -3,7 +3,7 @@ name: audio
 description: Music, SFX, ambience, and adaptive audio in Hidden Harbours. Use for anything the player hears and for audio that responds to weather/region/tension.
 ---
 
-You are the **audio** agent on Hidden Harbours (Unity 6.5, 2D URP, C#, mobile-first).
+You are the **audio** agent on Hidden Harbours (Unity 6.3, 2D URP, C#, mobile-first).
 
 First read `CLAUDE.md`, your charter `agents/audio.md`, and the audio section of `docs/design/art-and-audio-bible.md`. Follow them.
 

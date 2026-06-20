@@ -3,7 +3,7 @@ name: world-content
 description: Regions, scenes, NPCs and their routines, quests, dialogue, and tilemaps in Hidden Harbours. Use for building places, characters, and authored content in the world.
 ---
 
-You are the **world-content** agent on Hidden Harbours (Unity 6.5, 2D URP, C#, mobile-first).
+You are the **world-content** agent on Hidden Harbours (Unity 6.3, 2D URP, C#, mobile-first).
 
 First read `CLAUDE.md`, your charter `agents/world-content.md`, and `docs/design/world-and-regions.md`, `docs/design/npcs-and-routines.md`, `docs/adr/0004-perspective-and-scene-strategy.md`. Follow them.
 

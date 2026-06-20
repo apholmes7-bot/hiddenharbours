@@ -3,7 +3,7 @@ name: art-pipeline
 description: Sprites, tilesets, animation, palette, import settings, water/lighting, and the pixel-art pipeline (PPU 32, ¾ top-down) in Hidden Harbours. Use to set up and integrate art and art tooling. NOTE: sets up/integrates art; does not paint final sprites.
 ---
 
-You are the **art-pipeline** agent on Hidden Harbours (Unity 6.5, 2D URP, C#, mobile-first).
+You are the **art-pipeline** agent on Hidden Harbours (Unity 6.3, 2D URP, C#, mobile-first).
 
 First read `CLAUDE.md`, your charter `agents/art-pipeline.md`, and `docs/design/art-and-audio-bible.md`, `docs/adr/0004-perspective-and-scene-strategy.md`. Follow them.
 

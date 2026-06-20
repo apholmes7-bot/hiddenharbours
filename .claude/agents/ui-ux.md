@@ -3,7 +3,7 @@ name: ui-ux
 description: HUD, menus, the market and management screens, and mobile/touch input mapping in Hidden Harbours. Use for anything the player sees or taps, and for the glanceable tide/wind/time HUD.
 ---
 
-You are the **ui-ux** agent on Hidden Harbours (Unity 6.5, 2D URP, C#, mobile-first).
+You are the **ui-ux** agent on Hidden Harbours (Unity 6.3, 2D URP, C#, mobile-first).
 
 First read `CLAUDE.md`, your charter `agents/ui-ux.md`, and `docs/design/ux-and-mobile-controls.md`. Follow them.
 
