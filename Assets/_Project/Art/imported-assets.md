@@ -88,3 +88,22 @@ paints + places.**
 Both components read the sim through Core contracts only. EditMode tests for the pure mappings live in
 `Assets/Tests/EditMode/Art/`.
 
+---
+
+## Batch 3 — HUD/UI, portraits & haul animation (for the tide/wind/time/HUD work)
+
+art-pipeline owns the UI *look* (imported here); ***ui-ux* owns layout & behaviour** (`ux-and-mobile-controls.md`).
+This is the set the HUD/tide/wind/time work needs.
+
+| Group | Files (`Art/…`) | Wire-in owner(s) | Backlog |
+|---|---|---|---|
+| HUD instruments | `UI/TideGauge` (48×96), `UI/TideArrow{Up,Down}` (16²), `UI/WindCompass` (64²), `UI/Clock{Sun,Moon}` (24²), `UI/CoinIcon` (16²), `UI/HoldIcon` (24²) | *ui-ux* | VS-17 / VS-19 |
+| Dialogue | `UI/DialoguePanel` (208×104), `UI/NamePlate` (92×28), `Portraits/{Ned,Ginny,Player}` (96²) | *ui-ux* + *world-content* | VS-21 |
+| Fishing UI | `UI/TensionGauge` (64×40), `UI/LineHook` (16×28), `UI/FishOnSilhouette` (32×24) | *ui-ux* + *gameplay-systems* | VS-13 / VS-14 |
+| Sell screen | `UI/SellChalkboard` (208×144), `UI/Button` (76×28) | *ui-ux* | VS-18 |
+| Player haul anim | `Characters/PlayerHaul.png` (96×256, 3×4 of 32×64) | *gameplay-systems* | VS-14 / VS-25 |
+
+UI sprites get the same PPU-32 / Point / no-compression lock on import; if a Canvas needs a different
+reference PPU, *ui-ux* can override per-asset (the lock only stamps on first import). The haul sheet uses
+the same 4-facing / 3-frame layout as `FisherSheet.png`.
+
