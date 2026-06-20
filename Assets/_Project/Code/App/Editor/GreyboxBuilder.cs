@@ -26,6 +26,7 @@ namespace HiddenHarbours.App.Editor
         const string DataConfig = "Assets/_Project/Data/Config";
         const string DataBoats  = "Assets/_Project/Data/Boats";
         const string DataFish   = "Assets/_Project/Data/Fish";
+        const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
@@ -197,6 +198,20 @@ namespace HiddenHarbours.App.Editor
             SetRef(sellPoint, "_holdProvider", doryGo);
             SetRef(sellPoint, "_walletProvider", root);
 
+            // Shipwright buy flow (VS-16): P buys the Punt with the wallet; on success the Shipwright
+            // raises BoatPurchased (gameplay-systems listens to swap the boat). Economy side only — the
+            // price lives in a ShipwrightOffer asset, and we reference the boat by id, never the Boats
+            // module. (DevBuyInput is a placeholder; ui-ux replaces it with the real buy screen.)
+            var puntOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
+            {
+                o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
+            });
+            var shipwrightGo = new GameObject("Shipwright");
+            var shipwright = shipwrightGo.AddComponent<Shipwright>();
+            shipwrightGo.AddComponent<DevBuyInput>();
+            SetRef(shipwright, "_offer", puntOffer);
+            SetRef(shipwright, "_walletProvider", root);
+
             // Camera follows the dory so it stays on screen as you sail.
             camGo.AddComponent<CameraFollow>().Target = doryGo.transform;
 
@@ -211,9 +226,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast, B = sell your hold at the wharf.");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast, B = sell your hold, P = buy the Punt (₲1,800).");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n• B = sell your hold at the wharf\n\nWatch the Console for catches and sales.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nWatch the Console for catches, sales, and purchases.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -301,7 +316,7 @@ namespace HiddenHarbours.App.Editor
 
         static void EnsureFolders()
         {
-            foreach (var f in new[] { DataConfig, DataBoats, DataFish, ArtSprites, Scenes })
+            foreach (var f in new[] { DataConfig, DataBoats, DataFish, DataShip, ArtSprites, Scenes })
             {
                 if (AssetDatabase.IsValidFolder(f)) continue;
                 var parent = Path.GetDirectoryName(f).Replace('\\', '/');

@@ -61,4 +61,20 @@ namespace HiddenHarbours.Core
         public readonly int Delta;
         public MoneyChanged(int newBalance, int delta) { NewBalance = newBalance; Delta = delta; }
     }
+
+    /// <summary>
+    /// Raised when the player buys a boat at the Shipwright. The economy side has already deducted the
+    /// money; <c>gameplay-systems</c> listens for this to add the hull to the owned fleet and swap the
+    /// active boat — so Economy never references the Boats module (cross-module talk via Core/EventBus).
+    /// Keyed by stable boat id (e.g. "boat.punt"), matching <c>BoatHullDef.Id</c>.
+    /// </summary>
+    public readonly struct BoatPurchased
+    {
+        public readonly string BoatId;
+        public readonly int PricePaid;   // ₲
+        public BoatPurchased(string boatId, int pricePaid)
+        {
+            BoatId = boatId; PricePaid = pricePaid;
+        }
+    }
 }
