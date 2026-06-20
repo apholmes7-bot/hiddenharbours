@@ -1,0 +1,16 @@
+{
+    "name": "HiddenHarbours.App.Editor",
+    "rootNamespace": "HiddenHarbours.App.Editor",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Environment",
+        "HiddenHarbours.Boats",
+        "HiddenHarbours.Fishing",
+        "HiddenHarbours.Economy",
+        "HiddenHarbours.Player",
+        "HiddenHarbours.App"
+    ],
+    "includePlatforms": ["Editor"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

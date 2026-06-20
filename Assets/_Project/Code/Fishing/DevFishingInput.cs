@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace HiddenHarbours.Fishing
 {
@@ -15,7 +16,7 @@ namespace HiddenHarbours.Fishing
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
                 _fishing.TryCast();
         }
     }

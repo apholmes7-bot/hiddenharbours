@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace HiddenHarbours.Boats
 {
@@ -7,8 +8,7 @@ namespace HiddenHarbours.Boats
     /// Left-Right/A-D = steer. To ship, replace this with the mobile control scheme through an
     /// InputService (design/ux-and-mobile-controls.md, owned by ui-ux).
     ///
-    /// Uses the legacy Input Manager — in Project Settings &gt; Player set
-    /// "Active Input Handling" to "Both" (or "Input Manager (Old)") for this to run.
+    /// Uses the new Input System (Keyboard.current), matching this project's input setting.
     /// </summary>
     [RequireComponent(typeof(BoatController))]
     public class DevBoatInput : MonoBehaviour
@@ -19,8 +19,11 @@ namespace HiddenHarbours.Boats
 
         private void Update()
         {
-            float throttle = Mathf.Clamp01(Input.GetAxisRaw("Vertical")); // forward only
-            float steer = Input.GetAxisRaw("Horizontal");
+            var kb = Keyboard.current;
+            if (kb == null) return;
+            float throttle = (kb.wKey.isPressed || kb.upArrowKey.isPressed) ? 1f : 0f;
+            float steer = ((kb.dKey.isPressed || kb.rightArrowKey.isPressed) ? 1f : 0f)
+                        - ((kb.aKey.isPressed || kb.leftArrowKey.isPressed) ? 1f : 0f);
             _boat.SetControl(throttle, steer);
         }
     }

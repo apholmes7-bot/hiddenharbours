@@ -1,0 +1,264 @@
+#if UNITY_EDITOR
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using HiddenHarbours.Core;
+using HiddenHarbours.Environment;
+using HiddenHarbours.Boats;
+using HiddenHarbours.Fishing;
+using HiddenHarbours.Economy;
+using HiddenHarbours.Player;
+
+namespace HiddenHarbours.App.Editor
+{
+    /// <summary>
+    /// One-click greybox: creates the data assets (GameConfig, the Dory, a few fish), builds a
+    /// playable scene wiring the services + dory + wharf, and opens it. Menu: Hidden Harbours ▸
+    /// Build Greybox Scene. Re-runnable (idempotent on the assets). This is a dev convenience, not
+    /// shipping content — real scenes are authored by world-content (see backlog VS-02).
+    /// </summary>
+    public static class GreyboxBuilder
+    {
+        const string DataConfig = "Assets/_Project/Data/Config";
+        const string DataBoats  = "Assets/_Project/Data/Boats";
+        const string DataFish   = "Assets/_Project/Data/Fish";
+        const string ArtSprites = "Assets/_Project/Art/Sprites";
+        const string Scenes     = "Assets/_Project/Scenes";
+        const string ScenePath  = Scenes + "/Greybox.unity";
+
+        [MenuItem("Hidden Harbours/Build Greybox Scene")]
+        public static void Build()
+        {
+            EnsureFolders();
+
+            // --- DATA ASSETS ---------------------------------------------------------------
+            var config = LoadOrCreate<GameConfig>(DataConfig + "/GameConfig.asset");
+
+            var dory = LoadOrCreate<BoatHullDef>(DataBoats + "/Dory.asset", h =>
+            {
+                h.Id = "boat.dory"; h.DisplayName = "The Dory";
+                h.LengthMeters = 4.5f; h.DraughtMeters = 0.3f; h.MassKg = 400f;
+                h.HoldUnits = 6; h.CrewSlots = 1;
+                h.EnginePower = 1200f; h.RudderAuthority = 600f;
+                h.ForwardDrag = 40f; h.LateralDrag = 240f; h.WindExposure = 1.2f;
+                h.MaxSafeSeaState = SeaState.Lively;
+            });
+
+            var fish = new[]
+            {
+                Fish("fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, Rarity.Common,    14, 0.20f, 1.0f, 2f, 12f),
+                Fish("fish.haddock",      "Haddock",      FishCategory.InshoreGroundfish, Rarity.Common,    16, 0.20f, 0.9f, 1f, 6f),
+                Fish("fish.mackerel",     "Mackerel",     FishCategory.Pelagic,           Rarity.Uncommon,  10, 0.35f, 0.8f, 0.3f, 1.5f),
+                Fish("fish.lobster",      "American Lobster", FishCategory.Shellfish,     Rarity.Prize,     28, 0.35f, 0.4f, 0.4f, 4f),
+            };
+
+            // --- SCENE ---------------------------------------------------------------------
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+            // Camera
+            var camGo = new GameObject("Main Camera");
+            camGo.tag = "MainCamera";
+            var cam = camGo.AddComponent<Camera>();
+            cam.orthographic = true; cam.orthographicSize = 9f;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
+            camGo.transform.position = new Vector3(0f, 0f, -10f);
+            camGo.AddComponent<AudioListener>();
+
+            // Water backdrop (slate blue square behind everything)
+            var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
+            var water = new GameObject("Water");
+            var wsr = water.AddComponent<SpriteRenderer>();
+            wsr.sprite = waterSprite; wsr.color = new Color(0.17f, 0.30f, 0.38f);
+            wsr.sortingOrder = -10;
+            water.transform.localScale = new Vector3(120f, 120f, 1f); // 0.5m sprite → big sea
+
+            // Scatter markers so motion reads on the open water (a flat sea looks static otherwise).
+            var markerRng = new System.Random(7);
+            var markers = new GameObject("SeaMarkers");
+            for (int i = 0; i < 40; i++)
+            {
+                var m = new GameObject("Marker");
+                m.transform.SetParent(markers.transform);
+                m.transform.position = new Vector3(
+                    (float)(markerRng.NextDouble() * 100 - 50),
+                    (float)(markerRng.NextDouble() * 100 - 50), 0f);
+                var msr = m.AddComponent<SpriteRenderer>();
+                msr.sprite = waterSprite;
+                msr.color = new Color(0.31f, 0.44f, 0.50f);
+                msr.sortingOrder = -5;
+                m.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+            }
+
+            // Reload data assets from disk before wiring. An intervening AssetDatabase import (the
+            // sprite SaveAndReimport above) can invalidate the in-memory references created earlier,
+            // which is what left GameConfig / hull showing "None". Reloading guarantees valid refs.
+            config = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
+            dory = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
+            if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
+            {
+                dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
+                EditorUtility.SetDirty(dory);
+            }
+            fish = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AmericanLobster.asset"),
+            };
+
+            // Services root
+            var root = new GameObject("GameRoot");
+            var clock = root.AddComponent<GameClock>();
+            var env = root.AddComponent<EnvironmentService>();
+            var wallet = root.AddComponent<PlayerWallet>();
+            var gameRoot = root.AddComponent<GameRoot>();
+            SetRef(clock, "_config", config);
+            SetRef(env, "_config", config);
+            SetTideProfile(env, 0f, 1.6f, 0f);
+            SetRef(gameRoot, "_clock", clock);
+            SetRef(gameRoot, "_environment", env);
+            SetRef(gameRoot, "_wallet", wallet);
+
+            // Wharf (market + buyer)
+            var wharf = new GameObject("Wharf");
+            var market = wharf.AddComponent<Market>();
+            var buyer = wharf.AddComponent<FishBuyer>();
+            SetRef(market, "_config", config);
+            SetRef(buyer, "_market", market);
+
+            // The Dory
+            var doryGo = new GameObject("Dory");
+            doryGo.transform.position = Vector3.zero;
+            var sr = doryGo.AddComponent<SpriteRenderer>();
+            sr.sprite = waterSprite; sr.color = new Color(0.82f, 0.45f, 0.25f); // dory hull colour
+            sr.sortingOrder = 0;
+            doryGo.transform.localScale = new Vector3(3.6f, 9f, 1f); // ~1.8 m beam × 4.5 m length
+            var rb = doryGo.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            var boat = doryGo.AddComponent<BoatController>();
+            var hold = doryGo.AddComponent<ShipHold>();
+            doryGo.AddComponent<DevBoatInput>();
+            var fishing = doryGo.AddComponent<FishingController>();
+            doryGo.AddComponent<DevFishingInput>();
+            SetRef(boat, "_hull", dory);
+            SetRef(hold, "_hull", dory);
+            SetRef(fishing, "_holdProvider", doryGo);
+            SetRefArray(fishing, "_regionFish", fish);
+
+            // Camera follows the dory so it stays on screen as you sail.
+            camGo.AddComponent<CameraFollow>().Target = doryGo.transform;
+
+            // --- SAVE & REGISTER -----------------------------------------------------------
+            EditorSceneManager.SaveScene(scene, ScenePath);
+            var list = EditorBuildSettings.scenes.ToList();
+            if (!list.Any(s => s.path == ScenePath))
+            {
+                list.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
+                EditorBuildSettings.scenes = list.ToArray();
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast.");
+            EditorUtility.DisplayDialog("Hidden Harbours",
+                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n\nWatch the Console for catches and sales.", "Fair winds");
+        }
+
+        // ---- helpers ------------------------------------------------------------------------
+        static FishSpeciesDef Fish(string id, string name, FishCategory cat, Rarity rarity,
+                                   int value, float elasticity, float spawnWeight, float minKg, float maxKg)
+        {
+            return LoadOrCreate<FishSpeciesDef>($"{DataFish}/{name.Replace(" ", "")}.asset", f =>
+            {
+                f.Id = id; f.DisplayName = name; f.Category = cat; f.Rarity = rarity;
+                f.RegionIds = new[] { "region.coddle_cove" };
+                f.AllowedGear = Gear.Handline | Gear.Longline;
+                f.Seasons = SeasonMask.AllYear;
+                f.MinTide = -10f; f.MaxTide = 10f; f.StartHour = 0f; f.EndHour = 24f;
+                f.MinWeightKg = minKg; f.MaxWeightKg = maxKg;
+                f.BaseValue = value; f.SupplyElasticity = elasticity; f.SpawnWeight = spawnWeight;
+            });
+        }
+
+        static T LoadOrCreate<T>(string path, System.Action<T> init = null) where T : ScriptableObject
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (existing != null) return existing;
+            var asset = ScriptableObject.CreateInstance<T>();
+            if (init != null) init(asset);
+            AssetDatabase.CreateAsset(asset, path);
+            AssetDatabase.SaveAssets();
+            // Reload so callers wire the PERSISTED asset (a freshly-created instance may not
+            // serialize into the scene reliably). This is what fixes "No GameConfig assigned".
+            return AssetDatabase.LoadAssetAtPath<T>(path);
+        }
+
+        static void SetRef(Component c, string field, Object value)
+        {
+            var so = new SerializedObject(c);
+            var p = so.FindProperty(field);
+            if (p != null) { p.objectReferenceValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
+            else Debug.LogWarning($"[GreyboxBuilder] {c.GetType().Name} has no field '{field}'.");
+        }
+
+        static void SetRefArray(Component c, string field, Object[] values)
+        {
+            var so = new SerializedObject(c);
+            var p = so.FindProperty(field);
+            if (p == null) { Debug.LogWarning($"[GreyboxBuilder] no array field '{field}'."); return; }
+            p.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+                p.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void SetTideProfile(Component env, float mean, float amp, float phase)
+        {
+            var so = new SerializedObject(env);
+            var tp = so.FindProperty("_activeTideProfile");
+            if (tp == null) return;
+            tp.FindPropertyRelative("MeanLevel").floatValue = mean;
+            tp.FindPropertyRelative("Amplitude").floatValue = amp;
+            tp.FindPropertyRelative("PhaseHours").floatValue = phase;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static Sprite MakeSquareSprite(string path)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (existing != null) return existing;
+
+            var tex = new Texture2D(16, 16);
+            var px = Enumerable.Repeat(Color.white, 16 * 16).ToArray();
+            tex.SetPixels(px); tex.Apply();
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            AssetDatabase.ImportAsset(path);
+
+            var imp = (TextureImporter)AssetImporter.GetAtPath(path);
+            imp.textureType = TextureImporterType.Sprite;
+            imp.spritePixelsPerUnit = 32f;        // canon PPU
+            imp.filterMode = FilterMode.Point;     // crisp pixels
+            imp.textureCompression = TextureImporterCompression.Uncompressed;
+            imp.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
+
+        static void EnsureFolders()
+        {
+            foreach (var f in new[] { DataConfig, DataBoats, DataFish, ArtSprites, Scenes })
+            {
+                if (AssetDatabase.IsValidFolder(f)) continue;
+                var parent = Path.GetDirectoryName(f).Replace('\\', '/');
+                var leaf = Path.GetFileName(f);
+                if (!AssetDatabase.IsValidFolder(parent)) EnsureFolders(); // parents exist already in scaffold
+                AssetDatabase.CreateFolder(parent, leaf);
+            }
+        }
+    }
+}
+#endif
