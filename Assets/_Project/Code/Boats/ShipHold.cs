@@ -26,5 +26,12 @@ namespace HiddenHarbours.Boats
         }
 
         public void Clear() => _items.Clear();
+
+        /// <summary>
+        /// Swap the hull so capacity tracks the active boat (VS-16, driven by OwnedFleet). Any catch
+        /// already aboard is kept (buying up the ladder grows the hold, 6→14). A small public setter
+        /// so the swapper doesn't reach into the private serialized field.
+        /// </summary>
+        public void SetHull(BoatHullDef hull) => _hull = hull;
     }
 }
