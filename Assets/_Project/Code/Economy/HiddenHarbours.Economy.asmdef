@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.Economy",
+    "rootNamespace": "HiddenHarbours.Economy",
+    "references": ["HiddenHarbours.Core"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

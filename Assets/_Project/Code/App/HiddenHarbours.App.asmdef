@@ -1,0 +1,14 @@
+{
+    "name": "HiddenHarbours.App",
+    "rootNamespace": "HiddenHarbours.App",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Environment",
+        "HiddenHarbours.Boats",
+        "HiddenHarbours.Fishing",
+        "HiddenHarbours.Economy",
+        "HiddenHarbours.Player"
+    ],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.Boats",
+    "rootNamespace": "HiddenHarbours.Boats",
+    "references": ["HiddenHarbours.Core"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

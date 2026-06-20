@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.Player",
+    "rootNamespace": "HiddenHarbours.Player",
+    "references": ["HiddenHarbours.Core"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
