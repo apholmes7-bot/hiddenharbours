@@ -1,7 +1,7 @@
 {
     "name": "HiddenHarbours.Economy",
     "rootNamespace": "HiddenHarbours.Economy",
-    "references": ["HiddenHarbours.Core"],
+    "references": ["HiddenHarbours.Core", "Unity.InputSystem"],
     "allowUnsafeCode": false,
     "autoReferenced": true
 }
