@@ -107,3 +107,20 @@ UI sprites get the same PPU-32 / Point / no-compression lock on import; if a Can
 reference PPU, *ui-ux* can override per-asset (the lock only stamps on first import). The haul sheet uses
 the same 4-facing / 3-frame layout as `FisherSheet.png`.
 
+---
+
+## Batch 4 — minimal Greywick, the dory row anim & feel VFX
+
+Closes the P2 (Greywick) and P3 (polish) art gaps. The Shipwright logic (VS-16) and HUD (VS-17) just
+landed, so the Greywick buildings are timely.
+
+| Group | Files (`Art/…`) | Wire-in owner(s) | Backlog |
+|---|---|---|---|
+| Greywick buildings | `Sprites/Buildings/{ShipwrightShed (256×224), FishBuyerStall (128×160), GreywickHouseRed (144×184), GreywickHouseTeal (160×176)}.png` | *world-content* (place in the Greywick scene) + *economy-sim* (Shipwright/buyer are built) | VS-22 / VS-16 |
+| Dory row anim | `Boats/DoryRow.png` (384×144 = 6 frames of 64×144) | *gameplay-systems* | VS-26 / oars |
+| Feel VFX | `VFX/{BoatWake (64×96), CatchSparkle (72×24, 3 frames), WindPennant (160×48)}.png` | *gameplay-systems* (boat wake) + art-pipeline (sparkle/pennant wiring) | VS-14 / VS-19 / VS-26 |
+
+The three effect overlays were filed under `VFX/` (not `UI/`) — they're world/boat effects, not HUD
+widgets. Excluded from the import: the design canvas's `gallery/ShoreDemo.png` preview and the `*.dc.html`
+source files (not game assets).
+
