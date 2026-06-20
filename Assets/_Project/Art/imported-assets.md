@@ -124,3 +124,19 @@ The three effect overlays were filed under `VFX/` (not `UI/`) — they're world/
 widgets. Excluded from the import: the design canvas's `gallery/ShoreDemo.png` preview and the `*.dc.html`
 source files (not game assets).
 
+---
+
+## Import-meta status (stable GUIDs + slicing)
+
+Every committed `.png` must have its `.meta` committed too — a meta-less PNG regenerates a new GUID + default
+settings on a fresh clone/CI, breaking references and importing the sprite blurry/wrong-scale ([[commit-unity-metas-with-assets]]).
+
+- **Batch-3 metas committed** — the 15 UI sprites, 3 portraits (+ `Portraits/`), and `PlayerHaul` carry the
+  VS-23 lock (Sprite · PPU 32 · Point · Compression None · mips off).
+- **Sheets are sliced** (ready for *gameplay-systems* — no slicing needed on their side):
+  `Characters/FisherSheet.png` and `Characters/PlayerHaul.png` are `Multiple`, **12 frames** of 32×64
+  (rows = facing down/up/left/right, cols = idle / walk-or-haul-1 / -2).
+- **Pending (follow-up):** `Boats/DoryRow.png` (slice to 6×1 of 64×144) and the batch-4 VFX
+  (`BoatWake`, `CatchSparkle` = 3×1 of 24×24, `WindPennant`) still need Unity to import them before their
+  metas can be committed/sliced.
+
