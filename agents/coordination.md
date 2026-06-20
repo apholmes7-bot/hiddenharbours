@@ -104,6 +104,22 @@ A few things are touched by more than one role. To stop them drifting, the seam 
   re-author the smaller change.
 - A green build + passing tests is the merge gate. Never merge over failing tests "to fix later."
 
+### 5.1 Git & push hygiene (one feature per push)
+Learned the hard way (the VS-22 work rode along on an unrelated push): a plain `git push` of `main`
+sends **every** local commit on `main` — so if another agent had merged work locally that wasn't
+pushed yet, your push publishes it too. To keep pushes scoped and history clean:
+- **Pull first.** `git pull --ff-only origin main` (or fetch + rebase) before starting any task, so
+  you begin from the latest `main`.
+- **Branch always.** Do the work on a short-lived `type/short-desc` branch — never commit straight to `main`.
+- **Land via the PR, not via local main.** Merge with `gh pr merge --squash --delete-branch` (or the
+  GitHub merge button). Do **not** `git merge <branch>` into local `main` and then `git push main` —
+  that's exactly what drags sibling agents' unpushed work along.
+- **Look before you push.** Run `git log --oneline origin/main..HEAD` and confirm every commit listed
+  is yours. If another agent's commit appears, stop and flag it to the owner — never rewrite shared
+  history (rebase/force-push of pushed commits) without their explicit say-so.
+- **Keep your tree clean.** Commit or stash your own changes before switching branches, so an
+  unrelated edit isn't swept into someone else's commit.
+
 ## 6. Pull requests & review
 - **Small and single-purpose.** One backlog item per PR where possible. Big PRs get split.
 - **Reviewers:** `lead-architect` reviews anything touching `Core/`, architecture, or cross-module
