@@ -1,0 +1,37 @@
+GIMP Palette
+Name: Hidden Harbours Master
+Columns: 5
+# Hidden Harbours — North Atlantic master ramp (22 colours).
+# Locked intent from docs/design/art-and-audio-bible.md §4.1. Author all art against this palette.
+# Import into Aseprite: Palette menu > Load Palette > this .gpl. Keep the cool/neutral/warm ramps for
+# environment; the SATURATED POPS are precious — reserve them for human-made colour (buoys, oilskins,
+# painted hulls) so the eye goes to the life (P3). A foggy grey morning with one red buoy is the
+# signature image.
+#
+# --- Sea / sky cool ramp ---
+ 22  36  46	Deepwater navy 16242E
+ 30  58  76	Slate blue deep 1E3A4C
+ 47  96 121	Slate blue mid 2F6079
+ 74 138 166	Atlantic blue 4A8AA6
+169 199 212	Pale sky haze A9C7D4
+# --- Fog / neutral greys ---
+ 58  66  72	Storm grey dark 3A4248
+110 122 128	Fog grey mid 6E7A80
+167 176 179	Mist grey light A7B0B3
+232 238 240	Sea-foam white E8EEF0
+# --- Wood / earth warm ramp ---
+ 36  26  20	Tarred timber dark 241A14
+ 90  70  50	Weathered wood brown 5A4632
+138 111  78	Driftwood tan 8A6F4E
+180 154 116	Wet sand mud B49A74
+216 195 154	Dry rope canvas D8C39A
+# --- Greens (sea-glass / weed) ---
+ 36  58  46	Kelp green dark 243A2E
+ 79 138 107	Sea-glass green 4F8A6B
+127 168 126	Lichen moss 7FA87E
+# --- Saturated pops (life — use sparingly) ---
+192  57  43	Lobster-buoy red C0392B
+224 123  39	Buoy orange E07B27
+232 178  58	Oilskin yellow E8B23A
+ 43 163 154	Painted-hull teal 2BA39A
+244 213 141	Lighthouse warm light F4D58D

@@ -8,7 +8,8 @@
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
-        "HiddenHarbours.App"
+        "HiddenHarbours.App",
+        "HiddenHarbours.Art.Editor"
     ],
     "includePlatforms": ["Editor"],
     "allowUnsafeCode": false,

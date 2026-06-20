@@ -135,6 +135,12 @@ Packages/packages-lock.json linguist-generated
 *.tiff                  lfs
 *.webp                  lfs
 
+# Pixel-art sources (Aseprite) — binary; LFS-tracked per VS-01 AC + art pipeline (bible §9.3).
+# The com.unity.2d.aseprite importer imports these directly, so they live in the Assets tree
+# and MUST be LFS-tracked like any other binary art.
+*.aseprite              lfs
+*.ase                   lfs
+
 # Compressed Archive
 *.7z                    lfs
 *.bz2                   lfs
