@@ -10,6 +10,7 @@ using HiddenHarbours.Boats;
 using HiddenHarbours.Fishing;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Player;
+using HiddenHarbours.Art.Editor;   // VS-23: locked Pixel-Perfect camera convention
 
 namespace HiddenHarbours.App.Editor
 {
@@ -61,11 +62,14 @@ namespace HiddenHarbours.App.Editor
             var camGo = new GameObject("Main Camera");
             camGo.tag = "MainCamera";
             var cam = camGo.AddComponent<Camera>();
-            cam.orthographic = true; cam.orthographicSize = 9f;
+            cam.orthographic = true; cam.orthographicSize = 9f; // PPC recomputes this at runtime (~16 m tall)
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
             camGo.transform.position = new Vector3(0f, 0f, -10f);
             camGo.AddComponent<AudioListener>();
+            // VS-23: lock the Pixel-Perfect camera (PPU 32, pixel-snapping) so there's no sub-pixel
+            // shimmer as the follow-cam tracks the dory. Shared art-pipeline convention (bible §3.7).
+            ArtCameraSetup.ConfigurePixelPerfect(camGo);
 
             // Water backdrop (slate blue square behind everything)
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
