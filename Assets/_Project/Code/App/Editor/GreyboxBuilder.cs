@@ -26,6 +26,8 @@ namespace HiddenHarbours.App.Editor
         const string DataBoats  = "Assets/_Project/Data/Boats";
         const string DataFish   = "Assets/_Project/Data/Fish";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
+        const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
+        const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
 
@@ -71,13 +73,26 @@ namespace HiddenHarbours.App.Editor
             // shimmer as the follow-cam tracks the dory. Shared art-pipeline convention (bible §3.7).
             ArtCameraSetup.ConfigurePixelPerfect(camGo);
 
-            // Water backdrop (slate blue square behind everything)
+            // Water backdrop. Use the final tiling sea tile if it's been imported (the placeholder→
+            // final swap, VS-24); otherwise fall back to a flat slate-blue square so the greybox
+            // still builds before any art exists.
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
+            var seaTile = LoadArtSprite(ArtSea);
             var water = new GameObject("Water");
             var wsr = water.AddComponent<SpriteRenderer>();
-            wsr.sprite = waterSprite; wsr.color = new Color(0.17f, 0.30f, 0.38f);
             wsr.sortingOrder = -10;
-            water.transform.localScale = new Vector3(120f, 120f, 1f); // 0.5m sprite → big sea
+            if (seaTile != null)
+            {
+                wsr.sprite = seaTile;
+                wsr.drawMode = SpriteDrawMode.Tiled;     // repeat the 2 m tile across the cove
+                wsr.size = new Vector2(140f, 140f);       // metres of open water
+                water.transform.localScale = Vector3.one;
+            }
+            else
+            {
+                wsr.sprite = waterSprite; wsr.color = new Color(0.17f, 0.30f, 0.38f);
+                water.transform.localScale = new Vector3(120f, 120f, 1f); // 0.5m sprite → big sea
+            }
 
             // Scatter markers so motion reads on the open water (a flat sea looks static otherwise).
             var markerRng = new System.Random(7);
@@ -138,9 +153,18 @@ namespace HiddenHarbours.App.Editor
             var doryGo = new GameObject("Dory");
             doryGo.transform.position = Vector3.zero;
             var sr = doryGo.AddComponent<SpriteRenderer>();
-            sr.sprite = waterSprite; sr.color = new Color(0.82f, 0.45f, 0.25f); // dory hull colour
             sr.sortingOrder = 0;
-            doryGo.transform.localScale = new Vector3(3.6f, 9f, 1f); // ~1.8 m beam × 4.5 m length
+            var dorySprite = LoadArtSprite(ArtDory);
+            if (dorySprite != null)
+            {
+                sr.sprite = dorySprite;                    // 64×144 px @ PPU 32 = 2 m × 4.5 m, bow-up
+                doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
+            }
+            else
+            {
+                sr.sprite = waterSprite; sr.color = new Color(0.82f, 0.45f, 0.25f); // dory hull colour
+                doryGo.transform.localScale = new Vector3(3.6f, 9f, 1f); // ~1.8 m beam × 4.5 m length
+            }
             var rb = doryGo.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             var boat = doryGo.AddComponent<BoatController>();
@@ -241,6 +265,9 @@ namespace HiddenHarbours.App.Editor
             tp.FindPropertyRelative("PhaseHours").floatValue = phase;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+
+        // Load a final art sprite if it has been imported; null if the project is still greybox-only.
+        static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
         static Sprite MakeSquareSprite(string path)
         {
