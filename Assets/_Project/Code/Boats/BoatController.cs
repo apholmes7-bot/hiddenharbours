@@ -44,6 +44,17 @@ namespace HiddenHarbours.Boats
             _steer = Mathf.Clamp(steer, -1f, 1f);
         }
 
+        /// <summary>
+        /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
+        /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
+        /// A small public setter so the swapper doesn't reach into the private serialized field.
+        /// </summary>
+        public void SetHull(BoatHullDef hull)
+        {
+            _hull = hull;
+            if (_rb != null && _hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+        }
+
         private void FixedUpdate()
         {
             if (_hull == null) return;

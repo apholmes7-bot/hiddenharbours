@@ -29,6 +29,7 @@ namespace HiddenHarbours.App.Editor
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
+        const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
@@ -50,6 +51,10 @@ namespace HiddenHarbours.App.Editor
                 h.ForwardDrag = 40f; h.LateralDrag = 240f; h.WindExposure = 1.2f;
                 h.MaxSafeSeaState = SeaState.Lively;
             });
+
+            // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY, the
+            // payoff of the buy-the-Punt loop (VS-16). Authored as data, never hardcoded in gameplay C#.
+            var punt = LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
 
             var fish = new[]
             {
@@ -123,6 +128,15 @@ namespace HiddenHarbours.App.Editor
                 dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
                 EditorUtility.SetDirty(dory);
             }
+            // Reload + re-apply the Punt stats (idempotent on re-runs, like the Dory above) and attach its
+            // hull sprite so OwnedFleet has something to swap the renderer to on the grant (null-safe).
+            punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
+            if (punt != null)
+            {
+                ApplyPuntStats(punt);
+                punt.Sprite = LoadArtSprite(ArtPunt);
+                EditorUtility.SetDirty(punt);
+            }
             fish = new[]
             {
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
@@ -187,6 +201,16 @@ namespace HiddenHarbours.App.Editor
             SetRef(fishing, "_holdProvider", doryGo);
             SetRefArray(fishing, "_regionFish", fish);
 
+            // Boat grant (VS-16, gameplay-systems): OwnedFleet listens for the Shipwright's BoatPurchased
+            // signal and swaps the active hull to the bought boat (data-driven by id). It lives on the
+            // Dory GO so it has the BoatController/ShipHold/renderer to swap, and is registered with the
+            // {Dory, Punt} hulls. Refs are the reloaded (persisted) assets, so they don't save as None.
+            var fleet = doryGo.AddComponent<OwnedFleet>();
+            SetRefArray(fleet, "_registry", new Object[] { dory, punt });
+            SetRef(fleet, "_boat", boat);
+            SetRef(fleet, "_hold", hold);
+            SetRef(fleet, "_spriteRenderer", sr);
+
             // Wharf sell interaction (VS-22): B sells the dory's hold to the buyer, paying the wallet.
             // Wired here because it needs the dory (IHold) and the services root (IWallet), both built
             // above. _boat is left unset so 'B' always sells, keeping the greybox frictionless — assign
@@ -245,6 +269,20 @@ namespace HiddenHarbours.App.Editor
                 f.MinWeightKg = minKg; f.MaxWeightKg = maxKg;
                 f.BaseValue = value; f.SupplyElasticity = elasticity; f.SpawnWeight = spawnWeight;
             });
+        }
+
+        // Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place
+        // so the values live on the asset, never duplicated in C#. Propulsion is a touch stronger and
+        // drier than the greybox Dory (EnginePower 500 / drag 120·320 / WindExposure 0.6) for a bigger,
+        // steadier hull. Seaworthiness "4 — Popple" maps to SeaState.Lively, same as the Dory.
+        static void ApplyPuntStats(BoatHullDef h)
+        {
+            h.Id = "boat.punt"; h.DisplayName = "The Punt";
+            h.LengthMeters = 6.0f; h.DraughtMeters = 0.5f; h.MassKg = 700f;
+            h.HoldUnits = 14; h.CrewSlots = 1;
+            h.EnginePower = 650f; h.RudderAuthority = 600f;
+            h.ForwardDrag = 140f; h.LateralDrag = 360f; h.WindExposure = 0.5f;
+            h.MaxSafeSeaState = SeaState.Lively;
         }
 
         static T LoadOrCreate<T>(string path, System.Action<T> init = null) where T : ScriptableObject

@@ -16,6 +16,11 @@ namespace HiddenHarbours.Boats
         public string Id = "boat.dory";
         public string DisplayName = "The Dory";
 
+        [Header("Art")]
+        [Tooltip("Optional hull sprite. When a boat is granted, the fleet swaps the renderer to this " +
+                 "(null-safe). Attached by art-pipeline / wired in the greybox builder.")]
+        public Sprite Sprite;
+
         [Header("Dimensions & mass")]
         public float LengthMeters = 4.5f;
         [Tooltip("How deep the hull sits. Grounds when draught exceeds local water depth (tie to tide).")]

@@ -19,6 +19,10 @@ namespace HiddenHarbours.Fishing
         public Rarity Rarity = Rarity.Common;
         [TextArea] public string Flavor;
 
+        [Header("Art")]
+        [Tooltip("Optional species sprite (icon/haul art). Attached by art-pipeline later; never required.")]
+        public Sprite Sprite;
+
         [Header("Where & when it bites")]
         public string[] RegionIds = { "region.coddle_cove" };
         public Gear AllowedGear = Gear.Handline | Gear.Longline;
