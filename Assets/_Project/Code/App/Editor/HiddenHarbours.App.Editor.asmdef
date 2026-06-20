@@ -9,6 +9,7 @@
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
         "HiddenHarbours.App",
+        "HiddenHarbours.UI",
         "HiddenHarbours.Art.Editor"
     ],
     "includePlatforms": ["Editor"],

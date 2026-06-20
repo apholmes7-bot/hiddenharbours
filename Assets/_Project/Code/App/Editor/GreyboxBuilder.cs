@@ -10,6 +10,7 @@ using HiddenHarbours.Boats;
 using HiddenHarbours.Fishing;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Player;
+using HiddenHarbours.UI;            // VS-17: the glanceable HUD (ui-ux)
 using HiddenHarbours.Art.Editor;   // VS-23: locked Pixel-Perfect camera convention
 
 namespace HiddenHarbours.App.Editor
@@ -141,6 +142,14 @@ namespace HiddenHarbours.App.Editor
             SetRef(gameRoot, "_clock", clock);
             SetRef(gameRoot, "_environment", env);
             SetRef(gameRoot, "_wallet", wallet);
+
+            // HUD (VS-17 + partial VS-19, owned by ui-ux). Self-contained: builds its own Canvas in
+            // Awake, reads state only through Core. _config gives it SecondsPerHour for the tide
+            // time-to-turn conversion (no magic numbers). Added on GameRoot so it persists like the
+            // services. (This single additive line is the only ui-ux touch in App.Editor — tagged
+            // for lead-architect review.)
+            var hud = root.AddComponent<HudController>();
+            SetRef(hud, "_config", config);
 
             // Wharf (market + buyer + sell interaction)
             var wharf = new GameObject("Wharf");

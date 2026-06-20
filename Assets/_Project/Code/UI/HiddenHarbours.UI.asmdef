@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.UI",
+    "rootNamespace": "HiddenHarbours.UI",
+    "references": ["HiddenHarbours.Core"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
