@@ -2,7 +2,8 @@
     "name": "HiddenHarbours.Art.Editor",
     "rootNamespace": "HiddenHarbours.Art.Editor",
     "references": [
-        "Unity.RenderPipelines.Universal.2D.Runtime"
+        "Unity.RenderPipelines.Universal.2D.Runtime",
+        "Unity.2D.Tilemap.Extras"
     ],
     "includePlatforms": ["Editor"],
     "allowUnsafeCode": false,

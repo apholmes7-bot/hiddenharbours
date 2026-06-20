@@ -1,0 +1,15 @@
+{
+    "name": "HiddenHarbours.Tests.Art.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.Art.EditMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Art"
+    ],
+    "includePlatforms": ["Editor"],
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
