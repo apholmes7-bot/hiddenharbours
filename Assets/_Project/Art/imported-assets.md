@@ -148,3 +148,24 @@ settings on a fresh clone/CI, breaking references and importing the sprite blurr
   Wiring the wake/oars into boat behaviour (ParticleSystem/Animator) is *gameplay-systems*' job — this
   lane just provides the sliced, correctly-imported assets.
 
+---
+
+## Batch 5 — the boat fleet (T2+ hulls + roster icons)
+
+The bigger tiers beyond the Dory (T0) and Punt (T1) — the **P2 "Dory to Dynasty"** progression art —
+plus a matching set of roster/fleet thumbnails. Imported headless (editor closed) so
+`ArtImportPipeline` stamped the VS-23 lock on first import.
+
+| Group | Files (`Art/…`) | Wire-in owner(s) | Backlog |
+|---|---|---|---|
+| Fleet hulls | `Boats/{CapeIslander (100×288), CoastalPacket (124×620), LobsterBoat (104×268), SideDragger (132×456), SternTrawler (144×576), Tanker (110×640)}.png` | *gameplay-systems* + *economy-sim* (one `BoatHullDef` per tier + hull sprite ref) | P2 fleet tiers |
+| Roster icons | `UI/Roster/{CapeIslander, CoastalPacket, Dory, LobsterBoat, Punt, SideDragger, SternTrawler, Tanker}.png` | *ui-ux* (fleet/roster screen) | P2 fleet UI |
+
+Each hull is a **single-frame** sprite (`Multiple` with one auto-trimmed sprite + centre pivot — the
+same convention as `Boats/Dory.png` / `Boats/Punt.png`); they're individual hulls, not animation strips,
+so no grid-slicing is needed. Roster icons get the standard PPU-32 / Point / no-compression lock; *ui-ux*
+can override reference PPU per-asset if a Canvas needs it. Skipped as **identical re-exports**:
+`Boats/{Dory, DoryRow, Punt}.png` (byte-for-byte matches of what's already committed). Building/Def
+wiring (a `BoatHullDef` asset per hull, with stats + the sprite ref) is *gameplay-systems* / *economy-sim*'
+job — this lane only provides the locked, imported sprites.
+
