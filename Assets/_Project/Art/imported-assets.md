@@ -118,7 +118,7 @@ landed, so the Greywick buildings are timely.
 |---|---|---|---|
 | Greywick buildings | `Sprites/Buildings/{ShipwrightShed (256×224), FishBuyerStall (128×160), GreywickHouseRed (144×184), GreywickHouseTeal (160×176)}.png` | *world-content* (place in the Greywick scene) + *economy-sim* (Shipwright/buyer are built) | VS-22 / VS-16 |
 | Dory row anim | `Boats/DoryRow.png` (384×144 = 6 frames of 64×144) | *gameplay-systems* | VS-26 / oars |
-| Feel VFX | `VFX/{BoatWake (64×96), CatchSparkle (72×24, 3 frames), WindPennant (160×48)}.png` | *gameplay-systems* (boat wake) + art-pipeline (sparkle/pennant wiring) | VS-14 / VS-19 / VS-26 |
+| Feel VFX | `VFX/{BoatWake (64×96), CatchSparkle (72×24, 3 frames), WindPennant (160×48, 4 frames)}.png` | *gameplay-systems* (boat wake) + art-pipeline (sparkle/pennant wiring) | VS-14 / VS-19 / VS-26 |
 
 The three effect overlays were filed under `VFX/` (not `UI/`) — they're world/boat effects, not HUD
 widgets. Excluded from the import: the design canvas's `gallery/ShoreDemo.png` preview and the `*.dc.html`
@@ -136,7 +136,15 @@ settings on a fresh clone/CI, breaking references and importing the sprite blurr
 - **Sheets are sliced** (ready for *gameplay-systems* — no slicing needed on their side):
   `Characters/FisherSheet.png` and `Characters/PlayerHaul.png` are `Multiple`, **12 frames** of 32×64
   (rows = facing down/up/left/right, cols = idle / walk-or-haul-1 / -2).
-- **Pending (follow-up):** `Boats/DoryRow.png` (slice to 6×1 of 64×144) and the batch-4 VFX
-  (`BoatWake`, `CatchSparkle` = 3×1 of 24×24, `WindPennant`) still need Unity to import them before their
-  metas can be committed/sliced.
+- **Batch-4 metas committed + sliced** — `Boats/DoryRow.png` and the three `VFX/` sheets carry the
+  VS-23 lock (Sprite · PPU 32 · Point · Compression None · mips off) and are sliced to clean
+  **full-cell grids** (rect = the whole cell, not trimmed — so the centre pivot is identical on every
+  frame and the animation never jitters):
+  - `DoryRow` — `Multiple`, **6×1 of 64×144** (the oar stroke; `DoryRow_0…5`).
+  - `CatchSparkle` — `Multiple`, **3×1 of 24×24** (`CatchSparkle_0…2`).
+  - `WindPennant` — `Multiple`, **4×1 of 40×48** — the strip *is* animated (4 evenly-spaced frames with
+    transparent gaps), so it's sliced, not single (`WindPennant_0…3`).
+  - `BoatWake` — single-frame, **1× 64×96** full-cell (`BoatWake_0`).
+  Wiring the wake/oars into boat behaviour (ParticleSystem/Animator) is *gameplay-systems*' job — this
+  lane just provides the sliced, correctly-imported assets.
 
