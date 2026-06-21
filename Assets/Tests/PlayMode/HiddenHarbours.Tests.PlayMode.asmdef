@@ -6,7 +6,9 @@
         "UnityEditor.TestRunner",
         "UnityEngine.UI",
         "HiddenHarbours.Core",
-        "HiddenHarbours.UI"
+        "HiddenHarbours.UI",
+        "HiddenHarbours.Fishing",
+        "HiddenHarbours.Economy"
     ],
     "includePlatforms": [],
     "precompiledReferences": ["nunit.framework.dll"],
