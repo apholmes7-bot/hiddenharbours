@@ -176,7 +176,34 @@ A boat is composed, not a single flat sprite, so it can *animate and crew*:
 4. **Damage / load state** (optional polish) — a fuller hull sits lower (load), and rough-sea
    pitch/roll is a subtle vertical bob + slight rotation on the whole assembly.
 
-### 3.6 Water rendering
+#### 3.5.1 Boat art conventions (forward-compatible with the M2 bake)
+
+These three rules are **locked now** so the planned M2 boat pipeline (pre-rendered 3D → sprite
+sheets — `adr/0006-boat-art-pipeline.md`, *Proposed*) can drop in **without re-placing or re-lighting
+the world**. They are cheap to honour now and expensive to retrofit, so **all boat art from here on
+obeys them** — including the current slice placeholders.
+
+1. **One implied light direction, across all art.** The fixed *sculpt/key* light that shades forms in
+   the pixels is **high, from the top of the frame and slightly behind/above the camera** — so objects
+   show a lit **front face** and cast **short shadows forward / down-screen** (this is the §2 LOCKED
+   read). Boat hulls are authored **bow-up**, so on the sprite this key falls from the **bow/top of
+   the canvas**. This is **distinct from the dynamic day-night colour grade** (§6), which is a global
+   light applied in-engine on top — *that* one moves; the **baked sculpt-light must not vary** between
+   sprites. The **M2 bake's virtual key light must match this direction and elevation** exactly, or
+   baked hulls will read as lit differently from everything around them.
+2. **Per-hull pivot/origin + metric footprint are pinned.** Each hull's **pivot = hull centre**
+   (the VS-23 import lock already stamps `Center` for `Art/Boats/`) and its **metric footprint** (the
+   §3.3 length × beam → pixels) are the **placement contract**. A placeholder-sprite → baked-sheet
+   swap **must preserve both**, so the boat never shifts on the water, at the wharf, or in a docking
+   slot when the art is replaced. Treat the pivot + footprint as fixed even if the *art inside the
+   canvas* changes. (If a placeholder isn't yet at canon length — see §3.3 — the **M2 bake** is what
+   reconciles it to the pinned footprint, not a quiet rescale of the placeholder.)
+3. **FX follows direction.** Wakes, spray, and nav/deck lights are currently baked **bow-up** (the art
+   only ever faces up). The moment boats carry **real headings** and turn within the fixed world, these
+   must **rotate with the hull** (a wake trails astern of the *actual* stern; a starboard light stays
+   starboard) — or be **baked per-heading** alongside the hull. Do **not** leave bow-up FX pinned to a
+   rotating boat. **Flag for VS-26 (boat-feel):** wire wake/lights to heading when continuous turning
+   lands.
 
 Water is a **first-class P1 system**, not a backdrop:
 

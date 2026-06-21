@@ -169,3 +169,10 @@ can override reference PPU per-asset if a Canvas needs it. Skipped as **identica
 wiring (a `BoatHullDef` asset per hull, with stats + the sprite ref) is *gameplay-systems* / *economy-sim*'
 job — this lane only provides the locked, imported sprites.
 
+> **The whole fleet is SLICE PLACEHOLDER art** (spin-tolerant, near-plan hand-drawn hulls) — the Dory
+> and Punt included, and these T2+ hulls + roster icons especially. Final boats are planned to come
+> from an **M2 pre-rendered-3D → sprite-sheet bake** that replaces them via a sprite-ref swap (no
+> rework, no placement shift — the pivots/footprints are pinned). See `docs/adr/0006-boat-art-pipeline.md`
+> (*Proposed, deferred to M2*) and the boat art conventions in `docs/design/art-and-audio-bible.md` §3.5.1.
+> Keep these assets (stable GUIDs, usable now); don't invest in hand-drawing per-heading boat art.
+
