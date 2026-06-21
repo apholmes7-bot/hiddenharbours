@@ -19,6 +19,12 @@ namespace HiddenHarbours.UI
         public const string TurnGlyph        = "⤴"; // ⤴ "turns in" marker
         public const string Currency         = "₲"; // ₲ guarani sign — the game's coin
 
+        // Wind-strength barbs — LENGTH encodes strength (colourblind-safe), pairing the kt/Beaufort
+        // numbers with a glanceable shape. Marine convention: a full barb ≈ 10 kt, a half ≈ 5 kt.
+        public const string WindBarbFull     = "▮"; // ▮ full barb ≈ 10 kt
+        public const string WindBarbHalf     = "▪"; // ▪ half barb ≈ 5 kt
+        public const string WindCalm         = "○"; // ○ calm (met ring)
+
         // Placeholders shown before services are ready / when a value is unknown.
         public const string Unknown   = "--";
         public const string Booting   = "";   // empty = HUD shows nothing until services are up
