@@ -6,9 +6,10 @@ using HiddenHarbours.Boats;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// Boat handling pass — astern/reverse, the rowing-animation frame mapping, and the hull collider.
-    /// The thrust and frame/tempo logic are pure static helpers, so they're tested without the physics
-    /// step; the collider existence is asserted on a freshly-built BoatController (RequireComponent).
+    /// Boat handling — astern/reverse, the per-oar rowing input mapping (the owner's table), the
+    /// differential-rowing physics (per-oar thrust → yaw, brace drag), and the hull collider. The thrust,
+    /// yaw, and combo-mapping logic are pure static helpers, so they're tested without the physics/input
+    /// loop; the collider existence is asserted on a freshly-built BoatController (RequireComponent).
     /// </summary>
     public class BoatHandlingTests
     {
@@ -51,75 +52,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(-480f, BoatController.EngineThrust(-2f, 1200f, 0.4f), 1e-3f, "throttle clamps to -1");
         }
 
-        // ---- Part 2: ROWING ANIMATION (frame selection) ------------------------------------
+        // ---- Part 2: PER-OAR INPUT MAPPING (the owner's rowing table) -----------------------
 
-        [Test]
-        public void RowFrame_ForPhase_CyclesAndWraps_Ahead()
+        // (left, right) per-oar state expected for a key combo. forward +1 / back -1 / idle 0.
+        static void AssertOar(string combo, (float left, float right) got, float eLeft, float eRight)
         {
-            Assert.AreEqual(0, BoatRowAnimator.FrameForPhase(0f, 6, false));
-            Assert.AreEqual(0, BoatRowAnimator.FrameForPhase(0.9f, 6, false), "within a frame stays on it");
-            Assert.AreEqual(1, BoatRowAnimator.FrameForPhase(1.2f, 6, false));
-            Assert.AreEqual(5, BoatRowAnimator.FrameForPhase(5.5f, 6, false));
-            Assert.AreEqual(0, BoatRowAnimator.FrameForPhase(6f, 6, false), "the 6-frame cycle wraps");
-            Assert.AreEqual(1, BoatRowAnimator.FrameForPhase(7f, 6, false), "and keeps wrapping");
+            Assert.AreEqual(eLeft,  got.left,  1e-4f, $"{combo}: port oar");
+            Assert.AreEqual(eRight, got.right, 1e-4f, $"{combo}: starboard oar");
         }
 
         [Test]
-        public void RowFrame_ForPhase_Astern_RunsReversed()
+        public void OarMapping_MatchesTheOwnerTable()
         {
-            Assert.AreEqual(5, BoatRowAnimator.FrameForPhase(0f, 6, true), "astern starts at the far end of the cycle");
-            Assert.AreEqual(4, BoatRowAnimator.FrameForPhase(1f, 6, true));
-            Assert.AreEqual(0, BoatRowAnimator.FrameForPhase(5f, 6, true), "astern reverses 0..5 to 5..0");
+            //                                            ahead  astern port   stbd        port  stbd
+            AssertOar("W",   DevBoatInput.OarStateFor(true,  false, false, false),  1f,  1f);
+            AssertOar("S",   DevBoatInput.OarStateFor(false, true,  false, false), -1f, -1f);
+            AssertOar("A",   DevBoatInput.OarStateFor(false, false, true,  false),  1f, -1f);
+            AssertOar("D",   DevBoatInput.OarStateFor(false, false, false, true ), -1f,  1f);
+            AssertOar("W+A", DevBoatInput.OarStateFor(true,  false, true,  false),  1f,  0f);
+            AssertOar("W+D", DevBoatInput.OarStateFor(true,  false, false, true ),  0f,  1f);
+            AssertOar("S+A", DevBoatInput.OarStateFor(false, true,  true,  false), -1f,  0f);
+            AssertOar("S+D", DevBoatInput.OarStateFor(false, true,  false, true ),  0f, -1f);
         }
 
         [Test]
-        public void RowFrame_ForPhase_IsNegativeSafe()
+        public void OarMapping_NeutralAndCancellingCombos_AreIdle()
         {
-            Assert.AreEqual(5, BoatRowAnimator.FrameForPhase(-1f, 6, false), "negative phase wraps within range");
-            Assert.AreEqual(0, BoatRowAnimator.FrameForPhase(0f, 0, false), "no frames → frame 0, never throws");
+            AssertOar("(none)", DevBoatInput.OarStateFor(false, false, false, false), 0f, 0f);
+            AssertOar("A+D",    DevBoatInput.OarStateFor(false, false, true,  true ), 0f, 0f);  // opposing oar keys cancel
+            AssertOar("W+S",    DevBoatInput.OarStateFor(true,  true,  false, false), 0f, 0f);  // ahead + astern cancel
         }
 
         [Test]
-        public void RowCycleFps_ScalesWithSpeed_AndIsCapped()
+        public void OarMapping_FeedsThePhysicsForCorrectYaw()
         {
-            Assert.AreEqual(0f, BoatRowAnimator.CycleFps(0f, 4f, 12f), 1e-4f, "at rest the oars don't move");
-            Assert.AreEqual(4f, BoatRowAnimator.CycleFps(1f, 4f, 12f), 1e-4f, "faster boat → faster oars");
-            Assert.AreEqual(8f, BoatRowAnimator.CycleFps(2f, 4f, 12f), 1e-4f);
-            Assert.AreEqual(8f, BoatRowAnimator.CycleFps(-2f, 4f, 12f), 1e-4f, "tempo uses speed magnitude (astern same rate)");
-            Assert.AreEqual(12f, BoatRowAnimator.CycleFps(100f, 4f, 12f), 1e-4f, "capped so it never strobes");
-        }
+            // The mapped per-oar state, run through the (unchanged) #26 yaw, must turn the right way.
+            var a = DevBoatInput.OarStateFor(false, false, true, false);   // A: stationary pivot
+            Assert.Less(BoatController.OarYawTorque(a.left, a.right, P, O), 0f, "A spins the bow to starboard (right)");
 
-        [Test]
-        public void RowMakingWay_HasAtRestThreshold()
-        {
-            Assert.IsFalse(BoatRowAnimator.IsMakingWay(0f, 0.15f), "still = at rest");
-            Assert.IsFalse(BoatRowAnimator.IsMakingWay(0.1f, 0.15f), "a creep below threshold still idles");
-            Assert.IsTrue(BoatRowAnimator.IsMakingWay(0.2f, 0.15f), "above threshold = making way");
-            Assert.IsTrue(BoatRowAnimator.IsMakingWay(-0.2f, 0.15f), "astern is making way too");
-        }
+            var d = DevBoatInput.OarStateFor(false, false, false, true);   // D: stationary pivot
+            Assert.Greater(BoatController.OarYawTorque(d.left, d.right, P, O), 0f, "D spins the bow to port (left)");
 
-        [Test]
-        public void RowFrame_MapsSpeedToFrame_Deterministically()
-        {
-            // Accumulating phase from a constant speed over fixed steps must give a fixed frame sequence,
-            // and a faster boat must reach later frames in fewer steps. (speed → frame, deterministic.)
-            int FrameAfter(float speed, float dt, int steps, bool astern)
-            {
-                float phase = 0f;
-                for (int i = 0; i < steps; i++)
-                    phase = BoatRowAnimator.AdvancePhase(phase, speed, 4f, 12f, dt);
-                return BoatRowAnimator.FrameForPhase(phase, 6, astern);
-            }
-
-            // Repeatable: identical inputs → identical frame.
-            Assert.AreEqual(FrameAfter(1.5f, 0.1f, 7, false), FrameAfter(1.5f, 0.1f, 7, false), "deterministic in its inputs");
-
-            // speed 1 m/s, fps 4 → +0.4 phase/step; after 3 steps phase=1.2 → frame 1.
-            Assert.AreEqual(1, FrameAfter(1f, 0.1f, 3, false));
-            // Twice the speed reaches frame 1 in half the steps (phase 0.8 → 1.6 after the same 3 steps → frame... ).
-            Assert.AreEqual(1, FrameAfter(2f, 0.1f, 2, false), "twice the speed → frame 1 in fewer steps (phase 1.6)");
-            // Same motion astern lands on the reversed frame.
-            Assert.AreEqual(BoatRowAnimator.FrameForPhase(1.2f, 6, true), FrameAfter(1f, 0.1f, 3, true), "astern reverses the same phase");
+            var wa = DevBoatInput.OarStateFor(true, false, true, false);   // W+A: port oar only, ahead
+            Assert.Less(BoatController.OarYawTorque(wa.left, wa.right, P, O), 0f, "rowing only the port oar swings the bow starboard");
+            Assert.Greater(BoatController.OarThrust(wa.left, wa.right, P), 0f, "…while still making headway");
         }
 
         // ---- Part 3: COZY COLLISION (the boat has a collider) ------------------------------
@@ -185,20 +161,21 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Oar_SetOarInput_StoresClampedRowDrive()
+        public void Oar_SetOarInput_StoresClampedPerOarState()
         {
             var go = new GameObject("RowBoat");
             _spawned.Add(go);
             var boat = go.AddComponent<BoatController>();
 
             boat.SetOarInput(1f, 1f, false);
-            Assert.AreEqual(1f, boat.RowDrive, 1e-4f, "both oars ahead → full ahead rowing activity");
+            Assert.AreEqual(1f, boat.LeftOar, 1e-4f, "both oars ahead → port forward");
+            Assert.AreEqual(1f, boat.RightOar, 1e-4f, "both oars ahead → starboard forward");
             boat.SetOarInput(1f, -1f, false);
-            Assert.AreEqual(0f, boat.RowDrive, 1e-4f, "opposite oars → no net drive (a pivot)");
-            boat.SetOarInput(-1f, -1f, true);
-            Assert.AreEqual(-1f, boat.RowDrive, 1e-4f, "both oars astern → astern rowing activity");
+            Assert.AreEqual(1f, boat.LeftOar, 1e-4f, "port forward");
+            Assert.AreEqual(-1f, boat.RightOar, 1e-4f, "starboard back-water (a pivot)");
             boat.SetOarInput(2f, -2f, false);
-            Assert.AreEqual(0f, boat.RowDrive, 1e-4f, "oar input clamps to ±1 (2 and -2 → 1 and -1 → net 0)");
+            Assert.AreEqual(1f, boat.LeftOar, 1e-4f, "oar input clamps to +1");
+            Assert.AreEqual(-1f, boat.RightOar, 1e-4f, "oar input clamps to -1");
         }
 
         [Test]

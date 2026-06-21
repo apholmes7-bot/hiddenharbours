@@ -6,8 +6,10 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// PLACEHOLDER dev controls so you can feel the boat in the greybox. The scheme follows the active
     /// hull's <see cref="PropulsionType"/>:
-    ///   • Oars (the dory): W/S = both oars ahead/astern, A = a LEFT-oar stroke, D = a RIGHT-oar stroke
-    ///     (held = a sustained pull; one-sided = turn the OTHER way), Space = brace the oars (brake).
+    ///   • Oars (the dory) — per the owner's rowing table (each oar is forward +1 / back -1 / idle 0):
+    ///     W = both ahead · S = both astern · A = port-oar stroke · D = starboard-oar stroke ·
+    ///     W+A = port oar only ahead · W+D = stbd only · S+A = port only astern · S+D = stbd only ·
+    ///     A or D with no W/S = a stationary pivot (oars opposite) · Space = brace (both oars → brake).
     ///   • Engine (boats you buy): W/S = throttle ahead/astern, A/D = steer (UNCHANGED helm).
     /// To ship, replace this with the control scheme through an InputService (design/ux-and-mobile-
     /// controls.md, owned by ui-ux); a gamepad maps analog oar effort straight to BoatController.SetOarInput.
@@ -33,16 +35,33 @@ namespace HiddenHarbours.Boats
                 ReadEngine(kb);
         }
 
-        // Differential hand-rowing (the dory). W/S drive both oars; A/D add a one-sided pull → yaw.
-        // Holding an oar key is a sustained pull; a tap is one pull. A gamepad would feed analog effort.
+        /// <summary>
+        /// Map the keyboard combo to each oar's stroke state (forward +1 / backward -1 / idle 0), per the
+        /// owner's rowing table. W/S drive both oars ahead/astern; A engages the PORT (left) oar, D the
+        /// STARBOARD (right). A one-sided key rows just that oar in the W/S direction; with no W/S it rows
+        /// that oar forward and back-waters the other for a stationary pivot. Both (or neither) of A/D →
+        /// both oars track the W/S drive. Pure + static so the table is unit-testable without the input loop.
+        /// </summary>
+        public static (float left, float right) OarStateFor(bool ahead, bool astern, bool portKey, bool stbdKey)
+        {
+            float drive = (ahead ? 1f : 0f) - (astern ? 1f : 0f);   // -1 / 0 / +1
+            bool portOnly = portKey && !stbdKey;
+            bool stbdOnly = stbdKey && !portKey;
+            if (portOnly) return drive != 0f ? (drive, 0f) : (1f, -1f);   // port oar in drive dir, else pivot bow-right
+            if (stbdOnly) return drive != 0f ? (0f, drive) : (-1f, 1f);   // stbd oar in drive dir, else pivot bow-left
+            return (drive, drive);                                        // both oars together (or A+D cancel) → straight
+        }
+
+        // Differential hand-rowing (the dory): each oar's state comes from the combo table, then drives
+        // the per-oar physics surface. Space braces both oars (a strong braking drag).
         private void ReadOars(Keyboard kb)
         {
-            float both = ((kb.wKey.isPressed || kb.upArrowKey.isPressed) ? 1f : 0f)
-                       - ((kb.sKey.isPressed || kb.downArrowKey.isPressed) ? 1f : 0f);
-            float left  = Mathf.Clamp(both + ((kb.aKey.isPressed || kb.leftArrowKey.isPressed)  ? 1f : 0f), -1f, 1f);
-            float right = Mathf.Clamp(both + ((kb.dKey.isPressed || kb.rightArrowKey.isPressed) ? 1f : 0f), -1f, 1f);
-            bool brace = kb.spaceKey.isPressed;   // oars braced = brake/stop
-            _boat.SetOarInput(left, right, brace);
+            bool ahead  = kb.wKey.isPressed || kb.upArrowKey.isPressed;
+            bool astern = kb.sKey.isPressed || kb.downArrowKey.isPressed;
+            bool portKey = kb.aKey.isPressed || kb.leftArrowKey.isPressed;
+            bool stbdKey = kb.dKey.isPressed || kb.rightArrowKey.isPressed;
+            var (left, right) = OarStateFor(ahead, astern, portKey, stbdKey);
+            _boat.SetOarInput(left, right, kb.spaceKey.isPressed);   // Space = brace = brake/stop
         }
 
         // Engine helm — UNCHANGED: W/S = throttle (S/Down = astern), A/D = steer.

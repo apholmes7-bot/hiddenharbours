@@ -38,8 +38,10 @@ namespace HiddenHarbours.Boats
         public bool IsAground { get; private set; }
         public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
 
-        /// <summary>Signed rowing activity (-1 astern .. +1 ahead) for the row animator; |value| = effort.</summary>
-        public float RowDrive => (_leftOar + _rightOar) * 0.5f;
+        /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
+        public float LeftOar => _leftOar;
+        /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
+        public float RightOar => _rightOar;
 
         private void Awake()
         {
