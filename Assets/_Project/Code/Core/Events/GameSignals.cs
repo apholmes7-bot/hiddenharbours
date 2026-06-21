@@ -77,4 +77,20 @@ namespace HiddenHarbours.Core
             BoatId = boatId; PricePaid = pricePaid;
         }
     }
+
+    /// <summary>
+    /// Raised when the active boat changes (an upgrade swap), carrying the framing the camera should
+    /// use for that hull. Lets the camera (App) zoom to the new boat WITHOUT referencing the Boats
+    /// module — data-driven from <c>BoatHullDef.CameraWorldHeightMeters</c>. Bigger boat = more water
+    /// on screen (the tangible "bigger boat" beat). Keyed by stable boat id.
+    /// </summary>
+    public readonly struct ActiveBoatChanged
+    {
+        public readonly string BoatId;
+        public readonly float CameraWorldHeightMeters;
+        public ActiveBoatChanged(string boatId, float cameraWorldHeightMeters)
+        {
+            BoatId = boatId; CameraWorldHeightMeters = cameraWorldHeightMeters;
+        }
+    }
 }

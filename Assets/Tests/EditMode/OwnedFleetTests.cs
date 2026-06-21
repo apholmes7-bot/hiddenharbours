@@ -20,12 +20,17 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<Object> _spawned = new();
 
         [SetUp]
-        public void SetUp() => EventBus.Clear<BoatPurchased>();
+        public void SetUp()
+        {
+            EventBus.Clear<BoatPurchased>();
+            EventBus.Clear<ActiveBoatChanged>();
+        }
 
         [TearDown]
         public void TearDown()
         {
             EventBus.Clear<BoatPurchased>();
+            EventBus.Clear<ActiveBoatChanged>();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -144,6 +149,47 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Publish(new BoatPurchased("boat.punt", 1800));
 
             Assert.AreSame(startSprite, sr.sprite, "no hull sprite → renderer left as-is (no null-swap)");
+        }
+
+        [Test]
+        public void Purchase_RepointsCamera_ViaActiveBoatChanged_FromTheNewHull()
+        {
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            punt.CameraWorldHeightMeters = 17f;     // bigger boat → the camera should frame more water
+            MakeFleet(new[] { dory, punt }, dory);
+
+            var events = new List<ActiveBoatChanged>();
+            void Capture(ActiveBoatChanged e) => events.Add(e);
+            EventBus.Subscribe<ActiveBoatChanged>(Capture);
+            try
+            {
+                EventBus.Publish(new BoatPurchased("boat.punt", 1800));
+
+                Assert.AreEqual(1, events.Count, "the swap should re-point the camera exactly once");
+                Assert.AreEqual("boat.punt", events[0].BoatId);
+                Assert.AreEqual(17f, events[0].CameraWorldHeightMeters, 1e-4f,
+                    "camera framing is data-driven from the new hull");
+            }
+            finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
+        }
+
+        [Test]
+        public void Purchase_UnknownId_DoesNotRepointCamera()
+        {
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            MakeFleet(new[] { dory, punt }, dory);
+
+            int count = 0;
+            void Capture(ActiveBoatChanged e) => count++;
+            EventBus.Subscribe<ActiveBoatChanged>(Capture);
+            try
+            {
+                EventBus.Publish(new BoatPurchased("boat.galleon", 1));
+                Assert.AreEqual(0, count, "an unknown id must not re-point the camera");
+            }
+            finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
         }
     }
 }
