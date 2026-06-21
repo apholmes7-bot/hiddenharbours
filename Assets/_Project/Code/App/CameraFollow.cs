@@ -106,8 +106,14 @@ namespace HiddenHarbours.App
         // ---- follow behaviour ---------------------------------------------------------------
 
         [Header("Follow")]
-        [Tooltip("The transform to follow (the dory).")]
+        [Tooltip("The transform currently followed (player on foot, or the boat when aboard).")]
         public Transform Target;
+
+        [Tooltip("Follow target while ON FOOT (the player). The control switcher picks between this and " +
+                 "the boat target via the Core ControlModeChanged signal — the camera never references Player/Boats.")]
+        [SerializeField] private Transform _onFootTarget;
+        [Tooltip("Follow target while ABOARD (the boat).")]
+        [SerializeField] private Transform _boatTarget;
 
         [Tooltip("Follow stiffness — higher snaps to the target faster.")]
         public float Smooth = 6f;
@@ -141,11 +147,30 @@ namespace HiddenHarbours.App
             ApplyFramingHard(_worldHeightMeters); // initial framing from the active (Dory) hull
         }
 
-        private void OnEnable()  => EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
-        private void OnDisable() => EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+        private void OnEnable()
+        {
+            EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+        }
 
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+        }
+
+        // An active-boat change (an upgrade) reframes only — it doesn't retarget (you're already aboard).
         private void OnActiveBoatChanged(ActiveBoatChanged e)
             => SetFraming(e.CameraWorldHeightMeters, animate: true);
+
+        // Switching between on-foot and aboard retargets the follow-cam (and, on foot, reframes to the
+        // tighter on-foot view; the boat's framing arrives via ActiveBoatChanged on boarding).
+        private void OnControlModeChanged(ControlModeChanged e)
+        {
+            Transform next = e.Mode == ControlMode.Aboard ? _boatTarget : _onFootTarget;
+            if (next != null) Target = next;
+            if (e.Mode == ControlMode.OnFoot) SetFraming(OnFootWorldHeightMeters, animate: true);
+        }
 
         /// <summary>
         /// Frame the camera for a world height. <paramref name="animate"/> eases the zoom (the upgrade
