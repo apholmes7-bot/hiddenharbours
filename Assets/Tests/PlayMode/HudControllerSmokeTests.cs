@@ -99,7 +99,15 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             GameServices.Clock = new FakeClock();
             GameServices.Environment = new FakeEnv();
-            GameServices.Wallet = new FakeWallet();
+            // No Wallet: isolate the event-driven path so this test proves OnMoneyChanged actually
+            // drives the label. A funded wallet would repaint the same balance via UpdateMoney's
+            // reconcile every frame, so the assert could pass even if OnMoneyChanged did nothing.
+            // It also exercises the documented greybox "wallet == null → preserve the event value"
+            // branch (HudController.UpdateMoney). The previous setup wired a FakeWallet that started
+            // at 0 and was never funded, so UpdateMoney reconciled the label back to "₲0" on the
+            // frame after the event — a state that can't occur in production, where PlayerWallet
+            // updates its balance BEFORE publishing MoneyChanged (wallet.Money == e.NewBalance).
+            GameServices.Wallet = null;
 
             var hud = MakeHud();
             yield return null;
