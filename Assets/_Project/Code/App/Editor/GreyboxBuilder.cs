@@ -54,6 +54,7 @@ namespace HiddenHarbours.App.Editor
                 h.EnginePower = 1200f; h.RudderAuthority = 600f;
                 h.ForwardDrag = 40f; h.LateralDrag = 240f; h.WindExposure = 1.2f;
                 h.MaxSafeSeaState = SeaState.Lively;
+                h.CameraWorldHeightMeters = 14f;   // intimate framing for the little dory
             });
 
             // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY, the
@@ -76,10 +77,11 @@ namespace HiddenHarbours.App.Editor
             camGo.tag = "MainCamera";
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;
-            // PC-first intimate LANDSCAPE framing (ADR 0005): ~14 m of world height so the 4.5 m Dory
-            // reads large, not lost in blue. Authored here (and used in the scene view); the PPC below
-            // snaps the live render to the nearest pixel-perfect step. Single source of truth in CameraFollow.
-            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.DefaultWorldHeightMeters);
+            // PC-first intimate LANDSCAPE framing (ADR 0005), DATA-DRIVEN per boat: the camera frames the
+            // active hull's CameraWorldHeightMeters (Dory ~14 m so the 4.5 m hull reads large; a bigger
+            // boat shows more water). Authored here for the scene view; CameraFollow re-applies it at play
+            // and zooms out on an upgrade. Single source of truth for the mapping is in CameraFollow.
+            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(dory.CameraWorldHeightMeters);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
             camGo.transform.position = new Vector3(0f, 0f, -10f);
@@ -95,8 +97,9 @@ namespace HiddenHarbours.App.Editor
             var ppc = camGo.GetComponent<PixelPerfectCamera>();
             if (ppc != null)
             {
-                ppc.refResolutionX = CameraFollow.ReferenceWidthPx;   // 640
-                ppc.refResolutionY = CameraFollow.ReferenceHeightPx;  // 360 → 16:9
+                CameraFollow.ReferenceResolutionForWorldHeight(dory.CameraWorldHeightMeters, out int refW, out int refH);
+                ppc.refResolutionX = refW;   // Dory 14 m → 640×360 (exact ×3 pixel-perfect zoom at 1080p)
+                ppc.refResolutionY = refH;   // 16:9; a bigger boat tier sets a larger reference
                 EditorUtility.SetDirty(ppc);
             }
 
@@ -146,6 +149,7 @@ namespace HiddenHarbours.App.Editor
             if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
             {
                 dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
+                dory.CameraWorldHeightMeters = 14f;
                 EditorUtility.SetDirty(dory);
             }
             // Reload + re-apply the Punt stats (idempotent on re-runs, like the Dory above) and attach its
@@ -275,8 +279,13 @@ namespace HiddenHarbours.App.Editor
             SetRef(shipwright, "_offer", puntOffer);
             SetRef(shipwright, "_walletProvider", root);
 
-            // Camera follows the dory so it stays on screen as you sail.
-            camGo.AddComponent<CameraFollow>().Target = doryGo.transform;
+            // Camera follows the dory so it stays on screen as you sail. Its framing is data-driven from
+            // the active hull (the Dory now; OwnedFleet zooms it out on the Punt upgrade via Core).
+            var cameraFollow = camGo.AddComponent<CameraFollow>();
+            cameraFollow.Target = doryGo.transform;
+            var cfSo = new SerializedObject(cameraFollow);
+            var cfWorldH = cfSo.FindProperty("_worldHeightMeters");
+            if (cfWorldH != null) { cfWorldH.floatValue = dory.CameraWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
 
             // --- SAVE & REGISTER -----------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -322,6 +331,7 @@ namespace HiddenHarbours.App.Editor
             h.EnginePower = 650f; h.RudderAuthority = 600f;
             h.ForwardDrag = 140f; h.LateralDrag = 360f; h.WindExposure = 0.5f;
             h.MaxSafeSeaState = SeaState.Lively;
+            h.CameraWorldHeightMeters = 17f;   // a bigger boat → the camera pulls back a touch on the upgrade
         }
 
         static T LoadOrCreate<T>(string path, System.Action<T> init = null) where T : ScriptableObject

@@ -46,5 +46,9 @@ namespace HiddenHarbours.Boats
         [Header("Seaworthiness")]
         [Tooltip("Worst sea state this boat can work safely. Above it, danger rises (P5).")]
         public SeaState MaxSafeSeaState = SeaState.Lively;
+
+        [Header("Camera")]
+        [Tooltip("World height in metres the camera frames for this hull — bigger boat = more water.")]
+        public float CameraWorldHeightMeters = 14f;
     }
 }

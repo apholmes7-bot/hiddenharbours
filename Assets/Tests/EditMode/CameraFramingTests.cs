@@ -92,5 +92,64 @@ namespace HiddenHarbours.Tests.EditMode
             float liveHeight720 = CameraFollow.WorldHeightAtZoom(720, zoom720, LockedPPU);
             Assert.That(liveHeight720, Is.InRange(10f, 16f), "720p framing is still intimate");
         }
+
+        // ---- data-driven per-boat framing (the bigger-boat zoom-out) -------------------------
+
+        [Test]
+        public void DoryReference_DerivesToTheDefaultConstants()
+        {
+            // The named Dory constants must equal the mapping for the default (~14 m) height.
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.DefaultWorldHeightMeters,
+                out int w, out int h);
+            Assert.AreEqual(CameraFollow.ReferenceWidthPx, w);
+            Assert.AreEqual(CameraFollow.ReferenceHeightPx, h);
+        }
+
+        [Test]
+        public void EachTierReference_Is16x9_AndPixelPerfectAt1080p()
+        {
+            foreach (float worldHeight in new[] { 14f, 17f, 25f, 40f })
+            {
+                CameraFollow.ReferenceResolutionForWorldHeight(worldHeight, out int w, out int h);
+                Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, $"tier {worldHeight} m must be 16:9");
+
+                int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
+                Assert.GreaterOrEqual(zoom, 1, $"tier {worldHeight} m must hold an integer pixel-perfect zoom");
+            }
+        }
+
+        [Test]
+        public void BiggerBoat_FramesMoreWater_ThanSmaller()
+        {
+            // Dory (14 m) vs Punt (17 m): the bigger boat's reference is taller (more world) and its
+            // live pixel-perfect framing shows strictly more water — the tangible "bigger boat" beat.
+            CameraFollow.ReferenceResolutionForWorldHeight(14f, out int dW, out int dH);
+            CameraFollow.ReferenceResolutionForWorldHeight(17f, out int pW, out int pH);
+
+            Assert.Greater(pH, dH, "the bigger boat uses a larger (taller) reference → more world");
+            Assert.Greater(pW, dW);
+
+            float doryLive = CameraFollow.WorldHeightAtZoom(1080,
+                CameraFollow.PixelPerfectZoom(1920, 1080, dW, dH), LockedPPU);
+            float puntLive = CameraFollow.WorldHeightAtZoom(1080,
+                CameraFollow.PixelPerfectZoom(1920, 1080, pW, pH), LockedPPU);
+
+            Assert.Greater(puntLive, doryLive, "buying the Punt zooms the camera out (more water on screen)");
+        }
+
+        [Test]
+        public void Framing_IsMonotonic_BiggerRequest_NeverShowsLessWater()
+        {
+            // Across the ladder, a larger CameraWorldHeightMeters never frames LESS water (non-decreasing).
+            float prevLive = 0f;
+            foreach (float worldHeight in new[] { 8f, 11f, 14f, 17f, 22f, 30f, 45f })
+            {
+                CameraFollow.ReferenceResolutionForWorldHeight(worldHeight, out int w, out int h);
+                float live = CameraFollow.WorldHeightAtZoom(1080,
+                    CameraFollow.PixelPerfectZoom(1920, 1080, w, h), LockedPPU);
+                Assert.GreaterOrEqual(live + 1e-3f, prevLive, $"framing must not shrink as the boat grows ({worldHeight} m)");
+                prevLive = live;
+            }
+        }
     }
 }

@@ -44,6 +44,11 @@ namespace HiddenHarbours.Boats
             if (_hold != null) _hold.SetHull(hull);                                  // capacity 6→14
             if (_spriteRenderer != null && hull.Sprite != null)
                 _spriteRenderer.sprite = hull.Sprite;                               // visible swap
+
+            // Re-point the camera to this hull's framing — the App's CameraFollow listens via Core, so
+            // Boats never references it. Buying a bigger boat zooms the view out a touch (data-driven
+            // from the hull). M2 hulls just set a larger CameraWorldHeightMeters — no new code here.
+            EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters));
             // TODO(VS-08): persist the owned boat across save/load. For now the grant is in-session only.
         }
 
