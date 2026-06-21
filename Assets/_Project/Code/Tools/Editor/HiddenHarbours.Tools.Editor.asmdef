@@ -4,6 +4,7 @@
     "references": [
         "HiddenHarbours.Core",
         "HiddenHarbours.Environment",
+        "HiddenHarbours.Fishing",
         "HiddenHarbours.UI"
     ],
     "includePlatforms": ["Editor"],
