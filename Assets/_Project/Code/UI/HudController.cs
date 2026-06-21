@@ -361,7 +361,12 @@ namespace HiddenHarbours.UI
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1080f, 1920f); // portrait-primary reference
+            // PC-first legibility bump (gameplay-systems, flagged for ui-ux): a smaller LANDSCAPE
+            // reference makes the whole code-drawn HUD scale up uniformly (~1.5× at 1920×1080) so
+            // clock/tide/money/hold read at a glance on a desktop window. This is a minimal scale
+            // tweak only — the real HUD pass (sizing, density, layout) is ui-ux's VS-19. Was the
+            // portrait 1080×1920 mobile reference (pre-ADR-0005).
+            scaler.referenceResolution = new Vector2(1280f, 720f);
             scaler.matchWidthOrHeight = 0.5f;
 
             // A top band anchored across the top, inset for the safe area at runtime.

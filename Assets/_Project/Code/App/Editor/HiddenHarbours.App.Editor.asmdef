@@ -10,7 +10,8 @@
         "HiddenHarbours.Player",
         "HiddenHarbours.App",
         "HiddenHarbours.UI",
-        "HiddenHarbours.Art.Editor"
+        "HiddenHarbours.Art.Editor",
+        "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "includePlatforms": ["Editor"],
     "allowUnsafeCode": false,
