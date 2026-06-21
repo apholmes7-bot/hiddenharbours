@@ -176,3 +176,46 @@ job — this lane only provides the locked, imported sprites.
 > (*Proposed, deferred to M2*) and the boat art conventions in `docs/design/art-and-audio-bible.md` §3.5.1.
 > Keep these assets (stable GUIDs, usable now); don't invest in hand-drawing per-heading boat art.
 
+---
+
+## Batch 6 — dory oar-rework rig (hull + oar + rower, layered)
+
+The dory's rowing was a single baked 6-frame strip (`Boats/DoryRow.png`). To drive the **per-oar
+differential hand-rowing feel** (the input→per-oar fwd/back/idle table — see the gameplay-systems
+oar-rework), the oars need to move *independently of the hull*, so the art ships as three separate,
+composited layers instead of one pre-baked strip. Imported headless (editor closed) so
+`ArtImportPipeline` stamped the VS-23 lock (Sprite · PPU 32 · Point · Compression None · mips off) on
+first import.
+
+| Layer (back→front) | File | px (W×H) | At PPU 32 | Pivot | Role |
+|---|---|---|---|---|---|
+| 1 — base | `Boats/DoryHull.png` | 64×144 | 2 m × 4.5 m (bow-up) | **centre** | The oar-less dory hull. Same footprint/pivot as `Boats/Dory.png` — a drop-in hull base. |
+| 2 — oars (×2) | `Boats/Oar.png` | 56×16 | 1.75 m × 0.5 m | **LeftCenter (handle/inboard end)** | One oar; the rig **mirrors it L/R** and **rotates each about its oarlock** to animate strokes. |
+| 3 — rower | `Boats/DoryRower.png` | 26×28 | ~0.8 m × 0.9 m | **centre** | The rower figure that sits at the thwart, on top of the hull (hands meet the oar handles). |
+
+**Intended composition (for the gameplay-systems rig — cross-lane, not wired here):**
+- Stack the three as child `SpriteRenderer`s of the dory: hull (sorting back) → two oars → rower (front),
+  so the rower covers the inboard handle ends and the looms/blades sweep out over the water.
+- The hull's centre pivot is the boat's rotation/footprint anchor — identical to `Dory.png`, so the rig
+  drops onto the existing dory placement with **no shift**.
+- **Oars are one sprite, used twice:** instance it for port & starboard, `flipX` one of them, anchor each
+  at its gunwale oarlock, and rotate each oar's transform to row. Because the two oars share the sprite,
+  per-oar input (left stick vs right stick / A·D feathering) just drives two independent rotations.
+
+**Oarlock / pivot note (important for whoever rigs the stroke):**
+- `Oar.png` is drawn **handle-left → loom → blade-right** (trimmed content rect 55×13, handle knob at the
+  left edge, wide blade at the right). Its sprite **pivot is set at the handle/inboard end** (`LeftCenter`,
+  `{x:0, y:0.5}`) so rotating the SpriteRenderer directly swings the blade through an arc — the cheap path.
+- The **true oarlock (fulcrum) is *not* the handle tip** — it sits roughly the **inboard third along the
+  loom: ≈ x 18 of 55 px from the handle, i.e. normalized pivot ≈ {x: 0.33, y: 0.5}** of the trimmed
+  sprite. A real stroke pivots here (handle swings inboard, blade swings outboard about this point).
+- If the handle-tip swing looks off, **don't re-pivot the art** — parent `Oar.png` under an empty *oarlock
+  pivot transform* placed at that ≈0.33 point and rotate the transform instead (more flexible: gameplay
+  can tune the fulcrum and the inboard/outboard lever per boat without an art round-trip). The sprite's
+  `LeftCenter` pivot and this documented oarlock offset support **either** approach.
+
+`Boats/DoryRow.png` (the old 6-frame strip) is kept for now (stable GUID; usable as a fallback) but is
+**superseded** by this layered rig for the oar-rework. Building the rowing rig/animation (oarlock
+transforms, the per-oar rotation curves, sorting) is *gameplay-systems*' job — this lane provides the
+locked, correctly-pivoted layers.
+
