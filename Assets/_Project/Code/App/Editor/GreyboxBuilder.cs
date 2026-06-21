@@ -31,6 +31,9 @@ namespace HiddenHarbours.App.Editor
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
+        const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
+        const string ArtLineHook         = "Assets/_Project/Art/UI/LineHook.png";         // VS-13 rod gauge
+        const string ArtFishSilhouette   = "Assets/_Project/Art/UI/FishOnSilhouette.png"; // VS-13 rod gauge
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
 
@@ -201,6 +204,25 @@ namespace HiddenHarbours.App.Editor
             SetRef(fishing, "_holdProvider", doryGo);
             SetRefArray(fishing, "_regionFish", fish);
 
+            // Fishing mini-game (VS-13, gameplay-systems). A simple visible fishing-spot marker so there
+            // IS a spot (greybox flavour — proximity gating is future; Space still casts from the dory),
+            // plus the TRANSIENT rod gauge overlay. The gauge reads the fight purely through the Core
+            // FishingStateChanged signal, so it needs no controller ref — just the imported UI art,
+            // loaded fresh (post-reload) and wired by serialized ref (null-safe if a sprite is missing).
+            var fishingSpot = new GameObject("FishingSpot");
+            fishingSpot.transform.position = new Vector3(4f, 4f, 0f);
+            var spotSr = fishingSpot.AddComponent<SpriteRenderer>();
+            spotSr.sprite = waterSprite;
+            spotSr.color = new Color(0.30f, 0.58f, 0.66f, 0.7f);
+            spotSr.sortingOrder = -4;
+            fishingSpot.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+
+            var gaugeGo = new GameObject("FishingGauge");
+            var gauge = gaugeGo.AddComponent<RodGaugeView>();
+            SetRef(gauge, "_gaugeSprite", LoadArtSprite(ArtTensionGauge));
+            SetRef(gauge, "_lineHookSprite", LoadArtSprite(ArtLineHook));
+            SetRef(gauge, "_fishSprite", LoadArtSprite(ArtFishSilhouette));
+
             // Boat grant (VS-16, gameplay-systems): OwnedFleet listens for the Shipwright's BoatPurchased
             // signal and swaps the active hull to the bought boat (data-driven by id). It lives on the
             // Dory GO so it has the BoatController/ShipHold/renderer to swap, and is registered with the
@@ -250,9 +272,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast, B = sell your hold, P = buy the Punt (₲1,800).");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast then HOLD to reel / RELEASE to ease (land it before the line snaps), B = sell your hold, P = buy the Punt (₲1,800).");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast for a fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nWatch the Console for catches, sales, and purchases.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish before the line snaps\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nWatch the Console for bites, catches, sales, and purchases.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------

@@ -4,8 +4,10 @@ using UnityEngine.InputSystem;
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// PLACEHOLDER: press Space to cast, so you can test the catch loop in the greybox. Replace with
-    /// the touch fishing interaction through the InputService later (ui-ux).
+    /// PLACEHOLDER one-thumb fishing input for the greybox: Space is the single fishing action.
+    /// Press it to cast; after a bite, HOLD to reel and RELEASE to ease — pulse to land the fish before
+    /// the line snaps. Feeds the held state to <see cref="FishingController.Tick"/> every frame. Replace
+    /// with the real touch Action button via the InputService later (ui-ux, the Haul(hold/release) intent).
     /// </summary>
     [RequireComponent(typeof(FishingController))]
     public class DevFishingInput : MonoBehaviour
@@ -16,8 +18,8 @@ namespace HiddenHarbours.Fishing
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-                _fishing.TryCast();
+            bool held = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+            _fishing.Tick(Time.deltaTime, held);
         }
     }
 }
