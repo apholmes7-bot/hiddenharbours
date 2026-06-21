@@ -56,6 +56,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             EventBus.Clear<MoneyChanged>();
             EventBus.Clear<CatchSold>();
+            EventBus.Clear<FishCaught>();
             GameServices.Reset();
         }
 
@@ -64,6 +65,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             EventBus.Clear<MoneyChanged>();
             EventBus.Clear<CatchSold>();
+            EventBus.Clear<FishCaught>();
             GameServices.Reset();
             if (_hudGo != null) Object.Destroy(_hudGo);
         }
@@ -137,6 +139,60 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsTrue(payout.enabled, "a sale should show the payout flash");
             Assert.AreEqual("+₲48", payout.text, "the flash shows the gain with a '+'");
+        }
+
+        [UnityTest]
+        public IEnumerator FishCaught_ShowsCatchCard()
+        {
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            GameServices.Wallet = new FakeWallet();
+
+            var hud = MakeHud();
+            yield return null;
+
+            var card = Label(hud, "_catchCardLabel");
+            Assert.IsNotNull(card, "the catch card label should exist");
+            Assert.IsFalse(card.enabled, "the catch card starts hidden");
+
+            var item = new CatchItem("fish.atlantic_cod", "Atlantic Cod",
+                FishCategory.InshoreGroundfish, 3.4f, 48, 0.1f);
+            EventBus.Publish(new FishCaught(item));
+            yield return null;
+
+            Assert.IsTrue(card.enabled, "landing a fish should show the catch card");
+            Assert.AreEqual("Atlantic Cod — 3.4 kg — ₲48!", card.text,
+                "the card celebrates the fish name, weight and value");
+        }
+
+        [UnityTest]
+        public IEnumerator FishCaught_DoesNotDisturbMoneyOrPayout()
+        {
+            // The catch card is ADDITIVE: landing a fish must not touch the money/payout readouts
+            // (the #22 smoke contract). The payout flash only reacts to a sale (CatchSold), and the
+            // money readout reconciles from the wallet — fund it so this asserts a stable balance.
+            GameServices.Clock = new FakeClock();
+            GameServices.Environment = new FakeEnv();
+            var wallet = new FakeWallet();
+            wallet.Add(1240);
+            GameServices.Wallet = wallet;
+
+            var hud = MakeHud();
+            yield return null;
+
+            Assert.AreEqual("₲1,240", Label(hud, "_moneyLabel").text,
+                "precondition: the money readout shows the wallet balance");
+
+            var item = new CatchItem("fish.atlantic_cod", "Atlantic Cod",
+                FishCategory.InshoreGroundfish, 3.4f, 48, 0.1f);
+            EventBus.Publish(new FishCaught(item));
+            yield return null;
+
+            Assert.IsTrue(Label(hud, "_catchCardLabel").enabled, "the catch card shows on a catch");
+            Assert.AreEqual("₲1,240", Label(hud, "_moneyLabel").text,
+                "a catch must not change the money readout");
+            Assert.IsFalse(Label(hud, "_payoutLabel").enabled,
+                "a catch is not a sale — the payout flash stays hidden");
         }
 
         [UnityTest]

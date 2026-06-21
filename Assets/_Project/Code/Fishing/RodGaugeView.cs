@@ -28,11 +28,31 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Tension fraction at/above which the strain bar reads as the red SNAP zone (shape+colour+text).")]
         [SerializeField] private float _snapZone = 0.75f;
 
+        [Header("On-the-line struggle (VS-14 catch-feel; gameplay-systems FYI)")]
+        [Tooltip("Jitter amplitude (px) of the on-line fish at calm tension vs. at full frantic.")]
+        [SerializeField] private float _struggleAmpCalm = 3f;
+        [SerializeField] private float _struggleAmpFrantic = 26f;
+        [Tooltip("Shake frequency of the on-line fish at calm tension vs. at full frantic.")]
+        [SerializeField] private float _struggleFreqCalm = 5f;
+        [SerializeField] private float _struggleFreqFrantic = 22f;
+        [Tooltip("Peak lurch rotation (degrees) of the on-line fish at full frantic.")]
+        [SerializeField] private float _struggleMaxRotation = 14f;
+        [Tooltip("How strongly a sudden RISE in live tension (a surge) spikes the franticness.")]
+        [SerializeField] private float _surgeGain = 6f;
+        [Tooltip("How fast a surge calms back to zero (per real second).")]
+        [SerializeField] private float _surgeDecay = 1.6f;
+
         private RectTransform _panel;
         private Image _tensionFill;
         private Image _landingFill;
         private Image _fishIcon;
         private Text _statusLabel;
+
+        // ---- live struggle state (drives the per-frame fish animation; all GC-free) ----------
+        private Vector2 _fishHome;                          // the fish's resting anchored position (jitter origin)
+        private FishingPhase _lastPhase = FishingPhase.Idle;
+        private float _lastTension;                         // previous snapshot's strain — for surge detection
+        private float _surge;                               // 0..1 decaying "a surge just hit" intensity
 
         private static readonly Color CalmTension  = new Color(0.45f, 0.85f, 0.55f);
         private static readonly Color HotTension   = new Color(0.92f, 0.30f, 0.25f);
@@ -42,7 +62,75 @@ namespace HiddenHarbours.Fishing
         private void OnEnable()  => EventBus.Subscribe<FishingStateChanged>(OnState);
         private void OnDisable() => EventBus.Unsubscribe<FishingStateChanged>(OnState);
 
-        private void OnState(FishingStateChanged e) => Render(e.State);
+        private void OnState(FishingStateChanged e)
+        {
+            FeedStruggle(e.State);
+            Render(e.State);
+        }
+
+        // ---- on-the-line struggle (Update-driven, no per-frame GC) ---------------------------
+
+        /// <summary>
+        /// Track live strain and detect surges from the same <see cref="FishingState"/> the gauge already
+        /// consumes — a sudden RISE in tension reads as the fish lurching, which spikes the franticness.
+        /// </summary>
+        private void FeedStruggle(FishingState s)
+        {
+            bool fighting = s.Phase == FishingPhase.Fighting || s.Phase == FishingPhase.Tending;
+            if (fighting)
+            {
+                float rise = s.Tension01 - _lastTension; // a positive jump = the fish just surged
+                if (rise > 0f) _surge = Mathf.Clamp01(_surge + rise * _surgeGain);
+            }
+            else
+            {
+                _surge = 0f; // bite/result/idle: nothing's pulling
+            }
+            _lastTension = s.Tension01;
+            _lastPhase = s.Phase;
+        }
+
+        /// <summary>
+        /// Animate the on-line fish so it feels alive while hooked: a fast tug/jitter plus a slower
+        /// lurch, both scaled by the live tension and amplified by a surge. Settles to rest the instant
+        /// the fight ends (landed/snapped). Allocation-free (struct maths only) — CLAUDE.md rule 7.
+        /// </summary>
+        private void Update()
+        {
+            if (_fishIcon == null || _panel == null || !_panel.gameObject.activeSelf) return;
+
+            var rt = _fishIcon.rectTransform;
+
+            bool fighting = _lastPhase == FishingPhase.Fighting || _lastPhase == FishingPhase.Tending;
+            if (!fighting || !_fishIcon.enabled)
+            {
+                // At rest (bite / result beat / idle): the fish sits still — no struggle.
+                if (_surge != 0f) _surge = 0f;
+                rt.anchoredPosition = _fishHome;
+                rt.localRotation = Quaternion.identity;
+                return;
+            }
+
+            float dt = Time.unscaledDeltaTime;
+            _surge = Mathf.MoveTowards(_surge, 0f, _surgeDecay * dt);
+
+            // Franticness: the live strain plus any unspent surge from a recent tension rise.
+            float frantic = Mathf.Clamp01(_lastTension + _surge);
+            float t = Time.unscaledTime;
+
+            float freq = Mathf.Lerp(_struggleFreqCalm, _struggleFreqFrantic, frantic);
+            float amp  = Mathf.Lerp(_struggleAmpCalm,  _struggleAmpFrantic,  frantic);
+
+            // Organic tug/jitter: two detuned sines for the shake + a slower yank a surge amplifies.
+            float shakeX = Mathf.Sin(t * freq) * amp;
+            float shakeY = Mathf.Sin(t * freq * 1.43f + 1.1f) * amp * 0.7f;
+            float lurch  = Mathf.Sin(t * 2.7f) * _surge * amp; // big, slow yank during a surge
+            rt.anchoredPosition = _fishHome + new Vector2(shakeX + lurch, shakeY);
+
+            // Lurch rotation — the fish twisting on the line, scaled by franticness.
+            float rot = Mathf.Sin(t * freq * 0.8f + 0.5f) * _struggleMaxRotation * frantic;
+            rt.localRotation = Quaternion.Euler(0f, 0f, rot);
+        }
 
         // ---- rendering ----------------------------------------------------------------------
 
@@ -123,6 +211,7 @@ namespace HiddenHarbours.Fishing
                 new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(70f, -70f), new Vector2(120f, 120f));
             _fishIcon.preserveAspect = true;
             _fishIcon.enabled = false;
+            _fishHome = _fishIcon.rectTransform.anchoredPosition; // jitter origin for the struggle
 
             // Strain (tension) bar with its snap-zone frame.
             MakeImage(_panel, "TensionFrame", _gaugeSprite, new Color(0.12f, 0.14f, 0.16f, 0.9f),

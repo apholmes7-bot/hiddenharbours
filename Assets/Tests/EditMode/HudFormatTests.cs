@@ -62,6 +62,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void CatchCard_ShowsNameWeightAndValue()
+        {
+            Assert.AreEqual("Atlantic Cod — 3.4 kg — ₲48!",
+                HudFormat.CatchCard("Atlantic Cod", 3.4f, 48));
+            Assert.AreEqual("Lobster — 1.0 kg — ₲1,200!",
+                HudFormat.CatchCard("Lobster", 1.0f, 1200), "weight is one decimal; value has thousands");
+            Assert.AreEqual("Catch — 0.5 kg — ₲0!",
+                HudFormat.CatchCard("", 0.5f, -5), "a missing name and bad value are guarded");
+        }
+
+        [Test]
         public void HeightMeters_OneDecimalWithSign()
         {
             Assert.AreEqual("+1.6 m", HudFormat.HeightMeters(1.6f));
