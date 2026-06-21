@@ -62,6 +62,16 @@ namespace HiddenHarbours.UI
             return "+" + HudStrings.MoneyPrefix + amount.ToString("N0", Inv);
         }
 
+        /// <summary>A landed-fish celebration card like "Atlantic Cod — 3.4 kg — ₲48!". Weight to one
+        /// decimal; value is the fish's base worth (the market sale is a separate payout flash).</summary>
+        public static string CatchCard(string displayName, float weightKg, int baseValue)
+        {
+            string name = string.IsNullOrEmpty(displayName) ? "Catch" : displayName;
+            int value = baseValue > 0 ? baseValue : 0;
+            return name + " — " + weightKg.ToString("0.0", Inv) + " kg — "
+                 + HudStrings.MoneyPrefix + value.ToString("N0", Inv) + "!";
+        }
+
         /// <summary>Wind label like "12 kt" (knots, no decimal — glanceable).</summary>
         public static string WindKnots(float knots)
             => Math.Max(0, (int)Math.Round(knots)).ToString(Inv) + " kt";

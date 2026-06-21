@@ -35,6 +35,8 @@ namespace HiddenHarbours.UI
         [SerializeField] private float _envSampleHz = 4f;
         [Tooltip("How long the '+₲N' payout flash stays up (real seconds).")]
         [SerializeField] private float _payoutFlashSeconds = 2.0f;
+        [Tooltip("How long the catch celebration card stays up before fading out (real seconds).")]
+        [SerializeField] private float _catchCardSeconds = 1.5f;
         [Tooltip("Persist across scene loads like the services. The HUD is always-on.")]
         [SerializeField] private bool _persistAcrossScenes = true;
 
@@ -45,6 +47,8 @@ namespace HiddenHarbours.UI
         private Text _seaLabel;
         private Text _moneyLabel;
         private Text _payoutLabel;
+        private Text _catchCardLabel;       // brief celebratory card on a landed fish (VS-14)
+        private Outline _catchCardOutline;  // faded alongside the text so the card fades cleanly
 
         // ---- cached displayed values (change-detection → no per-frame string building) ------
         private string _clockCache;
@@ -64,6 +68,7 @@ namespace HiddenHarbours.UI
 
         private float _envSampleTimer;
         private float _payoutTimer;
+        private float _catchCardTimer;
         private bool _subscribed;
 
         // Cached so a missing GameConfig doesn't recompute the lookup every sample.
@@ -91,6 +96,7 @@ namespace HiddenHarbours.UI
             if (_subscribed) return;
             EventBus.Subscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Subscribe<CatchSold>(OnCatchSold);
+            EventBus.Subscribe<FishCaught>(OnFishCaught);
             _subscribed = true;
         }
 
@@ -99,6 +105,7 @@ namespace HiddenHarbours.UI
             if (!_subscribed) return;
             EventBus.Unsubscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
+            EventBus.Unsubscribe<FishCaught>(OnFishCaught);
             _subscribed = false;
         }
 
@@ -115,6 +122,7 @@ namespace HiddenHarbours.UI
             UpdateEnvironmentThrottled();
             UpdateMoney();            // event-driven, but reconcile once services exist (boot balance)
             TickPayoutFlash();
+            TickCatchCard();
         }
 
         // ---- per-readout updates ------------------------------------------------------------
@@ -285,6 +293,47 @@ namespace HiddenHarbours.UI
                 _payoutLabel.enabled = false;
         }
 
+        // ---- catch card (VS-14: a brief celebration on landing a fish) ----------------------
+        // ADDITIVE: this is a separate label and timer; it never touches the money/payout path.
+
+        private void OnFishCaught(FishCaught e) => ShowCatchCard(e.Item);
+
+        private void ShowCatchCard(in CatchItem item)
+        {
+            if (_catchCardLabel == null) return;
+            // TEXT only for now — a per-fish sprite + CatchSparkle want def-sprite refs wired via
+            // GreyboxBuilder; that's a follow-up (see the PR notes), not this slice.
+            _catchCardLabel.text = HudFormat.CatchCard(item.DisplayName, item.WeightKg, item.BaseValue);
+            SetCatchCardAlpha(1f);
+            _catchCardLabel.enabled = true;
+            _catchCardTimer = _catchCardSeconds;
+        }
+
+        private void TickCatchCard()
+        {
+            if (_catchCardTimer <= 0f) return;
+            _catchCardTimer -= Time.unscaledDeltaTime;
+
+            // Hold full, then fade the alpha over the back half of the lifetime (no per-frame alloc).
+            float fadeOver = _catchCardSeconds > 0f ? _catchCardSeconds * 0.5f : 0f;
+            if (fadeOver > 0f && _catchCardTimer < fadeOver)
+                SetCatchCardAlpha(Mathf.Clamp01(_catchCardTimer / fadeOver));
+
+            if (_catchCardTimer <= 0f && _catchCardLabel != null)
+                _catchCardLabel.enabled = false;
+        }
+
+        // Fade the text and its outline together so the card dissolves cleanly (no lingering edge).
+        private void SetCatchCardAlpha(float a)
+        {
+            if (_catchCardLabel == null) return;
+            var c = _catchCardLabel.color; c.a = a; _catchCardLabel.color = c;
+            if (_catchCardOutline != null)
+            {
+                var oc = _catchCardOutline.effectColor; oc.a = 0.85f * a; _catchCardOutline.effectColor = oc;
+            }
+        }
+
         // ---- helpers ------------------------------------------------------------------------
 
         // Cache the method-group delegate per environment service so the 4 Hz tide scan reuses one
@@ -397,6 +446,17 @@ namespace HiddenHarbours.UI
                 new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -100f, 34);
             _seaLabel  = MakeLabel(bandRt, "Sea", TextAnchor.UpperRight,
                 new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -140f, 30);
+
+            // Catch card: a brief, centred celebration on a landed fish (VS-14). Parented to the
+            // canvas root (not the top band) so it reads as a centre-screen flourish, above the
+            // gameplay HUD. Styled like the payout flash — outlined text, a warm celebratory tint —
+            // and faded out by TickCatchCard. Text+content carry it (never colour alone, §8).
+            var canvasRt = (RectTransform)canvasGo.transform;
+            _catchCardLabel = MakeLabel(canvasRt, "CatchCard", TextAnchor.MiddleCenter,
+                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, 120f, 56);
+            _catchCardLabel.color = new Color(1f, 0.92f, 0.55f); // warm gold "nice catch!" flash
+            _catchCardOutline = _catchCardLabel.GetComponent<Outline>();
+            _catchCardLabel.enabled = false;
 
             // Start quiet until services are ready.
             ShowPlaceholder();
