@@ -1,0 +1,12 @@
+{
+    "name": "HiddenHarbours.Tools.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.Editor",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Environment",
+        "HiddenHarbours.UI"
+    ],
+    "includePlatforms": ["Editor"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
