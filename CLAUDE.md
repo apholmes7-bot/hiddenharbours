@@ -1,7 +1,7 @@
 # CLAUDE.md — Operating Manual for Hidden Harbours
 
-**You are an AI agent working on _Hidden Harbours_, a mobile-first 2D pixel-art fishing & trade
-RPG built in Unity 6.3 LTS.** Read this file first, every session. It is short on purpose and
+**You are an AI agent working on _Hidden Harbours_, a PC-first 2D pixel-art fishing & trade
+RPG built in Unity 6.3 LTS (mobile kept as a viable later port).** Read this file first, every session. It is short on purpose and
 links to the detail. If anything here conflicts with another doc, **`docs/vision-and-pillars.md`
 (the canon) wins**, then this file, then the rest.
 
@@ -15,12 +15,13 @@ serve at least one pillar (P1 Sea Has Moods · P2 Dory to Dynasty · P3 Living W
 P4 Earn It Then Automate It · P5 Cozy but with Teeth). If it serves none, don't build it.
 
 ## 2. Stack & ground truth
-- **Engine:** Unity **6.3 LTS** (6000.3.x), **2D URP**, **C#**. **Mobile-first** (iOS/Android),
-  desktop/console later. Pin the editor version; don't upgrade without `lead-architect` sign-off.
+- **Engine:** Unity **6.3 LTS** (6000.3.x), **2D URP**, **C#**. **PC-first** (Windows/desktop;
+  landscape; KB/mouse + gamepad), **mobile/console later (mobile kept as a viable port)**. Pin the
+  editor version; don't upgrade without `lead-architect` sign-off. (ADR 0005)
 - **Architecture:** `docs/architecture/tech-architecture.md`
 - **Repo & code layout:** `docs/architecture/project-structure.md`
 - **Data model:** `docs/architecture/data-model.md`
-- **Decisions (ADRs):** `docs/adr/` — engine choice, procedural-vs-handcrafted, data-driven, scenes
+- **Decisions (ADRs):** `docs/adr/` — engine choice, procedural-vs-handcrafted, data-driven, scenes, PC-first target
 - **What to build & in what order:** `docs/roadmap.md`, `backlog/` ← **start here for work**
 
 ## 3. The ten rules (non-negotiable)
@@ -34,8 +35,10 @@ P4 Earn It Then Automate It · P5 Cozy but with Teeth). If it serves none, don't
 5. **Simulation is deterministic** from `(worldSeed, gameTime)`. Tide/wind/weather are
    *recomputed, not saved*. Don't add hidden global randomness to sim systems.
 6. **No magic numbers.** Balance/tunables live in Def assets / `GameConfig`, editable by the owner.
-7. **Mobile budget is a feature.** Pool objects, mind draw calls, throttle heavy sim to the slow
-   tick. Target 60fps mid-range phone (30fps floor).
+7. **Performance budget is a feature.** Target **60fps on a typical desktop/laptop GPU** (the
+   PC-first baseline). Keep the discipline that also keeps mobile portable: pool objects, mind draw
+   calls, throttle heavy sim to the slow tick, no per-frame HUD allocations, mind texture memory —
+   don't paint the later mobile port into a corner. (ADR 0005)
 8. **Stay in your phase.** Don't build M3 systems during M0. If the backlog doesn't ask for it
    yet, raise it — don't sneak it in. (`docs/roadmap.md`)
 9. **Version control discipline:** binaries via **Git LFS**, scenes/prefabs via **smart merge**,
