@@ -30,8 +30,10 @@ namespace HiddenHarbours.App.Editor
         const string DataFish   = "Assets/_Project/Data/Fish";
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
-        const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
-        const string ArtDoryRow = "Assets/_Project/Art/Boats/DoryRow.png";       // sliced 3-frame both-oars cycle
+        const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // legacy single-sprite hull (fallback)
+        const string ArtDoryHull = "Assets/_Project/Art/Boats/DoryHull.png";     // oar-less hull base (64×144, centre)
+        const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";          // one oar (56×16, handle/LeftCenter pivot), used ×2
+        const string ArtDoryRower = "Assets/_Project/Art/Boats/DoryRower.png";   // rower figure (26×28, centre)
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
         const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
@@ -217,20 +219,16 @@ namespace HiddenHarbours.App.Editor
             doryGo.transform.position = Vector3.zero;
             var sr = doryGo.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 0;
-            // Prefer the sliced row sheet (animated by BoatRowAnimator below); frame 0 is the oars-shipped
-            // idle pose, so the moored dory in the scene view matches the at-rest look at play. Fall back
-            // to the static Dory.png, then a tinted square, so the greybox still builds before any art.
-            var doryRowFrames = LoadSheetFrames(ArtDoryRow);   // 3 frames of 128×144 (both-oars cycle), _0.._2
-            var dorySprite = LoadArtSprite(ArtDory);
-            if (doryRowFrames.Length > 0 && doryRowFrames[0] != null)
+            // Layered oar-rework rig (imported-assets.md Batch 6): the boat's own renderer is the OAR-LESS
+            // hull base (DoryHull); the rower + the two oars are children built below and animated by
+            // BoatRowAnimator. OwnedFleet swaps THIS renderer to the Punt on a purchase (and the animator
+            // then hides the oar rig). Fall back to the legacy Dory.png, then a tinted square, so the
+            // greybox still builds before the art is imported.
+            var hullSprite = LoadSpriteAny(ArtDoryHull) ?? LoadSpriteAny(ArtDory);
+            if (hullSprite != null)
             {
-                sr.sprite = doryRowFrames[0];              // oars-shipped idle frame (128×144 @ PPU 32 = 4 m × 4.5 m, oars out)
+                sr.sprite = hullSprite;                    // 64×144 px @ PPU 32 = 2 m × 4.5 m, bow-up
                 doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
-            }
-            else if (dorySprite != null)
-            {
-                sr.sprite = dorySprite;                    // 64×144 px @ PPU 32 = 2 m × 4.5 m, bow-up
-                doryGo.transform.localScale = Vector3.one;
             }
             else
             {
@@ -242,17 +240,41 @@ namespace HiddenHarbours.App.Editor
             var boat = doryGo.AddComponent<BoatController>();
             // Hull collider so the boat bumps the shore edge + dock pilings (cozy, no damage). BoatController
             // requires a CapsuleCollider2D; size it just inside the hull sprite (2 m × 4.5 m) with rounded
-            // ends so nudging up to the dock reads gentle. Default zero-bounce material → no bouncing.
+            // ends so nudging up to the dock reads gentle. Stays CENTRED on the hull (the oars are visual
+            // children only, so they never move the collider). Default zero-bounce material → no bouncing.
             var hullCol = doryGo.GetComponent<CapsuleCollider2D>() ?? doryGo.AddComponent<CapsuleCollider2D>();
             hullCol.direction = CapsuleDirection2D.Vertical;
             hullCol.size = new Vector2(1.7f, 4.0f);
             hullCol.offset = Vector2.zero;
             var hold = doryGo.AddComponent<ShipHold>();
             var devBoat = doryGo.AddComponent<DevBoatInput>();
-            // Rowing animation: speed-scaled oar cycle from the sliced row sheet (frame-swap only,
-            // reversed when astern, idle at rest). No-op if the sheet isn't imported (frames empty).
+
+            // --- Oar-rework rig: rower + two independently-rotating oars, children of the dory ---------
+            // Stack back→front: hull (sr, order 0) → oars (order 1) → rower (order 2). Each oar is one
+            // Oar.png parented under an oarlock PIVOT transform at its gunwale; BoatRowAnimator rotates the
+            // pivots about the oar fulcrum from each oar's per-oar state. One parent ("OarRig") so the
+            // animator can hide the whole rig when a bought engine hull (no oars) is active.
+            var oarRig = new GameObject("OarRig");
+            oarRig.transform.SetParent(doryGo.transform, false);
+
+            var rower = new GameObject("DoryRower");
+            rower.transform.SetParent(oarRig.transform, false);
+            var rowerSr = rower.AddComponent<SpriteRenderer>();
+            rowerSr.sortingOrder = 2;                       // in front of the oars (hands meet the handles)
+            var rowerSprite = LoadSpriteAny(ArtDoryRower);
+            if (rowerSprite != null) rowerSr.sprite = rowerSprite;
+            else { rowerSr.sprite = waterSprite; rowerSr.color = new Color(0.25f, 0.20f, 0.15f); rower.transform.localScale = new Vector3(1.6f, 1.8f, 1f); }
+
+            var oarSprite = LoadSpriteAny(ArtOar);
+            var leftOarPivot  = MakeOar(oarRig.transform, "LeftOar",  new Vector2(-0.9f, -0.1f), true,  oarSprite, waterSprite);
+            var rightOarPivot = MakeOar(oarRig.transform, "RightOar", new Vector2( 0.9f, -0.1f), false, oarSprite, waterSprite);
+
+            // Rowing animation: rotate the two oar pivots from per-oar state (forward/back/idle → sweep),
+            // ease to neutral at rest, hide the rig on an engine hull. No baked frames — real transforms now.
             var rowAnim = doryGo.AddComponent<BoatRowAnimator>();
-            SetRefArray(rowAnim, "_frames", doryRowFrames);
+            SetRef(rowAnim, "_leftOarPivot", leftOarPivot);
+            SetRef(rowAnim, "_rightOarPivot", rightOarPivot);
+            SetRef(rowAnim, "_oarRig", oarRig);
             // STEP 1: the Dory is static scenery moored at the dock — WASD drives only the on-foot player.
             // Disable its dev input AND the controller so ambient wind/current doesn't drift the moored
             // boat. Both stay present (unbroken); step 2's board/disembark re-enables them on boarding.
@@ -480,9 +502,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. By the cottage, walk up to AUNT GINNY and press E to talk, or read NED'S LOGBOOK (E) — the inheritance opening, with a light nudge through your first loop. Aboard the DORY (hand-rowed): W/S = both oars ahead/astern, A = left-oar stroke, D = right-oar stroke (one oar = turn the other way), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. By the cottage, walk up to AUNT GINNY and press E to talk, or read NED'S LOGBOOK (E) — the inheritance opening, with a light nudge through your first loop. Aboard the DORY (hand-rowed, independent oars): W/S = both oars ahead/astern, A = port-oar stroke, D = starboard-oar stroke (one oar rows = bow swings the OTHER way; A or D alone with no W/S = spin in place), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot\n• Aboard the DORY (hand-rowed): W/S = both oars ahead/astern · A = left-oar stroke · D = right-oar stroke (a one-sided stroke swings the bow the OTHER way) · Space = brace the oars to brake. Both oars together track straight.\n• Buy the Punt (engine helm): W/S = throttle, A/D = steer (the old controls).\n• E = board at the dock / disembark · B = sell your hold · P = buy the Punt (₲1,800)\n\nNote: Space also casts the fishing line — handy, you brace to hold station while you fish.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot\n• Aboard the DORY (hand-rowed — the two oars move independently): W/S = both oars ahead/astern · A = port-oar stroke · D = starboard-oar stroke (one oar rows → the bow swings the OTHER way; A or D alone with no W/S spins in place) · Space = brace the oars to brake. Both oars together track straight.\n• Buy the Punt (engine helm): W/S = throttle, A/D = steer (the old controls).\n• E = board at the dock / disembark · B = sell your hold · P = buy the Punt (₲1,800)\n\nNote: Space also casts the fishing line — handy, you brace to hold station while you fish.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -648,6 +670,40 @@ namespace HiddenHarbours.App.Editor
             else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
             var col = go.AddComponent<CircleCollider2D>();
             col.radius = 0.3f;   // slim piling; leaves a navigable channel between the two rows of posts
+        }
+
+        // One oar of the row rig: an oarlock PIVOT transform at the gunwale, with Oar.png as a child
+        // offset so the oar's fulcrum (≈0.33 along the 1.75 m loom from the handle/LeftCenter pivot) sits
+        // on the pivot origin — so rotating the returned transform swings the oar about its oarlock
+        // (imported-assets.md Batch 6). The port oar is mirrored (flipX). Returns the pivot transform for
+        // BoatRowAnimator to rotate; falls back to a tinted bar so the greybox still builds without the art.
+        static Transform MakeOar(Transform parent, string name, Vector2 oarlockLocalPos, bool mirror,
+                                 Sprite oarSprite, Sprite fallback)
+        {
+            const float fulcrumFromHandle = 0.56f;   // 0.33 × 1.75 m loom, handle → fulcrum (toward blade)
+
+            var pivot = new GameObject(name + "Pivot");
+            pivot.transform.SetParent(parent, false);
+            pivot.transform.localPosition = new Vector3(oarlockLocalPos.x, oarlockLocalPos.y, 0f);
+
+            var oar = new GameObject(name);
+            oar.transform.SetParent(pivot.transform, false);
+            var osr = oar.AddComponent<SpriteRenderer>();
+            osr.sortingOrder = 1;                    // over the hull, under the rower
+            if (oarSprite != null)
+            {
+                osr.sprite = oarSprite;
+                osr.flipX = mirror;                  // port oar is the mirror of starboard
+                // Shift the sprite so the fulcrum lands on the pivot origin (mirrored for the port oar).
+                oar.transform.localPosition = new Vector3(mirror ? fulcrumFromHandle : -fulcrumFromHandle, 0f, 0f);
+            }
+            else
+            {
+                osr.sprite = fallback; osr.color = new Color(0.55f, 0.40f, 0.24f);
+                oar.transform.localScale = new Vector3(3.5f, 0.4f, 1f);   // ~1.75 m × 0.2 m bar
+                oar.transform.localPosition = new Vector3(mirror ? 0.9f : -0.9f, 0f, 0f);
+            }
+            return pivot.transform;
         }
 
         static Sprite MakeSquareSprite(string path)
