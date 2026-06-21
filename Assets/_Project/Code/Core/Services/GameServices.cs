@@ -13,6 +13,15 @@ namespace HiddenHarbours.Core
         public static IEnvironmentService Environment { get; set; }
         public static IWallet Wallet { get; set; }
 
+        /// <summary>
+        /// The active boat's heading + course-over-ground reporter (VS-19 compass / set-&amp;-drift).
+        /// OPTIONAL and scene-scoped — like <see cref="Wallet"/> it is NOT part of <see cref="Ready"/>:
+        /// it is null on foot / before a boat is aboard, and the producer (ActiveBoatProbe) registers
+        /// itself when present rather than being wired on the persistent GameRoot. Consumers must
+        /// null-check it (ADR 0007).
+        /// </summary>
+        public static IActiveBoatService ActiveBoat { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -21,6 +30,7 @@ namespace HiddenHarbours.Core
             Clock = null;
             Environment = null;
             Wallet = null;
+            ActiveBoat = null;
         }
     }
 }

@@ -294,6 +294,15 @@ namespace HiddenHarbours.App.Editor
             SetRef(fleet, "_hold", hold);
             SetRef(fleet, "_spriteRenderer", sr);
 
+            // Active-boat heading seam (VS-19, lead-architect / ADR 0007): a tiny Core IActiveBoatService
+            // producer on the Dory. The HUD (UI lane, Core-only) pulls the boat's heading + course-over-
+            // ground from it at ~4 Hz to drive the compass + set-&-drift predictor + apparent wind, never
+            // referencing the Boats module. It self-registers into GameServices.ActiveBoat on enable and
+            // reports HasActiveBoat off the controller's enabled flag (moored/on-foot → false). _boat is
+            // the same persistent dory OwnedFleet swaps the hull on.
+            var activeBoatProbe = doryGo.AddComponent<ActiveBoatProbe>();
+            SetRef(activeBoatProbe, "_boat", boat);
+
             // Wharf sell interaction (VS-22): B sells the dory's hold to the buyer, paying the wallet.
             // Wired here because it needs the dory (IHold) and the services root (IWallet), both built
             // above. _boat is left unset so 'B' always sells, keeping the greybox frictionless — assign
