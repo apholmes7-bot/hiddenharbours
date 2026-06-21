@@ -4,6 +4,7 @@
     "references": [
         "HiddenHarbours.Core",
         "HiddenHarbours.Environment",
+        "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
         "HiddenHarbours.UI"
     ],
