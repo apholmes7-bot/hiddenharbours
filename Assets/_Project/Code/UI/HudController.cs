@@ -50,12 +50,24 @@ namespace HiddenHarbours.UI
         private Text _catchCardLabel;       // brief celebratory card on a landed fish (VS-14)
         private Outline _catchCardOutline;  // faded alongside the text so the card fades cleanly
 
+        // VS-19 nav cluster (built in Awake): the heading compass + set-&-drift read, shown only at sea.
+        private Text _compassLabel;        // "↗ 045°  NE" — arrow + degrees + cardinal (redundant coding)
+        private Text _compassRibbonLabel;  // the scrolling rose tape — the SHAPE channel
+        private Text _compassNeedleLabel;  // a fixed centre needle the tape scrolls under
+        private Text _setDriftLabel;       // "COG 050°  → 8° stbd" — track vs heading (crabbing read)
+
         // ---- cached displayed values (change-detection → no per-frame string building) ------
         private string _clockCache;
         private string _tideCache;
         private string _windCache;
         private string _seaCache;
         private string _moneyCache;
+        private string _compassCache;
+        private string _ribbonCache;
+        private string _setDriftCache;
+
+        // Whether the nav cluster is currently shown (at sea). Toggled, so labels flip enabled only on change.
+        private bool _navShown;
 
         // Clock change-detection (avoid building the clock string when the displayed minute is unchanged).
         private int _lastMinuteOfDay = -1;
@@ -162,6 +174,7 @@ namespace HiddenHarbours.UI
             UpdateTide(env);
             UpdateWind(sample.WindVector);
             UpdateSea(sample.SeaState);
+            UpdateNavReads();   // VS-19: heading compass + set-&-drift (only while aboard)
         }
 
         private void UpdateTide(IEnvironmentService env)
@@ -228,6 +241,48 @@ namespace HiddenHarbours.UI
                 _seaCache = text;
                 _seaLabel.text = text;
             }
+        }
+
+        // ---- VS-19 nav reads (heading compass + set-&-drift), built on the Core heading seam ---------
+        // Read-only through Core (GameServices.ActiveBoat / BoatKinematics) — the UI never references the
+        // Boats module (ADR 0007). Shown only while aboard; hidden ashore. Strings are change-detected
+        // against a cache (same discipline as UpdateWind/UpdateTide) so an unchanged read repaints nothing.
+
+        private void UpdateNavReads()
+        {
+            // ActiveBoat is OPTIONAL (null on foot / before a boat is aboard, like Wallet) — null-check it.
+            var boat = GameServices.ActiveBoat;
+            if (boat == null || !boat.HasActiveBoat) { SetNavShown(false); return; }
+
+            BoatKinematics k = boat.Sample();
+            if (!k.HasBoat) { SetNavShown(false); return; }
+            SetNavShown(true);
+
+            // Compass: arrow SHAPE + degrees NUMBER + cardinal WORD (redundant coding, §8). Cross-checked
+            // against WindReadout's bearing so the compass and the wind arrow agree on North (ADR 0007).
+            string compass = CompassReadout.HeadingArrow(k.HeadingDegrees) + " "
+                           + CompassReadout.Degrees(k.HeadingDegrees) + "  "
+                           + CompassReadout.Cardinal(k.HeadingDegrees);
+            if (compass != _compassCache) { _compassCache = compass; _compassLabel.text = compass; }
+
+            // Ribbon: the rose tape that scrolls under the fixed needle (the SHAPE channel).
+            string ribbon = CompassReadout.Ribbon(k.HeadingDegrees);
+            if (ribbon != _ribbonCache) { _ribbonCache = ribbon; _compassRibbonLabel.text = ribbon; }
+
+            // Set-&-drift: the boat's true course-over-ground vs its heading — so the player sees it crab.
+            string set = CompassReadout.SetAndDrift(k.HeadingDegrees, k.CourseOverGroundDegrees, k.SpeedOverGround);
+            if (set != _setDriftCache) { _setDriftCache = set; _setDriftLabel.text = set; }
+        }
+
+        // Show the nav cluster at sea, hide it ashore. Flips the labels' enabled state only on a change.
+        private void SetNavShown(bool shown)
+        {
+            if (_navShown == shown) return;
+            _navShown = shown;
+            if (_compassLabel != null)       _compassLabel.enabled = shown;
+            if (_compassRibbonLabel != null) _compassRibbonLabel.enabled = shown;
+            if (_compassNeedleLabel != null) _compassNeedleLabel.enabled = shown;
+            if (_setDriftLabel != null)      _setDriftLabel.enabled = shown;
         }
 
         private void UpdateMoney()
@@ -369,6 +424,7 @@ namespace HiddenHarbours.UI
             SetIfChanged(ref _windCache,  HudStrings.Unknown, _windLabel);
             SetIfChanged(ref _seaCache,   HudStrings.Unknown, _seaLabel);
             SetIfChanged(ref _moneyCache, HudStrings.MoneyPrefix + HudStrings.Unknown, _moneyLabel);
+            SetNavShown(false); // no boat at boot → keep the nav cluster hidden
         }
 
         private static void SetIfChanged(ref string cache, string value, Text label)
@@ -440,6 +496,27 @@ namespace HiddenHarbours.UI
             _catchCardLabel.color = new Color(1f, 0.92f, 0.55f); // warm gold "nice catch!" flash
             _catchCardOutline = _catchCardLabel.GetComponent<Outline>();
             _catchCardLabel.enabled = false;
+
+            // VS-19 nav cluster (heading compass + set-&-drift). A sailing read, so it sits BOTTOM-CENTRE
+            // (a natural compass spot, clear of the top conditions band) and is shown only while aboard
+            // (UpdateNavReads toggles it; hidden ashore). Parented to the canvas root, stacked upward:
+            // set-&-drift, the rose ribbon, the fixed needle, then the heading line. Redundant-coded — a
+            // degrees number + a cardinal word + the ribbon/arrow SHAPE — never colour alone (§8).
+            _setDriftLabel = MakeLabel(canvasRt, "SetDrift", TextAnchor.LowerCenter,
+                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 70f, 28);
+            _compassRibbonLabel = MakeLabel(canvasRt, "CompassRibbon", TextAnchor.LowerCenter,
+                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 118f, 30);
+            _compassNeedleLabel = MakeLabel(canvasRt, "CompassNeedle", TextAnchor.LowerCenter,
+                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 146f, 26);
+            _compassNeedleLabel.text = "▾"; // fixed needle — the ribbon's centre column (the heading) sits under it
+            _compassLabel = MakeLabel(canvasRt, "Compass", TextAnchor.LowerCenter,
+                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 188f, 34);
+
+            // Built hidden; UpdateNavReads shows them once aboard (HasActiveBoat).
+            _setDriftLabel.enabled = false;
+            _compassRibbonLabel.enabled = false;
+            _compassNeedleLabel.enabled = false;
+            _compassLabel.enabled = false;
 
             // Start quiet until services are ready.
             ShowPlaceholder();
