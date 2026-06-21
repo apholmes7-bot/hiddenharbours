@@ -30,7 +30,7 @@ namespace HiddenHarbours.App.Editor
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
-        const string ArtDoryRow = "Assets/_Project/Art/Boats/DoryRow.png";       // sliced 6-frame oar cycle
+        const string ArtDoryRow = "Assets/_Project/Art/Boats/DoryRow.png";       // sliced 3-frame both-oars cycle
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
         const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
@@ -155,6 +155,7 @@ namespace HiddenHarbours.App.Editor
             dory = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
             {
+                dory.Propulsion = PropulsionType.Oars;   // the dory is hand-rowed (the oar-tunable defaults ride the Def)
                 dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
                 dory.CameraWorldHeightMeters = 14f;
                 EditorUtility.SetDirty(dory);
@@ -212,11 +213,11 @@ namespace HiddenHarbours.App.Editor
             // Prefer the sliced row sheet (animated by BoatRowAnimator below); frame 0 is the oars-shipped
             // idle pose, so the moored dory in the scene view matches the at-rest look at play. Fall back
             // to the static Dory.png, then a tinted square, so the greybox still builds before any art.
-            var doryRowFrames = LoadSheetFrames(ArtDoryRow);   // 6 frames of 64×144, _0.._5
+            var doryRowFrames = LoadSheetFrames(ArtDoryRow);   // 3 frames of 128×144 (both-oars cycle), _0.._2
             var dorySprite = LoadArtSprite(ArtDory);
             if (doryRowFrames.Length > 0 && doryRowFrames[0] != null)
             {
-                sr.sprite = doryRowFrames[0];              // oars-shipped idle frame (64×144 @ PPU 32 = 2 m × 4.5 m)
+                sr.sprite = doryRowFrames[0];              // oars-shipped idle frame (128×144 @ PPU 32 = 4 m × 4.5 m, oars out)
                 doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
             }
             else if (dorySprite != null)
@@ -413,9 +414,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot / steer the boat when aboard (W ahead, S astern to back onto the dock), E = board at the dock / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). Full loop: walk → E to board → sail → fish/sell/buy → back onto the dock → E to disembark → walk.");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. Aboard the DORY (hand-rowed): W/S = both oars ahead/astern, A = left-oar stroke, D = right-oar stroke (one oar = turn the other way), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot, or steer the Dory when aboard (W = ahead, S = astern — back onto the dock; the hull now bumps the shore + pilings)\n• E = board at the dock (on foot) / disembark (aboard, back at the dock)\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe full loop: walk → board → sail → fish/sell/buy → back onto the dock → disembark → walk.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot\n• Aboard the DORY (hand-rowed): W/S = both oars ahead/astern · A = left-oar stroke · D = right-oar stroke (a one-sided stroke swings the bow the OTHER way) · Space = brace the oars to brake. Both oars together track straight.\n• Buy the Punt (engine helm): W/S = throttle, A/D = steer (the old controls).\n• E = board at the dock / disembark · B = sell your hold · P = buy the Punt (₲1,800)\n\nNote: Space also casts the fishing line — handy, you brace to hold station while you fish.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -441,6 +442,7 @@ namespace HiddenHarbours.App.Editor
         static void ApplyPuntStats(BoatHullDef h)
         {
             h.Id = "boat.punt"; h.DisplayName = "The Punt";
+            h.Propulsion = PropulsionType.Engine;   // buying the Punt swaps hand-rowing for an engine helm (P4)
             h.LengthMeters = 6.0f; h.DraughtMeters = 0.5f; h.MassKg = 700f;
             h.HoldUnits = 14; h.CrewSlots = 1;
             h.EnginePower = 650f; h.RudderAuthority = 600f;

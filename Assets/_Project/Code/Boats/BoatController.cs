@@ -28,12 +28,18 @@ namespace HiddenHarbours.Boats
         [SerializeField] private float _asternThrustFactor = DefaultAsternFactor;
 
         private Rigidbody2D _rb;
-        private float _throttle;   // -1..1 (negative = astern)
-        private float _steer;      // -1..1
+        private float _throttle;   // Engine: -1..1 (negative = astern)
+        private float _steer;      // Engine: -1..1 (rudder)
+        private float _leftOar;    // Oars: -1..1 (port-oar pull; negative = back-water)
+        private float _rightOar;   // Oars: -1..1 (starboard-oar pull)
+        private bool _brace;       // Oars: oars planted in the water = strong braking drag
 
         public BoatHullDef Hull => _hull;
         public bool IsAground { get; private set; }
         public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
+
+        /// <summary>Signed rowing activity (-1 astern .. +1 ahead) for the row animator; |value| = effort.</summary>
+        public float RowDrive => (_leftOar + _rightOar) * 0.5f;
 
         private void Awake()
         {
@@ -70,6 +76,42 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
+        /// back-water negative); a DIFFERENCE between the two yaws the boat. brace = oars planted for a
+        /// strong braking drag. This is the per-oar control surface a real InputService/gamepad maps to —
+        /// keyboard drives it now via DevBoatInput. Ignored by the Engine path (which reads SetControl).
+        /// </summary>
+        public void SetOarInput(float leftOar, float rightOar, bool brace)
+        {
+            _leftOar = Mathf.Clamp(leftOar, -1f, 1f);
+            _rightOar = Mathf.Clamp(rightOar, -1f, 1f);
+            _brace = brace;
+        }
+
+        /// <summary>
+        /// Net forward oar thrust (design-unit force, before the physics-feel scale) from both oars.
+        /// Both oars = 2× a single oar; astern (negative inputs) yields negative thrust. Pure + static.
+        /// </summary>
+        public static float OarThrust(float leftOar, float rightOar, float oarPower)
+            => (leftOar + rightOar) * oarPower;
+
+        /// <summary>
+        /// Net yaw torque from the oar differential — the moment of the two offset oar forces about the
+        /// hull centre. A one-sided forward stroke swings the bow to the OTHER side: left oar forward →
+        /// negative torque → clockwise → bow yaws right (starboard), matching the engine steer-sign
+        /// convention (positive steer → bow right → negative torque). Both oars equal → zero. Pure + static.
+        /// </summary>
+        public static float OarYawTorque(float leftOar, float rightOar, float oarPower, float lateralOffset)
+            => -(leftOar - rightOar) * oarPower * lateralOffset;
+
+        /// <summary>
+        /// Extra drag force (design-unit, before the feel scale) when the oars are braced in the water —
+        /// a strong brake opposing motion THROUGH THE WATER. Zero when braceDrag is 0. Pure + static.
+        /// </summary>
+        public static Vector2 BraceDragForce(Vector2 throughWater, float braceDrag)
+            => -throughWater * braceDrag;
+
+        /// <summary>
         /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
         /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
         /// A small public setter so the swapper doesn't reach into the private serialized field.
@@ -98,6 +140,30 @@ namespace HiddenHarbours.Boats
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
 
+            // --- Propulsion (data-driven, ADR 0003): hand-rowed oars or an engine helm. ---
+            if (_hull.Propulsion == PropulsionType.Oars)
+                ApplyOarDrive(fwd, vel, env);
+            else
+                ApplyEngineDrive(fwd, vel);
+
+            // --- Hull drag RELATIVE TO THE WATER (tidal current is the ambient water velocity) ---
+            Vector2 throughWater = vel - env.CurrentVector;
+            Vector2 along = fwd * Vector2.Dot(throughWater, fwd);
+            Vector2 sideways = throughWater - along;
+            Vector2 drag = -(along * (_hull.ForwardDrag * 0.01f) + sideways * (_hull.LateralDrag * 0.01f));
+            _rb.AddForce(drag, ForceMode2D.Force);
+
+            // --- Wind shove (Pillar 1: the dory gets pushed around) ---
+            _rb.AddForce(env.WindVector * (_hull.WindExposure * 0.01f), ForceMode2D.Force);
+        }
+
+        /// <summary>
+        /// Engine helm — UNCHANGED behaviour (throttle thrust ahead/astern + speed-scaled rudder),
+        /// extracted verbatim so the data-driven propulsion split reads cleanly. Do not alter: buying an
+        /// engine boat must feel exactly as before.
+        /// </summary>
+        private void ApplyEngineDrive(Vector2 fwd, Vector2 vel)
+        {
             // --- Engine (no drive when hard aground). Ahead full, astern weaker (real-prop feel). ---
             if (!IsAground)
             {
@@ -111,16 +177,30 @@ namespace HiddenHarbours.Boats
                                    * Mathf.Clamp01(speed / 2f)
                                    * (IsAground ? 0.2f : 1f);
             _rb.AddTorque(-_steer * steerAuthority);
+        }
 
-            // --- Hull drag RELATIVE TO THE WATER (tidal current is the ambient water velocity) ---
-            Vector2 throughWater = vel - env.CurrentVector;
-            Vector2 along = fwd * Vector2.Dot(throughWater, fwd);
-            Vector2 sideways = throughWater - along;
-            Vector2 drag = -(along * (_hull.ForwardDrag * 0.01f) + sideways * (_hull.LateralDrag * 0.01f));
-            _rb.AddForce(drag, ForceMode2D.Force);
+        /// <summary>
+        /// Differential hand-rowing. Each oar's forward pull acts at a lateral offset, so a one-sided
+        /// stroke gives forward thrust AND a yaw torque about the hull centre (left oar → bow swings
+        /// right); both oars equal → straight, no fighting. Space braces the oars for a strong braking
+        /// drag. No drive when hard aground. A forgiving feel prototype — tune via the hull's oar stats.
+        /// </summary>
+        private void ApplyOarDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        {
+            if (!IsAground)
+            {
+                float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * 0.01f;
+                float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * 0.01f;
+                _rb.AddForce(fwd * thrust, ForceMode2D.Force);
+                _rb.AddTorque(yaw);
+            }
 
-            // --- Wind shove (Pillar 1: the dory gets pushed around) ---
-            _rb.AddForce(env.WindVector * (_hull.WindExposure * 0.01f), ForceMode2D.Force);
+            // Brace: oars planted = a strong extra drag relative to the water (brake/stop). Forgiving.
+            if (_brace)
+            {
+                Vector2 throughWater = vel - env.CurrentVector;
+                _rb.AddForce(BraceDragForce(throughWater, _hull.OarBraceDrag) * 0.01f, ForceMode2D.Force);
+            }
         }
     }
 }

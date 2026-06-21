@@ -3,6 +3,15 @@ using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
+    /// <summary>How a hull is driven — selects the control scheme in <see cref="BoatController"/>.</summary>
+    public enum PropulsionType
+    {
+        /// <summary>Differential hand-rowing (the starting dory): per-oar strokes; turn by pulling one side.</summary>
+        Oars,
+        /// <summary>Throttle + rudder (boats you buy up the ladder): the existing engine helm.</summary>
+        Engine,
+    }
+
     /// <summary>
     /// Data definition for a hull on the Dory→Dynasty ladder. Content is data, not code
     /// (ADR 0003): make a new boat by creating one of these assets, not a new class.
@@ -31,11 +40,28 @@ namespace HiddenHarbours.Boats
         public int HoldUnits = 6;      // HU
         public int CrewSlots = 1;
 
-        [Header("Propulsion & handling")]
+        [Header("Propulsion")]
+        [Tooltip("How this hull is driven. Oars = differential hand-rowing (the dory); Engine = " +
+                 "throttle/rudder (boats you buy). Buying an engine boat swaps hand-rowing for a helm (P4).")]
+        public PropulsionType Propulsion = PropulsionType.Oars;   // the starting boat is the rowed dory
+
+        [Header("Engine handling (Propulsion = Engine)")]
         [Tooltip("Thrust at full throttle (design units).")]
         public float EnginePower = 1200f;
         [Tooltip("Turning authority (design units). Effective authority scales up with speed.")]
         public float RudderAuthority = 600f;
+
+        [Header("Oar handling (Propulsion = Oars)")]
+        [Tooltip("Per-oar pull force at a full stroke (design units). Both oars = 2× ahead; one oar = " +
+                 "thrust + a yaw the OTHER way. Feel tunable — playtest and adjust.")]
+        public float OarPower = 300f;
+        [Tooltip("How far each oar acts off the centreline (m) — the moment arm. Bigger = a sharper turn " +
+                 "from a one-sided stroke. Feel tunable.")]
+        public float OarLateralOffset = 0.6f;
+        [Tooltip("Extra water drag when the oars are braced (Space) to brake/stop. Forgiving — just slows.")]
+        public float OarBraceDrag = 400f;
+
+        [Header("Hydrodynamics (shared)")]
         [Tooltip("Water drag along the hull (low = glides).")]
         public float ForwardDrag = 40f;
         [Tooltip("Water drag beam-on (high = the boat tracks forward instead of sliding sideways).")]
