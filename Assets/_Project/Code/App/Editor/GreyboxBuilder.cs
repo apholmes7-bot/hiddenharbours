@@ -10,6 +10,7 @@ using HiddenHarbours.Boats;
 using HiddenHarbours.Fishing;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;         // VS-21: NPCs, dialogue, the inheritance opening (world-content)
 using HiddenHarbours.UI;            // VS-17: the glanceable HUD (ui-ux)
 using HiddenHarbours.Art.Editor;   // VS-23: locked Pixel-Perfect camera convention
 using UnityEngine.Rendering.Universal; // PixelPerfectCamera — PC-first landscape reference override
@@ -42,6 +43,12 @@ namespace HiddenHarbours.App.Editor
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";   // home on the island
         const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";          // dock planks
         const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";           // dock pilings
+        const string ArtGinny    = "Assets/_Project/Art/Characters/Ginny.png";            // VS-21 Aunt Ginny (world)
+        const string ArtNeighbour= "Assets/_Project/Art/Characters/Neighbour.png";        // VS-21 a neighbour
+        const string ArtPortraitGinny = "Assets/_Project/Art/Portraits/Ginny.png";        // VS-21 dialogue portrait
+        const string ArtPortraitNed   = "Assets/_Project/Art/Portraits/Ned.png";          // VS-21 logbook portrait
+        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";       // VS-21 dialogue panel
+        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";           // VS-21 nameplate
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
 
@@ -403,6 +410,56 @@ namespace HiddenHarbours.App.Editor
             SetRef(switcher, "_dockZone", dockZone.transform);
             SetRef(switcher, "_disembarkPoint", disembarkPoint.transform);
 
+            // --- DEMO PEOPLE & THE INHERITANCE OPENING (VS-21, world-content; additive — flagged for
+            // lead-architect) -------------------------------------------------------------------------
+            // Aunt Ginny + a neighbour by the cottage, Ned's logbook to read, a self-built dialogue panel,
+            // the proximity INTERACT driver, and a light one-loop onboarding nudge. Everything sits UP BY
+            // THE COTTAGE, well clear of the dock zone (0,-12), so the shared E key never fires both "talk"
+            // and "board" (context-aware by proximity). Belt-and-braces, the open dialogue also raises the
+            // Core InteractionGate which ControlSwitcher now honours (seam flagged for gameplay-systems).
+            // Art is loaded fresh here (post-reload) and wired by serialized ref; null-safe if a sprite is
+            // missing. The character/portrait/panel art is sliced (spriteMode Multiple) so it's loaded via
+            // LoadSpriteAny (the single sub-sprite), not LoadArtSprite.
+
+            // Dialogue panel (builds its own canvas in Awake; needs only the panel + nameplate art).
+            var dialogueGo = new GameObject("DialogueUI");
+            var presenter = dialogueGo.AddComponent<DialoguePresenter>();
+            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
+            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+
+            // Aunt Ginny — anchored by the cottage (no daily routine; routines are M2). Warm intro about
+            // Uncle Ned, the dory he left, and a nudge to go fish. Finishing it sets the met_ginny flag.
+            var ginnyGo = MakeNpc("AuntGinny", new Vector3(-2.2f, 4.2f, 0f), LoadSpriteAny(ArtGinny), waterSprite, new Color(0.78f, 0.55f, 0.62f));
+            var ginny = ginnyGo.AddComponent<Interactable>();
+            ConfigureInteractable(ginny, InteractKind.Talk, WorldStrings.GinnyName,
+                LoadSpriteAny(ArtPortraitGinny), WorldStrings.ConvoGinny, OnboardingFlags.MetGinnyKey);
+
+            // A neighbour, for warmth (optional). No neighbour portrait shipped → name + text only; no flag.
+            var bramGo = MakeNpc("Neighbour", new Vector3(2.8f, 4.8f, 0f), LoadSpriteAny(ArtNeighbour), waterSprite, new Color(0.55f, 0.60f, 0.70f));
+            var bram = bramGo.AddComponent<Interactable>();
+            ConfigureInteractable(bram, InteractKind.Talk, WorldStrings.NeighbourName,
+                null, WorldStrings.ConvoNeighbour, "");
+
+            // "Ned's Unfinished Lines" — a readable logbook on the cottage step (no logbook art yet → a
+            // small tinted marker). Framing the inheritance, bittersweet but hopeful. Sets read_logbook.
+            var logbookGo = MakeNpc("NedsLogbook", new Vector3(-6.4f, 3.6f, 0f), null, waterSprite, new Color(0.62f, 0.47f, 0.30f));
+            logbookGo.transform.localScale = new Vector3(0.6f, 0.8f, 1f); // a book-sized marker for the greybox
+            var logbook = logbookGo.AddComponent<Interactable>();
+            ConfigureInteractable(logbook, InteractKind.Read, WorldStrings.LogbookName,
+                LoadSpriteAny(ArtPortraitNed), WorldStrings.ConvoLogbook, OnboardingFlags.ReadLogbookKey);
+
+            // The proximity INTERACT driver: shows "E: …" near an interactable and runs the conversation.
+            var interactorGo = new GameObject("WorldInteractor");
+            var interactor = interactorGo.AddComponent<WorldInteractor>();
+            SetRef(interactor, "_player", playerGo.transform);
+            SetRef(interactor, "_presenter", presenter);
+            SetRefArray(interactor, "_interactables", new Object[] { ginny, bram, logbook });
+
+            // Light onboarding: one nudge through cast off → fish → return → sell, then it bows out and
+            // persists 'onboarded' so the opening never re-triggers on reload.
+            var onboardingGo = new GameObject("Onboarding");
+            onboardingGo.AddComponent<OnboardingDirector>();
+
             // --- SAVE & REGISTER -----------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
             var list = EditorBuildSettings.scenes.ToList();
@@ -414,7 +471,7 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. Aboard the DORY (hand-rowed): W/S = both oars ahead/astern, A = left-oar stroke, D = right-oar stroke (one oar = turn the other way), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. By the cottage, walk up to AUNT GINNY and press E to talk, or read NED'S LOGBOOK (E) — the inheritance opening, with a light nudge through your first loop. Aboard the DORY (hand-rowed): W/S = both oars ahead/astern, A = left-oar stroke, D = right-oar stroke (one oar = turn the other way), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot\n• Aboard the DORY (hand-rowed): W/S = both oars ahead/astern · A = left-oar stroke · D = right-oar stroke (a one-sided stroke swings the bow the OTHER way) · Space = brace the oars to brake. Both oars together track straight.\n• Buy the Punt (engine helm): W/S = throttle, A/D = steer (the old controls).\n• E = board at the dock / disembark · B = sell your hold · P = buy the Punt (₲1,800)\n\nNote: Space also casts the fishing line — handy, you brace to hold station while you fish.", "Fair winds");
         }
@@ -496,6 +553,44 @@ namespace HiddenHarbours.App.Editor
 
         // Load a final art sprite if it has been imported; null if the project is still greybox-only.
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        // Like LoadArtSprite but also handles single-frame sliced sheets (spriteMode Multiple): the
+        // VS-21 character/portrait/panel art each carry one sub-sprite (e.g. DialoguePanel_0), so
+        // LoadAssetAtPath<Sprite> returns null and we fall back to the first sub-sprite. Null if absent.
+        static Sprite LoadSpriteAny(string path)
+        {
+            var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (direct != null) return direct;
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                                 .OrderBy(s => SpriteIndex(s.name)).FirstOrDefault();
+        }
+
+        // A standing world NPC / marker: a SpriteRenderer above the ground (just under the player at 10),
+        // with a tinted-square fallback so the greybox still builds before the art is imported.
+        static GameObject MakeNpc(string name, Vector3 pos, Sprite sprite, Sprite fallback, Color fallbackColor)
+        {
+            var go = new GameObject(name);
+            go.transform.position = pos;
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = 9;
+            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
+            else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(1f, 2f, 1f); }
+            return go;
+        }
+
+        // Set every Interactable field in one SerializedObject pass (the builder's persist-the-refs
+        // convention, extended to the string/enum fields the dialogue needs).
+        static void ConfigureInteractable(Interactable it, InteractKind kind, string speaker,
+                                          Sprite portrait, string conversationId, string completionFlag)
+        {
+            var so = new SerializedObject(it);
+            so.FindProperty("_kind").enumValueIndex = (int)kind;
+            so.FindProperty("_speaker").stringValue = speaker;
+            so.FindProperty("_portrait").objectReferenceValue = portrait;
+            so.FindProperty("_conversationId").stringValue = conversationId;
+            so.FindProperty("_completionFlag").stringValue = completionFlag;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         // Load the sub-sprites of a sliced sheet (Sprite Mode Multiple), ordered by their _N suffix so
         // index 0..N-1 matches the slice order (e.g. FisherSheet_0..11).

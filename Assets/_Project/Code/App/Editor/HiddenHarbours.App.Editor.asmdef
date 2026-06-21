@@ -8,6 +8,7 @@
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
+        "HiddenHarbours.World",
         "HiddenHarbours.App",
         "HiddenHarbours.UI",
         "HiddenHarbours.Art.Editor",
