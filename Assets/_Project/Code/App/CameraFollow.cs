@@ -24,6 +24,10 @@ namespace HiddenHarbours.App
         /// <summary>Intimate default zoom: ~14 m of world HEIGHT visible (the Dory's default).</summary>
         public const float DefaultWorldHeightMeters = 14f;
 
+        /// <summary>Tighter on-foot framing: ~9 m of world height so the ~1.8 m walking fisher reads
+        /// large. Uses the same data-driven, pixel-perfect mapping as the boat tiers.</summary>
+        public const float OnFootWorldHeightMeters = 9f;
+
         /// <summary>VS-23 locked assets PPU (mirrors ArtCameraSetup.AssetsPPU; one PPU never changes).</summary>
         public const int AssetsPPU = 32;
 

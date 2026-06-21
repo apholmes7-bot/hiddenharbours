@@ -151,5 +151,37 @@ namespace HiddenHarbours.Tests.EditMode
                 prevLive = live;
             }
         }
+
+        // ---- on-foot framing (tighter than the boat; same pixel-perfect mapping) -------------
+
+        [Test]
+        public void OnFootFraming_OrthoSize_MapsToAbout9mTall()
+        {
+            float ortho = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
+            Assert.AreEqual(9f, CameraFollow.WorldHeightForOrthoSize(ortho), 0.5f, "on-foot frames ~9 m of world height");
+        }
+
+        [Test]
+        public void OnFootReference_Is16x9_AndExactIntegerZoomAt1080p()
+        {
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int w, out int h);
+            Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, "on-foot reference is 16:9 landscape");
+
+            int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
+            Assert.AreEqual(4, zoom, "9 m on-foot resolves to an exact ×4 pixel-perfect zoom at 1080p");
+        }
+
+        [Test]
+        public void OnFoot_IsTighter_ThanTheBoat()
+        {
+            Assert.Less(CameraFollow.OnFootWorldHeightMeters, CameraFollow.DefaultWorldHeightMeters,
+                "on foot the camera is tighter than in the dory");
+
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int fw, out int fh);
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.DefaultWorldHeightMeters, out int bw, out int bh);
+            float footLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, fw, fh), LockedPPU);
+            float boatLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, bw, bh), LockedPPU);
+            Assert.Less(footLive, boatLive, "the on-foot live framing shows less water than the dory");
+        }
     }
 }

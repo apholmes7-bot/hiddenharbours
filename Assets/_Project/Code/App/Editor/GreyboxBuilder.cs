@@ -35,6 +35,12 @@ namespace HiddenHarbours.App.Editor
         const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
         const string ArtLineHook         = "Assets/_Project/Art/UI/LineHook.png";         // VS-13 rod gauge
         const string ArtFishSilhouette   = "Assets/_Project/Art/UI/FishOnSilhouette.png"; // VS-13 rod gauge
+        const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png";      // on-foot player (sliced 3×4)
+        const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";              // island ground
+        const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";               // beach border
+        const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";   // home on the island
+        const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";          // dock planks
+        const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";           // dock pilings
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
 
@@ -77,11 +83,11 @@ namespace HiddenHarbours.App.Editor
             camGo.tag = "MainCamera";
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;
-            // PC-first intimate LANDSCAPE framing (ADR 0005), DATA-DRIVEN per boat: the camera frames the
-            // active hull's CameraWorldHeightMeters (Dory ~14 m so the 4.5 m hull reads large; a bigger
-            // boat shows more water). Authored here for the scene view; CameraFollow re-applies it at play
-            // and zooms out on an upgrade. Single source of truth for the mapping is in CameraFollow.
-            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(dory.CameraWorldHeightMeters);
+            // PC-first intimate LANDSCAPE framing (ADR 0005), DATA-DRIVEN: the game starts ON FOOT, so the
+            // camera frames the tighter on-foot view (~9 m). The same mapping zooms it out to the boat
+            // tiers when sailing (CameraFollow / OwnedFleet). Authored here for the scene view; CameraFollow
+            // re-applies it at play. Single source of truth for the mapping is in CameraFollow.
+            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
             camGo.transform.position = new Vector3(0f, 0f, -10f);
@@ -97,9 +103,9 @@ namespace HiddenHarbours.App.Editor
             var ppc = camGo.GetComponent<PixelPerfectCamera>();
             if (ppc != null)
             {
-                CameraFollow.ReferenceResolutionForWorldHeight(dory.CameraWorldHeightMeters, out int refW, out int refH);
-                ppc.refResolutionX = refW;   // Dory 14 m → 640×360 (exact ×3 pixel-perfect zoom at 1080p)
-                ppc.refResolutionY = refH;   // 16:9; a bigger boat tier sets a larger reference
+                CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int refW, out int refH);
+                ppc.refResolutionX = refW;   // on-foot 9 m → 480×270 (exact ×4 pixel-perfect zoom at 1080p)
+                ppc.refResolutionY = refH;   // 16:9; the boat tiers set a larger reference when sailing
                 EditorUtility.SetDirty(ppc);
             }
 
@@ -217,7 +223,12 @@ namespace HiddenHarbours.App.Editor
             rb.gravityScale = 0f;
             var boat = doryGo.AddComponent<BoatController>();
             var hold = doryGo.AddComponent<ShipHold>();
-            doryGo.AddComponent<DevBoatInput>();
+            var devBoat = doryGo.AddComponent<DevBoatInput>();
+            // STEP 1: the Dory is static scenery moored at the dock — WASD drives only the on-foot player.
+            // Disable its dev input AND the controller so ambient wind/current doesn't drift the moored
+            // boat. Both stay present (unbroken); step 2's board/disembark re-enables them on boarding.
+            devBoat.enabled = false;
+            boat.enabled = false;
             var fishing = doryGo.AddComponent<FishingController>();
             doryGo.AddComponent<DevFishingInput>();
             SetRef(boat, "_hull", dory);
@@ -231,7 +242,7 @@ namespace HiddenHarbours.App.Editor
             // FishingStateChanged signal, so it needs no controller ref — just the imported UI art,
             // loaded fresh (post-reload) and wired by serialized ref (null-safe if a sprite is missing).
             var fishingSpot = new GameObject("FishingSpot");
-            fishingSpot.transform.position = new Vector3(4f, 4f, 0f);
+            fishingSpot.transform.position = new Vector3(5f, -10f, 0f); // in the water beside the dock
             var spotSr = fishingSpot.AddComponent<SpriteRenderer>();
             spotSr.sprite = waterSprite;
             spotSr.color = new Color(0.30f, 0.58f, 0.66f, 0.7f);
@@ -279,13 +290,73 @@ namespace HiddenHarbours.App.Editor
             SetRef(shipwright, "_offer", puntOffer);
             SetRef(shipwright, "_walletProvider", root);
 
-            // Camera follows the dory so it stays on screen as you sail. Its framing is data-driven from
-            // the active hull (the Dory now; OwnedFleet zooms it out on the Punt upgrade via Core).
+            // --- DEMO ISLAND (on-foot player, step 1/2; additive — flagged for lead-architect) --------
+            // A small island the player stands on: tiled sand beach + grass, the cottage, a dock into the
+            // water with pilings, and the (now static) Dory moored at the dock end. A closed shore-edge
+            // collider keeps the player out of open water. Tiles use the same tiled-SpriteRenderer
+            // approach as the sea backdrop; all art is imported.
+            MakeTiledGround("Beach",  LoadArtSprite(ArtSand),      new Vector2(0f, 2f),    new Vector2(20f, 14f), -8, waterSprite, new Color(0.86f, 0.79f, 0.55f));
+            MakeTiledGround("Ground", LoadArtSprite(ArtGrass),     new Vector2(0f, 2.5f),  new Vector2(17f, 11f), -7, waterSprite, new Color(0.38f, 0.58f, 0.32f));
+            MakeTiledGround("Dock",   LoadArtSprite(ArtWharfDeck), new Vector2(0f, -8.5f), new Vector2(3f, 7f),   -6, waterSprite, new Color(0.55f, 0.40f, 0.24f));
+
+            // Dock pilings down both sides.
+            var postSprite = LoadArtSprite(ArtWharfPost);
+            for (int i = 0; i < 3; i++)
+            {
+                float py = -6f - i * 3f; // -6, -9, -12
+                MakePost(postSprite, new Vector2(-1.5f, py), waterSprite);
+                MakePost(postSprite, new Vector2( 1.5f, py), waterSprite);
+            }
+
+            // The cottage (home) on the grass.
+            var cottageGo = new GameObject("Cottage");
+            cottageGo.transform.position = new Vector3(-4.5f, 5f, 0f);
+            var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
+            cottageSr.sortingOrder = 2;
+            var cottageSprite = LoadArtSprite(ArtCottage);
+            if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
+            else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
+
+            // The Dory is now static scenery moored at the dock end (its controller is disabled above).
+            doryGo.transform.position = new Vector3(0f, -13.8f, 0f);
+
+            // Shore edge: a closed collider fence tracing the beach + dock so the player can roam the
+            // island and walk out the dock, but can't wander into open water (P5 cozy bounds).
+            var shore = new GameObject("ShoreEdge");
+            var edge = shore.AddComponent<EdgeCollider2D>();
+            edge.points = new[]
+            {
+                new Vector2(-10f, 9f), new Vector2(10f, 9f), new Vector2(10f, -5f),
+                new Vector2(1.5f, -5f), new Vector2(1.5f, -12f), new Vector2(-1.5f, -12f),
+                new Vector2(-1.5f, -5f), new Vector2(-10f, -5f), new Vector2(-10f, 9f),
+            };
+
+            // --- ON-FOOT PLAYER ------------------------------------------------------------------------
+            // Top-down WASD walk from the sliced FisherSheet. Honest 1×2 m frame (~1.8 m fisher); never
+            // rescaled. A footprint collider + the shore edge keep the player on land/dock.
+            var playerGo = new GameObject("Player");
+            playerGo.transform.position = new Vector3(-4.5f, 2.5f, 0f); // in front of the cottage
+            playerGo.transform.localScale = Vector3.one;
+            var playerSr = playerGo.AddComponent<SpriteRenderer>();
+            playerSr.sortingOrder = 10;                                 // in front of ground/cottage
+            var prb = playerGo.AddComponent<Rigidbody2D>();
+            prb.gravityScale = 0f; prb.freezeRotation = true;
+            prb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            var foot = playerGo.AddComponent<CircleCollider2D>();
+            foot.radius = 0.35f; foot.offset = new Vector2(0f, -0.7f);  // footprint at the feet
+            var walk = playerGo.AddComponent<PlayerWalkController>();
+            var fisherFrames = LoadSheetFrames(ArtFisher);
+            SetRefArray(walk, "_frames", fisherFrames);
+            if (fisherFrames.Length > 0 && fisherFrames[0] != null)
+                playerSr.sprite = fisherFrames[0];                     // idle-down for the scene view
+
+            // Camera follows the PLAYER at the tighter on-foot framing (data-driven; same pixel-perfect
+            // approach as the boat tiers). Step 2 switches the target/framing between player and boat.
             var cameraFollow = camGo.AddComponent<CameraFollow>();
-            cameraFollow.Target = doryGo.transform;
+            cameraFollow.Target = playerGo.transform;
             var cfSo = new SerializedObject(cameraFollow);
             var cfWorldH = cfSo.FindProperty("_worldHeightMeters");
-            if (cfWorldH != null) { cfWorldH.floatValue = dory.CameraWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
+            if (cfWorldH != null) { cfWorldH.floatValue = CameraFollow.OnFootWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
 
             // --- SAVE & REGISTER -----------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -298,9 +369,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: W/Up = throttle, A/D = steer, Space = cast then HOLD to reel / RELEASE to ease (land it before the line snaps), B = sell your hold, P = buy the Punt (₲1,800).");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk the island on foot, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). (Boarding the moored Dory comes in the next step.)");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• W / Up = throttle\n• A / D = steer\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish before the line snaps\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nWatch the Console for bites, catches, sales, and purchases.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk the island on foot\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish before the line snaps\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe Dory is moored at the dock end — boarding & sailing come in the next step.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -379,6 +450,52 @@ namespace HiddenHarbours.App.Editor
 
         // Load a final art sprite if it has been imported; null if the project is still greybox-only.
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        // Load the sub-sprites of a sliced sheet (Sprite Mode Multiple), ordered by their _N suffix so
+        // index 0..N-1 matches the slice order (e.g. FisherSheet_0..11).
+        static Sprite[] LoadSheetFrames(string path)
+            => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                            .OrderBy(s => SpriteIndex(s.name)).ToArray();
+
+        static int SpriteIndex(string spriteName)
+        {
+            int u = spriteName.LastIndexOf('_');
+            return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
+        }
+
+        // A tiled ground/dock patch (mirrors the sea backdrop's tiled SpriteRenderer). Falls back to a
+        // tinted square if the tile art isn't imported, so the greybox still builds.
+        static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,
+                                    Sprite fallback, Color fallbackColor)
+        {
+            var go = new GameObject(name);
+            go.transform.position = new Vector3(center.x, center.y, 0f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = order;
+            if (sprite != null)
+            {
+                sr.sprite = sprite;
+                sr.drawMode = SpriteDrawMode.Tiled;
+                sr.size = size;
+            }
+            else
+            {
+                sr.sprite = fallback;
+                sr.color = fallbackColor;
+                go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); // 0.5 m fallback → metres
+            }
+        }
+
+        // A single dock piling.
+        static void MakePost(Sprite sprite, Vector2 pos, Sprite fallback)
+        {
+            var go = new GameObject("WharfPost");
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = 3;
+            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
+            else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
+        }
 
         static Sprite MakeSquareSprite(string path)
         {

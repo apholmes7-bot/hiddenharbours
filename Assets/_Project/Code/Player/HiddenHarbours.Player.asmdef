@@ -1,7 +1,7 @@
 {
     "name": "HiddenHarbours.Player",
     "rootNamespace": "HiddenHarbours.Player",
-    "references": ["HiddenHarbours.Core"],
+    "references": ["HiddenHarbours.Core", "Unity.InputSystem"],
     "allowUnsafeCode": false,
     "autoReferenced": true
 }
