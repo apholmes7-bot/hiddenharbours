@@ -1,17 +1,25 @@
 # Hidden Harbours — Continuous Integration
-# Runs the Unity tests on every push/PR so `main` always stays green (CLAUDE.md rule 10,
-# agents/coordination.md §4-§5). Owned by qa-test.
+# Runs the Unity EditMode + PlayMode tests on every push/PR so `main` stays green
+# (CLAUDE.md rule 10, agents/coordination.md §4-§5). Owned by qa-test.
 #
-# ONE-TIME SETUP (required before this can run):
-#   1. Activate a Unity license for CI. The easiest is a free Personal license:
-#      follow https://game.ci/docs/github/activation to generate a .ulf, then add these
-#      repository secrets (Settings > Secrets and variables > Actions):
-#        UNITY_LICENSE   = the full contents of the .ulf file
-#        UNITY_EMAIL     = your Unity account email
-#        UNITY_PASSWORD  = your Unity account password
-#   2. Update `unityVersion` below to the EXACT editor version you installed (e.g. 6000.3.4f1).
+# WHY BUILDALON (and not GameCI): Unity 6 issues a machine-bound "entitlement" license,
+# and Unity removed manual `.ulf` activation for free Personal licenses back in ~2023.
+# GameCI's Docker test-runner is hard-wired to need a `.ulf` that a Personal seat can no
+# longer produce, so it cannot work for this project. The Buildalon actions activate a
+# Personal license at runtime against Unity's licensing servers using just an email +
+# password — no `.ulf` file and no serial number.
 #
-# Until those secrets exist, this workflow will fail at the test step — that's expected.
+# ONE-TIME SETUP (required before this can pass) — add two repository secrets under
+# Settings ▸ Secrets and variables ▸ Actions ▸ "New repository secret":
+#     UNITY_EMAIL     = the email address for your Unity ID
+#     UNITY_PASSWORD  = the password for your Unity ID
+# No serial and no `.ulf` are needed for a Personal license. NOTE: the Unity account must
+# NOT have two-factor (2FA) on password login, or the automated activation will fail.
+# Until these secrets exist, the "Activate Unity license" step fails — that is expected.
+#
+# The third-party Buildalon actions are pinned to commit SHAs (supply-chain hygiene) because
+# they receive the Unity credentials. To bump one, update the SHA *and* its trailing
+# `# vX` comment together.
 
 name: CI
 
@@ -20,6 +28,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+# A new push to the same branch cancels the previous (still-running) CI — Unity installs are
+# expensive, so don't burn runner minutes on a run that's already superseded.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
@@ -39,18 +53,35 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: Run tests
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      - name: Set up Unity
+        uses: buildalon/unity-setup@30fcbcb56c10ea5d64298e970d952b8d29bc268b # v2
         with:
-          unityVersion: 6000.5.0f1   # matches the editor you installed (Unity 6.5)
-          testMode: all              # EditMode + PlayMode
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1
+          build-targets: StandaloneLinux64
+          cache-installation: true                             # cache the multi-GB editor between runs
 
-      - name: Upload results
+      - name: Activate Unity license (Personal)
+        uses: buildalon/activate-unity-license@e0d245d0787b7b9931b56ccbde3b508f6b70f1af # v2
+        with:
+          license: Personal
+          username: ${{ secrets.UNITY_EMAIL }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+
+      - name: EditMode tests
+        uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
+        with:
+          log-name: editmode-tests
+          args: -batchmode -runTests -testPlatform EditMode -testResults ${{ github.workspace }}/artifacts/editmode-results.xml
+
+      - name: PlayMode tests
+        # Run even if EditMode failed, so a single CI run reports both suites.
+        if: success() || failure()
+        uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
+        with:
+          log-name: playmode-tests
+          args: -batchmode -runTests -testPlatform PlayMode -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
+
+      - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
