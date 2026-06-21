@@ -11,15 +11,6 @@ TextureImporter:
   - first:
       213: -8836600189163077380
     second: DoryRow_2
-  - first:
-      213: 1592746042390992770
-    second: DoryRow_3
-  - first:
-      213: -4155387477168315461
-    second: DoryRow_4
-  - first:
-      213: 8778798190771806431
-    second: DoryRow_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -133,7 +124,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
+        width: 128
         height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -153,9 +144,9 @@ TextureImporter:
       name: DoryRow_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 128
         y: 0
-        width: 64
+        width: 128
         height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -175,9 +166,9 @@ TextureImporter:
       name: DoryRow_2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 256
         y: 0
-        width: 64
+        width: 128
         height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -190,73 +181,7 @@ TextureImporter:
       spriteID: cf009ce32f61e5580800000000000000
       internalID: -8836600189163077380
       vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DoryRow_3
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 62b9d9e08181a68a0800000000000000
-      internalID: 1592746042390992770
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DoryRow_4
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b70675f7f05ac7c60800000000000000
-      internalID: -4155387477168315461
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: DoryRow_5
-      rect:
-        serializedVersion: 2
-        x: 320
-        y: 0
-        width: 64
-        height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5dc07439394da7160800000000000000
-      internalID: 8778798190771806431
-      vertices: []
-      indices: 
+      indices:
       edges: []
       weights: []
     outline: []
@@ -276,9 +201,6 @@ TextureImporter:
       DoryRow_0: 4416127307031658751
       DoryRow_1: -6789109352393671366
       DoryRow_2: -8836600189163077380
-      DoryRow_3: 1592746042390992770
-      DoryRow_4: -4155387477168315461
-      DoryRow_5: 8778798190771806431
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
