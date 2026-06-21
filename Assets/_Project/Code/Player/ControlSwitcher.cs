@@ -133,6 +133,15 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
+            // A modal dialogue (VS-21, world-content) owns the shared Interact key while it's up —
+            // don't also board/disembark under it. Gate is a Core contract so neither lane references
+            // the other (see InteractionGate). Hide our board/dock hint too while blocked.
+            if (InteractionGate.IsBlocked)
+            {
+                if (_hint != null && _hint.enabled) _hint.enabled = false;
+                return;
+            }
+
             var kb = Keyboard.current;
             if (kb != null && kb.eKey.wasPressedThisFrame) TryInteract();
             UpdateHint();

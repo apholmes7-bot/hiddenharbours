@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.World",
+    "rootNamespace": "HiddenHarbours.World",
+    "references": ["HiddenHarbours.Core", "Unity.InputSystem"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

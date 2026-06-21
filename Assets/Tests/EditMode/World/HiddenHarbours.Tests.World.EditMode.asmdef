@@ -1,0 +1,15 @@
+{
+    "name": "HiddenHarbours.Tests.World.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.World.EditMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.World"
+    ],
+    "includePlatforms": ["Editor"],
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
