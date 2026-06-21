@@ -350,13 +350,34 @@ namespace HiddenHarbours.App.Editor
             if (fisherFrames.Length > 0 && fisherFrames[0] != null)
                 playerSr.sprite = fisherFrames[0];                     // idle-down for the scene view
 
-            // Camera follows the PLAYER at the tighter on-foot framing (data-driven; same pixel-perfect
-            // approach as the boat tiers). Step 2 switches the target/framing between player and boat.
+            // Camera starts following the PLAYER at the tighter on-foot framing. It also knows both
+            // mode targets (player + boat) and switches between them on the Core ControlModeChanged
+            // signal (VS boarding, step 2) — data-driven, pixel-perfect, same approach as the boat tiers.
             var cameraFollow = camGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
             var cfSo = new SerializedObject(cameraFollow);
             var cfWorldH = cfSo.FindProperty("_worldHeightMeters");
             if (cfWorldH != null) { cfWorldH.floatValue = CameraFollow.OnFootWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
+            SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
+            SetRef(cameraFollow, "_boatTarget", doryGo.transform);
+
+            // --- BOARDING (control switch, step 2/2; additive — flagged for lead-architect) ------------
+            // A dock zone at the mooring: walk into it on foot and press E to board; sail the boat back
+            // into it and press E to disembark onto the dock. The ControlSwitcher (Player lane) toggles
+            // the player vs boat controllers and hands the camera off via Core signals — it never
+            // references the App camera. Start ON FOOT (the boat's controller/input are disabled above).
+            var dockZone = new GameObject("DockZone");
+            dockZone.transform.position = new Vector3(0f, -12f, 0f);   // the dock end / mooring
+            var disembarkPoint = new GameObject("DisembarkPoint");
+            disembarkPoint.transform.position = new Vector3(0f, -10.5f, 0f); // on the dock planks
+
+            var switcherGo = new GameObject("ControlSwitcher");
+            var switcher = switcherGo.AddComponent<ControlSwitcher>();
+            SetRef(switcher, "_playerWalk", walk);
+            SetRef(switcher, "_boatController", boat);
+            SetRef(switcher, "_boatInput", devBoat);
+            SetRef(switcher, "_dockZone", dockZone.transform);
+            SetRef(switcher, "_disembarkPoint", disembarkPoint.transform);
 
             // --- SAVE & REGISTER -----------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -369,9 +390,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk the island on foot, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). (Boarding the moored Dory comes in the next step.)");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot / steer the boat when aboard, E = board at the dock / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). Full loop: walk → E to board → sail → fish/sell/buy → dock → E to disembark → walk.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk the island on foot\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish before the line snaps\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe Dory is moored at the dock end — boarding & sailing come in the next step.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot (and steer the Dory when aboard)\n• E = board at the dock (on foot) / disembark (aboard, back at the dock)\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe full loop: walk → board → sail → fish/sell/buy → return → disembark → walk.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------

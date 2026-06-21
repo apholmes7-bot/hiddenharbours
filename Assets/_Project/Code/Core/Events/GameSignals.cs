@@ -93,4 +93,19 @@ namespace HiddenHarbours.Core
             BoatId = boatId; CameraWorldHeightMeters = cameraWorldHeightMeters;
         }
     }
+
+    /// <summary>Whether the player is walking the coast or sailing the boat.</summary>
+    public enum ControlMode { OnFoot, Aboard }
+
+    /// <summary>
+    /// Raised when control switches between on-foot and aboard (board / disembark). Lets the camera
+    /// (App) retarget between the player and the boat WITHOUT the switcher referencing the camera — a
+    /// Player/Boats-lane switcher can't reference App (that would be circular), so the handoff goes
+    /// through Core. The boat's framing still arrives via <see cref="ActiveBoatChanged"/> on boarding.
+    /// </summary>
+    public readonly struct ControlModeChanged
+    {
+        public readonly ControlMode Mode;
+        public ControlModeChanged(ControlMode mode) { Mode = mode; }
+    }
 }
