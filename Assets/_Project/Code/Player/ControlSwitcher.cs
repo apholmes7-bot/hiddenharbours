@@ -31,7 +31,10 @@ namespace HiddenHarbours.Player
         [Header("Dock zone")]
         [Tooltip("The dock/mooring point. Board when the player is within range; disembark when the boat is.")]
         [SerializeField] private Transform _dockZone;
-        [SerializeField] private float _zoneRadius = 3f;
+        [Tooltip("Board/dock zone radius (m). Forgiving (P5 cozy) so a reasonably-parked boat — bow stopped " +
+                 "against the dock-head collider — still registers a disembark; boarding uses the on-foot " +
+                 "player's position, so this stays comfortable for both.")]
+        [SerializeField] private float _zoneRadius = 3.5f;
         [Tooltip("Where the on-foot player is placed after disembarking (on the dock).")]
         [SerializeField] private Transform _disembarkPoint;
 
@@ -104,6 +107,11 @@ namespace HiddenHarbours.Player
             if (sr != null) sr.enabled = active;
             var rb = _playerWalk.GetComponent<Rigidbody2D>();
             if (rb != null) rb.linearVelocity = Vector2.zero;        // no residual drift while hidden
+            // Drop the player's footprint collider while aboard so the boat backing onto the dock can't
+            // bump the hidden, frozen on-foot player (the boat gained a hull collider this pass). Restored
+            // on disembark. Null-safe: tests build a player without a footprint collider.
+            var col = _playerWalk.GetComponent<Collider2D>();
+            if (col != null) col.enabled = active;
         }
 
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>

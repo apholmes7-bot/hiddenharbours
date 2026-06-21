@@ -14,14 +14,21 @@ namespace HiddenHarbours.Boats
     /// InputService later (ui-ux).
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(CapsuleCollider2D))]   // hull collider: bumps shore + dock pilings (cozy, no damage)
     public class BoatController : MonoBehaviour
     {
+        /// <summary>Astern thrust as a fraction of ahead, like a real prop pushes backward weaker (~40%).</summary>
+        public const float DefaultAsternFactor = 0.4f;
+
         [SerializeField] private BoatHullDef _hull;
         [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
         [SerializeField] private float _localSeabedDepth = 3f;
+        [Tooltip("Astern thrust as a fraction of ahead thrust. A real propeller pushes backward weaker " +
+                 "(~40%) — enough to back off the dock without turning the dory into a reversing car.")]
+        [SerializeField] private float _asternThrustFactor = DefaultAsternFactor;
 
         private Rigidbody2D _rb;
-        private float _throttle;   // 0..1
+        private float _throttle;   // -1..1 (negative = astern)
         private float _steer;      // -1..1
 
         public BoatHullDef Hull => _hull;
@@ -34,14 +41,32 @@ namespace HiddenHarbours.Boats
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
             _rb.angularDamping = 2.5f;
+            // Don't tunnel the thin shore-edge / dock colliders when nudging up to the dock.
+            _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             if (_hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
 
-        /// <summary>Set helm input. Called by DevBoatInput now, by the InputService later.</summary>
+        /// <summary>
+        /// Set helm input. Throttle is -1..1: ahead (forward) or astern (reverse, for backing onto the
+        /// dock). Called by DevBoatInput now, by the InputService later.
+        /// </summary>
         public void SetControl(float throttle, float steer)
         {
-            _throttle = Mathf.Clamp01(throttle);
+            _throttle = Mathf.Clamp(throttle, -1f, 1f);
             _steer = Mathf.Clamp(steer, -1f, 1f);
+        }
+
+        /// <summary>
+        /// Effective engine thrust (design-unit force, before the physics-feel scale) for a throttle in
+        /// -1..1. Ahead is full power; astern (throttle &lt; 0) is weaker by <paramref name="asternFactor"/>,
+        /// like a real propeller — so the result is negative and smaller in magnitude than ahead. Pure +
+        /// static so it's unit-testable without the physics step.
+        /// </summary>
+        public static float EngineThrust(float throttle, float enginePower, float asternFactor)
+        {
+            throttle = Mathf.Clamp(throttle, -1f, 1f);
+            float factor = throttle < 0f ? asternFactor : 1f;
+            return throttle * enginePower * factor;
         }
 
         /// <summary>
@@ -73,9 +98,12 @@ namespace HiddenHarbours.Boats
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
 
-            // --- Engine (no drive when hard aground) ---
+            // --- Engine (no drive when hard aground). Ahead full, astern weaker (real-prop feel). ---
             if (!IsAground)
-                _rb.AddForce(fwd * (_throttle * _hull.EnginePower * 0.01f), ForceMode2D.Force);
+            {
+                float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * 0.01f;
+                _rb.AddForce(fwd * thrust, ForceMode2D.Force);
+            }
 
             // --- Rudder: authority grows with speed; almost nil at a standstill or aground ---
             float speed = vel.magnitude;

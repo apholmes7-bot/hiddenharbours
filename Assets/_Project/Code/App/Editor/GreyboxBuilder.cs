@@ -30,6 +30,7 @@ namespace HiddenHarbours.App.Editor
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // final sprite (VS-26)
+        const string ArtDoryRow = "Assets/_Project/Art/Boats/DoryRow.png";       // sliced 6-frame oar cycle
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
         const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
@@ -208,11 +209,20 @@ namespace HiddenHarbours.App.Editor
             doryGo.transform.position = Vector3.zero;
             var sr = doryGo.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 0;
+            // Prefer the sliced row sheet (animated by BoatRowAnimator below); frame 0 is the oars-shipped
+            // idle pose, so the moored dory in the scene view matches the at-rest look at play. Fall back
+            // to the static Dory.png, then a tinted square, so the greybox still builds before any art.
+            var doryRowFrames = LoadSheetFrames(ArtDoryRow);   // 6 frames of 64×144, _0.._5
             var dorySprite = LoadArtSprite(ArtDory);
-            if (dorySprite != null)
+            if (doryRowFrames.Length > 0 && doryRowFrames[0] != null)
+            {
+                sr.sprite = doryRowFrames[0];              // oars-shipped idle frame (64×144 @ PPU 32 = 2 m × 4.5 m)
+                doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
+            }
+            else if (dorySprite != null)
             {
                 sr.sprite = dorySprite;                    // 64×144 px @ PPU 32 = 2 m × 4.5 m, bow-up
-                doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
+                doryGo.transform.localScale = Vector3.one;
             }
             else
             {
@@ -222,8 +232,19 @@ namespace HiddenHarbours.App.Editor
             var rb = doryGo.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
             var boat = doryGo.AddComponent<BoatController>();
+            // Hull collider so the boat bumps the shore edge + dock pilings (cozy, no damage). BoatController
+            // requires a CapsuleCollider2D; size it just inside the hull sprite (2 m × 4.5 m) with rounded
+            // ends so nudging up to the dock reads gentle. Default zero-bounce material → no bouncing.
+            var hullCol = doryGo.GetComponent<CapsuleCollider2D>() ?? doryGo.AddComponent<CapsuleCollider2D>();
+            hullCol.direction = CapsuleDirection2D.Vertical;
+            hullCol.size = new Vector2(1.7f, 4.0f);
+            hullCol.offset = Vector2.zero;
             var hold = doryGo.AddComponent<ShipHold>();
             var devBoat = doryGo.AddComponent<DevBoatInput>();
+            // Rowing animation: speed-scaled oar cycle from the sliced row sheet (frame-swap only,
+            // reversed when astern, idle at rest). No-op if the sheet isn't imported (frames empty).
+            var rowAnim = doryGo.AddComponent<BoatRowAnimator>();
+            SetRefArray(rowAnim, "_frames", doryRowFrames);
             // STEP 1: the Dory is static scenery moored at the dock — WASD drives only the on-foot player.
             // Disable its dev input AND the controller so ambient wind/current doesn't drift the moored
             // boat. Both stay present (unbroken); step 2's board/disembark re-enables them on boarding.
@@ -318,7 +339,9 @@ namespace HiddenHarbours.App.Editor
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
 
             // The Dory is now static scenery moored at the dock end (its controller is disabled above).
-            doryGo.transform.position = new Vector3(0f, -13.8f, 0f);
+            // Parked just clear of the dock-head shore-edge wall (y=-12) so its new 4 m hull collider
+            // doesn't start overlapping it (which would jolt the moored boat free on the first frame).
+            doryGo.transform.position = new Vector3(0f, -14.2f, 0f);
 
             // Shore edge: a closed collider fence tracing the beach + dock so the player can roam the
             // island and walk out the dock, but can't wander into open water (P5 cozy bounds).
@@ -390,9 +413,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot / steer the boat when aboard, E = board at the dock / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). Full loop: walk → E to board → sail → fish/sell/buy → dock → E to disembark → walk.");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot / steer the boat when aboard (W ahead, S astern to back onto the dock), E = board at the dock / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800). Full loop: walk → E to board → sail → fish/sell/buy → back onto the dock → E to disembark → walk.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot (and steer the Dory when aboard)\n• E = board at the dock (on foot) / disembark (aboard, back at the dock)\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe full loop: walk → board → sail → fish/sell/buy → return → disembark → walk.", "Fair winds");
+                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot, or steer the Dory when aboard (W = ahead, S = astern — back onto the dock; the hull now bumps the shore + pilings)\n• E = board at the dock (on foot) / disembark (aboard, back at the dock)\n• Space = cast, then HOLD to reel & RELEASE to ease — pulse to land the fish\n• B = sell your hold at the wharf\n• P = buy the Punt at the Shipwright (₲1,800)\n\nThe full loop: walk → board → sail → fish/sell/buy → back onto the dock → disembark → walk.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -507,7 +530,8 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        // A single dock piling.
+        // A single dock piling. A small circular collider so the boat bumps the pilings (cozy, no damage)
+        // when nudging into the slip, on top of the shore-edge fence that bounds the island.
         static void MakePost(Sprite sprite, Vector2 pos, Sprite fallback)
         {
             var go = new GameObject("WharfPost");
@@ -516,6 +540,8 @@ namespace HiddenHarbours.App.Editor
             sr.sortingOrder = 3;
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
+            var col = go.AddComponent<CircleCollider2D>();
+            col.radius = 0.3f;   // slim piling; leaves a navigable channel between the two rows of posts
         }
 
         static Sprite MakeSquareSprite(string path)
