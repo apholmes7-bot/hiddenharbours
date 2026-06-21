@@ -6,8 +6,10 @@ namespace HiddenHarbours.UI
     /// <summary>
     /// Pure conversions for the wind widget: m/s to knots and Beaufort, and a wind vector to a
     /// 16-point compass cardinal. Engine-light (only <see cref="Vector2"/>) so the conversions are
-    /// EditMode-testable. World/absolute terms only — wind *relative to heading* is a VS-19
-    /// follow-up that needs a Core boat-heading contract that does not exist yet.
+    /// EditMode-testable. World/absolute terms only — wind *relative to heading* (apparent wind) is
+    /// a VS-19 follow-up: the boat-heading contract it needs now exists in Core
+    /// (HiddenHarbours.Core.IActiveBoatService / BoatKinematics, ADR 0007), so the widget can compose
+    /// it via BoatKinematics.RelativeBearingDegrees without referencing the Boats module.
     /// </summary>
     public static class WindReadout
     {
