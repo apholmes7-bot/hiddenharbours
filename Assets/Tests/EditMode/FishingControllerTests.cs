@@ -112,7 +112,7 @@ namespace HiddenHarbours.Tests.EditMode
             float t = 0f;
             while (!IsResult(c.Phase) && t < 120f)
             {
-                c.Tick(0.05f, reeling: c.State.Tension01 < 0.5f); // forgiving pulse
+                c.Tick(0.05f, actionHeld: c.State.Tension01 < 0.5f); // forgiving pulse
                 t += 0.05f;
             }
 
@@ -133,7 +133,7 @@ namespace HiddenHarbours.Tests.EditMode
             float t = 0f;
             while (!IsResult(c.Phase) && t < 60f)
             {
-                c.Tick(0.05f, reeling: true); // just hold → snap
+                c.Tick(0.05f, actionHeld: true); // just hold → snap
                 t += 0.05f;
             }
 
@@ -155,7 +155,7 @@ namespace HiddenHarbours.Tests.EditMode
             float t = 0f;
             while (!IsResult(c.Phase) && t < 30f)
             {
-                c.Tick(0.05f, reeling: true); // hold to tend — no snap risk
+                c.Tick(0.05f, actionHeld: true); // hold to tend — no snap risk
                 t += 0.05f;
             }
 
