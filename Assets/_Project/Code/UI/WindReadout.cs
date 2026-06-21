@@ -72,5 +72,27 @@ namespace HiddenHarbours.UI
             int index = Mathf.RoundToInt(bearing / 22.5f) % 16;
             return Compass16[index];
         }
+
+        // 8-point arrows clockwise from North — a coarse SHAPE channel for direction that complements
+        // the 16-point Cardinal text (redundant coding; Unicode has clean glyphs only at 8-way).
+        private static readonly string[] Arrows8 =
+        {
+            "↑", "↗", "→", "↘", "↓", "↙", "←", "↖"
+        };
+
+        /// <summary>
+        /// 8-point arrow glyph for the direction a wind vector points toward (same +Y=N, +X=E
+        /// convention as <see cref="Cardinal"/>). Returns "·" for a calm (near-zero) vector.
+        /// </summary>
+        public static string ArrowGlyph(Vector2 windVector, float deadZone = 0.01f)
+        {
+            if (windVector.sqrMagnitude < deadZone * deadZone) return "·";
+
+            float bearing = Mathf.Atan2(windVector.x, windVector.y) * Mathf.Rad2Deg;
+            if (bearing < 0f) bearing += 360f;
+
+            int octant = Mathf.RoundToInt(bearing / 45f) % 8;
+            return Arrows8[octant];
+        }
     }
 }

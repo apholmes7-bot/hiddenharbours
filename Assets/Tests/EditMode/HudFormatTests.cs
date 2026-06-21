@@ -121,6 +121,52 @@ namespace HiddenHarbours.Tests.EditMode
                 "a near-zero wind has no meaningful direction");
         }
 
+        [Test]
+        public void ArrowGlyph_PointsTheWayTheWindBlows()
+        {
+            // +Y = North, +X = East — same convention as Cardinal, at 8-point resolution.
+            Assert.AreEqual("↑", WindReadout.ArrowGlyph(new Vector2(0f, 1f)),  "N");
+            Assert.AreEqual("→", WindReadout.ArrowGlyph(new Vector2(1f, 0f)),  "E");
+            Assert.AreEqual("↓", WindReadout.ArrowGlyph(new Vector2(0f, -1f)), "S");
+            Assert.AreEqual("←", WindReadout.ArrowGlyph(new Vector2(-1f, 0f)), "W");
+            Assert.AreEqual("↗", WindReadout.ArrowGlyph(new Vector2(1f, 1f)),  "NE");
+            Assert.AreEqual("↘", WindReadout.ArrowGlyph(new Vector2(1f, -1f)), "SE");
+            Assert.AreEqual("·", WindReadout.ArrowGlyph(Vector2.zero), "calm has no direction");
+        }
+
+        [Test]
+        public void WindBarbs_EncodeStrengthByLength()
+        {
+            Assert.AreEqual("○", HudFormat.WindBarbs(0),  "calm shows the ring");
+            Assert.AreEqual("○", HudFormat.WindBarbs(2),  "below ~3 kt rounds to calm");
+            Assert.AreEqual("▪", HudFormat.WindBarbs(5),  "a half barb is ~5 kt");
+            Assert.AreEqual("▮", HudFormat.WindBarbs(10), "a full barb is ~10 kt");
+            Assert.AreEqual("▮▪", HudFormat.WindBarbs(15), "15 kt = full + half");
+            Assert.AreEqual("▮▮", HudFormat.WindBarbs(20), "20 kt = two full barbs");
+            Assert.AreEqual("▮▮▮▮", HudFormat.WindBarbs(40), "stronger wind = a longer barb run");
+            Assert.AreEqual("○", HudFormat.WindBarbs(-5), "negative speed clamps to calm");
+        }
+
+        [Test]
+        public void WindBarbs_NeverReadWeakerAsTheWindRises()
+        {
+            // The whole point of the barb channel: more wind must never render fewer/lighter barbs.
+            int prevWeight = -1;
+            for (int kt = 0; kt <= 60; kt += 5)
+            {
+                string barbs = HudFormat.WindBarbs(kt);
+                int weight = 0;
+                foreach (char c in barbs)
+                {
+                    if (c == HudStrings.WindBarbFull[0]) weight += 2; // full ≈ 10 kt
+                    else if (c == HudStrings.WindBarbHalf[0]) weight += 1; // half ≈ 5 kt
+                }
+                Assert.GreaterOrEqual(weight, prevWeight,
+                    $"{kt} kt barbs '{barbs}' must not read weaker than the previous step");
+                prevWeight = weight;
+            }
+        }
+
         // ---- sea-state & season words -------------------------------------------------------
 
         [Test]

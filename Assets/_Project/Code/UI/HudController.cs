@@ -204,9 +204,12 @@ namespace HiddenHarbours.UI
             int knots = Mathf.Max(0, Mathf.RoundToInt(WindReadout.Knots(strength)));
             string cardinal = WindReadout.Cardinal(windVector);
 
-            // Redundant coding: a directional glyph + cardinal text + a kts number (+ Beaufort).
-            string text = WindArrowGlyph(windVector) + " " + cardinal
-                        + "  " + knots.ToString(System.Globalization.CultureInfo.InvariantCulture) + " kt"
+            // Redundant coding (accessibility §8): direction reads as an arrow SHAPE + a cardinal
+            // WORD; strength reads as barb LENGTH + a knots NUMBER + a Beaufort LABEL — never colour
+            // alone. e.g. "↗ NE  ▮▪ 17 kt  F5".
+            string text = WindReadout.ArrowGlyph(windVector) + " " + cardinal
+                        + "  " + HudFormat.WindBarbs(knots)
+                        + " " + knots.ToString(System.Globalization.CultureInfo.InvariantCulture) + " kt"
                         + "  " + HudFormat.BeaufortLabel(WindReadout.Beaufort(strength));
 
             if (text != _windCache)
@@ -373,26 +376,6 @@ namespace HiddenHarbours.UI
             if (value == cache) return;
             cache = value;
             if (label != null) label.text = value;
-        }
-
-        // A simple 8-way arrow glyph for the direction the wind blows toward (shape, not colour).
-        private static string WindArrowGlyph(Vector2 v)
-        {
-            if (v.sqrMagnitude < 0.0001f) return "·";
-            float bearing = Mathf.Atan2(v.x, v.y) * Mathf.Rad2Deg; // 0=N, 90=E
-            if (bearing < 0f) bearing += 360f;
-            int oct = Mathf.RoundToInt(bearing / 45f) % 8;
-            switch (oct)
-            {
-                case 0: return "↑";
-                case 1: return "↗";
-                case 2: return "→";
-                case 3: return "↘";
-                case 4: return "↓";
-                case 5: return "↙";
-                case 6: return "←";
-                default: return "↖";
-            }
         }
 
         // ---- HUD construction (code-driven, no prefab) --------------------------------------

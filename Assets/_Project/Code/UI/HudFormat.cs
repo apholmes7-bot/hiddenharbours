@@ -78,5 +78,23 @@ namespace HiddenHarbours.UI
 
         /// <summary>Beaufort label like "F4".</summary>
         public static string BeaufortLabel(int force) => "F" + force.ToString(Inv);
+
+        /// <summary>
+        /// Wind-strength "barbs" — a marine-style glyph whose LENGTH encodes speed, so the wind reads
+        /// strong/weak by shape, not just by the "12 kt"/"F4" numbers (redundant coding,
+        /// colourblind-safe). Each full barb ▮ ≈ 10 kt, a trailing half barb ▪ ≈ 5 kt, calm is the
+        /// ring ○. Knots are rounded to the nearest 5; negatives clamp to calm.
+        /// </summary>
+        public static string WindBarbs(int knots)
+        {
+            int k = knots < 0 ? 0 : knots;
+            int k5 = ((k + 2) / 5) * 5;                  // round to nearest 5 kt
+            if (k5 == 0) return HudStrings.WindCalm;      // ○
+
+            int full = k5 / 10;                          // ▮ per 10 kt
+            bool half = (k5 % 10) >= 5;                  // ▪ for the odd +5 kt
+            string barbs = full > 0 ? new string(HudStrings.WindBarbFull[0], full) : string.Empty;
+            return half ? barbs + HudStrings.WindBarbHalf : barbs;
+        }
     }
 }
