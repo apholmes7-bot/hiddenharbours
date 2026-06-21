@@ -1,7 +1,8 @@
 # Hidden Harbours — UX & Mobile Controls
 
-> Design module. Subordinate to `../vision-and-pillars.md` (CANON). Specifies the mobile-first
-> control schemes, the HUD, the on-screen menus, session design, scale-up to desktop/console, and
+> Design module. Subordinate to `../vision-and-pillars.md` (CANON). Specifies the control schemes
+> (now **PC-first** per ADR 0005 — see the note below; the touch design is retained as the
+> mobile-port spec), the HUD, the on-screen menus, session design, cross-platform input/layout, and
 > accessibility. Serves every pillar but is the **front line of P1 (The Sea Has Moods)** — making
 > tide and wind *legible* is treated here as a first-class UI problem.
 >
@@ -10,6 +11,17 @@
 > (boat handling the sailing controls drive), `economy-and-business.md` (market/business screens'
 > content), `progression-and-housing.md` (skills/housing screens, session-banking, offline stance),
 > `art-and-audio-bible.md` (UI *art* direction; this doc owns *layout & behaviour*).
+
+> ⚓ **PC-FIRST NOTE (ADR 0005, 2026-06-20) — read this before the rest.** The project's **primary
+> target is now landscape desktop with keyboard/mouse + gamepad** (Windows/desktop). This doc was
+> written mobile-first, and **all of that touch / one-thumb / portrait design is kept on purpose** —
+> but it is now **future-mobile-port scope**, not the primary build. For the PC-first build, read the
+> touch sections as: *the same HUD, screens, and interactions, with the bindings retargeted to
+> KB/mouse/gamepad and the layout in **landscape**.* Crucially, **the input *intent* architecture
+> (VS-02 — `Move/SetThrottle/SetHeading/Interact/Haul/OpenMap/Confirm/Cancel/Zoom`) is UNCHANGED**:
+> only the device→intent **bindings** retarget (see §9, §10). Nothing about the gameplay, the HUD's
+> information set, or the screens changes — only which device drives the intents and how the layout
+> reflows. The touch design here is the **port spec** when mobile is built.
 
 ---
 
@@ -33,7 +45,14 @@
 
 ## 2. Orientation & one-handed stance
 
-**Decision: portrait-primary, landscape-supported.**
+**Decision (PC-first, ADR 0005): landscape-primary on desktop. Portrait-primary is retained as the
+future-mobile-port stance** (the original decision, below, governs the mobile port).
+
+> On PC the game runs **landscape**, using the wider sightlines (open water, big ships) and a
+> spread-out top read-only band; the thumb-zone / one-handed reasoning below applies to the mobile
+> port, not the desktop build.
+
+**Original mobile-port decision: portrait-primary, landscape-supported.**
 
 - **Portrait is the canonical, one-handed mode.** It suits the cozy, glanceable, "pick up for a
   quick run" fantasy and one-thumb reach; the HUD and controls are designed portrait-first.
@@ -381,6 +400,13 @@ everyone** (colourblind, low-vision, motor, motion-sensitive players).
 
 ## 9. Scaling up to desktop / console
 
+> **PC-first reframe (ADR 0005):** desktop with KB/mouse/gamepad is now the **primary** target, so
+> this section describes the *primary* bindings (and the touch mappings below become the
+> **mobile-port** direction). The key invariant is unchanged and load-bearing: **the input *intent*
+> set (VS-02) does not change — only the device→intent bindings retarget.** Gameplay reads intents,
+> never raw input, so PC-first is a binding/layout swap, not a rewrite, and the mobile port stays a
+> binding/layout swap too.
+
 Everything above is built on an **input abstraction** so the same UX maps to mouse/keyboard and
 gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
 
@@ -397,9 +423,9 @@ gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
 - **Responsive UI for big screens:** the same **summary-first card** screens reflow to multi-column
   on desktop/console (more cards visible at once), and the HUD spreads out — but the *information set*
   and the *interaction model* are unchanged. No separate desktop UI codebase.
-- **Why this matters now:** designing the touch scheme **as intents from day one** is what lets
-  "mobile-first, desktop/console-later" be true without a costly rebuild (the canon platform
-  commitment).
+- **Why this matters now:** designing the scheme **as intents from day one** is exactly what lets
+  the **PC-first** pivot (ADR 0005) happen as a binding/layout retarget rather than a rebuild — and
+  what keeps the **mobile port** equally cheap to add later (the canon platform commitment).
 
 ---
 

@@ -120,6 +120,9 @@ audio. Lock 2D URP render pipeline settings.
   device (or emulator) and in the Editor. asmdefs compile with the stated module boundaries and no cyclic refs.
   `.gitattributes` tracks `*.png *.aseprite *.wav *.ogg` via LFS. A persistent Core scene loads and can additively
   load/unload a child scene by key.
+  > **PC-first note (ADR 0005):** the primary build target is now **desktop (Windows, landscape)**; the iOS/Android
+  > (portrait) target is the **later mobile port**. Bootstrap a desktop build first — the module/scene scaffold is
+  > identical either way.
 
 **VS-02 · Input intents (touch-first) · [M0] · `lead-architect` · deps: VS-01**
 Stand up Unity Input System with an `InputService` that exposes **intents**, not raw input: `Move(Vector2)`,
@@ -129,6 +132,9 @@ so mouse/keyboard + gamepad can map to the same intents later (no rewrite).
   drives `Move`/`SetThrottle`; a right-side tap/drag drives `SetHeading`; an Action button raises `Interact`/
   `Haul`. Switching/adding a device (e.g. an editor keyboard) maps to the same intents with no gameplay code
   change. A throwaway test scene proves all five intents fire.
+  > **PC-first note (ADR 0005):** the **intent set is UNCHANGED** — only the bindings retarget. For the PC-first
+  > build the **primary** bindings are **KB/mouse + gamepad** (mouse-point → `SetHeading`, WASD/scroll → `Move`/
+  > `SetThrottle`, E/F/Space → `Interact`/`Haul`); **keep the touch bindings** for the later mobile port.
 
 **VS-03 · Save/load scaffold (versioned) · [M0] · `lead-architect` · deps: VS-01**
 A `SaveService` that serializes/deserializes a small, **versioned** save document. M0 payload:
@@ -427,6 +433,8 @@ greybox?* (the M0 go/no-go from the roadmap).
 - **AC:** The full M0 loop (board → sail → fish → return → sell → sleep → reload) passes end-to-end on a mid-range
   Android device with no blocking bugs and a stable framerate. A documented smoke test exists and passes. A short
   written playtest verdict on loop fun is delivered to the owner (with the explicit GO/POLISH/PIVOT recommendation).
+  > **PC-first note (ADR 0005): desktop baseline; mobile = later port.** Read "mid-range Android device" as the
+  > **desktop baseline** (60fps on a typical desktop/laptop GPU); the on-phone pass moves to the mobile-port stage.
 
 **VS-31 · M1 acceptance + external playtest (soft-launch readiness) · [M1] · `qa-test` · deps: VS-09, VS-14, VS-16, VS-19, VS-21, VS-22, VS-24, VS-26, VS-28, save-migration · deps-note: gates the whole slice**
 Run the **M1 acceptance pass** against the Definition of Done (§6) and a small **external playtest** (TestFlight/
@@ -437,6 +445,9 @@ made on an earlier build still loads (migration). Deliver the M1 go/no-go verdic
   cove → fish → sell → buy Punt) and the loop holds them for repeat sessions. The sailing scheme is judged fun and
   one-thumb-comfortable (documented, with the stick-vs-heading comparison). An old save migrates without loss. A
   written soft-launch-readiness verdict + GO/POLISH/PIVOT recommendation is delivered to the owner.
+  > **PC-first note (ADR 0005): desktop baseline; mobile = later port.** The external playtest is a **Steam / itch.io
+  > closed playtest** (not TestFlight); "mid-range phone" → the **desktop baseline**; validate sailing comfort on
+  > **KB/mouse + gamepad** (still vs the arcade/virtual-stick alternate). The touch/one-thumb pass moves to the port.
 
 ---
 
@@ -473,6 +484,11 @@ VS-16/22 (Greywick + Punt), VS-23→24/25/26 (art), VS-28 (audio), VS-21 (Ned), 
 
 The slice is **Done** when all of the following are true on a mid-range Android phone (and in the Editor), with no
 blocking bugs and a stable framerate:
+
+> **PC-first note (ADR 0005): desktop baseline; mobile = later port.** Read "mid-range Android phone" as the
+> **desktop baseline** (60fps on a typical desktop/laptop GPU) and the "one-thumb-comfortable" checks as
+> **KB/mouse + gamepad comfort**. The VS items below are left intact; this note retargets the hard-coded phone
+> bars. The touch/one-thumb validation runs in the later mobile-port pass — same intents, retargeted bindings.
 
 **The loop**
 - [ ] You inherit the **dory** from **Uncle Ned** and complete a guided onboarding that teaches the full loop.

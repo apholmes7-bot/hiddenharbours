@@ -31,9 +31,11 @@ Here is the honest situation and how we handle it:
   build for long, it gets sliced smaller.
 - **Why slice this hard?** Three reasons. (1) **Fun is discovered, not designed** — the fishing→sell loop is
   either satisfying in your hand or it isn't, and you can only find out by playing a rough version *early*,
-  before tons of art and systems are poured on top. (2) **Mobile-first means performance-first** — every system
-  has to earn its frame budget on a real mid-range phone, and that's only knowable by building and profiling, not
-  by planning. (3) **Money and morale** — a playable slice is something you can show, soft-launch, and decide
+  before tons of art and systems are poured on top. (2) **Performance-first** — every system has to earn its
+  frame budget against the **PC-first desktop baseline** (60fps on a typical desktop/laptop GPU), and that's only
+  knowable by building and profiling, not by planning. *We keep the mobile-portability discipline (pooling,
+  draw-call/texture-memory budgets) so the later mobile port stays cheap — see ADR 0005.* (3) **Money and morale**
+  — a playable slice is something you can show, soft-launch, and decide
   *whether this game is worth the multi-year climb* before you've spent the years.
 - **The owner's job is to steer with go/no-go calls, not to write code.** Each milestone ends with a clear
   decision point (see §6 "How the owner steers"). The single most valuable thing you can do is **play the M0 loop
@@ -54,7 +56,7 @@ fill, the staff automation layer, the freight economy — all are *designed* and
 | Milestone | Name | Goal in one line | Shippable? | Fun lives here |
 |---|---|---|---|---|
 | **M0** | **Greybox Prototype** | Prove the fishing→sell loop is fun with placeholder art. | Internal only | The core loop: read tide → catch by hand → sell before it spoils. |
-| **M1** | **Vertical Slice — "Coddle Cove"** | Make that loop *genuinely good* in one real region. | **Yes — soft-launch / TestFlight candidate** | "Is this game worth making?" One beautiful cove, real wind/tide on the dory, Ned, the Punt. |
+| **M1** | **Vertical Slice — "Coddle Cove"** | Make that loop *genuinely good* in one real region. | **Yes — soft-launch candidate (Steam / itch.io closed playtest)** | "Is this game worth making?" One beautiful cove, real wind/tide on the dory, Ned, the Punt. |
 | **M2** | **The Working Coast** | Expand to a living inshore+mid coast with danger and the first business steps. | Yes (Early-Access shape) | Grounding/rescue teeth, more regions/boats, supply-and-demand, storage, refining, NPC routines. |
 | **M3** | **Offshore & Enterprise** | Open the Banks and turn laborer into owner. | Yes | The offshore industry; the *first* automation (a staffed second boat); contracts. |
 | **M4** | **Dynasty** | Fleet command, freight empire, the full content fill, multi-platform. | Yes (1.0) | Directing a freight empire; Ironbound/Smother capstones; all 100 fish; desktop/console. |
@@ -172,8 +174,8 @@ proficiencies, reputation as systems (M2 — onboarding may *fake* the first lic
 glimpse of Greywick) · **P5** as gentle seasoning (the cove still won't kill you, but spray, wind, and spoilage
 give the coziness stakes).
 
-**Shippable?** **Yes — this is the soft-launch / TestFlight candidate.** It is a complete, polished, small game:
-inherit the dory, learn the cove, fish, sell, buy the Punt. **Fun here?** If M0 was "does the loop work," M1 is
+**Shippable?** **Yes — this is the soft-launch candidate (a Steam / itch.io closed playtest; mobile = later port).**
+It is a complete, polished, small game: inherit the dory, learn the cove, fish, sell, buy the Punt. **Fun here?** If M0 was "does the loop work," M1 is
 "does the *world* make me want to live in it." A "go" here greenlights the multi-year build; a "no" tells you to
 keep iterating on the slice (cheaply) rather than pour years into M2+.
 
@@ -326,7 +328,7 @@ never bolted on at the end. Each has a standing owner.
 | **Audio** | `audio` | The sea must be *heard* changing before it's dangerous (P1/P5). Responsive ambient beds + adaptive music grow with each region; rising-wind tell is sacred. |
 | **Tools & editor** | `tools-editor` | Data-driven content (ADR-0003) only pays off if authoring is fast: SO inspectors, the tide/clock scrubber, the fish/economy balance dashboards, the unlock-graph validator. Build tools *just ahead* of the content that needs them. |
 | **QA & playtest** | `qa-test` | Every milestone ends with an acceptance pass; the loop is **playtested by humans** at M0 and externally at M1. Maintain a smoke-test of the core loop that must pass on every build. |
-| **Performance / mobile** | `lead-architect` + `qa-test` | Mobile-first means **profile on a real mid-range phone every milestone**, not at the end. Watch the frame budget (water/lighting/HUD), draw calls, texture memory, scene-streaming at passages, GC in the hot path. A feature that can't hit budget gets cut or simplified. |
+| **Performance (desktop baseline; mobile-portable)** | `lead-architect` + `qa-test` | PC-first means **profile against the desktop baseline (60fps on a typical desktop/laptop GPU) every milestone**, not at the end. Watch the frame budget (water/lighting/HUD), draw calls, texture memory, scene-streaming at passages, GC in the hot path. **Keep the mobile-portability guardrails** (pooling, draw-call/texture budgets) so the later mobile port stays cheap (ADR 0005). A feature that can't hit budget gets cut or simplified. |
 | **Save-system stability & migration** | `lead-architect` | Saves are tiny by design (seed + gameTime + player/world mutations). Keep a **versioned schema** from M0; every milestone that changes the save must ship a **migration** and a test that loads an old save. Never strand a player's save. |
 | **Localization-readiness** | `ui-ux` + `world-content` | All player-facing strings (fish names, flavor text, dialogue, UI) go through **localization tables from M0**, never inline. Not localized at launch necessarily, but never blocked from it by hardcoded strings. |
 | **Determinism & data-driven discipline** | `lead-architect` | Environment is a pure function of `(seed, gameTime)`; content is ScriptableObjects with stable `id`s. Guard these invariants in review — they are what make saves tiny, forecasts honest, and parallel content authoring conflict-free. |
@@ -337,8 +339,8 @@ never bolted on at the end. Each has a standing owner.
 
 | Risk | Why it's scary | How we de-risk |
 |---|---|---|
-| **Boat physics feel** (the #1 design risk) | "Throttle + tap-heading" steering against wind/current on a touchscreen is the riskiest UX bet (UX doc OQ1) — if sailing isn't *fun* and one-thumb-comfortable, P1's whole skill fantasy collapses. | **Prototype the dory force model on a real phone in M1, early and in isolation**, against the virtual-stick alternate. Tune the assist defaults (heading-hold/leeway-compensation) so it's approachable but the sea still bites. Don't build the rest of M1's content until sailing feels right. |
-| **Mobile performance** | Animated tide-aware water + 2D lights + a frame-by-frame HUD + scene streaming on a mid-range phone is a real budget. | Performance is a **cross-cutting track**, profiled every milestone (§3). Water shader vs overlay decided by a profiled spike (art OQ2). One active boat dominates physics cost by design; NPC/freight fleets are abstracted, not fully simulated. Cap on-screen boats with LOD. |
+| **Boat physics feel** (the #1 design risk) | "Throttle + heading" steering against wind/current is the riskiest UX bet (UX doc OQ1) — if sailing isn't *fun* and **comfortable on KB/mouse + gamepad**, P1's whole skill fantasy collapses. | **Prototype the dory force model on desktop (KB/mouse + gamepad) in M1, early and in isolation**, against the virtual-stick/arcade alternate. Tune the assist defaults (heading-hold/leeway-compensation) so it's approachable but the sea still bites. Don't build the rest of M1's content until sailing feels right. *(The touch/one-thumb feel is validated in the later mobile-port pass — same intents, retargeted bindings.)* |
+| **Performance (desktop baseline)** | Animated tide-aware water + 2D lights + a frame-by-frame HUD + scene streaming is a real budget even on desktop. | Performance is a **cross-cutting track**, profiled every milestone against the desktop baseline (§3). Water shader vs overlay decided by a profiled spike (art OQ2). One active boat dominates physics cost by design; NPC/freight fleets are abstracted, not fully simulated. Cap on-screen boats with LOD. *Keep the mobile-portability budgets so the port stays viable (ADR 0005).* |
 | **Scope creep** (the project's existential risk) | The design is vast and every part is tempting to build "while we're in there." | **This roadmap is the gate.** Milestone order is enforced; later-phase work is redirected here. The Definition of Done per milestone (and per work item) is the contract. The owner's go/no-go at each milestone is the throttle. |
 | **Market-sim balance** | Supply/demand + elasticity + storage + processing + contracts can easily become unfun (prices that swing wrongly, gluts that punish, a "correct" exploit). | Build the **balance dashboard** (fish + economy) early as a tools-track deliverable; run the "day-in-the-life" sim against the economic progression curve. Introduce the market *shallow* in M1 and deepen it only in M2 with tuning data in hand. |
 | **Save migration / corruption** | A multi-year game with evolving systems can strand or corrupt long-lived saves — the worst possible player experience. | Tiny deterministic saves + **versioned schema + a migration and an old-save load test every milestone** (§3). Stable `id`s everywhere so content additions append, never break. |
@@ -351,8 +353,8 @@ never bolted on at the end. Each has a standing owner.
 ## 5. The release/visibility shape (how milestones map to the outside world)
 
 - **M0** — internal prototype. Shown to no one but the owner (and trusted playtesters of the loop).
-- **M1** — **soft-launch / TestFlight candidate.** The first thing real players touch. The go/no-go on the
-  whole multi-year build.
+- **M1** — **soft-launch candidate: a Steam / itch.io closed playtest** (PC-first; mobile = later port). The
+  first thing real players touch. The go/no-go on the whole multi-year build.
 - **M2** — **Early-Access shape.** A complete cozy-with-teeth inshore game; a credible paid/launch-able product
   even though the empire half isn't built.
 - **M3** — content/feature update over the EA shape (offshore + the first automation).

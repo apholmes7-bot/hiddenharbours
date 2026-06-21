@@ -36,6 +36,11 @@
 > **Goal:** prove the fishing→sell loop is fun with placeholder art. **Detail + AC:** the `VS-xx` items in
 > [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md) (M0-tagged). Internal only; the loop is
 > human-playtested before proceeding.
+>
+> **PC-first note (ADR 0005): desktop baseline; mobile = later port.** VS items are left intact; where an AC below
+> hard-codes a phone (e.g. M0-17 "mid-range phone", M0-01 "on device"), read it as the **desktop baseline** and
+> KB/mouse/gamepad. Input intents (M0-02 / VS-02) are **unchanged** — only the bindings retarget. Full notes in
+> [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md).
 
 ### Epic M0-A — Project foundations (`lead-architect`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
@@ -88,6 +93,10 @@
 
 > **Goal:** make the loop *genuinely good* — the soft-launch candidate. **Detail + AC:** the M1-tagged `VS-xx`
 > items + the Definition of Done in [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md).
+>
+> **PC-first note (ADR 0005):** the M1 soft-launch is a **Steam / itch.io closed playtest** (not TestFlight), the
+> perf/acceptance bars are the **desktop baseline**, and sailing comfort is validated on **KB/mouse + gamepad**.
+> The touch/one-thumb validation moves to the later **mobile-port** pass — same intents, retargeted bindings.
 
 ### Epic M1-A — The sea v1 & boat force model (`gameplay-systems` / `lead-architect`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |

@@ -95,8 +95,9 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 - **NPCs:** handcrafted named core cast with routines + procedurally varied "extras" for crowds/crew. → `design/npcs-and-routines.md`
 - **Housing:** start at uncle's cottage; buy / upgrade / refurnish homes, plus commercial property (warehouses, plants, shops). → `design/progression-and-housing.md`
 
-### 5.6 Platform & engine (see `adr/0001-engine-choice.md`)
-- **Engine:** **Unity 6.3 LTS**, 2D URP. **Mobile-first** (iOS + Android), architected for later desktop/console.
+### 5.6 Platform & engine (see `adr/0001-engine-choice.md`, `adr/0005-pc-first-target.md`)
+- **Engine:** **Unity 6.3 LTS**, 2D URP.
+- **Target:** **PC-first** (Windows/desktop primary; **landscape**; **keyboard/mouse + gamepad**), with **mobile (iOS/Android) kept as a viable later port** (and console after). This is a *presentation/target* decision, not a design change — the five pillars and all gameplay/sim/economy/content are unchanged. Recorded in `adr/0005-pc-first-target.md`, which supersedes the earlier "mobile-first" framing. Input stays an **intent abstraction** (VS-02): KB/mouse/gamepad become the primary bindings, touch is retained for the port — *bindings retarget, gameplay does not*.
 - **Language:** C#. **Content is data-driven** via ScriptableObjects (see `adr/0003-data-driven-content.md`).
 
 ### 5.7 Procedural vs handcrafted (see `adr/0002-procedural-vs-handcrafted.md`)
