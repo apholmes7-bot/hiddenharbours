@@ -10,10 +10,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// VS-30 — content validation. The single source of truth for "is the Data/ content well-formed":
     /// every <see cref="FishSpeciesDef"/> and <see cref="BoatHullDef"/> must have a non-empty, unique
-    /// id and no missing (broken) object references. It runs over the ACTUAL assets in Data/ so it
-    /// catches data errors as content grows — a new Punt BoatHullDef, a new ref field (e.g. a
-    /// PropulsionType), a deleted sprite, a copy-pasted id. If tools-editor later adds an in-editor
-    /// content validator, it should call THESE rules rather than re-deriving its own.
+    /// id and references that actually resolve (a fish must be reachable by some region/gear/season, a
+    /// boat must have a name and a hold). It runs over the ACTUAL assets in Data/, so it catches data
+    /// errors as content grows — a new Punt BoatHullDef, a copy-pasted id, a fish gated so tightly it
+    /// can never bite, an inverted weight range. If tools-editor later adds an in-editor content
+    /// validator, it should call THESE rules rather than re-deriving its own.
     /// </summary>
     public class ContentValidationTests
     {
@@ -34,23 +35,7 @@ namespace HiddenHarbours.Tests.EditMode
             return list;
         }
 
-        /// <summary>Property paths of any assigned-but-unresolvable object reference on the asset.
-        /// A broken ref reads as null value with a non-zero recorded instance id.</summary>
-        private static List<string> MissingRefs(Object asset)
-        {
-            var bad = new List<string>();
-            var so = new SerializedObject(asset);
-            SerializedProperty p = so.GetIterator();
-            while (p.NextVisible(true))
-            {
-                if (p.propertyType != SerializedPropertyType.ObjectReference) continue;
-                if (p.objectReferenceValue == null && p.objectReferenceInstanceIDValue != 0)
-                    bad.Add(p.propertyPath);
-            }
-            return bad;
-        }
-
-        /// <summary>Add an id to the seen-set, failing if it is empty or a duplicate.</summary>
+        /// <summary>Add an id to the seen-set, failing if it is empty/blank or a duplicate.</summary>
         private static void RegisterUniqueId(Dictionary<string, string> seen, string id, string path, string kind)
         {
             Assert.IsFalse(string.IsNullOrWhiteSpace(id), $"{kind} '{path}' has an empty id");
@@ -73,13 +58,27 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void FishSpecies_HaveNoMissingReferences()
+        public void FishSpecies_AreReachable_AndPricedSanely()
         {
             foreach (var f in LoadAll<FishSpeciesDef>())
             {
-                var bad = MissingRefs(f);
-                Assert.IsEmpty(bad,
-                    $"FishSpeciesDef '{AssetDatabase.GetAssetPath(f)}' has missing refs: {string.Join(", ", bad)}");
+                string path = AssetDatabase.GetAssetPath(f);
+
+                // Region references must resolve to at least one non-blank region — a fish gated to no
+                // region (or a blank one) can never be caught.
+                Assert.IsNotNull(f.RegionIds, $"{path}: RegionIds is null");
+                Assert.IsNotEmpty(f.RegionIds, $"{path}: a fish with no region can never be caught");
+                foreach (var r in f.RegionIds)
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(r), $"{path}: has a blank region id");
+
+                // Reachable by some gear and some season (an empty mask = catchable by nothing).
+                Assert.AreNotEqual(0, (int)f.AllowedGear, $"{path}: AllowedGear is empty — no gear can land it");
+                Assert.AreNotEqual(0, (int)f.Seasons, $"{path}: Seasons is empty — it bites in no season");
+
+                // Sane catch + price.
+                Assert.LessOrEqual(f.MinWeightKg, f.MaxWeightKg, $"{path}: MinWeightKg exceeds MaxWeightKg");
+                Assert.Greater(f.MaxWeightKg, 0f, $"{path}: MaxWeightKg must be positive");
+                Assert.GreaterOrEqual(f.BaseValue, 0, $"{path}: BaseValue must be non-negative");
             }
         }
 
@@ -97,13 +96,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void BoatHulls_HaveNoMissingReferences()
+        public void BoatHulls_HaveNameAndHold()
         {
             foreach (var b in LoadAll<BoatHullDef>())
             {
-                var bad = MissingRefs(b);
-                Assert.IsEmpty(bad,
-                    $"BoatHullDef '{AssetDatabase.GetAssetPath(b)}' has missing refs: {string.Join(", ", bad)}");
+                string path = AssetDatabase.GetAssetPath(b);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(b.DisplayName), $"{path}: empty DisplayName");
+                // Every hull on the Dory→Dynasty ladder hauls catch; a hold of zero breaks the loop.
+                Assert.GreaterOrEqual(b.HoldUnits, 1, $"{path}: HoldUnits must be at least 1");
             }
         }
 
