@@ -22,6 +22,14 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static IActiveBoatService ActiveBoat { get; set; }
 
+        /// <summary>
+        /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
+        /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
+        /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
+        /// Optional — null before the bootstrap runs (e.g. EditMode) — so consumers must null-check.
+        /// </summary>
+        public static ISaveService Save { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -31,6 +39,7 @@ namespace HiddenHarbours.Core
             Environment = null;
             Wallet = null;
             ActiveBoat = null;
+            Save = null;
         }
     }
 }

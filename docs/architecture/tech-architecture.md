@@ -104,6 +104,16 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
   also save anywhere. Writes are atomic (write temp → rename) so a killed app never corrupts a save.
 - **Format:** JSON via a stable DTO layer for readability/debuggability in M0; can move to a
   binary/compressed format later behind the same interface.
+- **Schema v1 (VS-08, shipped).** The first concrete schema persists `schemaVersion`, `worldSeed`,
+  `gameTime` (the master `double`), `money`, `dayIndex`, `ownedBoats` + `activeHullId`, and the
+  onboarding flags — see `adr/0008-save-schema-and-versioning.md`. `SaveService` is a **self-installing**
+  persistent service (`[RuntimeInitializeOnLoadMethod]`, no scene wiring) reached through Core via
+  `GameServices.Save` (`ISaveService`). The VS-21 onboarding flags are **consolidated** off PlayerPrefs
+  into this slot (`World.SaveFlagStore` backs `OnboardingFlags`). It captures money/time/seed on demand
+  through the existing Core seams and learns the owned/active boat from the `BoatPurchased` /
+  `ActiveBoatChanged` signals; re-applying that loaded state into the live gameplay objects is the owning
+  lanes' follow-up (they read `ISaveService.Current`). Migration is forward-only via `SaveMigration`
+  (v0→v1 is a no-op upgrade: empty fleet/flag lists + a version bump, scalars untouched).
 
 ## 7. Tick & performance model
 
