@@ -106,6 +106,81 @@ namespace HiddenHarbours.Tests.Audio
             Assert.IsFalse(AudioDirectorLogic.HullLayerActive(ControlMode.OnFoot), "silent ashore");
         }
 
+        // ---- aboard propulsion bed: Dory oars vs Punt engine --------------------------------
+
+        [Test]
+        public void BoatLayer_NoneWhenAshore()
+        {
+            Assert.AreEqual(BoatAudioLayer.None,
+                AudioDirectorLogic.BoatLayerFor(ControlMode.OnFoot, AudioDirectorLogic.DoryBoatId),
+                "ashore there is no boat bed, even with a boat remembered");
+            Assert.AreEqual(BoatAudioLayer.None,
+                AudioDirectorLogic.BoatLayerFor(ControlMode.OnFoot, "boat.punt"));
+        }
+
+        [Test]
+        public void BoatLayer_DoryRows_EngineBoatsRunEngines()
+        {
+            Assert.AreEqual(BoatAudioLayer.Oars,
+                AudioDirectorLogic.BoatLayerFor(ControlMode.Aboard, AudioDirectorLogic.DoryBoatId),
+                "the hand-rowed dory gets the oar/water bed");
+            Assert.AreEqual(BoatAudioLayer.Engine,
+                AudioDirectorLogic.BoatLayerFor(ControlMode.Aboard, "boat.punt"),
+                "the punt is an engine boat → outboard bed");
+            Assert.AreEqual(BoatAudioLayer.Engine,
+                AudioDirectorLogic.BoatLayerFor(ControlMode.Aboard, "boat.cape_islander"),
+                "every bought hull up the ladder runs an engine");
+        }
+
+        [Test]
+        public void BoatLayer_UnknownAboardDefaultsToOars_TheCosyStarter()
+        {
+            Assert.AreEqual(BoatAudioLayer.Oars, AudioDirectorLogic.BoatLayerFor(ControlMode.Aboard, null),
+                "a null id aboard falls back to the rowed starter, not a phantom engine");
+            Assert.AreEqual(BoatAudioLayer.Oars, AudioDirectorLogic.BoatLayerFor(ControlMode.Aboard, ""));
+        }
+
+        [Test]
+        public void BoatLayer_SoundsIffTheAboardHullLayerIsActive()
+        {
+            // The boat bed plays exactly when the aboard layer is active — they agree.
+            foreach (var mode in new[] { ControlMode.OnFoot, ControlMode.Aboard })
+                Assert.AreEqual(AudioDirectorLogic.HullLayerActive(mode),
+                    AudioDirectorLogic.BoatLayerFor(mode, "boat.punt") != BoatAudioLayer.None,
+                    $"layer-active and boat-bed-present must agree ({mode})");
+        }
+
+        // ---- engine bed: speed-reactive (course-over-ground proxy) --------------------------
+
+        [Test]
+        public void EngineThrottle01_RampsWithSpeed_Clamped()
+        {
+            Assert.AreEqual(0f, AudioDirectorLogic.EngineThrottle01(0f), Eps, "moored → idle");
+            Assert.AreEqual(0f, AudioDirectorLogic.EngineThrottle01(-5f), Eps, "negative speed clamps to idle");
+            Assert.AreEqual(1f, AudioDirectorLogic.EngineThrottle01(AudioDirectorLogic.EngineFullSpeedMs), Eps,
+                "full revs at the working speed");
+            Assert.AreEqual(1f, AudioDirectorLogic.EngineThrottle01(99f), Eps, "and holds at full above it");
+
+            float mid = 0.5f * (AudioDirectorLogic.EngineIdleSpeedMs + AudioDirectorLogic.EngineFullSpeedMs);
+            float t = AudioDirectorLogic.EngineThrottle01(mid);
+            Assert.Greater(t, 0f); Assert.Less(t, 1f);
+        }
+
+        [Test]
+        public void Engine_SwellsAndLiftsPitchWithThrottle()
+        {
+            Assert.AreEqual(AudioDirectorLogic.EngineIdleGainFrac, AudioDirectorLogic.EngineGain(1f, 0f), Eps,
+                "idles at the idle fraction of the bed");
+            Assert.AreEqual(1f, AudioDirectorLogic.EngineGain(1f, 1f), Eps, "full bed at full throttle");
+            Assert.Less(AudioDirectorLogic.EngineGain(1f, 0f), AudioDirectorLogic.EngineGain(1f, 1f),
+                "the engine swells underway");
+
+            Assert.AreEqual(AudioDirectorLogic.EngineIdlePitch, AudioDirectorLogic.EnginePitch(0f), Eps);
+            Assert.AreEqual(AudioDirectorLogic.EngineFullPitch, AudioDirectorLogic.EnginePitch(1f), Eps);
+            Assert.Less(AudioDirectorLogic.EnginePitch(0f), AudioDirectorLogic.EnginePitch(1f),
+                "revs lift the pitch with speed");
+        }
+
         // ---- cue ducking --------------------------------------------------------------------
 
         [Test]

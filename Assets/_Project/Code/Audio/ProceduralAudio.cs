@@ -32,6 +32,17 @@ namespace HiddenHarbours.Audio
             return Mathf.Sin(phase * 2f * Mathf.PI * 90f) * env * 0.3f;
         });
 
+        /// <summary>A looping low outboard-engine bed (a small "putt-putt" motor). The director lifts
+        /// its pitch + volume with the boat's speed over ground, so this is just the idle texture.</summary>
+        public static AudioClip OutboardEngine() => Build("ph_outboard_engine", 1f, true, (t, n) =>
+        {
+            float chug = 0.7f + 0.3f * Mathf.Sin(t * 2f * Mathf.PI * 6f);   // ~6 Hz combustion chug
+            float body = Mathf.Sin(t * 2f * Mathf.PI * 70f) * 0.6f          // fundamental
+                       + Mathf.Sin(t * 2f * Mathf.PI * 140f) * 0.25f;       // octave
+            float grit = Noise(n) * 0.12f;
+            return (body + grit) * 0.28f * chug;
+        });
+
         /// <summary>An airy rising-wind whistle bed — the director scales its loudness by the tell.</summary>
         public static AudioClip WindTell() => Build("ph_wind_tell", 2f, true, (t, n) =>
         {
