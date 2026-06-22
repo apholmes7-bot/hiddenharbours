@@ -217,6 +217,19 @@ for each new region + the danger/weather VFX + bigger boats (`art-pipeline`). Au
 cues, town hum (`audio`). Map/chart UI + fog-of-war reveal + the tide table tiers (`ui-ux`). Save migration from
 M1; performance pass for scene streaming at passages (`lead-architect` + `qa-test`).
 
+**Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
+and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue (dig clams by hand,
+buy a clam licence, repair the uncle's dory, then leave): the start and the Ned/Ginny onboarding **relocate** here
+from the M1 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it (canon
+[`vision-and-pillars.md`](vision-and-pillars.md) §5.8; [`design/world-and-regions.md`](design/world-and-regions.md)
+§6.0). The **lobster gear loop** (trap + buoy + bait; lay alongside, leave the helm, gaff and haul; the
+powered-winch upgrade — [`design/boats-and-navigation.md`](design/boats-and-navigation.md) §6.3) joins the
+Cape-Islander / Lobster-Boat branch. The **weather/winter/fog** wave gains the owner's **waves that push boats**,
+**gusts that travel across the water**, **lightning + heavy rain**, and **winter freezing in *some* regions**
+([`design/time-tides-weather.md`](design/time-tides-weather.md) §4.8), plus the **wet-surface tide effects** (the
+~3–4 m tide range that bares wet walls and flats — [`design/art-and-audio-bible.md`](design/art-and-audio-bible.md)
+§6.1). All stay deterministic and cozy-with-teeth.
+
 **Explicitly deferred.** The Banks and everything offshore; dragger/trawler tiers; the **staff & automation**
 layer (M3 — you still do every job by hand here, which is the *point*: earn it before you automate it, P4);
 production *chains* beyond the first one or two facilities; freight/shipping; Ironbound, The Smother; fleet
@@ -260,6 +273,14 @@ delegated operations, within bounds (`lead-architect` + `economy-sim`). Manageme
 based, "manage by exception" (`ui-ux`). Offshore art (big boats, banks, weather spectacle) + crewed-deck sprites
 (`art-pipeline`). Offshore/industry audio (engine voices that scale with tier, busy decks) (`audio`). Performance
 & save scaling for an abstracted NPC/freight fleet (`lead-architect` + `qa-test`).
+
+**Owner-ratified additions folded into M3 (2026).** **Mussel/oyster aquaculture leasing** — lease a patch of
+water, set buoys-in-series with grow-ropes, season-grow the crop, harvest at maturity — sits beside the staff /
+automation layer as another P4 "earn it, then automate it" engine (`economy-sim` + `world-content`;
+[`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). The **advanced rendering pass**
+([`design/art-and-audio-bible.md`](design/art-and-audio-bible.md) §6.1) — **3D water baked to a 2D surface**,
+**dynamic shadows on the 24-h clock**, **cloud shadows**, and the **parallax underwater / shallow-water preview** —
+deepens the look as the world scales offshore, held to the desktop perf budget (`art-pipeline` + `lead-architect`).
 
 **Explicitly deferred.** Ironbound and The Smother (M4 capstones); the freighter/tanker tier and full freight
 empire (M4); the complete 100-fish fill (M4 — M3 fills what the Banks needs); multi-platform port (M4).

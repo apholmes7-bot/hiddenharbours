@@ -232,6 +232,51 @@ nets, clam-digging) uses a lighter variant.
 > [`ux-and-mobile-controls.md`](ux-and-mobile-controls.md); this doc fixes only the *model* (tension band + landing
 > gauge + strain bar) and its feel.
 
+### 3.5 Phased gear & content — St Peters clam-dig · lobster gaffing · aquaculture leases
+
+> **All future work, captured here for consistency — none of it is in the M0/M1 slice** (CLAUDE.md
+> rule 8). The **St Peters clam-dig** ships with the St Peters opening (**M2**); the **lobster**
+> gaffing loop ships with the lobster gear / specialist branch (**M2**); **aquaculture leasing** is
+> advanced/late (**M3**). Phasing: [`../roadmap.md`](../roadmap.md). On-water interactions:
+> [`boats-and-navigation.md`](boats-and-navigation.md).
+
+**(a) St Peters clam-dig — shovel + the "two squirting holes" tell (M2).** The opening's by-hand
+income ([`world-and-regions.md`](world-and-regions.md) §6.0). On the bared low-water flats, buried
+clams betray themselves with **two little squirting holes** in the wet sand; the player reads the
+tell, **digs with a shovel**, and pulls the clam. Mechanically this is the **passive "tend" beat** of
+§3.4 (read-the-spot + dig, no tension fight), tuned cozy. It is **licence-gated**: you buy a **clam
+licence** at the St Peters general store before you may dig — the first, gentlest instance of the
+licence currency in [`progression-and-housing.md`](progression-and-housing.md) §2.2. *Data note:* clam
+content already exists (`soft-shell-clam`, `blue-mussel`; gear tag `ClamFork`). The **shovel** is the
+St Peters flavour of the `ClamFork` / hand-dig method — **reconcile at M2** whether to add a distinct
+`Shovel`/`ClamRake` `GearTag` or treat the shovel as the `ClamFork` tag's presentation (a new tag
+touches the enum and is review-gated — §6.1). The "two squirting holes" is a **spot tell** (a hotspot
+cue, §3.3), not a new system.
+
+**(b) Lobster — trap + buoy + bait, hauled by gaffing the buoy (M2).** Lobster already exists
+(`american-lobster`: `Pots`/`Trap`, **Required** bait herring/mackerel, `/unit`, kept alive). The
+**loop** the owner specifies: **set a baited trap** marked by a **surface buoy**; later **return,
+bring the boat alongside the buoy, leave the helm (step to port or starboard), and gaff the buoy to
+haul the trap**. This **dive-beside-the-trap + leave-the-helm-to-haul** interaction and the
+**electric-winch upgrade** (powered hauling on boats that mount it) are **on-water boat interactions
+owned by [`boats-and-navigation.md`](boats-and-navigation.md)** (the trap-hauler gear mount, §4.2 /
+§6.1 there); this doc owns only the **species + bait + soak** side. Without the winch the haul is a
+**stamina action** (P4, "by hand first"); the winch automates the tedium later (P4). Trap soak /
+bycatch follows the passive-gear model (§3.4 and the multi-catch open question §7.2).
+
+**(c) Aquaculture — mussel/oyster leases, buoys-in-series, season-grown (M3, advanced/late).** A new
+**farmed-shellfish** path distinct from wild hand-gathering: you **lease a patch of water**, set
+**buoys in series** with grow-ropes/socks beneath, seed them, and the crop **grows over a season**
+(mussels, oysters) before harvest. This is **slow, owned, passive production** — pure **P4** ("earn it,
+then automate it") and **P2** scale — and leans on the **leasing / property** mechanics in
+[`progression-and-housing.md`](progression-and-housing.md) §4.4 and the **value-add / contracts** in
+[`economy-and-business.md`](economy-and-business.md). *Content shape:* farmed mussel/oyster are **not**
+new wild `FishSpecies` rolls — they are **harvested from a lease at maturity** (a grow-timer + yield),
+so they live closer to the production/economy layer than the catch resolver. Capture only — **design
+the full lease → grow → harvest loop at M3** with the economy doc (where the grow-timer, water-lease
+cost, and seasonal yield live is an M3 joint pass). Natural home grounds: sheltered inshore (Coddle
+Cove, the Sunkers, the Drownded Lands edges).
+
 ---
 
 ## 4. Seed species (concrete examples against the schema)

@@ -212,6 +212,20 @@
 | M2-29 | Weather/danger audio + town hum | audio | Storm/fog/region beds; danger cues; inhabited town | Storm/fog beds; aground/lost cues; Greywick sounds populated |
 | M2-30 | Streaming-at-passages + perf pass + save migration | qa-test + lead-architect | Stream clusters at passages; profile; migrate M1 saves | One/two regions resident; hits budget; old saves migrate |
 
+### Epic M2-I — Owner-ratified 2026 additions (St Peters opening · lobster gear · weather/winter · wet tide)
+> New design captured 2026 (the "St Peters batch"). All **M2-phased**; full design lives in the design docs.
+> Honor milestone order — **none of this is M0/M1** (CLAUDE.md rule 8). The St Peters opening **prepends** the
+> arc and **relocates** the existing onboarding; it does not delete the Coddle Cove opening.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig licence; repair the uncle's dory; leave for the Cove | New starter region; tide-gated causeway (low-water access only); **clam-dig → licence → repair → depart** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
+| M2-32 | St Peters clam-dig (shovel + "two squirting holes") | gameplay-systems + world-content | Read the tell on bared flats, dig with a shovel; clam-licence gate at the store | Passive "tend" dig (no tension fight); **licence-gated**; reconcile shovel vs `ClamFork` tag (new tag = review-gated) (`fish-and-content` §3.5a) |
+| M2-33 | Lobster gear loop (trap+buoy, leave-helm gaff-haul, winch) | gameplay-systems | Set baited trap+buoy; lay alongside, **leave the helm to gaff & haul** (boat drifts); powered-winch upgrade | Hand-haul is a stamina action; winch automates it (P4); approach/drift reads as seamanship (P1/P5) (`boats-and-navigation` §6.3, `fish-and-content` §3.5b) |
+| M2-34 | Weather v2: waves-push + traveling gusts | gameplay-systems | Wave-push force shoves the hull; moving gust cells you see coming | Wave-push adds to drift + broach (new FORCES field, save-compat bump); gust cells propagate + telegraph; deterministic (`time-tides-weather` §4.8) |
+| M2-35 | Winter freezing (some regions) + lightning/heavy rain | gameplay-systems | Ice closes specific inshore water in Hard Winter (ice-strengthened hull pairs); rain/lightning as storm atmosphere/visibility | Regional + seasonal ice, **never save-stranding**; lightning atmosphere-first (strike mechanic stays an OQ) (`time-tides-weather` §4.8) |
+| M2-36 | Wet-surface tide effects (~3–4 m range reveal) | art-pipeline | Wet glistening walls/pilings/flats revealed as the tide falls; drying over time | Extends the tide-aware shoreline; ~3–4 m `RegionTideProfile` range; St Peters causeway is the gameplay case (`art-and-audio-bible` §6.1, `time-tides-weather` §3.5) |
+
 ---
 
 # M3 — Offshore & Enterprise
@@ -248,6 +262,14 @@
 | M3-13 | Offshore art + crewed-deck sprites | art-pipeline | Big boats, banks, weather spectacle, busy decks | Crew visible on deck (visible progression); big hulls sectioned/atlased; budget held |
 | M3-14 | Offshore/industry audio | audio | Engine voices scale with tier; busy decks; lonely offshore | Audible progression (outboard→diesel thrum); offshore loneliness reads |
 | M3-15 | Fleet/abstraction perf + save scaling | lead-architect + qa-test | Abstract off-screen fleet; batched shift sim; bigger saves | A multi-boat empire stays cheap; save persists staff/facilities/freight |
+
+### Epic M3-E — Owner-ratified 2026 additions (aquaculture · advanced rendering)
+> New design captured 2026 (the "St Peters batch"). All **M3-phased** (advanced/late); design in the design docs.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M3-16 | Mussel/oyster aquaculture leasing | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
+| M3-17 | Advanced rendering pass (3D-water→2D bake · dynamic + cloud shadows · parallax-underwater) | art-pipeline + lead-architect | Bake 3D water to the 2D surface; sun-driven dynamic shadows; drifting cloud shadows; shallow-water underwater preview | Holds one-perspective + PPU=32 + desktop budget; baked sculpt-light unchanged; shallow preview telegraphs hazards/forage (`art-and-audio-bible` §6.1) |
 
 ---
 
