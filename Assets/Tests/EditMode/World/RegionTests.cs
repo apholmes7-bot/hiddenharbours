@@ -133,5 +133,20 @@ namespace HiddenHarbours.Tests.World.EditMode
             // Round-trip back to the cove from Greywick is loadable.
             Assert.IsTrue(RegionTravel.ShouldLoad("Greywick", cove));
         }
+
+        [Test]
+        public void Travel_RoundTrip_CoveGreywickCove_IsLoadableEachLeg_NoReloadInPlace()
+        {
+            // The VS-22 round trip the passages drive: each hop into another region loads, and asking to
+            // "travel" to the region you're already standing in is a no-op (the coordinator just re-shows
+            // a region that's already loaded — no decision to load).
+            var cove = MakeRegion("region.coddle_cove", "Greybox");
+            var greywick = MakeRegion("region.port_greywick", "Greywick");
+
+            Assert.IsTrue(RegionTravel.ShouldLoad("Greybox", greywick), "outbound: cove → Greywick");
+            Assert.IsFalse(RegionTravel.ShouldLoad("Greywick", greywick), "in Greywick, don't reload Greywick");
+            Assert.IsTrue(RegionTravel.ShouldLoad("Greywick", cove), "return: Greywick → cove");
+            Assert.IsFalse(RegionTravel.ShouldLoad("Greybox", cove), "back in the cove, don't reload the cove");
+        }
     }
 }
