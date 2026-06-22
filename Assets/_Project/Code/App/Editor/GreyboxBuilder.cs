@@ -55,6 +55,16 @@ namespace HiddenHarbours.App.Editor
         const string Scenes     = "Assets/_Project/Scenes";
         const string ScenePath  = Scenes + "/Greybox.unity";
 
+        // VS-22 crossing geometry (canon map: Port Greywick lies WEST of the cove — "PORT GREYWICK ——+——
+        // CODDLE COVE"). So you CROSS BY SAILING WEST, and you RETURN to the cove dock FROM THE WEST. These
+        // are public so an EditMode test can assert the crossing reads true without loading a scene.
+        // CoveDockZoneRadius mirrors ControlSwitcher's default _zoneRadius (the cove disembark is a pure
+        // distance test), so the return arrival must park within it of the cove dock or E can't disembark.
+        public const float CoveDockZoneRadius = 3.5f;
+        public static readonly Vector3 CoveDockZonePos      = new Vector3(0f, -12f, 0f);     // cove dock head / mooring
+        public static readonly Vector3 CoveArrivalPos       = new Vector3(-2.5f, -13.5f, 0f); // return from Greywick: just WEST of the dock
+        public static readonly Vector3 ToGreywickPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
+
         [MenuItem("Hidden Harbours/Build Greybox Scene")]
         public static void Build()
         {
@@ -449,7 +459,7 @@ namespace HiddenHarbours.App.Editor
             // the player vs boat controllers and hands the camera off via Core signals — it never
             // references the App camera. Start ON FOOT (the boat's controller/input are disabled above).
             var dockZone = new GameObject("DockZone");
-            dockZone.transform.position = new Vector3(0f, -12f, 0f);   // the dock end / mooring
+            dockZone.transform.position = CoveDockZonePos;   // the dock end / mooring
             var disembarkPoint = new GameObject("DisembarkPoint");
             disembarkPoint.transform.position = new Vector3(0f, -10.5f, 0f); // on the dock planks
 
@@ -489,20 +499,24 @@ namespace HiddenHarbours.App.Editor
             SetRef(coordinator, "_switcher", switcher);
             SetRef(coordinator, "_hold", hold);
 
-            // This region's anchor: arrive by boat in the channel near the dock; board/disembark at the
-            // cove dock (the coordinator re-points the switcher here when you sail back from Greywick).
+            // This region's anchor: when you sail back from Greywick you arrive in the channel just WEST of
+            // the dock (Greywick lies west — so you come home FROM THE WEST), still heading east; board/
+            // disembark at the cove dock. The coordinator re-points the switcher here on arrival. The arrival
+            // sits within CoveDockZoneRadius of the dock zone so E disembarks the moment you're home.
             var coveArrival = new GameObject("CoveArrival");
-            coveArrival.transform.position = new Vector3(0f, -13f, 0f);   // in the channel, just off the dock head
+            coveArrival.transform.position = CoveArrivalPos;   // just WEST of the dock head (arrive from the west)
             var coveAnchor = new GameObject("CoveRegionAnchor").AddComponent<RegionAnchor>();
             coveAnchor.Configure("region.coddle_cove", coveArrival.transform, dockZone.transform, disembarkPoint.transform);
 
-            // Cove→Greywick passage: sail out to the harbour mouth (open water, south) to head for Port
-            // Greywick. A forgiving wide trigger — the only mover out here is the player's boat.
+            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map).
+            // A wide, forgiving band down the WEST edge of the open water, reachable by sailing west out of
+            // the dock; the only mover out here is the player's boat. Sailing west into it crosses to
+            // Greywick, where you arrive still HEADING WEST (the hop preserves the boat's heading).
             var toGreywickGo = new GameObject("PassageToPortGreywick");
-            toGreywickGo.transform.position = new Vector3(0f, -22f, 0f);
+            toGreywickGo.transform.position = ToGreywickPassagePos;
             var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
             toGreywickTrigger.isTrigger = true;
-            toGreywickTrigger.size = new Vector2(24f, 3f);
+            toGreywickTrigger.size = new Vector2(3f, 28f);   // a tall west-edge band (forgiving, wide)
             var toGreywickPassage = toGreywickGo.AddComponent<RegionPassage>();
             SetRef(toGreywickPassage, "_target", greywickRegion);
             SetRef(toGreywickPassage, "_loader", loader);
