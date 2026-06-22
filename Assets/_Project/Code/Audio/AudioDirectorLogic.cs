@@ -22,6 +22,10 @@ namespace HiddenHarbours.Audio
     /// <summary>The three independent mix buses, each with its own player-set volume.</summary>
     public enum AudioBus { Ambience, Sfx, Music }
 
+    /// <summary>Which aboard propulsion bed is heard: the hand-rowed oar/water bed, the looping
+    /// outboard-engine bed, or none (ashore).</summary>
+    public enum BoatAudioLayer { None, Oars, Engine }
+
     /// <summary>
     /// The PURE, engine-light decision logic for the adaptive audio director (VS-27/28). All the
     /// "what should we hear" maths live here — no AudioSources, no events — so they are EditMode
@@ -78,6 +82,64 @@ namespace HiddenHarbours.Audio
 
         /// <summary>The hull-slap/row layer plays only while aboard.</summary>
         public static bool HullLayerActive(ControlMode mode) => mode == ControlMode.Aboard;
+
+        // ---- aboard propulsion bed: Dory oars vs Punt engine --------------------------------
+        // The boat you hear depends on how the active hull is driven: the hand-rowed dory gets an
+        // oar-stroke/water bed; an engine boat gets a looping outboard bed. The two crossfade on a
+        // swap. Both ride the AMBIENCE bus (they're the aboard soundscape, not one-shot SFX).
+
+        /// <summary>
+        /// Stable id of the starting hand-rowed dory (mirrors <c>BoatHullDef.Id</c> content). The dory
+        /// is the ONLY oar-driven hull — P4 "Earn It Then Automate It": every boat you BUY (the punt and
+        /// up) runs an engine.
+        /// <para>FLAGGED v1: we anchor on the id because <see cref="ActiveBoatChanged"/> carries the
+        /// BoatId but NOT a propulsion type — that enum lives in the Boats module, which the Audio lane
+        /// must not reference (asmdef is Core-only; CLAUDE.md rule 4). The robust fix is a Core
+        /// propulsion field on <see cref="ActiveBoatChanged"/> / <c>IActiveBoatService</c>, which is a
+        /// Boats/Player + Core change outside this lane.</para>
+        /// </summary>
+        public const string DoryBoatId = "boat.dory";
+
+        /// <summary>
+        /// Pick the aboard propulsion bed from control mode + the active hull's stable id. Ashore → None.
+        /// Aboard: the dory (and any unknown/empty id — the cosy starter default) rows; every other hull
+        /// is an engine boat.
+        /// </summary>
+        public static BoatAudioLayer BoatLayerFor(ControlMode mode, string boatId)
+        {
+            if (mode != ControlMode.Aboard) return BoatAudioLayer.None;
+            bool engine = !string.IsNullOrEmpty(boatId)
+                          && !string.Equals(boatId, DoryBoatId, System.StringComparison.Ordinal);
+            return engine ? BoatAudioLayer.Engine : BoatAudioLayer.Oars;
+        }
+
+        /// <summary>How fast the oar/engine beds crossfade on a boat swap (gain units/sec; ~0.3 s).</summary>
+        public const float BoatLayerCrossfadePerSec = 3f;
+
+        // ---- engine bed is speed-reactive (uses the Core IActiveBoatService SOG read) -------
+        // No throttle signal is exposed, but course-over-ground speed IS (BoatKinematics.SpeedOverGround),
+        // so the outboard idles when moored/slow and swells + lifts in pitch underway. A fair v1 proxy.
+
+        public const float EngineIdleSpeedMs  = 0.2f;  // moored / barely moving → idle rumble
+        public const float EngineFullSpeedMs  = 4.0f;  // a small outboard punt's working speed
+        public const float EngineIdleGainFrac = 0.55f; // idle loudness as a fraction of the full bed
+        public const float EngineIdlePitch    = 0.85f;
+        public const float EngineFullPitch    = 1.25f;
+
+        /// <summary>0..1 throttle proxy from speed over ground (idle→full), clamped.</summary>
+        public static float EngineThrottle01(float speedOverGroundMs)
+        {
+            if (EngineFullSpeedMs <= EngineIdleSpeedMs) return 0f;
+            return Mathf.Clamp01((speedOverGroundMs - EngineIdleSpeedMs) / (EngineFullSpeedMs - EngineIdleSpeedMs));
+        }
+
+        /// <summary>Engine bed gain: idles quietly, swells to the full bed level underway.</summary>
+        public static float EngineGain(float baseGain, float throttle01)
+            => baseGain * Mathf.Lerp(EngineIdleGainFrac, 1f, Mathf.Clamp01(throttle01));
+
+        /// <summary>Engine pitch: lifts with throttle so revs read as speed.</summary>
+        public static float EnginePitch(float throttle01)
+            => Mathf.Lerp(EngineIdlePitch, EngineFullPitch, Mathf.Clamp01(throttle01));
 
         /// <summary>How much of the bed a cue removes at full duck (0..1), and how fast it recovers.</summary>
         public const float DuckDepth = 0.6f;

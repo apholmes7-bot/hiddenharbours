@@ -10,7 +10,9 @@ namespace HiddenHarbours.Audio
     /// EXISTING Core signals, and adapts the soundscape:
     /// <list type="bullet">
     ///   <item>a calm-sea + gull AMBIENT BED (always),</item>
-    ///   <item>a hull-slap/row LAYER while aboard,</item>
+    ///   <item>a propulsion-aware BOAT BED while aboard — the hand-rowed dory gets an oar-stroke/water
+    ///   bed, an engine boat gets a looping outboard bed; the two crossfade on a swap, and the engine
+    ///   rides the boat's speed over ground,</item>
     ///   <item>a CATCH STING on <see cref="FishCaught"/>,</item>
     ///   <item>"made it home" WARMTH on <see cref="CatchSold"/> / coming ashore,</item>
     ///   <item>the SACRED rising-wind TELL — as the <see cref="IEnvironmentService"/> wind strengthens
@@ -45,13 +47,16 @@ namespace HiddenHarbours.Audio
         [Header("Tuning")]
         [Tooltip("Wind/environment poll cadence (Hz). Matches the HUD's 4 Hz sampling — not per frame.")]
         [SerializeField] private float _envSampleHz = 4f;
-        [Tooltip("Loudness of the at-rest hull-slap/row layer relative to the ambience bus.")]
-        [SerializeField, Range(0f, 1f)] private float _hullLayerGain = 0.8f;
+        [Tooltip("Loudness of the aboard oar-stroke/water bed (the rowed dory) relative to the ambience bus.")]
+        [SerializeField, Range(0f, 1f)] private float _oarLayerGain = 0.8f;
+        [Tooltip("Loudness of the aboard outboard-engine bed (engine boats) relative to the ambience bus.")]
+        [SerializeField, Range(0f, 1f)] private float _engineLayerGain = 0.8f;
 
         [Header("Clips (placeholders generated if empty; slot owner SFX here later)")]
         [SerializeField] private AudioClip _calmBed;
         [SerializeField] private AudioClip _gulls;
-        [SerializeField] private AudioClip _hullRow;
+        [SerializeField] private AudioClip _hullRow;          // oar-stroke / water bed (rowed dory)
+        [SerializeField] private AudioClip _outboardEngine;   // looping outboard-engine bed (engine boats)
         [SerializeField] private AudioClip _windTell;
         [SerializeField] private AudioClip _catchSting;
         [SerializeField] private AudioClip _homeWarmth;
@@ -59,13 +64,18 @@ namespace HiddenHarbours.Audio
         // ---- runtime sources ----------------------------------------------------------------
         private AudioSource _bed;     // calm-sea bed (ambience)
         private AudioSource _gull;    // gull layer (ambience)
-        private AudioSource _hull;    // hull-slap/row (ambience, aboard only)
+        private AudioSource _oar;     // oar-stroke/water bed (ambience, aboard a rowed hull)
+        private AudioSource _engine;  // outboard-engine bed (ambience, aboard an engine hull)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
         private AudioSource _music;   // music bus (reserved — no stem yet; volume + duck are live)
 
         // ---- state --------------------------------------------------------------------------
-        private bool _aboard;
+        private ControlMode _mode = ControlMode.OnFoot;
+        private string _boatId;       // last active hull id (from ActiveBoatChanged) — picks the boat bed
+        private float _oarLevel;      // 0..1 crossfade level for the oar bed
+        private float _engineLevel;   // 0..1 crossfade level for the engine bed
+        private float _engineThrottle01; // 0..1 from the active boat's speed over ground (4 Hz poll)
         private bool _tellActive;
         private float _tell01;
         private float _duck;          // 0..1, set by a cue, decays per frame
@@ -92,6 +102,7 @@ namespace HiddenHarbours.Audio
             EventBus.Subscribe<FishCaught>(OnFishCaught);
             EventBus.Subscribe<CatchSold>(OnCatchSold);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             _subscribed = true;
         }
 
@@ -101,6 +112,7 @@ namespace HiddenHarbours.Audio
             EventBus.Unsubscribe<FishCaught>(OnFishCaught);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             _subscribed = false;
         }
 
@@ -114,12 +126,19 @@ namespace HiddenHarbours.Audio
             if (_duck > 0f)
                 _duck = Mathf.MoveTowards(_duck, 0f, AudioDirectorLogic.DuckRecoveryPerSec * dt);
 
-            // Poll the sea's wind at a low cadence and drive the rising-wind tell (P1).
+            // Crossfade the aboard propulsion beds toward the active layer (smooth swap, no pop).
+            BoatAudioLayer layer = AudioDirectorLogic.BoatLayerFor(_mode, _boatId);
+            float rate = AudioDirectorLogic.BoatLayerCrossfadePerSec * dt;
+            _oarLevel    = Mathf.MoveTowards(_oarLevel,    layer == BoatAudioLayer.Oars   ? 1f : 0f, rate);
+            _engineLevel = Mathf.MoveTowards(_engineLevel, layer == BoatAudioLayer.Engine ? 1f : 0f, rate);
+
+            // Poll the sea's wind AND the boat's speed at a low cadence (the HUD's 4 Hz) — not per frame.
             _envTimer -= dt;
             if (_envTimer <= 0f)
             {
                 _envTimer = _envSampleHz > 0f ? 1f / _envSampleHz : 0.25f;
                 SampleWind();
+                SampleBoat();
             }
 
             ApplyMix();
@@ -135,6 +154,15 @@ namespace HiddenHarbours.Audio
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
         }
 
+        // The engine bed is speed-reactive: read the active boat's course-over-ground speed through the
+        // Core seam (ADR 0007), so the outboard idles when moored/slow and revs underway. Null/ashore = idle.
+        private void SampleBoat()
+        {
+            var boat = GameServices.ActiveBoat;
+            float sog = (boat != null && boat.HasActiveBoat) ? boat.Sample().SpeedOverGround : 0f;
+            _engineThrottle01 = AudioDirectorLogic.EngineThrottle01(sog);
+        }
+
         private void ApplyMix()
         {
             float amb = _ambienceVolume * _masterVolume;
@@ -143,7 +171,16 @@ namespace HiddenHarbours.Audio
 
             if (_bed  != null) _bed.volume  = ambDucked * bedGain;
             if (_gull != null) _gull.volume = ambDucked * bedGain * 0.7f;
-            if (_hull  != null) _hull.volume  = _aboard ? amb * _hullLayerGain : 0f; // being on the water — not ducked
+
+            // Aboard propulsion beds ride the ambience bus and are NOT ducked (you're on the water);
+            // they crossfade by level, and the engine swells + lifts pitch with speed over ground.
+            if (_oar != null) _oar.volume = amb * _oarLayerGain * _oarLevel;
+            if (_engine != null)
+            {
+                _engine.volume = AudioDirectorLogic.EngineGain(amb * _engineLayerGain, _engineThrottle01) * _engineLevel;
+                _engine.pitch  = AudioDirectorLogic.EnginePitch(_engineThrottle01);
+            }
+
             if (_tell  != null) _tell.volume  = amb * _tell01;                       // the warning itself rises
             if (_cue   != null) _cue.volume   = _sfxVolume * _masterVolume;          // one-shots at sfx volume
             if (_music != null) _music.volume = AudioDirectorLogic.DuckedGain(_musicVolume * _masterVolume, _duck); // bus is live; ducks under cues
@@ -156,14 +193,16 @@ namespace HiddenHarbours.Audio
 
         private void OnControlModeChanged(ControlModeChanged e)
         {
-            bool wasAboard = _aboard;
-            _aboard = AudioDirectorLogic.HullLayerActive(e.Mode);
-
-            if (_hull != null && _aboard && !_hull.isPlaying) _hull.Play();
+            bool wasAboard = _mode == ControlMode.Aboard;
+            _mode = e.Mode;
 
             // Coming ashore after being out at sea = "made it home".
-            if (wasAboard && !_aboard) PlayCue(AudioDirectorLogic.CueFor(AudioMoment.CameAshore));
+            if (wasAboard && _mode != ControlMode.Aboard) PlayCue(AudioDirectorLogic.CueFor(AudioMoment.CameAshore));
         }
+
+        // The active hull changed (boarded / upgrade swap): remember its id so the boat bed picks
+        // oar vs engine. Carries no propulsion type (that lives in Boats); see AudioDirectorLogic.
+        private void OnActiveBoatChanged(ActiveBoatChanged e) => _boatId = e.BoatId;
 
         private void PlayCue(AudioCue cue)
         {
@@ -184,12 +223,14 @@ namespace HiddenHarbours.Audio
         private void BuildSources()
         {
             EnsurePlaceholderClips();
-            _bed  = MakeSource("Bed",      _calmBed,  loop: true,  play: true);
-            _gull = MakeSource("Gulls",    _gulls,    loop: true,  play: true);
-            _hull = MakeSource("HullRow",  _hullRow,  loop: true,  play: false);
-            _tell  = MakeSource("WindTell", _windTell, loop: true,  play: true);
-            _cue   = MakeSource("Cue",      null,      loop: false, play: false);
-            _music = MakeSource("Music",    null,      loop: true,  play: false); // bus ready; stem slots in later
+            _bed    = MakeSource("Bed",      _calmBed,        loop: true,  play: true);
+            _gull   = MakeSource("Gulls",    _gulls,          loop: true,  play: true);
+            // Both propulsion beds loop from boot at zero volume and crossfade in — no Play/Stop pops on a swap.
+            _oar    = MakeSource("OarRow",   _hullRow,        loop: true,  play: true);
+            _engine = MakeSource("Outboard", _outboardEngine, loop: true,  play: true);
+            _tell   = MakeSource("WindTell", _windTell,       loop: true,  play: true);
+            _cue    = MakeSource("Cue",      null,            loop: false, play: false);
+            _music  = MakeSource("Music",    null,            loop: true,  play: false); // bus ready; stem slots in later
         }
 
         private AudioSource MakeSource(string name, AudioClip clip, bool loop, bool play)
@@ -210,12 +251,13 @@ namespace HiddenHarbours.Audio
         {
             // Owner SFX slot into the serialized refs; until then, procedural placeholders so the
             // adaptive mix is audible end-to-end (AUDIO-MANIFEST.md lists the real set).
-            if (_calmBed    == null) _calmBed    = ProceduralAudio.CalmSeaBed();
-            if (_gulls      == null) _gulls      = ProceduralAudio.GullCalls();
-            if (_hullRow    == null) _hullRow    = ProceduralAudio.HullRow();
-            if (_windTell   == null) _windTell   = ProceduralAudio.WindTell();
-            if (_catchSting == null) _catchSting = ProceduralAudio.CatchSting();
-            if (_homeWarmth == null) _homeWarmth = ProceduralAudio.HomeWarmth();
+            if (_calmBed        == null) _calmBed        = ProceduralAudio.CalmSeaBed();
+            if (_gulls          == null) _gulls          = ProceduralAudio.GullCalls();
+            if (_hullRow        == null) _hullRow        = ProceduralAudio.HullRow();
+            if (_outboardEngine == null) _outboardEngine = ProceduralAudio.OutboardEngine();
+            if (_windTell       == null) _windTell       = ProceduralAudio.WindTell();
+            if (_catchSting     == null) _catchSting     = ProceduralAudio.CatchSting();
+            if (_homeWarmth     == null) _homeWarmth     = ProceduralAudio.HomeWarmth();
         }
     }
 }
