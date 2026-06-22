@@ -9,7 +9,8 @@
         "HiddenHarbours.UI",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
-        "HiddenHarbours.Economy"
+        "HiddenHarbours.Economy",
+        "HiddenHarbours.Player"
     ],
     "includePlatforms": [],
     "precompiledReferences": ["nunit.framework.dll"],
