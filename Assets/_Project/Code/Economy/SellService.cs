@@ -37,7 +37,8 @@ namespace HiddenHarbours.Economy
             if (!TryGetSpecies(hold, speciesId, out CatchItem sample, out int available)) return 0;
             int q = Mathf.Clamp(quantity, 0, available);
             float supply = market != null ? market.SupplyOf(sample.Category) : 0f;
-            return SellPricing.RunningTotal(sample.BaseValue, sample.SupplyElasticity, supply, q);
+            float demand = market != null ? market.DemandFactor : 1f;
+            return SellPricing.RunningTotal(sample.BaseValue, sample.SupplyElasticity, supply, q, demand);
         }
 
         /// <summary>Sell <paramref name="quantity"/> of one species at marginal prices. Returns ₲ paid
@@ -52,7 +53,8 @@ namespace HiddenHarbours.Economy
             if (q <= 0) return 0;
 
             float supply = market != null ? market.SupplyOf(sample.Category) : 0f;
-            int total = SellPricing.RunningTotal(sample.BaseValue, sample.SupplyElasticity, supply, q);
+            float demand = market != null ? market.DemandFactor : 1f;
+            int total = SellPricing.RunningTotal(sample.BaseValue, sample.SupplyElasticity, supply, q, demand);
 
             RemoveSpecies(hold, speciesId, q);
             if (market != null) market.RegisterSale(sample.Category, q);
@@ -69,7 +71,9 @@ namespace HiddenHarbours.Economy
             if (hold == null || wallet == null || hold.UsedUnits == 0) return 0;
 
             // Walk the hold once, pricing each unit at its category's supply-so-far (base supply plus
-            // however many of that category we have already priced into this sale).
+            // however many of that category we have already priced into this sale) and this buyer's demand
+            // (market-wide, so read once — Greywick's higher D lifts every unit over the cove's).
+            float demand = market != null ? market.DemandFactor : 1f;
             var soldPerCategory = new Dictionary<FishCategory, int>();
             int grandTotal = 0;
             var items = hold.Items;
@@ -79,7 +83,7 @@ namespace HiddenHarbours.Economy
                 CatchItem it = items[i];
                 float baseSupply = market != null ? market.SupplyOf(it.Category) : 0f;
                 int already = soldPerCategory.TryGetValue(it.Category, out int s) ? s : 0;
-                grandTotal += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, baseSupply, already);
+                grandTotal += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, baseSupply, already, demand);
                 soldPerCategory[it.Category] = already + 1;
             }
 

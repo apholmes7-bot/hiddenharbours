@@ -168,9 +168,10 @@ namespace HiddenHarbours.Economy
             int q = Mathf.Clamp(Mathf.RoundToInt(_qtySlider.value), 0, have);
             CatchItem sample = SampleOf(_selectedSpecies);
             float supply = _market != null ? _market.SupplyOf(sample.Category) : 0f;
+            float demand = _market != null ? _market.DemandFactor : 1f;
 
             int marginal = q > 0
-                ? SellPricing.MarginalPrice(sample.BaseValue, sample.SupplyElasticity, supply, q - 1)
+                ? SellPricing.MarginalPrice(sample.BaseValue, sample.SupplyElasticity, supply, q - 1, demand)
                 : 0;
             int total = SellService.Quote(_hold, _market, _selectedSpecies, q);
 
