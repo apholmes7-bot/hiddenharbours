@@ -36,6 +36,18 @@ namespace HiddenHarbours.Core
         [Tooltip("Base fog tendency for the world (0..1). Regions add their own bias later.")]
         [Range(0f, 1f)] public float BaseFogBias = 0.15f;
 
+        [Header("Market (VS-16)")]
+        [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
+        [Min(0.01f)] public float MarketDemandCove = 1f;
+        [Tooltip("Demand D at Port Greywick. Set higher than the cove so WHERE you sell matters: Greywick " +
+                 "pays a premium on a glut (the reason to make the hop), and its supply recovers separately. " +
+                 "(economy-and-business §1.2/§1.4)")]
+        [Min(0.01f)] public float MarketDemandGreywick = 1.4f;
+        [Tooltip("Fraction of a category's accumulated supply (glut) cleared at each daily settle (0..1). " +
+                 "Higher = faster price recovery over days (economy-and-business §1.3). Deterministic — fired " +
+                 "on day rollover, not per frame.")]
+        [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
+
         // Convenience
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
