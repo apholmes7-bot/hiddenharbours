@@ -11,6 +11,7 @@
         "HiddenHarbours.Economy",
         "HiddenHarbours.UI",
         "HiddenHarbours.App",
+        "HiddenHarbours.App.Editor",
         "HiddenHarbours.Player",
         "HiddenHarbours.World"
     ],

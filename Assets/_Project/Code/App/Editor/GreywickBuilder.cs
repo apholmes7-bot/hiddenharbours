@@ -49,6 +49,15 @@ namespace HiddenHarbours.App.Editor
         const string SceneName   = "Greywick";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
 
+        // VS-22 arrival/dock geometry — single source of truth shared with GreywickDockTests. The persistent
+        // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
+        // the boat parks at ArrivalPos on arrival, so ArrivalPos MUST sit within DockZoneRadius of DockZonePos
+        // or the player lands out of dock range and can't disembark (the owner-playtest gap this fixes).
+        public const float DockZoneRadius = 3.5f;                          // ControlSwitcher's default _zoneRadius (cove pattern)
+        public static readonly Vector3 ArrivalPos   = new Vector3(0f, -5.5f, 0f);  // deep harbour, just off the wharf head
+        public static readonly Vector3 DockZonePos  = new Vector3(0f, -4f,   0f);  // the wharf's seaward HEAD (dock here)
+        public static readonly Vector3 DisembarkPos = new Vector3(0f, -2.5f, 0f);  // on the public wharf deck planks
+
         [MenuItem("Hidden Harbours/Build Greywick Scene")]
         public static void Build()
         {
@@ -164,6 +173,18 @@ namespace HiddenHarbours.App.Editor
             MakeBuilding("GreywickHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(3.5f, 6.3f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
             MakeBuilding("GreywickHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(7.5f, 6f),   waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
 
+            // --- SHORELINE BOUNDARY ---------------------------------------------------------
+            // Mirror the cove's ShoreEdge (a closed/open EdgeCollider2D fence dividing land from water) so
+            // the boat can't sail THROUGH the quay/wharf geometry (owner playtest gap #2). The fence runs
+            // along the land waterline (the QuayEdge sand bottom, y=2) but DIPS around the public wharf deck
+            // (centred (0,0), size (6,8) → x ∈ [-3,3], seaward head y=-4): down the west side, across the
+            // head, up the east side. That makes the wharf a SOLID peninsula — the boat approaches the head
+            // from the deep harbour (south) and stops against it to dock (dock zone (0,-4)), but cannot slip
+            // up either side onto the deck or onto the land. The disembark spot (0,-2.5) sits on the deck
+            // BEHIND the fence; the player is teleported there, then their footprint keeps them land-side.
+            // Open water (south) is left fully open for the arrival + sail-in.
+            MakeShoreline();
+
             // --- ECONOMY (reuse the cove's components, referenced by id) --------------------
             // Fish Buyer stall: Market → FishBuyer → WharfSellPoint (+ dev 'B' to sell). The hold/wallet
             // providers (player's boat + wallet) live in the origin scene → left unwired (TODO).
@@ -211,14 +232,26 @@ namespace HiddenHarbours.App.Editor
             SetRef(passage, "_loader", loader);
 
             // VS-22 arrival anchor: where the persistent rig binds when you sail in from the cove. The boat
-            // appears in the deep harbour just off the public wharf; board/disembark at the wharf deck. The
-            // App RegionTravelCoordinator reads this on arrival to reposition the rig + re-point the dock.
+            // appears in the deep harbour just off the public wharf head; board/disembark at the wharf deck.
+            // The App RegionTravelCoordinator reads this on arrival to reposition the rig + re-point the dock.
+            //
+            // DISEMBARK GEOMETRY (the cove's proven pattern): ControlSwitcher.InDockZone() is a pure DISTANCE
+            // test — Vector2.Distance(boat, dockZone) <= _zoneRadius (3.5 m default on the persistent
+            // switcher). It needs NO trigger collider on the dock zone; it only needs the BOAT to PARK within
+            // 3.5 m of the dock zone on arrival. The previous wiring parked the boat at (0,-5) but put the
+            // dock zone at (0,-1) — 4.0 m apart (> 3.5 m), so on arrival the boat sat just OUT of dock range
+            // and E did nothing (no way to disembark to reach the Fish Buyer / Shipwright). Park the arrival
+            // just off the deck head and the dock zone AT the deck head so the boat lands ~1.5 m from the dock
+            // zone — comfortably in range — exactly as the cove arrives in its channel at its dock head. The
+            // PublicWharf deck is centred (0,0) size (6,8) → its seaward (south) edge is y=-4; deep harbour
+            // is south of it. The three positions are public constants (single source of truth) so an
+            // EditMode test can assert the arrival↔dock distance stays inside DockZoneRadius without a scene.
             var gwArrival = new GameObject("GreywickArrival");
-            gwArrival.transform.position = new Vector3(0f, -5f, 0f);     // deep harbour, south of the wharf deck
+            gwArrival.transform.position = ArrivalPos;       // deep harbour, just off the wharf head (open water; deck ends at y=-4)
             var gwDock = new GameObject("GreywickDockZone");
-            gwDock.transform.position = new Vector3(0f, -1f, 0f);        // the wharf's seaward end (dock here)
+            gwDock.transform.position = DockZonePos;          // the wharf's seaward HEAD — within the dock radius of arrival
             var gwDisembark = new GameObject("GreywickDisembark");
-            gwDisembark.transform.position = new Vector3(0f, 1.5f, 0f);  // up on the public wharf deck
+            gwDisembark.transform.position = DisembarkPos;    // up on the public wharf deck planks (north of the head)
             var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
 
@@ -315,6 +348,30 @@ namespace HiddenHarbours.App.Editor
             sr.sortingOrder = 3;
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
+            // Solid piling so the boat bumps the pilings (cozy, no damage), mirroring the cove's MakePost.
+            var col = go.AddComponent<CircleCollider2D>();
+            col.radius = 0.3f;   // slim piling
+        }
+
+        // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the quay
+        // waterline and dipping around the public wharf deck so the wharf reads as a solid peninsula and the
+        // boat can't sail through Greywick. Public so an EditMode test can assert its shape without a scene.
+        // The deep harbour (south) is left fully open for the arrival + sail-in.
+        public static readonly Vector2[] ShorelinePoints =
+        {
+            new Vector2(-40f, 2f),   // west shoreline (along the QuayEdge sand bottom)
+            new Vector2(-3f,  2f),   // to the west edge of the wharf deck
+            new Vector2(-3f, -4f),   // down the west side of the deck to its seaward head
+            new Vector2( 3f, -4f),   // across the wharf head (the boat stops here to dock — dock zone (0,-4))
+            new Vector2( 3f,  2f),   // up the east side of the deck back to the shoreline
+            new Vector2(40f,  2f),   // east shoreline
+        };
+
+        static void MakeShoreline()
+        {
+            var shore = new GameObject("Shoreline");
+            var edge = shore.AddComponent<EdgeCollider2D>();
+            edge.points = ShorelinePoints;   // non-trigger by default → a solid wall the boat bumps
         }
 
         static GameObject MakeBuilding(string name, Sprite sprite, Vector2 pos, Sprite fallback, Color fallbackColor)
@@ -325,6 +382,13 @@ namespace HiddenHarbours.App.Editor
             sr.sortingOrder = 2;
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(5f, 5f, 1f); }
+            // Solid building so the boat / on-foot player can't pass through Greywick's geometry. Non-trigger
+            // BoxCollider2D sized to the rendered footprint (sprite bounds in local space, or the fallback
+            // square's metric size). Buildings sit on the quay land beyond the shoreline; this makes each
+            // read solid in its own right (owner playtest: "boat sails through the buildings").
+            var box = go.AddComponent<BoxCollider2D>();
+            if (sprite != null) { box.size = sprite.bounds.size; box.offset = sprite.bounds.center; }
+            else { box.size = Vector2.one; }   // 1 unit × the (5,5,1) localScale → a 5 m × 5 m footprint
             return go;
         }
 
