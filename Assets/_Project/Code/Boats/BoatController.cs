@@ -78,6 +78,27 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// THE propulsion branch (data-driven, ADR 0003): which control scheme a hull uses. Engine hulls
+        /// (e.g. the Punt) take the outboard helm — <see cref="SetControl"/> (throttle + speed-scaled
+        /// rudder, <see cref="ApplyEngineDrive"/>); Oars hulls (the Dory) take per-oar hand-rowing —
+        /// <see cref="SetOarInput"/> (<see cref="ApplyOarDrive"/>). One place so the controller and the
+        /// input layer (DevBoatInput) never drift apart. Pure + static.
+        /// </summary>
+        public static bool UsesEngineHelm(PropulsionType propulsion) => propulsion == PropulsionType.Engine;
+
+        /// <summary>
+        /// Engine rudder torque (design-unit, before the physics-feel scale) for a helm in -1..1. Authority
+        /// scales with WAY — the forward speed through the water — so it is ~0 at rest (you CAN'T pivot dead
+        /// in the water; give a burst of throttle to turn) and rises + saturates with speed; aground it's
+        /// heavily damped. Positive helm → bow right (negative torque), matching the oar-yaw sign. The
+        /// outboard's "speed-scaled rudder" from boats-and-navigation.md §2. Pure + static.
+        /// </summary>
+        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec, bool aground)
+            => -Mathf.Clamp(helm, -1f, 1f) * rudderAuthority
+               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f)
+               * (aground ? 0.2f : 1f);
+
+        /// <summary>
         /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
         /// back-water negative); a DIFFERENCE between the two yaws the boat. brace = oars planted for a
         /// strong braking drag. This is the per-oar control surface a real InputService/gamepad maps to —
@@ -142,11 +163,11 @@ namespace HiddenHarbours.Boats
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
 
-            // --- Propulsion (data-driven, ADR 0003): hand-rowed oars or an engine helm. ---
-            if (_hull.Propulsion == PropulsionType.Oars)
-                ApplyOarDrive(fwd, vel, env);
+            // --- Propulsion (data-driven, ADR 0003): hand-rowed oars (Dory) or an engine helm (Punt). ---
+            if (UsesEngineHelm(_hull.Propulsion))
+                ApplyEngineDrive(fwd, vel, env);
             else
-                ApplyEngineDrive(fwd, vel);
+                ApplyOarDrive(fwd, vel, env);
 
             // --- Hull drag RELATIVE TO THE WATER (tidal current is the ambient water velocity) ---
             Vector2 throughWater = vel - env.CurrentVector;
@@ -160,25 +181,24 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Engine helm — UNCHANGED behaviour (throttle thrust ahead/astern + speed-scaled rudder),
-        /// extracted verbatim so the data-driven propulsion split reads cleanly. Do not alter: buying an
-        /// engine boat must feel exactly as before.
+        /// Engine helm (the outboard model, boats-and-navigation.md §2): throttle thrust along the hull
+        /// (ahead full, astern weaker) + a rudder whose authority scales with WAY — the forward speed
+        /// through the water. At rest there's ~no authority, so an outboard CANNOT pivot dead in the water
+        /// (you give a burst of throttle to turn in tight quarters); it bites as you make speed. This is
+        /// the Engine branch (the Punt); the Oars branch (the Dory) keeps per-oar rowing.
         /// </summary>
-        private void ApplyEngineDrive(Vector2 fwd, Vector2 vel)
+        private void ApplyEngineDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
         {
-            // --- Engine (no drive when hard aground). Ahead full, astern weaker (real-prop feel). ---
+            // --- Engine thrust along the hull (no drive when hard aground). Ahead full, astern weaker. ---
             if (!IsAground)
             {
                 float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * 0.01f;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
             }
 
-            // --- Rudder: authority grows with speed; almost nil at a standstill or aground ---
-            float speed = vel.magnitude;
-            float steerAuthority = _hull.RudderAuthority * 0.001f
-                                   * Mathf.Clamp01(speed / 2f)
-                                   * (IsAground ? 0.2f : 1f);
-            _rb.AddTorque(-_steer * steerAuthority);
+            // --- Rudder: authority scales with WAY (forward speed through the water, §2) — nil at rest. ---
+            float way = Vector2.Dot(vel - env.CurrentVector, fwd);   // forward way through the moving water
+            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way, IsAground) * 0.001f);
         }
 
         /// <summary>

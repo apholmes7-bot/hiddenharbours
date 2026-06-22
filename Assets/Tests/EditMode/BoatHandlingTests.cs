@@ -7,9 +7,11 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// Boat handling — astern/reverse, the per-oar rowing input mapping (the owner's table), the
-    /// differential-rowing physics (per-oar thrust → yaw, brace drag), and the hull collider. The thrust,
-    /// yaw, and combo-mapping logic are pure static helpers, so they're tested without the physics/input
-    /// loop; the collider existence is asserted on a freshly-built BoatController (RequireComponent).
+    /// differential-rowing physics (per-oar thrust → yaw, brace drag), the hull collider, and the
+    /// data-driven PROPULSION BRANCH (the Dory rows; the Punt drives like an outboard — throttle + a
+    /// speed-scaled rudder that can't pivot dead in the water). The thrust, yaw, rudder, and combo-mapping
+    /// logic are pure static helpers, so they're tested without the physics/input loop; the collider
+    /// existence is asserted on a freshly-built BoatController (RequireComponent).
     /// </summary>
     public class BoatHandlingTests
     {
@@ -188,6 +190,52 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(PropulsionType.Engine, hull.Propulsion, "a bought boat can be an engine hull");
             // Engine boats are unaffected by the oar additions: the engine thrust path is unchanged
             // (see the EngineThrust tests above) and runs only on the Engine propulsion branch.
+        }
+
+        // ---- Part 5: PROPULSION BRANCH (the Dory rows · the Punt drives like an outboard) ----
+
+        [Test]
+        public void PropulsionBranch_EngineHullTakesTheHelm_OarsHullRows()
+        {
+            // The single source of truth the controller (FixedUpdate) AND the input layer (DevBoatInput)
+            // both branch on — so input + physics can never disagree about a hull.
+            Assert.IsTrue(BoatController.UsesEngineHelm(PropulsionType.Engine), "an Engine hull (the Punt) uses the outboard helm");
+            Assert.IsFalse(BoatController.UsesEngineHelm(PropulsionType.Oars), "an Oars hull (the Dory) keeps per-oar rowing");
+
+            var hull = ScriptableObject.CreateInstance<BoatHullDef>();   // template default = Oars (the dory)
+            _spawned.Add(hull);
+            Assert.IsFalse(BoatController.UsesEngineHelm(hull.Propulsion), "the Dory hull rows, not helms");
+            hull.Propulsion = PropulsionType.Engine;                     // a Punt-configured hull
+            Assert.IsTrue(BoatController.UsesEngineHelm(hull.Propulsion), "a Punt-configured (Engine) hull helms, no oars");
+        }
+
+        [Test]
+        public void EngineRudder_NoAuthorityAtRest_GrowsAndSaturatesWithWay()
+        {
+            const float auth = 600f;   // the Punt's RudderAuthority
+            // Dead in the water → no rudder authority → an outboard can't pivot at rest.
+            Assert.AreEqual(0f, BoatController.RudderTorque(1f, auth, 0f, false), 1e-4f, "no pivot dead in the water");
+            // Making way: helm-to-starboard turns the bow right (negative torque, the oar-yaw sign); helm-to-port left.
+            Assert.Less(BoatController.RudderTorque(1f, auth, 3f, false), 0f, "helm to starboard → bow right while making way");
+            Assert.Greater(BoatController.RudderTorque(-1f, auth, 3f, false), 0f, "helm to port → bow left");
+            // Authority rises with way, then saturates by ~2 m/s.
+            Assert.Greater(Mathf.Abs(BoatController.RudderTorque(1f, auth, 1f, false)),
+                           Mathf.Abs(BoatController.RudderTorque(1f, auth, 0.2f, false)), "more way → more authority");
+            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 2f, false), 1e-3f, "full authority by 2 m/s");
+            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 50f, false), 1e-3f, "…and stays saturated");
+            // Aground steering is heavily damped.
+            Assert.Less(Mathf.Abs(BoatController.RudderTorque(1f, auth, 3f, true)),
+                        Mathf.Abs(BoatController.RudderTorque(1f, auth, 3f, false)), "aground steering is damped");
+        }
+
+        [Test]
+        public void AtRest_TheDoryPivots_ButTheOutboardCannot()
+        {
+            // The acceptance contrast: at zero way the Dory spins in place by working the oars
+            // differentially (no speed needed), but the Punt's outboard rudder gives nothing — it must
+            // make way to turn. This is "rows like a dory" vs "drives like a motorboat, no zero-speed pivot".
+            Assert.AreNotEqual(0f, BoatController.OarYawTorque(1f, -1f, P, O), "the Dory pivots at rest (differential oars)");
+            Assert.AreEqual(0f, BoatController.RudderTorque(1f, 600f, 0f, false), 1e-4f, "the Punt cannot pivot at rest (no oars; speed-scaled rudder)");
         }
     }
 }
