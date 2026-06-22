@@ -44,6 +44,7 @@ P4 Earn It Then Automate It · P5 Cozy but with Teeth). If it serves none, don't
 9. **Version control discipline:** binaries via **Git LFS**, scenes/prefabs via **smart merge**,
    **Force Text** serialization. Never commit `Library/`, `Temp/`, builds, or secrets.
 10. **Leave a working build.** Don't merge anything that breaks the playable build or the tests.
+    CI isn't an automated gate on this repo — **observe CI green before you merge** (`coordination.md` §5.2).
 
 ## 4. How to do a piece of work
 1. **Pick** the top unblocked item for *your role* from `backlog/` (M1 detail lives in

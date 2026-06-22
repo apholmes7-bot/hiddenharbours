@@ -93,7 +93,8 @@ A few things are touched by more than one role. To stop them drifting, the seam 
   the content-validation test, and runs the playtest/acceptance pass per milestone).
 - **Determinism tests are sacred:** tide height / weather / market price for a given
   `(seed, gameTime)` must be reproducible. These guard the save system.
-- Post-M0, CI (GameCI on GitHub Actions) builds + runs tests on every PR; red CI blocks merge.
+- Post-M0, CI (Buildalon on GitHub Actions) builds + runs tests on every PR; **red CI means do not
+  merge** — and since branch protection isn't enforceable here, that gate is yours to honour (§5.2).
 
 ## 5. Keeping `main` green (integration)
 - `main` is **always shippable**. Work happens on short-lived branches; merge often in small pieces
@@ -102,7 +103,8 @@ A few things are touched by more than one role. To stop them drifting, the seam 
   conflicts with **UnityYAMLMerge** (configured per machine — `project-structure.md` §6); if two
   agents edited the *same object* in a scene, smart-merge can't auto-resolve — coordinate and
   re-author the smaller change.
-- A green build + passing tests is the merge gate. Never merge over failing tests "to fix later."
+- A green build + passing tests is the merge gate — but on this repo it is a **manual discipline you
+  enforce, not an automated block** (see §5.2). Never merge over failing tests "to fix later."
 
 ### 5.1 Git & push hygiene (one feature per push)
 Learned the hard way (the VS-22 work rode along on an unrelated push): a plain `git push` of `main`
@@ -119,6 +121,20 @@ pushed yet, your push publishes it too. To keep pushes scoped and history clean:
   history (rebase/force-push of pushed commits) without their explicit say-so.
 - **Keep your tree clean.** Commit or stash your own changes before switching branches, so an
   unrelated edit isn't swept into someone else's commit.
+
+### 5.2 Green CI before merge (this discipline **is** the gate)
+CI (Buildalon) builds + runs tests on every PR (~10 min). **This repo has no automated merge block:**
+it is a free private repo on a personal account, and GitHub gates required-status-checks / ruleset
+enforcement behind a paid plan, which the owner has chosen not to adopt. So branch protection will
+**not** stop a bad merge — **you are the gate.** Follow this without exception:
+- **Do not run `gh pr merge` until you have OBSERVED CI green on that PR.** Confirm with
+  `gh pr checks <pr>` that **all** checks pass on the PR's **current head**. "GitHub let me merge"
+  does **not** mean CI passed — nothing is blocking you; the discipline is.
+- **A cancelled run is not a pass.** CI's concurrency group cancels older in-progress runs when
+  sibling PRs merge in a flurry, so a check can show `cancelled` (or stale `pending`) rather than a
+  real result. Re-confirm a run **completed green on the final merged head** before and after merging.
+- **Never merge "UNSTABLE" / pending.** If checks are still running, wait. If they're red, fix the
+  cause — never merge over red "to fix later" (§5).
 
 ## 6. Pull requests & review
 - **Small and single-purpose.** One backlog item per PR where possible. Big PRs get split.
