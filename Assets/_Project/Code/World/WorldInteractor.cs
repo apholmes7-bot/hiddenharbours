@@ -35,14 +35,14 @@ namespace HiddenHarbours.World
         [Tooltip("How close (m) the player must be to an interactable for the prompt to show.")]
         [SerializeField] private float _radius = 1.8f;
 
-        // Onboarding flags, backed by PlayerPrefs so the 'met before' variants persist across reload.
+        // Onboarding flags, backed by the save file (VS-08) so the 'met before' variants persist across reload.
         private OnboardingFlags _flags;
         private Text _prompt;
         private Interactable _nearest;
 
         private void Awake()
         {
-            _flags = new OnboardingFlags(new PlayerPrefsFlagStore());
+            _flags = new OnboardingFlags(new SaveFlagStore());   // VS-08: persisted via the save file, not PlayerPrefs
             BuildPrompt();
         }
 

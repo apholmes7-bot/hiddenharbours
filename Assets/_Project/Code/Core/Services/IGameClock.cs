@@ -11,6 +11,7 @@ namespace HiddenHarbours.Core
 
         Season Season { get; }
         int Year { get; }              // 1-based
+        int DayIndex { get; }          // 0-based absolute day since new game (TotalSeconds / SecondsPerDay)
         int DayOfSeason { get; }       // 1-based, 1..daysPerSeason
         Weekday Weekday { get; }
         bool IsMarketDay { get; }

@@ -31,7 +31,7 @@ namespace HiddenHarbours.World
 
         private void Awake()
         {
-            _flags = new OnboardingFlags(new PlayerPrefsFlagStore());
+            _flags = new OnboardingFlags(new SaveFlagStore());   // VS-08: persisted via the save file, not PlayerPrefs
             BuildHint();
         }
 

@@ -25,6 +25,10 @@ namespace HiddenHarbours.Environment
 
         private int TotalDays => _config != null ? (int)(_t / _config.SecondsPerDay) : 0;
 
+        /// <summary>0-based absolute day since a new game began (the save's dayIndex). See
+        /// <see cref="IGameClock.DayIndex"/>.</summary>
+        public int DayIndex => TotalDays;
+
         public Season Season => _config != null ? (Season)(TotalDays / _config.DaysPerSeason % 4) : Season.EarlySpring;
         public int Year => _config != null ? TotalDays / _config.DaysPerSeason / 4 + 1 : 1;
         public int DayOfSeason => _config != null ? TotalDays % _config.DaysPerSeason + 1 : 1;

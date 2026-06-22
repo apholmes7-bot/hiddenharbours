@@ -24,6 +24,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public GameTime Now => new GameTime(TotalSeconds);
             public Season Season => Season.EarlySpring;
             public int Year => 1;
+            public int DayIndex => 0;
             public int DayOfSeason => 1;
             public Weekday Weekday => Weekday.Monday;
             public bool IsMarketDay => false;
