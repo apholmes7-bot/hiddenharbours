@@ -121,14 +121,21 @@ namespace HiddenHarbours.Tests.PlayMode
             f.SetValue(target, value);
         }
 
-        /// <summary>Payout a FRESH market owes for these items: supply 0 → PriceMultiplier 1.0 → each
-        /// item pays Max(1, Round(BaseValue)). Mirrors FishBuyer.SellAll, computed from the items
-        /// actually landed so it's robust to which fish the RNG picked.</summary>
+        /// <summary>Payout a FRESH market owes for these items, mirroring the now-MARGINAL
+        /// FishBuyer.SellAll (routed through SellService): each unit prices at its category's
+        /// supply-so-far — base 0 at a fresh market, but a 2nd+ fish of the SAME category self-glutts.
+        /// Computed from the items actually landed so it's robust to which fish the RNG picked.</summary>
         private static int ExpectedFreshPayout(IReadOnlyList<CatchItem> items)
         {
             int total = 0;
+            var soldPerCategory = new Dictionary<FishCategory, int>();
             for (int i = 0; i < items.Count; i++)
-                total += Mathf.Max(1, Mathf.RoundToInt(items[i].BaseValue * 1f));
+            {
+                CatchItem it = items[i];
+                int already = soldPerCategory.TryGetValue(it.Category, out int s) ? s : 0;
+                total += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, 0f, already);
+                soldPerCategory[it.Category] = already + 1;
+            }
             return total;
         }
 
@@ -183,7 +190,7 @@ namespace HiddenHarbours.Tests.PlayMode
             int paid = wharf.Sell(hold, wallet);
             EventBus.Unsubscribe<CatchSold>(OnSold);
 
-            Assert.AreEqual(expected, paid, "fresh-market payout = sum of base values (price multiplier 1.0)");
+            Assert.AreEqual(expected, paid, "fresh-market payout = the marginal self-glutting total (per category)");
             Assert.AreEqual(paid, wallet.Money, "money updates by exactly the payout");
             Assert.AreEqual(0, hold.UsedUnits, "selling empties the hold");
             Assert.AreEqual(1, raised, "exactly one CatchSold is raised");

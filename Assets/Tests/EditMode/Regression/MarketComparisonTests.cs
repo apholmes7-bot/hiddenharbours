@@ -12,10 +12,10 @@ namespace HiddenHarbours.Tests.EditMode.Regression
     /// (<see cref="Market.NextUnitPrice"/> is demand-aware), proven here via the integer per-unit price
     /// (distinct from the float <c>PriceMultiplier</c> GreywickMarketTests already covers).
     ///
-    /// <para><b>Gap this net surfaces:</b> the VS-18 sell SCREEN does NOT use that lever — <see cref="SellService"/>
-    /// prices through <see cref="SellPricing"/>, which reads only the market's SUPPLY at neutral demand,
-    /// so selling the same hold at Greywick pays the SAME as the cove. The characterization test below
-    /// pins that current behavior and is flagged for economy-sim (see the PR). Test demand comes from a
+    /// <para><b>Demand now reaches the sell screen too (market depth 2):</b> <see cref="SellService"/> /
+    /// <see cref="SellPricing"/> were threaded with the market's per-category demand, so selling the same
+    /// hold at Greywick pays MORE than the cove — closing the gap this net originally flagged (the test
+    /// below was flipped from a same-coin characterization to assert the fix). Test demand comes from a
     /// test GameConfig; the production GameConfig stays the single source of truth for shipped balance.</para>
     /// </summary>
     public class MarketComparisonTests
@@ -115,10 +115,10 @@ namespace HiddenHarbours.Tests.EditMode.Regression
                 "with equal demand both buyers quote the same — the gap above is demand, not market identity");
         }
 
-        // ---- DOCUMENTED GAP: the sell SCREEN path ignores market demand ---------------------
+        // ---- the sell SCREEN path now honours market demand (market depth 2 closed the gap) --
 
         [Test]
-        public void SellScreenPath_CurrentlyIgnoresMarketDemand_SameCoinAtBothMarkets_FLAGGED()
+        public void SellScreenPath_IsDemandAware_GreywickPaysMoreThanCove()
         {
             var config = MakeConfig(cove: 1f, greywick: 1.5f);
             var cove = MakeMarket(config, MarketId.Cove);
@@ -127,15 +127,13 @@ namespace HiddenHarbours.Tests.EditMode.Regression
             int covePaid     = SellService.SellAll(HoldOf(5, 24, 0.4f), new FakeWallet(), cove);
             int greywickPaid = SellService.SellAll(HoldOf(5, 24, 0.4f), new FakeWallet(), greywick);
 
-            // CHARACTERIZATION — documents current behavior, NOT an endorsement. The VS-18 sell screen
-            // prices via SellPricing → MarketMath.PriceMultiplier(supply, elasticity) at NEUTRAL demand,
-            // and SellService reads only Market.SupplyOf, never DemandFactor. So Greywick's VS-16 demand
-            // advantage (real on Market.NextUnitPrice, asserted above, and on the older instant
-            // FishBuyer.SellAll) does NOT reach the screen's payout. Flagged for economy-sim in the PR.
-            // When the sell path is made demand-aware, flip this to Assert.Greater(greywickPaid, covePaid).
+            // Market depth 2 threaded per-category demand through SellPricing/SellService, so the screen's
+            // payout (and the instant FishBuyer.SellAll that now routes through it) honours Greywick's
+            // higher demand: selling the same hold at Greywick pays MORE. This was the documented gap this
+            // net flagged — the characterization here was flipped from AreEqual once the gap was closed.
             Assert.Greater(covePaid, 0);
-            Assert.AreEqual(covePaid, greywickPaid,
-                "DOCUMENTED GAP: selling via the VS-18 screen ignores market demand — Greywick pays the same as the cove");
+            Assert.Greater(greywickPaid, covePaid,
+                "selling via the VS-18 screen now honours market demand — Greywick pays more than the cove");
         }
     }
 }
