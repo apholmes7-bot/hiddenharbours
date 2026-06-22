@@ -29,6 +29,7 @@ namespace HiddenHarbours.App.Editor
         const string DataBoats  = "Assets/_Project/Data/Boats";
         const string DataFish   = "Assets/_Project/Data/Fish";
         const string DataShip   = "Assets/_Project/Data/Shipwright";
+        const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // legacy single-sprite hull (fallback)
         const string ArtDoryHull = "Assets/_Project/Art/Boats/DoryHull.png";     // oar-less hull base (64×144, centre)
@@ -76,6 +77,23 @@ namespace HiddenHarbours.App.Editor
             // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY, the
             // payoff of the buy-the-Punt loop (VS-16). Authored as data, never hardcoded in gameplay C#.
             var punt = LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
+
+            // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage. Created
+            // here if absent and authored by GreywickBuilder under the same stable ids (first run wins).
+            var coveRegion = LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
+            {
+                r.Id = "region.coddle_cove"; r.DisplayName = "Coddle Cove"; r.SceneName = "Greybox";
+                r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
+                r.TideMeanLevel = 0f; r.TideAmplitude = 1.6f; r.TidePhaseHours = 0f;
+                r.Description = "Your home harbour — the sheltered greybox cove.";
+            });
+            var greywickRegion = LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
+            {
+                r.Id = "region.port_greywick"; r.DisplayName = "Port Greywick"; r.SceneName = "Greywick";
+                r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
+                r.TideMeanLevel = 0f; r.TideAmplitude = 0.8f; r.TidePhaseHours = 2f;
+                r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
+            });
 
             var fish = new[]
             {
@@ -185,6 +203,8 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AmericanLobster.asset"),
             };
+            coveRegion     = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
+            greywickRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
 
             // Services root
             var root = new GameObject("GameRoot");
@@ -441,6 +461,52 @@ namespace HiddenHarbours.App.Editor
             SetRef(switcher, "_dockZone", dockZone.transform);
             SetRef(switcher, "_disembarkPoint", disembarkPoint.transform);
 
+            // --- REGION TRAVEL (VS-22 Cove↔Greywick; persistent-core / additive-region) ----------------
+            // FLAG lead-architect: this is the pragmatic VS-01 persistent-core approach. The core (GameRoot
+            // — which already DontDestroyOnLoads itself — plus the player, dory+hold, camera, control
+            // switcher, fishing gauge) is tagged PersistentObject so it SURVIVES the additive region hop,
+            // carrying the player, boat, hold and wallet. A persistent RegionSceneLoader + a
+            // RegionTravelCoordinator move the rig across and re-bind it to whichever region became active;
+            // region scenes are TOGGLED (roots SetActive), not reloaded, so the core is never duplicated.
+            // The longer-term home for the core is a dedicated Bootstrap scene (lead-architect's).
+            playerGo.AddComponent<PersistentObject>();
+            doryGo.AddComponent<PersistentObject>();
+            camGo.AddComponent<PersistentObject>();
+            switcherGo.AddComponent<PersistentObject>();
+            gaugeGo.AddComponent<PersistentObject>();
+
+            var loaderGo = new GameObject("RegionSceneLoader");
+            loaderGo.AddComponent<PersistentObject>();
+            var loader = loaderGo.AddComponent<RegionSceneLoader>();
+            SetRefArray(loader, "_regions", new Object[] { coveRegion, greywickRegion });
+            SetString(loader, "_currentSceneName", "Greybox");   // this scene; explicit (don't rely on Awake vs DDOL order)
+
+            var coordinatorGo = new GameObject("RegionTravelCoordinator");
+            coordinatorGo.AddComponent<PersistentObject>();
+            var coordinator = coordinatorGo.AddComponent<RegionTravelCoordinator>();
+            SetRef(coordinator, "_player", playerGo.transform);
+            SetRef(coordinator, "_boat", doryGo.transform);
+            SetRef(coordinator, "_switcher", switcher);
+            SetRef(coordinator, "_hold", hold);
+
+            // This region's anchor: arrive by boat in the channel near the dock; board/disembark at the
+            // cove dock (the coordinator re-points the switcher here when you sail back from Greywick).
+            var coveArrival = new GameObject("CoveArrival");
+            coveArrival.transform.position = new Vector3(0f, -13f, 0f);   // in the channel, just off the dock head
+            var coveAnchor = new GameObject("CoveRegionAnchor").AddComponent<RegionAnchor>();
+            coveAnchor.Configure("region.coddle_cove", coveArrival.transform, dockZone.transform, disembarkPoint.transform);
+
+            // Cove→Greywick passage: sail out to the harbour mouth (open water, south) to head for Port
+            // Greywick. A forgiving wide trigger — the only mover out here is the player's boat.
+            var toGreywickGo = new GameObject("PassageToPortGreywick");
+            toGreywickGo.transform.position = new Vector3(0f, -22f, 0f);
+            var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
+            toGreywickTrigger.isTrigger = true;
+            toGreywickTrigger.size = new Vector2(24f, 3f);
+            var toGreywickPassage = toGreywickGo.AddComponent<RegionPassage>();
+            SetRef(toGreywickPassage, "_target", greywickRegion);
+            SetRef(toGreywickPassage, "_loader", loader);
+
             // --- DEMO PEOPLE & THE INHERITANCE OPENING (VS-21, world-content; additive — flagged for
             // lead-architect) -------------------------------------------------------------------------
             // Aunt Ginny + a neighbour by the cottage, Ned's logbook to read, a self-built dialogue panel,
@@ -569,6 +635,14 @@ namespace HiddenHarbours.App.Editor
             for (int i = 0; i < values.Length; i++)
                 p.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void SetString(Component c, string field, string value)
+        {
+            var so = new SerializedObject(c);
+            var p = so.FindProperty(field);
+            if (p != null && p.propertyType == SerializedPropertyType.String)
+            { p.stringValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
         }
 
         static void SetTideProfile(Component env, float mean, float amp, float phase)
@@ -729,7 +803,7 @@ namespace HiddenHarbours.App.Editor
 
         static void EnsureFolders()
         {
-            foreach (var f in new[] { DataConfig, DataBoats, DataFish, DataShip, ArtSprites, Scenes })
+            foreach (var f in new[] { DataConfig, DataBoats, DataFish, DataShip, DataRegions, ArtSprites, Scenes })
             {
                 if (AssetDatabase.IsValidFolder(f)) continue;
                 var parent = Path.GetDirectoryName(f).Replace('\\', '/');

@@ -174,14 +174,24 @@ namespace HiddenHarbours.App.Editor
             SetRef(market, "_config", config);
             SetRef(buyer, "_market", market);
             SetRef(sell, "_buyer", buyer);
-            // TODO (needs the origin scene/bootstrap): SetRef(sell, "_holdProvider", playerBoat);
-            //                                          SetRef(sell, "_walletProvider", gameRoot);
 
-            // Shipwright shed: buy the Punt by id (+ dev 'P' to buy). Wallet provider left unwired (TODO).
+            // VS-22 travel: the player's hold + wallet live in the PERSISTENT core (a different scene), so
+            // they can't be serialize-referenced here. Wire the wharf to scene-local PROXIES that forward
+            // to the live persistent hold (PersistentHoldProxy → the dory's ShipHold) and wallet
+            // (PersistentWalletProxy → GameServices.Wallet). The RegionTravelCoordinator binds the hold
+            // proxy to the real hold on arrival; the wallet proxy always forwards to the live wallet — so
+            // you sell your catch + buy the Punt here against the same hold + coin you sailed in with.
+            var providersGo = new GameObject("PersistentProviders");
+            providersGo.AddComponent<PersistentHoldProxy>();
+            providersGo.AddComponent<PersistentWalletProxy>();
+            SetRef(sell, "_holdProvider", providersGo);
+            SetRef(sell, "_walletProvider", providersGo);
+
+            // Shipwright shed: buy the Punt by id (+ dev 'P' to buy), paid from the persistent wallet proxy.
             var shipwright = shipwrightShed.AddComponent<Shipwright>();
             shipwrightShed.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present
             SetRef(shipwright, "_offer", puntOffer);
-            // TODO (needs the origin scene/bootstrap): SetRef(shipwright, "_walletProvider", gameRoot);
+            SetRef(shipwright, "_walletProvider", providersGo);
 
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------
             var loaderGo = new GameObject("RegionSceneLoader");
@@ -199,6 +209,18 @@ namespace HiddenHarbours.App.Editor
             var passage = passageGo.AddComponent<RegionPassage>();
             SetRef(passage, "_target", cove);
             SetRef(passage, "_loader", loader);
+
+            // VS-22 arrival anchor: where the persistent rig binds when you sail in from the cove. The boat
+            // appears in the deep harbour just off the public wharf; board/disembark at the wharf deck. The
+            // App RegionTravelCoordinator reads this on arrival to reposition the rig + re-point the dock.
+            var gwArrival = new GameObject("GreywickArrival");
+            gwArrival.transform.position = new Vector3(0f, -5f, 0f);     // deep harbour, south of the wharf deck
+            var gwDock = new GameObject("GreywickDockZone");
+            gwDock.transform.position = new Vector3(0f, -1f, 0f);        // the wharf's seaward end (dock here)
+            var gwDisembark = new GameObject("GreywickDisembark");
+            gwDisembark.transform.position = new Vector3(0f, 1.5f, 0f);  // up on the public wharf deck
+            var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
+            gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
 
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);

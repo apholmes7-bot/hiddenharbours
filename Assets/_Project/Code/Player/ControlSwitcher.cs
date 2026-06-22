@@ -127,6 +127,19 @@ namespace HiddenHarbours.Player
             Mode = ControlMode.OnFoot;
         }
 
+        /// <summary>
+        /// Re-point the board/dock zone to ANOTHER region's mooring on a VS-22 travel — WITHOUT changing
+        /// the control mode (you arrive in the new region still aboard / still on foot). The persistent
+        /// switcher carries across the hop; the App RegionTravelCoordinator calls this so boarding and
+        /// disembarking work at whichever region's wharf you're standing in. Null args are tolerated (a
+        /// region simply has no board zone until wired).
+        /// </summary>
+        public void SetDock(Transform dockZone, Transform disembarkPoint)
+        {
+            _dockZone = dockZone;
+            _disembarkPoint = disembarkPoint;
+        }
+
         // ---- lifecycle (greybox dev input + prompt) -----------------------------------------
 
         private void Awake() => BuildHint();

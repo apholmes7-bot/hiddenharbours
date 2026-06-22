@@ -10,11 +10,11 @@ namespace HiddenHarbours.World
     /// wrapper over <see cref="SceneManager"/> driven by the pure <see cref="RegionTravel"/> decisions
     /// and a <see cref="RegionRegistry"/> built from the wired regions.
     ///
-    /// SCOPE (VS-22): this is the load mechanism + a stub for the Cove↔Greywick hop. It does NOT yet
-    /// unload the origin region or carry the player across — the on-foot player/boat are authored into
-    /// the origin (Cove) scene by the greybox builder, so persisting/repositioning them across a load
-    /// belongs with a bootstrap/origin-scene change (GreyboxBuilder), which this task must not touch.
-    /// Those steps are marked TODO. Until then this additively layers a region in for authoring/review.
+    /// SCOPE (VS-22): the load mechanism for the additive Cove↔Greywick hop. Carrying the player across +
+    /// re-showing a region is owned by the persistent core (App: PersistentObject + RegionTravelCoordinator,
+    /// GreyboxBuilder) — flagged for lead-architect. To keep the persistent core from being duplicated, a
+    /// region scene is loaded once and then TOGGLED by the coordinator rather than unloaded/reloaded; so
+    /// <see cref="Travel"/> re-activates an already-loaded region instead of loading a second copy.
     /// </summary>
     public sealed class RegionSceneLoader : MonoBehaviour
     {
@@ -28,6 +28,9 @@ namespace HiddenHarbours.World
         private RegionRegistry _registry;
 
         public RegionRegistry Registry => _registry ??= new RegionRegistry(_regions);
+
+        /// <summary>The scene the player currently occupies (the active region).</summary>
+        public string CurrentSceneName => _currentSceneName;
 
         private void Awake()
         {
@@ -44,14 +47,26 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
-        /// Additively load the target region's scene and make it active. No-op if it can't be loaded or
-        /// we're already there (<see cref="RegionTravel.ShouldLoad"/>).
-        /// TODO (needs bootstrap/GreyboxBuilder): unload the origin region and carry the player across.
+        /// Make the target region the active scene, carrying the persistent player/boat across. No-op if
+        /// it can't be loaded or we're already there (<see cref="RegionTravel.ShouldLoad"/>). If the region
+        /// scene is ALREADY loaded (a region we visited earlier and the coordinator only toggled off), we
+        /// just re-activate it — loading a second copy would duplicate the scene. Setting the active scene
+        /// raises <see cref="SceneManager.activeSceneChanged"/>, which the persistent RegionTravelCoordinator
+        /// listens to in order to show the region, silence its stray camera, and rebind the rig.
         /// </summary>
         public void Travel(RegionDef to)
         {
             if (!RegionTravel.ShouldLoad(_currentSceneName, to))
                 return;
+
+            // Already loaded (re-visit) → re-activate it, don't load a duplicate.
+            var existing = SceneManager.GetSceneByName(to.SceneName);
+            if (existing.IsValid() && existing.isLoaded)
+            {
+                SceneManager.SetActiveScene(existing);
+                _currentSceneName = to.SceneName;
+                return;
+            }
 
             var op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
             if (op == null)
@@ -68,7 +83,6 @@ namespace HiddenHarbours.World
                 var scene = SceneManager.GetSceneByName(loaded);
                 if (scene.IsValid() && scene.isLoaded) SceneManager.SetActiveScene(scene);
                 _currentSceneName = loaded;
-                // TODO: SceneManager.UnloadSceneAsync(originScene) once the player persists across the hop.
             };
         }
     }
