@@ -17,6 +17,10 @@ namespace HiddenHarbours.Tests.EditMode
     /// the invariant at the builder's shared constants AND drive the real switcher through the arrival
     /// bind, so a future re-tune that re-breaks dock range fails here rather than in a manual playtest.
     ///
+    /// The wharf was reoriented to face EAST so the crossing reads true (canon: Greywick lies WEST of the
+    /// cove — you sail west, arrive from the east, continue west onto the wharf). The disembark invariant
+    /// is unchanged: arrival must still park within DockZoneRadius of the dock zone (the #52 fix).
+    ///
     /// The collider/visual side (the boat not sailing through the wharf) is play-mode/manual — see the
     /// report's note that the owner must re-run "Hidden Harbours ▸ Build Greywick Scene" and re-test.
     /// </summary>
@@ -77,12 +81,13 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void DisembarkPoint_IsOnTheWharfDeck_NotInOpenWater()
         {
-            // The PublicWharf deck is centred (0,0) size (6,8) → x ∈ [-3,3], y ∈ [-4,4]. The disembark spot
-            // must land the on-foot player ON that deck (so they can walk to the Fish Buyer / Shipwright),
-            // not in the harbour. (A loose sanity box around the deck; mainly catches a sign/typo regression.)
+            // EAST-facing wharf: the PublicWharf deck is centred (0,0) size (8,6) → x ∈ [-4,4], y ∈ [-3,3]
+            // (it pokes east, head at the east tip x=4). The disembark spot must land the on-foot player ON
+            // that deck (so they can walk WEST to the Fish Buyer / Shipwright), not in the harbour. (A loose
+            // sanity box around the deck; mainly catches a sign/typo regression.)
             var p = GreywickBuilder.DisembarkPos;
-            Assert.GreaterOrEqual(p.x, -3f); Assert.LessOrEqual(p.x, 3f);
-            Assert.GreaterOrEqual(p.y, -4f); Assert.LessOrEqual(p.y, 4f);
+            Assert.GreaterOrEqual(p.x, -4f); Assert.LessOrEqual(p.x, 4f);
+            Assert.GreaterOrEqual(p.y, -3f); Assert.LessOrEqual(p.y, 3f);
         }
 
         // ---- the shoreline fence: a closed land/water boundary that leaves a dockable wharf head ---------
@@ -93,23 +98,24 @@ namespace HiddenHarbours.Tests.EditMode
             var pts = GreywickBuilder.ShorelinePoints;
             Assert.GreaterOrEqual(pts.Length, 4, "the shoreline fence needs enough points to dip around the wharf");
 
-            // The fence must reach the wharf HEAD (y = -4, the deck's seaward edge) so the boat stops against
-            // it to dock — and the dock zone sits right there.
+            // EAST-facing wharf: the fence must reach the wharf HEAD (x = the deck's seaward EAST tip = dock
+            // zone x) so the boat stops against it to dock — and the head is the EASTERNMOST point of the
+            // fence (the deep harbour stays open east of it).
             bool reachesHead = false;
-            float headY = float.MaxValue;
-            foreach (var p in pts) { if (p.y < headY) headY = p.y; if (Mathf.Approximately(p.y, GreywickBuilder.DockZonePos.y)) reachesHead = true; }
-            Assert.IsTrue(reachesHead, "the shoreline must trace down to the wharf head (y = dock zone y) so the boat docks against it");
-            Assert.AreEqual(GreywickBuilder.DockZonePos.y, headY, 1e-3f, "and the head is the southernmost point of the fence (the deep harbour stays open south of it)");
+            float headX = float.MinValue;
+            foreach (var p in pts) { if (p.x > headX) headX = p.x; if (Mathf.Approximately(p.x, GreywickBuilder.DockZonePos.x)) reachesHead = true; }
+            Assert.IsTrue(reachesHead, "the shoreline must trace out to the wharf head (x = dock zone x) so the boat docks against it");
+            Assert.AreEqual(GreywickBuilder.DockZonePos.x, headX, 1e-3f, "the head is the easternmost point of the fence (deep harbour open east of it)");
 
-            // The gap across the head must span the deck width (the boat reaches the head between the sides),
-            // i.e. there are points at x = ±3 sitting at the head depth.
-            bool westSide = false, eastSide = false;
+            // The gap across the head must span the deck height (the boat reaches the head between the sides),
+            // i.e. there are points at y = ±3 sitting at the head depth (x = headX).
+            bool northSide = false, southSide = false;
             foreach (var p in pts)
             {
-                if (Mathf.Approximately(p.y, headY) && p.x <= -3f + 1e-3f) westSide = true;
-                if (Mathf.Approximately(p.y, headY) && p.x >=  3f - 1e-3f) eastSide = true;
+                if (Mathf.Approximately(p.x, headX) && p.y >=  3f - 1e-3f) northSide = true;
+                if (Mathf.Approximately(p.x, headX) && p.y <= -3f + 1e-3f) southSide = true;
             }
-            Assert.IsTrue(westSide && eastSide, "the fence dips down BOTH sides of the wharf deck (x = ±3) to the head, making it a solid peninsula");
+            Assert.IsTrue(northSide && southSide, "the fence dips around BOTH sides of the wharf deck (y = ±3) to the head, making it a solid peninsula");
         }
     }
 }

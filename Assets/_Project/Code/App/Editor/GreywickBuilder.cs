@@ -52,11 +52,17 @@ namespace HiddenHarbours.App.Editor
         // VS-22 arrival/dock geometry — single source of truth shared with GreywickDockTests. The persistent
         // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
         // the boat parks at ArrivalPos on arrival, so ArrivalPos MUST sit within DockZoneRadius of DockZonePos
-        // or the player lands out of dock range and can't disembark (the owner-playtest gap this fixes).
-        public const float DockZoneRadius = 3.5f;                          // ControlSwitcher's default _zoneRadius (cove pattern)
-        public static readonly Vector3 ArrivalPos   = new Vector3(0f, -5.5f, 0f);  // deep harbour, just off the wharf head
-        public static readonly Vector3 DockZonePos  = new Vector3(0f, -4f,   0f);  // the wharf's seaward HEAD (dock here)
-        public static readonly Vector3 DisembarkPos = new Vector3(0f, -2.5f, 0f);  // on the public wharf deck planks
+        // or the player lands out of dock range and can't disembark (the owner-playtest gap #52 fixed — keep it).
+        //
+        // CROSSING DIRECTION (canon map): Port Greywick lies WEST of the cove, so you cross by SAILING WEST
+        // and ARRIVE HEADING WEST (the hop preserves heading). The harbour reads true: the public wharf is a
+        // peninsula pointing EAST into the deep harbour (open to the east), its dockable HEAD the EAST tip.
+        // You enter from the EAST, park just east of the head (still heading west), and step WEST onto the deck.
+        public const float DockZoneRadius = 3.5f;                              // ControlSwitcher's default _zoneRadius (cove pattern)
+        public static readonly Vector3 ArrivalPos   = new Vector3(7f, 0f, 0f);  // deep harbour, just EAST of the wharf head
+        public static readonly Vector3 DockZonePos  = new Vector3(4f, 0f, 0f);  // the wharf's seaward (EAST) HEAD — dock here
+        public static readonly Vector3 DisembarkPos = new Vector3(2f, 0f, 0f);  // on the public wharf deck planks (west of the head)
+        public static readonly Vector3 ToCovePassagePos = new Vector3(14f, 0f, 0f); // return passage: EAST edge → sail east back to the cove
 
         [MenuItem("Hidden Harbours/Build Greywick Scene")]
         public static void Build()
@@ -99,7 +105,7 @@ namespace HiddenHarbours.App.Editor
             cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.05f, 0.10f, 0.15f); // deep-harbour dusk
-            camGo.transform.position = new Vector3(0f, 0f, -10f);
+            camGo.transform.position = new Vector3(-2f, 0f, -10f); // frame the west town + the east-poking wharf (standalone review)
             camGo.AddComponent<AudioListener>();
             ArtCameraSetup.ConfigurePixelPerfect(camGo);
             var ppc = camGo.GetComponent<PixelPerfectCamera>();
@@ -152,37 +158,39 @@ namespace HiddenHarbours.App.Editor
             greywick  = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
             cove      = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
 
-            // --- QUAY (the land the town sits on, along the north) --------------------------
-            MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     new Vector2(0f, 7f), new Vector2(28f, 8f), -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
-            MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(0f, 3.5f), new Vector2(28f, 3f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
-            // The public wharf deck reaching out into the deep harbour.
-            MakeTiledGround("PublicWharf", LoadSpriteAny(ArtWharfDeck), new Vector2(0f, 0f), new Vector2(6f, 8f), -5, waterSprite, new Color(0.55f, 0.40f, 0.24f));
+            // --- QUAY (the land the town sits on, along the WEST) ---------------------------
+            // Greywick lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
+            // public wharf is a peninsula reaching EAST into the deep harbour (open water is to the east).
+            MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     new Vector2(-10f, 0f), new Vector2(10f, 30f), -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
+            MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, 30f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
+            // The public wharf deck reaching EAST out into the deep harbour (head = the east tip, x=4).
+            MakeTiledGround("PublicWharf", LoadSpriteAny(ArtWharfDeck), new Vector2(0f, 0f), new Vector2(8f, 6f), -5, waterSprite, new Color(0.55f, 0.40f, 0.24f));
 
-            // Pilings down the wharf sides.
+            // Pilings along the wharf's north & south edges, out toward the EAST head (fenders at the head).
             var postSprite = LoadSpriteAny(ArtWharfPost);
             for (int i = 0; i < 3; i++)
             {
-                float py = 1f - i * 3f; // 1, -2, -5
-                MakePost(postSprite, new Vector2(-3f, py), waterSprite);
-                MakePost(postSprite, new Vector2( 3f, py), waterSprite);
+                float px = i * 2f; // 0, 2, 4 (out toward the east head)
+                MakePost(postSprite, new Vector2(px,  3f), waterSprite);
+                MakePost(postSprite, new Vector2(px, -3f), waterSprite);
             }
 
-            // --- BUILDINGS (services + a couple of flavour houses) --------------------------
-            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), new Vector2(-7f, 6f),  waterSprite, new Color(0.50f, 0.42f, 0.34f));
-            var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  new Vector2(-2.5f, 6f),waterSprite, new Color(0.42f, 0.50f, 0.52f));
-            MakeBuilding("GreywickHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(3.5f, 6.3f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
-            MakeBuilding("GreywickHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(7.5f, 6f),   waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
+            // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
+            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), new Vector2(-8f,  3f), waterSprite, new Color(0.50f, 0.42f, 0.34f));
+            var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  new Vector2(-8f, -3f), waterSprite, new Color(0.42f, 0.50f, 0.52f));
+            MakeBuilding("GreywickHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(-12f,  5f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
+            MakeBuilding("GreywickHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -5f), waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
 
             // --- SHORELINE BOUNDARY ---------------------------------------------------------
-            // Mirror the cove's ShoreEdge (a closed/open EdgeCollider2D fence dividing land from water) so
-            // the boat can't sail THROUGH the quay/wharf geometry (owner playtest gap #2). The fence runs
-            // along the land waterline (the QuayEdge sand bottom, y=2) but DIPS around the public wharf deck
-            // (centred (0,0), size (6,8) → x ∈ [-3,3], seaward head y=-4): down the west side, across the
-            // head, up the east side. That makes the wharf a SOLID peninsula — the boat approaches the head
-            // from the deep harbour (south) and stops against it to dock (dock zone (0,-4)), but cannot slip
-            // up either side onto the deck or onto the land. The disembark spot (0,-2.5) sits on the deck
-            // BEHIND the fence; the player is teleported there, then their footprint keeps them land-side.
-            // Open water (south) is left fully open for the arrival + sail-in.
+            // Mirror the cove's ShoreEdge (an EdgeCollider2D fence dividing land from water) so the boat
+            // can't sail THROUGH the quay/wharf geometry (owner playtest gap #2). The fence runs along the
+            // WEST land waterline (x=-4) but DIPS EAST around the public wharf deck (centred (0,0), size
+            // (8,6) → x ∈ [-4,4], seaward head at the EAST tip x=4): out the north edge, down the head, back
+            // along the south edge. That makes the wharf a SOLID peninsula pointing east — the boat
+            // approaches the head from the deep harbour (EAST) and stops against it to dock (dock zone
+            // (4,0)), but cannot slip onto the deck or land. The disembark spot (2,0) sits on the deck BEHIND
+            // the fence; the player is teleported there, then their footprint keeps them land-side. Open
+            // water (EAST) is left fully open for the arrival + sail-in.
             MakeShoreline();
 
             // --- ECONOMY (reuse the cove's components, referenced by id) --------------------
@@ -220,13 +228,15 @@ namespace HiddenHarbours.App.Editor
             SetRefArray(loader, "_regions", new Object[] { greywick, cove });
             SetString(loader, "_currentSceneName", SceneName);
 
-            // Return passage at the harbour mouth (south): sail/walk into it to head back to the Cove.
-            // The matching Cove→Greywick passage lives in the cove scene (GreyboxBuilder) — TODO there.
+            // Return passage out to the EAST (toward the cove, which lies east of Greywick): sail east into
+            // this wide, forgiving band to head back to Coddle Cove — so you arrive home at the cove dock
+            // FROM THE WEST (heading east). The matching Cove→Greywick passage lives on the cove's WEST edge
+            // (GreyboxBuilder.ToGreywickPassagePos).
             var passageGo = new GameObject("PassageToCoddleCove");
-            passageGo.transform.position = new Vector3(0f, -11f, 0f);
+            passageGo.transform.position = ToCovePassagePos;
             var trigger = passageGo.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(10f, 2f);
+            trigger.size = new Vector2(3f, 16f);   // a tall east-edge band (forgiving, wide)
             var passage = passageGo.AddComponent<RegionPassage>();
             SetRef(passage, "_target", cove);
             SetRef(passage, "_loader", loader);
@@ -235,23 +245,22 @@ namespace HiddenHarbours.App.Editor
             // appears in the deep harbour just off the public wharf head; board/disembark at the wharf deck.
             // The App RegionTravelCoordinator reads this on arrival to reposition the rig + re-point the dock.
             //
-            // DISEMBARK GEOMETRY (the cove's proven pattern): ControlSwitcher.InDockZone() is a pure DISTANCE
-            // test — Vector2.Distance(boat, dockZone) <= _zoneRadius (3.5 m default on the persistent
-            // switcher). It needs NO trigger collider on the dock zone; it only needs the BOAT to PARK within
-            // 3.5 m of the dock zone on arrival. The previous wiring parked the boat at (0,-5) but put the
-            // dock zone at (0,-1) — 4.0 m apart (> 3.5 m), so on arrival the boat sat just OUT of dock range
-            // and E did nothing (no way to disembark to reach the Fish Buyer / Shipwright). Park the arrival
-            // just off the deck head and the dock zone AT the deck head so the boat lands ~1.5 m from the dock
-            // zone — comfortably in range — exactly as the cove arrives in its channel at its dock head. The
-            // PublicWharf deck is centred (0,0) size (6,8) → its seaward (south) edge is y=-4; deep harbour
-            // is south of it. The three positions are public constants (single source of truth) so an
-            // EditMode test can assert the arrival↔dock distance stays inside DockZoneRadius without a scene.
+            // DISEMBARK GEOMETRY (the cove's proven pattern; do NOT regress #52): ControlSwitcher.InDockZone()
+            // is a pure DISTANCE test — Vector2.Distance(boat, dockZone) <= _zoneRadius (3.5 m default on the
+            // persistent switcher). It needs NO trigger collider on the dock zone; it only needs the BOAT to
+            // PARK within 3.5 m of the dock zone on arrival. With the EAST-facing wharf the head is the deck's
+            // east tip (4,0); you cross by sailing WEST, so you enter the harbour from the EAST still heading
+            // west and park just east of the head at (7,0) — 3.0 m from the dock zone, comfortably in range —
+            // then step WEST onto the deck. The PublicWharf deck is centred (0,0) size (8,6) → its seaward
+            // (EAST) edge is x=4; the deep harbour is open east of it. The three positions are public
+            // constants (single source of truth) so an EditMode test can assert the arrival↔dock distance
+            // stays inside DockZoneRadius without a scene (GreywickDockTests).
             var gwArrival = new GameObject("GreywickArrival");
-            gwArrival.transform.position = ArrivalPos;       // deep harbour, just off the wharf head (open water; deck ends at y=-4)
+            gwArrival.transform.position = ArrivalPos;       // deep harbour, just EAST of the wharf head (open water; deck ends at x=4)
             var gwDock = new GameObject("GreywickDockZone");
-            gwDock.transform.position = DockZonePos;          // the wharf's seaward HEAD — within the dock radius of arrival
+            gwDock.transform.position = DockZonePos;          // the wharf's seaward (EAST) HEAD — within the dock radius of arrival
             var gwDisembark = new GameObject("GreywickDisembark");
-            gwDisembark.transform.position = DisembarkPos;    // up on the public wharf deck planks (north of the head)
+            gwDisembark.transform.position = DisembarkPos;    // on the public wharf deck planks (west of the head)
             var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
 
@@ -261,15 +270,17 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreywickBuilder] Built Greywick.unity — Port Greywick (services region). The wharf " +
-                      "carries the Fish Buyer (B) + Shipwright (P), reused by id. Region scene loads " +
-                      "additively via RegionSceneLoader; the return passage heads back to Coddle Cove. " +
-                      "TODO: wire the player/wallet across the transition (needs the origin/bootstrap scene).");
+            Debug.Log("[GreywickBuilder] Built Greywick.unity — Port Greywick (services region), EAST-FACING " +
+                      "to read true (canon: Greywick lies WEST of the cove). You cross by sailing WEST, arrive " +
+                      "from the EAST heading west, and continue west onto the wharf (Fish Buyer B + Shipwright " +
+                      "P, reused by id). The return passage heads EAST back to Coddle Cove (you arrive home " +
+                      "from the west). Loaded additively via RegionSceneLoader.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Port Greywick scene built.\n\nIt's a SEPARATE region scene (services, not a town — M2 " +
-                "grows it):\n• Public wharf with the Fish Buyer + Shipwright\n• A couple of flavour houses\n" +
-                "• A return passage to Coddle Cove\n\nLoaded additively by RegionSceneLoader. The " +
-                "Cove→Greywick hop + carrying the player across are TODOs (need the cove/bootstrap scene).",
+                "Port Greywick scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Greywick " +
+                "lies WEST of the cove, so:\n• You SAIL WEST to cross\n• You ARRIVE from the EAST, heading " +
+                "west, and continue west onto the wharf (Fish Buyer + Shipwright)\n• The return passage heads " +
+                "EAST → you arrive home at the cove dock from the WEST\n\nLoaded additively by " +
+                "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Greywick Scene', then re-test.",
                 "Fair winds");
         }
 
@@ -353,18 +364,20 @@ namespace HiddenHarbours.App.Editor
             col.radius = 0.3f;   // slim piling
         }
 
-        // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the quay
-        // waterline and dipping around the public wharf deck so the wharf reads as a solid peninsula and the
-        // boat can't sail through Greywick. Public so an EditMode test can assert its shape without a scene.
-        // The deep harbour (south) is left fully open for the arrival + sail-in.
+        // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the WEST land
+        // waterline (x=-4) and dipping EAST around the public wharf deck so the wharf reads as a solid
+        // peninsula pointing into the deep harbour and the boat can't sail through Greywick. Land is WEST
+        // (x < -4); the deep harbour is open to the EAST. The boat arrives from the east and stops against
+        // the wharf HEAD (the deck's east tip, x=4 — the dock zone). Public so an EditMode test can assert
+        // its shape without a scene.
         public static readonly Vector2[] ShorelinePoints =
         {
-            new Vector2(-40f, 2f),   // west shoreline (along the QuayEdge sand bottom)
-            new Vector2(-3f,  2f),   // to the west edge of the wharf deck
-            new Vector2(-3f, -4f),   // down the west side of the deck to its seaward head
-            new Vector2( 3f, -4f),   // across the wharf head (the boat stops here to dock — dock zone (0,-4))
-            new Vector2( 3f,  2f),   // up the east side of the deck back to the shoreline
-            new Vector2(40f,  2f),   // east shoreline
+            new Vector2(-4f,  20f),  // west land waterline, north
+            new Vector2(-4f,   3f),  // in to the deck's north edge
+            new Vector2( 4f,   3f),  // east along the deck's north edge to the head (the east tip)
+            new Vector2( 4f,  -3f),  // down the head (east edge) — the boat stops here to dock (dock zone (4,0))
+            new Vector2(-4f,  -3f),  // west along the deck's south edge back to the waterline
+            new Vector2(-4f, -20f),  // west land waterline, south
         };
 
         static void MakeShoreline()
