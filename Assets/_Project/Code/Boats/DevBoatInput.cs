@@ -28,11 +28,14 @@ namespace HiddenHarbours.Boats
             var kb = Keyboard.current;
             if (kb == null || _boat == null) return;
 
+            // The propulsion branch is the SAME decision the controller's physics uses (one source of
+            // truth in BoatController.UsesEngineHelm) so input + physics can never disagree about a hull:
+            // the Punt (Engine) gets the outboard helm, the Dory (Oars) keeps per-oar rowing.
             BoatHullDef hull = _boat.Hull;
-            if (hull != null && hull.Propulsion == PropulsionType.Oars)
-                ReadOars(kb);
-            else
+            if (hull == null || BoatController.UsesEngineHelm(hull.Propulsion))
                 ReadEngine(kb);
+            else
+                ReadOars(kb);
         }
 
         /// <summary>
