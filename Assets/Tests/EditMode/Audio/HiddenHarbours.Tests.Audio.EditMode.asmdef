@@ -1,0 +1,15 @@
+{
+    "name": "HiddenHarbours.Tests.Audio.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.Audio.EditMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Audio"
+    ],
+    "includePlatforms": ["Editor"],
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "overrideReferences": true,
+    "autoReferenced": false
+}

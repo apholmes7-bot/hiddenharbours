@@ -1,0 +1,9 @@
+{
+    "name": "HiddenHarbours.Audio",
+    "rootNamespace": "HiddenHarbours.Audio",
+    "references": [
+        "HiddenHarbours.Core"
+    ],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}
