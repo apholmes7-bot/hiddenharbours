@@ -13,6 +13,7 @@ namespace HiddenHarbours.Environment
         [SerializeField] private GameConfig _config;
         [SerializeField] private int _worldSeed = 12345;
         [SerializeField] private TideProfile _activeTideProfile = TideProfile.CoddleCove;
+        [SerializeField] private WindProfile _activeWindProfile = WindProfile.CoddleCove;   // VS-05
 
         [Header("Tidal current (simplified for greybox)")]
         [Tooltip("Axis the flood tide runs along for the active region.")]
@@ -24,6 +25,7 @@ namespace HiddenHarbours.Environment
 
         public int WorldSeed => _worldSeed;
         public TideProfile ActiveTideProfile { get => _activeTideProfile; set => _activeTideProfile = value; }
+        public WindProfile ActiveWindProfile { get => _activeWindProfile; set => _activeWindProfile = value; }
 
         private void Awake()
         {
@@ -36,7 +38,7 @@ namespace HiddenHarbours.Environment
         public EnvironmentSample Sample()
         {
             double t = Clock?.TotalSeconds ?? 0.0;
-            WeatherModel.Sample(t, _worldSeed, _config, out Vector2 wind, out SeaState sea, out float vis);
+            WeatherModel.Sample(t, _worldSeed, _config, _activeWindProfile, out Vector2 wind, out SeaState sea, out float vis);
             float tide = TideModel.Height(t, _activeTideProfile, _config);
 
             // Flood runs along +channelAxis, ebb reverses; strongest at mid-tide (max rate).
