@@ -1,0 +1,15 @@
+{
+    "name": "HiddenHarbours.Tests.Sell.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.Sell",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Economy"
+    ],
+    "includePlatforms": ["Editor"],
+    "precompiledReferences": ["nunit.framework.dll"],
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
