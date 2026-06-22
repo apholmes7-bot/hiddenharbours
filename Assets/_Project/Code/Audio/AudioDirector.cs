@@ -62,6 +62,7 @@ namespace HiddenHarbours.Audio
         private AudioSource _hull;    // hull-slap/row (ambience, aboard only)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
+        private AudioSource _music;   // music bus (reserved — no stem yet; volume + duck are live)
 
         // ---- state --------------------------------------------------------------------------
         private bool _aboard;
@@ -142,9 +143,10 @@ namespace HiddenHarbours.Audio
 
             if (_bed  != null) _bed.volume  = ambDucked * bedGain;
             if (_gull != null) _gull.volume = ambDucked * bedGain * 0.7f;
-            if (_hull != null) _hull.volume = _aboard ? amb * _hullLayerGain : 0f; // being on the water — not ducked
-            if (_tell != null) _tell.volume = amb * _tell01;                       // the warning itself rises
-            if (_cue  != null) _cue.volume  = _sfxVolume * _masterVolume;          // one-shots at sfx volume
+            if (_hull  != null) _hull.volume  = _aboard ? amb * _hullLayerGain : 0f; // being on the water — not ducked
+            if (_tell  != null) _tell.volume  = amb * _tell01;                       // the warning itself rises
+            if (_cue   != null) _cue.volume   = _sfxVolume * _masterVolume;          // one-shots at sfx volume
+            if (_music != null) _music.volume = AudioDirectorLogic.DuckedGain(_musicVolume * _masterVolume, _duck); // bus is live; ducks under cues
         }
 
         // ---- events -------------------------------------------------------------------------
@@ -185,8 +187,9 @@ namespace HiddenHarbours.Audio
             _bed  = MakeSource("Bed",      _calmBed,  loop: true,  play: true);
             _gull = MakeSource("Gulls",    _gulls,    loop: true,  play: true);
             _hull = MakeSource("HullRow",  _hullRow,  loop: true,  play: false);
-            _tell = MakeSource("WindTell", _windTell, loop: true,  play: true);
-            _cue  = MakeSource("Cue",      null,      loop: false, play: false);
+            _tell  = MakeSource("WindTell", _windTell, loop: true,  play: true);
+            _cue   = MakeSource("Cue",      null,      loop: false, play: false);
+            _music = MakeSource("Music",    null,      loop: true,  play: false); // bus ready; stem slots in later
         }
 
         private AudioSource MakeSource(string name, AudioClip clip, bool loop, bool play)
