@@ -47,9 +47,22 @@ namespace HiddenHarbours.Economy
 
         /// <summary>
         /// The no-arg interaction entrypoint (what dev input / the future Interact intent calls).
-        /// Sells the wired hold to the wired wallet.
+        /// VS-18: opens the <see cref="SellScreen"/> (choose a species + quantity, marginal pricing)
+        /// instead of instant-selling the whole hold. The instant batch sale stays available via the
+        /// <see cref="Sell(IHold, IWallet)"/> seam (tests/automation); returns 0 here because the
+        /// payout now happens through the screen, not synchronously.
         /// </summary>
-        public int Sell() => Sell(_hold, _wallet);
+        public int Sell()
+        {
+            if (_hold == null || _wallet == null) return 0;
+            if (_hold.UsedUnits == 0)
+            {
+                Debug.Log("[Wharf] Hold's empty — nothing to sell.");
+                return 0;
+            }
+            SellScreen.Open(_hold, _wallet);
+            return 0;
+        }
 
         /// <summary>
         /// Core sell seam (testable): guards inputs, delegates the economics to the buyer, surfaces
