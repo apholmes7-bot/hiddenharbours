@@ -55,6 +55,7 @@ namespace HiddenHarbours.UI
         private Text _compassRibbonLabel;  // the scrolling rose tape — the SHAPE channel
         private Text _compassNeedleLabel;  // a fixed centre needle the tape scrolls under
         private Text _setDriftLabel;       // "COG 050°  → 8° stbd" — track vs heading (crabbing read)
+        private Text _apparentWindLabel;   // "Apparent ↗ 45° stbd bow" — true wind relative to the bow
 
         // ---- cached displayed values (change-detection → no per-frame string building) ------
         private string _clockCache;
@@ -65,6 +66,7 @@ namespace HiddenHarbours.UI
         private string _compassCache;
         private string _ribbonCache;
         private string _setDriftCache;
+        private string _apparentWindCache;
 
         // Whether the nav cluster is currently shown (at sea). Toggled, so labels flip enabled only on change.
         private bool _navShown;
@@ -174,7 +176,7 @@ namespace HiddenHarbours.UI
             UpdateTide(env);
             UpdateWind(sample.WindVector);
             UpdateSea(sample.SeaState);
-            UpdateNavReads();   // VS-19: heading compass + set-&-drift (only while aboard)
+            UpdateNavReads(sample.WindVector);   // VS-19: compass + set-&-drift + apparent wind (only at sea)
         }
 
         private void UpdateTide(IEnvironmentService env)
@@ -248,7 +250,7 @@ namespace HiddenHarbours.UI
         // Boats module (ADR 0007). Shown only while aboard; hidden ashore. Strings are change-detected
         // against a cache (same discipline as UpdateWind/UpdateTide) so an unchanged read repaints nothing.
 
-        private void UpdateNavReads()
+        private void UpdateNavReads(Vector2 windVector)
         {
             // ActiveBoat is OPTIONAL (null on foot / before a boat is aboard, like Wallet) — null-check it.
             var boat = GameServices.ActiveBoat;
@@ -272,6 +274,12 @@ namespace HiddenHarbours.UI
             // Set-&-drift: the boat's true course-over-ground vs its heading — so the player sees it crab.
             string set = CompassReadout.SetAndDrift(k.HeadingDegrees, k.CourseOverGroundDegrees, k.SpeedOverGround);
             if (set != _setDriftCache) { _setDriftCache = set; _setDriftLabel.text = set; }
+
+            // Apparent wind: the true wind RELATIVE to the bow (off which bow/beam/quarter it's hitting),
+            // composed from the same heading seam + the environment wind via BoatKinematics — so the
+            // player reads the wind on the boat, not just its absolute compass direction (VS-19).
+            string apparent = ApparentWindReadout.Format(k.HeadingDegrees, windVector);
+            if (apparent != _apparentWindCache) { _apparentWindCache = apparent; _apparentWindLabel.text = apparent; }
         }
 
         // Show the nav cluster at sea, hide it ashore. Flips the labels' enabled state only on a change.
@@ -283,6 +291,7 @@ namespace HiddenHarbours.UI
             if (_compassRibbonLabel != null) _compassRibbonLabel.enabled = shown;
             if (_compassNeedleLabel != null) _compassNeedleLabel.enabled = shown;
             if (_setDriftLabel != null)      _setDriftLabel.enabled = shown;
+            if (_apparentWindLabel != null)  _apparentWindLabel.enabled = shown;
         }
 
         private void UpdateMoney()
@@ -502,6 +511,8 @@ namespace HiddenHarbours.UI
             // (UpdateNavReads toggles it; hidden ashore). Parented to the canvas root, stacked upward:
             // set-&-drift, the rose ribbon, the fixed needle, then the heading line. Redundant-coded — a
             // degrees number + a cardinal word + the ribbon/arrow SHAPE — never colour alone (§8).
+            _apparentWindLabel = MakeLabel(canvasRt, "ApparentWind", TextAnchor.LowerCenter,
+                new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 40f, 28);
             _setDriftLabel = MakeLabel(canvasRt, "SetDrift", TextAnchor.LowerCenter,
                 new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 70f, 28);
             _compassRibbonLabel = MakeLabel(canvasRt, "CompassRibbon", TextAnchor.LowerCenter,
@@ -513,6 +524,7 @@ namespace HiddenHarbours.UI
                 new Vector2(0.2f, 0f), new Vector2(0.8f, 0f), 0f, 188f, 34);
 
             // Built hidden; UpdateNavReads shows them once aboard (HasActiveBoat).
+            _apparentWindLabel.enabled = false;
             _setDriftLabel.enabled = false;
             _compassRibbonLabel.enabled = false;
             _compassNeedleLabel.enabled = false;
