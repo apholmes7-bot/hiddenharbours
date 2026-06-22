@@ -292,7 +292,7 @@ When stability fully fails (sustained broachRisk → knockdown → capsize) or t
 | **Engine** | `Engine` | Stock outboard → larger outboard → inboard diesel → high-output → twin-screw | More thrust/top speed, better reverse & rudder authority at low speed, more range; higher tiers needed to push the big hulls. **Maintenance/condition** reduces breakdown risk (§3.6, P4). |
 | **Hull** | `Hull` | Reinforced planking → steel plating → ice-strengthened; **freeboard/flare** add-ons | More `baseStability` & `maxSafeSeaState` (seaworthiness), more collision/holing resistance, higher freeboard resists swamping (§3.3). The path to surviving Ironbound storms. |
 | **Hold** | `Hold` | Hold expansion, **insulated/iced hold**, live-well, **trim ballast** | More HU capacity; insulation slows catch spoilage (value — `economy`); ballast/trim assist improves stability under load (§3.5). |
-| **Gear mounts** | `Gear[]` | Handline rig, **longline drum**, net/trawl winch, **trap hauler**, dredge | Determines *what fishing methods* the boat can run (§6). Branch-defining (lobster = trap hauler; offshore = trawl winch). |
+| **Gear mounts** | `Gear[]` | Handline rig, **longline drum**, net/trawl winch, **trap hauler** (manual → **electric/powered winch**), dredge | Determines *what fishing methods* the boat can run (§6). Branch-defining (lobster = trap hauler; offshore = trawl winch). The **powered winch** upgrade automates the hand-haul (P4 — §6.3). |
 | **Navigation instruments** | `Instruments[]` | **Compass** → **depth sounder** → **radar** → **GPS/chartplotter** → integrated suite | Awareness & danger-warning (next table). The **fog answer** for The Smother. |
 | **Safety gear** | `Safety[]` | **Bilge pump** (manual→powered), **life raft**, **flares**, **EPIRB/radio beacon**, fire kit | Directly mitigate §3.3/§3.7/§3.8 — pump out leaks, summon rescue faster, reduce penalties. The "teeth-filing" kit. |
 
@@ -370,6 +370,36 @@ catchContext = {
 - **Tide** opens specific opportunities (clams on the Drownded Lands at low water; fast pelagics through Fundy Rips on a running tide) — the P1 tie-in: *when* you fish matters as much as *where*.
 
 > **Boundary discipline:** if an agent needs to know *what fish, how many, at what value* — that's [`fish-and-content.md`](fish-and-content.md). If they need *what gear/boat can reach/work a region at a given tide & weather* — that's here.
+
+### 6.3 Trap-hauling interaction — the lobster loop (phased **M2**)
+
+> **Future work (M2 — the lobster gear / specialist branch).** Captured here because it is an
+> on-water *boat* interaction; the species / bait / soak side lives in
+> [`fish-and-content.md`](fish-and-content.md) §3.5(b).
+
+The lobster loop the owner specifies, expressed as a boat interaction:
+
+1. **Set** a baited trap (`Pots`/`Trap`); it drops to the bottom marked by a **surface buoy**.
+2. **Return and lay alongside.** You bring the boat **beside the buoy** and **hold station** — a real
+   handling beat, because wind, current, and tide **set you off the mark**, so approaching the buoy
+   cleanly is itself a small navigation skill (P1).
+3. **Leave the helm to haul.** You **step off the wheel to port or starboard**, **gaff the buoy**, and
+   **haul the trap** — while the boat, helm unattended, **drifts with wind and current** (§2.3). You
+   pick your moment and your side, or you re-approach. This "**leave the helm, work the rail**" beat
+   is the tactile heart of trap fishing and a deliberate cozy-with-teeth bit of seamanship — drift
+   onto a sunker while you're heads-down hauling and that's on you (P5).
+4. **Haul by hand, then winched (P4).** Hauling without a powered mount is a **stamina action**; the
+   **electric-winch upgrade** (a powered `trap hauler` in the **Gear mounts** slot, §4.2) hauls the
+   pot for you — the canon "earn it, then automate it" arc expressed in deck hardware. Some boats
+   mount the winch, some don't (branch/tier-gated).
+
+**Fuel reminder (already canon — §2.6 / §3.6):** the boats you run these from are **engine boats that
+consume fuel (FU)**. Every soak-and-haul run spends fuel, fuel is bought at wharves
+([`economy-and-business.md`](economy-and-business.md)), and **running dry is a breakdown-class event**
+(§3.6). The dory and punt can **row or sail** home fuel-free; bigger boats cannot. *(St Peters note:
+the prologue dory begins **broken and hauled out** — the opening's whole goal is to **repair** it,
+[`world-and-regions.md`](world-and-regions.md) §6.0 — after which it burns fuel like any outboard
+craft. Phased **M2**.)*
 
 ---
 

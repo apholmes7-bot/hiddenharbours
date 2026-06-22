@@ -231,6 +231,17 @@ relationship to the player · questline/service hook.**
 > start (the tutorial / handover), then lost, with his memory and unfinished business threaded
 > through the early game. This matches "Inherit your uncle's dory and his cottage" while still
 > letting him anchor the opening as required.
+>
+> **St Peters opening (owner-ratified, phased M2 — `../vision-and-pillars.md` §5.8,
+> `world-and-regions.md` §6.0).** The full arc is **St Peters Island → Coddle Cove → mainland**. The
+> M1 opening described below (Aunt Ginny + Ned's logbook at Coddle Cove) is the **stand-in**; when
+> St Peters is built (M2), the **start and onboarding relocate** to the island's **school**, and the
+> **dialogue/onboarding system is reused, not rebuilt** — **no NPC here is deleted**.
+> **Reconciliation flagged for the M2 pass (do not silently resolve):** where **Aunt Ginny** lives
+> across the arc (the St Peters school vs the Coddle Cove hearth — §3.4) and where the **uncle's
+> dory** is inherited/repaired (the St Peters slip vs the Cove). **Intent:** *one* teaching-aunt and
+> *one* inherited dory, placed to serve the three-beat arc — likely Ginny (or her teaching role)
+> opens the game at St Peters, then the cast settles into the Cove/Greywick placements below.
 
 ### 3.1 Uncle Ned Coddle — *the one who left you everything*
 
@@ -292,6 +303,12 @@ relationship to the player · questline/service hook.**
   tutorial of the home base** (`progression-and-housing.md`). Questline: **"Ned's Memory"** — she
   parcels out his story and his keepsakes as you prove yourself, the warm counterpart to his
   practical logbook.
+- **St Peters reconciliation (phased M2 — see the §3 note):** Aunt Ginny is the natural **teaching
+  aunt** of the St Peters prologue (compass + hand skills at the island **school**, the
+  onboarding-that-relocates). Whether she *moves* with the player from the island to the Cove, or the
+  island has her early and the Cove keeps the hearth version, is the **flagged reconciliation** to
+  settle when M2 is scheduled — **do not resolve it silently**. Intent: one teaching-aunt, no
+  duplicate.
 
 ### 3.5 Silas Boyne — *the shipwright*
 

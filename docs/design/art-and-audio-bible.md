@@ -347,6 +347,42 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
   realtime 2D lights. Profile on a mid-range phone; provide a **reduce-motion** path (calmer water,
   fewer particles — see accessibility in the UX doc).
 
+### 6.1 Advanced rendering roadmap (owner-ratified vision — phased M2/M3)
+
+> **Future work, captured for consistency — not in the M0/M1 slice** (CLAUDE.md rule 8). The M1 slice
+> ships the **§3.6 water + §6 global-grade backbone**. These owner-ratified ambitions deepen the look
+> later. **Phase: the wet-surface tide effects ≈ M2; the heavier rendering (3D-water→2D bake, dynamic
+> & cloud shadows, parallax-underwater preview) ≈ M3** ([`../roadmap.md`](../roadmap.md)). Each must
+> hold the LOCKED rules (§2 one perspective, §3 one scale / PPU) and the desktop perf budget
+> (mobile-portable).
+
+- **3D water baked to a 2D surface (M3).** Author the hero water look by **rendering a 3D water sim and
+  baking it down to the 2D surface** sprite/shader — richer swell, refraction and foam than
+  hand-pixelled tiles, while staying a flat ¾ surface on the grid. Mirrors the **M2 boat bake**
+  philosophy ([`../adr/0006-boat-art-pipeline.md`](../adr/0006-boat-art-pipeline.md)): author in 3D,
+  ship as 2D, with **one implied light direction** (§3.5.1) so baked water lights consistently with
+  everything around it. A profiled spike decides bake-to-frames vs a runtime shader (extends **OQ2**).
+- **Dynamic shadows on the 24-h clock (M3).** Shadows that **lengthen, shorten and swing** with the
+  sun's altitude/azimuth from the time-of-day curve ([`time-tides-weather.md`](time-tides-weather.md)
+  §2.3) — dawn rake → short noon → long dusk — instead of the static blob shadows of the slice (§3.4).
+  A major mood/P1 upgrade; must stay cheap (projected/skewed sprite shadows, not realtime shadow maps)
+  and respect the **fixed baked sculpt-light** (§3.5.1), which does *not* move.
+- **Cloud shadows (M3).** Soft **cloud-shadow patches drifting across land and water** (tied to
+  `cloudCover` + wind), so the light *breathes* — a Kingdoms-Two-Crowns staple that makes the open
+  coast feel vast and alive (P1). A cheap scrolling overlay; density follows the weather state.
+- **Wet-surface tide effects (M2).** As the tide **falls (~3–4 m range)**, harbour walls, pilings,
+  slipways, rock and mud are **revealed wet and glistening**, drying over time as the water leaves —
+  the visual half of the tide-tell value set in [`time-tides-weather.md`](time-tides-weather.md) §3.5.
+  Extends the already-locked **tide-aware shoreline** (§2.1/§2.2) from "the waterline moves" to "the
+  bared surfaces read *wet*." Lands with the **M2 region art passes**; the **St Peters causeway** is
+  the gameplay-critical case ([`world-and-regions.md`](world-and-regions.md) §6.0).
+- **Parallax underwater / shallow-water preview (M3).** A **parallax peek beneath the surface** in
+  shallow water — you can *see* the bar, the sunker, the clam bed, the seabed shelving away — turning
+  the §3.6 sub-surface parallax layers into a **readable shallow-water preview** that telegraphs
+  grounding hazards and forage (P1/P5: see the rock before you strike it, see the bed before you dig).
+  Pairs with the depth sounder ([`boats-and-navigation.md`](boats-and-navigation.md) §4.3) as the
+  *visual* counterpart to the instrument.
+
 ---
 
 ## 7. UI art direction
@@ -480,6 +516,8 @@ Per `../project-structure.md`:
    tier, since it drives atlas budgets.
 2. **Water: shader vs overlay, and how far to push it.** How much of the water look is a custom URP
    shader vs tilemap animation + overlays, given the mobile GPU budget? Needs a prototype + profile.
+   The **M3 3D-water→2D bake** (§6.1) is the far end of this spectrum — decide bake-to-frames vs a
+   runtime shader with the same profiled spike.
 3. **UI rendering resolution.** Render UI at world-pixel scale (maximally consistent) or at a higher
    effective res for text crispness on dense screens? Tie to the UI Toolkit vs uGUI decision in
    `ux-and-mobile-controls.md`.

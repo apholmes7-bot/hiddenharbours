@@ -246,6 +246,17 @@ This single rule produces *every* tidal gameplay consequence:
 
 > **Hard rule for tide-sensitive regions:** the region's authored seabed heightfield + the global tide is the **single source of truth** for "is this passable / walkable / a hazard right now." Boats query `waterDepth` for grounding (next doc); the player-on-foot query the same field for walkability on the flats.
 
+> **Tide range & the wet-reveal tell (owner-ratified vision; art lands M2/M3).** Sablewick's working
+> harbours run a **big tide** — author **marina/wharf tide ranges of ~3–4 m** so the water visibly
+> *walks up and down the walls*. As the tide **falls**, wet pilings, harbour walls, slip ramps,
+> weed-lines and bared mud/rock are **revealed glistening** — a primary, always-on **tide tell** the
+> player reads at a glance (P1), and the gentle everywhere-version of the Drownded Lands
+> transformation. The **value** (a ~3–4 m range per `RegionTideProfile`) can be set whenever; the
+> **wet-surface rendering** is owned by [`art-and-audio-bible.md`](art-and-audio-bible.md) and lands
+> with the art passes (**M2/M3**). Ties to **OQ1** (tide → visual-cue mapping). St Peters' **causeway**
+> is the gameplay-critical case: the same 3–4 m fall both **bares the flats** and **opens the
+> tide-gate** (`world-and-regions.md` §6.0).
+
 ### 3.6 The tide table (the player's core tool)
 
 Canon: *"a readable tide table is a core tool"* and is a **gate** for The Drownded Lands. It's the in-fiction forecasting instrument.
@@ -427,6 +438,38 @@ Three escalating instruments. The reward for using them is *foresight*; the cost
 
 - **The sky itself is a free, learnable forecast.** Telegraph cues — greasy swell, mares' tails cloud, a sudden lull, the glass dropping, fog bank on the horizon, a sickly light before a squall — are rendered/audible so an attentive player can read weather *without any tool*, then confirm with instruments. **Reading the signs is the mastery fantasy** (P1). (Optional later: a "weather lore" skill that surfaces these cues as subtle UI hints.)
 
+### 4.8 Phased weather & sea enhancements (owner-ratified vision — M2+)
+
+> **Future work, captured for consistency — not in the M0/M1 slice** (CLAUDE.md rule 8). These
+> owner-ratified additions deepen the sea's moods beyond the M1 slice's wind+tide. **Phase: M2** (the
+> weather / winter / fog wave — [`../roadmap.md`](../roadmap.md)). Each reconciles with an existing
+> Open Question (§10). All stay **deterministic from `(worldSeed, gameTime)`** — no new save state.
+
+- **Waves with magnitude that push boats.** Beyond drift (current) and stability stress (sea state),
+  big seas apply a **physical push force** to the hull — a wave set that shoves you to leeward / onto
+  a lee shore, strongest at high sea state and in the overfalls. This becomes an **explicit term in
+  the FORCES sample** (a wave-push vector alongside `CurrentVector`/`WindVector`, §5.1) that
+  [`boats-and-navigation.md`](boats-and-navigation.md) adds to drift and to the broach check (§3.2
+  there). Reconciles **OQ6** (wind-against-tide overfalls become a larger wave-push). **M2.**
+- **Wind gusts that travel across the water.** §4.2's gusts become **moving gust cells** — a
+  cat's-paw / darkened patch of ruffled water that **propagates across the surface** and strikes the
+  boat as a timed spike (heel/broach check, sail trim), so an attentive skipper **sees the gust
+  coming** and eases for it (P1). A moving noise lobe keyed to `(seed, t)`: deterministic, cheap, and
+  a readable tell. **M2.**
+- **Lightning & heavy rain.** §4.4 keeps **lightning atmosphere-first** (rim-flash + thunder) and
+  **heavy rain** as a **visibility + handling** factor (wetter, lower-vis, slightly worse traction).
+  The owner wants both present as real storm weather; whether lightning ever becomes a **rare,
+  telegraphed strike hazard** stays **OQ4** (leaning no — it risks tipping P5 from tense to
+  punishing). Capture: rain/lightning are part of the M2 storm package; a *strike mechanic* is a
+  later, optional, carefully-telegraphed call. **M2** (atmosphere) / OQ (mechanic).
+- **Winter freezing in some areas.** Canon has Hard Winter as storm season; the owner ratifies that
+  **some grounds actually freeze** in winter (not merely weather-gated). This **upgrades OQ3 from
+  "flavor-only at launch" to a real M2 mechanic in *specific* regions**: ice that closes/blocks
+  certain inshore water in Hard Winter, paired with the **ice-strengthened hull** upgrade
+  ([`boats-and-navigation.md`](boats-and-navigation.md) §4.2). Kept **regional and seasonal** — not
+  world-freezing — and **never save-stranding** (you can always get home / wait out the season).
+  **M2** for the first frozen region(s); broader ice later.
+
 ---
 
 ## 5. The FORCES interface (consumed by `boats-and-navigation.md`)
@@ -461,6 +504,11 @@ public readonly struct EnvironmentSample
     public readonly float    SeabedElevation; // m above datum at this position (for grounding math)
 }
 ```
+
+> **Forward note (M2, do not add yet):** the **wave-push** force in §4.8 will add **one field** to
+> this struct (e.g. `Vector2 WavePush; // m/s² leeward shove from sea state/overfalls`) when the M2
+> weather wave lands. It is called out here so the M1 contract above stays stable and the M2 addition
+> is a *known, additive* change (a new field + a save-compatible bump), not a surprise reshape.
 
 ### 5.2 How wind & current produce force/drift (the spec boats implement)
 
@@ -583,10 +631,10 @@ worldSeed ──────────┤
 
 1. **Tide datum vs. art sea level.** We define tide as metres above chart datum, but the ¾ top-down camera shows water as a *plane*, not a side elevation. Need an agreed mapping from `tideHeight`/`waterDepth` → **visual cues** (shoreline waterline position, exposed-rock sprites toggling, flat tiles switching wet→dry, float heights). Coordinate with `art-and-audio-bible.md`. (Likely: per-region a small set of waterline states + tile wet/dry swaps keyed off `waterDepth` thresholds, rather than true vertical displacement.)
 2. **Diurnal inequality on/off at launch?** The optional second term (§3.4) adds realism ("the morning low is the big one") but also planning complexity. Ship semidiurnal-only for the tutorial regions, enable inequality for advanced regions? Or globally? Decide with playtest.
-3. **Ice / freezing in Hard Winter.** Canon mentions some grounds may "freeze/close." Is winter ice **flavor only** (atmosphere + soft weather-gating) or a **mechanic** (literal ice tiles blocking water, ice-strengthened hulls)? Recommend flavor-only at launch; revisit as an Ironbound/late feature.
-4. **Lightning / squall strikes.** Currently atmosphere-only. Do we ever want a rare, telegraphed lightning hazard, or does that tip P5 from "tense" toward "punishing"? Leaning no.
+3. **Ice / freezing in Hard Winter.** Canon mentions some grounds may "freeze/close." Is winter ice **flavor only** (atmosphere + soft weather-gating) or a **mechanic** (literal ice tiles blocking water, ice-strengthened hulls)? Recommend flavor-only at launch; revisit as an Ironbound/late feature. **Owner-ratified (2026):** winter freezing becomes a **real M2 mechanic in *some* regions** (ice closes specific inshore water; pairs with ice-strengthened hulls) — see §4.8. Launch / M1 stays flavor-only.
+4. **Lightning / squall strikes.** Currently atmosphere-only. Do we ever want a rare, telegraphed lightning hazard, or does that tip P5 from "tense" toward "punishing"? Leaning no. **Owner lists lightning + heavy rain as M2 storm weather** (§4.8): rain/lightning ship as *atmosphere/visibility*; a strike *mechanic* remains this OQ's open call (still leaning no).
 5. **Forecast-error curve shape.** How fuzzy should a 2-day-out forecast be, and how much should relationship-with-harbourmaster (P3) and tool tier (P2) sharpen it? Needs tuning so forecasts feel *useful but not omniscient*.
-6. **Wind-against-tide overfalls.** Fundy Rips should kick up dangerous steep seas when strong wind opposes a strong tide (`windVector` vs `currentVector` anti-aligned at mid-tide). Is this an explicit `seaState` bump in the sample, or emergent in the boat's stability check? Recommend an explicit local sea-state modifier in `RegionTideProfile` so it's tunable and readable.
+6. **Wind-against-tide overfalls.** Fundy Rips should kick up dangerous steep seas when strong wind opposes a strong tide (`windVector` vs `currentVector` anti-aligned at mid-tide). Is this an explicit `seaState` bump in the sample, or emergent in the boat's stability check? Recommend an explicit local sea-state modifier in `RegionTideProfile` so it's tunable and readable. Now also folds into the **wave-push force** in §4.8 (M2) — overfall steepness becomes a stronger push.
 7. **Multiple simultaneous fronts.** Blending two overlapping fronts (§4.5) — cap at one dominant front per region for clarity, or allow genuine blends? Start with one-dominant for readability; allow blends only if it doesn't confuse forecasting.
 8. **Per-region vs per-position tide phase.** We currently compute tide per *region* (with a `phaseOffset`). Do we ever need *within-region* tide phase variation (a long narrows where one end floods before the other)? Probably not at launch; flag for Fundy Rips if it ever feels wrong.
 ```
