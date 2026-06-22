@@ -4,17 +4,19 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// VS-30 — content validation. The single source of truth for "is the Data/ content well-formed":
-    /// every <see cref="FishSpeciesDef"/> and <see cref="BoatHullDef"/> must have a non-empty, unique
-    /// id and references that actually resolve (a fish must be reachable by some region/gear/season, a
-    /// boat must have a name and a hold). It runs over the ACTUAL assets in Data/, so it catches data
-    /// errors as content grows — a new Punt BoatHullDef, a copy-pasted id, a fish gated so tightly it
-    /// can never bite, an inverted weight range. If tools-editor later adds an in-editor content
-    /// validator, it should call THESE rules rather than re-deriving its own.
+    /// every <see cref="FishSpeciesDef"/>, <see cref="BoatHullDef"/>, and <see cref="RegionDef"/> must
+    /// have a non-empty, unique id and references that actually resolve (a fish must be reachable by some
+    /// region/gear/season AND its region ids must name a real region; a boat must have a name and a hold;
+    /// a region must have a name + a scene to load). It runs over the ACTUAL assets in Data/, so it
+    /// catches data errors as content grows — a new Punt BoatHullDef, a copy-pasted id, a fish gated to a
+    /// region that doesn't exist, an inverted weight range. If tools-editor later adds an in-editor
+    /// content validator, it should call THESE rules rather than re-deriving its own.
     /// </summary>
     public class ContentValidationTests
     {
@@ -107,13 +109,81 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- regions (VS-22+) ---------------------------------------------------------------
+
+        [Test]
+        public void Regions_Exist_AndHaveNonEmptyUniqueIds()
+        {
+            var regions = LoadAll<RegionDef>();
+            Assert.IsNotEmpty(regions, "the slice must ship at least one RegionDef in Data/Regions (the cove + Greywick)");
+
+            var seen = new Dictionary<string, string>();
+            foreach (var r in regions)
+                RegisterUniqueId(seen, r.Id, AssetDatabase.GetAssetPath(r), nameof(RegionDef));
+        }
+
+        [Test]
+        public void Regions_HaveNameAndAScene()
+        {
+            foreach (var r in LoadAll<RegionDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(r);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(r.DisplayName), $"{path}: empty DisplayName");
+                // "Scene per region, loaded additively" (CLAUDE.md §3) — a region with no scene can't load.
+                Assert.IsTrue(r.HasScene, $"{path}: no SceneName — the region can never be loaded");
+                // Tide envelope is physical: amplitude can't be negative.
+                Assert.GreaterOrEqual(r.TideAmplitude, 0f, $"{path}: negative TideAmplitude");
+            }
+        }
+
+        [Test]
+        public void RegionSpawnFishIds_ResolveToRealFish()
+        {
+            var fishIds = new HashSet<string>();
+            foreach (var f in LoadAll<FishSpeciesDef>())
+                if (!string.IsNullOrWhiteSpace(f.Id)) fishIds.Add(f.Id);
+
+            foreach (var r in LoadAll<RegionDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(r);
+                if (r.SpawnFishIds == null) continue;
+                foreach (var id in r.SpawnFishIds)
+                {
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(id), $"{path}: a blank spawn-fish id");
+                    Assert.IsTrue(fishIds.Contains(id), $"{path}: spawn-fish id '{id}' resolves to no FishSpeciesDef");
+                }
+            }
+        }
+
         // ---- cross-type ---------------------------------------------------------------------
 
         [Test]
-        public void DefIds_AreGloballyUnique_AcrossFishAndBoats()
+        public void FishRegionIds_ResolveToRealRegions()
         {
-            // Ids are append-only & stable and namespaced by type (fish.* / boat.*), so they must not
-            // collide across the whole content set.
+            // Now that regions are authored as data, a fish's region ids must name an ACTUAL RegionDef —
+            // not just be non-blank strings (which FishSpecies_AreReachable already checks). A fish gated
+            // to a region that doesn't exist can never be caught.
+            var regionIds = new HashSet<string>();
+            foreach (var r in LoadAll<RegionDef>())
+                if (!string.IsNullOrWhiteSpace(r.Id)) regionIds.Add(r.Id);
+            Assert.IsNotEmpty(regionIds, "there must be at least one RegionDef for fish to reference");
+
+            foreach (var f in LoadAll<FishSpeciesDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(f);
+                if (f.RegionIds == null) continue;
+                foreach (var rid in f.RegionIds)
+                    if (!string.IsNullOrWhiteSpace(rid))
+                        Assert.IsTrue(regionIds.Contains(rid),
+                            $"{path}: region id '{rid}' resolves to no RegionDef — the fish is gated to a region that doesn't exist");
+            }
+        }
+
+        [Test]
+        public void DefIds_AreGloballyUnique_AcrossFishBoatsAndRegions()
+        {
+            // Ids are append-only & stable and namespaced by type (fish.* / boat.* / region.*), so they
+            // must not collide across the whole content set.
             var seen = new Dictionary<string, string>();
             foreach (var f in LoadAll<FishSpeciesDef>())
                 if (!string.IsNullOrWhiteSpace(f.Id))
@@ -121,6 +191,9 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var b in LoadAll<BoatHullDef>())
                 if (!string.IsNullOrWhiteSpace(b.Id))
                     RegisterUniqueId(seen, b.Id, AssetDatabase.GetAssetPath(b), "Def");
+            foreach (var r in LoadAll<RegionDef>())
+                if (!string.IsNullOrWhiteSpace(r.Id))
+                    RegisterUniqueId(seen, r.Id, AssetDatabase.GetAssetPath(r), "Def");
         }
     }
 }

@@ -11,7 +11,8 @@
         "HiddenHarbours.Economy",
         "HiddenHarbours.UI",
         "HiddenHarbours.App",
-        "HiddenHarbours.Player"
+        "HiddenHarbours.Player",
+        "HiddenHarbours.World"
     ],
     "includePlatforms": ["Editor"],
     "precompiledReferences": ["nunit.framework.dll"],
