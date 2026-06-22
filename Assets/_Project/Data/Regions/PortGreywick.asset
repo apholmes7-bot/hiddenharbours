@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9c4fb6be8dd46eba08510dde87bace3, type: 3}
+  m_Name: PortGreywick
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
+  Id: region.port_greywick
+  DisplayName: Port Greywick
+  Description: 'The market town: a deep, sheltered harbour of weathered clapboard behind a stone breakwater. Where you sell your catch, buy a bigger boat, and the coast''s business gets done - services, not a fishing ground.'
+  SceneName: Greywick
+  UnlockFlag:
+  IsDeepHarbour: 1
+  HarbourDepthMeters: 6
+  TideMeanLevel: 0
+  TideAmplitude: 0.8
+  TidePhaseHours: 2
+  SpawnFishIds: []
