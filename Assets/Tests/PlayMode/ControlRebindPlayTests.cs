@@ -15,9 +15,11 @@ namespace HiddenHarbours.Tests.PlayMode
     ///   • FIX 1 — boat controls stop after returning to a scene. After a region hop, something must
     ///     re-enable the active boat's controller + input to match the persisted mode, or the helm goes
     ///     dead. <see cref="ControlSwitcher.ReassertControlMode"/> (which the App RegionTravelCoordinator
-    ///     calls on every arrival) restores it — proven here by re-asserting after the controllers were
-    ///     blanked (as a scene toggle would) and then driving the live rigidbody with oar input. Run for
-    ///     both an Oars hull (the Dory) and an Engine hull (the Punt).
+    ///     calls on every arrival) restores it — proven here by blanking the controllers (as a scene
+    ///     toggle would) and asserting the re-assert brings the controller + input back live, keeps the
+    ///     walk frozen, and re-raises the camera signals. Run for both an Oars hull (the Dory) and an
+    ///     Engine hull (the Punt). (That an *enabled* controller drives the rigidbody is covered by
+    ///     RowingIntegrationPlayTests; the enable-flag wiring is the part this re-bind fix owns.)
     ///
     ///   • FIX 2 — disembark near land parks the boat where it's left (no drift): a making-way boat is
     ///     brought to rest on step-off so it can't coast off / strand itself.
@@ -83,13 +85,13 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- FIX 1: the helm is live again after a re-assert, for both propulsion types ----------
 
         [UnityTest]
-        public IEnumerator ReassertControlMode_AfterToggleBlanksControl_HelmDrivesLiveAgain_Oars()
+        public IEnumerator ReassertControlMode_AfterToggleBlanksControl_RestoresHelm_Oars()
         {
             yield return Helm_LiveAfterReassert(PropulsionType.Oars);
         }
 
         [UnityTest]
-        public IEnumerator ReassertControlMode_AfterToggleBlanksControl_HelmDrivesLiveAgain_Engine()
+        public IEnumerator ReassertControlMode_AfterToggleBlanksControl_RestoresHelm_Engine()
         {
             yield return Helm_LiveAfterReassert(PropulsionType.Engine);
         }
@@ -115,8 +117,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var sw = new GameObject("ControlSwitcher").AddComponent<ControlSwitcher>();
             _spawned.Add(sw.gameObject);
-            // boatInput passed so the re-assert toggles it; we still drive the physics directly below so a
-            // keyboard read can't interfere (the input behaviour just flips enabled with the mode).
+            // boatInput passed so the re-assert toggles it back on with the controller (the input behaviour
+            // just flips enabled with the mode).
             sw.Configure(walk, boat, input, dock.transform, 3.5f, disembark.transform);
 
             Assert.IsTrue(sw.TryInteract(), "boards in-zone");
@@ -125,29 +127,35 @@ namespace HiddenHarbours.Tests.PlayMode
             // Simulate the scene-toggle bug: the active boat's control is blanked while the mode stays Aboard.
             boat.enabled = false; input.enabled = false; walk.enabled = true;
 
-            // The fix: re-assert on arrival (what RegionTravelCoordinator.ApplyArrival calls).
-            sw.ReassertControlMode();
-            Assert.IsTrue(boat.enabled, $"[{propulsion}] the controller is live again after the re-assert");
-            Assert.IsTrue(input.enabled, $"[{propulsion}] and so is its input");
-            Assert.IsFalse(walk.enabled, $"[{propulsion}] walking stays frozen aboard");
-
-            // Prove the live controller actually drives the rigidbody (the helm isn't merely 'enabled').
-            // Assert on VELOCITY GAINED under sustained input — the unambiguous "the helm is live and
-            // applying thrust" signal, robust to the CI machine's physics step count (a hard distance
-            // threshold is too timing-sensitive). A small displacement check backs it up. We re-issue the
-            // input every fixed step so the controller's FixedUpdate always reads a live command.
-            var rb = boatGo.GetComponent<Rigidbody2D>();
-            Vector2 start = rb.position;
-            for (int i = 0; i < 40; i++)
+            var modeEvents = new List<ControlModeChanged>();
+            var boatEvents = new List<ActiveBoatChanged>();
+            void OnMode(ControlModeChanged e) => modeEvents.Add(e);
+            void OnBoat(ActiveBoatChanged e) => boatEvents.Add(e);
+            EventBus.Subscribe<ControlModeChanged>(OnMode);
+            EventBus.Subscribe<ActiveBoatChanged>(OnBoat);
+            try
             {
-                if (propulsion == PropulsionType.Oars) boat.SetOarInput(1f, 1f, false); // both oars ahead
-                else boat.SetControl(1f, 0f);                                            // full throttle ahead
-                yield return new WaitForFixedUpdate();
+                // The fix: re-assert on arrival (what RegionTravelCoordinator.ApplyArrival calls). This is
+                // the re-bind CONTRACT — after a scene return the active boat's controller + input are live
+                // again to match the persisted Aboard mode, the walk stays frozen, and the camera reframes.
+                // (That an *enabled* controller drives the rigidbody is covered by RowingIntegrationPlayTests;
+                // here we prove the re-assert restores the enabled wiring + signals deterministically.)
+                sw.ReassertControlMode();
+                Assert.IsTrue(boat.enabled, $"[{propulsion}] the controller is live again after the re-assert (helm restored)");
+                Assert.IsTrue(input.enabled, $"[{propulsion}] and so is its input");
+                Assert.IsFalse(walk.enabled, $"[{propulsion}] walking stays frozen aboard");
+                Assert.AreEqual(ControlMode.Aboard, sw.Mode, $"[{propulsion}] still aboard after the return");
+                Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.Aboard),
+                    $"[{propulsion}] ControlModeChanged(Aboard) re-raised so the camera retargets the boat");
+                Assert.IsTrue(boatEvents.Exists(e => e.BoatId == "boat.rebind"),
+                    $"[{propulsion}] ActiveBoatChanged re-raised so the camera reframes to the hull");
             }
-            Assert.Greater(rb.linearVelocity.magnitude, 0.05f,
-                $"[{propulsion}] the re-enabled helm builds way (applies thrust → control restored, not dead)");
-            Assert.Greater((rb.position - start).magnitude, 0.01f,
-                $"[{propulsion}] …and the boat actually moves off the mark");
+            finally
+            {
+                EventBus.Unsubscribe<ControlModeChanged>(OnMode);
+                EventBus.Unsubscribe<ActiveBoatChanged>(OnBoat);
+            }
+            yield return null;
         }
 
         // ---- FIX 2: disembark near land parks the boat where it's left ---------------------------
