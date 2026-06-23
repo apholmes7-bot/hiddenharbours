@@ -5,23 +5,46 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using HiddenHarbours.Core;
-using HiddenHarbours.Environment;
-using HiddenHarbours.Boats;
-using HiddenHarbours.Fishing;
-using HiddenHarbours.Economy;
-using HiddenHarbours.Player;
-using HiddenHarbours.World;         // VS-21: NPCs, dialogue, the inheritance opening (world-content)
-using HiddenHarbours.UI;            // VS-17: the glanceable HUD (ui-ux)
-using HiddenHarbours.Art.Editor;   // VS-23: locked Pixel-Perfect camera convention
-using UnityEngine.Rendering.Universal; // PixelPerfectCamera — PC-first landscape reference override
+using HiddenHarbours.Boats;         // BoatHullDef / PropulsionType (the hull defs authored as data)
+using HiddenHarbours.Fishing;       // FishSpeciesDef / Gear (the cove's fishing-ground species)
+using HiddenHarbours.Economy;       // Market / FishBuyer / WharfSellPoint / Shipwright (the cove's services)
+using HiddenHarbours.World;         // RegionDef / RegionSceneLoader / RegionPassage
+using HiddenHarbours.App;           // RegionAnchor / PersistentHoldProxy / PersistentWalletProxy
+using UnityEngine.Rendering.Universal; // PixelPerfectCamera
+using HiddenHarbours.Art.Editor;   // VS-23 locked Pixel-Perfect camera convention
 
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// One-click greybox: creates the data assets (GameConfig, the Dory, a few fish), builds a
-    /// playable scene wiring the services + dory + wharf, and opens it. Menu: Hidden Harbours ▸
-    /// Build Greybox Scene. Re-runnable (idempotent on the assets). This is a dev convenience, not
-    /// shipping content — real scenes are authored by world-content (see backlog VS-02).
+    /// One-click <b>Coddle Cove</b> — the player's HOME HARBOUR as a PLAIN region scene (#66 demotion).
+    /// Menu: Hidden Harbours ▸ Build Greybox Scene. Re-runnable (idempotent on the assets).
+    ///
+    /// <para><b>Demoted from the start (#66 / StPetersBuilder's flag #1).</b> The decided opening arc is
+    /// St Peters → Greywick → buy + repair the dory → SAIL HOME to Coddle Cove. The cove USED to be the
+    /// start, so this builder used to author its OWN persistent core (GameRoot / on-foot player / camera /
+    /// ControlSwitcher / fishing rig / travel coordinator). With St Peters as the start, sailing to the cove
+    /// would DUPLICATE that rig. So the cove is now a PLAIN region exactly like <see cref="GreywickBuilder"/>:
+    /// it authors only the region's own content (water / island / wharf / cottage / Fish Buyer + Shipwright /
+    /// decor) plus a <see cref="RegionAnchor"/> (arrival / dock / disembark). The persistent rig is carried in
+    /// from the START scene (St Peters) via the <see cref="RegionTravelCoordinator"/> and BINDS on arrival to
+    /// this anchor — the same way Greywick binds. The cove stays the home base; it's just REACHED by travel
+    /// now, not the start.</para>
+    ///
+    /// <para>Like Greywick, this scene carries its own Main Camera + AudioListener so it can be opened and
+    /// reviewed standalone; the coordinator silences them on arrival (the persistent core owns the live
+    /// camera). The wharf's hold/wallet live in the persistent core (a different scene), so the Fish Buyer /
+    /// Shipwright resolve them through scene-local <see cref="PersistentHoldProxy"/> / <see cref="PersistentWalletProxy"/>
+    /// shims, which the coordinator binds to the real hold on arrival (the Greywick pattern).</para>
+    ///
+    /// <para>This is a dev convenience, not shipping content — real scenes are authored by world-content
+    /// (backlog VS-02; and see ADR 0011 for the committed hand-authored-scene plan).</para>
+    ///
+    /// <para>FLAG world-content (follow-up, not this PR): the cove home base could later host its OWN NPCs
+    /// (a returning Aunt Ginny, etc.). They were dropped from the cove in this demotion because their
+    /// interaction driver (<c>WorldInteractor</c>) needs the persistent on-foot player transform, which an
+    /// additively-loaded region can't serialize-reference — it needs a bind-on-arrival shim like the wharf
+    /// hold/wallet proxies. The inheritance OPENING (Ginny's intro, Ned's logbook, the one-loop onboarding)
+    /// now belongs to the START scene (St Peters), so it must not re-trigger on arriving home at the cove.</para>
     /// </summary>
     public static class GreyboxBuilder
     {
@@ -32,38 +55,27 @@ namespace HiddenHarbours.App.Editor
         const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtTrees   = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
-        const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // legacy single-sprite hull (fallback)
-        const string ArtDoryHull = "Assets/_Project/Art/Boats/DoryHull.png";     // oar-less hull base (64×144, centre)
-        const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";          // one oar (56×16, handle/LeftCenter pivot), used ×2
-        const string ArtDoryRower = "Assets/_Project/Art/Boats/DoryRower.png";   // rower figure (26×28, centre)
-        const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16)
+        const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16) — kept on the hull asset
         const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
-        const string ArtTensionGauge     = "Assets/_Project/Art/UI/TensionGauge.png";     // VS-13 rod gauge
-        const string ArtLineHook         = "Assets/_Project/Art/UI/LineHook.png";         // VS-13 rod gauge
-        const string ArtFishSilhouette   = "Assets/_Project/Art/UI/FishOnSilhouette.png"; // VS-13 rod gauge
-        const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png";      // on-foot player (sliced 3×4)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";              // island ground
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";               // beach border
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";   // home on the island
         const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";          // dock planks
         const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";           // dock pilings
-        const string ArtGinny    = "Assets/_Project/Art/Characters/Ginny.png";            // VS-21 Aunt Ginny (world)
-        const string ArtNeighbour= "Assets/_Project/Art/Characters/Neighbour.png";        // VS-21 a neighbour
-        const string ArtPortraitGinny = "Assets/_Project/Art/Portraits/Ginny.png";        // VS-21 dialogue portrait
-        const string ArtPortraitNed   = "Assets/_Project/Art/Portraits/Ned.png";          // VS-21 logbook portrait
-        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";       // VS-21 dialogue panel
-        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";           // VS-21 nameplate
         const string Scenes     = "Assets/_Project/Scenes";
-        const string ScenePath  = Scenes + "/Greybox.unity";
+        const string SceneName  = "Greybox";
+        const string ScenePath  = Scenes + "/" + SceneName + ".unity";
 
         // VS-22 crossing geometry (canon map: Port Greywick lies WEST of the cove — "PORT GREYWICK ——+——
         // CODDLE COVE"). So you CROSS BY SAILING WEST, and you RETURN to the cove dock FROM THE WEST. These
-        // are public so an EditMode test can assert the crossing reads true without loading a scene.
-        // CoveDockZoneRadius mirrors ControlSwitcher's default _zoneRadius (the cove disembark is a pure
-        // distance test), so the return arrival must park within it of the cove dock or E can't disembark.
+        // are public so an EditMode test (CrossingDirectionTests) can assert the crossing reads true without
+        // loading a scene. CoveDockZoneRadius mirrors ControlSwitcher's default _zoneRadius (the cove disembark
+        // is a pure distance test), so the return arrival must park within it of the cove dock or E can't
+        // disembark — the proven cove/Greywick pattern (#52).
         public const float CoveDockZoneRadius = 3.5f;
         public static readonly Vector3 CoveDockZonePos      = new Vector3(0f, -12f, 0f);     // cove dock head / mooring
         public static readonly Vector3 CoveArrivalPos       = new Vector3(-2.5f, -13.5f, 0f); // return from Greywick: just WEST of the dock
+        public static readonly Vector3 CoveDisembarkPos     = new Vector3(0f, -10.5f, 0f);    // on the dock planks
         public static readonly Vector3 ToGreywickPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
 
         [MenuItem("Hidden Harbours/Build Greybox Scene")]
@@ -72,6 +84,9 @@ namespace HiddenHarbours.App.Editor
             EnsureFolders();
 
             // --- DATA ASSETS ---------------------------------------------------------------
+            // The hull defs (Dory + Punt) + the Punt offer + the region defs live as data. The cove is no
+            // longer the start, so it doesn't stand up the boat rig — but it still authors/keeps these stable
+            // assets (first run wins; StPeters/Greywick author the canonical versions under the same ids).
             var config = LoadOrCreate<GameConfig>(DataConfig + "/GameConfig.asset");
 
             var dory = LoadOrCreate<BoatHullDef>(DataBoats + "/Dory.asset", h =>
@@ -85,15 +100,15 @@ namespace HiddenHarbours.App.Editor
                 h.CameraWorldHeightMeters = 14f;   // intimate framing for the little dory
             });
 
-            // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY, the
-            // payoff of the buy-the-Punt loop (VS-16). Authored as data, never hardcoded in gameplay C#.
+            // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY (VS-16).
+            // Authored as data, never hardcoded in gameplay C#.
             var punt = LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
 
             // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage. Created
-            // here if absent and authored by GreywickBuilder under the same stable ids (first run wins).
+            // here if absent and authored by the other builders under the same stable ids (first run wins).
             var coveRegion = LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
             {
-                r.Id = "region.coddle_cove"; r.DisplayName = "Coddle Cove"; r.SceneName = "Greybox";
+                r.Id = "region.coddle_cove"; r.DisplayName = "Coddle Cove"; r.SceneName = SceneName;
                 r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
                 r.TideMeanLevel = 0f; r.TideAmplitude = 1.6f; r.TidePhaseHours = 0f;
                 r.Description = "Your home harbour — the sheltered greybox cove.";
@@ -106,51 +121,44 @@ namespace HiddenHarbours.App.Editor
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
             });
 
-            var fish = new[]
-            {
-                Fish("fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, Rarity.Common,    14, 0.20f, 1.0f, 2f, 12f),
-                Fish("fish.haddock",      "Haddock",      FishCategory.InshoreGroundfish, Rarity.Common,    16, 0.20f, 0.9f, 1f, 6f),
-                Fish("fish.mackerel",     "Mackerel",     FishCategory.Pelagic,           Rarity.Uncommon,  10, 0.35f, 0.8f, 0.3f, 1.5f),
-                Fish("fish.lobster",      "American Lobster", FishCategory.Shellfish,     Rarity.Prize,     28, 0.35f, 0.4f, 0.4f, 4f),
-            };
+            // The cove's fishing ground species (authored as data; the persistent FishingController carried in
+            // from the start reads its region species by id — these are kept stable for the dory's catch at the
+            // cove). Created here if absent; no scene ref needed now the boat rig is carried in, so we just
+            // ensure the assets exist (data-driven, CLAUDE.md rule 2).
+            Fish("fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, Rarity.Common,    14, 0.20f, 1.0f, 2f, 12f);
+            Fish("fish.haddock",      "Haddock",      FishCategory.InshoreGroundfish, Rarity.Common,    16, 0.20f, 0.9f, 1f, 6f);
+            Fish("fish.mackerel",     "Mackerel",     FishCategory.Pelagic,           Rarity.Uncommon,  10, 0.35f, 0.8f, 0.3f, 1.5f);
+            Fish("fish.lobster",      "American Lobster", FishCategory.Shellfish,     Rarity.Prize,     28, 0.35f, 0.4f, 0.4f, 4f);
 
             // --- SCENE ---------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // Camera
+            // Camera (standalone-viewable; the coordinator silences it on arrival — the persistent core owns
+            // the live camera). Mirrors Greywick's locked pixel-perfect, on-foot landscape framing so the cove
+            // reads at the same scale when reviewed standalone.
             var camGo = new GameObject("Main Camera");
             camGo.tag = "MainCamera";
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;
-            // PC-first intimate LANDSCAPE framing (ADR 0005), DATA-DRIVEN: the game starts ON FOOT, so the
-            // camera frames the tighter on-foot view (~9 m). The same mapping zooms it out to the boat
-            // tiers when sailing (CameraFollow / OwnedFleet). Authored here for the scene view; CameraFollow
-            // re-applies it at play. Single source of truth for the mapping is in CameraFollow.
             cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
             camGo.transform.position = new Vector3(0f, 0f, -10f);
             camGo.AddComponent<AudioListener>();
-            // VS-23: lock the Pixel-Perfect camera (PPU 32, pixel-snapping) so there's no sub-pixel
-            // shimmer as the follow-cam tracks the dory. Shared art-pipeline convention (bible §3.7).
+            // VS-23: lock the Pixel-Perfect camera (PPU 32) and override its reference to a 16:9 LANDSCAPE
+            // reference (PC-first, ADR 0005) so the standalone render is pixel-perfect.
             ArtCameraSetup.ConfigurePixelPerfect(camGo);
-            // PC-first (ADR 0005): the locked convention's reference is portrait (mobile-era). Override
-            // it to a 16:9 LANDSCAPE reference — PPU stays locked at 32 — so the live render is
-            // pixel-perfect at 1920×1080 (exact ×3 zoom) and the framing stays intimate in smaller
-            // desktop windows instead of collapsing to an over-wide view. (art-pipeline: fold a PC
-            // landscape reference into the locked convention in a VS-23 follow-up.)
             var ppc = camGo.GetComponent<PixelPerfectCamera>();
             if (ppc != null)
             {
                 CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int refW, out int refH);
-                ppc.refResolutionX = refW;   // on-foot 9 m → 480×270 (exact ×4 pixel-perfect zoom at 1080p)
-                ppc.refResolutionY = refH;   // 16:9; the boat tiers set a larger reference when sailing
+                ppc.refResolutionX = refW;
+                ppc.refResolutionY = refH;
                 EditorUtility.SetDirty(ppc);
             }
 
-            // Water backdrop. Use the final tiling sea tile if it's been imported (the placeholder→
-            // final swap, VS-24); otherwise fall back to a flat slate-blue square so the greybox
-            // still builds before any art exists.
+            // Water backdrop. Use the final tiling sea tile if it's been imported (the placeholder→final swap,
+            // VS-24); otherwise fall back to a flat slate-blue square so the greybox still builds before art.
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
             var seaTile = LoadArtSprite(ArtSea);
             var water = new GameObject("Water");
@@ -186,9 +194,9 @@ namespace HiddenHarbours.App.Editor
                 m.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
             }
 
-            // Reload data assets from disk before wiring. An intervening AssetDatabase import (the
-            // sprite SaveAndReimport above) can invalidate the in-memory references created earlier,
-            // which is what left GameConfig / hull showing "None". Reloading guarantees valid refs.
+            // Reload data assets from disk before wiring. An intervening AssetDatabase import (the sprite
+            // SaveAndReimport above) can invalidate the in-memory references created earlier. Reloading
+            // guarantees valid refs so nothing serializes into the scene as "None".
             config = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
             dory = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
@@ -199,7 +207,7 @@ namespace HiddenHarbours.App.Editor
                 EditorUtility.SetDirty(dory);
             }
             // Reload + re-apply the Punt stats (idempotent on re-runs, like the Dory above) and attach its
-            // hull sprite so OwnedFleet has something to swap the renderer to on the grant (null-safe).
+            // hull sprite so the carried OwnedFleet has something to swap the renderer to on the grant.
             punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             if (punt != null)
             {
@@ -207,185 +215,13 @@ namespace HiddenHarbours.App.Editor
                 punt.Sprite = LoadArtSprite(ArtPunt);
                 EditorUtility.SetDirty(punt);
             }
-            fish = new[]
-            {
-                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
-                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset"),
-                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
-                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AmericanLobster.asset"),
-            };
             coveRegion     = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
             greywickRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
 
-            // Services root
-            var root = new GameObject("GameRoot");
-            var clock = root.AddComponent<GameClock>();
-            var env = root.AddComponent<EnvironmentService>();
-            var wallet = root.AddComponent<PlayerWallet>();
-            var gameRoot = root.AddComponent<GameRoot>();
-            SetRef(clock, "_config", config);
-            SetRef(env, "_config", config);
-            SetTideProfile(env, 0f, 1.6f, 0f);
-            SetRef(gameRoot, "_clock", clock);
-            SetRef(gameRoot, "_environment", env);
-            SetRef(gameRoot, "_wallet", wallet);
-
-            // HUD (VS-17 + partial VS-19, owned by ui-ux). Self-contained: builds its own Canvas in
-            // Awake, reads state only through Core. _config gives it SecondsPerHour for the tide
-            // time-to-turn conversion (no magic numbers). Added on GameRoot so it persists like the
-            // services. (This single additive line is the only ui-ux touch in App.Editor — tagged
-            // for lead-architect review.)
-            var hud = root.AddComponent<HudController>();
-            SetRef(hud, "_config", config);
-
-            // Wharf (market + buyer + sell interaction)
-            var wharf = new GameObject("Wharf");
-            var market = wharf.AddComponent<Market>();
-            var buyer = wharf.AddComponent<FishBuyer>();
-            SetRef(market, "_config", config);
-            SetRef(buyer, "_market", market);
-
-            // The Dory
-            var doryGo = new GameObject("Dory");
-            doryGo.transform.position = Vector3.zero;
-            var sr = doryGo.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 0;
-            // Layered oar-rework rig (imported-assets.md Batch 6): the boat's own renderer is the OAR-LESS
-            // hull base (DoryHull); the rower + the two oars are children built below and animated by
-            // BoatRowAnimator. OwnedFleet swaps THIS renderer to the Punt on a purchase (and the animator
-            // then hides the oar rig). Fall back to the legacy Dory.png, then a tinted square, so the
-            // greybox still builds before the art is imported.
-            var hullSprite = LoadSpriteAny(ArtDoryHull) ?? LoadSpriteAny(ArtDory);
-            if (hullSprite != null)
-            {
-                sr.sprite = hullSprite;                    // 64×144 px @ PPU 32 = 2 m × 4.5 m, bow-up
-                doryGo.transform.localScale = Vector3.one; // honest metric size — never scale a real sprite
-            }
-            else
-            {
-                sr.sprite = waterSprite; sr.color = new Color(0.82f, 0.45f, 0.25f); // dory hull colour
-                doryGo.transform.localScale = new Vector3(3.6f, 9f, 1f); // ~1.8 m beam × 4.5 m length
-            }
-            var rb = doryGo.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0f;
-            var boat = doryGo.AddComponent<BoatController>();
-            // Hull collider so the boat bumps the shore edge + dock pilings (cozy, no damage). BoatController
-            // requires a CapsuleCollider2D; size it just inside the hull sprite (2 m × 4.5 m) with rounded
-            // ends so nudging up to the dock reads gentle. Stays CENTRED on the hull (the oars are visual
-            // children only, so they never move the collider). Default zero-bounce material → no bouncing.
-            var hullCol = doryGo.GetComponent<CapsuleCollider2D>() ?? doryGo.AddComponent<CapsuleCollider2D>();
-            hullCol.direction = CapsuleDirection2D.Vertical;
-            hullCol.size = new Vector2(1.7f, 4.0f);
-            hullCol.offset = Vector2.zero;
-            var hold = doryGo.AddComponent<ShipHold>();
-            var devBoat = doryGo.AddComponent<DevBoatInput>();
-
-            // --- Oar-rework rig: rower + two independently-rotating oars, children of the dory ---------
-            // Stack back→front: hull (sr, order 0) → oars (order 1) → rower (order 2). Each oar is one
-            // Oar.png parented under an oarlock PIVOT transform at its gunwale; BoatRowAnimator rotates the
-            // pivots about the oar fulcrum from each oar's per-oar state. One parent ("OarRig") so the
-            // animator can hide the whole rig when a bought engine hull (no oars) is active.
-            var oarRig = new GameObject("OarRig");
-            oarRig.transform.SetParent(doryGo.transform, false);
-
-            var rower = new GameObject("DoryRower");
-            rower.transform.SetParent(oarRig.transform, false);
-            var rowerSr = rower.AddComponent<SpriteRenderer>();
-            rowerSr.sortingOrder = 2;                       // in front of the oars (hands meet the handles)
-            var rowerSprite = LoadSpriteAny(ArtDoryRower);
-            if (rowerSprite != null) rowerSr.sprite = rowerSprite;
-            else { rowerSr.sprite = waterSprite; rowerSr.color = new Color(0.25f, 0.20f, 0.15f); rower.transform.localScale = new Vector3(1.6f, 1.8f, 1f); }
-
-            var oarSprite = LoadSpriteAny(ArtOar);
-            var leftOarPivot  = MakeOar(oarRig.transform, "LeftOar",  new Vector2(-0.9f, -0.1f), true,  oarSprite, waterSprite);
-            var rightOarPivot = MakeOar(oarRig.transform, "RightOar", new Vector2( 0.9f, -0.1f), false, oarSprite, waterSprite);
-
-            // Rowing animation: rotate the two oar pivots from per-oar state (forward/back/idle → sweep),
-            // ease to neutral at rest, hide the rig on an engine hull. No baked frames — real transforms now.
-            var rowAnim = doryGo.AddComponent<BoatRowAnimator>();
-            SetRef(rowAnim, "_leftOarPivot", leftOarPivot);
-            SetRef(rowAnim, "_rightOarPivot", rightOarPivot);
-            SetRef(rowAnim, "_oarRig", oarRig);
-            // STEP 1: the Dory is static scenery moored at the dock — WASD drives only the on-foot player.
-            // Disable its dev input AND the controller so ambient wind/current doesn't drift the moored
-            // boat. Both stay present (unbroken); step 2's board/disembark re-enables them on boarding.
-            devBoat.enabled = false;
-            boat.enabled = false;
-            var fishing = doryGo.AddComponent<FishingController>();
-            doryGo.AddComponent<DevFishingInput>();
-            SetRef(boat, "_hull", dory);
-            SetRef(hold, "_hull", dory);
-            SetRef(fishing, "_holdProvider", doryGo);
-            SetRefArray(fishing, "_regionFish", fish);
-
-            // Fishing mini-game (VS-13, gameplay-systems). A simple visible fishing-spot marker so there
-            // IS a spot (greybox flavour — proximity gating is future; Space still casts from the dory),
-            // plus the TRANSIENT rod gauge overlay. The gauge reads the fight purely through the Core
-            // FishingStateChanged signal, so it needs no controller ref — just the imported UI art,
-            // loaded fresh (post-reload) and wired by serialized ref (null-safe if a sprite is missing).
-            var fishingSpot = new GameObject("FishingSpot");
-            fishingSpot.transform.position = new Vector3(5f, -10f, 0f); // in the water beside the dock
-            var spotSr = fishingSpot.AddComponent<SpriteRenderer>();
-            spotSr.sprite = waterSprite;
-            spotSr.color = new Color(0.30f, 0.58f, 0.66f, 0.7f);
-            spotSr.sortingOrder = -4;
-            fishingSpot.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
-
-            var gaugeGo = new GameObject("FishingGauge");
-            var gauge = gaugeGo.AddComponent<RodGaugeView>();
-            SetRef(gauge, "_gaugeSprite", LoadArtSprite(ArtTensionGauge));
-            SetRef(gauge, "_lineHookSprite", LoadArtSprite(ArtLineHook));
-            SetRef(gauge, "_fishSprite", LoadArtSprite(ArtFishSilhouette));
-
-            // Boat grant (VS-16, gameplay-systems): OwnedFleet listens for the Shipwright's BoatPurchased
-            // signal and swaps the active hull to the bought boat (data-driven by id). It lives on the
-            // Dory GO so it has the BoatController/ShipHold/renderer to swap, and is registered with the
-            // {Dory, Punt} hulls. Refs are the reloaded (persisted) assets, so they don't save as None.
-            var fleet = doryGo.AddComponent<OwnedFleet>();
-            SetRefArray(fleet, "_registry", new Object[] { dory, punt });
-            SetRef(fleet, "_boat", boat);
-            SetRef(fleet, "_hold", hold);
-            SetRef(fleet, "_spriteRenderer", sr);
-
-            // Active-boat heading seam (VS-19, lead-architect / ADR 0007): a tiny Core IActiveBoatService
-            // producer on the Dory. The HUD (UI lane, Core-only) pulls the boat's heading + course-over-
-            // ground from it at ~4 Hz to drive the compass + set-&-drift predictor + apparent wind, never
-            // referencing the Boats module. It self-registers into GameServices.ActiveBoat on enable and
-            // reports HasActiveBoat off the controller's enabled flag (moored/on-foot → false). _boat is
-            // the same persistent dory OwnedFleet swaps the hull on.
-            var activeBoatProbe = doryGo.AddComponent<ActiveBoatProbe>();
-            SetRef(activeBoatProbe, "_boat", boat);
-
-            // Wharf sell interaction (VS-22): B sells the dory's hold to the buyer, paying the wallet.
-            // Wired here because it needs the dory (IHold) and the services root (IWallet), both built
-            // above. _boat is left unset so 'B' always sells, keeping the greybox frictionless — assign
-            // it + tune _dockRadius later to require docking. (DevSellInput is a placeholder; ui-ux
-            // replaces it with the real Interact intent.)
-            var sellPoint = wharf.AddComponent<WharfSellPoint>();
-            wharf.AddComponent<DevSellInput>();
-            SetRef(sellPoint, "_buyer", buyer);
-            SetRef(sellPoint, "_holdProvider", doryGo);
-            SetRef(sellPoint, "_walletProvider", root);
-
-            // Shipwright buy flow (VS-16): P buys the Punt with the wallet; on success the Shipwright
-            // raises BoatPurchased (gameplay-systems listens to swap the boat). Economy side only — the
-            // price lives in a ShipwrightOffer asset, and we reference the boat by id, never the Boats
-            // module. (DevBuyInput is a placeholder; ui-ux replaces it with the real buy screen.)
-            var puntOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
-            {
-                o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
-            });
-            var shipwrightGo = new GameObject("Shipwright");
-            var shipwright = shipwrightGo.AddComponent<Shipwright>();
-            shipwrightGo.AddComponent<DevBuyInput>();
-            SetRef(shipwright, "_offer", puntOffer);
-            SetRef(shipwright, "_walletProvider", root);
-
-            // --- DEMO ISLAND (on-foot player, step 1/2; additive — flagged for lead-architect) --------
-            // A small island the player stands on: tiled sand beach + grass, the cottage, a dock into the
-            // water with pilings, and the (now static) Dory moored at the dock end. A closed shore-edge
-            // collider keeps the player out of open water. Tiles use the same tiled-SpriteRenderer
-            // approach as the sea backdrop; all art is imported.
+            // --- HOME ISLAND (the land the cove sits on) -----------------------------------
+            // A small island the player stands on once disembarked: tiled sand beach + grass, the cottage, a
+            // dock into the water with pilings. A closed shore-edge collider keeps the player out of open
+            // water. Tiles use the same tiled-SpriteRenderer approach as the sea backdrop; all art is imported.
             MakeTiledGround("Beach",  LoadArtSprite(ArtSand),      new Vector2(0f, 2f),    new Vector2(20f, 14f), -8, waterSprite, new Color(0.86f, 0.79f, 0.55f));
             MakeTiledGround("Ground", LoadArtSprite(ArtGrass),     new Vector2(0f, 2.5f),  new Vector2(17f, 11f), -7, waterSprite, new Color(0.38f, 0.58f, 0.32f));
             MakeTiledGround("Dock",   LoadArtSprite(ArtWharfDeck), new Vector2(0f, -8.5f), new Vector2(3f, 7f),   -6, waterSprite, new Color(0.55f, 0.40f, 0.24f));
@@ -408,13 +244,8 @@ namespace HiddenHarbours.App.Editor
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
 
-            // The Dory is now static scenery moored at the dock end (its controller is disabled above).
-            // Parked just clear of the dock-head shore-edge wall (y=-12) so its new 4 m hull collider
-            // doesn't start overlapping it (which would jolt the moored boat free on the first frame).
-            doryGo.transform.position = new Vector3(0f, -14.2f, 0f);
-
-            // Shore edge: a closed collider fence tracing the beach + dock so the player can roam the
-            // island and walk out the dock, but can't wander into open water (P5 cozy bounds).
+            // Shore edge: a closed collider fence tracing the beach + dock so the player can roam the island
+            // and walk out the dock, but can't wander into open water (P5 cozy bounds). The boat bumps it too.
             var shore = new GameObject("ShoreEdge");
             var edge = shore.AddComponent<EdgeCollider2D>();
             edge.points = new[]
@@ -424,95 +255,66 @@ namespace HiddenHarbours.App.Editor
                 new Vector2(-1.5f, -5f), new Vector2(-10f, -5f), new Vector2(-10f, 9f),
             };
 
-            // --- ON-FOOT PLAYER ------------------------------------------------------------------------
-            // Top-down WASD walk from the sliced FisherSheet. Honest 1×2 m frame (~1.8 m fisher); never
-            // rescaled. A footprint collider + the shore edge keep the player on land/dock.
-            var playerGo = new GameObject("Player");
-            playerGo.transform.position = new Vector3(-4.5f, 2.5f, 0f); // in front of the cottage
-            playerGo.transform.localScale = Vector3.one;
-            var playerSr = playerGo.AddComponent<SpriteRenderer>();
-            playerSr.sortingOrder = 10;                                 // in front of ground/cottage
-            var prb = playerGo.AddComponent<Rigidbody2D>();
-            prb.gravityScale = 0f; prb.freezeRotation = true;
-            prb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            var foot = playerGo.AddComponent<CircleCollider2D>();
-            foot.radius = 0.35f; foot.offset = new Vector2(0f, -0.7f);  // footprint at the feet
-            var walk = playerGo.AddComponent<PlayerWalkController>();
-            var fisherFrames = LoadSheetFrames(ArtFisher);
-            SetRefArray(walk, "_frames", fisherFrames);
-            if (fisherFrames.Length > 0 && fisherFrames[0] != null)
-                playerSr.sprite = fisherFrames[0];                     // idle-down for the scene view
+            // --- FISHING SPOT (greybox flavour) --------------------------------------------
+            // A visible fishing-spot marker so there IS a spot in the cove water beside the dock. The carried
+            // FishingController casts from the persistent dory (Space); this is just the look (no logic ref).
+            var fishingSpot = new GameObject("FishingSpot");
+            fishingSpot.transform.position = new Vector3(5f, -10f, 0f); // in the water beside the dock
+            var spotSr = fishingSpot.AddComponent<SpriteRenderer>();
+            spotSr.sprite = waterSprite;
+            spotSr.color = new Color(0.30f, 0.58f, 0.66f, 0.7f);
+            spotSr.sortingOrder = -4;
+            fishingSpot.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
 
-            // Camera starts following the PLAYER at the tighter on-foot framing. It also knows both
-            // mode targets (player + boat) and switches between them on the Core ControlModeChanged
-            // signal (VS boarding, step 2) — data-driven, pixel-perfect, same approach as the boat tiers.
-            var cameraFollow = camGo.AddComponent<CameraFollow>();
-            cameraFollow.Target = playerGo.transform;
-            var cfSo = new SerializedObject(cameraFollow);
-            var cfWorldH = cfSo.FindProperty("_worldHeightMeters");
-            if (cfWorldH != null) { cfWorldH.floatValue = CameraFollow.OnFootWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
-            SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
-            SetRef(cameraFollow, "_boatTarget", doryGo.transform);
+            // --- WHARF (Fish Buyer + Shipwright; resolved through the persistent proxies) ---
+            // The cove keeps its Fish Buyer (sell your catch) and the Shipwright (buy the Punt). The player's
+            // hold + wallet live in the PERSISTENT core (a different scene), so they can't be serialize-
+            // referenced here — the wharf resolves them through scene-local proxies (the Greywick pattern):
+            // PersistentHoldProxy forwards to the dory's ShipHold (the coordinator binds it on arrival), and
+            // PersistentWalletProxy always forwards to GameServices.Wallet. So you sell + buy at the cove
+            // against the same hold + coin you sailed in with.
+            var providersGo = new GameObject("PersistentProviders");
+            providersGo.AddComponent<PersistentHoldProxy>();
+            providersGo.AddComponent<PersistentWalletProxy>();
 
-            // --- BOARDING (control switch, step 2/2; additive — flagged for lead-architect) ------------
-            // A dock zone at the mooring: walk into it on foot and press E to board; sail the boat back
-            // into it and press E to disembark onto the dock. The ControlSwitcher (Player lane) toggles
-            // the player vs boat controllers and hands the camera off via Core signals — it never
-            // references the App camera. Start ON FOOT (the boat's controller/input are disabled above).
-            var dockZone = new GameObject("DockZone");
-            dockZone.transform.position = CoveDockZonePos;   // the dock end / mooring
-            var disembarkPoint = new GameObject("DisembarkPoint");
-            disembarkPoint.transform.position = new Vector3(0f, -10.5f, 0f); // on the dock planks
+            var wharf = new GameObject("Wharf");
+            var market = wharf.AddComponent<Market>();
+            var buyer = wharf.AddComponent<FishBuyer>();
+            var sellPoint = wharf.AddComponent<WharfSellPoint>();
+            wharf.AddComponent<DevSellInput>();            // RequireComponent(WharfSellPoint) — present (greybox B to sell)
+            SetRef(market, "_config", config);
+            SetRef(buyer, "_market", market);
+            SetRef(sellPoint, "_buyer", buyer);
+            SetRef(sellPoint, "_holdProvider", providersGo);
+            SetRef(sellPoint, "_walletProvider", providersGo);
 
-            var switcherGo = new GameObject("ControlSwitcher");
-            var switcher = switcherGo.AddComponent<ControlSwitcher>();
-            SetRef(switcher, "_playerWalk", walk);
-            SetRef(switcher, "_boatController", boat);
-            SetRef(switcher, "_boatInput", devBoat);
-            SetRef(switcher, "_dockZone", dockZone.transform);
-            SetRef(switcher, "_disembarkPoint", disembarkPoint.transform);
+            // Shipwright buy flow (VS-16): P buys the Punt with the persistent wallet; on success the
+            // Shipwright raises BoatPurchased (the carried OwnedFleet swaps the boat). Economy side only — the
+            // price lives in a ShipwrightOffer asset, and we reference the boat by id, never the Boats module.
+            var puntOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
+            {
+                o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
+            });
+            puntOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset");
+            var shipwrightGo = new GameObject("Shipwright");
+            var shipwright = shipwrightGo.AddComponent<Shipwright>();
+            shipwrightGo.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present (greybox P to buy)
+            SetRef(shipwright, "_offer", puntOffer);
+            SetRef(shipwright, "_walletProvider", providersGo);
 
-            // --- REGION TRAVEL (VS-22 Cove↔Greywick; persistent-core / additive-region) ----------------
-            // FLAG lead-architect: this is the pragmatic VS-01 persistent-core approach. The core (GameRoot
-            // — which already DontDestroyOnLoads itself — plus the player, dory+hold, camera, control
-            // switcher, fishing gauge) is tagged PersistentObject so it SURVIVES the additive region hop,
-            // carrying the player, boat, hold and wallet. A persistent RegionSceneLoader + a
-            // RegionTravelCoordinator move the rig across and re-bind it to whichever region became active;
-            // region scenes are TOGGLED (roots SetActive), not reloaded, so the core is never duplicated.
-            // The longer-term home for the core is a dedicated Bootstrap scene (lead-architect's).
-            playerGo.AddComponent<PersistentObject>();
-            doryGo.AddComponent<PersistentObject>();
-            camGo.AddComponent<PersistentObject>();
-            switcherGo.AddComponent<PersistentObject>();
-            gaugeGo.AddComponent<PersistentObject>();
-
+            // --- REGION SCENE-LOAD PATH ----------------------------------------------------
+            // The persistent travel rig (loader + coordinator) is carried in from the start scene. This scene
+            // places its OWN RegionSceneLoader (so it's reviewable standalone and the additive loader can
+            // re-activate it) and the Cove→Greywick passage. On arrival the carried coordinator drives travel.
             var loaderGo = new GameObject("RegionSceneLoader");
-            loaderGo.AddComponent<PersistentObject>();
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
             SetRefArray(loader, "_regions", new Object[] { coveRegion, greywickRegion });
-            SetString(loader, "_currentSceneName", "Greybox");   // this scene; explicit (don't rely on Awake vs DDOL order)
+            SetString(loader, "_currentSceneName", SceneName);   // this scene; explicit (don't rely on Awake vs DDOL order)
 
-            var coordinatorGo = new GameObject("RegionTravelCoordinator");
-            coordinatorGo.AddComponent<PersistentObject>();
-            var coordinator = coordinatorGo.AddComponent<RegionTravelCoordinator>();
-            SetRef(coordinator, "_player", playerGo.transform);
-            SetRef(coordinator, "_boat", doryGo.transform);
-            SetRef(coordinator, "_switcher", switcher);
-            SetRef(coordinator, "_hold", hold);
-
-            // This region's anchor: when you sail back from Greywick you arrive in the channel just WEST of
-            // the dock (Greywick lies west — so you come home FROM THE WEST), still heading east; board/
-            // disembark at the cove dock. The coordinator re-points the switcher here on arrival. The arrival
-            // sits within CoveDockZoneRadius of the dock zone so E disembarks the moment you're home.
-            var coveArrival = new GameObject("CoveArrival");
-            coveArrival.transform.position = CoveArrivalPos;   // just WEST of the dock head (arrive from the west)
-            var coveAnchor = new GameObject("CoveRegionAnchor").AddComponent<RegionAnchor>();
-            coveAnchor.Configure("region.coddle_cove", coveArrival.transform, dockZone.transform, disembarkPoint.transform);
-
-            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map).
-            // A wide, forgiving band down the WEST edge of the open water, reachable by sailing west out of
-            // the dock; the only mover out here is the player's boat. Sailing west into it crosses to
-            // Greywick, where you arrive still HEADING WEST (the hop preserves the boat's heading).
+            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map). A
+            // wide, forgiving band down the WEST edge of the open water, reachable by sailing west out of the
+            // dock; sailing west into it crosses to Greywick (where you arrive still HEADING WEST — the hop
+            // preserves the boat's heading). The matching return passage is on Greywick's EAST edge.
             var toGreywickGo = new GameObject("PassageToPortGreywick");
             toGreywickGo.transform.position = ToGreywickPassagePos;
             var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
@@ -522,80 +324,52 @@ namespace HiddenHarbours.App.Editor
             SetRef(toGreywickPassage, "_target", greywickRegion);
             SetRef(toGreywickPassage, "_loader", loader);
 
-            // --- DEMO PEOPLE & THE INHERITANCE OPENING (VS-21, world-content; additive — flagged for
-            // lead-architect) -------------------------------------------------------------------------
-            // Aunt Ginny + a neighbour by the cottage, Ned's logbook to read, a self-built dialogue panel,
-            // the proximity INTERACT driver, and a light one-loop onboarding nudge. Everything sits UP BY
-            // THE COTTAGE, well clear of the dock zone (0,-12), so the shared E key never fires both "talk"
-            // and "board" (context-aware by proximity). Belt-and-braces, the open dialogue also raises the
-            // Core InteractionGate which ControlSwitcher now honours (seam flagged for gameplay-systems).
-            // Art is loaded fresh here (post-reload) and wired by serialized ref; null-safe if a sprite is
-            // missing. The character/portrait/panel art is sliced (spriteMode Multiple) so it's loaded via
-            // LoadSpriteAny (the single sub-sprite), not LoadArtSprite.
+            // --- REGION ANCHOR (the persistent rig binds here on arrival) -------------------
+            // The cove's board/dock geometry as a RegionAnchor (mirrors Greywick + St Peters). When you sail
+            // home from Greywick (which lies WEST), the carried RegionTravelCoordinator reads this anchor and:
+            // parks the boat at the arrival point (just WEST of the dock, heading east), re-points the
+            // persistent ControlSwitcher's dock to the cove dock zone + disembark spot, so E disembarks the
+            // moment you're home. The arrival sits within CoveDockZoneRadius of the dock zone — the proven
+            // pure-distance disembark geometry (don't regress #52). NO persistent core is authored here.
+            var dockZone = new GameObject("CoveDockZone");
+            dockZone.transform.position = CoveDockZonePos;          // the dock head / mooring
+            var disembarkPoint = new GameObject("CoveDisembark");
+            disembarkPoint.transform.position = CoveDisembarkPos;   // on the dock planks
+            var coveArrival = new GameObject("CoveArrival");
+            coveArrival.transform.position = CoveArrivalPos;        // just WEST of the dock head (arrive from the west)
+            var coveAnchor = new GameObject("CoveRegionAnchor").AddComponent<RegionAnchor>();
+            coveAnchor.Configure("region.coddle_cove", coveArrival.transform, dockZone.transform, disembarkPoint.transform);
 
-            // Dialogue panel (builds its own canvas in Awake; needs only the panel + nameplate art).
-            var dialogueGo = new GameObject("DialogueUI");
-            var presenter = dialogueGo.AddComponent<DialoguePresenter>();
-            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
-            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
-
-            // Aunt Ginny — anchored by the cottage (no daily routine; routines are M2). Warm intro about
-            // Uncle Ned, the dory he left, and a nudge to go fish. Finishing it sets the met_ginny flag.
-            var ginnyGo = MakeNpc("AuntGinny", new Vector3(-2.2f, 4.2f, 0f), LoadSpriteAny(ArtGinny), waterSprite, new Color(0.78f, 0.55f, 0.62f));
-            var ginny = ginnyGo.AddComponent<Interactable>();
-            ConfigureInteractable(ginny, InteractKind.Talk, WorldStrings.GinnyName,
-                LoadSpriteAny(ArtPortraitGinny), WorldStrings.ConvoGinny, OnboardingFlags.MetGinnyKey);
-
-            // A neighbour, for warmth (optional). No neighbour portrait shipped → name + text only; no flag.
-            var bramGo = MakeNpc("Neighbour", new Vector3(2.8f, 4.8f, 0f), LoadSpriteAny(ArtNeighbour), waterSprite, new Color(0.55f, 0.60f, 0.70f));
-            var bram = bramGo.AddComponent<Interactable>();
-            ConfigureInteractable(bram, InteractKind.Talk, WorldStrings.NeighbourName,
-                null, WorldStrings.ConvoNeighbour, "");
-
-            // "Ned's Unfinished Lines" — a readable logbook on the cottage step (no logbook art yet → a
-            // small tinted marker). Framing the inheritance, bittersweet but hopeful. Sets read_logbook.
-            var logbookGo = MakeNpc("NedsLogbook", new Vector3(-6.4f, 3.6f, 0f), null, waterSprite, new Color(0.62f, 0.47f, 0.30f));
-            logbookGo.transform.localScale = new Vector3(0.6f, 0.8f, 1f); // a book-sized marker for the greybox
-            var logbook = logbookGo.AddComponent<Interactable>();
-            ConfigureInteractable(logbook, InteractKind.Read, WorldStrings.LogbookName,
-                LoadSpriteAny(ArtPortraitNed), WorldStrings.ConvoLogbook, OnboardingFlags.ReadLogbookKey);
-
-            // The proximity INTERACT driver: shows "E: …" near an interactable and runs the conversation.
-            var interactorGo = new GameObject("WorldInteractor");
-            var interactor = interactorGo.AddComponent<WorldInteractor>();
-            SetRef(interactor, "_player", playerGo.transform);
-            SetRef(interactor, "_presenter", presenter);
-            SetRefArray(interactor, "_interactables", new Object[] { ginny, bram, logbook });
-
-            // Light onboarding: one nudge through cast off → fish → return → sell, then it bows out and
-            // persists 'onboarded' so the opening never re-triggers on reload.
-            var onboardingGo = new GameObject("Onboarding");
-            onboardingGo.AddComponent<OnboardingDirector>();
-
-            // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
-            // A tasteful, sparse-to-moderate scatter of trees along the LAND/coast edges of the island —
-            // the back (north) treeline up by the cottage and a few along the grass/beach margins — to
-            // soften the cold North Atlantic coast. NEVER in open water, on the dock/wharf, on the paths,
-            // in the dock/disembark zones, or overlapping the cottage/NPCs. Trees use the imported pack's
-            // cold-coast varieties only (green broadleaf, pine, birch — no blossom/autumn/snow this round).
-            // Placement is data-driven (explicit positions + variety ids in CoveTrees) so counts/positions
-            // tweak freely; sortingOrder is derived from base Y so trees further north sort behind.
+            // --- TREE DECOR (greybox dressing; world-content) ------------------------------
+            // A tasteful, sparse-to-moderate scatter of cold-coast trees along the LAND/coast edges of the
+            // island. NEVER in open water, on the dock/wharf, on the paths, in the dock/disembark zones, or
+            // overlapping the cottage. Data-driven (CoveTrees) so counts/positions tweak freely; sortingOrder
+            // is derived from base Y so trees further north sort behind.
             PlaceTrees("Cove", CoveTrees, waterSprite);
 
             // --- SAVE & REGISTER -----------------------------------------------------------
+            // The cove is NO LONGER the start, so it must NOT force itself to build-index-0 (St Peters owns
+            // index 0). Register it if absent, but do not reorder the list (StPetersBuilder pins index 0).
             EditorSceneManager.SaveScene(scene, ScenePath);
-            var list = EditorBuildSettings.scenes.ToList();
-            if (!list.Any(s => s.path == ScenePath))
-            {
-                list.Insert(0, new EditorBuildSettingsScene(ScenePath, true));
-                EditorBuildSettings.scenes = list.ToArray();
-            }
+            RegisterScene(ScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity. Press Play: WASD = walk on foot. By the cottage, walk up to AUNT GINNY and press E to talk, or read NED'S LOGBOOK (E) — the inheritance opening, with a light nudge through your first loop. Aboard the DORY (hand-rowed, independent oars): W/S = both oars ahead/astern, A = port-oar stroke, D = starboard-oar stroke (one oar rows = bow swings the OTHER way; A or D alone with no W/S = spin in place), Space = brace oars (brake). Buy the Punt (engine) and it's W/S throttle + A/D steer. E = board / disembark, Space = cast then HOLD to reel / RELEASE to ease, B = sell your hold, P = buy the Punt (₲1,800).");
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity — Coddle Cove as a PLAIN region (#66 demotion): " +
+                      "no persistent core (St Peters is the start), just the cove's water/island/wharf/cottage/" +
+                      "Fish Buyer + Shipwright (resolved through the persistent hold/wallet proxies) + decor, " +
+                      "plus a RegionAnchor (arrival WEST of the dock, dock zone, disembark) so the persistent " +
+                      "rig carried from St Peters binds on arrival — exactly like Greywick. You SAIL WEST to " +
+                      "cross to Greywick; you arrive HOME from the WEST. RE-RUN 'Build St Peters Scene', 'Build " +
+                      "Greywick Scene', AND this, then test the sail-home from the START scene (StPeters.unity).");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Greybox scene built and opened.\n\nPress Play, then:\n• WASD / arrows = walk on foot\n• Aboard the DORY (hand-rowed — the two oars move independently): W/S = both oars ahead/astern · A = port-oar stroke · D = starboard-oar stroke (one oar rows → the bow swings the OTHER way; A or D alone with no W/S spins in place) · Space = brace the oars to brake. Both oars together track straight.\n• Buy the Punt (engine helm): W/S = throttle, A/D = steer (the old controls).\n• E = board at the dock / disembark · B = sell your hold · P = buy the Punt (₲1,800)\n\nNote: Space also casts the fishing line — handy, you brace to hold station while you fish.", "Fair winds");
+                "Coddle Cove built as a PLAIN region (demoted from the start, #66).\n\nThe cove no longer " +
+                "authors the persistent core — St Peters is the start, and the player/boat/camera are carried " +
+                "in and bind to the cove's RegionAnchor on arrival (the Greywick pattern). The Fish Buyer + " +
+                "Shipwright sell/buy against the persistent hold + wallet via proxies.\n\nTo test the full " +
+                "sail-home: open StPeters.unity (the start), repair the dory at Greywick, sail home to the " +
+                "cove, and confirm there's ONE player/camera (not duplicated).\n\nRE-RUN 'Build St Peters " +
+                "Scene', 'Build Greywick Scene', and this builder, then re-test.", "Fair winds");
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -614,10 +388,8 @@ namespace HiddenHarbours.App.Editor
             });
         }
 
-        // Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place
-        // so the values live on the asset, never duplicated in C#. Propulsion is a touch stronger and
-        // drier than the greybox Dory (EnginePower 500 / drag 120·320 / WindExposure 0.6) for a bigger,
-        // steadier hull. Seaworthiness "4 — Popple" maps to SeaState.Lively, same as the Dory.
+        // Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place so the
+        // values live on the asset, never duplicated in C#. Seaworthiness "4 — Popple" maps to SeaState.Lively.
         static void ApplyPuntStats(BoatHullDef h)
         {
             h.Id = "boat.punt"; h.DisplayName = "The Punt";
@@ -638,8 +410,8 @@ namespace HiddenHarbours.App.Editor
             if (init != null) init(asset);
             AssetDatabase.CreateAsset(asset, path);
             AssetDatabase.SaveAssets();
-            // Reload so callers wire the PERSISTED asset (a freshly-created instance may not
-            // serialize into the scene reliably). This is what fixes "No GameConfig assigned".
+            // Reload so callers wire the PERSISTED asset (a freshly-created instance may not serialize into
+            // the scene reliably). This is what fixes "No GameConfig assigned".
             return AssetDatabase.LoadAssetAtPath<T>(path);
         }
 
@@ -670,23 +442,12 @@ namespace HiddenHarbours.App.Editor
             { p.stringValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
         }
 
-        static void SetTideProfile(Component env, float mean, float amp, float phase)
-        {
-            var so = new SerializedObject(env);
-            var tp = so.FindProperty("_activeTideProfile");
-            if (tp == null) return;
-            tp.FindPropertyRelative("MeanLevel").floatValue = mean;
-            tp.FindPropertyRelative("Amplitude").floatValue = amp;
-            tp.FindPropertyRelative("PhaseHours").floatValue = phase;
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         // Load a final art sprite if it has been imported; null if the project is still greybox-only.
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-        // Like LoadArtSprite but also handles single-frame sliced sheets (spriteMode Multiple): the
-        // VS-21 character/portrait/panel art each carry one sub-sprite (e.g. DialoguePanel_0), so
-        // LoadAssetAtPath<Sprite> returns null and we fall back to the first sub-sprite. Null if absent.
+        // Like LoadArtSprite but also handles single-frame sliced sheets (spriteMode Multiple): some imported
+        // art carries one sub-sprite, so LoadAssetAtPath<Sprite> returns null and we fall back to the first
+        // sub-sprite. Null if absent. (imported-art-spritemode-multiple)
         static Sprite LoadSpriteAny(string path)
         {
             var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
@@ -695,47 +456,14 @@ namespace HiddenHarbours.App.Editor
                                  .OrderBy(s => SpriteIndex(s.name)).FirstOrDefault();
         }
 
-        // A standing world NPC / marker: a SpriteRenderer above the ground (just under the player at 10),
-        // with a tinted-square fallback so the greybox still builds before the art is imported.
-        static GameObject MakeNpc(string name, Vector3 pos, Sprite sprite, Sprite fallback, Color fallbackColor)
-        {
-            var go = new GameObject(name);
-            go.transform.position = pos;
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 9;
-            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
-            else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(1f, 2f, 1f); }
-            return go;
-        }
-
-        // Set every Interactable field in one SerializedObject pass (the builder's persist-the-refs
-        // convention, extended to the string/enum fields the dialogue needs).
-        static void ConfigureInteractable(Interactable it, InteractKind kind, string speaker,
-                                          Sprite portrait, string conversationId, string completionFlag)
-        {
-            var so = new SerializedObject(it);
-            so.FindProperty("_kind").enumValueIndex = (int)kind;
-            so.FindProperty("_speaker").stringValue = speaker;
-            so.FindProperty("_portrait").objectReferenceValue = portrait;
-            so.FindProperty("_conversationId").stringValue = conversationId;
-            so.FindProperty("_completionFlag").stringValue = completionFlag;
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        // Load the sub-sprites of a sliced sheet (Sprite Mode Multiple), ordered by their _N suffix so
-        // index 0..N-1 matches the slice order (e.g. FisherSheet_0..11).
-        static Sprite[] LoadSheetFrames(string path)
-            => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
-                            .OrderBy(s => SpriteIndex(s.name)).ToArray();
-
         static int SpriteIndex(string spriteName)
         {
             int u = spriteName.LastIndexOf('_');
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
         }
 
-        // A tiled ground/dock patch (mirrors the sea backdrop's tiled SpriteRenderer). Falls back to a
-        // tinted square if the tile art isn't imported, so the greybox still builds.
+        // A tiled ground/dock patch (mirrors the sea backdrop's tiled SpriteRenderer). Falls back to a tinted
+        // square if the tile art isn't imported, so the greybox still builds.
         static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,
                                     Sprite fallback, Color fallbackColor)
         {
@@ -771,40 +499,6 @@ namespace HiddenHarbours.App.Editor
             col.radius = 0.3f;   // slim piling; leaves a navigable channel between the two rows of posts
         }
 
-        // One oar of the row rig: an oarlock PIVOT transform at the gunwale, with Oar.png as a child
-        // offset so the oar's fulcrum (≈0.33 along the 1.75 m loom from the handle/LeftCenter pivot) sits
-        // on the pivot origin — so rotating the returned transform swings the oar about its oarlock
-        // (imported-assets.md Batch 6). The port oar is mirrored (flipX). Returns the pivot transform for
-        // BoatRowAnimator to rotate; falls back to a tinted bar so the greybox still builds without the art.
-        static Transform MakeOar(Transform parent, string name, Vector2 oarlockLocalPos, bool mirror,
-                                 Sprite oarSprite, Sprite fallback)
-        {
-            const float fulcrumFromHandle = 0.56f;   // 0.33 × 1.75 m loom, handle → fulcrum (toward blade)
-
-            var pivot = new GameObject(name + "Pivot");
-            pivot.transform.SetParent(parent, false);
-            pivot.transform.localPosition = new Vector3(oarlockLocalPos.x, oarlockLocalPos.y, 0f);
-
-            var oar = new GameObject(name);
-            oar.transform.SetParent(pivot.transform, false);
-            var osr = oar.AddComponent<SpriteRenderer>();
-            osr.sortingOrder = 1;                    // over the hull, under the rower
-            if (oarSprite != null)
-            {
-                osr.sprite = oarSprite;
-                osr.flipX = mirror;                  // port oar is the mirror of starboard
-                // Shift the sprite so the fulcrum lands on the pivot origin (mirrored for the port oar).
-                oar.transform.localPosition = new Vector3(mirror ? fulcrumFromHandle : -fulcrumFromHandle, 0f, 0f);
-            }
-            else
-            {
-                osr.sprite = fallback; osr.color = new Color(0.55f, 0.40f, 0.24f);
-                oar.transform.localScale = new Vector3(3.5f, 0.4f, 1f);   // ~1.75 m × 0.2 m bar
-                oar.transform.localPosition = new Vector3(mirror ? 0.9f : -0.9f, 0f, 0f);
-            }
-            return pivot.transform;
-        }
-
         static Sprite MakeSquareSprite(string path)
         {
             var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
@@ -826,6 +520,15 @@ namespace HiddenHarbours.App.Editor
             return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
+        static void RegisterScene(string path)
+        {
+            var list = EditorBuildSettings.scenes.ToList();
+            if (list.Any(s => s.path == path)) return;
+            // Append (don't insert at 0) — St Peters is the start scene and owns build-index-0.
+            list.Add(new EditorBuildSettingsScene(path, true));
+            EditorBuildSettings.scenes = list.ToArray();
+        }
+
         // ---- tree decor (greybox dressing) ----------------------------------------------------------
         // One placed tree: world position (the trunk base, since the sprite pivot is BottomCenter) + the
         // imported variety file ("TreeNN"). Kept as a plain struct so placement is a tweakable data list.
@@ -837,11 +540,10 @@ namespace HiddenHarbours.App.Editor
         }
 
         // COLD NORTH ATLANTIC coast scatter for the cove. Tasteful & sparse-to-moderate, hugging the LAND
-        // edges only — a back (north) treeline behind the cottage/grass (y≈7–9, inside the shore fence
-        // top at y=9) and a few down the east & west grass/beach margins. NONE in the open water, on the
-        // dock (x∈[-1.5,1.5], y≤-5) or its zones, on the paths, or over the cottage (≈x[-7,-2] y[2,8]) or
-        // the NPCs/player by it. Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine
-        // (Tree02/22) and birch (Tree25) — the cold-coast subset; no blossom/autumn/snow this round.
+        // edges only — a back (north) treeline behind the cottage/grass (y≈7–9, inside the shore fence top at
+        // y=9) and a few down the east & west grass/beach margins. NONE in the open water, on the dock
+        // (x∈[-1.5,1.5], y≤-5) or its zones, on the paths, or over the cottage (≈x[-7,-2] y[2,8]). Varieties:
+        // green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22) and birch (Tree25).
         static readonly TreeSpec[] CoveTrees =
         {
             // Back treeline along the north edge (behind the cottage + grass), left → right.
@@ -852,23 +554,21 @@ namespace HiddenHarbours.App.Editor
             new TreeSpec( 1.6f, 8.5f, "Tree05"),   // broadleaf
             new TreeSpec( 4.0f, 8.7f, "Tree06"),   // broadleaf
             new TreeSpec( 6.8f, 8.4f, "Tree02"),   // pine, far NE corner
-            // West grass/beach margin (clear of the cottage at x≈-4.5 and the logbook at -6.4,3.6).
+            // West grass/beach margin (clear of the cottage at x≈-4.5).
             new TreeSpec(-9.2f, 6.0f, "Tree08"),   // broadleaf
             new TreeSpec(-8.8f, 1.0f, "Tree25"),   // birch, lower west margin
             new TreeSpec(-7.6f, -1.8f, "Tree18"),  // broadleaf, SW beach band (north of the channel)
-            // East grass/beach margin (clear of the neighbour NPC at 2.8,4.8).
+            // East grass/beach margin.
             new TreeSpec( 7.0f, 6.2f, "Tree21"),   // broadleaf
             new TreeSpec( 8.0f, 2.4f, "Tree02"),   // pine, mid-east margin
             new TreeSpec( 6.6f, -1.6f, "Tree34"),  // broadleaf, SE beach band (east of the dock)
             new TreeSpec( 4.4f, -2.6f, "Tree35"),  // broadleaf, lower SE (well east of the dock x=1.5)
         };
 
-        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder is DERIVED FROM the
-        // tree's base Y (BottomCenter pivot) so trees further "back"/north (higher Y) render behind ones in
-        // front — and the whole band sits below the NPCs/player (order 9/10) so the foreground reads right.
-        // Loads each variety via LoadSpriteAny (the pack is Sprite Mode Multiple → one TreeNN_0 sub-sprite,
-        // so LoadAssetAtPath<Sprite> returns null; [[imported-art-spritemode-multiple]]). Falls back to a
-        // tinted square so the greybox still builds before the art is imported.
+        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder is DERIVED FROM the tree's
+        // base Y (BottomCenter pivot) so trees further "back"/north (higher Y) render behind ones in front.
+        // Loads each variety via LoadSpriteAny (the pack is Sprite Mode Multiple → one TreeNN_0 sub-sprite).
+        // Falls back to a tinted square so the greybox still builds before the art is imported.
         static void PlaceTrees(string sceneLabel, TreeSpec[] specs, Sprite fallback)
         {
             var decor = new GameObject("Decor");
@@ -881,8 +581,6 @@ namespace HiddenHarbours.App.Editor
                 go.transform.SetParent(trees.transform, false);
                 go.transform.position = new Vector3(t.X, t.Y, 0f);
                 var sr = go.AddComponent<SpriteRenderer>();
-                // Higher Y → smaller (more negative) order → renders behind. ×2 spreads the band so
-                // overlapping trees layer cleanly; stays under the NPCs (9) / player (10).
                 sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
                 var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
                 if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
