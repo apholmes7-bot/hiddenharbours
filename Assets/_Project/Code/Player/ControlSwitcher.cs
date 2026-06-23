@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
+using HiddenHarbours.Economy;   // RepairLedger only — the boarding gate's single source of truth (see BoardableNow)
 
 namespace HiddenHarbours.Player
 {
@@ -55,9 +56,43 @@ namespace HiddenHarbours.Player
             => Boat != null && _dockZone != null
                && Vector2.Distance(Boat.position, _dockZone.position) <= _zoneRadius;
 
-        /// <summary>True if INTERACT would transition right now (in the right zone for the current mode).</summary>
+        /// <summary>
+        /// The damaged-dory boarding gate (St Peters opening, P5): a boat bought DAMAGED is owned but
+        /// unusable until the player pays the shipwright to repair it. We read the single source of truth —
+        /// <see cref="RepairLedger.IsRepaired"/> over the live <see cref="SaveData"/> — so the switcher and
+        /// the shipwright can't disagree about "is she ready to sail?". Economy owns that economy-state and
+        /// raises <see cref="BoatRepaired"/> when paid; this reads it off the Core save seam (the owner of
+        /// the rule, the Economy lane, explicitly delegated this boarding read to gameplay-systems).
+        ///
+        /// <para><b>Fail-safe defaults.</b> When there's NO save wired (EditMode, pre-bootstrap) or no
+        /// active hull id, this returns <c>true</c> — the gate self-disables so it never blocks the
+        /// ordinary already-usable boat or breaks tests. A boat only becomes UN-boardable when a save is
+        /// present AND that specific hull id is recorded owned-but-not-yet-repaired. (A non-damaged boat is
+        /// marked repaired on purchase, so it boards immediately.)</para>
+        /// </summary>
+        public bool BoardableNow()
+        {
+            var save = GameServices.Save?.Current;
+            if (save == null) return true;                       // no save → don't gate (tests / pre-boot)
+
+            string hullId = _boatController != null && _boatController.Hull != null
+                ? _boatController.Hull.Id : null;
+            if (string.IsNullOrEmpty(hullId)) return true;       // no identifiable hull → don't gate
+
+            // Only gate a hull we actually OWN as damaged: an owned hull that isn't yet repaired is the
+            // damaged dory awaiting the shipwright. An un-owned/unknown hull (the greybox start dory before
+            // any purchase flow) isn't part of the buy+repair gate, so it stays boardable.
+            bool owned = save.OwnedBoats != null && save.OwnedBoats.Contains(hullId);
+            if (!owned) return true;
+
+            return RepairLedger.IsRepaired(save, hullId);
+        }
+
+        /// <summary>True if INTERACT would transition right now (in the right zone for the current mode).
+        /// On foot this also requires the boat to be boardable (a damaged dory blocks boarding until
+        /// repaired); disembarking is never gated.</summary>
         public bool CanInteract()
-            => Mode == ControlMode.OnFoot ? InBoardZone() : InDockZone();
+            => Mode == ControlMode.OnFoot ? (InBoardZone() && BoardableNow()) : InDockZone();
 
         /// <summary>Attempt the board/disembark transition. Returns true if it happened.</summary>
         public bool TryInteract()
@@ -163,11 +198,17 @@ namespace HiddenHarbours.Player
         private void UpdateHint()
         {
             if (_hint == null) return;
-            bool show = CanInteract();
+
+            // Cozy feedback (P5): when standing at the mooring of a damaged, unrepaired boat, say why you
+            // can't board rather than showing nothing — the opening nudges the player to the shipwright.
+            bool atDamagedBoat = Mode == ControlMode.OnFoot && InBoardZone() && !BoardableNow();
+            bool show = CanInteract() || atDamagedBoat;
             if (_hint.enabled != show) _hint.enabled = show;
             if (show)
             {
-                string text = Mode == ControlMode.OnFoot ? "E: Board" : "E: Dock";
+                string text = atDamagedBoat
+                    ? "She needs repairs before she'll sail"
+                    : (Mode == ControlMode.OnFoot ? "E: Board" : "E: Dock");
                 if (_hint.text != text) _hint.text = text;
             }
         }
