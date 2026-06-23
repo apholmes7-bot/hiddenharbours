@@ -261,3 +261,54 @@ dig sheet → player dig Animator (*gameplay-systems*); gear icons → `GearOffe
 hole + squirt → the clam-spot visual (*gameplay-systems* / *world-content*). This lane only provides the locked,
 correctly-sliced, correctly-pivoted sprites with stable GUIDs.
 
+---
+
+## Trees / environment decor — owner's free-to-use tree pack (IMPORT-ONLY)
+
+A **seasonal tree sprite pack** for island/coast decor — banked here for **world-content to place as
+scene decor** during scene-dressing / the art pass. Imported **IMPORT-ONLY: not wired into any
+scene, builder, or prefab.** From the owner's drop `trees.zip` (37 individual 64×64 RGBA PNGs).
+
+> **SOURCE / LICENSE — TO CONFIRM with owner.** The zip contained **no LICENSE / README / attribution
+> file**, and the PNGs are flat `tree1.png`…`tree37.png` with no embedded author/pack metadata. The
+> owner **confirmed these are free-to-use** for the project; the **pack name, author, exact licence
+> type, and any required credit line are still UNKNOWN and must be confirmed before commercial
+> release** — do not silently assume a permissive licence. Flagged here so it's tracked, not lost.
+> (Action: owner to supply the source/pack + licence so an attribution/credits line can be added.)
+
+> **Metas are hand-authored, not Unity-generated** (we build headless — no Unity to auto-generate
+> `.meta`s). Each `.meta` clones the committed VS-23 import lock and adapts it for discrete decor:
+> Sprite · **PPU 32 · Point · Compression None · mips off · sRGB on · Clamp wrap** (trees are discrete
+> decor, NOT seamless tiles → **Clamp**, unlike the `Tilesets/Water/` repeat tile) · **Pivot
+> BottomCenter** (`{x: 0.5, y: 0}` — trees plant at the trunk base so they sort correctly in the ¾
+> top-down view). Sprite Mode **Multiple** with **one full-cell sub-sprite** per file (`TreeNN_0`,
+> rect = the whole 64×64 cell). Fresh, repo-collision-checked GUIDs / `spriteID`s / `internalID`s.
+> `ArtImportPipeline` only stamps the lock when a `.meta` is *missing*, so these authored metas are
+> authoritative and stable on a fresh clone / CI ([[commit-unity-metas-with-assets]]).
+
+**Files:** `Sprites/Environment/Trees/Tree01.png` … `Tree37.png` — **37 sprites, each 64×64 px**
+(2 m × 2 m at PPU 32) · Sprite (Multiple, 1 sub-sprite each) · **pivot BottomCenter** · **Clamp** wrap.
+All confirmed **LFS-tracked** (the `*.png` rule) with their `.meta` committed alongside.
+
+The pack is a four-season decor set (visual types below, from inspection — names are descriptive, not
+botanically authoritative; files are numbered `TreeNN` so the GUID/ref is stable regardless of any
+later re-classification):
+
+| File | Visual type (approx.) |
+|---|---|
+| `Tree01`, `Tree05`, `Tree06`, `Tree08`, `Tree18`, `Tree21`, `Tree34`, `Tree35` | green summer broadleaf (oak / maple / round canopy) |
+| `Tree02`, `Tree22` | green conifer / pine |
+| `Tree03`, `Tree04`, `Tree17` | blossom / flowering (pink-white) |
+| `Tree07`, `Tree26` | weeping willow (drooping fronds) |
+| `Tree09`, `Tree10`, `Tree11`, `Tree12`, `Tree19`, `Tree23`, `Tree31`, `Tree32`, `Tree36` | autumn canopy (orange / red / yellow) |
+| `Tree14`, `Tree15`, `Tree24` | snow-covered conifer (winter) |
+| `Tree13`, `Tree16`, `Tree20`, `Tree28`, `Tree33`, `Tree37` | bare / dead winter branches |
+| `Tree25` | slender pale-trunk birch / sapling |
+| `Tree27` | dark / deep-purple foliage |
+| `Tree29`, `Tree30` | fruit tree (red fruit on green) |
+
+**WIRE-IN is downstream (NOT done here):** *world-content* places these as scene decor (prefabs /
+direct instances) during scene-dressing and the art pass — Coddle Cove, Greywick, St Peters, etc.
+This lane only provides the locked, correctly-pivoted sprites with stable GUIDs; no scene/builder/
+prefab was touched.
+
