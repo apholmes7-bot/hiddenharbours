@@ -219,3 +219,45 @@ first import.
 transforms, the per-oar rotation curves, sorting) is *gameplay-systems*' job — this lane provides the
 locked, correctly-pivoted layers.
 
+---
+
+## Clamming kit — soft-shell clam catch + the dig loop art
+
+The art for the soft-shell clam dig loop (clam-flat tide-pool digging). Seven sprites authored to the
+locked standard (**32 px = 1 m · no anti-aliasing · transparent PNG**, palette/light-matched). Imported
+**IMPORT-ONLY** — no wiring (downstream, pairs with the in-flight St Peters work; owners flagged below).
+
+> **Metas are hand-authored, not Unity-generated.** Because we build headless (no Unity to auto-generate
+> `.meta`s), each `.meta` here was written to clone the committed VS-23 import lock and adapt it — Sprite ·
+> **PPU 32 · Point · Compression None · mips off · sRGB on · Clamp wrap**, with fresh, repo-collision-checked
+> GUIDs / `internalID`s / `spriteID`s. `ArtImportPipeline` only stamps the lock when a `.meta` is *missing*,
+> so these authored metas are authoritative and stable on a fresh clone/CI ([[commit-unity-metas-with-assets]]).
+> Multi-sprite sheets are sliced to **clean full-cell rects** (rect = the whole cell, not alpha-trimmed) so
+> every frame shares an identical pivot and the animation never jitters — same convention as `Boats/DoryRow.png`.
+
+| Asset | File (`Art/…`) | px (W×H) | Sprite Mode / slice | Pivot · wrap | Wire-in owner(s) |
+|---|---|---|---|---|---|
+| Soft-shell clam | `Sprites/Fish/SoftShellClam.png` | 48×32 | Single (1 sub-sprite `SoftShellClam_0`) | centre · Clamp | *economy-sim* / *world-content* — assign to the clam `FishSpeciesDef.sprite` (catch + sell UI) |
+| Clam hole | `Sprites/ClamHole.png` | 32×32 | Single (`ClamHole_0`) — the dig spot (two holes in sand) | centre · Clamp | *gameplay-systems* / *world-content* — the clam-spot visual (dig anchor) |
+| Clam squirt | `Sprites/ClamSquirt.png` | 128×32 | **Multiple** — 4 horizontal 32×32 frames (`ClamSquirt_0…3`) | centre · Clamp | *gameplay-systems* / *world-content* — squirt anim on the clam-spot |
+| Shovel | `Sprites/Gear/Shovel.png` | 32×32 | Single (`Shovel_0`) | centre · Clamp | *economy-sim* / *ui-ux* — gear icon (`GearOffer` / inventory UI) |
+| Clam bucket | `Sprites/Gear/ClamBucket.png` | 32×32 | Single (`ClamBucket_0`) | centre · Clamp | *economy-sim* / *ui-ux* — gear icon |
+| Rod | `Sprites/Gear/Rod.png` | 48×32 | Single (`Rod_0`) | centre · Clamp | *economy-sim* / *ui-ux* — gear icon |
+| Fisher dig sheet | `Characters/FisherDig.png` | 128×256 | **Multiple** — 4 cols × 4 rows of 32×64 (16 sub-sprites) | **feet** (BottomCenter) · Clamp | *gameplay-systems* — the player dig Animator |
+
+**`FisherDig.png` slicing (cloned from `Characters/FisherSheet.png`'s 32×64-cell layout, extended to 4 rows):**
+- **Rows = facing**, in the **same order as `FisherSheet.png`**: row 0 = **Down**, row 1 = **Up**, row 2 = **Left**,
+  row 3 = **Right** (row 0 = the top of the image; Unity's bottom-left rect origin puts Down at `y:192`, Right at `y:0`).
+- **Columns = the dig beat:** col 0 = **Ready** → col 1 = **WindUp** → col 2 = **Plunge** → col 3 = **Scoop**.
+- Sub-sprites are named `FisherDig_<Dir>_<Frame>` (e.g. `FisherDig_Down_Plunge`) so the Animator can address each
+  frame by name. Feet pivot (`{0.5, 0}` per cell) matches `FisherSheet` so the dig sheet plants on the same ground
+  grid with **no shift** — the dig animation can swap in over the walk sheet at the same transform.
+
+**`ClamSquirt.png`** is a 4-frame horizontal flipbook (`ClamSquirt_0…3`, left→right, ~32×32 each) for the
+spurt that marks a live clam under the sand — play it on the clam-spot when the player approaches/probes.
+
+**WIRE-IN is downstream (NOT done here):** clam → `FishSpeciesDef.sprite` (*economy-sim* / *world-content*);
+dig sheet → player dig Animator (*gameplay-systems*); gear icons → `GearOffer` / gear UI (*economy-sim* / *ui-ux*);
+hole + squirt → the clam-spot visual (*gameplay-systems* / *world-content*). This lane only provides the locked,
+correctly-sliced, correctly-pivoted sprites with stable GUIDs.
+
