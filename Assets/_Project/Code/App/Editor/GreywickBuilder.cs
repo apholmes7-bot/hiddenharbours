@@ -35,6 +35,8 @@ namespace HiddenHarbours.App.Editor
         const string DataConfig  = "Assets/_Project/Data/Config";
         const string DataShip    = "Assets/_Project/Data/Shipwright";
         const string DataRegions = "Assets/_Project/Data/Regions";
+        const string DataLicenses= "Assets/_Project/Data/Licenses";   // St Peters opening: the cod licence
+        const string DataGear    = "Assets/_Project/Data/Gear";        // St Peters opening: the rod
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
@@ -91,6 +93,26 @@ namespace HiddenHarbours.App.Editor
             var puntOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
             {
                 o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
+            });
+
+            // --- St Peters opening vendors (economy data from #60; authored there, PLACED here) ----------
+            // The cod licence, the rod, and the DAMAGED dory offer. Created here if absent so the builder is
+            // self-sufficient (re-runnable), but economy-sim owns the canonical assets under the same paths.
+            var codLicense = LoadOrCreate<LicenseDef>(DataLicenses + "/CodLicense.asset", l =>
+            {
+                l.Id = "license.cod"; l.DisplayName = "Cod Fishing License"; l.Price = 120;
+                l.PermittedSpeciesIds = new[] { "fish.atlantic_cod" };
+                l.Flavor = "Greywick's harbourmaster signs you off to take cod on rod and line.";
+            });
+            var rodOffer = LoadOrCreate<GearOffer>(DataGear + "/Rod.asset", g =>
+            {
+                g.Id = "gear.rod"; g.DisplayName = "Fishing Rod"; g.Price = 60;
+                g.Flavor = "A proper rod and reel - the step up from a hand-line.";
+            });
+            var damagedDoryOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/DamagedDoryOffer.asset", o =>
+            {
+                o.BoatId = "boat.dory"; o.DisplayName = "The Old Dory (needs work)";
+                o.Price = 400; o.StartsDamaged = true; o.RepairCost = 300;
             });
 
             // --- SCENE ----------------------------------------------------------------------
@@ -157,6 +179,9 @@ namespace HiddenHarbours.App.Editor
             puntOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset");
             greywick  = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
             cove      = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
+            codLicense       = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/CodLicense.asset");
+            rodOffer         = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
+            damagedDoryOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/DamagedDoryOffer.asset");
 
             // --- QUAY (the land the town sits on, along the WEST) ---------------------------
             // Greywick lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
@@ -222,6 +247,37 @@ namespace HiddenHarbours.App.Editor
             SetRef(shipwright, "_offer", puntOffer);
             SetRef(shipwright, "_walletProvider", providersGo);
 
+            // --- ST PETERS OPENING VENDORS (places + data wiring; interaction drivers are gameplay/ui) ---
+            // The opening's earn-your-way loop ends at Greywick: sell clams (the Fish Buyer above —
+            // baseline Shellfish demand handles the clam, no override needed), buy the COD LICENCE + the
+            // ROD, save up, then buy the DAMAGED DORY and pay to repair her. world-content places these
+            // components + wires their DATA (the licence/gear/damaged-dory offers, by stable id) and the
+            // wallet provider (the persistent proxy). The buy/repair SCREENS + the dig/walk/gear gates are
+            // ui-ux / gameplay-systems — NOT wired here (no dev-input is attached so nothing collides with
+            // the Punt's 'P'); each is the named seam those lanes attach their driver to.
+
+            // Harbourmaster's office: sells the cod licence (LicenseVendor → license.cod). Reuse a flavour
+            // house sprite (no new art — art-pipeline's lane); it sits north on the WEST land.
+            var harbourOffice = MakeBuilding("HarbourmasterOffice", LoadSpriteAny(ArtHouseRed), new Vector2(-12f, 9f), waterSprite, new Color(0.46f, 0.40f, 0.52f));
+            var licenseVendor = harbourOffice.AddComponent<LicenseVendor>();
+            SetRef(licenseVendor, "_license", codLicense);
+            SetRef(licenseVendor, "_walletProvider", providersGo);
+
+            // General store / chandlery: sells the rod (GearShop → gear.rod). South on the WEST land.
+            var store = MakeBuilding("GeneralStore", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -9f), waterSprite, new Color(0.40f, 0.50f, 0.40f));
+            var gearShop = store.AddComponent<GearShop>();
+            SetRef(gearShop, "_offer", rodOffer);
+            SetRef(gearShop, "_walletProvider", providersGo);
+
+            // The DAMAGED DORY at the shipwright (the opening's prize): a second Shipwright stall wired with
+            // the damaged-dory offer (buy → owned-but-unusable; pay TryRepair → usable). Its own GO so it
+            // doesn't fight the Punt shipwright's offer; west land, beside the shed. Buy/repair screens are
+            // ui-ux's, so no dev-input is added here (P already buys the Punt next door).
+            var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), new Vector2(-8f, 8f), waterSprite, new Color(0.46f, 0.40f, 0.32f));
+            var doryShipwright = doryYard.AddComponent<Shipwright>();
+            SetRef(doryShipwright, "_offer", damagedDoryOffer);
+            SetRef(doryShipwright, "_walletProvider", providersGo);
+
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------
             var loaderGo = new GameObject("RegionSceneLoader");
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
@@ -273,8 +329,11 @@ namespace HiddenHarbours.App.Editor
             Debug.Log("[GreywickBuilder] Built Greywick.unity — Port Greywick (services region), EAST-FACING " +
                       "to read true (canon: Greywick lies WEST of the cove). You cross by sailing WEST, arrive " +
                       "from the EAST heading west, and continue west onto the wharf (Fish Buyer B + Shipwright " +
-                      "P, reused by id). The return passage heads EAST back to Coddle Cove (you arrive home " +
-                      "from the west). Loaded additively via RegionSceneLoader.");
+                      "P, reused by id). NEW St Peters opening vendors PLACED: Harbourmaster (cod licence), " +
+                      "General Store (rod), and a Shipwright DORY YARD with the DAMAGED dory (buy + repair) — " +
+                      "data-wired to the persistent wallet proxy; their buy/repair screens are ui-ux/gameplay's. " +
+                      "Clams sell at the Fish Buyer (baseline Shellfish demand). The return passage heads EAST " +
+                      "back to Coddle Cove. Loaded additively via RegionSceneLoader.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Port Greywick scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Greywick " +
                 "lies WEST of the cove, so:\n• You SAIL WEST to cross\n• You ARRIVE from the EAST, heading " +

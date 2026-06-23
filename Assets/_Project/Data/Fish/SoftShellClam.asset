@@ -21,7 +21,7 @@ MonoBehaviour:
     GEAR NOTE: hand-dig only; authored on the Handline (by-hand) tag until gameplay-systems
     reconciles a dedicated Shovel/ClamFork GearTag (fish-and-content design 3.5a).'
   RegionIds:
-  - region.coddle_cove
+  - region.st_peters
   AllowedGear: 1
   Seasons: 15
   MinTide: -10
