@@ -87,6 +87,14 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   `IsExposed(...)`, `IsSubmerged(...)`. The **one shared rule** the **world** (terrain authoring) and
   **gameplay** (walkability sim) both read, so the shoreline they draw and the seabed the player walks
   can never disagree. Built in the next wave; the seam is defined now.
+- **`Core.ITidalTerrain` + `GameServices.TidalTerrain`** — the per-position **terrain-elevation source**
+  (the "height map") that supplies the `terrainElevation` the helper above and the boat-grounding rule
+  need. `ElevationAt(Vector2 worldPos)` returns authored ground height (m above datum, higher = drier),
+  deterministic and unsaved. The **world** registers the active region's terrain via the optional,
+  scene-scoped `GameServices.TidalTerrain` accessor (same pattern as `ActiveBoat`/`Licenses`); **gameplay**
+  and the future **water depth-gradient shader** read it through Core, never referencing World. **Null =
+  open water** (everywhere submerged / no walkable ground) — callers null-check rather than throw. Closes
+  ADR 0009's "within-region elevation source" open question; world + gameplay can now build in parallel.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 

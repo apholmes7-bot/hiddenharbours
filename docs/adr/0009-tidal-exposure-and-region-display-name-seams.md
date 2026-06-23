@@ -122,9 +122,15 @@ migration is required.
 
 ## Open questions (later, for the owning lanes)
 
-- **Within-region elevation source.** The exposure helper takes `terrainElevation` as a parameter; how
-  the world supplies it per position (tile heightfield vs per-feature zones) is a world-lane call in
-  `design/world-and-regions.md` §9.4 / `design/time-tides-weather.md` §3.5 — out of scope for the seam.
+- **Within-region elevation source.** ~~The exposure helper takes `terrainElevation` as a parameter; how
+  the world supplies it per position is out of scope for the seam.~~ **Resolved (follow-on, same author).**
+  The *Core contract* through which the world supplies elevation per position is now
+  `Core.ITidalTerrain.ElevationAt(Vector2 worldPos)` (m above datum, higher = drier; deterministic, unsaved),
+  resolved via the optional scene-scoped `GameServices.TidalTerrain` accessor — the same pull-style, null-safe
+  pattern as `ActiveBoat`/`Licenses` (null = open water). Gameplay's walkability sim and the future water
+  depth-gradient shader read authored elevation through Core without referencing World, so the two lanes build
+  in parallel. **Still a world-lane call:** *how* the world backs `ElevationAt` per position (tile heightfield
+  vs per-feature zones) — `design/world-and-regions.md` §9.4 / `design/time-tides-weather.md` §3.5.
 - **Registry key choice.** World may register by **scene name** (what the fade card has) and/or by
   **region id**; `RegionDisplayNames` accepts either. If region scenes are ever reused across regions,
   prefer the id key — flag at adoption.
