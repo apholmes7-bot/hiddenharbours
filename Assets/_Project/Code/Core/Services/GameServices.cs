@@ -14,6 +14,16 @@ namespace HiddenHarbours.Core
         public static IWallet Wallet { get; set; }
 
         /// <summary>
+        /// The player's license wallet (St Peters opening): which fishing/gear licenses they hold.
+        /// Lets Fishing gate the rod-fishes-cod catch on the cod license WITHOUT referencing Economy —
+        /// the same indirection as <see cref="Wallet"/>/<c>IHold</c>. OPTIONAL and NOT part of
+        /// <see cref="Ready"/>: it is null until Economy's <c>LicenseService</c> registers itself
+        /// (e.g. in EditMode, or before the opening scene). Consumers must null-check — a null service
+        /// means "no gating", so ungated content stays catchable.
+        /// </summary>
+        public static ILicenseService Licenses { get; set; }
+
+        /// <summary>
         /// The active boat's heading + course-over-ground reporter (VS-19 compass / set-&amp;-drift).
         /// OPTIONAL and scene-scoped — like <see cref="Wallet"/> it is NOT part of <see cref="Ready"/>:
         /// it is null on foot / before a boat is aboard, and the producer (ActiveBoatProbe) registers
@@ -38,6 +48,7 @@ namespace HiddenHarbours.Core
             Clock = null;
             Environment = null;
             Wallet = null;
+            Licenses = null;
             ActiveBoat = null;
             Save = null;
         }

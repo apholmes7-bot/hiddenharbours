@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed602a11ae364ca3b3b0453687d1d98b, type: 3}
+  m_Name: Shovel
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
+  Id: gear.shovel
+  DisplayName: Clam Shovel
+  Flavor: 'For digging soft-shell clams out of the bared flats at low water. gameplay-systems
+    maps gear.shovel to the hand-dig method (reconcile Shovel vs ClamFork GearTag, fish-and-content 3.5a).'
+  Price: 25

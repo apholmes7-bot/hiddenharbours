@@ -20,5 +20,16 @@ namespace HiddenHarbours.Economy
         [Min(0)]
         [Tooltip("Purchase price in ₲. The economy-owned tunable for this offer.")]
         public int Price = 1800;
+
+        [Header("Damaged → repair (St Peters opening)")]
+        [Tooltip("If true, this boat is sold in a DAMAGED state: it is bought/owned but UNUSABLE until " +
+                 "the player pays RepairCost at the shipwright to repair it. The St Peters dory is the " +
+                 "first case (a plain bought + repaired boat, no inheritance). A normal offer (false) is " +
+                 "usable the moment it's bought.")]
+        public bool StartsDamaged = false;
+        [Min(0)]
+        [Tooltip("₲ to repair this boat into a usable boat (only used when StartsDamaged). The economy-" +
+                 "owned tunable; greybox-minimal = instant repair on payment.")]
+        public int RepairCost = 300;
     }
 }
