@@ -25,6 +25,13 @@ namespace HiddenHarbours.Player
         [Tooltip("Walk speed on foot (m/s).")]
         [SerializeField] private float _moveSpeed = 3f;
 
+        [Tooltip("Enforce the falling-tide walkability gate (St Peters): the fisher may only step onto " +
+                 "ground exposed by the tide; a move into the water gently stops at the wading edge. " +
+                 "Off-by-default so non-tidal land scenes (no terrain wired) need no change; the St " +
+                 "Peters scene turns it on. Pure inland scenes can also just not register a TidalTerrain " +
+                 "— the gate self-disables when no height map is present.")]
+        [SerializeField] private bool _tideGatedWalk = false;
+
         [Tooltip("Seconds per animation frame (~230 ms — a gentle, readable walk).")]
         [SerializeField] private float _frameSeconds = 0.23f;
 
@@ -67,6 +74,50 @@ namespace HiddenHarbours.Player
         public static int WalkCycleColumn(int step)
             => WalkCycle[((step % WalkCycle.Length) + WalkCycle.Length) % WalkCycle.Length];
 
+        /// <summary>
+        /// Resolve a tide-gated move into a wading-edge stop (St Peters falling-tide walkability, P1).
+        /// Given the would-be velocity and a per-axis "is the position a small step along this axis
+        /// walkable?" probe, this zeroes any velocity component that would step the fisher off exposed
+        /// ground into the water — a gentle stop at the wading edge, never a teleport. The X and Y axes
+        /// are gated independently so the player can still slide ALONG a shoreline (only the into-water
+        /// component is cut), which keeps the emerging-sandbar walk feeling smooth rather than sticky.
+        ///
+        /// <para>Pure + static so it is fully EditMode-testable with a fake walkability probe — the probe
+        /// is "would a step of <paramref name="probeDistance"/> m in this direction land on exposed
+        /// ground?". The controller supplies a probe backed by <see cref="TidalWalkability"/>.</para>
+        /// </summary>
+        /// <param name="desiredVelocity">The velocity the input wants this tick (m/s).</param>
+        /// <param name="origin">The fisher's current world position.</param>
+        /// <param name="walkableAt">Probe: is this world position currently walkable (exposed)?</param>
+        /// <param name="probeDistance">How far ahead to test along each axis (m). A small look-ahead so we
+        /// stop at the edge before the body slides into the water.</param>
+        public static Vector2 ApplyWadingEdge(Vector2 desiredVelocity, Vector2 origin,
+                                              System.Func<Vector2, bool> walkableAt, float probeDistance)
+        {
+            if (walkableAt == null) return desiredVelocity;
+
+            // If the fisher isn't on exposed ground right now (e.g. the tide rose under them), don't trap
+            // them: allow any move so they can wade back toward dry ground. The gate only blocks STEPPING
+            // OFF exposed ground INTO water, never escaping water you're already in (P5 forgiving).
+            if (!walkableAt(origin)) return desiredVelocity;
+
+            Vector2 v = desiredVelocity;
+            float look = Mathf.Max(0f, probeDistance);
+
+            // Gate each axis independently so you can slide along the shoreline.
+            if (v.x != 0f)
+            {
+                Vector2 probe = origin + new Vector2(Mathf.Sign(v.x) * look, 0f);
+                if (!walkableAt(probe)) v.x = 0f;
+            }
+            if (v.y != 0f)
+            {
+                Vector2 probe = origin + new Vector2(0f, Mathf.Sign(v.y) * look);
+                if (!walkableAt(probe)) v.y = 0f;
+            }
+            return v;
+        }
+
         // ---- lifecycle ----------------------------------------------------------------------
 
         private void Awake()
@@ -104,9 +155,23 @@ namespace HiddenHarbours.Player
             ApplyFrame(_facing, column);
         }
 
+        [Tooltip("Wading-edge look-ahead (m): how far ahead of the fisher the tide gate probes for exposed " +
+                 "ground, so movement stops just before stepping into the water. A little more than one " +
+                 "tick of travel keeps the stop clean without feeling sticky.")]
+        [SerializeField] private float _wadeProbeDistance = 0.5f;
+
         private void FixedUpdate()
         {
-            if (_rb != null) _rb.linearVelocity = VelocityFor(_moveInput, _moveSpeed);
+            if (_rb == null) return;
+            Vector2 desired = VelocityFor(_moveInput, _moveSpeed);
+
+            // Falling-tide walkability (St Peters, P1): cut any component that would step off exposed
+            // ground into the water — a gentle wading-edge stop, not a wall or a teleport. Pure helper +
+            // a Core-seam probe (TidalWalkability), so it self-disables where no terrain/tide is wired.
+            if (_tideGatedWalk)
+                desired = ApplyWadingEdge(desired, _rb.position, TidalWalkability.IsWalkableNow, _wadeProbeDistance);
+
+            _rb.linearVelocity = desired;
         }
 
         private static Vector2 ReadInput()

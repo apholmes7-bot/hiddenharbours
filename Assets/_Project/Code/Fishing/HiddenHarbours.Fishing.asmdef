@@ -1,7 +1,7 @@
 {
     "name": "HiddenHarbours.Fishing",
     "rootNamespace": "HiddenHarbours.Fishing",
-    "references": ["HiddenHarbours.Core", "Unity.InputSystem"],
+    "references": ["HiddenHarbours.Core", "HiddenHarbours.Economy", "Unity.InputSystem"],
     "allowUnsafeCode": false,
     "autoReferenced": true
 }

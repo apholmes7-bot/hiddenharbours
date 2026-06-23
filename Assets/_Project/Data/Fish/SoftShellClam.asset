@@ -18,11 +18,12 @@ MonoBehaviour:
   Rarity: 0
   Flavor: 'Dug from the flats by hand when the low tide bares them - two little squirting
     holes give the buried clam away. The St Peters opening''s first by-hand income.
-    GEAR NOTE: hand-dig only; authored on the Handline (by-hand) tag until gameplay-systems
-    reconciles a dedicated Shovel/ClamFork GearTag (fish-and-content design 3.5a).'
+    GEAR NOTE: hand-dig only - re-tagged off the Handline stopgap onto the dedicated
+    ClamFork (hand-dig) gear tag by gameplay-systems (fish-and-content 3.5a). The on-foot
+    ClamDig interaction yields it; it is deliberately not in the rod''s catch pool.'
   RegionIds:
   - region.st_peters
-  AllowedGear: 1
+  AllowedGear: 64
   Seasons: 15
   MinTide: -10
   MaxTide: 0

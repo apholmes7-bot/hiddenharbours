@@ -40,6 +40,14 @@ namespace HiddenHarbours.Boats
         [SerializeField] private BoatHullDef _hull;
         [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
         [SerializeField] private float _localSeabedDepth = 3f;
+        [Tooltip("Gate crossing on the authored tidal terrain (St Peters): the boat can only pass where " +
+                 "the water is deeper than its draught, so the sandbar channel closes as the tide falls. " +
+                 "Non-punishing — the hull eases to a stop at the shallows, no grounding/damage. " +
+                 "Off-by-default; self-disables anyway where no TidalTerrain is wired (open water).")]
+        [SerializeField] private bool _tideGatedCrossing = false;
+        [Tooltip("How firmly the boat is held out of water too shallow to float it (design-unit drag " +
+                 "against the into-shallows velocity). Forgiving: it stops you entering, it doesn't punish.")]
+        [SerializeField] private float _shallowsHoldDrag = 600f;
         [Tooltip("Astern thrust as a fraction of ahead thrust. A real propeller pushes backward weaker " +
                  "(~40%) — enough to back off the dock without turning the dory into a reversing car.")]
         [SerializeField] private float _asternThrustFactor = DefaultAsternFactor;
@@ -152,6 +160,28 @@ namespace HiddenHarbours.Boats
             => -throughWater * braceDrag;
 
         /// <summary>
+        /// The non-punishing <b>shallows-hold</b> force (design-unit, before the feel scale): when the boat
+        /// is heading into water too shallow to float it (the boat-cross gate, <see cref="BoatCrossing"/>),
+        /// a drag opposes ONLY the component of velocity pushing further into the shallows, easing the hull
+        /// to a stop at the channel edge. It never opposes motion BACK toward deep water (so you can always
+        /// retreat), and it does no damage — too-shallow water just can't be entered (P5 forgiving). Returns
+        /// zero unless heading into the shallows. Pure + static so it's EditMode-testable.
+        /// </summary>
+        /// <param name="velocity">The hull's current velocity (m/s).</param>
+        /// <param name="aheadShallow">True when the water just ahead of the bow is too shallow to float the hull.</param>
+        /// <param name="towardShallow">Unit (or any) vector pointing from the hull toward the shallow water ahead.</param>
+        /// <param name="holdDrag">Drag strength against the into-shallows velocity component.</param>
+        public static Vector2 ShallowsHoldForce(Vector2 velocity, bool aheadShallow, Vector2 towardShallow, float holdDrag)
+        {
+            if (!aheadShallow || holdDrag <= 0f) return Vector2.zero;
+            Vector2 dir = towardShallow.sqrMagnitude > 1e-6f ? towardShallow.normalized : Vector2.zero;
+            if (dir == Vector2.zero) return Vector2.zero;
+            float into = Vector2.Dot(velocity, dir);   // speed component heading into the shallows
+            if (into <= 0f) return Vector2.zero;        // moving away / parallel → don't impede retreat
+            return -dir * (into * holdDrag);
+        }
+
+        /// <summary>
         /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
         /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
         /// A small public setter so the swapper doesn't reach into the private serialized field.
@@ -195,6 +225,19 @@ namespace HiddenHarbours.Boats
 
             // --- Wind shove (Pillar 1: the dory gets pushed around) ---
             _rb.AddForce(env.WindVector * (_hull.WindExposure * ForceFeelScale), ForceMode2D.Force);
+
+            // --- Boat-cross gate (St Peters, P1/P5): can't pass water too shallow to float the hull. ---
+            // The inverse of the on-foot walkability gate, over the SAME authored terrain + tide. Forgiving:
+            // it eases the hull to a stop at the shallows — no grounding, no damage (that's a later wave).
+            // Self-disables in open water (no TidalTerrain wired).
+            if (_tideGatedCrossing)
+            {
+                // Probe just ahead of the bow; one boat-length is a sensible, draught-independent look-ahead.
+                Vector2 ahead = _rb.position + fwd * Mathf.Max(0.5f, _hull.LengthMeters * 0.5f);
+                bool aheadShallow = !BoatCrossing.CanFloatNow(ahead, _hull.DraughtMeters);
+                Vector2 hold = ShallowsHoldForce(vel, aheadShallow, ahead - _rb.position, _shallowsHoldDrag);
+                if (hold != Vector2.zero) _rb.AddForce(hold * ForceFeelScale, ForceMode2D.Force);
+            }
         }
 
         /// <summary>
