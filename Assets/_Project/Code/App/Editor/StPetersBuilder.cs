@@ -7,7 +7,8 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using HiddenHarbours.Boats;               // BoatHullDef (the carried Dory/Punt hulls handed to the core)
-using HiddenHarbours.Fishing;             // FishSpeciesDef (the clam the on-foot player's fishing reads)
+using HiddenHarbours.Fishing;             // FishSpeciesDef + ClamDig/ClamHoleVisual (the clam dig action + look)
+using HiddenHarbours.Player;              // ClamBucket (the on-foot clam hold the dig fills)
 using HiddenHarbours.App;                 // RegionAnchor — St Peters' travel bind point (the persistent rig rebinds here)
 
 namespace HiddenHarbours.App.Editor
@@ -58,6 +59,8 @@ namespace HiddenHarbours.App.Editor
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
+        const string ArtClamHole   = "Assets/_Project/Art/Sprites/ClamHole.png";    // the still dig-spot sprite
+        const string ArtClamSquirt = "Assets/_Project/Art/Sprites/ClamSquirt.png";  // 4-frame "two squirts" tell
         const string Scenes      = "Assets/_Project/Scenes";
         const string SceneName   = "StPeters";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
@@ -85,6 +88,18 @@ namespace HiddenHarbours.App.Editor
         public const float ChannelAlong            = 0.62f;
         public const float ChannelHalfWidth        = 4.5f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls
+
+        // --- CLAM-HOLE scatter (deterministic; single source of truth shared with the EditMode test) ------
+        // Holes scatter over the bar's footprint on a jittered grid, kept only where the authored ground is
+        // INTERTIDAL — between the lowest and highest water of the swing (mean ∓ amplitude), so a hole bares
+        // as the tide falls and floods as it rises. ClamScatterStep = grid spacing; ClamScatterJitter = the
+        // max deterministic offset (hashed off the cell, no RNG) that breaks the grid look. The band is the
+        // tide swing inset by a small margin so a hole isn't perpetually at the very waterline edge.
+        public const float ClamScatterStep   = 6f;     // one candidate hole per ~6×6 m cell over the bar
+        public const float ClamScatterJitter = 2.0f;   // ± world units of stable hash jitter per cell
+        public const float ClamBandMargin     = 0.4f;   // inset (m) from the extreme water levels (kindness band)
+        // The bar footprint to scatter over (a margin around the bar so the flats either side are covered).
+        public const float ClamScatterMargin = 8f;
 
         // Player START spawn (on the island, by the slip). The walk path runs east along the sandbar.
         public static readonly Vector3 StartSpawnPos = new Vector3(-40f, -2f, 0f);
@@ -255,20 +270,25 @@ namespace HiddenHarbours.App.Editor
             var devTideGo = new GameObject("DevFastTide");
             devTideGo.AddComponent<HiddenHarbours.Environment.DevFastTide>();
 
-            // --- CLAM-HOLE spots (positions only; gameplay implements the dig) --------------------------
-            // Dropped on the sandbar flats + along the island coast. Each yields fish.soft_shell_clam by id;
-            // gameplay reads each spot's tide-exposure (TidalTerrain + TidalExposure) to gate the dig.
+            // --- CLAM-HOLES (VISIBLE + diggable; scattered wherever the tide bares ground) ---------------
+            // The owner's expectation: clam holes appear ANYWHERE the falling tide bares the flats, and are
+            // diggable. So instead of a fixed handful of points, we DETERMINISTICALLY scatter holes over the
+            // bar's whole footprint and keep only the cells whose authored ground is INTERTIDAL — ground that
+            // actually reveals as the big tide falls (between the lowest and highest water of the swing). That
+            // skips always-dry island and always-deep harbour, so holes land exactly on the bared flats.
+            //
+            // Each hole gets: a SpriteRenderer (ClamHole.png, base-Y sorted so it sits on the flat), a World
+            // ClamSpot marker (names the yield by id), a ClamDig (the action — wired to the species + the
+            // player's ClamBucket, gating exposure/shovel/room), and a ClamHoleVisual that shows the hole ONLY
+            // while its ground is exposed and runs the ClamSquirt tell off ClamDig.ShowingSquirt. The position
+            // + the exposure are a pure function of (position, tide) — no RNG drift (CLAUDE.md rule 5); the
+            // scatter jitter is a stable hash of the grid cell, so a rebuild reproduces the same field.
             var clamRoot = new GameObject("ClamHoles");
-            Vector2[] clamPositions =
-            {
-                // On the bar flats (bare at low water — the showcase dig ground).
-                new Vector2(-10f,  3f), new Vector2(-4f, -4f), new Vector2(2f,  4f),
-                new Vector2(8f, -3f),   new Vector2(16f, 5f),  new Vector2(22f, -5f),
-                // Along the island's own intertidal coast (a few near home).
-                new Vector2(-26f, -8f), new Vector2(-30f, 9f), new Vector2(-20f, -10f),
-            };
-            foreach (var p in clamPositions)
-                MakeClamSpot(clamRoot.transform, p, "fish.soft_shell_clam", waterSprite);
+            var holeSprite = LoadSpriteAny(ArtClamHole);
+            var squirtFrames = LoadSheetFrames(ArtClamSquirt);
+            foreach (var p in ScatterClamHoles(terrain))
+                MakeClamHole(clamRoot.transform, p, clam, "fish.soft_shell_clam",
+                             core.Bucket, holeSprite, squirtFrames, waterSprite);
 
             // --- THE MOORED DORY'S SLIP (set dressing; the persistent Dory floats at DoryMooredPos) ------
             // The real, controllable Player is now spawned by the PersistentCoreBuilder above at
@@ -466,6 +486,11 @@ namespace HiddenHarbours.App.Editor
                                  .OrderBy(s => SpriteIndex(s.name)).FirstOrDefault();
         }
 
+        // All sub-sprites of a sliced sheet (spriteMode Multiple), in frame order — e.g. ClamSquirt_0.._3.
+        static Sprite[] LoadSheetFrames(string path)
+            => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                            .OrderBy(s => SpriteIndex(s.name)).ToArray();
+
         static int SpriteIndex(string spriteName)
         {
             int u = spriteName.LastIndexOf('_');
@@ -483,16 +508,106 @@ namespace HiddenHarbours.App.Editor
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); }
         }
 
-        static void MakeClamSpot(Transform parent, Vector2 pos, string yieldFishId, Sprite marker)
+        /// <summary>
+        /// DETERMINISTIC clam-hole field: a hash-jittered grid over the bar footprint, keeping only the
+        /// cells whose authored ground (<paramref name="terrain"/>) is INTERTIDAL — between the lowest and
+        /// highest water of the St Peters swing (mean ∓ amplitude), inset by <see cref="ClamBandMargin"/>.
+        /// That puts holes exactly where the falling tide bares ground (skipping always-dry island and
+        /// always-deep harbour), so wherever a flat reveals there are holes to find. Pure: position is a
+        /// function of the cell index (a stable hash, no <c>System.Random</c>) and the kept/dropped decision
+        /// is a function of (position, tide band) — a rebuild reproduces the same field (CLAUDE.md rule 5).
+        /// Public + static so the EditMode test can assert the same field the scene is built from.
+        /// </summary>
+        public static System.Collections.Generic.List<Vector2> ScatterClamHoles(ITidalTerrain terrain)
+        {
+            var holes = new System.Collections.Generic.List<Vector2>();
+            if (terrain == null) return holes;
+
+            // The intertidal band: ground that bares AND floods over the swing. Mean ∓ amplitude is the
+            // extreme water; inset by the kindness margin so a hole isn't perpetually at the very edge.
+            float lowWater  = TideMean - TideAmplitude + ClamBandMargin;
+            float highWater = TideMean + TideAmplitude - ClamBandMargin;
+
+            // Bounding box around the bar (From→To) plus a margin so the flats either side are covered.
+            float minX = Mathf.Min(SandbarFrom.x, SandbarTo.x) - ClamScatterMargin;
+            float maxX = Mathf.Max(SandbarFrom.x, SandbarTo.x) + ClamScatterMargin;
+            float minY = Mathf.Min(SandbarFrom.y, SandbarTo.y) - SandbarHalfWidth - ClamScatterMargin;
+            float maxY = Mathf.Max(SandbarFrom.y, SandbarTo.y) + SandbarHalfWidth + ClamScatterMargin;
+
+            int nx = Mathf.Max(1, Mathf.CeilToInt((maxX - minX) / ClamScatterStep));
+            int ny = Mathf.Max(1, Mathf.CeilToInt((maxY - minY) / ClamScatterStep));
+            for (int ix = 0; ix < nx; ix++)
+            for (int iy = 0; iy < ny; iy++)
+            {
+                // Cell centre, then a stable hash-jitter (deterministic, no RNG) so the field isn't a grid.
+                float cx = minX + (ix + 0.5f) * ClamScatterStep;
+                float cy = minY + (iy + 0.5f) * ClamScatterStep;
+                cx += (Hash01(ix, iy, 1) * 2f - 1f) * ClamScatterJitter;
+                cy += (Hash01(ix, iy, 2) * 2f - 1f) * ClamScatterJitter;
+
+                var pos = new Vector2(cx, cy);
+                float ground = terrain.ElevationAt(pos);
+                if (ground > lowWater && ground < highWater)   // intertidal → bares as the tide falls
+                    holes.Add(pos);
+            }
+            return holes;
+        }
+
+        // A stable 0..1 hash of two integer cell coords + a salt — deterministic jitter without System.Random
+        // (so the scatter is a pure function of the cell; a rebuild reproduces the same field — rule 5).
+        static float Hash01(int x, int y, int salt)
+        {
+            unchecked
+            {
+                uint h = 2166136261u;
+                h = (h ^ (uint)x) * 16777619u;
+                h = (h ^ (uint)y) * 16777619u;
+                h = (h ^ (uint)salt) * 16777619u;
+                h ^= h >> 15; h *= 2246822519u; h ^= h >> 13;
+                return (h & 0xFFFFFF) / (float)0x1000000;   // 24-bit mantissa → [0,1)
+            }
+        }
+
+        /// <summary>
+        /// Build one VISIBLE, diggable clam hole: a SpriteRenderer (ClamHole.png, base-Y sorted so it sits on
+        /// the flat), the World <see cref="ClamSpot"/> marker, the <see cref="ClamDig"/> action wired to the
+        /// clam species + the player's <see cref="ClamBucket"/>, and the <see cref="ClamHoleVisual"/> that
+        /// shows the hole only while exposed and runs the squirt tell off <see cref="ClamDig.ShowingSquirt"/>.
+        /// </summary>
+        static void MakeClamHole(Transform parent, Vector2 pos, FishSpeciesDef clam, string yieldFishId,
+                                 ClamBucket bucket, Sprite holeSprite, Sprite[] squirtFrames, Sprite fallback)
         {
             var go = new GameObject("ClamHole");
             go.transform.SetParent(parent, false);
             go.transform.position = new Vector3(pos.x, pos.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();          // a faint greybox marker; gameplay/art replace it
-            sr.sprite = marker; sr.color = new Color(0.30f, 0.24f, 0.16f, 0.65f); sr.sortingOrder = -6;
-            go.transform.localScale = new Vector3(0.5f, 0.5f, 1f);
+
+            var sr = go.AddComponent<SpriteRenderer>();
+            // Sit ON the flat: above the ground sprites (Sandbar -9) and the tide-reveal cells (-5), and below
+            // the on-foot characters (the Player draws at +10). A small base-Y term sorts holes among
+            // themselves (lower on screen = higher Y-negated = draws in front) without ever crossing the
+            // character band — clamped so a far-south hole can't pop in front of the player.
+            sr.sortingOrder = Mathf.Clamp(-Mathf.RoundToInt(pos.y), -4, 4);
+            if (holeSprite != null) { sr.sprite = holeSprite; go.transform.localScale = Vector3.one; }
+            else { sr.sprite = fallback; sr.color = new Color(0.30f, 0.24f, 0.16f, 0.65f); go.transform.localScale = new Vector3(0.5f, 0.5f, 1f); }
+
+            // World marker: names the yield by id (no Fishing reference from World).
             var spot = go.AddComponent<ClamSpot>();
             SetString(spot, "_yieldFishId", yieldFishId);
+
+            // The DIG action (gameplay-systems): species + the player's bucket; gates exposure/shovel/room.
+            // The exposure test reads this object's transform (the hole position) via TidalTerrain.
+            var dig = go.AddComponent<ClamDig>();
+            SetRef(dig, "_clamSpecies", clam);
+            SetRef(dig, "_bucketProvider", bucket != null ? bucket.gameObject : null);
+            SetRef(dig, "_spot", go.transform);
+
+            // The LOOK: hole sprite while exposed, squirt flip-book while the dig's tell shows, hidden when
+            // submerged — driven off the SAME exposure read the dig gates on, so picture and gate agree.
+            var visual = go.AddComponent<ClamHoleVisual>();
+            SetRef(visual, "_dig", dig);
+            SetRef(visual, "_holeSprite", holeSprite);
+            if (squirtFrames != null && squirtFrames.Length > 0)
+                SetRefArray(visual, "_squirtFrames", squirtFrames.Cast<Object>().ToArray());
         }
 
         static Sprite MakeSquareSprite(string path)
