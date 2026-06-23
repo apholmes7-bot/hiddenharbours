@@ -38,6 +38,7 @@ namespace HiddenHarbours.App.Editor
         const string DataLicenses= "Assets/_Project/Data/Licenses";   // St Peters opening: the cod licence
         const string DataGear    = "Assets/_Project/Data/Gear";        // St Peters opening: the rod
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
+        const string ArtTrees    = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
@@ -320,6 +321,16 @@ namespace HiddenHarbours.App.Editor
             var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
 
+            // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
+            // A sparse-to-moderate scatter of cold-coast trees on the WEST quay land only — the far-west
+            // back edge behind the houses and a few in the gaps between/around the buildings — to soften
+            // the harbour town. NEVER in the open harbour water (EAST of x=-4), on the public wharf deck
+            // (x∈[-4,4], y∈[-3,3]) or its dock/disembark zones, on the paths, or overlapping a building
+            // footprint (the x=-8 and x=-12 building rows). Cold-coast varieties only (green broadleaf,
+            // pine, birch). Data-driven (GreywickTrees) so counts/positions tweak freely; sortingOrder is
+            // derived from base Y so trees further north sort behind, and the band sits below buildings.
+            PlaceTrees("Greywick", GreywickTrees, waterSprite);
+
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterScene(ScenePath);
@@ -491,6 +502,68 @@ namespace HiddenHarbours.App.Editor
             if (list.Any(s => s.path == path)) return;
             list.Add(new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = list.ToArray();
+        }
+
+        // ---- tree decor (greybox dressing) ----------------------------------------------------------
+        // One placed tree: world position (the trunk base — the sprite pivot is BottomCenter) + the
+        // imported variety file ("TreeNN"). Plain struct so placement is a tweakable data list.
+        struct TreeSpec
+        {
+            public float X, Y;
+            public string Variety;   // "TreeNN" → Art/Sprites/Environment/Trees/TreeNN.png
+            public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
+        }
+
+        // COLD NORTH ATLANTIC scatter for Greywick — WEST quay land ONLY (land is x < -4; the deep harbour
+        // is open to the EAST). Hugs the far-west back edge behind the x=-12 house row and tucks into the
+        // gaps north/south of the building rows. NONE in the open harbour water, on the public wharf deck
+        // (x∈[-4,4], y∈[-3,3]) or its zones, on the paths, or over a building (rows at x=-8 and x=-12, each
+        // ≈5 m). Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22), birch (Tree25).
+        static readonly TreeSpec[] GreywickTrees =
+        {
+            // Far-west back edge of the quay, behind the x=-12 house row (north → south), clear of houses.
+            new TreeSpec(-14.4f, 12.0f, "Tree02"),  // pine, NW
+            new TreeSpec(-14.2f,  7.0f, "Tree08"),  // broadleaf (between HarbourOffice y9 and HouseRed y5)
+            new TreeSpec(-14.5f,  0.0f, "Tree25"),  // birch, mid west edge
+            new TreeSpec(-14.2f, -7.0f, "Tree06"),  // broadleaf (between HouseTeal y-5 and GeneralStore y-9)
+            new TreeSpec(-14.4f,-12.0f, "Tree22"),  // pine, SW
+            // North end of the quay, above the building rows (y>10, clear of HarbourOffice at -12,9).
+            new TreeSpec(-9.2f,  12.5f, "Tree01"),  // broadleaf
+            new TreeSpec(-6.0f,  13.0f, "Tree05"),  // broadleaf, NE land edge (well west of the x=-4 shore)
+            // South end of the quay, below the building rows (y<-11, clear of GeneralStore at -12,-9).
+            new TreeSpec(-9.4f, -12.5f, "Tree18"),  // broadleaf
+            new TreeSpec(-5.8f, -13.0f, "Tree21"),  // broadleaf, SE land edge
+            // A couple between the x=-8 service row and the shore strip (north/south of the wharf, clear of
+            // the deck y∈[-3,3] and the sheds at -8,±3 / -8,8).
+            new TreeSpec(-5.2f,   7.5f, "Tree34"),  // broadleaf, north of the wharf
+            new TreeSpec(-5.0f,  -7.5f, "Tree35"),  // broadleaf, south of the wharf
+        };
+
+        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder derives from the
+        // tree's base Y (BottomCenter pivot) so trees further north (higher Y) render behind nearer ones;
+        // trees behind the x=-12 house row (high Y → negative order) sort under the buildings (order 2).
+        // Loads each variety via LoadSpriteAny (Sprite Mode Multiple → one TreeNN_0 sub-sprite, so
+        // LoadAssetAtPath<Sprite> is null; [[imported-art-spritemode-multiple]]). Tinted-square fallback so
+        // the scene still builds before the art is imported.
+        static void PlaceTrees(string sceneLabel, TreeSpec[] specs, Sprite fallback)
+        {
+            var decor = new GameObject("Decor");
+            var trees = new GameObject("Trees");
+            trees.transform.SetParent(decor.transform, false);
+            int placed = 0;
+            foreach (var t in specs)
+            {
+                var go = new GameObject(t.Variety);
+                go.transform.SetParent(trees.transform, false);
+                go.transform.position = new Vector3(t.X, t.Y, 0f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
+                var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
+                if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
+                else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }
+                placed++;
+            }
+            Debug.Log($"[GreywickBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
         }
 
         static void EnsureFolders()

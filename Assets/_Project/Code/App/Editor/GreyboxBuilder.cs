@@ -31,6 +31,7 @@ namespace HiddenHarbours.App.Editor
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
+        const string ArtTrees   = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
         const string ArtDory    = "Assets/_Project/Art/Boats/Dory.png";          // legacy single-sprite hull (fallback)
         const string ArtDoryHull = "Assets/_Project/Art/Boats/DoryHull.png";     // oar-less hull base (64×144, centre)
         const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";          // one oar (56×16, handle/LeftCenter pivot), used ×2
@@ -571,6 +572,16 @@ namespace HiddenHarbours.App.Editor
             var onboardingGo = new GameObject("Onboarding");
             onboardingGo.AddComponent<OnboardingDirector>();
 
+            // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
+            // A tasteful, sparse-to-moderate scatter of trees along the LAND/coast edges of the island —
+            // the back (north) treeline up by the cottage and a few along the grass/beach margins — to
+            // soften the cold North Atlantic coast. NEVER in open water, on the dock/wharf, on the paths,
+            // in the dock/disembark zones, or overlapping the cottage/NPCs. Trees use the imported pack's
+            // cold-coast varieties only (green broadleaf, pine, birch — no blossom/autumn/snow this round).
+            // Placement is data-driven (explicit positions + variety ids in CoveTrees) so counts/positions
+            // tweak freely; sortingOrder is derived from base Y so trees further north sort behind.
+            PlaceTrees("Cove", CoveTrees, waterSprite);
+
             // --- SAVE & REGISTER -----------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
             var list = EditorBuildSettings.scenes.ToList();
@@ -813,6 +824,72 @@ namespace HiddenHarbours.App.Editor
             imp.textureCompression = TextureImporterCompression.Uncompressed;
             imp.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
+
+        // ---- tree decor (greybox dressing) ----------------------------------------------------------
+        // One placed tree: world position (the trunk base, since the sprite pivot is BottomCenter) + the
+        // imported variety file ("TreeNN"). Kept as a plain struct so placement is a tweakable data list.
+        struct TreeSpec
+        {
+            public float X, Y;
+            public string Variety;   // "TreeNN" → Art/Sprites/Environment/Trees/TreeNN.png
+            public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
+        }
+
+        // COLD NORTH ATLANTIC coast scatter for the cove. Tasteful & sparse-to-moderate, hugging the LAND
+        // edges only — a back (north) treeline behind the cottage/grass (y≈7–9, inside the shore fence
+        // top at y=9) and a few down the east & west grass/beach margins. NONE in the open water, on the
+        // dock (x∈[-1.5,1.5], y≤-5) or its zones, on the paths, or over the cottage (≈x[-7,-2] y[2,8]) or
+        // the NPCs/player by it. Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine
+        // (Tree02/22) and birch (Tree25) — the cold-coast subset; no blossom/autumn/snow this round.
+        static readonly TreeSpec[] CoveTrees =
+        {
+            // Back treeline along the north edge (behind the cottage + grass), left → right.
+            new TreeSpec(-9.0f, 8.4f, "Tree02"),   // pine, far NW corner
+            new TreeSpec(-7.2f, 8.7f, "Tree25"),   // birch
+            new TreeSpec(-3.4f, 8.6f, "Tree01"),   // broadleaf (clear of the cottage top, x≈-2)
+            new TreeSpec(-1.0f, 8.8f, "Tree22"),   // pine
+            new TreeSpec( 1.6f, 8.5f, "Tree05"),   // broadleaf
+            new TreeSpec( 4.0f, 8.7f, "Tree06"),   // broadleaf
+            new TreeSpec( 6.8f, 8.4f, "Tree02"),   // pine, far NE corner
+            // West grass/beach margin (clear of the cottage at x≈-4.5 and the logbook at -6.4,3.6).
+            new TreeSpec(-9.2f, 6.0f, "Tree08"),   // broadleaf
+            new TreeSpec(-8.8f, 1.0f, "Tree25"),   // birch, lower west margin
+            new TreeSpec(-7.6f, -1.8f, "Tree18"),  // broadleaf, SW beach band (north of the channel)
+            // East grass/beach margin (clear of the neighbour NPC at 2.8,4.8).
+            new TreeSpec( 7.0f, 6.2f, "Tree21"),   // broadleaf
+            new TreeSpec( 8.0f, 2.4f, "Tree02"),   // pine, mid-east margin
+            new TreeSpec( 6.6f, -1.6f, "Tree34"),  // broadleaf, SE beach band (east of the dock)
+            new TreeSpec( 4.4f, -2.6f, "Tree35"),  // broadleaf, lower SE (well east of the dock x=1.5)
+        };
+
+        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder is DERIVED FROM the
+        // tree's base Y (BottomCenter pivot) so trees further "back"/north (higher Y) render behind ones in
+        // front — and the whole band sits below the NPCs/player (order 9/10) so the foreground reads right.
+        // Loads each variety via LoadSpriteAny (the pack is Sprite Mode Multiple → one TreeNN_0 sub-sprite,
+        // so LoadAssetAtPath<Sprite> returns null; [[imported-art-spritemode-multiple]]). Falls back to a
+        // tinted square so the greybox still builds before the art is imported.
+        static void PlaceTrees(string sceneLabel, TreeSpec[] specs, Sprite fallback)
+        {
+            var decor = new GameObject("Decor");
+            var trees = new GameObject("Trees");
+            trees.transform.SetParent(decor.transform, false);
+            int placed = 0;
+            foreach (var t in specs)
+            {
+                var go = new GameObject(t.Variety);
+                go.transform.SetParent(trees.transform, false);
+                go.transform.position = new Vector3(t.X, t.Y, 0f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                // Higher Y → smaller (more negative) order → renders behind. ×2 spreads the band so
+                // overlapping trees layer cleanly; stays under the NPCs (9) / player (10).
+                sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
+                var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
+                if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
+                else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }
+                placed++;
+            }
+            Debug.Log($"[GreyboxBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
         }
 
         static void EnsureFolders()
