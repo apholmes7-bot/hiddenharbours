@@ -317,3 +317,29 @@ blossom/autumn/snow) is scattered along the land/coast edges of **Coddle Cove** 
 are a follow-up (its builder was contested at the time of this pass). The art lane only provides the
 locked, correctly-pivoted sprites with stable GUIDs.
 
+
+---
+
+## UI icon wire-in — sell / catch / HUD (ui-ux)
+
+*ui-ux* integrated the imported icons into the UI through a Core seam (no UI→Fishing/Economy
+reference): **`Core.IconRegistry`** (id → sprite) is published at boot from an authored
+**`Resources/IconLibrary.asset`** by the self-installing **`Core.IconRegistrar`** (see
+`docs/architecture/tech-architecture.md` §4.3). The UI reads `IconRegistry.Get(id)` and falls back to
+text-only when an icon isn't registered.
+
+- **Done now (a UI surface shows the sprite):**
+  - **Sell screen** (`SellScreen`): each hold/species row shows the fish/clam icon at its left, and the
+    detail panel shows the larger icon beside the species name.
+  - **Catch card** (`HudController`): the landed fish/clam icon shows above the "nice catch!" text
+    (was TEXT-only; the noted follow-up is closed — resolved by id, not via a builder).
+  - **HUD money**: a `ui.coin` glyph sits beside the cash read.
+  - **Fish defs**: `FishSpeciesDef.Sprite` assigned on Cod / Haddock / Mackerel / Lobster / SoftShellClam
+    (the data-driven home) — these match the `IconLibrary` fish rows.
+- **Registered + ready, but no UI surface yet (so no icon visible until the screen exists):**
+  `gear.rod` / `gear.shovel` / `gear.bucket`, `license.cod`, `boat.dory` / `boat.punt`, and `ui.hold`
+  are in the `IconLibrary` so the future Shipwright / gear / licence **buy screens** (today only a dev
+  keypress, no screen) and a HUD hold-fullness read pick them up by id with zero extra wiring.
+- **Flagged (NOT done — needs another lane):** a glanceable **HUD hold-fullness** read needs a Core
+  seam to read the active boat's `IHold` (no `GameServices` hold accessor exists) — a *lead-architect*
+  seam, not built here. The `ui.hold` icon is registered and waiting.

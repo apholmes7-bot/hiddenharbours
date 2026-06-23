@@ -34,6 +34,7 @@ namespace HiddenHarbours.Economy
         // ---- built UI refs ------------------------------------------------------------------
         private RectTransform _speciesList;
         private Text _moneyLabel;
+        private Image _detailIcon;
         private Text _detailName;
         private Text _marginalLabel;
         private Text _totalLabel;
@@ -118,8 +119,18 @@ namespace HiddenHarbours.Economy
                 string id = it.SpeciesId;
                 string label = it.DisplayName + "   ×" + count;
 
+                // Show the species icon at the row's left (resolved by id via the Core IconRegistry — the
+                // sell screen never references the Fishing def). When an icon resolves, indent the label
+                // past it; with no icon the row falls back to text-only (icon is reinforcement, not the
+                // only channel). The name+count text always carries the row.
+                Sprite icon = IconRegistry.Get(id);
+                float labelPad = icon != null ? RowIconBox + 8f : 0f;
+
                 GameObject btn = MakeButton(_speciesList, id, label, 0f, y, 380f, 52f,
-                    () => SelectSpecies(id), accent: false, align: TextAnchor.MiddleLeft, out _);
+                    () => SelectSpecies(id), accent: false, align: TextAnchor.MiddleLeft, out _,
+                    leftPad: labelPad);
+                if (icon != null)
+                    MakeRowIcon((RectTransform)btn.transform, icon);
                 _speciesButtons.Add(btn);
                 y -= 58f;
             }
@@ -140,6 +151,7 @@ namespace HiddenHarbours.Economy
             if (count <= 0 || speciesId == null)
             {
                 _detailName.text = "—";
+                if (_detailIcon != null) _detailIcon.enabled = false;
                 _qtySlider.gameObject.SetActive(false);
                 _marginalLabel.text = "";
                 _totalLabel.text = "";
@@ -149,6 +161,14 @@ namespace HiddenHarbours.Economy
 
             CatchItem sample = SampleOf(speciesId);
             _detailName.text = sample.DisplayName;
+
+            // The selected species' icon beside the name (resolved by id via the Core IconRegistry).
+            if (_detailIcon != null)
+            {
+                Sprite icon = IconRegistry.Get(speciesId);
+                _detailIcon.sprite = icon;
+                _detailIcon.enabled = icon != null;
+            }
             if (_sellTypeLabel != null) _sellTypeLabel.text = "Sell all " + sample.DisplayName;
 
             _qtySlider.gameObject.SetActive(true);
@@ -287,7 +307,9 @@ namespace HiddenHarbours.Economy
             _speciesList.anchoredPosition = new Vector2(24f, -124f);
             _speciesList.sizeDelta = new Vector2(380f, 360f);
 
-            _detailName   = MakeText(panel, "—", 32, TextAnchor.UpperLeft, 430f, -84f, 466f, 44f);
+            // Detail panel: the selected species' icon (left) + its name (indented past the icon).
+            _detailIcon   = MakeDetailIcon(panel, 430f, -78f, 56f);
+            _detailName   = MakeText(panel, "—", 32, TextAnchor.UpperLeft, 430f + 66f, -84f, 400f, 44f);
             _qtyLabel     = MakeText(panel, "", 26, TextAnchor.UpperLeft, 430f, -140f, 466f, 34f);
             _qtySlider    = MakeSlider(panel, 430f, -184f, 466f, 36f);
             _qtySlider.onValueChanged.AddListener(OnSliderChanged);
@@ -333,7 +355,8 @@ namespace HiddenHarbours.Economy
         }
 
         private GameObject MakeButton(RectTransform parent, string name, string label,
-            float x, float y, float w, float h, UnityAction onClick, bool accent, TextAnchor align, out Text labelText)
+            float x, float y, float w, float h, UnityAction onClick, bool accent, TextAnchor align,
+            out Text labelText, float leftPad = 0f)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
@@ -351,10 +374,48 @@ namespace HiddenHarbours.Economy
             btn.targetGraphic = img;
             if (onClick != null) btn.onClick.AddListener(onClick);
 
-            float pad = align == TextAnchor.MiddleLeft ? 14f : 0f;
-            labelText = MakeText(rt, label, 26, align, pad, 0f, w - 2f * pad, h);
+            // leftPad reserves room for a row icon; for left-aligned labels add it to the base padding.
+            float pad = (align == TextAnchor.MiddleLeft ? 14f : 0f) + leftPad;
+            labelText = MakeText(rt, label, 26, align, pad, 0f, w - pad - (align == TextAnchor.MiddleLeft ? 14f : 0f), h);
             if (accent) labelText.color = Color.black;
             return go;
+        }
+
+        // ---- icon helpers (resolve by id through the Core IconRegistry) ---------------------
+        // A square box the row icon fits inside (the fish art is 48×32 — preserveAspect keeps it crisp).
+        private const float RowIconBox = 40f;
+
+        // The icon at the left of a species row, vertically centred inside the 52px row, padded 8px in.
+        private void MakeRowIcon(RectTransform row, Sprite icon)
+        {
+            var go = new GameObject("Icon", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(row, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0f, 0.5f); rt.anchorMax = new Vector2(0f, 0.5f);
+            rt.pivot = new Vector2(0f, 0.5f);
+            rt.anchoredPosition = new Vector2(8f, 0f);
+            rt.sizeDelta = new Vector2(RowIconBox, RowIconBox);
+            var img = go.GetComponent<Image>();
+            img.sprite = icon;
+            img.preserveAspect = true;   // fish icons are 48×32 — never stretch them
+            img.raycastTarget = false;   // clicks pass through to the row button beneath
+        }
+
+        // The larger icon beside the detail-panel species name (built once, sprite swapped per selection).
+        private Image MakeDetailIcon(RectTransform parent, float x, float y, float size)
+        {
+            var go = new GameObject("DetailIcon", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0f, 1f); rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(x, y);
+            rt.sizeDelta = new Vector2(size, size);
+            var img = go.GetComponent<Image>();
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+            img.enabled = false;   // shown only when a selection resolves an icon
+            return img;
         }
 
         // A minimal but functional uGUI slider (background + fill + draggable handle).
