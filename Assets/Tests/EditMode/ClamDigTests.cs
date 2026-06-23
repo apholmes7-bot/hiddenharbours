@@ -166,5 +166,104 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(dig.IsExposedNow(), "no height map → submerged default");
             Assert.IsFalse(dig.TryDig());
         }
+
+        // ---- BUG 1: a dig is gated to standing AT the hole (within reach), via the ClamDigger -----------
+
+        // A clam hole at a given world spot with a reach radius; the digger reads the player position to
+        // decide which (if any) hole a press digs.
+        private ClamDig MakeDigAt(IHold bucket, FishSpeciesDef clam, Vector2 spotPos, float reach = 1.25f, int seed = 7)
+        {
+            var go = new GameObject("ClamHole");
+            _spawned.Add(go);
+            go.transform.position = spotPos;
+            var d = go.AddComponent<ClamDig>();
+            d.Configure(clam, bucket, go.transform, "gear.shovel", seed, reach);
+            return d;
+        }
+
+        private ClamDigger MakeDigger(Vector2 playerPos)
+        {
+            var go = new GameObject("Player");
+            _spawned.Add(go);
+            go.transform.position = playerPos;
+            var digger = go.AddComponent<ClamDigger>();
+            digger.Configure(go.transform);
+            return digger;
+        }
+
+        [Test]
+        public void Digger_WhenPlayerAtHole_DigsOneClam()
+        {
+            var hold = new FakeHold();
+            MakeDigAt(hold, MakeClam(), new Vector2(5f, 0f), reach: 1.25f);
+            var digger = MakeDigger(new Vector2(5f, 0.5f));   // 0.5 m from the hole → in reach
+
+            Assert.IsTrue(digger.TryDigNearest(), "a press while standing at the bared hole digs one clam");
+            Assert.AreEqual(1, hold.UsedUnits, "exactly one clam per press");
+            Assert.AreEqual(1, _caught, "FishCaught fired once");
+        }
+
+        [Test]
+        public void Digger_WhenPlayerNotAtAnyHole_DigsNothing()
+        {
+            var hold = new FakeHold();
+            MakeDigAt(hold, MakeClam(), new Vector2(5f, 0f), reach: 1.25f);
+            var digger = MakeDigger(new Vector2(20f, 0f));    // 15 m away → no hole in reach
+
+            Assert.IsFalse(digger.TryDigNearest(), "pressing E away from any hole yields nothing");
+            Assert.AreEqual(0, hold.UsedUnits, "nothing dug when not at a hole");
+            Assert.AreEqual(0, _caught);
+        }
+
+        [Test]
+        public void Dig_OutOfReach_WithinReachIsFalse()
+        {
+            var hold = new FakeHold();
+            var dig = MakeDigAt(hold, MakeClam(), new Vector2(5f, 0f), reach: 1.25f);
+
+            Assert.IsTrue(dig.WithinReach(new Vector2(5f, 1.0f)), "1.0 m away is within the 1.25 m reach");
+            Assert.IsFalse(dig.WithinReach(new Vector2(5f, 3.0f)), "3.0 m away is out of the 1.25 m reach");
+        }
+
+        [Test]
+        public void Digger_OnePressDigsExactlyOneClam_NotEveryExposedHole()
+        {
+            // BUG 2 root cause: every exposed hole used to dig on each press, filling the 20-cap bucket in a
+            // press or two. With the digger, a press digs ONE hole — the nearest in reach.
+            var hold = new FakeHold();
+            // A whole bar's worth of exposed holes, all far apart; the player stands at exactly one of them.
+            for (int i = 0; i < 10; i++) MakeDigAt(hold, MakeClam(), new Vector2(i * 5f, 0f), reach: 1.25f);
+            var digger = MakeDigger(new Vector2(0f, 0f));     // at the first hole only
+
+            Assert.IsTrue(digger.TryDigNearest());
+            Assert.AreEqual(1, hold.UsedUnits, "one press digs ONE clam, not all 10 exposed holes");
+        }
+
+        [Test]
+        public void Digger_PicksTheNearestInRangeHole()
+        {
+            var holdA = new FakeHold();
+            var holdB = new FakeHold();
+            // Two holes within reach of the player; the NEARER one (B) is the one dug.
+            MakeDigAt(holdA, MakeClam(), new Vector2(0.0f, 1.0f), reach: 2.0f);   // 1.0 m away
+            MakeDigAt(holdB, MakeClam(), new Vector2(0.0f, 0.3f), reach: 2.0f);   // 0.3 m away (nearer)
+            var digger = MakeDigger(new Vector2(0f, 0f));
+
+            Assert.IsTrue(digger.TryDigNearest());
+            Assert.AreEqual(0, holdA.UsedUnits, "the farther hole is untouched");
+            Assert.AreEqual(1, holdB.UsedUnits, "the nearest in-range hole is the one dug");
+        }
+
+        [Test]
+        public void Digger_SkipsSubmergedHole_EvenIfInReach()
+        {
+            _env.Level = 2.0f;   // floods the 1.0 m flat → every hole submerged (not diggable)
+            var hold = new FakeHold();
+            MakeDigAt(hold, MakeClam(), new Vector2(0f, 0f), reach: 1.25f);
+            var digger = MakeDigger(new Vector2(0f, 0.2f));   // standing right at the hole, but it's underwater
+
+            Assert.IsFalse(digger.TryDigNearest(), "an in-reach hole that's still underwater doesn't dig");
+            Assert.AreEqual(0, hold.UsedUnits);
+        }
     }
 }

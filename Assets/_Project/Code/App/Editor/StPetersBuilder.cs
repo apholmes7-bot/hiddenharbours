@@ -278,17 +278,27 @@ namespace HiddenHarbours.App.Editor
             // skips always-dry island and always-deep harbour, so holes land exactly on the bared flats.
             //
             // Each hole gets: a SpriteRenderer (ClamHole.png, base-Y sorted so it sits on the flat), a World
-            // ClamSpot marker (names the yield by id), a ClamDig (the action — wired to the species + the
-            // player's ClamBucket, gating exposure/shovel/room), and a ClamHoleVisual that shows the hole ONLY
-            // while its ground is exposed and runs the ClamSquirt tell off ClamDig.ShowingSquirt. The position
-            // + the exposure are a pure function of (position, tide) — no RNG drift (CLAUDE.md rule 5); the
-            // scatter jitter is a stable hash of the grid cell, so a rebuild reproduces the same field.
+            // ClamSpot marker (names the yield by id), a ClamDig (the hole's gate-and-yield — wired to the
+            // species + the player's ClamBucket, gating reach/exposure/shovel/room), and a ClamHoleVisual that
+            // shows the hole ONLY while its ground is exposed and runs the ClamSquirt tell off
+            // ClamDig.ShowingSquirt. The position + the exposure are a pure function of (position, tide) — no
+            // RNG drift (CLAUDE.md rule 5); the scatter jitter is a stable hash of the grid cell, so a rebuild
+            // reproduces the same field. The holes DON'T listen for input themselves — a single ClamDigger on
+            // the player (below) owns the Interact key and digs only the nearest in-range hole, one clam per
+            // press (the fix for "E dug every exposed hole at once + filled the bucket in two presses").
             var clamRoot = new GameObject("ClamHoles");
             var holeSprite = LoadSpriteAny(ArtClamHole);
             var squirtFrames = LoadSheetFrames(ArtClamSquirt);
             foreach (var p in ScatterClamHoles(terrain))
                 MakeClamHole(clamRoot.transform, p, clam, "fish.soft_shell_clam",
                              core.Bucket, holeSprite, squirtFrames, waterSprite);
+
+            // THE DIGGER (gameplay-systems): one Interact owner on the player. On E it digs the nearest hole
+            // that's BOTH in shovel reach AND exposed — so a press is exactly one clam from the hole you're
+            // standing on, and nothing when you're not at a bared hole. Sits on the persistent Player so it
+            // carries across region hops with the player (no per-region re-wire needed).
+            var digger = core.PlayerGo.AddComponent<ClamDigger>();
+            SetRef(digger, "_player", core.PlayerGo.transform);
 
             // --- THE MOORED DORY'S SLIP (set dressing; the persistent Dory floats at DoryMooredPos) ------
             // The real, controllable Player is now spawned by the PersistentCoreBuilder above at
