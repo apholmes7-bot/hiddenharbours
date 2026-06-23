@@ -232,6 +232,29 @@ namespace HiddenHarbours.App.Editor
             var terrain = terrainGo.AddComponent<TidalTerrain>();
             ConfigureTidalTerrain(terrain);
 
+            // --- TIDE-REVEAL VISUAL (THE FIX — the bar VISIBLY bares/covers as the tide swings) ----------
+            // The static Sandbar/Channel sprites above are only a ground texture; on their own the falling-
+            // tide reveal read FROZEN even though the sim was swinging. This runtime overlay (gameplay-systems'
+            // Environment lane) colours a grid of cells from the SAME single number the walkability/boat-cross
+            // gate reads — authored ground elevation (TidalTerrain) vs the live deterministic water level
+            // (EnvironmentService.WaterLevelAt) — so a cell shows SAND when exposed and ramps to BLUE as water
+            // covers it. As the big tide (±3.5 m) falls the bar bares from its crest out; the flood seals it.
+            // Greybox flat tint only (NO shader — the layered water shader is the deferred art pass, ADR 0010).
+            // Covers the bar + flats span (island toe → Greywick end) with a comfortable margin either side.
+            var tideVisualGo = new GameObject("TideFlatVisual");
+            tideVisualGo.transform.position = new Vector3(barMid.x, barMid.y, 0f);
+            var tideVisual = tideVisualGo.AddComponent<HiddenHarbours.Environment.TidalFlatVisual>();
+            ConfigureTideFlatVisual(tideVisual, barMid, barLen, waterSprite);
+
+            // --- OPTIONAL DEV FAST-TIDE (greybox aid; OFF by default) -----------------------------------
+            // The real-time tide is slow by design (~minutes per high→low), so in a short playtest the
+            // reveal is gradual. This dev component lets a tester TICK 'Enabled' on it in the Inspector
+            // during Play to fast-forward the clock and watch the WHOLE swing in seconds — it never changes
+            // the shipping default (it only multiplies the live TimeScale while ticked, and is OFF by
+            // default). The in-editor Tide Scrubber remains the precise way to jump the tide.
+            var devTideGo = new GameObject("DevFastTide");
+            devTideGo.AddComponent<HiddenHarbours.Environment.DevFastTide>();
+
             // --- CLAM-HOLE spots (positions only; gameplay implements the dig) --------------------------
             // Dropped on the sandbar flats + along the island coast. Each yields fish.soft_shell_clam by id;
             // gameplay reads each spot's tide-exposure (TidalTerrain + TidalExposure) to gate the dig.
@@ -314,21 +337,49 @@ namespace HiddenHarbours.App.Editor
                       "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
                       "yours). Island = high (always exposed); the SANDBAR bridges it to Greywick as a " +
                       "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
-                      "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. Clam-holes on the flats " +
-                      "(fish.soft_shell_clam, gated by exposure). The walk passage at the Greywick end leads " +
-                      "on. StPeters is now BUILD-INDEX-0 (the start scene). RE-RUN this builder + " +
-                      "GreywickBuilder, then open StPeters.unity and press Play.");
+                      "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The TideFlatVisual now " +
+                      "VISIBLY colours the bar/flats from the live water level (sand when exposed → blue as " +
+                      "it covers), so the reveal is unmistakable — not a frozen static sprite. Clam-holes on " +
+                      "the flats (fish.soft_shell_clam, gated by exposure). The walk passage at the Greywick " +
+                      "end leads on. NOTE: the tide is SLOW by design (~minutes per high→low); to see the " +
+                      "full swing fast, tick 'Enabled' on the DevFastTide object in Play (OFF by default) or " +
+                      "use the in-editor Tide Scrubber. StPeters is now BUILD-INDEX-0 (the start scene). " +
+                      "RE-RUN this builder + GreywickBuilder, then open StPeters.unity and press Play.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "St Peters Island built — now a PLAYABLE START scene (greybox).\n\nPress Play:\n• You control " +
                 "the on-foot fisher (WASD / arrows) at the start spawn; the camera follows.\n• The clock + " +
-                "tide RUN — watch the sandbar bare as the big tide (±3.5 m) falls (the tide-reveal is the " +
-                "point).\n• The hand-rowed Dory is moored off the south coast (board at the slip once she's " +
-                "yours).\n• Walk the bared bar east to reach Greywick.\n\nThe dig/walk/gear ACTIONS are " +
+                "tide RUN — the sandbar/flats VISIBLY bare (turn sandy) as the big tide (±3.5 m) falls and " +
+                "go blue as it floods (the tide-reveal is the point).\n• The tide is SLOW by design (~a few " +
+                "minutes per high→low). To watch the full swing FAST: tick 'Enabled' on the DevFastTide " +
+                "object in the Hierarchy while in Play (OFF by default), or use Tools ▸ Tide Scrubber.\n• " +
+                "The hand-rowed Dory is moored off the south coast (board at the slip once she's yours).\n• " +
+                "Walk the bared bar east to reach Greywick.\n\nThe dig/walk/gear ACTIONS are " +
                 "gameplay-systems'. StPeters is now build-index-0 (the start scene). RE-RUN 'Build St Peters " +
                 "Scene' AND 'Build Greywick Scene', then open StPeters.unity and press Play.", "Fair winds");
         }
 
         // ---- shared config (single source of truth with the EditMode test) -------------------------
+
+        /// <summary>Configure the runtime tide-reveal overlay (gameplay-systems' <c>TidalFlatVisual</c>) to
+        /// cover the bar + intertidal flats. Grid extent spans the bar with a generous margin so the
+        /// island-toe clam coast and the flats either side of the bar are all revealed/covered by the live
+        /// tide. The cell sprite is the scene's 1×1 square (colour does the work). Tuning lives on the
+        /// component (no magic numbers — CLAUDE.md rule 6); these are just the region's extent.</summary>
+        public static void ConfigureTideFlatVisual(HiddenHarbours.Environment.TidalFlatVisual visual,
+                                                   Vector2 barMid, float barLen, Sprite cellSprite)
+        {
+            var so = new SerializedObject(visual);
+            SetV2(so, "_center", barMid);
+            // Span the whole bar + a margin along its axis, and a height that takes in the flats and the
+            // near intertidal coast either side of the bar centre-line — without slabbing the whole deep
+            // harbour (cells outside the bar read as the deep-water blue, which blends with the sea).
+            SetV2(so, "_size", new Vector2(barLen + 2f * SandbarHalfWidth + 16f, SandbarHalfWidth * 2f + 16f));
+            SetF(so, "_cellSize", 2f);
+            var sp = so.FindProperty("_cellSprite");
+            if (sp != null && sp.propertyType == SerializedPropertyType.ObjectReference)
+                sp.objectReferenceValue = cellSprite;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         /// <summary>Apply the authored elevation zones onto a <see cref="TidalTerrain"/> via SerializedObject
         /// (the builder's persist-the-refs convention). One place so the values live on the component, never
