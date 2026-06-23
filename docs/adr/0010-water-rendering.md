@@ -1,0 +1,170 @@
+# ADR 0010 — Water rendering: a layered, height-map-driven URP Shader Graph (pixelized), unified with the tide-walkability seam
+
+- **Status:** **Accepted** — lead-architect. Records the **decision and plan** for the game's hero
+  water look. This change is **docs only**: it ships no shader, no scene, no Core/builder change. The
+  shader itself is built in the **art/rendering pass** — M1 **VS-24** (the §3.6 water + global-grade
+  backbone) deepening into the **M2/M3** advanced-rendering work — **after** the St Peters mechanics
+  prove fun and the placeholder pixel art is dropped (CLAUDE.md rule 8).
+- **Date:** 2026-06-23
+- **Decision owner:** lead-architect (the URP shader/rendering plumbing is a cross-cutting/architectural
+  call — `agents/coordination.md` §1.1 "Water/fog/lighting" seam, §8; CLAUDE.md rule 4). art-pipeline
+  owns the *look* (palette, foam/caustic/specular textures); the two tune together.
+- **Flagged from:** the owner picking a **target look** for water, referencing a Unity URP Shader Graph
+  water tutorial — a **main water shader** composed from **caustic, specular, and sea-foam subgraphs**.
+  We record the plan now so the later art pass builds *toward* a known target instead of improvising.
+- **Related:** `design/water-rendering.md` (the layer-by-layer build recipe this ADR decides),
+  `design/art-and-audio-bible.md` §2.1/§2.2 (tide-aware shoreline, walkable seabed), §3.5 ("Water is a
+  first-class P1 system" — the surface spec), §3.6 (water backbone), §4 (palette), §6.1 (advanced-
+  rendering roadmap — now points here), `design/time-tides-weather.md` §3.5 (the water-depth rule),
+  §5.1 (the forward-additive `EnvironmentSample` reshape) and OQ1 (tide→visual-cue mapping — this ADR
+  resolves the rendering side); `0009-tidal-exposure-and-region-display-name-seams.md`
+  (`Core.TidalExposure` + `IEnvironmentService.WaterLevelAt` — the shared height-map rule this shader
+  reuses), `0006-boat-art-pipeline.md` (the author-in-3D/ship-as-2D, one-implied-light precedent),
+  `0001-engine-choice.md` (2D URP), `0005-pc-first-target.md` (the 60fps desktop budget, mobile-portable).
+
+## Context
+
+Water is a **first-class P1 system** ("The Sea Has Moods"), not a backdrop (art-bible §3.5). The owner
+has now chosen a concrete target: a **layered URP Shader Graph** built like the referenced tutorial —
+a main water shader assembled from **subgraphs** for caustics, specular, and sea-foam, over a
+depth-driven base. Three forces shape how we adopt it:
+
+1. **We are pixel-art, not smooth 3D water.** Everything renders at **PPU = 32** with one constant
+   scale (art-bible §3.1). A photoreal URP water surface would fight the look. The shader must read as
+   *pixel art*.
+2. **The waterline is gameplay, and it moves.** The shoreline is **tide-driven**: water *extent*
+   follows `WaterLevel`, the headline P1 visual (art-bible §2.1/§2.2, §3.6). The St Peters opening
+   leans on a falling tide baring a **sandbar** the player walks across (canon §5.8;
+   world-and-regions §6.0/§7). So the water render and the tide *gameplay* must agree on "submerged or
+   exposed here, now?" — they cannot drift, or what the player *sees* and what the physics *does* part
+   ways (the P1 integrity rule, art-bible §2.2 close).
+3. **It's later-phase, and shared.** The shader is M1 VS-24 → M2/M3 work, owned across two lanes
+   (lead-architect: shader-graph plumbing; art-pipeline: look). Building it now would be scope creep
+   (rule 8) and waste effort while placeholder art is still in.
+
+ADR 0009 already shipped the Core seam that #2 needs: `IEnvironmentService.WaterLevelAt(t)` (the
+deterministic water surface, metres above chart datum, recomputed from `(worldSeed, gameTime)`, never
+saved) and `Core.TidalExposure` (`WaterDepth`/`IsExposed`/`IsSubmerged` over an authored terrain
+elevation). What was unrecorded is **how the water *render* consumes the same data** — which this ADR
+fixes.
+
+## Decision
+
+**(1) Water is a layered URP Shader Graph, not frame-by-frame animation, built foundation → polish.**
+Five layers, each a subgraph where the tutorial uses one (`design/water-rendering.md` is the recipe):
+
+1. **Depth gradient** — base colour ramped shallow → deep from **water depth**, where
+   `depth = waterLevel − terrainHeight` (the same arithmetic as `TidalExposure.WaterDepth`).
+2. **Surface distortion** — animated scrolling perlin/value-noise × time for swell and surface motion.
+3. **Sea-foam fringe** — a foam texture **masked by a blurred-edge / depth≈0 band** so foam hugs the
+   *moving* waterline (where the gradient's depth crosses zero), not a fixed painted edge.
+4. **Specular** — sun/sky highlights glinting on the surface.
+5. **Caustics** — perlin × time light-ripple in the **shallows** (depth-gated), the shimmer over a
+   visible seabed.
+
+**(2) Pixel-art fidelity is mandatory.** Every layer/subgraph **pixelizes world coordinates**
+(`Position → Multiply → Floor → Divide`) so noise, foam, specular and caustics all snap to the PPU=32
+pixel grid and the surface reads as pixel art, not smooth 3D water. This is non-negotiable, holds the
+LOCKED §2/§3 rules, and is the single rule the art pass cannot skip.
+
+**(3) The height map is the one shared source of truth — water render *and* tide gameplay read it.**
+A single **height map** (per-region terrain elevation, metres above chart datum) feeds **three**
+consumers off the *same* data:
+- **water rendering** (this shader) — the depth gradient and foam band;
+- **tide walkability** — `Core.TidalExposure.IsExposed(WaterLevelAt(t), terrainElevation)` / the
+  `IEnvironmentService.WaterLevelAt` seam from ADR 0009 / #59 (the on-foot walkability sim);
+- **boat-cross** — "deep enough = passable" (boat draught vs `WaterDepth`).
+
+`depth = waterLevel − terrainHeight` everywhere. The St Peters **sandbar is just a low ridge in the
+height map**: as the deterministic tide falls, its `depth` crosses zero, the shader's foam band sweeps
+across it, and the *same* zero-crossing makes it walkable — render and sim cannot disagree because they
+read one number. This generalizes the canon **seabed-elevation / bathymetry heightfield** (the single
+source of truth named in time-tides-weather §3.5, §5.1) to **all** terrain (land above datum included),
+and resolves the rendering half of that doc's **OQ1** (tide→visual-cue mapping).
+
+**(4) Static terrain edges are Rule Tiles; the live moving waterline + foam live in the shader.**
+Terrain-*type* boundaries that don't move (grass↔sand↔rock) are authored with **Rule Tiles** (the
+existing autotile approach). The **waterline and its foam move with `WaterLevel`** every tide, so they
+live in the **shader's depth≈0 band** — *not* re-stamped into tiles per frame (that would be per-frame
+authoring churn and would fork the truth away from the height map). Static type-edges = tiles; the live
+wet edge = shader.
+
+**(5) Ownership & phasing.**
+- **lead-architect** owns the **URP Shader Graph plumbing** (the layer/subgraph structure, the
+  height-map sampling, the pixelize node pattern, the `WaterLevelAt` hookup).
+- **art-pipeline** owns the **look** (palette per §4, foam/caustic/specular textures, tuning).
+- **Now (in the St Peters greybox, gameplay-relevant):** the **height map** + a **flat depth-tint**
+  (shallow→deep colour, no animation) fold in, because the height map *is* the walkability data and a
+  readable depth tint helps the fun-check. This is world/gameplay greybox work on the ADR-0009 seam —
+  **not** the shader.
+- **Later (M1 VS-24 → M2/M3 advanced rendering, after mechanics + art-drop):** the full five-layer
+  shader slots onto the *same* height-map data. No data migration — the shader is a new *consumer* of
+  an existing field.
+
+**No code, no shader assets, no scene/Core/builder change ship with this ADR.** It records intent.
+
+### Determinism & save (the invariant guarded)
+
+The water render is a **pure function** of the deterministic `WaterLevelAt(t)` (recomputed from
+`(worldSeed, gameTime)`, never saved — CLAUDE.md rule 5) and the **authored, read-only** height map.
+Surface/caustic *animation* is driven by `time` for visual motion only and feeds **no** simulation —
+it never influences walkability, grounding, or any saved state. Nothing about water rendering enters
+the save (ADR 0008); the height map is authored content, not save state.
+
+### Performance posture (planned, validated at build time)
+
+Targets the 60fps desktop budget, mobile-portable (ADR 0005): a small fixed set of texture samples +
+noise per pixel, **no per-frame CPU allocation** (the shader samples `WaterLevelAt` as a material
+float, set on tide change / slow tick, not rebuilt per frame), pooled/static materials. The
+tutorial-style runtime shader vs the M3 **3D-water→2D bake** (art-bible §6.1, mirroring the ADR 0006
+boat bake) is decided by a **profiled spike** in the art pass (extends art-bible **OQ2**) — this ADR
+does not pre-commit that fork.
+
+## Consequences
+
+- **One source of truth for the shoreline.** Render, on-foot walkability, and boat-cross all read the
+  height map through `depth = waterLevel − terrainHeight`; the visible waterline and the playable
+  shoreline are the *same* line by construction (P1 integrity). The St Peters sandbar "just works" as a
+  low ridge.
+- **Zero new coupling, zero new Core surface.** The shader reuses the **already-shipped** ADR-0009
+  seam (`WaterLevelAt`, `TidalExposure`); no new interface, signal, or save field is needed for the
+  plan. (Any later helper — e.g. a per-position height-map *sampler* in Core — would be its own
+  additive ADR when the build needs it.)
+- **Pixel look preserved.** The pixelize-world-coords rule keeps URP water reading as PPU=32 pixel art.
+- **In-phase.** Nothing is built now beyond the greybox height map + flat tint (gameplay-relevant);
+  the shader waits for VS-24/M2/M3 and the art-drop, per rule 8.
+- **Docs in the same change:** this ADR + `design/water-rendering.md` (the recipe) + the art-bible §6.1
+  pointer, per the lead-architect DoD.
+
+## Rejected alternatives
+
+- **Hand-pixelled / frame-by-frame animated water tiles.** Doesn't scale to sea-state-driven amplitude,
+  reflections, and a *moving* tide waterline; the owner's chosen target is the layered shader. Tiles
+  stay only for **static** terrain-type edges (decision (4)).
+- **A photoreal (non-pixelized) URP water surface** straight from the tutorial. Fights the LOCKED
+  pixel-art look (§2/§3). The pixelize-coords rule (decision (2)) is what reconciles the tutorial
+  technique with our art direction.
+- **Re-stamping the waterline/foam into the tilemap each tide tick.** Per-frame authoring churn, and it
+  forks the shoreline truth away from the height map. The live edge belongs in the shader's depth≈0
+  band; tiles carry only static type-edges.
+- **Separate height fields for rendering vs gameplay** (a "visual" seabed and a "physics" seabed). The
+  exact drift ADR 0009 exists to prevent — one height map, three consumers.
+- **Saving the water/foam state.** Violates rule 5 (recompute from seed+time); the render is a pure
+  function of `WaterLevelAt(t)` + the authored height map.
+- **Building the shader now.** Scope creep (rule 8) and wasted effort while placeholder art is in and
+  the St Peters loop is unproven. Plan now; build in the art pass.
+
+## Open questions (later, for the owning lanes / the art pass)
+
+- **Height-map authoring source & Core sampler.** ADR 0009 takes `terrainElevation` as a *caller-
+  supplied* parameter; how the world authors it per position (tile heightfield texture vs per-feature
+  zones — world-and-regions §9.4, time-tides-weather §3.5) and whether the shader and sim should share
+  a Core-owned **per-position sampler** is a build-time call (its own additive ADR if needed).
+- **Runtime shader vs M3 3D-water→2D bake.** Decided by a profiled spike in the art pass (art-bible
+  §6.1, OQ2). The layer recipe in `design/water-rendering.md` applies either way.
+- **Per-region water plane offset.** A region that offsets its local water plane from raw tide height
+  overrides `IEnvironmentService.WaterLevelAt` (the ADR-0009 hook); the shader reads whatever that
+  returns — no shader change needed.
+- **Foam-band width / depth thresholds, palette ramps, caustic intensity.** Tunables, owned by
+  art-pipeline; exposed as material/Def values per the no-magic-numbers rule (CLAUDE.md rule 6), not
+  hard-coded in the graph.
