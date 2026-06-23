@@ -182,6 +182,27 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// Bring the boat to rest where it sits — zero its linear and angular velocity and clear any held
+        /// control input. Called on disembark so a boat LEFT NEAR SHORE <b>parks where it's left</b> and
+        /// doesn't coast on after the helm is dropped (the disembark-anywhere safety: an un-crewed boat is
+        /// safe-moored, never strands itself). This is NOT the wind/tide mooring-drift mechanic (a separate
+        /// follow-up); it is the deliberate "boat stays put" guarantee. Null-safe before <see cref="Awake"/>.
+        /// </summary>
+        public void Stop()
+        {
+            _throttle = 0f; _steer = 0f;
+            _leftOar = 0f; _rightOar = 0f; _brace = false;
+            // Resolve the body lazily so Stop() works even before Awake has run (EditMode / on-arrival
+            // before the first physics tick) — Awake may not have cached _rb yet.
+            var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+        }
+
+        /// <summary>
         /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
         /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
         /// A small public setter so the swapper doesn't reach into the private serialized field.

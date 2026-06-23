@@ -480,6 +480,32 @@ class Boat {
 
 `{ boatTier, componentFit (Hull/Engine/Hold/Gear/Instruments/Safety/Cosmetics refs), engineHealth, fuel, bilgeLevel, hullDamage, hold load, lastPosition/harbour, ownedBoats[] }`. Combined with the environment doc's `{seed, gameTime}`, the world reconstructs fully on load.
 
+### 9.5 Board / disembark verb & control re-bind (greybox)
+
+The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); two playtest fixes hardened it:
+
+- **Disembark anywhere near land/shore** (not only at the dock). Aboard, INTERACT now disembarks when the
+  boat is at the dock zone **OR** `NearShore()`. "Near shore" reads two independent tells (either
+  suffices): the authored **tidal terrain shoaling** under the boat — the same deterministic
+  `WaterDepth = WaterLevel − groundElevation` (via `BoatCrossing.DepthAt`) the boat-cross gate uses, so
+  "near shore" and "too shallow to float here" agree — and an optional **physical shore/land collider**
+  within a probe radius (for non-tidal regions like the cove, whose hard shore-edge has no height map).
+  At the dock you land tidily on the planks; away from the dock you step off at the boat. Boarding is
+  unchanged (still the dock board zone).
+- **The boat parks where it's left** (no drift). On disembark the boat is brought to rest
+  (`BoatController.Stop()` zeroes linear+angular velocity) before the helm is dropped, so an un-crewed
+  boat stays put and never coasts off / strands itself (P5 cozy). *(A wind/tide mooring-drift mechanic
+  for UNtied boats — making an unmoored boat set with the weather — is a deliberate **separate
+  follow-up**; the disembark path keeps boats safe-parked so disembark-anywhere can't strand the boat.)*
+- **Control survives a region hop.** The persistent rig (player/boat/switcher) is `DontDestroyOnLoad`
+  and carries the control **mode** across an additive region toggle, but nothing re-enabled the active
+  boat's controller + input to match it on arrival — so a re-activated region (especially a **return**
+  trip) could leave the helm dead. `RegionTravelCoordinator.ApplyArrival` now calls
+  `ControlSwitcher.ReassertControlMode()` (idempotent) on **every** arrival, re-enabling boat-or-foot
+  control to match the persisted mode and re-raising the camera signals; the just-teleported boat is
+  also `Stop()`-ed so a stale velocity doesn't carry it off the arrival mark. Works for both the rowed
+  Dory and the engine Punt.
+
 ---
 
 ## 10. Open questions
