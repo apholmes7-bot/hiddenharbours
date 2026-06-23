@@ -215,16 +215,23 @@
 ### Epic M2-I — Owner-ratified 2026 additions (St Peters opening · lobster gear · weather/winter · wet tide)
 > New design captured 2026 (the "St Peters batch"). All **M2-phased**; full design lives in the design docs.
 > Honor milestone order — **none of this is M0/M1** (CLAUDE.md rule 8). The St Peters opening **prepends** the
-> arc and **relocates** the existing onboarding; it does not delete the Coddle Cove opening.
+> arc and **relocates** the existing onboarding; it does not delete the Coddle Cove opening — Coddle Cove is
+> **reused** as the home base sailed to once the dory is bought + repaired.
+> **Core seams already landed for this batch (ADR 0009):** the **tidal-exposure query**
+> (`IEnvironmentService.WaterLevelAt` + `Core.TidalExposure.IsExposed/WaterDepth`) the world terrain and the
+> on-foot walkability sim share for the falling-tide sandbar, and **`Core.RegionDisplayNames`** so the crossing
+> fade card reads "Coddle Cove"/"Port Greywick". Build M2-31/31b/31c against these; do not re-invent them.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig licence; repair the uncle's dory; leave for the Cove | New starter region; tide-gated causeway (low-water access only); **clam-dig → licence → repair → depart** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
-| M2-32 | St Peters clam-dig (shovel + "two squirting holes") | gameplay-systems + world-content | Read the tell on bared flats, dig with a shovel; clam-licence gate at the store | Passive "tend" dig (no tension fight); **licence-gated**; reconcile shovel vs `ClamFork` tag (new tag = review-gated) (`fish-and-content` §3.5a) |
+| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig at low water; **walk the tide-gated sandbar to Greywick** | New starter region; **tide-gated SANDBAR to Greywick** (low-water walking path; channels narrow as the tide falls) reads + works via the Core tidal-exposure seam; **clam-dig → walk sandbar → Greywick** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
+| M2-32 | St Peters clam-dig (shovel + "two squirting holes") | gameplay-systems + world-content | Read the tell on bared flats, dig with a shovel; clam-licence gate (licence system = economy) | Passive "tend" dig (no tension fight); **licence-gated** (licence system owned by economy); the **first catch, before any rod**; reconcile shovel vs `ClamFork` tag (new tag = review-gated) (`fish-and-content` §3.5a) |
+| M2-31b | Greywick early-progression: cod licence + rod + **buy & repair a damaged dory** | economy-sim (+ gameplay-systems) | At Greywick: buy a **cod fishing licence** + a **rod**; sell clams; **buy a damaged dory at the shipwright and pay to repair it**, then sail it home to Coddle Cove | Minimal **licence system** (clam + cod licences) lands in economy; shipwright sells a **damaged** dory + a paid **repair** to usable; arc completes by **sailing the repaired dory to the Cove** (`vision` §5.8, `progression-and-housing` §2.2/§3) |
+| M2-31c | Rework VS-21 onboarding: inherited dory → **earned + repaired** dory | world-content | The built M1 onboarding (`VS-21`: Ned's logbook + "inherit the dory" at the Cove) is **partly invalidated** by the dropped inherited-dory framing — rework the inherited-dory beat into a buy-and-repair beat | Cottage + Ned's memory stay inherited; the **dory beat becomes buy-and-repair**; dialogue/onboarding **reused, not rebuilt**; flagged in canon §5.8 + `npcs-and-routines` §3.1 (do **not** silently drop) |
 | M2-33 | Lobster gear loop (trap+buoy, leave-helm gaff-haul, winch) | gameplay-systems | Set baited trap+buoy; lay alongside, **leave the helm to gaff & haul** (boat drifts); powered-winch upgrade | Hand-haul is a stamina action; winch automates it (P4); approach/drift reads as seamanship (P1/P5) (`boats-and-navigation` §6.3, `fish-and-content` §3.5b) |
 | M2-34 | Weather v2: waves-push + traveling gusts | gameplay-systems | Wave-push force shoves the hull; moving gust cells you see coming | Wave-push adds to drift + broach (new FORCES field, save-compat bump); gust cells propagate + telegraph; deterministic (`time-tides-weather` §4.8) |
 | M2-35 | Winter freezing (some regions) + lightning/heavy rain | gameplay-systems | Ice closes specific inshore water in Hard Winter (ice-strengthened hull pairs); rain/lightning as storm atmosphere/visibility | Regional + seasonal ice, **never save-stranding**; lightning atmosphere-first (strike mechanic stays an OQ) (`time-tides-weather` §4.8) |
-| M2-36 | Wet-surface tide effects (~3–4 m range reveal) | art-pipeline | Wet glistening walls/pilings/flats revealed as the tide falls; drying over time | Extends the tide-aware shoreline; ~3–4 m `RegionTideProfile` range; St Peters causeway is the gameplay case (`art-and-audio-bible` §6.1, `time-tides-weather` §3.5) |
+| M2-36 | Wet-surface tide effects (~3–4 m range reveal) | art-pipeline | Wet glistening walls/pilings/flats revealed as the tide falls; drying over time | Extends the tide-aware shoreline; ~3–4 m `RegionTideProfile` range; the St Peters **tide-gated sandbar** is the gameplay case (`art-and-audio-bible` §6.1, `time-tides-weather` §3.5) |
 
 ---
 

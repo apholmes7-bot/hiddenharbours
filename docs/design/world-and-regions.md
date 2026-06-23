@@ -58,23 +58,27 @@ lobster traps, working wharves.
      (tidal flats)             |
             \                  |
              \                 |
-              PORT GREYWICK ———+——— CODDLE COVE   ← M1 slice start (2nd beat)
-              (market town)         (home harbour)
-                                         ·
-                                  (low-tide causeway)
-                                         ·
-                                  ST PETERS ISLAND   ← the opening (M2 prologue)
-                                  (home island, tide-gated)
+              PORT GREYWICK ———+——— CODDLE COVE   ← M1 slice start; home base in the full arc
+              (market town)    |    (home harbour, sailed to AFTER the dory is repaired)
+                               ·
+                 (tide-gated SANDBAR — bares as a walking path at low water)
+                               ·
+                        ST PETERS ISLAND   ← the opening (M2 prologue)
+                        (home island, tide-gated)
 
         ←——— sheltered, shallow, inshore        offshore, deep, dangerous ———→
 ```
 
-> **St Peters Island is the owner-ratified prologue (phased M2, see `../roadmap.md`).** It
-> **prepends** the arc — **St Peters → Coddle Cove → the mainland (Greywick)** — without deleting the
-> Coddle Cove opening, which is the **M1 vertical-slice** start and the second beat. St Peters is a
-> small home island linked to the mainland **only across a tide-gated causeway at low water** (pure
-> P1). Its full brief is §6.0; everything about it below is **future (M2)**, captured here so the
-> world stays a single source of truth.
+> **St Peters Island is the owner-ratified prologue (phased M2, built as a greybox prototype — see
+> `../roadmap.md`).** The arc is now **DECIDED** (owner-ratified 2026): **St Peters → [walk the
+> tide-gated sandbar] → Port Greywick (buy cod licence + rod; buy + repair a damaged dory) → Coddle
+> Cove (sail the repaired dory home; it becomes the home base).** St Peters **prepends** the arc
+> **without deleting** the Coddle Cove opening — Coddle Cove stays central and **everything built for
+> it is reused**; it is simply **reordered** to be the home you *arrive at* once the dory is yours
+> (it remains the **M1 vertical-slice** start). St Peters links to the mainland **only across a
+> tide-gated SANDBAR at low water** (pure P1): the **first crossing is on foot to Greywick**, before
+> you own any boat. Its full brief is §6.0; everything about it below is **future (M2)**, captured
+> here so the world stays a single source of truth. (Canon: `../vision-and-pillars.md` §5.8.)
 
 The deliberate design gradient runs **bottom-left to top-right**: from sheltered, shallow,
 forgiving, populated inshore water (Coddle Cove, Greywick) outward and upward to open, deep,
@@ -118,11 +122,11 @@ single most important structural decision in this doc, so it is spelled out full
 
 | From | Reachable directly via | Transition type |
 |------|------------------------|-----------------|
-| St Peters Island *(prologue, M2)* | Coddle Cove / the mainland | **Tide-gated causeway** — passable (on foot or by the dory in the channel) only near **low water**; cut off at high tide (P1) |
-| Coddle Cove | The Sunkers, Port Greywick, St Peters Island *(tide-gated, M2)* | Contiguous (inshore cluster); St Peters via the tide-gated causeway |
+| St Peters Island *(prologue, M2)* | **Port Greywick** (the mainland) | **Tide-gated SANDBAR** — bares as a **walking path** near **low water** (boat-crossable channels narrow as the tide falls); cut off at high tide (P1). The opening's **first crossing is on foot to Greywick** before any boat is owned. |
+| Coddle Cove | The Sunkers, Port Greywick | Contiguous (inshore cluster). *(In the full arc, Coddle Cove is **first reached by sailing the repaired dory from Greywick**, then it is the home base — `../vision-and-pillars.md` §5.8.)* |
 | The Sunkers | Coddle Cove, The Drownded Lands | Contiguous |
 | The Drownded Lands | The Sunkers, Port Greywick, Fundy Rips | Contiguous inshore / passage to Rips |
-| Port Greywick | Coddle Cove, The Drownded Lands, The Shipping Lanes | Contiguous harbour + lane buoys |
+| Port Greywick | Coddle Cove, The Drownded Lands, The Shipping Lanes, **St Peters Island** *(tide-gated sandbar, M2)* | Contiguous harbour + lane buoys; St Peters via the tide-gated sandbar (on foot at low water) |
 | Fundy Rips | The Drownded Lands, The Banks | Timed passage (tide-gated strait) |
 | The Banks | Fundy Rips, Ironbound, The Smother, The Shipping Lanes | Open-water passages / set-a-course |
 | Ironbound | The Banks | Open-water passage (weather-gated) |
@@ -229,8 +233,8 @@ system in itself, layering three mechanisms:
 
 | # | Region | Cluster | Identity (one line) | Unlock gate (canon) |
 |---|--------|---------|---------------------|---------------------|
-| 0 | **St Peters Island** *(prologue, M2)* | Inshore (home island) | Tide-gated home island; the opening — clam-dig, repair the dory, leave | The opening (no gate; built M2) |
-| 1 | **Coddle Cove** | Inshore | Home harbour; sheltered tutorial water | Start zone (M1 slice; 2nd beat) |
+| 0 | **St Peters Island** *(prologue, M2)* | Inshore (home island) | Tide-gated home island; the opening — clam-dig at low water, **walk the sandbar to Greywick** | The opening (no gate; built M2) |
+| 1 | **Coddle Cove** | Inshore | Home harbour; sheltered tutorial water | Start zone (M1 slice); in the full arc, **home base sailed to after the dory is bought + repaired at Greywick** |
 | 2 | **The Sunkers** | Inshore | Tidal reef field; shellfish & grounding hazard | Basic boat + reading tide |
 | 3 | **Port Greywick** | Inshore | The market town; shops, auction, most NPCs | Story unlock (early) |
 | 4 | **The Drownded Lands** | Inshore→mid | Tidal flats that become walkable seabed at low water | Tide mastery + tide table |
@@ -252,60 +256,66 @@ present · Authored vs simulated · Role in progression.**
 
 ### 6.0 St Peters Island — *the home island* (prologue · phased **M2**)
 
-> **Phasing banner.** St Peters is the **owner-ratified opening**, built in **M2** (`../roadmap.md`).
-> It **prepends** the arc and does **not** delete the Coddle Cove opening, which remains the **M1
-> vertical-slice** start and the second beat. Everything in this brief is **future work** captured
-> now so the world stays consistent. The Ginny/Ned onboarding **relocates** here at M2 and the
-> **dialogue/onboarding system is reused, not rebuilt**.
+> **Phasing banner.** St Peters is the **owner-ratified opening**, built in **M2** as a **greybox
+> prototype** (`../roadmap.md`). It **prepends** the arc and does **not** delete the Coddle Cove
+> opening, which remains the **M1 vertical-slice** start and is **reused** (reordered to be the home
+> base sailed to later). Everything in this brief is **future work** captured now so the world stays
+> consistent. The Ginny/Ned onboarding **relocates** here at M2 and the **dialogue/onboarding system
+> is reused, not rebuilt**. **The decided arc:** St Peters → **walk the tide-gated sandbar to
+> Greywick** → buy a **cod licence + rod**, sell clams, **buy a damaged dory at the Greywick
+> shipwright and pay to repair it** → **sail the dory home to Coddle Cove** (canon §5.8).
 
 **Identity & mood.** Where the game begins. A tiny, weathered **home island** off the mainland —
-three clapboard houses, a one-room **school**, a **general store**, and a slip with your late uncle's
-broken-down dory hauled up on the hard. Cut off from the mainland **except when the tide bares the
-causeway**. Quiet, close, the whole world the size of a low-tide walk. The mood is childhood's-end
-and first independence: you learn the sea here in miniature before you ever leave home. Cozy, safe,
-formative.
+three clapboard houses, a one-room **school**, and a **general store**. Cut off from the mainland
+**except when the tide bares the sandbar**. Quiet, close, the whole world the size of a low-tide
+walk. The mood is childhood's-end and first independence: you learn the sea here in miniature before
+you ever leave home. Cozy, safe, formative.
 
 **Physical layout & landmarks.** A small island holding: the **village** (3 houses + the **school**
-where the aunt teaches the compass and hand skills + the **general store** that sells the **clam
-licence** and basic gear); a **slip / the hard** with the **uncle's dory under repair**; **clam
-flats** that bare at low water; and the **tide-gated causeway** (a cobble-and-sand bar) that links to
-the mainland only near low tide. Everything within an easy walk; shallow, soft, forgiving water all
-around.
+where the aunt teaches the compass and hand skills + the **general store** for basic gear); **clam
+flats** that bare at low water; and the **tide-gated SANDBAR** (a cobble-and-sand bar) that bares as
+a **walking path to Port Greywick** only near low water. Everything within an easy walk; shallow,
+soft, forgiving water all around. *(No dory here — your first boat is bought damaged and repaired at
+the **Greywick shipwright**, §6.3; the earlier "uncle's broken dory on the slip" framing is retired,
+canon §5.8.)*
 
 **Hazards.** Deliberately minimal — the gentlest tutorial of all. The one teeth-of-tide lesson: **the
-causeway floods.** Cross to the mainland side and dawdle past the turn of the tide and you are **cut
+sandbar floods.** Walk across toward Greywick and dawdle past the turn of the tide and you are **cut
 off until the next low water** (lost time, never worse — P5 at its kindest). Soft mud can briefly
 mire a careless step. No rocks, no current, no weather of consequence.
 
 **Catch & resources (categories).** **Tidepool & Flats** is the whole economy here: **clam /
 shellfish digging** on the bared flats — the **shovel** and the **"two squirting holes"** tell (see
-`fish-and-content.md`) — gated behind the **clam licence** from the store. This by-hand income is what
-funds the **dory repair** (P4 in miniature: do the humblest job by hand to earn your way up). A first
-**rod** and real finfish grounds wait at the Cove; St Peters offers no rod-fishing of consequence.
+`fish-and-content.md`) — **licence-gated** (the **clam licence** is owned by the licence system in
+`economy-and-business.md`, not authored here). This by-hand income is what funds the **dory** you buy
+and repair at Greywick (P4 in miniature: do the humblest job by hand to earn your way up). St Peters
+offers no rod-fishing of consequence — the **rod** is bought at **Greywick**, after the walk.
 
 **Tide behaviour.** Tide is the island's defining force from minute one (the purest P1 primer): low
-water bares the clam flats **and** opens the causeway to the mainland; high water drowns the flats and
+water bares the clam flats **and** opens the **sandbar** to Greywick; high water drowns the flats and
 **seals the island off**. Before anything else, the player learns that the sea's clock decides *what
 they can do* and *where they can go* — the ideal warm-up for the Sunkers, the Drownded Lands, and the
-Rips. **Spring lows** bare the most flat (best digging) and the widest causeway window; neaps the
+Rips. **Spring lows** bare the most flat (best digging) and the widest sandbar window; neaps the
 least. (Curves owned by `time-tides-weather.md`.)
 
 **NPCs present.** The **aunt** — the teaching / home figure of the opening (*reconcile with Aunt
 Ginny; see `../vision-and-pillars.md` §5.8 and `npcs-and-routines.md` — intent is one teaching-aunt
-placed to serve the arc*); a handful of island **neighbours**; the **storekeeper** (sells the clam
-licence + basic gear). The departed **Uncle Ned** is felt here through the broken dory and the aunt's
-stories. A small cast by design — intimacy over bustle.
+placed to serve the arc*); a handful of island **neighbours**; the **storekeeper** (sells basic
+gear). The departed **Uncle Ned** is felt here through the cottage he left (in the Cove), the aunt's
+stories, and his logbook — **not** through an inherited dory (the boat is now earned + repaired at
+Greywick, canon §5.8). A small cast by design — intimacy over bustle.
 
-**Authored vs simulated.** *Authored:* island layout, the village (houses/school/store), the slip and
-the dory, the clam-flat and causeway geography, the opening quest beats. *Simulated:* which
-clams/flotsam are exposed this tide (scaled by spring/neap), tide/weather, and the causeway window
-timing.
+**Authored vs simulated.** *Authored:* island layout, the village (houses/school/store), the
+clam-flat and **sandbar** geography, the opening quest beats. *Simulated:* which clams/flotsam are
+exposed this tide (scaled by spring/neap), tide/weather, and the **sandbar window** timing.
 
 **Role in progression.** The **prologue / the cradle before the cradle.** It teaches, at the smallest
-possible scale, the spine of the whole game: **read the tide → work by hand (dig) → earn → spend
-(licence, then the dory repair) → leave.** Completing it (repairing the dory) **graduates the player
-to Coddle Cove** and the rest of the arc. Because it is **M2**, the M1 slice still *starts* at Coddle
-Cove; when St Peters lands, the start and onboarding move here.
+possible scale, the spine of the whole game: **read the tide → work by hand (dig clams) → earn →
+walk the sandbar → spend (cod licence + rod, then buy + repair the dory at Greywick) → sail home.**
+Completing it (owning the repaired dory and sailing to the cove) **graduates the player to Coddle
+Cove** as the home base and the rest of the arc. Because it is **M2**, the M1 slice still *starts* at
+Coddle Cove; when St Peters lands, the start and onboarding move here and Coddle Cove is reused as
+the reordered home base.
 
 ---
 
@@ -340,18 +350,20 @@ cove; low water exposes a strip of stony foreshore (light beachcombing) and shoa
 corner. Tide here is *legible and safe* — the player learns to read the tide table
 (`time-tides-weather.md`) where mistakes cost minutes, not a hull.
 
-**NPCs present.** The **uncle** anchors the opening here (see `npcs-and-routines.md`); a small
-set of neighbours (e.g., the first hireable deckhand lives nearby). Low population by design —
-intimacy over bustle.
+**NPCs present.** The departed **uncle's** memory anchors this home base (the cottage, the logbook —
+see `npcs-and-routines.md`); a small set of neighbours (e.g., the first hireable deckhand lives
+nearby). Low population by design — intimacy over bustle. *(In M2 the teaching/onboarding relocates
+to St Peters; the Cove keeps the hearth — `../vision-and-pillars.md` §5.8.)*
 
 **Authored vs simulated.** *Authored:* cove shape, cottage/wharf, beach, beacon, neighbour
 cottages, tutorial quest geography. *Simulated:* inshore fish spawns, beachcombing loot,
 weather/tide, the odd passing boat.
 
 **Role in progression.** The cradle. Tutorialises the full core loop — fish → store → sell —
-at the smallest, safest scale, and is the vertical-slice region (canon §7). Remains a cozy home
-base forever; you return to it to rest, to the cottage, and eventually to *miss* it as you spend
-your days at the edge of the world.
+at the smallest, safest scale, and is the vertical-slice region (canon §7). In the **full arc** it
+is the **home base you sail your newly-repaired dory home to** after St Peters + Greywick (canon
+§5.8), and remains a cozy home base forever; you return to it to rest, to the cottage, and
+eventually to *miss* it as you spend your days at the edge of the world.
 
 ---
 
@@ -742,12 +754,16 @@ from the cottage in Coddle Cove.
 Tide is the world's defining force (P1), and several regions are *literally reshaped* by it. This
 section gathers the cross-cutting rules; the simulation lives in `time-tides-weather.md`.
 
-- **St Peters Island — the tide-gated causeway** *(prologue, M2)*. The bar/causeway linking the home
-  island to the mainland is **walkable (and the dory-channel passable) only near low water**; the
-  flood **covers it and seals the island off**. Mechanically identical to the Drownded Lands cutoff
-  (a `seabedElevation` threshold on the causeway tiles, §3.5/§7 implementation), tuned to be the
-  *kindest* version — being cut off costs only **time**. This is the player's very first tide lesson
-  (P1), authored before the more dangerous tide-gates downstream.
+- **St Peters Island — the tide-gated SANDBAR to Greywick** *(prologue, M2)*. As the deterministic
+  tide **falls**, exposed seabed becomes **walkable** and a **sandbar between St Peters and Port
+  Greywick bares as a walking path at low water** (with **boat-crossable channels that narrow as the
+  tide falls**); the flood **covers it and seals the island off**. It is the **first way to reach the
+  mainland — on foot, before any boat is owned**. Mechanically identical to the Drownded Lands cutoff
+  (a `seabedElevation`/terrain-elevation threshold compared against the deterministic water level —
+  §3.5; consumed via the Core tidal-exposure seam `IsExposed(elevation)` so terrain authoring and the
+  walkability sim agree on one source of truth), tuned to be the *kindest* version — being cut off
+  costs only **time**. This is the player's very first tide lesson (P1), authored before the more
+  dangerous tide-gates downstream.
 
 - **The Drownded Lands — walkable seabed.** At low water the flats drain to a **walkable
   seabed** the player can disembark onto and traverse on foot (clams, wrecks, secrets); at high
@@ -800,7 +816,7 @@ bought with one currency (P2, P4).
 
 | Order | Region | Gate (canon) | Why here / what it teaches |
 |-------|--------|--------------|----------------------------|
-| 0 | St Peters Island *(prologue, M2)* | The opening (no gate) | The pre-cradle: read the tide, dig clams by hand, buy a licence, earn the dory repair, leave. The whole game's spine, in miniature. |
+| 0 | St Peters Island *(prologue, M2)* | The opening (no gate) | The pre-cradle: read the tide, dig clams by hand, **walk the tide-gated sandbar to Greywick**, buy a cod licence + rod, **earn a damaged dory and pay to repair it**, sail home. The whole game's spine, in miniature. |
 | 1 | Coddle Cove | Start (M1 slice) | Cradle: learn the core loop safely. |
 | 2 | The Sunkers | Basic boat + reading tide | First teeth; learn grounding & tide-reading cheaply. |
 | 3 | Port Greywick | Story (early) | Open the economy/social hub once you have something to sell. |

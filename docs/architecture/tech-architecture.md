@@ -73,6 +73,29 @@ The boat reads its local sample and applies forces; this is what makes navigatio
 (`design/boats-and-navigation.md`). Local **water depth = seabedHeight − tideHeight**; when a
 boat's **draught > water depth → grounding** (ties tide to boats to regions in one clean number).
 
+### 4.1 Tidal-exposure seam (on-foot walkability shares the grounding rule) — ADR 0009
+
+The **same** water-level rule the boat uses for grounding also answers "is this spot submerged or
+exposed at the current tide?" for the **on-foot** player — the falling-tide walkable seabed and the
+St Peters tide-gated sandbar (`design/world-and-regions.md` §7, `design/time-tides-weather.md` §3.5).
+Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameTime)`, never saved):
+
+- **`IEnvironmentService.WaterLevelAt(double t)`** — the active region's deterministic water surface
+  (m above datum). A **default interface method** returning `TideHeightAt(t)` (additive; existing
+  implementers unchanged; overridable when a region offsets its water plane).
+- **`Core.TidalExposure`** — pure helper: `WaterDepth(waterLevel, terrainElevation)`,
+  `IsExposed(...)`, `IsSubmerged(...)`. The **one shared rule** the **world** (terrain authoring) and
+  **gameplay** (walkability sim) both read, so the shoreline they draw and the seabed the player walks
+  can never disagree. Built in the next wave; the seam is defined now.
+
+### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
+
+**`Core.RegionDisplayNames`** — a tiny static registry mapping a scene name / region id → player-facing
+display name ("Coddle Cove", "Port Greywick"). The **world** (owner of `RegionDef`) registers at boot;
+the **UI** (Core-only) reads `Resolve(key, fallback)` so the crossing fade card titles correctly
+(closes the ui-ux #54 follow-up) without a UI→World reference. Presentation metadata: unsaved, no
+determinism concern.
+
 ## 5. Boat & entity architecture (composition)
 
 A boat is a `Rigidbody2D` (Box2D-v3 backend in Unity 6.3) assembled from data-configured

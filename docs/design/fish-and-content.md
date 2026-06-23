@@ -240,18 +240,25 @@ nets, clam-digging) uses a lighter variant.
 > advanced/late (**M3**). Phasing: [`../roadmap.md`](../roadmap.md). On-water interactions:
 > [`boats-and-navigation.md`](boats-and-navigation.md).
 
-**(a) St Peters clam-dig — shovel + the "two squirting holes" tell (M2).** The opening's by-hand
-income ([`world-and-regions.md`](world-and-regions.md) §6.0). On the bared low-water flats, buried
-clams betray themselves with **two little squirting holes** in the wet sand; the player reads the
-tell, **digs with a shovel**, and pulls the clam. Mechanically this is the **passive "tend" beat** of
-§3.4 (read-the-spot + dig, no tension fight), tuned cozy. It is **licence-gated**: you buy a **clam
-licence** at the St Peters general store before you may dig — the first, gentlest instance of the
-licence currency in [`progression-and-housing.md`](progression-and-housing.md) §2.2. *Data note:* clam
-content already exists (`soft-shell-clam`, `blue-mussel`; gear tag `ClamFork`). The **shovel** is the
-St Peters flavour of the `ClamFork` / hand-dig method — **reconcile at M2** whether to add a distinct
-`Shovel`/`ClamRake` `GearTag` or treat the shovel as the `ClamFork` tag's presentation (a new tag
-touches the enum and is review-gated — §6.1). The "two squirting holes" is a **spot tell** (a hotspot
-cue, §3.3), not a new system.
+**(a) St Peters clam-dig — shovel + the "two squirting holes" tell (M2). The FIRST catch, before any
+rod.** The opening's by-hand income ([`world-and-regions.md`](world-and-regions.md) §6.0, canon
+[`../vision-and-pillars.md`](../vision-and-pillars.md) §5.8). Clams are the player's **very first
+"catch" — earned by hand on the bared sandbar/flats before they own a rod or a boat**. On the bared
+low-water flats, buried clams betray themselves with **two little squirting holes** in the wet sand;
+the player reads the tell, **digs with a shovel**, and pulls the clam. Mechanically this is the
+**passive "tend" beat** of §3.4 (read-the-spot + dig, no tension fight), tuned cozy. It is
+**licence-gated** by a **clam licence** bought at the St Peters general store. *Ownership note (this
+wave):* the licence system itself — including the clam licence and the **cod fishing licence** bought
+later at Greywick (the gate on rod-fishing) — is a **real, minimal licence system owned by
+[`economy-and-business.md`](economy-and-business.md)** (not authored here, and not the
+`progression-and-housing.md` currency table's job to implement); this doc only declares that clams are
+**gated** behind it. *Data note:* clam content already exists (`soft-shell-clam`, `blue-mussel`; gear
+tag `ClamFork`). The **shovel** is the St Peters flavour of the `ClamFork` / hand-dig method —
+**reconcile at M2** whether to add a distinct `Shovel`/`ClamRake` `GearTag` or treat the shovel as the
+`ClamFork` tag's presentation (a new tag touches the enum and is review-gated — §6.1). The **rod** (and
+the cod licence that gates rod finfishing) is bought at **Greywick**, after the sandbar walk — so St
+Peters' economy is clams-by-hand only. The "two squirting holes" is a **spot tell** (a hotspot cue,
+§3.3), not a new system.
 
 **(b) Lobster — trap + buoy + bait, hauled by gaffing the buoy (M2).** Lobster already exists
 (`american-lobster`: `Pots`/`Trap`, **Required** bait herring/mackerel, `/unit`, kept alive). The

@@ -226,27 +226,35 @@ holds the lonely end of the world at **Ironbound**). They are warm, weathered, N
 working people — not quirky cartoons. Each entry gives **role · personality · daily-routine sketch ·
 relationship to the player · questline/service hook.**
 
-> Note on the uncle: the canon logline is that you *inherit* the uncle's dory and cottage. The cast
-> below treats the uncle as the **departed figure who anchors the opening** — present at the very
+> Note on the uncle: Ned is the **departed figure who anchors the opening** — present at the very
 > start (the tutorial / handover), then lost, with his memory and unfinished business threaded
-> through the early game. This matches "Inherit your uncle's dory and his cottage" while still
-> letting him anchor the opening as required.
+> through the early game. You inherit his **cottage** in Coddle Cove and his memory; he still anchors
+> the opening as required. **(Owner-ratified 2026 change — see the reconciliation block below.)**
 >
-> **St Peters opening (owner-ratified, phased M2 — `../vision-and-pillars.md` §5.8,
-> `world-and-regions.md` §6.0).** The full arc is **St Peters Island → Coddle Cove → mainland**. The
-> M1 opening described below (Aunt Ginny + Ned's logbook at Coddle Cove) is the **stand-in**; when
-> St Peters is built (M2), the **start and onboarding relocate** to the island's **school**, and the
-> **dialogue/onboarding system is reused, not rebuilt** — **no NPC here is deleted**.
-> **Reconciliation flagged for the M2 pass (do not silently resolve):** where **Aunt Ginny** lives
-> across the arc (the St Peters school vs the Coddle Cove hearth — §3.4) and where the **uncle's
-> dory** is inherited/repaired (the St Peters slip vs the Cove). **Intent:** *one* teaching-aunt and
-> *one* inherited dory, placed to serve the three-beat arc — likely Ginny (or her teaching role)
-> opens the game at St Peters, then the cast settles into the Cove/Greywick placements below.
+> **St Peters opening + dropped inherited-dory (owner-ratified 2026, DECIDED — `../vision-and-pillars.md`
+> §5.8, `world-and-regions.md` §6.0).** The arc is now **St Peters Island → [walk the tide-gated
+> sandbar] → Port Greywick (buy cod licence + rod; buy + repair a damaged dory) → Coddle Cove (sail
+> the repaired dory home; home base).** The M1 opening described below (Aunt Ginny + Ned's logbook at
+> Coddle Cove) is the **stand-in**; when St Peters is built (M2), the **start and onboarding relocate**
+> to the island's **school**, and the **dialogue/onboarding system is reused, not rebuilt** — **no NPC
+> here is deleted**.
+> **⚠ Reconciliation flag — the dropped inherited dory partly invalidates the BUILT VS-21 onboarding
+> (do not silently resolve):** the owner has **dropped the "inherit Uncle Ned's dory" framing**; your
+> first boat is now a **plain damaged dory bought at the Greywick shipwright and repaired for a fee**,
+> not handed down. The **already-built M1 onboarding** (`M1-08` / `VS-21`: Ned's logbook + "inherit the
+> dory" at Coddle Cove) therefore needs a **rework into a buy-and-repair beat** — a **later task**,
+> logged here and in canon §5.8 so it is not lost. The cottage + memory remain inherited.
+> **Also still open for the M2 pass:** where **Aunt Ginny** lives across the arc (the St Peters school
+> vs the Coddle Cove hearth — §3.4). **Intent:** *one* teaching-aunt and *one* (now **earned**) dory,
+> placed to serve the arc — likely Ginny (or her teaching role) opens the game at St Peters, then the
+> cast settles into the Cove/Greywick placements below.
 
 ### 3.1 Uncle Ned Coddle — *the one who left you everything*
 
-- **Role:** Your late uncle; the man whose dory and cottage you inherit. The emotional origin of
-  the game. Present in the opening hours (the handover / tutorial), then gone.
+- **Role:** Your late uncle; the man whose **cottage** (and memory) you inherit. The emotional origin
+  of the game. Present in the opening hours (the handover / tutorial), then gone. *(The dory is no
+  longer inherited — it is bought damaged and repaired at Greywick; canon §5.8 and the reconciliation
+  block above.)*
 - **Personality:** Gruff, dry-humoured, endlessly capable; loved this coast more than he ever said.
   Taught by doing, not telling. The kind of man the whole harbour quietly respected.
 - **Daily routine (opening only):** Up before dawn, out in the dory on the cove, in by afternoon to
