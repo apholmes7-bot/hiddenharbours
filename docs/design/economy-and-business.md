@@ -444,6 +444,54 @@ Rough money milestones from first dory catch to freight empire. **Coin figures a
   small code-side enums. New buyers, contracts, and routes are authorable by content agents in
   parallel (independent assets → no merge conflicts), mirroring the fish-authoring workflow.
 
+### 9.1a St Peters opening — licences, gear & the damaged-dory repair (greybox, minimal)
+
+The St Peters opening (`backlog` M2-31..33, pulled forward by the owner) needs a *minimal but real*
+progression layer. The economy side, all **data-driven** and behind **Core seams** (no concrete cross-
+module refs):
+
+- **`LicenseDef` (ScriptableObject, `Data/Licenses/`):** `id` (e.g. `license.cod`), `displayName`,
+  `Price` (₲ fee), `PermittedSpeciesIds[]` (what it unlocks). The first one is `license.cod`. This is
+  the **money-only** seed of the licence currency ([`progression-and-housing.md`](progression-and-housing.md)
+  §2.2) — the proficiency/reputation eligibility tower is **deliberately deferred** (it adds fields here
+  + a vendor check later, without changing the seam or save shape).
+- **`ILicenseService` (Core seam) + `LicenseService` (Economy, self-installing) + save:** the licence
+  *wallet* — `IsLicensed(id)`/`Grant(id)`, held licences persisted in `SaveData.OwnedLicenses` (schema
+  v2). Fishing reads `GameServices.Licenses` to gate a catch **without referencing Economy** — the
+  `IWallet`/`IHold` pattern.
+- **The catch gate (`CatchLicensePolicy`, pure helper):** "may this species be landed?" — a species is
+  gated iff a licence lists it; cod requires `license.cod`, everything ungated stays catchable. The
+  mapping is *derived from the licence data* (one source of truth; cod→`license.cod` isn't duplicated)
+  so gameplay-systems calls `MayLand(speciesId, …)` at land-time without an Economy ref. We do **not**
+  add a `RequiredLicenseId` field to the Fishing `FishSpeciesDef` (that's their schema) — the gate keys
+  by id.
+- **The rod / shovel / clam-bucket (`GearOffer`, `Data/Gear/`):** the *economic* side of a purchasable
+  item — `id`, `displayName`, `Price`. Bought at a `GearShop`; ownership recorded in
+  `SaveData.OwnedGear`. The gear's **capability** (which `Gear` flag the rod maps to, the shovel's dig
+  method, the bucket's 20-unit hold) is **gameplay-systems'** — they map an owned-gear id to it. The
+  rod fishes cod only once the cod licence is *also* held (owning the rod ≠ being licensed).
+- **The soft-shell clam (`FishSpeciesDef`, `fish.soft_shell_clam`):** the opening's by-hand income —
+  Shellfish, hand-dug, sellable at Greywick through the existing per-category market. Authored on the
+  existing `Handline` (by-hand) gear tag until gameplay-systems reconciles a dedicated `Shovel`/
+  `ClamFork` `GearTag` ([`fish-and-content.md`](fish-and-content.md) §3.5a — a new enum tag is review-
+  gated). Gated to `region.coddle_cove` as a placeholder until world-content authors the St Peters
+  `RegionDef` (then re-gate to `region.st_peters`).
+- **Damaged-dory buy + repair (`ShipwrightOffer.StartsDamaged`/`RepairCost` + `Shipwright.TryRepair`):**
+  a boat can be sold **damaged** — bought/owned (still raises `BoatPurchased` so the fleet grants it)
+  but **unusable** until the player pays the repair fee, which marks it repaired (`SaveData.RepairedBoats`,
+  via `RepairLedger`) and raises the Core `BoatRepaired` event. A non-damaged buy is repaired-on-grant.
+  Greybox-minimal: **instant repair on payment**. The *usable* gate (boarding) is gameplay-systems' —
+  they read `RepairLedger.IsRepaired` off the save. The St Peters dory is a **plain bought + repaired**
+  boat (no inheritance).
+- **New Core events (additive, in `Core/Events/LicenseSignals.cs`, NOT `GameSignals.cs`):**
+  `LicensePurchased`, `BoatRepaired`, `GearPurchased` — for ui-ux toasts / world-content beats /
+  gameplay-systems capability enable, all via EventBus so no module references Economy.
+
+> **Out of scope this wave (flagged):** the on-foot dig interaction, the rod→`Gear` mapping, the bucket
+> as a 20-unit hold, and the vendor placement in the world are **gameplay-systems / world-content** —
+> Economy provides the components + data; the **builders are re-run by those lanes next wave** to surface
+> the vendors/clam spots. The full M2 proficiency/reputation licence tower stays deferred.
+
 ### 9.2 The market simulation tick
 
 - A single **`MarketSim` service** advances all markets on the hourly/daily cadence (§1.3): updates

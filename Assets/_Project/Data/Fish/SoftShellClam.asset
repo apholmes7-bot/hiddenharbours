@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: SoftShellClam
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.soft_shell_clam
+  DisplayName: Soft-shell Clam
+  Category: 1
+  Rarity: 0
+  Flavor: 'Dug from the flats by hand when the low tide bares them - two little squirting
+    holes give the buried clam away. The St Peters opening''s first by-hand income.
+    GEAR NOTE: hand-dig only; authored on the Handline (by-hand) tag until gameplay-systems
+    reconciles a dedicated Shovel/ClamFork GearTag (fish-and-content design 3.5a).'
+  RegionIds:
+  - region.coddle_cove
+  AllowedGear: 1
+  Seasons: 15
+  MinTide: -10
+  MaxTide: 0
+  StartHour: 6
+  EndHour: 20
+  MinWeightKg: 0.05
+  MaxWeightKg: 0.2
+  BaseValue: 2
+  SupplyElasticity: 0.45
+  SpawnWeight: 1

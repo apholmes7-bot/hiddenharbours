@@ -26,6 +26,9 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `FacilityDef` | `Data/Commodities/Facilities/` | processing/storage buildings: throughput, capacity, staff slots, cost | `design/economy-and-business.md` |
 | `StaffRoleDef` | `Data/Staff/` | role (deckhand, skipper, processor, hauler, seller, manager), wage band, skills, AI routine template | `design/economy-and-business.md` |
 | `BuyerDef` / `ContractDef` | `Data/Commodities/Buyers/` | market buyers, standing contracts, reputation requirements | `design/economy-and-business.md` |
+| `LicenseDef` | `Data/Licenses/` | id, display name, fee (₲), permitted species/gear (St Peters opening — the minimal money-only licence; eligibility tower is later) | `design/progression-and-housing.md` §2.2 |
+| `ShipwrightOffer` | `Data/Shipwright/` | a boat offered for sale: boat id, price, `StartsDamaged` + `RepairCost` (the damaged-dory buy+repair) | `design/economy-and-business.md` |
+| `GearOffer` | `Data/Gear/` | the *economic* side of a purchasable gear item: id, display name, price (the rod/shovel/bucket). The gear *capability* (Gear flag, hold capacity) is gameplay-systems' | `design/economy-and-business.md` |
 | `BaitDef` / `GearDef` | `Data/Gear/`, `Data/Bait/` | gear/bait that gate catch resolution | `design/fish-and-content.md` |
 | `PropertyDef` | `Data/Regions/Property/` | houses & commercial lots: purchase, upgrade tiers, furnishing slots, comfort | `design/progression-and-housing.md` |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
@@ -50,6 +53,13 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 |-------------|-------|----------|
 | `PlayerState` | position, region, money (₲), stamina, skills, licenses, hold/inventory | — |
 | `FleetState` | owned boats: hullId, fitted engine/gear/instrument ids, upgrades, damage, hold contents | boat instance id |
+
+> **Save schema v2 (St Peters opening)** — `SaveData` gained three append-only lists at v2:
+> `OwnedLicenses[]` (the licence wallet, backing `ILicenseService`), `RepairedBoats[]` (which owned
+> hulls have been repaired → usable; a boat bought damaged is owned but unusable until its id lands
+> here), and `OwnedGear[]` (purchased gear ids: rod/shovel/bucket). The `v1→v2` migration is additive
+> (empty new lists) and marks every already-owned boat repaired so a pre-v2 save's boat stays usable.
+> Cross-lane (`SaveData`/`SaveMigration` are Core/lead-architect) — flagged for review.
 | `EconomyState` | per-commodity supply level & price history, active contracts, business ledger | commodityId |
 | `BusinessState` | owned facilities, staff roster (roleId, skill, morale, wage, assignment), production queues, logistics routes | facility/staff instance id |
 | `WorldState` | region reveal/fog, quest & story flags, NPC relationship scores | regionId / npcId / flagId |

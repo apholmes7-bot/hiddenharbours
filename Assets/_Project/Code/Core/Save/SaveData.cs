@@ -46,6 +46,22 @@ namespace HiddenHarbours.Core
         /// <summary>The opening-sequence (and other story) flags, consolidated here from PlayerPrefs
         /// (VS-08 absorbs the VS-21 onboarding flags). Added in v1.</summary>
         public List<SaveFlag> OnboardingFlags = new();
+
+        /// <summary>Stable ids of every license the player holds (e.g. "license.cod") — the license
+        /// wallet for the St Peters opening (progression-and-housing §2.2). Append-only; order is
+        /// acquisition order. Backs <c>ILicenseService</c>. Added in v2.</summary>
+        public List<string> OwnedLicenses = new();
+
+        /// <summary>Per-boat repair state: the stable hull ids the player has PAID THE SHIPWRIGHT TO
+        /// REPAIR. A boat bought damaged sits in <see cref="OwnedBoats"/> but is unusable until its id
+        /// also appears here. (A boat bought already-usable is repaired on grant, so it appears in
+        /// both.) Added in v2 for the damaged-dory buy+repair flow.</summary>
+        public List<string> RepairedBoats = new();
+
+        /// <summary>Stable ids of every gear/equipment item the player owns (e.g. "gear.rod",
+        /// "gear.shovel"). gameplay-systems maps an owned id to its Gear capability; Economy only records
+        /// the purchase. Append-only; acquisition order. Added in v2.</summary>
+        public List<string> OwnedGear = new();
     }
 
     /// <summary>

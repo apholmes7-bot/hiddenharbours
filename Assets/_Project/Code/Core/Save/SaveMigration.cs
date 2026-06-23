@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
 
         /// <summary>A fresh save for a brand-new game — current version, empty collections.</summary>
         public static SaveData NewGame() => new SaveData { SchemaVersion = CurrentVersion };
@@ -33,11 +33,28 @@ namespace HiddenHarbours.Core
             if (data.SchemaVersion < 1)
                 data.SchemaVersion = 1;
 
+            // ---- v1 → v2: the license wallet, per-boat repair state, and owned-gear wallet are new in
+            // v2 (St Peters opening). An older save simply had no licenses/gear and no damaged boats to
+            // repair; the null-repair below gives them empty lists. A pre-v2 owned boat was always a
+            // usable boat, so we mark every already-owned boat repaired — it stays usable after upgrade.
+            if (data.SchemaVersion < 2)
+            {
+                data.RepairedBoats ??= new System.Collections.Generic.List<string>();
+                if (data.OwnedBoats != null)
+                    foreach (var id in data.OwnedBoats)
+                        if (!string.IsNullOrEmpty(id) && !data.RepairedBoats.Contains(id))
+                            data.RepairedBoats.Add(id);
+                data.SchemaVersion = 2;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
             data.OwnedBoats ??= new System.Collections.Generic.List<string>();
             data.OnboardingFlags ??= new System.Collections.Generic.List<SaveFlag>();
+            data.OwnedLicenses ??= new System.Collections.Generic.List<string>();
+            data.RepairedBoats ??= new System.Collections.Generic.List<string>();
+            data.OwnedGear ??= new System.Collections.Generic.List<string>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).

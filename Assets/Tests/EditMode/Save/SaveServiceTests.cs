@@ -91,8 +91,10 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData upgraded = SaveMigration.Migrate(v0);
 
             Assert.IsNotNull(upgraded);
-            Assert.AreEqual(1, upgraded.SchemaVersion, "v0 must be stamped v1.");
-            // Scalars carried through untouched (no-op upgrade).
+            // v0 climbs every migration step to the current version (v1's no-op upgrade, then v2's
+            // licence/repair/gear lists). Asserting CurrentVersion keeps this resilient to later bumps.
+            Assert.AreEqual(SaveMigration.CurrentVersion, upgraded.SchemaVersion, "v0 must be stamped the current version.");
+            // Scalars carried through untouched (the upgrade only adds fields).
             Assert.AreEqual(777, upgraded.WorldSeed);
             Assert.AreEqual(4242.5, upgraded.GameTimeSeconds, 1e-6);
             Assert.AreEqual(120, upgraded.Money);
@@ -116,7 +118,7 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData loaded = SaveSerialization.FromJson(v0Json);
 
             Assert.IsNotNull(loaded);
-            Assert.AreEqual(1, loaded.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, loaded.SchemaVersion);
             Assert.AreEqual(42, loaded.WorldSeed);
             Assert.AreEqual(90.25, loaded.GameTimeSeconds, 1e-6);
             Assert.AreEqual(15, loaded.Money);
