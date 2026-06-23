@@ -113,6 +113,7 @@ region scenes should use the same helper.
 ```
 Art/
 ├── Sprites/      general sprites + the greybox unit square
+│   └── Environment/Trees/  discrete tree decor (64×64, pivot = base/BottomCenter, Clamp)
 ├── Tilesets/     32×32 modular terrain tiles, Rule Tiles (Water/ → tiling/Repeat)
 ├── Characters/   player + NPC sheets (pivot = feet)
 ├── Boats/        hull/wake/crew layers (pivot = centre)
