@@ -22,7 +22,7 @@ MonoBehaviour:
     ClamFork (hand-dig) gear tag by gameplay-systems (fish-and-content 3.5a). The on-foot
     ClamDig interaction yields it; it is deliberately not in the rod''s catch pool.'
   RegionIds:
-  - region.coddle_cove
+  - region.st_peters
   AllowedGear: 64
   Seasons: 15
   MinTide: -10

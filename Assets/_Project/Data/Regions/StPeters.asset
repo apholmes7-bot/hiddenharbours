@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9c4fb6be8dd46eba08510dde87bace3, type: 3}
+  m_Name: StPeters
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
+  Id: region.st_peters
+  DisplayName: St Peters Island
+  Description: 'The home island where the game begins: a tiny weathered coast cut off
+    from the mainland except when the big tide bares the sandbar. Dig clams on the
+    flats at low water, walk the bar to Greywick, earn your way to the dory.'
+  SceneName: StPeters
+  UnlockFlag:
+  IsDeepHarbour: 0
+  HarbourDepthMeters: 2
+  TideMeanLevel: 0
+  TideAmplitude: 3.5
+  TidePhaseHours: 1
+  SpawnFishIds:
+  - fish.soft_shell_clam
