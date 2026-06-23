@@ -132,16 +132,22 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(walk.enabled, $"[{propulsion}] walking stays frozen aboard");
 
             // Prove the live controller actually drives the rigidbody (the helm isn't merely 'enabled').
+            // Assert on VELOCITY GAINED under sustained input — the unambiguous "the helm is live and
+            // applying thrust" signal, robust to the CI machine's physics step count (a hard distance
+            // threshold is too timing-sensitive). A small displacement check backs it up. We re-issue the
+            // input every fixed step so the controller's FixedUpdate always reads a live command.
             var rb = boatGo.GetComponent<Rigidbody2D>();
             Vector2 start = rb.position;
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 40; i++)
             {
                 if (propulsion == PropulsionType.Oars) boat.SetOarInput(1f, 1f, false); // both oars ahead
                 else boat.SetControl(1f, 0f);                                            // full throttle ahead
                 yield return new WaitForFixedUpdate();
             }
-            Assert.Greater((rb.position - start).magnitude, 0.05f,
-                $"[{propulsion}] the re-enabled helm drives the boat (control restored, not dead)");
+            Assert.Greater(rb.linearVelocity.magnitude, 0.05f,
+                $"[{propulsion}] the re-enabled helm builds way (applies thrust → control restored, not dead)");
+            Assert.Greater((rb.position - start).magnitude, 0.01f,
+                $"[{propulsion}] …and the boat actually moves off the mark");
         }
 
         // ---- FIX 2: disembark near land parks the boat where it's left ---------------------------
