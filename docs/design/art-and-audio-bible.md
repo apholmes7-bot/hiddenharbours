@@ -356,12 +356,25 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
 > hold the LOCKED rules (§2 one perspective, §3 one scale / PPU) and the desktop perf budget
 > (mobile-portable).
 
+> **The hero water look has a dedicated plan.** The owner picked a target: a **layered URP Shader
+> Graph** (a main water shader assembled from **caustic / specular / sea-foam subgraphs** over a
+> depth-driven base, à la the referenced Unity tutorial), **pixelized** to read as PPU=32 pixel art,
+> and driven by the **same height map the tide gameplay reads** (`depth = waterLevel − terrainHeight`,
+> via the [`../adr/0009-tidal-exposure-and-region-display-name-seams.md`](../adr/0009-tidal-exposure-and-region-display-name-seams.md)
+> `WaterLevelAt` / `TidalExposure` seam). **The full layer-by-layer build recipe and the decision are
+> in [`water-rendering.md`](water-rendering.md) + [`../adr/0010-water-rendering.md`](../adr/0010-water-rendering.md)** —
+> the bullets below are the higher-level ambitions that plan realises. **lead-architect** owns the
+> shader-graph plumbing; **art-pipeline** owns the look. Phase: the **height map + a flat depth-tint**
+> fold into the St Peters greybox **now** (it *is* the walkability data); the full shader is the **art
+> pass** (M1 VS-24 → M2/M3), after mechanics prove fun and placeholder pixel art is dropped.
+
 - **3D water baked to a 2D surface (M3).** Author the hero water look by **rendering a 3D water sim and
   baking it down to the 2D surface** sprite/shader — richer swell, refraction and foam than
   hand-pixelled tiles, while staying a flat ¾ surface on the grid. Mirrors the **M2 boat bake**
   philosophy ([`../adr/0006-boat-art-pipeline.md`](../adr/0006-boat-art-pipeline.md)): author in 3D,
   ship as 2D, with **one implied light direction** (§3.5.1) so baked water lights consistently with
-  everything around it. A profiled spike decides bake-to-frames vs a runtime shader (extends **OQ2**).
+  everything around it. A profiled spike decides bake-to-frames vs a runtime shader (extends **OQ2**)
+  — the layered-shader recipe in [`water-rendering.md`](water-rendering.md) applies either way.
 - **Dynamic shadows on the 24-h clock (M3).** Shadows that **lengthen, shorten and swing** with the
   sun's altitude/azimuth from the time-of-day curve ([`time-tides-weather.md`](time-tides-weather.md)
   §2.3) — dawn rake → short noon → long dusk — instead of the static blob shadows of the slice (§3.4).
@@ -376,7 +389,9 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
   Extends the already-locked **tide-aware shoreline** (§2.1/§2.2) from "the waterline moves" to "the
   bared surfaces read *wet*." Lands with the **M2 region art passes**; the **St Peters tide-gated
   sandbar** (the low-water walking path to Greywick) is the gameplay-critical case
-  ([`world-and-regions.md`](world-and-regions.md) §6.0, §7).
+  ([`world-and-regions.md`](world-and-regions.md) §6.0, §7) — in the shader plan the sandbar is just a
+  low ridge in the height map whose depth≈0 foam band sweeps the same waterline the player walks
+  ([`water-rendering.md`](water-rendering.md) §4).
 - **Parallax underwater / shallow-water preview (M3).** A **parallax peek beneath the surface** in
   shallow water — you can *see* the bar, the sunker, the clam bed, the seabed shelving away — turning
   the §3.6 sub-surface parallax layers into a **readable shallow-water preview** that telegraphs
