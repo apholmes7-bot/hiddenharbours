@@ -4,47 +4,54 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;         // BoatHullDef / PropulsionType (the hull defs authored as data)
 using HiddenHarbours.Fishing;       // FishSpeciesDef / Gear (the cove's fishing-ground species)
 using HiddenHarbours.Economy;       // Market / FishBuyer / WharfSellPoint / Shipwright (the cove's services)
 using HiddenHarbours.World;         // RegionDef / RegionSceneLoader / RegionPassage
-using HiddenHarbours.App;           // RegionAnchor / PersistentHoldProxy / PersistentWalletProxy
+using HiddenHarbours.App;           // RegionAnchor / RegionLogicRoot / PersistentHoldProxy / PersistentWalletProxy
 using UnityEngine.Rendering.Universal; // PixelPerfectCamera
 using HiddenHarbours.Art.Editor;   // VS-23 locked Pixel-Perfect camera convention
 
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// One-click <b>Coddle Cove</b> — the player's HOME HARBOUR as a PLAIN region scene (#66 demotion).
-    /// Menu: Hidden Harbours ▸ Build Greybox Scene. Re-runnable (idempotent on the assets).
+    /// One-click <b>Coddle Cove</b> — the player's HOME HARBOUR as a PLAIN region scene (#66 demotion),
+    /// and the <b>committed hand-authored-scene pilot</b> (ADR 0011).
     ///
-    /// <para><b>Demoted from the start (#66 / StPetersBuilder's flag #1).</b> The decided opening arc is
-    /// St Peters → Greywick → buy + repair the dory → SAIL HOME to Coddle Cove. The cove USED to be the
-    /// start, so this builder used to author its OWN persistent core (GameRoot / on-foot player / camera /
-    /// ControlSwitcher / fishing rig / travel coordinator). With St Peters as the start, sailing to the cove
-    /// would DUPLICATE that rig. So the cove is now a PLAIN region exactly like <see cref="GreywickBuilder"/>:
-    /// it authors only the region's own content (water / island / wharf / cottage / Fish Buyer + Shipwright /
-    /// decor) plus a <see cref="RegionAnchor"/> (arrival / dock / disembark). The persistent rig is carried in
-    /// from the START scene (St Peters) via the <see cref="RegionTravelCoordinator"/> and BINDS on arrival to
-    /// this anchor — the same way Greywick binds. The cove stays the home base; it's just REACHED by travel
-    /// now, not the start.</para>
+    /// <para><b>The ADR 0011 hybrid.</b> A committed region scene has two layers, ONE author each:</para>
+    /// <list type="bullet">
+    /// <item><b>LOGIC layer (code/builder).</b> The invisible gameplay scaffolding the simulation reads —
+    /// the <see cref="RegionAnchor"/> + its arrival/dock/disembark markers, the wharf economy (Fish Buyer +
+    /// Shipwright) resolved through the persistent hold/wallet proxies, the region loader + the Cove→Greywick
+    /// passage, the shore/piling colliders that gate gameplay, the fishing-spot marker, and the
+    /// standalone-review camera. ALL of it is parented under ONE tagged root —
+    /// <c>--LOGIC-- (generated, do not edit)</c>, marked with <see cref="RegionLogicRoot"/>.</item>
+    /// <item><b>VISUAL layer (the owner).</b> Everything you SEE — painted terrain Tilemaps + dropped decor
+    /// prefab instances from the #71 toolkit. It lives OUTSIDE the <c>--LOGIC--</c> root and the builder NEVER
+    /// touches it. The old placeholder visuals (the tiled sea/ground/dock sprites, the sea-marker scatter, the
+    /// cottage sprite, the hardcoded tree scatter) are RETIRED — the owner's painting replaces them.</item>
+    /// </list>
     ///
-    /// <para>Like Greywick, this scene carries its own Main Camera + AudioListener so it can be opened and
-    /// reviewed standalone; the coordinator silences them on arrival (the persistent core owns the live
-    /// camera). The wharf's hold/wallet live in the persistent core (a different scene), so the Fish Buyer /
-    /// Shipwright resolve them through scene-local <see cref="PersistentHoldProxy"/> / <see cref="PersistentWalletProxy"/>
-    /// shims, which the coordinator binds to the real hold on arrival (the Greywick pattern).</para>
+    /// <para><b>Two menu entry points (ADR 0011 Option A — idempotent Refresh):</b></para>
+    /// <list type="bullet">
+    /// <item><b>Hidden Harbours ▸ Build Greybox Scene</b> — FULL build. Creates the scene from zero (the
+    /// <c>--LOGIC--</c> root + nothing else). Use this ONCE to bake the committed cove. After the owner has
+    /// painted, this WARNS first, because a from-zero rebuild discards the hand-authored visual layer.</item>
+    /// <item><b>Hidden Harbours ▸ Refresh Cove Logic</b> — SAFE in-place logic update. Opens the committed
+    /// cove scene, destroys + regenerates ONLY the <c>--LOGIC--</c> subtree, and leaves every painted/decor
+    /// object alone. This is the command the owner runs after the scene is committed + hand-painted whenever
+    /// the gameplay logic needs to move forward.</item>
+    /// </list>
+    ///
+    /// <para><b>Demoted from the start (#66).</b> The opening arc is St Peters → Greywick → buy + repair the
+    /// dory → SAIL HOME to Coddle Cove. The cove is a PLAIN region exactly like <see cref="GreywickBuilder"/>:
+    /// it authors only the region's own logic + a <see cref="RegionAnchor"/>; the persistent rig is carried in
+    /// from the START scene (St Peters) via the <see cref="RegionTravelCoordinator"/> and BINDS on arrival.</para>
     ///
     /// <para>This is a dev convenience, not shipping content — real scenes are authored by world-content
-    /// (backlog VS-02; and see ADR 0011 for the committed hand-authored-scene plan).</para>
-    ///
-    /// <para>FLAG world-content (follow-up, not this PR): the cove home base could later host its OWN NPCs
-    /// (a returning Aunt Ginny, etc.). They were dropped from the cove in this demotion because their
-    /// interaction driver (<c>WorldInteractor</c>) needs the persistent on-foot player transform, which an
-    /// additively-loaded region can't serialize-reference — it needs a bind-on-arrival shim like the wharf
-    /// hold/wallet proxies. The inheritance OPENING (Ginny's intro, Ned's logbook, the one-loop onboarding)
-    /// now belongs to the START scene (St Peters), so it must not re-trigger on arriving home at the cove.</para>
+    /// (backlog VS-02; ADR 0011 for the committed hand-authored-scene plan).</para>
     /// </summary>
     public static class GreyboxBuilder
     {
@@ -54,17 +61,17 @@ namespace HiddenHarbours.App.Editor
         const string DataShip   = "Assets/_Project/Data/Shipwright";
         const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
-        const string ArtTrees   = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16) — kept on the hull asset
-        const string ArtSea     = "Assets/_Project/Art/Tilesets/Water/SeaTile.png"; // final tile (VS-24)
-        const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";              // island ground
-        const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";               // beach border
-        const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";   // home on the island
-        const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";          // dock planks
-        const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";           // dock pilings
         const string Scenes     = "Assets/_Project/Scenes";
         const string SceneName  = "Greybox";
         const string ScenePath  = Scenes + "/" + SceneName + ".unity";
+
+        // The region id the cove's generated logic root belongs to (ADR 0011 single-author-per-layer marker).
+        const string CoveRegionId = "region.coddle_cove";
+
+        // The one tagged root that holds ALL builder-generated LOGIC. The owner's painted VISUAL layer
+        // (Grid/Tilemaps + decor prefab instances) lives OUTSIDE this root and the builder never touches it.
+        public const string LogicRootName = "--LOGIC-- (generated, do not edit)";
 
         // VS-22 crossing geometry (canon map: Port Greywick lies WEST of the cove — "PORT GREYWICK ——+——
         // CODDLE COVE"). So you CROSS BY SAILING WEST, and you RETURN to the cove dock FROM THE WEST. These
@@ -78,18 +85,315 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 CoveDisembarkPos     = new Vector3(0f, -10.5f, 0f);    // on the dock planks
         public static readonly Vector3 ToGreywickPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
 
+        // =====================================================================================
+        //  ENTRY POINTS
+        // =====================================================================================
+
+        /// <summary>
+        /// FULL build: create <c>Greybox.unity</c> from zero with just the <c>--LOGIC--</c> root. Use this the
+        /// FIRST time to bake the committed cove. After the owner has hand-painted, this discards their visual
+        /// layer, so it WARNS first (ADR 0011: never silently destroy the owner's work).
+        /// </summary>
         [MenuItem("Hidden Harbours/Build Greybox Scene")]
         public static void Build()
         {
+            // ADR 0011 guard: a from-zero build wipes the owner's painted/decor layer. If a committed cove
+            // already exists, make the owner confirm — Refresh Cove Logic is the safe path once it's painted.
+            bool sceneExists = File.Exists(ScenePath);
+            if (sceneExists && !EditorUtility.DisplayDialog(
+                    "Hidden Harbours — full rebuild will WIPE hand-authored visuals",
+                    "'Build Greybox Scene' rebuilds Coddle Cove FROM ZERO. It will DISCARD any terrain you've " +
+                    "painted and any decor you've dropped (the whole VISUAL layer).\n\nIf you only want to " +
+                    "update the gameplay logic and KEEP your painting, cancel and run " +
+                    "'Hidden Harbours ▸ Refresh Cove Logic' instead.\n\nRebuild from zero anyway?",
+                    "Rebuild from zero (lose painting)", "Cancel"))
+            {
+                Debug.Log("[GreyboxBuilder] Full rebuild cancelled — run 'Refresh Cove Logic' to update logic " +
+                          "without touching the painted visual layer (ADR 0011).");
+                return;
+            }
+
+            var data = PrepareData();
+
+            // Fresh empty scene → place ONLY the tagged logic root + its subtree. No placeholder visuals: the
+            // owner's painting is the visual layer now (ADR 0011).
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var root = CreateLogicRoot(scene);
+            BuildLogicTree(root.transform, data);
+
+            EditorSceneManager.SaveScene(scene, ScenePath);
+            RegisterScene(ScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("[GreyboxBuilder] Built Greybox.unity (ADR 0011 committed-scene pilot): a single " +
+                      $"'{LogicRootName}' root holds all of the cove's LOGIC (RegionAnchor + arrival/dock/" +
+                      "disembark, Fish Buyer + Shipwright via the persistent proxies, loader + Cove→Greywick " +
+                      "passage, shore/piling colliders, fishing spot, standalone camera). NO placeholder " +
+                      "visuals — PAINT the terrain + drop decor OUTSIDE the --LOGIC-- root, then File ▸ Save. " +
+                      "After it's painted, use 'Refresh Cove Logic' (never 'Build') to update logic.");
+            EditorUtility.DisplayDialog("Hidden Harbours",
+                "Coddle Cove baked as a COMMITTED scene (ADR 0011 pilot).\n\nThe scene now contains ONE " +
+                $"'{LogicRootName}' object holding all the gameplay logic. There are no placeholder visuals " +
+                "— that's deliberate: YOU paint the look.\n\nNext:\n" +
+                "1. Hidden Harbours ▸ Art ▸ Add Paintable Tilemap, then paint terrain.\n" +
+                "2. Drag decor prefabs from Assets/_Project/Prefabs/Decor into the Scene.\n" +
+                "3. Leave the --LOGIC-- object alone.\n" +
+                "4. File ▸ Save (Ctrl+S).\n\nFrom now on, to update the logic WITHOUT losing your painting, " +
+                "use 'Hidden Harbours ▸ Refresh Cove Logic' — NOT this command.", "Fair winds");
+        }
+
+        /// <summary>
+        /// SAFE in-place logic update (ADR 0011 Option A). Opens the committed cove scene (or uses it if it's
+        /// already the active scene), destroys + regenerates ONLY the <c>--LOGIC--</c> subtree, and leaves
+        /// every other object — the owner's painted Tilemaps + decor — untouched. Idempotent: running it twice
+        /// yields the same logic tree.
+        /// </summary>
+        [MenuItem("Hidden Harbours/Refresh Cove Logic")]
+        public static void RefreshLogic()
+        {
+            if (!File.Exists(ScenePath))
+            {
+                EditorUtility.DisplayDialog("Hidden Harbours — no committed cove yet",
+                    "There's no committed Coddle Cove scene to refresh.\n\nRun 'Hidden Harbours ▸ Build " +
+                    "Greybox Scene' once to bake the initial committed scene, then paint, then use this " +
+                    "command to update the logic later.", "OK");
+                return;
+            }
+
+            // Open the committed scene single (or reuse it if already active) — NEVER NewScene (that's the
+            // exact step that destroys hand-painting).
+            var active = EditorSceneManager.GetActiveScene();
+            Scene scene = (active.IsValid() && active.path == ScenePath)
+                ? active
+                : EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+
+            var data = PrepareData();
+            RebuildLogicSubtree(scene, data);
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+            RegisterScene(ScenePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log("[GreyboxBuilder] Refreshed Coddle Cove LOGIC in place (ADR 0011): destroyed + " +
+                      $"regenerated only the '{LogicRootName}' subtree; the painted/decor visual layer was " +
+                      "left untouched. Saved Greybox.unity.");
+            EditorUtility.DisplayDialog("Hidden Harbours",
+                "Coddle Cove logic refreshed.\n\nOnly the --LOGIC-- object was rebuilt; your painted terrain " +
+                "and decor are untouched. The scene has been saved.\n\nIf this was an art session, commit your " +
+                "scene on a branch + open a PR (see docs/authoring-scenes.md §7).", "Fair winds");
+        }
+
+        /// <summary>
+        /// Rebuild ONLY the tagged logic subtree of <paramref name="scene"/>: destroy every existing
+        /// <see cref="RegionLogicRoot"/> root in the scene, then create one fresh root and populate it. This is
+        /// the surgical reconciler that protects the painted layer — it touches nothing outside the root.
+        /// Public so an EditMode test can drive it against an in-memory scene.
+        /// </summary>
+        public static void RebuildLogicSubtree(Scene scene, DataRefs data)
+        {
+            // Destroy any pre-existing logic roots (there should be exactly one; tolerate zero or many). We key
+            // on the RegionLogicRoot tag component, NOT on the name, so a renamed/duplicated root is still found
+            // and we never accidentally destroy a painted object that merely shares the name.
+            var roots = scene.GetRootGameObjects();
+            foreach (var go in roots)
+            {
+                if (go == null) continue;
+                if (go.GetComponent<RegionLogicRoot>() != null)
+                    Object.DestroyImmediate(go);
+            }
+
+            var root = CreateLogicRoot(scene);
+            BuildLogicTree(root.transform, data);
+        }
+
+        // =====================================================================================
+        //  LOGIC ROOT + TREE
+        // =====================================================================================
+
+        /// <summary>Create the single tagged <c>--LOGIC--</c> root GameObject in <paramref name="scene"/>.</summary>
+        static GameObject CreateLogicRoot(Scene scene)
+        {
+            var go = new GameObject(LogicRootName);
+            // Ensure it lands in the target scene (NewScene/OpenScene make it active, so new GOs go there; this
+            // is belt-and-braces for the test path where the scene may not be active).
+            if (go.scene != scene) SceneManager.MoveGameObjectToScene(go, scene);
+            var tag = go.AddComponent<RegionLogicRoot>();
+            tag.SetRegionId(CoveRegionId);
+            return go;
+        }
+
+        /// <summary>
+        /// Populate the LOGIC layer under <paramref name="root"/>. EVERYTHING the builder authors is parented
+        /// here so the owner's painted/decor layer (outside the root) is never touched. No placeholder visuals
+        /// (sea/ground/cottage sprites, tree scatter) are authored — the owner paints those (ADR 0011).
+        /// </summary>
+        static void BuildLogicTree(Transform root, DataRefs data)
+        {
+            // --- CAMERA (standalone-viewable; the coordinator silences it on arrival) ----------
+            // Mirrors Greywick's locked pixel-perfect, on-foot landscape framing so the cove reads at the same
+            // scale when reviewed standalone. The persistent core owns the live camera in play.
+            var camGo = new GameObject("Main Camera");
+            camGo.transform.SetParent(root, false);
+            camGo.tag = "MainCamera";
+            var cam = camGo.AddComponent<Camera>();
+            cam.orthographic = true;
+            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);   // slate so an as-yet-unpainted cove isn't black
+            camGo.transform.position = new Vector3(0f, 0f, -10f);
+            camGo.AddComponent<AudioListener>();
+            // VS-23: lock the Pixel-Perfect camera (PPU 32), 16:9 LANDSCAPE reference (PC-first, ADR 0005).
+            ArtCameraSetup.ConfigurePixelPerfect(camGo);
+            var ppc = camGo.GetComponent<PixelPerfectCamera>();
+            if (ppc != null)
+            {
+                CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int refW, out int refH);
+                ppc.refResolutionX = refW;
+                ppc.refResolutionY = refH;
+                EditorUtility.SetDirty(ppc);
+            }
+
+            // --- SHORE EDGE (gameplay bounds; collider only, no placeholder sprite) -------------
+            // A closed collider fence tracing the beach + dock so the player can roam the island and walk out
+            // the dock, but can't wander into open water (P5 cozy bounds). The boat bumps it too. The owner
+            // paints the visible coastline to MATCH this fence (or we refine the geometry post-pilot — ADR 0011
+            // open question). The fence is LOGIC; the look is painted.
+            var shore = new GameObject("ShoreEdge");
+            shore.transform.SetParent(root, false);
+            var edge = shore.AddComponent<EdgeCollider2D>();
+            edge.points = new[]
+            {
+                new Vector2(-10f, 9f), new Vector2(10f, 9f), new Vector2(10f, -5f),
+                new Vector2(1.5f, -5f), new Vector2(1.5f, -12f), new Vector2(-1.5f, -12f),
+                new Vector2(-1.5f, -5f), new Vector2(-10f, -5f), new Vector2(-10f, 9f),
+            };
+
+            // --- DOCK PILING COLLIDERS (boat bumpers; collider only) ----------------------------
+            // Slim circular colliders so the boat bumps the pilings (cozy, no damage) when nudging into the
+            // slip, leaving a navigable channel between the two rows. The post SPRITES are the owner's decor.
+            var pilings = new GameObject("Pilings");
+            pilings.transform.SetParent(root, false);
+            for (int i = 0; i < 3; i++)
+            {
+                float py = -6f - i * 3f; // -6, -9, -12
+                MakePilingCollider(pilings.transform, new Vector2(-1.5f, py));
+                MakePilingCollider(pilings.transform, new Vector2( 1.5f, py));
+            }
+
+            // --- FISHING SPOT (the gameplay spot location; collider/marker, no placeholder art) --
+            // Marks WHERE the cove's fishing spot sits in the water beside the dock. The carried
+            // FishingController casts from the persistent dory; this is the spot's gameplay position.
+            var fishingSpot = new GameObject("FishingSpot");
+            fishingSpot.transform.SetParent(root, false);
+            fishingSpot.transform.position = new Vector3(5f, -10f, 0f); // in the water beside the dock
+
+            // --- WHARF (Fish Buyer + Shipwright; resolved through the persistent proxies) --------
+            // The cove keeps its Fish Buyer (sell) + Shipwright (buy the Punt). The player's hold + wallet live
+            // in the PERSISTENT core (a different scene), so the wharf resolves them through scene-local proxies:
+            // PersistentHoldProxy forwards to the dory's ShipHold (coordinator binds it on arrival),
+            // PersistentWalletProxy forwards to GameServices.Wallet. So you sell + buy against the hold + coin
+            // you sailed in with.
+            var providersGo = new GameObject("PersistentProviders");
+            providersGo.transform.SetParent(root, false);
+            providersGo.AddComponent<PersistentHoldProxy>();
+            providersGo.AddComponent<PersistentWalletProxy>();
+
+            var wharf = new GameObject("Wharf");
+            wharf.transform.SetParent(root, false);
+            var market = wharf.AddComponent<Market>();
+            var buyer = wharf.AddComponent<FishBuyer>();
+            var sellPoint = wharf.AddComponent<WharfSellPoint>();
+            wharf.AddComponent<DevSellInput>();            // RequireComponent(WharfSellPoint) — present (greybox B to sell)
+            SetRef(market, "_config", data.Config);
+            SetRef(buyer, "_market", market);
+            SetRef(sellPoint, "_buyer", buyer);
+            SetRef(sellPoint, "_holdProvider", providersGo);
+            SetRef(sellPoint, "_walletProvider", providersGo);
+
+            var shipwrightGo = new GameObject("Shipwright");
+            shipwrightGo.transform.SetParent(root, false);
+            var shipwright = shipwrightGo.AddComponent<Shipwright>();
+            shipwrightGo.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present (greybox P to buy)
+            SetRef(shipwright, "_offer", data.PuntOffer);
+            SetRef(shipwright, "_walletProvider", providersGo);
+
+            // --- REGION SCENE-LOAD PATH ---------------------------------------------------------
+            // The persistent travel rig (loader + coordinator) is carried in from the start scene. This scene
+            // places its OWN RegionSceneLoader (reviewable standalone; the additive loader re-activates it) and
+            // the Cove→Greywick passage. On arrival the carried coordinator drives travel.
+            var loaderGo = new GameObject("RegionSceneLoader");
+            loaderGo.transform.SetParent(root, false);
+            var loader = loaderGo.AddComponent<RegionSceneLoader>();
+            SetRefArray(loader, "_regions", new Object[] { data.CoveRegion, data.GreywickRegion });
+            SetString(loader, "_currentSceneName", SceneName);   // this scene; explicit (don't rely on Awake vs DDOL order)
+
+            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map). A
+            // wide, forgiving band down the WEST edge of the open water.
+            var toGreywickGo = new GameObject("PassageToPortGreywick");
+            toGreywickGo.transform.SetParent(root, false);
+            toGreywickGo.transform.position = ToGreywickPassagePos;
+            var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
+            toGreywickTrigger.isTrigger = true;
+            toGreywickTrigger.size = new Vector2(3f, 28f);   // a tall west-edge band (forgiving, wide)
+            var toGreywickPassage = toGreywickGo.AddComponent<RegionPassage>();
+            SetRef(toGreywickPassage, "_target", data.GreywickRegion);
+            SetRef(toGreywickPassage, "_loader", loader);
+
+            // --- REGION ANCHOR (the persistent rig binds here on arrival) ------------------------
+            // The cove's board/dock geometry as a RegionAnchor (mirrors Greywick + St Peters). When you sail
+            // home from Greywick (WEST), the carried RegionTravelCoordinator reads this anchor and: parks the
+            // boat at the arrival point (just WEST of the dock), re-points the persistent ControlSwitcher's dock
+            // to the cove dock zone + disembark spot. The arrival sits within CoveDockZoneRadius of the dock
+            // zone (don't regress #52). NO persistent core is authored here.
+            var anchorGo = new GameObject("CoveRegionAnchor");
+            anchorGo.transform.SetParent(root, false);
+            var dockZone = new GameObject("CoveDockZone");
+            dockZone.transform.SetParent(anchorGo.transform, false);
+            dockZone.transform.position = CoveDockZonePos;          // the dock head / mooring
+            var disembarkPoint = new GameObject("CoveDisembark");
+            disembarkPoint.transform.SetParent(anchorGo.transform, false);
+            disembarkPoint.transform.position = CoveDisembarkPos;   // on the dock planks
+            var coveArrival = new GameObject("CoveArrival");
+            coveArrival.transform.SetParent(anchorGo.transform, false);
+            coveArrival.transform.position = CoveArrivalPos;        // just WEST of the dock head (arrive from the west)
+            var coveAnchor = anchorGo.AddComponent<RegionAnchor>();
+            coveAnchor.Configure(CoveRegionId, coveArrival.transform, dockZone.transform, disembarkPoint.transform);
+        }
+
+        // =====================================================================================
+        //  DATA ASSETS
+        // =====================================================================================
+
+        /// <summary>
+        /// Refs the logic tree wires to. A struct so both Build and Refresh prepare/reload the data once and
+        /// pass the (re)loaded, on-disk assets into <see cref="BuildLogicTree"/>.
+        /// </summary>
+        public struct DataRefs
+        {
+            public GameConfig Config;
+            public BoatHullDef Dory;
+            public BoatHullDef Punt;
+            public RegionDef CoveRegion;
+            public RegionDef GreywickRegion;
+            public ShipwrightOffer PuntOffer;
+        }
+
+        /// <summary>
+        /// Create/keep the cove's stable data assets and return RELOADED on-disk refs (a fresh CreateInstance
+        /// may not serialize into a scene reliably). The cove is no longer the start, so it doesn't stand up
+        /// the boat rig — but it still keeps these stable assets (first run wins; StPeters/Greywick author the
+        /// canonical versions under the same ids). Public so a test can prep data without scene side effects.
+        /// </summary>
+        public static DataRefs PrepareData()
+        {
             EnsureFolders();
 
-            // --- DATA ASSETS ---------------------------------------------------------------
-            // The hull defs (Dory + Punt) + the Punt offer + the region defs live as data. The cove is no
-            // longer the start, so it doesn't stand up the boat rig — but it still authors/keeps these stable
-            // assets (first run wins; StPeters/Greywick author the canonical versions under the same ids).
             var config = LoadOrCreate<GameConfig>(DataConfig + "/GameConfig.asset");
 
-            var dory = LoadOrCreate<BoatHullDef>(DataBoats + "/Dory.asset", h =>
+            LoadOrCreate<BoatHullDef>(DataBoats + "/Dory.asset", h =>
             {
                 h.Id = "boat.dory"; h.DisplayName = "The Dory";
                 h.LengthMeters = 4.5f; h.DraughtMeters = 0.3f; h.MassKg = 400f;
@@ -101,19 +405,17 @@ namespace HiddenHarbours.App.Editor
             });
 
             // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY (VS-16).
-            // Authored as data, never hardcoded in gameplay C#.
-            var punt = LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
+            LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
 
-            // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage. Created
-            // here if absent and authored by the other builders under the same stable ids (first run wins).
-            var coveRegion = LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
+            // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
+            LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
             {
-                r.Id = "region.coddle_cove"; r.DisplayName = "Coddle Cove"; r.SceneName = SceneName;
+                r.Id = CoveRegionId; r.DisplayName = "Coddle Cove"; r.SceneName = SceneName;
                 r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
                 r.TideMeanLevel = 0f; r.TideAmplitude = 1.6f; r.TidePhaseHours = 0f;
                 r.Description = "Your home harbour — the sheltered greybox cove.";
             });
-            var greywickRegion = LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
+            LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
             {
                 r.Id = "region.port_greywick"; r.DisplayName = "Port Greywick"; r.SceneName = "Greywick";
                 r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
@@ -121,84 +423,22 @@ namespace HiddenHarbours.App.Editor
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
             });
 
-            // The cove's fishing ground species (authored as data; the persistent FishingController carried in
-            // from the start reads its region species by id — these are kept stable for the dory's catch at the
-            // cove). Created here if absent; no scene ref needed now the boat rig is carried in, so we just
-            // ensure the assets exist (data-driven, CLAUDE.md rule 2).
+            // The cove's fishing-ground species (data-driven; the persistent FishingController reads its region
+            // species by id). Created here if absent.
             Fish("fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, Rarity.Common,    14, 0.20f, 1.0f, 2f, 12f);
             Fish("fish.haddock",      "Haddock",      FishCategory.InshoreGroundfish, Rarity.Common,    16, 0.20f, 0.9f, 1f, 6f);
             Fish("fish.mackerel",     "Mackerel",     FishCategory.Pelagic,           Rarity.Uncommon,  10, 0.35f, 0.8f, 0.3f, 1.5f);
             Fish("fish.lobster",      "American Lobster", FishCategory.Shellfish,     Rarity.Prize,     28, 0.35f, 0.4f, 0.4f, 4f);
 
-            // --- SCENE ---------------------------------------------------------------------
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-            // Camera (standalone-viewable; the coordinator silences it on arrival — the persistent core owns
-            // the live camera). Mirrors Greywick's locked pixel-perfect, on-foot landscape framing so the cove
-            // reads at the same scale when reviewed standalone.
-            var camGo = new GameObject("Main Camera");
-            camGo.tag = "MainCamera";
-            var cam = camGo.AddComponent<Camera>();
-            cam.orthographic = true;
-            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.06f, 0.13f, 0.18f);
-            camGo.transform.position = new Vector3(0f, 0f, -10f);
-            camGo.AddComponent<AudioListener>();
-            // VS-23: lock the Pixel-Perfect camera (PPU 32) and override its reference to a 16:9 LANDSCAPE
-            // reference (PC-first, ADR 0005) so the standalone render is pixel-perfect.
-            ArtCameraSetup.ConfigurePixelPerfect(camGo);
-            var ppc = camGo.GetComponent<PixelPerfectCamera>();
-            if (ppc != null)
+            // The Punt offer (VS-16): the price lives in a ShipwrightOffer asset; reference the boat by id.
+            LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
             {
-                CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int refW, out int refH);
-                ppc.refResolutionX = refW;
-                ppc.refResolutionY = refH;
-                EditorUtility.SetDirty(ppc);
-            }
+                o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
+            });
 
-            // Water backdrop. Use the final tiling sea tile if it's been imported (the placeholder→final swap,
-            // VS-24); otherwise fall back to a flat slate-blue square so the greybox still builds before art.
-            var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
-            var seaTile = LoadArtSprite(ArtSea);
-            var water = new GameObject("Water");
-            var wsr = water.AddComponent<SpriteRenderer>();
-            wsr.sortingOrder = -10;
-            if (seaTile != null)
-            {
-                wsr.sprite = seaTile;
-                wsr.drawMode = SpriteDrawMode.Tiled;     // repeat the 2 m tile across the cove
-                wsr.size = new Vector2(140f, 140f);       // metres of open water
-                water.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                wsr.sprite = waterSprite; wsr.color = new Color(0.17f, 0.30f, 0.38f);
-                water.transform.localScale = new Vector3(120f, 120f, 1f); // 0.5m sprite → big sea
-            }
-
-            // Scatter markers so motion reads on the open water (a flat sea looks static otherwise).
-            var markerRng = new System.Random(7);
-            var markers = new GameObject("SeaMarkers");
-            for (int i = 0; i < 40; i++)
-            {
-                var m = new GameObject("Marker");
-                m.transform.SetParent(markers.transform);
-                m.transform.position = new Vector3(
-                    (float)(markerRng.NextDouble() * 100 - 50),
-                    (float)(markerRng.NextDouble() * 100 - 50), 0f);
-                var msr = m.AddComponent<SpriteRenderer>();
-                msr.sprite = waterSprite;
-                msr.color = new Color(0.31f, 0.44f, 0.50f);
-                msr.sortingOrder = -5;
-                m.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-            }
-
-            // Reload data assets from disk before wiring. An intervening AssetDatabase import (the sprite
-            // SaveAndReimport above) can invalidate the in-memory references created earlier. Reloading
-            // guarantees valid refs so nothing serializes into the scene as "None".
-            config = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
-            dory = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
+            // Reload from disk before wiring. An intervening AssetDatabase import can invalidate the in-memory
+            // references created above; reloading guarantees valid refs so nothing serializes as "None".
+            var dory = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
             {
                 dory.Propulsion = PropulsionType.Oars;   // the dory is hand-rowed (the oar-tunable defaults ride the Def)
@@ -206,180 +446,36 @@ namespace HiddenHarbours.App.Editor
                 dory.CameraWorldHeightMeters = 14f;
                 EditorUtility.SetDirty(dory);
             }
-            // Reload + re-apply the Punt stats (idempotent on re-runs, like the Dory above) and attach its
-            // hull sprite so the carried OwnedFleet has something to swap the renderer to on the grant.
-            punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
+            var punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             if (punt != null)
             {
                 ApplyPuntStats(punt);
                 punt.Sprite = LoadArtSprite(ArtPunt);
                 EditorUtility.SetDirty(punt);
             }
-            coveRegion     = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
-            greywickRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
 
-            // --- HOME ISLAND (the land the cove sits on) -----------------------------------
-            // A small island the player stands on once disembarked: tiled sand beach + grass, the cottage, a
-            // dock into the water with pilings. A closed shore-edge collider keeps the player out of open
-            // water. Tiles use the same tiled-SpriteRenderer approach as the sea backdrop; all art is imported.
-            MakeTiledGround("Beach",  LoadArtSprite(ArtSand),      new Vector2(0f, 2f),    new Vector2(20f, 14f), -8, waterSprite, new Color(0.86f, 0.79f, 0.55f));
-            MakeTiledGround("Ground", LoadArtSprite(ArtGrass),     new Vector2(0f, 2.5f),  new Vector2(17f, 11f), -7, waterSprite, new Color(0.38f, 0.58f, 0.32f));
-            MakeTiledGround("Dock",   LoadArtSprite(ArtWharfDeck), new Vector2(0f, -8.5f), new Vector2(3f, 7f),   -6, waterSprite, new Color(0.55f, 0.40f, 0.24f));
-
-            // Dock pilings down both sides.
-            var postSprite = LoadArtSprite(ArtWharfPost);
-            for (int i = 0; i < 3; i++)
+            return new DataRefs
             {
-                float py = -6f - i * 3f; // -6, -9, -12
-                MakePost(postSprite, new Vector2(-1.5f, py), waterSprite);
-                MakePost(postSprite, new Vector2( 1.5f, py), waterSprite);
-            }
-
-            // The cottage (home) on the grass.
-            var cottageGo = new GameObject("Cottage");
-            cottageGo.transform.position = new Vector3(-4.5f, 5f, 0f);
-            var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
-            cottageSr.sortingOrder = 2;
-            var cottageSprite = LoadArtSprite(ArtCottage);
-            if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
-            else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
-
-            // Shore edge: a closed collider fence tracing the beach + dock so the player can roam the island
-            // and walk out the dock, but can't wander into open water (P5 cozy bounds). The boat bumps it too.
-            var shore = new GameObject("ShoreEdge");
-            var edge = shore.AddComponent<EdgeCollider2D>();
-            edge.points = new[]
-            {
-                new Vector2(-10f, 9f), new Vector2(10f, 9f), new Vector2(10f, -5f),
-                new Vector2(1.5f, -5f), new Vector2(1.5f, -12f), new Vector2(-1.5f, -12f),
-                new Vector2(-1.5f, -5f), new Vector2(-10f, -5f), new Vector2(-10f, 9f),
+                Config         = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset"),
+                Dory           = dory,
+                Punt           = punt,
+                CoveRegion     = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset"),
+                GreywickRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset"),
+                PuntOffer      = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset"),
             };
-
-            // --- FISHING SPOT (greybox flavour) --------------------------------------------
-            // A visible fishing-spot marker so there IS a spot in the cove water beside the dock. The carried
-            // FishingController casts from the persistent dory (Space); this is just the look (no logic ref).
-            var fishingSpot = new GameObject("FishingSpot");
-            fishingSpot.transform.position = new Vector3(5f, -10f, 0f); // in the water beside the dock
-            var spotSr = fishingSpot.AddComponent<SpriteRenderer>();
-            spotSr.sprite = waterSprite;
-            spotSr.color = new Color(0.30f, 0.58f, 0.66f, 0.7f);
-            spotSr.sortingOrder = -4;
-            fishingSpot.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
-
-            // --- WHARF (Fish Buyer + Shipwright; resolved through the persistent proxies) ---
-            // The cove keeps its Fish Buyer (sell your catch) and the Shipwright (buy the Punt). The player's
-            // hold + wallet live in the PERSISTENT core (a different scene), so they can't be serialize-
-            // referenced here — the wharf resolves them through scene-local proxies (the Greywick pattern):
-            // PersistentHoldProxy forwards to the dory's ShipHold (the coordinator binds it on arrival), and
-            // PersistentWalletProxy always forwards to GameServices.Wallet. So you sell + buy at the cove
-            // against the same hold + coin you sailed in with.
-            var providersGo = new GameObject("PersistentProviders");
-            providersGo.AddComponent<PersistentHoldProxy>();
-            providersGo.AddComponent<PersistentWalletProxy>();
-
-            var wharf = new GameObject("Wharf");
-            var market = wharf.AddComponent<Market>();
-            var buyer = wharf.AddComponent<FishBuyer>();
-            var sellPoint = wharf.AddComponent<WharfSellPoint>();
-            wharf.AddComponent<DevSellInput>();            // RequireComponent(WharfSellPoint) — present (greybox B to sell)
-            SetRef(market, "_config", config);
-            SetRef(buyer, "_market", market);
-            SetRef(sellPoint, "_buyer", buyer);
-            SetRef(sellPoint, "_holdProvider", providersGo);
-            SetRef(sellPoint, "_walletProvider", providersGo);
-
-            // Shipwright buy flow (VS-16): P buys the Punt with the persistent wallet; on success the
-            // Shipwright raises BoatPurchased (the carried OwnedFleet swaps the boat). Economy side only — the
-            // price lives in a ShipwrightOffer asset, and we reference the boat by id, never the Boats module.
-            var puntOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/PuntOffer.asset", o =>
-            {
-                o.BoatId = "boat.punt"; o.DisplayName = "The Punt"; o.Price = 1800;
-            });
-            puntOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset");
-            var shipwrightGo = new GameObject("Shipwright");
-            var shipwright = shipwrightGo.AddComponent<Shipwright>();
-            shipwrightGo.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present (greybox P to buy)
-            SetRef(shipwright, "_offer", puntOffer);
-            SetRef(shipwright, "_walletProvider", providersGo);
-
-            // --- REGION SCENE-LOAD PATH ----------------------------------------------------
-            // The persistent travel rig (loader + coordinator) is carried in from the start scene. This scene
-            // places its OWN RegionSceneLoader (so it's reviewable standalone and the additive loader can
-            // re-activate it) and the Cove→Greywick passage. On arrival the carried coordinator drives travel.
-            var loaderGo = new GameObject("RegionSceneLoader");
-            var loader = loaderGo.AddComponent<RegionSceneLoader>();
-            SetRefArray(loader, "_regions", new Object[] { coveRegion, greywickRegion });
-            SetString(loader, "_currentSceneName", SceneName);   // this scene; explicit (don't rely on Awake vs DDOL order)
-
-            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map). A
-            // wide, forgiving band down the WEST edge of the open water, reachable by sailing west out of the
-            // dock; sailing west into it crosses to Greywick (where you arrive still HEADING WEST — the hop
-            // preserves the boat's heading). The matching return passage is on Greywick's EAST edge.
-            var toGreywickGo = new GameObject("PassageToPortGreywick");
-            toGreywickGo.transform.position = ToGreywickPassagePos;
-            var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
-            toGreywickTrigger.isTrigger = true;
-            toGreywickTrigger.size = new Vector2(3f, 28f);   // a tall west-edge band (forgiving, wide)
-            var toGreywickPassage = toGreywickGo.AddComponent<RegionPassage>();
-            SetRef(toGreywickPassage, "_target", greywickRegion);
-            SetRef(toGreywickPassage, "_loader", loader);
-
-            // --- REGION ANCHOR (the persistent rig binds here on arrival) -------------------
-            // The cove's board/dock geometry as a RegionAnchor (mirrors Greywick + St Peters). When you sail
-            // home from Greywick (which lies WEST), the carried RegionTravelCoordinator reads this anchor and:
-            // parks the boat at the arrival point (just WEST of the dock, heading east), re-points the
-            // persistent ControlSwitcher's dock to the cove dock zone + disembark spot, so E disembarks the
-            // moment you're home. The arrival sits within CoveDockZoneRadius of the dock zone — the proven
-            // pure-distance disembark geometry (don't regress #52). NO persistent core is authored here.
-            var dockZone = new GameObject("CoveDockZone");
-            dockZone.transform.position = CoveDockZonePos;          // the dock head / mooring
-            var disembarkPoint = new GameObject("CoveDisembark");
-            disembarkPoint.transform.position = CoveDisembarkPos;   // on the dock planks
-            var coveArrival = new GameObject("CoveArrival");
-            coveArrival.transform.position = CoveArrivalPos;        // just WEST of the dock head (arrive from the west)
-            var coveAnchor = new GameObject("CoveRegionAnchor").AddComponent<RegionAnchor>();
-            coveAnchor.Configure("region.coddle_cove", coveArrival.transform, dockZone.transform, disembarkPoint.transform);
-
-            // --- TREE DECOR (greybox dressing; world-content) ------------------------------
-            // A tasteful, sparse-to-moderate scatter of cold-coast trees along the LAND/coast edges of the
-            // island. NEVER in open water, on the dock/wharf, on the paths, in the dock/disembark zones, or
-            // overlapping the cottage. Data-driven (CoveTrees) so counts/positions tweak freely; sortingOrder
-            // is derived from base Y so trees further north sort behind.
-            PlaceTrees("Cove", CoveTrees, waterSprite);
-
-            // --- SAVE & REGISTER -----------------------------------------------------------
-            // The cove is NO LONGER the start, so it must NOT force itself to build-index-0 (St Peters owns
-            // index 0). Register it if absent, but do not reorder the list (StPetersBuilder pins index 0).
-            EditorSceneManager.SaveScene(scene, ScenePath);
-            RegisterScene(ScenePath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            Debug.Log("[GreyboxBuilder] Built Greybox.unity — Coddle Cove as a PLAIN region (#66 demotion): " +
-                      "no persistent core (St Peters is the start), just the cove's water/island/wharf/cottage/" +
-                      "Fish Buyer + Shipwright (resolved through the persistent hold/wallet proxies) + decor, " +
-                      "plus a RegionAnchor (arrival WEST of the dock, dock zone, disembark) so the persistent " +
-                      "rig carried from St Peters binds on arrival — exactly like Greywick. You SAIL WEST to " +
-                      "cross to Greywick; you arrive HOME from the WEST. RE-RUN 'Build St Peters Scene', 'Build " +
-                      "Greywick Scene', AND this, then test the sail-home from the START scene (StPeters.unity).");
-            EditorUtility.DisplayDialog("Hidden Harbours",
-                "Coddle Cove built as a PLAIN region (demoted from the start, #66).\n\nThe cove no longer " +
-                "authors the persistent core — St Peters is the start, and the player/boat/camera are carried " +
-                "in and bind to the cove's RegionAnchor on arrival (the Greywick pattern). The Fish Buyer + " +
-                "Shipwright sell/buy against the persistent hold + wallet via proxies.\n\nTo test the full " +
-                "sail-home: open StPeters.unity (the start), repair the dory at Greywick, sail home to the " +
-                "cove, and confirm there's ONE player/camera (not duplicated).\n\nRE-RUN 'Build St Peters " +
-                "Scene', 'Build Greywick Scene', and this builder, then re-test.", "Fair winds");
         }
 
-        // ---- helpers ------------------------------------------------------------------------
+        // =====================================================================================
+        //  HELPERS
+        // =====================================================================================
+
         static FishSpeciesDef Fish(string id, string name, FishCategory cat, Rarity rarity,
                                    int value, float elasticity, float spawnWeight, float minKg, float maxKg)
         {
             return LoadOrCreate<FishSpeciesDef>($"{DataFish}/{name.Replace(" ", "")}.asset", f =>
             {
                 f.Id = id; f.DisplayName = name; f.Category = cat; f.Rarity = rarity;
-                f.RegionIds = new[] { "region.coddle_cove" };
+                f.RegionIds = new[] { CoveRegionId };
                 f.AllowedGear = Gear.Handline | Gear.Longline;
                 f.Seasons = SeasonMask.AllYear;
                 f.MinTide = -10f; f.MaxTide = 10f; f.StartHour = 0f; f.EndHour = 24f;
@@ -410,8 +506,6 @@ namespace HiddenHarbours.App.Editor
             if (init != null) init(asset);
             AssetDatabase.CreateAsset(asset, path);
             AssetDatabase.SaveAssets();
-            // Reload so callers wire the PERSISTED asset (a freshly-created instance may not serialize into
-            // the scene reliably). This is what fixes "No GameConfig assigned".
             return AssetDatabase.LoadAssetAtPath<T>(path);
         }
 
@@ -445,79 +539,14 @@ namespace HiddenHarbours.App.Editor
         // Load a final art sprite if it has been imported; null if the project is still greybox-only.
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-        // Like LoadArtSprite but also handles single-frame sliced sheets (spriteMode Multiple): some imported
-        // art carries one sub-sprite, so LoadAssetAtPath<Sprite> returns null and we fall back to the first
-        // sub-sprite. Null if absent. (imported-art-spritemode-multiple)
-        static Sprite LoadSpriteAny(string path)
+        // A single dock-piling collider (boat bumper). No sprite — the visible post is the owner's decor.
+        static void MakePilingCollider(Transform parent, Vector2 pos)
         {
-            var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (direct != null) return direct;
-            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
-                                 .OrderBy(s => SpriteIndex(s.name)).FirstOrDefault();
-        }
-
-        static int SpriteIndex(string spriteName)
-        {
-            int u = spriteName.LastIndexOf('_');
-            return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
-        }
-
-        // A tiled ground/dock patch (mirrors the sea backdrop's tiled SpriteRenderer). Falls back to a tinted
-        // square if the tile art isn't imported, so the greybox still builds.
-        static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,
-                                    Sprite fallback, Color fallbackColor)
-        {
-            var go = new GameObject(name);
-            go.transform.position = new Vector3(center.x, center.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = order;
-            if (sprite != null)
-            {
-                sr.sprite = sprite;
-                sr.drawMode = SpriteDrawMode.Tiled;
-                sr.size = size;
-            }
-            else
-            {
-                sr.sprite = fallback;
-                sr.color = fallbackColor;
-                go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); // 0.5 m fallback → metres
-            }
-        }
-
-        // A single dock piling. A small circular collider so the boat bumps the pilings (cozy, no damage)
-        // when nudging into the slip, on top of the shore-edge fence that bounds the island.
-        static void MakePost(Sprite sprite, Vector2 pos, Sprite fallback)
-        {
-            var go = new GameObject("WharfPost");
+            var go = new GameObject("Piling");
+            go.transform.SetParent(parent, false);
             go.transform.position = new Vector3(pos.x, pos.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 3;
-            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
-            else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
             var col = go.AddComponent<CircleCollider2D>();
             col.radius = 0.3f;   // slim piling; leaves a navigable channel between the two rows of posts
-        }
-
-        static Sprite MakeSquareSprite(string path)
-        {
-            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (existing != null) return existing;
-
-            var tex = new Texture2D(16, 16);
-            var px = Enumerable.Repeat(Color.white, 16 * 16).ToArray();
-            tex.SetPixels(px); tex.Apply();
-            File.WriteAllBytes(path, tex.EncodeToPNG());
-            Object.DestroyImmediate(tex);
-            AssetDatabase.ImportAsset(path);
-
-            var imp = (TextureImporter)AssetImporter.GetAtPath(path);
-            imp.textureType = TextureImporterType.Sprite;
-            imp.spritePixelsPerUnit = 32f;        // canon PPU
-            imp.filterMode = FilterMode.Point;     // crisp pixels
-            imp.textureCompression = TextureImporterCompression.Uncompressed;
-            imp.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
         static void RegisterScene(string path)
@@ -527,67 +556,6 @@ namespace HiddenHarbours.App.Editor
             // Append (don't insert at 0) — St Peters is the start scene and owns build-index-0.
             list.Add(new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = list.ToArray();
-        }
-
-        // ---- tree decor (greybox dressing) ----------------------------------------------------------
-        // One placed tree: world position (the trunk base, since the sprite pivot is BottomCenter) + the
-        // imported variety file ("TreeNN"). Kept as a plain struct so placement is a tweakable data list.
-        struct TreeSpec
-        {
-            public float X, Y;
-            public string Variety;   // "TreeNN" → Art/Sprites/Environment/Trees/TreeNN.png
-            public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
-        }
-
-        // COLD NORTH ATLANTIC coast scatter for the cove. Tasteful & sparse-to-moderate, hugging the LAND
-        // edges only — a back (north) treeline behind the cottage/grass (y≈7–9, inside the shore fence top at
-        // y=9) and a few down the east & west grass/beach margins. NONE in the open water, on the dock
-        // (x∈[-1.5,1.5], y≤-5) or its zones, on the paths, or over the cottage (≈x[-7,-2] y[2,8]). Varieties:
-        // green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22) and birch (Tree25).
-        static readonly TreeSpec[] CoveTrees =
-        {
-            // Back treeline along the north edge (behind the cottage + grass), left → right.
-            new TreeSpec(-9.0f, 8.4f, "Tree02"),   // pine, far NW corner
-            new TreeSpec(-7.2f, 8.7f, "Tree25"),   // birch
-            new TreeSpec(-3.4f, 8.6f, "Tree01"),   // broadleaf (clear of the cottage top, x≈-2)
-            new TreeSpec(-1.0f, 8.8f, "Tree22"),   // pine
-            new TreeSpec( 1.6f, 8.5f, "Tree05"),   // broadleaf
-            new TreeSpec( 4.0f, 8.7f, "Tree06"),   // broadleaf
-            new TreeSpec( 6.8f, 8.4f, "Tree02"),   // pine, far NE corner
-            // West grass/beach margin (clear of the cottage at x≈-4.5).
-            new TreeSpec(-9.2f, 6.0f, "Tree08"),   // broadleaf
-            new TreeSpec(-8.8f, 1.0f, "Tree25"),   // birch, lower west margin
-            new TreeSpec(-7.6f, -1.8f, "Tree18"),  // broadleaf, SW beach band (north of the channel)
-            // East grass/beach margin.
-            new TreeSpec( 7.0f, 6.2f, "Tree21"),   // broadleaf
-            new TreeSpec( 8.0f, 2.4f, "Tree02"),   // pine, mid-east margin
-            new TreeSpec( 6.6f, -1.6f, "Tree34"),  // broadleaf, SE beach band (east of the dock)
-            new TreeSpec( 4.4f, -2.6f, "Tree35"),  // broadleaf, lower SE (well east of the dock x=1.5)
-        };
-
-        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder is DERIVED FROM the tree's
-        // base Y (BottomCenter pivot) so trees further "back"/north (higher Y) render behind ones in front.
-        // Loads each variety via LoadSpriteAny (the pack is Sprite Mode Multiple → one TreeNN_0 sub-sprite).
-        // Falls back to a tinted square so the greybox still builds before the art is imported.
-        static void PlaceTrees(string sceneLabel, TreeSpec[] specs, Sprite fallback)
-        {
-            var decor = new GameObject("Decor");
-            var trees = new GameObject("Trees");
-            trees.transform.SetParent(decor.transform, false);
-            int placed = 0;
-            foreach (var t in specs)
-            {
-                var go = new GameObject(t.Variety);
-                go.transform.SetParent(trees.transform, false);
-                go.transform.position = new Vector3(t.X, t.Y, 0f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
-                var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
-                if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
-                else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }
-                placed++;
-            }
-            Debug.Log($"[GreyboxBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
         }
 
         static void EnsureFolders()

@@ -1,9 +1,16 @@
 # ADR 0011 — Committed, hand-authored scenes (the hybrid: builders own LOGIC, the owner paints the VISUALS)
 
-- **Status:** **Proposed** — lead-architect. Records the **decision and plan** so the owner can draw
-  real, durable scenes. This change is **docs only**: it ships no scene conversion, no Core change, no
-  builder change. The pilot conversion is a **follow-up** the owner approves first (CLAUDE.md rule 8).
-- **Date:** 2026-06-23
+- **Status:** **Accepted — pilot landed (cove).** The decision is ratified and the **Coddle Cove pilot
+  of Option A is implemented**: `GreyboxBuilder` now bakes all of the cove's gameplay LOGIC under one
+  tagged `--LOGIC-- (generated, do not edit)` root (`RegionLogicRoot`), and a new menu command
+  **`Hidden Harbours ▸ Refresh Cove Logic`** rebuilds ONLY that subtree in the open committed scene,
+  leaving the owner's painted/decor layer untouched. The full-rebuild `Build Greybox Scene` now WARNS
+  before discarding hand-authored visuals. No Core change; the only new runtime type is the
+  `RegionLogicRoot` marker. **Headless agents cannot author a valid `.unity`, so the committed cove
+  scene is NOT shipped by this PR** — the owner bakes + commits it via the step-by-step below
+  (CLAUDE.md rule 8 still holds: the *scene-conversion act* is the owner's, the *tooling* is ours).
+  Greywick + St Peters stay un-converted until separately piloted.
+- **Date:** 2026-06-23 (decision); pilot tooling 2026-06-23
 - **Decision owner:** lead-architect (scene strategy is a cross-cutting/architectural call —
   `agents/coordination.md` §1 "Scenes" ownership, §8; CLAUDE.md rule 3). world-content owns region
   *content*; the owner hand-authors the *visual layer*; tools-editor owns the bake/refresh tooling.
@@ -124,11 +131,18 @@ problem needs. The single-author-per-layer rule (below) gives Option A the safet
 structurally, at a fraction of the complexity. Option B stays on file as the fallback if Refresh ever
 proves too fiddly to keep surgical.
 
-**Implementation note (tools-editor, the pilot follow-up):** the builders refactor from
-`NewScene → build everything` into `BuildLogic(scene)` (the tagged subtree, callable by both a
-first-time **Build** that does create the scene, and a **Refresh** that opens an existing committed one).
-The placeholder-visual code paths are removed from converted scenes. The `RegionLogicRoot` tag + the
-"destroy-and-recreate only under it" reconciler is the one new, small piece of editor tooling.
+**Implementation note (shipped for the cove).** `GreyboxBuilder` was refactored from
+`NewScene → build everything` into a shared `BuildLogicTree(root)` (the tagged subtree) + `PrepareData()`
+(the data assets), callable by both a first-time **Build Greybox Scene** (creates the scene, places only
+the `--LOGIC--` root) and **Refresh Cove Logic** (opens the committed scene, destroys + re-creates only
+the tagged subtree via `RebuildLogicSubtree(scene)`). The placeholder-visual code paths (the tiled
+sea/ground/dock sprites, the sea-marker scatter, the cottage sprite, the hardcoded tree scatter) are
+**removed** — the owner paints those. Colliders those visuals used to carry (the shore-edge fence, the
+dock-piling bumpers) survive as **collider-only** objects under `--LOGIC--`. The one new runtime type is
+`RegionLogicRoot` (a marker MonoBehaviour, so it serializes into the committed `.unity`); the
+destroy-and-recreate-only-under-the-tag reconciler is the one new piece of editor logic. An EditMode test
+(`CoveLogicRefreshTests`) pins the contract: one root after a refresh, idempotent, painted layer untouched.
+Greywick/St Peters keep building as today until separately piloted.
 
 ## How this coexists with "agents commit via PRs, the owner's checkout is contested"
 
@@ -185,71 +199,76 @@ Convert the cove first. Reasons:
 Once the cove proves the **bake-logic → paint → save → PR** loop end-to-end, roll the same treatment to
 Greywick, then (with the owner) to St Peters.
 
-## The owner workflow (concrete, non-dev) — bake logic → paint → save → commit + push
+## The owner workflow (concrete, non-dev) — bake logic → commit the committed scene → paint → save → commit your art
 
 > This is the flow `docs/authoring-scenes.md` §6 promised "when the workflow for real regions is ready."
-> It will be folded into that guide when the pilot lands. No coding required.
+> The full paste-ready version now lives in **`docs/authoring-scenes.md §7`** — this is the same flow in
+> brief. No coding required.
 
-1. **Get latest, on a branch.** Open a terminal (the project folder) and run the block in step 6's
-   PowerShell — actually, do the *branch* first (so you never paint on a stale `main`):
+The pilot ships the **tooling**, not the committed `.unity` — an agent builds headless and can't produce a
+valid scene file, so **the owner bakes + commits the initial committed cove**, then paints. There are
+**two commits**: (A) the freshly-baked logic-only scene, and (B) the owner's painting on top.
 
-2. **Bake the gameplay logic into the real scene** (Unity, menu). For the cove pilot:
-   `Hidden Harbours ▸ Build Greybox Scene` the **first** time (it creates the committed scene with the
-   `--LOGIC--` subtree), and `Hidden Harbours ▸ Refresh Greybox Logic` **every time after** (it updates
-   only the logic and leaves your painting alone). *(Build vs Refresh is the pilot's one new menu item;
-   until it ships, treat "Build" as first-time-only.)*
+**The owner's checkout starts on a DETACHED HEAD** (he runs `git checkout --detach origin/main`), so the
+flow must **make a branch first** — you cannot commit on a detached HEAD.
 
-3. **Paint terrain + drag decor** (Unity) — straight from `docs/authoring-scenes.md`:
-   - `Hidden Harbours ▸ Art ▸ Add Paintable Tilemap` to get a `Grid`/`TerrainTilemap` canvas.
-   - `Window ▸ 2D ▸ Tile Palette` → choose **HiddenHarboursTerrain** → paint Sand/Grass/Rock/Shoreline.
-   - Drag decor prefabs from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/` into the Scene.
-   - Leave the `--LOGIC--` objects alone (don't move the dock/anchor markers — they're the gameplay).
+```powershell
+# ===== STEP 0 — branch off latest main (you start on a detached HEAD; this fixes that) =====
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git fetch origin
+git checkout -b paint/coddle-cove origin/main      # creates + switches to the branch from fresh main
 
-4. **Save the scene** (Unity): `File ▸ Save` (Ctrl+S). Save often.
+# ===== STEP 1 (Unity) — BAKE the committed cove =====
+#   Menu: Hidden Harbours ▸ Build Greybox Scene   (run ONCE to create the committed scene)
+#   It places ONLY the "--LOGIC-- (generated, do not edit)" object — no art yet (you paint that).
+#   Then File ▸ Save (Ctrl+S).
 
-5. **Sanity-check** (Unity): press **Play** from the start scene (`StPeters.unity`) and confirm the
-   sail-home still lands at the cove with ONE player/camera — your painting shouldn't change behaviour.
+# ===== STEP 2 (terminal) — COMMIT the initial committed scene (logic only) =====
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git add "Assets/_Project/Scenes/Greybox.unity" "Assets/_Project/Scenes/Greybox.unity.meta"
+git status                      # confirm ONLY the scene (+ .meta) is staged — nothing else
+git commit -m "feat(cove): commit the baked Coddle Cove scene (--LOGIC-- root)"
 
-6. **Commit + push the painted scene on a branch, then open a PR** (terminal — **PowerShell, one
-   command per line, never `&&`/`||`**). Paste-ready (cove pilot shown):
+# ===== STEP 3 (Unity) — PAINT =====
+#   Hidden Harbours ▸ Art ▸ Add Paintable Tilemap     → a Grid/TerrainTilemap canvas (OUTSIDE --LOGIC--)
+#   Window ▸ 2D ▸ Tile Palette → choose HiddenHarboursTerrain → paint Sand/Grass/Rock/Shoreline
+#   Drag decor prefabs from Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/ into the Scene
+#   Leave the --LOGIC-- object alone (don't move the dock/anchor markers — they're the gameplay).
+#   File ▸ Save (Ctrl+S). Save often.
 
-   ```powershell
-   # --- do this BEFORE you start painting (step 1): start from a fresh branch off main ---
-   cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
-   git fetch origin
-   git switch -c paint/coddle-cove origin/main
+# ===== STEP 4 (terminal) — COMMIT your art, push, open the PR =====
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git add "Assets/_Project/Scenes/Greybox.unity" "Assets/_Project/Scenes/Greybox.unity.meta"
+git status                      # confirm ONLY the scene (+ .meta) — see the note on NEW decor prefabs
+git commit -m "art(cove): hand-paint Coddle Cove terrain + decor"
+git push -u origin paint/coddle-cove
 
-   # --- ... now bake logic (step 2), paint (step 3), save (step 4) in Unity ... ---
+$env:GH_REPO = "apholmes7-bot/hiddenharbours"
+& "C:\Program Files\GitHub CLI\gh.exe" pr create --base main --head paint/coddle-cove `
+  --title "art(cove): commit + hand-paint Coddle Cove (ADR 0011 pilot)" `
+  --body "Committed Coddle Cove (ADR 0011 pilot): commit 1 is the baked --LOGIC-- scene, commit 2 is the hand-painted visual layer. Logic untouched by painting."
+```
 
-   # --- after saving, back in the terminal: commit JUST the scene you painted ---
-   cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
-   git add "Assets/_Project/Scenes/Greybox.unity" "Assets/_Project/Scenes/Greybox.unity.meta"
-   git status                      # confirm ONLY your scene (+ .meta) is staged — nothing else
-   git commit -m "art(cove): hand-paint Coddle Cove terrain + decor"
-   git push -u origin paint/coddle-cove
-
-   # --- open the PR for the lead architect to review + merge once CI is green ---
-   $env:GH_REPO = "apholmes7-bot/hiddenharbours"
-   & "C:\Program Files\GitHub CLI\gh.exe" pr create --base main --head paint/coddle-cove `
-     --title "art(cove): hand-paint Coddle Cove (committed scene pilot)" `
-     --body "Hand-authored visual layer for Coddle Cove (ADR 0011 pilot). Logic untouched; diff is painting only."
-   ```
-
-   Notes for the owner:
-   - If a decor prefab you placed is *new* (not previously committed), `git status` may list extra files
-     under `Assets/_Project/Prefabs/Decor/` — that's fine; `git add` those too, or ask an agent.
-   - **Don't** `git push` to `main` directly, and **don't** `git add .` (that would sweep in unrelated
-     work). Stage the scene explicitly, as above.
-   - If the git steps are unwelcome, stop after step 4 (save) and hand an agent the path
-     `Assets/_Project/Scenes/Greybox.unity` — they'll do steps 6 for you (the fallback path above).
+Notes for the owner:
+- **Later updates to the logic** (after the scene is committed + painted): open the cove scene and run
+  `Hidden Harbours ▸ Refresh Cove Logic` — it rebuilds ONLY the `--LOGIC--` object and **keeps your
+  painting**. Never run `Build Greybox Scene` again on a painted cove (it warns you, but Refresh is the
+  right tool).
+- If a decor prefab you placed is *new* (not previously committed), `git status` may list extra files
+  under `Assets/_Project/Prefabs/Decor/` — that's fine; `git add` those too (with their `.meta`), or ask
+  an agent.
+- **Don't** `git push` to `main` directly, and **don't** `git add .` (that sweeps in unrelated work).
+  Stage the scene explicitly, as above.
+- If the git steps are unwelcome, stop after a Save and hand an agent the path
+  `Assets/_Project/Scenes/Greybox.unity` — they'll do the commit/PR for you (the fallback path above).
 
 ## Consequences
 
-- **tools-editor** builds the `Build`/`Refresh` split + the `RegionLogicRoot` tag + the surgical
-  reconciler (the one new piece). `docs/authoring-scenes.md` §1/§6 get the "save-back" steps appended.
-- **The builders** stop authoring placeholder visuals for *converted* scenes; their LOGIC paths move
-  under a tagged root and become Refresh-safe. Un-converted scenes keep building as today until they're
-  piloted.
+- **The cove builder** now ships the `Build`/`Refresh` split + the `RegionLogicRoot` tag + the surgical
+  reconciler (`GreyboxBuilder.RebuildLogicSubtree`). `docs/authoring-scenes.md` §1 is updated and a §7
+  "save-back" procedure is appended. (Owned in the App/Editor lane; co-reviewed by tools-editor.)
+- **The cove builder** stops authoring placeholder visuals; its LOGIC paths moved under the tagged root
+  and are Refresh-safe. Greywick / St Peters keep building as today until separately piloted.
 - **Committed `.unity` files re-enter version control** (the cove first). Their diffs are reviewable
   (logic is named + small; the owner's visual diff is the painting). LFS still tracks binaries; scenes
   stay Force-Text + smart-merge (ADR 0004) — committing them does not change that.

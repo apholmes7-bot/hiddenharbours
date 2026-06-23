@@ -29,18 +29,27 @@ That single command runs three steps (you can also run them one at a time from t
 
 ---
 
-## 1. Where to paint (use a scratch scene for now)
+## 1. Where to paint
 
-> **Heads-up — which scenes get saved into the project is still being decided.** *Which* scenes
-> become hand-authored, committed regions, and *how* your painted scenes get saved back into the
-> shared project, is a separate call the lead architect is working out. **Until that's decided,
-> practice in a throwaway "scratch" scene** so your painting can't disturb the real game scenes.
+> **Decided (ADR 0011): Coddle Cove is now a real, committed, hand-paintable scene.** The cove
+> (`Greybox.unity`) splits into two layers with one author each: a **LOGIC layer** the builder bakes
+> (an object named **`--LOGIC-- (generated, do not edit)`** holding all the invisible gameplay — the
+> dock/anchor, Fish Buyer + Shipwright, region wiring, colliders), and a **VISUAL layer** *you* paint
+> (terrain Tilemaps + decor) that lives **outside** that object. The two never share GameObjects, so
+> your painting and the gameplay never fight, and a logic update never wipes your art. **The full
+> bake → commit → paint → save → commit flow is in [§7](#7-save-your-painted-cove-into-the-project-the-committed-scene-flow).**
 
-To make a scratch scene:
+**Two ways to use this guide:**
 
-1. **File ▸ New Scene**. Pick the **Basic 2D** (or Empty) template, click **Create**.
-2. **File ▸ Save As…** and save it somewhere out of the way — e.g. name it `ScratchPaint` and save
-   it under `Assets/_Project/Scenes/` (it's fine while you practise; don't worry about committing it).
+- **Painting the real cove?** Follow **§7** — it walks the whole committed-scene flow (it includes the
+  painting steps below). This is the supported way to get durable, hand-painted regions.
+- **Just practising / experimenting?** Use a throwaway "scratch" scene so nothing real is disturbed:
+  1. **File ▸ New Scene**. Pick the **Basic 2D** (or Empty) template, click **Create**.
+  2. **File ▸ Save As…** somewhere out of the way — e.g. `ScratchPaint` under
+     `Assets/_Project/Scenes/` (don't commit it).
+
+> Greywick and St Peters are **not yet** committed/hand-paintable — only the cove pilot is so far. Don't
+> paint into `Greywick.unity` / `StPeters.unity` yet; they're still builder-generated.
 
 ---
 
@@ -129,9 +138,83 @@ That's the only number you'll ever need to touch, and only when something overla
 - The tiles, palette, and decor prefabs themselves are already saved as project assets — you don't
   need to re-save those.
 
-> Reminder: until the lead architect settles which scenes are committed and how painted scenes get
-> merged back, keep practising in your scratch scene. When the workflow for "real" regions is ready,
-> this guide will be updated with the save-back steps.
+> Saving the scene saves your painting **on your disk**. To get it into the shared project (so it
+> persists and others see it), follow **§7** — it commits the scene on a branch and opens a PR.
+
+---
+
+## 7. Save your painted cove into the project (the committed-scene flow)
+
+> **This is the supported way to make a durable, hand-painted Coddle Cove (ADR 0011 pilot).** No coding.
+> It's PowerShell — **one command per line, never `&&`**. Copy each block as-is.
+
+**Why two commits?** The agents build the game headless and can't produce a valid scene file, so **you**
+bake + commit the initial committed cove first, then paint on top. Commit (A) is the freshly-baked
+logic-only scene; commit (B) is your painting.
+
+**You start on a "detached HEAD"** (after `git checkout --detach origin/main`). You can't commit there,
+so **step 0 makes a branch first.**
+
+### Step 0 — branch off the latest main (fixes the detached HEAD)
+```powershell
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git fetch origin
+git checkout -b paint/coddle-cove origin/main
+```
+
+### Step 1 — bake the committed cove (Unity)
+1. Menu: **Hidden Harbours ▸ Build Greybox Scene** — run this **once**. It creates the committed cove
+   containing only the **`--LOGIC-- (generated, do not edit)`** object (all the gameplay) and **no art**
+   — you paint that next.
+2. **File ▸ Save** (Ctrl+S).
+
+### Step 2 — commit the initial committed scene (terminal)
+```powershell
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git add "Assets/_Project/Scenes/Greybox.unity" "Assets/_Project/Scenes/Greybox.unity.meta"
+git status
+git commit -m "feat(cove): commit the baked Coddle Cove scene (--LOGIC-- root)"
+```
+After `git status`, confirm **only** `Greybox.unity` and its `.meta` are staged — nothing else.
+
+### Step 3 — paint (Unity)
+Do the painting from **§2–§5 above**:
+- **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** → a `Grid`/`TerrainTilemap` canvas (it lands
+  **outside** the `--LOGIC--` object — that's correct).
+- **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** → paint Sand/Grass/Rock/Shoreline.
+- Drag decor prefabs from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/` into the Scene.
+- **Leave the `--LOGIC--` object alone** — don't move the dock/anchor markers; they're the gameplay.
+- **File ▸ Save** (Ctrl+S). Save often.
+
+### Step 4 — commit your art, push, open the PR (terminal)
+```powershell
+cd "C:\Users\aphol\Claude\Projects\Hidden Harbours"
+git add "Assets/_Project/Scenes/Greybox.unity" "Assets/_Project/Scenes/Greybox.unity.meta"
+git status
+git commit -m "art(cove): hand-paint Coddle Cove terrain + decor"
+git push -u origin paint/coddle-cove
+```
+```powershell
+$env:GH_REPO = "apholmes7-bot/hiddenharbours"
+& "C:\Program Files\GitHub CLI\gh.exe" pr create --base main --head paint/coddle-cove `
+  --title "art(cove): commit + hand-paint Coddle Cove (ADR 0011 pilot)" `
+  --body "Committed Coddle Cove (ADR 0011 pilot): commit 1 is the baked --LOGIC-- scene, commit 2 is the hand-painted visual layer. Logic untouched by painting."
+```
+
+### Updating the gameplay logic *after* the cove is painted
+When code needs to move the cove's logic forward, **don't** rebuild from scratch. Open the cove scene and
+run **Hidden Harbours ▸ Refresh Cove Logic** — it rebuilds **only** the `--LOGIC--` object and **keeps
+your painting**. (`Build Greybox Scene` will warn you if you ever try it on a painted cove — Refresh is
+the right tool.)
+
+### Notes
+- **New decor prefabs:** if a prefab you placed wasn't in the project before, `git status` may list extra
+  files under `Assets/_Project/Prefabs/Decor/`. Add those too **with their `.meta`** (e.g.
+  `git add "Assets/_Project/Prefabs/Decor/Trees/MyNewTree.prefab" "Assets/_Project/Prefabs/Decor/Trees/MyNewTree.prefab.meta"`),
+  or ask an agent.
+- **Never** `git push` to `main` directly, and **never** `git add .` (it sweeps in unrelated work).
+- **Prefer the agent fallback if git feels fiddly:** after a Save, just tell an agent the path
+  `Assets/_Project/Scenes/Greybox.unity` and they'll commit + open the PR for you.
 
 ---
 
@@ -140,11 +223,14 @@ That's the only number you'll ever need to touch, and only when something overla
 | I want to… | Do this |
 |---|---|
 | Build/refresh the whole toolkit | **Hidden Harbours ▸ Art ▸ Build Scene-Painting Toolkit (tiles + palette + decor)** |
+| Bake the committed cove (first time) | **Hidden Harbours ▸ Build Greybox Scene** (creates the `--LOGIC--` scene; warns if it would wipe painting) |
+| Update the cove's logic (after painting) | **Hidden Harbours ▸ Refresh Cove Logic** (rebuilds only `--LOGIC--`, keeps your art) |
 | Get a surface to paint on | **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** |
 | Pick & paint terrain tiles | **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** |
 | Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/` into the Scene view |
 | Fix wrong overlap | Select the object → Inspector → **Sprite Renderer ▸ Order in Layer** |
 | Save | **File ▸ Save** (Ctrl+S) |
+| Save my painted cove into the project | Follow **§7** (branch → commit baked scene → paint → commit art → PR) |
 
 ### Where the toolkit lives (for the curious / for developers)
 - Tile + palette + decor builders: `Assets/_Project/Art/Editor/` (`TileAssetBuilder`,
@@ -153,3 +239,6 @@ That's the only number you'll ever need to touch, and only when something overla
 - Generated tiles: `Assets/_Project/Art/Tilesets/Tiles/` · palette:
   `Assets/_Project/Art/Tilesets/Palettes/HiddenHarboursTerrain.prefab` · decor prefabs:
   `Assets/_Project/Prefabs/Decor/`.
+- The committed-cove split (LOGIC vs VISUAL) + the Build/Refresh commands: `GreyboxBuilder`
+  (`Assets/_Project/Code/App/Editor/`) + the `RegionLogicRoot` marker
+  (`Assets/_Project/Code/App/RegionLogicRoot.cs`). Decision: ADR 0011.
