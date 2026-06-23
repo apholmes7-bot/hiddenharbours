@@ -269,12 +269,14 @@ A **seasonal tree sprite pack** for island/coast decor — banked here for **wor
 scene decor** during scene-dressing / the art pass. Imported **IMPORT-ONLY: not wired into any
 scene, builder, or prefab.** From the owner's drop `trees.zip` (37 individual 64×64 RGBA PNGs).
 
-> **SOURCE / LICENSE — TO CONFIRM with owner.** The zip contained **no LICENSE / README / attribution
-> file**, and the PNGs are flat `tree1.png`…`tree37.png` with no embedded author/pack metadata. The
-> owner **confirmed these are free-to-use** for the project; the **pack name, author, exact licence
-> type, and any required credit line are still UNKNOWN and must be confirmed before commercial
-> release** — do not silently assume a permissive licence. Flagged here so it's tracked, not lost.
-> (Action: owner to supply the source/pack + licence so an attribution/credits line can be added.)
+> **SOURCE / ATTRIBUTION (owner-provided).** Author **ranju**. Source-listing tags: **2D · 64×64 ·
+> nature · Pixel Art · Top-Down · treeset**. **Status: Released.** The owner confirms the pack is
+> **free-to-use** for the project. **AI Disclosure: AI-Assisted graphics** — flag this for surfacing
+> in the game's own **credits / AI-disclosure at release** (we ship AI-assisted art and should say so).
+> The **exact licence type and the required credit/attribution line are still per the source listing** —
+> confirm the precise terms (and the exact credit string) against the listing before commercial release.
+> (Earlier note, now resolved: the zip itself carried no LICENSE/README and the PNGs no embedded
+> metadata; the author/tags/status/AI-disclosure above are the owner's out-of-band attribution.)
 
 > **Metas are hand-authored, not Unity-generated** (we build headless — no Unity to auto-generate
 > `.meta`s). Each `.meta` clones the committed VS-23 import lock and adapts it for discrete decor:
@@ -307,8 +309,11 @@ later re-classification):
 | `Tree27` | dark / deep-purple foliage |
 | `Tree29`, `Tree30` | fruit tree (red fruit on green) |
 
-**WIRE-IN is downstream (NOT done here):** *world-content* places these as scene decor (prefabs /
-direct instances) during scene-dressing and the art pass — Coddle Cove, Greywick, St Peters, etc.
-This lane only provides the locked, correctly-pivoted sprites with stable GUIDs; no scene/builder/
-prefab was touched.
+**WIRE-IN (world-content):** *world-content* places these as scene decor during scene-dressing /
+the art pass. **PLACED so far:** the cold-coast subset (green broadleaf, pine, birch — no
+blossom/autumn/snow) is scattered along the land/coast edges of **Coddle Cove** (`GreyboxBuilder`,
+14 trees) and **Port Greywick** (`GreywickBuilder`, 11 trees) under a `Decor/Trees` parent, base-Y
+`sortingOrder`, never in water / on docks / paths / over buildings. **PENDING:** **St Peters** trees
+are a follow-up (its builder was contested at the time of this pass). The art lane only provides the
+locked, correctly-pivoted sprites with stable GUIDs.
 
