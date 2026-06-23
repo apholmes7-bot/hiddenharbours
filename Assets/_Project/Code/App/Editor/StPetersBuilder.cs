@@ -6,8 +6,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
-using HiddenHarbours.Art.Editor;          // VS-23 locked Pixel-Perfect camera convention
-using UnityEngine.Rendering.Universal;     // PixelPerfectCamera
+using HiddenHarbours.Boats;               // BoatHullDef (the carried Dory/Punt hulls handed to the core)
+using HiddenHarbours.Fishing;             // FishSpeciesDef (the clam the on-foot player's fishing reads)
+using HiddenHarbours.App;                 // RegionAnchor — St Peters' travel bind point (the persistent rig rebinds here)
 
 namespace HiddenHarbours.App.Editor
 {
@@ -31,17 +32,27 @@ namespace HiddenHarbours.App.Editor
     /// so the bar visibly bares and floods (P1 at its purest, the kindest tide-gate — being cut off costs
     /// only time). The terrain registers itself into <see cref="GameServices.TidalTerrain"/> at runtime.</para>
     ///
-    /// <para>SCOPE / TODO (greybox): like GreywickBuilder this scene carries its own Main Camera +
-    /// AudioListener so it can be opened/reviewed standalone, and places a RegionSceneLoader + a walk
-    /// passage toward Greywick. The full persistent-core travel rig (the player/boat carried across, the
-    /// RegionTravelCoordinator) lives in the cove scene and is owned by the App persistent core
-    /// (GreyboxBuilder / lead-architect) — wiring the start to relocate here is the M2 onboarding-relocation
-    /// follow-up, out of scope this round. The on-foot player here is a START-spawn marker; gameplay's
-    /// walk/dig controllers attach to it.</para>
+    /// <para>St Peters is now the GAME'S START scene (#64 made it the entry point), so it stands up the
+    /// shared PERSISTENT CORE via <see cref="PersistentCoreBuilder"/> — the same rig the cove builds: the
+    /// services root (clock/environment/wallet + HUD), the controllable on-foot Player (spawned at
+    /// <see cref="StartSpawnPos"/>), the moored hand-rowed Dory, the follow camera at the on-foot framing,
+    /// the control switcher, and the travel rig (loader + coordinator) so the sandbar passage to Greywick
+    /// works. The extracted helper keeps the core IDENTICAL between the two start scenes (it can't diverge).
+    /// This builder then authors only the REGION content around that core (island/coast/sandbar/clam-holes/
+    /// passage/anchor). The dig/walk/gear ACTIONS remain gameplay-systems'.</para>
+    ///
+    /// <para>FLAG lead-architect (follow-ups, not this PR): (1) the cove (GreyboxBuilder) STILL authors its
+    /// own copy of the core because it was the old start — now that St Peters is the start and the cove is a
+    /// sail-to region, the cove must be DEMOTED to a plain region (drop its core authoring, give it a
+    /// RegionAnchor like Greywick) before the full sail-home chain is tested. (2) The long-term fix is the
+    /// dedicated Bootstrap scene (VS-01) carrying the one core that additively loads the start region.</para>
     /// </summary>
     public static class StPetersBuilder
     {
         const string DataRegions = "Assets/_Project/Data/Regions";
+        const string DataConfig  = "Assets/_Project/Data/Config";   // shared GameConfig (cove builder authors it)
+        const string DataBoats   = "Assets/_Project/Data/Boats";    // the Dory + Punt hulls (the carried rig)
+        const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
@@ -80,6 +91,18 @@ namespace HiddenHarbours.App.Editor
         // Where the walk path reaches Greywick — a forgiving band at the Greywick (east) end of the bar.
         public static readonly Vector3 ToGreywickPassagePos = new Vector3(36f, 0f, 0f);
 
+        // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
+        // The uncle's dory is moored in the deep water off the island's SOUTH coast (the island plateau sits
+        // above (-40,0) radius ~22, so south of ≈ -20 is open water). Board/disembark at this slip once the
+        // dory is yours (the opening's first trip is on foot — this is for the sail home). The arrival point
+        // sits within DockZoneRadius of the dock zone so the persistent ControlSwitcher's pure-distance
+        // disembark test registers the moment you're home (the cove/Greywick proven pattern — don't regress).
+        public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
+        public static readonly Vector3 DoryMooredPos  = new Vector3(-40f, -26f, 0f); // off the island's south coast (deep water)
+        public static readonly Vector3 DockZonePos    = new Vector3(-40f, -26f, 0f); // the slip head — dock here
+        public static readonly Vector3 DisembarkPos   = new Vector3(-40f, -21f, 0f); // step onto the island's south shore
+        public static readonly Vector3 ArrivalPos     = new Vector3(-40f, -25f, 0f); // sail home: park just off the slip, in range
+
         [MenuItem("Hidden Harbours/Build St Peters Scene")]
         public static void Build()
         {
@@ -107,29 +130,16 @@ namespace HiddenHarbours.App.Editor
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
             });
 
+            // The persistent-core data refs (shared stable assets; the cove builder authors the canonical
+            // versions — created here if absent so this builder is self-sufficient/re-runnable). LoadOrCreate
+            // reloads the PERSISTED asset so they serialize into the scene rather than saving as "None".
+            var config = LoadOrCreate<GameConfig>(DataConfig + "/GameConfig.asset");
+            var dory   = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
+            var punt   = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
+            var clam   = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
+
             // --- SCENE ----------------------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-            // Camera (standalone-viewable; see the class TODO). Mirrors the cove/Greywick locked
-            // pixel-perfect on-foot landscape framing so St Peters reads at the same scale.
-            var camGo = new GameObject("Main Camera");
-            camGo.tag = "MainCamera";
-            var cam = camGo.AddComponent<Camera>();
-            cam.orthographic = true;
-            cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.07f, 0.14f, 0.18f);
-            camGo.transform.position = new Vector3(-40f, -2f, -10f); // frame the island start
-            camGo.AddComponent<AudioListener>();
-            ArtCameraSetup.ConfigurePixelPerfect(camGo);
-            var ppc = camGo.GetComponent<PixelPerfectCamera>();
-            if (ppc != null)
-            {
-                CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int refW, out int refH);
-                ppc.refResolutionX = refW;
-                ppc.refResolutionY = refH;
-                EditorUtility.SetDirty(ppc);
-            }
 
             // --- SEA backdrop (the deep water surrounding the island + bar) -----------------------------
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
@@ -154,6 +164,33 @@ namespace HiddenHarbours.App.Editor
             // in-memory instances — the gotcha the cove/Greywick builders guard against).
             stPeters = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/StPeters.asset");
             greywick = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
+            config   = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
+            dory     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
+            punt     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
+            clam     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
+
+            // --- PERSISTENT CORE (THE FIX) --------------------------------------------------------------
+            // St Peters is the START scene, so it stands up the SAME persistent rig the cove builds — a
+            // controllable on-foot Player at the START spawn, the moored hand-rowed Dory, the follow camera
+            // at the on-foot framing, the services (clock/environment/wallet → the tide actually advances),
+            // the control switcher, and the travel rig. Extracted to PersistentCoreBuilder so the two start
+            // scenes can't diverge. The walk is TIDE-GATED here (St Peters' falling-tide wading edge, P1).
+            var core = PersistentCoreBuilder.Build(new PersistentCoreBuilder.Params
+            {
+                Config           = config,
+                StartDory        = dory,
+                PuntHull         = punt,
+                RegionFish       = clam != null ? new[] { clam } : null,
+                Square           = waterSprite,
+                CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water
+                PlayerStartPos   = StartSpawnPos,
+                BoatMooredPos    = DoryMooredPos,
+                TideGatedWalk    = true,
+                CurrentSceneName = SceneName,
+                TideMean         = TideMean,        // St Peters' BIG tide (±3.5 m) so the bar bares + floods
+                TideAmplitude    = TideAmplitude,
+                TidePhaseHours   = TidePhaseHours,
+            });
 
             // --- ISLAND (the high home ground; greybox grass + sand beach) ------------------------------
             // Tiled ground patches over the island plateau (centre (-40,0), radius ~22). Sand rim under grass.
@@ -210,14 +247,15 @@ namespace HiddenHarbours.App.Editor
             foreach (var p in clamPositions)
                 MakeClamSpot(clamRoot.transform, p, "fish.soft_shell_clam", waterSprite);
 
-            // --- PLAYER START SPAWN (on the island, by the slip) ----------------------------------------
-            // A START marker only — gameplay-systems' walk/dig controllers attach the on-foot player here.
-            // Named "PlayerStart" so it doesn't collide with the persistent "Player" the cove rig carries.
-            var startGo = new GameObject("PlayerStart");
-            startGo.transform.position = StartSpawnPos;
-            var startSr = startGo.AddComponent<SpriteRenderer>();
-            startSr.sprite = waterSprite; startSr.color = new Color(0.95f, 0.85f, 0.30f, 0.9f); startSr.sortingOrder = 11;
-            startGo.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+            // --- THE MOORED DORY'S SLIP (set dressing; the persistent Dory floats at DoryMooredPos) ------
+            // The real, controllable Player is now spawned by the PersistentCoreBuilder above at
+            // StartSpawnPos, and the persistent Dory floats off the south coast. This is a small marker on
+            // the south shore showing where the uncle's dory is moored / where you board once she's yours.
+            var slipGo = new GameObject("DorySlipMarker");
+            slipGo.transform.position = new Vector3(DisembarkPos.x, DisembarkPos.y, 0f);
+            var slipSr = slipGo.AddComponent<SpriteRenderer>();
+            slipSr.sprite = waterSprite; slipSr.color = new Color(0.55f, 0.40f, 0.24f, 0.85f); slipSr.sortingOrder = -6;
+            slipGo.transform.localScale = new Vector3(2.5f, 1.2f, 1f);
 
             // --- REGION DISPLAY NAME (the world registrar → Core) ---------------------------------------
             // Register "St Peters Island" / "Port Greywick" so the UI crossing-card resolves them by scene
@@ -227,15 +265,13 @@ namespace HiddenHarbours.App.Editor
             SetRefArray(registrar, "_regions", new Object[] { stPeters, greywick });
 
             // --- REGION SCENE-LOAD PATH + the WALK PASSAGE to Greywick ----------------------------------
-            // Consistent with the TidalTerrain: the bar is a WALK path at low water (the first trip is on
-            // foot). The passage band sits at the Greywick (east) end of the bar. Triggering is forgiving
-            // (greybox) — gameplay gates the actual crossing on the bar being EXPOSED (TidalExposure) and on
-            // the player being on foot. The persistent travel rig that carries the player across lives in
-            // the cove scene (App core) — see the class TODO.
-            var loaderGo = new GameObject("RegionSceneLoader");
-            var loader = loaderGo.AddComponent<RegionSceneLoader>();
+            // The persistent travel rig (loader + coordinator) was built with the core; here we fill the
+            // loader's region list and wire this region's passage to it. Consistent with the TidalTerrain:
+            // the bar is a WALK path at low water (the first trip is on foot). The passage band sits at the
+            // Greywick (east) end of the bar; triggering is forgiving (greybox) — gameplay gates the actual
+            // crossing on the bar being EXPOSED (TidalExposure) and on the player being on foot.
+            var loader = core.Loader;
             SetRefArray(loader, "_regions", new Object[] { stPeters, greywick });
-            SetString(loader, "_currentSceneName", SceneName);
 
             var passageGo = new GameObject("PassageToPortGreywick");
             passageGo.transform.position = ToGreywickPassagePos;
@@ -246,27 +282,50 @@ namespace HiddenHarbours.App.Editor
             SetRef(passage, "_target", greywick);
             SetRef(passage, "_loader", loader);
 
+            // --- ST PETERS DOCK + ARRIVAL ANCHOR (the persistent rig binds here on the sail home) --------
+            // St Peters' own board/dock geometry, mirroring the cove/Greywick pattern. The persistent
+            // ControlSwitcher starts pointed at this slip so you can board the moored Dory once she's yours;
+            // the RegionAnchor lets the RegionTravelCoordinator re-bind the rig here when you sail back from
+            // the cove. The arrival sits within DockZoneRadius of the dock zone (the proven disembark
+            // geometry — don't regress #52). Disembark steps onto the island's south shore.
+            var dockZone = new GameObject("StPetersDockZone");
+            dockZone.transform.position = DockZonePos;
+            var disembark = new GameObject("StPetersDisembark");
+            disembark.transform.position = DisembarkPos;
+            var arrival = new GameObject("StPetersArrival");
+            arrival.transform.position = ArrivalPos;
+
+            // Point the persistent switcher's dock at this slip so boarding works in the start region.
+            core.Switcher.SetDock(dockZone.transform, disembark.transform);
+
+            var anchor = new GameObject("StPetersRegionAnchor").AddComponent<RegionAnchor>();
+            anchor.Configure("region.st_peters", arrival.transform, dockZone.transform, disembark.transform);
+
             // --- SAVE & REGISTER ------------------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterScene(ScenePath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[StPetersBuilder] Built StPeters.unity — the OPENING region (greybox). Island = high " +
-                      "(always exposed); the SANDBAR bridges it to Greywick as a tide-gated path: the crest " +
-                      "(1.6 m) bares as the BIG tide (±3.5 m) falls, while a deeper CHANNEL (-0.6 m) through " +
-                      "it stays boat-crossable at higher tide (the two are inverse over the tide). Clam-holes " +
-                      "on the flats (fish.soft_shell_clam, gated by exposure). Player START on the island. A " +
-                      "walk passage at the Greywick end leads on. RE-RUN this builder + GreywickBuilder, " +
-                      "ensure StPeters is in Build Settings, then re-test.");
+            Debug.Log("[StPetersBuilder] Built StPeters.unity — the OPENING + START region (greybox), now " +
+                      "with the PERSISTENT CORE so it's playable: press Play and you control the on-foot " +
+                      "fisher at the START spawn (WASD), the camera follows at the on-foot framing, and the " +
+                      "clock/tide run (GameServices online → the tide advances + the bar bares/floods). The " +
+                      "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
+                      "yours). Island = high (always exposed); the SANDBAR bridges it to Greywick as a " +
+                      "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
+                      "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. Clam-holes on the flats " +
+                      "(fish.soft_shell_clam, gated by exposure). The walk passage at the Greywick end leads " +
+                      "on. StPeters is now BUILD-INDEX-0 (the start scene). RE-RUN this builder + " +
+                      "GreywickBuilder, then open StPeters.unity and press Play.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "St Peters Island scene built (greybox — the OPENING region).\n\n• Island = high ground " +
-                "(always exposed)\n• SANDBAR to Greywick = a ridge JUST BELOW high water — it bares as the " +
-                "BIG tide (±3.5 m) falls (widest walk path at low water)\n• A deeper CHANNEL cut through the " +
-                "bar stays boat-crossable at higher tide (inverse of the walk flats)\n• Clam-holes on the " +
-                "flats; player START on the island\n\nThe dig/walk/gear ACTIONS are gameplay-systems'. RE-RUN " +
-                "'Build St Peters Scene' AND 'Build Greywick Scene', ensure StPeters is in Build Settings, " +
-                "then re-test.", "Fair winds");
+                "St Peters Island built — now a PLAYABLE START scene (greybox).\n\nPress Play:\n• You control " +
+                "the on-foot fisher (WASD / arrows) at the start spawn; the camera follows.\n• The clock + " +
+                "tide RUN — watch the sandbar bare as the big tide (±3.5 m) falls (the tide-reveal is the " +
+                "point).\n• The hand-rowed Dory is moored off the south coast (board at the slip once she's " +
+                "yours).\n• Walk the bared bar east to reach Greywick.\n\nThe dig/walk/gear ACTIONS are " +
+                "gameplay-systems'. StPeters is now build-index-0 (the start scene). RE-RUN 'Build St Peters " +
+                "Scene' AND 'Build Greywick Scene', then open StPeters.unity and press Play.", "Fair winds");
         }
 
         // ---- shared config (single source of truth with the EditMode test) -------------------------
@@ -406,17 +465,19 @@ namespace HiddenHarbours.App.Editor
             return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
+        // St Peters is the GAME'S START scene, so it must be build-index-0 (the scene that boots on Play in
+        // a player build). Insert it at the front (moving an existing entry to index 0 if a prior run added
+        // it at the end), so the persistent core boots here. Idempotent on re-runs.
         static void RegisterScene(string path)
         {
-            var list = EditorBuildSettings.scenes.ToList();
-            if (list.Any(s => s.path == path)) return;
-            list.Add(new EditorBuildSettingsScene(path, true));
+            var list = EditorBuildSettings.scenes.Where(s => s.path != path).ToList();
+            list.Insert(0, new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = list.ToArray();
         }
 
         static void EnsureFolders()
         {
-            foreach (var f in new[] { DataRegions, ArtSprites, Scenes })
+            foreach (var f in new[] { DataRegions, DataConfig, DataBoats, DataFish, ArtSprites, Scenes })
             {
                 if (AssetDatabase.IsValidFolder(f)) continue;
                 var parent = Path.GetDirectoryName(f).Replace('\\', '/');
