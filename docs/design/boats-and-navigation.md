@@ -492,11 +492,27 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); two 
   within a probe radius (for non-tidal regions like the cove, whose hard shore-edge has no height map).
   At the dock you land tidily on the planks; away from the dock you step off at the boat. Boarding is
   unchanged (still the dock board zone).
-- **The boat parks where it's left** (no drift). On disembark the boat is brought to rest
-  (`BoatController.Stop()` zeroes linear+angular velocity) before the helm is dropped, so an un-crewed
-  boat stays put and never coasts off / strands itself (P5 cozy). *(A wind/tide mooring-drift mechanic
-  for UNtied boats — making an unmoored boat set with the weather — is a deliberate **separate
-  follow-up**; the disembark path keeps boats safe-parked so disembark-anywhere can't strand the boat.)*
+- **Tie up your boat so the sea doesn't take it** — the **rope / mooring mechanic** (`BoatMooring`, Boats
+  lane; P1 + P5). This *replaces* the earlier placeholder "park-on-disembark": a disembarked boat now stays
+  put **only while tied**, and **drifts free on wind + tide when untied** — the teeth.
+  - **On disembark near shore the rope auto-attaches and the boat is TIED by default** (one press — the
+    disembark itself — makes her fast at the spot the player steps off; a quick hop-off never loses the
+    boat, P5 cozy). Tied, she is **tethered**: she still feels the deterministic wind + tidal-current force
+    model (she bobs/swings on her leash), but a **one-sided rope spring** (`BoatMooring.TetherForce`) pulls
+    her back whenever she reaches the end of the rope, so she stays **within rope-length of the tie point**
+    and can never float away. Inside rope-length the rope is slack and does nothing.
+  - **The `Q` key ties / unties** the rope of a moored boat you're standing beside (`ToggleMooring`).
+    **Cast off (untie) and she DRIFTS FREE** on wind + tide (`BoatMooring.DriftForce` — the same set-with-
+    the-weather model the helm applies with the throttle let go). Recoverable, not punishing: she bumps the
+    shore on her hull collider (no damage, no stranding); re-tie (`Q`) or re-board (`E`) to take her out
+    again. Re-boarding **stows** the rope (the helm takes over).
+  - **Tunables are owner-editable serialized fields, no magic numbers**: rope length, tether stiffness, and
+    snub damping on `BoatMooring`. Drift uses only the deterministic `EnvironmentSample`; the tether is a
+    pure physics constraint (one-sided spring + snub) — nothing saved, no RNG (CLAUDE.md rule 5). The
+    constraint + drift math are pure static helpers, EditMode-tested (tethered-stays-within-rope vs
+    untied-runs-away; the tie/untie state machine; force determinism). The greybox rope is a placeholder
+    `LineRenderer`; the FEEL (tethered-and-swinging vs drifting-away) is the point — the pretty rope is a
+    later art pass.
 - **Control survives a region hop.** The persistent rig (player/boat/switcher) is `DontDestroyOnLoad`
   and carries the control **mode** across an additive region toggle, but nothing re-enabled the active
   boat's controller + input to match it on arrival — so a re-activated region (especially a **return**
