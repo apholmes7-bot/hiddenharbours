@@ -1,7 +1,7 @@
 {
     "name": "HiddenHarbours.Player",
     "rootNamespace": "HiddenHarbours.Player",
-    "references": ["HiddenHarbours.Core", "HiddenHarbours.Boats", "Unity.InputSystem"],
+    "references": ["HiddenHarbours.Core", "HiddenHarbours.Boats", "HiddenHarbours.Economy", "Unity.InputSystem"],
     "allowUnsafeCode": false,
     "autoReferenced": true
 }

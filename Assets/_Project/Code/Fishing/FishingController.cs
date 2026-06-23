@@ -1,5 +1,6 @@
 using UnityEngine;
 using HiddenHarbours.Core;
+using HiddenHarbours.Economy;   // CatchLicensePolicy + LicenseDef: the catch-side licence gate (St Peters)
 
 namespace HiddenHarbours.Fishing
 {
@@ -29,6 +30,11 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private Gear _gear = Gear.Handline;
         [Tooltip("The fish that can be caught in this region (region scenes provide these).")]
         [SerializeField] private FishSpeciesDef[] _regionFish;
+        [Tooltip("The authored licences in play (e.g. the cod licence) — supplied by the region/world the " +
+                 "same way the region fish are. Used ONLY to look up which licence (if any) a species " +
+                 "requires at land-time (CatchLicensePolicy); the player's held licences come from the " +
+                 "Core ILicenseService. Null/empty = nothing is licence-gated (all species land freely).")]
+        [SerializeField] private LicenseDef[] _licenses;
         [Tooltip("A GameObject carrying an IHold (the boat's ShipHold).")]
         [SerializeField] private GameObject _holdProvider;
         [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
@@ -114,13 +120,22 @@ namespace HiddenHarbours.Fishing
             }
         }
 
-        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 = time-seeded.</summary>
+        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 = time-seeded.
+        /// Licences default to none (nothing gated); use the overload to supply the licence data.</summary>
         public void Configure(IHold hold, FishSpeciesDef[] regionFish, string regionId, Gear gear, int seed)
+            => Configure(hold, regionFish, regionId, gear, seed, null);
+
+        /// <summary>Wire the controller, including the authored licence data used for the land-time gate
+        /// (the cod licence gates cod). The player's HELD licences still come from
+        /// <see cref="GameServices.Licenses"/> at land-time — this is only the species→licence mapping.</summary>
+        public void Configure(IHold hold, FishSpeciesDef[] regionFish, string regionId, Gear gear, int seed,
+                              LicenseDef[] licenses)
         {
             _hold = hold;
             _regionFish = regionFish;
             _regionId = regionId;
             _gear = gear;
+            _licenses = licenses;
             _rng = seed == 0 ? new System.Random() : new System.Random(seed);
             _phase = FishingPhase.Idle;
             _state = FishingState.Idle;
@@ -179,6 +194,21 @@ namespace HiddenHarbours.Fishing
             FishSpeciesDef fish = _pendingFish;
             float tension = _fight != null ? _fight.Tension01 : 0f;
             _fight = null;
+
+            // --- Licence gate (St Peters, P5 cozy): some species may only be LANDED with the right
+            // licence (the rod takes cod only once you hold the cod licence). The mapping species→licence
+            // is the authored licence data (CatchLicensePolicy); the player's held licences come from the
+            // Core ILicenseService — Fishing never references Economy's concrete service. Unlicensed is
+            // cozy: the fish slips back (the existing no-penalty "released" result), nudging you to the
+            // harbourmaster. Ungated species are unaffected; a null licence service fails closed only for
+            // gated species, so unlicensed cod can't be taken before you can hold a licence.
+            if (!CatchLicensePolicy.MayLand(fish.Id, _licenses, GameServices.Licenses))
+            {
+                _phaseTimer = _resultDisplay;
+                Debug.Log($"[Fishing] {fish.DisplayName} — you need the licence to land that. (Slipped it back, no harm done.)");
+                Emit(FishingPhase.Snapped, tension, 1f);   // reuse the cozy "it got away" result; nothing added
+                return;
+            }
 
             var item = new CatchItem(fish.Id, fish.DisplayName, fish.Category,
                                      _pendingWeight, fish.BaseValue, fish.SupplyElasticity);
