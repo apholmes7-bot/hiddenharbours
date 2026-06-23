@@ -270,6 +270,17 @@ This single rule produces *every* tidal gameplay consequence:
 > reads `WaterLevel` (no hidden RNG, no saved tide; recomputed from `(seed, gameTime)` exactly like the
 > rest of this doc). The world authors terrain elevation; the gameplay sim consumes the helper. (Seam
 > defined in Core this wave; the tide sim + St Peters scene are the **next** wave.)
+>
+> **Clam holes scatter on the bared flats (implementation note).** The opening's clam holes are a
+> **deterministic scatter** over the sandbar footprint, keeping only positions whose authored ground is
+> **intertidal** (between the swing's lowest and highest water) — so a hole lands exactly where the
+> falling tide bares ground and floods as it rises. Position comes from a stable hash of the grid cell
+> (no `System.Random`); the kept/dropped decision is a pure function of `(position, tide band)`, so a
+> rebuild reproduces the same field. Each hole **shows its sprite only while its ground is exposed** and
+> hides under the flood — driven off the **same** exposure read (`TidalTerrain` elevation vs the live
+> `WaterLevel`) that gates the dig, so the picture can never disagree with the gate (the discipline the
+> St Peters tide-reveal overlay follows). On a bared hole a single Interact lands one clam into the
+> on-foot bucket (the by-hand first catch, P4).
 
 ### 3.6 The tide table (the player's core tool)
 

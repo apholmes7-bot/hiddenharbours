@@ -80,6 +80,7 @@ namespace HiddenHarbours.App.Editor
             public GameObject DoryGo;             // the persistent Dory (controller disabled = moored at start)
             public GameObject GaugeGo;            // the transient fishing gauge overlay
             public PlayerWalkController Walk;
+            public ClamBucket Bucket;             // the on-foot clam hold (IHold) the dig fills; sits on the Player
             public BoatController Boat;
             public ShipHold Hold;
             public Behaviour BoatInput;           // DevBoatInput (enabled only while aboard)
@@ -232,6 +233,15 @@ namespace HiddenHarbours.App.Editor
             if (fisherFrames.Length > 0 && fisherFrames[0] != null)
                 playerSr.sprite = fisherFrames[0];
 
+            // The on-foot CLAM HOLD + STARTING GEAR (St Peters opening). Without these the dig chain is dead:
+            // ClamDig writes a dug clam into an IHold (the bucket) and gates on owning gear.shovel — so the
+            // player carries a ClamBucket (the hand-held hold) and a StartingGear grant that writes
+            // gear.shovel + gear.bucket into the save on Start. (StartingGear is a no-op until a save exists,
+            // and idempotent, so re-entering the scene never double-grants.) The dig spots wire their
+            // ClamDig._bucketProvider to this Player via the Handle.
+            var bucket = playerGo.AddComponent<ClamBucket>();
+            playerGo.AddComponent<StartingGear>();
+
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
             var cameraFollow = camGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
@@ -277,7 +287,7 @@ namespace HiddenHarbours.App.Editor
             return new Handle
             {
                 ServicesRoot = root, CameraGo = camGo, PlayerGo = playerGo, DoryGo = doryGo, GaugeGo = gaugeGo,
-                Walk = walk, Boat = boat, Hold = hold, BoatInput = devBoat, Fleet = fleet,
+                Walk = walk, Bucket = bucket, Boat = boat, Hold = hold, BoatInput = devBoat, Fleet = fleet,
                 Switcher = switcher, SwitcherGo = switcherGo, Camera = cameraFollow,
                 Loader = loader, LoaderGo = loaderGo, Coordinator = coordinator,
             };
