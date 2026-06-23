@@ -238,7 +238,8 @@ This single rule produces *every* tidal gameplay consequence:
 
 | Region | Profile feel | What tide does (P1/P5) |
 |---|---|---|
-| **Coddle Cove** (start) | Small amplitude, gentle slope, deep enough channel that you **never ground the dory in the main channel** — a forgiving tutorial. | Teaches the *concept* of tide safely: the wharf float rises/falls, mudflat edges show at low water, but you can't get badly stuck. |
+| **St Peters Island** *(the opening, M2)* | **Big amplitude (~3–4 m range — much larger than the Cove's gentle tide), broad shallow flats and a low sandbar to Greywick.** The deliberate contrast: the prologue's enormous tide makes the falling-tide reveal unmissable, where the Cove's is gentle and forgiving. | As the tide **falls**, exposed seabed becomes **walkable**: the **clam flats** bare (the by-hand first catch) **and** the **sandbar to Port Greywick** bares as a **walking path** (boat-crossable channels **narrow as the tide falls**). The flood covers both and **seals the island off** — the player's first, kindest tide-gate (cut-off costs only time, P5). One `RegionTideProfile` + terrain elevation drives both flats and sandbar. |
+| **Coddle Cove** (start) | Small amplitude, gentle slope, deep enough channel that you **never ground the dory in the main channel** — a forgiving tutorial. (Deliberately the **gentle** counterpoint to St Peters' big tide.) | Teaches the *concept* of tide safely: the wharf float rises/falls, mudflat edges show at low water, but you can't get badly stuck. |
 | **The Sunkers** | Reef field. Many tiles have `seabedElevation` just below mean level → submerged rocks (**sunkers**) that **break the surface near low water**. | At **low tide** the sunkers are exposed hazards you can see and avoid (and tide-pool/shellfish forage); at **high tide** they're *hidden just under the surface* → grounding/holing risk (P5). Reading the tide turns a deathtrap into a larder. |
 | **The Drownded Lands** | Vast flats with `seabedElevation` near mid-range. | At **low water** huge areas go dry → **walkable seabed** (clams, wrecks, secrets — canon). At **high water** they flood (*drownded*). Spring lows expose the most; the *biggest* secrets only surface at **spring low tide**. Get caught out there on a fast flood and you're in trouble (P5) — but never lethal; you wade/swim back or lose forage, not your life. |
 | **Fundy Rips** | Deep narrows; tide drives **current**, not exposure. | Transit only safe near **slack water**; at mid-tide the **rips** run ferociously (§3.7/§3.9). |
@@ -253,9 +254,22 @@ This single rule produces *every* tidal gameplay consequence:
 > player reads at a glance (P1), and the gentle everywhere-version of the Drownded Lands
 > transformation. The **value** (a ~3–4 m range per `RegionTideProfile`) can be set whenever; the
 > **wet-surface rendering** is owned by [`art-and-audio-bible.md`](art-and-audio-bible.md) and lands
-> with the art passes (**M2/M3**). Ties to **OQ1** (tide → visual-cue mapping). St Peters' **causeway**
-> is the gameplay-critical case: the same 3–4 m fall both **bares the flats** and **opens the
-> tide-gate** (`world-and-regions.md` §6.0).
+> with the art passes (**M2/M3**). Ties to **OQ1** (tide → visual-cue mapping).
+>
+> **Falling tide → walkable seabed → the St Peters sandbar (the opening's signature, M2).** The owner's
+> decided opening (canon [`../vision-and-pillars.md`](../vision-and-pillars.md) §5.8) leans on this
+> mechanic from minute one: as the deterministic tide **falls**, **exposed seabed becomes walkable**,
+> and a **tide-gated sandbar between St Peters and Port Greywick bares as a walking path at low water**
+> (with **boat-crossable channels that narrow as the tide falls**) — the **first way to reach the
+> mainland, on foot**. St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
+> gentle tide**, so the same falling tide that bares the **clam flats** (the by-hand first catch) also
+> **opens the sandbar** and, at the flood, **seals the island off** (`world-and-regions.md` §6.0,
+> §7). **One source of truth:** terrain (world) and the walkability sim (gameplay) both decide
+> "submerged or exposed here, now?" from the **deterministic water level** via the additive Core
+> tidal-exposure seam — a water-level accessor + an `IsExposed(position, terrainElevation)` helper that
+> reads `WaterLevel` (no hidden RNG, no saved tide; recomputed from `(seed, gameTime)` exactly like the
+> rest of this doc). The world authors terrain elevation; the gameplay sim consumes the helper. (Seam
+> defined in Core this wave; the tide sim + St Peters scene are the **next** wave.)
 
 ### 3.6 The tide table (the player's core tool)
 

@@ -374,8 +374,9 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
   slipways, rock and mud are **revealed wet and glistening**, drying over time as the water leaves —
   the visual half of the tide-tell value set in [`time-tides-weather.md`](time-tides-weather.md) §3.5.
   Extends the already-locked **tide-aware shoreline** (§2.1/§2.2) from "the waterline moves" to "the
-  bared surfaces read *wet*." Lands with the **M2 region art passes**; the **St Peters causeway** is
-  the gameplay-critical case ([`world-and-regions.md`](world-and-regions.md) §6.0).
+  bared surfaces read *wet*." Lands with the **M2 region art passes**; the **St Peters tide-gated
+  sandbar** (the low-water walking path to Greywick) is the gameplay-critical case
+  ([`world-and-regions.md`](world-and-regions.md) §6.0, §7).
 - **Parallax underwater / shallow-water preview (M3).** A **parallax peek beneath the surface** in
   shallow water — you can *see* the bar, the sunker, the clam bed, the seabed shelving away — turning
   the §3.6 sub-surface parallax layers into a **readable shallow-water preview** that telegraphs

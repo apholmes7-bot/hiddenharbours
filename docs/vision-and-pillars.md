@@ -8,9 +8,18 @@
 
 ## 1. Logline
 
-> Inherit your uncle's dory and his cottage on a hard, beautiful stretch of the Atlantic
-> Canadian coast. Read the tides, the wind, and a market that never sits still, and work your
-> way up from hauling handlines by hand to commanding a cargo fleet.
+> Start with two hands and a tide table on a hard, beautiful stretch of the Atlantic Canadian
+> coast. Dig clams at low water, earn your first boat and put it right, read the tides, the wind,
+> and a market that never sits still, and work your way up from hauling handlines by hand to
+> commanding a cargo fleet.
+
+> **Opening note (owner-ratified 2026; canon below in §5.8).** You begin on **St Peters Island**,
+> dig clams on the bared low-water flats, and **earn — then repair — your first dory** at the
+> Greywick shipwright before you ever sail it home to the cove. The earlier "inherit your uncle's
+> dory" framing has been **retired in favour of an earned/repaired dory**; Uncle Ned remains the
+> game's departed emotional anchor (the cottage, the memory), but the boat is now *bought and
+> mended*, not handed down (§5.8). *This is a phased **M2** opening built as a greybox prototype —
+> a deliberate pull-forward, not scope-creep.*
 
 A cozy-but-dangerous fishing-and-trade RPG. Stardew Valley's warmth and daily rhythm, the
 painterly atmosphere of Kingdoms Two Crowns, and the ownership/automation depth of Schedule I
@@ -18,9 +27,12 @@ and Big Ambitions — set on a working North Atlantic coast.
 
 ## 2. Fantasy & tone
 
-You are not a hero. You are a young skipper who inherited very little and a lot of weather.
+You are not a hero. You are a young skipper who inherited very little and a lot of weather — a
+cottage, a memory, and a tide that decides what you can do today. You don't even start with a
+boat: you dig clams by hand, earn your first dory, and pay to put it right before you can sail it.
 The island is beautiful, the work is real, and the sea does not care about you. Success feels
-*earned*: the first time you sell a hold full of cod you caught by hand is a genuine triumph;
+*earned*: the first hold of clams that buys back a broken dory, and the first hold of cod you
+caught by hand, are both genuine triumphs;
 the first time you ground your boat on a falling tide and have to wait, exposed, for the tide
 or a tow, is a genuine gut-punch. Warm, weathered, salt-stained, hopeful.
 
@@ -59,8 +71,8 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 ### 5.3 Regions (LOCKED names — a prologue home-island + 7 core + commerce layer). Detail in `design/world-and-regions.md`.
 | Order | Region | Identity | Gate / why locked |
 |-------|--------|----------|-------------------|
-| 0 | **St Peters Island** *(prologue; owner-ratified, phased **M2**)* | Your **home island**, cut off from the mainland **except at low tide** (a pure P1 tide-gate). A village of 3 houses + a school + a general store; learn the basics, dig clams at low water, repair the uncle's dory, and leave for the Cove. **Prepends** Coddle Cove; does not replace it. | The new opening (built **M2**); see §5.8 |
-| 1 | **Coddle Cove** | Home harbour: uncle's cottage + wharf. Sheltered tutorial waters, inshore beginner fish. | Start zone (the **M1 vertical-slice** start; 2nd beat of the full arc) |
+| 0 | **St Peters Island** *(prologue; owner-ratified, phased **M2**)* | Your **home island**, cut off from the mainland **except at low tide** (a pure P1 tide-gate). A village of 3 houses + a school + a general store. Dig clams at low water on the island flats; at low water a **tide-gated sandbar** to **Greywick** bares as a walking path; there you buy a **cod licence** + a **rod**, sell clams, and **save to buy a damaged dory at the Greywick shipwright — then pay to repair it**. **Prepends** Coddle Cove; does not replace it. | The new opening (built **M2**); see §5.8 |
+| 1 | **Coddle Cove** | **Home base you sail to after repairing the dory** — uncle's cottage + wharf. Sheltered tutorial waters, inshore beginner fish. | Start zone for the **M1 vertical-slice**; in the full arc it is the **home you arrive at** once the dory is yours (see §5.8) |
 | 2 | **The Sunkers** | Tidal reef field of submerged rocks; rich tide pools & shellfish; grounding hazard at low water. | Basic boat + reading tide |
 | 3 | **Port Greywick** | The market town: auction house, shops, shipwright, housing, most named NPCs. | Story unlock (early) |
 | 4 | **The Drownded Lands** | Vast tidal flats that become *walkable seabed* at low tide (clams, wrecks, secrets); flood at high. | Tide mastery + tide table |
@@ -75,7 +87,7 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 
 | Tier | Boat | ~Length | Role |
 |------|------|---------|------|
-| 0 | **The Dory** (uncle's) | ~4.5 m | Starter. Oars + small outboard. Tiny hold, inshore only, very tide/wind-vulnerable. |
+| 0 | **The Dory** (bought damaged at Greywick, then repaired) | ~4.5 m | Starter. Oars + small outboard. Tiny hold, inshore only, very tide/wind-vulnerable. *Earned with clam money and put right by the shipwright — no longer inherited (§5.8).* |
 | 1 | **Punt / Skiff** | ~6 m | First purchase. A little more capacity and reach. |
 | 2 | **Cape Islander** (inshore longliner) | ~13 m | The iconic Maritime workboat. Real range, lines & traps, mid capacity. |
 | 3 | **Lobster Boat** (specialist) | ~12 m | Shellfish/trap specialist branch. |
@@ -110,8 +122,14 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 
 These resolve questions raised while writing the system docs. They are now canon.
 
-- **Uncle Ned is the departed figure who anchors the opening.** You *inherit* his **dory** and his **cottage** in Coddle Cove — the classic warm cozy-game setup (think Stardew's inherited farm). The tone is **bittersweet and hopeful, not grim**: a gift from someone who believed in you. Ned is present at the very start (a remembered moment / his letter), then his dog-eared logbook — the **"Ned's Unfinished Lines"** framing questline — together with **Aunt Ginny** at the home base teaches the loop and introduces the town. His memory is carried by the cast (P3). Full treatment: `design/npcs-and-routines.md` §3.1.
-- **The opening is a three-beat arc: St Peters Island → Coddle Cove → the mainland (Port Greywick).** *(Owner-ratified 2026; **phased to M2** — see `roadmap.md`. This is a presentation/onboarding addition, not a change to any pillar or system.)* You begin on **St Peters Island**, a small **home island cut off from the mainland except at low tide** (a pure P1 tide-gate): a village of three houses, a school, and a general store. An **aunt** teaches you the basics — the compass and hand skills — at the school; you buy a **clam licence** at the general store and **dig shellfish at low water** (a shovel, and the tell of "two squirting holes" in the bared sand); and you sell your diggings to **repair your late uncle's dory**, earning your way off the island toward deeper water and your first rod. St Peters **prepends** the Coddle Cove opening; it does **not** delete it. **The current M1 opening — Aunt Ginny + Ned's logbook at Coddle Cove (backlog `M1-08` / `VS-21`) — is the stand-in:** when St Peters is built (M2) the *start and onboarding relocate* to the island and the **dialogue/onboarding system is reused, not rebuilt**. *Reconciliation flagged for the M2 pass (do not silently resolve here): exactly where Aunt Ginny lives across the arc (the St Peters school vs the Coddle Cove hearth) and whether the dory is inherited/repaired on St Peters or at the Cove are settled with `design/npcs-and-routines.md` when M2 is scheduled — intent is **one teaching-aunt** and **one inherited dory**, placed to serve the three-beat arc.*
+- **Uncle Ned is the departed figure who anchors the opening — but the dory is now EARNED, not inherited (owner-ratified 2026).** Ned remains the game's emotional origin: you inherit his **cottage** in Coddle Cove and carry his memory, and the tone stays **bittersweet and hopeful, not grim**. **What changed:** the owner has **dropped the "inherit Uncle Ned's dory" framing.** Your first boat is now a **plain damaged dory you buy at the Greywick shipwright with clam money and pay to repair** — you *earn* the boat (a stronger P4 "do it by hand first" beat), and only the cottage + the memory are handed down. Ned is still present at the very start (a remembered moment / his letter); his dog-eared logbook — the **"Ned's Unfinished Lines"** framing questline — together with **Aunt Ginny** still teaches the loop and introduces the town. His memory is carried by the cast (P3). **Reconciliation flag (do not lose this):** the already-built M1 onboarding (`M1-08` / `VS-21`: Ned's logbook + "inherit the dory" at Coddle Cove) is now **partly invalidated** — the inherited-dory beat must be **reworked into a buy-and-repair beat** when St Peters is built. That rework is a **later task**, explicitly logged here and in `design/npcs-and-routines.md` §3.1 so the change is not silently dropped. Full treatment: `design/npcs-and-routines.md` §3.1.
+- **The opening arc (owner-ratified 2026, now DECIDED): St Peters Island → [walk the tide-gated sandbar] → Port Greywick → [buy + repair the dory] → Coddle Cove (home base).** *(**Phased to M2**, built as a **greybox prototype** — a deliberate pull-forward of the M2 opening, **not** scope-creep — see `roadmap.md`. It is an onboarding/structure addition that *serves* the pillars, not a change to any pillar or system.)* The decided sequence:
+  1. **St Peters Island** — a small **home island cut off from the mainland except at low tide** (a pure P1 tide-gate): three houses, a one-room **school**, a **general store**, and your late uncle's broken-down dory on the slip *(see the rework note below)*. An **aunt** teaches the basics (compass + hand skills). You **dig CLAMS at low water** on the bared island flats with a **shovel** (the tell: "two squirting holes" in the wet sand) — the first "catch," **before any rod**. *(Clams are licence-gated — the clam licence is owned by `economy-and-business.md`'s licence system, not here.)*
+  2. **The tide-gated sandbar to Greywick** — as the deterministic tide **falls**, exposed seabed becomes **walkable**, and a **sandbar between St Peters and Greywick bares as a walking path at low water** (with boat-crossable channels that **narrow as the tide falls**). This is the **first way to reach the mainland — on foot at low tide** (see `design/time-tides-weather.md` §3.5 and `design/world-and-regions.md` §7). Dawdle past the turn of the tide and the flood seals you out until the next low — P5 at its kindest.
+  3. **Port Greywick** — buy a **cod fishing LICENCE** (a real, minimal licence — owned by `economy-and-business.md`) and a fishing **ROD**; **sell your clams** and **save to buy a DAMAGED DORY at the Greywick shipwright, then PAY THE SHIPWRIGHT TO REPAIR it** to usable. The dory is a **plain bought-and-repaired boat** — *not* inherited (see the Ned bullet above).
+  4. **Coddle Cove** — once the dory is yours and seaworthy, you **sail it home to the cove** (the uncle's cottage + wharf), which becomes the **home base** for the rest of the game.
+
+  St Peters **prepends** the Coddle Cove opening; it does **not** delete it — Coddle Cove stays central and **everything built for it is reused** (it is just **reordered** later in the arc). **The current M1 opening — Aunt Ginny + Ned's logbook at Coddle Cove (backlog `M1-08` / `VS-21`) — remains the M1 stand-in:** when St Peters is built (M2) the *start and onboarding relocate* to the island and the **dialogue/onboarding system is reused, not rebuilt**. **Reconciliation flagged for the M2 pass (do not silently resolve here):** (a) the inherited-dory beat in VS-21 must be **reworked to a buy-and-repair beat** *(the Ned bullet above)*; (b) where **Aunt Ginny** lives across the arc (St Peters school vs Coddle Cove hearth) is settled with `design/npcs-and-routines.md` when M2 is scheduled — intent is **one teaching-aunt** placed to serve the arc.
 - **Calendar:** a **7-day week** (six working days + one rest day; one weekday is **Market Day** at Greywick). The weekday is owned by `design/time-tides-weather.md` alongside the clock and seasons; NPC routines and the market key off it.
 - **Seasons (named):** **Early Spring, High Summer, The Turn** (autumn), **Hard Winter** — 28 days each.
 - **Sea-state scale (calm→storm):** **Glass, Calm, Light, Moderate, Lively, Rough, Gale, Storm.**

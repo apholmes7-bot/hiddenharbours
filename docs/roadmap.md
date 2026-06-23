@@ -137,7 +137,9 @@ and the first boat purchase (the **Punt**).
 ¾ water, a tide-aware shoreline that visibly moves, warm light that shifts with the time of day, gulls and hull
 slap. You arrive to your late **Uncle Ned's** cottage and his inherited dory; his dog-eared logbook (the
 *"Ned's Unfinished Lines"* framing) and **Aunt Ginny** teach the loop through a gentle, bittersweet-but-warm
-onboarding. Out on the water the dory now feels like a *boat*: wind pushes you, the tide sets you, you carry way
+onboarding. *(M2 note: the owner has since **dropped the inherited-dory framing** — in the full arc the dory is
+**earned and repaired** at Greywick — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
+Peters lands; the cottage stays inherited. Canon §5.8.)* Out on the water the dory now feels like a *boat*: wind pushes you, the tide sets you, you carry way
 and you crab into a breeze — the [`boats-and-navigation.md`](design/boats-and-navigation.md) force model is live
 (at the inshore, forgiving end). The **tide table** is a readable tool and the HUD tide/wind widgets are
 first-class. You can make a short hop to **Port Greywick** where market basics work (the Fish Buyer/auction spot
@@ -218,11 +220,15 @@ cues, town hum (`audio`). Map/chart UI + fog-of-war reveal + the tide table tier
 M1; performance pass for scene streaming at passages (`lead-architect` + `qa-test`).
 
 **Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
-and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue (dig clams by hand,
-buy a clam licence, repair the uncle's dory, then leave): the start and the Ned/Ginny onboarding **relocate** here
-from the M1 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it (canon
-[`vision-and-pillars.md`](vision-and-pillars.md) §5.8; [`design/world-and-regions.md`](design/world-and-regions.md)
-§6.0). The **lobster gear loop** (trap + buoy + bait; lay alongside, leave the helm, gaff and haul; the
+and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue, **built first as a
+greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Greywick at low
+water** → buy a **cod licence + rod**, sell clams, **buy a damaged dory at the Greywick shipwright and pay to
+repair it** → **sail it home to Coddle Cove**. The start and the Ned/Ginny onboarding **relocate** here from the M1
+Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it. **Note:** the owner has
+**dropped the "inherit Uncle Ned's dory" framing** — the dory is now *earned and repaired*, which **partly
+invalidates the built VS-21 onboarding** (the inherited-dory beat needs rework — a flagged later task), while Ned's
+cottage + memory remain inherited (canon [`vision-and-pillars.md`](vision-and-pillars.md) §5.8;
+[`design/world-and-regions.md`](design/world-and-regions.md) §6.0). The **lobster gear loop** (trap + buoy + bait; lay alongside, leave the helm, gaff and haul; the
 powered-winch upgrade — [`design/boats-and-navigation.md`](design/boats-and-navigation.md) §6.3) joins the
 Cape-Islander / Lobster-Boat branch. The **weather/winter/fog** wave gains the owner's **waves that push boats**,
 **gusts that travel across the water**, **lightning + heavy rain**, and **winter freezing in *some* regions**

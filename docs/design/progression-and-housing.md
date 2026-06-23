@@ -79,6 +79,8 @@ Representative licenses (full list lives with the data; see §6):
 
 | License | Eligibility (typical) | Unlocks |
 |---|---|---|
+| **Clam Licence** *(St Peters opening, M2)* | none (small fee at the St Peters general store) | **Clam digging** on the bared low-water flats — the gentlest first instance of the licence gate, and the player's first earned income |
+| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee at **Port Greywick** | **Rod finfishing for cod** — bought after walking the sandbar to Greywick, alongside the first **rod**; the gate that turns hand-digging into real fishing |
 | **Inshore Handline** | none (granted in tutorial) | Hand-fishing in Coddle Cove |
 | **Tide-Reader's Note** | Navigation: Coaster + a Sunkers run | Safer Sunkers reef work; tide-table tool upgrade |
 | **Port Greywick Trade Seal** | Story (early) | Use the auction house; rent storage |
@@ -89,6 +91,13 @@ Representative licenses (full list lives with the data; see §6):
 | **Instrument Pilotage Cert** | Navigation: Navigator | Navigate **The Smother** by instrument |
 | **Freight Carrier's License** | Business: Manager + freighter-tier hull | Take cargo contracts on **The Shipping Lanes** |
 | **Processing / Warehouse Permits** | Business: Trader+ | Own & operate plants/warehouses (see `economy-and-business.md`) |
+
+> **Licence *system* ownership.** This table names the *progression gates*; the **runtime licence
+> system** (the wallet of held licences, the buy interaction, the gate check) is a **real, minimal
+> system owned by `economy-and-business.md`** — the **Clam Licence** and **Cod Fishing Licence** above
+> are its first two concrete instances, shipping with the **St Peters opening (owner-ratified, phased
+> M2, built as a greybox prototype** — canon `../vision-and-pillars.md` §5.8). This doc owns *what the
+> licences gate*; economy owns *how a licence is bought, held, and checked*.
 
 ### 2.3 Reputation
 
@@ -118,7 +127,8 @@ section only describes *how the currencies move you between them*.
 
 | Stage | Identity | Boat (tier) | Region(s) opened | Primary gate to *leave* this stage |
 |---|---|---|---|---|
-| **0. Handline** | "By hand, in the dory" | The Dory (T0) | Coddle Cove | Earn first stake + Fishing→Hauler |
+| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island → Port Greywick (on foot) | Dig clams → **clam licence** → **walk the tide-gated sandbar to Greywick** → buy a **cod licence + rod** → **save for + buy a damaged dory and pay the shipwright to repair it** → sail it home to Coddle Cove |
+| **0. Handline** | "By hand, in the dory you earned" | The Dory (T0) | Coddle Cove | Earn first stake + Fishing→Hauler |
 | **1. First boat & first reef** | Owning a hull, reading tide | Punt/Skiff (T1) | + The Sunkers | Money for a Cape Islander + Seamanship→Deckhand + Tide-Reader's Note |
 | **2. Town & market** | Trading, not just catching | Cape Islander (T2) *or* Lobster Boat (T3) | + Port Greywick, + Drownded Lands (with Flats Permit) | Business→Trader + Offshore License eligibility |
 | **3. Offshore** | Working the open grounds | Side Dragger (T4) → Stern Trawler (T5) | + Fundy Rips, + The Banks, + Ironbound | Business→Manager + Freight Carrier's License |
@@ -126,11 +136,24 @@ section only describes *how the currencies move you between them*.
 
 ### 3.2 The arc in prose
 
-**Coddle Cove, the dory, your two hands.** You start with the uncle's dory (T0) and his cottage.
-The Inshore Handline license is already in your pocket. You jig and handline in sheltered water;
-every cod is hauled up by *you*. The first hold you sell is the canonical triumph beat from the
-vision. Money trickles in; Fishing climbs fast from Handliner toward Hauler. This is the whole
-game in one cove — short, complete, repeatable (P4: *do it by hand first*).
+**St Peters, two hands, no boat (the prologue — M2).** *(Owner-ratified 2026, phased M2, built as a
+greybox prototype — canon `../vision-and-pillars.md` §5.8.)* Before the cove and the dory, you start
+on **St Peters Island** with nothing but your hands and the tide. You buy a **clam licence** and
+**dig clams at low water** with a shovel — your very first earned income, the humblest job, done by
+hand (the purest P4 on-ramp). As the tide **falls**, a **sandbar to Port Greywick** bares; you **walk
+it to the mainland** at low water (and learn the tide-gate the kind way — dawdle and you wait for the
+next low). At Greywick you buy a **cod fishing licence + a rod**, sell your clams, and **save to buy a
+damaged dory at the shipwright — then pay to repair it**. The boat is *earned*, not inherited. With a
+seaworthy dory you **sail home to Coddle Cove**, where the rest of the arc begins. *(This prologue
+**reorders and reuses** the Coddle Cove onboarding, which remains the M1 start — see §5.8; the
+existing inherited-dory onboarding beat is **flagged for rework**, not deleted.)*
+
+**Coddle Cove, the dory you earned, your two hands.** You arrive at the cove with the **dory you
+bought and repaired** (T0) and your late uncle's cottage. The Inshore Handline license is in your
+pocket. You jig and handline in sheltered water; every cod is hauled up by *you*. The first hold you
+sell is the canonical triumph beat from the vision. Money trickles in; Fishing climbs fast from
+Handliner toward Hauler. This is the whole game in one cove — short, complete, repeatable (P4: *do it
+by hand first*).
 
 **The first boat and the first reef.** With a small stake you buy the **Punt/Skiff (T1)** from the
 Greywick shipwright. A little hold, a little reach — enough to nose into **The Sunkers**. Now tide
