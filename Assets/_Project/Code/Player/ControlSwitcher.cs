@@ -36,8 +36,28 @@ namespace HiddenHarbours.Player
                  "against the dock-head collider — still registers a disembark; boarding uses the on-foot " +
                  "player's position, so this stays comfortable for both.")]
         [SerializeField] private float _zoneRadius = 3.5f;
-        [Tooltip("Where the on-foot player is placed after disembarking (on the dock).")]
+        [Tooltip("Where the on-foot player is placed after disembarking AT THE DOCK (on the dock planks). " +
+                 "When disembarking away from the dock (near a shore), the player steps off at the boat's " +
+                 "own position instead, so this is only used for the tidy dock landing.")]
         [SerializeField] private Transform _disembarkPoint;
+
+        [Header("Disembark-anywhere (near land/shore)")]
+        [Tooltip("Disembarking is allowed wherever the boat is near land/shore — not only at the dock. " +
+                 "Shore is detected two ways (either suffices): the authored tidal terrain shoaling toward " +
+                 "land (the boat is over water shallower than ShoreDepthThreshold), and/or a physical land/" +
+                 "shore collider within ShoreProbeRadius on this mask. Leave the mask empty to rely on the " +
+                 "terrain test alone (St Peters); set it to the layer your shore-edge/island colliders use " +
+                 "(the cove's ShoreEdge is on Default) to allow step-off onto a hard shore.")]
+        [SerializeField] private LayerMask _shoreMask = 0;
+        [Tooltip("How close (m) a shore/land collider must be for the boat to count as 'near shore'. " +
+                 "Forgiving so a boat nudged up to the beach reliably lets you step off (P5 cozy).")]
+        [SerializeField] private float _shoreProbeRadius = 2.5f;
+        [Tooltip("Water depth (m) at or below which the boat counts as 'near shore' over authored tidal " +
+                 "terrain — i.e. the water has shoaled toward land. Read off the same deterministic depth " +
+                 "(water level − ground) the boat-cross gate uses, so 'near shore' and 'too shallow to " +
+                 "float here' agree. Open water (no terrain wired) reads infinite depth → never shore by " +
+                 "this test, so set a shore mask for non-tidal regions.")]
+        [SerializeField] private float _shoreDepthThreshold = 1.5f;
 
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
@@ -55,6 +75,43 @@ namespace HiddenHarbours.Player
         public bool InDockZone()
             => Boat != null && _dockZone != null
                && Vector2.Distance(Boat.position, _dockZone.position) <= _zoneRadius;
+
+        /// <summary>
+        /// Pure test: is the water under the boat shallow enough to count as "near shore"? Reads the SAME
+        /// deterministic depth (water level − authored ground) the boat-cross gate uses, so "near shore"
+        /// and "too shallow to float here" can't disagree. Open water (no terrain wired) reads
+        /// <see cref="float.PositiveInfinity"/> → never near shore by depth. Pure + static so the
+        /// disembark-near-land rule is EditMode-testable with a fake terrain/environment.
+        /// </summary>
+        public static bool IsNearShoreByDepth(float waterDepth, float shoreDepthThreshold)
+            => waterDepth <= shoreDepthThreshold;
+
+        /// <summary>
+        /// True when the boat is near land/shore right now, so the player may step off here (not only at
+        /// the dock). Two independent tells, either suffices (P5 forgiving):
+        ///   • the authored tidal terrain has shoaled — water depth under the boat ≤ ShoreDepthThreshold
+        ///     (the deterministic <see cref="BoatCrossing.DepthAt"/> read; open water = infinite = not shore);
+        ///   • a physical land/shore collider sits within ShoreProbeRadius on the shore mask (an empty mask
+        ///     skips this test). The cove's hard shore-edge is found this way; St Peters' soft flats by depth.
+        /// </summary>
+        public bool NearShore()
+        {
+            if (Boat == null) return false;
+
+            // 1) Tidal-terrain shoaling (deterministic, the boat-cross gate's depth read).
+            float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment,
+                                               GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0,
+                                               Boat.position);
+            if (!float.IsPositiveInfinity(depth) && IsNearShoreByDepth(depth, _shoreDepthThreshold))
+                return true;
+
+            // 2) A physical land/shore collider close by (only when a mask is set; 0 = skip).
+            if (_shoreMask.value != 0
+                && Physics2D.OverlapCircle(Boat.position, _shoreProbeRadius, _shoreMask) != null)
+                return true;
+
+            return false;
+        }
 
         /// <summary>
         /// The damaged-dory boarding gate (St Peters opening, P5): a boat bought DAMAGED is owned but
@@ -90,9 +147,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>True if INTERACT would transition right now (in the right zone for the current mode).
         /// On foot this also requires the boat to be boardable (a damaged dory blocks boarding until
-        /// repaired); disembarking is never gated.</summary>
+        /// repaired). Aboard, you may disembark at the dock OR anywhere the boat is near land/shore
+        /// (<see cref="NearShore"/>) — disembarking is otherwise never gated.</summary>
         public bool CanInteract()
-            => Mode == ControlMode.OnFoot ? (InBoardZone() && BoardableNow()) : InDockZone();
+            => Mode == ControlMode.OnFoot
+                ? (InBoardZone() && BoardableNow())
+                : (InDockZone() || NearShore());
 
         /// <summary>Attempt the board/disembark transition. Returns true if it happened.</summary>
         public bool TryInteract()
@@ -122,16 +182,61 @@ namespace HiddenHarbours.Player
 
         private void Disembark()
         {
-            if (_boatController != null) _boatController.enabled = false;
+            // PARK WHERE LEFT (disembark-anywhere safety): bring the boat to rest before dropping the helm
+            // so an un-crewed boat stays put and never coasts off / strands itself. (A wind/tide mooring-
+            // drift mechanic for UNtied boats is a separate follow-up; here she's safe-moored on step-off.)
+            bool atDock = InDockZone();
+            if (_boatController != null) { _boatController.Stop(); _boatController.enabled = false; }
             if (_boatInput != null) _boatInput.enabled = false;
 
-            if (Player != null && _disembarkPoint != null)
-                Player.position = _disembarkPoint.position;          // step back onto the dock
+            // Place the on-foot player: a tidy landing on the dock planks when disembarking at the dock,
+            // otherwise step off right where the boat is (onto the nearby shore/flats) so disembark-anywhere
+            // doesn't teleport you back to a far dock. Null-safe (tests / no disembark point wired).
+            if (Player != null)
+            {
+                if (atDock && _disembarkPoint != null) Player.position = _disembarkPoint.position;
+                else if (Boat != null) Player.position = Boat.position;
+            }
             SetPlayerActive(true);
             Mode = ControlMode.OnFoot;
 
             // Camera: retarget to the player + reframe to the on-foot view (CameraFollow owns the value).
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+        }
+
+        /// <summary>
+        /// Re-assert the controller-enabled state to match the persisted <see cref="Mode"/> — and re-raise
+        /// the camera/active-boat signals so the view follows the right target. Called after a region hop
+        /// (the App <c>RegionTravelCoordinator</c> on arrival) so boat OR foot control is reliably LIVE
+        /// after EVERY scene return: when aboard, the boat controller + its input are re-enabled and the
+        /// walk frozen; on foot, the reverse. This is the fix for "helm goes dead after returning to a
+        /// scene" — the persistent rig carries the mode across the toggle, but nothing re-enabled the
+        /// controllers to match it, so a re-activated region could leave the active boat un-driven.
+        /// Idempotent: safe to call on every arrival regardless of mode. Re-publishing the signals is
+        /// cheap and keeps the camera framing correct on return (boat framing aboard, on-foot framing
+        /// ashore). Null-safe throughout.
+        /// </summary>
+        public void ReassertControlMode()
+        {
+            if (Mode == ControlMode.Aboard)
+            {
+                SetPlayerActive(false);
+                if (_boatController != null) _boatController.enabled = true;
+                if (_boatInput != null) _boatInput.enabled = true;
+
+                BoatHullDef hull = _boatController != null ? _boatController.Hull : null;
+                float height = hull != null ? hull.CameraWorldHeightMeters : 14f;
+                string id = hull != null ? hull.Id : null;
+                EventBus.Publish(new ActiveBoatChanged(id, height));
+                EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
+            }
+            else
+            {
+                if (_boatController != null) _boatController.enabled = false;
+                if (_boatInput != null) _boatInput.enabled = false;
+                SetPlayerActive(true);
+                EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+            }
         }
 
         private void SetPlayerActive(bool active)
@@ -206,9 +311,10 @@ namespace HiddenHarbours.Player
             if (_hint.enabled != show) _hint.enabled = show;
             if (show)
             {
-                string text = atDamagedBoat
-                    ? "She needs repairs before she'll sail"
-                    : (Mode == ControlMode.OnFoot ? "E: Board" : "E: Dock");
+                string text;
+                if (atDamagedBoat) text = "She needs repairs before she'll sail";
+                else if (Mode == ControlMode.OnFoot) text = "E: Board";
+                else text = InDockZone() ? "E: Dock" : "E: Get off";   // near a shore away from the dock
                 if (_hint.text != text) _hint.text = text;
             }
         }

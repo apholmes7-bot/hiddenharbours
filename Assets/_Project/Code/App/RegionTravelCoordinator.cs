@@ -38,15 +38,28 @@ namespace HiddenHarbours.App
 
         /// <summary>
         /// Re-bind the persistent rig to a region: park the boat at the region's arrival point, place the
-        /// (hidden, aboard) player at its disembark spot, and re-point the control switcher's dock — WITHOUT
-        /// resetting the control mode (you arrive still aboard). Null-safe throughout.
+        /// (hidden, aboard) player at its disembark spot, re-point the control switcher's dock, and
+        /// RE-ASSERT the control mode — WITHOUT resetting which mode you're in (you arrive still aboard /
+        /// still on foot). Null-safe throughout.
+        ///
+        /// <para>The re-assert (<see cref="ControlSwitcher.ReassertControlMode"/>) is the fix for "boat
+        /// controls stop after returning to a scene": the persistent switcher carries the mode across the
+        /// hop, but the scene toggle never re-enabled the active boat's controller + input to match it, so
+        /// a re-activated region (especially on a RETURN trip) could leave the helm dead. Re-asserting on
+        /// every arrival makes boat OR foot control reliably live after EVERY return, for both the rowed
+        /// Dory and the engine Punt; it also re-raises the camera signals so the view follows the right
+        /// target. Idempotent.</para>
         /// </summary>
         public static void ApplyArrival(Transform player, Transform boat, ControlSwitcher switcher, RegionAnchor anchor)
         {
             if (anchor == null) return;
             if (boat != null && anchor.ArrivalPoint != null) boat.position = anchor.ArrivalPoint.position;
             if (player != null && anchor.DisembarkPoint != null) player.position = anchor.DisembarkPoint.position;
-            if (switcher != null) switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
+            if (switcher != null)
+            {
+                switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
+                switcher.ReassertControlMode();   // re-enable the active boat/foot controller after the toggle
+            }
         }
 
         // ---- play-mode glue (scene toggling — flagged for Unity verification) ---------------
@@ -58,6 +71,14 @@ namespace HiddenHarbours.App
             SilenceRegionCamera(next);              // the persistent core's camera/listener are the live ones
             BindHoldProxies(next);
             ApplyArrival(_player, _boat, _switcher, RegionAnchor.ForScene(next));
+
+            // The boat was just teleported to the arrival point — bring it to rest there so a residual
+            // velocity from the previous region doesn't carry it off the mark once the controller re-enables.
+            if (_boat != null)
+            {
+                var boatController = _boat.GetComponent<BoatController>();
+                if (boatController != null) boatController.Stop();
+            }
         }
 
         private static void SetSceneRootsActive(Scene scene, bool active)
