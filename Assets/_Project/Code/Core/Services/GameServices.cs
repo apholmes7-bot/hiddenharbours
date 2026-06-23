@@ -40,6 +40,18 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static ISaveService Save { get; set; }
 
+        /// <summary>
+        /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
+        /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
+        /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
+        /// accessor WITHOUT referencing the World module — the same Core-mediated indirection as
+        /// <see cref="ActiveBoat"/>/<see cref="Licenses"/> (CLAUDE.md rule 4, ADR 0007/0009). OPTIONAL and
+        /// scene-scoped: NOT part of <see cref="Ready"/>, and null before a region wires itself (EditMode,
+        /// pre-first-scene boot). <b>A null terrain means "open water"</b> — consumers treat the absence of
+        /// a height map as everywhere-submerged / no walkable ground rather than throwing.
+        /// </summary>
+        public static ITidalTerrain TidalTerrain { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -51,6 +63,7 @@ namespace HiddenHarbours.Core
             Licenses = null;
             ActiveBoat = null;
             Save = null;
+            TidalTerrain = null;
         }
     }
 }
