@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Fishing
@@ -10,13 +9,23 @@ namespace HiddenHarbours.Fishing
     /// tide, you Interact to dig: one press adds a single clam to the bucket. It's the opening's first
     /// by-hand income, the thing you do while you wait out the tide to walk the sandbar to Greywick.
     ///
-    /// <para><b>The three gates (all cozy).</b> A dig only lands a clam when: (1) the spot is
+    /// <para><b>The gates (all cozy).</b> A dig only lands a clam when: (0) you are <em>at this hole</em> —
+    /// the on-foot player is within a small reach (<see cref="ReachRadius"/>, ~1.25 m) of THIS spot, the
+    /// same pure-distance test the dock zone uses (you can't dig a hole across the flat); (1) the spot is
     /// <em>exposed</em> — the deterministic tide has bared this ground (<see cref="TidalExposure"/> over
     /// the authored <see cref="ITidalTerrain"/>); (2) the player owns the <b>shovel</b> (starting gear,
     /// read off the save); and (3) the <b>bucket</b> has room (its <see cref="IHold.CapacityUnits"/> —
     /// 20 clams). Fail any gate and the dig just doesn't yield (a log, no penalty). When the tide floods
     /// the spot back over, it stops being diggable — pure tide-gating, the inverse of needing deep water
     /// to float a boat.</para>
+    ///
+    /// <para><b>One press, one clam, the nearest hole.</b> Each <see cref="ClamDig"/> is just a hole's
+    /// gate-and-yield; it does NOT listen for input itself (that bug dug every exposed hole on the bar at
+    /// once, filling the 20-clam bucket in a press or two). A single scene-side <see cref="ClamDigger"/> on
+    /// the player owns the Interact key: on a press it picks the <em>nearest in-range, exposed</em> hole and
+    /// digs only THAT one, so a press is always exactly one clam from the hole you're standing on (and
+    /// nothing when you're not at a hole). The digger gathers the candidate holes on each press, not per
+    /// frame, so there's no per-frame cost here.</para>
     ///
     /// <para><b>Reuse, don't reinvent.</b> The clam is the existing <c>fish.soft_shell_clam</c>
     /// <see cref="FishSpeciesDef"/> (a Shellfish — the hand-gathered category); the weight roll
@@ -33,8 +42,8 @@ namespace HiddenHarbours.Fishing
     /// <para><b>Seam discipline.</b> Reads the world terrain + tide through the Core
     /// <see cref="GameServices"/> accessors and the bucket through the Core <see cref="IHold"/> contract;
     /// the shovel-ownership check is the owned-gear list on the save. No World/Player/Environment concrete
-    /// classes referenced. Input is dev-keyed (E) for the greybox; an InputService/interaction prompt
-    /// replaces it later (ui-ux).</para>
+    /// classes referenced. The dev Interact key (E) lives on the sibling <see cref="ClamDigger"/>, not here;
+    /// an InputService/interaction prompt replaces it later (ui-ux).</para>
     /// </summary>
     public class ClamDig : MonoBehaviour
     {
@@ -49,6 +58,10 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private Transform _spot;
 
         [Header("Gating")]
+        [Tooltip("How close (m) the on-foot player must stand to THIS hole's spot to dig it — the reach " +
+                 "of a shovel, the same pure-distance gate the dock zone uses. A tunable, not a magic " +
+                 "number: forgiving enough to feel cozy, tight enough that you must be at the hole.")]
+        [SerializeField] private float _reachRadius = 1.25f;
         [Tooltip("Owned-gear id that enables digging (the shovel). Matches the GearOffer id.")]
         [SerializeField] private string _shovelGearId = "gear.shovel";
         [Tooltip("0 = time-seeded weight roll; non-zero for reproducible clam weights in testing.")]
@@ -70,7 +83,11 @@ namespace HiddenHarbours.Fishing
         /// <summary>True while the greybox squirt-hole cue is showing (art/UI hint; cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
 
-        private Vector2 SpotPos => _spot != null ? (Vector2)_spot.position : (Vector2)transform.position;
+        /// <summary>How close the player must stand to dig this hole (m) — the shovel's reach.</summary>
+        public float ReachRadius => _reachRadius;
+
+        /// <summary>This hole's world spot (the spot transform, or this object's position when unset).</summary>
+        public Vector2 SpotPos => _spot != null ? (Vector2)_spot.position : (Vector2)transform.position;
 
         private void Awake()
         {
@@ -81,14 +98,15 @@ namespace HiddenHarbours.Fishing
 
         private void Update()
         {
+            // The only per-hole work is the cosmetic squirt-reveal cadence. INPUT lives on ClamDigger so one
+            // press digs one clam from the nearest in-range hole — not every exposed hole on the bar at once.
             UpdateReveal(Time.deltaTime, IsExposedNow());
-
-            // Greybox interaction: E digs when standing on the spot (world places a trigger/proximity
-            // gate later). A modal dialogue owns Interact while up — don't dig under it.
-            if (InteractionGate.IsBlocked) return;
-            var kb = Keyboard.current;
-            if (kb != null && kb.eKey.wasPressedThisFrame) TryDig();
         }
+
+        /// <summary>Is the on-foot player (at <paramref name="playerPos"/>) within shovel reach of this hole's
+        /// spot? Pure distance test, mirroring the dock zone — the proximity gate the digger applies before
+        /// it digs a hole.</summary>
+        public bool WithinReach(Vector2 playerPos) => Vector2.Distance(playerPos, SpotPos) <= _reachRadius;
 
         /// <summary>
         /// Attempt one dig. Lands a single clam into the bucket and raises <see cref="FishCaught"/> iff all
@@ -179,14 +197,17 @@ namespace HiddenHarbours.Fishing
             return lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
         }
 
-        /// <summary>Wire the dig in one call (tests / editor).</summary>
-        public void Configure(FishSpeciesDef clamSpecies, IHold bucket, Transform spot, string shovelGearId, int seed)
+        /// <summary>Wire the dig in one call (tests / editor). <paramref name="reachRadius"/> is the shovel
+        /// reach; pass a negative value to leave the serialized/default radius untouched.</summary>
+        public void Configure(FishSpeciesDef clamSpecies, IHold bucket, Transform spot, string shovelGearId, int seed,
+                              float reachRadius = -1f)
         {
             _clamSpecies = clamSpecies;
             _bucket = bucket;
             _spot = spot;
             _shovelGearId = shovelGearId;
             _rng = seed == 0 ? new System.Random() : new System.Random(seed);
+            if (reachRadius >= 0f) _reachRadius = reachRadius;
         }
     }
 }
