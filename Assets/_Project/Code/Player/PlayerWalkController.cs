@@ -9,10 +9,20 @@ namespace HiddenHarbours.Player
     /// <summary>
     /// On-foot, top-down WASD walk (step 1 of the on-foot player; boarding/sailing is the next step).
     /// Drives a Rigidbody2D (gravityScale 0) from WASD/arrows and animates the sliced FisherSheet
-    /// (3×4 of 32×64 px: rows Down/Up/Left/Right, cols idle/walk1/walk2) on a gentle [walk1, idle,
+    /// (3×4 of 32×64 px: rows Down/Up/Side, cols idle/walk1/walk2) on a gentle [walk1, idle,
     /// walk2, idle] cycle (~230 ms/frame). Honest metric scale — the 32×64 frame is 1×2 m at PPU 32
     /// (~1.8 m of fisher within it); never rescaled. A footprint collider (added in the scene) plus the
     /// island's shore edge keep the player out of open water.
+    ///
+    /// <para><b>Three facings of art, four facings on screen.</b> The fisher art carries only THREE drawn
+    /// rows — Down (row 0), Up (row 1) and ONE Side (row 2, drawn facing LEFT). The OTHER side is a
+    /// guaranteed-matched MIRROR: Right reuses the same Side-row frames with <c>SpriteRenderer.flipX</c>.
+    /// So only three facings ever need to be authored and the fourth can never drift from its mirror.
+    /// (The sheet keeps the historical 12-cell/96×256 shape — row 3 is a harmless un-flipped copy of the
+    /// Side row, never read here — so the FisherSheet asset and the scene builders stay byte-for-byte
+    /// shaped like the classic and a revert is a one-file swap.) The flip mirrors about the cell's
+    /// horizontal centre because the slices use a BottomCentre pivot, so the mirrored Right facing lands
+    /// exactly where Left/Down/Up do — no sideways jump.</para>
     ///
     /// Input is read here for the greybox (matching DevBoatInput/DevFishingInput, new Input System); a
     /// real InputService replaces it later (ui-ux). The movement/facing/animation logic is pure static
@@ -35,8 +45,9 @@ namespace HiddenHarbours.Player
         [Tooltip("Seconds per animation frame (~230 ms — a gentle, readable walk).")]
         [SerializeField] private float _frameSeconds = 0.23f;
 
-        [Tooltip("The 12 FisherSheet frames in slice order (_0.._11): rows Down/Up/Left/Right, cols " +
-                 "idle/walk1/walk2. Wired by the greybox builder from the sliced sheet.")]
+        [Tooltip("The FisherSheet frames in slice order (_0..): rows Down/Up/Side(+padding), cols " +
+                 "idle/walk1/walk2. Wired by the greybox builder from the sliced sheet. Only the first " +
+                 "three rows (9 frames) are read — Right mirrors the Side row via flipX.")]
         [SerializeField] private Sprite[] _frames;
 
         // Walk cycle as COLUMN indices within a facing's 3 frames: walk1, idle, walk2, idle.
@@ -66,9 +77,26 @@ namespace HiddenHarbours.Player
             return moveInput.y > 0f ? Facing.Up : Facing.Down;
         }
 
-        /// <summary>Sheet frame index for a facing + column (0 = idle, 1 = walk1, 2 = walk2).</summary>
+        /// <summary>
+        /// Which SHEET ROW a facing draws from. Down/Up have their own rows (0, 1); Left and Right BOTH
+        /// draw the single Side row (2) — Right is the mirror (see <see cref="FlipXFor"/>). This is what
+        /// lets the art carry only three facings while the screen shows four.
+        /// </summary>
+        public static int SheetRow(Facing facing) => facing switch
+        {
+            Facing.Down => 0,
+            Facing.Up => 1,
+            _ => 2, // Left and Right share the Side row; Right flips it.
+        };
+
+        /// <summary>True when the facing should be drawn mirrored (flipX). The Side art is drawn facing
+        /// LEFT, so only Right is flipped — the matched mirror of the drawn side.</summary>
+        public static bool FlipXFor(Facing facing) => facing == Facing.Right;
+
+        /// <summary>Sheet frame index for a facing + column (0 = idle, 1 = walk1, 2 = walk2). Left and
+        /// Right resolve to the SAME Side-row frames; Right is differentiated by <see cref="FlipXFor"/>.</summary>
         public static int FrameIndex(Facing facing, int column)
-            => (int)facing * 3 + Mathf.Clamp(column, 0, 2);
+            => SheetRow(facing) * 3 + Mathf.Clamp(column, 0, 2);
 
         /// <summary>The column to show at a given step of the walk cycle (wraps; negative-safe).</summary>
         public static int WalkCycleColumn(int step)
@@ -189,6 +217,9 @@ namespace HiddenHarbours.Player
         private void ApplyFrame(Facing facing, int column)
         {
             if (_renderer == null || _frames == null) return;
+            // Mirror the Side row for Right so the fourth facing is a guaranteed match of the drawn side.
+            // (Set the flip even when the frame is missing so a half-wired sheet still faces correctly.)
+            _renderer.flipX = FlipXFor(facing);
             int idx = FrameIndex(facing, column);
             if (idx >= 0 && idx < _frames.Length && _frames[idx] != null)
                 _renderer.sprite = _frames[idx];

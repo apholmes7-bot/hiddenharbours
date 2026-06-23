@@ -1,42 +1,42 @@
 fileFormatVersion: 2
-guid: 005332ac27ee4d240883a1ee56471061
+guid: 5501b3d77586417a8928b1879a8a56e3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5286321531796407868
+      213: 3673591202288349514
     second: FisherSheet_0
   - first:
-      213: 5137335233980326335
+      213: 5664267863234894645
     second: FisherSheet_1
   - first:
-      213: -972819498965668096
+      213: -2319831939971522374
     second: FisherSheet_2
   - first:
-      213: -2472864050940742111
+      213: -1207882745206507331
     second: FisherSheet_3
   - first:
-      213: -6176165459330712
+      213: 3547203938576930356
     second: FisherSheet_4
   - first:
-      213: -2973498338510342073
+      213: -8032114279873241766
     second: FisherSheet_5
   - first:
-      213: -2825318290103059147
+      213: -8151506159672214353
     second: FisherSheet_6
   - first:
-      213: 5303768798220329758
+      213: 4716856699910148223
     second: FisherSheet_7
   - first:
-      213: 8711754944424561355
+      213: -3739776215287789082
     second: FisherSheet_8
   - first:
-      213: 492025823174789296
+      213: 8661134142539530231
     second: FisherSheet_9
   - first:
-      213: -5828420156306518338
+      213: -6250118649297753341
     second: FisherSheet_10
   - first:
-      213: -7384552886448377052
+      213: 6390875289738081161
     second: FisherSheet_11
   externalObjects: {}
   serializedVersion: 13
@@ -161,8 +161,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c36493fcc69cc5940800000000000000
-      internalID: 5286321531796407868
+      spriteID: a46c638aef3dd8e70800000000000000
+      internalID: 3673591202288349514
       vertices: []
       indices: 
       edges: []
@@ -183,8 +183,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fb1ee713d2b7b4740800000000000000
-      internalID: 5137335233980326335
+      spriteID: 6b4cdf2c0800fed10800000000000000
+      internalID: 5664267863234894645
       vertices: []
       indices: 
       edges: []
@@ -205,8 +205,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 00fe395e1d9df72f0800000000000000
-      internalID: -972819498965668096
+      spriteID: 261ffef6a3db63970800000000000000
+      internalID: -2319831939971522374
       vertices: []
       indices: 
       edges: []
@@ -227,8 +227,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 126f7d95f3f9eadd0800000000000000
-      internalID: -2472864050940742111
+      spriteID: 92273e893813858f0800000000000000
+      internalID: -1207882745206507331
       vertices: []
       indices: 
       edges: []
@@ -249,8 +249,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 869f8bb6fce0aeff0800000000000000
-      internalID: -6176165459330712
+      spriteID: 36b174fec9d182e30800000000000000
+      internalID: 3547203938576930356
       vertices: []
       indices: 
       edges: []
@@ -271,8 +271,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 74870e0f3030cb6d0800000000000000
-      internalID: -2973498338510342073
+      spriteID: 1738e744b43c74fb0800000000000000
+      internalID: -8032114279873241766
       vertices: []
       indices: 
       edges: []
@@ -293,8 +293,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 53d3efcfbf37ac8d0800000000000000
-      internalID: -2825318290103059147
+      spriteID: 6d3102f446e907490800000000000000
+      internalID: -8151506159672214353
       vertices: []
       indices: 
       edges: []
@@ -315,8 +315,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e1329b41f95ca9940800000000000000
-      internalID: 5303768798220329758
+      spriteID: bc67b8cc86adc97f0800000000000000
+      internalID: 4716856699910148223
       vertices: []
       indices: 
       edges: []
@@ -337,8 +337,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bcacda017fe56e870800000000000000
-      internalID: 8711754944424561355
+      spriteID: 0ad65d3de966ac750800000000000000
+      internalID: -3739776215287789082
       vertices: []
       indices: 
       edges: []
@@ -359,8 +359,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0b807aa11e604d600800000000000000
-      internalID: 492025823174789296
+      spriteID: b25a9a78c8d84b9f0800000000000000
+      internalID: 8661134142539530231
       vertices: []
       indices: 
       edges: []
@@ -381,8 +381,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ebe8f958fba4d1fa0800000000000000
-      internalID: -5828420156306518338
+      spriteID: fa889f0ec01a8fa60800000000000000
+      internalID: -6250118649297753341
       vertices: []
       indices: 
       edges: []
@@ -403,8 +403,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 423b82a564cc48990800000000000000
-      internalID: -7384552886448377052
+      spriteID: a168e68d13503f420800000000000000
+      internalID: 6390875289738081161
       vertices: []
       indices: 
       edges: []
@@ -423,18 +423,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      FisherSheet_0: 5286321531796407868
-      FisherSheet_1: 5137335233980326335
-      FisherSheet_10: -5828420156306518338
-      FisherSheet_11: -7384552886448377052
-      FisherSheet_2: -972819498965668096
-      FisherSheet_3: -2472864050940742111
-      FisherSheet_4: -6176165459330712
-      FisherSheet_5: -2973498338510342073
-      FisherSheet_6: -2825318290103059147
-      FisherSheet_7: 5303768798220329758
-      FisherSheet_8: 8711754944424561355
-      FisherSheet_9: 492025823174789296
+      FisherSheet_0: 3673591202288349514
+      FisherSheet_1: 5664267863234894645
+      FisherSheet_10: -6250118649297753341
+      FisherSheet_11: 6390875289738081161
+      FisherSheet_2: -2319831939971522374
+      FisherSheet_3: -1207882745206507331
+      FisherSheet_4: 3547203938576930356
+      FisherSheet_5: -8032114279873241766
+      FisherSheet_6: -8151506159672214353
+      FisherSheet_7: 4716856699910148223
+      FisherSheet_8: -3739776215287789082
+      FisherSheet_9: 8661134142539530231
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
