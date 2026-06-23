@@ -24,6 +24,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             EventBus.Clear<BoatPurchased>();
             EventBus.Clear<ActiveBoatChanged>();
+            EventBus.Clear<ControlModeChanged>();
         }
 
         [TearDown]
@@ -31,6 +32,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             EventBus.Clear<BoatPurchased>();
             EventBus.Clear<ActiveBoatChanged>();
+            EventBus.Clear<ControlModeChanged>();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -152,12 +154,41 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Purchase_RepointsCamera_ViaActiveBoatChanged_FromTheNewHull()
+        public void Purchase_OnFoot_DoesNotRepointCamera()
         {
+            // The camera zoom keys off PILOTING, not OWNERSHIP. A buy at the wharf is the on-foot player
+            // (default mode), so the grant must NOT zoom the on-foot view — the bug the owner hit was the
+            // camera snapping to the Punt's framing the instant they bought it. The boat's framing instead
+            // arrives via ControlSwitcher.Board() when they next step aboard.
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            punt.CameraWorldHeightMeters = 17f;
+            MakeFleet(new[] { dory, punt }, dory);   // fleet starts on foot (no ControlModeChanged seen yet)
+
+            var events = new List<ActiveBoatChanged>();
+            void Capture(ActiveBoatChanged e) => events.Add(e);
+            EventBus.Subscribe<ActiveBoatChanged>(Capture);
+            try
+            {
+                EventBus.Publish(new BoatPurchased("boat.punt", 1800));
+                Assert.AreEqual(0, events.Count,
+                    "buying a boat while on foot must NOT reframe the camera (zoom keys off piloting, not ownership)");
+            }
+            finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
+        }
+
+        [Test]
+        public void Purchase_WhileAboard_RepointsCamera_FromTheNewHull()
+        {
+            // The upgrade-at-sea case: if you take the grant WHILE already piloting, the view should reframe
+            // to the new hull (bigger boat → more water). The fleet learns the mode off the Core seam.
             var dory = MakeHull("boat.dory", 6);
             var punt = MakeHull("boat.punt", 14);
             punt.CameraWorldHeightMeters = 17f;     // bigger boat → the camera should frame more water
-            MakeFleet(new[] { dory, punt }, dory);
+            var (fleet, _, _, _) = MakeFleet(new[] { dory, punt }, dory);
+
+            // Tell the fleet we're aboard, the way the ControlSwitcher would on boarding.
+            fleet.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
 
             var events = new List<ActiveBoatChanged>();
             void Capture(ActiveBoatChanged e) => events.Add(e);
@@ -166,10 +197,32 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 EventBus.Publish(new BoatPurchased("boat.punt", 1800));
 
-                Assert.AreEqual(1, events.Count, "the swap should re-point the camera exactly once");
+                Assert.AreEqual(1, events.Count, "an upgrade taken while aboard reframes the camera exactly once");
                 Assert.AreEqual("boat.punt", events[0].BoatId);
                 Assert.AreEqual(17f, events[0].CameraWorldHeightMeters, 1e-4f,
                     "camera framing is data-driven from the new hull");
+            }
+            finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
+        }
+
+        [Test]
+        public void Purchase_BackOnFootAfterDisembark_DoesNotRepointCamera()
+        {
+            // Boarding then disembarking returns to on-foot; a later purchase must again not reframe.
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            var (fleet, _, _, _) = MakeFleet(new[] { dory, punt }, dory);
+
+            fleet.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            fleet.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
+
+            var events = new List<ActiveBoatChanged>();
+            void Capture(ActiveBoatChanged e) => events.Add(e);
+            EventBus.Subscribe<ActiveBoatChanged>(Capture);
+            try
+            {
+                EventBus.Publish(new BoatPurchased("boat.punt", 1800));
+                Assert.AreEqual(0, events.Count, "after disembarking, a purchase on foot must not reframe");
             }
             finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
         }
@@ -179,7 +232,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var dory = MakeHull("boat.dory", 6);
             var punt = MakeHull("boat.punt", 14);
-            MakeFleet(new[] { dory, punt }, dory);
+            var (fleet, _, _, _) = MakeFleet(new[] { dory, punt }, dory);
+            fleet.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));   // even while aboard…
 
             int count = 0;
             void Capture(ActiveBoatChanged e) => count++;
@@ -187,7 +241,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 EventBus.Publish(new BoatPurchased("boat.galleon", 1));
-                Assert.AreEqual(0, count, "an unknown id must not re-point the camera");
+                Assert.AreEqual(0, count, "an unknown id must not re-point the camera (no swap happened)");
             }
             finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
         }

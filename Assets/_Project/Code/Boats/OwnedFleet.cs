@@ -25,9 +25,27 @@ namespace HiddenHarbours.Boats
         [SerializeField] private ShipHold _hold;
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
-        private void Awake() => EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
+        // The camera framing belongs to PILOTING, not OWNERSHIP: a purchase grants the hull, but the
+        // view only reframes when you're actually aboard that boat. We track the control mode off the
+        // Core ControlModeChanged seam (the ControlSwitcher publishes it on board/disembark) so a buy at
+        // the wharf — which is gated to the on-foot player — never zooms the on-foot camera. An upgrade
+        // taken WHILE aboard still reframes to the new hull. Cross-module talk stays one-way via Core.
+        private bool _aboard;
 
-        private void OnDisable() => EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
+        private void Awake()
+        {
+            EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
+            EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+        }
+
+        /// <summary>Track whether the player is currently piloting, so a grant only reframes when aboard.</summary>
+        public void OnControlModeChanged(ControlModeChanged e) => _aboard = e.Mode == ControlMode.Aboard;
 
         /// <summary>
         /// Grant a purchased boat by swapping the active hull. Data-driven lookup by stable Id; an
@@ -45,10 +63,13 @@ namespace HiddenHarbours.Boats
             if (_spriteRenderer != null && hull.Sprite != null)
                 _spriteRenderer.sprite = hull.Sprite;                               // visible swap
 
-            // Re-point the camera to this hull's framing — the App's CameraFollow listens via Core, so
-            // Boats never references it. Buying a bigger boat zooms the view out a touch (data-driven
-            // from the hull). M2 hulls just set a larger CameraWorldHeightMeters — no new code here.
-            EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters));
+            // Re-point the camera ONLY when actively piloting this boat — framing keys off PILOTING, not
+            // ownership. A buy at the wharf (on foot) grants the hull but must NOT zoom the on-foot view;
+            // the boat's framing arrives via ControlSwitcher.Board() when you next step aboard. An upgrade
+            // taken while already aboard reframes here to the new hull. The App's CameraFollow listens via
+            // Core, so Boats never references it; bigger boat → more water (data-driven from the hull).
+            if (_aboard)
+                EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters));
             // TODO(VS-08): persist the owned boat across save/load. For now the grant is in-session only.
         }
 

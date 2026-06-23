@@ -9,9 +9,9 @@ namespace HiddenHarbours.Boats
     /// applies engine, rudder, hull drag relative to the water, wind shove, and a grounding check
     /// against tide. Built on Unity 6's Box2D-v3 2D physics. See design/boats-and-navigation.md.
     ///
-    /// Greybox tuning note: the 0.01/0.001 factors translate the design-unit stats on the hull into
-    /// a good 2D-physics feel; tune to taste. Real input arrives via DevBoatInput for now and an
-    /// InputService later (ui-ux).
+    /// Greybox tuning note: the <see cref="ForceFeelScale"/>/<see cref="RudderFeelScale"/> constants
+    /// translate the design-unit stats on the hull into a good 2D-physics feel; tune to taste. Real input
+    /// arrives via DevBoatInput for now and an InputService later (ui-ux).
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]   // hull collider: bumps shore + dock pilings (cozy, no damage)
@@ -19,6 +19,23 @@ namespace HiddenHarbours.Boats
     {
         /// <summary>Astern thrust as a fraction of ahead, like a real prop pushes backward weaker (~40%).</summary>
         public const float DefaultAsternFactor = 0.4f;
+
+        /// <summary>
+        /// Greybox feel-scale that translates the hulls' design-unit FORCE stats (EnginePower, drag,
+        /// windage, oar power) into a good 2D-physics feel. Shared by every force path so they stay in
+        /// proportion to one another.
+        /// </summary>
+        private const float ForceFeelScale = 0.01f;
+
+        /// <summary>
+        /// Greybox feel-scale for the engine RUDDER torque. Matched to <see cref="ForceFeelScale"/> so the
+        /// outboard's speed-scaled rudder has turning authority comparable to the Dory's differential-oar
+        /// yaw on the same hull — i.e. the Punt actually answers the helm while making way (the §2 outboard
+        /// turn), instead of the imperceptible swing the older 10×-smaller scale gave the larger hull. The
+        /// "no pivot dead in the water" feel is unchanged: it lives in <see cref="RudderTorque"/>'s
+        /// way-scaling, not here. Tune to taste.
+        /// </summary>
+        private const float RudderFeelScale = 0.01f;
 
         [SerializeField] private BoatHullDef _hull;
         [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
@@ -173,11 +190,11 @@ namespace HiddenHarbours.Boats
             Vector2 throughWater = vel - env.CurrentVector;
             Vector2 along = fwd * Vector2.Dot(throughWater, fwd);
             Vector2 sideways = throughWater - along;
-            Vector2 drag = -(along * (_hull.ForwardDrag * 0.01f) + sideways * (_hull.LateralDrag * 0.01f));
+            Vector2 drag = -(along * (_hull.ForwardDrag * ForceFeelScale) + sideways * (_hull.LateralDrag * ForceFeelScale));
             _rb.AddForce(drag, ForceMode2D.Force);
 
             // --- Wind shove (Pillar 1: the dory gets pushed around) ---
-            _rb.AddForce(env.WindVector * (_hull.WindExposure * 0.01f), ForceMode2D.Force);
+            _rb.AddForce(env.WindVector * (_hull.WindExposure * ForceFeelScale), ForceMode2D.Force);
         }
 
         /// <summary>
@@ -192,13 +209,13 @@ namespace HiddenHarbours.Boats
             // --- Engine thrust along the hull (no drive when hard aground). Ahead full, astern weaker. ---
             if (!IsAground)
             {
-                float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * 0.01f;
+                float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * ForceFeelScale;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
             }
 
             // --- Rudder: authority scales with WAY (forward speed through the water, §2) — nil at rest. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);   // forward way through the moving water
-            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way, IsAground) * 0.001f);
+            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way, IsAground) * RudderFeelScale);
         }
 
         /// <summary>
@@ -211,8 +228,8 @@ namespace HiddenHarbours.Boats
         {
             if (!IsAground)
             {
-                float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * 0.01f;
-                float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * 0.01f;
+                float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * ForceFeelScale;
+                float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
                 _rb.AddTorque(yaw);
             }
@@ -221,7 +238,7 @@ namespace HiddenHarbours.Boats
             if (_brace)
             {
                 Vector2 throughWater = vel - env.CurrentVector;
-                _rb.AddForce(BraceDragForce(throughWater, _hull.OarBraceDrag) * 0.01f, ForceMode2D.Force);
+                _rb.AddForce(BraceDragForce(throughWater, _hull.OarBraceDrag) * ForceFeelScale, ForceMode2D.Force);
             }
         }
     }
