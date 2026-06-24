@@ -24,7 +24,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class BoatRebindAndDisembarkTests
     {
-        // A flat tidal terrain + environment so NearShore()'s depth read is deterministic in EditMode.
+        // A flat tidal terrain + environment so OnLand()'s exposed-terrain depth read is deterministic.
         private sealed class FlatTerrain : ITidalTerrain
         {
             public float Elevation;
@@ -187,34 +187,38 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        // ---- FIX 2: disembark anywhere near land/shore; the boat parks where it's left ----------
+        // ---- FIX 2: disembark only onto LAND (board from anywhere); the boat is held on step-off -----
 
         [Test]
-        public void IsNearShoreByDepth_ShallowWaterIsShore_DeepWaterIsNot()
+        public void IsStandableLandByDepth_OnlyExposedGroundIsLand()
         {
-            Assert.IsTrue(ControlSwitcher.IsNearShoreByDepth(0.4f, 1.5f), "shoaled water (0.4 m) is near shore");
-            Assert.IsTrue(ControlSwitcher.IsNearShoreByDepth(1.5f, 1.5f), "right at the threshold counts");
-            Assert.IsFalse(ControlSwitcher.IsNearShoreByDepth(4f, 1.5f), "deep water (4 m) is open sea, not shore");
+            // The tightened rule (owner playtest): only EXPOSED ground (depth ≤ 0 — the ground is at/above the
+            // water line) is standable land. Merely-shallow but still-submerged water is NOT land — you can't
+            // step off onto water.
+            Assert.IsTrue(ControlSwitcher.IsStandableLandByDepth(0f), "right at the water line counts as land (bared)");
+            Assert.IsTrue(ControlSwitcher.IsStandableLandByDepth(-0.3f), "ground proud of the water is land");
+            Assert.IsFalse(ControlSwitcher.IsStandableLandByDepth(0.4f), "shallow-but-submerged water (0.4 m) is NOT land");
+            Assert.IsFalse(ControlSwitcher.IsStandableLandByDepth(4f), "deep water is open sea, not land");
         }
 
         [Test]
-        public void Disembark_NearShoreAwayFromDock_Succeeds_AndStepsOffAtTheBoat()
+        public void Disembark_OnLandAwayFromDock_Succeeds_AndStepsOffAtTheBoat()
         {
-            // Tidal terrain shoaled so the water under the boat is shallow → "near shore", far from the dock.
+            // Tidal terrain EXPOSED so the ground under the boat is bared → standable land, far from the dock.
             GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new FlatEnv { Level = 0.6f }; // depth 0.4 m ≤ 1.5 threshold
+            GameServices.Environment = new FlatEnv { Level = 0f }; // depth -0.2 m ≤ 0 = land
 
             var (sw, walk, boat, input, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                         Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); // board
-            boatGo.transform.position = new Vector3(40f, 40f, 0f); // sailed far from the dock, up to a shore
+            sw.TryInteract(); // board (within reach of the boat)
+            boatGo.transform.position = new Vector3(40f, 40f, 0f); // sailed far from the dock, up onto a flat
 
             Assert.IsFalse(sw.InDockZone(), "the boat is nowhere near the dock");
-            Assert.IsTrue(sw.NearShore(), "but it's near a shoaled shore");
+            Assert.IsTrue(sw.OnLand(), "but it's over standable land (an exposed flat)");
             Assert.IsTrue(sw.CanInteract(), "so disembark is allowed here");
 
             bool ok = sw.TryInteract(); // disembark away from the dock
-            Assert.IsTrue(ok, "disembarking near land (away from the dock) succeeds");
+            Assert.IsTrue(ok, "disembarking onto land (away from the dock) succeeds");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             Assert.IsTrue(walk.enabled);
             Assert.IsFalse(boat.enabled);
@@ -225,9 +229,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Disembark_OverShallowButSubmergedWater_IsRefused()
+        {
+            // The owner's tightened rule: merely-shallow water that's still SUBMERGED is NOT land. The old
+            // "shallow-but-submerged depth" allowance is gone — you can't step off onto water.
+            GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
+            GameServices.Environment = new FlatEnv { Level = 0.6f }; // depth 0.4 m > 0 → still submerged water
+
+            var (sw, _, boat, _, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
+                                                 Hull("boat.dory", PropulsionType.Oars));
+            sw.TryInteract(); // board
+            boatGo.transform.position = new Vector3(40f, 40f, 0f); // over shallow but still-submerged water
+
+            Assert.IsFalse(sw.OnLand(), "shallow-but-submerged water is not standable land");
+            Assert.IsFalse(sw.CanInteract(), "so disembark is refused over water");
+            Assert.IsFalse(sw.TryInteract());
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "still aboard — can't step off onto water");
+        }
+
+        [Test]
         public void Disembark_OutInDeepWater_StillRefused()
         {
-            // Deep water everywhere → not near shore, not at the dock → can't get off (no stranding mid-sea).
+            // Deep water everywhere → not over land, not at the dock → can't get off (no stranding mid-sea).
             GameServices.TidalTerrain = new FlatTerrain { Elevation = -10f };
             GameServices.Environment = new FlatEnv { Level = 0f }; // depth 10 m
 
@@ -236,7 +259,7 @@ namespace HiddenHarbours.Tests.EditMode
             sw.TryInteract(); // board
             boatGo.transform.position = new Vector3(0f, -60f, 0f); // far out in deep water
 
-            Assert.IsFalse(sw.NearShore(), "deep open water is not shore");
+            Assert.IsFalse(sw.OnLand(), "deep open water is not land");
             Assert.IsFalse(sw.CanInteract(), "so disembark is refused out at sea");
             Assert.IsFalse(sw.TryInteract());
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
@@ -244,11 +267,27 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Disembark_ParksTheBoatWhereItsLeft()
+        public void Board_FromAnywhereWithinReach_Succeeds_EvenAwayFromTheDock()
         {
-            // The boat is coasting; disembarking must bring it to rest so it stays put (no drift).
+            // Board-from-anywhere (owner playtest): boarding is gated by proximity to the boat, not a dock
+            // zone. Place the player right beside a boat far from any dock and confirm she boards.
+            var (sw, _, boat, input, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f),
+                                                Hull("boat.dory", PropulsionType.Oars));
+            Assert.IsFalse(sw.InDockZone(), "nowhere near the dock");
+            Assert.IsTrue(sw.WithinBoardReach(), "but the player is right beside the boat");
+            Assert.IsTrue(sw.TryInteract(), "boarding succeeds from anywhere within reach of the boat");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.IsTrue(boat.enabled);
+            Assert.IsTrue(input.enabled);
+        }
+
+        [Test]
+        public void Disembark_HoldsTheBoat_BroughtToRest()
+        {
+            // The boat is coasting; disembarking holds the rope (boat tethered to the player) and brings it to
+            // rest so it sits quiet under the player's hand (parks where left in calm weather).
             GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new FlatEnv { Level = 0.6f };
+            GameServices.Environment = new FlatEnv { Level = 0f };   // exposed land + dead-calm sample
 
             var (sw, _, boat, _, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                  Hull("boat.dory", PropulsionType.Oars));
@@ -258,9 +297,9 @@ namespace HiddenHarbours.Tests.EditMode
             rb.linearVelocity = new Vector2(3f, -2f); // making way
             rb.angularVelocity = 30f;
 
-            sw.TryInteract(); // disembark near shore
+            sw.TryInteract(); // disembark onto land → holds the rope
 
-            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "the boat is brought to rest on step-off (parks where left)");
+            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "the boat is brought to rest on step-off (held quiet)");
             Assert.AreEqual(0f, rb.angularVelocity, 1e-4f, "and stops spinning");
         }
 

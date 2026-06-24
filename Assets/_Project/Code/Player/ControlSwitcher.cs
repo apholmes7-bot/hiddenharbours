@@ -11,8 +11,9 @@ namespace HiddenHarbours.Player
     /// The control-mode state machine (OnFoot ⇄ Aboard) — step 2 of the on-foot player, completing the
     /// walk → board → sail → fish/sell/buy → dock → disembark → walk loop. Owns the active mode and
     /// gates which controller receives input: on foot the <see cref="PlayerWalkController"/> drives;
-    /// aboard the <see cref="BoatController"/> + its dev input drive. INTERACT (dev key E) boards when
-    /// on foot within the dock zone, and disembarks when aboard with the boat back in the dock zone.
+    /// aboard the <see cref="BoatController"/> + its dev input drive. INTERACT (dev key E) BOARDS when on
+    /// foot within reach of the boat (anywhere, not only at the dock), and DISEMBARKS when aboard with the
+    /// step-off point over standable LAND.
     ///
     /// Cross-module via Core only: it toggles the Player + Boats controllers it holds and hands the
     /// camera off through the Core <see cref="ControlModeChanged"/> / <see cref="ActiveBoatChanged"/>
@@ -29,42 +30,44 @@ namespace HiddenHarbours.Player
         [Tooltip("The boat's input behaviour (DevBoatInput) — enabled only while aboard.")]
         [SerializeField] private Behaviour _boatInput;
         [Tooltip("The boat's rope/mooring (BoatMooring). Optional — auto-resolved off the boat if left empty. " +
-                 "On disembark near shore the boat is TIED here (parks + tethered, the cozy default); the " +
-                 "tie/untie key casts her off to drift on wind+tide (the teeth) or makes her fast again.")]
+                 "On disembark onto land the player HOLDS the rope (boat tethered to the player); the root " +
+                 "key drops it to the ground (boat tethered there, player free to roam) and back to hand.")]
         [SerializeField] private BoatMooring _mooring;
 
-        [Header("Dock zone")]
-        [Tooltip("The dock/mooring point. Board when the player is within range; disembark when the boat is.")]
+        [Header("Dock zone (the tidy dock landing only)")]
+        [Tooltip("The dock/mooring point. Disembarking AT the dock lands the player tidily on the planks; " +
+                 "otherwise they step off where the boat is. Boarding no longer requires the dock (board " +
+                 "from anywhere within reach of the boat).")]
         [SerializeField] private Transform _dockZone;
-        [Tooltip("Board/dock zone radius (m). Forgiving (P5 cozy) so a reasonably-parked boat — bow stopped " +
-                 "against the dock-head collider — still registers a disembark; boarding uses the on-foot " +
-                 "player's position, so this stays comfortable for both.")]
+        [Tooltip("Dock landing radius (m): when the boat is within this of the dock on disembark, the player " +
+                 "lands on the dock planks (DisembarkPoint) instead of at the boat. Forgiving (P5 cozy).")]
         [SerializeField] private float _zoneRadius = 3.5f;
         [Tooltip("Where the on-foot player is placed after disembarking AT THE DOCK (on the dock planks). " +
-                 "When disembarking away from the dock (near a shore), the player steps off at the boat's " +
+                 "When disembarking away from the dock (onto a shore), the player steps off at the boat's " +
                  "own position instead, so this is only used for the tidy dock landing.")]
         [SerializeField] private Transform _disembarkPoint;
 
-        [Header("Disembark-anywhere (near land/shore)")]
-        [Tooltip("Disembarking is allowed wherever the boat is near land/shore — not only at the dock. " +
-                 "Shore is detected two ways (either suffices): the authored tidal terrain shoaling toward " +
-                 "land (the boat is over water shallower than ShoreDepthThreshold), and/or a physical land/" +
-                 "shore collider within ShoreProbeRadius on this mask. Leave the mask empty to rely on the " +
-                 "terrain test alone (St Peters); set it to the layer your shore-edge/island colliders use " +
-                 "(the cove's ShoreEdge is on Default) to allow step-off onto a hard shore.")]
-        [SerializeField] private LayerMask _shoreMask = 0;
-        [Tooltip("How close (m) a shore/land collider must be for the boat to count as 'near shore'. " +
-                 "Forgiving so a boat nudged up to the beach reliably lets you step off (P5 cozy).")]
-        [SerializeField] private float _shoreProbeRadius = 2.5f;
-        [Tooltip("Water depth (m) at or below which the boat counts as 'near shore' over authored tidal " +
-                 "terrain — i.e. the water has shoaled toward land. Read off the same deterministic depth " +
-                 "(water level − ground) the boat-cross gate uses, so 'near shore' and 'too shallow to " +
-                 "float here' agree. Open water (no terrain wired) reads infinite depth → never shore by " +
-                 "this test, so set a shore mask for non-tidal regions.")]
-        [SerializeField] private float _shoreDepthThreshold = 1.5f;
+        [Header("Board from anywhere (proximity to the boat)")]
+        [Tooltip("How close (m) the on-foot player must be to the boat to board it — board from ANYWHERE " +
+                 "within this reach, not only at a dock zone. Forgiving (P5 cozy) so you can step aboard a " +
+                 "boat you've nudged up to a beach, not just one parked at the wharf.")]
+        [SerializeField] private float _boardReach = 3.5f;
 
-        [Header("Rope / mooring (tie · untie)")]
-        [Tooltip("How close (m) the on-foot player must stand to a moored boat to tie/untie its rope. " +
+        [Header("Disembark only onto LAND (no stepping off over water)")]
+        [Tooltip("Disembarking is allowed only where the step-off point is actual standable LAND — never over " +
+                 "open or submerged water. Land is detected two ways (either suffices): the authored tidal " +
+                 "terrain is EXPOSED under the boat (the ground is at/above the water line — walkable flat), " +
+                 "and/or a physical land/shore collider sits within LandProbeRadius on this mask. Leave the " +
+                 "mask empty to rely on the exposed-terrain test alone (St Peters); set it to the layer your " +
+                 "shore-edge/island colliders use (the cove's ShoreEdge is on Default) to allow step-off onto " +
+                 "a hard shore.")]
+        [SerializeField] private LayerMask _landMask = 0;
+        [Tooltip("How close (m) a land/shore collider must be for the boat to count as 'over land'. Forgiving " +
+                 "so a boat nudged up to the beach reliably lets you step off (P5 cozy).")]
+        [SerializeField] private float _landProbeRadius = 2.5f;
+
+        [Header("Rope / mooring (hold · root)")]
+        [Tooltip("How close (m) the on-foot player must stand to a moored boat to hold/root its rope. " +
                  "Forgiving (P5 cozy) so you don't have to stand on the exact spot.")]
         [SerializeField] private float _moorReach = 4f;
 
@@ -90,46 +93,54 @@ namespace HiddenHarbours.Player
 
         // ---- zone tests (testable via positioned transforms) --------------------------------
 
-        public bool InBoardZone()
-            => Player != null && _dockZone != null
-               && Vector2.Distance(Player.position, _dockZone.position) <= _zoneRadius;
-
+        /// <summary>True when the boat is within the dock-landing radius (used only to pick the tidy
+        /// dock-plank landing on disembark — boarding no longer depends on it).</summary>
         public bool InDockZone()
             => Boat != null && _dockZone != null
                && Vector2.Distance(Boat.position, _dockZone.position) <= _zoneRadius;
 
         /// <summary>
-        /// Pure test: is the water under the boat shallow enough to count as "near shore"? Reads the SAME
-        /// deterministic depth (water level − authored ground) the boat-cross gate uses, so "near shore"
-        /// and "too shallow to float here" can't disagree. Open water (no terrain wired) reads
-        /// <see cref="float.PositiveInfinity"/> → never near shore by depth. Pure + static so the
-        /// disembark-near-land rule is EditMode-testable with a fake terrain/environment.
+        /// True when the on-foot player is close enough to the boat to BOARD it — board from anywhere within
+        /// reach, not only at a dock zone (the relaxed board gate). Pure proximity to the boat.
         /// </summary>
-        public static bool IsNearShoreByDepth(float waterDepth, float shoreDepthThreshold)
-            => waterDepth <= shoreDepthThreshold;
+        public bool WithinBoardReach()
+            => Player != null && Boat != null
+               && Vector2.Distance(Player.position, Boat.position) <= _boardReach;
 
         /// <summary>
-        /// True when the boat is near land/shore right now, so the player may step off here (not only at
-        /// the dock). Two independent tells, either suffices (P5 forgiving):
-        ///   • the authored tidal terrain has shoaled — water depth under the boat ≤ ShoreDepthThreshold
-        ///     (the deterministic <see cref="BoatCrossing.DepthAt"/> read; open water = infinite = not shore);
-        ///   • a physical land/shore collider sits within ShoreProbeRadius on the shore mask (an empty mask
-        ///     skips this test). The cove's hard shore-edge is found this way; St Peters' soft flats by depth.
+        /// Pure test: is the step-off point over standable LAND by tidal terrain — i.e. the ground is EXPOSED
+        /// (at or above the water line, <c>waterDepth ≤ 0</c>)? This is the tightened rule (owner playtest):
+        /// merely-shallow but still-submerged water (<c>0 &lt; depth</c>) is NOT land, so you can't step off
+        /// onto water. Reads the SAME deterministic depth (water level − authored ground) the boat-cross gate
+        /// uses. Open water (no terrain wired) reads <see cref="float.PositiveInfinity"/> → never land. Pure +
+        /// static so the disembark-only-on-land rule is EditMode-testable with a fake terrain/environment.
         /// </summary>
-        public bool NearShore()
+        public static bool IsStandableLandByDepth(float waterDepth)
+            => waterDepth <= 0f;
+
+        /// <summary>
+        /// True when the boat sits over standable land right now, so the player may step off here (the
+        /// disembark gate; not only at the dock). Two independent tells, either suffices (P5 forgiving) — but
+        /// BOTH require actual land, never open/submerged water:
+        ///   • the authored tidal terrain is EXPOSED under the boat (water depth ≤ 0 — a walkable flat/bar,
+        ///     via the deterministic <see cref="BoatCrossing.DepthAt"/>; open water = infinite = not land);
+        ///   • a physical land/shore collider sits within LandProbeRadius on the land mask (an empty mask
+        ///     skips this test). The cove's hard shore-edge is found this way; St Peters' bared flats by depth.
+        /// </summary>
+        public bool OnLand()
         {
             if (Boat == null) return false;
 
-            // 1) Tidal-terrain shoaling (deterministic, the boat-cross gate's depth read).
+            // 1) Exposed tidal terrain — the ground is bared (deterministic, the boat-cross gate's depth read).
             float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment,
                                                GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0,
                                                Boat.position);
-            if (!float.IsPositiveInfinity(depth) && IsNearShoreByDepth(depth, _shoreDepthThreshold))
+            if (!float.IsPositiveInfinity(depth) && IsStandableLandByDepth(depth))
                 return true;
 
             // 2) A physical land/shore collider close by (only when a mask is set; 0 = skip).
-            if (_shoreMask.value != 0
-                && Physics2D.OverlapCircle(Boat.position, _shoreProbeRadius, _shoreMask) != null)
+            if (_landMask.value != 0
+                && Physics2D.OverlapCircle(Boat.position, _landProbeRadius, _landMask) != null)
                 return true;
 
             return false;
@@ -167,14 +178,17 @@ namespace HiddenHarbours.Player
             return RepairLedger.IsRepaired(save, hullId);
         }
 
-        /// <summary>True if INTERACT would transition right now (in the right zone for the current mode).
-        /// On foot this also requires the boat to be boardable (a damaged dory blocks boarding until
-        /// repaired). Aboard, you may disembark at the dock OR anywhere the boat is near land/shore
-        /// (<see cref="NearShore"/>) — disembarking is otherwise never gated.</summary>
+        /// <summary>True if INTERACT would transition right now. On foot you may board whenever within reach
+        /// of the boat (anywhere) and the boat is boardable (a damaged dory blocks boarding until repaired).
+        /// Aboard, you may disembark only onto a standable step-off: at an authored DOCK/wharf (you step onto
+        /// the planks) OR where the boat is over standable LAND (<see cref="OnLand"/>) — NEVER over open or
+        /// merely-shallow-but-submerged water. The dock is the built place you step ashore; the land test is
+        /// the bared-flats/shore-collider case away from any dock. The removed allowance is "shallow but
+        /// still submerged water with no dock" (owner playtest: you couldn't step off onto water).</summary>
         public bool CanInteract()
             => Mode == ControlMode.OnFoot
-                ? (InBoardZone() && BoardableNow())
-                : (InDockZone() || NearShore());
+                ? (WithinBoardReach() && BoardableNow())
+                : (InDockZone() || OnLand());
 
         /// <summary>Attempt the board/disembark transition. Returns true if it happened.</summary>
         public bool TryInteract()
@@ -185,12 +199,12 @@ namespace HiddenHarbours.Player
             return true;
         }
 
-        // ---- rope: tie / untie (the mooring mechanic — the teeth) ---------------------------
+        // ---- rope: hold / root (the mooring mechanic — the owner's refinement) --------------
 
         /// <summary>
-        /// True when the on-foot player may tie/untie the rope right now: on foot, the boat has a mooring,
-        /// it's actually moored (tied or adrift), and the player stands within <see cref="_moorReach"/> of
-        /// it. (Aboard, the rope is stowed — you cast off by getting under way.)
+        /// True when the on-foot player may hold/root the rope right now: on foot, the boat has a mooring,
+        /// it's actually moored (held or rooted), and the player stands within <see cref="_moorReach"/> of
+        /// it. (Aboard, the rope is stowed — boarding takes the helm.)
         /// </summary>
         public bool CanToggleMooring()
             => Mode == ControlMode.OnFoot
@@ -199,14 +213,15 @@ namespace HiddenHarbours.Player
                && Vector2.Distance(Player.position, Boat.position) <= _moorReach;
 
         /// <summary>
-        /// Tie ⇄ untie the rope. Tethered → cast off (the boat drifts free on wind+tide — the teeth);
-        /// adrift → make her fast again at the player's feet (recover). No-op unless
-        /// <see cref="CanToggleMooring"/>. Returns true if it toggled.
+        /// Toggle HOLD ⇄ ROOT the rope (the root key). Held → root the line at the player's feet (the boat
+        /// tethers to that fixed spot; the player is free to roam); Rooted → take the line back in hand (the
+        /// boat follows the player again). No-op unless <see cref="CanToggleMooring"/>. Returns true if it
+        /// toggled.
         /// </summary>
         public bool ToggleMooring()
         {
             if (!CanToggleMooring()) return false;
-            Mooring.ToggleTie(Player.position);   // re-tie point = where the player stands
+            Mooring.ToggleRoot(Player.position, Player);   // root at the player's feet, or take back in hand
             return true;
         }
 
@@ -215,7 +230,7 @@ namespace HiddenHarbours.Player
         private void Board()
         {
             SetPlayerActive(false);                                  // hide & freeze the on-foot player
-            if (Mooring != null) Mooring.Stow();                     // cast off the rope; the helm takes over
+            if (Mooring != null) Mooring.Stow();                     // stow the rope; the helm takes over
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
             Mode = ControlMode.Aboard;
@@ -230,33 +245,31 @@ namespace HiddenHarbours.Player
 
         private void Disembark()
         {
-            // Drop the helm. The boat is brought to rest and made fast to shore below (TieTo → Stop), so an
-            // un-crewed boat stays put — the cozy disembark-anywhere safety. (Casting her OFF to drift on
-            // wind+tide is the deliberate teeth: the tie/untie key, ToggleMooring.)
+            // Drop the helm. The player steps off onto land and HOLDS the rope (the boat is tethered to the
+            // player's hand and trails them on the leash). Press the root key to drop the line to the ground
+            // (the boat tethers there; the player roams free). The boat always drifts on wind+tide on its
+            // current tether (held or rooted) via the firm/slack rope physics.
             bool atDock = InDockZone();
             if (_boatController != null) _boatController.enabled = false;
             if (_boatInput != null) _boatInput.enabled = false;
 
             // Place the on-foot player: a tidy landing on the dock planks when disembarking at the dock,
-            // otherwise step off right where the boat is (onto the nearby shore/flats) so disembark-anywhere
+            // otherwise step off right where the boat is (onto the nearby land/flats) so disembark-on-land
             // doesn't teleport you back to a far dock. Null-safe (tests / no disembark point wired).
-            Vector2 landing = Boat != null ? (Vector2)Boat.position : Vector2.zero;
             if (Player != null)
             {
                 if (atDock && _disembarkPoint != null) Player.position = _disembarkPoint.position;
                 else if (Boat != null) Player.position = Boat.position;
-                landing = Player.position;
             }
-
-            // TIE UP (the rope mechanic, P1/P5): make fast to the shore spot where the player stepped off —
-            // the boat parks AND is tethered, so wind+tide can swing her on the leash but never carry her off.
-            // One press (this disembark) ties her: a quick hop-off never loses the boat. If the boat has no
-            // mooring component the mechanic self-disables and we fall back to a bare stop (still parks).
-            if (Mooring != null) Mooring.TieTo(landing);
-            else if (_boatController != null) _boatController.Stop();
 
             SetPlayerActive(true);
             Mode = ControlMode.OnFoot;
+
+            // HOLD the rope (the owner's refinement): on disembark the player takes the line in hand, so the
+            // boat is tethered to the player and follows on the leash. If the boat has no mooring component
+            // the mechanic self-disables and we fall back to a bare stop (still parks).
+            if (Mooring != null && Player != null) Mooring.Hold(Player);
+            else if (_boatController != null) _boatController.Stop();
 
             // Camera: retarget to the player + reframe to the on-foot view (CameraFollow owns the value).
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
@@ -327,11 +340,11 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// Re-point the board/dock zone to ANOTHER region's mooring on a VS-22 travel — WITHOUT changing
+        /// Re-point the dock-landing zone to ANOTHER region's mooring on a VS-22 travel — WITHOUT changing
         /// the control mode (you arrive in the new region still aboard / still on foot). The persistent
-        /// switcher carries across the hop; the App RegionTravelCoordinator calls this so boarding and
-        /// disembarking work at whichever region's wharf you're standing in. Null args are tolerated (a
-        /// region simply has no board zone until wired).
+        /// switcher carries across the hop; the App RegionTravelCoordinator calls this so the tidy dock
+        /// landing works at whichever region's wharf you're standing in. Null args are tolerated (a region
+        /// simply has no dock landing until wired — you still step off at the boat onto land).
         /// </summary>
         public void SetDock(Transform dockZone, Transform disembarkPoint)
         {
@@ -356,7 +369,7 @@ namespace HiddenHarbours.Player
 
             var kb = Keyboard.current;
             if (kb != null && kb.eKey.wasPressedThisFrame) TryInteract();
-            // Q ties / unties the rope of a moored boat you're standing by (the mooring teeth).
+            // Q holds/roots the rope of a moored boat you're standing by (the mooring interaction).
             if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
             UpdateHint();
         }
@@ -365,9 +378,9 @@ namespace HiddenHarbours.Player
         {
             if (_hint == null) return;
 
-            // Cozy feedback (P5): when standing at the mooring of a damaged, unrepaired boat, say why you
-            // can't board rather than showing nothing — the opening nudges the player to the shipwright.
-            bool atDamagedBoat = Mode == ControlMode.OnFoot && InBoardZone() && !BoardableNow();
+            // Cozy feedback (P5): when standing near a damaged, unrepaired boat, say why you can't board
+            // rather than showing nothing — the opening nudges the player to the shipwright.
+            bool atDamagedBoat = Mode == ControlMode.OnFoot && WithinBoardReach() && !BoardableNow();
             bool canMoor = CanToggleMooring();
             bool show = CanInteract() || atDamagedBoat || canMoor;
             if (_hint.enabled != show) _hint.enabled = show;
@@ -376,13 +389,14 @@ namespace HiddenHarbours.Player
                 string text;
                 if (atDamagedBoat) text = "She needs repairs before she'll sail";
                 else if (Mode == ControlMode.OnFoot) text = CanInteract() ? "E: Board" : null;
-                else text = InDockZone() ? "E: Dock" : "E: Get off";   // near a shore away from the dock
+                else text = InDockZone() ? "E: Dock" : "E: Get off";   // onto land away from the dock
 
-                // Rope prompt (mooring teeth): tie up an adrift boat, or cast off a tethered one to let her
-                // drift. Shown alongside the board prompt when both apply (on foot beside a moored boat).
+                // Rope prompt (the mooring interaction): while holding the rope, offer to root it to the
+                // ground; while rooted, offer to take it back in hand. Shown alongside the board prompt when
+                // both apply (on foot beside a moored boat).
                 if (canMoor)
                 {
-                    string rope = Mooring.IsTethered ? "Q: Untie (cast off)" : "Q: Tie up";
+                    string rope = Mooring.IsHeld ? "Q: Tie to ground" : "Q: Take rope";
                     text = string.IsNullOrEmpty(text) ? rope : text + "    " + rope;
                 }
                 if (_hint.text != text) _hint.text = text;

@@ -482,36 +482,47 @@ class Boat {
 
 ### 9.5 Board / disembark verb & control re-bind (greybox)
 
-The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); two playtest fixes hardened it:
+The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); several playtest fixes hardened it:
 
-- **Disembark anywhere near land/shore** (not only at the dock). Aboard, INTERACT now disembarks when the
-  boat is at the dock zone **OR** `NearShore()`. "Near shore" reads two independent tells (either
-  suffices): the authored **tidal terrain shoaling** under the boat — the same deterministic
-  `WaterDepth = WaterLevel − groundElevation` (via `BoatCrossing.DepthAt`) the boat-cross gate uses, so
-  "near shore" and "too shallow to float here" agree — and an optional **physical shore/land collider**
-  within a probe radius (for non-tidal regions like the cove, whose hard shore-edge has no height map).
-  At the dock you land tidily on the planks; away from the dock you step off at the boat. Boarding is
-  unchanged (still the dock board zone).
-- **Tie up your boat so the sea doesn't take it** — the **rope / mooring mechanic** (`BoatMooring`, Boats
-  lane; P1 + P5). This *replaces* the earlier placeholder "park-on-disembark": a disembarked boat now stays
-  put **only while tied**, and **drifts free on wind + tide when untied** — the teeth.
-  - **On disembark near shore the rope auto-attaches and the boat is TIED by default** (one press — the
-    disembark itself — makes her fast at the spot the player steps off; a quick hop-off never loses the
-    boat, P5 cozy). Tied, she is **tethered**: she still feels the deterministic wind + tidal-current force
-    model (she bobs/swings on her leash), but a **one-sided rope spring** (`BoatMooring.TetherForce`) pulls
-    her back whenever she reaches the end of the rope, so she stays **within rope-length of the tie point**
-    and can never float away. Inside rope-length the rope is slack and does nothing.
-  - **The `Q` key ties / unties** the rope of a moored boat you're standing beside (`ToggleMooring`).
-    **Cast off (untie) and she DRIFTS FREE** on wind + tide (`BoatMooring.DriftForce` — the same set-with-
-    the-weather model the helm applies with the throttle let go). Recoverable, not punishing: she bumps the
-    shore on her hull collider (no damage, no stranding); re-tie (`Q`) or re-board (`E`) to take her out
-    again. Re-boarding **stows** the rope (the helm takes over).
-  - **Tunables are owner-editable serialized fields, no magic numbers**: rope length, tether stiffness, and
-    snub damping on `BoatMooring`. Drift uses only the deterministic `EnvironmentSample`; the tether is a
-    pure physics constraint (one-sided spring + snub) — nothing saved, no RNG (CLAUDE.md rule 5). The
-    constraint + drift math are pure static helpers, EditMode-tested (tethered-stays-within-rope vs
-    untied-runs-away; the tie/untie state machine; force determinism). The greybox rope is a placeholder
-    `LineRenderer`; the FEEL (tethered-and-swinging vs drifting-away) is the point — the pretty rope is a
+- **Disembark only onto a standable step-off** (never over open or merely-shallow-but-submerged water).
+  Aboard, INTERACT disembarks when the boat is **at an authored dock/wharf** (`InDockZone()` — you step onto
+  the planks) **OR over standable LAND** (`OnLand()`). `OnLand()` reads two independent tells (either
+  suffices, but **both require actual land**): the authored **tidal terrain is EXPOSED** under the boat —
+  the deterministic `WaterDepth = WaterLevel − groundElevation` (via `BoatCrossing.DepthAt`) is **≤ 0**, i.e.
+  the ground is at/above the water line (a bared flat/bar) — and/or a **physical land/shore collider** within
+  a probe radius (for non-tidal regions like the cove, whose hard shore-edge has no height map). The earlier
+  **"shallow-but-submerged depth" allowance is gone** (owner playtest): merely-shallow water that's still
+  submerged, with no dock or land under you, is *not* a step-off — you can't disembark onto water. At the
+  dock you land tidily on the planks; away from the dock you step off at the boat onto the bared land.
+- **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
+  at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
+  wharf. (The damaged-dory repair gate still applies on top, P5.)
+- **Hold / root the mooring line** — the **rope / mooring mechanic** (`BoatMooring`, Boats lane; P1 + P5).
+  This *replaces* the earlier auto-tie-on-disembark with the owner's refinement:
+  - **On disembark the player HOLDS the rope** (`Hold(player)`): the line is made fast to the **player's own
+    position**, so the boat is tethered to the player and trails them on the leash as they move. A quick
+    hop-off never loses the boat (P5 cozy).
+  - **Press `Q` to ROOT the line to the ground** at the player's feet (`ToggleMooring` → `Root`): the boat
+    now tethers to that **fixed spot** and the player is free to roam. **`Q` again** takes the line back in
+    hand (`Hold`). Re-boarding (`E`) **stows** the rope (the helm takes over).
+  - **The boat always drifts on its current tether** (the player's hand while held, the ground spot while
+    rooted) via the deterministic wind + tidal-current force model (`BoatMooring.DriftForce` — the same
+    set-with-the-weather model the helm applies with the throttle let go).
+  - **The rope behaves like a ROPE, not a rubber band.** Inside rope-length the line is **slack** and does
+    nothing — the boat moves freely (bobs/swings) on wind + tide. At the end of the rope it hits a **FIRM,
+    near-inextensible limit**: `BoatMooring.TetherForce` applies a stiff restoring force only on the small
+    *excess past `ropeLength + give`* plus strong outward-velocity damping (so she's arrested cleanly at the
+    limit, not pulled back softly in proportion to stretch), and a **hard positional clamp**
+    (`ConstrainToRope`) guarantees she can never sit more than the tiny `give` past rope-length (the
+    "inextensible" part). The greybox `LineRenderer` draws the **slack rope as a drooping catenary** that
+    straightens and goes taut only at the limit (`Slack01` / `SampleRopeCurve`).
+  - **Tunables are owner-editable serialized fields, no magic numbers**: rope length, the firm-limit give /
+    stiffness / damping, and the slack-sag amount on `BoatMooring`. Drift uses only the deterministic
+    `EnvironmentSample`; the tether is a pure physics constraint (firm limit + damping + positional clamp) —
+    nothing saved, no RNG (CLAUDE.md rule 5). The constraint + drift + curve math are pure static helpers,
+    EditMode-tested (slack-inside vs firm-limit; held-at-the-rope's-end vs untethered-runs-away;
+    inextensible clamp; the hold/root/board state machine; disembark-only-on-land; board-from-anywhere;
+    force determinism). The greybox rope is a placeholder; the FEEL is the point — the pretty rope is a
     later art pass.
 - **Control survives a region hop.** The persistent rig (player/boat/switcher) is `DontDestroyOnLoad`
   and carries the control **mode** across an additive region toggle, but nothing re-enabled the active
@@ -521,6 +532,29 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); two 
   control to match the persisted mode and re-raising the camera signals; the just-teleported boat is
   also `Stop()`-ed so a stale velocity doesn't carry it off the arrival mark. Works for both the rowed
   Dory and the engine Punt.
+
+### 9.6 Mooring — future work (cleats / posts / placed tie items, and a second line) *(NOT built)*
+
+The current rope makes fast to one of two **tie targets**: the **player's hand** (held) or a **fixed ground
+spot** (rooted). Both are an `IMooringAnchor` (`MooringAnchor.cs`) — an interface the tether reads a live
+`Position` from each tick — so the mechanic is already structured to grow **without reworking the rope
+physics**:
+
+- **Dedicated cleats / posts / user-placeable tie items.** A cleat on the wharf, a piling, or a tie-post the
+  player **places** is just another `IMooringAnchor` (a `FixedAnchor` at its position, or a component that
+  supplies its own). Rooting to one instead of the bare ground becomes a target-selection choice (snap to the
+  nearest in-reach cleat); the firm/slack tether and the LineRenderer are unchanged. A placed tie-item would
+  be **content/data** (a small `Def` + a world prop), keeping it in-lane with ADR-0003. This pairs with the
+  shipwright/harbour build-out and the lobster-buoy work (§6.3).
+- **Two lines (a bow line + a stern line).** A larger or more exposed berth wants the boat held at **two
+  points** so she lies alongside instead of swinging on a single leash. That is two `BoatMooring`/anchor
+  pairs (a bow anchor + a stern anchor, each its own rope), with the per-line firm/slack physics applied at
+  the bow and stern attach points rather than the hull centre — a natural extension of the single-line model,
+  not a new mechanic. It also unlocks **springs/breast-lines** flavour and a real "make her fast fore-and-aft"
+  docking beat (P1 seamanship).
+
+Both are deliberately deferred (out of the current greybox phase); the single rope-to-player/ground is the
+working mechanic. Captured here so the structure stays honest and the later pass is a fill-in, not a rewrite.
 
 ---
 
