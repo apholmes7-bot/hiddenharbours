@@ -9,20 +9,22 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// The rope / mooring mechanic — "tie up your boat so the sea doesn't take it" (P1 + P5). Exercised
-    /// through the pure tether/drift helpers (no physics loop) and the tie/untie state machine on both
+    /// through the pure tether/drift helpers (no physics loop) and the hold/root/board state machine on both
     /// <see cref="BoatMooring"/> and the Player-lane <see cref="ControlSwitcher"/>:
     ///
-    ///   • TETHERED — a boat pushed by wind/tide is held within rope-length of the tie point (the leash):
-    ///     the rope force is zero inside rope-length (bobs free) and pulls inward beyond it; an integrated
-    ///     drift-under-constant-force never escapes the rope circle, while the same drift UNtied runs away.
-    ///   • UNTIED  — the deterministic wind+tide drift force sets an idle hull moving (the teeth).
-    ///   • STATE MACHINE — disembark ties (parks + tethered, the cozy default); the tie/untie key casts off
-    ///     to drift and re-ties; re-boarding stows the rope.
+    ///   • ROPE PHYSICS (firm limit, not a rubber band) — inside rope-length the rope is SLACK (zero force,
+    ///     the boat bobs free); past it a FIRM near-inextensible limit checks her, and a hard positional
+    ///     clamp guarantees she can never sit more than the tiny give past rope-length. An integrated
+    ///     drift-under-constant-force is held essentially AT the rope's end (no big springy overshoot),
+    ///     while the same drift untethered runs away.
+    ///   • DRIFT — the deterministic wind+tide drift force sets an idle hull moving on its leash.
+    ///   • STATE MACHINE — disembark HOLDS the rope (boat tethered to the player); the root key roots it to
+    ///     the ground and back to hand; re-boarding stows the rope.
     ///   • DETERMINISM — the tether + drift forces are bit-stable for identical inputs (no hidden RNG).
     /// </summary>
     public class BoatMooringTests
     {
-        // A flat deterministic terrain + environment so the switcher's NearShore() depth read is stable.
+        // A flat deterministic terrain + environment so the switcher's OnLand() depth read is stable.
         private sealed class FlatTerrain : ITidalTerrain
         {
             public float Elevation;
@@ -61,67 +63,98 @@ namespace HiddenHarbours.Tests.EditMode
             return hull;
         }
 
-        // ============ Part 1: the TETHER force (stays within rope length under force) ============
+        // Firm-limit tunables used across the rope-physics tests (owner-editable in the real component).
+        private const float RopeLen = 4f;
+        private const float Give = 0.15f;
+        private const float Stiff = 1200f;
+        private const float Damp = 120f;
+
+        // ============ Part 1: the FIRM-LIMIT rope (a rope, not a rubber band) ============
 
         [Test]
         public void TetherForce_SlackInsideRopeLength_IsZero()
         {
-            var tie = new Vector2(0f, 0f);
+            var tie = Vector2.zero;
             // Inside the rope circle the boat bobs/swings freely — no rope force at all.
-            Assert.AreEqual(Vector2.zero, BoatMooring.TetherForce(new Vector2(0f, 0f), tie, 4f, 90f, Vector2.zero, 18f),
+            Assert.AreEqual(Vector2.zero, BoatMooring.TetherForce(Vector2.zero, tie, RopeLen, Stiff, Vector2.zero, Damp, Give),
                             "at the tie point the rope is slack");
-            Assert.AreEqual(Vector2.zero, BoatMooring.TetherForce(new Vector2(3.9f, 0f), tie, 4f, 90f, Vector2.zero, 18f),
+            Assert.AreEqual(Vector2.zero, BoatMooring.TetherForce(new Vector2(3.9f, 0f), tie, RopeLen, Stiff, Vector2.zero, Damp, Give),
                             "just inside rope-length the rope is still slack (free swing)");
-            Assert.IsFalse(BoatMooring.IsBeyondRope(new Vector2(3.9f, 0f), tie, 4f), "3.9 m is within a 4 m rope");
+            Assert.IsFalse(BoatMooring.IsBeyondRope(new Vector2(3.9f, 0f), tie, RopeLen), "3.9 m is within a 4 m rope");
         }
 
         [Test]
-        public void TetherForce_BeyondRopeLength_PullsBackTowardTheTiePoint()
+        public void TetherForce_WithinTheGive_IsStillZero()
         {
-            var tie = new Vector2(0f, 0f);
-            // The boat has been blown out to 6 m on a 4 m rope → the rope goes taut and pulls inward.
-            Vector2 f = BoatMooring.TetherForce(new Vector2(6f, 0f), tie, 4f, 90f, Vector2.zero, 18f);
+            var tie = Vector2.zero;
+            // The rope's tiny give (0.15 m) reads as the rope's own minimal stretch — no checking force yet.
+            Vector2 f = BoatMooring.TetherForce(new Vector2(RopeLen + 0.1f, 0f), tie, RopeLen, Stiff, Vector2.zero, Damp, Give);
+            Assert.AreEqual(Vector2.zero, f, "within the small give past rope-length the rope hasn't bitten yet");
+        }
 
-            Assert.IsTrue(BoatMooring.IsBeyondRope(new Vector2(6f, 0f), tie, 4f), "6 m is past a 4 m rope (taut)");
-            Assert.Less(f.x, 0f, "the rope pulls the boat back toward the tie point (inward = -x here)");
+        [Test]
+        public void TetherForce_PastTheGive_ChecksFirmly_AndOnlyOnTheExcess()
+        {
+            var tie = Vector2.zero;
+            // 0.4 m past rope-length: that's 0.25 m past the 0.15 m give → the FIRM limit acts on the EXCESS
+            // only (0.25 m), not the whole stretch. Force = 0.25 * 1200 = 300, pulling straight back in.
+            Vector2 f = BoatMooring.TetherForce(new Vector2(RopeLen + 0.4f, 0f), tie, RopeLen, Stiff, Vector2.zero, Damp, Give);
+            Assert.Less(f.x, 0f, "the taut rope pulls the boat back toward the tie point");
             Assert.AreEqual(0f, f.y, 1e-4f, "the pull is purely radial (along the rope)");
-            // Spring magnitude = overshoot(2 m) * stiffness(90) = 180 (snub is 0 at rest).
-            Assert.AreEqual(-180f, f.x, 1e-3f, "spring force = (dist - ropeLength) * stiffness");
+            Assert.AreEqual(-300f, f.x, 1e-3f, "firm-limit force = (overshoot − give) * stiffness, on the excess only");
+        }
+
+        [Test]
+        public void TetherForce_IsFarStiffer_ThanASoftRubberBand()
+        {
+            var tie = Vector2.zero;
+            // A firm rope at the SAME small overshoot delivers a much larger checking force than a soft,
+            // rubber-band-like spring would — the difference between "hits a firm stop" and "stretches".
+            var pos = new Vector2(RopeLen + 0.3f, 0f);
+            float firm = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, Vector2.zero, Damp, Give).magnitude;
+            float soft = BoatMooring.TetherForce(pos, tie, RopeLen, /*soft*/90f, Vector2.zero, 0f, Give).magnitude;
+            Assert.Greater(firm, soft * 5f, "the firm limit is dramatically stiffer than a rubber-band pull");
         }
 
         [Test]
         public void TetherForce_NeverPushesOutward_RopeOnlyPulls()
         {
-            var tie = new Vector2(0f, 0f);
-            // A boat surging INWARD (toward the tie) past the rope: spring still pulls in, snub must NOT add
-            // outward force (a rope can't shove the boat off its tie). Net radial force stays inward.
-            Vector2 inwardVel = new Vector2(-5f, 0f);   // moving toward the tie
-            Vector2 f = BoatMooring.TetherForce(new Vector2(6f, 0f), tie, 4f, 90f, inwardVel, 18f);
-            Assert.LessOrEqual(f.x, 0f, "even with inward velocity the rope force is never outward (it only pulls)");
-
-            // A boat surging OUTWARD past the rope: snub adds extra inward braking (eases onto the rope).
-            Vector2 outwardVel = new Vector2(+5f, 0f);
-            Vector2 fOut = BoatMooring.TetherForce(new Vector2(6f, 0f), tie, 4f, 90f, outwardVel, 18f);
-            Assert.Less(fOut.x, f.x, "surging outward, the snub adds more inward braking than at rest/inbound");
-        }
-
-        [Test]
-        public void TetherForce_StifferRope_PullsHarder()
-        {
-            var tie = Vector2.zero; var pos = new Vector2(6f, 0f);
-            float soft = BoatMooring.TetherForce(pos, tie, 4f, 50f, Vector2.zero, 0f).magnitude;
-            float stiff = BoatMooring.TetherForce(pos, tie, 4f, 150f, Vector2.zero, 0f).magnitude;
-            Assert.Greater(stiff, soft, "a stiffer tether checks the boat harder (tunable feel, no magic number)");
-        }
-
-        [Test]
-        public void TetheredBoat_UnderConstantDrift_StaysWithinRopeLength()
-        {
-            // Integrate a tethered boat under a CONSTANT outward drift force and confirm it never escapes the
-            // rope circle — the core guarantee. Pure explicit-Euler over the helpers (deterministic, no Unity
-            // physics needed). The same drift UNtied is shown to run away in the next test.
             var tie = Vector2.zero;
-            float ropeLen = 4f, stiffness = 120f, snub = 45f;   // a snubbed rope eases her onto the leash
+            var pos = new Vector2(RopeLen + 0.5f, 0f);   // taut, past the give
+            // A boat surging INWARD (toward the tie): spring still pulls in, the damper must NOT add outward
+            // force (a rope can't shove the boat off its tie). Net radial force stays inward.
+            Vector2 fIn = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, new Vector2(-5f, 0f), Damp, Give);
+            Assert.LessOrEqual(fIn.x, 0f, "even with inward velocity the rope force is never outward (it only pulls)");
+
+            // A boat surging OUTWARD: the damper adds extra inward braking (arrests her at the limit).
+            Vector2 fOut = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, new Vector2(+5f, 0f), Damp, Give);
+            Assert.Less(fOut.x, fIn.x, "surging outward, the damper adds more inward braking than at rest/inbound");
+        }
+
+        [Test]
+        public void ConstrainToRope_ClampsBeyondTheGive_LeavesWithinAlone()
+        {
+            var tie = Vector2.zero;
+            // Within rope+give → untouched.
+            Assert.AreEqual(new Vector2(RopeLen + 0.1f, 0f),
+                            BoatMooring.ConstrainToRope(new Vector2(RopeLen + 0.1f, 0f), tie, RopeLen, Give),
+                            "a boat within rope-length + give isn't moved (the rope is slack/just taut)");
+            // Way past → snapped back onto the limit circle (rope is inextensible).
+            Vector2 clamped = BoatMooring.ConstrainToRope(new Vector2(20f, 0f), tie, RopeLen, Give);
+            Assert.AreEqual(RopeLen + Give, clamped.magnitude, 1e-4f,
+                            "an over-stretched boat is hard-clamped onto rope-length + give (inextensible)");
+            Assert.AreEqual(0f, clamped.y, 1e-4f, "the clamp keeps the same bearing from the tie point");
+        }
+
+        [Test]
+        public void TetheredBoat_UnderConstantDrift_IsHeldAtTheRopesEnd_NotStretchedFar()
+        {
+            // Integrate a tethered boat under a CONSTANT outward drift force WITH the hard positional clamp,
+            // and confirm it is held essentially AT the rope's end — never stretched far past it (the firm,
+            // near-inextensible limit, NOT a rubber band that lets her surge way out and twang back). Pure
+            // explicit-Euler over the helpers (deterministic, no Unity physics). The same drift untethered
+            // runs away in the next test.
+            var tie = Vector2.zero;
             float mass = 4f, dt = 0.02f;
             Vector2 driftForce = new Vector2(60f, 0f);   // a steady wind/tide shove outward
 
@@ -129,16 +162,25 @@ namespace HiddenHarbours.Tests.EditMode
             float maxDist = 0f;
             for (int i = 0; i < 4000; i++)   // 80 s of sim
             {
-                Vector2 tether = BoatMooring.TetherForce(pos, tie, ropeLen, stiffness, vel, snub);
+                Vector2 tether = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, vel, Damp, Give);
                 Vector2 a = (driftForce + tether) / mass;
                 vel += a * dt;
                 pos += vel * dt;
+                // The inextensible clamp (mirrors BoatMooring.FixedUpdate): she can't sit past rope+give.
+                Vector2 clamped = BoatMooring.ConstrainToRope(pos, tie, RopeLen, Give);
+                if (clamped != pos)
+                {
+                    pos = clamped;
+                    Vector2 outward = (pos - tie).normalized;
+                    float outwardSpeed = Vector2.Dot(vel, outward);
+                    if (outwardSpeed > 0f) vel -= outward * outwardSpeed;
+                }
                 maxDist = Mathf.Max(maxDist, (pos - tie).magnitude);
             }
-            // Held on the leash: it reaches the rope and is checked, settling near rope-length, never far
-            // past (a small spring overshoot is expected — that's the rope stretching, not escaping).
-            Assert.Less(maxDist, ropeLen + 1.0f, "a tethered boat stays within (about) rope-length under steady drift");
-            Assert.Greater((pos - tie).magnitude, ropeLen - 1.0f, "…and it DOES swing out to the end of its leash");
+            // Held firmly on the leash: she reaches the rope's end and is checked there, sitting right at
+            // rope-length + give and never stretching meaningfully past it (a firm stop, not a rubber band).
+            Assert.LessOrEqual(maxDist, RopeLen + Give + 1e-3f, "a tethered boat is held AT the rope's end (inextensible)");
+            Assert.Greater((pos - tie).magnitude, RopeLen - 0.5f, "…and it DOES swing out to the end of its leash");
         }
 
         [Test]
@@ -154,10 +196,42 @@ namespace HiddenHarbours.Tests.EditMode
                 vel += a * dt;
                 pos += vel * dt;
             }
-            Assert.Greater(pos.magnitude, 50f, "an UNTIED boat drifts well clear — the sea takes her");
+            Assert.Greater(pos.magnitude, 50f, "an UNTETHERED boat drifts well clear — the sea takes her");
         }
 
-        // ============ Part 2: the deterministic DRIFT force (untied boat drifts) ============
+        // ============ Part 1b: the SLACK / catenary visual helpers ============
+
+        [Test]
+        public void Slack01_IsOneAtTheTie_ZeroAtTheLimit()
+        {
+            Assert.AreEqual(1f, BoatMooring.Slack01(0f, RopeLen), 1e-4f, "on top of the tie the rope is fully slack");
+            Assert.AreEqual(0f, BoatMooring.Slack01(RopeLen, RopeLen), 1e-4f, "at rope-length the rope is taut (no slack)");
+            Assert.AreEqual(0.5f, BoatMooring.Slack01(RopeLen * 0.5f, RopeLen), 1e-4f, "halfway out it's half slack");
+            Assert.AreEqual(0f, BoatMooring.Slack01(RopeLen * 2f, RopeLen), 1e-4f, "past the limit clamps to taut (no negative slack)");
+        }
+
+        [Test]
+        public void SampleRopeCurve_SlackRopeDroops_TautRopeIsStraight()
+        {
+            var tie = new Vector2(0f, 5f);
+            var buffer = new Vector2[9];
+
+            // SLACK (boat sits on the tie): the rope bellies DOWN — the midpoint sags below the straight line.
+            BoatMooring.SampleRopeCurve(tie, tie, RopeLen, /*maxSag*/0.8f, buffer);
+            Vector2 mid = buffer[buffer.Length / 2];
+            Assert.Less(mid.y, tie.y, "a slack rope droops (the belly sags below the endpoints)");
+
+            // TAUT (boat at the rope's end): the line is straight — no sag.
+            var taut = tie + new Vector2(RopeLen, 0f);
+            BoatMooring.SampleRopeCurve(tie, taut, RopeLen, 0.8f, buffer);
+            Vector2 straightMid = Vector2.Lerp(tie, taut, 0.5f);
+            Assert.AreEqual(straightMid.y, buffer[buffer.Length / 2].y, 1e-4f, "a taut rope is a straight line (no droop)");
+            // Endpoints always anchor exactly at the tie and the boat.
+            Assert.AreEqual(tie, buffer[0]);
+            Assert.AreEqual(taut, buffer[buffer.Length - 1]);
+        }
+
+        // ============ Part 2: the deterministic DRIFT force (moored boat drifts on its leash) ============
 
         [Test]
         public void DriftForce_AtRest_PushesWithWindAndCurrent()
@@ -204,7 +278,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(a, b, "the drift force is deterministic — identical inputs, identical output (no RNG)");
         }
 
-        // ============ Part 3: the tie/untie STATE MACHINE (BoatMooring) ============
+        [Test]
+        public void TetherForce_IsBitStable_ForIdenticalInputs()
+        {
+            var tie = new Vector2(1f, 2f);
+            var pos = new Vector2(7f, 2f);
+            var vel = new Vector2(2f, -1f);
+            Vector2 a = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, vel, Damp, Give);
+            Vector2 b = BoatMooring.TetherForce(pos, tie, RopeLen, Stiff, vel, Damp, Give);
+            Assert.AreEqual(a, b, "the firm-limit tether force is deterministic — no hidden RNG");
+        }
+
+        // ============ Part 3: the hold/root STATE MACHINE (BoatMooring) ============
 
         private BoatMooring NewMooredBoat(BoatHullDef hull, out BoatController boat, out Rigidbody2D rb)
         {
@@ -214,6 +299,12 @@ namespace HiddenHarbours.Tests.EditMode
             boat.SetHull(hull);
             rb = go.GetComponent<Rigidbody2D>();
             return go.GetComponent<BoatMooring>();
+        }
+
+        private Transform NewPlayerAt(Vector3 pos)
+        {
+            var go = new GameObject("PlayerAnchor"); go.transform.position = pos; _spawned.Add(go);
+            return go.transform;
         }
 
         [Test]
@@ -235,47 +326,61 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TieTo_Tethers_AndParksTheBoat()
+        public void Hold_TethersToThePlayer_AndParksTheBoat()
         {
             var m = NewMooredBoat(Hull("boat.dory", PropulsionType.Oars), out _, out var rb);
             rb.linearVelocity = new Vector2(3f, -2f);   // coasting
             rb.angularVelocity = 40f;
+            var player = NewPlayerAt(new Vector3(7f, 7f, 0f));
 
-            m.TieTo(new Vector2(7f, 7f));
+            m.Hold(player);
 
-            Assert.AreEqual(MooringState.Tethered, m.State, "tying makes her fast (tethered)");
-            Assert.IsTrue(m.IsTethered);
-            Assert.AreEqual(new Vector2(7f, 7f), m.TiePoint, "the rope is made fast where the player stood");
-            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "tying brings the boat to rest (parks where left)");
+            Assert.AreEqual(MooringState.HeldByPlayer, m.State, "holding takes the line in hand");
+            Assert.IsTrue(m.IsHeld);
+            Assert.AreEqual(new Vector2(7f, 7f), m.TiePoint, "the line is made fast to the player's hand (their position)");
+            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "holding brings the boat to rest (parks where left)");
             Assert.AreEqual(0f, rb.angularVelocity, 1e-4f, "…and stops her spinning");
         }
 
         [Test]
-        public void Untie_CastsOff_ToDriftFree()
+        public void Hold_TracksTheMovingPlayer()
         {
             var m = NewMooredBoat(Hull("boat.dory", PropulsionType.Oars), out _, out _);
-            m.TieTo(Vector2.zero);
-            m.Untie();
-            Assert.AreEqual(MooringState.AdriftUntied, m.State, "untying casts her off to drift");
-            Assert.IsTrue(m.IsAdrift);
-            Assert.IsTrue(m.IsMoored, "she's still 'moored' in the sense the rope is in play (a loose end)");
+            var player = NewPlayerAt(new Vector3(1f, 1f, 0f));
+            m.Hold(player);
+            Assert.AreEqual(new Vector2(1f, 1f), m.TiePoint, "the tie point starts at the player");
+            player.position = new Vector3(9f, 3f, 0f);   // the player walks off
+            Assert.AreEqual(new Vector2(9f, 3f), m.TiePoint, "the held line follows the player's live position");
         }
 
         [Test]
-        public void ToggleTie_FlipsTetheredAndAdrift_AndStowIsDormant()
+        public void Root_MakesFastToAFixedGroundSpot()
         {
             var m = NewMooredBoat(Hull("boat.dory", PropulsionType.Oars), out _, out _);
-            m.TieTo(Vector2.zero);
-            Assert.AreEqual(MooringState.AdriftUntied, m.ToggleTie(new Vector2(2f, 0f)), "tethered → cast off");
-            Assert.AreEqual(MooringState.Tethered, m.ToggleTie(new Vector2(2f, 0f)), "adrift → tied again");
-            Assert.AreEqual(new Vector2(2f, 0f), m.TiePoint, "re-tying makes fast at the new spot");
+            m.Hold(NewPlayerAt(Vector3.zero));
+            m.Root(new Vector2(5f, -2f));
+            Assert.AreEqual(MooringState.RootedToGround, m.State, "rooting drops the line to the ground");
+            Assert.IsTrue(m.IsRooted);
+            Assert.AreEqual(new Vector2(5f, -2f), m.TiePoint, "the line is made fast to the fixed ground spot");
+            Assert.IsTrue(m.IsMoored);
+        }
+
+        [Test]
+        public void ToggleRoot_FlipsHeldAndRooted_AndStowIsDormant()
+        {
+            var m = NewMooredBoat(Hull("boat.dory", PropulsionType.Oars), out _, out _);
+            var player = NewPlayerAt(new Vector3(2f, 0f, 0f));
+            m.Hold(player);
+            Assert.AreEqual(MooringState.RootedToGround, m.ToggleRoot(new Vector2(2f, 0f), player), "held → rooted at the feet");
+            Assert.AreEqual(new Vector2(2f, 0f), m.TiePoint, "rooting makes fast at the player's feet");
+            Assert.AreEqual(MooringState.HeldByPlayer, m.ToggleRoot(new Vector2(2f, 0f), player), "rooted → back in hand");
 
             m.Stow();
             Assert.AreEqual(MooringState.Stowed, m.State, "stow goes dormant (re-boarded)");
-            Assert.AreEqual(MooringState.Stowed, m.ToggleTie(Vector2.zero), "toggling while stowed is a no-op");
+            Assert.AreEqual(MooringState.Stowed, m.ToggleRoot(Vector2.zero, player), "toggling while stowed is a no-op");
         }
 
-        // ============ Part 4: the ControlSwitcher wiring (disembark ties · key casts off · board stows) ============
+        // ============ Part 4: the ControlSwitcher wiring (disembark holds · root key · board stows) ============
 
         private (ControlSwitcher sw, PlayerWalkController walk, BoatController boat, BoatMooring mooring, GameObject boatGo)
             BuildSwitcher(Vector3 playerPos, Vector3 boatPos, BoatHullDef hull)
@@ -297,78 +402,82 @@ namespace HiddenHarbours.Tests.EditMode
             return (sw, walk, boat, mooring, boatGo);
         }
 
-        [Test]
-        public void Disembark_NearShore_TiesTheBoat_NotJustParks()
+        // Exposed land so the boat counts as 'over land' (the disembark gate): ground 0.2 m, water level 0.
+        private void WireExposedLand()
         {
-            // Shoaled terrain so the boat is "near shore" away from the dock.
             GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new WindEnv { Level = 0.6f };   // depth 0.4 m → near shore
-
-            var (sw, _, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
-                                                            Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract();                                  // board
-            boatGo.transform.position = new Vector3(40f, 40f, 0f);   // sailed up to a shore
-            Assert.IsTrue(sw.TryInteract(), "disembark near the shore succeeds");
-
-            Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
-            Assert.AreEqual(MooringState.Tethered, mooring.State,
-                            "disembark TIES the boat by default (parks + tethered, the cozy safety)");
+            GameServices.Environment = new WindEnv { Level = 0f };   // depth -0.2 m ≤ 0 = standable land
         }
 
         [Test]
-        public void ToggleMooring_OnFootBesideTheBoat_CastsOff_ThenReTies()
+        public void Disembark_OnLand_HoldsTheRope_TetheredToThePlayer()
         {
-            GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new WindEnv { Level = 0.6f };
+            WireExposedLand();
+
+            var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
+                                                               Hull("boat.dory", PropulsionType.Oars));
+            sw.TryInteract();                                  // board (within reach of the boat)
+            boatGo.transform.position = new Vector3(40f, 40f, 0f);   // sailed up onto an exposed flat
+            Assert.IsTrue(sw.TryInteract(), "disembark onto land succeeds");
+
+            Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
+            Assert.AreEqual(MooringState.HeldByPlayer, mooring.State,
+                            "disembark HOLDS the rope by default (boat tethered to the player's hand)");
+            // The player stepped off at the boat, so the line is made fast right there.
+            Assert.AreEqual((Vector2)walk.transform.position, mooring.TiePoint, "the held line follows the player");
+        }
+
+        [Test]
+        public void ToggleMooring_OnFootBesideTheBoat_Roots_ThenTakesBackInHand()
+        {
+            WireExposedLand();
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
             sw.TryInteract();                                  // board
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
-            sw.TryInteract();                                  // disembark → tethered, player at the boat
+            sw.TryInteract();                                  // disembark → held, player at the boat
             walk.transform.position = boatGo.transform.position;   // standing right by her
 
             Assert.IsTrue(sw.CanToggleMooring(), "on foot beside a moored boat, the rope is in reach");
-            Assert.IsTrue(sw.ToggleMooring(), "cast off");
-            Assert.AreEqual(MooringState.AdriftUntied, mooring.State, "Q casts her off → she'll drift (teeth)");
+            Assert.IsTrue(sw.ToggleMooring(), "root it to the ground");
+            Assert.AreEqual(MooringState.RootedToGround, mooring.State, "Q roots the line at the feet → the player can roam");
+            Assert.AreEqual((Vector2)walk.transform.position, mooring.TiePoint, "rooted at the player's feet");
 
-            Assert.IsTrue(sw.ToggleMooring(), "tie up again");
-            Assert.AreEqual(MooringState.Tethered, mooring.State, "Q again makes her fast → held on the leash");
+            Assert.IsTrue(sw.ToggleMooring(), "take the rope back in hand");
+            Assert.AreEqual(MooringState.HeldByPlayer, mooring.State, "Q again takes the line back in hand");
         }
 
         [Test]
         public void ToggleMooring_FarFromTheBoat_IsRefused()
         {
-            GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new WindEnv { Level = 0.6f };
+            WireExposedLand();
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
             sw.TryInteract();
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
-            sw.TryInteract();                                  // tethered
-            walk.transform.position = new Vector3(80f, 80f, 0f);   // walked well away
+            sw.TryInteract();                                  // held
+            sw.ToggleMooring();                                // root it so it stays put when the player leaves
+            walk.transform.position = new Vector3(80f, 80f, 0f);   // walked well away (the rope is rooted)
 
             Assert.IsFalse(sw.CanToggleMooring(), "you can't fiddle the rope from across the harbour");
             Assert.IsFalse(sw.ToggleMooring());
-            Assert.AreEqual(MooringState.Tethered, mooring.State, "so an untouched boat stays tied (still safe)");
+            Assert.AreEqual(MooringState.RootedToGround, mooring.State, "so the rooted line stays as it was (still safe)");
         }
 
         [Test]
         public void Board_StowsTheRope()
         {
-            GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new WindEnv { Level = 0.6f };
+            WireExposedLand();
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); boatGo.transform.position = new Vector3(40f, 40f, 0f); sw.TryInteract();   // tethered
-            Assert.AreEqual(MooringState.Tethered, mooring.State);
+            sw.TryInteract(); boatGo.transform.position = new Vector3(40f, 40f, 0f); sw.TryInteract();   // held
+            Assert.AreEqual(MooringState.HeldByPlayer, mooring.State);
 
-            // Walk back to the boat and re-board (the boat is its own board zone proxy: place player at boat,
-            // dock at boat so InBoardZone passes — we just need Board() to run and stow the rope).
+            // Walk back to the boat and re-board (board from anywhere within reach of the boat).
             walk.transform.position = boatGo.transform.position;
-            sw.SetDock(boatGo.transform, boatGo.transform);
             Assert.IsTrue(sw.TryInteract(), "re-board");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
             Assert.AreEqual(MooringState.Stowed, mooring.State, "boarding stows the rope (the helm takes over)");

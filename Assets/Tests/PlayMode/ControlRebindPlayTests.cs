@@ -161,11 +161,12 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- FIX 2: disembark near land parks the boat where it's left ---------------------------
 
         [UnityTest]
-        public IEnumerator Disembark_NearShore_ParksTheMakingWayBoat()
+        public IEnumerator Disembark_OnLand_ParksTheMakingWayBoat()
         {
-            // Shoaled tidal terrain so the boat counts as 'near shore' away from the dock.
+            // EXPOSED tidal terrain so the boat counts as 'over land' away from the dock (the tightened
+            // rule: only standable land, never submerged water). Ground 0.2 m, water level 0 → depth -0.2 m.
             GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };
-            GameServices.Environment = new FlatEnv { Level = 0.6f };   // depth 0.4 m ≤ 1.5 shore threshold
+            GameServices.Environment = new FlatEnv { Level = 0f };   // depth -0.2 m ≤ 0 = standable land
 
             var dock = new GameObject("DockZone"); dock.transform.position = Vector3.zero; _spawned.Add(dock);
             var disembark = new GameObject("DisembarkPoint"); disembark.transform.position = new Vector3(0f, 1f, 0f); _spawned.Add(disembark);
@@ -190,24 +191,26 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(sw.TryInteract(), "boards in-zone");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
 
-            // Sail off far from the dock, up against a shore, still making way.
+            // Sail off far from the dock, up onto an exposed flat, still making way.
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
             var rb = boatGo.GetComponent<Rigidbody2D>();
             rb.position = new Vector2(40f, 40f);
             rb.linearVelocity = new Vector2(3f, -2f);
             rb.angularVelocity = 25f;
 
-            Assert.IsTrue(sw.NearShore(), "the boat is near a shoaled shore");
-            Assert.IsTrue(sw.TryInteract(), "disembark succeeds near land, away from the dock");
+            Assert.IsTrue(sw.OnLand(), "the boat is over standable land (an exposed flat)");
+            Assert.IsTrue(sw.TryInteract(), "disembark succeeds onto land, away from the dock");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
 
-            // PARK WHERE LEFT: stopped on step-off, and one physics tick later it hasn't coasted off.
-            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "the boat is brought to rest on disembark");
+            // The player HOLDS the rope on disembark: the boat is brought to rest and tethered to the player
+            // (who stepped off at the boat). With dead-calm weather (zero wind/current) it sits quiet on the
+            // slack rope and doesn't coast off / drift away.
+            Assert.AreEqual(Vector2.zero, rb.linearVelocity, "the boat is brought to rest on disembark (held)");
             Assert.AreEqual(0f, rb.angularVelocity, 1e-4f);
             Vector2 parkedAt = rb.position;
             yield return new WaitForFixedUpdate();
             yield return new WaitForFixedUpdate();
-            Assert.Less((rb.position - parkedAt).magnitude, 0.01f, "and it stays parked where it was left (no drift)");
+            Assert.Less((rb.position - parkedAt).magnitude, 0.01f, "it stays put on the slack rope in calm weather");
         }
     }
 }

@@ -23,6 +23,24 @@ namespace HiddenHarbours.Tests.PlayMode
     /// </summary>
     public class RowingIntegrationPlayTests
     {
+        // Minimal exposed-land fakes so a disembark step can pass the disembark-only-on-land gate. Wired
+        // only right before the disembark (the rowing motion under test stays env-free).
+        private sealed class FlatTerrain : ITidalTerrain
+        {
+            public float Elevation;
+            public float ElevationAt(Vector2 worldPos) => Elevation;
+        }
+
+        private sealed class FlatEnv : IEnvironmentService
+        {
+            public float Level;
+            public int WorldSeed => 0;
+            public TideProfile ActiveTideProfile { get; set; }
+            public EnvironmentSample Sample() => default;
+            public float TideHeightAt(double totalSeconds) => Level;
+            public float WaterLevelAt(double totalSeconds) => Level;
+        }
+
         private readonly List<Object> _spawned = new();
 
         [SetUp]
@@ -103,9 +121,9 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "the loop starts on foot");
 
-                // --- BOARD: the player is in the dock zone ---
-                Assert.IsTrue(sw.InBoardZone(), "the player is within the board zone");
-                Assert.IsTrue(sw.TryInteract(), "boarding succeeds in-zone");
+                // --- BOARD: the player is within reach of the boat (board from anywhere) ---
+                Assert.IsTrue(sw.WithinBoardReach(), "the player is within reach of the boat");
+                Assert.IsTrue(sw.TryInteract(), "boarding succeeds within reach");
                 Assert.AreEqual(ControlMode.Aboard, sw.Mode, "now aboard");
                 Assert.IsTrue(boat.enabled, "the boat controller drives while aboard");
                 Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.Aboard),
@@ -129,13 +147,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Less(rb.angularVelocity, 0f, "a left-only stroke yaws the bow to starboard (clockwise), the specced way");
                 Assert.Greater((rb.position - startPos).magnitude, 0.02f, "the stroke drives the boat off the mooring (makes way)");
 
-                // --- DISEMBARK: park the boat at the mooring and step off (harness, not scene layout) ---
+                // --- DISEMBARK: park the boat at the mooring (over standable land) and step off ---
+                GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };  // ground bared (exposed)
+                GameServices.Environment = new FlatEnv { Level = 0f };             // depth -0.2 m ≤ 0 = land
                 boat.SetOarInput(0f, 0f, false);                         // ship the oars
                 rb.linearVelocity = Vector2.zero; rb.angularVelocity = 0f;
                 boatGo.transform.position = dock.transform.position;     // teleport both transform + body to the mooring
                 rb.position = dock.transform.position;
-                Assert.IsTrue(sw.InDockZone(), "the parked boat is within the dock zone");
-                Assert.IsTrue(sw.TryInteract(), "disembarking succeeds with the boat in-zone");
+                Assert.IsTrue(sw.OnLand(), "the parked boat is over standable land");
+                Assert.IsTrue(sw.TryInteract(), "disembarking succeeds onto land");
                 Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "back on foot");
                 Assert.IsFalse(boat.enabled, "the boat controller is released on foot");
                 Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.OnFoot),

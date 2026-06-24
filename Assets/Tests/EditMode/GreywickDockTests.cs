@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.App;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Boats;
@@ -54,9 +55,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void Disembark_RegistersOnArrival_AtTheGreywickWharf()
         {
             // A real rig + a Greywick anchor built from the SAME constants the GreywickBuilder uses.
-            var player = New("Player").AddComponent<PlayerWalkController>(); // + Rigidbody2D + SpriteRenderer
+            var playerGo = New("Player");
+            var player = playerGo.AddComponent<PlayerWalkController>();      // + Rigidbody2D + SpriteRenderer
             var boatGo = New("Boat");
             var boat = boatGo.AddComponent<BoatController>();                // + Rigidbody2D + CapsuleCollider2D
+            var input = boatGo.AddComponent<DevBoatInput>();
+            var hull = ScriptableObject.CreateInstance<BoatHullDef>();
+            hull.Id = "boat.greywick"; hull.CameraWorldHeightMeters = 14f; hull.DraughtMeters = 0.3f;
+            _spawned.Add(hull); boat.SetHull(hull);
             var switcher = New("Switcher").AddComponent<ControlSwitcher>();
 
             var anchor = New("GreywickAnchor").AddComponent<RegionAnchor>();
@@ -65,17 +71,20 @@ namespace HiddenHarbours.Tests.EditMode
                              At("Dock", GreywickBuilder.DockZonePos),
                              At("Dis", GreywickBuilder.DisembarkPos));
 
-            // Start the switcher pointed elsewhere (radius = the cove/persistent default), then arrive in
-            // Greywick exactly as RegionTravelCoordinator does on the hop.
-            switcher.Configure(player, boat, null, null, GreywickBuilder.DockZoneRadius, null);
+            // Board (the normal travel case is ARRIVING ABOARD), then arrive in Greywick exactly as
+            // RegionTravelCoordinator does on the hop (which re-asserts the aboard mode).
+            switcher.Configure(player, boat, input, null, GreywickBuilder.DockZoneRadius, null);
+            playerGo.transform.position = boatGo.transform.position;        // step aboard from beside the boat
+            Assert.IsTrue(switcher.TryInteract(), "board before travelling");
             RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, anchor);
 
             Assert.AreEqual(GreywickBuilder.ArrivalPos, boatGo.transform.position,
                 "the boat is parked at the Greywick arrival point on arrival");
+            Assert.AreEqual(ControlMode.Aboard, switcher.Mode, "you arrive still aboard");
             Assert.IsTrue(switcher.InDockZone(),
                 "with the boat parked at arrival, the Greywick dock zone is in range → E disembarks (the fix)");
             Assert.IsTrue(switcher.CanInteract(),
-                "and CanInteract reports the disembark is available the moment you arrive aboard");
+                "and CanInteract reports the disembark is available the moment you arrive aboard (dock step-off)");
         }
 
         [Test]

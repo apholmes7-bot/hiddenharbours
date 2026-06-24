@@ -48,7 +48,8 @@ namespace HiddenHarbours.Tests.EditMode
             return g;
         }
 
-        // A switcher with the player standing in the dock zone, started on foot. Hull id "boat.dory".
+        // A switcher with the player standing within board reach of the boat, started on foot. Hull id
+        // "boat.dory". (Board-from-anywhere: boarding is gated by proximity to the boat, not a dock zone.)
         private ControlSwitcher BuildInBoardZone()
         {
             var playerGo = NewGo("Player", new Vector3(0f, -11.5f, 0f));
@@ -82,7 +83,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             var sw = BuildInBoardZone();
 
-            Assert.IsTrue(sw.InBoardZone(), "the player is standing at the mooring");
+            Assert.IsTrue(sw.WithinBoardReach(), "the player is standing within reach of the boat");
             Assert.IsFalse(sw.BoardableNow(), "a damaged, unrepaired dory can't be boarded");
             Assert.IsFalse(sw.CanInteract(), "so INTERACT won't board");
             Assert.IsFalse(sw.TryInteract(), "the board is refused");

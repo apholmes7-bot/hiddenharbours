@@ -15,15 +15,38 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class ControlSwitcherTests
     {
+        // A flat tidal terrain + environment so OnLand()'s exposed-terrain depth read is deterministic.
+        private sealed class FlatTerrain : ITidalTerrain
+        {
+            public float Elevation;
+            public float ElevationAt(Vector2 worldPos) => Elevation;
+        }
+
+        private sealed class FlatEnv : IEnvironmentService
+        {
+            public float Level;
+            public int WorldSeed => 0;
+            public TideProfile ActiveTideProfile { get; set; }
+            public EnvironmentSample Sample() => default;
+            public float TideHeightAt(double totalSeconds) => Level;
+            public float WaterLevelAt(double totalSeconds) => Level;
+        }
+
         private readonly List<Object> _spawned = new();
         private readonly List<ControlModeChanged> _modeEvents = new();
         private readonly List<ActiveBoatChanged> _boatEvents = new();
         private void OnMode(ControlModeChanged e) => _modeEvents.Add(e);
         private void OnBoat(ActiveBoatChanged e) => _boatEvents.Add(e);
 
+        // Wire exposed terrain (ground at/above the water line → standable land) so disembark is allowed.
+        private void WireExposedLand() =>
+            (GameServices.TidalTerrain, GameServices.Environment) =
+            (new FlatTerrain { Elevation = 0.2f }, new FlatEnv { Level = 0f });   // depth -0.2 m ≤ 0 = land
+
         [SetUp]
         public void SetUp()
         {
+            GameServices.Reset();
             _modeEvents.Clear(); _boatEvents.Clear();
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();
@@ -38,6 +61,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Unsubscribe<ActiveBoatChanged>(OnBoat);
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();
+            GameServices.Reset();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -104,7 +128,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             bool ok = sw.TryInteract();
 
-            Assert.IsFalse(ok, "can't board far from the dock");
+            Assert.IsFalse(ok, "can't board from far away — boarding needs you within reach of the boat");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             Assert.IsTrue(walk.enabled);
             Assert.IsFalse(boat.enabled);
@@ -115,11 +139,12 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Disembark_BoatInZone_EnablesWalk_DisablesBoat_MovesPlayer_AndRetargets()
         {
+            WireExposedLand();   // the dock sits on standable land so stepping off is allowed
             var (sw, walk, boat, input, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
             sw.TryInteract(); // board
             _modeEvents.Clear(); _boatEvents.Clear();
 
-            bool ok = sw.TryInteract(); // boat is at (0,-13.8), within r=3 of the dock (0,-12)
+            bool ok = sw.TryInteract(); // boat is at (0,-13.8), within r=3 of the dock (0,-12) and over land
 
             Assert.IsTrue(ok, "disembarking with the boat in the dock zone should succeed");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
