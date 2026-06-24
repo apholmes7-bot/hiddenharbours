@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: American Lobster
   Category: 1
   Rarity: 3
-  Flavor: 
+  Flavor:
+  Sprite: {fileID: -8456290002298016751, guid: 040a0268a1bccd349b770115adf7e914, type: 3}
   RegionIds:
   - region.coddle_cove
   AllowedGear: 3

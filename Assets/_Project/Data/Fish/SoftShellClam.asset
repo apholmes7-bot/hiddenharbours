@@ -21,6 +21,7 @@ MonoBehaviour:
     GEAR NOTE: hand-dig only - re-tagged off the Handline stopgap onto the dedicated
     ClamFork (hand-dig) gear tag by gameplay-systems (fish-and-content 3.5a). The on-foot
     ClamDig interaction yields it; it is deliberately not in the rod''s catch pool.'
+  Sprite: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   RegionIds:
   - region.st_peters
   AllowedGear: 64

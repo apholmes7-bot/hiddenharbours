@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: Haddock
   Category: 0
   Rarity: 0
-  Flavor: 
+  Flavor:
+  Sprite: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
   RegionIds:
   - region.coddle_cove
   AllowedGear: 3

@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: Mackerel
   Category: 2
   Rarity: 1
-  Flavor: 
+  Flavor:
+  Sprite: {fileID: -8407166883477379423, guid: e9ea28cbd0a514a408c7c9cc278ef42d, type: 3}
   RegionIds:
   - region.coddle_cove
   AllowedGear: 3

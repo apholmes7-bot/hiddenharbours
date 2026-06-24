@@ -104,6 +104,22 @@ the **UI** (Core-only) reads `Resolve(key, fallback)` so the crossing fade card 
 (closes the ui-ux #54 follow-up) without a UI→World reference. Presentation metadata: unsaved, no
 determinism concern.
 
+### 4.3 Icon seam (UI shows the sprite for an id without referencing the owning module)
+
+**`Core.IconRegistry`** — the icon twin of `RegionDisplayNames`: a tiny static registry mapping a stable
+content **id** (a fish/clam species id, a `gear.*`/`license.*`/`boat.*` id, or a `ui.*` glyph key) →
+its **icon sprite**. It exists because the sell screen / catch card / HUD see a `CatchItem` (Core, which
+caches only id/name/value so Boats/Economy depend on Core alone) and the UI assembly references only
+Core — so the UI cannot reach a `FishSpeciesDef.Sprite` (Fishing) or a gear/boat offer sprite (Economy)
+directly. An authored **`Core.IconLibrary`** asset (one `Resources/IconLibrary.asset`, id → sprite rows)
+is published into the registry at boot by the self-installing **`Core.IconRegistrar`**
+(`RuntimeInitializeOnLoadMethod`, mirroring `SaveService` — no scene/builder wiring). The UI resolves
+icons by id via `IconRegistry.Get(id)`; a null result (none registered / EditMode) falls back to the
+text-only read (icon is reinforcement, never the only channel — accessibility §8). The fish/clam defs
+also carry their own `FishSpeciesDef.Sprite` (assigned) — the library is the single Core-readable place
+that *also* gathers the gear/licence/boat/coin/hold icons the UI lane doesn't own a sprite field for.
+Presentation metadata: unsaved, no determinism concern.
+
 ## 5. Boat & entity architecture (composition)
 
 A boat is a `Rigidbody2D` (Box2D-v3 backend in Unity 6.3) assembled from data-configured

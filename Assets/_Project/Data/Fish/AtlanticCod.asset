@@ -16,7 +16,8 @@ MonoBehaviour:
   DisplayName: Atlantic Cod
   Category: 0
   Rarity: 0
-  Flavor: 
+  Flavor:
+  Sprite: {fileID: -3536239991035090404, guid: 2ebb3cba674a7834fbbfd59fb79f0b83, type: 3}
   RegionIds:
   - region.coddle_cove
   AllowedGear: 3

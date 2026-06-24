@@ -49,6 +49,8 @@ namespace HiddenHarbours.UI
         private Text _payoutLabel;
         private Text _catchCardLabel;       // brief celebratory card on a landed fish (VS-14)
         private Outline _catchCardOutline;  // faded alongside the text so the card fades cleanly
+        private Image _catchCardIcon;       // the caught species' icon, resolved by id via IconRegistry
+        private Image _moneyIcon;           // a coin glyph beside the money read (ui.coin)
 
         // VS-19 nav cluster (built in Awake): the heading compass + set-&-drift read, shown only at sea.
         private Text _compassLabel;        // "↗ 045°  NE" — arrow + degrees + cardinal (redundant coding)
@@ -368,9 +370,18 @@ namespace HiddenHarbours.UI
         private void ShowCatchCard(in CatchItem item)
         {
             if (_catchCardLabel == null) return;
-            // TEXT only for now — a per-fish sprite + CatchSparkle want def-sprite refs wired via
-            // GreyboxBuilder; that's a follow-up (see the PR notes), not this slice.
             _catchCardLabel.text = HudFormat.CatchCard(item.DisplayName, item.WeightKg, item.BaseValue);
+
+            // Show the caught species' icon beside the card text, resolved by id through the Core
+            // IconRegistry (so the UI never references the Fishing/FishSpeciesDef def). Null icon
+            // (none registered / EditMode) → hide the image and let the text carry it alone (§8).
+            if (_catchCardIcon != null)
+            {
+                Sprite icon = IconRegistry.Get(item.SpeciesId);
+                _catchCardIcon.sprite = icon;
+                _catchCardIcon.enabled = icon != null;
+            }
+
             SetCatchCardAlpha(1f);
             _catchCardLabel.enabled = true;
             _catchCardTimer = _catchCardSeconds;
@@ -386,11 +397,14 @@ namespace HiddenHarbours.UI
             if (fadeOver > 0f && _catchCardTimer < fadeOver)
                 SetCatchCardAlpha(Mathf.Clamp01(_catchCardTimer / fadeOver));
 
-            if (_catchCardTimer <= 0f && _catchCardLabel != null)
-                _catchCardLabel.enabled = false;
+            if (_catchCardTimer <= 0f)
+            {
+                if (_catchCardLabel != null) _catchCardLabel.enabled = false;
+                if (_catchCardIcon != null)  _catchCardIcon.enabled = false;
+            }
         }
 
-        // Fade the text and its outline together so the card dissolves cleanly (no lingering edge).
+        // Fade the text, its outline, and the icon together so the card dissolves cleanly (no lingering edge).
         private void SetCatchCardAlpha(float a)
         {
             if (_catchCardLabel == null) return;
@@ -398,6 +412,10 @@ namespace HiddenHarbours.UI
             if (_catchCardOutline != null)
             {
                 var oc = _catchCardOutline.effectColor; oc.a = 0.85f * a; _catchCardOutline.effectColor = oc;
+            }
+            if (_catchCardIcon != null)
+            {
+                var ic = _catchCardIcon.color; ic.a = a; _catchCardIcon.color = ic;
             }
         }
 
@@ -485,6 +503,11 @@ namespace HiddenHarbours.UI
             // Right column: money (top), payout flash (under it), wind, sea.
             _moneyLabel  = MakeLabel(bandRt, "Money", TextAnchor.UpperRight,
                 new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -4f, 44);
+            // A coin glyph just left of the money read (ui.coin), resolved by id via IconRegistry.
+            // The money TEXT still carries the value (icon is reinforcement, never the only channel, §8);
+            // hidden when no icon is registered (EditMode / stripped build).
+            _moneyIcon = MakeIcon(bandRt, "MoneyIcon", "ui.coin", TextAnchor.UpperRight,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), -150f, -6f, 36f);
             _payoutLabel = MakeLabel(bandRt, "Payout", TextAnchor.UpperRight,
                 new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -52f, 38);
             _payoutLabel.color = new Color(0.55f, 0.95f, 0.55f); // green flash — but text+sign carry it too
@@ -505,6 +528,12 @@ namespace HiddenHarbours.UI
             _catchCardLabel.color = new Color(1f, 0.92f, 0.55f); // warm gold "nice catch!" flash
             _catchCardOutline = _catchCardLabel.GetComponent<Outline>();
             _catchCardLabel.enabled = false;
+
+            // The caught species' icon, centred just above the card text (set per-catch in ShowCatchCard,
+            // resolved by id via IconRegistry). Built hidden; shown only when an icon resolves for the catch.
+            _catchCardIcon = MakeIcon(canvasRt, "CatchCardIcon", null, TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 0f, 184f, 64f);
+            _catchCardIcon.enabled = false;
 
             // VS-19 nav cluster (heading compass + set-&-drift). A sailing read, so it sits BOTTOM-CENTRE
             // (a natural compass spot, clear of the top conditions band) and is shown only while aboard
@@ -563,6 +592,36 @@ namespace HiddenHarbours.UI
             outline.effectDistance = new Vector2(2f, -2f);
 
             return text;
+        }
+
+        // A square HUD icon Image. If <paramref name="iconId"/> is non-null it resolves the sprite from
+        // the Core IconRegistry now (built once at Awake — no per-frame lookup); a null id means the
+        // caller sets the sprite later (e.g. the per-catch card icon). The icon is reinforcement only —
+        // every read it sits beside also has its text/number channel (accessibility §8). Read-only
+        // (never eats touches), pivoted top-left to match MakeLabel's anchoring math.
+        private static Image MakeIcon(RectTransform parent, string name, string iconId, TextAnchor align,
+                                      Vector2 anchorMin, Vector2 anchorMax, float x, float y, float size)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.pivot = align == TextAnchor.MiddleCenter ? new Vector2(0.5f, 0.5f) : new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(x, y);
+            rt.sizeDelta = new Vector2(size, size);
+
+            var img = go.GetComponent<Image>();
+            img.raycastTarget = false;          // HUD is read-only
+            img.preserveAspect = true;          // icons aren't square (fish are 48×32) — don't stretch
+            if (iconId != null)
+            {
+                Sprite sprite = IconRegistry.Get(iconId);
+                img.sprite = sprite;
+                img.enabled = sprite != null;   // hide cleanly when none is registered
+            }
+            return img;
         }
 
         // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
