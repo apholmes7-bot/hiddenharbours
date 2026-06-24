@@ -15,6 +15,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]   // hull collider: bumps shore + dock pilings (cozy, no damage)
+    [RequireComponent(typeof(BoatMooring))]         // the rope/mooring (tie-up vs drift) rides on every boat
     public class BoatController : MonoBehaviour
     {
         /// <summary>Astern thrust as a fraction of ahead, like a real prop pushes backward weaker (~40%).</summary>

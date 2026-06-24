@@ -28,6 +28,10 @@ namespace HiddenHarbours.Player
         [SerializeField] private BoatController _boatController;
         [Tooltip("The boat's input behaviour (DevBoatInput) — enabled only while aboard.")]
         [SerializeField] private Behaviour _boatInput;
+        [Tooltip("The boat's rope/mooring (BoatMooring). Optional — auto-resolved off the boat if left empty. " +
+                 "On disembark near shore the boat is TIED here (parks + tethered, the cozy default); the " +
+                 "tie/untie key casts her off to drift on wind+tide (the teeth) or makes her fast again.")]
+        [SerializeField] private BoatMooring _mooring;
 
         [Header("Dock zone")]
         [Tooltip("The dock/mooring point. Board when the player is within range; disembark when the boat is.")]
@@ -59,12 +63,30 @@ namespace HiddenHarbours.Player
                  "this test, so set a shore mask for non-tidal regions.")]
         [SerializeField] private float _shoreDepthThreshold = 1.5f;
 
+        [Header("Rope / mooring (tie · untie)")]
+        [Tooltip("How close (m) the on-foot player must stand to a moored boat to tie/untie its rope. " +
+                 "Forgiving (P5 cozy) so you don't have to stand on the exact spot.")]
+        [SerializeField] private float _moorReach = 4f;
+
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
         private Text _hint;
 
         private Transform Player => _playerWalk != null ? _playerWalk.transform : null;
         private Transform Boat   => _boatController != null ? _boatController.transform : null;
+
+        /// <summary>The boat's rope/mooring — the explicit wired reference, else auto-resolved off the boat
+        /// (so the greybox builder and existing Configure() call sites need no change). Null only if the boat
+        /// has no <see cref="BoatMooring"/> at all (the mechanic self-disables there).</summary>
+        private BoatMooring Mooring
+        {
+            get
+            {
+                if (_mooring == null && _boatController != null)
+                    _mooring = _boatController.GetComponent<BoatMooring>();
+                return _mooring;
+            }
+        }
 
         // ---- zone tests (testable via positioned transforms) --------------------------------
 
@@ -163,11 +185,37 @@ namespace HiddenHarbours.Player
             return true;
         }
 
+        // ---- rope: tie / untie (the mooring mechanic — the teeth) ---------------------------
+
+        /// <summary>
+        /// True when the on-foot player may tie/untie the rope right now: on foot, the boat has a mooring,
+        /// it's actually moored (tied or adrift), and the player stands within <see cref="_moorReach"/> of
+        /// it. (Aboard, the rope is stowed — you cast off by getting under way.)
+        /// </summary>
+        public bool CanToggleMooring()
+            => Mode == ControlMode.OnFoot
+               && Mooring != null && Mooring.IsMoored
+               && Player != null && Boat != null
+               && Vector2.Distance(Player.position, Boat.position) <= _moorReach;
+
+        /// <summary>
+        /// Tie ⇄ untie the rope. Tethered → cast off (the boat drifts free on wind+tide — the teeth);
+        /// adrift → make her fast again at the player's feet (recover). No-op unless
+        /// <see cref="CanToggleMooring"/>. Returns true if it toggled.
+        /// </summary>
+        public bool ToggleMooring()
+        {
+            if (!CanToggleMooring()) return false;
+            Mooring.ToggleTie(Player.position);   // re-tie point = where the player stands
+            return true;
+        }
+
         // ---- transitions --------------------------------------------------------------------
 
         private void Board()
         {
             SetPlayerActive(false);                                  // hide & freeze the on-foot player
+            if (Mooring != null) Mooring.Stow();                     // cast off the rope; the helm takes over
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
             Mode = ControlMode.Aboard;
@@ -182,21 +230,31 @@ namespace HiddenHarbours.Player
 
         private void Disembark()
         {
-            // PARK WHERE LEFT (disembark-anywhere safety): bring the boat to rest before dropping the helm
-            // so an un-crewed boat stays put and never coasts off / strands itself. (A wind/tide mooring-
-            // drift mechanic for UNtied boats is a separate follow-up; here she's safe-moored on step-off.)
+            // Drop the helm. The boat is brought to rest and made fast to shore below (TieTo → Stop), so an
+            // un-crewed boat stays put — the cozy disembark-anywhere safety. (Casting her OFF to drift on
+            // wind+tide is the deliberate teeth: the tie/untie key, ToggleMooring.)
             bool atDock = InDockZone();
-            if (_boatController != null) { _boatController.Stop(); _boatController.enabled = false; }
+            if (_boatController != null) _boatController.enabled = false;
             if (_boatInput != null) _boatInput.enabled = false;
 
             // Place the on-foot player: a tidy landing on the dock planks when disembarking at the dock,
             // otherwise step off right where the boat is (onto the nearby shore/flats) so disembark-anywhere
             // doesn't teleport you back to a far dock. Null-safe (tests / no disembark point wired).
+            Vector2 landing = Boat != null ? (Vector2)Boat.position : Vector2.zero;
             if (Player != null)
             {
                 if (atDock && _disembarkPoint != null) Player.position = _disembarkPoint.position;
                 else if (Boat != null) Player.position = Boat.position;
+                landing = Player.position;
             }
+
+            // TIE UP (the rope mechanic, P1/P5): make fast to the shore spot where the player stepped off —
+            // the boat parks AND is tethered, so wind+tide can swing her on the leash but never carry her off.
+            // One press (this disembark) ties her: a quick hop-off never loses the boat. If the boat has no
+            // mooring component the mechanic self-disables and we fall back to a bare stop (still parks).
+            if (Mooring != null) Mooring.TieTo(landing);
+            else if (_boatController != null) _boatController.Stop();
+
             SetPlayerActive(true);
             Mode = ControlMode.OnFoot;
 
@@ -221,6 +279,7 @@ namespace HiddenHarbours.Player
             if (Mode == ControlMode.Aboard)
             {
                 SetPlayerActive(false);
+                if (Mooring != null) Mooring.Stow();                 // aboard → the helm drives, rope stowed
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -297,6 +356,8 @@ namespace HiddenHarbours.Player
 
             var kb = Keyboard.current;
             if (kb != null && kb.eKey.wasPressedThisFrame) TryInteract();
+            // Q ties / unties the rope of a moored boat you're standing by (the mooring teeth).
+            if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
             UpdateHint();
         }
 
@@ -307,14 +368,23 @@ namespace HiddenHarbours.Player
             // Cozy feedback (P5): when standing at the mooring of a damaged, unrepaired boat, say why you
             // can't board rather than showing nothing — the opening nudges the player to the shipwright.
             bool atDamagedBoat = Mode == ControlMode.OnFoot && InBoardZone() && !BoardableNow();
-            bool show = CanInteract() || atDamagedBoat;
+            bool canMoor = CanToggleMooring();
+            bool show = CanInteract() || atDamagedBoat || canMoor;
             if (_hint.enabled != show) _hint.enabled = show;
             if (show)
             {
                 string text;
                 if (atDamagedBoat) text = "She needs repairs before she'll sail";
-                else if (Mode == ControlMode.OnFoot) text = "E: Board";
+                else if (Mode == ControlMode.OnFoot) text = CanInteract() ? "E: Board" : null;
                 else text = InDockZone() ? "E: Dock" : "E: Get off";   // near a shore away from the dock
+
+                // Rope prompt (mooring teeth): tie up an adrift boat, or cast off a tethered one to let her
+                // drift. Shown alongside the board prompt when both apply (on foot beside a moored boat).
+                if (canMoor)
+                {
+                    string rope = Mooring.IsTethered ? "Q: Untie (cast off)" : "Q: Tie up";
+                    text = string.IsNullOrEmpty(text) ? rope : text + "    " + rope;
+                }
                 if (_hint.text != text) _hint.text = text;
             }
         }
