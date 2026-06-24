@@ -39,6 +39,14 @@ namespace HiddenHarbours.Fishing
     /// to render a hint. It's cosmetic only (real-time, not sim state) and never gates the dig — digging
     /// works whenever the spot is exposed. Determinism is unaffected (the reveal isn't world-sim state).</para>
     ///
+    /// <para><b>Yields once, then it's spent.</b> A hole gives up its clam <em>once</em>: a successful
+    /// <see cref="TryDig"/> flips <see cref="Consumed"/> on, after which the hole no longer yields — the
+    /// clam's been lifted out, there's nothing left to dig. The "skittish clam" escape (a player who loiters
+    /// too close) also spends the hole via <see cref="MarkConsumed"/>. <see cref="ClamHoleVisual"/> reads
+    /// <see cref="Consumed"/> to hide/animate the spent hole. This is a <b>real-time, play-session</b> state,
+    /// NOT world-sim — it isn't saved, so a reload reconstructs the deterministic hole field afresh (same as
+    /// the cosmetic squirt cue); determinism (the dig YIELD + tidal EXPOSURE) is untouched (rule 5).</para>
+    ///
     /// <para><b>Seam discipline.</b> Reads the world terrain + tide through the Core
     /// <see cref="GameServices"/> accessors and the bucket through the Core <see cref="IHold"/> contract;
     /// the shovel-ownership check is the owned-gear list on the save. No World/Player/Environment concrete
@@ -79,9 +87,15 @@ namespace HiddenHarbours.Fishing
         private System.Random _rng;
         private float _revealTimer;
         private bool _showingSquirt;
+        private bool _consumed;
 
         /// <summary>True while the greybox squirt-hole cue is showing (art/UI hint; cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
+
+        /// <summary>True once this hole has been spent — either dug (it yielded its clam) or escaped (the
+        /// skittish clam burrowed away). A consumed hole no longer yields; the visual hides/animates it.
+        /// Real-time play-session state, never saved (determinism unaffected — rule 5).</summary>
+        public bool Consumed => _consumed;
 
         /// <summary>How close the player must stand to dig this hole (m) — the shovel's reach.</summary>
         public float ReachRadius => _reachRadius;
@@ -117,6 +131,11 @@ namespace HiddenHarbours.Fishing
         {
             if (_clamSpecies == null) { Debug.LogWarning("[ClamDig] No clam species wired.", this); return false; }
 
+            if (_consumed)
+            {
+                Debug.Log("[ClamDig] This hole's already given up its clam — there's nothing left to dig.");
+                return false;
+            }
             if (!IsExposedNow())
             {
                 Debug.Log("[ClamDig] The flat's still under water here — wait for the tide to fall.");
@@ -143,8 +162,19 @@ namespace HiddenHarbours.Fishing
 
             EventBus.Publish(new FishCaught(clam));     // same land path the rod uses
             _showingSquirt = false;                     // dug it — the tell's gone
+            _consumed = true;                           // a hole yields ONCE, then it's spent (the clam's gone)
             Debug.Log($"[ClamDig] Dug a {clam}. ({_bucket.UsedUnits}/{_bucket.CapacityUnits} in the bucket.)");
             return true;
+        }
+
+        /// <summary>Spend this hole without yielding a clam — the "skittish clam" escape: a player who
+        /// loitered too close let the clam burrow away. After this the hole no longer yields (the visual
+        /// plays the sink-away animation then hides). Idempotent. Real-time cosmetic state — not saved
+        /// (determinism unaffected, rule 5).</summary>
+        public void MarkConsumed()
+        {
+            _consumed = true;
+            _showingSquirt = false;
         }
 
         /// <summary>Is the dig spot bared by the tide right now? A null terrain (open water) or null
@@ -176,6 +206,7 @@ namespace HiddenHarbours.Fishing
         // Cosmetic greybox reveal cadence: flash the "squirt" cue every 10–20 s while exposed.
         private void UpdateReveal(float dt, bool exposed)
         {
+            if (_consumed) { _showingSquirt = false; return; }   // a spent hole gives no more tells
             if (!exposed) { _showingSquirt = false; return; }
 
             _revealTimer -= dt;

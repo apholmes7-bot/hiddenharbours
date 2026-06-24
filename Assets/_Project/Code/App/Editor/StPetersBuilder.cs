@@ -580,9 +580,11 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Build one VISIBLE, diggable clam hole: a SpriteRenderer (ClamHole.png, base-Y sorted so it sits on
-        /// the flat), the World <see cref="ClamSpot"/> marker, the <see cref="ClamDig"/> action wired to the
-        /// clam species + the player's <see cref="ClamBucket"/>, and the <see cref="ClamHoleVisual"/> that
-        /// shows the hole only while exposed and runs the squirt tell off <see cref="ClamDig.ShowingSquirt"/>.
+        /// the flat) used as the visual's BASE (two-holes) renderer, the World <see cref="ClamSpot"/> marker,
+        /// the <see cref="ClamDig"/> action wired to the clam species + the player's <see cref="ClamBucket"/>,
+        /// and the <see cref="ClamHoleVisual"/> that shows the holes while exposed, layers the squirt tell on a
+        /// SEPARATE overlay renderer it creates (the squirt is added on top, never a sprite-swap), runs the
+        /// skittish-clam proximity escape, and vanishes the hole once it's been dug (a hole yields once).
         /// </summary>
         static void MakeClamHole(Transform parent, Vector2 pos, FishSpeciesDef clam, string yieldFishId,
                                  ClamBucket bucket, Sprite holeSprite, Sprite[] squirtFrames, Sprite fallback)
@@ -611,8 +613,10 @@ namespace HiddenHarbours.App.Editor
             SetRef(dig, "_bucketProvider", bucket != null ? bucket.gameObject : null);
             SetRef(dig, "_spot", go.transform);
 
-            // The LOOK: hole sprite while exposed, squirt flip-book while the dig's tell shows, hidden when
-            // submerged — driven off the SAME exposure read the dig gates on, so picture and gate agree.
+            // The LOOK: the two-holes sprite stays on the BASE renderer while exposed; the squirt plays as an
+            // OVERLAY on a separate child renderer the visual creates on top (added, never a sprite-swap), so
+            // the holes are always visible when exposed. Driven off the SAME exposure read the dig gates on, so
+            // picture and gate agree. The visual also runs the skittish-clam escape and vanishes a dug hole.
             var visual = go.AddComponent<ClamHoleVisual>();
             SetRef(visual, "_dig", dig);
             SetRef(visual, "_holeSprite", holeSprite);
