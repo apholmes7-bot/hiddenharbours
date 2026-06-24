@@ -23,6 +23,12 @@ namespace HiddenHarbours.Fishing
     /// modal dialogue owns Interact while up (the Core <see cref="InteractionGate"/>), so the digger stands
     /// down under it. Input is dev-keyed (E) for the greybox; an InputService/interaction prompt replaces it
     /// later (ui-ux). Real-time only — it touches no sim state, so determinism is unaffected (rule 5).</para>
+    ///
+    /// <para><b>The player-position beacon.</b> The digger is the one Fishing-lane component that holds the
+    /// on-foot player, so it publishes that position to a static <see cref="TryGetPlayerPosition"/> beacon each
+    /// frame. The per-hole <see cref="ClamHoleVisual"/> reads it to run the "skittish clam" proximity-escape
+    /// timer WITHOUT referencing the Player module — the same in-lane indirection the dig itself uses. Cosmetic,
+    /// real-time only: the beacon is never saved and feeds no sim path (rule 5).</para>
     /// </summary>
     public class ClamDigger : MonoBehaviour
     {
@@ -32,8 +38,45 @@ namespace HiddenHarbours.Fishing
 
         private Transform Player => _player != null ? _player : transform;
 
+        // The latest on-foot player position, published for the per-hole proximity-escape timer. Static so a
+        // hole reads it without a Player reference; real-time cosmetic only (never saved, no sim path).
+        private static bool s_hasPlayer;
+        private static Vector2 s_playerPos;
+
+        /// <summary>The most recent on-foot player position seen by a live digger this frame. Returns false
+        /// (no position) before any digger has ticked or after they're all gone — callers must null-check, so
+        /// a missing beacon never throws. Cosmetic real-time only (the proximity-escape cue), never sim.</summary>
+        public static bool TryGetPlayerPosition(out Vector2 pos)
+        {
+            pos = s_playerPos;
+            return s_hasPlayer;
+        }
+
+        private void OnDisable()
+        {
+            // Drop the beacon when no digger is live (scene teardown / tests) so a stale position can't fire an
+            // escape against a phantom player. The next live digger's Update re-publishes it.
+            s_hasPlayer = false;
+        }
+
+        /// <summary>Publish this digger's player position to the static escape-timer beacon. Called every
+        /// frame by <see cref="Update"/>; public so EditMode tests can prime the beacon without the game loop.
+        /// Cosmetic real-time only (never saved, no sim path).</summary>
+        public void PublishPlayerPosition()
+        {
+            s_playerPos = Player.position;
+            s_hasPlayer = true;
+        }
+
+        /// <summary>Clear the static escape-timer beacon (test teardown), so a stale position can't fire an
+        /// escape across tests.</summary>
+        public static void ClearPlayerPosition() => s_hasPlayer = false;
+
         private void Update()
         {
+            // Publish the player position for the per-hole proximity-escape timer (cosmetic, real-time).
+            PublishPlayerPosition();
+
             // A modal dialogue (world-content) owns the shared Interact key while it's up — don't dig under it.
             if (InteractionGate.IsBlocked) return;
             var kb = Keyboard.current;

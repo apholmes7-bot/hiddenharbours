@@ -147,12 +147,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void Dig_FullBucket_RefusesAndCapsAt20()
         {
             var hold = new FakeHold { Capacity = 20 };
-            var dig = MakeDig(hold, MakeClam());
+            var clam = MakeClam();
 
-            // Dig 20 clams (the cap), then a 21st must refuse.
-            for (int i = 0; i < 20; i++) Assert.IsTrue(dig.TryDig(), $"dig {i + 1} should succeed");
+            // A hole yields ONCE (the clam's lifted out), so fill the 20-cap bucket from 20 separate holes —
+            // each a single clam — then a 21st hole must refuse because the bucket is full.
+            for (int i = 0; i < 20; i++)
+                Assert.IsTrue(MakeDig(hold, clam).TryDig(), $"hole {i + 1} yields its one clam");
             Assert.AreEqual(20, hold.UsedUnits, "the bucket caps at 20");
-            Assert.IsFalse(dig.TryDig(), "the 21st dig refuses — head to Greywick and sell");
+            Assert.IsFalse(MakeDig(hold, clam).TryDig(), "the 21st hole refuses — head to Greywick and sell");
             Assert.AreEqual(20, hold.UsedUnits, "still 20 — never over the cap");
         }
 
