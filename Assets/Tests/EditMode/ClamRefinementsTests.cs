@@ -295,6 +295,51 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Contains(visual.SquirtRenderer.sprite, squirtFrames, "the overlay shows a squirt frame");
         }
 
+        // The squirt overlay sits CENTERED on the two-holes base sprite (lifted by the serialized offset), so
+        // the squirt no longer animates too low — it lines up with the holes it belongs to.
+        [Test]
+        public void Squirt_OverlayIsLifted_ToCenterOnTheHoles()
+        {
+            var hold = new FakeHold();
+            var dig = MakeDigAt(hold, MakeClam(), Vector2.zero);
+            var visual = MakeVisualFor(dig, MakeSprite(), new[] { MakeSprite() });
+
+            // The default serialized offset (0.5) lifts the overlay above its parent's pivot so it sits on the holes.
+            Assert.AreEqual(0.5f, visual.SquirtRenderer.transform.localPosition.y, 1e-4f,
+                "the squirt overlay is lifted by the default vertical offset to center on the holes");
+            Assert.AreEqual(0f, visual.SquirtRenderer.transform.localPosition.x, 1e-4f,
+                "the overlay stays horizontally aligned with the holes");
+
+            // The offset is owner-tunable (not a magic number): ConfigureSquirtOffset retargets the live overlay.
+            visual.ConfigureSquirtOffset(1.25f);
+            Assert.AreEqual(1.25f, visual.SquirtRenderer.transform.localPosition.y, 1e-4f,
+                "ConfigureSquirtOffset moves the live overlay to the new height");
+        }
+
+        // The clam takes fright from well across the flat: the escape radius now reaches far (7 m by default),
+        // so a player loitering several metres away — not just on the hole — still spooks the clam.
+        [Test]
+        public void Escape_FiresFromAcrossTheFlat_WithTheWideDefaultRadius()
+        {
+            var hold = new FakeHold();
+            var dig = MakeDigAt(hold, MakeClam(), Vector2.zero);
+            var visual = MakeVisualFor(dig, MakeSprite(), null);
+            // Only the timing is overridden; the escape RADIUS keeps its serialized default (the wide 7 m).
+            visual.ConfigureEscape(escapeRadius: -1f, escapeSeconds: 4.0f, sinkSeconds: 0.5f);
+
+            // 5 m away — outside the old 2 m radius, but well inside the new 7 m default.
+            PrimePlayerAt(new Vector2(5.0f, 0f));
+
+            // Under the threshold: counting up but not yet spooked.
+            for (int i = 0; i < 30; i++) visual.Tick(0.1f);   // 3 s
+            Assert.Greater(visual.LingerTimer, 2.5f, "the wide default radius reaches a player 5 m away");
+            Assert.IsFalse(dig.Consumed, "3 s of lingering is under the 4 s threshold — not yet spooked");
+
+            // Cross the threshold: the clam burrows away even from 5 m off.
+            for (int i = 0; i < 15; i++) visual.Tick(0.1f);   // +1.5 s → past 4 s
+            Assert.IsTrue(dig.Consumed, "lingering 5 m away past the escape time spends the hole (wide radius)");
+        }
+
         // Tick the dig's cosmetic reveal cadence until its squirt cue is showing (it flips on a 10–20 s gap).
         // We drive plenty of time so the gap elapses regardless of the seeded initial value.
         private static void DriveSquirtOn(ClamDig dig)

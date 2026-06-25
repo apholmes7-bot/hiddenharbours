@@ -55,10 +55,16 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Flip-book speed of the squirt overlay (frames per second).")]
         [Min(1f)] [SerializeField] private float _squirtFps = 6f;
 
+        [Tooltip("Vertical nudge (local units, positive = up) of the squirt OVERLAY so it animates CENTERED on " +
+                 "the two-holes base sprite. The base art's squirt holes sit above its pivot, so the overlay is " +
+                 "lifted to line up. Owner-editable — not a magic number.")]
+        [SerializeField] private float _squirtVerticalOffset = 0.5f;
+
         [Header("Skittish clam (proximity escape — real-time cosmetic, never saved)")]
         [Tooltip("How close (m) the on-foot player must linger for the clam to take fright. Tunable, not a " +
-                 "magic number — wider than a dig's reach so loitering near a hole (not on it) still spooks it.")]
-        [SerializeField] private float _escapeRadius = 2.0f;
+                 "magic number — the clam takes fright from well across the flat, so loitering anywhere near it " +
+                 "(not just on the hole) spooks it.")]
+        [SerializeField] private float _escapeRadius = 7.0f;
 
         [Tooltip("How long (real seconds) the player may linger inside the escape radius before the clam " +
                  "burrows away. Owner-editable; default 4 s. The timer resets if the player leaves the radius.")]
@@ -114,6 +120,7 @@ namespace HiddenHarbours.Fishing
             if (_squirtRenderer != null) return;
             var child = new GameObject("ClamSquirtOverlay");
             child.transform.SetParent(transform, false);
+            child.transform.localPosition = new Vector3(0f, _squirtVerticalOffset, 0f);   // centered on the holes
             _squirtRenderer = child.AddComponent<SpriteRenderer>();
             if (_holeRenderer != null)
             {
@@ -251,6 +258,16 @@ namespace HiddenHarbours.Fishing
             if (escapeRadius >= 0f) _escapeRadius = escapeRadius;
             if (escapeSeconds >= 0f) _escapeSeconds = escapeSeconds;
             if (sinkSeconds >= 0f) _sinkSeconds = sinkSeconds;
+        }
+
+        /// <summary>Set the squirt overlay's vertical offset (tests / editor) and apply it to the live overlay
+        /// so the squirt animates centered on the two-holes base sprite. Positive = up.</summary>
+        public void ConfigureSquirtOffset(float verticalOffset)
+        {
+            _squirtVerticalOffset = verticalOffset;
+            EnsureInit();
+            if (_squirtRenderer != null)
+                _squirtRenderer.transform.localPosition = new Vector3(0f, _squirtVerticalOffset, 0f);
         }
 
         // ---- Test-facing observers (no behaviour; let EditMode assert the rendered state) ------------------
