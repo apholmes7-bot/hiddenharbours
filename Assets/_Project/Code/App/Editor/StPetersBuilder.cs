@@ -54,7 +54,14 @@ namespace HiddenHarbours.App.Editor
         const string DataConfig  = "Assets/_Project/Data/Config";   // shared GameConfig (cove builder authors it)
         const string DataBoats   = "Assets/_Project/Data/Boats";    // the Dory + Punt hulls (the carried rig)
         const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
+        const string DataNpcs    = "Assets/_Project/Data/NPCs";     // the opening cast (Aunt Ginny, Ned's letter)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
+        // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
+        const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
+        const string ArtPortraitGinny = "Assets/_Project/Art/Portraits/Ginny.png";    // Ginny dialogue portrait
+        const string ArtPortraitNed   = "Assets/_Project/Art/Portraits/Ned.png";      // Ned portrait on his letter
+        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
+        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
@@ -209,6 +216,13 @@ namespace HiddenHarbours.App.Editor
             punt     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             clam     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
 
+            // The opening cast as DATA (CLAUDE.md rule 2): Aunt Ginny (teaches the buy-and-repair loop) and
+            // Ned's letter (the remembered presence — no inherited dory). Each NpcDef carries its name, its
+            // DialogueDef, the verb, and the completion flag, so the builder only PLACES them — the words
+            // live in assets the owner can edit (Data/NPCs + Data/NPCs/Dialogue), never hard-coded here.
+            var ginnyNpc = AssetDatabase.LoadAssetAtPath<NpcDef>(DataNpcs + "/AuntGinny.asset");
+            var nedNpc   = AssetDatabase.LoadAssetAtPath<NpcDef>(DataNpcs + "/NedLetter.asset");
+
             // --- PERSISTENT CORE (THE FIX) --------------------------------------------------------------
             // St Peters is the START scene, so it stands up the SAME persistent rig the cove builds — a
             // controllable on-foot Player at the START spawn, the moored hand-rowed Dory, the follow camera
@@ -335,6 +349,50 @@ namespace HiddenHarbours.App.Editor
             slipSr.sprite = waterSprite; slipSr.color = new Color(0.55f, 0.40f, 0.24f, 0.85f); slipSr.sortingOrder = -6;
             slipGo.transform.localScale = new Vector3(2.5f, 1.2f, 1f);
 
+            // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
+            // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
+            // M2), the self-built dialogue panel, the proximity INTERACT driver, and the light one-line
+            // onboarding nudge that walks the NEW loop: dig clams → cross the bar → Greywick (cod licence +
+            // rod) → buy + REPAIR the damaged dory → sail home. The dory is EARNED, never inherited.
+            //
+            // Everything sits UP BY THE COTTAGE (≈ y +3..+6), well clear of the dock zone at (-40,-26), so
+            // the shared E key never fires both "talk" and "board" (context-aware by proximity). Belt-and-
+            // braces, the open dialogue raises the Core InteractionGate the ControlSwitcher honours. Content
+            // is DATA — the Interactables carry NpcDef refs, not strings; the words live in Data/NPCs.
+            // Art is greybox (Ginny standee + portraits + panel), null-safe if a sprite isn't imported.
+
+            // Dialogue panel (builds its own canvas in Awake; needs only the panel + nameplate art).
+            var dialogueGo = new GameObject("DialogueUI");
+            var presenter = dialogueGo.AddComponent<DialoguePresenter>();
+            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
+            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+
+            // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
+            // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).
+            var ginnyGo = MakeNpc("AuntGinny", new Vector3(-42f, 1.5f, 0f), LoadSpriteAny(ArtGinny),
+                                  waterSprite, new Color(0.78f, 0.55f, 0.62f));
+            var ginnyIt = ginnyGo.AddComponent<Interactable>();
+            ConfigureInteractableNpc(ginnyIt, ginnyNpc, LoadSpriteAny(ArtPortraitGinny));
+
+            // "Ned's Letter" on the cottage step — the remembered presence (no inherited dory; the boat is
+            // bought + mended). Read it to set read_logbook. A small book-sized marker if the art's absent.
+            var letterGo = MakeNpc("NedsLetter", new Vector3(-45.5f, 2.4f, 0f), null,
+                                   waterSprite, new Color(0.62f, 0.47f, 0.30f));
+            letterGo.transform.localScale = new Vector3(0.6f, 0.8f, 1f);
+            var letterIt = letterGo.AddComponent<Interactable>();
+            ConfigureInteractableNpc(letterIt, nedNpc, LoadSpriteAny(ArtPortraitNed));
+
+            // The proximity INTERACT driver: shows "E: …" near an interactable and runs its conversation.
+            var interactorGo = new GameObject("WorldInteractor");
+            var interactor = interactorGo.AddComponent<WorldInteractor>();
+            SetRef(interactor, "_player", core.PlayerGo.transform);
+            SetRef(interactor, "_presenter", presenter);
+            SetRefArray(interactor, "_interactables", new Object[] { ginnyIt, letterIt });
+
+            // Light onboarding: one nudge per beat of the new earned-dory loop, then it bows out and persists
+            // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
+            new GameObject("Onboarding").AddComponent<OnboardingDirector>();
+
             // --- REGION DISPLAY NAME (the world registrar → Core) ---------------------------------------
             // Register "St Peters Island" / "Port Greywick" so the UI crossing-card resolves them by scene
             // name or id without referencing World (the RegionDisplayNames seam, #59/#54).
@@ -394,7 +452,11 @@ namespace HiddenHarbours.App.Editor
                       "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
                       "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The TideFlatVisual now " +
                       "VISIBLY colours the bar/flats from the live water level (sand when exposed → blue as " +
-                      "it covers), so the reveal is unmistakable — not a frozen static sprite. Clam-holes on " +
+                      "it covers), so the reveal is unmistakable — not a frozen static sprite. Up by the " +
+                      "cottage, AUNT GINNY (E to talk) teaches the buy-and-repair loop and NED'S LETTER (E " +
+                      "to read) frames it — the dory is EARNED, not inherited; a one-line onboarding nudge " +
+                      "walks the loop (clams → cross the bar → Greywick licence+rod → buy+repair the dory → " +
+                      "sail home). Clam-holes on " +
                       "the flats (fish.soft_shell_clam, gated by exposure). The walk passage at the Greywick " +
                       "end leads on. NOTE: the tide is SLOW by design (~minutes per high→low); to see the " +
                       "full swing fast, tick 'Enabled' on the DevFastTide object in Play (OFF by default) or " +
@@ -544,6 +606,34 @@ namespace HiddenHarbours.App.Editor
         {
             int u = spriteName.LastIndexOf('_');
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
+        }
+
+        // A standing world NPC / marker: a SpriteRenderer above the ground (just under the player, which
+        // draws at +10), with a tinted-square fallback so the greybox still builds before the art imports.
+        static GameObject MakeNpc(string name, Vector3 pos, Sprite sprite, Sprite fallback, Color fallbackColor)
+        {
+            var go = new GameObject(name);
+            go.transform.position = pos;
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingOrder = 9;
+            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
+            else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(1f, 2f, 1f); }
+            return go;
+        }
+
+        // Wire an Interactable to an NpcDef (the data-driven path) + an optional portrait, via the builder's
+        // persist-the-refs SerializedObject convention so the refs survive into the saved scene.
+        static void ConfigureInteractableNpc(Interactable it, NpcDef npc, Sprite portrait)
+        {
+            var so = new SerializedObject(it);
+            var npcProp = so.FindProperty("_npc");
+            if (npcProp != null) npcProp.objectReferenceValue = npc;
+            var portraitProp = so.FindProperty("_portrait");
+            if (portraitProp != null) portraitProp.objectReferenceValue = portrait;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            if (npc == null)
+                Debug.LogWarning("[StPetersBuilder] NpcDef missing for an Interactable — re-run after the " +
+                                 "Data/NPCs assets import (the opening NPC will show no dialogue otherwise).");
         }
 
         static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,

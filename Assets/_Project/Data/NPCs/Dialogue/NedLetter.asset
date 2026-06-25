@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: NedLetter
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.ned_letter
+  FirstLines:
+  - 'A weathered letter from your uncle Ned waits on the cottage table, in a careful,
+    salt-stained hand.'
+  - '"If you''re reading this, I''ve gone on ahead. I''m sorry there''s no boat to leave
+    you — my old dory''s rotted past saving, and I''d not have you risk your neck in her."'
+  - '"So I''ll leave you something better than a boat: the way to earn one. Dig clams
+    on the low-water flats. Walk the bar to Greywick. Buy a licence, a rod, and a hull
+    worth mending."'
+  - '"A boat you''ve bought and put right with your own hands is worth ten that were
+    handed to you. Mind the tide, watch the sky, and don''t fish angry."'
+  - '"There''s a whole coast out there waiting. Go and meet it. — Ned"'
+  RepeatLines:
+  - 'Ned''s letter. "Earn your boat, then sail her home. Mind the tide, and go and meet
+    the coast. — Ned"'

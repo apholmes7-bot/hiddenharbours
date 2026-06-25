@@ -87,7 +87,12 @@ namespace HiddenHarbours.World
             if (_presenter == null) return;
 
             bool metBefore = _flags.Get(it.CompletionFlag);
-            string[] text = WorldStrings.Conversation(it.ConversationId, metBefore);
+            // Content as DATA first (CLAUDE.md rule 2): an NpcDef → DialogueDef supplies the lines when
+            // wired; only fall back to the legacy WorldStrings table for the older string-driven cove
+            // interactables that have no NpcDef.
+            string[] text = it.HasNpcData
+                ? it.DialogueLines(metBefore)
+                : WorldStrings.Conversation(it.ConversationId, metBefore);
             if (text == null || text.Length == 0) return;
 
             var lines = new List<DialogueLine>(text.Length);
