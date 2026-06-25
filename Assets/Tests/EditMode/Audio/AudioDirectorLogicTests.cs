@@ -97,6 +97,61 @@ namespace HiddenHarbours.Tests.Audio
                 "coming ashore is the same warmth");
         }
 
+        // ---- "made it home" warmth is EARNED, not constant (P5) -----------------------------
+
+        [Test]
+        public void HomeWarmth_DoesNotFireAfterACalmTrip()
+        {
+            // A flat-calm hop to the next beach should end QUIETLY — the home-exhale is not free.
+            Assert.IsFalse(AudioDirectorLogic.HomeWarmthOnAshore(0f),
+                "dead-calm trip: coming ashore does NOT swell to warmth");
+            Assert.IsFalse(AudioDirectorLogic.HomeWarmthOnAshore(AudioDirectorLogic.HomeWarmthTellThreshold - 0.01f),
+                "barely-a-breeze trip: still below the bar — quiet");
+        }
+
+        [Test]
+        public void HomeWarmth_FiresWhenTheSeaHadBecomeAWorry()
+        {
+            // Coming in from a building blow IS the "the sea warned me → I made it" beat (P5).
+            Assert.IsTrue(AudioDirectorLogic.HomeWarmthOnAshore(AudioDirectorLogic.HomeWarmthTellThreshold),
+                "at the threshold the exhale is earned");
+            Assert.IsTrue(AudioDirectorLogic.HomeWarmthOnAshore(1f),
+                "coming in from a full blow definitely warms");
+        }
+
+        [Test]
+        public void HomeWarmth_ThresholdIsLowButNonZero()
+        {
+            // The gate is "the wind picked up at all", not "it was a gale" — small, but not zero (else
+            // every disembark fires and the cue is constant again).
+            Assert.Greater(AudioDirectorLogic.HomeWarmthTellThreshold, 0f,
+                "a non-zero bar is what makes the warmth earned");
+            Assert.Less(AudioDirectorLogic.HomeWarmthTellThreshold, 0.5f,
+                "but low enough that any real freshening counts, not just a gale");
+        }
+
+        [Test]
+        public void HomeWarmth_IsMonotonic_WorseSeaNeverUnEarnsTheExhale()
+        {
+            // Determinism + sanity: a worse peak sea can never turn a YES into a NO.
+            bool prev = false;
+            for (float p = 0f; p <= 1f + Eps; p += 0.05f)
+            {
+                bool now = AudioDirectorLogic.HomeWarmthOnAshore(p);
+                Assert.IsFalse(prev && !now, $"a worse sea must not un-earn the warmth (at peak {p})");
+                prev = now;
+            }
+            Assert.IsTrue(prev, "by a full-tell trip the warmth is certainly earned");
+        }
+
+        [Test]
+        public void HomeWarmth_ClampsNegativePeak()
+        {
+            // A peak should never be negative, but the gate must be robust if it is.
+            Assert.IsFalse(AudioDirectorLogic.HomeWarmthOnAshore(-1f),
+                "a nonsense negative peak reads as 'no worry' — quiet, not a crash");
+        }
+
         // ---- aboard layer -------------------------------------------------------------------
 
         [Test]
