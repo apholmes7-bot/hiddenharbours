@@ -25,6 +25,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<BoatPurchased>();
             EventBus.Clear<ActiveBoatChanged>();
             EventBus.Clear<ControlModeChanged>();
+            EventBus.Clear<GameLoaded>();
         }
 
         [TearDown]
@@ -33,6 +34,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<BoatPurchased>();
             EventBus.Clear<ActiveBoatChanged>();
             EventBus.Clear<ControlModeChanged>();
+            EventBus.Clear<GameLoaded>();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -244,6 +246,97 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(0, count, "an unknown id must not re-point the camera (no swap happened)");
             }
             finally { EventBus.Unsubscribe<ActiveBoatChanged>(Capture); }
+        }
+
+        // ---- VS-08 load-restore: the fleet re-grants the saved active hull -------------------
+
+        [Test]
+        public void RestoreFromSave_RestoresTheSavedActiveHull()
+        {
+            // A save where the player bought up to the Punt: restoring must put them back in the Punt
+            // (hull + grown hold), through the same swap a live purchase uses — so reloading resumes you
+            // aboard the boat you saved in, not back in the scene-default Dory.
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            var (fleet, boat, hold, _) = MakeFleet(new[] { dory, punt }, dory);
+
+            Assert.AreSame(dory, boat.Hull, "starts in the scene-default dory");
+
+            fleet.RestoreFromSave(new SaveData
+            {
+                OwnedBoats   = new List<string> { "boat.dory", "boat.punt" },
+                ActiveHullId = "boat.punt",
+            });
+
+            Assert.AreSame(punt, boat.Hull, "restore swaps to the saved active hull (the Punt)");
+            Assert.AreEqual(14, hold.CapacityUnits, "the restored hull's hold capacity is applied (6→14)");
+        }
+
+        [Test]
+        public void RestoreFromSave_EmptyOrUnknownActiveId_IsGracefulNoOp()
+        {
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            var (fleet, boat, hold, _) = MakeFleet(new[] { dory, punt }, dory);
+
+            Assert.DoesNotThrow(() => fleet.RestoreFromSave(new SaveData { ActiveHullId = "" }),
+                "an empty active id (fresh save) must not throw");
+            Assert.AreSame(dory, boat.Hull, "empty active id → no swap, the scene-default hull stands");
+
+            Assert.DoesNotThrow(() => fleet.RestoreFromSave(new SaveData { ActiveHullId = "boat.galleon" }),
+                "an unknown active id must not throw");
+            Assert.AreSame(dory, boat.Hull, "unknown active id → no swap (graceful, never null-swaps the player)");
+            Assert.AreEqual(6, hold.CapacityUnits, "hold unchanged on a no-op restore");
+        }
+
+        [Test]
+        public void RestoreFromSave_NullData_IsGracefulNoOp()
+        {
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            var (fleet, boat, _, _) = MakeFleet(new[] { dory, punt }, dory);
+
+            Assert.DoesNotThrow(() => fleet.RestoreFromSave(null), "a null save must not throw");
+            Assert.AreSame(dory, boat.Hull, "null save → no swap");
+        }
+
+        [Test]
+        public void GameLoaded_Signal_DrivesTheFleetRestore_OffTheLiveSave()
+        {
+            // The runtime path: GameRoot publishes GameLoaded after restoring scalars; the fleet handles it
+            // by reading GameServices.Save.Current and re-granting the active hull. Here we inject a fake
+            // save into the Core seam and fire the signal through the real bus (EditMode doesn't run Awake,
+            // so we subscribe the fleet's GameLoaded handler by hand — the way Awake does at runtime).
+            var dory = MakeHull("boat.dory", 6);
+            var punt = MakeHull("boat.punt", 14);
+            var (fleet, boat, hold, _) = MakeFleet(new[] { dory, punt }, dory);
+            EventBus.Subscribe<GameLoaded>(fleet.OnGameLoaded);
+
+            var prevSave = GameServices.Save;
+            GameServices.Save = new RestoreSaveStub(new SaveData { ActiveHullId = "boat.punt" });
+            try
+            {
+                EventBus.Publish(new GameLoaded());
+                Assert.AreSame(punt, boat.Hull, "GameLoaded → fleet reads the live save and restores the active hull");
+                Assert.AreEqual(14, hold.CapacityUnits, "the restored hull's hold capacity is applied");
+            }
+            finally
+            {
+                EventBus.Unsubscribe<GameLoaded>(fleet.OnGameLoaded);
+                GameServices.Save = prevSave;
+            }
+        }
+
+        /// <summary>A bare ISaveService that just hands back a fixed blob — enough to drive the fleet's
+        /// GameLoaded restore off the Core save seam in EditMode.</summary>
+        private sealed class RestoreSaveStub : ISaveService
+        {
+            private readonly SaveData _data;
+            public RestoreSaveStub(SaveData data) { _data = data; }
+            public SaveData Current => _data;
+            public bool GetFlag(string key) => false;
+            public void SetFlag(string key, bool value) { }
+            public void Save() { }
         }
     }
 }

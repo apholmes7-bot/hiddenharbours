@@ -94,6 +94,23 @@ namespace HiddenHarbours.Core
         }
     }
 
+    /// <summary>
+    /// Raised once, after a save has been loaded and its persistent player state has been re-applied to
+    /// the live services (the clock seeked, the wallet brought to the saved balance, the owned fleet/
+    /// licences/gear restored) — the "resume exactly where it was saved" signal (VS-08 load-restore).
+    /// <para>Published by the composition root through <see cref="SaveRestore"/> after restore completes,
+    /// so a lane that holds <em>derived</em> live state (e.g. the owned fleet re-granting its hulls) can
+    /// re-sync from <see cref="ISaveService.Current"/> on a single, well-defined edge instead of polling.
+    /// A new game raises it too (the loaded blob is just a fresh one), so subscribers have one code path.
+    /// It carries no payload: consumers read what they need from <see cref="GameServices.Save"/>. The
+    /// tide/wind/weather are NOT in scope — they are recomputed from <c>(worldSeed, gameTime)</c>, never
+    /// restored (CLAUDE.md rule 5); only the clock + persistent player state are restored before this
+    /// fires.</para>
+    /// </summary>
+    public readonly struct GameLoaded
+    {
+    }
+
     /// <summary>Whether the player is walking the coast or sailing the boat.</summary>
     public enum ControlMode { OnFoot, Aboard }
 
