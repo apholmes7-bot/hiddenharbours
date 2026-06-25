@@ -1,11 +1,14 @@
 # Water Rendering — the layered URP water shader (recipe + the shipped first pass)
 
-> **Status: FIRST PASS SHIPPED (greybox-real).** The layered shader now exists as a **text URP 2D
-> HLSL/ShaderLab shader** (NOT a Shader Graph — authored as text so it builds headless), wired to the
-> deterministic sim. The §0 "Applying the shader" note below covers what shipped and how to use it;
-> §2–§5 remain the layer-by-layer recipe (now describing the built layers). Colours / speeds / foam /
-> thresholds are all Inspector tunables on the material — the owner art-directs the LOOK next; this is a
-> solid first pass, not final polish. Decision of record:
+> **Status: FIRST PASS SHIPPED (greybox-real) + PAINTED-TEXTURE SLOTS.** The layered shader now exists
+> as a **text URP 2D HLSL/ShaderLab shader** (NOT a Shader Graph — authored as text so it builds
+> headless), wired to the deterministic sim. The §0 "Applying the shader" note below covers what shipped
+> and how to use it; §2–§5 remain the layer-by-layer recipe (now describing the built layers). Colours /
+> speeds / foam / thresholds are all Inspector tunables on the material — the owner art-directs the LOOK
+> next; this is a solid first pass, not final polish. **The shader also accepts optional owner-painted
+> TEXTURES (§10)** that blend with / override the matching procedural layer when assigned, and fall back
+> to the procedural look when empty — so art-pipeline can hand-paint foam, caustics, ripple, sparkle, the
+> depth-colour ramp, and whitecaps without touching the shader. Decision of record:
 > [`../adr/0010-water-rendering.md`](../adr/0010-water-rendering.md).
 >
 > ---
@@ -34,6 +37,11 @@
 > 4. **Tune the look** on `Water.mat` in the Inspector: depth colours/bands, surface noise/flow, foam
 >    width/softness, specular amount/sharpness/light-dir, caustic amount/scale/depth, and the pixel grid
 >    (`Pixels Per Unit`, default 32). No graph editing, no code.
+> 5. **Art-direct beyond procedural (optional):** drop owner-painted textures into the **Painted
+>    textures** slots to override or blend with the matching procedural layer — foam shape, caustics,
+>    surface ripple, sparkle, a hand-painted depth-colour ramp, whitecaps. **Every slot is empty by
+>    default, so the shipped look is 100% procedural until you assign one.** Full per-slot spec
+>    (suggested dims, seamless, no-AA import, what each drives, the fallback): **§10** below.
 >
 > The St Peters builder applies this automatically to the `Sea` plane (the free demo touch). To see it
 > move: **Hidden Harbours ▸ Build St Peters Scene**, open `StPeters.unity`, press Play, and tick the
@@ -274,3 +282,66 @@ The full shader slots onto the **same height-map data** the greybox already auth
 - **Tide→visual-cue mapping (time-tides-weather OQ1).** This doc resolves the *rendering* side
   (continuous depth gradient + depth≈0 foam band); whether discrete waterline states / wet-dry tile
   swaps are *also* wanted for non-shader fallbacks is an art-pipeline call coordinated with that doc.
+
+---
+
+## 10. Owner-painted texture slots (art-direct beyond procedural)
+
+The shader's first pass draws every layer **procedurally** (value-noise + math) so it ships with no art
+dependency. To let the owner/art-pipeline **art-direct the exact look**, the shader exposes **six
+optional texture slots** on `Water.mat`. Each one **blends with or overrides the matching procedural
+layer when assigned**, and **falls back to the shipped procedural look when the slot is empty** — so the
+default material (every slot empty, every toggle off) renders *exactly* the first pass, unchanged.
+
+**How the fallback works.** Each slot is paired with a `Use…` toggle (a shader keyword). The material
+ships with all toggles **off** and all slots **empty**, so the procedural branch runs. To use a slot:
+**assign the texture *and* tick its `Use…` toggle** in the Inspector. (Assigning a texture without
+ticking the toggle does nothing — the toggle is the on-switch; this keeps the procedural path the
+guaranteed default.) A per-slot **strength/blend** `[0..1]` then dials procedural ↔ painted
+(`0` = pure procedural, `1` = fully painted), except `_DepthRamp`, which is a hard replace when on.
+
+**Universal import settings for every slot** (so painted detail stays on-look):
+
+| Setting | Value | Why |
+|---|---|---|
+| **Filter Mode** | **Point (no filter)** | no bilinear AA — keeps the pixel-art read (LOCKED §3) |
+| **Wrap Mode** | **Repeat** | a small seamless tile covers the whole sea plane |
+| **Compression** | None (or high-quality) | avoid block-artefacts on tiny tiles |
+| **sRGB** | **on** for `_DepthRamp` (it's colour); **off** for the grayscale/mask tiles | masks are data, not colour |
+| **Alpha** | keep for the white-on-*transparent* tiles (foam, whitecap) | coverage comes from alpha |
+
+All slots are sampled on the **pixelized world grid** (PPU-snapped, like every procedural layer) and
+**tiled by `_PaintScale`** (tiles/unit; sparkle has its own finer `_SparkleTexScale`). Time-animated
+layers (surface, caustics, sparkle, foam, whitecap) **scroll the painted tile with the current**, so a
+single static tile still "swims" — no flip-book frames needed.
+
+### The six slots
+
+| Slot (material property) | Drives / blends into | On-switch + strength | Suggested authoring | Procedural fallback (slot empty) |
+|---|---|---|---|---|
+| **`_SurfaceTex`** | the layer-2 surface ripple/wave detail — augments **or replaces** the procedural scrolling value-noise that produces swell + the surface tint + the foam/spec coords | `_UseSurfaceTex` · `_SurfaceTexStrength` | **~64×64**, **seamless**, **grayscale** (mid-grey ≈ flat; light/dark = crest/trough) | the two-octave scrolling value-noise (`SurfaceNoise`) |
+| **`_FoamTex`** | the layer-3 foam fringe pattern, **masked to the waterline/shallows** (the depth≈0 band) — the painted shape breaks the foam line in place of the procedural churn | `_UseFoamTex` · `_FoamTexStrength` | **~64×64**, **seamless**, **white-on-transparent** (alpha = foam coverage; opaque tiles fall back to luminance) | the value-noise `churn` term inside the foam band |
+| **`_CausticTex`** | the layer-5 caustics, **distorted by time** (two counter-scrolling samples) and **depth-gated to the shallows** — painted light-veins over the visible seabed | `_UseCausticTex` · `_CausticTexStrength` | **~64×64**, **seamless**, **grayscale** (bright = caustic vein) | the ridged dual-value-noise caustic, same shallow gate |
+| **`_SparkleTex`** | the layer-4 specular glint pattern — replaces/blends the procedural posterized glint, still **gated by the implied-sun facing** (one-sun discipline, ADR 0006) | `_UseSparkleTex` · `_SparkleTexStrength` (+ `_SparkleTexScale`) | **~32×32**, **seamless**, **white-on-black** (white = a glint dot) | the noise-gradient facing glint, posterized to pixel sparkles |
+| **`_DepthRamp`** | the layer-1 depth **colour** — a **1-D shallow→deep ramp** sampled by depth (`u=0` shallow → `u=1` deep). When assigned it **drives the depth colour instead of** the `_ShallowColor`/`_DeepColor` lerp (a hard replace; the depth-band posterization still applies *before* the lookup) | `_UseDepthRamp` (no strength — hard replace) | **64×1** or **256×1** (1px tall), **sRGB colour**, shallow at the **left** (`u=0`); alpha in the ramp drives water opacity too | the `lerp(_ShallowColor, _DeepColor, dt)` two-colour gradient |
+| **`_WhitecapTex`** | the open-water, wind-driven whitecap pattern — coverage **scaled by the `_Roughness` (wind) uniform** and gated to deeper water, blended over the procedural speckle | `_UseWhitecapTex` · `_WhitecapTexStrength` | **~64×64**, **seamless**, **white-on-transparent** (alpha = cap coverage) | the wind-thresholded value-noise speckle |
+
+> **Notes.**
+> - `_PaintScale` (default `0.25` tiles/unit) sets how large the painted tiles read on the sea for all
+>   slots except sparkle, which uses `_SparkleTexScale` (default `0.5`, finer). Both are tunables, not
+>   hard-coded (rule 6).
+> - Slots blend **in their own layer only** — e.g. a painted foam tile still appears *only* in the
+>   depth≈0 band, painted caustics still fade out into deep water. The owner paints the *texture*; the
+>   shader keeps the *placement* tied to the tide-truth (the P1 integrity rule — render and sim still
+>   read one height map). A painted tile cannot move the waterline.
+> - **Determinism & save (rule 5) are unaffected:** these are read-only authored textures sampled for
+>   *visuals only*; they feed no simulation, influence no walkability/grounding, and enter no save —
+>   exactly like the procedural look they replace.
+
+### Ownership
+
+Per [`../../agents/coordination.md`](../../agents/coordination.md) §1.1 ("Water/fog/lighting"):
+**lead-architect** owns the **slot plumbing** (the properties, keywords, sampling, blend math — this
+section); **art-pipeline** owns the **textures** (painting the seamless tiles + ramp to the §4 palette
+and tuning the strengths). The slots are the seam where the two lanes meet — author the tiles to the
+import table above and tune together.

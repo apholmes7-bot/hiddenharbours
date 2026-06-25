@@ -23,7 +23,31 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _CausticTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DepthRamp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _HeightTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WhitecapTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -32,24 +56,37 @@ Material:
     - _CausticAmount: 0.3
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
+    - _CausticTexStrength: 1
     - _Chop: 0.25
     - _DeepDepth: 3
     - _DepthBands: 5
     - _Flow: 0.06
     - _FoamNoise: 1.2
     - _FoamSoftness: 0.18
+    - _FoamTexStrength: 1
     - _FoamWidth: 0.45
     - _HeightMax: 6
     - _HeightMin: -4
     - _NoiseScale: 0.35
+    - _PaintScale: 0.25
     - _PixelsPerUnit: 32
     - _Roughness: 0.2
     - _ShallowDepth: 0.15
     - _SpecAmount: 0.35
     - _SpecSharpness: 18
+    - _SparkleTexScale: 0.5
+    - _SparkleTexStrength: 1
+    - _SurfaceTexStrength: 1
     - _SurfaceTint: 0.18
+    - _UseCausticTex: 0
+    - _UseDepthRamp: 0
+    - _UseFoamTex: 0
     - _UseHeightTex: 0
+    - _UseSparkleTex: 0
+    - _UseSurfaceTex: 0
+    - _UseWhitecapTex: 0
     - _WaterLevel: 0
+    - _WhitecapTexStrength: 1
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}
