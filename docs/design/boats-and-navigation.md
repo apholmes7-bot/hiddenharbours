@@ -532,6 +532,18 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   control to match the persisted mode and re-raising the camera signals; the just-teleported boat is
   also `Stop()`-ed so a stale velocity doesn't carry it off the arrival mark. Works for both the rowed
   Dory and the engine Punt.
+- **The region passage can't re-fire on the just-arrived boat (helm-drop fix).** A `RegionPassage` is a
+  forgiving trigger band at the shore↔open-water boundary; **any** collider entering it took the crossing.
+  Two ways it double-fired and dropped the helm — and *every* fire re-runs travel, which teleports +
+  `Stop()`s the boat and re-binds control (a beat of dead helm, then recovery): (1) the boat **lingered in
+  / nudged back into** the wide band while crossing; (2) when the destination region's scene root is
+  toggled back on, Unity **re-raises `OnTriggerEnter2D` on the boat already overlapping** the passage (the
+  scene-toggle "bounce"). `RegionPassage` now guards with three layers so it fires **once per genuine
+  crossing, never on the boat that just arrived**: a **leave-then-enter latch** (it won't re-arm until the
+  body has exited and re-entered), a **cooldown debounce** after a fire, and **priming OFF on enable** (a
+  freshly activated/arrived region starts un-primed). The decision is a pure, EditMode-tested function
+  (`RegionPassage.ShouldFire`), owner-tunable (`_reentryCooldownSeconds`), nothing saved. So the helm stays
+  live crossing the boundary repeatedly, for both the rowed Dory and the engine Punt.
 
 ### 9.6 Mooring — future work (cleats / posts / placed tie items, and a second line) *(NOT built)*
 
