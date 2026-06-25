@@ -287,6 +287,16 @@ The full shader slots onto the **same height-map data** the greybox already auth
 
 ## 10. Owner-painted texture slots (art-direct beyond procedural)
 
+> **Status: the owner's six hand-painted tiles are now IMPORTED + ASSIGNED.** They live at
+> `Assets/_Project/Art/Textures/Water/` (`Foam.png`, `Caustics.png`, `SurfaceRipple.png`,
+> `Whitecaps.png`, `Sparkle.png` 32×32, `DepthRamp.png` 256×8) and are wired into every matching slot
+> on `Water.mat` with their `_Use…` toggles **ON** and each strength at the visible default `1`
+> (`_PaintScale` 0.25 / `_SparkleTexScale` 0.5 left at defaults). They import as **Default** textures
+> (not Sprite): **Point** filter, **no compression**, **mipmaps off** — **Repeat** wrap for the five
+> seamless tiles, **Clamp** for the 1-D `DepthRamp`; **sRGB on** for the colour ramp, **off** for the
+> five grayscale/mask tiles (per the import table below). So the default `Water.mat` now renders the
+> owner's painted look; every strength remains a tunable to dial back toward the procedural fallback.
+
 The shader's first pass draws every layer **procedurally** (value-noise + math) so it ships with no art
 dependency. To let the owner/art-pipeline **art-direct the exact look**, the shader exposes **six
 optional texture slots** on `Water.mat`. Each one **blends with or overrides the matching procedural
