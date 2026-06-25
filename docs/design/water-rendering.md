@@ -1,10 +1,48 @@
-# Water Rendering — the layered URP Shader Graph plan (build recipe for the art pass)
+# Water Rendering — the layered URP water shader (recipe + the shipped first pass)
 
-> **Status: PLAN, not code.** This is the recipe the art/rendering pass builds *toward*. No shader,
-> scene, or Core change exists yet. **Phase:** built in the art pass — M1 **VS-24** (the §3.6 water +
-> global-grade backbone) deepening into **M2/M3** advanced rendering — **after** the St Peters
-> mechanics prove fun and the placeholder pixel art is dropped (CLAUDE.md rule 8). Decision of record:
+> **Status: FIRST PASS SHIPPED (greybox-real).** The layered shader now exists as a **text URP 2D
+> HLSL/ShaderLab shader** (NOT a Shader Graph — authored as text so it builds headless), wired to the
+> deterministic sim. The §0 "Applying the shader" note below covers what shipped and how to use it;
+> §2–§5 remain the layer-by-layer recipe (now describing the built layers). Colours / speeds / foam /
+> thresholds are all Inspector tunables on the material — the owner art-directs the LOOK next; this is a
+> solid first pass, not final polish. Decision of record:
 > [`../adr/0010-water-rendering.md`](../adr/0010-water-rendering.md).
+>
+> ---
+>
+> ## 0. Applying the shader (what shipped + how to use it in ANY scene)
+>
+> The first pass ships three reusable pieces:
+>
+> | Asset | Path | What it is |
+> |---|---|---|
+> | **Shader** | `Assets/_Project/Art/Shaders/HiddenHarboursWater.shader` | the custom URP 2D unlit `HiddenHarbours/Water` shader — all five layers, every colour/speed/threshold a material property |
+> | **Material** | `Assets/_Project/Art/Materials/Water.mat` | the tunable instance the owner art-directs (the single place to change the look) |
+> | **Runtime** | `Assets/_Project/Code/Art/WaterSurface.cs` (`HiddenHarbours.Art`) | the SIM→shader bridge MonoBehaviour |
+>
+> **To put live water in ANY scene (including the hand-painted cove):**
+> 1. On the scene's **water plane** SpriteRenderer (or a quad), set its **Material** to `Water.mat`.
+>    The shader ignores the sprite texture — it draws everything procedurally from world position — so
+>    any sea sprite/quad works as the canvas.
+> 2. Add the **`WaterSurface`** component to the same GameObject. Set **Height world center / size** to
+>    the world rectangle the water covers, so the baked seabed depth map lines up with that region's
+>    `TidalTerrain`. Leave the rest at defaults.
+> 3. Press Play. `WaterSurface` reads `GameServices.Environment` + `GameServices.TidalTerrain` and feeds
+>    the surface every throttled tick — water flows with the current, roughens in wind, and its
+>    shoreline/foam track the tide. With no `TidalTerrain` wired the plane reads as uniform deep water
+>    (no false shoreline) — safe in any region.
+> 4. **Tune the look** on `Water.mat` in the Inspector: depth colours/bands, surface noise/flow, foam
+>    width/softness, specular amount/sharpness/light-dir, caustic amount/scale/depth, and the pixel grid
+>    (`Pixels Per Unit`, default 32). No graph editing, no code.
+>
+> The St Peters builder applies this automatically to the `Sea` plane (the free demo touch). To see it
+> move: **Hidden Harbours ▸ Build St Peters Scene**, open `StPeters.unity`, press Play, and tick the
+> `DevFastTide` object (or use the Tide Scrubber) to sweep the tide and watch the shoreline + foam move.
+>
+> **Phase note.** This is the M1 **VS-24** first pass (the §3.6 water backbone), deepening into **M2/M3**
+> advanced rendering. Greybox-real: a solid, tunable first pass the owner colours next; the per-pixel
+> authored height-map texture (vs the current coarse bake) and the runtime-vs-bake fork remain §9 open
+> questions for the deeper passes.
 >
 > **Ownership** ([`../../agents/coordination.md`](../../agents/coordination.md) §1.1 "Water/fog/lighting"):
 > **lead-architect** owns the URP Shader Graph *plumbing* (layer/subgraph structure, height-map

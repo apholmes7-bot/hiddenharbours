@@ -56,6 +56,7 @@ namespace HiddenHarbours.App.Editor
         const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
+        const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
@@ -173,6 +174,30 @@ namespace HiddenHarbours.App.Editor
             {
                 wsr.sprite = waterSprite; wsr.color = new Color(0.15f, 0.27f, 0.34f);
                 water.transform.localScale = new Vector3(160f, 120f, 1f);
+            }
+
+            // --- LAYERED SIM-DRIVEN WATER SHADER (ADR 0010 / design/water-rendering.md) ------------------
+            // FLAG lead-architect (this PR, the FREE touch): apply the HiddenHarbours/Water material to the
+            // Sea plane and hang the runtime WaterSurface on it so the layered shader (depth gradient / surface
+            // distortion / foam fringe / specular / caustics) MOVES off the live deterministic sim. WaterSurface
+            // feeds the EnvironmentSample + WaterLevelAt into the shader each throttled tick (current→flow,
+            // wind→roughness, level→shoreline, sea→chop) and BAKES the TidalTerrain seabed into a height texture,
+            // so the visible waterline/depth match the SAME number the walkability/boat-cross gate reads. The
+            // material's colours/speeds/thresholds are all Inspector tunables (no magic numbers) — the owner
+            // art-directs the LOOK on the Water.mat after re-running this builder and viewing it in Play.
+            // Visual-only: drives no sim, saves nothing (CLAUDE.md rule 5). If the material isn't present (first
+            // checkout before import) the Sea stays the plain tiled/flat backdrop — the wiring no-ops safely.
+            var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
+            if (waterMat != null)
+            {
+                wsr.sharedMaterial = waterMat;
+                var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
+                ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f));
+            }
+            else
+            {
+                Debug.LogWarning("[StPetersBuilder] Water.mat not found at " + ArtWaterMat + " — Sea left as the " +
+                                 "plain backdrop. Re-run after the material imports to get the layered water shader.");
             }
 
             // Reload data assets from disk before wiring refs (an intervening import can invalidate the
@@ -408,6 +433,20 @@ namespace HiddenHarbours.App.Editor
             var sp = so.FindProperty("_cellSprite");
             if (sp != null && sp.propertyType == SerializedPropertyType.ObjectReference)
                 sp.objectReferenceValue = cellSprite;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Configure the runtime <see cref="HiddenHarbours.Art.WaterSurface"/> so the layered shader's
+        /// baked seabed height map covers the visible water (the Sea plane bounds). The sim → uniform tuning
+        /// (current/wind thresholds, refresh) lives on the component defaults and the LOOK on the Water material
+        /// (no magic numbers — CLAUDE.md rule 6); here we only set the world rectangle the height map bakes over,
+        /// so the depth gradient + foam band line up with the St Peters TidalTerrain.</summary>
+        public static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
+                                                 Vector2 worldCenter, Vector2 worldSize)
+        {
+            var so = new SerializedObject(surface);
+            SetV2(so, "_heightWorldCenter", worldCenter);
+            SetV2(so, "_heightWorldSize", worldSize);
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
