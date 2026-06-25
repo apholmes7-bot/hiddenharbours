@@ -214,18 +214,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             const float auth = 600f;   // the Punt's RudderAuthority
             // Dead in the water → no rudder authority → an outboard can't pivot at rest.
-            Assert.AreEqual(0f, BoatController.RudderTorque(1f, auth, 0f, false), 1e-4f, "no pivot dead in the water");
+            Assert.AreEqual(0f, BoatController.RudderTorque(1f, auth, 0f), 1e-4f, "no pivot dead in the water");
             // Making way: helm-to-starboard turns the bow right (negative torque, the oar-yaw sign); helm-to-port left.
-            Assert.Less(BoatController.RudderTorque(1f, auth, 3f, false), 0f, "helm to starboard → bow right while making way");
-            Assert.Greater(BoatController.RudderTorque(-1f, auth, 3f, false), 0f, "helm to port → bow left");
+            Assert.Less(BoatController.RudderTorque(1f, auth, 3f), 0f, "helm to starboard → bow right while making way");
+            Assert.Greater(BoatController.RudderTorque(-1f, auth, 3f), 0f, "helm to port → bow left");
             // Authority rises with way, then saturates by ~2 m/s.
-            Assert.Greater(Mathf.Abs(BoatController.RudderTorque(1f, auth, 1f, false)),
-                           Mathf.Abs(BoatController.RudderTorque(1f, auth, 0.2f, false)), "more way → more authority");
-            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 2f, false), 1e-3f, "full authority by 2 m/s");
-            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 50f, false), 1e-3f, "…and stays saturated");
-            // Aground steering is heavily damped.
-            Assert.Less(Mathf.Abs(BoatController.RudderTorque(1f, auth, 3f, true)),
-                        Mathf.Abs(BoatController.RudderTorque(1f, auth, 3f, false)), "aground steering is damped");
+            Assert.Greater(Mathf.Abs(BoatController.RudderTorque(1f, auth, 1f)),
+                           Mathf.Abs(BoatController.RudderTorque(1f, auth, 0.2f)), "more way → more authority");
+            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 2f), 1e-3f, "full authority by 2 m/s");
+            Assert.AreEqual(-auth, BoatController.RudderTorque(1f, auth, 50f), 1e-3f, "…and stays saturated");
         }
 
         [Test]
@@ -235,7 +232,67 @@ namespace HiddenHarbours.Tests.EditMode
             // differentially (no speed needed), but the Punt's outboard rudder gives nothing — it must
             // make way to turn. This is "rows like a dory" vs "drives like a motorboat, no zero-speed pivot".
             Assert.AreNotEqual(0f, BoatController.OarYawTorque(1f, -1f, P, O), "the Dory pivots at rest (differential oars)");
-            Assert.AreEqual(0f, BoatController.RudderTorque(1f, 600f, 0f, false), 1e-4f, "the Punt cannot pivot at rest (no oars; speed-scaled rudder)");
+            Assert.AreEqual(0f, BoatController.RudderTorque(1f, 600f, 0f), 1e-4f, "the Punt cannot pivot at rest (no oars; speed-scaled rudder)");
+        }
+
+        // ---- Part 6: GROUNDING IS NON-KILLING (shallows SLOW the boat; the helm never cuts out) ----
+        // Latent issue flagged in #85: grounding used to ZERO thrust/oar drive and damp the rudder, so
+        // St Peters' big tide (region-wide TideHeight, not per-position) could trip a transient "aground"
+        // at low water and KILL the helm purely from the tide phase. Grounding must SLOW, never KILL.
+
+        [Test]
+        public void Grounded_RudderKeepsFullAuthority_HelmNeverCutByGrounding()
+        {
+            const float auth = 600f;
+            // The rudder is a pure function of helm + way; grounding no longer enters the formula at all.
+            // Making way over a soft bottom, the helm answers with FULL authority — it is not damped/cut.
+            float makingWay = BoatController.RudderTorque(1f, auth, 3f);
+            Assert.AreEqual(-auth, makingWay, 1e-3f,
+                "aground but making way, the rudder keeps full authority — grounding never cuts the helm");
+            Assert.Less(makingWay, 0f, "helm to starboard still turns the bow right while aground");
+        }
+
+        [Test]
+        public void Grounded_ThrustStaysLive_InputIsNotZeroed()
+        {
+            // The engine/oar drive is applied regardless of grounding (the helm never cuts out). The static
+            // thrust helpers carry no grounding term — full throttle/oar input always yields full thrust, so
+            // the player can always power/row their way back to deep water (P5, never-punishing).
+            Assert.AreEqual(1200f, BoatController.EngineThrust(1f, 1200f, 0.4f), 1e-3f,
+                "full throttle yields full thrust — grounding does not zero engine input");
+            Assert.AreEqual(2f * P, BoatController.OarThrust(1f, 1f, P), 1e-3f,
+                "full oar stroke yields full thrust — grounding does not zero oar input");
+            Assert.AreNotEqual(0f, BoatController.OarYawTorque(1f, -1f, P, O),
+                "the dory can still yaw with the oars while aground (work off a soft bottom)");
+        }
+
+        [Test]
+        public void Grounded_SlowdownDrag_OpposesMotion_ButOnlyWhenAground()
+        {
+            var through = new Vector2(0f, 2f);   // making way ahead, through the water
+            const float drag = 900f;
+
+            // Aground → a real through-water drag that OPPOSES motion (heavy, sluggish shallows = the teeth).
+            Vector2 slow = BoatController.GroundedSlowdownForce(through, aground: true, drag);
+            Assert.Less(Vector2.Dot(slow, through), 0f, "the grounded slowdown opposes motion through the water");
+            Assert.Greater(slow.magnitude, 0f, "aground adds real drag — the boat feels heavy in the shallows");
+            // Magnitude scales linearly with the through-water speed × the tunable strength: |F| = drag * |v|.
+            Assert.AreEqual(drag * through.magnitude, slow.magnitude, 1e-3f,
+                "drag scales linearly with the through-water speed and the tunable strength");
+
+            // Afloat → zero (no penalty in deep water); and a non-positive drag is a no-op (tunable off).
+            Assert.AreEqual(0f, BoatController.GroundedSlowdownForce(through, aground: false, drag).magnitude, 1e-4f,
+                "afloat → no slowdown; the penalty exists only in the shallows");
+            Assert.AreEqual(0f, BoatController.GroundedSlowdownForce(through, aground: true, 0f).magnitude, 1e-4f,
+                "zero drag strength → no force (owner can tune the teeth all the way off)");
+
+            // Symmetric: it slows you whichever way you move (heavy, not a one-way wall) — you can still
+            // retreat to deep water, just sluggishly. Stronger tuning → more drag (it's a real slider).
+            Vector2 retreating = BoatController.GroundedSlowdownForce(new Vector2(0f, -2f), aground: true, drag);
+            Assert.Greater(retreating.magnitude, 0f, "the slowdown resists retreat too — sluggish, but never blocks it");
+            Assert.Greater(BoatController.GroundedSlowdownForce(through, true, 1800f).magnitude,
+                           BoatController.GroundedSlowdownForce(through, true, 900f).magnitude,
+                           "stronger tuning = heavier shallows (the owner-tunable amount really scales)");
         }
     }
 }

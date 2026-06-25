@@ -41,6 +41,12 @@ namespace HiddenHarbours.Boats
         [SerializeField] private BoatHullDef _hull;
         [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
         [SerializeField] private float _localSeabedDepth = 3f;
+        [Tooltip("Shallows SLOW the boat — they never cut the helm. When the hull is aground/touching " +
+                 "bottom this design-unit drag opposes its motion through the water, so the boat feels " +
+                 "heavy and sluggish (the desired 'teeth'), but throttle, oars and rudder stay FULLY " +
+                 "responsive — the player can always work their way out (P5, never-punishing). Friction, " +
+                 "not a dead helm. Tune to taste.")]
+        [SerializeField] private float _groundedSlowdownDrag = 900f;
         [Tooltip("Gate crossing on the authored tidal terrain (St Peters): the boat can only pass where " +
                  "the water is deeper than its draught, so the sandbar channel closes as the tide falls. " +
                  "Non-punishing — the hull eases to a stop at the shallows, no grounding/damage. " +
@@ -115,14 +121,19 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// Engine rudder torque (design-unit, before the physics-feel scale) for a helm in -1..1. Authority
         /// scales with WAY — the forward speed through the water — so it is ~0 at rest (you CAN'T pivot dead
-        /// in the water; give a burst of throttle to turn) and rises + saturates with speed; aground it's
-        /// heavily damped. Positive helm → bow right (negative torque), matching the oar-yaw sign. The
-        /// outboard's "speed-scaled rudder" from boats-and-navigation.md §2. Pure + static.
+        /// in the water; give a burst of throttle to turn) and rises + saturates with speed. Positive helm →
+        /// bow right (negative torque), matching the oar-yaw sign. The outboard's "speed-scaled rudder" from
+        /// boats-and-navigation.md §2. Pure + static.
+        ///
+        /// Grounding never touches rudder authority: a boat in the shallows is SLOWED (the grounded-slowdown
+        /// drag, <see cref="GroundedSlowdownForce"/>), not steering-crippled — so the helm never "cuts out"
+        /// and the player can always steer their way back to deep water (P5, never-punishing). As speed
+        /// bleeds off in the shallows the rudder naturally loses bite through the WAY term, which is the
+        /// honest, recoverable feel; it is not zeroed by a grounding flag.
         /// </summary>
-        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec, bool aground)
+        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec)
             => -Mathf.Clamp(helm, -1f, 1f) * rudderAuthority
-               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f)
-               * (aground ? 0.2f : 1f);
+               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f);
 
         /// <summary>
         /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
@@ -183,6 +194,26 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// The <b>grounded-slowdown</b> force (design-unit, before the feel scale): when the hull is
+        /// aground/touching bottom, a drag opposes its motion THROUGH THE WATER so the boat feels heavy and
+        /// sluggish in the shallows — the desired "teeth". Crucially this is the <i>only</i> thing grounding
+        /// does to handling: it <b>SLOWS</b> the boat, it never zeroes thrust or rudder authority. The player
+        /// keeps full throttle/oar/helm response and can always work back to deep water (P5, never-punishing
+        /// — the helm never cuts out). Symmetric in direction (unlike <see cref="ShallowsHoldForce"/>, which
+        /// is one-way): it resists motion either way, just adding friction, so retreating is sluggish but
+        /// always possible. Returns zero when not aground or when drag is non-positive. Pure + static so it's
+        /// EditMode-testable without the physics step.
+        /// </summary>
+        /// <param name="throughWater">The hull's velocity relative to the ambient water (m/s).</param>
+        /// <param name="aground">True when the keel is on/below the bottom (draught exceeds water depth).</param>
+        /// <param name="slowdownDrag">Drag strength against the through-water velocity while aground.</param>
+        public static Vector2 GroundedSlowdownForce(Vector2 throughWater, bool aground, float slowdownDrag)
+        {
+            if (!aground || slowdownDrag <= 0f) return Vector2.zero;
+            return -throughWater * slowdownDrag;
+        }
+
+        /// <summary>
         /// Bring the boat to rest where it sits — zero its linear and angular velocity and clear any held
         /// control input. Called on disembark so a boat LEFT NEAR SHORE <b>parks where it's left</b> and
         /// doesn't coast on after the helm is dropped (the disembark-anywhere safety: an un-crewed boat is
@@ -222,7 +253,14 @@ namespace HiddenHarbours.Boats
                 ? GameServices.Environment.Sample()
                 : default;
 
-            // --- Grounding: water depth = seabed depth + tide height; ground if draught exceeds it (P5) ---
+            // --- Grounding: water depth = seabed depth + tide height; aground if draught exceeds it (P5). ---
+            // NOTE: grounding is NON-killing. It SLOWS the boat (the grounded-slowdown drag below) so the
+            // shallows feel heavy and sluggish — the "teeth" — but it NEVER zeroes thrust or cuts the rudder.
+            // The helm/throttle/oars stay fully responsive so the player can always steer/power their way back
+            // to deep water (P5, never-punishing). This matters under St Peters' big tide: at low water the
+            // region-wide TideHeight alone can trip this (the depth here is still flat & time-based, not
+            // per-position) — so it MUST stay a slowdown, not a helm-cut, or a transient tide phase would kill
+            // control independent of where you are.
             float waterDepth = _localSeabedDepth + env.TideHeight;
             bool agroundNow = waterDepth < _hull.DraughtMeters;
             if (agroundNow && !IsAground)
@@ -233,6 +271,7 @@ namespace HiddenHarbours.Boats
             Vector2 vel = _rb.linearVelocity;
 
             // --- Propulsion (data-driven, ADR 0003): hand-rowed oars (Dory) or an engine helm (Punt). ---
+            // Always driven — drive authority is NOT gated on grounding (the helm never cuts out).
             if (UsesEngineHelm(_hull.Propulsion))
                 ApplyEngineDrive(fwd, vel, env);
             else
@@ -244,6 +283,11 @@ namespace HiddenHarbours.Boats
             Vector2 sideways = throughWater - along;
             Vector2 drag = -(along * (_hull.ForwardDrag * ForceFeelScale) + sideways * (_hull.LateralDrag * ForceFeelScale));
             _rb.AddForce(drag, ForceMode2D.Force);
+
+            // --- Grounded slowdown (P5 teeth, NOT a kill): aground → an extra through-water drag makes the
+            // hull heavy and sluggish in the shallows, but input authority is untouched. Forgiving by design. ---
+            Vector2 groundedSlow = GroundedSlowdownForce(throughWater, IsAground, _groundedSlowdownDrag);
+            if (groundedSlow != Vector2.zero) _rb.AddForce(groundedSlow * ForceFeelScale, ForceMode2D.Force);
 
             // --- Wind shove (Pillar 1: the dory gets pushed around) ---
             _rb.AddForce(env.WindVector * (_hull.WindExposure * ForceFeelScale), ForceMode2D.Force);
@@ -268,30 +312,35 @@ namespace HiddenHarbours.Boats
         /// through the water. At rest there's ~no authority, so an outboard CANNOT pivot dead in the water
         /// (you give a burst of throttle to turn in tight quarters); it bites as you make speed. This is
         /// the Engine branch (the Punt); the Oars branch (the Dory) keeps per-oar rowing.
+        ///
+        /// Throttle + rudder are applied REGARDLESS of grounding — the helm never cuts out. Aground the
+        /// boat is merely SLOWED by the grounded-slowdown drag (FixedUpdate); the player keeps full throttle
+        /// and steering to work back to deep water (P5, never-punishing).
         /// </summary>
         private void ApplyEngineDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
         {
-            // --- Engine thrust along the hull (no drive when hard aground). Ahead full, astern weaker. ---
-            if (!IsAground)
-            {
-                float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * ForceFeelScale;
-                _rb.AddForce(fwd * thrust, ForceMode2D.Force);
-            }
+            // --- Engine thrust along the hull. Ahead full, astern weaker. Always live (never killed by ground). ---
+            float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * ForceFeelScale;
+            _rb.AddForce(fwd * thrust, ForceMode2D.Force);
 
             // --- Rudder: authority scales with WAY (forward speed through the water, §2) — nil at rest. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);   // forward way through the moving water
-            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way, IsAground) * RudderFeelScale);
+            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
         }
 
         /// <summary>
         /// Differential hand-rowing. Each oar's forward pull acts at a lateral offset, so a one-sided
         /// stroke gives forward thrust AND a yaw torque about the hull centre (left oar → bow swings
         /// right); both oars equal → straight, no fighting. Space braces the oars for a strong braking
-        /// drag. No drive when hard aground. A forgiving feel prototype — tune via the hull's oar stats.
+        /// drag. A forgiving feel prototype — tune via the hull's oar stats.
+        ///
+        /// Oar drive is applied REGARDLESS of grounding — the oars never stop answering. Aground the dory is
+        /// just SLOWED by the grounded-slowdown drag (FixedUpdate), so you can always row off a soft bottom
+        /// (P5, never-punishing; the dory's shallow draught + oars are exactly the "work your way out" tool).
         /// </summary>
         private void ApplyOarDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
         {
-            if (!IsAground)
+            // Oar thrust + yaw always live — never killed by grounding (the player can always pull the oars).
             {
                 float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * ForceFeelScale;
                 float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
