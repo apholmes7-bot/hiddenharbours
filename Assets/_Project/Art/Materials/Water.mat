@@ -11,7 +11,13 @@ Material:
   m_Shader: {fileID: 4800000, guid: 60e801f535ab482ca783280c9f07d6cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _USE_CAUSTICTEX
+  - _USE_DEPTHRAMP
+  - _USE_FOAMTEX
+  - _USE_SPARKLETEX
+  - _USE_SURFACETEX
+  - _USE_WHITECAPTEX
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -24,15 +30,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _CausticTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 0976c3a9024a43fca2f9467e02d3f8e6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DepthRamp:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 26cd9a2a0c77453d9190a256acdddc5e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 1951838e4d2b46a5a547bbc30e5d93b8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightTex:
@@ -40,15 +46,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SparkleTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: dd102f0aa90843ae976d90ee15af3b78, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SurfaceTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 05fd86eb7b9c49bcb322c37001431f3e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WhitecapTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 88a48d6f1c0e4477b173188940b33ad4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -78,13 +84,13 @@ Material:
     - _SparkleTexStrength: 1
     - _SurfaceTexStrength: 1
     - _SurfaceTint: 0.18
-    - _UseCausticTex: 0
-    - _UseDepthRamp: 0
-    - _UseFoamTex: 0
+    - _UseCausticTex: 1
+    - _UseDepthRamp: 1
+    - _UseFoamTex: 1
     - _UseHeightTex: 0
-    - _UseSparkleTex: 0
-    - _UseSurfaceTex: 0
-    - _UseWhitecapTex: 0
+    - _UseSparkleTex: 1
+    - _UseSurfaceTex: 1
+    - _UseWhitecapTex: 1
     - _WaterLevel: 0
     - _WhitecapTexStrength: 1
     m_Colors:
