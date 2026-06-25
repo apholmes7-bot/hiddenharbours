@@ -168,3 +168,21 @@ does not pre-commit that fork.
 - **Foam-band width / depth thresholds, palette ramps, caustic intensity.** Tunables, owned by
   art-pipeline; exposed as material/Def values per the no-magic-numbers rule (CLAUDE.md rule 6), not
   hard-coded in the graph.
+
+## Addendum — shipped art-pass tunables (anti-tiling + beach swash)
+
+Two visual fixes shipped on `HiddenHarboursWater.shader` after the owner saw the painted-texture pass
+running live (`design/water-rendering.md` §5.6 documents the mechanism). Both are **visual-only** — they
+drive no sim, save nothing, and read the *same* deterministic depth (the invariant above holds):
+
+- **Anti-tiling** — `_UntileStrength` (0..1, default 0.6, ON). An IQ-style hash-untile + domain warp on
+  the scrolling painted slots (`_SurfaceTex`/`_FoamTex`/`_CausticTex`/`_SparkleTex`) so the small painted
+  tile's repeat grid stops reading at CALM. Kept pixel-snapped (the offset is applied to the world coord
+  before the pixelize), so the pixel-art rule (decision (2)) still holds.
+- **Always-on beach swash** — `_SwashAmplitude` (m, default 0.3), `_SwashSpeed` (default 0.5),
+  `_SwashScale` (default 0.25). A fast `_Time`-driven sine that advances/recedes the **foam fringe**
+  continuously (the "waves in and out" the slow tide alone didn't give). **Confined to the depth≈0 foam
+  band** by a gate and applied only to a *local foam-only depth* — the real `depth` driving `clip()`, the
+  deep tint, and the caustic gate is never touched, so the cosmetic wash **cannot move the gameplay
+  waterline** (the P1 integrity rule / determinism invariant above). Its math has a C# twin
+  (`WaterSurface.SwashOffset`/`SwashBandGate`) unit-tested headless for the band-confinement invariant.

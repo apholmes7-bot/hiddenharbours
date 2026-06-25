@@ -41,6 +41,11 @@ Shader "HiddenHarbours/Water"
         _FoamNoise      ("Foam churn noise scale", Float) = 1.2
         _Roughness      ("Roughness / whitecaps (0..1)", Range(0,1)) = 0.2
 
+        [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
+        _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
+        _SwashSpeed     ("Swash speed (waves / 2pi sec)", Float)      = 0.5
+        _SwashScale     ("Swash along-shore variation scale", Float)  = 0.25
+
         [Header(Specular glints (layer 4))]
         _SpecColor      ("Specular color", Color)       = (1.0, 0.98, 0.86, 1.0)
         _SpecAmount     ("Specular amount (0..1)", Range(0,1)) = 0.35
@@ -73,6 +78,9 @@ Shader "HiddenHarbours/Water"
         // "Owner-painted texture slots".
         [Header(Painted textures   optional   blend or override procedural)]
         _PaintScale      ("Painted texture scale (tiles/unit)", Float) = 0.25
+        // Anti-tiling: hide the painted tile's repeat grid (IQ-style hash-untile + domain warp). 0 = raw
+        // tiling (the grid reads at CALM), 1 = full break-up. Applied to every scrolling painted slot.
+        _UntileStrength  ("Untile strength (0=raw grid, 1=broken up)", Range(0,1)) = 0.6
 
         [Toggle(_USE_SURFACETEX)] _UseSurfaceTex ("Use surface ripple texture", Float) = 0
         [NoScaleOffset] _SurfaceTex ("Surface ripple/detail (grayscale, seamless ~64)", 2D) = "gray" {}
@@ -178,6 +186,9 @@ Shader "HiddenHarbours/Water"
                 float  _FoamSoftness;
                 float  _FoamNoise;
                 float  _Roughness;
+                float  _SwashAmplitude;
+                float  _SwashSpeed;
+                float  _SwashScale;
                 float4 _SpecColor;
                 float  _SpecAmount;
                 float  _SpecSharpness;
@@ -194,6 +205,7 @@ Shader "HiddenHarbours/Water"
                 // Painted-texture blend strengths + tiling (the _Use* toggle floats live only as keyword
                 // drivers — like _UseHeightTex — and are intentionally NOT in the CBUFFER).
                 float  _PaintScale;
+                float  _UntileStrength;
                 float  _SurfaceTexStrength;
                 float  _FoamTexStrength;
                 float  _CausticTexStrength;
@@ -248,6 +260,69 @@ Shader "HiddenHarbours/Water"
                 return Pixelize(worldXY + scroll) * max(scale, 1e-4);
             }
 
+            // 2-vector hash for the untile per-tile offset (different lattice constants from Hash21 so the
+            // untile offset doesn't correlate with the surface noise).
+            float2 Hash22(float2 p)
+            {
+                p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
+                return frac(sin(p) * 43758.5453);
+            }
+
+            // ---- IQ-style texture UNTILING (hide the repeat grid that reads at CALM) -------------------------
+            // The painted slots are small seamless tiles on Repeat wrap, so at a glassy sea-state (no chop/flow
+            // motion to mask it) the tile boundary reads as an obvious grid. This breaks it up two ways, both
+            // dialed by _UntileStrength (0 = raw tiling, 1 = full break-up):
+            //   1) DOMAIN WARP — nudge the sample UV by the low-freq surface ValueNoise so straight tile seams
+            //      bend before they're sampled (cheap, smooth).
+            //   2) HASH-UNTILE — per repeat-cell, offset the lookup by a cell hash, then blend two neighbouring
+            //      offset variants by a smooth weight so adjacent cells differ yet never seam.
+            // PIXEL-ART faithful: the offset is added to the WORLD coord BEFORE PaintUV pixelizes, so the
+            // untiled lookup still snaps to the PPU grid and stays point-sampled. Pass scroll for the drift.
+            half4 UntileSampleW(TEXTURE2D_PARAM(tex, smp), float2 worldXY, float scale, float2 scroll, float strength)
+            {
+                float s = saturate(strength);
+                // (1) domain warp: a small world-space nudge from the surface noise, scaled by strength.
+                float2 warpN = float2(ValueNoise(worldXY * _NoiseScale * 0.5 + 3.1),
+                                      ValueNoise(worldXY * _NoiseScale * 0.5 + 8.7)) - 0.5;
+                float2 warped = worldXY + warpN * (s * 1.5);
+
+                half4 raw = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped, scale, scroll));
+                if (s <= 0.001) return raw;
+
+                // (2) hash-untile in TILE space (uv = warped*scale; one repeat-cell == 1 unit of uv).
+                float2 uv  = Pixelize(warped + scroll) * max(scale, 1e-4);
+                float2 iuv = floor(uv);
+                float2 fuv = frac(uv);
+                // two candidate cell offsets (this cell + the diagonally-adjacent cell) so the blend never
+                // shows a seam: each is hashed to a per-cell translation; world-space so PaintUV still snaps.
+                float2 offA = Hash22(iuv)            * 64.0;          // a few tiles of world translation
+                float2 offB = Hash22(iuv + 1.0)      * 64.0;
+                half4 a = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + offA, scale, scroll));
+                half4 b = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + offB, scale, scroll));
+                // smooth blend weight across the cell so neighbours cross-fade (no hard tile edge).
+                float w = smoothstep(0.2, 0.8, fuv.x) * 0.5 + smoothstep(0.2, 0.8, fuv.y) * 0.5;
+                half4 untiled = lerp(a, b, w);
+                // dial raw(+warp) <-> untiled by strength.
+                return lerp(raw, untiled, s);
+            }
+
+            // ---- ALWAYS-ON beach swash (cosmetic waterline wash; foam band ONLY) ----------------------------
+            // A fast sine on _Time that makes the wet edge advance & recede CONTINUOUSLY, independent of the
+            // slow deterministic tide — the "waves crashing in and out" the procedural foam alone didn't have.
+            // Returns a signed DEPTH OFFSET (metres): + pulls the wet edge inshore (advances), - pushes it
+            // back. The caller GATES it to the depth~0 foam band and applies it to a LOCAL foam-only depth, so
+            // it NEVER touches the real `depth` that drives clip()/the deep tint/the caustic gate, NEVER moves
+            // the gameplay waterline, and saves nothing (the P1 integrity rule, CLAUDE.md rule 5). Visual-only.
+            // Along-shore variation (_SwashScale over world X+Y) keeps the wash from pulsing as one flat line.
+            float BeachSwash(float2 worldXY, float t)
+            {
+                float alongShore = (worldXY.x + worldXY.y) * _SwashScale;
+                // two beats slightly out of phase read as overlapping run-up/backwash, not a metronome.
+                float wave = sin(t * _SwashSpeed * 6.2831853 + alongShore) * 0.7
+                           + sin(t * _SwashSpeed * 6.2831853 * 0.5 + alongShore * 1.7) * 0.3;
+                return wave * _SwashAmplitude;
+            }
+
             // Sample the seabed elevation (metres above datum) at a world position. With the baked height map
             // the depth gradient + foam band match TidalTerrain exactly; without it, the plane reads as uniform
             // deep water (a safe fallback before a region bakes its height).
@@ -286,8 +361,9 @@ Shader "HiddenHarbours/Water"
                 // Painted ripple/detail (grayscale) scrolled with the current; blend over the procedural
                 // noise. At strength 1 it fully replaces the procedural surface; at 0 it's pure procedural.
                 float2 sScroll = normalize(_FlowDir.xy + float2(1e-4, 0)) * (_Flow * t);
-                float surfTex = SAMPLE_TEXTURE2D(_SurfaceTex, sampler_SurfaceTex,
-                                    PaintUV(worldXY, _PaintScale, sScroll)).r;
+                // untile so the painted ripple's repeat grid stops reading at CALM (the headline fix).
+                float surfTex = UntileSampleW(TEXTURE2D_ARGS(_SurfaceTex, sampler_SurfaceTex),
+                                    worldXY, _PaintScale, sScroll, _UntileStrength).r;
                 surf = lerp(surf, surfTex, _SurfaceTexStrength);
             #endif
                 float swell = (surf - 0.5) * 2.0;                  // -1..1
@@ -331,10 +407,10 @@ Shader "HiddenHarbours/Water"
                     // still depth-gated to the shallows by causticGate. Two counter-scrolling samples mul
                     // to a moving ripple so a static tile still "swims".
                     float2 cScroll = float2(t * _Flow * 0.6, -t * _Flow * 0.4);
-                    float ct = SAMPLE_TEXTURE2D(_CausticTex, sampler_CausticTex,
-                                   PaintUV(worldXY, _PaintScale * 2.0, cScroll)).r
-                             * SAMPLE_TEXTURE2D(_CausticTex, sampler_CausticTex,
-                                   PaintUV(worldXY, _PaintScale * 2.0, -cScroll * 1.3)).r;
+                    float ct = UntileSampleW(TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex),
+                                   worldXY, _PaintScale * 2.0, cScroll, _UntileStrength).r
+                             * UntileSampleW(TEXTURE2D_ARGS(_CausticTex, sampler_CausticTex),
+                                   worldXY, _PaintScale * 2.0, -cScroll * 1.3, _UntileStrength).r;
                     caustic = lerp(caustic, ct * 2.0, _CausticTexStrength);   // *2: counter-mul darkens, restore range
                 #endif
                     col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate;
@@ -355,16 +431,23 @@ Shader "HiddenHarbours/Water"
                     // Painted glint pattern (white-on-black), drifted with the current and still gated by
                     // `facing` so sparkles only land where the implied sun hits (one-sun discipline, ADR 0006).
                     float2 kScroll = normalize(_FlowDir.xy + float2(1e-4, 0)) * (_Flow * t * 0.5);
-                    float sparkle = SAMPLE_TEXTURE2D(_SparkleTex, sampler_SparkleTex,
-                                        PaintUV(worldXY, _SparkleTexScale, kScroll)).r * facing;
+                    float sparkle = UntileSampleW(TEXTURE2D_ARGS(_SparkleTex, sampler_SparkleTex),
+                                        worldXY, _SparkleTexScale, kScroll, _UntileStrength).r * facing;
                     glint = lerp(glint, sparkle, _SparkleTexStrength);
                 #endif
                     col.rgb += _SpecColor.rgb * glint * _SpecAmount;
                 }
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
+                // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
+                // GATED to the depth~0 band (full at the wet edge, 0 by ~2x the foam width) and applied ONLY
+                // to a LOCAL foam-only depth — the real `depth` (clip/dt/caustics) is never touched, so deep
+                // water and the gameplay waterline don't move. Pure foam dressing (P1 integrity, rule 5).
+                float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);
+                float swashGate  = 1.0 - smoothstep(0.0, swashReach, depth);   // 1 at the wet edge -> 0 deeper
+                float foamDepth  = depth - BeachSwash(worldXY, t) * swashGate;  // local, foam-only
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
-                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), depth);
+                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
                 if (foamEdge > 0.001)
                 {
                     float churn = ValueNoise(Pixelize(worldXY * _FoamNoise + float2(-t * _Flow, t * _Flow)));
@@ -373,8 +456,8 @@ Shader "HiddenHarbours/Water"
                     // (alpha, falling back to luminance for an opaque tile) replaces the procedural churn so
                     // the owner's foam shape breaks the line. Still masked to the depth~0 band by foamEdge.
                     float2 fScroll = float2(-t * _Flow, t * _Flow);
-                    half4 foamSample = SAMPLE_TEXTURE2D(_FoamTex, sampler_FoamTex,
-                                           PaintUV(worldXY, _PaintScale, fScroll));
+                    half4 foamSample = UntileSampleW(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex),
+                                           worldXY, _PaintScale, fScroll, _UntileStrength);
                     float foamPat = max(foamSample.a, dot(foamSample.rgb, float3(0.299, 0.587, 0.114)));
                     churn = lerp(churn, foamPat, _FoamTexStrength);
                 #endif

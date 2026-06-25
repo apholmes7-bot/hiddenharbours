@@ -84,6 +84,10 @@ Material:
     - _SparkleTexStrength: 1
     - _SurfaceTexStrength: 1
     - _SurfaceTint: 0.18
+    - _SwashAmplitude: 0.3
+    - _SwashScale: 0.25
+    - _SwashSpeed: 0.5
+    - _UntileStrength: 0.6
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1

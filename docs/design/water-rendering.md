@@ -35,8 +35,11 @@
 >    shoreline/foam track the tide. With no `TidalTerrain` wired the plane reads as uniform deep water
 >    (no false shoreline) — safe in any region.
 > 4. **Tune the look** on `Water.mat` in the Inspector: depth colours/bands, surface noise/flow, foam
->    width/softness, specular amount/sharpness/light-dir, caustic amount/scale/depth, and the pixel grid
->    (`Pixels Per Unit`, default 32). No graph editing, no code.
+>    width/softness, specular amount/sharpness/light-dir, caustic amount/scale/depth, the pixel grid
+>    (`Pixels Per Unit`, default 32), the **anti-tiling** lever (`Untile Strength`, default 0.6 — raise
+>    it if the painted surface grid reads at CALM) and the **always-on beach swash** (`Swash Amplitude`
+>    0.3 m, `Swash Speed` 0.5, `Swash Scale` 0.25 — the fast in/out shoreline wash, §5.6). No graph
+>    editing, no code.
 > 5. **Art-direct beyond procedural (optional):** drop owner-painted textures into the **Painted
 >    textures** slots to override or blend with the matching procedural layer — foam shape, caustics,
 >    surface ripple, sparkle, a hand-painted depth-colour ramp, whitecaps. **Every slot is empty by
@@ -224,6 +227,48 @@ shader/material properties or Def values (rule 6), owned by art-pipeline.
 - **Pixelize:** pixelize the perlin coords (§3).
 - **Tunables:** caustic scale + speed, shallow depth range (fade in/out), intensity.
 
+### 5.6 Anti-tiling + always-on beach swash (shipped upgrades)
+
+Two fixes the owner asked for after seeing the painted-texture first pass live. Both are in
+`HiddenHarboursWater.shader`; both expose every value as a material property (rule 6); both are
+**visual-only** (no sim, no save — rule 5).
+
+**(A) Anti-tiling of the painted slots — `_UntileStrength` (0..1, default 0.6, ON).** At a CALM
+sea-state the painted **surface** tile's repeat grid reads as an obvious small square (it's hidden at
+"Light"+ only because chop/flow motion masks it). The `UntileSampleW` helper breaks the grid two ways,
+both dialed by `_UntileStrength`:
+- **Domain warp** — the sample world-coord is nudged by the low-freq surface `ValueNoise` so straight
+  tile seams bend before they're sampled (cheap, smooth).
+- **IQ-style hash-untile** — per repeat-cell, the lookup is offset by a per-cell hash (`Hash22`) and two
+  neighbouring offset variants are cross-faded by a smooth weight, so adjacent cells differ yet never
+  show a seam (the [Inigo-Quilez "untile"](https://iquilezles.org/articles/texturerepetition/) trick,
+  adapted to our point-sampled pixel grid).
+
+It is applied to the four **scrolling** painted slots — `_SurfaceTex` (the primary fix), `_FoamTex`,
+`_CausticTex`, `_SparkleTex` — and stays **pixel-art faithful**: the per-tile offset is added to the
+**world** coord *before* `PaintUV` pixelizes, so the untiled lookup still snaps to the PPU grid and
+remains point-sampled. `0` = the raw repeating grid; `1` = fully broken up. Cost: one extra noise eval
+plus two extra texture taps per untiled slot only when `_UntileStrength > 0` — within the rule-7 budget.
+
+**(B) Always-on beach swash — `_SwashAmplitude` (m, default 0.3), `_SwashSpeed` (default 0.5),
+`_SwashScale` (default 0.25).** Before this, the **only** in/out shoreline motion was the slow
+deterministic tide. The swash adds a **fast, continuous, cosmetic** waterline wash — "waves crashing in
+and out" — driven off `_Time` in the shader (`BeachSwash`): a two-beat sine (`_SwashSpeed` sets the
+rate; `_SwashScale` varies the phase along-shore so it doesn't pulse as one flat line) produces a signed
+**depth offset** (`±_SwashAmplitude` m) that advances (run-up) and recedes (backwash) the wet edge.
+
+- **Confined to the foam band (the P1 integrity rule).** The swash offset is multiplied by a band gate
+  (`1 − smoothstep(0, foamWidth·2 + |amp|, depth)` — full at the wet edge, **zero** by the band reach)
+  and applied **only** to a *local foam-only depth* (`foamDepth`). The real `depth` that drives
+  `clip()`, the deep-water tint (`dt`), and the caustic gate is **never touched** — so deep water does
+  not move and **the cosmetic wash cannot move the gameplay waterline** (it's foam *dressing* on top of
+  the real depth read: saves nothing, drives no sim — rule 5). Set `_SwashAmplitude = 0` to disable.
+
+The swash math has a pure-C# twin in `WaterSurface.cs` (`SwashOffset` + `SwashBandGate`) so the
+oscillation, the amplitude bound, and **the band-confinement invariant** are unit-tested headless
+(`Assets/Tests/EditMode/Art/ArtRenderingTests.cs`) without opening Unity — the twin feeds no sim and is
+not pushed to the material; the shader owns the live wash.
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
@@ -340,6 +385,10 @@ single static tile still "swims" — no flip-book frames needed.
 > - `_PaintScale` (default `0.25` tiles/unit) sets how large the painted tiles read on the sea for all
 >   slots except sparkle, which uses `_SparkleTexScale` (default `0.5`, finer). Both are tunables, not
 >   hard-coded (rule 6).
+> - **`_UntileStrength` (0..1, default `0.6`, ON)** breaks up the painted tiles' repeat grid (visible at
+>   CALM) for the four scrolling slots — `_SurfaceTex`, `_FoamTex`, `_CausticTex`, `_SparkleTex` — via an
+>   IQ-style hash-untile + domain warp, kept pixel-snapped. `0` = the raw grid; raise it until the tile
+>   square stops reading. See §5.6(A).
 > - Slots blend **in their own layer only** — e.g. a painted foam tile still appears *only* in the
 >   depth≈0 band, painted caustics still fade out into deep water. The owner paints the *texture*; the
 >   shader keeps the *placement* tied to the tide-truth (the P1 integrity rule — render and sim still

@@ -167,6 +167,67 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(expected, WaterSurface.Smoothstep01(t), 1e-5f);
         }
 
+        // ===== WaterSurface: the ALWAYS-ON beach swash (cosmetic shoreline wash) ==========================
+        // These guard the C# twin of the shader's swash math: it oscillates over time (waves in/out), stays
+        // within the amplitude, and — the P1 integrity invariant — is CONFINED to the foam band by the gate
+        // (zero in deep water), so the cosmetic wash can never move deep water or the gameplay waterline.
+
+        [Test]
+        public void SwashOffset_OscillatesInTime_WithinAmplitude()
+        {
+            const float speed = 0.5f, amp = 0.3f, alongShore = 0f;
+            float minV = float.MaxValue, maxV = float.MinValue;
+            // Sample a full beat (the slow octave has period 1/(speed*0.5) = 4s at speed 0.5).
+            for (float tm = 0f; tm <= 4f; tm += 0.05f)
+            {
+                float v = WaterSurface.SwashOffset(tm, speed, amp, alongShore);
+                Assert.LessOrEqual(Mathf.Abs(v), amp + 1e-4f, "swash never exceeds its amplitude");
+                minV = Mathf.Min(minV, v);
+                maxV = Mathf.Max(maxV, v);
+            }
+            Assert.Greater(maxV, 0.05f, "the wash runs UP the beach (positive offset) within a beat");
+            Assert.Less(minV, -0.05f, "the wash runs BACK (negative offset) within a beat — it moves in AND out");
+        }
+
+        [Test]
+        public void SwashOffset_IsContinuousAndTimeDriven_NotFrozen()
+        {
+            // Two distinct times give distinct offsets => it's animated, not a static fringe.
+            float a = WaterSurface.SwashOffset(0.3f, 0.5f, 0.3f, 1.2f);
+            float b = WaterSurface.SwashOffset(0.9f, 0.5f, 0.3f, 1.2f);
+            Assert.AreNotEqual(a, b, "swash advances with time (the always-on motion the tide alone lacked)");
+        }
+
+        [Test]
+        public void SwashBandGate_FullAtShore_ZeroInDeepWater()
+        {
+            const float foamWidth = 0.45f, amp = 0.3f;
+            float atEdge = WaterSurface.SwashBandGate(0f, foamWidth, amp);
+            Assert.AreEqual(1f, atEdge, 1e-4f, "the wash is strongest right at the wet edge (depth 0)");
+
+            // reach = foamWidth*2 + amp = 1.2 m. Anything at/beyond reach must read EXACTLY zero — the
+            // invariant that keeps the cosmetic wash out of deep water (P1 integrity, rule 5).
+            float reach = foamWidth * 2f + amp;
+            Assert.AreEqual(0f, WaterSurface.SwashBandGate(reach, foamWidth, amp), 1e-4f,
+                "the wash is fully gone by the band reach");
+            Assert.AreEqual(0f, WaterSurface.SwashBandGate(10f, foamWidth, amp), 1e-6f,
+                "deep water gets ZERO swash — it cannot move the gameplay waterline");
+        }
+
+        [Test]
+        public void SwashBandGate_IsMonotonicNonIncreasing_FromShoreToDeep()
+        {
+            const float foamWidth = 0.4f, amp = 0.25f;
+            float prev = WaterSurface.SwashBandGate(0f, foamWidth, amp);
+            for (float d = 0.05f; d <= 2f; d += 0.05f)
+            {
+                float g = WaterSurface.SwashBandGate(d, foamWidth, amp);
+                Assert.LessOrEqual(g, prev + 1e-5f, "the gate only fades going offshore (never re-strengthens)");
+                Assert.That(g, Is.InRange(0f, 1f), "the gate stays a 0..1 weight");
+                prev = g;
+            }
+        }
+
         [Test]
         public void PointInPolygon_InsideAndOutsideASquare()
         {
