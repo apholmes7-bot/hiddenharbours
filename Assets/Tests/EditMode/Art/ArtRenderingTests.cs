@@ -98,5 +98,85 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(rough, calm, "rougher seas => more chop");
             Assert.That(WaterSurface.Choppiness(SeaState.Moderate), Is.InRange(0f, 1f), "stays in the 0..1 uniform range");
         }
+
+        // ===== WaterSurface: the distance-to-land DEPTH estimate (the no-height-map shore gradient) =======
+        // These prove the fallback depth curve: ~0 (shallow + foam) right at the shore, deepening smoothly to
+        // a max depth offshore and saturating there — the tunable drop-off the owner adjusts in any scene.
+
+        [Test]
+        public void DistanceToDepth_ShallowAtShore_DeepOffshore()
+        {
+            const float dropoff = 14f, maxDepth = 3.5f;
+
+            float atShore = WaterSurface.DistanceToDepth(0f, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+            float offshore = WaterSurface.DistanceToDepth(dropoff, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+            float farOut = WaterSurface.DistanceToDepth(dropoff * 4f, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+
+            Assert.AreEqual(0f, atShore, 1e-5f, "depth is ~0 at the waterline (shallow, foam sits here)");
+            Assert.AreEqual(maxDepth, offshore, 1e-4f, "depth reaches the max by the drop-off distance");
+            Assert.AreEqual(maxDepth, farOut, 1e-5f, "depth saturates at the max past the drop-off (no runaway)");
+        }
+
+        [Test]
+        public void DistanceToDepth_IsMonotonicNonDecreasing_BothCurves()
+        {
+            const float dropoff = 10f, maxDepth = 4f;
+            foreach (var curve in new[] { WaterSurface.DropoffCurve.Linear, WaterSurface.DropoffCurve.Smooth })
+            {
+                float prev = WaterSurface.DistanceToDepth(0f, dropoff, maxDepth, curve);
+                for (float d = 0.5f; d <= dropoff; d += 0.5f)
+                {
+                    float depth = WaterSurface.DistanceToDepth(d, dropoff, maxDepth, curve);
+                    Assert.GreaterOrEqual(depth + 1e-5f, prev, $"{curve}: depth never decreases going offshore");
+                    Assert.That(depth, Is.InRange(0f, maxDepth + 1e-4f), $"{curve}: stays within [0, maxDepth]");
+                    prev = depth;
+                }
+            }
+        }
+
+        [Test]
+        public void DistanceToDepth_LinearVsSmooth_DifferShape_AgreeAtEnds()
+        {
+            const float dropoff = 12f, maxDepth = 3f;
+            float lin0  = WaterSurface.DistanceToDepth(0f, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+            float smo0  = WaterSurface.DistanceToDepth(0f, dropoff, maxDepth, WaterSurface.DropoffCurve.Smooth);
+            float linEnd = WaterSurface.DistanceToDepth(dropoff, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+            float smoEnd = WaterSurface.DistanceToDepth(dropoff, dropoff, maxDepth, WaterSurface.DropoffCurve.Smooth);
+            Assert.AreEqual(lin0, smo0, 1e-5f, "both start at 0 depth at the shore");
+            Assert.AreEqual(linEnd, smoEnd, 1e-4f, "both reach maxDepth at the drop-off");
+
+            // Mid-shelf: smoothstep eases in, so it sits SHALLOWER than the straight line near the shore.
+            float mid = dropoff * 0.25f;
+            float linMid = WaterSurface.DistanceToDepth(mid, dropoff, maxDepth, WaterSurface.DropoffCurve.Linear);
+            float smoMid = WaterSurface.DistanceToDepth(mid, dropoff, maxDepth, WaterSurface.DropoffCurve.Smooth);
+            Assert.Less(smoMid, linMid, "the smooth curve keeps a gentler shelf near the shore than linear");
+        }
+
+        [Test]
+        public void DistanceToDepth_GuardsZeroDropoff_NoDivideByZero()
+        {
+            float d = WaterSurface.DistanceToDepth(5f, 0f, 3f, WaterSurface.DropoffCurve.Linear);
+            Assert.AreEqual(3f, d, 1e-4f, "a zero drop-off saturates to maxDepth immediately rather than NaN");
+        }
+
+        [TestCase(0f, 0f)]
+        [TestCase(0.5f, 0.5f)]
+        [TestCase(1f, 1f)]
+        public void Smoothstep01_HitsEndpointsAndMidpoint(float t, float expected)
+        {
+            Assert.AreEqual(expected, WaterSurface.Smoothstep01(t), 1e-5f);
+        }
+
+        [Test]
+        public void PointInPolygon_InsideAndOutsideASquare()
+        {
+            var square = new[]
+            {
+                new Vector2(-2f, -2f), new Vector2(2f, -2f), new Vector2(2f, 2f), new Vector2(-2f, 2f),
+            };
+            Assert.IsTrue(WaterSurface.PointInPolygon(new Vector2(0f, 0f), square), "centre is inside");
+            Assert.IsFalse(WaterSurface.PointInPolygon(new Vector2(5f, 0f), square), "well outside reads outside");
+            Assert.IsFalse(WaterSurface.PointInPolygon(Vector2.zero, null), "null polygon is never inside (safe)");
+        }
     }
 }
