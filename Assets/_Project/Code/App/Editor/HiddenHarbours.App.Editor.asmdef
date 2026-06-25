@@ -11,6 +11,7 @@
         "HiddenHarbours.World",
         "HiddenHarbours.App",
         "HiddenHarbours.UI",
+        "HiddenHarbours.Art",
         "HiddenHarbours.Art.Editor",
         "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
