@@ -238,16 +238,23 @@ relationship to the player · questline/service hook.**
 > Coddle Cove) is the **stand-in**; when St Peters is built (M2), the **start and onboarding relocate**
 > to the island's **school**, and the **dialogue/onboarding system is reused, not rebuilt** — **no NPC
 > here is deleted**.
-> **⚠ Reconciliation flag — the dropped inherited dory partly invalidates the BUILT VS-21 onboarding
-> (do not silently resolve):** the owner has **dropped the "inherit Uncle Ned's dory" framing**; your
-> first boat is now a **plain damaged dory bought at the Greywick shipwright and repaired for a fee**,
-> not handed down. The **already-built M1 onboarding** (`M1-08` / `VS-21`: Ned's logbook + "inherit the
-> dory" at Coddle Cove) therefore needs a **rework into a buy-and-repair beat** — a **later task**,
-> logged here and in canon §5.8 so it is not lost. The cottage + memory remain inherited.
-> **Also still open for the M2 pass:** where **Aunt Ginny** lives across the arc (the St Peters school
-> vs the Coddle Cove hearth — §3.4). **Intent:** *one* teaching-aunt and *one* (now **earned**) dory,
-> placed to serve the arc — likely Ginny (or her teaching role) opens the game at St Peters, then the
-> cast settles into the Cove/Greywick placements below.
+> **✅ Reconciliation RESOLVED for the buy-and-repair beat (2026 — onboarding relocated to St Peters).**
+> The owner **dropped the "inherit Uncle Ned's dory" framing**; your first boat is now a **plain damaged
+> dory bought at the Greywick shipwright and repaired for a fee**, not handed down. The onboarding has now
+> been **relocated to the St Peters opening and reworked into the earned/buy-and-repair beat** (the
+> dialogue/onboarding *system* was reused, not rebuilt, exactly as required): **Aunt Ginny** is placed at
+> the St Peters island start (anchored by the cottage — no routine yet, that's M2) teaching the new loop,
+> and **Ned is now a remembered presence** — his **letter** on the island, *no inherited dory* — read in
+> place of the old Coddle-Cove logbook. The onboarding nudge walks the new arc end-to-end (dig clams →
+> cross the bar → Greywick cod-licence + rod → buy + **repair** the dory → sail home). Content is **data**:
+> the cast is authored as `NpcDef` + `DialogueDef` assets under `Data/NPCs` (one entity per file, stable
+> ids `npc.aunt_ginny` / `npc.ned_letter`, `dialogue.ginny_first` / `dialogue.ned_letter`). The cottage +
+> memory remain inherited. *(The legacy Coddle-Cove `WorldStrings` conversations are kept as a fallback —
+> nothing is deleted — but the St Peters opening drives the data-driven path.)*
+> **Still open for the M2 pass (not resolved here):** the *final* home of **Aunt Ginny** across the full
+> arc — the St Peters **school** (with a real daily routine) vs the Coddle Cove hearth (§3.4). For the
+> greybox opening she is simply **anchored** at the island start. **Intent:** *one* teaching-aunt and *one*
+> (now **earned**) dory, placed to serve the arc.
 
 ### 3.1 Uncle Ned Coddle — *the one who left you everything*
 

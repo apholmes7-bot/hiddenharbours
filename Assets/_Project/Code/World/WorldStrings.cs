@@ -15,9 +15,13 @@ namespace HiddenHarbours.World
     public static class WorldStrings
     {
         // ---- speaker names ------------------------------------------------------------------
+        // Cove (legacy stand-in) speakers.
         public const string GinnyName     = "Aunt Ginny";
         public const string NeighbourName = "Bram Tully";
         public const string LogbookName   = "Ned's Logbook";
+        // St Peters opening speakers. Ned is now a remembered presence (his LETTER on the island), not an
+        // inherited boat — the dory is bought and repaired (canon §5.8). Names mirror the NpcDef assets.
+        public const string NedLetterName = "Ned's Letter";
 
         // ---- conversation ids (stable; used to look copy up) --------------------------------
         public const string ConvoGinny     = "ginny";
@@ -82,11 +86,19 @@ namespace HiddenHarbours.World
             "Anything wants hauling or hammering, you give Bram a shout. Welcome to the cove."
         };
 
-        // ---- onboarding nudges (one gentle line per step of the first loop) -----------------
-        public const string OnboardTalkGinny = "Step ashore — find Aunt Ginny by the cottage and press E to talk.";
-        public const string OnboardGoFish    = "Walk out to the dock's end and press E to take Ned's dory out.";
-        public const string OnboardCast      = "Out on the water: press Space to cast, then reel her in.";
-        public const string OnboardSell      = "Bring your catch back and sell your hold at the wharf (B).";
-        public const string OnboardDone      = "That's the loop — she's yours now. Fair winds!";
+        // ---- onboarding nudges — the St Peters BUY-AND-REPAIR opening (one gentle line per step) ----
+        // The new arc (canon §5.8): dig CLAMS at low water → walk the bared sandbar to Greywick → buy a
+        // cod LICENCE + a ROD, sell clams, save → BUY the damaged dory + PAY to REPAIR her → sail home to
+        // Coddle Cove. The dory is EARNED, never inherited. Each line points at the next beat; the director
+        // (OnboardingDirector) picks which one to show from the opening flags + Core signals.
+        public const string OnboardTalkGinny = "Find Aunt Ginny on the island and press E — she'll set you straight.";
+        public const string OnboardDigClams  = "Wait for the tide to drop, then dig clams on the bared flats (E by a hole).";
+        public const string OnboardCrossBar  = "Walk the bared sandbar east to Greywick before the tide floods it back.";
+        public const string OnboardBuyLicence= "At Greywick: sell your clams, then buy a COD LICENCE to fish.";
+        public const string OnboardBuyRod    = "Buy a fishing ROD from the shop — then you can hand-line cod.";
+        public const string OnboardBuyDory   = "Save up, then BUY the damaged dory at the Greywick shipwright.";
+        public const string OnboardRepairDory= "She's yours but broken — pay the shipwright to REPAIR her.";
+        public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
+        public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";
     }
 }
