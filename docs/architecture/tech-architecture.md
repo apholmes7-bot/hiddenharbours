@@ -158,9 +158,28 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
   `GameServices.Save` (`ISaveService`). The VS-21 onboarding flags are **consolidated** off PlayerPrefs
   into this slot (`World.SaveFlagStore` backs `OnboardingFlags`). It captures money/time/seed on demand
   through the existing Core seams and learns the owned/active boat from the `BoatPurchased` /
-  `ActiveBoatChanged` signals; re-applying that loaded state into the live gameplay objects is the owning
-  lanes' follow-up (they read `ISaveService.Current`). Migration is forward-only via `SaveMigration`
-  (v0→v1 is a no-op upgrade: empty fleet/flag lists + a version bump, scalars untouched).
+  `ActiveBoatChanged` signals. Migration is forward-only via `SaveMigration`
+  (v0→v1 is a no-op upgrade: empty fleet/flag lists + a version bump, scalars untouched; v1→v2 adds the
+  licence/repair/gear lists and marks every already-owned boat repaired).
+- **Load-restore (VS-08, shipped).** Loading a save no longer just fills `Current` — it is **re-applied to
+  the live game** so a save resumes exactly where it was saved. `SaveService` exposes
+  `ISaveService.LoadedExistingSave` (true only for a resumed game, so a *new* game keeps its authored start
+  hour). The composition root's `GameRoot.Start()` runs `Core.SaveRestore.ApplyToLiveServices(...)` — the
+  inverse of `SaveService.SnapshotLiveState` — which pushes the loaded blob back through the **same Core
+  service APIs** gameplay uses (CLAUDE.md rule 4):
+  - **Clock** → `IGameClock.SeekTo(double)` (additive, default-no-op interface method; `GameClock` seeks its
+    backing time and re-baselines its rollover guards so it does **not** replay the skipped days).
+  - **Money** → brought to the saved balance via `IWallet.Add(delta)` (so `MoneyChanged` fires for the HUD).
+  - **Licences** → `ILicenseService.Grant(id)` (idempotent — the same call the vendor makes).
+  - **Owned boats / repaired-boat state / gear** → read **live** off `ISaveService.Current`: `OwnedFleet`
+    re-grants the saved active hull on the new `GameLoaded` signal (through its existing purchase-swap path),
+    while `RepairLedger`/`PlayerGear` query the save directly — so simply loading the blob restores them.
+  - **`GameLoaded`** (new `GameSignals` event, no payload) is published once after restore as the single edge
+    lanes holding *derived* live state re-sync on. A new game raises it too, so subscribers have one code path.
+  The **determinism invariant holds** (rule 5): tide/wind/weather are **never** restored — only the clock that
+  drives them is, and the environment is recomputed from `(worldSeed, restored gameTime)`. Restore is
+  service-injected + static, so the mapping is fully headless-testable (`SaveRestoreTests`), with a PlayMode
+  round-trip + tide-determinism guard (`SaveLoadRestorePlayTests`).
 
 ## 7. Tick & performance model
 

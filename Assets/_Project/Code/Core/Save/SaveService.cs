@@ -28,6 +28,8 @@ namespace HiddenHarbours.Core
 
         public SaveData Current { get; private set; }
 
+        public bool LoadedExistingSave { get; private set; }
+
         // ---- self-installing bootstrap ---------------------------------------------------------
 
         /// <summary>Create the persistent service before the first scene's objects awake, so flags are
@@ -51,7 +53,9 @@ namespace HiddenHarbours.Core
             _instance = this;
 
             _path = SaveStore.DefaultPath;
-            Current = SaveStore.Read(_path) ?? SaveMigration.NewGame();   // load on launch (or new game)
+            var loaded = SaveStore.Read(_path);                           // null when no save on disk yet
+            LoadedExistingSave = loaded != null;
+            Current = loaded ?? SaveMigration.NewGame();                  // load on launch (or new game)
 
             GameServices.Save = this;
 

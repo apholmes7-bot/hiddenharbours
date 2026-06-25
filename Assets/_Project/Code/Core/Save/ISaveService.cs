@@ -15,6 +15,16 @@ namespace HiddenHarbours.Core
         /// Never null once the service is running. Consumers may read it to restore their own state.</summary>
         SaveData Current { get; }
 
+        /// <summary>True iff <see cref="Current"/> was read from an existing save file on disk (a resumed
+        /// game), rather than freshly minted for a new game. The load-restore path (<see cref="SaveRestore"/>)
+        /// uses this to decide whether to seek the clock to the saved time: a NEW game must keep its authored
+        /// start hour (its blob's gameTime is 0), so only a resumed game seeks. False until the service has
+        /// loaded (e.g. EditMode before bootstrap).
+        /// <para><b>Additive &amp; non-breaking:</b> a default interface property (defaults to <c>false</c>)
+        /// so existing test fakes implementing <see cref="ISaveService"/> compile unchanged; the real
+        /// <c>SaveService</c> overrides it.</para></summary>
+        bool LoadedExistingSave => false;
+
         /// <summary>Read a persisted boolean flag by stable key (backs the world's onboarding flags).</summary>
         bool GetFlag(string key);
 

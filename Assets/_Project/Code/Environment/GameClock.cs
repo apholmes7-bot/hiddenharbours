@@ -51,6 +51,24 @@ namespace HiddenHarbours.Environment
             _lastSeason = Season;
         }
 
+        /// <summary>
+        /// Seek the master clock to an absolute game-time (<see cref="IGameClock.SeekTo"/>): how a loaded
+        /// save resumes at the saved instant. We re-baseline the day/season rollover trackers to the new
+        /// time so the next <see cref="Update"/> does NOT spuriously fire a DayStarted/SeasonChanged for
+        /// the jumped span — a restore lands you on the day you saved, it isn't a fast-forward through it.
+        /// Negative input clamps to 0 (time never runs before the start of the game).
+        /// </summary>
+        public void SeekTo(double totalSeconds)
+        {
+            _t = totalSeconds < 0d ? 0d : totalSeconds;
+            // Keep the rollover guards in step with where we landed (only meaningful once configured).
+            if (_config != null)
+            {
+                _lastTotalDays = TotalDays;
+                _lastSeason = Season;
+            }
+        }
+
         private void Update()
         {
             if (_config == null || IsPaused) return;
