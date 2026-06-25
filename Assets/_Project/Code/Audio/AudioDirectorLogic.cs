@@ -78,6 +78,33 @@ namespace HiddenHarbours.Audio
             _                      => AudioCue.None,
         };
 
+        // ---- "made it home" warmth is EARNED, not constant (P5) -----------------------------
+        // The home-exhale resolves only when the trip was worth exhaling about. Coming ashore is the
+        // SAME disembark whether you crossed a building blow or hopped to the next beach in flat calm —
+        // so an unconditional warmth on every disembark cheapens the cue (charter guardrail: "warmth is
+        // earned, not constant"; bible §8.3 "the home exhale"). We gate it on whether the SEA had become
+        // a worry while you were out: if the rising-wind tell ever rose past a small threshold this trip,
+        // coming ashore reads as "the sea warned me → I made it" and the warmth lands; a calm pootle ends
+        // quietly. The peak tell is tracked aboard (the director already polls the tell at 4 Hz) and reset
+        // each time you board, so the gate is per-trip. (A SALE — CatchSold — still warms unconditionally;
+        // that's a reward beat, not the home-exhale, and arguably wants its own cue — flagged in the
+        // manifest.) Reading the trip's peak tell needs no new signal: it falls out of the wind poll.
+
+        /// <summary>How worrying the sea must have gotten this trip (peak rising-wind tell, 0..1) for the
+        /// home-exhale to be earned on coming ashore. Sits low: any real freshening counts — but a flat
+        /// calm hop does not. A SMALL non-zero value so the gate is "the wind picked up at all", not
+        /// "it was a full gale".</summary>
+        public const float HomeWarmthTellThreshold = 0.15f;
+
+        /// <summary>
+        /// Whether coming ashore should resolve to "made it home" warmth, given the PEAK rising-wind tell
+        /// (0..1) experienced during the just-ended trip. The warmth is earned only if the sea had become a
+        /// worry — i.e. the peak tell reached <see cref="HomeWarmthTellThreshold"/>. A calm trip ends quietly.
+        /// Pure and deterministic — no AudioSources, no clock.
+        /// </summary>
+        public static bool HomeWarmthOnAshore(float peakTell01)
+            => Mathf.Clamp01(peakTell01) >= HomeWarmthTellThreshold;
+
         // ---- aboard layer + cue ducking -----------------------------------------------------
 
         /// <summary>The hull-slap/row layer plays only while aboard.</summary>

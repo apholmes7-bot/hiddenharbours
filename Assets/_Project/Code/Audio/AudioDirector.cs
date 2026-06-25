@@ -14,7 +14,9 @@ namespace HiddenHarbours.Audio
     ///   bed, an engine boat gets a looping outboard bed; the two crossfade on a swap, and the engine
     ///   rides the boat's speed over ground,</item>
     ///   <item>a CATCH STING on <see cref="FishCaught"/>,</item>
-    ///   <item>"made it home" WARMTH on <see cref="CatchSold"/> / coming ashore,</item>
+    ///   <item>"made it home" WARMTH on <see cref="CatchSold"/>, and on coming ashore — but the ashore
+    ///   exhale is EARNED: it fires only when the sea had become a worry that trip (the rising-wind tell
+    ///   peaked past a small threshold), so a flat-calm hop ends quietly (P5 "warmth is earned"),</item>
     ///   <item>the SACRED rising-wind TELL — as the <see cref="IEnvironmentService"/> wind strengthens
     ///   the bed thins and a cue rises, audible BEFORE the sea turns dangerous (Pillar 1).</item>
     /// </list>
@@ -78,6 +80,7 @@ namespace HiddenHarbours.Audio
         private float _engineThrottle01; // 0..1 from the active boat's speed over ground (4 Hz poll)
         private bool _tellActive;
         private float _tell01;
+        private float _peakTellThisTrip; // 0..1 high-water mark of the wind tell since boarding — gates the home-exhale
         private float _duck;          // 0..1, set by a cue, decays per frame
         private float _envTimer;
         private bool _subscribed;
@@ -152,6 +155,11 @@ namespace HiddenHarbours.Audio
             float wind = env.Sample().WindVector.magnitude;
             _tellActive = AudioDirectorLogic.TellActive(wind, _tellActive);
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
+
+            // High-water mark of the tell while ABOARD — it's how worrying the sea got this trip, which
+            // decides whether coming ashore earns the home-exhale (reset on boarding).
+            if (_mode == ControlMode.Aboard && _tell01 > _peakTellThisTrip)
+                _peakTellThisTrip = _tell01;
         }
 
         // The engine bed is speed-reactive: read the active boat's course-over-ground speed through the
@@ -196,8 +204,19 @@ namespace HiddenHarbours.Audio
             bool wasAboard = _mode == ControlMode.Aboard;
             _mode = e.Mode;
 
-            // Coming ashore after being out at sea = "made it home".
-            if (wasAboard && _mode != ControlMode.Aboard) PlayCue(AudioDirectorLogic.CueFor(AudioMoment.CameAshore));
+            if (_mode == ControlMode.Aboard)
+            {
+                // Boarding starts a fresh trip — the home-exhale is judged on THIS trip's worst sea.
+                if (!wasAboard) _peakTellThisTrip = 0f;
+            }
+            else if (wasAboard)
+            {
+                // Coming ashore = "made it home" — but only EARNED if the sea had become a worry this
+                // trip (a flat-calm hop ends quietly; charter guardrail "warmth is earned, not constant").
+                if (AudioDirectorLogic.HomeWarmthOnAshore(_peakTellThisTrip))
+                    PlayCue(AudioDirectorLogic.CueFor(AudioMoment.CameAshore));
+                _peakTellThisTrip = 0f;
+            }
         }
 
         // The active hull changed (boarded / upgrade swap): remember its id so the boat bed picks

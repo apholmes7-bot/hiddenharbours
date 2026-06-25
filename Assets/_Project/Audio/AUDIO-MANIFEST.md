@@ -19,6 +19,15 @@ placeholder is only used when the field is empty, so no code changes.
 
 Cues **duck** the ambience/music beds under them; the calm bed also **thins** as the wind tell rises.
 
+### "Made it home" warmth is **earned** (P5)
+The ashore exhale (`_homeWarmth` on coming ashore) fires **only when the sea had become a worry that
+trip** — the rising-wind tell must have peaked past `AudioDirectorLogic.HomeWarmthTellThreshold` (a small
+0..1 value) while aboard. A flat-calm hop to the next beach ends **quietly**; coming in from a building
+blow lands the warmth ("the sea warned me → I made it"). The peak tell is tracked aboard from the 4 Hz
+wind poll and reset each time you board, so the gate is **per-trip**. (Charter guardrail: "warmth is
+earned, not constant"; bible §8.3 "the home exhale".) A **sale** (`CatchSold`) still warms
+unconditionally — see the flag below.
+
 ### Aboard boat bed — Dory oars vs Punt engine
 The aboard boat bed is **propulsion-aware**: a hand-rowed hull plays the oar-stroke/water bed (`_hullRow`),
 an engine boat plays the looping outboard bed (`_outboardEngine`), and the two **crossfade** on a swap
@@ -44,6 +53,25 @@ idles when moored and revs underway.
 | `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | `WindTell` |
 | `_catchSting` | `SFX/catch_sting.wav`       | no  | SFX | bright sting on `FishCaught` | `CatchSting` |
 | `_homeWarmth` | `SFX/home_warmth.wav`       | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `HomeWarmth` |
+
+## Missing Core signals (flagged for a follow-up — NOT added this round)
+The Audio lane subscribes to **existing** Core signals only (`FishCaught`, `CatchSold`,
+`ControlModeChanged`, `ActiveBoatChanged`) and polls the deterministic `IEnvironmentService` /
+`IActiveBoatService`. Two cues would read truer with signals Core does not yet carry — flagged here for
+the owning lanes rather than reached across:
+
+- **A "reached safe harbour" signal** (world-content / Core). The home-exhale wants to fire on **arriving
+  at the wharf/safe harbour**, but Core has **no harbour/wharf/safe-zone concept** and no such event. As a
+  faithful v1 we proxy it: coming ashore (`ControlModeChanged` Aboard→OnFoot) **after the sea had become a
+  worry** (peak wind tell past threshold). The robust fix is a small Core signal like
+  `EnteredSafeHarbour` (or a "safe zone" flag on the disembark) published by world-content when the player
+  docks at a harbour — then the warmth keys off *actually being home*, not a wind proxy.
+- **A `PropulsionType` on `ActiveBoatChanged`** (Boats/Player + Core). The aboard boat bed picks oars-vs-
+  engine from the hull **id** because the signal carries no propulsion type and the Audio asmdef is
+  Core-only (see the boat-bed flag above). A Core propulsion field would remove the id heuristic.
+- **A distinct `CatchSold` reward cue.** Today a sale reuses `_homeWarmth`. A sale is a *reward* beat, not
+  the *home-exhale* — they should diverge (e.g. a `_saleChime`), so the home-warmth can stay the rarer,
+  earned arrival cue. Small, in-lane follow-up once a sale-chime asset exists.
 
 ## Wishlist (future, not wired this round)
 - A light **music** stem for the harbour / title (would slot onto the Music bus).
