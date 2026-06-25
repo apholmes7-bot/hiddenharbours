@@ -558,5 +558,39 @@ namespace HiddenHarbours.Art
             int max = (int)SeaState.Storm;   // 7
             return max > 0 ? Mathf.Clamp01((int)seaState / (float)max) : 0f;
         }
+
+        // ==== Beach swash (ALWAYS-ON cosmetic shoreline wash) — pure mirror of the shader's BeachSwash ======
+        // The shader drives the wet-edge advance/recede off _Time; this C# twin lets the math be unit-tested
+        // (oscillation, amplitude bound, foam-band confinement) without opening Unity. It feeds NO sim and is
+        // NOT pushed to the material — the shader owns the live wash; this is the determinism/contract guard
+        // for the "swash stays in the foam band and never moves the gameplay waterline" rule (P1, rule 5).
+
+        /// <summary>
+        /// The signed swash depth offset (metres) at a shoreline position and time — the same two-beat sine the
+        /// shader's <c>BeachSwash</c> uses. Positive pulls the wet edge inshore (run-up), negative pushes it back
+        /// (backwash). Bounded by |result| ≤ <paramref name="amplitude"/>. Continuous and periodic in time,
+        /// independent of the tide. <paramref name="alongShore"/> is the shader's <c>(worldX+worldY)*_SwashScale</c>
+        /// phase term that keeps the wash from pulsing as one flat line.
+        /// </summary>
+        public static float SwashOffset(float time, float speed, float amplitude, float alongShore)
+        {
+            float w = time * speed * 2f * Mathf.PI;
+            float wave = Mathf.Sin(w + alongShore) * 0.7f
+                       + Mathf.Sin(w * 0.5f + alongShore * 1.7f) * 0.3f;
+            return wave * amplitude;
+        }
+
+        /// <summary>
+        /// The foam-band gate (1 at the wet edge → 0 in deeper water) the shader multiplies the swash by, so the
+        /// wash is CONFINED to the shallow/foam band and cannot move deep water or the gameplay waterline. Mirrors
+        /// the shader's <c>1 - smoothstep(0, reach, depth)</c> with <c>reach = foamWidth*2 + |amplitude|</c>.
+        /// Returns 0 for any depth at/beyond the reach — the invariant the P1 integrity rule depends on.
+        /// </summary>
+        public static float SwashBandGate(float depth, float foamWidth, float amplitude)
+        {
+            float reach = Mathf.Max(foamWidth, 1e-3f) * 2f + Mathf.Max(Mathf.Abs(amplitude), 1e-3f);
+            float t = Mathf.Clamp01(depth / reach);
+            return 1f - Smoothstep01(t);   // 1 at depth 0, 0 at depth >= reach
+        }
     }
 }
