@@ -100,6 +100,70 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsFalse(float.IsNaN(slack.x) || float.IsNaN(slack.y), "slack-wind fallback is NaN-safe");
         }
 
+        // ===== WaterSurface: the COHESION-PASS direction twins (rolling swell + foam-drift blend) ==========
+        // These guard the C# mirrors of the shader's SwellDir()/FoamDriftDir(): the large-scale ocean swell
+        // keys off the (wandering) WIND by default so the cohesion bands REORIENT as the weather shifts (P1
+        // "sea has moods"); an explicit override wins; and the foam drift follows a tunable BLEND of wind AND
+        // the tidal current. NONE of this is pushed to the material (the shader derives it live from the
+        // already-pushed _WindDir/_FlowDir) — these are the headless determinism guards for the LOGIC.
+
+        [Test]
+        public void SwellDirection_DefaultsToWind_OverrideWins_NormalizedAndNaNSafe()
+        {
+            // Auto (zero override): the swell axis follows the wind, normalized. Wind generates swell, so as
+            // the sim wanders _WindDir the swell bands reorient — the cohesion is sim-true, not a fixed angle.
+            var auto = WaterSurface.SwellDirection(new Vector2(3f, 4f), Vector2.zero);   // 3-4-5 → (0.6,0.8)
+            Assert.AreEqual(0.6f, auto.x, 1e-4f);
+            Assert.AreEqual(0.8f, auto.y, 1e-4f);
+            Assert.AreEqual(1f, auto.magnitude, 1e-4f, "swell dir is a unit vector");
+
+            // A non-zero explicit override wins over the wind (the _OceanSwellDir art-direction lever).
+            var overridden = WaterSurface.SwellDirection(new Vector2(0f, 9f), new Vector2(1f, 0f));
+            Assert.AreEqual(Vector2.right, overridden, "explicit _OceanSwellDir override beats auto-from-wind");
+
+            // Slack wind AND zero override → +Y fallback (matching the shader default), never NaN.
+            var slackSwell = WaterSurface.SwellDirection(Vector2.zero, Vector2.zero);
+            Assert.AreEqual(Vector2.up, slackSwell, "no wind, no override → +Y fallback (shader default)");
+            Assert.IsFalse(float.IsNaN(slackSwell.x) || float.IsNaN(slackSwell.y), "fallback is NaN-safe");
+        }
+
+        [Test]
+        public void FoamDriftDirection_BlendsWindAndCurrent_DialsBetweenThem()
+        {
+            var wind    = new Vector2(0f, 1f);   // +Y
+            var current = new Vector2(1f, 0f);   // +X
+
+            // windVsCurrent = 0 → pure current-led; = 1 → pure wind-led (the two ends of the blend).
+            var currentLed = WaterSurface.FoamDriftDirection(wind, current, 0f);
+            var windLed     = WaterSurface.FoamDriftDirection(wind, current, 1f);
+            Assert.AreEqual(Vector2.right, currentLed, "0 = pure current-led drift");
+            Assert.AreEqual(Vector2.up, windLed, "1 = pure wind-led drift");
+
+            // A mid blend points BETWEEN the two axes (45° here) and stays a unit vector.
+            var mid = WaterSurface.FoamDriftDirection(wind, current, 0.5f);
+            Assert.AreEqual(1f, mid.magnitude, 1e-4f, "blended drift is normalized");
+            Assert.Greater(mid.x, 0f, "the mix leans partly toward the current axis");
+            Assert.Greater(mid.y, 0f, "and partly toward the wind axis");
+        }
+
+        [Test]
+        public void FoamDriftDirection_IsNaNSafe_OnSlackWindAndCurrent()
+        {
+            // Both forces slack: wind falls back to +Y, current to +X, so the blend is the normalized mix of
+            // the two fallback axes — a FINITE UNIT vector, never NaN (the drift never freezes). The exact
+            // heading depends on windVsCurrent, but the guarantee that matters is finite + unit-length.
+            var slackDrift = WaterSurface.FoamDriftDirection(Vector2.zero, Vector2.zero, 0.6f);
+            Assert.IsFalse(float.IsNaN(slackDrift.x) || float.IsNaN(slackDrift.y), "slack inputs stay NaN-safe");
+            Assert.AreEqual(1f, slackDrift.magnitude, 1e-4f, "slack fallback is still a unit vector (never frozen/NaN)");
+            Assert.Greater(slackDrift.x, 0f, "leans toward the +X current fallback");
+            Assert.Greater(slackDrift.y, 0f, "and toward the +Y wind fallback (a blended, finite heading)");
+
+            // Slack wind but a live current, fully wind-led: the wind axis fell back to +Y, so the wind-led
+            // blend still resolves to a finite unit vector (no NaN from normalizing a zero wind vector).
+            var windLedNoWind = WaterSurface.FoamDriftDirection(Vector2.zero, new Vector2(2f, 0f), 1f);
+            Assert.AreEqual(1f, windLedNoWind.magnitude, 1e-4f, "wind-led with slack wind still unit (via +Y fallback)");
+        }
+
         [Test]
         public void Roughness_RisesWithWind_AndSaturates()
         {

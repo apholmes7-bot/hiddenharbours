@@ -222,3 +222,45 @@ at a modest strength** so the change is visible immediately yet fully dial-able 
 
 To calm the look back toward the old single-direction surface, set `_WindChop` / `_Octave2Weight` /
 `_Octave3Weight` / `_FbmStrength` to 0 on `Water.mat`.
+
+## Addendum — shipped art-pass tunables (cohesion pass: rolling swell + wind-streaked foam + flow-with-body)
+
+A fourth visual upgrade shipped on `HiddenHarboursWater.shader` after the owner saw the §5.7 surface read as
+a **field of separate specks** rather than **one large body**, and noticed the foam/whitecap layers scrolling
+on a diagonal **opposite** to the surface (`float2(-t*_Flow, t*_Flow)`). This **cohesion pass** adds three
+coupled layers so the sea reads as one connected, rolling body. Mechanism: `design/water-rendering.md` §5.8.
+
+Like every prior addendum, **all of it is visual-only** — it touches only `col.rgb` / the foam dressing and
+**never** `depth`, `clip()`, the deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim and saves
+nothing (the determinism / P1-integrity invariant above holds). Every new constant is a material property
+(rule 6), every new field is **pixelized** (decision (2)), and the new layers default **ON at a modest
+strength** so the cohesion is visible immediately yet fully dial-able on `Water.mat`. Crucially, **everything
+keys off the LIVE, time-wandering sim directions** — the wind (`_WindDir`, `WeatherModel`) and the tidal
+current (`_FlowDir`, the PR #95 drifting current bearing), both already pushed by `WaterSurface.cs` — so the
+whole body **reorients as the weather shifts** (the P1 "sea has moods" integrity); no angle is hardcoded.
+
+- **Rolling ocean swell (the keystone)** — one big, long-wavelength swell field (`SwellField`) over worldXY
+  whose 0..1 crest factor modulates the **base-colour brightness** (crests lighter, troughs darker) so broad
+  light/dark **bands roll across the WHOLE surface**, the small variance riding on top. Direction
+  defaults to the wandering **wind** (`SwellDir()`; `_OceanSwellDir (0,0)` = auto-from-`_WindDir`, override
+  optional). Props: `_OceanSwellDir`, `_OceanSwellScale` (0.025, small = long wavelength), `_OceanSwellSpeed`
+  (0.018), `_OceanSwellStrength` (0.16), `_OceanSwellSharpness` (1.4).
+- **Wind-streaked foam (wind rows)** — the open-water whitecap speckle is sampled on a coord **compressed
+  perpendicular to `_WindDir`** so features **elongate into streaks ALONG the wind**, anisotropic instead of
+  round speckle. Prop: `_FoamStreakStretch` (3.5; 1 = round). The existing wind/roughness + deep-water gating
+  is unchanged.
+- **Coupling + the opposite-motion fix** — the **same** swell field rides the whitecaps on the swell crests
+  (`_FoamCrestGate` 0.6) and biases the specular toward the lit swell faces (`_SpecSwellBias` 0.35, still the
+  one implied sun). The foam churn + whitecap scroll's old fixed counter-diagonal is **replaced** by a drift
+  along a **blend of the wind and the tidal current** (`_FoamDriftWindVsCurrent` 0.6: 0 = current-led, 1 =
+  wind-led) so the foam flows **with** the body and reorients with the weather.
+
+**No new C# uniform.** The swell axis and foam-drift axis are derived **in-shader** from the already-pushed
+`_WindDir`/`_FlowDir`; `WaterSurface.cs` gains only **non-pushed pure twins** (`SwellDirection`,
+`FoamDriftDirection`) so the direction logic is unit-tested headless (`ArtRenderingTests.cs`) — the
+determinism guard for the reorientation. The CI shader-compile guard (`WaterShaderCompileGuardTests.cs`)
+continues to force-compile the shipped `Water.mat` variant: no `+` in any `[Header]`/Property string, no
+`[unroll]` over a runtime bound (the magenta class stays guarded).
+
+To dissolve the cohesion back toward the §5.7 look, set `_OceanSwellStrength` / `_FoamCrestGate` /
+`_SpecSwellBias` to 0 and `_FoamStreakStretch` to 1 on `Water.mat`.

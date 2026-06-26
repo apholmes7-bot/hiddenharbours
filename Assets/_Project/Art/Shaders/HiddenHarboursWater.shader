@@ -62,12 +62,38 @@ Shader "HiddenHarbours/Water"
         _FbmGateHi      ("FBM spec gate high (sparkles full)", Range(0,1)) = 0.7
         _SpecBands      ("Specular posterize bands", Float) = 4
 
+        [Header(Rolling ocean swell (large scale cohesion   col.rgb only))]
+        // The KEYSTONE of the cohesion pass. ONE big, long-wavelength swell field over worldXY that
+        // modulates the BASE-COLOUR brightness (crests lighter, troughs darker) so broad light/dark bands
+        // roll across the WHOLE surface — the small variance rides on top, and the sea reads as ONE
+        // connected body. col.rgb ONLY: never touches depth/clip/the deep tint/the caustic gate/_WaterLevel.
+        // Direction is derived in-shader from _WindDir when _OceanSwellDir is auto (0,0) — no C# change.
+        _OceanSwellDir      ("Ocean swell dir (xy; 0,0 = auto from wind)", Vector) = (0, 0, 0, 0)
+        _OceanSwellScale    ("Ocean swell scale (SMALL = long wavelength)", Float) = 0.025
+        _OceanSwellSpeed    ("Ocean swell scroll speed (slow)", Float) = 0.018
+        _OceanSwellStrength ("Ocean swell brightness amplitude (0..1)", Range(0,1)) = 0.16
+        _OceanSwellSharpness("Ocean swell crest sharpness (1 = round)", Float) = 1.4
+
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
         _FoamSoftness   ("Foam edge softness (m)", Float) = 0.18
         _FoamNoise      ("Foam churn noise scale", Float) = 1.2
         _Roughness      ("Roughness / whitecaps (0..1)", Range(0,1)) = 0.2
+
+        [Header(Wind streaked foam and swell coupling (whitecaps ride the swell))]
+        // Open-water whitecaps stretched into long thin streaks ALONG the wind (anisotropic: sample the
+        // whitecap noise at a coord COMPRESSED perpendicular to the wind so features elongate along it),
+        // and preferentially placed on swell CRESTS (gate the cap mask by the swell field's high values)
+        // so the foam rides the rolling swell instead of speckling evenly. All col.rgb-only dressing.
+        _FoamStreakStretch  ("Foam streak stretch (1 = round, higher = streaks)", Float) = 3.5
+        _FoamCrestGate      ("Whitecaps on swell crests (0 = even, 1 = crest-only)", Range(0,1)) = 0.6
+        _SpecSwellBias      ("Specular bias toward lit swell faces (0..1)", Range(0,1)) = 0.35
+        // The foam churn / whitecap scroll used to counter-move on a fixed diagonal (against the surface).
+        // Now it drifts WITH the body along a BLEND of the wind (_WindDir) and the tidal current (_FlowDir)
+        // — both sim-driven and time-wandering — so the foam flows with the one connected surface and
+        // reorients as the weather shifts. 0 = pure current-led, 1 = pure wind-led; default a sensible mix.
+        _FoamDriftWindVsCurrent ("Foam drift wind vs current (0 = current, 1 = wind)", Range(0,1)) = 0.6
 
         [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
         _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
@@ -227,11 +253,22 @@ Shader "HiddenHarbours/Water"
                 float  _FbmGateLo;
                 float  _FbmGateHi;
                 float  _SpecBands;
+                // Rolling ocean swell (large-scale cohesion; col.rgb-only brightness bands).
+                float4 _OceanSwellDir;
+                float  _OceanSwellScale;
+                float  _OceanSwellSpeed;
+                float  _OceanSwellStrength;
+                float  _OceanSwellSharpness;
                 float4 _FoamColor;
                 float  _FoamWidth;
                 float  _FoamSoftness;
                 float  _FoamNoise;
                 float  _Roughness;
+                // Wind-streaked foam + swell coupling + the foam-drift wind/current blend.
+                float  _FoamStreakStretch;
+                float  _FoamCrestGate;
+                float  _SpecSwellBias;
+                float  _FoamDriftWindVsCurrent;
                 float  _SwashAmplitude;
                 float  _SwashSpeed;
                 float  _SwashScale;
@@ -364,6 +401,48 @@ Shader "HiddenHarbours/Water"
                 float wC = _Octave3Weight;
                 float total = 1.0 + wB + wC;
                 return (octaveA + octaveB * wB + octaveC * wC) / total;
+            }
+
+            // ---- swell direction: wind generates swell, so default to the (time-wandering) WIND axis ---------
+            // _OceanSwellDir (0,0) = auto-from-wind; an explicit override wins. Normalized, +Y fallback so the
+            // bands never freeze to a NaN axis. As the sim wanders _WindDir, the swell bands REORIENT with it.
+            float2 SwellDir()
+            {
+                float2 d = (dot(_OceanSwellDir.xy, _OceanSwellDir.xy) > 1e-6)
+                             ? _OceanSwellDir.xy : _WindDir.xy;
+                return normalize(d + float2(0, 1e-4));
+            }
+
+            // ---- ROLLING OCEAN SWELL (the cohesion keystone) -------------------------------------------------
+            // ONE big, long-wavelength swell field over worldXY: a low-frequency directional wave (a sine ALONG
+            // the swell axis, broken up by a slow value-noise so the bands aren't ruler-straight), scrolling
+            // SLOWLY along that axis. Returns a 0..1 crest factor — high on crests, low in troughs. The caller
+            // uses it to modulate ONLY col.rgb brightness so broad light/dark bands roll across the WHOLE
+            // surface (the small variance riding on top), and reuses the SAME field to ride the whitecaps on the
+            // crests + bias the specular. Pixelized so it stays pixel-art. Drives no depth/clip/sim (P1, rule 5).
+            float SwellField(float2 worldXY, float t)
+            {
+                float2 dir = SwellDir();
+                // distance projected ALONG the swell axis, advanced slowly with time (long rolling wave).
+                float phase = dot(Pixelize(worldXY) * _OceanSwellScale, dir) - t * _OceanSwellSpeed;
+                // base sine wave (0..1), plus a slow value-noise wander so the bands read organic, not ruled.
+                float wave = sin(phase * 6.2831853) * 0.5 + 0.5;
+                float wander = ValueNoise(Pixelize(worldXY * _OceanSwellScale * 1.3) + t * _OceanSwellSpeed * 0.5);
+                float crest = saturate(wave * 0.75 + wander * 0.25);
+                // sharpen the crest so the light bands read as crests sitting above broad troughs (1 = round).
+                return pow(crest, max(_OceanSwellSharpness, 0.05));
+            }
+
+            // ---- foam DRIFT direction: a BLEND of the (wandering) wind and the (wandering) tidal current ------
+            // Real surface foam follows both forces. _FoamDriftWindVsCurrent dials wind-led (1) vs current-led
+            // (0). Both axes are sim-driven and drift over time, so the foam reorients as the weather shifts.
+            // This replaces the old fixed counter-diagonal so the foam flows WITH the one connected body.
+            float2 FoamDriftDir()
+            {
+                float2 wind    = normalize(_WindDir.xy + float2(0, 1e-4));
+                float2 current = normalize(_FlowDir.xy + float2(1e-4, 0));
+                float2 blend   = lerp(current, wind, saturate(_FoamDriftWindVsCurrent));
+                return normalize(blend + float2(1e-4, 1e-4));
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -528,6 +607,22 @@ Shader "HiddenHarbours/Water"
                     col.rgb += fbmSigned * _FbmStrength * 0.06;        // gentle brightness wobble
                 }
 
+                // ---- ROLLING OCEAN SWELL (the cohesion keystone; col.rgb brightness ONLY) ---------------------
+                // ONE big, long-wavelength swell field rolling slowly across the WHOLE surface. It lightens the
+                // crests and darkens the troughs so broad light/dark BANDS read as one connected body, with the
+                // small variance (above) riding on top. Computed once here and REUSED below to ride the
+                // whitecaps on the crests and bias the specular. col.rgb-only — it never touches depth/clip/the
+                // deep tint/the caustic gate/_WaterLevel, so the cohesion cannot move the gameplay waterline
+                // (P1 integrity, CLAUDE.md rule 5). Direction comes from the (wandering) wind, so the bands
+                // reorient as the weather shifts.
+                float swellCrest = SwellField(worldXY, t);            // 0..1: 1 on crests, 0 in troughs
+                if (_OceanSwellStrength > 0.001)
+                {
+                    // signed around the midpoint: crests brighten, troughs darken, by the amplitude.
+                    float swellSigned = (swellCrest - 0.5) * 2.0;     // -1..1
+                    col.rgb += swellSigned * _OceanSwellStrength * 0.25;
+                }
+
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
                 float causticGate = 1.0 - saturate(depth / max(_CausticDepth, 1e-3));   // 1 shallow -> 0 deep
                 if (causticGate > 0.001 && _CausticAmount > 0.001)
@@ -575,7 +670,12 @@ Shader "HiddenHarbours/Water"
                     // organically instead of an even grid (the marching-grid fix for the highlights). The
                     // gate is BEFORE the additive so it only thins col.rgb's sparkle — never the depth/clip.
                     float specGate = smoothstep(_FbmGateLo, _FbmGateHi, fbm);
-                    col.rgb += _SpecColor.rgb * glint * _SpecAmount * specGate;
+                    // SWELL-FACE BIAS: lean the sparkle toward the lit faces of the rolling swell so the glints
+                    // ride the same bands as the cohesion brightness (one body catching one sun). The swell
+                    // crest factor stands in for "this face rises toward the light"; _SpecSwellBias dials how
+                    // much (0 = even across the swell, 1 = crest-led). col.rgb-only, like every spec term.
+                    float swellSpec = lerp(1.0, swellCrest, saturate(_SpecSwellBias));
+                    col.rgb += _SpecColor.rgb * glint * _SpecAmount * specGate * swellSpec;
                 }
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
@@ -590,12 +690,17 @@ Shader "HiddenHarbours/Water"
                 float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
                 if (foamEdge > 0.001)
                 {
-                    float churn = ValueNoise(Pixelize(worldXY * _FoamNoise + float2(-t * _Flow, t * _Flow)));
+                    // FOAM FLOWS WITH THE BODY: the churn drifts along FoamDriftDir() — a blend of the wind and
+                    // the tidal current (both sim-driven, both wandering) — NOT the old fixed counter-diagonal
+                    // float2(-t*_Flow, t*_Flow) that scrolled AGAINST the surface. So the foam moves with the
+                    // one connected surface and reorients as the weather shifts.
+                    float2 foamDrift = FoamDriftDir() * (_Flow * t);
+                    float churn = ValueNoise(Pixelize(worldXY * _FoamNoise + foamDrift));
                 #if defined(_USE_FOAMTEX)
-                    // Painted foam pattern (white-on-transparent) scrolled with the current; its coverage
-                    // (alpha, falling back to luminance for an opaque tile) replaces the procedural churn so
-                    // the owner's foam shape breaks the line. Still masked to the depth~0 band by foamEdge.
-                    float2 fScroll = float2(-t * _Flow, t * _Flow);
+                    // Painted foam pattern (white-on-transparent) scrolled WITH the body (same FoamDriftDir as
+                    // the churn); its coverage (alpha, falling back to luminance for an opaque tile) replaces the
+                    // procedural churn so the owner's foam shape breaks the line. Still masked to the band.
+                    float2 fScroll = foamDrift;
                     half4 foamSample = UntileSampleW(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex),
                                            worldXY, _PaintScale, fScroll, _UntileStrength);
                     float foamPat = max(foamSample.a, dot(foamSample.rgb, float3(0.299, 0.587, 0.114)));
@@ -608,22 +713,38 @@ Shader "HiddenHarbours/Water"
                     col.a = max(col.a, foamMask * _FoamColor.a);
                 }
 
-                // Whitecaps out on open water when it's rough (wind-driven), pixelized speckle.
+                // Whitecaps out on open water when it's rough (wind-driven). WIND-STREAKED + swell-coupled:
+                // the speckle is sampled on a coord COMPRESSED perpendicular to the wind, so features
+                // ELONGATE into long thin streaks ALONG the wind (wind rows) instead of round speckle; it
+                // drifts WITH the body (the foam drift blend, not a counter-scroll); and it is preferentially
+                // placed on the swell CRESTS so the foam rides the rolling swell. All col.rgb-only dressing.
                 if (_Roughness > 0.01)
                 {
-                    float cap = ValueNoise(Pixelize(worldXY * _NoiseScale * 3.0 + t * _Flow));
+                    // wind-aligned anisotropic basis: keep the along-wind axis, COMPRESS the cross-wind axis
+                    // by _FoamStreakStretch so a round noise cell reads as a streak stretched down the wind.
+                    float2 wdir   = normalize(_WindDir.xy + float2(0, 1e-4));
+                    float2 wperp  = float2(-wdir.y, wdir.x);
+                    float2 capDrift = FoamDriftDir() * (_Flow * t);
+                    float2 wp = worldXY + capDrift;
+                    float stretch = max(_FoamStreakStretch, 1.0);
+                    // project onto the wind basis: along-wind unchanged, cross-wind multiplied (compressed UV).
+                    float2 aniso = float2(dot(wp, wdir), dot(wp, wperp) * stretch);
+                    float cap = ValueNoise(Pixelize(aniso * _NoiseScale * 3.0));
                     float capMask = step(1.0 - _Roughness * 0.25, cap) * saturate(dt);  // only on deeper water
                 #if defined(_USE_WHITECAPTEX)
-                    // Painted whitecap pattern (white-on-transparent) drifted with the current; its coverage
-                    // SCALES BY ROUGHNESS (the wind uniform) so caps appear/intensify with wind, and is gated
-                    // to deeper water by dt. Blends over the procedural speckle.
-                    float2 wScroll = normalize(_FlowDir.xy + float2(1e-4, 0)) * (_Flow * t);
+                    // Painted whitecap pattern (white-on-transparent) drifted WITH the body (the foam drift
+                    // blend, not a fixed current scroll); coverage SCALES BY ROUGHNESS (the wind uniform) so
+                    // caps appear/intensify with wind, gated to deeper water by dt. Blends over the speckle.
                     half4 capSample = SAMPLE_TEXTURE2D(_WhitecapTex, sampler_WhitecapTex,
-                                          PaintUV(worldXY, _PaintScale, wScroll));
+                                          PaintUV(worldXY, _PaintScale, capDrift));
                     float capPat = max(capSample.a, dot(capSample.rgb, float3(0.299, 0.587, 0.114)));
                     float capTexMask = capPat * saturate(_Roughness) * saturate(dt);
                     capMask = lerp(capMask, capTexMask, _WhitecapTexStrength);
                 #endif
+                    // SWELL-CREST GATE: lift the caps toward the swell crests so the foam rides the rolling
+                    // swell instead of speckling evenly. _FoamCrestGate dials it (0 = even, 1 = crest-only).
+                    float crestGate = lerp(1.0, swellCrest, saturate(_FoamCrestGate));
+                    capMask *= crestGate;
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capMask * 0.6);
                 }
 

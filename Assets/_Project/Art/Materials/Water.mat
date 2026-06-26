@@ -110,6 +110,14 @@ Material:
     - _FbmGateLo: 0.35
     - _FbmGateHi: 0.7
     - _SpecBands: 4
+    - _OceanSwellScale: 0.025
+    - _OceanSwellSpeed: 0.018
+    - _OceanSwellStrength: 0.16
+    - _OceanSwellSharpness: 1.4
+    - _FoamStreakStretch: 3.5
+    - _FoamCrestGate: 0.6
+    - _SpecSwellBias: 0.35
+    - _FoamDriftWindVsCurrent: 0.6
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}
@@ -123,5 +131,6 @@ Material:
     - _WindDir: {r: 0, g: 1, b: 0, a: 0}
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _FbmTint: {r: 0.55, g: 0.72, b: 0.78, a: 1}
+    - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
