@@ -44,6 +44,30 @@ namespace HiddenHarbours.App.Editor
         const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";           // one oar (used ×2, mirrored)
         const string ArtDoryRower= "Assets/_Project/Art/Boats/DoryRower.png";     // rower figure
         const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png"; // on-foot player (sliced 3×4)
+
+        // --- DIRECTIONAL FISHING-BOAT VISUAL ("for now" placeholder swap; #93 DirectionalBoatSprite) ------
+        // REVERSIBLE FLAG. While true, the playable boat WEARS the owner's 4-way hand-drawn fishing-boat
+        // facings (snap to the nearest of N/E/S/W from heading, picture stays screen-aligned) instead of the
+        // hand-rowed dory hull + oar rig — the owner LOVES the directional boat and wants it on the boat he
+        // sails NOW, until he draws 8/16-way art. It is a VISUAL swap only: the boat PHYSICS + controls (the
+        // BoatController / hull def / OwnedFleet) are UNCHANGED — the dory is still hand-rowed under the hood;
+        // we only HIDE the oar-rig + hull picture and draw the chosen facing on top. Flip this to FALSE and
+        // re-run the start builder (StPetersBuilder) to restore the dory hull + oars exactly as before (the
+        // swap is the only thing this flag gates). The 4 facings are M2 fleet art used as a placeholder
+        // (memory: M2 fleet art banked + frozen) — kept reversible so the dory render path returns with one bool.
+        const bool UseDirectionalFishingBoatVisual = true;
+
+        // The 4 owner-drawn facings, in CLOCKWISE order from the ZERO heading (North): N, E, S, W. The
+        // DirectionalBoatSprite math (#93) already maps heading→facing; element 0 must be the North-facing
+        // sprite and the zero-heading is 0° (North/up), matching the project's bearing convention.
+        static readonly string[] FishingBoatFacingPaths =
+        {
+            "Assets/_Project/Art/Boats/FishingBoat_N.png",
+            "Assets/_Project/Art/Boats/FishingBoat_E.png",
+            "Assets/_Project/Art/Boats/FishingBoat_S.png",
+            "Assets/_Project/Art/Boats/FishingBoat_W.png",
+        };
+
         const string ArtTensionGauge   = "Assets/_Project/Art/UI/TensionGauge.png";
         const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
         const string ArtFishSilhouette = "Assets/_Project/Art/UI/FishOnSilhouette.png";
@@ -180,6 +204,15 @@ namespace HiddenHarbours.App.Editor
             SetRef(rowAnim, "_rightOarPivot", rightOarPivot);
             SetRef(rowAnim, "_oarRig", oarRig);
 
+            // --- DIRECTIONAL FISHING-BOAT VISUAL (reversible "for now" swap; #93) ----------------------
+            // When the flag is on, the boat the player sails WEARS the owner's 4-way fishing-boat facings
+            // instead of the dory hull + oars. PHYSICS/CONTROLS are untouched (BoatController/hull/OwnedFleet
+            // unchanged) — this only hides the dory picture and adds a DirectionalBoatSprite drawing the chosen
+            // facing on top. Self-contained + null-safe (no-ops to the dory look if the art isn't imported), so
+            // flipping the flag false restores the dory exactly. Boats-core source is NOT modified.
+            if (UseDirectionalFishingBoatVisual)
+                ApplyDirectionalFishingBoatVisual(doryGo, sr, oarRig, rowAnim);
+
             // Moored at start: WASD drives only the on-foot player. Boarding re-enables these (unbroken).
             devBoat.enabled = false;
             boat.enabled = false;
@@ -291,6 +324,73 @@ namespace HiddenHarbours.App.Editor
                 Switcher = switcher, SwitcherGo = switcherGo, Camera = cameraFollow,
                 Loader = loader, LoaderGo = loaderGo, Coordinator = coordinator,
             };
+        }
+
+        // ---- directional fishing-boat visual (reversible "for now" swap; #93) ----------------------
+
+        /// <summary>
+        /// Make the playable boat WEAR the owner's 4-way directional fishing-boat facings instead of the
+        /// hand-rowed dory hull + oar rig — the reversible "for now" placeholder the owner asked for (#93).
+        /// This is a VISUAL-ONLY swap: it never touches the <see cref="BoatController"/>, the hull
+        /// <see cref="BoatHullDef"/>, or the <see cref="OwnedFleet"/> — the dory is still hand-rowed under the
+        /// hood. It (1) HIDES the dory hull picture (disables the hull SpriteRenderer; its sprite ref stays so
+        /// OwnedFleet's id-keyed swap is unaffected), (2) HIDES the oar rig (rower + oars) by severing the
+        /// <see cref="BoatRowAnimator"/>'s <c>_oarRig</c> ref — so the animator can't re-activate it each frame
+        /// (it re-enables the rig whenever the home hull is active) — then deactivating the rig object, and
+        /// (3) adds a <see cref="DirectionalBoatSprite"/> on a child renderer, configured with the 4 facings
+        /// (CW from North, snap mode). Null-safe: if the facing art isn't imported the dory look is left
+        /// untouched (the swap no-ops with a warning), so the build never breaks before the art is in.
+        /// </summary>
+        static void ApplyDirectionalFishingBoatVisual(GameObject doryGo, SpriteRenderer hullRenderer,
+                                                      GameObject oarRig, BoatRowAnimator rowAnim)
+        {
+            // Load the 4 facings up-front (CW from North). LoadSpriteAny handles Single OR Multiple import.
+            var facings = new Sprite[FishingBoatFacingPaths.Length];
+            for (int i = 0; i < FishingBoatFacingPaths.Length; i++)
+                facings[i] = LoadSpriteAny(FishingBoatFacingPaths[i]);
+
+            if (facings[0] == null)
+            {
+                // Art not imported yet → leave the dory hull + oars exactly as built (no half-swap). Re-run
+                // after the FishingBoat_N/E/S/W PNGs import to get the directional visual.
+                Debug.LogWarning("[PersistentCoreBuilder] FishingBoat facings not found (e.g. " +
+                                 FishingBoatFacingPaths[0] + ") — left the dory hull + oars in place. Open " +
+                                 "Unity so the PNGs import, then re-run the start builder to get the " +
+                                 "directional fishing-boat visual.");
+                return;
+            }
+
+            // (1) Hide the dory HULL picture. Disable the renderer only — keep its sprite ref intact so
+            // OwnedFleet's id-keyed hull swap (which sets .sprite, never .enabled) is unaffected by the swap.
+            if (hullRenderer != null) hullRenderer.enabled = false;
+
+            // (2) Hide the OAR RIG (rower + both oars). The BoatRowAnimator RE-ACTIVATES its _oarRig every
+            // Update while the home hull is active, so we must SEVER that ref first (null) — then the animator
+            // can't turn the rig back on — before deactivating the rig object. The animator itself stays
+            // (it's Boats-core, harmless: it just rotates now-inactive oar pivots). Fully reversible: flip the
+            // flag false + re-run to re-wire _oarRig and leave the rig active.
+            SetRef(rowAnim, "_oarRig", null);
+            if (oarRig != null) oarRig.SetActive(false);
+
+            // (3) Add the DirectionalBoatSprite on a CHILD renderer of the boat body (the body transform
+            // turns with physics; the component counter-rotates this child to keep the facing screen-aligned).
+            // sortingOrder 1 draws it above the (now-hidden) hull at 0 and below the on-foot player at 10.
+            var spriteGo = new GameObject("FishingBoatVisual");
+            spriteGo.transform.SetParent(doryGo.transform, false);
+            var sr = spriteGo.AddComponent<SpriteRenderer>();
+            sr.sprite = facings[0];          // start facing North (until the first LateUpdate snaps to heading)
+            sr.sortingOrder = 1;
+
+            var directional = doryGo.AddComponent<DirectionalBoatSprite>();
+            directional.Configure(
+                facings, sr,
+                zeroHeadingDegrees: 0f,                       // facings[0] is the North-facing sprite
+                smoothModeSprite: facings[0],                 // unused in Snap; same art if ever toggled to Smooth
+                mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
+
+            Debug.Log("[PersistentCoreBuilder] Playable boat wears the 4-way DIRECTIONAL FISHING-BOAT visual " +
+                      "(#93): hull + oar rig hidden, FishingBoat_N/E/S/W snap by heading. This is a reversible " +
+                      "'for now' swap — set UseDirectionalFishingBoatVisual=false + re-run to restore the dory.");
         }
 
         // ---- serialized-ref helpers (the builders' persist-the-refs convention) --------------------
