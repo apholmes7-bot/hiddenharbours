@@ -151,6 +151,74 @@ namespace HiddenHarbours.Tests.EditMode
             var registry = so.FindProperty("_registry");
             Assert.AreEqual(2, registry.arraySize, "the fleet registry holds the Dory + the Punt swap hull");
         }
+
+        // ---- the directional fishing-boat visual swap (reversible "for now" placeholder; #93) -----
+        // The owner wants the playable boat to WEAR the 4-way directional fishing-boat facings instead of the
+        // dory hull + oars (a VISUAL swap; physics/controls untouched). The builder gates this on the
+        // UseDirectionalFishingBoatVisual flag (currently ON). These guard the swap's three observable effects
+        // — the directional component is added + configured, the hull picture is hidden, and the oar rig is
+        // hidden (with its BoatRowAnimator ref severed so it can't re-show the rig). The swap loads the real
+        // committed FishingBoat_*.png via AssetDatabase; if the art isn't imported in this environment the
+        // builder no-ops the swap (by design), so the tests skip rather than false-fail.
+
+        // The facings the builder loads (CW from North) — mirrors PersistentCoreBuilder.FishingBoatFacingPaths.
+        const string FishingBoatNorthPath = "Assets/_Project/Art/Boats/FishingBoat_N.png";
+
+        private static bool FishingBoatArtImported()
+        {
+            if (UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(FishingBoatNorthPath) != null) return true;
+            // Match the builder's Single-OR-Multiple-import-tolerant lookup.
+            return UnityEditor.AssetDatabase.LoadAllAssetsAtPath(FishingBoatNorthPath).OfType<Sprite>().Any();
+        }
+
+        [Test]
+        public void Build_DirectionalVisual_AddsConfiguredSnapDirectionalSprite_WithFourFacings()
+        {
+            if (!FishingBoatArtImported())
+                Assert.Ignore("FishingBoat facings not imported in this environment — the builder no-ops the " +
+                              "swap by design (it warns + leaves the dory look); nothing to assert.");
+
+            var directional = _core.DoryGo.GetComponent<DirectionalBoatSprite>();
+            Assert.IsNotNull(directional, "the playable boat wears the DirectionalBoatSprite (the #93 component)");
+            Assert.AreEqual(DirectionalBoatSprite.RotationMode.SnapDirectional, directional.Mode,
+                "configured for 4-way SNAP (swap facings, keep the picture screen-aligned) — the owner's ask");
+
+            var so = new UnityEditor.SerializedObject(directional);
+            var facings = so.FindProperty("_facings");
+            Assert.AreEqual(4, facings.arraySize, "all 4 N/E/S/W facings are assigned");
+            for (int i = 0; i < facings.arraySize; i++)
+                Assert.IsNotNull(facings.GetArrayElementAtIndex(i).objectReferenceValue, $"facing {i} is assigned");
+
+            // The component draws onto a CHILD renderer (counter-rotated to stay screen-aligned), not the hull.
+            var child = _core.DoryGo.transform.Find("FishingBoatVisual");
+            Assert.IsNotNull(child, "a child 'FishingBoatVisual' renderer carries the facing");
+            Assert.IsNotNull(child.GetComponent<SpriteRenderer>(), "the child has the SpriteRenderer to draw into");
+        }
+
+        [Test]
+        public void Build_DirectionalVisual_HidesTheDoryHullAndOarRig()
+        {
+            if (!FishingBoatArtImported())
+                Assert.Ignore("FishingBoat facings not imported — the swap no-ops by design; nothing to assert.");
+
+            // The hull picture is hidden (renderer disabled) so the owner doesn't see the dory hull under the
+            // fishing boat. The renderer + its sprite ref stay (OwnedFleet's id-keyed swap sets .sprite, not
+            // .enabled), so ownership logic is unaffected — we only stopped DRAWING it.
+            var hull = _core.DoryGo.GetComponent<SpriteRenderer>();
+            Assert.IsNotNull(hull, "the hull SpriteRenderer still exists (kept for OwnedFleet's sprite swap)");
+            Assert.IsFalse(hull.enabled, "but it's DISABLED so the dory hull isn't drawn under the fishing boat");
+
+            // The oar rig (rower + both oars) is hidden, and the BoatRowAnimator's _oarRig ref is SEVERED so
+            // the animator can't re-activate the rig each frame (it re-enables it while the home hull is active).
+            var oarRig = _core.DoryGo.transform.Find("OarRig");
+            Assert.IsNotNull(oarRig, "the oar rig object still exists (kept so the swap is reversible)");
+            Assert.IsFalse(oarRig.gameObject.activeSelf, "but it's DEACTIVATED — no oars on the motorboat");
+
+            var rowAnim = _core.DoryGo.GetComponent<BoatRowAnimator>();
+            var so = new UnityEditor.SerializedObject(rowAnim);
+            Assert.IsNull(so.FindProperty("_oarRig").objectReferenceValue,
+                "the animator's _oarRig ref is severed so it can't re-show the rig each Update");
+        }
     }
 }
 #endif
