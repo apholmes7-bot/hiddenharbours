@@ -648,5 +648,42 @@ namespace HiddenHarbours.Art
             float t = Mathf.Clamp01(depth / reach);
             return 1f - Smoothstep01(t);   // 1 at depth 0, 0 at depth >= reach
         }
+
+        // ==== Living foam: the SOFT-THRESHOLD (merge/separate) twin — pure mirror of the shader ==============
+        // The shader's whitecaps + foam-fringe used to mask the foam with a HARD step() on a single ValueNoise
+        // that only TRANSLATED — a fixed-shape sliding stamp, the "repeating pattern, shapes never change" the
+        // owner saw. The fix turns the mask into a smoothstep around a threshold on an EVOLVING field
+        // (EvolvingField, GPU-only). The EVOLUTION itself is value-noise on the GPU and isn't unit-testable
+        // headless, but the SOFT-THRESHOLD math — the part that produces the metaball MERGE/SEPARATE behaviour —
+        // is a pure function mirrored here so the mechanism is guarded without opening Unity. NOT pushed to the
+        // material; the shader owns the live field. col.rgb/col.a foam dressing only — drives no sim (P1, rule 5).
+
+        /// <summary>
+        /// Smoothstep with explicit edges (the HLSL <c>smoothstep(edge0, edge1, x)</c>): 0 below
+        /// <paramref name="edge0"/>, 1 above <paramref name="edge1"/>, an ease-in-out (3t²−2t³) between. If the
+        /// edges are equal/inverted it degrades to a hard step at the edge (guarded, no divide-by-zero).
+        /// </summary>
+        public static float Smoothstep(float edge0, float edge1, float x)
+        {
+            float denom = edge1 - edge0;
+            if (Mathf.Abs(denom) < 1e-6f) return x < edge0 ? 0f : 1f;
+            float t = Mathf.Clamp01((x - edge0) / denom);
+            return Smoothstep01(t);
+        }
+
+        /// <summary>
+        /// The foam SOFT-THRESHOLD the shader applies to its evolving foam field —
+        /// <c>smoothstep(threshold − softness, threshold + softness, field)</c>. This is the metaball mechanism:
+        /// because it is a SOFT band (not a hard <c>step</c>), when two field maxima grow toward each other the
+        /// rising valley between them crosses <c>threshold − softness</c> and the foam blobs MERGE; when the field
+        /// dips below between them they SEPARATE; and a maximum rising through / falling back across the band
+        /// fades the blob in / out. Monotonic non-decreasing in <paramref name="field"/>; returns a 0..1 coverage.
+        /// <paramref name="softness"/> is floored so a zero softness still yields a (near-hard) finite edge.
+        /// </summary>
+        public static float FoamSoftThreshold(float field, float threshold, float softness)
+        {
+            float soft = Mathf.Max(softness, 1e-3f);
+            return Smoothstep(threshold - soft, threshold + soft, field);
+        }
     }
 }

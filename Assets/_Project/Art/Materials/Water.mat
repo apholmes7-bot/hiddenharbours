@@ -118,6 +118,10 @@ Material:
     - _FoamCrestGate: 0.6
     - _SpecSwellBias: 0.35
     - _FoamDriftWindVsCurrent: 0.6
+    - _FoamEvolveSpeed: 0.25
+    - _FoamBlobScale: 2.2
+    - _FoamThreshold: 0.55
+    - _FoamThresholdSoft: 0.18
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}

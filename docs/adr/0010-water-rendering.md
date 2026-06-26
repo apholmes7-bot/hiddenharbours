@@ -264,3 +264,51 @@ continues to force-compile the shipped `Water.mat` variant: no `+` in any `[Head
 
 To dissolve the cohesion back toward the §5.7 look, set `_OceanSwellStrength` / `_FoamCrestGate` /
 `_SpecSwellBias` to 0 and `_FoamStreakStretch` to 1 on `Water.mat`.
+
+## Addendum — shipped art-pass tunables (living foam: evolving field + soft (metaball) threshold)
+
+A fifth visual upgrade shipped on `HiddenHarboursWater.shader` after the owner saw the open-water whitecaps
+(and the foam-fringe churn) read as a **repeating pattern** whose shapes **never change**. **Root cause:** the
+foam was a **fixed-shape noise stamp that only TRANSLATED** — a single `ValueNoise` sample scrolled by the
+foam-drift, masked by a **hard `step()`**. A sliding stamp under a hard cut is, by construction, a sliding
+repeat; the blobs could never change shape, merge, or separate. This pass makes the foam **EVOLVE, not just
+translate**. Mechanism: `design/water-rendering.md` §5.9.
+
+Like every prior addendum, **all of it is visual-only** — it touches only `col.rgb` / `col.a` (the foam blend)
+and **never** `depth`, `clip()`, the deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim and saves
+nothing (the determinism / P1-integrity invariant above holds). Every new constant is a material property
+(rule 6), every new field is **pixelized** (decision (2)), and the new layers default **ON at a modest
+strength** so the change is visible immediately yet fully dial-able on `Water.mat`. **Crucially the foam still
+travels with the weather** — the in-place evolution is layered ON TOP of the existing wind+current foam drift
+(`_FoamDriftWindVsCurrent`, both axes sim-driven), so it morphs *and* flows; the evolution is added, not a
+replacement.
+
+- **Evolving field (the keystone)** — a new in-shader pseudo-3D value-noise helper (`EvolvingField`) replaces
+  the single translating `ValueNoise` for both the whitecaps and the fringe churn. It blends two **time-offset**
+  `ValueNoise` samples of the **same** coord with an **animated mix** (two boil pairs, half a step out of phase,
+  smoothly crossfaded → continuous + seamless), so maxima rise/fall **in place**: bright spots appear, grow,
+  drift, shrink, vanish. Props: `_FoamEvolveSpeed` (0.25 — boil/morph rate, 0 = frozen shapes), `_FoamBlobScale`
+  (2.2 — blob size).
+- **Merge / separate via a soft threshold** — the foam mask becomes
+  `smoothstep(_FoamThreshold − _FoamThresholdSoft, _FoamThreshold + _FoamThresholdSoft, field)` instead of a
+  hard `step`. The soft band is the metaball mechanism: a rising valley between two maxima crosses the lower
+  edge and the blobs **MERGE**; a dipping field between them **SEPARATES** them; a maximum crossing the band
+  **fades** in/out. Props: `_FoamThreshold` (0.55), `_FoamThresholdSoft` (0.18). The swell-crest gate
+  (`_FoamCrestGate`), wind-streak stretch (`_FoamStreakStretch`), and wind-roughness threshold-lowering all keep
+  working on top.
+- **Kill the residual repeat** — the procedural value-noise is hash-based (non-tiling), but the painted
+  `_WhitecapTex` slot (ON) was the one scrolling slot still sampled through a plain `PaintUV` (skipping the
+  anti-tiling path). It is now routed through the existing **`UntileSampleW`** (IQ-style hash-untile + domain
+  warp, dialed by `_UntileStrength`), like every other painted slot — kept pixel-snapped.
+
+**No new C# uniform.** The evolving field and the soft threshold are derived **in-shader** off `_Time` and the
+already-pushed `_WindDir`/`_FlowDir`; `WaterSurface.cs` pushes nothing new. The GPU value-noise field can't be
+unit-tested headless, but the **soft-threshold math** — the part that produces the merge/separate behaviour —
+gains **non-pushed pure twins** (`FoamSoftThreshold` + a general `Smoothstep`) so the mechanism is unit-tested
+headless (`ArtRenderingTests.cs`: the soft band is partial coverage not a 0/1 step; monotonic in the field; a
+risen valley between two maxima fills in = MERGE, a low valley reads bare = SEPARATE). The CI shader-compile
+guard (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in
+any `[Header]`/Property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).
+
+To revert toward the old translating-stamp look, set `_FoamEvolveSpeed` to 0 (shapes stop morphing, foam only
+drifts) and `_FoamThresholdSoft` small (toward a hard edge) on `Water.mat`.

@@ -394,6 +394,67 @@ the NaN-safe fallbacks — the determinism guard for the cohesion reorientation.
 > back toward the §5.7 look, set `_OceanSwellStrength` / `_FoamCrestGate` / `_SpecSwellBias` to 0 and
 > `_FoamStreakStretch` to 1.
 
+### 5.9 Living foam — an evolving field + a soft (metaball) threshold (shipped upgrade)
+
+The owner saw the open-water whitecaps (and the foam-fringe churn) read as a **repeating pattern** whose
+shapes **never change**: the foam was a **fixed-shape noise stamp that only TRANSLATED** across the surface
+(one `ValueNoise` sample scrolled by `capDrift`/`foamDrift`), masked by a **hard `step()`**. A sliding stamp
++ a hard cut is a sliding repeat by construction. This pass makes the foam **EVOLVE, not just translate**:
+patches **MERGE**, **SEPARATE**, and **CHANGE SHAPE** over time, and the residual painted-tile repeat is
+killed. Like every prior addendum it is **visual-only** — it touches only `col.rgb` / `col.a` (the foam
+blend) and **never** `depth`, `clip()`, the deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim
+and saves nothing (P1 integrity, CLAUDE.md rule 5). Every constant is a material property (rule 6) and every
+new field is **pixelized** (decision (2)), defaults **ON at a modest strength**, fully dial-able on `Water.mat`.
+
+**(A) The evolving FIELD (`EvolvingField`) — the field morphs in place.** A new pseudo-3D value-noise helper
+replaces the single translating `ValueNoise` for both the whitecaps and the fringe churn. It is built by
+**blending two time-offset `ValueNoise` samples of the SAME coord, where the mix itself animates** — as the
+mix sweeps, a local maximum from one sample fades while a (differently-placed) maximum from the other rises,
+so bright spots **appear, grow, drift, shrink and vanish**: the field MORPHS instead of sliding rigidly. Two
+such "boil" pairs run half a step out of phase (a smoothed crossfade) so the morph is **continuous and
+seamless** (no popping when a pair re-randomizes at a step boundary). The existing **wind+current drift**
+(`FoamDriftDir()`, blended by `_FoamDriftWindVsCurrent`) is layered ON TOP — the foam still **travels with
+the weather**; the in-place evolution is *added* to that drift, not a replacement. `_FoamEvolveSpeed` sets
+the boil rate (0 = frozen shapes, just drift); `_FoamBlobScale` sets the blob size (smaller = bigger blobs).
+Pure value-noise + pixelize, a few extra taps — within the rule-7 budget.
+
+**(B) MERGE / SEPARATE via a SOFT THRESHOLD.** The foam mask is now
+`smoothstep(_FoamThreshold − _FoamThresholdSoft, _FoamThreshold + _FoamThresholdSoft, field)` — **not** a hard
+`step`. This soft band is the metaball mechanism: when two field maxima grow toward each other the **valley
+between them rises** above `thr − soft` and the blobs **MERGE**; when the field **dips** below between them
+they **SEPARATE**; and a maximum rising through / falling back across the band **fades a blob IN / OUT** — so
+the foam reads as organic, connected, living patches rather than a binary speckle. The wind-roughness still
+lowers the cap threshold (rougher ⇒ more sea above the threshold ⇒ more caps), the **swell-crest gate**
+(`_FoamCrestGate`) still lifts caps onto crests, and the **wind-streak stretch** (`_FoamStreakStretch`) still
+compresses the field coord perpendicular to the wind so the morphing blobs **elongate into streaks ALONG the
+wind**. All three keep working *on top of* the evolving field + soft threshold.
+
+**(C) Kill the residual REPEAT (painted whitecap tile).** The procedural `ValueNoise` is hash-based
+(effectively non-tiling), so the procedural foam never tiled — but the painted **`_WhitecapTex`** slot
+(`_UseWhitecapTex` ON) was sampled through a **plain `PaintUV`** (the only scrolling painted slot that
+*skipped* the anti-tiling path), so its small seamless tile's **repeat grid** could read as the periodic
+culprit. It is now routed through the existing **`UntileSampleW`** (IQ-style hash-untile + domain warp,
+dialed by `_UntileStrength`), exactly like `_SurfaceTex`/`_FoamTex`/`_CausticTex`/`_SparkleTex` — kept
+pixel-snapped. If a repeat still reads, raise `_UntileStrength` or lower `_WhitecapTexStrength`.
+
+> **Why no C# uniform.** The evolving field and the soft threshold are derived **in-shader** off `_Time` and
+> the already-pushed `_WindDir`/`_FlowDir` — **no new uniform**, `WaterSurface.cs` pushes nothing new. The
+> GPU value-noise can't be unit-tested headless, but the **soft-threshold math** — the part that produces the
+> merge/separate behaviour — has pure C# twins (`WaterSurface.FoamSoftThreshold` + a general `Smoothstep`),
+> unit-tested in `ArtRenderingTests.cs` (the soft band is partial coverage not a 0/1 step; monotonic in the
+> field; a risen valley between two maxima fills in = MERGE, a low valley reads bare = SEPARATE). The CI
+> shader-compile guard (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat`
+> variant: no `+` in any `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta class
+> stays guarded).
+
+> **Property summary (all additive — none of the owner's existing tuned values changed):**
+> *living foam* — `_FoamEvolveSpeed` (0.25, boil/morph rate; 0 = frozen shapes), `_FoamBlobScale` (2.2, blob
+> size; smaller = bigger blobs), `_FoamThreshold` (0.55, soft-threshold level; higher = less foam),
+> `_FoamThresholdSoft` (0.18, the merge/separate softness band). The painted whitecap de-tile reuses the
+> existing `_UntileStrength` (no new knob). To revert toward the old translating-stamp look, set
+> `_FoamEvolveSpeed` to 0 (shapes stop morphing, foam only drifts) and `_FoamThresholdSoft` small (toward a
+> hard edge).
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
