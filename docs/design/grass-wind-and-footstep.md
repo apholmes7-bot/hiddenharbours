@@ -71,6 +71,12 @@ scene. A `GrassDevWind` on the root feeds a gentle **veering test wind** *only w
 the demo sways out of the box; the moment the real environment sim is present, `GrassWindBridge` takes
 over the same global off the deterministic wind. Reversible: delete the `GrassTest` object.
 
+For density and a painterly read (matching the owner's evergreen-clearing reference), the builder
+scatters a **mix of three greybox tuft variants** — `GrassTuft` (medium), `GrassTuft_Short`,
+`GrassTuft_Tall` — with per-tuft **scale and tint jitter** (the shader multiplies vertex colour, so each
+tuft shades within the palette). These are **placeholders**: drop the owner's final tuft art into
+`Assets/_Project/Art/Sprites/` (bottom-centre pivot, Point, PPU 32) and the system drives it unchanged.
+
 ## Tunable knobs (no magic numbers — rule 6)
 On the **Grass** material (`Assets/_Project/Art/Materials/Grass.mat`): `_SwayAmount`, `_IdleSway`,
 `_WindLean`, `_SwaySpeed`, `_GustScale`, `_GustStrength`, `_PhaseGrid`, `_BendY`, `_FootRadius`,

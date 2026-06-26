@@ -29,7 +29,13 @@ namespace HiddenHarbours.Tools.Editor
     {
         private const string MenuPath = "Hidden Harbours/Build Grass Test";
         private const string RootName = "GrassTest";
-        private const string TuftPath = "Assets/_Project/Art/Sprites/GrassTuft.png";
+        // The greybox tuft variants (medium / short / tall) — scattered as a mix for a dense, painterly read.
+        private static readonly string[] TuftPaths =
+        {
+            "Assets/_Project/Art/Sprites/GrassTuft.png",
+            "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
+            "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
+        };
         private const string MaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
         private const string ShaderName = "HiddenHarbours/GrassWind";
 
@@ -61,8 +67,14 @@ namespace HiddenHarbours.Tools.Editor
                 material.enableInstancing = true;
             }
 
-            // --- the tuft sprite (prefer the committed art; fall back to a generated greybox tuft). ---
-            Sprite tuft = LoadSpriteAny(TuftPath) ?? GenerateFallbackTuft();
+            // --- the tuft sprites (prefer the committed variants; fall back to one generated greybox tuft). ---
+            var tufts = new System.Collections.Generic.List<Sprite>();
+            foreach (string p in TuftPaths)
+            {
+                var s = LoadSpriteAny(p);
+                if (s != null) tufts.Add(s);
+            }
+            if (tufts.Count == 0) tufts.Add(GenerateFallbackTuft());
 
             // Remove a prior rig so re-running is idempotent (no stacked patches).
             var existing = GameObject.Find(RootName);
@@ -96,8 +108,13 @@ namespace HiddenHarbours.Tools.Editor
                 tuftGo.transform.localScale = new Vector3(s, s, 1f);
 
                 var sr = tuftGo.AddComponent<SpriteRenderer>();
-                sr.sprite = tuft;
+                sr.sprite = tufts[rng.Next(tufts.Count)];   // mix the height variants for density
                 sr.sharedMaterial = material;
+                // per-tuft tint jitter (value + a touch of hue) so the field reads painterly, not stamped.
+                // The shader multiplies vertex colour, so this just shades each tuft; it stays in the palette.
+                float v = 0.82f + (float)rng.NextDouble() * 0.30f;   // 0.82..1.12 brightness
+                float warm = (float)(rng.NextDouble() * 0.10 - 0.05);
+                sr.color = new Color(Mathf.Clamp01(v + warm), Mathf.Clamp01(v), Mathf.Clamp01(v - warm * 0.5f), 1f);
                 // lower on screen draws in front (¾ top-down depth read).
                 sr.sortingOrder = Mathf.RoundToInt(-pos.y * 100f);
             }
