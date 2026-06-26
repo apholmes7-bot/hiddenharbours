@@ -306,13 +306,18 @@ Shader "HiddenHarbours/Water"
             // at a BIG scale (_FbmScale) and slowly drifted (_FbmDriftSpeed) it gives broad, slowly-moving
             // patches — used to (i) softly tint col.rgb and (ii) GATE the specular so sparkles cluster, both
             // of which break the single-direction "marching grid" read. Pixelized so it stays pixel-art.
-            float Fbm(float2 p, int octaves)
+            //
+            // Octave count is a COMPILE-TIME CONSTANT (FBM_OCTAVES), NOT a runtime parameter: an [unroll] over a
+            // loop whose bound is a runtime value fails to compile on some shader targets/variants (that broke
+            // the painted-keyword variant => magenta). A literal trip count lets [unroll] resolve cleanly.
+            #define FBM_OCTAVES 4
+            float Fbm(float2 p)
             {
                 float sum = 0.0;
                 float amp = 0.5;
                 float norm = 0.0;
-                [unroll(4)]
-                for (int i = 0; i < octaves; i++)
+                [unroll]
+                for (int i = 0; i < FBM_OCTAVES; i++)
                 {
                     sum  += ValueNoise(Pixelize(p)) * amp;
                     norm += amp;
@@ -514,7 +519,7 @@ Shader "HiddenHarbours/Water"
                 // tints the base so the sea breaks into broad slow patches instead of an even sheet — purely
                 // cosmetic (col.rgb), so it cannot move the waterline/clip/deep-tint (P1 integrity, rule 5).
                 float2 fbmDrift = float2(t * _FbmDriftSpeed, -t * _FbmDriftSpeed * 0.8);
-                float fbm = Fbm((worldXY + fbmDrift) * _FbmScale, 4);   // 0..1
+                float fbm = Fbm((worldXY + fbmDrift) * _FbmScale);   // 0..1 (FBM_OCTAVES octaves)
                 if (_FbmStrength > 0.001)
                 {
                     // signed around the patch midpoint so some areas lift toward the tint, others sit back.
