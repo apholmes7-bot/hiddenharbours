@@ -560,6 +560,42 @@ namespace HiddenHarbours.Art
             return windVector.sqrMagnitude > 1e-6f ? windVector.normalized : Vector2.up;
         }
 
+        // ==== Cohesion-pass DIRECTION twins — pure mirrors of the shader's SwellDir()/FoamDriftDir() ========
+        // The shader derives the rolling-swell axis and the foam-drift axis IN-SHADER from the already-pushed
+        // _WindDir / _FlowDir (no NEW uniform — the cohesion follows the LIVE, time-wandering sim directions,
+        // the P1 "sea has moods" integrity). These C# twins are NOT pushed to the material; they exist only so
+        // the direction LOGIC (auto-from-wind swell, the wind/current foam-drift blend, the NaN-safe fallbacks)
+        // is unit-tested headless without opening Unity — the determinism guard for the cohesion reorientation.
+
+        /// <summary>
+        /// The rolling-ocean-swell DIRECTION the shader's <c>SwellDir()</c> uses. Wind generates swell, so the
+        /// axis defaults to the (time-wandering) wind direction; an explicit <paramref name="swellDirOverride"/>
+        /// (non-zero) wins — matching the shader's <c>_OceanSwellDir (0,0) = auto-from-_WindDir</c>. Normalized;
+        /// near-zero inputs fall back to <see cref="Vector2.up"/> (the shader's +Y default) so the swell bands
+        /// never freeze to a NaN axis. As the sim wanders the wind, the swell bands REORIENT with it.
+        /// </summary>
+        public static Vector2 SwellDirection(Vector2 windVector, Vector2 swellDirOverride)
+        {
+            Vector2 d = swellDirOverride.sqrMagnitude > 1e-6f ? swellDirOverride : windVector;
+            return d.sqrMagnitude > 1e-6f ? d.normalized : Vector2.up;
+        }
+
+        /// <summary>
+        /// The foam-DRIFT direction the shader's <c>FoamDriftDir()</c> uses — a BLEND of the (wandering) wind
+        /// and the (wandering) tidal current, both sim-driven. <paramref name="windVsCurrent"/> (0..1) dials
+        /// current-led (0) ↔ wind-led (1), mirroring <c>_FoamDriftWindVsCurrent</c>. Replaces the old fixed
+        /// counter-diagonal so the foam flows WITH the one connected body and reorients as the weather shifts.
+        /// Each axis is normalized (NaN-safe fallbacks: wind→+Y, current→+X) before the blend, and the blended
+        /// result is re-normalized; a slack blend falls back to +X so the drift never freezes to NaN.
+        /// </summary>
+        public static Vector2 FoamDriftDirection(Vector2 windVector, Vector2 currentVector, float windVsCurrent)
+        {
+            Vector2 wind    = windVector.sqrMagnitude > 1e-6f ? windVector.normalized : Vector2.up;
+            Vector2 current = currentVector.sqrMagnitude > 1e-6f ? currentVector.normalized : Vector2.right;
+            Vector2 blend   = Vector2.Lerp(current, wind, Mathf.Clamp01(windVsCurrent));
+            return blend.sqrMagnitude > 1e-6f ? blend.normalized : Vector2.right;
+        }
+
         /// <summary>
         /// Surface roughness / whitecap amount (0..1) from wind strength: wind speed normalized against
         /// <paramref name="windForFullRoughness"/> and saturated. A breeze ruffles; a gale whitens.

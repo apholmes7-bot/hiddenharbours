@@ -339,6 +339,61 @@ untiled painted slots read more organic. `_UntileStrength = 0` is unchanged (raw
 > `_FbmGateHi` (0.7), `_SpecBands` (4). To calm the look back toward the old single-direction surface, set
 > `_WindChop` / `_Octave2Weight` / `_Octave3Weight` / `_FbmStrength` to 0.
 
+### 5.8 Cohesion pass — rolling ocean swell + wind-streaked foam + flow-with-body (shipped upgrade)
+
+The §5.7 upgrade gave the surface organic small-scale variance, but the owner noted it read as a **field
+of separate specks**, not **one large body** of water — and that the foam/whitecap layers were scrolling
+on a diagonal **opposite** to the surface (`float2(-t*_Flow, t*_Flow)`). This **cohesion pass** adds three
+coupled layers, all **visual-only** (col.rgb / foam dressing — never `depth`, `clip()`, the deep-tint
+`dt`, the caustic gate, or `_WaterLevel`; drives no sim, saves nothing — P1 integrity, CLAUDE.md rule 5),
+every constant a material property (rule 6), every new field **pixelized** (decision (2)), modest defaults
+**ON** so the cohesion is visible yet fully dial-able. **Everything keys off the LIVE, time-wandering sim
+directions** (`_WindDir` from `WeatherModel`, `_FlowDir` from PR #95's drifting current bearing — both
+already pushed by `WaterSurface.cs`), so the whole body visibly **reorients as the weather shifts** — no
+hardcoded angle (the P1 "sea has moods" integrity).
+
+**(A) Rolling ocean swell — the keystone (`SwellField`).** ONE big, **long-wavelength** swell field over
+worldXY: a low-frequency directional wave (a sine **along** the swell axis, broken up by a slow value-noise
+so the bands aren't ruler-straight), scrolling **slowly** along that axis. Its 0..1 crest factor modulates
+the **base-colour brightness** (crests lighter, troughs darker) so broad light/dark **bands roll across the
+WHOLE surface** — the §5.7 small variance rides on top, and the sea reads as **one connected body**. The
+swell **direction defaults to the (wandering) wind** (`SwellDir()` — wind generates swell), with an optional
+`_OceanSwellDir` override (`(0,0)` = auto-from-`_WindDir`), so the bands reorient as the wind veers. The
+same field is **reused** below (crest-gate the whitecaps, bias the specular) so foam, glint and brightness
+all ride the **same** swell.
+
+**(B) Wind-streaked foam (wind rows).** The open-water whitecap speckle is now **anisotropic** — sampled on
+a coordinate **compressed perpendicular to `_WindDir`** (a wind-aligned basis: along-wind axis kept,
+cross-wind axis multiplied by `_FoamStreakStretch`) so a round noise cell **elongates into a long thin
+streak ALONG the wind** instead of isotropic speckle. The existing wind/roughness gating (the `_Roughness`
+threshold + the deep-water `dt` gate) is unchanged.
+
+**(C) Couple everything to the swell + flow together.**
+> - **Whitecaps ride the crests.** The cap mask is gated by the swell field's high values
+>   (`_FoamCrestGate`: 0 = even, 1 = crest-only) so foam preferentially appears on swell **crests**.
+> - **Specular leans to the lit swell faces.** The glint is multiplied by a swell-crest term
+>   (`_SpecSwellBias`) before it's added, so sparkles ride the same bands the cohesion brightness does
+>   (one body catching one sun — still the §3.5.1 single implied light).
+> - **Foam now flows WITH the body (the opposite-motion fix).** The foam churn + whitecap scroll's old fixed
+>   counter-diagonal `float2(-t*_Flow, t*_Flow)` is **replaced** by a drift along `FoamDriftDir()` — a
+>   **blend of the wind (`_WindDir`) and the tidal current (`_FlowDir`)**, dialed by `_FoamDriftWindVsCurrent`
+>   (0 = current-led, 1 = wind-led). Both axes are sim-driven and wander over time, so the foam flows with
+>   the one connected surface and reorients with the weather, instead of scrolling against it.
+
+The swell-direction and foam-drift **direction logic** has pure C# twins in `WaterSurface.cs`
+(`SwellDirection`, `FoamDriftDirection`) — **not pushed** to the material (the shader derives the live
+versions from the already-pushed `_WindDir`/`_FlowDir`; **no new uniform**), unit-tested headless
+(`ArtRenderingTests.cs`) for the auto-from-wind default, the override-wins rule, the wind/current blend, and
+the NaN-safe fallbacks — the determinism guard for the cohesion reorientation.
+
+> **Property summary (all additive — none of the owner's existing tuned values changed):**
+> *ocean swell* — `_OceanSwellDir` (vec, `(0,0)` = auto-from-`_WindDir`), `_OceanSwellScale` (0.025, SMALL =
+> long wavelength), `_OceanSwellSpeed` (0.018), `_OceanSwellStrength` (0.16), `_OceanSwellSharpness` (1.4).
+> *foam streaks* — `_FoamStreakStretch` (3.5; 1 = round, higher = longer streaks). *coupling* —
+> `_FoamCrestGate` (0.6), `_SpecSwellBias` (0.35), `_FoamDriftWindVsCurrent` (0.6). To dissolve the cohesion
+> back toward the §5.7 look, set `_OceanSwellStrength` / `_FoamCrestGate` / `_SpecSwellBias` to 0 and
+> `_FoamStreakStretch` to 1.
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
