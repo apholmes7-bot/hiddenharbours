@@ -152,17 +152,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(2, registry.arraySize, "the fleet registry holds the Dory + the Punt swap hull");
         }
 
-        // ---- the directional fishing-boat visual swap (reversible "for now" placeholder; #93) -----
-        // The owner wants the playable boat to WEAR the 4-way directional fishing-boat facings instead of the
-        // dory hull + oars (a VISUAL swap; physics/controls untouched). The builder gates this on the
-        // UseDirectionalFishingBoatVisual flag (currently ON). These guard the swap's three observable effects
-        // — the directional component is added + configured, the hull picture is hidden, and the oar rig is
-        // hidden (with its BoatRowAnimator ref severed so it can't re-show the rig). The swap loads the real
-        // committed FishingBoat_*.png via AssetDatabase; if the art isn't imported in this environment the
-        // builder no-ops the swap (by design), so the tests skip rather than false-fail.
+        // ---- the directional fishing-boat SKIN swap (reversible "for now" placeholder; #93/#94/#97) -----
+        // The owner wants the playable boat to WEAR the 4-way directional fishing-boat facings AND drive as an
+        // ENGINE boat ("a power boat skin, not a rowboat") instead of the dory hull + oars. The builder gates
+        // this on the UseDirectionalFishingBoatVisual flag (currently ON). These guard the swap's observable
+        // effects — the boat's hull is swapped to the Engine boat.fishing_skiff (propulsion match), the
+        // directional component is added + configured, the hull picture is hidden, and the oar rig is hidden
+        // (with its BoatRowAnimator ref severed so it can't re-show the rig). The swap loads the real committed
+        // FishingBoat_*.png + FishingSkiff.asset via AssetDatabase; if EITHER isn't imported in this environment
+        // the builder no-ops the swap (by design — no half-state), so the tests skip rather than false-fail.
 
         // The facings the builder loads (CW from North) — mirrors PersistentCoreBuilder.FishingBoatFacingPaths.
         const string FishingBoatNorthPath = "Assets/_Project/Art/Boats/FishingBoat_N.png";
+        // The Engine hull the skin drives on — mirrors PersistentCoreBuilder.DataFishingSkiff.
+        const string FishingSkiffPath     = "Assets/_Project/Data/Boats/FishingSkiff.asset";
 
         private static bool FishingBoatArtImported()
         {
@@ -171,12 +174,58 @@ namespace HiddenHarbours.Tests.EditMode
             return UnityEditor.AssetDatabase.LoadAllAssetsAtPath(FishingBoatNorthPath).OfType<Sprite>().Any();
         }
 
+        private static bool FishingSkiffDefImported()
+            => UnityEditor.AssetDatabase.LoadAssetAtPath<BoatHullDef>(FishingSkiffPath) != null;
+
+        // The swap (visual + propulsion) only runs when BOTH the facing art AND the Engine Def are present —
+        // the builder no-ops to the rowed dory otherwise (no half-state). Tests that assert the swap skip
+        // unless both are imported in this environment.
+        private static bool SkinSwapApplied() => FishingBoatArtImported() && FishingSkiffDefImported();
+
+        // ---- the propulsion match: the skin drives on the Engine fishing-skiff hull (#97) ---------
+
+        [Test]
+        public void Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull()
+        {
+            if (!SkinSwapApplied())
+                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported in this environment — " +
+                              "the builder no-ops the skin swap by design (leaves the rowed dory); nothing to assert.");
+
+            var boat = _core.DoryGo.GetComponent<BoatController>();
+            Assert.IsNotNull(boat.Hull, "the swapped boat has a hull");
+            Assert.AreEqual("boat.fishing_skiff", boat.Hull.Id,
+                "the directional skin must drive on the dedicated Engine hull (a power boat, not the rowed dory)");
+            Assert.AreEqual(PropulsionType.Engine, boat.Hull.Propulsion,
+                "the skin's hull is Engine-propelled so the controls match the powerboat picture");
+            Assert.IsTrue(BoatController.UsesEngineHelm(boat.Hull.Propulsion),
+                "the controller takes the outboard helm (throttle + speed-scaled rudder), not the oars");
+
+            // The hold tracks the same Engine hull so capacity/feel stay consistent with the boat under helm.
+            var hold = _core.DoryGo.GetComponent<ShipHold>();
+            var hso = new UnityEditor.SerializedObject(hold);
+            Assert.AreEqual("boat.fishing_skiff",
+                ((BoatHullDef)hso.FindProperty("_hull").objectReferenceValue).Id,
+                "the hold is on the same Engine skiff hull");
+
+            // The Engine skiff is deliberately NOT in OwnedFleet's id-keyed registry ({Dory, Punt}), so a
+            // buy/grant/load never reverts the skin's hull — it STICKS.
+            var fleet = _core.DoryGo.GetComponent<OwnedFleet>();
+            var fso = new UnityEditor.SerializedObject(fleet);
+            var registry = fso.FindProperty("_registry");
+            for (int i = 0; i < registry.arraySize; i++)
+            {
+                var h = registry.GetArrayElementAtIndex(i).objectReferenceValue as BoatHullDef;
+                Assert.AreNotEqual("boat.fishing_skiff", h != null ? h.Id : null,
+                    "the fishing-skiff hull must NOT be in the fleet registry (so OwnedFleet never reverts it)");
+            }
+        }
+
         [Test]
         public void Build_DirectionalVisual_AddsConfiguredSnapDirectionalSprite_WithFourFacings()
         {
-            if (!FishingBoatArtImported())
-                Assert.Ignore("FishingBoat facings not imported in this environment — the builder no-ops the " +
-                              "swap by design (it warns + leaves the dory look); nothing to assert.");
+            if (!SkinSwapApplied())
+                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported in this environment — " +
+                              "the builder no-ops the swap by design (it warns + leaves the dory look); nothing to assert.");
 
             var directional = _core.DoryGo.GetComponent<DirectionalBoatSprite>();
             Assert.IsNotNull(directional, "the playable boat wears the DirectionalBoatSprite (the #93 component)");
@@ -198,8 +247,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Build_DirectionalVisual_HidesTheDoryHullAndOarRig()
         {
-            if (!FishingBoatArtImported())
-                Assert.Ignore("FishingBoat facings not imported — the swap no-ops by design; nothing to assert.");
+            if (!SkinSwapApplied())
+                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported — the swap no-ops by " +
+                              "design; nothing to assert.");
 
             // The hull picture is hidden (renderer disabled) so the owner doesn't see the dory hull under the
             // fishing boat. The renderer + its sprite ref stay (OwnedFleet's id-keyed swap sets .sprite, not
