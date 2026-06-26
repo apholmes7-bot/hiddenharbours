@@ -96,7 +96,10 @@ namespace HiddenHarbours.Environment
         }
 
         // --- deterministic 1D value noise in [-1, 1] ---
-        private static float Noise(float x, int seed)
+        // Internal so sibling Environment sims (the tidal-current wander, CurrentModel) reuse the
+        // EXACT same hash/value-noise — one deterministic noise source for the whole module, no new
+        // RNG, no UnityEngine.Random (CLAUDE.md rule 5).
+        internal static float Noise(float x, int seed)
         {
             int xi = Mathf.FloorToInt(x);
             float xf = x - xi;

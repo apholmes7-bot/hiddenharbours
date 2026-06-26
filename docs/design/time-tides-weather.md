@@ -334,6 +334,22 @@ Tide doesn't just raise water; it **moves** it. Tidal current is what makes Fund
 - **Slack water** (`tideRateNorm≈0`, near HW/LW) → near-zero current → safe transit window. **Mid-tide** → peak current → the rips run hard. This *emergent timing puzzle* is the heart of Fundy Rips and a P1 set-piece.
 - Strength tuning (peak `maxSpeed`): Coddle Cove ~0.2 m/s (gentle), The Drownded Lands flood ~0.8 m/s (you can get swept), **Fundy Rips ~3.0 m/s** (ferocious — a small boat at full throttle barely makes headway against a mid-tide rip), open Banks ~0.3 m/s drift.
 
+#### 3.7.1 The set *wanders* on its own slow rate (greybox, shipped)
+
+The flow axis isn't perfectly fixed — over hours the **set of the tide leans gently off the channel and back**, so the current evolves "at its own rate" alongside the wind without being tied to it. The **bearing** of `currentVector` is rotated by a slow, zero-mean **value-noise angle** on a timescale *distinct from* both the wind's `ChangeHours` and the tide's 12.42 h period:
+
+```
+// the channel axis breathes around its prevailing bearing on the current's OWN slow channel:
+driftT       = hoursSinceEpoch / CurrentProfile.DriftHours      // its own timescale (default ~9 h)
+wanderAngle  = noise(driftT, seed) * CurrentProfile.WanderDeg   // zero-mean, ±WanderDeg (default ~18°)
+flowDir(t)   = rotate(channelAxis, wanderAngle)                 // the prevailing axis, gently leaned
+currentVector(t) = flowDir(t) * maxSpeed * tideRateNorm         // magnitude still follows the tide
+```
+
+- **Same deterministic noise as the wind** (the shared `WeatherModel` value-noise, keyed by `seed + quantizedTime`, on its own offset lane) — **no new RNG, nothing saved** (§9.2). A different `worldSeed` gives a different wander; identical `(seed, gameTime)` is bit-stable.
+- **Tunables** (per region, on `CurrentProfile`, mirroring `WindProfile`): **`WanderDeg`** (amplitude, default **18°**) and **`DriftHours`** (its own timescale, default **9 h** — slower than the wind's 6 h slow channel and not a harmonic of the 12.42 h tide). The prevailing **channel axis** and the rate→speed **`currentFactor`** stay on `EnvironmentService`.
+- **Gentle on purpose.** Because `currentVector` *also* drives **boat drift and mooring** (the boat sails on `velocity − currentVector`, §5.2), a swing in the current heading is a swing in **sailing feel** — so the defaults are kept small/slow and the long-run **mean bearing stays on the channel axis** (the set still "runs up the narrows", it just breathes). Owner tunes from here; bigger, faster wander is a per-region choice (e.g. the overfalls at Fundy Rips). Determinism + the wander envelope are EditMode-guarded (`CurrentFieldTests`).
+
 ### 3.8 Access windows (the planning game)
 
 An **access window** is "the span of time during which region/feature X is doable." The tide table is how you find it.
