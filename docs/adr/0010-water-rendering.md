@@ -186,3 +186,39 @@ drive no sim, save nothing, and read the *same* deterministic depth (the invaria
   deep tint, and the caustic gate is never touched, so the cosmetic wash **cannot move the gameplay
   waterline** (the P1 integrity rule / determinism invariant above). Its math has a C# twin
   (`WaterSurface.SwashOffset`/`SwashBandGate`) unit-tested headless for the band-confinement invariant.
+
+## Addendum — shipped art-pass tunables (wind direction + syncopation + FBM variance)
+
+A third visual upgrade shipped on `HiddenHarboursWater.shader` after the owner saw the surface "stay
+organized in a pattern" and "march one direction." **Root cause (a shader/sim split):** the sim's wind
+*already varies direction over time* (`WeatherModel.SampleWind` — prevailing-wander + gust veer), but the
+shader **discarded** wind direction — it scrolled *every* animated layer along `_FlowDir` (the tidal
+**current**, a fixed axis) and used wind only as the scalar `_Roughness`. The whole sea therefore slid
+down one axis regardless of weather. The fix makes the surface follow the **wind** (intensity **and**
+direction), adds multi-rate/multi-direction wave octaves (syncopation), and adds organic low-frequency
+variance (FBM) that also scatters the specular sparkles. Mechanism: `design/water-rendering.md` §5.7.
+
+Like the swash, **all of it is visual-only** — it touches only `col.rgb` / the foam dressing and **never**
+`depth`, `clip()`, the deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim and saves nothing
+(the determinism / P1-integrity invariant above holds). Every new constant is a material property
+(rule 6), and every new octave/field is **pixelized** (decision (2) holds). The new layers default **ON
+at a modest strength** so the change is visible immediately yet fully dial-able on `Water.mat`.
+
+- **Wind direction pushed** — new `_WindDir` (Vector) + a `WaterSurface.WindDirection(windVector)` pure
+  static helper mirroring `FlowDirection` (normalize; fall back to `Vector2.up` on near-zero wind,
+  NaN-safe), pushed in `PushUniforms` right after `_FlowDir`. Headless EditMode-tested
+  (`WindDirection_FollowsTheWind_NormalizesAndFallsBackOnSlackWind`). Wind *strength* still drives
+  `_Roughness` separately; only the **direction** is added.
+- **Wind chop octave** — `_WindChop` (0.4), `_WindChopScale` (0.7), `_WindChopSpeed` (0.09): a value-noise
+  octave scrolled along `_WindDir` at its own rate (a separate scroll from `_FlowDir`).
+- **Syncopation** — `SurfaceNoise` refactored to 3 octaves on distinct (direction, rate): current swell
+  (`_FlowDir`/`_Flow`), wind chop (`_WindDir`/`_WindChopSpeed`), and a slow perpendicular cross-swell
+  (`_CrossSwellDir` — `(0,0)` = auto-perpendicular — `_CrossSwellSpeed` 0.025, `_CrossSwellScale` 0.16),
+  mixed by `_Octave2Weight` (0.35) / `_Octave3Weight` (0.3).
+- **FBM low-freq variance** — a new `Fbm()` field (`_FbmScale` 0.05, `_FbmDriftSpeed` 0.012) that (i)
+  tints `col.rgb` toward `_FbmTint` by `_FbmStrength` (0.18) for broad slow patches, and (ii) **gates the
+  specular** by `smoothstep(_FbmGateLo 0.35, _FbmGateHi 0.7, fbm)` so sparkles cluster organically; the
+  hard 4-step glint posterize is now the tunable `_SpecBands` (4).
+
+To calm the look back toward the old single-direction surface, set `_WindChop` / `_Octave2Weight` /
+`_Octave3Weight` / `_FbmStrength` to 0 on `Water.mat`.

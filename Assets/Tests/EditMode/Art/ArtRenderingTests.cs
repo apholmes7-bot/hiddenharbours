@@ -79,6 +79,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void WindDirection_FollowsTheWind_NormalizesAndFallsBackOnSlackWind()
+        {
+            // EnvironmentSample.WindVector is direction × strength; WindDirection normalizes it (strength is
+            // dropped here — it drives _Roughness separately). The shader scrolls its wind-chop octave along
+            // this, so the surface follows the (time-varying) sim wind, not only the fixed current axis.
+            var dir = WaterSurface.WindDirection(new Vector2(3f, 4f));   // 3-4-5 → unit (0.6, 0.8)
+            Assert.AreEqual(0.6f, dir.x, 1e-4f);
+            Assert.AreEqual(0.8f, dir.y, 1e-4f);
+            Assert.AreEqual(1f, dir.magnitude, 1e-4f, "wind dir is a unit vector regardless of wind strength");
+
+            // Strength must NOT change the direction: a stronger wind on the same bearing normalizes equal.
+            var weak   = WaterSurface.WindDirection(new Vector2(0f, 2f));
+            var strong = WaterSurface.WindDirection(new Vector2(0f, 18f));
+            Assert.AreEqual(weak, strong, "direction is independent of wind strength (both unit +Y)");
+
+            // Slack wind (near-zero) falls back to +Y — matching the shader's _WindDir default — never NaN.
+            var slack = WaterSurface.WindDirection(Vector2.zero);
+            Assert.AreEqual(Vector2.up, slack, "near-zero wind falls back to +y, never NaN");
+            Assert.IsFalse(float.IsNaN(slack.x) || float.IsNaN(slack.y), "slack-wind fallback is NaN-safe");
+        }
+
+        [Test]
         public void Roughness_RisesWithWind_AndSaturates()
         {
             const float full = 12f;

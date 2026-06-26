@@ -34,6 +34,34 @@ Shader "HiddenHarbours/Water"
         _Chop           ("Choppiness (0..1)", Range(0,1)) = 0.25
         _SurfaceTint    ("Surface tint strength", Range(0,1)) = 0.18
 
+        [Header(Wind chop + syncopation (multi rate multi direction surface))]
+        // Layer-2 used to scroll EVERY noise octave along _FlowDir (the tidal CURRENT, a fixed axis), so
+        // the surface read as one marching grid. These break that: a wind-driven chop octave scrolled
+        // along the WIND, plus a slow cross-swell on a perpendicular axis, mixed by per-octave weights.
+        // _WindDir is pushed by WaterSurface.cs from EnvironmentSample.WindVector (sim-driven, varies over
+        // time); the default is the calm-wind fallback (+Y) so the look is sane before the sim feeds it.
+        _WindDir        ("Wind direction (xy, sim-driven)", Vector) = (0, 1, 0, 0)
+        _WindChop       ("Wind chop weight (0..1)", Range(0,1)) = 0.4
+        _WindChopScale  ("Wind chop noise scale", Float) = 0.7
+        _WindChopSpeed  ("Wind chop scroll speed", Float) = 0.09
+        _CrossSwellDir  ("Cross-swell dir (xy; 0,0 = auto perpendicular)", Vector) = (0, 0, 0, 0)
+        _CrossSwellSpeed("Cross-swell scroll speed", Float) = 0.025
+        _CrossSwellScale("Cross-swell noise scale (big = long swell)", Float) = 0.16
+        _Octave2Weight  ("Octave 2 (wind chop) mix weight", Range(0,1)) = 0.35
+        _Octave3Weight  ("Octave 3 (cross swell) mix weight", Range(0,1)) = 0.3
+
+        [Header(FBM low freq variance (organic patches + sparkle scatter))]
+        // A big-scale, slow-drifting fractal field that breaks the even grid two ways (both col.rgb-only,
+        // never touching depth/clip/the gameplay waterline): a soft brightness/tint patchwork, and a GATE
+        // on the specular so sparkles CLUSTER organically instead of an even posterized lattice.
+        _FbmScale       ("FBM scale (big = broad patches)", Float) = 0.05
+        _FbmDriftSpeed  ("FBM drift speed", Float) = 0.012
+        _FbmStrength    ("FBM tint strength (0..1)", Range(0,1)) = 0.18
+        _FbmTint        ("FBM tint color", Color) = (0.55, 0.72, 0.78, 1.0)
+        _FbmGateLo      ("FBM spec gate low (sparkles start)", Range(0,1)) = 0.35
+        _FbmGateHi      ("FBM spec gate high (sparkles full)", Range(0,1)) = 0.7
+        _SpecBands      ("Specular posterize bands", Float) = 4
+
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
@@ -181,6 +209,24 @@ Shader "HiddenHarbours/Water"
                 float4 _FlowDir;
                 float  _Chop;
                 float  _SurfaceTint;
+                // Wind chop + syncopation (multi-rate / multi-direction surface octaves).
+                float4 _WindDir;
+                float  _WindChop;
+                float  _WindChopScale;
+                float  _WindChopSpeed;
+                float4 _CrossSwellDir;
+                float  _CrossSwellSpeed;
+                float  _CrossSwellScale;
+                float  _Octave2Weight;
+                float  _Octave3Weight;
+                // FBM low-frequency variance (organic patches + sparkle scatter).
+                float  _FbmScale;
+                float  _FbmDriftSpeed;
+                float  _FbmStrength;
+                float4 _FbmTint;
+                float  _FbmGateLo;
+                float  _FbmGateHi;
+                float  _SpecBands;
                 float4 _FoamColor;
                 float  _FoamWidth;
                 float  _FoamSoftness;
@@ -241,14 +287,78 @@ Shader "HiddenHarbours/Water"
                 return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
             }
 
-            // Two-octave scrolling noise (richer than one), each octave pixelized so the swell snaps to the grid.
+            // ---- WIND-DRIVEN chop octave (a SEPARATE scroll from the tidal current) -------------------------
+            // A 2-octave value-noise field scrolled along the WIND direction (normalize(_WindDir.xy)) at its
+            // OWN rate (_WindChopSpeed) and scale (_WindChopScale) — NOT along _FlowDir. This is what lets the
+            // surface follow the wind (which the sim varies over time) instead of marching down the fixed
+            // current axis. Pixelized like every other octave so it reads as pixel art. Returns 0..1.
+            float WindChop(float2 worldXY, float t)
+            {
+                float2 dir = normalize(_WindDir.xy + float2(0, 1e-4));   // +Y fallback on a zero wind dir
+                float2 scroll = dir * (_WindChopSpeed * t);
+                float2 p1 = Pixelize((worldXY + scroll) * _WindChopScale);
+                float2 p2 = Pixelize((worldXY + scroll * 1.7) * _WindChopScale * 2.3);
+                return ValueNoise(p1) * 0.6 + ValueNoise(p2) * 0.4;
+            }
+
+            // ---- FBM: fractal value-noise (low-frequency organic variance) ----------------------------------
+            // A few octaves of ValueNoise (lacunarity ~2, gain ~0.5) summed to a normalized 0..1 field. Sampled
+            // at a BIG scale (_FbmScale) and slowly drifted (_FbmDriftSpeed) it gives broad, slowly-moving
+            // patches — used to (i) softly tint col.rgb and (ii) GATE the specular so sparkles cluster, both
+            // of which break the single-direction "marching grid" read. Pixelized so it stays pixel-art.
+            float Fbm(float2 p, int octaves)
+            {
+                float sum = 0.0;
+                float amp = 0.5;
+                float norm = 0.0;
+                [unroll(4)]
+                for (int i = 0; i < octaves; i++)
+                {
+                    sum  += ValueNoise(Pixelize(p)) * amp;
+                    norm += amp;
+                    p    *= 2.0;     // lacunarity
+                    amp  *= 0.5;     // gain
+                }
+                return sum / max(norm, 1e-4);
+            }
+
+            // Three-octave SYNCOPATED surface noise. Each octave has a DISTINCT (direction, rate) so the
+            // surface stops reading as one marching grid (the owner's "marches one direction" complaint):
+            //   A = the current swell along _FlowDir @ _Flow      (the original look, the base)
+            //   B = the wind chop  along _WindDir  @ _WindChopSpeed (follows the sim wind, weighted _WindChop)
+            //   C = a SLOW cross-swell on a perpendicular axis @ _CrossSwellSpeed, big _CrossSwellScale
+            // Octaves B and C are folded in by per-octave weights (_Octave2Weight / _Octave3Weight) so the
+            // owner can dial the syncopation. Still pure value-noise + pixelize — no textures, ~no extra cost.
             float SurfaceNoise(float2 worldXY, float t)
             {
-                float2 dir = normalize(_FlowDir.xy + float2(1e-4, 0));
-                float2 scroll = dir * (_Flow * t);
-                float2 p1 = Pixelize((worldXY + scroll) * _NoiseScale);
-                float2 p2 = Pixelize((worldXY - scroll * 0.6) * _NoiseScale * 2.0);
-                return ValueNoise(p1) * 0.65 + ValueNoise(p2) * 0.35;
+                // A — current swell along the tidal set (the existing octave; the foundation).
+                float2 flowDir = normalize(_FlowDir.xy + float2(1e-4, 0));
+                float2 scrollA = flowDir * (_Flow * t);
+                float2 pA1 = Pixelize((worldXY + scrollA) * _NoiseScale);
+                float2 pA2 = Pixelize((worldXY - scrollA * 0.6) * _NoiseScale * 2.0);
+                float octaveA = ValueNoise(pA1) * 0.65 + ValueNoise(pA2) * 0.35;
+
+                // B — wind chop along the wind direction at its own rate (raw 0..1 octave).
+                float octaveB = WindChop(worldXY, t);
+
+                // C — slow cross-swell on a perpendicular axis: either the explicit _CrossSwellDir, or (when
+                // that's near-zero) the perpendicular of the average of flow & wind, so it crosses the grain.
+                float2 avgDir = normalize(flowDir + normalize(_WindDir.xy + float2(0, 1e-4)) + float2(1e-4, 0));
+                float2 autoCross = float2(-avgDir.y, avgDir.x);                  // rotate 90 deg
+                float2 crossDir = (dot(_CrossSwellDir.xy, _CrossSwellDir.xy) > 1e-6)
+                                    ? normalize(_CrossSwellDir.xy) : autoCross;
+                float2 scrollC = crossDir * (_CrossSwellSpeed * t);
+                float octaveC = ValueNoise(Pixelize((worldXY + scrollC) * _CrossSwellScale));
+
+                // Weighted blend, normalized so the result stays ~0..1 regardless of the syncopation weights.
+                // Each octave has ONE clear effective weight (no double-counting): the wind chop's mix weight
+                // is _WindChop * _Octave2Weight (the headline wind knob × the octave-2 fine-tune); the
+                // cross-swell's is _Octave3Weight. _Octave2/3Weight both default to a modest mix so the
+                // syncopation reads immediately but stays dial-able to 0 (back to the single-direction look).
+                float wB = _WindChop * _Octave2Weight;
+                float wC = _Octave3Weight;
+                float total = 1.0 + wB + wC;
+                return (octaveA + octaveB * wB + octaveC * wC) / total;
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -282,8 +392,13 @@ Shader "HiddenHarbours/Water"
             {
                 float s = saturate(strength);
                 // (1) domain warp: a small world-space nudge from the surface noise, scaled by strength.
-                float2 warpN = float2(ValueNoise(worldXY * _NoiseScale * 0.5 + 3.1),
-                                      ValueNoise(worldXY * _NoiseScale * 0.5 + 8.7)) - 0.5;
+                // Two warp octaves (low-freq bend + a finer ripple) read more organic than one straight nudge;
+                // both still dialed by _UntileStrength (no new knob) so 0 strength = the raw grid unchanged.
+                float2 warpLo = float2(ValueNoise(worldXY * _NoiseScale * 0.5 + 3.1),
+                                       ValueNoise(worldXY * _NoiseScale * 0.5 + 8.7)) - 0.5;
+                float2 warpHi = float2(ValueNoise(worldXY * _NoiseScale * 1.7 + 17.3),
+                                       ValueNoise(worldXY * _NoiseScale * 1.7 + 42.9)) - 0.5;
+                float2 warpN = warpLo + warpHi * 0.4;
                 float2 warped = worldXY + warpN * (s * 1.5);
 
                 half4 raw = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped, scale, scroll));
@@ -394,6 +509,20 @@ Shader "HiddenHarbours/Water"
                 // Tint the base by the surface so the swell is visible even in flat light.
                 col.rgb += swell * _SurfaceTint * 0.15;
 
+                // ---- FBM low-frequency variance (organic patches; col.rgb ONLY — never touches depth) --------
+                // One big-scale, slowly-drifting fractal field, reused below to gate the specular. It softly
+                // tints the base so the sea breaks into broad slow patches instead of an even sheet — purely
+                // cosmetic (col.rgb), so it cannot move the waterline/clip/deep-tint (P1 integrity, rule 5).
+                float2 fbmDrift = float2(t * _FbmDriftSpeed, -t * _FbmDriftSpeed * 0.8);
+                float fbm = Fbm((worldXY + fbmDrift) * _FbmScale, 4);   // 0..1
+                if (_FbmStrength > 0.001)
+                {
+                    // signed around the patch midpoint so some areas lift toward the tint, others sit back.
+                    float fbmSigned = (fbm - 0.5) * 2.0;               // -1..1
+                    col.rgb = lerp(col.rgb, _FbmTint.rgb, saturate(fbmSigned) * _FbmStrength);
+                    col.rgb += fbmSigned * _FbmStrength * 0.06;        // gentle brightness wobble
+                }
+
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
                 float causticGate = 1.0 - saturate(depth / max(_CausticDepth, 1e-3));   // 1 shallow -> 0 deep
                 if (causticGate > 0.001 && _CausticAmount > 0.001)
@@ -426,7 +555,9 @@ Shader "HiddenHarbours/Water"
                     float ny = ValueNoise(gp + float2(0, 0.05)) - ValueNoise(gp - float2(0, 0.05));
                     float facing = saturate(dot(normalize(float2(nx, ny) + 1e-4), ld) * 0.5 + 0.5);
                     float glint = pow(facing, max(_SpecSharpness, 1.0));
-                    glint = floor(glint * 4.0 + 0.5) / 4.0;        // posterize -> pixel sparkles
+                    // posterize into _SpecBands steps -> pixel sparkles (tunable band count, was a hard 4).
+                    float bands = max(_SpecBands, 1.0);
+                    glint = floor(glint * bands + 0.5) / bands;
                 #if defined(_USE_SPARKLETEX)
                     // Painted glint pattern (white-on-black), drifted with the current and still gated by
                     // `facing` so sparkles only land where the implied sun hits (one-sun discipline, ADR 0006).
@@ -435,7 +566,11 @@ Shader "HiddenHarbours/Water"
                                         worldXY, _SparkleTexScale, kScroll, _UntileStrength).r * facing;
                     glint = lerp(glint, sparkle, _SparkleTexStrength);
                 #endif
-                    col.rgb += _SpecColor.rgb * glint * _SpecAmount;
+                    // FBM SCATTER: gate the glint by the low-freq field so sparkles CLUSTER in patches
+                    // organically instead of an even grid (the marching-grid fix for the highlights). The
+                    // gate is BEFORE the additive so it only thins col.rgb's sparkle — never the depth/clip.
+                    float specGate = smoothstep(_FbmGateLo, _FbmGateHi, fbm);
+                    col.rgb += _SpecColor.rgb * glint * _SpecAmount * specGate;
                 }
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------

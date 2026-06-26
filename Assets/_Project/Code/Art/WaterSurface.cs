@@ -140,6 +140,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdWaterLevel = Shader.PropertyToID("_WaterLevel");
         private static readonly int IdFlow       = Shader.PropertyToID("_Flow");
         private static readonly int IdFlowDir    = Shader.PropertyToID("_FlowDir");
+        private static readonly int IdWindDir    = Shader.PropertyToID("_WindDir");
         private static readonly int IdRoughness  = Shader.PropertyToID("_Roughness");
         private static readonly int IdChop       = Shader.PropertyToID("_Chop");
         private static readonly int IdHeightTex  = Shader.PropertyToID("_HeightTex");
@@ -196,6 +197,7 @@ namespace HiddenHarbours.Art
 
             float flow = FlowSpeed(s.CurrentVector, _baseFlow, _flowSpeedScale, _currentForFullFlow);
             Vector2 flowDir = FlowDirection(s.CurrentVector);
+            Vector2 windDir = WindDirection(s.WindVector);
             float roughness = Roughness(s.WindVector, _windForFullRoughness);
             float chop = Choppiness(s.SeaState);
 
@@ -203,6 +205,10 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdWaterLevel, waterLevel);
             _mpb.SetFloat(IdFlow, flow);
             _mpb.SetVector(IdFlowDir, new Vector4(flowDir.x, flowDir.y, 0f, 0f));
+            // Push the WIND direction too (the sim varies it over time): the shader scrolls its wind-chop
+            // octave along this, so the surface follows the wind instead of only marching down the fixed
+            // current axis. Direction only — wind STRENGTH still drives _Roughness below.
+            _mpb.SetVector(IdWindDir, new Vector4(windDir.x, windDir.y, 0f, 0f));
             _mpb.SetFloat(IdRoughness, roughness);
             _mpb.SetFloat(IdChop, chop);
             _renderer.SetPropertyBlock(_mpb);
@@ -538,6 +544,20 @@ namespace HiddenHarbours.Art
         public static Vector2 FlowDirection(Vector2 currentVector)
         {
             return currentVector.sqrMagnitude > 1e-6f ? currentVector.normalized : Vector2.right;
+        }
+
+        /// <summary>
+        /// WIND DIRECTION for the shader's wind-chop octave: the normalized wind vector
+        /// (<see cref="EnvironmentSample.WindVector"/> is direction × strength, so normalizing drops the
+        /// strength — that still drives <c>_Roughness</c> separately). The sim VARIES wind direction over
+        /// time (the prevailing wander + gust veer in WeatherModel.SampleWind), so this is what makes the
+        /// surface follow the wind rather than only the fixed current axis. Slack wind (near-zero,
+        /// sqrMagnitude &lt; 1e-6) falls back to <see cref="Vector2.up"/> — matching the shader's +Y default
+        /// — so the surface never freezes to a NaN direction. Mirrors <see cref="FlowDirection"/>.
+        /// </summary>
+        public static Vector2 WindDirection(Vector2 windVector)
+        {
+            return windVector.sqrMagnitude > 1e-6f ? windVector.normalized : Vector2.up;
         }
 
         /// <summary>
