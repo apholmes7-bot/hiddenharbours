@@ -332,6 +332,15 @@ Shader "HiddenHarbours/Water"
                 return frac(p.x * p.y);
             }
 
+            // 2-vector hash (different lattice constants from Hash21 so the untile/swell offsets don't
+            // correlate with the surface noise). Defined up here with the other hash helpers because the
+            // swell/foam evolving-field code below CALLS it — HLSL/D3D needs definition before use.
+            float2 Hash22(float2 p)
+            {
+                p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
+                return frac(sin(p) * 43758.5453);
+            }
+
             float ValueNoise(float2 p)
             {
                 float2 i = floor(p);
@@ -520,14 +529,6 @@ Shader "HiddenHarbours/Water"
             float2 PaintUV(float2 worldXY, float scale, float2 scroll)
             {
                 return Pixelize(worldXY + scroll) * max(scale, 1e-4);
-            }
-
-            // 2-vector hash for the untile per-tile offset (different lattice constants from Hash21 so the
-            // untile offset doesn't correlate with the surface noise).
-            float2 Hash22(float2 p)
-            {
-                p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
-                return frac(sin(p) * 43758.5453);
             }
 
             // ---- IQ-style texture UNTILING (hide the repeat grid that reads at CALM) -------------------------
