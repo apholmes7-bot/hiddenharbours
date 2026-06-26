@@ -97,6 +97,19 @@ Material:
     - _UseWhitecapTex: 1
     - _WaterLevel: 0
     - _WhitecapTexStrength: 1
+    - _WindChop: 0.4
+    - _WindChopScale: 0.7
+    - _WindChopSpeed: 0.09
+    - _CrossSwellSpeed: 0.025
+    - _CrossSwellScale: 0.16
+    - _Octave2Weight: 0.35
+    - _Octave3Weight: 0.3
+    - _FbmScale: 0.05
+    - _FbmDriftSpeed: 0.012
+    - _FbmStrength: 0.18
+    - _FbmGateLo: 0.35
+    - _FbmGateHi: 0.7
+    - _SpecBands: 4
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}
@@ -107,5 +120,8 @@ Material:
     - _LightDir: {r: -0.6, g: 0.8, b: 0, a: 0}
     - _ShallowColor: {r: 0.35, g: 0.62, b: 0.66, a: 0.95}
     - _SpecColor: {r: 1, g: 0.98, b: 0.86, a: 1}
+    - _WindDir: {r: 0, g: 1, b: 0, a: 0}
+    - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
+    - _FbmTint: {r: 0.55, g: 0.72, b: 0.78, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

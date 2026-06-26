@@ -185,10 +185,13 @@ shader/material properties or Def values (rule 6), owned by art-pipeline.
   [`time-tides-weather.md`](time-tides-weather.md) weather/sea-state; a material float).
 - **Method:** scrolling **perlin / value-noise** sampled at `(pixelizedCoord + time·scrollDir)`;
   output a small UV offset / normal-ish perturbation reused by foam, specular and caustics so they all
-  swim together. Two octaves at different scroll speeds reads richer than one.
+  swim together. Two octaves at different scroll speeds reads richer than one. **Shipped: now three
+  syncopated octaves on distinct (direction, rate) — current swell along `_FlowDir`, a wind-driven chop
+  along `_WindDir`, and a slow perpendicular cross-swell — so the surface follows the wind and stops
+  reading as one marching grid (§5.7).**
 - **Pixelize:** pixelize the noise sample coords (§3) so swell snaps to the grid.
-- **Tunables:** noise scale, scroll direction + speed (wire to wind dir later — §6), amplitude vs
-  sea-state, octave mix.
+- **Tunables:** noise scale, scroll direction + speed (**wind direction now wired — §5.7**), amplitude vs
+  sea-state, octave mix (the per-octave syncopation weights, §5.7).
 
 ### 5.3 Sea-foam fringe — layer 3
 
@@ -268,6 +271,73 @@ The swash math has a pure-C# twin in `WaterSurface.cs` (`SwashOffset` + `SwashBa
 oscillation, the amplitude bound, and **the band-confinement invariant** are unit-tested headless
 (`Assets/Tests/EditMode/Art/ArtRenderingTests.cs`) without opening Unity — the twin feeds no sim and is
 not pushed to the material; the shader owns the live wash.
+
+### 5.7 Wind direction + syncopation + FBM variance (shipped upgrade)
+
+The owner saw the surface "stay organized in a pattern" and "march one direction." The cause was a
+shader/sim split: the sim's wind **already varies direction over time** (`WeatherModel.SampleWind` —
+prevailing-wander + gust veer), but the shader **discarded** wind direction — it scrolled *every*
+animated layer along `_FlowDir` (the tidal **current**, a fixed axis) and used wind only as the scalar
+`_Roughness`. So no matter the weather the whole sea slid down one diagonal. This upgrade makes the
+surface follow the **wind** (intensity **and** direction), adds multi-rate/multi-direction wave octaves
+(syncopation), and adds organic low-frequency variance (FBM) that also scatters the specular sparkles.
+All of it is **visual-only** — like the beach swash, it touches only `col.rgb` / the foam dressing and
+**never** `depth`, `clip()`, the deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim and
+saves nothing (P1 integrity, CLAUDE.md rule 5). Every constant is a material property (rule 6), and
+every new octave/field is **pixelized** like the rest (pixel-art faithful, §3). The new layers default
+**ON at a modest strength** so the change is visible immediately yet fully dial-able on `Water.mat`.
+
+**(A) Wind direction is now pushed to the shader — `_WindDir`.** `WaterSurface.cs` adds
+`IdWindDir = Shader.PropertyToID("_WindDir")` and, in `PushUniforms` (right after the `_FlowDir`
+set-vector), pushes `WindDirection(EnvironmentSample.WindVector)` — a new pure static helper mirroring
+`FlowDirection`: it normalizes the wind vector (strength is dropped here — it still drives `_Roughness`
+separately) and falls back to `Vector2.up` on near-zero wind (`sqrMagnitude < 1e-6`, NaN-safe), matching
+the shader's `_WindDir` default `(0,1,0,0)`. A headless EditMode test
+(`WindDirection_FollowsTheWind_NormalizesAndFallsBackOnSlackWind`) covers the normalization,
+strength-independence, and slack-wind fallback (alongside the existing `FlowDirection`/`SwashOffset`
+tests). The runtime push is throttled like every other uniform — no per-frame cost.
+
+**(B) Wind-driven chop octave — `WindChop`.** A new 1–2-octave value-noise field scrolled along
+`normalize(_WindDir.xy)` at its **own** rate `_WindChopSpeed` and scale `_WindChopScale` — a **separate
+scroll from `_FlowDir`**. This is the layer that *follows the wind*. Folded into the surface mix weighted
+by `_WindChop` (0..1). Pixelized like `SurfaceNoise`.
+
+**(C) Syncopation — `SurfaceNoise` is now 3 octaves with distinct (direction, rate).** The old two-octave
+`SurfaceNoise` (both along `_FlowDir`) becomes:
+- **A** = the **current swell** along `_FlowDir` @ `_Flow` (the original look — the foundation);
+- **B** = the **wind chop** along `_WindDir` @ `_WindChopSpeed` (weighted `_WindChop`);
+- **C** = a **slow cross-swell** along a derived **perpendicular** axis (the 90°-rotation of the average
+  of flow & wind) @ `_CrossSwellSpeed` with a big `_CrossSwellScale` — or an explicit `_CrossSwellDir`
+  when set (its default `(0,0)` means "auto-perpendicular").
+
+B and C are mixed by single, clear per-octave weights (no double-counting): octave B's effective weight
+is `_WindChop × _Octave2Weight` (the headline wind knob × an octave-2 fine-tune), octave C's is
+`_Octave3Weight`. The blend is normalized so the result stays ~0..1 regardless of the weights. Different
+directions + rates break the single-direction read at **~no extra cost** — still pure value-noise, no
+textures.
+
+**(D) FBM low-frequency variance — `Fbm` + a tint and a sparkle gate.** A new `Fbm(p, octaves)` helper
+(4 octaves of `ValueNoise`, lacunarity 2, gain 0.5, each pixelized) is sampled once per pixel at a **big**
+scale `_FbmScale`, slowly drifting at `_FbmDriftSpeed`, giving broad slow patches. Its 0..1 value does two
+things, **both `col.rgb`-only**:
+- **(i) Tint patchwork** — near the base-colour step it lerps `col.rgb` toward `_FbmTint` (strength
+  `_FbmStrength`) plus a gentle brightness wobble, so the sea breaks into broad slow patches instead of an
+  even sheet.
+- **(ii) Specular scatter** — the specular glint is multiplied by `smoothstep(_FbmGateLo, _FbmGateHi, fbm)`
+  **before** it's added, so sparkles **cluster** in organic patches instead of an even posterized lattice.
+  The hard `floor(glint*4+0.5)/4` posterize is replaced by a tunable band count `_SpecBands`.
+
+**(E) A second domain-warp octave in `UntileSampleW`.** The anti-tiling domain warp now sums a low-freq
+bend **and** a finer ripple octave (still dialed by the existing `_UntileStrength`, no new knob) so the
+untiled painted slots read more organic. `_UntileStrength = 0` is unchanged (raw grid).
+
+> **Property summary (all additive — none of the owner's existing tuned values changed):**
+> *wind chop* — `_WindDir` (vec, sim-driven; default `(0,1)`), `_WindChop` (0.4), `_WindChopScale` (0.7),
+> `_WindChopSpeed` (0.09). *syncopation* — `_CrossSwellDir` (vec, `(0,0)`=auto-perp), `_CrossSwellSpeed`
+> (0.025), `_CrossSwellScale` (0.16), `_Octave2Weight` (0.35), `_Octave3Weight` (0.3). *FBM* — `_FbmScale`
+> (0.05), `_FbmDriftSpeed` (0.012), `_FbmStrength` (0.18), `_FbmTint` (pale teal), `_FbmGateLo` (0.35),
+> `_FbmGateHi` (0.7), `_SpecBands` (4). To calm the look back toward the old single-direction surface, set
+> `_WindChop` / `_Octave2Weight` / `_Octave3Weight` / `_FbmStrength` to 0.
 
 ---
 
