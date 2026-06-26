@@ -34,7 +34,7 @@ Shader "HiddenHarbours/Water"
         _Chop           ("Choppiness (0..1)", Range(0,1)) = 0.25
         _SurfaceTint    ("Surface tint strength", Range(0,1)) = 0.18
 
-        [Header(Wind chop + syncopation (multi rate multi direction surface))]
+        [Header(Wind chop and syncopation (multi rate multi direction surface))]
         // Layer-2 used to scroll EVERY noise octave along _FlowDir (the tidal CURRENT, a fixed axis), so
         // the surface read as one marching grid. These break that: a wind-driven chop octave scrolled
         // along the WIND, plus a slow cross-swell on a perpendicular axis, mixed by per-octave weights.
@@ -50,7 +50,7 @@ Shader "HiddenHarbours/Water"
         _Octave2Weight  ("Octave 2 (wind chop) mix weight", Range(0,1)) = 0.35
         _Octave3Weight  ("Octave 3 (cross swell) mix weight", Range(0,1)) = 0.3
 
-        [Header(FBM low freq variance (organic patches + sparkle scatter))]
+        [Header(FBM low freq variance (organic patches and sparkle scatter))]
         // A big-scale, slow-drifting fractal field that breaks the even grid two ways (both col.rgb-only,
         // never touching depth/clip/the gameplay waterline): a soft brightness/tint patchwork, and a GATE
         // on the specular so sparkles CLUSTER organically instead of an even posterized lattice.
