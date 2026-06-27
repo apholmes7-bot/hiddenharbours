@@ -568,6 +568,18 @@ physics**:
 Both are deliberately deferred (out of the current greybox phase); the single rope-to-player/ground is the
 working mechanic. Captured here so the structure stays honest and the later pass is a fill-in, not a rewrite.
 
+### 9.7 Boat wake (the foam trail) — visual-only, reads the sim
+
+A moving boat leaves a **foam-particle wake** that **follows the boat, travels with the tidal current as the
+waves distort it, and dissipates once it loses force a distance astern** (the owner's brief). It is a pooled,
+self-installing, **visual-only** effect that **reads** the deterministic sim (boat `Velocity`/`IsAground`/bow,
+and the Core `EnvironmentSample`'s `CurrentVector` + `SeaState` — the *same* current and sea-state the water
+shader reads, so wake and water move together) and **drives no sim, saves nothing** (rule 5). Full design,
+the four-point mapping, the tunable list and the test coverage live in
+[`boat-wake.md`](boat-wake.md); the code is `Code/Boats/WakeParticleSystem.cs` (pure feel-math) +
+`Code/Boats/BoatWakeEmitter.cs` (the self-installing driver — no builder change). Because it self-installs
+(a `RuntimeInitializeOnLoadMethod` host, like the grass-wind bridge), no scene or builder needs editing.
+
 ---
 
 ## 10. Open questions
