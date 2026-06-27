@@ -12,9 +12,12 @@ namespace HiddenHarbours.Boats
     /// <list type="number">
     /// <item><description><b>Follow the boat</b> — particles are EMITTED at the stern
     /// (<see cref="SternEmitPoint"/>) at a rate proportional to boat SPEED (<see cref="EmissionCount"/>),
-    /// none below a small threshold and none when aground. Two diverging streams at the Kelvin-V half-angle
-    /// give the classic V; the boat's own motion seeds each puff's start velocity, so the freshest foam sits
-    /// right under the stern and the V trails the hull.</description></item>
+    /// none below a small threshold and none when aground. Each foam puff of the two wings is placed
+    /// DIRECTLY ON the Kelvin-V arm geometry (<see cref="ArmEmitPoint"/>): from the stern apex, astern and
+    /// outward at the half-angle by a deterministic distance up to <c>ArmLength</c>, so the arms are crisp
+    /// diverging lines that WIDEN with distance by construction (a true V, not a soft cone). A fraction of
+    /// puffs fill the turbulent stern churn between the arms (<see cref="SternFillPoint"/>). The V trails the
+    /// hull because the apex sits at the stern.</description></item>
     /// <item><description><b>Travel with the current</b> — every live particle integrates
     /// <c>pos += (particleVel + current) * dt</c> (<see cref="Advect"/>) so it DRIFTS on the live tidal set
     /// on top of its own momentum, and <c>particleVel *= velocityDecay^dt</c> so the wake's own push fades
@@ -124,33 +127,92 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Shed up to <paramref name="count"/> particles this tick from the stern. Each new puff alternates
-        /// the V wings (and seeds a central wash if <paramref name="cfg"/>.CentralStream) so the streams
-        /// stay balanced; its lifetime, base size and wobble-seed are set deterministically from the emit
-        /// counter (no RNG). Recycles the oldest slot when the pool is full — zero allocation.
+        /// The world position of a foam puff placed DIRECTLY ON one of the two diverging Kelvin-V arms — this
+        /// is what makes the wake read as a crisp V rather than a soft cone. From the stern apex
+        /// (<see cref="SternEmitPoint"/>) it walks <b>astern and outward</b> at <paramref name="cfg"/>.VHalfAngleDeg
+        /// off the stern-line, by a distance <c>t · ArmLength</c> along the arm (<paramref name="t01"/> in 0..1).
+        /// Because the arm direction is a FIXED half-angle, the lateral spread grows linearly with that distance —
+        /// the arms WIDEN with distance by construction. <paramref name="side"/> is −1 (port) or +1 (starboard).
+        /// Result is in WORLD space. Pure + static (the geometry the tests pin).
+        /// </summary>
+        public static Vector2 ArmEmitPoint(Vector2 boatPos, Vector2 bowDir, float t01, int side, in WakeConfig cfg)
+        {
+            Vector2 fwd = SafeDir(bowDir);
+            Vector2 apex = boatPos - fwd * cfg.SternOffset;        // the V apex sits at the stern
+            Vector2 astern = -fwd;
+            float ang = Mathf.Deg2Rad * cfg.VHalfAngleDeg * Mathf.Sign(side == 0 ? 1 : side);
+            Vector2 armDir = Rotate(astern, ang);                   // unit direction down this wing
+            float dist = Mathf.Clamp01(t01) * Mathf.Max(0f, cfg.ArmLength);
+            return apex + armDir * dist;
+        }
+
+        /// <summary>
+        /// The world position of a turbulent stern-fill puff — the churn BETWEEN the two arms (the prop/keel wash).
+        /// It sits along the centre stern-line a short way astern, jittered laterally inside the V so the fill never
+        /// punches past the crisp arm edges. <paramref name="t01"/> is the along-line fraction, <paramref name="lat"/>
+        /// in −1..1 the lateral position scaled by the V width at that distance times <paramref name="cfg"/>.SternFillWidth.
+        /// Pure + static.
+        /// </summary>
+        public static Vector2 SternFillPoint(Vector2 boatPos, Vector2 bowDir, float t01, float lat, in WakeConfig cfg)
+        {
+            Vector2 fwd = SafeDir(bowDir);
+            Vector2 apex = boatPos - fwd * cfg.SternOffset;
+            Vector2 astern = -fwd;
+            Vector2 rightOf = new Vector2(astern.y, -astern.x);    // perpendicular (lateral) axis
+            float halfAngle = Mathf.Deg2Rad * cfg.VHalfAngleDeg;
+            // Walk astern by the SAME projection the arms reach at this t (armDist·cos), so the fill triangle
+            // shares the arms' astern extent. The V half-width at that astern distance is astern·tan(halfAngle);
+            // the fill is bounded by it (scaled by SternFillWidth ≤ 1) so it never punches past the crisp edges.
+            float asternDist = Mathf.Clamp01(t01) * Mathf.Max(0f, cfg.ArmLength) * Mathf.Cos(halfAngle);
+            float halfWidth = Mathf.Tan(halfAngle) * asternDist;
+            float lateral = Mathf.Clamp(lat, -1f, 1f) * halfWidth * Mathf.Clamp01(cfg.SternFillWidth);
+            return apex + astern * asternDist + rightOf * lateral;
+        }
+
+        /// <summary>
+        /// Shed up to <paramref name="count"/> particles this tick. Each new puff is assigned a stream — the two V
+        /// WINGS (placed on the crisp arm geometry via <see cref="ArmEmitPoint"/>) most of the time, and the
+        /// turbulent STERN FILL (<see cref="SternFillPoint"/>) for a deterministic <paramref name="cfg"/>.SternFillFraction
+        /// of puffs — so the wake reads as two diverging arms with churn between them. Per-puff along-arm distance,
+        /// lateral jitter, lifetime, size and wobble-seed are all deterministic from the emit counter (no RNG). Each
+        /// puff also gets a gentle along-stream velocity so it keeps flowing astern before the current takes over.
+        /// Recycles the oldest slot when the pool is full — zero allocation.
         /// </summary>
         public void Emit(int count, Vector2 boatPos, Vector2 bowDir, float speed, in WakeConfig cfg)
         {
-            Vector2 stern = SternEmitPoint(boatPos, bowDir, cfg.SternOffset);
             for (int k = 0; k < count; k++)
             {
-                // Cycle the wings: port, starboard, (optional) centre — deterministic from the counter.
-                int phase = cfg.CentralStream ? (int)(_emitCounter % 3) : (int)(_emitCounter % 2);
-                int side = phase == 0 ? -1 : phase == 1 ? +1 : 0;
+                // Deterministic per-puff dice from the monotonic counter (no RNG, rule 5).
+                float diceStream = Hash01(_emitCounter * 0x9E3779B1u + 0x85u);   // stream selection
+                float t01        = Hash01(_emitCounter * 0x27D4EB2Fu + 0x13u);   // along-arm fraction
+                float seed       = Hash01(_emitCounter);
+                float lifeJit    = 1f + (Hash01(_emitCounter * 2654435761u) - 0.5f) * 2f * cfg.LifetimeJitter;
+                float sizeJit    = 1f + (Hash01(_emitCounter * 40503u + 7u) - 0.5f) * 2f * cfg.SizeJitter;
+
+                Vector2 pos;
+                Vector2 vel;
+                bool fill = cfg.SternFillFraction > 0f && diceStream < Mathf.Clamp01(cfg.SternFillFraction);
+                if (fill)
+                {
+                    float lat = Hash01(_emitCounter * 0x165667B1u + 0x9Du) * 2f - 1f;  // −1..1 lateral inside the V
+                    pos = SternFillPoint(boatPos, bowDir, t01, lat, cfg);
+                    vel = EmitVelocity(bowDir, speed, 0, cfg);          // straight astern wash
+                }
+                else
+                {
+                    // Alternate the wings deterministically so the two arms stay balanced.
+                    int side = ((int)(_emitCounter & 1u)) == 0 ? -1 : +1;
+                    pos = ArmEmitPoint(boatPos, bowDir, t01, side, cfg);
+                    vel = EmitVelocity(bowDir, speed, side, cfg);       // gentle outward+astern flow along the arm
+                }
 
                 int i = _next;
                 _next = (_next + 1) % _pool.Length;
-
-                float seed = Hash01(_emitCounter);
-                // Jitter the lifetime / size a touch per puff (deterministic) so the wake isn't a clone-stamp.
-                float lifeJit = 1f + (Hash01(_emitCounter * 2654435761u) - 0.5f) * 2f * cfg.LifetimeJitter;
-                float sizeJit = 1f + (Hash01(_emitCounter * 40503u + 7u) - 0.5f) * 2f * cfg.SizeJitter;
-
                 _pool[i] = new Particle
                 {
                     Alive    = true,
-                    Pos      = stern,
-                    Vel      = EmitVelocity(bowDir, speed, side, cfg),
+                    Pos      = pos,
+                    Vel      = vel,
                     Age      = 0f,
                     Lifetime = Mathf.Max(0.05f, cfg.Lifetime * lifeJit),
                     Seed     = seed,
@@ -326,11 +388,15 @@ namespace HiddenHarbours.Boats
         public float SpeedThreshold;
         [Tooltip("How far astern of the boat origin the foam is shed (m) — the stern, behind the hull.")]
         public float SternOffset;
-        [Tooltip("Half-angle (deg) of the diverging Kelvin-V wings off the stern line (~19° is the real wake angle).")]
+        [Tooltip("Half-angle (deg) of the diverging Kelvin-V wings off the stern line (~19° is the real Kelvin wake angle). Smaller = a narrower, sharper V.")]
         public float VHalfAngleDeg;
-        [Tooltip("Adds a third, central turbulent stern stream (the prop wash) between the two V wings.")]
-        public bool CentralStream;
-        [Tooltip("Scales boat speed into the puff's initial outward/astern wash speed (m/s per m/s). Bigger = a livelier spreading V.")]
+        [Tooltip("Length (m) of each diverging V arm — how far astern the crisp foam edges reach before they hand off to dissipation. Longer = a bigger, more obvious V.")]
+        public float ArmLength;
+        [Tooltip("Fraction (0..1) of puffs that fill the turbulent stern churn BETWEEN the arms (the prop/keel wash). 0 = clean arms only; higher = a busier centre.")]
+        public float SternFillFraction;
+        [Tooltip("How wide the stern fill spreads, as a fraction (0..1) of the V's own width at each distance — kept inside the arms so the fill never blurs the crisp edges.")]
+        public float SternFillWidth;
+        [Tooltip("Scales boat speed into the puff's initial along-arm/astern flow speed (m/s per m/s). Bigger = a livelier, faster-flowing V; the current then takes over as it decays.")]
         public float WashSpeedScale;
 
         [Header("Travel with the current / lose force")]
@@ -364,13 +430,15 @@ namespace HiddenHarbours.Boats
         /// <summary>The greybox default feel — a lively-but-subtle inshore wake. The owner tunes from here.</summary>
         public static WakeConfig Default => new WakeConfig
         {
-            ShedPerSpeed         = 6f,
+            ShedPerSpeed         = 10f,
             SpeedThreshold       = 0.4f,
             SternOffset          = 0.5f,
             VHalfAngleDeg        = 19f,
-            CentralStream        = true,
-            WashSpeedScale       = 0.35f,
-            VelocityDecay        = 0.35f,
+            ArmLength            = 3.0f,
+            SternFillFraction    = 0.3f,
+            SternFillWidth       = 0.7f,
+            WashSpeedScale       = 0.2f,
+            VelocityDecay        = 0.5f,
             Lifetime             = 2.2f,
             StartAlpha           = 0.7f,
             FadePower            = 1.4f,
