@@ -111,6 +111,11 @@ Decor is placed as **prefabs** — pre-made objects you drag in like stamps. No 
    leave scale at 1.
 5. Place as many as you like. Duplicate a placed one quickly with **Ctrl+D**.
 
+> **Trees sway too.** Like the grass, a tree's **canopy** gently sways with the **same wind as the
+> water** — the trunk stays planted, the boughs drift. It's automatic (press **Play** to see it);
+> tune the feel on the `Tree` material (`Assets/_Project/Art/Materials/Tree.mat`) — `_SwayAmount`,
+> `_SwaySpeed`, `_TrunkAnchor` (how much trunk stays rigid), etc.
+
 ### Grass (the wind-swaying living grass)
 
 Grass lives in **Decor ▸ Grass/** as two stamps:
