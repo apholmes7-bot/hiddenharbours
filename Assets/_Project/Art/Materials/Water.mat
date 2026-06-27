@@ -122,6 +122,12 @@ Material:
     - _FoamBlobScale: 2.2
     - _FoamThreshold: 0.55
     - _FoamThresholdSoft: 0.18
+    - _FoamSolidThreshold: 0.78
+    - _FoamDensity: 0.6
+    - _FoamDensityWind: 0.5
+    - _WhitecapFormSharpness: 0.5
+    - _WhitecapPeakDensity: 0.95
+    - _WhitecapCollapseRate: 1.5
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}
