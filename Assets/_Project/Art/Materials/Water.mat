@@ -15,6 +15,7 @@ Material:
   - _USE_CAUSTICTEX
   - _USE_DEPTHRAMP
   - _USE_FOAMTEX
+  - _USE_HEIGHTTEX
   - _USE_SPARKLETEX
   - _USE_SURFACETEX
   - _USE_WHITECAPTEX
@@ -94,7 +95,7 @@ Material:
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
-    - _UseHeightTex: 0
+    - _UseHeightTex: 1
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
