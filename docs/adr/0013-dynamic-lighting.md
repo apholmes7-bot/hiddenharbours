@@ -166,11 +166,20 @@ tunable max so weather alone never blacks the screen out — night is the dark, 
 - **PR 2 (projected sprite shadows) is now SHIPPED** — a drop-on `SpriteShadow` component +
   `HiddenHarbours/SpriteShadow` GPU-shear shader (+ `Resources/SpriteShadow.mat`, covered by the same
   magenta guard) draws a darkened, skewed, length-scaled silhouette anchored at the caster's feet, swinging
-  and lengthening with the sun and fading at night/under overcast. It consumes the PR-1 `_SunDir`/
-  `_SunElevation` globals with no new controller wiring; the projection maths (`ShadowLength` /
-  `ShadowSkewOffset` / `ShadowAlpha`) are pure + unit-tested. An editor menu ("Build Shadow Test" + "Add
-  Sprite Shadow to Selection") lets the owner see/attach it without touching the scene builders. See
+  and lengthening with the sun and fading at night/under overcast. It consumes the `_SunDir`/
+  `_SunElevation` globals (swing + length) and the controller's new `_ShadowStrength` global (alpha) with no
+  new controller wiring; the projection maths (`ShadowLength` / `ShadowSkewOffset` / `ShadowAlpha` /
+  `ShadowStrength`) are pure + unit-tested. An editor menu ("Build Shadow Test" + "Add Sprite Shadow to
+  Selection") lets the owner see/attach it without touching the scene builders. See
   `design/lighting-and-daynight.md` §5 (shipped).
+- **PR 2 follow-up: the weather→shadow hook is now LIVE.** Originally the live path overwrote the shadow
+  strength with `clamp01(sun elevation)` and never read weather, so `OvercastFadesShadow` was dead in-game.
+  The controller now computes `ShadowStrength(hour, sunrise, sunset, WeatherDim(visibility, seaState),
+  OvercastFadesShadow)` from the same Core weather it already reads for the tint and publishes it as a new
+  global `_ShadowStrength` (one extra `SetGlobalFloat` per tick); `SpriteShadow` reads it (one
+  `GetGlobalFloat` per shadow tick) on the live path. The shadow genuinely **softens under overcast/storm**
+  now — tunable via `DayNightProfile.OvercastFadesShadow`. A PlayMode test (`ShadowStrengthGlobalPlayTests`)
+  pins that the published `_ShadowStrength` is lower in storm/fog than in clear weather (and zero at night).
 - **A documented migration path to true 2D lights** for the M2/M3 boat-lights vision — the model is the
   durable part; the overlay is a swappable output stage.
 

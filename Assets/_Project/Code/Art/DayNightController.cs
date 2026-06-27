@@ -22,6 +22,11 @@ namespace HiddenHarbours.Art
     /// <item><description><b>The <c>_DayNightTint</c> global itself</b> (<see cref="Shader.SetGlobalColor"/>)
     /// — the canonical colour the overlay material reads, also available to any future custom/Sprite-Lit
     /// shader that wants per-layer control.</description></item>
+    /// <item><description><b>The <c>_ShadowStrength</c> global</b> — how firmly a cast shadow reads RIGHT
+    /// NOW (0 none .. 1 full), folding the sun being up AND the live weather (overcast/storm fades it). It
+    /// is the single live weather source the PR-2 <see cref="SpriteShadow"/> reads so its alpha softens
+    /// under cloud — without each caster re-reading the sim. Pure <see cref="DayNightMath.ShadowStrength"/>
+    /// of the same <c>(hour, weather, profile)</c> the tint uses.</description></item>
     /// </list>
     ///
     /// <para><b>Self-installing (mirrors <see cref="GrassWindBridge"/>).</b> A
@@ -34,15 +39,16 @@ namespace HiddenHarbours.Art
     /// Core <see cref="GameServices.Clock"/> / <see cref="GameServices.Environment"/> accessors — never a
     /// concrete sim class — and never writes them. The look is a pure function of <c>(hour, weather,
     /// profile)</c>; nothing is saved or randomised. <b>Performance (rule 7):</b> one quad, one material,
-    /// three global sets on a throttled tick (light is slow), no per-frame allocation, no per-sprite cost.</para>
+    /// four global sets on a throttled tick (light is slow), no per-frame allocation, no per-sprite cost.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DayNightController : MonoBehaviour
     {
         // Global shader uniforms (set via Shader.SetGlobal*, read by the overlay + water shaders).
-        private static readonly int IdDayNightTint = Shader.PropertyToID("_DayNightTint");
-        private static readonly int IdSunDir       = Shader.PropertyToID("_SunDir");
-        private static readonly int IdSunElevation = Shader.PropertyToID("_SunElevation");
+        private static readonly int IdDayNightTint   = Shader.PropertyToID("_DayNightTint");
+        private static readonly int IdSunDir         = Shader.PropertyToID("_SunDir");
+        private static readonly int IdSunElevation   = Shader.PropertyToID("_SunElevation");
+        private static readonly int IdShadowStrength = Shader.PropertyToID("_ShadowStrength");
 
         private const string ProfileResourcePath = "DayNightProfile"; // Resources/DayNightProfile.asset (optional)
         private const string OverlayMaterialPath = "DayNight";        // Resources/DayNight.mat (the multiply overlay)
@@ -127,17 +133,25 @@ namespace HiddenHarbours.Art
 
             // --- evaluate the pure model ---
             Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState);
-            float sunrise = _profile != null ? _profile.SunriseHour : 6f;
-            float sunset  = _profile != null ? _profile.SunsetHour : 20f;
-            float bias    = _profile != null ? _profile.ShadowSouthBias : 0.2f;
-            float lift    = _profile != null ? _profile.ShadowNoonLift : 0.9f;
+            float sunrise       = _profile != null ? _profile.SunriseHour : 6f;
+            float sunset        = _profile != null ? _profile.SunsetHour : 20f;
+            float bias          = _profile != null ? _profile.ShadowSouthBias : 0.2f;
+            float lift          = _profile != null ? _profile.ShadowNoonLift : 0.9f;
+            float overcastFades = _profile != null ? _profile.OvercastFadesShadow : 0.85f;
             Vector2 sunDir = DayNightMath.SunDirection(hour, sunrise, sunset, bias, lift);
             float elevation = DayNightMath.SunElevation(hour, sunrise, sunset);
 
-            // --- push the globals (read by the overlay + the water specular) ---
+            // Live cast-shadow strength: the sun being up folded with the live weather (overcast/storm
+            // fades it). Computed here — where the real weather already is — and published as a global so
+            // SpriteShadow gets a true weather source without each caster re-reading the sim (rule 4/7).
+            float weatherDim     = DayNightMath.WeatherDim(visibility, seaState, _profile);
+            float shadowStrength = DayNightMath.ShadowStrength(hour, sunrise, sunset, weatherDim, overcastFades);
+
+            // --- push the globals (read by the overlay + the water specular + the projected shadows) ---
             Shader.SetGlobalColor(IdDayNightTint, tint);
             Shader.SetGlobalVector(IdSunDir, new Vector4(sunDir.x, sunDir.y, 0f, 0f));
             Shader.SetGlobalFloat(IdSunElevation, elevation);
+            Shader.SetGlobalFloat(IdShadowStrength, shadowStrength);
 
             // --- colour the overlay (belt-and-braces: the material reads the global, but we also push the
             //     colour via a property block so it is correct even on the shared default material) ---

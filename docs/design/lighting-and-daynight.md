@@ -10,8 +10,10 @@
 One deterministic 24-hour cycle controls the **whole game's** look. It is computed every tick as a pure
 function of the clock hour + the weather, against an owner-tunable **`DayNightProfile`** asset, and applied
 as a **single full-screen multiply tint** over the composited frame (so unlit sprites, tilemaps, water and
-grass all darken/warm together) plus two **sun globals** (`_SunDir`, `_SunElevation`) that drive the water
-specular today and the projected shadows in PR 2. See ADR 0013 for *why* the overlay (short version: the
+grass all darken/warm together) plus the **sun globals** (`_SunDir`, `_SunElevation`) that drive the water
+specular and the projected shadows, and a **`_ShadowStrength` global** (how firmly a cast shadow reads now —
+the sun being up folded with the live weather) that the projected shadows read so they soften under
+overcast/storm. See ADR 0013 for *why* the overlay (short version: the
 sprites are unlit and sample no 2D light, so only an output-stage tint darkens everything without migrating
 every sprite).
 
@@ -66,8 +68,16 @@ A drop-on **`SpriteShadow`** component (`Assets/_Project/Code/Art/SpriteShadow.c
 copy of a caster's sprite — darkened, semi-transparent, **skewed + length-scaled** by the sun — so the
 player **reads the time of day from a shadow's angle and length** (long west at dawn → short north at noon →
 long east at dusk → faded/gone at night and under heavy cloud). It mirrors `CottageDayNight`'s drop-on
-pattern and consumes the PR-1 sun globals (`_SunDir` / `_SunElevation`) with **no new wiring** to the
-controller.
+pattern and consumes the controller's published globals — `_SunDir` / `_SunElevation` (the swing + length)
+and `_ShadowStrength` (the alpha; how firmly the shadow reads now, folding the sun being up with the LIVE
+weather) — with **no new wiring** to the controller and no per-caster sim read.
+
+> **The weather hook is LIVE.** `_ShadowStrength` is `DayNightMath.ShadowStrength(hour, sunrise, sunset,
+> WeatherDim(visibility, seaState), OvercastFadesShadow)`, computed once per controller tick where the real
+> weather already is, and published as the global the shadows read. So **`OvercastFadesShadow` genuinely
+> softens the shadow in-game** under overcast/storm — not just in the unit tests. (Off the cycle — a bare
+> art scene with no sim — `SpriteShadow` computes the strength locally from its fallback hour with no
+> weather, so the demo still shows.)
 
 **What shipped:**
 - **Pure projection maths** in `DayNightMath` (unit-tested in `DayNightMathTests`, mirroring the PR-1 style):
