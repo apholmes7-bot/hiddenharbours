@@ -78,10 +78,11 @@ paints + places.**
   `Shoreline` `RuleTile` (edge/corner-by-neighbour) under `Tilesets/Tiles/`. ***world-content* then paints
   the Coddle Cove tilemap with these.** (The Shoreline rule orientations are a sensible start — refine in
   the Tile Palette if a sprite faces the wrong way.)
-- **Tide-aware moving shoreline** (the headline P1 visual) — `Code/Art/TideShoreline.cs` (assembly
-  `HiddenHarbours.Art`, Core-only). Attach to the water object; it reads the live tide via
-  `GameServices.Environment.Sample().TideHeight` and slides the waterline (low tide exposes shore, high
-  tide floods). Visual only — it never touches the tide sim (gameplay-systems').
+- **Tide-aware moving shoreline** (the former headline P1 visual) — **retired.** `Code/Art/TideShoreline.cs`
+  was a smooth transform-slide of a water plane by tide height, wired into no builder or scene; it has been
+  removed (ADR 0012 §5, follow-up (a)). The live tide-aware shoreline is the height-map water shader
+  (`Art/Shaders/HiddenHarboursWater.shader` + `Code/Art/WaterSurface.cs`) plus the `TidalFlatVisual`
+  tide-reveal (`Code/Environment/TidalFlatVisual.cs`) — use that for any tide-gated coast.
 - **Cottage day↔night** — `Code/Art/CottageDayNight.cs`. Attach to the cottage `SpriteRenderer`, assign
   `Cottage.png` / `CottageNight.png`; it swaps on `GameServices.Clock.HourOfDay`. No new Core hook needed.
 
