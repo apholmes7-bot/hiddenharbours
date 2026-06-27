@@ -11,7 +11,8 @@
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
-        "HiddenHarbours.Environment"
+        "HiddenHarbours.Environment",
+        "HiddenHarbours.Art"
     ],
     "includePlatforms": [],
     "precompiledReferences": ["nunit.framework.dll"],

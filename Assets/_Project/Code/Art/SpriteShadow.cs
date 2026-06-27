@@ -11,13 +11,16 @@ namespace HiddenHarbours.Art
     /// (P1 "The Sea Has Moods"). It fades to nothing at night and softens under overcast (the weather hook).
     ///
     /// <para><b>Reads the globals the controller already pushes — no new wiring.</b> It consumes
-    /// <c>_SunDir</c> + <c>_SunElevation</c> (published every tick by <see cref="DayNightController"/>) plus
-    /// the owner's <see cref="DayNightProfile"/> shadow-arc tuning, evaluates the PURE
-    /// <see cref="DayNightMath"/> projection (length / skew / alpha — all unit-tested headless), and feeds the
-    /// result to ONE shared <c>HiddenHarbours/SpriteShadow</c> material (the shear runs in the shader's vertex
-    /// stage; every caster shares the one material via a <see cref="MaterialPropertyBlock"/> — GPU-batch
-    /// friendly, CLAUDE.md rule 7). When the cycle isn't running (a bare art scene / EditMode) it falls back
-    /// to a tunable daylight hour so the shadow still shows.</para>
+    /// <c>_SunDir</c> + <c>_SunElevation</c> (the sun's heading + height, for the swing/length) and
+    /// <c>_ShadowStrength</c> (how firmly the shadow reads NOW — the sun being up folded with the LIVE
+    /// weather; this is the weather hook, so overcast/storm genuinely softens the shadow in-game), all
+    /// published every tick by <see cref="DayNightController"/>, plus the owner's
+    /// <see cref="DayNightProfile"/> shadow-arc tuning. It evaluates the PURE <see cref="DayNightMath"/>
+    /// projection (length / skew / alpha — all unit-tested headless) and feeds the result to ONE shared
+    /// <c>HiddenHarbours/SpriteShadow</c> material (the shear runs in the shader's vertex stage; every caster
+    /// shares the one material via a <see cref="MaterialPropertyBlock"/> — GPU-batch friendly, CLAUDE.md
+    /// rule 7). When the cycle isn't running (a bare art scene / EditMode, no sim) it falls back to a tunable
+    /// daylight hour and computes the strength locally (no weather) so the shadow still shows.</para>
     ///
     /// <para><b>Mirrors <see cref="CottageDayNight"/>'s drop-on pattern.</b> No scene wiring beyond attaching
     /// it (the editor menu "Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection" batch-adds it; the
@@ -41,8 +44,14 @@ namespace HiddenHarbours.Art
         private static readonly int IdShadowDir    = Shader.PropertyToID("_ShadowDir");
         private static readonly int IdShadowLen    = Shader.PropertyToID("_ShadowLen");
         private static readonly int IdEdgeSoftness = Shader.PropertyToID("_EdgeSoftness");
-        private static readonly int IdSunDir       = Shader.PropertyToID("_SunDir");
-        private static readonly int IdSunElevation = Shader.PropertyToID("_SunElevation");
+        private static readonly int IdSunDir        = Shader.PropertyToID("_SunDir");
+        private static readonly int IdSunElevation  = Shader.PropertyToID("_SunElevation");
+        private static readonly int IdShadowStrength = Shader.PropertyToID("_ShadowStrength");
+
+        // ONE shared fallback material for the missing-Resources path, minted at most once across ALL
+        // casters (the normal path loads Resources/SpriteShadow.mat). A per-instance Material here would
+        // leak one material per caster and break the shared-material GPU batching this component relies on.
+        private static Material _sharedFallbackMaterial;
 
         [Header("Darkness")]
         [Tooltip("The darkest the shadow ever gets (its alpha at a firm clear noon). Scaled DOWN by the sun " +
@@ -154,14 +163,21 @@ namespace HiddenHarbours.Art
             Material mat = Resources.Load<Material>(ShadowMaterialPath);
             if (mat == null)
             {
-                var shader = Shader.Find(ShadowShaderName);
-                if (shader != null) mat = new Material(shader) { name = "SpriteShadow (runtime)" };
+                // Missing Resources material: mint ONE shared fallback for all casters (not per-instance —
+                // that would leak + break batching). Reused on every subsequent caster.
+                if (_sharedFallbackMaterial == null)
+                {
+                    var shader = Shader.Find(ShadowShaderName);
+                    if (shader != null)
+                        _sharedFallbackMaterial = new Material(shader) { name = "SpriteShadow (runtime shared)" };
+                }
+                mat = _sharedFallbackMaterial;
             }
             if (mat != null) _shadow.sharedMaterial = mat;
             else _shadow.enabled = false;   // no shader/material yet -> no shadow (still harmless)
         }
 
-        /// <summary>Read the sun globals (or the fallback hour) and push the projection to the shadow material.</summary>
+        /// <summary>Read the sun + shadow-strength globals (or the fallback hour) and push the projection to the shadow material.</summary>
         private void Tick()
         {
             if (_shadow == null || _caster == null) return;
@@ -184,7 +200,6 @@ namespace HiddenHarbours.Art
             // daylight hour so a bare art scene (no cycle) still shows a shadow.
             float elevation;
             Vector2 shadowDir;
-            float weatherDim = 0f;
 
             Vector4 gSun = Shader.GetGlobalVector(IdSunDir);
             float gElev = Shader.GetGlobalFloat(IdSunElevation);
@@ -203,15 +218,14 @@ namespace HiddenHarbours.Art
             }
             shadowDir = shadowDir.sqrMagnitude > 1e-6f ? shadowDir.normalized : Vector2.up;
 
-            // Alpha = maxAlpha × ShadowStrength (folds the sun being up + weather). When the live cycle is on,
-            // we don't have its weatherDim here cheaply, so derive strength from elevation; the controller's
-            // own night/overcast fade is captured by elevation<=0 -> 0, plus the profile fade below.
-            float strength = DayNightMath.ShadowStrength(_fallbackHour, sunrise, sunset, weatherDim, overcastFades);
-            if (cycleRunning)
-            {
-                // Strength straight from the published elevation (firmer, higher sun), 0 at/below the horizon.
-                strength = Mathf.Clamp01(elevation);
-            }
+            // Alpha = maxAlpha × ShadowStrength (folds the sun being up + the weather). When the live cycle is
+            // on, READ the controller's published _ShadowStrength global — it already folds the LIVE weather
+            // (overcast/storm fades the shadow, OvercastFadesShadow live), computed once per tick where the
+            // real sim is, so OvercastFadesShadow takes effect in-game. Off the cycle (a bare art scene, no
+            // sim) we evaluate the arc locally at the fallback hour with no weather.
+            float strength = cycleRunning
+                ? Mathf.Clamp01(Shader.GetGlobalFloat(IdShadowStrength))
+                : DayNightMath.ShadowStrength(_fallbackHour, sunrise, sunset, 0f, overcastFades);
             float alpha = DayNightMath.ShadowAlpha(_maxAlpha, strength);
 
             // Length multiplier (× height) from the elevation, clamped so dawn/dusk don't shoot to infinity.
