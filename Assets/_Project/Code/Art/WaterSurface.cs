@@ -89,6 +89,17 @@ namespace HiddenHarbours.Art
         [Tooltip("How often (Hz) the sim → uniform push runs. The sea is slow; a few Hz is plenty and cheap.")]
         [Min(0.5f)] [SerializeField] private float _refreshHz = 8f;
 
+        [Header("Flow momentum (the water has MASS — rule 6)")]
+        [Tooltip("Response time (seconds) for the VISUAL surface motion to ease toward the live sim flow. The " +
+                 "sim's wind/current directions WANDER over time; rather than the surface SNAPPING to a new " +
+                 "heading the instant the force shifts, the pushed flow/wind vectors are exponentially smoothed " +
+                 "toward the live sim with this time constant — so the surface decelerates through a heading " +
+                 "change and accelerates out of it (momentum). Heavier (larger) = more sluggish inertia; lighter " +
+                 "(smaller) = livelier, snappier. Frame-rate independent. PRESENTATION ONLY — the boat physics " +
+                 "still read the real EnvironmentSample directly; this lags only what the player SEES, and saves " +
+                 "nothing (rule 5). 0 = no smoothing (instant snap, the old behaviour).")]
+        [Min(0f)] [SerializeField] private float _flowResponseTime = 3f;
+
         [Header("Height map bake (the DEPTH source)")]
         [Tooltip("Bake a height texture so the shader's depth gradient + foam band have a seabed to read. Off → " +
                  "the shader reads uniform deep water (no false shoreline).")]
@@ -155,6 +166,17 @@ namespace HiddenHarbours.Art
         private float _baseFlow = 0.06f;   // the material's authored Flow floor (read once)
         private float _timer;
 
+        // --- flow-momentum state (the water's MASS): the VISUAL flow eases toward the live sim ----------
+        // Persistent SMOOTHED twins of the live EnvironmentSample current/wind vectors. Each push moves these
+        // toward the real sim vectors via frame-rate-independent exponential smoothing (SmoothVectorToward),
+        // and ALL pushed uniforms are derived from THESE — so when the sim's wind/current heading wanders the
+        // surface eases round instead of snapping. We smooth the VECTORS (not heading+speed apart) so the
+        // magnitude naturally DIPS as the vector rotates through a reversal — the "slows, turns, speeds back
+        // up" momentum, for free. Presentation only: the boat physics still read the real sample (rule 5).
+        private Vector2 _smoothedCurrent;
+        private Vector2 _smoothedWind;
+        private bool _flowInitialized;     // first push snaps to the live sim (no ease-in from zero on enable)
+
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
@@ -167,6 +189,9 @@ namespace HiddenHarbours.Art
         {
             BakeHeightMapIfNeeded();
             _timer = 0f;
+            // First push snaps the smoothed flow to the LIVE sim (no ease-in from a stale zero on enable) — the
+            // momentum kicks in only once the surface is already tracking the real current/wind.
+            _flowInitialized = false;
             // Push once immediately so the surface is correct on the first frame (not a stale material default).
             PushUniforms();
         }
@@ -195,10 +220,32 @@ namespace HiddenHarbours.Art
             float waterLevel = env.WaterLevelAt(now);
             EnvironmentSample s = env.Sample();
 
-            float flow = FlowSpeed(s.CurrentVector, _baseFlow, _flowSpeedScale, _currentForFullFlow);
-            Vector2 flowDir = FlowDirection(s.CurrentVector);
-            Vector2 windDir = WindDirection(s.WindVector);
-            float roughness = Roughness(s.WindVector, _windForFullRoughness);
+            // --- ease the VISUAL flow toward the live sim (the water's MASS) ---------------------------------
+            // dt is the push cadence (the throttle interval, the spacing Update enforces between pushes). The
+            // smoothing time-constant is in SECONDS, so the eased look is independent of BOTH frame rate (the
+            // push is throttled, not per-frame) and the chosen refresh rate (a faster cadence just takes more,
+            // smaller steps to the same place — the exponential factor composes). The FIRST push snaps to the
+            // live sim (no ease-in from a stale zero); subsequent pushes ease the smoothed vectors toward the
+            // real current/wind. All the uniforms below are derived from the SMOOTHED vectors, so every
+            // wind/current-driven layer inherits the same momentum (cohesive). The boat physics still read the
+            // real EnvironmentSample directly (rule 5).
+            if (!_flowInitialized)
+            {
+                _smoothedCurrent = s.CurrentVector;
+                _smoothedWind = s.WindVector;
+                _flowInitialized = true;
+            }
+            else
+            {
+                float dt = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;   // the push cadence (Update's throttle)
+                _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, s.CurrentVector, _flowResponseTime, dt);
+                _smoothedWind    = SmoothVectorToward(_smoothedWind,    s.WindVector,    _flowResponseTime, dt);
+            }
+
+            float flow = FlowSpeed(_smoothedCurrent, _baseFlow, _flowSpeedScale, _currentForFullFlow);
+            Vector2 flowDir = FlowDirection(_smoothedCurrent);
+            Vector2 windDir = WindDirection(_smoothedWind);
+            float roughness = Roughness(_smoothedWind, _windForFullRoughness);
             float chop = Choppiness(s.SeaState);
 
             _renderer.GetPropertyBlock(_mpb);
@@ -207,7 +254,8 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdFlowDir, new Vector4(flowDir.x, flowDir.y, 0f, 0f));
             // Push the WIND direction too (the sim varies it over time): the shader scrolls its wind-chop
             // octave along this, so the surface follows the wind instead of only marching down the fixed
-            // current axis. Direction only — wind STRENGTH still drives _Roughness below.
+            // current axis. Direction only — wind STRENGTH still drives _Roughness below. Both come from the
+            // SMOOTHED wind vector, so the wind-driven layers ease round with the same momentum as the flow.
             _mpb.SetVector(IdWindDir, new Vector4(windDir.x, windDir.y, 0f, 0f));
             _mpb.SetFloat(IdRoughness, roughness);
             _mpb.SetFloat(IdChop, chop);
@@ -523,6 +571,30 @@ namespace HiddenHarbours.Art
         }
 
         // ==== PURE sim → uniform mappings (testable; no Unity scene needed) ===============================
+
+        /// <summary>
+        /// Ease a SMOOTHED flow vector one step toward the live sim vector — the water's MASS. Frame-rate
+        /// independent exponential smoothing: <c>smoothed += (target − smoothed)·(1 − exp(−dt/τ))</c>, where
+        /// <paramref name="responseTime"/> (τ) is the time constant in seconds. Larger τ = more sluggish
+        /// (heavier inertia); τ ≤ 0 returns the target unchanged (instant snap, no momentum).
+        ///
+        /// <para>This is the heart of the "water has mass" feel: <see cref="WaterSurface"/> keeps the smoothed
+        /// current/wind vectors and steps them here each push, deriving ALL pushed uniforms from the result. We
+        /// smooth the <b>vector</b> (not heading + magnitude separately) on purpose — when the sim's flow
+        /// reverses heading, the smoothed vector travels THROUGH a low-magnitude region as it rotates, so the
+        /// surface speed DIPS mid-turn and recovers: "slows, turns, then speeds back up" for free.</para>
+        ///
+        /// <para>The exponential form is exact under sub-stepping — smoothing once over <c>dt</c> reaches the
+        /// same state as N steps of <c>dt/N</c> toward a fixed target (the <c>1 − exp</c> factors compose), so
+        /// the look is independent of the refresh rate. Deterministic; presentation only (drives no sim,
+        /// saves nothing — rule 5).</para>
+        /// </summary>
+        public static Vector2 SmoothVectorToward(Vector2 smoothed, Vector2 target, float responseTime, float dt)
+        {
+            if (responseTime <= 0f || dt < 0f) return target;   // no inertia (snap) / guard a negative dt
+            float alpha = 1f - Mathf.Exp(-dt / responseTime);   // 0 (no move) .. 1 (full move) — fps-independent
+            return smoothed + (target - smoothed) * alpha;
+        }
 
         /// <summary>
         /// Surface scroll speed from the tidal current. The material's authored <paramref name="baseFlow"/> is

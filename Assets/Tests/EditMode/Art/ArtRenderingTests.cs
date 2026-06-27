@@ -100,6 +100,111 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsFalse(float.IsNaN(slack.x) || float.IsNaN(slack.y), "slack-wind fallback is NaN-safe");
         }
 
+        // ===== WaterSurface: the FLOW-MOMENTUM smoothing (the water has MASS) ==============================
+        // These guard SmoothVectorToward — the frame-rate-independent exponential ease the surface uses so the
+        // VISUAL flow LAGS the live sim instead of SNAPPING when the wind/current heading wanders. The four
+        // properties the momentum feel rests on: it eases toward a steady target; on a heading REVERSAL the
+        // smoothed magnitude DIPS below both endpoints mid-turn (the "slows through the turn, then speeds back
+        // up" feel — because we smooth the VECTOR, not heading+magnitude apart); it is frame-rate independent
+        // (sub-stepping reaches the same end state); and it is deterministic. Presentation only (rule 5).
+
+        [Test]
+        public void SmoothFlow_EasesTowardASteadyTarget_MonotonicAndConverges()
+        {
+            var target = new Vector2(2f, 0f);
+            var v = Vector2.zero;               // start at rest; the sim flow is steady at the target
+            const float tau = 3f, dt = 1f / 8f; // a 3 s response at the 8 Hz default push cadence
+
+            float prevDist = (target - v).magnitude;
+            float prevMag = v.magnitude;
+            for (int i = 0; i < 8 * 20; i++)    // 20 s of pushes
+            {
+                v = WaterSurface.SmoothVectorToward(v, target, tau, dt);
+                float dist = (target - v).magnitude;
+                Assert.LessOrEqual(dist, prevDist + 1e-6f, "each step moves no further from the target (eases in)");
+                Assert.GreaterOrEqual(v.magnitude + 1e-6f, prevMag, "toward a co-linear target the speed only rises (accelerates out)");
+                Assert.LessOrEqual(v.x, target.x + 1e-4f, "never overshoots the target (no spring ringing)");
+                prevDist = dist;
+                prevMag = v.magnitude;
+            }
+            Assert.AreEqual(target.x, v.x, 1e-3f, "after many response-times the smoothed flow has reached the live sim");
+            Assert.AreEqual(target.y, v.y, 1e-4f);
+
+            // One step covers exactly the analytic fraction 1 − exp(−dt/τ) of the gap (the smoothing law).
+            float oneStepX = WaterSurface.SmoothVectorToward(Vector2.zero, target, tau, dt).x;
+            float expectedFrac = 1f - Mathf.Exp(-dt / tau);
+            Assert.AreEqual(target.x * expectedFrac, oneStepX, 1e-5f, "one step = the exact exponential fraction of the gap");
+        }
+
+        [Test]
+        public void SmoothFlow_OnReversal_MagnitudeDipsBelowBothEndpoints_MidTurn()
+        {
+            // The headline momentum property. The sim flow REVERSES heading (+X → −X) at full magnitude; because
+            // we smooth the VECTOR, the smoothed point travels through the origin region as it rotates/reverses,
+            // so its MAGNITUDE dips well below BOTH endpoints mid-turn — the surface visibly SLOWS through the
+            // turn, then speeds back up. (Smoothing heading+magnitude separately would hold the speed flat — the
+            // exact snap we're avoiding.)
+            var from = new Vector2(1.5f, 0f);
+            var to   = new Vector2(-1.5f, 0f);
+            float endpointMag = from.magnitude;   // == to.magnitude == 1.5
+            const float tau = 3f, dt = 1f / 8f;
+
+            var v = from;                         // already tracking the old flow, then it flips
+            float minMag = endpointMag;
+            for (int i = 0; i < 8 * 30; i++)      // run well past the turn
+            {
+                v = WaterSurface.SmoothVectorToward(v, to, tau, dt);
+                minMag = Mathf.Min(minMag, v.magnitude);
+            }
+            Assert.Less(minMag, endpointMag - 0.25f, "mid-reversal the smoothed speed DIPS clearly below both endpoints (slows through the turn)");
+            Assert.Less(minMag, 0.4f, "and dips close to slack as the vector passes through the reversal (a real deceleration, not a graze)");
+
+            // It recovers: by the end it has accelerated back out toward the new full-magnitude heading.
+            Assert.AreEqual(to.x, v.x, 1e-2f, "after the turn the flow speeds back up to the new heading (accelerates out)");
+            Assert.Less(v.x, 0f, "and is now pointing the new way (the reversal completed)");
+        }
+
+        [Test]
+        public void SmoothFlow_IsFrameRateIndependent_SubSteppingReachesSameEndState()
+        {
+            // Smoothing once over a big dt must reach ~the same place as many small sub-steps over the same total
+            // time toward a FIXED target — so the eased look doesn't change with the refresh rate. (Exact under
+            // the exponential law: the (1 − exp) factors compose multiplicatively.)
+            var target = new Vector2(-1f, 2f);
+            const float tau = 2.5f, total = 1f;
+
+            var coarse = WaterSurface.SmoothVectorToward(Vector2.zero, target, tau, total);          // 1 step of 1.0 s
+
+            var fine = Vector2.zero;
+            const int n = 64;
+            for (int i = 0; i < n; i++)                                                              // 64 steps of 1/64 s
+                fine = WaterSurface.SmoothVectorToward(fine, target, tau, total / n);
+
+            Assert.AreEqual(coarse.x, fine.x, 1e-4f, "coarse vs fine sub-stepping converge to the same X (fps-independent)");
+            Assert.AreEqual(coarse.y, fine.y, 1e-4f, "…and the same Y");
+        }
+
+        [Test]
+        public void SmoothFlow_IsDeterministic_AndSnapsWhenResponseTimeIsZero()
+        {
+            var smoothed = new Vector2(0.3f, -0.7f);
+            var target   = new Vector2(2f, 1f);
+
+            // Deterministic: identical inputs give bit-identical outputs (the determinism guard, rule 5).
+            var a = WaterSurface.SmoothVectorToward(smoothed, target, 3f, 1f / 8f);
+            var b = WaterSurface.SmoothVectorToward(smoothed, target, 3f, 1f / 8f);
+            Assert.AreEqual(a, b, "same inputs => same output (no hidden state / randomness)");
+
+            // responseTime <= 0 snaps to the target (the "no inertia" / instant-snap escape — the old behaviour).
+            var snap = WaterSurface.SmoothVectorToward(smoothed, target, 0f, 1f / 8f);
+            Assert.AreEqual(target, snap, "zero response time = instant snap (no momentum), exactly the live sim");
+
+            // A negative dt is guarded (returns the target rather than moving the wrong way / producing NaN).
+            var guarded = WaterSurface.SmoothVectorToward(smoothed, target, 3f, -1f);
+            Assert.AreEqual(target, guarded, "a negative dt is guarded — no backwards step, no NaN");
+            Assert.IsFalse(float.IsNaN(guarded.x) || float.IsNaN(guarded.y), "guarded result is finite");
+        }
+
         // ===== WaterSurface: the COHESION-PASS direction twins (rolling swell + foam-drift blend) ==========
         // These guard the C# mirrors of the shader's SwellDir()/FoamDriftDir(): the large-scale ocean swell
         // keys off the (wandering) WIND by default so the cohesion bands REORIENT as the weather shifts (P1
