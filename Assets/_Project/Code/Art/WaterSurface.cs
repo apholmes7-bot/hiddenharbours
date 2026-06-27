@@ -131,7 +131,7 @@ namespace HiddenHarbours.Art
         [Tooltip("A hand-painted, CPU-readable height texture (R = normalized elevation) fed STRAIGHT to the " +
                  "shader's _HeightTex — no re-bake. The SAME texture the sim's PaintedTidalTerrain decodes, so " +
                  "the visible depth and the gameplay depth come from the same bytes. The St Peters builder / " +
-                 "Seabed Paint Tool copy this (and the world rect / elevation range fields above) from the " +
+                 "Terrain Paint Tool copy this (and the world rect / elevation range fields above) from the " +
                  "PaintedHeightMap asset. Used when Depth Source is PaintedHeightMap (or Auto, if assigned).")]
         [SerializeField] private Texture2D _paintedHeightTex;
 
@@ -354,7 +354,7 @@ namespace HiddenHarbours.Art
         /// rect (centre/size) + elevation range, select the painted depth source, and (in edit mode) re-feed
         /// the shader immediately so the Scene view updates. Takes Unity-generic args (a
         /// <see cref="Texture2D"/> + scalars), NOT a World type, so Art stays decoupled from World (rule 4);
-        /// the St Peters builder / Seabed Paint Tool copy these from the <c>PaintedHeightMap</c> asset.
+        /// the St Peters builder / Terrain Paint Tool copy these from the <c>PaintedHeightMap</c> asset.
         /// </summary>
         public void ConfigurePaintedHeightMap(Texture2D heightTex, Vector2 worldCenter, Vector2 worldSize,
                                               float minElevation, float maxElevation)
