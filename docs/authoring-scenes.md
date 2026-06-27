@@ -25,7 +25,7 @@ That single command runs three steps (you can also run them one at a time from t
 |---|---|
 | **Build Terrain Tiles** | The paintable ground tiles + an auto-shaping shoreline, under `Assets/_Project/Art/Tilesets/Tiles/`. |
 | **Build Tile Palette** | A palette called **HiddenHarboursTerrain** you pick tiles from, under `Assets/_Project/Art/Tilesets/Palettes/`. |
-| **Build Decor Prefabs** | Drag-in trees, buildings and props, under `Assets/_Project/Prefabs/Decor/`. |
+| **Build Decor Prefabs** | Drag-in trees, buildings, props and grass, under `Assets/_Project/Prefabs/Decor/`. |
 
 ---
 
@@ -93,22 +93,42 @@ neighbouring cell — the rule re-evaluates as you go.
 
 ---
 
-## 4. Drag in decor (trees, buildings, props)
+## 4. Drag in decor (trees, buildings, props, grass)
 
 Decor is placed as **prefabs** — pre-made objects you drag in like stamps. No tilemap needed.
 
 1. In the **Project** window (bottom panel), open `Assets/_Project/Prefabs/Decor/`. You'll find
-   three folders: **Trees/**, **Buildings/**, **Props/**.
-2. Click a folder and you'll see thumbnails (Tree01…Tree37, Cottage, ShipwrightShed, Barrel, Crate,
-   WharfPost, etc.).
+   four folders: **Trees/**, **Buildings/**, **Props/**, **Grass/**.
+2. Click a folder and you'll see thumbnails (Tree01…Tree40, Cottage, ShipwrightShed, Barrel, Crate,
+   WharfPost, GrassClump, GrassTuft, etc.).
 3. **Drag a prefab straight from the Project window into the Scene view** and drop it where you want
    it. It appears at the correct size and the right "footing":
    - **Trees** plant at the trunk base — drop a tree where you want its trunk to stand.
    - **Buildings and props** centre on the drop point.
+   - **Grass** plants at its base too (drop it where you want the grass to grow).
 4. To move something after dropping it: click it in the Scene view and drag, or use the **Move tool**
    (press **W**). To rotate/scale, use **E** / **R** — though for pixel art it's usually best to
    leave scale at 1.
 5. Place as many as you like. Duplicate a placed one quickly with **Ctrl+D**.
+
+### Grass (the wind-swaying living grass)
+
+Grass lives in **Decor ▸ Grass/** as two stamps:
+
+- **GrassClump** — a dense, pre-scattered patch about 2.5 m across. Drag a few of these to **fill a
+  clearing** quickly; overlap them and they read as one lush field.
+- **GrassTuft** — a single tuft, for thinning the **edges** of a patch or tucking grass between rocks.
+
+Two things make the grass feel alive, both automatic:
+
+- **Wind sway** — the grass bends with the **same wind as the water**, so a gust moves the whole
+  scene together. Nothing to wire: it works the moment you press **Play**. (Before the world's wind
+  sim is running it still has a gentle idle sway so it's never dead-still.)
+- **Footstep bend** — grass bends away as the **player** walks through and springs back. This one
+  needs the player to carry a **`GrassFootstep`** component (one tick-box add on the player object).
+  If your scene's player doesn't have it yet, ask for it to be added — the sway works regardless.
+
+You won't see the sway in the **edit** view (it's a Play-mode effect) — press **Play** to watch it.
 
 ---
 
@@ -182,7 +202,7 @@ Do the painting from **§2–§5 above**:
 - **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** → a `Grid`/`TerrainTilemap` canvas (it lands
   **outside** the `--LOGIC--` object — that's correct).
 - **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** → paint Sand/Grass/Rock/Shoreline.
-- Drag decor prefabs from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/` into the Scene.
+- Drag decor prefabs from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props,Grass}/` into the Scene.
 - **Leave the `--LOGIC--` object alone** — don't move the dock/anchor markers; they're the gameplay.
 - **File ▸ Save** (Ctrl+S). Save often.
 
@@ -227,7 +247,7 @@ the right tool.)
 | Update the cove's logic (after painting) | **Hidden Harbours ▸ Refresh Cove Logic** (rebuilds only `--LOGIC--`, keeps your art) |
 | Get a surface to paint on | **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** |
 | Pick & paint terrain tiles | **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** |
-| Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/` into the Scene view |
+| Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props,Grass}/` into the Scene view |
 | Fix wrong overlap | Select the object → Inspector → **Sprite Renderer ▸ Order in Layer** |
 | Save | **File ▸ Save** (Ctrl+S) |
 | Save my painted cove into the project | Follow **§7** (branch → commit baked scene → paint → commit art → PR) |
