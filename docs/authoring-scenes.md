@@ -119,16 +119,19 @@ Grass lives in **Decor ▸ Grass/** as two stamps:
   clearing** quickly; overlap them and they read as one lush field.
 - **GrassTuft** — a single tuft, for thinning the **edges** of a patch or tucking grass between rocks.
 
-Two things make the grass feel alive, both automatic:
+Three things make the grass feel alive, all automatic — nothing to wire:
 
 - **Wind sway** — the grass bends with the **same wind as the water**, so a gust moves the whole
-  scene together. Nothing to wire: it works the moment you press **Play**. (Before the world's wind
-  sim is running it still has a gentle idle sway so it's never dead-still.)
-- **Footstep bend** — grass bends away as the **player** walks through and springs back. This one
-  needs the player to carry a **`GrassFootstep`** component (one tick-box add on the player object).
-  If your scene's player doesn't have it yet, ask for it to be added — the sway works regardless.
+  scene together. It works the moment you press **Play**. (Before the world's wind sim is running it
+  still has a gentle idle sway so it's never dead-still.)
+- **Footstep bend** — grass bends away as the **player** walks through and springs back. The player
+  carries this by default now, so it just works.
+- **Auto-layering** — grass (and trees) **sort themselves around the player** by position: walk *up*
+  behind a clump and it draws over you; walk *down* in front and you draw over it. You never set a
+  sorting order by hand. This reads correctly in the **Scene** view as you place, too.
 
-You won't see the sway in the **edit** view (it's a Play-mode effect) — press **Play** to watch it.
+You won't see the *sway* in the **edit** view (it's a Play-mode effect) — press **Play** to watch it
+(the layering, though, is correct in edit mode as well).
 
 ---
 

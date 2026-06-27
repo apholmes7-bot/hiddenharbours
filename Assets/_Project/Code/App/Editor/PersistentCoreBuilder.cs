@@ -271,6 +271,13 @@ namespace HiddenHarbours.App.Editor
             playerGo.transform.localScale = Vector3.one;
             var playerSr = playerGo.AddComponent<SpriteRenderer>();
             playerSr.sortingOrder = 10;
+            // Living-grass hooks: GrassFootstep makes the grass bend away as the player walks through; YSortSprite
+            // (dynamic) re-sorts the player by world Y each frame so grass/trees IN FRONT draw over the player and
+            // those BEHIND draw under — automatic ¾ layering, no per-piece tuning. (The order 10 above is just the
+            // pre-Play default; YSortSprite recomputes it from Y on the same scale grass/trees use.)
+            playerGo.AddComponent<HiddenHarbours.Art.GrassFootstep>();
+            var playerYSort = playerGo.AddComponent<HiddenHarbours.Art.YSortSprite>();
+            SetBool(playerYSort, "_dynamic", true);
             var prb = playerGo.AddComponent<Rigidbody2D>();
             prb.gravityScale = 0f; prb.freezeRotation = true;
             prb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
