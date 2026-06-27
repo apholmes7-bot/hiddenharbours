@@ -750,3 +750,41 @@ Per [`../../agents/coordination.md`](../../agents/coordination.md) §1.1 ("Water
 section); **art-pipeline** owns the **textures** (painting the seamless tiles + ramp to the §4 palette
 and tuning the strengths). The slots are the seam where the two lanes meet — author the tiles to the
 import table above and tune together.
+
+---
+
+## 11. Painted seabed-height authoring (ADR 0014) — hand-paint the §4 height map
+
+The §4 height map (the *single source of truth* for render + walkability + boat-cross) can be authored
+**two ways**, and they feed the **exact same** `depth = waterLevel − terrainHeight` equation:
+
+1. **Analytic zones** (`World.TidalTerrain`) — elevation composed in code from a few blended zones
+   (island / sandbar / channel / deep). The shipped St Peters default.
+2. **A hand-painted height map** (`World.PaintedHeightMap`, ADR 0014) — the owner paints elevation with
+   the **Seabed Paint Tool** (`Hidden Harbours ▸ Tools ▸ Seabed Paint Tool`). The painted texture's R
+   channel encodes elevation over a world rect + min/max range — **the same `_HeightTex` / `_HeightWorldMin`
+   / `_HeightWorldSize` / `_HeightMin` / `_HeightMax` this shader already samples** (§5.1 `SeabedElevation`).
+
+**One map, both consumers, no drift.** The painted texture is **CPU-readable**, so the sim decodes it once
+into a cached `float[]` (`PaintedHeightField`, sampled by `PaintedTidalTerrain : ITidalTerrain`) using the
+**identical** world→uv bilinear mapping this shader uses; the render feeds the **same texture** straight to
+`_HeightTex` (`WaterSurface.DepthSource.PaintedHeightMap` — no re-bake). So the visible depth and the
+gameplay depth come from the same bytes — the one-height-map / three-consumers rule (§4) holds by
+construction. Painting forks neither a "visual seabed" nor a "physics seabed" — the exact drift §4 / ADR
+0009 forbid.
+
+**See the coast WHILE editing (the headline UX).** `WaterSurface` is `[ExecuteAlways]` with a serialized
+**preview tide level**: in the Scene view (not playing) it drives `_WaterLevel` so the painted coast is
+visible — land dry, the bar baring, the channel flooded — and a slider scrubs any tide WITHOUT pressing
+Play. Presentation only (feeds no sim, saves nothing — rule 5); at runtime the live `WaterLevelAt(t)`
+overrides it.
+
+**Seed from today's coast.** "Export analytic St Peters → painted map" samples the shipped `TidalTerrain`
+zones into a painted map (committed seed: `Assets/_Project/Data/Terrain/StPetersSeabed.asset`), so the owner
+paints **from** the existing coast. Adopting the painted map (swap the scene's `TidalTerrain` for a
+`PaintedTidalTerrain` + point `WaterSurface` at it) is an **explicit** step — the shipped St Peters look is
+not silently changed.
+
+**Determinism & save:** the painted map is **authored DATA committed like a tilemap** — read at runtime,
+never written at runtime, no RNG; the tide is still recomputed from `(worldSeed, gameTime)` and nothing new
+is saved (rule 5; ADR 0014).
