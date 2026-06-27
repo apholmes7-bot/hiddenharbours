@@ -154,6 +154,47 @@ You won't see the *sway* in the **edit** view (it's a Play-mode effect) — pres
 
 ---
 
+## 4b. Shape the coast — the Terrain Paint Tool (height + look in one stroke)
+
+> **This is the one tool that designs a coast.** Paint a terrain TYPE (Deep, Channel, Beach, Sandbar,
+> Grass, Cliff) and ONE stroke sets BOTH the ground LOOK (the tile) AND the HEIGHT (how the tide bares
+> and floods it). What you paint is what the water shows AND what you can walk/sail on. There's a toggle
+> to SEE the height as colours while you work.
+
+Open it: **Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)**. *(This was renamed from
+"Seabed Paint Tool" — it now paints the ground tile too, not just the height.)*
+
+### Step by step
+
+1. **Open the scene you want to shape** (e.g. `StPeters.unity`).
+2. **Open the tool** (menu above). It needs a **Height Map** to paint into:
+   - For St Peters, click **Export analytic St Peters → painted map** — this seeds the map from the
+     existing coast so you paint *from* it, not a blank canvas. (Or **New Blank Map…** for an empty one.)
+3. **Ground Tilemap** — click **Find** to auto-locate the scene's `TerrainTilemap`. If the scene has
+   none, click **Add Ground Tilemap** and it makes one for you.
+4. **Pick a Terrain TYPE** from the **Type** dropdown (Deep / Channel / Beach / Sandbar / Grass /
+   Cliff). Each shows its height and which tile it paints. *Deep* and *Channel* are underwater — they
+   set the height only and clear any tile so the water shows.
+5. **Set the brush size** (Brush radius), then **paint in the Scene view** — hold the left mouse button
+   and drag over the water plane. One stroke lays the tile AND the height together.
+6. **Toggle "Show height colour overlay"** to SEE the shape: deep blue → cyan shallows → sand → green →
+   brown/rock, with a legend down the left. This is a *design aid only* — it never shows up in the game.
+   Turn it off when you want to see the real look.
+7. **Fine-tune the height** with the **Raise / Lower / Set-height / Smooth** brushes (switch the Brush
+   dropdown) — nudge a sandbar up, soften an edge, carve the channel deeper.
+8. **See it live:** the water updates as you paint. To watch the tide bare/flood without pressing Play,
+   select the **WaterSurface** object and scrub its **Preview Tide Level** slider.
+9. **Make the coast real (optional, St Peters):** when you're happy, click **Adopt this map on the OPEN
+   scene** — now the *tide simulation* (what bares, floods, and grounds boats) reads your painted heights
+   too, not just the water look. (This is reversible — it disables the old terrain rather than deleting it.)
+10. **Save** (Ctrl+S) to keep the painting + the tiles in the scene; the height map saves itself as an
+    asset.
+
+> The tile you paint is normal scene art (like §3's Tile Palette). The HEIGHT you paint is the *one*
+> source the water look and the tide gameplay both read — paint it once, it can't disagree with itself.
+
+---
+
 ## 5. Sorting — making things overlap correctly
 
 In our ¾ top-down view, an object lower on the screen should usually draw *in front of* one higher
@@ -269,6 +310,7 @@ the right tool.)
 | Update the cove's logic (after painting) | **Hidden Harbours ▸ Refresh Cove Logic** (rebuilds only `--LOGIC--`, keeps your art) |
 | Get a surface to paint on | **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** |
 | Pick & paint terrain tiles | **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** |
+| Shape the coast (height + look together) | **Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)** — see **§4b** |
 | Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props,Grass}/` into the Scene view |
 | Fix wrong overlap | Select the object → Inspector → **Sprite Renderer ▸ Order in Layer** |
 | Save | **File ▸ Save** (Ctrl+S) |
@@ -278,6 +320,10 @@ the right tool.)
 - Tile + palette + decor builders: `Assets/_Project/Art/Editor/` (`TileAssetBuilder`,
   `TilePaletteBuilder`, `DecorPrefabBuilder`, `PaintableTilemapMenu`, `SceneAuthoringMenu`) — all
   Editor-only tooling owned by the tools-editor lane.
+- Terrain Paint Tool (height + look): `Assets/_Project/Code/App/Editor/TerrainPaintTool.cs` (renamed from
+  `SeabedPaintTool`) + the pure overlay ramp `Assets/_Project/Code/World/TerrainHeightPalette.cs`; the
+  painted height asset/sampler are `Assets/_Project/Code/World/PaintedHeightMap.cs` /
+  `PaintedHeightField.cs`. Decision + flow: **ADR 0014** and `docs/design/water-rendering.md` §11.
 - Generated tiles: `Assets/_Project/Art/Tilesets/Tiles/` · palette:
   `Assets/_Project/Art/Tilesets/Palettes/HiddenHarboursTerrain.prefab` · decor prefabs:
   `Assets/_Project/Prefabs/Decor/`.
