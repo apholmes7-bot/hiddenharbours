@@ -152,5 +152,49 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 prev = s;
             }
         }
+
+        // ---- GrassFootstep.MovingFactor / SmoothToward / DirectionalGate (the behind-only gate) -----------
+
+        [Test]
+        public void MovingFactor_Saturates()
+        {
+            Assert.AreEqual(0f, GrassFootstep.MovingFactor(0f, 1.2f), Eps, "Standing still = symmetric gate.");
+            Assert.AreEqual(0.5f, GrassFootstep.MovingFactor(0.6f, 1.2f), Eps);
+            Assert.AreEqual(1f, GrassFootstep.MovingFactor(1.2f, 1.2f), Eps, "At the speed = fully directional.");
+            Assert.AreEqual(1f, GrassFootstep.MovingFactor(10f, 1.2f), Eps, "Past it stays saturated.");
+        }
+
+        [Test]
+        public void SmoothToward_EasesAndConverges()
+        {
+            // One step moves PART of the way; smoothing<=0 or dt<=0 snaps.
+            float oneStep = GrassFootstep.SmoothToward(0f, 1f, 0.1f, 0.12f);
+            Assert.Greater(oneStep, 0f);
+            Assert.Less(oneStep, 1f);
+            Assert.AreEqual(1f, GrassFootstep.SmoothToward(0f, 1f, 0.1f, 0f), Eps, "Zero smoothing snaps.");
+            // Iterating converges to the target.
+            float v = 0f;
+            for (int i = 0; i < 200; i++) v = GrassFootstep.SmoothToward(v, 1f, 0.016f, 0.12f);
+            Assert.AreEqual(1f, v, 1e-2f);
+        }
+
+        [Test]
+        public void DirectionalGate_BendsBehindNotAhead_WhileMoving()
+        {
+            // moving = 1 (fully directional): blades BEHIND (ahead <= 0) bend; AHEAD (ahead > softness) are cut.
+            Assert.AreEqual(1f, GrassFootstep.DirectionalGate(-0.5f, 0.12f, 1f), Eps, "Behind the foot: full bend.");
+            Assert.AreEqual(0f, GrassFootstep.DirectionalGate(0.5f, 0.12f, 1f), Eps, "Ahead of the foot: no bend.");
+            Assert.AreEqual(0.5f, GrassFootstep.DirectionalGate(0.06f, 0.12f, 1f), Eps, "Mid-softness ramps.");
+        }
+
+        [Test]
+        public void DirectionalGate_Symmetric_WhenStill()
+        {
+            // moving = 0 (standing): the gate is 1 everywhere, so grass underfoot still parts symmetrically.
+            Assert.AreEqual(1f, GrassFootstep.DirectionalGate(-0.5f, 0.12f, 0f), Eps);
+            Assert.AreEqual(1f, GrassFootstep.DirectionalGate(0.5f, 0.12f, 0f), Eps, "Still player: ahead also bends.");
+            // Half-moving blends the two.
+            Assert.AreEqual(0.5f, GrassFootstep.DirectionalGate(0.5f, 0.12f, 0.5f), Eps, "Half speed = half of symmetric.");
+        }
     }
 }
