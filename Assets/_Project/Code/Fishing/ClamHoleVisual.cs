@@ -8,7 +8,8 @@ namespace HiddenHarbours.Fishing
     /// the once-only yield, and the cosmetic squirt cadence; this drives the picture off it so the hole is
     /// <b>only drawn while its ground is bared by the falling tide</b>. When the flood covers the ground the
     /// hole vanishes — the same single tide number that gates the dig also decides whether you can see it, so
-    /// the picture can never disagree with the gate (the discipline #69's <c>TidalFlatVisual</c> follows).
+    /// the picture can never disagree with the gate (the one-height-map discipline ADR 0009/0010 enforce —
+    /// render and gameplay read the same deterministic <c>WaterLevelAt</c> + <c>ITidalTerrain.ElevationAt</c>).
     ///
     /// <para><b>Two renderers, never a sprite-swap (squirt = OVERLAY).</b> The two-holes sprite lives on the
     /// <em>base</em> renderer and stays visible the whole time the spot is exposed. The "two squirting holes"

@@ -378,7 +378,14 @@ runtime-shader-vs-M3-bake fork (ADR 0010 §7) is unchanged.
   is the shader regardless.
 - **Approach-C foam-edge sprite spec** (dims, frame count, seamlessness, the edge-tangent march) — an
   art-pipeline spec coordinated with the `_FoamTex` slot (ADR 0010 §10) **if** A isn't crisp enough.
-- **`TidalFlatVisual` overlay's future** — once the shader shore is smooth on St Peters, the 2 m-cell
+- **`TidalFlatVisual` overlay's future** — ~~once the shader shore is smooth on St Peters, the 2 m-cell
   colour grid (the greybox tide-reveal) may become redundant with the shader's own depth tint; whether to
   keep it as a gameplay-clarity overlay or retire it is a follow-up once the smoothed shader is seen
-  (it currently double-draws the bar alongside the shader).
+  (it currently double-draws the bar alongside the shader).~~ **RESOLVED (gameplay-systems):** retired. The
+  grid was the owner-reported blockiness — it stamped 2 m flat blue/teal cells ON TOP of the already-live
+  layered shader (same tide, same `ITidalTerrain`, same flat), hiding the smooth shore. The St Peters builder
+  no longer creates it; `TidalFlatVisual.cs` + `TidalFlatVisualTests.cs` are deleted; the Sea plane's
+  sorting was raised (−10 → −5, above the authored sand/channel ground, below the clam holes/player) so the
+  shader's `clip(depth)` does the wet/dry reveal directly; and the bake resolution was raised 96 → 192
+  (§A step 1). P1 unchanged — the sim still gates on `WaterLevelAt`/`ElevationAt` directly, not the visual.
+  Alex must re-run **Build St Peters Scene** for the grid to disappear (it is builder-placed).

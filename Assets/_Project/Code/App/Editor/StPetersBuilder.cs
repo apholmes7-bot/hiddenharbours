@@ -169,7 +169,19 @@ namespace HiddenHarbours.App.Editor
             var seaTile = LoadSpriteAny(ArtSea);
             var water = new GameObject("Sea");
             var wsr = water.AddComponent<SpriteRenderer>();
-            wsr.sortingOrder = -10;
+            // The Sea plane carries the layered WaterSurface shader (below), whose clip(depth) makes the
+            // plane TRANSPARENT over dry ground (depth<=0) and renders OPAQUE water over covered ground
+            // (depth>0) — the smooth wet/dry reveal. For "the ground shows through when dry, water covers it
+            // when wet" (design/water-rendering.md §5.1: depth<=0 → hands off to terrain) the water plane must
+            // sit ABOVE the authored tidal-ground sprites it reveals/covers: the Sandbar (-9), the
+            // BoatChannelMarker (-8), the island beach/grass (-8/-7) and the slip (-6). At -5 it sits just
+            // above that ground stack and still below the clam holes (clamped -4..4) and the on-foot
+            // characters (the player Y-sorts within +2..+40, #110) — so holes and the player draw on the
+            // bared flat IN FRONT of the water. (Before this change a 2 m TidalFlatVisual colour grid sat at
+            // -5 and masked BOTH the sand and the shader; retiring that grid is what lets the smooth shader
+            // show, and the Sea takes the vacated -5 slot. The always-dry island stays visible because the
+            // shader clips over it: its 6 m elevation is above every water level, so depth<0 → transparent.)
+            wsr.sortingOrder = -5;
             if (seaTile != null)
             {
                 wsr.sprite = seaTile;
@@ -199,7 +211,12 @@ namespace HiddenHarbours.App.Editor
             {
                 wsr.sharedMaterial = waterMat;
                 var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
-                ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f));
+                // Bake the seabed height map at 192² (ADR 0012 §A step 1): over the 160×120 m plane that's a
+                // ~0.83 m texel (half the old 96²/~1.67 m), so the shader's depth/foam shoreline follows a
+                // FINE grid — the wet edge stops reading as ~1.5 m rectangular steps on the near-flat bar
+                // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
+                // available if the crest still facets, but 192 is the ADR's recommended start.
+                ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
             }
             else
             {
@@ -286,19 +303,17 @@ namespace HiddenHarbours.App.Editor
             var terrain = terrainGo.AddComponent<TidalTerrain>();
             ConfigureTidalTerrain(terrain);
 
-            // --- TIDE-REVEAL VISUAL (THE FIX — the bar VISIBLY bares/covers as the tide swings) ----------
-            // The static Sandbar/Channel sprites above are only a ground texture; on their own the falling-
-            // tide reveal read FROZEN even though the sim was swinging. This runtime overlay (gameplay-systems'
-            // Environment lane) colours a grid of cells from the SAME single number the walkability/boat-cross
-            // gate reads — authored ground elevation (TidalTerrain) vs the live deterministic water level
-            // (EnvironmentService.WaterLevelAt) — so a cell shows SAND when exposed and ramps to BLUE as water
-            // covers it. As the big tide (±3.5 m) falls the bar bares from its crest out; the flood seals it.
-            // Greybox flat tint only (NO shader — the layered water shader is the deferred art pass, ADR 0010).
-            // Covers the bar + flats span (island toe → Greywick end) with a comfortable margin either side.
-            var tideVisualGo = new GameObject("TideFlatVisual");
-            tideVisualGo.transform.position = new Vector3(barMid.x, barMid.y, 0f);
-            var tideVisual = tideVisualGo.AddComponent<HiddenHarbours.Environment.TidalFlatVisual>();
-            ConfigureTideFlatVisual(tideVisual, barMid, barLen, waterSprite);
+            // --- TIDE-REVEAL: now owned by the smooth WaterSurface shader (ADR 0012) --------------------
+            // The falling-tide reveal (the bar VISIBLY baring/covering) is rendered by the layered WaterSurface
+            // shader on the Sea plane above — it reads the SAME deterministic tide + TidalTerrain the
+            // walkability/boat-cross gate reads (depth = WaterLevelAt(t) − elevation), clips to expose the
+            // authored sand ground where dry and renders a depth-graded, foam-fringed water where covered.
+            // That is the SMOOTH wavy shore. An older purely-visual 2 m colour-cell grid (TidalFlatVisual)
+            // used to be stamped here on top of the shader; it double-drew the bar as big flat blue/teal
+            // squares and HID the smooth shader (the owner-reported blockiness). ADR 0012 "converge the live
+            // shoreline on the shader path" retired it — the shader alone now owns the reveal. The P1
+            // gameplay (clam-baring + the crossing gate) is unchanged: it reads ITidalTerrain/WaterLevelAt
+            // directly (see ScatterClamHoles + ClamDig + the StPeters/Clam EditMode tests), never this visual.
 
             // --- OPTIONAL DEV FAST-TIDE (greybox aid; OFF by default) -----------------------------------
             // The real-time tide is slow by design (~minutes per high→low), so in a short playtest the
@@ -450,9 +465,10 @@ namespace HiddenHarbours.App.Editor
                       "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
                       "yours). Island = high (always exposed); the SANDBAR bridges it to Greywick as a " +
                       "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
-                      "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The TideFlatVisual now " +
-                      "VISIBLY colours the bar/flats from the live water level (sand when exposed → blue as " +
-                      "it covers), so the reveal is unmistakable — not a frozen static sprite. Up by the " +
+                      "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The layered WaterSurface " +
+                      "shader VISIBLY reveals the bar/flats from the live water level (smooth depth-graded " +
+                      "water that clips to bare the sand as the tide falls, foam hugging the moving edge) — " +
+                      "the smooth shoreline, no blocky grid overlay (ADR 0012). Up by the " +
                       "cottage, AUNT GINNY (E to talk) teaches the buy-and-repair loop and NED'S LETTER (E " +
                       "to read) frames it — the dory is EARNED, not inherited; a one-line onboarding nudge " +
                       "walks the loop (clams → cross the bar → Greywick licence+rod → buy+repair the dory → " +
@@ -465,8 +481,9 @@ namespace HiddenHarbours.App.Editor
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "St Peters Island built — now a PLAYABLE START scene (greybox).\n\nPress Play:\n• You control " +
                 "the on-foot fisher (WASD / arrows) at the start spawn; the camera follows.\n• The clock + " +
-                "tide RUN — the sandbar/flats VISIBLY bare (turn sandy) as the big tide (±3.5 m) falls and " +
-                "go blue as it floods (the tide-reveal is the point).\n• The tide is SLOW by design (~a few " +
+                "tide RUN — the smooth WaterSurface shader bares the sandbar/flats (the sand shows through) " +
+                "as the big tide (±3.5 m) falls and covers them with depth-graded water as it floods (the " +
+                "tide-reveal is the point).\n• The tide is SLOW by design (~a few " +
                 "minutes per high→low). To watch the full swing FAST: tick 'Enabled' on the DevFastTide " +
                 "object in the Hierarchy while in Play (OFF by default), or use Tools ▸ Tide Scrubber.\n• " +
                 "The hand-rowed Dory is moored off the south coast (board at the slip once she's yours).\n• " +
@@ -477,38 +494,22 @@ namespace HiddenHarbours.App.Editor
 
         // ---- shared config (single source of truth with the EditMode test) -------------------------
 
-        /// <summary>Configure the runtime tide-reveal overlay (gameplay-systems' <c>TidalFlatVisual</c>) to
-        /// cover the bar + intertidal flats. Grid extent spans the bar with a generous margin so the
-        /// island-toe clam coast and the flats either side of the bar are all revealed/covered by the live
-        /// tide. The cell sprite is the scene's 1×1 square (colour does the work). Tuning lives on the
-        /// component (no magic numbers — CLAUDE.md rule 6); these are just the region's extent.</summary>
-        public static void ConfigureTideFlatVisual(HiddenHarbours.Environment.TidalFlatVisual visual,
-                                                   Vector2 barMid, float barLen, Sprite cellSprite)
-        {
-            var so = new SerializedObject(visual);
-            SetV2(so, "_center", barMid);
-            // Span the whole bar + a margin along its axis, and a height that takes in the flats and the
-            // near intertidal coast either side of the bar centre-line — without slabbing the whole deep
-            // harbour (cells outside the bar read as the deep-water blue, which blends with the sea).
-            SetV2(so, "_size", new Vector2(barLen + 2f * SandbarHalfWidth + 16f, SandbarHalfWidth * 2f + 16f));
-            SetF(so, "_cellSize", 2f);
-            var sp = so.FindProperty("_cellSprite");
-            if (sp != null && sp.propertyType == SerializedPropertyType.ObjectReference)
-                sp.objectReferenceValue = cellSprite;
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         /// <summary>Configure the runtime <see cref="HiddenHarbours.Art.WaterSurface"/> so the layered shader's
-        /// baked seabed height map covers the visible water (the Sea plane bounds). The sim → uniform tuning
-        /// (current/wind thresholds, refresh) lives on the component defaults and the LOOK on the Water material
-        /// (no magic numbers — CLAUDE.md rule 6); here we only set the world rectangle the height map bakes over,
-        /// so the depth gradient + foam band line up with the St Peters TidalTerrain.</summary>
+        /// baked seabed height map covers the visible water (the Sea plane bounds) at a chosen bake resolution.
+        /// The sim → uniform tuning (current/wind thresholds, refresh) lives on the component defaults and the
+        /// LOOK on the Water material (no magic numbers — CLAUDE.md rule 6); here we set the world rectangle the
+        /// height map bakes over (so the depth gradient + foam band line up with the St Peters TidalTerrain) and
+        /// the bake <paramref name="resolution"/>. A FINER bake (ADR 0012 §A: 96 → 192) shrinks the texel from
+        /// ~1.67 m to ~0.83 m over the 160×120 m plane, so the shader's wet edge follows a fine grid instead of
+        /// reading as ~1.5 m rectangular steps — the smoothed shoreline. Clamped to the component's
+        /// [Range(16,256)]; pass 256 if the near-flat bar crest still facets at 192.</summary>
         public static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
-                                                 Vector2 worldCenter, Vector2 worldSize)
+                                                 Vector2 worldCenter, Vector2 worldSize, int resolution)
         {
             var so = new SerializedObject(surface);
             SetV2(so, "_heightWorldCenter", worldCenter);
             SetV2(so, "_heightWorldSize", worldSize);
+            SetInt(so, "_heightResolution", Mathf.Clamp(resolution, 16, 256));
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -578,6 +579,13 @@ namespace HiddenHarbours.App.Editor
             var p = so.FindProperty(field);
             if (p != null) p.floatValue = value;
             else Debug.LogWarning($"[StPetersBuilder] no float field '{field}'.");
+        }
+
+        static void SetInt(SerializedObject so, string field, int value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.intValue = value;
+            else Debug.LogWarning($"[StPetersBuilder] no int field '{field}'.");
         }
 
         static void SetV2(SerializedObject so, string field, Vector2 value)
@@ -723,10 +731,11 @@ namespace HiddenHarbours.App.Editor
             go.transform.position = new Vector3(pos.x, pos.y, 0f);
 
             var sr = go.AddComponent<SpriteRenderer>();
-            // Sit ON the flat: above the ground sprites (Sandbar -9) and the tide-reveal cells (-5), and below
-            // the on-foot characters (the Player draws at +10). A small base-Y term sorts holes among
+            // Sit ON the bared flat: above the Sandbar ground (-9) AND the water shader plane (Sea, -5) so a
+            // hole on dry ground draws in front of the (clipped-transparent) water, and below the on-foot
+            // characters (the player Y-sorts within +2..+40, #110). A small base-Y term sorts holes among
             // themselves (lower on screen = higher Y-negated = draws in front) without ever crossing the
-            // character band — clamped so a far-south hole can't pop in front of the player.
+            // character band — clamped to -4..4 so a far-south hole can't pop in front of the player.
             sr.sortingOrder = Mathf.Clamp(-Mathf.RoundToInt(pos.y), -4, 4);
             if (holeSprite != null) { sr.sprite = holeSprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = new Color(0.30f, 0.24f, 0.16f, 0.65f); go.transform.localScale = new Vector3(0.5f, 0.5f, 1f); }

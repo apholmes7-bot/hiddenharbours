@@ -12,6 +12,7 @@
         "HiddenHarbours.UI",
         "HiddenHarbours.App",
         "HiddenHarbours.App.Editor",
+        "HiddenHarbours.Art",
         "HiddenHarbours.Player",
         "HiddenHarbours.World"
     ],
