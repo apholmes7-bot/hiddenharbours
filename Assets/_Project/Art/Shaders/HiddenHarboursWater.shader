@@ -95,6 +95,21 @@ Shader "HiddenHarbours/Water"
         // reorients as the weather shifts. 0 = pure current-led, 1 = pure wind-led; default a sensible mix.
         _FoamDriftWindVsCurrent ("Foam drift wind vs current (0 = current, 1 = wind)", Range(0,1)) = 0.6
 
+        [Header(Living foam (evolving field   merge separate   not just scroll))]
+        // The whitecaps + foam-fringe churn used to sample ONE ValueNoise that only TRANSLATED — a fixed-shape
+        // stamp sliding across the surface, so it read as a REPEATING pattern whose blobs never changed shape.
+        // These make the underlying field EVOLVE IN PLACE: bright spots appear, grow, drift, shrink and vanish.
+        //   _FoamEvolveSpeed   — how fast the foam field BOILS / morphs (0 = frozen shapes, just drift).
+        //   _FoamBlobScale     — the foam-blob size for the evolving field (smaller = larger blobs).
+        //   _FoamThreshold     — the SOFT-THRESHOLD level on the evolving field: above it = foam. Higher = less foam.
+        //   _FoamThresholdSoft — the smoothstep width around the threshold. This is what makes blobs MERGE (the
+        //                        valley between two rising maxima crosses the threshold) and SEPARATE (it dips
+        //                        back below) and fade in/out — metaball-like, organic, instead of a hard edge.
+        _FoamEvolveSpeed    ("Foam evolve / boil speed (0 = frozen)", Float) = 0.25
+        _FoamBlobScale      ("Foam blob scale (smaller = bigger blobs)", Float) = 2.2
+        _FoamThreshold      ("Foam soft-threshold level (higher = less foam)", Range(0,1)) = 0.55
+        _FoamThresholdSoft  ("Foam threshold softness (merge / separate band)", Range(0,1)) = 0.18
+
         [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
         _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
         _SwashSpeed     ("Swash speed (waves / 2pi sec)", Float)      = 0.5
@@ -269,6 +284,11 @@ Shader "HiddenHarbours/Water"
                 float  _FoamCrestGate;
                 float  _SpecSwellBias;
                 float  _FoamDriftWindVsCurrent;
+                // Living foam: the evolving-field boil + the soft-threshold (merge/separate) levers.
+                float  _FoamEvolveSpeed;
+                float  _FoamBlobScale;
+                float  _FoamThreshold;
+                float  _FoamThresholdSoft;
                 float  _SwashAmplitude;
                 float  _SwashSpeed;
                 float  _SwashScale;
@@ -310,6 +330,15 @@ Shader "HiddenHarbours/Water"
                 p = frac(p * float2(123.34, 345.45));
                 p += dot(p, p + 34.345);
                 return frac(p.x * p.y);
+            }
+
+            // 2-vector hash (different lattice constants from Hash21 so the untile/swell offsets don't
+            // correlate with the surface noise). Defined up here with the other hash helpers because the
+            // swell/foam evolving-field code below CALLS it — HLSL/D3D needs definition before use.
+            float2 Hash22(float2 p)
+            {
+                p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
+                return frac(sin(p) * 43758.5453);
             }
 
             float ValueNoise(float2 p)
@@ -362,6 +391,54 @@ Shader "HiddenHarbours/Water"
                     amp  *= 0.5;     // gain
                 }
                 return sum / max(norm, 1e-4);
+            }
+
+            // ---- EVOLVING (pseudo-3D) noise FIELD — the LIVING-FOAM keystone ---------------------------------
+            // The old whitecaps/foam churn sampled ONE ValueNoise that only TRANSLATED (a fixed-shape stamp
+            // sliding across the surface) — so it read as a REPEATING pattern whose blobs never changed shape.
+            // This returns a field that EVOLVES IN PLACE: bright spots appear, grow, drift, shrink and vanish.
+            //
+            // Mechanism (cheapest that reads well): a pseudo-3D ValueNoise built by BLENDING TWO time-offset
+            // ValueNoise samples of the SAME coord, where the MIX itself animates. As the mix sweeps 0->1 a
+            // local maximum from sample-1 fades while a (differently placed) maximum from sample-2 rises — so the
+            // field MORPHS rather than sliding. Two such "boil" pairs half a step out of phase (a smoothed
+            // crossfade) keep the morph continuous and seamless (no popping when one pair re-randomizes). A slow
+            // `drift` (passed in, = wind+current) is layered ON TOP so the evolving field STILL travels with the
+            // weather — the owner keeps the wind-direction drift; the evolution is added, not a replacement.
+            //
+            // `evolveSpeed` sets how fast the field boils (morph rate); `worldXY*scale` is the blob size. Pure
+            // value-noise + pixelize (pixel-art faithful, §3), no textures, a few noise taps. Returns ~0..1.
+            // Drives ONLY col.rgb foam dressing — never depth/clip/_WaterLevel (P1 integrity, CLAUDE.md rule 5).
+            float EvolvingField(float2 worldXY, float2 drift, float scale, float evolveSpeed, float t)
+            {
+                // the field coord: pixelized world position (with the slow weather drift) at the blob scale.
+                float2 p = Pixelize((worldXY + drift) * max(scale, 1e-4));
+
+                // a slow "boil" clock; z is the pseudo-third axis the lattice is offset along.
+                float z = t * max(evolveSpeed, 0.0);
+                float zi = floor(z);
+                float zf = z - zi;                       // 0..1 within the current boil step
+
+                // Two decorrelated lattice offsets per integer boil step (hash the step so each step's pair of
+                // maxima sit in DIFFERENT places — that's what makes spots move/merge as the mix sweeps).
+                float2 oA = Hash22(float2(zi,        37.2)) * 8.0;   // a few cells of lattice shift
+                float2 oB = Hash22(float2(zi + 1.0,  37.2)) * 8.0;
+                // crossfade the two samples by the smoothed sub-step phase: maxima from A fade as B's rise.
+                float fade = zf * zf * (3.0 - 2.0 * zf);             // smoothstep(0,1,zf) — no popping at step edges
+                float pair = lerp(ValueNoise(p + oA), ValueNoise(p + oB), fade);
+
+                // A SECOND boil pair half a step out of phase, averaged in, so the morph never momentarily freezes
+                // at a step boundary (when one pair's fade hits an endpoint the other is mid-sweep). Cheap continuity.
+                float z2  = z + 0.5;
+                float zi2 = floor(z2);
+                float zf2 = z2 - zi2;
+                float2 oC = Hash22(float2(zi2,       91.7)) * 8.0;
+                float2 oD = Hash22(float2(zi2 + 1.0, 91.7)) * 8.0;
+                float fade2 = zf2 * zf2 * (3.0 - 2.0 * zf2);
+                float pair2 = lerp(ValueNoise(p + oC), ValueNoise(p + oD), fade2);
+
+                // average the two out-of-phase pairs => a continuously MORPHING ~0..1 field (in-place evolution).
+                return (pair + pair2) * 0.5;
             }
 
             // Three-octave SYNCOPATED surface noise. Each octave has a DISTINCT (direction, rate) so the
@@ -452,14 +529,6 @@ Shader "HiddenHarbours/Water"
             float2 PaintUV(float2 worldXY, float scale, float2 scroll)
             {
                 return Pixelize(worldXY + scroll) * max(scale, 1e-4);
-            }
-
-            // 2-vector hash for the untile per-tile offset (different lattice constants from Hash21 so the
-            // untile offset doesn't correlate with the surface noise).
-            float2 Hash22(float2 p)
-            {
-                p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
-                return frac(sin(p) * 43758.5453);
             }
 
             // ---- IQ-style texture UNTILING (hide the repeat grid that reads at CALM) -------------------------
@@ -695,7 +764,11 @@ Shader "HiddenHarbours/Water"
                     // float2(-t*_Flow, t*_Flow) that scrolled AGAINST the surface. So the foam moves with the
                     // one connected surface and reorients as the weather shifts.
                     float2 foamDrift = FoamDriftDir() * (_Flow * t);
-                    float churn = ValueNoise(Pixelize(worldXY * _FoamNoise + foamDrift));
+                    // LIVING foam: the churn is now an EVOLVING field (boils in place) instead of one ValueNoise
+                    // that only slid rigidly — so the fringe foam shapes MORPH (appear/grow/shrink/vanish) while
+                    // still drifting with the body. _FoamBlobScale sizes the blobs; _FoamEvolveSpeed the boil rate.
+                    float churn = EvolvingField(worldXY, foamDrift, _FoamNoise * _FoamBlobScale * 0.5,
+                                                _FoamEvolveSpeed, t);
                 #if defined(_USE_FOAMTEX)
                     // Painted foam pattern (white-on-transparent) scrolled WITH the body (same FoamDriftDir as
                     // the churn); its coverage (alpha, falling back to luminance for an opaque tile) replaces the
@@ -706,9 +779,16 @@ Shader "HiddenHarbours/Water"
                     float foamPat = max(foamSample.a, dot(foamSample.rgb, float3(0.299, 0.587, 0.114)));
                     churn = lerp(churn, foamPat, _FoamTexStrength);
                 #endif
-                    // wind roughness raises the foam threshold (whitecaps reach further in); churn breaks the line
-                    float foamMask = saturate(foamEdge + _Roughness * 0.4) * (0.5 + 0.5 * churn);
-                    foamMask = smoothstep(0.35, 0.65, foamMask);   // crisp pixel foam, not a soft smear
+                    // SOFT-THRESHOLD (metaball merge/separate): build the foam from a smoothstep around a
+                    // threshold on the evolving field, NOT a hard step. Wind roughness + the depth-band edge LIFT
+                    // the field (more foam reaches in when it's rough / right at the wet edge) so the threshold is
+                    // crossed by more of the field there. As two field maxima grow toward each other the valley
+                    // between them rises above (thr - soft) and the blobs MERGE; when the field dips below they
+                    // SEPARATE — organic, in-place, not a sliding stamp. col.a only blends the foam (P1, rule 5).
+                    float foamField = saturate(churn + foamEdge * 0.5 + _Roughness * 0.4);
+                    float thr  = saturate(_FoamThreshold);
+                    float soft = max(_FoamThresholdSoft, 1e-3);
+                    float foamMask = smoothstep(thr - soft, thr + soft, foamField) * saturate(foamEdge + _Roughness * 0.4);
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, foamMask * _FoamColor.a);
                     col.a = max(col.a, foamMask * _FoamColor.a);
                 }
@@ -728,15 +808,31 @@ Shader "HiddenHarbours/Water"
                     float2 wp = worldXY + capDrift;
                     float stretch = max(_FoamStreakStretch, 1.0);
                     // project onto the wind basis: along-wind unchanged, cross-wind multiplied (compressed UV).
+                    // The drift is folded into wp here, so the field both EVOLVES and travels along the wind/current.
                     float2 aniso = float2(dot(wp, wdir), dot(wp, wperp) * stretch);
-                    float cap = ValueNoise(Pixelize(aniso * _NoiseScale * 3.0));
-                    float capMask = step(1.0 - _Roughness * 0.25, cap) * saturate(dt);  // only on deeper water
+                    // LIVING whitecaps: the cap field now EVOLVES IN PLACE (the boil) instead of one ValueNoise
+                    // that only TRANSLATED — that fixed-shape sliding stamp was exactly the "repeating pattern /
+                    // shapes never change" the owner saw. Built on the wind-streaked aniso coord so the streaks
+                    // are preserved while the whitecaps morph (appear/grow/drift/shrink/vanish). drift=0 here
+                    // because it is already baked into wp above (avoids double-drifting the coord).
+                    float cap = EvolvingField(aniso, float2(0, 0), _NoiseScale * 3.0 * _FoamBlobScale,
+                                              _FoamEvolveSpeed, t);
+                    // SOFT-THRESHOLD (metaball merge/separate) instead of the hard step(): smoothstep around a
+                    // threshold lowered by wind (rougher => more sea is above the threshold => more caps). As the
+                    // evolving field's maxima rise toward each other the valley crosses (thr - soft) and caps
+                    // MERGE; when it dips they SEPARATE and fade — organic whitecaps, not a sliding speckle grid.
+                    float capThr  = saturate(_FoamThreshold - _Roughness * 0.25);
+                    float capSoft = max(_FoamThresholdSoft, 1e-3);
+                    float capMask = smoothstep(capThr - capSoft, capThr + capSoft, cap) * saturate(dt);  // deeper water
                 #if defined(_USE_WHITECAPTEX)
                     // Painted whitecap pattern (white-on-transparent) drifted WITH the body (the foam drift
                     // blend, not a fixed current scroll); coverage SCALES BY ROUGHNESS (the wind uniform) so
                     // caps appear/intensify with wind, gated to deeper water by dt. Blends over the speckle.
-                    half4 capSample = SAMPLE_TEXTURE2D(_WhitecapTex, sampler_WhitecapTex,
-                                          PaintUV(worldXY, _PaintScale, capDrift));
+                    // Routed through UntileSampleW (like the other painted slots) so the small seamless tile's
+                    // REPEAT GRID stops reading — the painted-texture culprit behind any residual tiling the
+                    // owner still sees — dialed by _UntileStrength, kept pixel-snapped (PaintUV inside).
+                    half4 capSample = UntileSampleW(TEXTURE2D_ARGS(_WhitecapTex, sampler_WhitecapTex),
+                                          worldXY, _PaintScale, capDrift, _UntileStrength);
                     float capPat = max(capSample.a, dot(capSample.rgb, float3(0.299, 0.587, 0.114)));
                     float capTexMask = capPat * saturate(_Roughness) * saturate(dt);
                     capMask = lerp(capMask, capTexMask, _WhitecapTexStrength);

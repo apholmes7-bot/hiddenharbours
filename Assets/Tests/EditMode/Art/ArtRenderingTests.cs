@@ -314,6 +314,74 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
+        // ===== WaterSurface: the LIVING-FOAM soft-threshold (metaball merge / separate) ====================
+        // These guard the C# twin of the shader's foam mask: the foam is built from a SMOOTHSTEP around a
+        // threshold on an evolving field, NOT a hard step. That soft band is what makes blobs MERGE (a rising
+        // valley between two maxima crosses thr−soft), SEPARATE (the field dips back below), and fade in/out.
+        // The evolving FIELD is GPU value-noise (not unit-testable headless); the THRESHOLD math — the part
+        // that produces the merge/separate behaviour — is pure and mirrored here. Visual-only (P1, rule 5).
+
+        [Test]
+        public void Smoothstep_HitsEdges_AndEasesBetween()
+        {
+            // Below edge0 → 0, above edge1 → 1, midpoint → 0.5, with an ease-in-out shape between.
+            Assert.AreEqual(0f, WaterSurface.Smoothstep(0.4f, 0.7f, 0.2f), 1e-5f, "below edge0 is fully off");
+            Assert.AreEqual(1f, WaterSurface.Smoothstep(0.4f, 0.7f, 0.9f), 1e-5f, "above edge1 is fully on");
+            Assert.AreEqual(0.5f, WaterSurface.Smoothstep(0.4f, 0.7f, 0.55f), 1e-5f, "the midpoint is half coverage");
+
+            // Degenerate (equal) edges fall back to a hard step at the edge — no NaN / divide-by-zero.
+            Assert.AreEqual(0f, WaterSurface.Smoothstep(0.5f, 0.5f, 0.49f), 1e-6f, "equal edges: just-below is 0");
+            Assert.AreEqual(1f, WaterSurface.Smoothstep(0.5f, 0.5f, 0.50f), 1e-6f, "equal edges: at/above is 1 (no NaN)");
+        }
+
+        [Test]
+        public void FoamSoftThreshold_IsSoft_NotAHardStep_AndMonotonic()
+        {
+            const float thr = 0.55f, soft = 0.18f;
+            // A SOFT band: a field value inside (thr−soft, thr+soft) is PARTIAL coverage — the thing a hard
+            // step() could never produce, and exactly what lets blob edges fade rather than pop.
+            float partial = WaterSurface.FoamSoftThreshold(thr, thr, soft);
+            Assert.AreEqual(0.5f, partial, 1e-4f, "a field exactly at the threshold is half-coverage (soft, not 0/1)");
+            float justInside = WaterSurface.FoamSoftThreshold(thr + soft * 0.5f, thr, soft);
+            Assert.That(justInside, Is.InRange(0.5f, 1f), "inside the band reads as a fractional, growing coverage");
+
+            // Fully below the band → no foam; fully above → solid foam (the blob's bright core).
+            Assert.AreEqual(0f, WaterSurface.FoamSoftThreshold(thr - soft - 0.01f, thr, soft), 1e-4f, "below the band: no foam");
+            Assert.AreEqual(1f, WaterSurface.FoamSoftThreshold(thr + soft + 0.01f, thr, soft), 1e-4f, "above the band: solid foam");
+
+            // Monotonic non-decreasing in the field value (a rising field only ever adds coverage — the basis
+            // for "a maximum rising through the band fades the blob IN; falling back fades it OUT").
+            float prev = WaterSurface.FoamSoftThreshold(0f, thr, soft);
+            for (float f = 0.02f; f <= 1f; f += 0.02f)
+            {
+                float c = WaterSurface.FoamSoftThreshold(f, thr, soft);
+                Assert.GreaterOrEqual(c + 1e-5f, prev, "coverage never decreases as the field rises (fades in, not flickers)");
+                Assert.That(c, Is.InRange(0f, 1f), "coverage stays a 0..1 weight");
+                prev = c;
+            }
+        }
+
+        [Test]
+        public void FoamSoftThreshold_TwoMaxima_MergeWhenValleyRises_SeparateWhenItDips()
+        {
+            // The metaball mechanism in one assertion set. Model two foam maxima as the field; the VALLEY between
+            // them is the field's value at the midpoint. With a fixed threshold:
+            const float thr = 0.5f, soft = 0.2f;   // band = [0.3, 0.7]
+
+            // Two SEPARATE blobs: each maximum is above the band (foam), but the valley between them sits BELOW
+            // thr−soft → zero coverage in the gap → the blobs read as two separate patches.
+            float maxCoverage = WaterSurface.FoamSoftThreshold(0.9f, thr, soft);
+            float valleyLow   = WaterSurface.FoamSoftThreshold(0.25f, thr, soft);   // valley below the band
+            Assert.AreEqual(1f, maxCoverage, 1e-4f, "each maximum is solid foam");
+            Assert.AreEqual(0f, valleyLow, 1e-4f, "a LOW valley between them is bare water — the blobs are SEPARATE");
+
+            // Now the maxima grow toward each other and the VALLEY rises above thr−soft: the gap fills with foam
+            // → the two blobs MERGE into one connected patch. Same threshold, only the field changed (it evolved).
+            float valleyRisen = WaterSurface.FoamSoftThreshold(0.45f, thr, soft);   // valley risen into the band
+            Assert.Greater(valleyRisen, 0f, "a RISEN valley now carries foam — the two blobs have MERGED");
+            Assert.Greater(valleyRisen, valleyLow, "merging is monotonic: the higher the valley, the more it fills in");
+        }
+
         [Test]
         public void PointInPolygon_InsideAndOutsideASquare()
         {
