@@ -39,6 +39,7 @@ namespace HiddenHarbours.App.Editor
         const string DataGear    = "Assets/_Project/Data/Gear";        // St Peters opening: the rod
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         const string ArtTrees    = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
+        const string TreeMatPath = "Assets/_Project/Art/Materials/Tree.mat";        // canopy wind-sway material (HiddenHarbours/TreeWind)
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
@@ -550,6 +551,10 @@ namespace HiddenHarbours.App.Editor
             var decor = new GameObject("Decor");
             var trees = new GameObject("Trees");
             trees.transform.SetParent(decor.transform, false);
+            // The canopy wind-sway material (HiddenHarbours/TreeWind), shared with the drag-in tree prefabs, so
+            // Greywick's baked trees sway off the SAME wind as the grass + water. Optional — null leaves them
+            // static (re-run after importing the TreeWind shader + Tree.mat).
+            var treeMaterial = AssetDatabase.LoadAssetAtPath<Material>(TreeMatPath);
             int placed = 0;
             foreach (var t in specs)
             {
@@ -558,6 +563,7 @@ namespace HiddenHarbours.App.Editor
                 go.transform.position = new Vector3(t.X, t.Y, 0f);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
+                if (treeMaterial != null) sr.sharedMaterial = treeMaterial;   // canopy sway off the shared wind
                 var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
                 if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
                 else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }

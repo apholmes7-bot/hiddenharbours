@@ -39,6 +39,10 @@ namespace HiddenHarbours.Art.Editor
         const int GrassSortingOrder    = 2;
 
         const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
+        // The tree canopy wind-sway material (HiddenHarbours/TreeWind). Assigned to every tree prefab so the
+        // canopy sways off the SAME shared wind as the grass + water — no per-tree wiring (GrassWindBridge
+        // self-installs and feeds the global _WindWorld). Optional: a missing material just leaves trees static.
+        const string TreeMaterialPath = "Assets/_Project/Art/Materials/Tree.mat";
         // The grass tuft variants (medium / short / tall) — mixed for a dense, painterly clump.
         static readonly string[] GrassTuftSprites =
         {
@@ -56,13 +60,19 @@ namespace HiddenHarbours.Art.Editor
             // --- Trees: Tree01..Tree40 (BottomCenter pivot on import — they plant at the trunk).
             //     Tree38..Tree40 are the reference-style painterly evergreens (tall, tiered, left-lit). ---
             EnsureFolder($"{PrefabRoot}/Trees");
+            // The canopy wind material (optional — null just leaves trees static; warns once).
+            var treeMaterial = AssetDatabase.LoadAssetAtPath<Material>(TreeMaterialPath);
+            if (treeMaterial == null)
+                Debug.LogWarning($"[DecorPrefabBuilder] tree material {TreeMaterialPath} missing — trees built " +
+                                 "without wind-sway (open Unity so it imports the TreeWind shader + material, then re-run).");
             for (int i = 1; i <= 40; i++)
             {
                 string name = $"Tree{i:00}";
                 string sprite = $"{ArtSprites}/Environment/Trees/{name}.png";
                 // Trees auto-layer by Y (YSort) so the player walks behind a tree up-screen and in front of one
-                // down-screen — the same scale the player/grass use, so all three interleave automatically.
-                if (BuildDecorPrefab(name, sprite, $"{PrefabRoot}/Trees/{name}.prefab", TreeSortingOrder, ySort: true)) n++;
+                // down-screen, and sway their canopy off the shared wind (the TreeWind material) — both automatic.
+                if (BuildDecorPrefab(name, sprite, $"{PrefabRoot}/Trees/{name}.prefab", TreeSortingOrder,
+                                     ySort: true, material: treeMaterial)) n++;
             }
 
             // --- Buildings (centre pivot). Cottage day/night, Greywick houses, shipwright, buyer stall. ---
@@ -217,7 +227,7 @@ namespace HiddenHarbours.Art.Editor
         /// what it can.
         /// </summary>
         static bool BuildDecorPrefab(string name, string spritePath, string prefabPath, int sortingOrder,
-                                     bool ySort = false)
+                                     bool ySort = false, Material material = null)
         {
             var sprite = TileAssetBuilder.LoadSpriteAny(spritePath);
             if (sprite == null) { Debug.LogWarning($"[DecorPrefabBuilder] missing sprite {spritePath} — {name} skipped."); return false; }
@@ -229,6 +239,7 @@ namespace HiddenHarbours.Art.Editor
                 sr.sprite = sprite;                 // pivot is baked into the sub-sprite by the import lock
                 sr.sortingOrder = sortingOrder;     // a sane default; YSortSprite (if added) recomputes from Y
                 go.transform.localScale = Vector3.one;   // honest metric size — never scale a real sprite
+                if (material != null) sr.sharedMaterial = material;   // e.g. the TreeWind canopy-sway material
                 if (ySort) go.AddComponent<YSortSprite>();   // auto-layer by world Y (static decor: computed once)
 
                 SavePrefabReplacing(go, prefabPath);
