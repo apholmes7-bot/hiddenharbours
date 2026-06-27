@@ -4,7 +4,7 @@ namespace HiddenHarbours.World
 {
     /// <summary>
     /// The hand-painted seabed/terrain <b>height map ASSET</b> (ADR 0014) — authored DATA (CLAUDE.md
-    /// rule 2), one per region, that the owner paints with <c>World.Editor.SeabedPaintTool</c> and that
+    /// rule 2), one per region, that the owner paints with <c>App.Editor.TerrainPaintTool</c> and that
     /// becomes BOTH the water render's depth source AND the tide sim's elevation source (the one-height-map
     /// / three-consumers invariant, ADR 0009/0010/0012). It wraps:
     /// <list type="bullet">

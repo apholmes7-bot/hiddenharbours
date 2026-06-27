@@ -761,9 +761,20 @@ The §4 height map (the *single source of truth* for render + walkability + boat
 1. **Analytic zones** (`World.TidalTerrain`) — elevation composed in code from a few blended zones
    (island / sandbar / channel / deep). The shipped St Peters default.
 2. **A hand-painted height map** (`World.PaintedHeightMap`, ADR 0014) — the owner paints elevation with
-   the **Seabed Paint Tool** (`Hidden Harbours ▸ Tools ▸ Seabed Paint Tool`). The painted texture's R
-   channel encodes elevation over a world rect + min/max range — **the same `_HeightTex` / `_HeightWorldMin`
-   / `_HeightWorldSize` / `_HeightMin` / `_HeightMax` this shader already samples** (§5.1 `SeabedElevation`).
+   the **Terrain Paint Tool (height + look)** (`Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height +
+   look)` — renamed from "Seabed Paint Tool"). The painted texture's R channel encodes elevation over a
+   world rect + min/max range — **the same `_HeightTex` / `_HeightWorldMin` / `_HeightWorldSize` /
+   `_HeightMin` / `_HeightMax` this shader already samples** (§5.1 `SeabedElevation`).
+
+**Paint a terrain TYPE — look + height in ONE stroke.** The tool's headline brush paints a tunable terrain
+*type* (Deep / Channel / Beach / Sandbar / Grass / Cliff): one stroke (a) sets the height-map cells to the
+type's elevation AND (b) stamps the type's ground **tile** on the scene's ground tilemap (underwater types —
+Deep / Channel — paint no tile and CLEAR any there, so the water shows). The **height side stays the single
+source of truth** for water + tide (this section is unchanged by the type brush); the tile is authored
+*visual* content, like normal Tile-Palette painting, never sim. A toggleable **edit-mode height colour
+overlay** (deep blue → cyan → sand → green → rock, with a legend + the preview waterline) lets the owner SEE
+the elevation he's shaping — a designer aid drawn ONLY in the Scene view that never serializes and never
+renders in Play or a build (`World.TerrainHeightPalette` owns the pure ramp).
 
 **One map, both consumers, no drift.** The painted texture is **CPU-readable**, so the sim decodes it once
 into a cached `float[]` (`PaintedHeightField`, sampled by `PaintedTidalTerrain : ITidalTerrain`) using the

@@ -35,9 +35,40 @@
   `Assets/_Project/Code/World/PaintedTidalTerrain.cs` (`ITidalTerrain` over the painted map; registers
   into `GameServices.TidalTerrain`), `Assets/_Project/Code/Art/WaterSurface.cs` (the new
   `DepthSource.PaintedHeightMap` that feeds the SAME painted texture to the shader),
-  `Assets/_Project/Code/App/Editor/SeabedPaintTool.cs` (the Scene-view brush + tide-preview + St Peters
-  export — alongside the builders, the tools-editor home with the StPeters constants + World/Art refs it
-  needs), `Assets/Tests/EditMode/World/PaintedHeightFieldTests.cs`.
+  `Assets/_Project/Code/App/Editor/TerrainPaintTool.cs` (the Scene-view brush + tide-preview + St Peters
+  export — **renamed from `SeabedPaintTool.cs`** and extended into the unified terrain-type tool below;
+  alongside the builders, the tools-editor home with the StPeters constants + World/Art refs it needs),
+  `Assets/_Project/Code/World/TerrainHeightPalette.cs` (the pure elevation→colour ramp for the edit-mode
+  overlay), `Assets/Tests/EditMode/World/PaintedHeightFieldTests.cs`,
+  `Assets/Tests/EditMode/World/TerrainHeightPaletteTests.cs`, `Assets/Tests/EditMode/TerrainPaintToolTests.cs`.
+
+## Addendum — the unified Terrain Paint Tool (height + LOOK in one stroke)
+
+The original tool (§6 below) painted **only the height map**. Per the owner's explicit choice of the "paint a
+terrain TYPE" model (over auto-texture-from-height or two separate brushes), the Scene-view tool is extended —
+**still editor-only, the height side / the P1 invariant UNCHANGED** — and renamed to **Terrain Paint Tool
+(height + look)** (menu `Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)`):
+
+- **Terrain-TYPE brush (the headline).** A TUNABLE list of presets (rule 6), each `{ name, optional ground
+  tile, elevation, clearTile }`. Painting a type in ONE stroke (a) sets the height-map cells under the brush
+  to the type's elevation AND (b) stamps the type's tile onto the target GROUND tilemap at those cells.
+  Defaults (owner-editable): **Deep** (−4, no tile), **Channel** (−0.6, no tile), **Beach** (~0.3, Sand),
+  **Sandbar** (1.6, Foam — the closest "wet sand" the generated set has), **Grass/Land** (6, Grass), **Cliff**
+  (~8, Rock). Underwater types (no tile / `clearTile`) set height only and CLEAR any land tile so the water
+  shows. Presets bind to the closest tile from `TileAssetBuilder.Terrain`; a missing tile leaves the preset
+  EMPTY (height-only) and the UI hints to run "Build Scene-Painting Toolkit".
+- **The height brushes are kept** (Raise / Lower / Set-height / Smooth) for fine-tuning, as are New /
+  Export-St-Peters / Adopt / the PaintedHeightMap asset / the WaterSurface preview. **The height map remains
+  the single source of truth for water + tide (P1); the tile is authored VISUAL content, not sim.**
+- **Edit-mode HEIGHT COLOUR OVERLAY.** A toggle renders the terrain false-coloured by elevation (deep blue →
+  cyan shallows → sand → green → brown/rock) in the **Scene view ONLY**, with a legend and the current
+  preview-tide waterline — a "hidden height map" the owner can SEE while adjusting. It is a designer aid
+  drawn with GL/Handles from the decoded height field (`World.TerrainHeightPalette` is the pure ramp); it
+  **never serializes and never renders in Play or a build**, and rebuilds its small CPU texture only when the
+  field changes (no per-frame churn — rule 7).
+- **Target ground tilemap.** Auto-found (prefers the `TerrainTilemap` that "Add Paintable Tilemap" creates),
+  owner-assignable, and create-on-demand (it reuses `PaintableTilemapMenu.AddPaintableTilemap` rather than
+  failing). Tiles are written via the Tilemap API, Undo-recorded, scene marked dirty.
 
 ## Context
 
