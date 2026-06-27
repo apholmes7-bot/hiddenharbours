@@ -668,6 +668,48 @@ namespace HiddenHarbours.Art
             return blend.sqrMagnitude > 1e-6f ? blend.normalized : Vector2.right;
         }
 
+        // ==== Shoreward-bias DIRECTION twins — pure mirrors of the shader's BiasTowardShore()/ShorewardWeight() =
+        // The owner saw the sea's swell + foam read as ORIGINATING AT THE SHORELINE and streaming OUT to sea
+        // ("foam blowing out of the sand") whenever the (wandering) wind blew offshore — because the rolling
+        // swell + the foam drift followed ONLY the wind/current. Real swell rolls SHOREWARD regardless of the
+        // local wind. The shader fixes this by deriving a per-pixel SHORE direction from the seabed height
+        // GRADIENT (shallower = toward land) and biasing the swell/foam direction toward it NEAR the coast,
+        // fading to the wind/current axis in deep water. The height-gradient sampling is GPU-side (reads
+        // _HeightTex, no C# mirror — it can't be evaluated headless), but the DIRECTION-BLEND + the near-shore
+        // WEIGHT — the part that determines whether waves roll IN — are pure functions mirrored here so the
+        // logic is unit-tested headless (the determinism guard). NOT pushed to the material; the shader owns
+        // the live per-pixel bias. VISUAL direction only — drives no sim, saves nothing (P1, rule 5).
+
+        /// <summary>
+        /// The near-shore WEIGHT the shader's <c>ShorewardWeight(depth)</c> uses to steer the swell/foam toward
+        /// the shore: full (= <paramref name="bias"/>) at the wet edge (<paramref name="depth"/> ≤ 0), fading
+        /// smoothly to 0 by <paramref name="falloffDepth"/> metres deep, so waves/foam roll IN near the coast
+        /// while the OPEN sea keeps its wind-driven direction. <paramref name="bias"/> is the master strength
+        /// (<c>_ShorewardBias</c>); 0 = no bias (the old wind-led behaviour). Returns a 0..1 weight, monotonic
+        /// non-increasing in depth. Visual steer only — never touches the gameplay depth/waterline (rule 5).
+        /// </summary>
+        public static float ShorewardWeight(float depth, float bias, float falloffDepth)
+        {
+            float falloff = Mathf.Max(falloffDepth, 1e-3f);
+            float near = 1f - Smoothstep01(Mathf.Clamp01(Mathf.Max(depth, 0f) / falloff)); // 1 at edge -> 0 deep
+            return Mathf.Clamp01(bias) * near;
+        }
+
+        /// <summary>
+        /// Bias a base (wind/current) direction toward the shore by a weight — the pure mirror of the shader's
+        /// <c>BiasTowardShore</c>. <c>lerp(baseDir, shoreDir, w)</c> then re-normalize. When the shore direction
+        /// is zero (flat seabed / open deep water — the shader's height gradient was flat) or <paramref name="w"/>
+        /// is ~0, the base direction is returned UNCHANGED (the open sea keeps its wind-driven cohesion). The
+        /// result is unit-length and NaN-safe (a degenerate blend falls back to the base direction). The shore
+        /// direction is a VISUAL steer for the swell/foam layers only — it never moves the waterline (rule 5).
+        /// </summary>
+        public static Vector2 BiasTowardShore(Vector2 baseDir, Vector2 shoreDir, float w)
+        {
+            if (w <= 1e-4f || shoreDir.sqrMagnitude < 1e-6f) return baseDir;
+            Vector2 blended = Vector2.Lerp(baseDir, shoreDir, Mathf.Clamp01(w));
+            return blended.sqrMagnitude > 1e-10f ? blended.normalized : baseDir;
+        }
+
         /// <summary>
         /// Surface roughness / whitecap amount (0..1) from wind strength: wind speed normalized against
         /// <paramref name="windForFullRoughness"/> and saturated. A breeze ruffles; a gale whitens.

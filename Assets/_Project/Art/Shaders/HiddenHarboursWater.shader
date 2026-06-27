@@ -142,6 +142,26 @@ Shader "HiddenHarbours/Water"
         _WhitecapPeakDensity   ("Whitecap peak density (newborn crest opacity)", Range(0,1)) = 0.95
         _WhitecapCollapseRate  ("Whitecap collapse rate (age to milky off-crest)", Range(0,4)) = 1.5
 
+        [Header(Shoreward swell and foam bias (waves roll IN near the coast))]
+        // The rolling swell + the foam drift used to follow ONLY the wandering WIND (and the tidal current),
+        // and the wind blows OFFSHORE part of the time — so near the beach the wave trains and foam streamed
+        // OUT to sea ("foam blowing out of the sand"). Real swell is generated far offshore and rolls
+        // SHOREWARD regardless of the local wind. These BIAS the swell + foam-drift direction toward the
+        // shore NEAR the coast, fading back to the wind/current direction in deep water (the open sea keeps
+        // its existing wind-driven cohesion). The shore direction is derived per-pixel from the SEABED HEIGHT
+        // GRADIENT (shallower = toward land), so it reads the SAME baked height map the depth/foam already
+        // use — a purely VISUAL direction; it NEVER touches depth/clip/the deep tint/_WaterLevel (P1, rule 5).
+        //   _ShorewardBias      — master strength (0 = old wind-led behaviour, 1 = full roll-in at the shore).
+        //   _ShorewardFalloff   — the depth (m) over which the bias fades from full (at the wet edge) to none
+        //                         (deep water). Smaller = the roll-in hugs the very edge; larger = it reaches
+        //                         further out before the open-sea wind cohesion takes over.
+        //   _ShoreSampleStep    — the world-space step (m) the gradient is sampled over. Larger = a smoother,
+        //                         broader shore direction (less sensitive to height-texel noise); smaller =
+        //                         it follows finer coast shape. A few decimetres reads well over the coarse bake.
+        _ShorewardBias    ("Shoreward bias strength (0 = wind-led, 1 = roll in)", Range(0,1)) = 0.7
+        _ShorewardFalloff ("Shoreward falloff depth (m, fades to wind out at sea)", Float) = 2.5
+        _ShoreSampleStep  ("Shore gradient sample step (m)", Float) = 0.4
+
         [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
         _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
         _SwashSpeed     ("Swash speed (waves / 2pi sec)", Float)      = 0.5
@@ -336,6 +356,10 @@ Shader "HiddenHarbours/Water"
                 float  _WhitecapFormSharpness;
                 float  _WhitecapPeakDensity;
                 float  _WhitecapCollapseRate;
+                // Shoreward swell/foam bias (near-coast roll-in; visual direction only).
+                float  _ShorewardBias;
+                float  _ShorewardFalloff;
+                float  _ShoreSampleStep;
                 float  _SwashAmplitude;
                 float  _SwashSpeed;
                 float  _SwashScale;
@@ -527,14 +551,79 @@ Shader "HiddenHarbours/Water"
                 return (octaveA + octaveB * wB + octaveC * wC) / total;
             }
 
+            // Sample the seabed elevation (metres above datum) at a world position. With the baked height map
+            // the depth gradient + foam band match TidalTerrain exactly; without it, the plane reads as uniform
+            // deep water (a safe fallback before a region bakes its height). Defined HERE (above the swell/foam
+            // direction helpers) because the shoreward-bias code below reads the height GRADIENT through it.
+            float SeabedElevation(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                float r = SAMPLE_TEXTURE2D(_HeightTex, sampler_HeightTex, uv).r;
+                return lerp(_HeightMin, _HeightMax, r);
+            #else
+                return _HeightMin;   // no height map => everywhere deep (uniform tint, no false shoreline)
+            #endif
+            }
+
+            // ---- SHOREWARD direction: which way is LAND? (from the seabed height gradient) -------------------
+            // Real ocean swell is generated far offshore and rolls SHOREWARD regardless of the local wind; foam
+            // at the wet edge runs UP the beach. The wind (the swell/foam driver below) WANDERS and blows
+            // offshore part of the time, which made the wave trains + foam stream OUT from the beach ("foam
+            // blowing out of the sand"). This derives the shoreward direction PER PIXEL from the baked height
+            // map: the elevation rises toward land, so the GRADIENT of elevation points toward shallower water =
+            // toward the shore. We sample the seabed at +/- a small world step on each axis (central difference)
+            // and normalize. Returns float2(0,0) on flat seabed (no height map / open deep water) so the caller
+            // keeps the pure wind/current direction there. VISUAL-only — never touches depth/clip (P1, rule 5).
+            float2 ShoreDir(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float h = max(_ShoreSampleStep, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                float2 grad = float2(ex, ey);                 // points toward HIGHER (shallower) ground = shoreward
+                float g = length(grad);
+                return g > 1e-5 ? grad / g : float2(0, 0);    // flat seabed => no shore preference
+            #else
+                return float2(0, 0);                          // no height map => no shoreward bias (open water)
+            #endif
+            }
+
+            // ---- near-shore WEIGHT: how strongly to steer toward shore at this depth ------------------------
+            // Full at the wet edge (depth ~ 0), fading to 0 by _ShorewardFalloff metres deep, scaled by the
+            // master _ShorewardBias. So waves/foam roll IN near the coast and the OPEN sea keeps its existing
+            // wind-driven cohesion. 0 everywhere when _ShorewardBias = 0 (the old behaviour, dial-able off).
+            float ShorewardWeight(float depth)
+            {
+                float falloff = max(_ShorewardFalloff, 1e-3);
+                float near = 1.0 - smoothstep(0.0, falloff, max(depth, 0.0));   // 1 at the edge -> 0 deep
+                return saturate(_ShorewardBias) * near;
+            }
+
+            // ---- bias a base (wind/current) direction toward the shore by a weight -------------------------
+            // Mirrors WaterSurface.BiasTowardShore (the headless determinism twin). lerp(base, shore, w) then
+            // re-normalize; when shore is zero (flat seabed) or w is 0 the base direction is returned unchanged.
+            // Pure direction math — NaN-safe, unit-length out. The shoreward bias is a VISUAL steer only.
+            float2 BiasTowardShore(float2 baseDir, float2 shoreDir, float w)
+            {
+                if (w <= 1e-4 || dot(shoreDir, shoreDir) < 1e-6)
+                    return baseDir;
+                float2 blended = lerp(baseDir, shoreDir, saturate(w));
+                float m = length(blended);
+                return m > 1e-5 ? blended / m : baseDir;
+            }
+
             // ---- swell direction: wind generates swell, so default to the (time-wandering) WIND axis ---------
             // _OceanSwellDir (0,0) = auto-from-wind; an explicit override wins. Normalized, +Y fallback so the
             // bands never freeze to a NaN axis. As the sim wanders _WindDir, the swell bands REORIENT with it.
-            float2 SwellDir()
+            // NEAR the coast the direction is BIASED toward the shore (waves roll IN) by ShorewardWeight(depth);
+            // in deep water (depth past the falloff) the pure wind/override axis is kept (open-sea cohesion).
+            float2 SwellDir(float2 worldXY, float depth)
             {
                 float2 d = (dot(_OceanSwellDir.xy, _OceanSwellDir.xy) > 1e-6)
                              ? _OceanSwellDir.xy : _WindDir.xy;
-                return normalize(d + float2(0, 1e-4));
+                float2 baseDir = normalize(d + float2(0, 1e-4));
+                return BiasTowardShore(baseDir, ShoreDir(worldXY), ShorewardWeight(depth));
             }
 
             // ---- ROLLING OCEAN SWELL (the cohesion keystone) -------------------------------------------------
@@ -544,9 +633,11 @@ Shader "HiddenHarbours/Water"
             // uses it to modulate ONLY col.rgb brightness so broad light/dark bands roll across the WHOLE
             // surface (the small variance riding on top), and reuses the SAME field to ride the whitecaps on the
             // crests + bias the specular. Pixelized so it stays pixel-art. Drives no depth/clip/sim (P1, rule 5).
-            float SwellField(float2 worldXY, float t)
+            // `depth` lets the swell axis curve SHOREWARD near the coast (the roll-in) while the open sea keeps
+            // the wind axis — so the crest BANDS advance toward the beach instead of streaming offshore.
+            float SwellField(float2 worldXY, float depth, float t)
             {
-                float2 dir = SwellDir();
+                float2 dir = SwellDir(worldXY, depth);
                 // distance projected ALONG the swell axis, advanced slowly with time (long rolling wave).
                 float phase = dot(Pixelize(worldXY) * _OceanSwellScale, dir) - t * _OceanSwellSpeed;
                 // base sine wave (0..1), plus a slow value-noise wander so the bands read organic, not ruled.
@@ -561,12 +652,16 @@ Shader "HiddenHarbours/Water"
             // Real surface foam follows both forces. _FoamDriftWindVsCurrent dials wind-led (1) vs current-led
             // (0). Both axes are sim-driven and drift over time, so the foam reorients as the weather shifts.
             // This replaces the old fixed counter-diagonal so the foam flows WITH the one connected body.
-            float2 FoamDriftDir()
+            // NEAR the coast the drift is BIASED toward the shore (foam runs UP the beach) by ShorewardWeight;
+            // deep-water foam keeps the wind/current blend (so the open sea is unchanged). The shoreward steer
+            // is what stops the foam streaming OUT of the sand when the wind happens to blow offshore.
+            float2 FoamDriftDir(float2 worldXY, float depth)
             {
                 float2 wind    = normalize(_WindDir.xy + float2(0, 1e-4));
                 float2 current = normalize(_FlowDir.xy + float2(1e-4, 0));
                 float2 blend   = lerp(current, wind, saturate(_FoamDriftWindVsCurrent));
-                return normalize(blend + float2(1e-4, 1e-4));
+                float2 baseDir = normalize(blend + float2(1e-4, 1e-4));
+                return BiasTowardShore(baseDir, ShoreDir(worldXY), ShorewardWeight(depth));
             }
 
             // ---- foam DENSITY: how solid/widespread the foam reads, driven by sea-state (wind/roughness) -------
@@ -693,20 +788,6 @@ Shader "HiddenHarbours/Water"
                 return wave * _SwashAmplitude;
             }
 
-            // Sample the seabed elevation (metres above datum) at a world position. With the baked height map
-            // the depth gradient + foam band match TidalTerrain exactly; without it, the plane reads as uniform
-            // deep water (a safe fallback before a region bakes its height).
-            float SeabedElevation(float2 worldXY)
-            {
-            #if defined(_USE_HEIGHTTEX)
-                float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
-                float r = SAMPLE_TEXTURE2D(_HeightTex, sampler_HeightTex, uv).r;
-                return lerp(_HeightMin, _HeightMax, r);
-            #else
-                return _HeightMin;   // no height map => everywhere deep (uniform tint, no false shoreline)
-            #endif
-            }
-
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -786,7 +867,7 @@ Shader "HiddenHarbours/Water"
                 // deep tint/the caustic gate/_WaterLevel, so the cohesion cannot move the gameplay waterline
                 // (P1 integrity, CLAUDE.md rule 5). Direction comes from the (wandering) wind, so the bands
                 // reorient as the weather shifts.
-                float swellCrest = SwellField(worldXY, t);            // 0..1: 1 on crests, 0 in troughs
+                float swellCrest = SwellField(worldXY, depth, t);     // 0..1: 1 on crests, 0 in troughs (rolls IN near shore)
                 if (_OceanSwellStrength > 0.001)
                 {
                     // signed around the midpoint: crests brighten, troughs darken, by the amplitude.
@@ -869,7 +950,7 @@ Shader "HiddenHarbours/Water"
                     // the tidal current (both sim-driven, both wandering) — NOT the old fixed counter-diagonal
                     // float2(-t*_Flow, t*_Flow) that scrolled AGAINST the surface. So the foam moves with the
                     // one connected surface and reorients as the weather shifts.
-                    float2 foamDrift = FoamDriftDir() * (_Flow * t);
+                    float2 foamDrift = FoamDriftDir(worldXY, depth) * (_Flow * t);
                     // LIVING foam: the churn is now an EVOLVING field (boils in place) instead of one ValueNoise
                     // that only slid rigidly — so the fringe foam shapes MORPH (appear/grow/shrink/vanish) while
                     // still drifting with the body. _FoamBlobScale sizes the blobs; _FoamEvolveSpeed the boil rate.
@@ -920,7 +1001,7 @@ Shader "HiddenHarbours/Water"
                     // by _FoamStreakStretch so a round noise cell reads as a streak stretched down the wind.
                     float2 wdir   = normalize(_WindDir.xy + float2(0, 1e-4));
                     float2 wperp  = float2(-wdir.y, wdir.x);
-                    float2 capDrift = FoamDriftDir() * (_Flow * t);
+                    float2 capDrift = FoamDriftDir(worldXY, depth) * (_Flow * t);
                     float2 wp = worldXY + capDrift;
                     float stretch = max(_FoamStreakStretch, 1.0);
                     // project onto the wind basis: along-wind unchanged, cross-wind multiplied (compressed UV).

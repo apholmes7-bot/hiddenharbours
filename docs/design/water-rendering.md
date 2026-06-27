@@ -562,6 +562,59 @@ dissipating look #101 nailed. This is a **separate axis** from the existing `_Fo
 > milky off-crest). To revert toward the #101 milky-everywhere look, set `_FoamDensity` to 0 and
 > `_WhitecapPeakDensity` to ~0.6 (the old ceiling); the merge/separate soft mask is then the whole look again.
 
+### 5.12 Shoreward swell + foam bias — waves roll IN near the coast (shipped upgrade)
+
+The owner saw the sea's surface artifacts / movement / foam appear to **ORIGINATE AT THE SHORELINE and travel
+OUTWARD to sea** — "foam blowing out of the sand." It reads unnatural: a real ocean's swell and foam roll
+**INWARD** toward the shore. **Root cause (a shader/sim direction split):** the cohesion pass (§5.8) keyed the
+rolling **swell** axis (`SwellDir()`) and the **foam-drift** axis (`FoamDriftDir()`) off the **wind** (and the
+tidal current) — both **wander over time** (the P1 "sea has moods" sim), and the wind blows **offshore part of
+the time**. When the wind pointed land→sea, the swell crest bands and the near-shore foam streamed **OUT** from
+the beach. Real swell is generated far offshore and propagates **shoreward regardless of the local wind**; foam
+at the wet edge runs **up** the beach and recedes, it does not stream seaward.
+
+The fix derives a per-pixel **shoreward direction from the seabed height map** the shader already samples, and
+**biases** the swell + foam direction toward it **near the coast**, fading back to the wind/current direction in
+deep water (the open sea keeps its §5.8 wind-driven cohesion). Like every prior addendum it is **visual-only** —
+it steers only the swell-brightness bands + the foam/whitecap **dressing**, and **never** touches `depth`,
+`clip()`, the deep tint, the caustic gate, or `_WaterLevel`; it drives no sim and saves nothing (P1 integrity,
+CLAUDE.md rule 5). Every constant is a material property (rule 6), the gradient sampling stays **pixelized**
+(decision (2)), and the bias defaults **ON at a modest strength** so the roll-in reads immediately yet dials
+fully back. **Crucially the open sea is unchanged** — the bias fades to nothing past the falloff depth, so out at
+sea the swell/foam still follow the wandering wind/current (the §5.8 cohesion). The wind may still scatter
+chop/spray on top (§5.7) — this only stops it dragging the **wave trains + foam offshore near the beach**.
+
+- **Shore direction from the height gradient (`ShoreDir`)** — the seabed elevation **rises toward land**, so the
+  **gradient** of the elevation points toward shallower water = **toward the shore**. `ShoreDir(worldXY)` samples
+  the baked `_HeightTex` (via `SeabedElevation`) at `± _ShoreSampleStep` metres on each axis (a central
+  difference) and normalizes. It returns `(0,0)` on a flat seabed / when no height map is baked, so a region with
+  no `TidalTerrain` (the open-water fallback) keeps the pure wind/current direction — **no behaviour change
+  there**. Reads the **same** height map the depth/foam already use (one source of truth); it is a **visual
+  direction only** — the gradient never feeds `depth`/`clip` (P1).
+- **Near-shore weight (`ShorewardWeight`)** — **full** (= `_ShorewardBias`) at the wet edge (`depth ≈ 0`), fading
+  smoothly to **0** by `_ShorewardFalloff` metres deep. So waves/foam roll in near the coast and the open sea is
+  untouched. `_ShorewardBias = 0` disables it everywhere (the old wind-led behaviour).
+- **Bias the swell + foam axes (`BiasTowardShore`)** — `SwellDir()` and `FoamDriftDir()` now `lerp` their existing
+  wind/current axis toward `ShoreDir` by the near-shore weight, re-normalized (NaN-safe; a zero shore direction or
+  zero weight returns the base axis unchanged). `SwellField` and both foam-drift call sites pass the per-pixel
+  `depth`, so the crest **bands advance toward the beach** and the foam **runs up the shore** near the coast.
+
+> **Why a C# twin (but not the gradient).** The height-gradient sampling is **GPU-side** (it reads `_HeightTex`)
+> and can't be evaluated headless — no C# mirror, as expected. But the **direction-blend + the near-shore
+> weight** — the part that decides whether waves roll IN — are pure functions with C# twins
+> (`WaterSurface.ShorewardWeight` + `WaterSurface.BiasTowardShore`), unit-tested headless
+> (`ArtRenderingTests.cs`): the weight is full at the edge, zero past the falloff, monotonic non-increasing, and
+> bias-0/zero-falloff safe; the blend steers toward the shore by the weight, keeps the base axis when there is no
+> shore direction (open water), and is NaN-safe on opposed directions. The CI shader-compile guard
+> (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in any
+> `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).
+
+> **Property summary (all additive — none of the owner's existing tuned values changed):**
+> *shoreward bias* — `_ShorewardBias` (0.7, master strength; 0 = old wind-led behaviour), `_ShorewardFalloff`
+> (2.5 m, the depth over which the bias fades from full at the wet edge to none in deep water), `_ShoreSampleStep`
+> (0.4 m, the world step the height gradient is sampled over; larger = a smoother/broader shore direction). To
+> turn the roll-in OFF (back to the §5.8 pure wind/current cohesion everywhere), set `_ShorewardBias` to 0.
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
