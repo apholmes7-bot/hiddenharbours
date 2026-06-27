@@ -35,9 +35,10 @@ namespace HiddenHarbours.Art.Editor
             EnsureFolder(PrefabRoot);
             int n = 0;
 
-            // --- Trees: Tree01..Tree37 (BottomCenter pivot on import — they plant at the trunk). ---
+            // --- Trees: Tree01..Tree40 (BottomCenter pivot on import — they plant at the trunk).
+            //     Tree38..Tree40 are the reference-style painterly evergreens (tall, tiered, left-lit). ---
             EnsureFolder($"{PrefabRoot}/Trees");
-            for (int i = 1; i <= 37; i++)
+            for (int i = 1; i <= 40; i++)
             {
                 string name = $"Tree{i:00}";
                 string sprite = $"{ArtSprites}/Environment/Trees/{name}.png";
