@@ -86,10 +86,12 @@ cannot sample it, the known gotcha. To keep the sim off the GPU read path entire
 on first sample / on `Rebuild()`), and all `ElevationAt` calls read that array — never `GetPixel` per
 call (rule 7). The decoded field is wrapped in a pure `PaintedHeightField` (below).
 
-The texture is committed like any authored asset (Force-Text meta, LFS for the `.png` if exported as one;
-here the texture is an **asset sub-object** of the `.asset` so a single committed `.asset` carries the
-whole map — no separate PNG/meta to lose). It is **authored DATA the sim reads**, distinct from ADR 0011's
-*visual-only* painted layer.
+The texture is committed like any authored asset: an **external `.png` next to the `.asset`** (the `.png`
+in **LFS**, both `.meta`s committed), and the `.asset` references it by GUID. This keeps the `.asset`
+Force-Text/smart-mergeable and the height bytes LFS-managed — the paint tool writes/imports the `.png`
+(CPU-readable + linear + R-usable) and points the map at it (it does **not** embed the texture as a
+sub-object, which had drifted from the committed seed and orphaned its PNG — see the rejected alternative).
+It is **authored DATA the sim reads**, distinct from ADR 0011's *visual-only* painted layer.
 
 ### (2) The PURE sampler — `PaintedHeightField` (the determinism core, headless-testable)
 
@@ -220,9 +222,14 @@ when not playing beyond the throttle).
   from what the sim decodes. (We still *decode* it to a `float[]` for the sim, but from the same bytes.)
 - **A non-readable (GPU-only) height texture.** Then the sim can't sample it (the known gotcha) and
   painted ≠ sailed. The asset enforces `isReadable` and decodes to a CPU `float[]`.
-- **A texture-per-region committed as a loose `.png` + `.meta`.** Workable, but a stray un-LFS'd PNG or a
-  lost `.meta` breaks the import (a repeated project hazard). Wrapping the texture as a sub-object of one
-  `PaintedHeightMap.asset` keeps it a single, reviewable, Force-Text-meta'd data file.
+- **Embedding the texture as a sub-object of the `.asset` (`AddObjectToAsset`).** Tried first, to dodge a
+  stray un-LFS'd PNG / lost `.meta`, but it **drifted from the committed external-PNG seed and orphaned the
+  PNG** (the export minted a `StPetersSeabed 1.asset` and left the committed `_HeightTex.png` dangling), and
+  an embedded YAML-serialized texture is neither LFS-managed nor smart-mergeable. **Chosen instead:** an
+  **external `.png` next to the `.asset`** — the `.png` in LFS + both `.meta`s committed (the project's
+  standard binary-asset discipline guards the "lost meta / un-LFS'd PNG" hazard), the `.asset` Force-Text and
+  smart-mergeable, and the paint tool overwrites the map+PNG **in place** (no unique-name duplicate). One
+  storage model, tool and committed seed consistent.
 - **Painting heights into the Tilemap (per-cell tile = elevation).** Coarse (1 m cells, discrete steps —
   the ADR-0012 blockiness), and forks the height authoring into the visual tile layer. A float texture is
   finer and is the same data shape the shader already samples.

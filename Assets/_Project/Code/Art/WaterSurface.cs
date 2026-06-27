@@ -227,6 +227,27 @@ namespace HiddenHarbours.Art
         {
             // Clear the per-renderer overrides so the shared material reads as authored if this is removed.
             if (_renderer != null) _renderer.SetPropertyBlock(null);
+            // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
+            DestroyBakedHeightTexture();
+        }
+
+        private void OnDestroy()
+        {
+            // (WS-2) Belt-and-braces: ensure the baked texture is freed even if OnDisable didn't run.
+            DestroyBakedHeightTexture();
+        }
+
+        /// <summary>
+        /// (WS-2) Destroy the baked distance-to-land fallback texture if one was allocated, choosing the
+        /// play/edit-correct teardown. The painted St Peters path feeds <see cref="_paintedHeightTex"/> (an
+        /// asset texture we never own) and never allocates <see cref="_heightTex"/>, so this is a no-op there.
+        /// </summary>
+        private void DestroyBakedHeightTexture()
+        {
+            if (_heightTex == null) return;
+            if (Application.isPlaying) Destroy(_heightTex);
+            else DestroyImmediate(_heightTex);
+            _heightTex = null;
         }
 
         private void Update()
@@ -387,6 +408,9 @@ namespace HiddenHarbours.Art
             int res = Mathf.Clamp(_heightResolution, 16, 256);
             if (_heightTex == null || _heightTex.width != res)
             {
+                // (WS-2) Reallocating (e.g. dragging _heightResolution in edit mode) must DESTROY the prior
+                // bake texture — otherwise it leaks (a new Texture2D each resolution change, unreachable).
+                DestroyBakedHeightTexture();
                 _heightTex = new Texture2D(res, res, TextureFormat.R8, false, true)
                 {
                     name = "WaterSurface.HeightBake",
@@ -414,9 +438,8 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             _renderer.SetPropertyBlock(_mpb);
 
-            // Enable the shader's height-map branch on the shared material so the depth read uses the bake.
-            if (_renderer.sharedMaterial != null)
-                _renderer.sharedMaterial.EnableKeyword("_USE_HEIGHTTEX");
+            // Enable the shader's height-map branch so the depth read uses the bake.
+            EnableHeightTexKeyword();
         }
 
         /// <summary>
@@ -437,8 +460,31 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             _renderer.SetPropertyBlock(_mpb);
 
-            if (_renderer.sharedMaterial != null)
-                _renderer.sharedMaterial.EnableKeyword("_USE_HEIGHTTEX");
+            EnableHeightTexKeyword();
+        }
+
+        /// <summary>
+        /// (WS-1) Ensure the shader's <c>_USE_HEIGHTTEX</c> branch is on. The committed <c>Water.mat</c>
+        /// PRE-ENABLES this keyword (it's a <c>multi_compile_local</c> runtime toggle, so the variant is
+        /// always compiled and enabling it globally is safe — with the default black <c>_HeightTex</c> it
+        /// reads as uniform-deep). We therefore must NOT write to the SHARED, COMMITTED material in EDIT
+        /// MODE (that marks the asset dirty → a spurious "save Water.mat?" prompt + a stray diff). At RUNTIME
+        /// we still enable it defensively (cheap, no asset to dirty); in edit mode we only enable it if a
+        /// material somehow shipped without it, so the headline edit-mode coast preview still renders.
+        /// </summary>
+        private void EnableHeightTexKeyword()
+        {
+            var mat = _renderer != null ? _renderer.sharedMaterial : null;
+            if (mat == null) return;
+            if (Application.isPlaying)
+            {
+                mat.EnableKeyword("_USE_HEIGHTTEX");
+                return;
+            }
+            // Edit mode: only touch the shared material if the keyword is genuinely missing (don't dirty the
+            // committed asset on every bake/feed when it already pre-enables _USE_HEIGHTTEX).
+            if (!mat.IsKeywordEnabled("_USE_HEIGHTTEX"))
+                mat.EnableKeyword("_USE_HEIGHTTEX");
         }
 
         /// <summary>Bake the gameplay-true seabed: <see cref="ITidalTerrain.ElevationAt"/> per cell.</summary>

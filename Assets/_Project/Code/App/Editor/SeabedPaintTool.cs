@@ -257,16 +257,37 @@ namespace HiddenHarbours.App.Editor
 
         private void BeginStrokeUndo()
         {
-            // Re-snapshot the pixels at stroke start so a stroke is one undo step (the map's texture is a
-            // runtime/sub-asset; we keep the buffer authoritative and commit on mouse-up).
+            // Re-snapshot the pixels at stroke start so a stroke is one undo step (the texture is an external
+            // .png asset; we keep the buffer authoritative in-memory and re-encode the PNG on mouse-up).
             if (_pixels == null) CacheTexture();
         }
 
+        /// <summary>
+        /// Persist the stroke (F1): the height texture is now an EXTERNAL <c>.png</c>, so SetDirty/SaveAssets
+        /// alone won't write the painted pixels back to disk — re-encode the working buffer to the source PNG
+        /// and re-import so the file (and the sim's next decode) reflects the brush. Mark the map dirty too.
+        /// </summary>
         private void CommitTexture()
         {
-            if (_tex == null) return;
-            EditorUtility.SetDirty(_tex);
-            if (_map != null) EditorUtility.SetDirty(_map);
+            if (_tex == null || _pixels == null) return;
+            string pngPath = AssetDatabase.GetAssetPath(_tex);
+            if (!string.IsNullOrEmpty(pngPath) && pngPath.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+            {
+                var enc = new Texture2D(_tex.width, _tex.height, TextureFormat.R8, false, true);
+                enc.SetPixels(_pixels);
+                enc.Apply(false, false);
+                File.WriteAllBytes(pngPath, enc.EncodeToPNG());
+                Object.DestroyImmediate(enc);
+                AssetDatabase.ImportAsset(pngPath, ImportAssetOptions.ForceSynchronousImport);
+                ConfigureHeightTextureImporter(pngPath);   // keep isReadable/linear after the re-import
+                _tex = AssetDatabase.LoadAssetAtPath<Texture2D>(pngPath);
+            }
+            else
+            {
+                // Defensive fallback for an unexpected non-PNG (e.g. a hand-wired sub-asset texture).
+                EditorUtility.SetDirty(_tex);
+            }
+            if (_map != null) { _map.Rebuild(); EditorUtility.SetDirty(_map); }
             AssetDatabase.SaveAssets();
         }
 
@@ -290,6 +311,16 @@ namespace HiddenHarbours.App.Editor
             Vector2 worldSize = new Vector2(160f, 120f);
             const float min0 = -4f, max0 = 6f;
 
+            // (F1) Overwrite the committed seed in place rather than minting a "StPetersSeabed 1.asset"
+            // duplicate that would orphan the committed PNG. Confirm before clobbering existing edits.
+            string existing = DataDir + "/StPetersSeabed.asset";
+            if (AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(existing) != null &&
+                !EditorUtility.DisplayDialog("Export analytic St Peters",
+                    "StPetersSeabed already exists. Overwrite it (and its height PNG) with a fresh export " +
+                    "from the analytic coast? Any painting you did on it will be replaced.",
+                    "Overwrite", "Cancel"))
+                return;
+
             // Build a transient TidalTerrain configured with the canon St Peters zones (single source of
             // truth — the same constants the builder mirrors), sample it per texel, then discard it.
             var go = EditorUtility.CreateGameObjectWithHideFlags("~SeabedExport", HideFlags.HideAndDontSave,
@@ -310,7 +341,8 @@ namespace HiddenHarbours.App.Editor
             }
             Object.DestroyImmediate(go);
 
-            var map = CreatePaintedMapAsset("StPetersSeabed", res, center, worldSize, min0, max0, pixels: pixels);
+            var map = CreatePaintedMapAsset("StPetersSeabed", res, center, worldSize, min0, max0,
+                                            pixels: pixels, overwrite: true);
             if (map != null)
             {
                 _map = map; CacheTexture();
@@ -322,12 +354,17 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Create a <see cref="PaintedHeightMap"/> asset with a CPU-readable R8 height texture as a sub-asset.
-        /// One self-contained <c>.asset</c> (no loose PNG/.meta to lose). Either fills a flat elevation or
-        /// writes supplied pixels.
+        /// Create (or OVERWRITE in place) a <see cref="PaintedHeightMap"/> at <c>DataDir/baseName.asset</c>
+        /// backed by an EXTERNAL, LFS-friendly, smart-mergeable <c>baseName_HeightTex.png</c> written NEXT TO
+        /// it (F1). The PNG is imported CPU-readable + linear + single-R-usable so the sim can decode it; the
+        /// <c>.asset</c> references it by GUID (NOT an embedded <c>AddObjectToAsset</c> sub-object — that
+        /// produced a self-contained file that drifted from the committed external-PNG seed and orphaned the
+        /// PNG). When <paramref name="overwrite"/> is true an existing same-named map is updated in place
+        /// (no <c>StPetersSeabed 1.asset</c> duplicate); otherwise a unique path is minted (blank maps).
         /// </summary>
         private static PaintedHeightMap CreatePaintedMapAsset(string baseName, int res, Vector2 center,
-            Vector2 worldSize, float minElev, float maxElev, float fillElevation = 0f, Color[] pixels = null)
+            Vector2 worldSize, float minElev, float maxElev, float fillElevation = 0f, Color[] pixels = null,
+            bool overwrite = false)
         {
             if (!AssetDatabase.IsValidFolder(DataDir))
             {
@@ -335,13 +372,19 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.CreateFolder(parent, Path.GetFileName(DataDir));
             }
 
-            // A readable R8 texture (linear — elevation is data, not colour).
-            var tex = new Texture2D(res, res, TextureFormat.R8, false, true)
+            // Resolve the .asset + .png paths. Overwrite reuses the existing names (update in place);
+            // otherwise mint unique sibling names so the .asset and its .png stay paired.
+            string assetPath = DataDir + "/" + baseName + ".asset";
+            string pngPath   = DataDir + "/" + baseName + "_HeightTex.png";
+            if (!overwrite)
             {
-                name = baseName + "_HeightTex",
-                wrapMode = TextureWrapMode.Clamp,
-                filterMode = FilterMode.Bilinear,
-            };
+                assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
+                string uniqueBase = Path.GetFileNameWithoutExtension(assetPath);
+                pngPath = DataDir + "/" + uniqueBase + "_HeightTex.png";
+            }
+
+            // Build the R8 pixel buffer (R = normalized elevation; G=B=R so 8-bit grayscale PNG round-trips).
+            var tex = new Texture2D(res, res, TextureFormat.R8, false, true);
             if (pixels == null)
             {
                 float r01 = PaintedHeightField.EncodeElevation(fillElevation, minElev, maxElev);
@@ -351,23 +394,58 @@ namespace HiddenHarbours.App.Editor
                 tex.SetPixels(fill);
             }
             else tex.SetPixels(pixels);
-            tex.Apply(false, false);   // keepReadable = true (so the sim + brush can sample it)
+            tex.Apply(false, false);
 
-            var map = ScriptableObject.CreateInstance<PaintedHeightMap>();
+            // Write the PNG to disk (external — LFS-friendly, smart-mergeable .asset alongside) and import it
+            // with the data-texture settings the sim needs: CPU-readable, LINEAR (elevation is data, not
+            // colour), single-channel R usable, point-able wrap=Clamp. Then re-import so isReadable sticks.
+            byte[] png = tex.EncodeToPNG();
+            Object.DestroyImmediate(tex);
+            File.WriteAllBytes(pngPath, png);
+            AssetDatabase.ImportAsset(pngPath, ImportAssetOptions.ForceSynchronousImport);
+            ConfigureHeightTextureImporter(pngPath);
+
+            var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(pngPath);
+
+            // Create or update the map .asset, pointing _heightTexture at the EXTERNAL png.
+            var map = overwrite ? AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(assetPath) : null;
+            bool created = map == null;
+            if (created) map = ScriptableObject.CreateInstance<PaintedHeightMap>();
+
             var so = new SerializedObject(map);
-            so.FindProperty("_heightTexture").objectReferenceValue = tex;
+            so.FindProperty("_heightTexture").objectReferenceValue = importedTex;
             so.FindProperty("_worldCenter").vector2Value = center;
             so.FindProperty("_worldSize").vector2Value = worldSize;
             so.FindProperty("_minElevation").floatValue = minElev;
             so.FindProperty("_maxElevation").floatValue = maxElev;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            string path = AssetDatabase.GenerateUniqueAssetPath(DataDir + "/" + baseName + ".asset");
-            AssetDatabase.CreateAsset(map, path);
-            AssetDatabase.AddObjectToAsset(tex, map);   // the texture rides inside the .asset (one file)
+            if (created) AssetDatabase.CreateAsset(map, assetPath);
+            else EditorUtility.SetDirty(map);
             AssetDatabase.SaveAssets();
-            AssetDatabase.ImportAsset(path);
-            return AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(path);
+            AssetDatabase.ImportAsset(assetPath);
+            return AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(assetPath);
+        }
+
+        /// <summary>
+        /// Import a painted-height PNG as a DATA texture the sim can decode (F1): CPU-readable
+        /// (<c>isReadable</c>), LINEAR (no sRGB gamma — the R channel is metres-of-elevation, not colour),
+        /// no mipmaps, Clamp wrap, and the single-channel R kept usable. Matches the committed
+        /// <c>StPetersSeabed_HeightTex.png</c> import so the seed and freshly-exported maps decode identically.
+        /// </summary>
+        private static void ConfigureHeightTextureImporter(string pngPath)
+        {
+            var importer = AssetImporter.GetAtPath(pngPath) as TextureImporter;
+            if (importer == null) return;
+            importer.textureType = TextureImporterType.Default;
+            importer.sRGBTexture = false;          // linear — elevation is data, not colour
+            importer.isReadable = true;            // the sim MUST be able to GetPixels()
+            importer.mipmapEnabled = false;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.textureCompression = TextureImporterCompression.Uncompressed; // keep the R byte exact
+            importer.SaveAndReimport();
         }
 
         // ============================ LIVE PREVIEW / ADOPTION ============================
@@ -395,8 +473,16 @@ namespace HiddenHarbours.App.Editor
                 return;
             }
 
-            // 1) Water render reads it.
-            RefreshOpenWaterSurfaces();
+            // 1) Water render reads it. (F2) Record Undo + SetDirty on each WaterSurface so the render-half
+            // swap is undoable in lockstep with the sim half below — Ctrl-Z reverts the WHOLE adoption, not a
+            // partial state. (RefreshOpenWaterSurfaces, used by the live brush, deliberately records no Undo.)
+            foreach (var s in Object.FindObjectsByType<WaterSurface>(FindObjectsSortMode.None))
+            {
+                Undo.RecordObject(s, "Adopt painted seabed");
+                s.ConfigurePaintedHeightMap(_map.HeightTexture, _map.WorldCenter, _map.WorldSize,
+                                            _map.MinElevation, _map.MaxElevation);
+                EditorUtility.SetDirty(s);
+            }
 
             // 2) Sim reads it: disable the analytic TidalTerrain (if any) and add a PaintedTidalTerrain.
             var analytic = Object.FindFirstObjectByType<TidalTerrain>();

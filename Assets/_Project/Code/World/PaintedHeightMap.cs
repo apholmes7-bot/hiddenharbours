@@ -35,8 +35,8 @@ namespace HiddenHarbours.World
     {
         [Header("Painted height texture (R = normalized elevation; MUST be CPU-readable)")]
         [Tooltip("The painted height texture. R channel 0..1 maps to Min..Max elevation. Authored by the " +
-                 "Seabed Paint Tool, usually as a sub-asset of this map. Must be readable (isReadable) so " +
-                 "the sim can decode it — the paint tool sets that.")]
+                 "Seabed Paint Tool as an EXTERNAL .png next to this .asset (LFS-friendly, smart-mergeable). " +
+                 "Must be readable (isReadable) + linear so the sim can decode it — the paint tool sets that.")]
         [SerializeField] private Texture2D _heightTexture;
 
         [Header("World rectangle the map covers (same frame as the water shader)")]
