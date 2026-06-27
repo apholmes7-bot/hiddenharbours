@@ -788,3 +788,84 @@ not silently changed.
 **Determinism & save:** the painted map is **authored DATA committed like a tilemap** — read at runtime,
 never written at runtime, no RNG; the tide is still recomputed from `(worldSeed, gameTime)` and nothing new
 is saved (rule 5; ADR 0014).
+
+---
+
+## 11. Sky reflections — strong + sharp on CALM water, gone in a storm (shipped upgrade)
+
+A reflection layer shipped on `HiddenHarboursWater.shader`: the sea now reflects the **sky**. On
+**CALM / glassy** water it adds a clean, mirror-like sheen — the **current sky colour** smeared down the
+surface plus a **brighter sun streak/glitter** sitting toward the sun. As the **sea-state** rises the
+reflection **breaks up** (smears/scatters across the chop) and **fades**, reaching **~0 by a tunable
+sea-state** (a storm doesn't mirror). So **calm → strong + sharp**, **lively → broken + dim**, **gale →
+gone**. It serves **P1 ("The Sea Has Moods")**: the reflection *is* a sea-state tell.
+
+It is a **faked, single-pass, in-shader** reflection — **NO reflection camera, NO extra render pass**
+(those need wiring we can't verify and would blow the rule-7 perf budget). The "reflection" is the sky
+colour stamped down the surface as a stylized **vertical-ish band** (the pixel-art cue for a mirror) plus a
+sun-aligned glitter streak — pixelized on the PPU grid like every other layer (§3).
+
+Like every prior addendum it is **visual-only** — it adds to `col.rgb` like every other water layer and
+**never** touches `depth`, `clip()`, the deep tint, the caustic gate, or `_WaterLevel`; it drives no sim
+and saves nothing (P1 integrity, CLAUDE.md rule 5). Every constant is a material property (rule 6). It is
+composited **after** the caustics + specular (the mirror sits over them) but **before** the foam (so
+whitecaps/fringe read on top of the reflection). **It defaults ON at a modest strength** so it reads
+immediately, yet `_ReflectionStrength = 0` returns the exact pre-feature look.
+
+### 11.1 Sea-state drives everything (NO new C# uniform)
+
+The calm↔stormy behaviour is read **entirely from the sea-state uniforms `WaterSurface.cs` already
+pushes** — `_Chop` (0 = glass .. 1 = storm; set from `Choppiness(SeaState)`) and `_Roughness` (the wind
+whitecap scalar). **No new uniform push; `WaterSurface.cs` is untouched.** Two in-shader curves shape it,
+each a pure function of those uniforms:
+
+- **Strength** (`ReflectionStrength()`): `1` on glass, faded by `1 − smoothstep(0, _ReflectionFadeChop,
+  _Chop)` to `0` by the fade-out sea-state, **further dimmed** by wind (`1 − _Roughness·_ReflectionWindFade`),
+  scaled by the master `_ReflectionStrength`. So a storm (or master 0) yields no reflection.
+- **Sharpness** (`ReflectionSharpness()`): `1` (a clean mirror) at calm, falling toward `0` (smeared)
+  against a combined agitation `_Chop·_ReflectionChopScatter + _Roughness·_ReflectionWindScatter`. The
+  shader uses it to **widen the vertical smear** (a sharp mirror is a tight band; a smeared one is broad)
+  and to **broaden the sun streak**.
+
+### 11.2 The reflection reflects the CURRENT sky (day/night)
+
+The reflected sky colour is the **day/night `_DayNightTint` global** (the same sky/scene colour the
+DayNightController multiplies the frame by, ADR 0013) so the mirror reads **warm at dusk, dark at night,
+bright at noon** — dialed by `_ReflectionSkyTint` against the material's `_ReflectionColor` base. The
+**sun streak** sits toward `_SunDir` (the same global the specular uses) and **fades out as the sun sets**
+(`_SunElevation`). When the day/night cycle is **not running** (the global defaults to near-black /
+`_SunDir == 0` — e.g. a bare art scene or editor preview) the layer falls back to the authored
+`_ReflectionColor` and treats the sun as up — mirroring the specular's existing `_SunDir == 0` fallback,
+so it never paints a black sky from an unset global.
+
+### 11.3 Tunables (all additive — none of the owner's existing tuned values changed)
+
+| Property | Default | What it does |
+|---|---|---|
+| `_ReflectionStrength` | 0.6 | **Master** opacity. **0 = off / today's look.** |
+| `_ReflectionFadeChop` | 0.6 | the `_Chop` sea-state at which the reflection has fully faded to nothing. |
+| `_ReflectionWindFade` | 0.5 | how much wind/`_Roughness` **additionally dims** it (0 = wind ignored). |
+| `_ReflectionChopScatter` | 1.5 | how much chop **smears** (softens) the reflection. |
+| `_ReflectionWindScatter` | 0.8 | how much wind **smears** the reflection. |
+| `_ReflectionSkyTint` | 0.85 | weight of the live day/night sky vs `_ReflectionColor`. |
+| `_ReflectionColor` | (0.62,0.74,0.86,1) | base reflected-sky colour (used when the cycle is off). |
+| `_ReflectionSmear` | 1.6 m | vertical smear length of a SHARP (calm) reflection. |
+| `_ReflectionSunStreak` | 0.9 | intensity of the brighter sun glitter/streak. |
+| `_ReflectionSunSharp` | 6.0 | tightness of the sun streak at calm (higher = narrower/hotter). |
+
+To turn reflections OFF entirely (the pre-feature look), set `_ReflectionStrength = 0`.
+
+### 11.4 Determinism guard (headless C# twin)
+
+The reflection FIELD (the smear band + glitter) is GPU value-noise (not unit-testable headless), but the
+**sea-state response curves** — the part that decides *how strong* and *how sharp* the reflection reads as
+the sea changes mood — are pure functions mirrored as C# twins in
+`Assets/_Project/Code/Art/WaterReflection.cs` (`WaterReflection.ReflectionStrength` /
+`ReflectionSharpness`, reusing `WaterSurface.Smoothstep`), unit-tested headless in
+`Assets/Tests/EditMode/Art/WaterReflectionTests.cs`: strength is full on glass, monotonically fades to 0 by
+the fade-chop and stays gone past it, wind dims it further, and the master 0 turns it off at every
+sea-state; sharpness is a mirror at calm and smears monotonically toward 0 with chop + wind, clamped (no
+negative smear). The twins are **not pushed** to the material and **not** in `WaterSurface.cs` — they read
+the existing sea-state uniforms, so there is no new C# uniform. The CI shader-compile guard
+(`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in
+any `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).

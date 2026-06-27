@@ -179,6 +179,37 @@ Shader "HiddenHarbours/Water"
         _CausticScale   ("Caustic scale", Float)        = 0.9
         _CausticDepth   ("Caustic max depth (m)", Float) = 1.4
 
+        [Header(Sky reflections (sea state driven   STRONG sharp on CALM   gone in a storm))]
+        // A FAKED reflection layer (single-pass, in-shader — NO reflection camera / extra render pass, which
+        // would need wiring we cannot verify and blow the perf budget). On CALM/glassy water it adds a clean,
+        // mirror-like sheen: it reflects the CURRENT SKY colour (the day/night _DayNightTint global — warm at
+        // dusk, dark at night, bright at noon) smeared down the surface as a vertical-ish band (the stylized
+        // mirror cue), plus a BRIGHTER sun streak/glitter sitting where the global sun is (_SunDir/_SunElevation).
+        // As the sea-state (_Chop) rises the reflection SHARPNESS drops (it smears/scatters across the chop) and
+        // its STRENGTH falls, reaching ~0 by _ReflectionFadeChop (a storm doesn't mirror); wind (_Roughness)
+        // additionally dims + scatters it. So calm => strong+sharp, lively => broken+dim, gale => gone. col.rgb
+        // ONLY: it adds to the colour like every other water layer and NEVER touches depth/clip/the deep tint/
+        // the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). Master 0 = off = today's look.
+        //   _ReflectionStrength   — master opacity dial (0 = OFF / today's look, 1 = full strong mirror at calm).
+        //   _ReflectionFadeChop   — the _Chop sea-state at which the reflection has fully faded to nothing.
+        //   _ReflectionWindFade   — how much wind/_Roughness ADDITIONALLY dims the reflection (a breezy sea).
+        //   _ReflectionChopScatter/_ReflectionWindScatter — how much chop / wind SMEAR (soften) the reflection.
+        //   _ReflectionSkyTint    — how much of the reflection is the current SKY colour (the _DayNightTint).
+        //   _ReflectionColor      — the base reflected-sky colour used when the day/night cycle is not running.
+        //   _ReflectionSmear      — the vertical smear length of a SHARP (calm) reflection, in metres.
+        //   _ReflectionSunStreak  — intensity of the brighter sun glitter/streak that sits toward the sun.
+        //   _ReflectionSunSharp   — how tight the sun streak reads at calm (higher = a narrower hotter streak).
+        _ReflectionStrength    ("Reflection strength (master; 0 = off)", Range(0,1)) = 0.6
+        _ReflectionFadeChop    ("Reflection fade-out sea-state (_Chop where it is gone)", Range(0,1)) = 0.6
+        _ReflectionWindFade    ("Reflection wind dim (0 = wind ignored, 1 = wind kills it)", Range(0,1)) = 0.5
+        _ReflectionChopScatter ("Reflection chop scatter (chop smears it)", Range(0,4)) = 1.5
+        _ReflectionWindScatter ("Reflection wind scatter (wind smears it)", Range(0,4)) = 0.8
+        _ReflectionSkyTint     ("Reflection sky tint weight (use the day/night sky)", Range(0,1)) = 0.85
+        _ReflectionColor       ("Reflection base sky color (cycle-off fallback)", Color) = (0.62, 0.74, 0.86, 1.0)
+        _ReflectionSmear       ("Reflection vertical smear length (m, at calm)", Float) = 1.6
+        _ReflectionSunStreak   ("Reflection sun streak intensity", Range(0,2)) = 0.9
+        _ReflectionSunSharp    ("Reflection sun streak sharpness", Float) = 6.0
+
         [Header(Depth source)]
         _WaterLevel     ("Water level (m, sim-driven)", Float) = 0.0
         [NoScaleOffset] _HeightTex ("Seabed height map (R=elevation)", 2D) = "black" {}
@@ -294,6 +325,15 @@ Shader "HiddenHarbours/Water"
             // the cycle is not running, in which case the specular falls back to the material's hand-authored
             // _LightDir below. This makes the sea's glints agree with where the global light comes from.
             float4 _SunDir;
+            // The day/night SKY/scene colour the controller multiplies the whole frame by (Shader.SetGlobalColor,
+            // ADR 0013) — warm at dusk, dark at night, bright at noon. The reflection layer reflects THIS as the
+            // sky colour so the mirror reads the current sky. (1,1,1,1) when the cycle is not running (full day),
+            // in which case the reflection falls back to the material's _ReflectionColor. Also a GLOBAL (outside
+            // the per-material CBUFFER) — both the day/night overlay shader and this one read the same value.
+            float4 _DayNightTint;
+            // The sun's height: 1 at noon, 0 at the horizon, <=0 at night (ADR 0013). The sun streak fades out as
+            // the sun sets (no glitter under a set sun). 0 when the cycle is not running -> handled by the fallback.
+            float  _SunElevation;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -371,6 +411,17 @@ Shader "HiddenHarbours/Water"
                 float  _CausticAmount;
                 float  _CausticScale;
                 float  _CausticDepth;
+                // Sky reflections (sea-state-driven; col.rgb-only dressing).
+                float  _ReflectionStrength;
+                float  _ReflectionFadeChop;
+                float  _ReflectionWindFade;
+                float  _ReflectionChopScatter;
+                float  _ReflectionWindScatter;
+                float  _ReflectionSkyTint;
+                float4 _ReflectionColor;
+                float  _ReflectionSmear;
+                float  _ReflectionSunStreak;
+                float  _ReflectionSunSharp;
                 float  _WaterLevel;
                 float  _HeightMin;
                 float  _HeightMax;
@@ -788,6 +839,101 @@ Shader "HiddenHarbours/Water"
                 return wave * _SwashAmplitude;
             }
 
+            // ---- REFLECTION sea-state response: how STRONG + how SHARP at this sea-state ---------------------
+            // Twins of WaterReflection.ReflectionStrength / ReflectionSharpness (the headless determinism guard).
+            // Both read the already-pushed sea-state uniforms — _Chop (0 glass .. 1 storm; WaterSurface sets it
+            // from the sea-state) and _Roughness (the wind whitecap scalar) — so there is NO new C# uniform push.
+            //
+            // ReflectionStrength: 1 on glassy/CALM water, fading to 0 by _ReflectionFadeChop (a storm doesn't
+            //   mirror), further dimmed by wind whitecaps (_ReflectionWindFade), scaled by the master dial.
+            // ReflectionSharpness: 1 = a clean mirror at CALM, falling toward 0 (smeared/scattered) as chop +
+            //   wind rise (the reflection breaks up across the chop). The caller widens the smear by 1/sharpness.
+            // Both col.rgb-only — they only shape the additive reflection, never depth/clip/_WaterLevel (P1).
+            float ReflectionStrength()
+            {
+                float fade = max(_ReflectionFadeChop, 1e-3);
+                float chopFalloff = 1.0 - smoothstep(0.0, fade, max(_Chop, 0.0));   // 1 at glass -> 0 by fadeChop
+                float windDim = 1.0 - saturate(_Roughness) * saturate(_ReflectionWindFade);
+                return saturate(_ReflectionStrength) * chopFalloff * windDim;
+            }
+            float ReflectionSharpness()
+            {
+                float agitation = max(_Chop, 0.0) * max(_ReflectionChopScatter, 0.0)
+                                + saturate(_Roughness) * max(_ReflectionWindScatter, 0.0);
+                return saturate(1.0 - agitation);
+            }
+
+            // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
+            // Returns an additive RGB contribution: a clean mirror-like sheen on CALM water that reflects the
+            // CURRENT SKY (the day/night _DayNightTint) as a vertical-ish smear, plus a brighter SUN STREAK /
+            // glitter sitting toward the global sun (_SunDir), the whole thing fading + smearing as the sea
+            // roughens (strength/sharpness above). NO reflection camera / extra pass: the "reflection" is the
+            // sky colour stamped down the surface as a stylized vertical band — the pixel-art cue for a mirror.
+            //   worldXY   — pixel-snapped world position (for the smear band + glitter noise; pixelized inside).
+            //   surf      — the layer-2 surface noise (0..1) so the reflection ripples WITH the swell at calm.
+            //   swellCrest— the rolling-swell crest factor (0..1) so the mirror brightens on the lit swell faces.
+            //   t         — _Time.y (the glitter twinkles).
+            // Everything here is pixelized (pixel-art faithful, §3) and additive to col.rgb (P1, rule 5).
+            float3 SkyReflection(float2 worldXY, float surf, float swellCrest, float t)
+            {
+                float strength = ReflectionStrength();
+                if (strength <= 0.001)
+                    return float3(0, 0, 0);                 // master 0 / storm => no reflection (today's look)
+                float sharp = ReflectionSharpness();        // 1 = mirror, 0 = smeared
+
+                // (1) the reflected SKY colour: the current day/night sky (_DayNightTint) when the cycle runs,
+                // else the material's authored _ReflectionColor. _ReflectionSkyTint dials how much of the live
+                // sky vs the base colour shows, so the mirror reads warm at dusk / dark at night / bright at noon.
+                // The global defaults to (0,0,0,0) when the day/night controller is NOT running (e.g. a bare art
+                // scene / editor preview); a near-zero sum therefore means "unset" -> fall back to _ReflectionColor
+                // (NOT a black sky). This mirrors the specular's `_SunDir == 0` fallback convention above.
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                bool cycleOn = tintSum > 1e-3;                                    // controller is pushing a real tint
+                float3 sky = cycleOn ? lerp(_ReflectionColor.rgb, _DayNightTint.rgb, saturate(_ReflectionSkyTint))
+                                     : _ReflectionColor.rgb;
+
+                // (2) the vertical-ish SMEAR: a stylized mirror stamps the sky DOWN the surface as a soft band.
+                // A SHARP (calm) reflection is a tight band; a smeared (rough) one is broad. We build a 0..1
+                // band factor from the pixelized world-Y modulated by the surface ripple (so the mirror wavers
+                // with the swell at calm) — widen it as sharpness drops so it scatters across the chop.
+                float smearLen = max(_ReflectionSmear, 1e-3) * lerp(4.0, 1.0, sharp);   // soft => longer smear
+                float2 pp = Pixelize(worldXY);
+                // a slow vertical wander so the reflected band isn't a ruler-flat line (rides the surface noise).
+                float bandPhase = (pp.y + (surf - 0.5) * smearLen) / smearLen;
+                float band = 0.5 + 0.5 * sin(bandPhase * 6.2831853);                    // 0..1 vertical smear
+                // sharpen the band toward a crisp mirror streak at calm; flatten (more uniform) when smeared.
+                band = pow(saturate(band), lerp(0.4, 3.0, sharp));
+                // the rolling swell's lit faces catch more sky (one body catching one sky), modest weight.
+                float skyFace = lerp(0.8, 1.2, swellCrest);
+                float3 reflectionRGB = sky * band * skyFace;
+
+                // (3) the SUN STREAK / glitter: a BRIGHTER smear of broken glints STRETCHED along the sun
+                // direction (the classic "path of light to the sun" on calm water), fading out as the sun sets
+                // (_SunElevation) and as the sea roughens. Uses the same _SunDir the specular does.
+                if (_ReflectionSunStreak > 0.001)
+                {
+                    float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                    float2 sd = normalize(sunXY + float2(1e-4, 0));
+                    float2 sperp = float2(-sd.y, sd.x);
+                    // ANISOTROPIC glitter coord: keep the along-sun axis, COMPRESS the cross-sun axis by the
+                    // streak sharpness so a round noise cell reads as a long thin glint ELONGATED toward the sun
+                    // (a tight streak at calm; broadening as sharpness drops -> the glints scatter when choppy).
+                    float streakSharp = max(_ReflectionSunSharp, 0.5) * lerp(0.15, 1.0, sharp);
+                    float alongSun = dot(pp, sd);
+                    float crossSun = dot(pp, sperp) * streakSharp;
+                    float2 sunUV = float2(alongSun, crossSun) + float2(t * 0.5, -t * 0.3);  // drift -> it twinkles
+                    // a sharp, sparse glint field: ridge two pixelized noise samples so only the bright lanes show.
+                    float g1 = ValueNoise(Pixelize(sunUV * 0.7));
+                    float g2 = ValueNoise(Pixelize(sunUV * 1.6 + 5.3));
+                    float streak = pow(saturate(1.0 - abs(g1 - g2) * 2.0), max(_ReflectionSunSharp, 1.0));
+                    // only when the sun is up (or the cycle is off, in which case _SunElevation is 0 -> treat as day).
+                    float sunUp = cycleOn ? saturate(_SunElevation) : 1.0;
+                    reflectionRGB += sky * streak * _ReflectionSunStreak * sunUp;
+                }
+
+                return reflectionRGB * strength;
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -933,6 +1079,16 @@ Shader "HiddenHarbours/Water"
                     float swellSpec = lerp(1.0, swellCrest, saturate(_SpecSwellBias));
                     col.rgb += _SpecColor.rgb * glint * _SpecAmount * specGate * swellSpec;
                 }
+
+                // ---- SKY REFLECTIONS (sea-state-driven; col.rgb-only dressing) ---------------------------------
+                // A faked, single-pass mirror sheen: STRONG + SHARP on glassy/CALM water (reflects the current
+                // day/night sky + a sun streak as a vertical smear), breaking up and FADING toward NONE as the
+                // sea-state (_Chop) rises (a storm doesn't mirror), wind (_Roughness) dimming/scattering it
+                // further. Added AFTER caustics + specular (so the mirror sits over them) but BEFORE the foam
+                // (so whitecaps/fringe read on top of the reflection). col.rgb ONLY — it never touches depth/
+                // clip()/the deep tint/the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). The whole
+                // layer dials to nothing with _ReflectionStrength = 0 (today's look). See SkyReflection() above.
+                col.rgb += SkyReflection(worldXY, surf, swellCrest, t);
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
