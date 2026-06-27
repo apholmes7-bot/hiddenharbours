@@ -78,11 +78,15 @@ paints + places.**
   `Shoreline` `RuleTile` (edge/corner-by-neighbour) under `Tilesets/Tiles/`. ***world-content* then paints
   the Coddle Cove tilemap with these.** (The Shoreline rule orientations are a sensible start — refine in
   the Tile Palette if a sprite faces the wrong way.)
-- **Tide-aware moving shoreline** (the former headline P1 visual) — **retired.** `Code/Art/TideShoreline.cs`
-  was a smooth transform-slide of a water plane by tide height, wired into no builder or scene; it has been
-  removed (ADR 0012 §5, follow-up (a)). The live tide-aware shoreline is the height-map water shader
-  (`Art/Shaders/HiddenHarboursWater.shader` + `Code/Art/WaterSurface.cs`) plus the `TidalFlatVisual`
-  tide-reveal (`Code/Environment/TidalFlatVisual.cs`) — use that for any tide-gated coast.
+- **Tide-aware moving shoreline** (the former headline P1 visual) — **two retired, one canonical.**
+  `Code/Art/TideShoreline.cs` (a smooth transform-slide of a water plane, wired into no scene) was removed
+  (ADR 0012 §5, follow-up (a)). `Code/Environment/TidalFlatVisual.cs` (a 2 m colour-cell tide-reveal grid)
+  was also removed (ADR 0012 "converge the live shoreline on the shader path"): it double-drew the St Peters
+  bar as blocky squares ON TOP of the shader. The **single** live tide-aware shoreline is now the height-map
+  water shader (`Art/Shaders/HiddenHarboursWater.shader` + `Code/Art/WaterSurface.cs`) — its `clip(depth)`
+  bares the authored ground when the tide recedes and renders depth-graded water when covered. Use it for any
+  tide-gated coast (give the region a `TidalTerrain` + a Sea plane carrying `Water.mat` + `WaterSurface`,
+  sorted ABOVE the authored ground it reveals).
 - **Cottage day↔night** — `Code/Art/CottageDayNight.cs`. Attach to the cottage `SpriteRenderer`, assign
   `Cottage.png` / `CottageNight.png`; it swaps on `GameServices.Clock.HourOfDay`. No new Core hook needed.
 
