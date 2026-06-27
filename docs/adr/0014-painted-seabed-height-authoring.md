@@ -178,7 +178,7 @@ floods at any tide, WITHOUT pressing Play.** This is what unblocks coast design.
 
 ### (6) The PAINT TOOL — a Scene-view brush + zone stamps + live preview (tools-editor)
 
-`World.Editor.SeabedPaintTool` (an `EditorWindow` + Scene-view input) paints elevation onto a
+`App.Editor.TerrainPaintTool` (an `EditorWindow` + Scene-view input) paints elevation onto a
 `PaintedHeightMap` over the scene's world rect:
 
 - **Brushes:** Raise / Lower / Set-to-height / Smooth, with **tunable** brush radius, strength, and

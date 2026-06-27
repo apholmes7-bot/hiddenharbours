@@ -9,7 +9,7 @@ namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
     /// The <b>Grass Paint Tool</b> — a Scene-view brush that scatters the wind-swaying living grass (PR #102)
-    /// by hand, the way the <see cref="HiddenHarbours.App.Editor.SeabedPaintTool"/> paints the coast. Drag in the
+    /// by hand, the way the <see cref="HiddenHarbours.App.Editor.TerrainPaintTool"/> paints the coast. Drag in the
     /// Scene view to lay down tufts at a tunable DENSITY, choose which HEIGHT variants to mix and how much to
     /// RANDOMIZE their height, and tune the colour from lush dark green toward dry STRAW — all without leaving the
     /// editor.
