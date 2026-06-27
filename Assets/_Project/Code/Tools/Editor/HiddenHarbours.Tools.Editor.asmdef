@@ -6,7 +6,8 @@
         "HiddenHarbours.Environment",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
-        "HiddenHarbours.UI"
+        "HiddenHarbours.UI",
+        "HiddenHarbours.Art"
     ],
     "includePlatforms": ["Editor"],
     "allowUnsafeCode": false,

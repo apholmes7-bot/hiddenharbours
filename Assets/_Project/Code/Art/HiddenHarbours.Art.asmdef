@@ -2,7 +2,8 @@
     "name": "HiddenHarbours.Art",
     "rootNamespace": "HiddenHarbours.Art",
     "references": [
-        "HiddenHarbours.Core"
+        "HiddenHarbours.Core",
+        "Unity.InputSystem"
     ],
     "allowUnsafeCode": false,
     "autoReferenced": true
