@@ -31,8 +31,8 @@ Material:
     m_Floats:
     - _AlphaClip: 0.01
     - _BendY: 0.25
-    - _FootRadius: 1.4
-    - _FootStrength: 0.5
+    - _FootRadius: 0.5
+    - _FootStrength: 0.4
     - _GustScale: 0.35
     - _GustStrength: 0.7
     - _IdleSway: 0.04
