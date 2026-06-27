@@ -60,37 +60,48 @@ One overlay quad + one material, three global uniform sets on a ~10 Hz throttled
 allocation, no per-sprite cost. Mobile-portable. The overlay draws above world sprites and below the
 screen-space HUD (the HUD stays readable at night — you must still read the sea's mood).
 
-## 5. Projected shadows — the PR-2 spec (NOT built in PR 1)
+## 5. Projected shadows — SHIPPED (PR 2)
 
-The recommended pixel-art approach (ADR 0013): a `SpriteShadow` component that draws a **projected** copy
-of a caster's sprite — darkened, semi-transparent, **skewed + length-scaled** by the sun — so the player
-**reads the time of day from a shadow's angle and length** (long west at dawn → short north at noon → long
-east at dusk → faded/gone at night and under heavy cloud).
+A drop-on **`SpriteShadow`** component (`Assets/_Project/Code/Art/SpriteShadow.cs`) draws a **projected**
+copy of a caster's sprite — darkened, semi-transparent, **skewed + length-scaled** by the sun — so the
+player **reads the time of day from a shadow's angle and length** (long west at dawn → short north at noon →
+long east at dusk → faded/gone at night and under heavy cloud). It mirrors `CottageDayNight`'s drop-on
+pattern and consumes the PR-1 sun globals (`_SunDir` / `_SunElevation`) with **no new wiring** to the
+controller.
 
-**It builds on the primitives already shipped in PR 1** (so PR 2 is mostly wiring + the shear matrix):
-- direction: `DayNightMath.ShadowDirection(hour, sunrise, sunset, southBias, noonLift)` (already published
-  inversely as `_SunDir`);
-- strength/fade: `DayNightMath.ShadowStrength(hour, sunrise, sunset, weatherDim, overcastFadesShadow)`
-  (already returns 0 at night and fades under overcast — the weather hook);
-- elevation: `_SunElevation` (already a global).
+**What shipped:**
+- **Pure projection maths** in `DayNightMath` (unit-tested in `DayNightMathTests`, mirroring the PR-1 style):
+  - `ShadowLength(sunElevation, lengthAtNoon, lengthAtHorizon, maxLength)` — length (× the caster's height)
+    that **shortens as the sun climbs** and **lengthens as it sinks**, **clamped** so dawn/dusk don't shoot
+    to infinity; 0 once the sun is at/below the horizon.
+  - `ShadowSkewOffset(shadowDir, sunElevation, casterHeight, …)` — the ground-plane shear offset the
+    silhouette's top is laid along (`ShadowDirection × length × height`), anchored at the feet.
+  - `ShadowAlpha(maxAlpha, shadowStrength)` — `maxAlpha · ShadowStrength(…)`, so it fades at night and
+    under overcast (the weather hook).
+- **The `HiddenHarbours/SpriteShadow` shader** (`Assets/_Project/Art/Shaders/HiddenHarboursSpriteShadow.shader`)
+  — does the **shear in the VERTEX stage** driven by `_SunDir`/`_SunElevation` (+ per-renderer tunables the
+  component pushes), samples the caster sprite's alpha, and outputs a flat dark silhouette. Shipped with
+  `Assets/_Project/Resources/SpriteShadow.mat` so the existing magenta shader-compile guard
+  (`WaterShaderCompileGuardTests`, which force-compiles every project material) covers it.
+- **The component** pools ONE child shadow renderer (created once, reused — rule 7), anchors it at the
+  caster's feet, sorts it just under the caster, **pixel-snaps** the anchor (toggleable), and follows the
+  caster every frame with the light recompute on a throttled tick (no per-frame allocation).
 
-**Shadow transform (the PR-2 maths to add + unit-test, mirroring the PR-1 test style):**
-- **Length** scales **inversely** with sun elevation: `len = baseLen · lerp(longAtHorizon, shortAtNoon,
-  elevation01)` — a long shadow at a low sun, short at noon, clamped so dawn/dusk don't shoot to infinity.
-- **Skew/shear**: the shadow's top vertices are sheared along `ShadowDirection` by `len` while the base
-  stays pinned at the caster's feet (anchor at the sprite's ground pivot). Express as a shear matrix on a
-  shadow mesh, or a tiny vertex-shader shear driven by `_SunDir`/`_SunElevation` (a `HiddenHarbours/SpriteShadow`
-  shader) — the latter keeps it GPU-cheap and pixel-snappable.
-- **Alpha** = `maxAlpha · ShadowStrength(...)` — fades to 0 at night and under heavy cloud.
-- **Sort** just under the caster; **pool** the shadow renderers (rule 7); **pixel-snap** the projected
-  offset (the project's PixelSnap discipline) so the shadow reads as crisp pixel art, not a smeared blob.
+**Tunables (per component, rule 6):** max alpha / darkness colour, length-at-noon vs length-at-horizon, a
+length clamp, edge softness, sorting offset, pixel-snap + PPU, foot offset, and a fallback daylight hour for
+scenes with no clock. The shadow **arc** (south-bias / noon-lift / overcast-fade / sunrise-sunset) is read
+from the same `DayNightProfile` the controller uses.
 
-**Casters:** trees, buildings, the player, the boat. Keep it a drop-on component (like `CottageDayNight`)
-plus optional auto-attach for tagged casters.
+**How to see it / add it (owner):**
+- **`Hidden Harbours ▸ Build Shadow Test`** — drops a ground plane + a post, a tree, and a standing figure
+  (each already carrying `SpriteShadow`) into the current scene. Press Play, scrub the clock, watch the
+  shadows swing + lengthen.
+- **`Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection`** — batch-adds the component to selected
+  `SpriteRenderer`s (the player, the boat, trees, buildings). World-content wires real casters this way (or
+  later in the scene builders) — the demo/menu never edits the scene builders.
 
-**Alternative noted (not preferred):** URP `ShadowCaster2D` + a `Light2D` — but that needs the Sprite-Lit
-migration ADR 0013 rejects for now, and gives less control over the stylized skew. Prefer the projected
-sprite.
+**Alternative noted (not chosen):** URP `ShadowCaster2D` + a `Light2D` — needs the Sprite-Lit migration ADR
+0013 rejects for now, and gives less control over the stylized skew. We ship the projected sprite.
 
 ## 6. Future: night lights (M2/M3, the owner's vision)
 

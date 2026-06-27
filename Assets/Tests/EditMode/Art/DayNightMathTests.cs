@@ -219,6 +219,102 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(cloudy, 0f);
         }
 
+        // ---- ShadowLength (PR 2 projection) ------------------------------------------------------------
+
+        [Test]
+        public void ShadowLength_IsShortAtNoon_LongAtLowSun()
+        {
+            float noon = DayNightMath.ShadowLength(1f, 0.4f, 6f, 10f);   // overhead sun
+            float low = DayNightMath.ShadowLength(0.1f, 0.4f, 6f, 10f);  // sun near the horizon
+            Assert.AreEqual(0.4f, noon, Eps, "overhead sun -> short stub (length-at-noon)");
+            Assert.Greater(low, noon, "a low sun casts a LONGER shadow than a high one");
+        }
+
+        [Test]
+        public void ShadowLength_IsZeroAtOrBelowHorizon()
+        {
+            Assert.AreEqual(0f, DayNightMath.ShadowLength(0f, 0.4f, 6f, 10f), Eps, "horizon -> no shadow");
+            Assert.AreEqual(0f, DayNightMath.ShadowLength(-0.5f, 0.4f, 6f, 10f), Eps, "below horizon -> no shadow");
+        }
+
+        [Test]
+        public void ShadowLength_IsClampedSoDawnDuskDontShootToInfinity()
+        {
+            // A tiny positive elevation would extrapolate toward the horizon length; the clamp caps it.
+            float max = 3f;
+            float len = DayNightMath.ShadowLength(0.001f, 0.4f, 100f, max);
+            Assert.LessOrEqual(len, max + Eps, "length is clamped to maxLength");
+        }
+
+        [Test]
+        public void ShadowLength_IsMonotonicAsTheSunSinks()
+        {
+            float prev = DayNightMath.ShadowLength(1f, 0.4f, 50f, 1000f);
+            for (float e = 0.95f; e > 0.05f; e -= 0.05f)
+            {
+                float len = DayNightMath.ShadowLength(e, 0.4f, 50f, 1000f);
+                Assert.GreaterOrEqual(len, prev - Eps, $"longer (or equal) as the sun sinks at elev {e}");
+                prev = len;
+            }
+        }
+
+        // ---- ShadowSkewOffset --------------------------------------------------------------------------
+
+        [Test]
+        public void ShadowSkewOffset_PointsAlongShadowDir_ScaledByHeightAndLength()
+        {
+            Vector2 dir = new Vector2(-1f, 0f);   // shadow falls west
+            // length multiplier at elev 0.5: lerp(horizon=4, noon=0.4, 0.5) = 2.2 ; height 2 -> world 4.4
+            Vector2 off = DayNightMath.ShadowSkewOffset(dir, 0.5f, 2f, 0.4f, 4f, 100f);
+            Assert.AreEqual(-4.4f, off.x, 1e-3f, "offset = dir * length * height");
+            Assert.AreEqual(0f, off.y, Eps);
+        }
+
+        [Test]
+        public void ShadowSkewOffset_IsZeroAtNight_AndForZeroHeight()
+        {
+            Vector2 dir = new Vector2(-1f, 0.2f).normalized;
+            Assert.AreEqual(Vector2.zero, DayNightMath.ShadowSkewOffset(dir, -0.3f, 2f, 0.4f, 4f, 100f), "night -> no offset");
+            Assert.AreEqual(Vector2.zero, DayNightMath.ShadowSkewOffset(dir, 0.8f, 0f, 0.4f, 4f, 100f), "zero height -> no offset");
+        }
+
+        [Test]
+        public void ShadowSkewOffset_SwingsWestAtDawnEastAtDusk()
+        {
+            // Use the real ShadowDirection so this guards the full chain dawn->west, dusk->east.
+            Vector2 dawnDir = DayNightMath.ShadowDirection(Sunrise + 1f, Sunrise, Sunset, 0.2f, 0.9f);
+            Vector2 duskDir = DayNightMath.ShadowDirection(Sunset - 1f, Sunrise, Sunset, 0.2f, 0.9f);
+            float dawnElev = DayNightMath.SunElevation(Sunrise + 1f, Sunrise, Sunset);
+            float duskElev = DayNightMath.SunElevation(Sunset - 1f, Sunrise, Sunset);
+
+            Vector2 dawn = DayNightMath.ShadowSkewOffset(dawnDir, dawnElev, 2f, 0.4f, 6f, 100f);
+            Vector2 dusk = DayNightMath.ShadowSkewOffset(duskDir, duskElev, 2f, 0.4f, 6f, 100f);
+            Assert.Less(dawn.x, 0f, "dawn shadow offset runs WEST");
+            Assert.Greater(dusk.x, 0f, "dusk shadow offset runs EAST");
+        }
+
+        // ---- ShadowAlpha -------------------------------------------------------------------------------
+
+        [Test]
+        public void ShadowAlpha_IsMaxAlphaTimesStrength_AndClamped()
+        {
+            Assert.AreEqual(0.3f, DayNightMath.ShadowAlpha(0.6f, 0.5f), Eps, "0.6 * 0.5 = 0.3");
+            Assert.AreEqual(0f, DayNightMath.ShadowAlpha(0.6f, 0f), Eps, "no strength (night) -> invisible");
+            Assert.AreEqual(1f, DayNightMath.ShadowAlpha(2f, 2f), Eps, "clamped to 1");
+            Assert.AreEqual(0f, DayNightMath.ShadowAlpha(-1f, 0.5f), Eps, "negative maxAlpha clamps to 0");
+        }
+
+        [Test]
+        public void ShadowAlpha_FadesWithTheSunAndWeather()
+        {
+            // Drive it through ShadowStrength: bright clear noon is darker than a cloudy noon, and night is 0.
+            float noon = DayNightMath.ShadowAlpha(0.5f, DayNightMath.ShadowStrength(13f, Sunrise, Sunset, 0f, 0.85f));
+            float cloudy = DayNightMath.ShadowAlpha(0.5f, DayNightMath.ShadowStrength(13f, Sunrise, Sunset, 0.6f, 0.85f));
+            float night = DayNightMath.ShadowAlpha(0.5f, DayNightMath.ShadowStrength(2f, Sunrise, Sunset, 0f, 0.85f));
+            Assert.Greater(noon, cloudy, "cloud softens the shadow");
+            Assert.AreEqual(0f, night, Eps, "no shadow at night");
+        }
+
         private static float Brightness(Color c) => c.r + c.g + c.b;
     }
 }

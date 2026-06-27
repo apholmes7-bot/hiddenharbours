@@ -163,6 +163,14 @@ tunable max so weather alone never blacks the screen out — night is the dark, 
 - **A clean weather→light seam exists** for the future dynamic-weather feature (no particles built).
 - **PR 2 (projected sprite shadows) is teed up** on the same `_SunDir`/`_SunElevation`/`ShadowStrength`
   primitives (spec in `design/lighting-and-daynight.md` §"Projected shadows").
+- **PR 2 (projected sprite shadows) is now SHIPPED** — a drop-on `SpriteShadow` component +
+  `HiddenHarbours/SpriteShadow` GPU-shear shader (+ `Resources/SpriteShadow.mat`, covered by the same
+  magenta guard) draws a darkened, skewed, length-scaled silhouette anchored at the caster's feet, swinging
+  and lengthening with the sun and fading at night/under overcast. It consumes the PR-1 `_SunDir`/
+  `_SunElevation` globals with no new controller wiring; the projection maths (`ShadowLength` /
+  `ShadowSkewOffset` / `ShadowAlpha`) are pure + unit-tested. An editor menu ("Build Shadow Test" + "Add
+  Sprite Shadow to Selection") lets the owner see/attach it without touching the scene builders. See
+  `design/lighting-and-daynight.md` §5 (shipped).
 - **A documented migration path to true 2D lights** for the M2/M3 boat-lights vision — the model is the
   durable part; the overlay is a swappable output stage.
 
