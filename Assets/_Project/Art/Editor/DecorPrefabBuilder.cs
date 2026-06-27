@@ -60,7 +60,9 @@ namespace HiddenHarbours.Art.Editor
             {
                 string name = $"Tree{i:00}";
                 string sprite = $"{ArtSprites}/Environment/Trees/{name}.png";
-                if (BuildDecorPrefab(name, sprite, $"{PrefabRoot}/Trees/{name}.prefab", TreeSortingOrder)) n++;
+                // Trees auto-layer by Y (YSort) so the player walks behind a tree up-screen and in front of one
+                // down-screen — the same scale the player/grass use, so all three interleave automatically.
+                if (BuildDecorPrefab(name, sprite, $"{PrefabRoot}/Trees/{name}.prefab", TreeSortingOrder, ySort: true)) n++;
             }
 
             // --- Buildings (centre pivot). Cottage day/night, Greywick houses, shipwright, buyer stall. ---
@@ -140,6 +142,7 @@ namespace HiddenHarbours.Art.Editor
                 sr.sharedMaterial = material;     // the wind-swaying Grass material
                 sr.sortingOrder = GrassSortingOrder;
                 go.transform.localScale = Vector3.one;
+                go.AddComponent<YSortSprite>();   // auto-layer by world Y (so it sorts around the player)
                 SavePrefabReplacing(go, prefabPath);
                 return true;
             }
@@ -150,8 +153,9 @@ namespace HiddenHarbours.Art.Editor
         /// A dense, pre-scattered patch (~2.5 m across) of mixed tuft variants under one root, with per-tuft
         /// scale + tint jitter for a painterly read — the owner drags a few of these to fill a clearing. The
         /// scatter is DETERMINISTIC (fixed seed) so re-running the builder rebuilds the same clump (clean diffs,
-        /// stable scenes). Children are emitted back-to-front (highest Y first) so the front tufts draw on top —
-        /// the ¾ depth read — while every tuft shares one sorting order so the clump never crosses other decor.
+        /// stable scenes). Each tuft carries a <see cref="YSortSprite"/> so it auto-layers by world Y — tufts in
+        /// front of the player draw over them, tufts behind draw under — and the children are emitted
+        /// back-to-front (highest Y first) so tufts that land on the SAME Y-order still read front-over-back.
         /// </summary>
         static bool BuildGrassClumpPrefab(string name, List<Sprite> tufts, Material material, string prefabPath)
         {
@@ -185,6 +189,7 @@ namespace HiddenHarbours.Art.Editor
                     sr.sprite = tufts[rng.Next(tufts.Count)];
                     sr.sharedMaterial = material;
                     sr.sortingOrder = GrassSortingOrder;
+                    tuftGo.AddComponent<YSortSprite>();   // auto-layer each tuft by world Y (sorts around the player)
                     // per-tuft tint jitter (the shader multiplies vertex colour) so the patch reads painterly.
                     float v = 0.82f + (float)rng.NextDouble() * 0.30f;
                     float warm = (float)(rng.NextDouble() * 0.10 - 0.05);
@@ -211,7 +216,8 @@ namespace HiddenHarbours.Art.Editor
         /// Returns false (with a warning) if the source sprite is missing, so a partial art set still builds
         /// what it can.
         /// </summary>
-        static bool BuildDecorPrefab(string name, string spritePath, string prefabPath, int sortingOrder)
+        static bool BuildDecorPrefab(string name, string spritePath, string prefabPath, int sortingOrder,
+                                     bool ySort = false)
         {
             var sprite = TileAssetBuilder.LoadSpriteAny(spritePath);
             if (sprite == null) { Debug.LogWarning($"[DecorPrefabBuilder] missing sprite {spritePath} — {name} skipped."); return false; }
@@ -221,12 +227,11 @@ namespace HiddenHarbours.Art.Editor
             {
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = sprite;                 // pivot is baked into the sub-sprite by the import lock
-                sr.sortingOrder = sortingOrder;
+                sr.sortingOrder = sortingOrder;     // a sane default; YSortSprite (if added) recomputes from Y
                 go.transform.localScale = Vector3.one;   // honest metric size — never scale a real sprite
+                if (ySort) go.AddComponent<YSortSprite>();   // auto-layer by world Y (static decor: computed once)
 
-                if (AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath) != null)
-                    AssetDatabase.DeleteAsset(prefabPath);
-                PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+                SavePrefabReplacing(go, prefabPath);
                 return true;
             }
             finally
