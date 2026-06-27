@@ -132,6 +132,15 @@ Material:
     - _WhitecapFormSharpness: 0.5
     - _WhitecapPeakDensity: 0.95
     - _WhitecapCollapseRate: 1.5
+    - _ReflectionStrength: 0.6
+    - _ReflectionFadeChop: 0.6
+    - _ReflectionWindFade: 0.5
+    - _ReflectionChopScatter: 1.5
+    - _ReflectionWindScatter: 0.8
+    - _ReflectionSkyTint: 0.85
+    - _ReflectionSmear: 1.6
+    - _ReflectionSunStreak: 0.9
+    - _ReflectionSunSharp: 6
     m_Colors:
     - _CausticColor: {r: 0.75, g: 0.95, b: 0.92, a: 1}
     - _DeepColor: {r: 0.06, g: 0.16, b: 0.24, a: 1}
@@ -146,5 +155,6 @@ Material:
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _FbmTint: {r: 0.55, g: 0.72, b: 0.78, a: 1}
     - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
+    - _ReflectionColor: {r: 0.62, g: 0.74, b: 0.86, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
