@@ -11,10 +11,10 @@
 //       for). A steady lean (holds the blades leaned in a strong wind) PLUS a travelling gust ripple that moves
 //       DOWNWIND across the field, decorrelated per-tuft so the field never sways in lockstep.
 //
-//   (2) FOOTSTEP BEND — grass within _FootRadius of the player bends AWAY from them and springs back once they
-//       leave. HiddenHarbours.Art.GrassFootstep pushes the player position into the GLOBAL vector _PlayerWorld;
-//       the bend is (1 - smoothstep(0, radius, dist)) away from the player. Recovery is automatic: it tracks the
-//       LIVE player position, so no per-blade state is stored (CLAUDE.md rule 5 — no hidden simulation state).
+//   (2) FOOTSTEP TRAIL — the grass parts along the player's recent PATH and springs back behind them, a trodden
+//       trail rather than a halo circling the player. HiddenHarbours.Art.GrassFootstep uploads the last N world
+//       positions into the GLOBAL array _GrassTrail (xy = pos, z = recency 0..1); each disturbs only a
+//       footprint-sized _FootRadius and fades by recency, so no per-blade state is stored (CLAUDE.md rule 5).
 //
 // The bend weight is the sprite UV.y (0 at the root -> 1 at the tip), squared so the base stays planted and the
 // tip moves most. EVERY amplitude / speed / radius is a material or global property (rule 6). Pixel-art faithful:
@@ -57,9 +57,11 @@ Shader "HiddenHarbours/GrassWind"
         // blade folding over rather than stretching. Small.
         _BendY ("Bend foreshorten (0..1)", Range(0, 1)) = 0.25
 
-        [Header(Footstep bend (driven by the player via _PlayerWorld))]
-        _FootRadius ("Footstep radius (m)", Float) = 1.4
-        _FootStrength ("Footstep push strength (m)", Float) = 0.5
+        [Header(Footstep trail (the player treads a path the grass springs back from))]
+        // A footprint-sized disturbance (NOT a wide halo): each point of the player's recent PATH parts the
+        // grass within this radius. Keep it near the player's footprint so only grass actually walked over reacts.
+        _FootRadius ("Footstep radius (m)", Float) = 0.5
+        _FootStrength ("Footstep push strength (m)", Float) = 0.4
     }
 
     SubShader
@@ -99,11 +101,15 @@ Shader "HiddenHarbours/GrassWind"
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
 
-            // GLOBAL sim/player inputs (Shader.SetGlobalVector from the bridges; not per-material, so they are
-            // OUTSIDE the per-material CBUFFER). _WindWorld = wind dir * normalized strength (0..1). _PlayerWorld
-            // = player world position (xy). Default (0,0,0,0): no wind, player effectively far away.
+            // GLOBAL sim/player inputs (set by the bridges; not per-material, so OUTSIDE the per-material CBUFFER).
+            // _WindWorld = wind dir * normalized strength (0..1). Default (0,0,0,0): no wind.
             float4 _WindWorld;
-            float4 _PlayerWorld;
+            // _GrassTrail = the player's recent PATH (GrassFootstep, via SetGlobalVectorArray): xy = world pos,
+            // z = recency 0..1 (1 just stepped, fading to 0 as the grass springs back), w unused. All z = 0 by
+            // default → no bend until the player actually walks. TRAIL_N is a COMPILE-TIME constant so the [unroll]
+            // below has a fixed bound (never an [unroll] over a runtime count — the magenta trap).
+            #define TRAIL_N 24
+            float4 _GrassTrail[TRAIL_N];
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
@@ -165,13 +171,26 @@ Shader "HiddenHarbours/GrassWind"
                 float  lean    = windStr * _WindLean;
                 float2 windOffset = wdir * ((lean + gust * _GustStrength) * swayMag);
 
-                // ---- FOOTSTEP ----
-                // bend AWAY from the live player position; recovery is automatic (tracks _PlayerWorld each frame).
-                float2 toBlade = wp.xy - _PlayerWorld.xy;
-                float  d   = length(toBlade);
-                float  fp  = 1.0 - smoothstep(0.0, max(_FootRadius, 1e-3), d);
-                float2 fdir = d > 1e-4 ? toBlade / d : float2(0.0, 1.0);
-                float2 footOffset = fdir * (fp * _FootStrength);
+                // ---- FOOTSTEP TRAIL ----
+                // Bend away from the player's recent PATH, not a single point: each _GrassTrail point disturbs only
+                // a footprint-sized radius (_FootRadius) and fades by its recency (z), so the grass parts ALONG the
+                // path the player walked and recovers behind them — a trodden trail, not a halo circling the player.
+                // Take the STRONGEST nearby point (max, not sum) so overlapping footprints don't stack into a bulge.
+                float  bestFp  = 0.0;
+                float2 bestDir = float2(0.0, 1.0);
+                [unroll]
+                for (int ti = 0; ti < TRAIL_N; ti++)
+                {
+                    float2 to = wp.xy - _GrassTrail[ti].xy;
+                    float  d  = length(to);
+                    float  fp = (1.0 - smoothstep(0.0, max(_FootRadius, 1e-3), d)) * saturate(_GrassTrail[ti].z);
+                    if (fp > bestFp)
+                    {
+                        bestFp  = fp;
+                        bestDir = d > 1e-4 ? to / d : float2(0.0, 1.0);
+                    }
+                }
+                float2 footOffset = bestDir * (bestFp * _FootStrength);
 
                 // combine, weight by the tip bend, foreshorten in Y, and pixel-snap.
                 float2 offset = (windOffset + footOffset) * bendW;

@@ -28,8 +28,11 @@ stage:
   field — the same cohesion the water swell has. A per-`_PhaseGrid`-cell phase offset decorrelates
   neighbouring tufts. Amplitude scales with wind strength, plus a small wind-independent `_IdleSway`
   baseline so grass always has a little life.
-- **Footstep** = bend away from `_PlayerWorld` by `(1 - smoothstep(0, _FootRadius, dist))`. Recovery is
-  automatic — it tracks the *live* player position every frame, so nothing is stored per tuft.
+- **Footstep trail** = bend away from the player's recent **path**, not a single point. `GrassFootstep`
+  publishes the last N world positions (`_GrassTrail`); each disturbs only a **footprint-sized** radius
+  (`_FootRadius`, ~0.5 m) and fades by recency, so the grass parts **along the trail the player walked**
+  and springs back behind them — a trodden path, not a halo circling the player. The shader takes the
+  strongest nearby point (max, not sum) so overlapping footprints never stack into a bulge.
 - **Pixel-art faithful**: the bend offset is **snapped to the PPU grid** (PPU 32), point-sampled, like
   the water shader. The blade also dips slightly in Y as it bends (`_BendY`) so a hard bend reads as
   folding over, not stretching.
@@ -50,9 +53,11 @@ Both just publish a **global** shader vector; every grass instance reads it with
   direction, and sets `Shader.SetGlobalVector("_WindWorld", dir * strength)`. So **grass + water move
   together**. When there is no sim yet (EditMode / pre-boot / the bare demo) it publishes nothing,
   leaving the grass on its idle baseline.
-- **`GrassFootstep`** (`Assets/_Project/Code/Art/`) — a tiny component on the player (or any mover). Each
-  frame it sets `Shader.SetGlobalVector("_PlayerWorld", transform.position)`. That's the whole footstep
-  system — recovery is the shader tracking the live position.
+- **`GrassFootstep`** (`Assets/_Project/Code/Art/`) — a tiny component on the player (or any mover). It
+  keeps a ring buffer of the walker's recent positions (a new footprint every `_pointSpacing` m, each
+  fading over `_trailLifetime` s) and uploads it once per frame via
+  `Shader.SetGlobalVectorArray("_GrassTrail", …)` (no per-frame allocation). The spring-back is the
+  recency fade — still no per-tuft state, nothing saved.
 
 Both are **visual-only**: they drive no simulation and save nothing (rule 5). Determinism-sensitive math
 (`WindToShaderVector`, `FootstepFalloff`) lives as pure static methods mirrored from the HLSL and is unit
@@ -86,5 +91,6 @@ On the **Grass** material (`Assets/_Project/Art/Materials/Grass.mat`): `_SwayAmo
 ## Integration handoff (world-content)
 Place grass-tuft `SpriteRenderer`s (sharing `Grass.mat`) in the St Peters clearings, and put a
 `GrassFootstep` on the on-foot player. No wind wiring is needed — `GrassWindBridge` self-installs and the
-grass reads the shared wind automatically. A lingering "trail you stomped down" is a deliberate later
-upgrade (today's footstep bend is a soft radius that follows the player and springs back).
+grass reads the shared wind automatically. The footstep bend is a **fading trail** along the path the
+player walks (a footprint-sized disturbance per recent position), so the grass reads as trodden-down
+rather than a halo orbiting the player.

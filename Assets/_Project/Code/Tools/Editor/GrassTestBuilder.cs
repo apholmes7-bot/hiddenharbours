@@ -18,7 +18,7 @@ namespace HiddenHarbours.Tools.Editor
     ///   • a field of grass-tuft <see cref="SpriteRenderer"/>s, all sharing the ONE grass material (GPU-instanced /
     ///     dynamic-batched, all sway/bend in-shader — hundreds of tufts stay cheap, CLAUDE.md rule 7);
     ///   • a movable avatar with <see cref="GrassDevWalker"/> (WASD/arrows) + <see cref="GrassFootstep"/> (publishes
-    ///     <c>_PlayerWorld</c> so the grass bends away from it);
+    ///     the walker's recent PATH into <c>_GrassTrail</c> so the grass parts along the trodden trail);
     ///   • <see cref="GrassDevWind"/> on the root, which feeds a gentle veering TEST wind ONLY while there is no
     ///     environment sim — so the demo sways out of the box; once the real sim is present, the self-installing
     ///     <see cref="GrassWindBridge"/> drives the SAME global off the deterministic wind (grass + water together).

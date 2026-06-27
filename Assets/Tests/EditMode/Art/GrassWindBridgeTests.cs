@@ -113,5 +113,44 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 prev = f;
             }
         }
+
+        // ---- GrassFootstep.TrailStrength (the path spring-back fade) --------------------------------------
+
+        [Test]
+        public void TrailStrength_FreshPoint_IsFull()
+        {
+            Assert.AreEqual(1f, GrassFootstep.TrailStrength(0f, 1.2f), Eps, "A just-trodden point bends fully.");
+            Assert.AreEqual(1f, GrassFootstep.TrailStrength(-5f, 1.2f), Eps, "A head point refreshed this frame is full.");
+        }
+
+        [Test]
+        public void TrailStrength_AtOrPastLifetime_IsZero()
+        {
+            Assert.AreEqual(0f, GrassFootstep.TrailStrength(1.2f, 1.2f), Eps, "At the lifetime the grass has sprung back.");
+            Assert.AreEqual(0f, GrassFootstep.TrailStrength(10f, 1.2f), Eps, "A stale point exerts no bend.");
+            // A never-set point (huge negative born → huge positive age) must read 0, not bend the whole field.
+            Assert.AreEqual(0f, GrassFootstep.TrailStrength(1e9f, 1.2f), Eps);
+        }
+
+        [Test]
+        public void TrailStrength_HalfLifetime_IsHalf()
+        {
+            Assert.AreEqual(0.5f, GrassFootstep.TrailStrength(0.6f, 1.2f), Eps, "Linear spring-back: half-faded at half life.");
+        }
+
+        [Test]
+        public void TrailStrength_MonotonicNonIncreasingInAge()
+        {
+            float prev = 2f;
+            for (int i = 0; i <= 20; i++)
+            {
+                float age = i * 0.1f;   // 0..2 s
+                float s = GrassFootstep.TrailStrength(age, 1.2f);
+                Assert.LessOrEqual(s, prev + Eps, "A trail point must only fade, never strengthen, with age.");
+                Assert.GreaterOrEqual(s, -Eps);
+                Assert.LessOrEqual(s, 1f + Eps);
+                prev = s;
+            }
+        }
     }
 }
