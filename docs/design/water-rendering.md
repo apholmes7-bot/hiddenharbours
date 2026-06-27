@@ -455,6 +455,48 @@ pixel-snapped. If a repeat still reads, raise `_UntileStrength` or lower `_White
 > `_FoamEvolveSpeed` to 0 (shapes stop morphing, foam only drifts) and `_FoamThresholdSoft` small (toward a
 > hard edge).
 
+### 5.10 Flow momentum — the water has MASS (shipped upgrade)
+
+PR #95/#96 made the sim's **wind and tidal-current directions WANDER over time** (a deterministic drift,
+P1 "sea has moods"). `WaterSurface.cs` pushes those live directions to the shader (`_FlowDir`/`_WindDir`,
+§5.7), and the shader scrolls **every** wind/current-driven layer along them — so the moment the sim's
+heading shifted, the surface motion **SNAPPED** to the new direction. The owner's note: *"when the water
+changes direction of movement it shouldn't be instantaneous — it needs time to slow and change direction
+from the newly applied force"* (water has mass).
+
+This upgrade gives the pushed flow a **damped response** so the VISUAL surface motion **eases** toward the
+live sim instead of snapping — decelerating through a heading change and accelerating out of it (momentum).
+It lives **entirely in `WaterSurface.cs`** — **no shader change, no material property** (it's how the
+uniforms are *fed*, not a new layer):
+
+- **Smoothed vectors (the mechanism).** `WaterSurface` keeps persistent `Vector2` **smoothed twins** of the
+  live `EnvironmentSample.CurrentVector` / `WindVector`. Each throttled push eases them toward the real sim
+  vectors via frame-rate-independent **exponential smoothing**
+  (`smoothed += (target − smoothed)·(1 − exp(−dt/τ))`, the pure static `SmoothVectorToward`), and **ALL**
+  pushed uniforms are derived from the SMOOTHED vectors (`_Flow`/`_FlowDir` from smoothed current;
+  `_WindDir`/`_Roughness` from smoothed wind — reusing the existing `FlowSpeed`/`FlowDirection`/
+  `WindDirection`/`Roughness` helpers). So **every** wind/current-driven layer — current scroll, wind chop,
+  rolling swell, foam streaks, foam drift — inherits the **same** momentum: the whole body eases round
+  together (cohesive), not layer-by-layer.
+- **Why smooth the VECTOR (not heading + magnitude apart).** When the flow reverses heading, the smoothed
+  vector travels THROUGH a low-magnitude region as it rotates, so the surface **speed dips** mid-turn and
+  recovers — *"slows, turns, then speeds back up"* for free. Smoothing heading and magnitude separately
+  would hold the speed flat through the turn (the very snap we're removing).
+- **One tunable (rule 6) — `Flow Response Time`** (`_flowResponseTime`, seconds, **default 3**). The time
+  constant τ: heavier (larger) = more sluggish inertia; lighter (smaller) = livelier/snappier; **0 = no
+  smoothing** (instant snap, the old behaviour). It is a **`WaterSurface` serialized field, NOT a material
+  property** — the knob is on the component, tuned in the Inspector with no builder re-run. Frame-rate AND
+  refresh-rate independent (the smoothing law composes, so the look doesn't change with `_refreshHz`).
+- **Presentation only (rule 5).** This smooths the **visual** uniforms; it does **not** change the
+  deterministic sim. The boat physics still read the **real** `EnvironmentSample` directly — only what the
+  player SEES lags the sim slightly, and **that lag IS the momentum**. It saves nothing and feeds no
+  simulation, exactly like the §5.6–§5.9 cosmetic layers.
+
+The smoothing law has a pure-C# twin tested headless (`SmoothVectorToward` in `ArtRenderingTests.cs`): it
+eases toward a steady target, the magnitude **dips below both endpoints on a reversal** (the slows-through-
+the-turn property), it is **frame-rate independent** (sub-stepping reaches the same end state), and it is
+deterministic — the guards for the momentum feel without opening Unity.
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
