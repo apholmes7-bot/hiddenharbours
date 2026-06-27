@@ -110,6 +110,38 @@ Shader "HiddenHarbours/Water"
         _FoamThreshold      ("Foam soft-threshold level (higher = less foam)", Range(0,1)) = 0.55
         _FoamThresholdSoft  ("Foam threshold softness (merge / separate band)", Range(0,1)) = 0.18
 
+        [Header(Foam DENSITY (dual zone   solid white core plus milky soft edge))]
+        // The SOFT (metaball) threshold made the foam MILKY EVERYWHERE — even at high field values the
+        // smoothstep only gives partial coverage, so the owner's painted solid-white _FoamTex never reads
+        // dense. These RESTORE a SOLID-WHITE CORE where the evolving field is WELL above threshold (full
+        // opacity, the painted solid white showing through), keeping the milky smoothstep ONLY as the soft
+        // edge near the threshold boundary. Result: a dense solid heart with soft milky edges.
+        //   _FoamSolidThreshold — the field level ABOVE _FoamThreshold at which foam becomes SOLID (full
+        //                         opacity). Between _FoamThreshold and here = the milky soft band; above = dense.
+        //   _FoamDensity        — master: how strongly the solid core lifts opacity to full (0 = always milky
+        //                         like before, 1 = full dense core). Drives calm(milky) to rough(solid).
+        //   _FoamDensityWind    — how much wind/roughness RAISES density plus widens the solid zone, so a
+        //                         building sea automatically gets denser, more widespread whitecaps (the
+        //                         owner's milky-for-some-conditions, dense-for-others happens with the weather).
+        _FoamSolidThreshold ("Foam SOLID-core level (above the soft band = dense white)", Range(0,1)) = 0.78
+        _FoamDensity        ("Foam density master (0 = milky like before, 1 = solid core)", Range(0,1)) = 0.6
+        _FoamDensityWind    ("Foam density wind coupling (rough means denser, wider)", Range(0,1)) = 0.5
+
+        [Header(Whitecap LIFECYCLE (form on crest   peak   collapse to milky residual))]
+        // A natural wave lifecycle for the OPEN-WATER whitecaps, keyed off the rolling-swell CREST factor
+        // (SwellField, reused). Foam FORMS as the swell crest builds, PEAKS into a dense solid whitecap near
+        // the crest MAXIMUM (the breaking crest), then COLLAPSES into milky residual (fading plus spreading
+        // downwind via _FoamStreakStretch) as the crest passes. All col.rgb-only dressing (P1, rule 5).
+        //   _WhitecapFormSharpness — how ABRUPTLY foam breaks at the crest top (0 = forms gradually across the
+        //                            whole crest, 1 = a sharp narrow breaking band only at the very crest).
+        //   _WhitecapPeakDensity   — the opacity of a NEWBORN whitecap on the breaking crest (the dense peak;
+        //                            also the open-water cap opacity ceiling, replacing the old hard 0.6).
+        //   _WhitecapCollapseRate  — how fast the cap AGES to milky residual as the crest drops away from the
+        //                            peak (higher = collapses faster, more milky residual off the crests).
+        _WhitecapFormSharpness ("Whitecap form sharpness at crest (0 = soft, 1 = sharp break)", Range(0,1)) = 0.5
+        _WhitecapPeakDensity   ("Whitecap peak density (newborn crest opacity)", Range(0,1)) = 0.95
+        _WhitecapCollapseRate  ("Whitecap collapse rate (age to milky off-crest)", Range(0,4)) = 1.5
+
         [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
         _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
         _SwashSpeed     ("Swash speed (waves / 2pi sec)", Float)      = 0.5
@@ -289,6 +321,14 @@ Shader "HiddenHarbours/Water"
                 float  _FoamBlobScale;
                 float  _FoamThreshold;
                 float  _FoamThresholdSoft;
+                // Dual-zone density (solid-white core + milky soft edge) + the condition coupling.
+                float  _FoamSolidThreshold;
+                float  _FoamDensity;
+                float  _FoamDensityWind;
+                // Whitecap lifecycle (form on the crest -> peak -> collapse to milky residual).
+                float  _WhitecapFormSharpness;
+                float  _WhitecapPeakDensity;
+                float  _WhitecapCollapseRate;
                 float  _SwashAmplitude;
                 float  _SwashSpeed;
                 float  _SwashScale;
@@ -520,6 +560,61 @@ Shader "HiddenHarbours/Water"
                 float2 current = normalize(_FlowDir.xy + float2(1e-4, 0));
                 float2 blend   = lerp(current, wind, saturate(_FoamDriftWindVsCurrent));
                 return normalize(blend + float2(1e-4, 1e-4));
+            }
+
+            // ---- foam DENSITY: how solid/widespread the foam reads, driven by sea-state (wind/roughness) -------
+            // The #101 soft threshold reads MILKY everywhere — accurate for calm/dissipating foam, wrong for a
+            // building/rough sea that needs SOLID-white density. This returns an effective density 0..1 from the
+            // master _FoamDensity lifted by wind (_Roughness × _FoamDensityWind): CALM => low (milky), ROUGH =>
+            // high (solid, widespread). The caller uses it to (a) lift the solid-core opacity and (b) widen the
+            // solid zone. So the owner's "milky for some conditions, dense for others" tracks the weather for free.
+            float FoamDensity()
+            {
+                return saturate(_FoamDensity + _Roughness * _FoamDensityWind);
+            }
+
+            // ---- dual-zone SOLID CORE: a dense solid-white heart with a soft milky edge --------------------------
+            // Given a foam FIELD value and its soft threshold, returns a SOLID-CORE weight 0..1 that is 1 where the
+            // field is WELL above threshold (the dense heart, full opacity, the painted solid white showing
+            // through) and 0 near the threshold boundary (where the existing milky smoothstep still owns the look).
+            // The solid level is _FoamSolidThreshold, but DENSITY pulls it DOWN toward the threshold as the sea
+            // roughens, so a rough sea turns more of the field solid (denser, more widespread caps). col.rgb/col.a
+            // dressing only — never depth/clip/_WaterLevel (P1 integrity, CLAUDE.md rule 5).
+            float SolidCore(float field, float thr, float density)
+            {
+                float d = saturate(density);
+                // solid level slides from _FoamSolidThreshold (calm: only the very brightest cores are solid)
+                // DOWN toward just above the threshold (rough: most of the foam reads solid). Kept above `thr`
+                // so the soft milky band between `thr` and the solid level never vanishes (dense heart + soft edge).
+                float solidLvl = lerp(saturate(_FoamSolidThreshold), thr + 0.02, d);
+                solidLvl = max(solidLvl, thr + 0.01);              // guard: solid level stays above the threshold
+                return smoothstep(thr, solidLvl, field);
+            }
+
+            // ---- whitecap LIFECYCLE: form on the crest -> peak (dense) -> collapse to milky residual -------------
+            // A natural wave lifecycle from the rolling-swell CREST factor (0..1; 1 = the breaking crest top).
+            // Returns a DENSITY SCALE 0..1 the caller multiplies into the solid-core lift, so the cap is BORN dense
+            // & solid on the breaking crest and AGES into milky residual as the crest passes:
+            //   BREAK  — a sharp band at the crest top (_WhitecapFormSharpness narrows it) where foam newly breaks:
+            //            full peak density (_WhitecapPeakDensity).
+            //   COLLAPSE— away from the crest the cap ages: crest^_WhitecapCollapseRate falls off (faster = more
+            //            milky residual off-crest), so troughs keep only a faint milky remnant (the soft mask
+            //            survives there, but the SOLID lift fades — milky residual, exactly the dissipating look).
+            // The downwind SPREAD of the residual is the existing _FoamStreakStretch (the cap coord is already
+            // wind-streaked at the call site). col.rgb-only dressing — drives no sim/clip/_WaterLevel (P1, rule 5).
+            float WhitecapLifecycle(float crest, float density)
+            {
+                float c = saturate(crest);
+                // the breaking band at the very crest: _WhitecapFormSharpness (0..1) raises the band's lower edge
+                // toward 1 so a higher value = a sharper, narrower break only at the crest top.
+                float breakLo = lerp(0.0, 0.9, saturate(_WhitecapFormSharpness));
+                float breakBand = smoothstep(breakLo, 1.0, c);
+                // newborn dense peak on the break band, scaled by the live density (rough seas break denser).
+                float newborn = breakBand * saturate(_WhitecapPeakDensity) * saturate(density);
+                // aged milky residual everywhere the crest is non-zero, decaying away from the peak.
+                float aged = pow(c, max(_WhitecapCollapseRate, 0.05));
+                // the cap is born dense on the crest, aging into milky residual — take the stronger of the two.
+                return saturate(max(newborn, aged * saturate(density)));
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -788,9 +883,19 @@ Shader "HiddenHarbours/Water"
                     float foamField = saturate(churn + foamEdge * 0.5 + _Roughness * 0.4);
                     float thr  = saturate(_FoamThreshold);
                     float soft = max(_FoamThresholdSoft, 1e-3);
-                    float foamMask = smoothstep(thr - soft, thr + soft, foamField) * saturate(foamEdge + _Roughness * 0.4);
-                    col.rgb = lerp(col.rgb, _FoamColor.rgb, foamMask * _FoamColor.a);
-                    col.a = max(col.a, foamMask * _FoamColor.a);
+                    float bandGate = saturate(foamEdge + _Roughness * 0.4);
+                    // the MILKY soft mask (the #101 metaball look): partial coverage across the soft band — kept
+                    // as the LIGHT/dissipating end (the soft edge of every blob).
+                    float milky = smoothstep(thr - soft, thr + soft, foamField);
+                    // DUAL-ZONE: a SOLID-WHITE CORE where the field is WELL above threshold lifts the coverage to
+                    // FULL (the painted solid-white _FoamTex shows through at the heart), leaving the milky band
+                    // only near the boundary. Density (driven by sea-state) sets how strongly the core lifts and
+                    // how wide the solid zone is: CALM => barely lifted (milky), ROUGH => a dense solid heart.
+                    float dens = FoamDensity();
+                    float core = SolidCore(foamField, thr, dens);
+                    float foamCoverage = lerp(milky, 1.0, core) * bandGate;
+                    col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);
+                    col.a = max(col.a, foamCoverage * _FoamColor.a);
                 }
 
                 // Whitecaps out on open water when it's rough (wind-driven). WIND-STREAKED + swell-coupled:
@@ -823,7 +928,10 @@ Shader "HiddenHarbours/Water"
                     // MERGE; when it dips they SEPARATE and fade — organic whitecaps, not a sliding speckle grid.
                     float capThr  = saturate(_FoamThreshold - _Roughness * 0.25);
                     float capSoft = max(_FoamThresholdSoft, 1e-3);
-                    float capMask = smoothstep(capThr - capSoft, capThr + capSoft, cap) * saturate(dt);  // deeper water
+                    // the MILKY soft coverage (the #101 metaball look): the merge/separate band, kept as the
+                    // light/dissipating end. The SOLID core (below) lifts it to dense white on the breaking crest.
+                    float capMilky = smoothstep(capThr - capSoft, capThr + capSoft, cap);
+                    float capMask = capMilky * saturate(dt);  // deeper water
                 #if defined(_USE_WHITECAPTEX)
                     // Painted whitecap pattern (white-on-transparent) drifted WITH the body (the foam drift
                     // blend, not a fixed current scroll); coverage SCALES BY ROUGHNESS (the wind uniform) so
@@ -841,7 +949,23 @@ Shader "HiddenHarbours/Water"
                     // swell instead of speckling evenly. _FoamCrestGate dials it (0 = even, 1 = crest-only).
                     float crestGate = lerp(1.0, swellCrest, saturate(_FoamCrestGate));
                     capMask *= crestGate;
-                    col.rgb = lerp(col.rgb, _FoamColor.rgb, capMask * 0.6);
+                    // ---- DUAL-ZONE DENSITY + WAVE LIFECYCLE (form -> peak -> collapse) ------------------------
+                    // The cap was capped at a flat 0.6 opacity (always milky). Now: a SOLID-WHITE CORE where the
+                    // cap field is WELL above threshold, lifted by sea-state DENSITY, and shaped by the wave
+                    // LIFECYCLE off the swell crest — BORN dense & solid on the breaking crest, AGING into milky
+                    // residual as the crest passes (the residual spreads downwind via the wind-streaked aniso
+                    // coord above). col.rgb-only dressing — drives no depth/clip/_WaterLevel (P1, rule 5).
+                    float capDens   = FoamDensity();
+                    float capCore   = SolidCore(cap, capThr, capDens);            // 0..1: the dense solid heart
+                    float life      = WhitecapLifecycle(swellCrest, capDens);     // form/peak/collapse density scale
+                    // peak opacity ceiling for a NEWBORN cap (replaces the old hard 0.6); the milky residual sits
+                    // below it. The solid core × the lifecycle drives the dense white; the milky coverage carries
+                    // the soft, aged remnant so off-crest the cap reads thin/milky, not a hard speckle.
+                    float capPeak   = saturate(_WhitecapPeakDensity);
+                    float capSolid  = capCore * life * capPeak;                   // dense white on the breaking crest
+                    float capMilkyOpacity = capMask * lerp(0.45, capPeak, capDens); // milky residual (scales gently with sea-state)
+                    float capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
+                    col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 
                 return col;

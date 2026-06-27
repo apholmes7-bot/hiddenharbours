@@ -497,6 +497,71 @@ eases toward a steady target, the magnitude **dips below both endpoints on a rev
 the-turn property), it is **frame-rate independent** (sub-stepping reaches the same end state), and it is
 deterministic — the guards for the momentum feel without opening Unity.
 
+### 5.11 Foam density + whitecap lifecycle — dense solid core, milky edge, born-on-the-crest (shipped upgrade)
+
+The §5.9 living-foam pass gave the foam a **soft (metaball) threshold** so blobs merge/separate — but the
+owner saw it read **MILKY EVERYWHERE**, losing the **dense, solid-white** whitecaps the painted `_FoamTex`
+(`_UseFoamTex` ON) used to give. The milky look is right for **calm / dissipating** foam, but a
+**building / rough** sea needs solid density. The owner also wanted a natural **wave lifecycle**: foam
+**forms** as waves build → peaks into dense **whitecaps** → **collapses** / dissipates. This pass is
+**additive on #100/#101** — it keeps their merge/separate + the milky soft fade as the **LIGHT/dissipating
+end**, and adds (1) a **dual-zone density** (solid-white core + milky edge), (2) **condition-driven density**
+(sea-state widens/solidifies the foam), and (3) the **form→whitecap→collapse lifecycle**. Like every prior
+addendum it is **visual-only** — it touches only `col.rgb` / `col.a` and **never** `depth`, `clip()`, the
+deep-tint, the caustic gate, or `_WaterLevel`; it drives no sim and saves nothing (P1 integrity, CLAUDE.md
+rule 5). Every constant is a material property (rule 6), every field stays **pixelized** (decision (2)), and
+the new levers default **ON at a modest strength** so the change reads immediately yet dials fully back.
+
+**(A) Dual-zone density — a SOLID-WHITE CORE + a milky soft edge (`SolidCore`, `FoamDensity`).** The #101
+mask was a single `smoothstep(thr − soft, thr + soft, field)` — a smooth ramp, so even a field maximum only
+reached partial coverage = milky. This pass keeps that smoothstep as the **milky band near the threshold
+boundary**, but adds a **solid core**: where the evolving field is **WELL above** the threshold (above a new
+`_FoamSolidThreshold`, which sits **above** `_FoamThreshold`), the foam coverage is lifted to **full
+opacity** — `coverage = lerp(milky, 1, SolidCore(field))` — so the painted solid-white `_FoamTex` shows
+through at the **dense heart**, with the milky smoothstep surviving only at the **soft edge**. Result: a
+dense solid heart with soft milky edges, not milky-everywhere. Applied to **both** the shoreline foam fringe
+and the open-water whitecaps.
+
+**(B) Condition-driven density — calm sparse/milky, rough dense/solid/widespread (`FoamDensity`).** A master
+`_FoamDensity` is **raised by wind** via `_FoamDensityWind` (× the existing `_Roughness`, which `WaterSurface`
+already drives from the sim wind): `density = saturate(_FoamDensity + _Roughness · _FoamDensityWind)`. Density
+both **lifts** the solid-core opacity and **widens** the solid zone (it slides the effective solid level
+**down toward** the threshold as the sea roughens, so more of the field reads solid). So **CALM → sparse +
+milky** (the #101 end) and **ROUGH → dense, solid, widespread whitecaps**, automatically, as the weather
+shifts — the owner's "milky for some conditions, dense for others" with **no manual retuning**.
+
+**(C) Wave lifecycle — form → peak → collapse, keyed off the swell crest (`WhitecapLifecycle`).** The
+open-water whitecaps are tied to the **rolling-swell crest factor** (`SwellField`, §5.8 — reused, no new
+field). A whitecap is **BORN dense & solid on the breaking crest** (a sharp break band at the crest top,
+narrowed by `_WhitecapFormSharpness`, at `_WhitecapPeakDensity` opacity — which also **replaces the old hard
+`0.6` cap-opacity ceiling**), then **AGES into milky residual** as the crest passes
+(`crest^_WhitecapCollapseRate` decays the solid lift; faster rate = more milky residual off-crest), the
+residual **spreading downwind** through the existing wind-streaked aniso coord (`_FoamStreakStretch`). Off the
+crest / in the trough the solid lift fades to nothing and **only the milky soft mask remains** — exactly the
+dissipating look #101 nailed. This is a **separate axis** from the existing `_FoamCrestGate` (which gates
+*where* caps appear): the lifecycle shapes *how dense/solid* they are across their life stage.
+
+> **Why no C# uniform.** The dual-zone core, the density coupling, and the lifecycle are all derived
+> **in-shader** off the already-pushed `_Roughness`/`_WindDir`/`_FlowDir` + `_Time` — **no new uniform**,
+> `WaterSurface.cs` pushes nothing new and is untouched. The evolving foam FIELD is GPU value-noise (not
+> unit-testable headless), but the three shaping functions — `FoamDensity` / `SolidCore` /
+> `WhitecapLifecycle` — are pure functions of the uniforms + the crest factor, mirrored as C# twins and
+> unit-tested headless (`Assets/Tests/EditMode/Art/FoamDensityLifecycleTests.cs`): wind raises density and
+> saturates; the solid core is 0 near the threshold and 1 well above it yet **always keeps a milky band**
+> (the dual zone, never all-milky nor all-solid); density **widens** the solid zone; the lifecycle **peaks on
+> the breaking crest and collapses in the trough**, ages monotonically off-crest, and **density gates the
+> whole solid look** (calm = milky everywhere, rough = dense crests). The CI shader-compile guard
+> (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in
+> any `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).
+
+> **Property summary (all additive — none of the owner's existing tuned values changed):**
+> *density* — `_FoamSolidThreshold` (0.78, the field level above the soft band that reads SOLID; sits above
+> `_FoamThreshold`), `_FoamDensity` (0.6, master), `_FoamDensityWind` (0.5, wind→density coupling).
+> *lifecycle* — `_WhitecapFormSharpness` (0.5, how abruptly foam breaks at the crest), `_WhitecapPeakDensity`
+> (0.95, newborn-crest opacity, replaces the old hard 0.6), `_WhitecapCollapseRate` (1.5, how fast it ages to
+> milky off-crest). To revert toward the #101 milky-everywhere look, set `_FoamDensity` to 0 and
+> `_WhitecapPeakDensity` to ~0.6 (the old ceiling); the merge/separate soft mask is then the whole look again.
+
 ---
 
 ## 6. Edges: tiles vs shader (the division of labour)
