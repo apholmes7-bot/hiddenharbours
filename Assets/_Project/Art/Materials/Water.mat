@@ -59,35 +59,35 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CausticAmount: 0.3
+    - _CausticAmount: 0.605
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
-    - _CausticTexStrength: 1
-    - _Chop: 0.25
+    - _CausticTexStrength: 0.78
+    - _Chop: 0.12
     - _DeepDepth: 3
     - _DepthBands: 5
     - _Flow: 0.06
-    - _FoamNoise: 1.2
+    - _FoamNoise: 0.09
     - _FoamSoftness: 0.18
-    - _FoamTexStrength: 1
+    - _FoamTexStrength: 0.672
     - _FoamWidth: 0.45
     - _HeightMax: 6
     - _HeightMin: -4
     - _NoiseScale: 0.35
     - _PaintScale: 0.25
-    - _PixelsPerUnit: 32
-    - _Roughness: 0.2
+    - _PixelsPerUnit: 12
+    - _Roughness: 0.302
     - _ShallowDepth: 0.15
-    - _SpecAmount: 0.35
+    - _SpecAmount: 0.248
     - _SpecSharpness: 18
     - _SparkleTexScale: 0.5
-    - _SparkleTexStrength: 1
-    - _SurfaceTexStrength: 1
+    - _SparkleTexStrength: 0.932
+    - _SurfaceTexStrength: 0.169
     - _SurfaceTint: 0.18
-    - _SwashAmplitude: 0.3
-    - _SwashScale: 0.25
-    - _SwashSpeed: 0.5
-    - _UntileStrength: 0.6
+    - _SwashAmplitude: 1
+    - _SwashScale: 0.2
+    - _SwashSpeed: 0.08
+    - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
@@ -96,31 +96,31 @@ Material:
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
     - _WaterLevel: 0
-    - _WhitecapTexStrength: 1
-    - _WindChop: 0.4
+    - _WhitecapTexStrength: 0.865
+    - _WindChop: 0.07
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09
     - _CrossSwellSpeed: 0.025
     - _CrossSwellScale: 0.16
-    - _Octave2Weight: 0.35
-    - _Octave3Weight: 0.3
-    - _FbmScale: 0.05
-    - _FbmDriftSpeed: 0.012
-    - _FbmStrength: 0.18
-    - _FbmGateLo: 0.35
-    - _FbmGateHi: 0.7
-    - _SpecBands: 4
-    - _OceanSwellScale: 0.025
+    - _Octave2Weight: 0.288
+    - _Octave3Weight: 0.108
+    - _FbmScale: 3.27
+    - _FbmDriftSpeed: -0.12
+    - _FbmStrength: 0.016
+    - _FbmGateLo: 0.452
+    - _FbmGateHi: 1
+    - _SpecBands: 3.38
+    - _OceanSwellScale: 0.07
     - _OceanSwellSpeed: 0.018
-    - _OceanSwellStrength: 0.16
-    - _OceanSwellSharpness: 1.4
-    - _FoamStreakStretch: 3.5
-    - _FoamCrestGate: 0.6
-    - _SpecSwellBias: 0.35
-    - _FoamDriftWindVsCurrent: 0.6
-    - _FoamEvolveSpeed: 0.25
-    - _FoamBlobScale: 2.2
-    - _FoamThreshold: 0.55
+    - _OceanSwellStrength: 0.06
+    - _OceanSwellSharpness: 22.63
+    - _FoamStreakStretch: -0.16
+    - _FoamCrestGate: 0.88
+    - _SpecSwellBias: 0.21
+    - _FoamDriftWindVsCurrent: 0.84
+    - _FoamEvolveSpeed: 0.1
+    - _FoamBlobScale: 5.17
+    - _FoamThreshold: 0.84
     - _FoamThresholdSoft: 0.18
     - _FoamSolidThreshold: 0.78
     - _FoamDensity: 0.6
