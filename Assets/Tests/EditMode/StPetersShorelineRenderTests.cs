@@ -21,8 +21,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// </list>
     /// Pure config assertions via the builder's public <see cref="StPetersBuilder.ConfigureWaterSurface"/>
     /// helper (the same call the scene uses) read back through <see cref="SerializedObject"/> — engine-light,
-    /// no scene loaded, no OnEnable/bake fired (AddComponent doesn't run it in EditMode). This is render
-    /// config only; it touches no sim and no save (CLAUDE.md rule 5).
+    /// no scene loaded. (Since ADR 0014 made <see cref="WaterSurface"/> <c>[ExecuteAlways]</c> for the
+    /// edit-mode coast preview, adding the component DOES fire OnEnable/the bake in EditMode — harmless here:
+    /// it bakes the distance-to-land fallback into a throwaway texture, and these tests assert the SERIALIZED
+    /// config the builder writes afterward, not runtime state.) This is render config only; it touches no sim
+    /// and no save (CLAUDE.md rule 5).
     /// </summary>
     public class StPetersShorelineRenderTests
     {

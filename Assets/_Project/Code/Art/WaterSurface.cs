@@ -53,9 +53,11 @@ namespace HiddenHarbours.Art
     /// </summary>
     [RequireComponent(typeof(Renderer))]
     [DisallowMultipleComponent]
+    [ExecuteAlways]   // ADR 0014: bake/feed the height map + push the (preview) water level in EDIT MODE too,
+                      // so the owner SEES the coast bare/flood while designing — not only in Play.
     public sealed class WaterSurface : MonoBehaviour
     {
-        /// <summary>Which seabed-elevation source feeds the baked <c>_HeightTex</c>.</summary>
+        /// <summary>Which seabed-elevation source feeds the shader's <c>_HeightTex</c>.</summary>
         public enum DepthSource
         {
             /// <summary>Tidal terrain when present (gameplay-true depth); else distance-to-land. The default.</summary>
@@ -64,6 +66,13 @@ namespace HiddenHarbours.Art
             TidalTerrain = 1,
             /// <summary>Force the distance-to-nearest-land depth estimate (the no-height-map shore gradient).</summary>
             DistanceToLand = 2,
+            /// <summary>
+            /// Feed a HAND-PAINTED height texture (ADR 0014) STRAIGHT into the shader's <c>_HeightTex</c> —
+            /// no re-bake. The SAME texture the sim's <c>PaintedTidalTerrain</c> decodes, so render == sim by
+            /// construction. Wire <see cref="_paintedHeightTex"/> + the painted world rect / elevation range
+            /// (the St Peters builder + the paint tool copy these from the <c>PaintedHeightMap</c> asset).
+            /// </summary>
+            PaintedHeightMap = 3,
         }
 
         /// <summary>Shape of the distance→depth ramp from the shoreline out to the drop-off distance.</summary>
@@ -117,6 +126,24 @@ namespace HiddenHarbours.Art
                  "the distance-to-land depths (Reference water level − Max depth at the low end, land above at top).")]
         [SerializeField] private float _heightMin = -4f;
         [SerializeField] private float _heightMax = 6f;
+
+        [Header("Painted height map (ADR 0014; DepthSource.PaintedHeightMap)")]
+        [Tooltip("A hand-painted, CPU-readable height texture (R = normalized elevation) fed STRAIGHT to the " +
+                 "shader's _HeightTex — no re-bake. The SAME texture the sim's PaintedTidalTerrain decodes, so " +
+                 "the visible depth and the gameplay depth come from the same bytes. The St Peters builder / " +
+                 "Seabed Paint Tool copy this (and the world rect / elevation range fields above) from the " +
+                 "PaintedHeightMap asset. Used when Depth Source is PaintedHeightMap (or Auto, if assigned).")]
+        [SerializeField] private Texture2D _paintedHeightTex;
+
+        [Header("Edit-mode shoreline preview (ADR 0014; design without pressing Play)")]
+        [Tooltip("In the Scene view (not playing) drive the shader's water level from the slider below so the " +
+                 "coast is VISIBLE — land dry, the bar baring, the channel flooded — while you design. " +
+                 "Presentation only: feeds no sim and saves nothing (rule 5). At runtime the live tide " +
+                 "(WaterLevelAt) overrides it.")]
+        [SerializeField] private bool _previewInEditMode = true;
+        [Tooltip("The water-surface level (m above datum) to show in the Scene view while not playing. Scrub " +
+                 "this to watch what bares/floods at any tide WITHOUT entering Play.")]
+        [Range(-6f, 6f)] [SerializeField] private float _previewTideLevel = 0.5f;
 
         [Header("Distance-to-land depth (fallback when there is no tidal terrain)")]
         [Tooltip("How far (m) the shallows reach from shore before the water hits full depth. Larger = a wider, " +
@@ -210,11 +237,50 @@ namespace HiddenHarbours.Art
             PushUniforms();
         }
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// (ADR 0014) When an Inspector value changes in EDIT MODE — the painted texture, the world rect, or
+        /// the preview tide slider — re-feed the height map + re-push the preview level so the Scene view
+        /// updates immediately (no Play, no re-enable). Skipped in Play (the live sim drives it) and guarded
+        /// for the un-awoken state. Editor-only; presentation, drives no sim (rule 5).
+        /// </summary>
+        private void OnValidate()
+        {
+            if (Application.isPlaying) return;
+            if (this == null || !isActiveAndEnabled) return;
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_renderer == null) return;
+            if (_mpb == null) _mpb = new MaterialPropertyBlock();
+            // Defer to avoid SendMessage-during-OnValidate warnings on some Unity versions.
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this == null || _renderer == null) return;
+                BakeHeightMapIfNeeded();
+                PushUniforms();
+            };
+        }
+#endif
+
         private void PushUniforms()
         {
             if (_renderer == null) return;
             var env = GameServices.Environment;
-            if (env == null) return;   // no sim yet (EditMode / pre-boot) — leave the material at its defaults
+            if (env == null)
+            {
+                // No sim yet (EDIT MODE / pre-boot). ADR 0014: rather than leave the material at its
+                // uniform-deep default (the coast invisible while designing), push the PREVIEW water level so
+                // the baked/painted height map reveals the coast — land dry, the bar baring, the channel
+                // flooded — and the owner can scrub _previewTideLevel to see any tide WITHOUT pressing Play.
+                // Presentation only: feeds no sim, saves nothing (rule 5). In Play this branch is skipped and
+                // the live tide drives _WaterLevel below.
+                if (_previewInEditMode && !Application.isPlaying)
+                {
+                    _renderer.GetPropertyBlock(_mpb);
+                    _mpb.SetFloat(IdWaterLevel, _previewTideLevel);
+                    _renderer.SetPropertyBlock(_mpb);
+                }
+                return;
+            }
 
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             float waterLevel = env.WaterLevelAt(now);
@@ -262,11 +328,49 @@ namespace HiddenHarbours.Art
             _renderer.SetPropertyBlock(_mpb);
         }
 
+        /// <summary>
+        /// (ADR 0014) Point this surface at a hand-painted height map: set the painted texture + its world
+        /// rect (centre/size) + elevation range, select the painted depth source, and (in edit mode) re-feed
+        /// the shader immediately so the Scene view updates. Takes Unity-generic args (a
+        /// <see cref="Texture2D"/> + scalars), NOT a World type, so Art stays decoupled from World (rule 4);
+        /// the St Peters builder / Seabed Paint Tool copy these from the <c>PaintedHeightMap</c> asset.
+        /// </summary>
+        public void ConfigurePaintedHeightMap(Texture2D heightTex, Vector2 worldCenter, Vector2 worldSize,
+                                              float minElevation, float maxElevation)
+        {
+            _paintedHeightTex = heightTex;
+            _heightWorldCenter = worldCenter;
+            _heightWorldSize = worldSize;
+            _heightMin = minElevation;
+            _heightMax = maxElevation;
+            _depthSource = DepthSource.PaintedHeightMap;
+            _bakeHeightMap = true;
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_mpb == null) _mpb = new MaterialPropertyBlock();
+            BakeHeightMapIfNeeded();   // feed it now so the (ExecuteAlways) Scene view shows the painted coast
+        }
+
         // ---- the height-map bake (depth source) -----------------------------------------------------------
 
         private void BakeHeightMapIfNeeded()
         {
             if (!_bakeHeightMap) return;
+
+            // (ADR 0014) PAINTED path: feed the hand-painted texture STRAIGHT to the shader — no re-bake. The
+            // same texture the sim's PaintedTidalTerrain decodes, so render == sim by construction. Chosen
+            // explicitly (PaintedHeightMap) or auto-detected (Auto with a painted texture assigned). The
+            // world rect / elevation-range fields above describe the painted map's frame (the builder + the
+            // paint tool copy them from the PaintedHeightMap asset).
+            bool usePainted = _paintedHeightTex != null &&
+                              (_depthSource == DepthSource.PaintedHeightMap ||
+                               (_depthSource == DepthSource.Auto && GameServices.TidalTerrain == null));
+            if (usePainted)
+            {
+                FeedPaintedHeightTexture();
+                return;
+            }
+            if (_depthSource == DepthSource.PaintedHeightMap)
+                return;   // painted source chosen but no texture wired — leave the uniform-deep fallback
 
             // Pick the source. Auto prefers gameplay-true tidal terrain; falls back to the distance-to-land
             // estimate so a scene with no height map still shallows up at the coast.
@@ -311,6 +415,28 @@ namespace HiddenHarbours.Art
             _renderer.SetPropertyBlock(_mpb);
 
             // Enable the shader's height-map branch on the shared material so the depth read uses the bake.
+            if (_renderer.sharedMaterial != null)
+                _renderer.sharedMaterial.EnableKeyword("_USE_HEIGHTTEX");
+        }
+
+        /// <summary>
+        /// (ADR 0014) Feed the hand-painted height texture straight into the shader's <c>_HeightTex</c> +
+        /// its world rect / elevation range — no re-bake. The render then samples the EXACT bytes the sim's
+        /// <see cref="ITidalTerrain"/> (PaintedTidalTerrain) decoded, so the visible depth and the gameplay
+        /// depth cannot diverge. The texture is wrapped Clamp so off-rect reads the edge depth (matching the
+        /// CPU sampler's clamp).
+        /// </summary>
+        private void FeedPaintedHeightTexture()
+        {
+            Vector2 min = _heightWorldCenter - _heightWorldSize * 0.5f;
+            _renderer.GetPropertyBlock(_mpb);
+            _mpb.SetTexture(IdHeightTex, _paintedHeightTex);
+            _mpb.SetFloat(IdHeightMin, _heightMin);
+            _mpb.SetFloat(IdHeightMax, _heightMax);
+            _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
+            _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
+            _renderer.SetPropertyBlock(_mpb);
+
             if (_renderer.sharedMaterial != null)
                 _renderer.sharedMaterial.EnableKeyword("_USE_HEIGHTTEX");
         }
