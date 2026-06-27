@@ -118,7 +118,21 @@ Decor is placed as **prefabs** — pre-made objects you drag in like stamps. No 
 
 ### Grass (the wind-swaying living grass)
 
-Grass lives in **Decor ▸ Grass/** as two stamps:
+There are two ways to lay grass down:
+
+**A) Paint it (best for filling areas).** Open **Hidden Harbours ▸ Tools ▸ Grass Paint Tool** and
+drag in the Scene view — like the Seabed Paint Tool, but it scatters grass tufts. Knobs:
+- **Density** (tufts per m²) + **Flow** (how fast a drag builds up) — paint thick meadows or sparse
+  tussocks; dragging back over an area won't pile tufts up past the density.
+- **Height** — pick which variants to mix (Short / Medium / Tall), a height **scale**, and a
+  **randomize** amount so a patch isn't uniform.
+- **Colour: green → straw** — slide from lush dark green toward dry straw. It only tints each tuft,
+  which the shader multiplies over the sprite, so the **dark-to-light gradient is preserved** (at 0
+  it's the shipped green). Plus brightness/warmth variety knobs.
+- **Erase** mode + **Clear ALL painted grass**. Everything is one Undo step per stroke. Painted grass
+  goes under one **`PaintedGrass`** object in the scene.
+
+**B) Drag-in stamps (Decor ▸ Grass/).** For quick hand-placement:
 
 - **GrassClump** — a dense, pre-scattered patch about 2.5 m across. Drag a few of these to **fill a
   clearing** quickly; overlap them and they read as one lush field.
