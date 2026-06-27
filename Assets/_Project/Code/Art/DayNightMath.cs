@@ -163,5 +163,58 @@ namespace HiddenHarbours.Art
             float weather = 1f - Mathf.Clamp01(weatherDim) * Mathf.Clamp01(overcastFadesShadow);
             return Mathf.Clamp01(sun * weather);
         }
+
+        // ==== PROJECTED SPRITE SHADOW maths (PR 2, ADR 0013 §"Projected shadows") =========================
+        // The pure projection a SpriteShadow draws with: how LONG the shadow is, the SKEW (shear) offset it
+        // lays the silhouette along, and its ALPHA. All a deterministic function of the published sun globals
+        // (`_SunElevation` + the ShadowDirection above) and the caster's height — no scene, unit-tested.
+
+        /// <summary>
+        /// How LONG a cast shadow is, as a multiple of the caster's height, from the sun's
+        /// <paramref name="sunElevation"/> (the published <c>_SunElevation</c>; 1 at noon, 0 at the horizon,
+        /// ≤0 at night). Physically the shadow length is <c>height / tan(altitude)</c> — it SHORTENS as the
+        /// sun climbs and LENGTHENS without bound as the sun sinks — so we model it with a smooth blend from
+        /// <paramref name="lengthAtNoon"/> (overhead sun, a short stub under the feet) to
+        /// <paramref name="lengthAtHorizon"/> (low sun, a long rake), then CLAMP to
+        /// <paramref name="maxLength"/> so dawn/dusk don't shoot the silhouette to infinity (and the stylized
+        /// pixel-art shadow stays on-screen). Returns 0 once the sun is at/below the horizon (no shadow at
+        /// night). Monotonic: a lower sun → a longer shadow. Pure / deterministic (rule 5).
+        /// </summary>
+        public static float ShadowLength(float sunElevation, float lengthAtNoon, float lengthAtHorizon,
+                                         float maxLength)
+        {
+            if (sunElevation <= 0f) return 0f;                       // sun down → no shadow to draw
+            float e = Mathf.Clamp01(sunElevation);
+            // e = 1 (noon) → noon length; e → 0 (horizon) → horizon length. Linear in elevation is a clean,
+            // predictable stylized rake (the true 1/tan blows up — the clamp tames it either way).
+            float len = Mathf.Lerp(Mathf.Max(lengthAtHorizon, 0f), Mathf.Max(lengthAtNoon, 0f), e);
+            return Mathf.Min(len, Mathf.Max(maxLength, 0f));
+        }
+
+        /// <summary>
+        /// The ground-plane SKEW/shear OFFSET (world units) a caster of <paramref name="casterHeight"/> lays
+        /// its shadow silhouette's TOP along: the shadow direction (from
+        /// <see cref="ShadowDirection"/> — away from the sun) times the shadow LENGTH
+        /// (<see cref="ShadowLength"/> × the height). The silhouette is anchored at the feet and sheared so
+        /// its top edge lands at <c>feet + this offset</c> — long west at dawn, a short northward stub at
+        /// noon, long east at dusk. NaN-safe (degenerate height/elevation → <see cref="Vector2.zero"/>, i.e.
+        /// no shadow). Pure / deterministic.
+        /// </summary>
+        public static Vector2 ShadowSkewOffset(Vector2 shadowDir, float sunElevation, float casterHeight,
+                                               float lengthAtNoon, float lengthAtHorizon, float maxLength)
+        {
+            float lenMul = ShadowLength(sunElevation, lengthAtNoon, lengthAtHorizon, maxLength);
+            float worldLen = lenMul * Mathf.Max(casterHeight, 0f);
+            if (worldLen <= 1e-5f) return Vector2.zero;
+            return shadowDir * worldLen;
+        }
+
+        /// <summary>
+        /// The ALPHA a cast shadow draws at, <c>0</c>..<paramref name="maxAlpha"/>: the artist-set darkness
+        /// scaled by <see cref="ShadowStrength"/> (so the shadow fades to nothing at night and softens under
+        /// overcast — the weather hook). Clamped to <c>[0, 1]</c>. Pure / deterministic.
+        /// </summary>
+        public static float ShadowAlpha(float maxAlpha, float shadowStrength)
+            => Mathf.Clamp01(Mathf.Clamp01(maxAlpha) * Mathf.Clamp01(shadowStrength));
     }
 }
