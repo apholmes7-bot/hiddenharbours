@@ -41,7 +41,11 @@ namespace HiddenHarbours.Art.Editor
             "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
             "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
         };
-        private static readonly Color StrawTint = new Color(1.0f, 0.92f, 0.55f, 1f);
+        // The straw multiply-target. The tuft texture is yellow-GREEN (green dominant), and a multiply can only
+        // scale channels DOWN — so to actually read as dry straw the tint must drop green and (especially) blue
+        // hard, leaving red dominant → a golden/khaki hue. A timid tint (e.g. 1,0.92,0.55) barely shifts and is
+        // the reason it "looked like it wasn't working". This keeps the gradient (still a per-pixel multiply).
+        private static readonly Color StrawTint = new Color(1.0f, 0.55f, 0.28f, 1f);
 
         private enum Mode { Paint, Erase }
 
@@ -138,6 +142,9 @@ namespace HiddenHarbours.Art.Editor
             var rect = EditorGUILayout.GetControlRect(false, 16f);
             EditorGUI.DrawRect(rect, swatch);
             EditorGUILayout.LabelField("↑ tint multiplied over the gradient (white = shipped green)", EditorStyles.miniLabel);
+            // The colour applies to NEW strokes; click to push it onto grass already painted (a live tuner).
+            if (GUILayout.Button("Apply colour to existing painted grass"))
+                RecolourExisting();
 
             EditorGUILayout.Space();
             using (new EditorGUILayout.HorizontalScope())
@@ -245,22 +252,48 @@ namespace HiddenHarbours.Art.Editor
             sr.sprite = _tufts[variants[Random.Range(0, variants.Length)]];
             sr.sharedMaterial = _material;
             sr.sortingOrder = _sortingOrder;
-            sr.color = TintFor();
+            sr.color = TintFor(p);
             go.AddComponent<YSortSprite>();   // auto-layer by world Y (sorts around the player)
         }
 
         /// <summary>Per-tuft tint = the green→straw base, with brightness + warmth jitter. Multiplied over the
-        /// sprite gradient, so the dark-to-light shading is preserved; at straw 0 the base is white (unchanged).</summary>
-        private Color TintFor()
+        /// sprite gradient, so the dark-to-light shading is preserved; at straw 0 the base is white (unchanged).
+        /// The jitter is hashed from the tuft's POSITION (deterministic), so re-running the colour over existing
+        /// grass is stable — only the green→straw / jitter SETTINGS change the look, not a fresh random roll.</summary>
+        private Color TintFor(Vector2 pos)
         {
             Color baseTint = Color.Lerp(Color.white, StrawTint, _straw);
-            float v = Random.Range(1f - _valueJitter, 1f + _valueJitter);
-            float warm = Random.Range(-_warmthJitter, _warmthJitter);
+            float v = Mathf.Lerp(1f - _valueJitter, 1f + _valueJitter, Hash01(pos, 17.13f));
+            float warm = Mathf.Lerp(-_warmthJitter, _warmthJitter, Hash01(pos, 51.71f));
             return new Color(
                 Mathf.Clamp01(baseTint.r * v + warm),
                 Mathf.Clamp01(baseTint.g * v),
                 Mathf.Clamp01(baseTint.b * v - warm * 0.5f),
                 1f);
+        }
+
+        /// <summary>A stable 0..1 hash of a world position (plus a salt), so per-tuft jitter is reproducible.</summary>
+        private static float Hash01(Vector2 p, float salt)
+        {
+            float h = Mathf.Sin(Vector2.Dot(p, new Vector2(12.9898f, 78.233f)) + salt) * 43758.5453f;
+            return h - Mathf.Floor(h);
+        }
+
+        /// <summary>
+        /// Re-apply the CURRENT colour settings (green→straw + variety) to ALL grass already painted under
+        /// <c>PaintedGrass</c> — so the colour knob is a live tuner, not just a setting for the next stroke.
+        /// One Undo step; the position-hashed jitter keeps each tuft's variety stable across re-applies.
+        /// </summary>
+        private void RecolourExisting()
+        {
+            var root = FindRoot();
+            if (root == null) return;
+            var renderers = root.GetComponentsInChildren<SpriteRenderer>(true);
+            if (renderers.Length == 0) return;
+            Undo.RecordObjects(renderers, "Recolour painted grass");
+            foreach (var sr in renderers)
+                sr.color = TintFor(sr.transform.position);
+            EditorSceneManager.MarkSceneDirty(root.scene);
         }
 
         // ============================ HELPERS ============================
