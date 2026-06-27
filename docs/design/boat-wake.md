@@ -8,18 +8,30 @@
 > foam, a rough sea breaks it up) and **P2 From Dory to Dynasty** (every boat that makes way leaves one).
 
 ## The look in one breath
-Foam puffs are **shed from the stern** as the boat makes way, in two diverging streams that form the
-classic **Kelvin V** (plus an optional central prop-wash stream). Each puff, once shed, is **on its own**:
-it drifts on its **own momentum + the live tidal current**, its own push **fades** so far astern it just
-sets with the tide, the **waves wobble it** (scaled by sea-state — glassy leaves it alone, a gale breaks
-it up), and over a **lifetime** it **fades to nothing and spreads/softens**. A distance astern = faint +
-spread = dissolved. No two puffs are identical (deterministic per-puff jitter), and nothing is saved.
+Foam puffs are **shed astern** as the boat makes way, placed **directly on two diverging Kelvin-V arms**
+(plus a turbulent stern-fill churn between them) so the wake reads as a **crisp V**, not a soft trail. Each
+puff, once shed, is **on its own**: it drifts on its **own momentum + the live tidal current**, its own push
+**fades** so far astern it just sets with the tide, the **waves wobble it** (scaled by sea-state — glassy
+leaves the V crisp, a gale breaks it up), and over a **lifetime** it **fades to nothing and spreads/softens**.
+A distance astern = faint + spread = dissolved. No two puffs are identical (deterministic per-puff jitter),
+and nothing is saved.
+
+### How the V is built (the crisp-V fix)
+The original wake shed every puff at a single stern point and pushed the two streams outward with velocity.
+Because that outward push *decays* (the wake must "lose force"), the arms collapsed back inward within a
+second and the V read as a soft cone/trail. The fix places each wing puff **directly on the arm geometry**:
+from the stern apex it walks **astern + outward at the Kelvin half-angle** by a deterministic distance up to
+`ArmLength`. Two consequences: (1) the arms are **straight diverging lines that widen with distance by
+construction** — a true V — and (2) the spread no longer depends on velocity, so the puffs can still *lose
+force and advect with the current* without the V folding up. A tunable `SternFillFraction` of puffs fill the
+churn **between** the arms, bounded to stay **inside** the V so they never blur the crisp edges. Glassy water
+keeps the edges razor-sharp; sea-state wobble (brief point 3) breaks them up as it roughens.
 
 ## How the four brief points are realised
 
 | Brief point | How |
 |---|---|
-| **follow the boat** | Puffs are emitted at the **stern** (`pos − transform.up · sternOffset`) at a rate **proportional to boat speed** (`Velocity.magnitude`). **None** below a small speed threshold, **none** when `IsAground`. Two streams at a tunable **V half-angle** (~19°) diverge to form the wake V; the boat's speed seeds each puff's initial outward+astern wash, so the freshest, brightest foam sits right under the stern and the V trails the hull. |
+| **follow the boat** | Puffs are emitted astern of the **stern** (`pos − transform.up · sternOffset`) at a rate **proportional to boat speed** (`Velocity.magnitude`). **None** below a small speed threshold, **none** when `IsAground`. Each wing puff is placed **directly on the arm** at a tunable **V half-angle** (~19°) and a deterministic distance up to `ArmLength` (`ArmEmitPoint`), so the two arms are crisp diverging lines that **widen with distance** and the V trails the hull from its apex at the stern. A `SternFillFraction` of puffs fill the churn between the arms (`SternFillPoint`, bounded inside the V). |
 | **travel with the current** | Every live puff integrates `pos += (ownVel + CurrentVector) · dt` each tick — it **drifts with the live tidal set** (read once per throttled tick through the Core `EnvironmentSample`) on top of its own momentum. `ownVel *= velocityDecay^dt` each tick, so the wake's **own push fades** ("loses force"); far from the boat **only the current's drift remains**. |
 | **waves distort it** | A deterministic **value-noise** displacement of `(worldPos, time, per-puff seed)`, **scaled by sea-state roughness** (`SeaState → 0..1`, the same linear scale the water surface uses for choppiness), wobbles each puff at render time. Glassy water (roughness 0) → **no** distortion; a rough sea → the wake **wobbles and breaks up**. The wobble is a display-only offset — it never accumulates into the integrated position, so it can't drift the wake. |
 | **dissipate** | Each puff has a **lifetime**. Over its life its opacity **fades** to 0 (monotonic — a puff never re-brightens) and its size **spreads/softens** (monotonic growth to `base · spreadFactor`). So a time/distance astern reads as faded + spread = dissolved. |
@@ -28,9 +40,10 @@ spread = dissolved. No two puffs are identical (deterministic per-puff jitter), 
 
 - **`Assets/_Project/Code/Boats/WakeParticleSystem.cs`** — the **pure, engine-light** simulation. A fixed
   array of foam-puff structs with all the feel-math as **side-effect-free static functions** (emission
-  rate vs speed, stern point, V-wing emit velocity, advection + decay, life fade/spread, sea-state-scaled
-  wave distortion). No `MonoBehaviour`, no `System.Random` — a deterministic integer **hash** drives the
-  per-puff jitter and the wave noise. This is what the EditMode tests hammer headless.
+  rate vs speed, stern apex, **V-arm placement (`ArmEmitPoint`) + bounded stern fill (`SternFillPoint`)**,
+  V-wing emit velocity, advection + decay, life fade/spread, sea-state-scaled wave distortion). No
+  `MonoBehaviour`, no `System.Random` — a deterministic integer **hash** drives the per-puff stream choice,
+  along-arm distance and jitter, and the wave noise. This is what the EditMode tests hammer headless.
 - **`Assets/_Project/Code/Boats/BoatWakeEmitter.cs`** — the **self-installing** Unity driver. A
   `RuntimeInitializeOnLoadMethod` spawns **one** hidden `[DontDestroyOnLoad]` host before the first scene
   (mirroring `GrassWindBridge` / the audio director), so there is **no builder change and no builder
@@ -51,10 +64,10 @@ spread = dissolved. No two puffs are identical (deterministic per-puff jitter), 
   world-pos / time — **no `System.Random`**, no hidden global randomness in any sim path (it's scoped to
   the VFX). Identical inputs reproduce identical foam (EditMode-guarded).
 - **Rule 6 (no magic numbers):** every knob lives on `WakeConfig` (serialized on the emitter): shed-rate-
-  per-speed, speed threshold, stern offset, V half-angle, central-stream toggle, wash-speed scale,
-  velocity decay, lifetime, start alpha, fade power, spread factor, foam size, lifetime/size jitter, and
-  the wave-distort amount/frequency/speed — plus pool size, max boats, foam colour and sorting on the
-  emitter.
+  per-speed, speed threshold, stern offset, V half-angle, **arm length, stern-fill fraction, stern-fill
+  width**, wash-speed scale, velocity decay, lifetime, start alpha, fade power, spread factor, foam size,
+  lifetime/size jitter, and the wave-distort amount/frequency/speed — plus pool size, max boats, foam colour
+  and sorting on the emitter.
 - **Rule 7 (perf):** a **fixed pool per boat**, dead puffs recycled in place → **zero per-frame
   allocation**; one shared sprite/material (batched); the sim sampled once per throttled tick. Mobile-
   portable. One active player boat dominates cost.
@@ -63,13 +76,15 @@ spread = dissolved. No two puffs are identical (deterministic per-puff jitter), 
 
 | Knob | Default | Meaning |
 |---|---|---|
-| `ShedPerSpeed` | 6 | Foam puffs/sec per (m/s) of speed over threshold |
+| `ShedPerSpeed` | 10 | Foam puffs/sec per (m/s) of speed over threshold (denser = a sharper-reading arm) |
 | `SpeedThreshold` | 0.4 | m/s below which no wake forms |
-| `SternOffset` | 0.5 | m astern of the boat origin the foam sheds |
-| `VHalfAngleDeg` | 19 | Kelvin-V half-angle of the diverging wings |
-| `CentralStream` | true | Add a central turbulent prop-wash stream |
-| `WashSpeedScale` | 0.35 | Boat-speed → initial wash speed |
-| `VelocityDecay` | 0.35 | Per-second retention of a puff's own momentum (<1 = fades) |
+| `SternOffset` | 0.5 | m astern of the boat origin the V apex sits |
+| `VHalfAngleDeg` | 19 | Kelvin-V half-angle of the diverging arms (smaller = a narrower, sharper V) |
+| `ArmLength` | 3.0 | m, how far astern each crisp V arm reaches before it hands off to dissipation |
+| `SternFillFraction` | 0.3 | fraction of puffs that fill the turbulent churn between the arms (0 = clean arms only) |
+| `SternFillWidth` | 0.7 | how wide the fill spreads, as a fraction of the V width at each distance (≤1 = inside the arms) |
+| `WashSpeedScale` | 0.2 | Boat-speed → initial along-arm flow speed (kept low so velocity doesn't blow the crisp arm apart) |
+| `VelocityDecay` | 0.5 | Per-second retention of a puff's own momentum (<1 = fades to current-only drift) |
 | `Lifetime` | 2.2 | s a puff lives before fully dissolved |
 | `StartAlpha` | 0.7 | Opacity at birth |
 | `FadePower` | 1.4 | Fade shaping (1 linear, >1 lingers then drops) |
@@ -85,14 +100,19 @@ spread = dissolved. No two puffs are identical (deterministic per-puff jitter), 
 
 ## Tests
 `Assets/Tests/EditMode/WakeParticleSystemTests.cs` — pure-logic guards for all four brief points
-(emission gating vs speed / aground; stern + diverging V geometry; advection by velocity+current and
-momentum decay toward current-only drift; monotonic fade-to-0 and monotonic spread; lifetime death;
-sea-state-scaled + bounded + deterministic wave distortion) plus whole-run determinism (same inputs →
-bit-stable particle field, no RNG).
+(emission gating vs speed / aground; **the crisp-V geometry: apex at the stern, arms widening at the Kelvin
+half-angle, mirrored wings, and the stern fill staying inside the arms**; fresh puffs at-or-astern of the
+apex; advection by velocity+current and momentum decay toward current-only drift; monotonic fade-to-0 and
+monotonic spread; lifetime death; sea-state-scaled + bounded + deterministic wave distortion) plus whole-run
+determinism (same inputs → bit-stable particle field, no RNG).
 
 ## Future work (not built)
-The procedurally-generated round foam puff is a **greybox** placeholder — an art pass can swap in
-authored foam sprites (e.g. a sliced `BoatWake.png`) on the same pooled renderers without touching the
-sim. A bow-wave / quarter-wave layer and turbulence at the rudder are natural additions on the same
-particle system. Larger hulls up the ladder could scale `WakeConfig` by `BoatHullDef` (a wider, heavier
-wake for the dragger) — data-driven, no new mechanic.
+The procedurally-generated round foam puff is a **greybox** placeholder. The authored V sprite
+`Assets/_Project/Art/VFX/BoatWake.png` (a 64×96 point-filtered white Kelvin triangle, apex at the
+bottom-centre) is **kept ready** for an art pass: it can be dropped onto a single stern-anchored renderer
+(oriented down the boat's heading, scaled + faded by speed, advected with the current) to draw razor-sharp
+leading edges, with the foam particles supplying the churn — a clean hybrid on top of today's pure-particle
+V. (It is `spriteMode: Multiple`, so a runtime load needs `LoadAllAssetsAtPath`/`LoadSpriteAny`, not
+`LoadAssetAtPath<Sprite>`.) A bow-wave / quarter-wave layer and rudder turbulence are natural additions on
+the same particle system. Larger hulls up the ladder could scale `WakeConfig` by `BoatHullDef` (a wider,
+heavier, longer-armed wake for the dragger) — data-driven, no new mechanic.

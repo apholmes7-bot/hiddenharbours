@@ -110,17 +110,75 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Emit_ShedsParticlesAtTheStern()
+        public void Emit_ShedsParticlesAtOrAsternOfTheSternApex()
+        {
+            // With the V-arm placement, fresh puffs are spread ALONG the arms (apex at t=0, astern as t→1),
+            // so the right invariant is: every fresh puff is at the stern apex or BEHIND it — never ahead of
+            // the hull. (The apex itself equals the old single stern emit point.)
+            var cfg = Cfg();
+            var sys = new WakeParticleSystem(64);
+            Assert.AreEqual(0, sys.AliveCount);
+            sys.Emit(32, Vector2.zero, Vector2.up, speed: 3f, cfg);
+            Assert.AreEqual(32, sys.AliveCount, "all puffs went live");
+            // Bow points +Y → astern is −Y. The apex is at −SternOffset; nothing may sit ahead of it (y > apex.y).
+            float apexY = -cfg.SternOffset;
+            foreach (var p in sys.Pool)
+                if (p.Alive)
+                    Assert.LessOrEqual(p.Pos.y, apexY + 1e-4f,
+                        "a fresh puff is shed at or astern of the stern apex, never ahead of the hull");
+        }
+
+        [Test]
+        public void ArmEmitPoint_ApexAtSternThenWidensWithDistance()
         {
             var cfg = Cfg();
-            var sys = new WakeParticleSystem(16);
-            Assert.AreEqual(0, sys.AliveCount);
-            sys.Emit(4, Vector2.zero, Vector2.up, speed: 3f, cfg);
-            Assert.AreEqual(4, sys.AliveCount, "four puffs went live");
-            // They start at the stern point.
-            Vector2 stern = WakeParticleSystem.SternEmitPoint(Vector2.zero, Vector2.up, cfg.SternOffset);
-            foreach (var p in sys.Pool)
-                if (p.Alive) Assert.AreEqual(stern, p.Pos, "a fresh puff starts at the stern");
+            Vector2 bow = Vector2.up;
+            Vector2 apex = WakeParticleSystem.SternEmitPoint(Vector2.zero, bow, cfg.SternOffset);
+
+            // At t=0 both wings start at the apex (the stern).
+            Vector2 p0 = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, 0f, -1, cfg);
+            Assert.AreEqual(apex, p0, "the V apex sits exactly at the stern");
+
+            // Farther along the arm = farther astern AND farther out to the side (the V WIDENS with distance).
+            Vector2 near = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, 0.3f, +1, cfg);
+            Vector2 far  = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, 0.9f, +1, cfg);
+            Assert.Less(far.y, near.y, "farther along the arm is farther astern");
+            Assert.Greater(Mathf.Abs(far.x), Mathf.Abs(near.x), "the arm spreads wider the farther astern it runs");
+            // Lateral spread grows in proportion to astern distance (a straight diverging line at the half-angle).
+            float tan = Mathf.Tan(Mathf.Deg2Rad * cfg.VHalfAngleDeg);
+            float asternFar = apex.y - far.y;     // distance astern of the apex
+            Assert.AreEqual(asternFar * tan, Mathf.Abs(far.x), 1e-3f,
+                "the arm holds the Kelvin half-angle (|lateral| = tan(halfAngle)·asternDistance)");
+        }
+
+        [Test]
+        public void ArmEmitPoint_WingsMirrorAcrossTheCentreline()
+        {
+            var cfg = Cfg();
+            Vector2 bow = Vector2.up;
+            Vector2 port = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, 0.7f, -1, cfg);
+            Vector2 stbd = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, 0.7f, +1, cfg);
+            Assert.AreEqual(-stbd.x, port.x, 1e-4f, "the two arms are mirror images → a symmetric V");
+            Assert.AreEqual(stbd.y, port.y, 1e-4f, "and sit at the same astern distance");
+            Assert.Greater(Mathf.Abs(port.x), 0f, "the arms actually diverge, not straight astern");
+        }
+
+        [Test]
+        public void SternFillPoint_StaysInsideTheArms()
+        {
+            // The turbulent centre fill must never punch past the crisp arm edges, or it would blur the V.
+            var cfg = Cfg();
+            Vector2 bow = Vector2.up;
+            for (float t = 0f; t <= 1f; t += 0.1f)
+            for (float lat = -1f; lat <= 1f; lat += 0.25f)
+            {
+                Vector2 fill = WakeParticleSystem.SternFillPoint(Vector2.zero, bow, t, lat, cfg);
+                Vector2 arm  = WakeParticleSystem.ArmEmitPoint(Vector2.zero, bow, t, +1, cfg);
+                // At the same along-distance the arm edge is the widest allowed |x|; the fill (scaled by
+                // SternFillWidth ≤ 1) must be no wider.
+                Assert.LessOrEqual(Mathf.Abs(fill.x), Mathf.Abs(arm.x) + 1e-4f,
+                    "the stern fill stays within the V arms so it never blurs the crisp edges");
+            }
         }
 
         [Test]
