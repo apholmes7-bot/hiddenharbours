@@ -32,8 +32,11 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _go = new GameObject("WaterSurface_Test");
-            _surface = _go.AddComponent<WaterSurface>();
+            // WaterSurface has [RequireComponent(typeof(Renderer))], and Renderer is abstract — Unity
+            // can't auto-add it, so AddComponent<WaterSurface>() on a bare GameObject returns null. Create
+            // the GameObject WITH a concrete MeshRenderer so the requirement is satisfied up front.
+            _go = new GameObject("WaterSurface_Test", typeof(MeshRenderer), typeof(WaterSurface));
+            _surface = _go.GetComponent<WaterSurface>();
         }
 
         [TearDown]
