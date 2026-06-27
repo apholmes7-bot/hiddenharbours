@@ -128,7 +128,9 @@ drag in the Scene view — like the Seabed Paint Tool, but it scatters grass tuf
   **randomize** amount so a patch isn't uniform.
 - **Colour: green → straw** — slide from lush dark green toward dry straw. It only tints each tuft,
   which the shader multiplies over the sprite, so the **dark-to-light gradient is preserved** (at 0
-  it's the shipped green). Plus brightness/warmth variety knobs.
+  it's the shipped green). Plus brightness/warmth variety knobs. The slider colours **new** strokes;
+  to push the current colour onto grass you've **already painted**, click **Apply colour to existing
+  painted grass** (a live tuner — re-applying is stable, so keep nudging the slider).
 - **Erase** mode + **Clear ALL painted grass**. Everything is one Undo step per stroke. Painted grass
   goes under one **`PaintedGrass`** object in the scene.
 
