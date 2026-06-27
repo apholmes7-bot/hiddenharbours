@@ -465,6 +465,108 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(valleyRisen, valleyLow, "merging is monotonic: the higher the valley, the more it fills in");
         }
 
+        // ===== WaterSurface: the SHOREWARD swell/foam bias (waves roll IN near the coast) ==================
+        // These guard the C# twins of the shader's ShorewardWeight()/BiasTowardShore(): the rolling swell + the
+        // foam drift used to follow ONLY the (wandering) wind, so when the wind blew OFFSHORE the wave trains +
+        // foam streamed OUT from the beach ("foam blowing out of the sand"). The shader now derives a per-pixel
+        // SHORE direction from the seabed height gradient and biases the swell/foam toward it NEAR the coast,
+        // fading to the wind/current axis in deep water. The height-gradient sampling is GPU-side (no headless
+        // mirror); the near-shore WEIGHT + the DIRECTION-BLEND — the part that decides whether waves roll IN —
+        // are pure and mirrored here. Visual direction only — never moves the waterline (P1, rule 5).
+
+        [Test]
+        public void ShorewardWeight_FullAtShore_ZeroInDeepWater_ScaledByBias()
+        {
+            const float bias = 0.7f, falloff = 2.5f;
+
+            // Full strength (= bias) right at the wet edge (depth 0), and submerged-below-0 clamps to the edge.
+            Assert.AreEqual(bias, WaterSurface.ShorewardWeight(0f, bias, falloff), 1e-4f,
+                "the shoreward steer is strongest right at the wet edge");
+            Assert.AreEqual(bias, WaterSurface.ShorewardWeight(-1f, bias, falloff), 1e-4f,
+                "a (clipped) negative depth still reads as the wet edge — full bias, never negative");
+
+            // By the falloff depth the bias is fully gone — the open sea keeps its wind-driven direction.
+            Assert.AreEqual(0f, WaterSurface.ShorewardWeight(falloff, bias, falloff), 1e-4f,
+                "by the falloff depth the shoreward bias has faded to nothing (deep water = wind-led)");
+            Assert.AreEqual(0f, WaterSurface.ShorewardWeight(20f, bias, falloff), 1e-6f,
+                "far offshore gets ZERO shoreward bias — the open-sea cohesion is unchanged");
+
+            // bias = 0 disables it everywhere (the dial-to-old-behaviour escape).
+            Assert.AreEqual(0f, WaterSurface.ShorewardWeight(0f, 0f, falloff), 1e-6f,
+                "_ShorewardBias = 0 turns the roll-in OFF everywhere (old wind-led behaviour)");
+        }
+
+        [Test]
+        public void ShorewardWeight_IsMonotonicNonIncreasing_FromShoreToDeep()
+        {
+            const float bias = 0.8f, falloff = 3f;
+            float prev = WaterSurface.ShorewardWeight(0f, bias, falloff);
+            for (float d = 0.1f; d <= falloff * 1.5f; d += 0.1f)
+            {
+                float w = WaterSurface.ShorewardWeight(d, bias, falloff);
+                Assert.LessOrEqual(w, prev + 1e-5f, "the bias only fades going offshore (never re-strengthens)");
+                Assert.That(w, Is.InRange(0f, bias + 1e-5f), "stays within [0, bias]");
+                prev = w;
+            }
+        }
+
+        [Test]
+        public void ShorewardWeight_GuardsZeroFalloff_NoDivideByZero()
+        {
+            // A zero falloff degrades to an immediate cutoff just past the edge — finite, never NaN.
+            float atEdge = WaterSurface.ShorewardWeight(0f, 0.6f, 0f);
+            float justDeep = WaterSurface.ShorewardWeight(0.5f, 0.6f, 0f);
+            Assert.IsFalse(float.IsNaN(atEdge) || float.IsNaN(justDeep), "zero falloff stays NaN-safe");
+            Assert.AreEqual(0f, justDeep, 1e-4f, "with no falloff band any depth past the edge gets no bias");
+        }
+
+        [Test]
+        public void BiasTowardShore_SteersTowardShore_ByTheWeight()
+        {
+            var wind  = Vector2.up;       // the base (wandering wind) axis: +Y
+            var shore = Vector2.right;    // the shore lies to +X (height rises that way)
+
+            // weight 0 → keep the wind axis exactly (deep water / bias off).
+            var none = WaterSurface.BiasTowardShore(wind, shore, 0f);
+            Assert.AreEqual(wind, none, "weight 0 keeps the pure wind/current direction (open sea unchanged)");
+
+            // weight 1 → fully shoreward (waves roll straight in).
+            var full = WaterSurface.BiasTowardShore(wind, shore, 1f);
+            Assert.AreEqual(shore, full, "weight 1 points fully toward the shore (waves roll IN)");
+
+            // a mid weight points BETWEEN the two and stays unit-length (a real steer, not a snap).
+            var mid = WaterSurface.BiasTowardShore(wind, shore, 0.5f);
+            Assert.AreEqual(1f, mid.magnitude, 1e-4f, "the biased direction is normalized");
+            Assert.Greater(mid.x, 0f, "the steer leans toward the shore (+X)");
+            Assert.Greater(mid.y, 0f, "while keeping some of the wind axis (+Y)");
+            // and it is CLOSER to the shore than the pure wind axis was (it actually moved toward land).
+            Assert.Greater(Vector2.Dot(mid, shore), Vector2.Dot(wind, shore),
+                "a mid bias points more shoreward than the un-biased wind axis");
+        }
+
+        [Test]
+        public void BiasTowardShore_KeepsBaseWhenNoShoreDirection()
+        {
+            // Flat seabed / open deep water: the shader's height gradient is zero → ShoreDir returns (0,0).
+            // The base (wind) direction must pass through UNCHANGED so the open sea keeps its cohesion.
+            var wind = new Vector2(0.6f, 0.8f);   // already unit
+            var keep = WaterSurface.BiasTowardShore(wind, Vector2.zero, 1f);
+            Assert.AreEqual(wind, keep, "a zero shore direction (flat seabed) leaves the base direction unchanged");
+            Assert.IsFalse(float.IsNaN(keep.x) || float.IsNaN(keep.y), "no NaN from a zero shore vector");
+        }
+
+        [Test]
+        public void BiasTowardShore_IsNaNSafe_OnOpposedDirections()
+        {
+            // Base and shore exactly opposed at weight 0.5 → the lerp lands near zero; the guard falls back to
+            // the base direction rather than normalizing a zero vector (no NaN, the steer never freezes).
+            var baseDir = Vector2.right;
+            var shore   = Vector2.left;
+            var r = WaterSurface.BiasTowardShore(baseDir, shore, 0.5f);
+            Assert.IsFalse(float.IsNaN(r.x) || float.IsNaN(r.y), "opposed directions at the midpoint stay NaN-safe");
+            Assert.AreEqual(1f, r.magnitude, 1e-4f, "the fallback result is still a unit vector");
+        }
+
         [Test]
         public void PointInPolygon_InsideAndOutsideASquare()
         {

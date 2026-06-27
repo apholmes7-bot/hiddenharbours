@@ -78,6 +78,9 @@ Material:
     - _PixelsPerUnit: 12
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
+    - _ShoreSampleStep: 0.4
+    - _ShorewardBias: 0.7
+    - _ShorewardFalloff: 2.5
     - _SpecAmount: 0.248
     - _SpecSharpness: 18
     - _SparkleTexScale: 0.5
