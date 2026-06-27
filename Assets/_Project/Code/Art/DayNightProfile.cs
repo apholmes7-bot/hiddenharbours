@@ -90,6 +90,7 @@ namespace HiddenHarbours.Art
             // Day fraction keys: 0 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk, 1 = midnight.
             _skyTint = new Gradient
             {
+                // NOTE: Unity Gradient allows a MAXIMUM of 8 colour keys. Keep this at <= 8.
                 colorKeys = new[]
                 {
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.00f), // deep night blue
@@ -97,7 +98,6 @@ namespace HiddenHarbours.Art
                     new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.27f), // warm low sunrise
                     new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.45f), // bright neutral morning
                     new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.50f), // cool bright noon
-                    new GradientColorKey(new Color(1.00f, 0.95f, 0.88f), 0.62f), // soft afternoon
                     new GradientColorKey(new Color(1.00f, 0.55f, 0.32f), 0.74f), // orange-red sunset
                     new GradientColorKey(new Color(0.30f, 0.24f, 0.40f), 0.80f), // dusk purple
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 1.00f), // back to night blue
