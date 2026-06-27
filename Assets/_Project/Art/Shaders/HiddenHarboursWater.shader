@@ -268,6 +268,13 @@ Shader "HiddenHarbours/Water"
             TEXTURE2D(_DepthRamp);    SAMPLER(sampler_DepthRamp);
             TEXTURE2D(_WhitecapTex);  SAMPLER(sampler_WhitecapTex);
 
+            // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
+            // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
+            // shader's _WindWorld). _SunDir.xy = the ground-plane direction TOWARD the sun; (0,0,0,0) when
+            // the cycle is not running, in which case the specular falls back to the material's hand-authored
+            // _LightDir below. This makes the sea's glints agree with where the global light comes from.
+            float4 _SunDir;
+
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
             CBUFFER_START(UnityPerMaterial)
@@ -812,7 +819,11 @@ Shader "HiddenHarbours/Water"
                 // ---- layer 4 specular glints (implied single sun; pixelized so it sparkles, not smears) -------
                 if (_SpecAmount > 0.001)
                 {
-                    float2 ld = normalize(_LightDir.xy + float2(1e-4, 0));
+                    // Prefer the LIVE day/night sun (_SunDir, pushed by DayNightController) so the glints face
+                    // the same sun that casts the shadows; fall back to the material's authored _LightDir when
+                    // the cycle is not running (_SunDir == 0). ADR 0013.
+                    float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                    float2 ld = normalize(sunXY + float2(1e-4, 0));
                     // a cheap surface "normal tilt" from the noise gradient, facing the implied light
                     float2 gp = Pixelize(worldXY * _NoiseScale);
                     float nx = ValueNoise(gp + float2(0.05, 0)) - ValueNoise(gp - float2(0.05, 0));
