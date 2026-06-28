@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Water_NorthAtlantic
+  m_Shader: {fileID: 4800000, guid: 60e801f535ab482ca783280c9f07d6cb, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _USE_CAUSTICTEX
+  - _USE_DEPTHRAMP
+  - _USE_FOAMTEX
+  - _USE_HEIGHTTEX
+  - _USE_SPARKLETEX
+  - _USE_SURFACETEX
+  - _USE_WHITECAPTEX
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties:
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CausticTex:
+        m_Texture: {fileID: 2800000, guid: 0976c3a9024a43fca2f9467e02d3f8e6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DepthRamp:
+        m_Texture: {fileID: 2800000, guid: 26cd9a2a0c77453d9190a256acdddc5e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: 1951838e4d2b46a5a547bbc30e5d93b8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SparkleTex:
+        m_Texture: {fileID: 2800000, guid: dd102f0aa90843ae976d90ee15af3b78, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTex:
+        m_Texture: {fileID: 2800000, guid: 05fd86eb7b9c49bcb322c37001431f3e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WhitecapTex:
+        m_Texture: {fileID: 2800000, guid: 88a48d6f1c0e4477b173188940b33ad4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _CausticAmount: 0.55
+    - _CausticDepth: 1.4
+    - _CausticScale: 0.9
+    - _CausticTexStrength: 0.78
+    - _Chop: 0.12
+    - _DeepDepth: 4
+    - _DepthBands: 0
+    - _Flow: 0.06
+    - _FoamNoise: 0.09
+    - _FoamSoftness: 0.18
+    - _FoamTexStrength: 0.672
+    - _FoamWidth: 0.45
+    - _HeightMax: 6
+    - _HeightMin: -4
+    - _NoiseScale: 0.35
+    - _PaintScale: 0.25
+    - _PixelsPerUnit: 12
+    - _Roughness: 0.302
+    - _ShallowDepth: 0.15
+    - _ShoreSampleStep: 0.4
+    - _ShorewardBias: 0.7
+    - _ShorewardFalloff: 2.5
+    - _SpecAmount: 0.2
+    - _SpecSharpness: 18
+    - _SparkleTexScale: 0.5
+    - _SparkleTexStrength: 0.932
+    - _SurfaceTexStrength: 0.169
+    - _SurfaceTint: 0.22
+    - _SwashAmplitude: 1
+    - _SwashScale: 0.2
+    - _SwashSpeed: 0.08
+    - _UntileStrength: 0.644
+    - _UseCausticTex: 1
+    - _UseDepthRamp: 1
+    - _UseFoamTex: 1
+    - _UseHeightTex: 1
+    - _UseSparkleTex: 1
+    - _UseSurfaceTex: 1
+    - _UseWhitecapTex: 1
+    - _WaterLevel: 0
+    - _WhitecapTexStrength: 0.865
+    - _WindChop: 0.07
+    - _WindChopScale: 0.7
+    - _WindChopSpeed: 0.09
+    - _CrossSwellSpeed: 0.025
+    - _CrossSwellScale: 0.16
+    - _Octave2Weight: 0.288
+    - _Octave3Weight: 0.108
+    - _FbmScale: 3.27
+    - _FbmDriftSpeed: -0.12
+    - _FbmStrength: 0.045
+    - _FbmGateLo: 0.452
+    - _FbmGateHi: 1
+    - _SpecBands: 3.38
+    - _OceanSwellScale: 0.07
+    - _OceanSwellSpeed: 0.018
+    - _OceanSwellStrength: 0.09
+    - _OceanSwellSharpness: 6
+    - _FoamStreakStretch: 2.2
+    - _FoamCrestGate: 0.88
+    - _SpecSwellBias: 0.21
+    - _FoamDriftWindVsCurrent: 0.84
+    - _FoamEvolveSpeed: 0.1
+    - _FoamBlobScale: 5.17
+    - _FoamThreshold: 0.84
+    - _FoamThresholdSoft: 0.18
+    - _FoamSolidThreshold: 0.78
+    - _FoamDensity: 0.5
+    - _FoamDensityWind: 0.5
+    - _WhitecapFormSharpness: 0.5
+    - _WhitecapPeakDensity: 0.78
+    - _WhitecapCollapseRate: 1.5
+    - _ReflectionStrength: 0.68
+    - _ReflectionFadeChop: 0.6
+    - _ReflectionWindFade: 0.5
+    - _ReflectionChopScatter: 1.5
+    - _ReflectionWindScatter: 0.8
+    - _ReflectionSkyTint: 0.85
+    - _ReflectionSmear: 1.6
+    - _ReflectionSunStreak: 0.9
+    - _ReflectionSunSharp: 6
+    m_Colors:
+    - _CausticColor: {r: 0.66, g: 0.86, b: 0.86, a: 1}
+    - _DeepColor: {r: 0.05, g: 0.135, b: 0.205, a: 1}
+    - _FlowDir: {r: 1, g: 0, b: 0, a: 0}
+    - _FoamColor: {r: 0.92, g: 0.96, b: 0.98, a: 1}
+    - _HeightWorldMin: {r: -80, g: -60, b: 0, a: 0}
+    - _HeightWorldSize: {r: 160, g: 120, b: 0, a: 0}
+    - _LightDir: {r: -0.6, g: 0.8, b: 0, a: 0}
+    - _ShallowColor: {r: 0.34, g: 0.6, b: 0.62, a: 0.95}
+    - _SpecColor: {r: 0.88, g: 0.92, b: 0.96, a: 1}
+    - _WindDir: {r: 0, g: 1, b: 0, a: 0}
+    - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
+    - _FbmTint: {r: 0.45, g: 0.58, b: 0.63, a: 1}
+    - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
+    - _ReflectionColor: {r: 0.56, g: 0.68, b: 0.8, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

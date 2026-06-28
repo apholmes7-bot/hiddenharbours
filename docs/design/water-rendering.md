@@ -880,3 +880,71 @@ negative smear). The twins are **not pushed** to the material and **not** in `Wa
 the existing sea-state uniforms, so there is no new C# uniform. The CI shader-compile guard
 (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in
 any `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).
+
+---
+
+## 12. Water presets — saved sea-mood material variants + the apply/generate/save menu
+
+> The owner asked to *"save the current ocean tune as a material preset, along with several variations."*
+> This section is the result: a small **library of complete `HiddenHarbours/Water` material variants**, each a
+> distinct sea MOOD, plus an editor menu to **apply** one onto the live water, **generate** native Unity
+> `.preset` assets, and **save** the owner's own tune as a new variant. It is **art-direction only** — no
+> shader, code-sim, or save change (rule 5). Tunable: every value lives on the material assets (rule 6).
+
+### 12.1 The sim-override caveat (read this first)
+
+At runtime the `WaterSurface` component **overrides** the sim-driven knobs — `_Chop`, `_Roughness`, `_Flow`,
+`_FlowDir`, `_WindDir` — from the deterministic sea-state every tick (§0, ADR 0010/0013). So **calm vs storm
+happens automatically with the weather**, on *any* preset: a preset cannot make the sea permanently flat or
+permanently raging. A preset instead expresses mood through the **non-sim-overridden VISUAL knobs**:
+
+- **Palette** — `_DeepColor` / `_ShallowColor` / `_FoamColor` / `_SpecColor` / `_CausticColor` /
+  `_ReflectionColor` / `_FbmTint`, plus `_SurfaceTint` and `_DepthBands`.
+- **Foam character** — `_FoamDensity` / `_FoamDensityWind` / `_FoamThreshold(Soft)` / `_FoamSolidThreshold` /
+  `_FoamStreakStretch` / the `_Whitecap*` lifecycle (form sharpness / peak density / collapse rate).
+- **Swell** — `_OceanSwellStrength` / `_OceanSwellScale` / `_OceanSwellSharpness` (the rolling cohesion bands).
+- **Specular** — `_SpecAmount` / `_SpecSharpness` / `_SpecSwellBias`.
+- **Caustics** — `_CausticAmount` / `_CausticScale` / `_CausticDepth`.
+- **Reflection** — `_ReflectionStrength` / `_ReflectionColor` / `_ReflectionSkyTint` / `_ReflectionSmear` /
+  `_ReflectionSunStreak(Sharp)` / the chop+wind scatter/fade knobs.
+
+The **structural** knobs are **identical** across every variant (so applying one never moves the gameplay
+waterline): the height map (`_HeightMin/Max/WorldMin/WorldSize`), `_WaterLevel`, every `_Use*` keyword toggle,
+the painted texture references, `_PixelsPerUnit`, `_PaintScale`, and the shoreward bias
+(`_ShorewardBias/Falloff`, `_ShoreSampleStep`). The sim-driven knobs above are also left at the base value
+(they're overwritten at runtime anyway). Each variant is therefore a **complete, valid `HiddenHarbours/Water`
+material** — assigning it to the Sea "just works", and the CI magenta guard (`WaterShaderCompileGuardTests`)
+force-compiles every one.
+
+### 12.2 The variant library (`Assets/_Project/Art/Materials/WaterPresets/`)
+
+| Variant | Mood (one line) |
+|---|---|
+| **Water_NorthAtlantic** | The current shipped tune **verbatim** — the cold teal-navy "home" / default. |
+| **Water_GlassyCalm** | The mirror showcase: reflections up + sharp, restrained milky foam, gentle round swell, soft cool spec, clear cold caustics. Serene. |
+| **Water_StormGrey** | Cold grey gloom (P5 teeth): desaturated grey-blue palette, dense whiter whitecaps, stronger broader swell, reflection near-off (storms don't mirror), dark brooding deeps. |
+| **Water_FoggySmother** | Pale, desaturated, low-contrast, eerie (The Smother): washed cold-grey colours, minimal spec + caustics, a soft diffuse pale reflection, low-contrast foam. |
+| **Water_WarmShelter** | A gentler, slightly **warmer** sheltered-harbour mood: warmer shallow + spec + reflection tint (tasteful, not tropical), calmer foam, a touch more caustic clarity. |
+
+All five are cold North-Atlantic-family except **WarmShelter**, which leans a careful step warmer for the
+sheltered-harbour feel — still in-palette.
+
+### 12.3 The menu (`Hidden Harbours ▸ Art ▸ Water Presets`)
+
+The editor menu lives in `Assets/_Project/Art/Editor/WaterPresetMenu.cs`:
+
+1. **Apply to live Water ▸ &lt;variant&gt;** — the recommended non-dev path. Copies the chosen variant's shader
+   properties onto the shipped `Assets/_Project/Art/Materials/Water.mat` (via `CopyPropertiesFromMaterial`),
+   then dirties + saves it. Because the St Peters Sea plane uses `Water.mat` (`StPetersBuilder` hard-sets
+   `sharedMaterial = Water.mat`), this swaps the in-game look **immediately** AND **survives a "Build St Peters
+   Scene" re-run**. It asks before overwriting and is **Undo-able** (Edit ▸ Undo). One item per variant.
+2. **Generate native .preset assets** — creates a real Unity `UnityEditor.Presets.Preset` (`new Preset(mat)`)
+   next to each variant `.mat` in the WaterPresets folder. These are genuine Unity "material presets" the owner
+   can drag onto any material's Inspector. They are **generated by this menu** (Unity authors them at runtime),
+   never hand-written `.preset` YAML (fragile).
+3. **Save current Water as new variant...** — duplicates the live, tuned `Water.mat` into the WaterPresets
+   folder under a name the owner picks (a save dialog), so the owner can bank his own tweaks as a reusable
+   preset variant.
+
+The live `Water.mat` is **only ever changed by the explicit "Apply" command** (that is the intent) — the
+variants are read-only sources the menu copies *from*.
