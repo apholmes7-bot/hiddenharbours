@@ -257,6 +257,32 @@ Shader "HiddenHarbours/Water"
         [Toggle(_USE_WHITECAPTEX)] _UseWhitecapTex ("Use whitecap texture", Float) = 0
         [NoScaleOffset] _WhitecapTex ("Whitecap pattern (white-on-transparent, seamless ~64)", 2D) = "white" {}
         _WhitecapTexStrength ("Whitecap tex blend (0=proc, 1=painted)", Range(0,1)) = 1.0
+
+        [Header(Palette guard rail (final soft grade   col.rgb only   ADR 0015))]
+        // THE LAST STAGE before return: a SOFT guard-rail that keeps the composited water colour inside an
+        // art-directed palette so it can never wash out (too bright) or go muddy (too dark), while preserving
+        // the dynamic, sea-state-driven diversity. The owner chose SOFT rails — bound the extremes and gently
+        // PULL toward the palette, NOT a hard lock. Three coupled ops, all on col.rgb ONLY (never depth/clip/
+        // _WaterLevel/the sim — P1 integrity, CLAUDE.md rule 5), scaled by the master so 0 = exactly today.
+        //   (1) VALUE floor + ceiling  — no mud, no blowout. The FLOOR is DAY/NIGHT-AWARE: it pre-compensates
+        //       for the day/night overlay's downstream MULTIPLY so daylight never goes muddy while true night
+        //       still goes genuinely dark (it reads the global _DayNightTint; see WaterPaletteGrade.cs + ADR 0015).
+        //   (2) SATURATION cap         — pull chroma toward grey only above the cap.
+        //   (3) ANCHOR pull            — gently lerp toward the nearest palette anchor (deep/mid/shallow/foam,
+        //                                chosen by luminance) at a soft strength (a rail, not a cage).
+        // _PaletteGradeStrength = 0 is an EXACT passthrough (opt-in, revertible). The four anchors + the bounds
+        // are per-material, so a Water variant carries its palette (North Atlantic / Stirred Brown / Deep Blue /
+        // Tropical / the mood variants). Mirrored headless by WaterPaletteGrade for the determinism guard.
+        _PaletteGradeStrength ("Palette grade strength (master; 0 = today's look)", Range(0,1)) = 0.35
+        _PaletteValueFloor    ("Palette value floor (daylight; no mud)", Range(0,1)) = 0.10
+        _PaletteValueCeil     ("Palette value ceiling (no blowout)", Range(0,1)) = 0.85
+        _PaletteSatCap        ("Palette saturation cap", Range(0,1)) = 0.55
+        _PalettePullStrength  ("Palette anchor pull (soft; 0.3..0.4 is a rail)", Range(0,1)) = 0.35
+        _PaletteNightFloor    ("Palette night floor (on-screen; 0 = night goes dark)", Range(0,1)) = 0.0
+        _PaletteDeep    ("Palette anchor   deep", Color)    = (0.05, 0.135, 0.205, 1)
+        _PaletteMid     ("Palette anchor   mid", Color)     = (0.14, 0.30, 0.38, 1)
+        _PaletteShallow ("Palette anchor   shallow", Color) = (0.34, 0.60, 0.62, 1)
+        _PaletteFoam    ("Palette anchor   foam", Color)    = (0.92, 0.96, 0.98, 1)
     }
 
     SubShader
@@ -437,6 +463,17 @@ Shader "HiddenHarbours/Water"
                 float  _SparkleTexStrength;
                 float  _SparkleTexScale;
                 float  _WhitecapTexStrength;
+                // Palette guard-rail (the final soft grade; col.rgb-only — ADR 0015).
+                float  _PaletteGradeStrength;
+                float  _PaletteValueFloor;
+                float  _PaletteValueCeil;
+                float  _PaletteSatCap;
+                float  _PalettePullStrength;
+                float  _PaletteNightFloor;
+                float4 _PaletteDeep;
+                float4 _PaletteMid;
+                float4 _PaletteShallow;
+                float4 _PaletteFoam;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -934,6 +971,111 @@ Shader "HiddenHarbours/Water"
                 return reflectionRGB * strength;
             }
 
+            // ====================================================================================================
+            // PALETTE GUARD-RAIL — the final soft colour-grade stage (ADR 0015). Mirrors WaterPaletteGrade.cs
+            // exactly (the headless determinism twin). Everything here is col.rgb-ONLY: it bounds + nudges the
+            // composited colour and NEVER touches depth/clip/_WaterLevel/the height read/the sim (P1 integrity,
+            // CLAUDE.md rule 5). _PaletteGradeStrength = 0 is an EXACT passthrough (today's look).
+            // ====================================================================================================
+
+            // Rec.601 luma — the SAME weights the painted-foam luminance fallback uses, so look stays consistent.
+            float PaletteLuma(float3 rgb) { return dot(rgb, float3(0.299, 0.587, 0.114)); }
+
+            // DAY/NIGHT-AWARE value floor: pre-compensate for the day/night overlay's downstream MULTIPLY so the
+            // ON-SCREEN water lands at ~paletteFloor in daylight, yet true night still goes genuinely dark. The
+            // overlay multiplies the whole frame by _DayNightTint AFTER the water renders (ADR 0013), so we floor
+            // the water's PRE-overlay value at min(1, paletteFloor / dayNightLuma): in daylight dnLuma~1 => ~floor;
+            // at deep night dnLuma is small => the quotient saturates at 1 (water full-bright pre-overlay) and the
+            // overlay still darkens it to genuine dark. nightFloor (on-screen) optionally keeps a faint night sea.
+            float PaletteValueFloorDayNight(float paletteFloor, float dayNightLuma, float nightFloor)
+            {
+                float dn = max(dayNightLuma, 1e-3);
+                float dayPre   = min(1.0, max(paletteFloor, 0.0) / dn);
+                float nightPre = min(1.0, max(nightFloor, 0.0) / dn);
+                return min(1.0, max(dayPre, nightPre));
+            }
+
+            // Re-scale rgb so its luminance moves to `toLuma` while keeping hue/chroma ratios (multiplicative,
+            // not a desaturating lerp). A (near) black pixel is lifted to a neutral grey of the target luma.
+            float3 PaletteScaleToLuma(float3 rgb, float fromLuma, float toLuma)
+            {
+                if (fromLuma <= 1e-4) return float3(toLuma, toLuma, toLuma);
+                return rgb * (toLuma / fromLuma);
+            }
+
+            // HSV-style saturation: (max - min) / max, 0 for black.
+            float PaletteSaturation(float3 rgb)
+            {
+                float mx = max(rgb.r, max(rgb.g, rgb.b));
+                float mn = min(rgb.r, min(rgb.g, rgb.b));
+                return mx <= 1e-5 ? 0.0 : (mx - mn) / mx;
+            }
+
+            // Cap saturation at `satCap`: pull every channel toward the colour's own grey (its luminance) by
+            // exactly the amount that lands the resulting HSV-style saturation ON the cap (closed form, so the
+            // cap is EXACT, not approximate). Pulling toward the LUMINANCE preserves perceived brightness — the
+            // cap desaturates without darkening. Mirrors WaterPaletteGrade.CapSaturation.
+            float3 PaletteCapSaturation(float3 rgb, float satCap)
+            {
+                float cap = saturate(satCap);
+                float mx = max(rgb.r, max(rgb.g, rgb.b));
+                float mn = min(rgb.r, min(rgb.g, rgb.b));
+                float chroma = mx - mn;
+                float sat = mx <= 1e-5 ? 0.0 : chroma / mx;
+                if (sat <= cap || sat <= 1e-5) return rgb;
+                float grey = PaletteLuma(rgb);
+                // f solves newSat == cap: f = (chroma - cap*mx) / (chroma - cap*(mx - grey)).
+                float denom = chroma - cap * (mx - grey);
+                float f = abs(denom) < 1e-6 ? 1.0 : saturate((chroma - cap * mx) / denom);
+                return lerp(rgb, float3(grey, grey, grey), f);
+            }
+
+            // Pick the palette ANCHOR to pull toward, by luminance: darkest -> deep, then mid, shallow, foam.
+            // A piecewise-linear blend across the four anchors (continuous, no banding); breakpoints are the
+            // anchors' own luminances, forced strictly increasing so the lerps are stable.
+            float3 PaletteAnchorForLuma(float luma)
+            {
+                float lDeep    = PaletteLuma(_PaletteDeep.rgb);
+                float lMid     = max(PaletteLuma(_PaletteMid.rgb),     lDeep + 1e-3);
+                float lShallow = max(PaletteLuma(_PaletteShallow.rgb), lMid  + 1e-3);
+                float lFoam    = max(PaletteLuma(_PaletteFoam.rgb),    lShallow + 1e-3);
+                if (luma <= lDeep)    return _PaletteDeep.rgb;
+                if (luma <  lMid)     return lerp(_PaletteDeep.rgb,    _PaletteMid.rgb,     (luma - lDeep)    / (lMid - lDeep));
+                if (luma <  lShallow) return lerp(_PaletteMid.rgb,     _PaletteShallow.rgb, (luma - lMid)     / (lShallow - lMid));
+                if (luma <  lFoam)    return lerp(_PaletteShallow.rgb, _PaletteFoam.rgb,    (luma - lShallow) / (lFoam - lShallow));
+                return _PaletteFoam.rgb;
+            }
+
+            // The full soft palette guard-rail: value clamp (day/night-aware floor + ceiling) -> sat cap ->
+            // anchor pull, the whole thing lerped back toward the raw colour by the master strength so 0 = today.
+            // dayNightLuma is the luminance of the day/night multiply tint (1 = full daylight; the global falls
+            // back to (1,1,1,1) when the cycle is not running -> dnLuma 1 -> the daylight rail, never a dark one).
+            float3 PaletteGrade(float3 rgb, float dayNightLuma)
+            {
+                float strength = saturate(_PaletteGradeStrength);
+                if (strength <= 0.0) return rgb;           // EXACT passthrough — opt-in, revertible (rule 6)
+
+                float3 graded = rgb;
+
+                // (1) VALUE clamp: day/night-aware floor + ceiling (no mud, no blowout).
+                float luma = PaletteLuma(graded);
+                float floorPre = PaletteValueFloorDayNight(_PaletteValueFloor, dayNightLuma, _PaletteNightFloor);
+                // NOTE: not named `ceil` — that shadows the HLSL ceil() intrinsic (a magenta-class trap).
+                float ceilLvl = max(_PaletteValueCeil, floorPre);       // ceiling never below the floor
+                float targetLuma = clamp(luma, floorPre, ceilLvl);
+                graded = PaletteScaleToLuma(graded, luma, targetLuma);
+
+                // (2) SATURATION cap.
+                graded = PaletteCapSaturation(graded, _PaletteSatCap);
+
+                // (3) ANCHOR pull (soft, by luminance).
+                float3 anchor = PaletteAnchorForLuma(PaletteLuma(graded));
+                graded = lerp(graded, anchor, saturate(_PalettePullStrength));
+
+                // master strength: lerp the whole grade back toward the raw colour (the soft rail).
+                return lerp(rgb, graded, strength);
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -1215,6 +1357,22 @@ Shader "HiddenHarbours/Water"
                     float capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
+
+                // ---- PALETTE GUARD-RAIL: the final soft grade (col.rgb ONLY; ADR 0015) -------------------------
+                // The LAST thing before return: bound + gently pull the composited colour into the art-directed
+                // palette so it never washes out or goes muddy, while keeping the dynamic diversity. The value
+                // FLOOR is DAY/NIGHT-AWARE — it pre-compensates for the day/night overlay's downstream MULTIPLY
+                // (ADR 0013) so daylight never goes muddy while true night still goes genuinely dark. dayNightLuma
+                // is the luminance of the global _DayNightTint the overlay multiplies the frame by; when the cycle
+                // is NOT running the global is near-black (the same "unset" convention the reflection/specular use)
+                // -> treat it as full daylight (dnLuma = 1, the daylight rail) so a bare art scene / editor preview
+                // grades to the daylight palette, never a phantom-dark one. col.rgb ONLY: this never touches depth/
+                // clip()/_WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). Strength 0 = today.
+                float dnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                float dayNightLuma = (dnSum > 1e-3)
+                    ? PaletteLuma(_DayNightTint.rgb)   // cycle running: the real multiply luminance (1 day .. ~0 night)
+                    : 1.0;                             // cycle off / unset: full daylight rail (no phantom dark floor)
+                col.rgb = PaletteGrade(col.rgb, dayNightLuma);
 
                 return col;
             }
