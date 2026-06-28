@@ -948,3 +948,109 @@ The editor menu lives in `Assets/_Project/Art/Editor/WaterPresetMenu.cs`:
 
 The live `Water.mat` is **only ever changed by the explicit "Apply" command** (that is the intent) — the
 variants are read-only sources the menu copies *from*.
+
+---
+
+## 13. Palette guard-rail — a tunable final-stage soft grade that bounds the sea to a palette (ADR 0015)
+
+> The owner asked for a **guard-rail** on the water's FINAL output so the increasingly rich, sea-state-driven
+> look (§5.6–§11) can never **wash out** (too bright) or go **muddy** (too dark), while keeping the dynamic
+> diversity. He chose **SOFT** rails — bound the extremes and gently PULL toward the palette, **NOT a hard
+> lock**. This section is the result: a **final colour-grade stage** in the water frag (`col.rgb` only, the
+> LAST thing before `return col`) plus **palette presets** integrated with the §12 library. Decision of
+> record: [`../adr/0015-water-palette-guard-rail.md`](../adr/0015-water-palette-guard-rail.md).
+
+### 13.1 What the grade does (three soft ops, scaled by a master)
+
+After every layer composites, `PaletteGrade(col.rgb, dayNightLuma)` applies, in order:
+
+1. **VALUE (luminance) FLOOR + CEILING** — no mud, no blowout. A hue-preserving multiplicative re-scale
+   clamps the colour's luminance into `[floor, ceil]`. The **floor is DAY/NIGHT-AWARE** (see §13.2); the
+   ceiling is a plain luminance cap.
+2. **SATURATION CAP** — HSV-style `(max−min)/max` capped at `_PaletteSatCap`; above the cap the colour is
+   pulled toward its own grey just enough to hit the cap (luminance preserved — it only desaturates).
+3. **ANCHOR PULL** — a soft `lerp` toward the **nearest palette anchor by luminance** (a continuous
+   piecewise blend across `_PaletteDeep` / `_PaletteMid` / `_PaletteShallow` / `_PaletteFoam`) at
+   `_PalettePullStrength` (~0.3–0.4 — a rail, not a cage).
+
+The whole graded result is lerped back toward the raw colour by the master `_PaletteGradeStrength`, so
+**`_PaletteGradeStrength = 0` is an EXACT passthrough (today's look, byte-for-byte)** — opt-in + revertible.
+It is composited **after** the foam/whitecaps (it bounds the *finished* colour). `col.rgb` ONLY: it never
+touches `depth` / `clip()` / the deep tint / the caustic gate / `_WaterLevel` / the height read / the sim
+(P1 integrity, CLAUDE.md rule 5); it drives no sim and saves nothing.
+
+### 13.2 The day/night floor — never muddy in daylight, still dark at true night (the subtle part)
+
+The day/night system (ADR 0013) draws a **full-screen MULTIPLY overlay ABOVE the water** that multiplies the
+WHOLE composited frame by the global `_DayNightTint`. So whatever the water shader emits is **multiplied
+downstream** by the day/night tint's luminance. A naive constant floor in the water shader would be
+**darkened away** by that multiply — forcing a bad choice between *daylight muddy* (floor too low) or
+*killing the genuinely-dark nights* (floor too high).
+
+The fix is **pre-compensation**: the water floors its PRE-overlay luminance at
+
+```
+floorPre = min(1, paletteFloor / max(dayNightLuma, eps))
+```
+
+so that AFTER the overlay's `× dayNightLuma`:
+
+- **Daylight / overcast** (`dayNightLuma ≈ 1`): `floorPre ≈ paletteFloor` → the on-screen water lands at
+  ~`paletteFloor` — **never muddy**.
+- **True night** (`dayNightLuma` small): the quotient **saturates at 1** (water full-bright pre-overlay), so
+  the overlay still multiplies it down to **genuine dark** — the owner's dark-nights vision is preserved.
+
+`_PaletteNightFloor` (an on-screen luminance, default **0**) optionally keeps a faint readable sea at night
+(it raises the deep-night floor a touch, inert in daylight). **`_PaletteNightFloor = 0` lets night go as dark
+as the overlay takes it** (the default). When the day/night cycle is NOT running the global `_DayNightTint`
+is near-black (the same "unset" convention the reflection/specular use) — the grade then treats it as full
+daylight (`dayNightLuma = 1`, the daylight rail) so a bare art scene / editor preview never paints a
+phantom-dark floor.
+
+### 13.3 Palette presets (the palette IS a material property set)
+
+A palette = its four **anchor colours** + its **bounds** (floor / ceil / sat-cap / pull-strength /
+night-floor), all material properties, so a Water variant **carries its palette**. The live `Water.mat`
+ships **North Atlantic** at the soft default (`_PaletteGradeStrength = 0.35`). Three NEW palette variants
+join `WaterPresets/` alongside the §12 moods:
+
+| Variant | Palette (one line) |
+|---|---|
+| **Water_StirredBrown** | Turbid brown-green estuary: low saturation, mid value, muddy olive-tan anchors. |
+| **Water_DeepBlue** | Saturated deep open-ocean blue: higher contrast, vivid navy→blue-teal anchors. |
+| **Water_Tropical** | Turquoise / cyan, brighter higher-sat shallows — the deliberate WARM/BRIGHT outlier (everything else is cold North-Atlantic-canon). |
+
+The existing 5 mood variants gained the **same palette property key set** with per-mood-appropriate bounds
+(e.g. StormGrey: low floor + low ceiling + tight sat-cap + stronger pull for cold gloom; FoggySmother:
+high floor + tight sat-cap for pale low-contrast eerie), so **every variant is a complete material with one
+property key set** (the CI magenta guard force-compiles them all). All eight appear in the
+`Hidden Harbours ▸ Art ▸ Water Presets ▸ Apply to live Water` submenu and the "Generate native .preset
+assets" list (`WaterPresetMenu.cs`).
+
+### 13.4 Tunables (all additive; `_PaletteGradeStrength = 0` = the pre-feature look)
+
+| Property | Default (Water.mat) | What it does |
+|---|---|---|
+| `_PaletteGradeStrength` | 0.35 | **Master** — lerps the whole grade back toward raw. **0 = today's look.** |
+| `_PaletteValueFloor` | 0.10 | Daylight on-screen luminance FLOOR (no mud). |
+| `_PaletteValueCeil` | 0.85 | Luminance CEILING (no blowout). |
+| `_PaletteSatCap` | 0.55 | HSV-style saturation CAP. |
+| `_PalettePullStrength` | 0.35 | Anchor PULL strength (soft; a rail). |
+| `_PaletteNightFloor` | 0.0 | On-screen luminance floor permitted at NIGHT (0 = night goes dark). |
+| `_PaletteDeep/Mid/Shallow/Foam` | (palette) | The four anchor colours the grade pulls toward, by luminance. |
+
+To turn the guard-rail fully off (the pre-feature look), set `_PaletteGradeStrength = 0`. The floor + ceiling
+live in `_PaletteValueFloor` / `_PaletteValueCeil`; switch palettes via the preset menu (§12.3).
+
+### 13.5 Determinism guard (headless C# twin)
+
+The grade math is mirrored exactly in a pure `Assets/_Project/Code/Art/WaterPaletteGrade.cs`
+(`WaterPaletteGrade.Grade` + `ValueFloorDayNight` / `CapSaturation` / `AnchorForLuma` / `ScaleToLuminance`)
+and locked headless in `Assets/Tests/EditMode/Art/WaterPaletteGradeTests.cs`: strength 0 = identity at every
+input + day/night state; the floor lifts mud to the palette floor in daylight and the pre-comp lands
+on-screen at the palette floor after the multiply; **true night still reaches genuinely dark**; the night
+floor keeps a faint sea only when asked; the ceiling caps blowout; the sat cap desaturates while preserving
+luminance; the anchor pull is soft (moves toward, never snaps to, the anchor) and continuous in luminance.
+The CI shader-compile guard (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped
+`Water.mat` AND every WaterPresets variant: no `+` in any `[Header]`/property string, no `[unroll]` over a
+runtime bound (the magenta class stays guarded), and every variant carries the same `_Palette*` key set.

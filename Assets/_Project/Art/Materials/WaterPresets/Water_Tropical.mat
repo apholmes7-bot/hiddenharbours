@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Water_FoggySmother
+  m_Name: Water_Tropical
   m_Shader: {fileID: 4800000, guid: 60e801f535ab482ca783280c9f07d6cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -60,17 +60,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CausticAmount: 0.18
-    - _CausticDepth: 1.4
+    - _CausticAmount: 0.7
+    - _CausticDepth: 1.8
     - _CausticScale: 0.9
-    - _CausticTexStrength: 0.5
+    - _CausticTexStrength: 0.78
     - _Chop: 0.12
     - _DeepDepth: 4
     - _DepthBands: 0
     - _Flow: 0.06
     - _FoamNoise: 0.09
-    - _FoamSoftness: 0.26
-    - _FoamTexStrength: 0.5
+    - _FoamSoftness: 0.18
+    - _FoamTexStrength: 0.672
     - _FoamWidth: 0.45
     - _HeightMax: 6
     - _HeightMin: -4
@@ -82,12 +82,12 @@ Material:
     - _ShoreSampleStep: 0.4
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
-    - _SpecAmount: 0.07
-    - _SpecSharpness: 12
+    - _SpecAmount: 0.3
+    - _SpecSharpness: 18
     - _SparkleTexScale: 0.5
-    - _SparkleTexStrength: 0.4
+    - _SparkleTexStrength: 0.932
     - _SurfaceTexStrength: 0.169
-    - _SurfaceTint: 0.12
+    - _SurfaceTint: 0.22
     - _SwashAmplitude: 1
     - _SwashScale: 0.2
     - _SwashSpeed: 0.08
@@ -100,7 +100,7 @@ Material:
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
     - _WaterLevel: 0
-    - _WhitecapTexStrength: 0.55
+    - _WhitecapTexStrength: 0.865
     - _WindChop: 0.07
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09
@@ -110,61 +110,61 @@ Material:
     - _Octave3Weight: 0.108
     - _FbmScale: 3.27
     - _FbmDriftSpeed: -0.12
-    - _FbmStrength: 0.08
+    - _FbmStrength: 0.045
     - _FbmGateLo: 0.452
     - _FbmGateHi: 1
     - _SpecBands: 3.38
     - _OceanSwellScale: 0.07
-    - _OceanSwellSpeed: 0.014
-    - _OceanSwellStrength: 0.05
-    - _OceanSwellSharpness: 3
+    - _OceanSwellSpeed: 0.018
+    - _OceanSwellStrength: 0.09
+    - _OceanSwellSharpness: 6
     - _FoamStreakStretch: 2.2
     - _FoamCrestGate: 0.88
-    - _SpecSwellBias: 0.15
+    - _SpecSwellBias: 0.21
     - _FoamDriftWindVsCurrent: 0.84
-    - _FoamEvolveSpeed: 0.08
+    - _FoamEvolveSpeed: 0.1
     - _FoamBlobScale: 5.17
-    - _FoamThreshold: 0.88
-    - _FoamThresholdSoft: 0.22
-    - _FoamSolidThreshold: 0.84
-    - _FoamDensity: 0.3
-    - _FoamDensityWind: 0.4
-    - _WhitecapFormSharpness: 0.4
-    - _WhitecapPeakDensity: 0.5
+    - _FoamThreshold: 0.84
+    - _FoamThresholdSoft: 0.18
+    - _FoamSolidThreshold: 0.78
+    - _FoamDensity: 0.5
+    - _FoamDensityWind: 0.5
+    - _WhitecapFormSharpness: 0.5
+    - _WhitecapPeakDensity: 0.78
     - _WhitecapCollapseRate: 1.5
-    - _ReflectionStrength: 0.45
+    - _ReflectionStrength: 0.72
     - _ReflectionFadeChop: 0.6
     - _ReflectionWindFade: 0.5
-    - _ReflectionChopScatter: 2.2
-    - _ReflectionWindScatter: 1.4
+    - _ReflectionChopScatter: 1.5
+    - _ReflectionWindScatter: 0.8
     - _ReflectionSkyTint: 0.85
-    - _ReflectionSmear: 2.4
-    - _ReflectionSunStreak: 0.2
-    - _ReflectionSunSharp: 4
-    - _PaletteGradeStrength: 0.4
-    - _PaletteValueFloor: 0.2
-    - _PaletteValueCeil: 0.75
-    - _PaletteSatCap: 0.3
-    - _PalettePullStrength: 0.35
-    - _PaletteNightFloor: 0.04
+    - _ReflectionSmear: 1.6
+    - _ReflectionSunStreak: 1.1
+    - _ReflectionSunSharp: 6
+    - _PaletteGradeStrength: 0.35
+    - _PaletteValueFloor: 0.14
+    - _PaletteValueCeil: 0.92
+    - _PaletteSatCap: 0.82
+    - _PalettePullStrength: 0.3
+    - _PaletteNightFloor: 0
     m_Colors:
-    - _CausticColor: {r: 0.74, g: 0.78, b: 0.78, a: 1}
-    - _DeepColor: {r: 0.2, g: 0.26, b: 0.29, a: 1}
+    - _CausticColor: {r: 0.7, g: 1, b: 0.95, a: 1}
+    - _DeepColor: {r: 0.04, g: 0.28, b: 0.4, a: 1}
     - _FlowDir: {r: 1, g: 0, b: 0, a: 0}
-    - _FoamColor: {r: 0.86, g: 0.88, b: 0.89, a: 1}
+    - _FoamColor: {r: 0.95, g: 0.99, b: 0.98, a: 1}
     - _HeightWorldMin: {r: -80, g: -60, b: 0, a: 0}
     - _HeightWorldSize: {r: 160, g: 120, b: 0, a: 0}
     - _LightDir: {r: -0.6, g: 0.8, b: 0, a: 0}
-    - _ShallowColor: {r: 0.5, g: 0.58, b: 0.59, a: 0.95}
-    - _SpecColor: {r: 0.8, g: 0.82, b: 0.84, a: 1}
+    - _ShallowColor: {r: 0.32, g: 0.86, b: 0.82, a: 0.95}
+    - _SpecColor: {r: 0.95, g: 1, b: 0.98, a: 1}
     - _WindDir: {r: 0, g: 1, b: 0, a: 0}
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
-    - _FbmTint: {r: 0.56, g: 0.62, b: 0.64, a: 1}
+    - _FbmTint: {r: 0.35, g: 0.78, b: 0.76, a: 1}
     - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
-    - _ReflectionColor: {r: 0.66, g: 0.7, b: 0.74, a: 1}
-    - _PaletteDeep: {r: 0.2, g: 0.26, b: 0.29, a: 1}
-    - _PaletteMid: {r: 0.36, g: 0.43, b: 0.45, a: 1}
-    - _PaletteShallow: {r: 0.5, g: 0.58, b: 0.59, a: 1}
-    - _PaletteFoam: {r: 0.86, g: 0.88, b: 0.89, a: 1}
+    - _ReflectionColor: {r: 0.6, g: 0.84, b: 0.9, a: 1}
+    - _PaletteDeep: {r: 0.04, g: 0.28, b: 0.4, a: 1}
+    - _PaletteMid: {r: 0.12, g: 0.56, b: 0.62, a: 1}
+    - _PaletteShallow: {r: 0.32, g: 0.86, b: 0.82, a: 1}
+    - _PaletteFoam: {r: 0.95, g: 0.99, b: 0.98, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

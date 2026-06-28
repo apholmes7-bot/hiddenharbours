@@ -56,6 +56,10 @@ namespace HiddenHarbours.Art.Editor
         private const string StormGrey     = "Water_StormGrey";
         private const string FoggySmother  = "Water_FoggySmother";
         private const string WarmShelter   = "Water_WarmShelter";
+        // PALETTE variants (ADR 0015): distinct PALETTE guard-rails (anchor colours + bounds), not just moods.
+        private const string StirredBrown  = "Water_StirredBrown";
+        private const string DeepBlue      = "Water_DeepBlue";
+        private const string Tropical      = "Water_Tropical";
 
         // ---------------------------------------------------------------------------------------------------
         // 1) APPLY a variant onto the live Water.mat (the recommended non-dev path).
@@ -78,6 +82,16 @@ namespace HiddenHarbours.Art.Editor
 
         [MenuItem("Hidden Harbours/Art/Water Presets/Apply to live Water/Warm Shelter (gentle, warmer)", priority = 4)]
         public static void ApplyWarmShelter() => ApplyVariant(WarmShelter);
+
+        // --- PALETTE variants (ADR 0015): each carries its own anchor colours + guard-rail bounds. ---
+        [MenuItem("Hidden Harbours/Art/Water Presets/Apply to live Water/Stirred Brown (turbid estuary)", priority = 20)]
+        public static void ApplyStirredBrown() => ApplyVariant(StirredBrown);
+
+        [MenuItem("Hidden Harbours/Art/Water Presets/Apply to live Water/Deep Blue (saturated open ocean)", priority = 21)]
+        public static void ApplyDeepBlue() => ApplyVariant(DeepBlue);
+
+        [MenuItem("Hidden Harbours/Art/Water Presets/Apply to live Water/Tropical (turquoise; warm outlier)", priority = 22)]
+        public static void ApplyTropical() => ApplyVariant(Tropical);
 
         /// <summary>
         /// Copies <paramref name="variantName"/>'s shader properties onto the live <c>Water.mat</c> (after a
@@ -145,7 +159,8 @@ namespace HiddenHarbours.Art.Editor
         [MenuItem("Hidden Harbours/Art/Water Presets/Generate native .preset assets", priority = 40)]
         public static void GeneratePresetAssets()
         {
-            string[] variants = { NorthAtlantic, GlassyCalm, StormGrey, FoggySmother, WarmShelter };
+            string[] variants =
+                { NorthAtlantic, GlassyCalm, StormGrey, FoggySmother, WarmShelter, StirredBrown, DeepBlue, Tropical };
             int made = 0;
             foreach (string variantName in variants)
             {

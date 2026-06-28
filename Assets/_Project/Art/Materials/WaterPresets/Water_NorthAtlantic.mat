@@ -141,6 +141,12 @@ Material:
     - _ReflectionSmear: 1.6
     - _ReflectionSunStreak: 0.9
     - _ReflectionSunSharp: 6
+    - _PaletteGradeStrength: 0.35
+    - _PaletteValueFloor: 0.1
+    - _PaletteValueCeil: 0.85
+    - _PaletteSatCap: 0.55
+    - _PalettePullStrength: 0.35
+    - _PaletteNightFloor: 0
     m_Colors:
     - _CausticColor: {r: 0.66, g: 0.86, b: 0.86, a: 1}
     - _DeepColor: {r: 0.05, g: 0.135, b: 0.205, a: 1}
@@ -156,5 +162,9 @@ Material:
     - _FbmTint: {r: 0.45, g: 0.58, b: 0.63, a: 1}
     - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _ReflectionColor: {r: 0.56, g: 0.68, b: 0.8, a: 1}
+    - _PaletteDeep: {r: 0.05, g: 0.135, b: 0.205, a: 1}
+    - _PaletteMid: {r: 0.14, g: 0.3, b: 0.38, a: 1}
+    - _PaletteShallow: {r: 0.34, g: 0.6, b: 0.62, a: 1}
+    - _PaletteFoam: {r: 0.92, g: 0.96, b: 0.98, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
