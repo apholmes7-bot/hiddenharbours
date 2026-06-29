@@ -113,10 +113,86 @@ from the same `DayNightProfile` the controller uses.
 **Alternative noted (not chosen):** URP `ShadowCaster2D` + a `Light2D` — needs the Sprite-Lit migration ADR
 0013 rejects for now, and gives less control over the stylized skew. We ship the projected sprite.
 
-## 6. Future: night lights (M2/M3, the owner's vision)
+## 6. Night lights — additive 2D lights + the boat spotlight — SHIPPED (ADR 0016)
 
-A multiply overlay darkens uniformly; it cannot by itself let a lantern/boat-light punch a bright hole in
-the dark. That is fine for this foundation (night IS dark — the point). When boat-lights arrive, the
-**durable model** (`DayNightProfile` + `DayNightMath` + the published globals) carries over; only the
-*output stage* changes — either additive light sprites drawn above the overlay, or a migration to URP 2D
-lights driven by the same profile (ADR 0013 "migration path"). Decide at M2.
+The multiply overlay darkens uniformly; it cannot by itself let a lantern/boat-light punch a bright hole in
+the dark. ADR 0016 adds that hole: a **light** is an **ADDITIVE glow drawn ABOVE the day/night overlay** that
+ADDS brightness back into the crushed-dark frame — the first concrete one being a **boat spotlight**. This is
+the **payoff** of the day/night system (P1 night-as-a-force, P5 night-sailing risk) and the start of the
+owner's M2/M3 night-lighting vision.
+
+### What it is
+
+- **An additive glow above the overlay.** Each light draws a soft CONE/RADIAL quad at `sortingOrder ~32770`
+  (above the overlay's ~32760, below the HUD) blended `One One`, so it brightens the darkened world (not the
+  HUD). Visual-only — drives no sim, saves nothing (rule 5).
+- **It auto-gates to night IN THE SHADER.** The `HiddenHarbours/AdditiveLight` shader reads the published
+  `_DayNightTint` and scales its output by the frame **darkness** (`≈ 1 − luminance(tint)`): a light is
+  ~invisible at a bright noon (so it can't wash daytime out) and full in a dark night — with **zero per-light
+  coupling to the cycle**. Drop a light anywhere; it fades with the day on its own. (Off the cycle — EditMode /
+  a bare art scene / the demo before Play — the tint is unset/near-black; the gate then **shows** the light, so
+  you can see + tune it. Tunable via `_GateFallback`, mirroring the water shader's unset-tint handling.)
+
+### The components
+
+- **`SceneLight`** (`Assets/_Project/Code/Art/SceneLight.cs`) — the reusable drop-on light. Shape (Cone beam /
+  Radial halo), colour, intensity, range, cone half-angle, edge + angular softness, the night-gate, optional
+  **deterministic** flicker (a `(seed, time)` hash, never `System.Random` — rule 5). Pooled (one child quad +
+  one shared `Resources/AdditiveLight.mat` via a `MaterialPropertyBlock`), no per-frame alloc (rule 7); the
+  heavy shape runs on the GPU.
+- **`BoatSpotlight`** (`Assets/_Project/Code/Art/BoatSpotlight.cs`) — the first concrete light. Configures +
+  carries a `SceneLight` **cone**: warm, soft, thrown forward off the **bow** onto the dark water, that
+  **follows + rotates with the hull** and **dims toward off when not making way** (a working searchlight under
+  way; a faint glow when moored — tunable, with a floor). It reads the boat through **Transform only** (heading
+  = its own `transform.up`, the bow anchor = a local forward offset, the way-gate = its own measured speed) — no
+  reference to the Boats module (rule 4).
+
+### The tunable set (rule 6) + defaults
+
+| Tunable | Where | Default |
+|---|---|---|
+| Shape (Cone / Radial) | SceneLight | Cone (BoatSpotlight) |
+| Colour | SceneLight / BoatSpotlight | warm amber `(1, 0.88, 0.62)` |
+| Intensity | SceneLight / BoatSpotlight | 1.5 (spotlight) |
+| Range (throw, m) | SceneLight / BoatSpotlight | 9 (spotlight) |
+| Cone half-angle (deg; 180 = radial) | SceneLight / BoatSpotlight | 26 (spotlight) |
+| Edge softness (radial fade) | SceneLight / BoatSpotlight | 0.6 |
+| Angular softness (cone edge) | SceneLight / BoatSpotlight | 0.45 |
+| Bright core boost | SceneLight | 1 |
+| Night-gate darkness threshold | SceneLight / material | 0.12 |
+| Night-gate fade band | SceneLight / material | 0.35 |
+| Show-when-no-cycle fallback | SceneLight / material | 1 (show) |
+| Flicker amount / speed | SceneLight / BoatSpotlight | 0.06 / 1 (spotlight) |
+| Bow offset / side offset | BoatSpotlight | 0.6 / 0 |
+| Dim-when-stationary, full-speed, floor | BoatSpotlight | on, 1.2 m/s, 0.15 |
+
+### How the owner SEES it / ADDS it
+
+- **`Hidden Harbours ▸ Build Light Test`** — drops a DARK ground plane + a boat-marker carrying a forward CONE
+  spotlight + a round RADIAL lantern into the current scene. Press Play, **scrub the clock to NIGHT** (Tide
+  Scrubber / DevFastTide / raise the clock `TimeScale`), and watch the beam + halo **cut through the dark**.
+  Delete the spawned `LightTest` object to fully revert.
+- **`Hidden Harbours ▸ Lighting ▸ Add Light to Selection ▸ Spotlight (boat)`** — adds a `BoatSpotlight` to the
+  selected object(s) (drop it on the boat). The other sub-menu entries (Worklight / Window Glow / Lightpost) are
+  radial **stubs** (a generic radial `SceneLight`) — the **follow-up** light types are structured for, not built
+  bespoke yet.
+
+### How the follow-up light types extend this
+
+The same `SceneLight` (set to **Radial**) is the spine for all of them — only the tunables differ:
+
+- **Worklight** — a cool-white radial halo on a dock/deck object (a wide, soft, steady glow).
+- **Window Glow** — a warm radial spill at a window, coordinating with `CottageDayNight`'s lit/unlit pane swap
+  (the pane art lights up; this adds the *spill* onto the ground/water).
+- **Lightpost** — a static warm radial on a quay lamp (a gentle pool of light, a faint flicker).
+
+Each becomes a small bespoke component (like `BoatSpotlight`) that configures a `SceneLight` and routes through
+the existing `LightPreset` extension point in `LightMenu`. Build them when the world/economy lanes need them
+(stay-in-phase, rule 8).
+
+## 7. Migration to true URP 2D lights (still open)
+
+If a future need outgrows additive sprites (e.g. real occlusion/shadow-casting lights), ADR 0013's path (2)
+remains: migrate the relevant sprites to Sprite-Lit and drive a `Light2D` from the same `DayNightProfile`. The
+**durable model** (`DayNightProfile` + `DayNightMath` + the published globals + now `LightMath`) carries over;
+only the *output stage* changes. Decide if/when that need arrives.
