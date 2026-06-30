@@ -10,6 +10,7 @@ using HiddenHarbours.Boats;               // BoatHullDef (the carried Dory/Punt 
 using HiddenHarbours.Fishing;             // FishSpeciesDef + ClamDig/ClamHoleVisual (the clam dig action + look)
 using HiddenHarbours.Player;              // ClamBucket (the on-foot clam hold the dig fills)
 using HiddenHarbours.App;                 // RegionAnchor — St Peters' travel bind point (the persistent rig rebinds here)
+using HiddenHarbours.Art;                 // ChimneySmoke — the cosy hearth plume off the cottage chimney (ambient VFX)
 
 namespace HiddenHarbours.App.Editor
 {
@@ -307,6 +308,17 @@ namespace HiddenHarbours.App.Editor
             var cottageSprite = LoadSpriteAny(ArtCottage);
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
+
+            // Cosy HEARTH SMOKE off the cottage chimney — the one positioned living-coast ambient effect (P3).
+            // A thin pooled plume that rises and bends DOWNWIND on the SAME shared wind the grass/water/mist
+            // read; it dims with the day/night cycle (the hearth burns on at night). Sits at the roofline,
+            // slightly to one side where a flue would be (offset is in WORLD metres; the cottage isn't scaled
+            // when the real sprite loads, so a fixed offset reads at the roof either way). The mist/gulls/motes
+            // self-install; this is the only one the builder places. (ChimneySmoke is visual-only, rule 5.)
+            var chimneyGo = new GameObject("ChimneySmoke");
+            chimneyGo.transform.SetParent(cottageGo.transform, worldPositionStays: false);
+            chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
+            chimneyGo.AddComponent<ChimneySmoke>();
 
             // --- SANDBAR (greybox visual of the tide-gated flats running island → Greywick) -------------
             // A sand strip along the bar centre-line (From (-22,0) → To (34,0)). It is VISUAL only — the
