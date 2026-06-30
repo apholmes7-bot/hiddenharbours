@@ -71,9 +71,60 @@ namespace HiddenHarbours.Art
                  "small floor keeps a faint glow at the bow even moored.")]
         [Range(0f, 1f)] [SerializeField] private float _stationaryFloor = 0.15f;
 
+        [Header("Light the WATER from within the water shader (ADR 0016)")]
+        [Tooltip("Also light the WATER (not just land). The additive QUAD lights land, but the URP 2D renderer " +
+                 "draws the custom-shader water OVER the quad regardless of sorting order — so the water gets lit " +
+                 "FROM WITHIN its own shader instead: this publishes the beam as GLOBAL shader uniforms " +
+                 "(_BoatLight*) and the water fragment adds the cone to its own colour (no sorting dependency, " +
+                 "composes with reflections/foam/palette). Off = the water term is disabled (intensity 0).")]
+        [SerializeField] private bool _lightWater = true;
+
+        [Tooltip("Water-side strength multiplier on the published beam intensity, so the owner can balance how " +
+                 "strongly the beam reads on WATER vs LAND independently (land = the quad; water = this term). " +
+                 "1 = the same intensity as land; higher = a stronger raking pool of light on the dark sea.")]
+        [Min(0f)] [SerializeField] private float _waterStrength = 1.4f;
+
+        [Tooltip("Frame DARKNESS (0 = bright noon .. 1 = pitch black) at/below which the WATER term is fully OFF " +
+                 "(so the beam can't wash daylight water out). Mirrors SceneLight's night-gate; the water reads " +
+                 "the same published day/night tint as the land quad does.")]
+        [Range(0f, 1f)] [SerializeField] private float _gateThreshold = 0.12f;
+
+        [Tooltip("Width of the WATER term's night-gate fade-in band above the threshold (small = a hard switch " +
+                 "at dusk; wide = a slow ramp through twilight).")]
+        [Range(0f, 1f)] [SerializeField] private float _gateSoftness = 0.35f;
+
+        [Tooltip("What the WATER term shows when the day/night cycle ISN'T running (EditMode / a bare art scene / " +
+                 "the demo before Play): 1 = fully show (so the beam reads for tuning), 0 = hidden. Mirrors how " +
+                 "the water shader's other layers treat an unset day/night tint.")]
+        [Range(0f, 1f)] [SerializeField] private float _gateFallback = 1f;
+
+        // ---- the published GLOBAL shader uniforms (the water shader reads these; ADR 0016) ----------------
+        // ONE boat "water light" is published as a handful of globals (like _SunDir / _DayNightTint already are),
+        // and the water fragment adds the cone illumination to its own col.rgb. ONE global light is enough for
+        // now: the boat spotlight is THE night-nav light. The clean extension to MANY lights later is to publish
+        // ARRAYS (_BoatLightPos[], ... with a _BoatLightCount) and loop in the shader; the single-light path is a
+        // count-1 special case of that, so nothing here needs rethinking when a second light arrives.
+        private static readonly int IdBoatLightPos    = Shader.PropertyToID("_BoatLightPos");     // xy = world lamp pos
+        private static readonly int IdBoatLightDir    = Shader.PropertyToID("_BoatLightDir");     // xy = world beam axis (unit)
+        private static readonly int IdBoatLightColor  = Shader.PropertyToID("_BoatLightColor");   // rgb = colour
+        // x = effective intensity (master × way-gate × water-strength × flicker), y = range (m),
+        // z = cos(halfAngle) (outer cone edge), w = cos(innerAngle) (fully-lit inner cone).
+        private static readonly int IdBoatLightParams = Shader.PropertyToID("_BoatLightParams");
+        // x = radial edge softness, y = night-gate threshold, z = night-gate softness, w = cycle-off fallback.
+        private static readonly int IdBoatLightParams2 = Shader.PropertyToID("_BoatLightParams2");
+
+        // Whether ANY BoatSpotlight has published a live water-light this frame, so a disabled/destroyed light
+        // zeroes the global out (no stuck beam over the water). Set when a spotlight publishes; the publisher
+        // that wrote last "owns" the global (single-light model). On disable we publish zero intensity.
         private SceneLight _light;
         private Vector3 _lastPos;
         private float _smoothedSpeed;
+        private float _publishTimer;
+
+        // How often (Hz) the water-light globals are re-published. The beam is slow; the sim throttles to a few
+        // Hz elsewhere too (rule 7). The POSE the LAND quad follows every frame in SceneLight; the water globals
+        // need only track the boat at a few Hz — cheap, no per-frame alloc.
+        private const float PublishHz = 20f;
 
         // expose for the editor menu / tests to read the configured light
         public SceneLight Light => _light;
@@ -92,6 +143,14 @@ namespace HiddenHarbours.Art
             ConfigureLight();
             _lastPos = transform.position;
             _smoothedSpeed = 0f;
+            _publishTimer = 0f;
+        }
+
+        private void OnDisable()
+        {
+            // The single-light model: a disabled/destroyed spotlight must turn the WATER term OFF, or the beam
+            // would stick on the water with no boat. Publish zero intensity (the shader treats <= 0 as no light).
+            PublishWaterLight(0f, Vector3.zero, Vector2.up);
         }
 
         /// <summary>Stamp the boat-spotlight feel onto the carried <see cref="SceneLight"/> (a forward warm cone at the bow).</summary>
@@ -134,7 +193,56 @@ namespace HiddenHarbours.Art
             }
             _lastPos = transform.position;
 
-            _light.Intensity = _intensity * wayFactor;
+            float effectiveIntensity = _intensity * wayFactor;
+            _light.Intensity = effectiveIntensity;   // the LAND quad
+
+            // ---- publish the WATER light globals (throttled) ------------------------------------------------
+            // The water shader lights ITSELF from these (ADR 0016) — sorting-independent, unlike the land quad.
+            _publishTimer -= Time.deltaTime;
+            if (_publishTimer <= 0f)
+            {
+                _publishTimer = PublishHz > 0f ? 1f / PublishHz : 0.05f;
+                // The lamp WORLD position (the bow anchor) and WORLD beam axis (the boat heading = transform.up),
+                // the SAME geometry SceneLight throws the land cone along — so land + water read one beam.
+                Vector3 lampWorld = transform.TransformPoint(new Vector3(_sideOffset, _bowOffset, 0f));
+                Vector2 beamDir = transform.up;
+                // The water term reuses the SAME deterministic flicker SceneLight applies to the land quad, so the
+                // two surfaces wobble together (LightMath.Flicker is a pure hash of (seed, time) — rule 5). Use a
+                // stable per-boat seed so it is reproducible. The water-side strength lets the owner balance the
+                // beam's read on water vs land independently.
+                int seed = (name.GetHashCode() * 397) ^ transform.GetSiblingIndex();
+                float flicker = LightMath.Flicker(seed, Time.time, _flickerAmount, 1f);
+                float waterIntensity = _lightWater
+                    ? Mathf.Max(0f, effectiveIntensity) * Mathf.Max(0f, _waterStrength) * flicker
+                    : 0f;
+                PublishWaterLight(waterIntensity, lampWorld, beamDir);
+            }
+        }
+
+        /// <summary>
+        /// Push the ONE boat "water light" to the GLOBAL shader uniforms the water fragment reads (ADR 0016).
+        /// <paramref name="intensity"/> &lt;= 0 (light off / not lighting water / disabled) publishes a zero
+        /// intensity, which the shader treats as "no beam" (the water term is skipped). The cone HALF-angle is
+        /// published as a COSINE (the shader tests the cone with a single dot, no per-pixel trig), with the
+        /// inner (fully-lit) cone derived from the angular softness so the water cone's feathering matches the
+        /// land cone's <see cref="LightMath.ConeFalloff"/>. Visual-only: it sets render globals, reads no sim,
+        /// saves nothing (rule 5); the values come from the boat transform (rule 4 — no Boats reference).
+        /// </summary>
+        private void PublishWaterLight(float intensity, Vector3 lampWorld, Vector2 beamDir)
+        {
+            float half = Mathf.Clamp(_coneHalfAngle, 0f, 89.5f);          // a cone (never a full radial here)
+            float cosHalf = LightMath.CosFromHalfAngleDeg(half);
+            float innerAngle = half * (1f - Mathf.Clamp01(_angularSoftness));   // fully-lit out to here
+            float cosInner = LightMath.CosFromHalfAngleDeg(innerAngle);
+
+            Shader.SetGlobalVector(IdBoatLightPos, new Vector4(lampWorld.x, lampWorld.y, 0f, 0f));
+            Shader.SetGlobalVector(IdBoatLightDir, new Vector4(beamDir.x, beamDir.y, 0f, 0f));
+            Shader.SetGlobalColor(IdBoatLightColor, _color);
+            Shader.SetGlobalVector(IdBoatLightParams,
+                new Vector4(Mathf.Max(0f, intensity), Mathf.Max(0.01f, _range), cosHalf, cosInner));
+            Shader.SetGlobalVector(IdBoatLightParams2,
+                new Vector4(Mathf.Clamp01(_edgeSoftness), Mathf.Clamp01(_gateThreshold),
+                            Mathf.Clamp01(_gateSoftness), Mathf.Clamp01(_gateFallback)));
         }
 
         /// <summary>

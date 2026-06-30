@@ -125,6 +125,89 @@ namespace HiddenHarbours.Art
             => RadialFalloff(normalizedDistance, edgeSoftness)
                * ConeFalloff(angleFromAxisDeg, coneHalfAngleDeg, angularSoftness);
 
+        // ---- the WATER spotlight term (lit FROM WITHIN the water shader; ADR 0016) -----------------------
+        //
+        // The boat spotlight's additive QUAD lights LAND, but the URP 2D renderer draws the custom-shader WATER
+        // SpriteRenderer over the MeshRenderer quad regardless of sortingOrder/depth (two quad-sort fixes failed).
+        // The robust fix: the water shader LIGHTS ITSELF — the boat spotlight publishes its world-space cone as
+        // GLOBAL shader uniforms (like _SunDir / _DayNightTint already are), and the water FRAGMENT adds the cone
+        // illumination to its own col.rgb. Computed inside the water's own rendering, there is NO sorting
+        // dependency — it cannot fail the way the quad did, and it composes naturally with the water's own
+        // reflection/foam/palette layers. These pure functions are the EXACT maths the HLSL term mirrors, lifted
+        // here so the cone/range/gate behaviour is unit-tested headless (the determinism guard, CLAUDE.md rule 5).
+        //
+        // COSINE-BASED cone (what the shader does, cheaper than degrees in HLSL): the beam axis is a unit vector
+        // and a pixel is "inside the cone" when cos(angle from the axis) >= cos(halfAngle). The angular falloff is
+        // a smoothstep on that cosine from the OUTER edge (cosHalf, fully off) up toward the INNER edge (cosInner,
+        // fully on, the inner cone the soft band feathers from). BoatSpotlight publishes BOTH cosines so the
+        // softness semantics match the existing ConeFalloff (a fraction of the half-angle) without recomputing
+        // trig per pixel.
+
+        /// <summary>
+        /// The cosine of a cone HALF-ANGLE (degrees). The boat spotlight publishes this so the water shader can
+        /// test "inside the cone" as <c>dot(beamDir, toPixelDir) >= cosHalfAngle</c> — a single dot, no per-pixel
+        /// trig. Clamped to a valid half-angle. Pure / deterministic.
+        /// </summary>
+        public static float CosFromHalfAngleDeg(float halfAngleDeg)
+            => Mathf.Cos(Mathf.Clamp(halfAngleDeg, 0f, 180f) * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// ANGULAR (cone) falloff from the COSINE of the angle off the beam axis, <c>1</c> inside the inner cone
+        /// .. <c>0</c> outside the half-angle. Mirrors <see cref="ConeFalloff"/> but in cosine space (what the
+        /// shader uses): a smoothstep from <paramref name="cosHalfAngle"/> (the outer edge, off) up to
+        /// <paramref name="cosInnerAngle"/> (fully on). Because cosine DECREASES as the angle grows, a point on
+        /// the axis (cos = 1) is fully lit and a point at the half-angle (cos = cosHalfAngle) is off — and beyond
+        /// the half-angle the smoothstep saturates to 0. Caller guarantees <c>cosInnerAngle >= cosHalfAngle</c>
+        /// (a smaller inner angle ⇒ a larger cosine). Pure / deterministic.
+        /// </summary>
+        public static float ConeFalloffCos(float cosAngle, float cosHalfAngle, float cosInnerAngle)
+            => SmoothStep01(cosHalfAngle, Mathf.Max(cosInnerAngle, cosHalfAngle + 1e-4f), cosAngle);
+
+        /// <summary>
+        /// The full WATER spotlight term at a world-space water pixel, in <c>0..1</c> (before colour, intensity
+        /// and the night-gate): the radial falloff over the range × the cosine cone falloff. This is the exact
+        /// shape the water fragment adds to <c>col.rgb</c> (scaled by colour × intensity × night-gate). Returns 0
+        /// when the pixel is beyond the range or outside the cone; at the lamp itself the direction is undefined
+        /// so it reads as on-axis (the bright core). Pure / deterministic — mirrors the HLSL <c>BoatLightTerm</c>.
+        ///
+        /// <param name="lampX">Lamp world X (the bow anchor).</param>
+        /// <param name="lampY">Lamp world Y.</param>
+        /// <param name="dirX">Beam axis world X (the boat heading, transform.up — assumed ~unit length).</param>
+        /// <param name="dirY">Beam axis world Y.</param>
+        /// <param name="pixelX">Water pixel world X.</param>
+        /// <param name="pixelY">Water pixel world Y.</param>
+        /// <param name="range">Throw distance (m); beyond this the term is 0.</param>
+        /// <param name="cosHalfAngle">Cosine of the cone half-angle (the outer edge).</param>
+        /// <param name="cosInnerAngle">Cosine of the inner (fully-lit) cone angle (>= cosHalfAngle).</param>
+        /// <param name="edgeSoftness">Radial edge softness (0 hard disc .. 1 soft halo).</param>
+        /// </summary>
+        public static float WaterConeTerm(float lampX, float lampY, float dirX, float dirY,
+                                          float pixelX, float pixelY, float range,
+                                          float cosHalfAngle, float cosInnerAngle, float edgeSoftness)
+        {
+            float r = Mathf.Max(range, 1e-4f);
+            float toX = pixelX - lampX;
+            float toY = pixelY - lampY;
+            float dist = Mathf.Sqrt(toX * toX + toY * toY);
+            if (dist >= r) return 0f;                              // beyond the throw -> dark
+
+            float nd = dist / r;                                  // 0 at the lamp .. 1 at the range edge
+            float radial = RadialFalloff(nd, edgeSoftness);
+
+            // direction lamp->pixel; at the lamp itself the direction is undefined -> treat as on-axis (core).
+            float invDist = dist > 1e-5f ? 1f / dist : 0f;
+            float ndx = toX * invDist;
+            float ndy = toY * invDist;
+            // normalize the beam axis defensively (the publisher sends ~unit, but be NaN-safe).
+            float dlen = Mathf.Sqrt(dirX * dirX + dirY * dirY);
+            float bdx = dlen > 1e-5f ? dirX / dlen : 0f;
+            float bdy = dlen > 1e-5f ? dirY / dlen : 1f;
+            float cosAngle = dist > 1e-5f ? (ndx * bdx + ndy * bdy) : 1f;   // 1 = on the beam axis
+            float cone = ConeFalloffCos(cosAngle, cosHalfAngle, cosInnerAngle);
+
+            return Mathf.Clamp01(radial * cone);
+        }
+
         /// <summary>
         /// A DETERMINISTIC flicker multiplier in <c>[1 − amount, 1]</c> — a lantern/torch's living wobble with
         /// NO <see cref="System.Random"/> (rule 5). It is a pure function of <c>(seed, time)</c>: a couple of

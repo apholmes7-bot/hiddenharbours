@@ -361,6 +361,20 @@ Shader "HiddenHarbours/Water"
             // the sun sets (no glitter under a set sun). 0 when the cycle is not running -> handled by the fallback.
             float  _SunElevation;
 
+            // GLOBAL BOAT SPOTLIGHT (ADR 0016) — published by HiddenHarbours.Art.BoatSpotlight via Shader.SetGlobal*.
+            // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this custom-shader WATER OVER the
+            // quad regardless of sorting order (two quad-sort fixes failed). So the water LIGHTS ITSELF: the frag
+            // reads these globals and ADDS the cone illumination to its own col.rgb (NO sorting dependency — it
+            // cannot fail like the quad did, and composes with the reflection/foam/palette). ONE light for now
+            // (the boat spotlight is THE night-nav light); the clean extension to many is to publish ARRAYS +
+            // a count and loop — the single-light path is a count-1 case of that. GLOBALS (outside the per-material
+            // CBUFFER) like _SunDir, so an empty material still compiles and a no-boat scene reads them as zero.
+            float4 _BoatLightPos;       // xy = world lamp position (the bow anchor)
+            float4 _BoatLightDir;       // xy = world beam axis (the boat heading; ~unit length)
+            float4 _BoatLightColor;     // rgb = beam colour
+            float4 _BoatLightParams;    // x = intensity (<=0 means OFF), y = range (m), z = cos(halfAngle), w = cos(innerAngle)
+            float4 _BoatLightParams2;   // x = radial edge softness, y = gate threshold, z = gate softness, w = cycle-off fallback
+
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
             CBUFFER_START(UnityPerMaterial)
@@ -971,6 +985,76 @@ Shader "HiddenHarbours/Water"
                 return reflectionRGB * strength;
             }
 
+            // ---- the BOAT SPOTLIGHT term: light the WATER from WITHIN this shader (ADR 0016) -----------------
+            // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this water shader OVER the quad
+            // regardless of sorting order — so the water lights ITSELF from the published globals (_BoatLight*).
+            // For this water pixel's worldXY it computes the cone contribution (lamp->pixel within range + within
+            // the cone half-angle, radial × angular falloff), scales it by the SAME night-gate the land cone uses
+            // (off by day, full at deep night, off-by-dawn), and the caller ADDS it to col.rgb. Sorting-INDEPENDENT
+            // by construction (it is part of the water's own fragment), so it cannot fail the way the quad did.
+            // Mirrors LightMath.WaterConeTerm + LightMath.NightGate EXACTLY (the headless determinism twins).
+            // col.rgb ONLY — it never touches depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
+            //
+            //   worldXY — this water pixel's world position (pixelized inside, so the pool of light reads pixel-art).
+            float3 BoatLightTerm(float2 worldXY)
+            {
+                float intensity = _BoatLightParams.x;
+                if (intensity <= 0.001)
+                    return float3(0, 0, 0);                 // light off / not lighting water / no boat -> nothing
+
+                float range    = max(_BoatLightParams.y, 1e-4);
+                float cosHalf  = _BoatLightParams.z;
+                float cosInner = max(_BoatLightParams.w, cosHalf + 1e-4);
+                float edgeSoft = _BoatLightParams2.x;
+
+                // pixel-snap the world position so the lit pool reads as pixel art like every other layer (§3).
+                float2 p = Pixelize(worldXY);
+                float2 toPixel = p - _BoatLightPos.xy;
+                float dist = length(toPixel);
+                if (dist >= range)
+                    return float3(0, 0, 0);                 // beyond the throw -> dark
+
+                // RADIAL falloff (mirrors LightMath.RadialFalloff): (1 - d)^power, power eased by edge softness.
+                float nd = saturate(dist / range);
+                float power = lerp(2.0, 0.6, saturate(edgeSoft));
+                float radial = pow(saturate(1.0 - nd), power);
+
+                // ANGULAR (cone) falloff in COSINE space (mirrors LightMath.ConeFalloffCos): on-axis = full, at
+                // the half-angle = 0. At the lamp itself the direction is undefined -> treat as on-axis (the core).
+                float2 ndir = dist > 1e-5 ? toPixel / dist : float2(0, 0);
+                float2 bdir = normalize(_BoatLightDir.xy + float2(0, 1e-4));
+                float cosAngle = dist > 1e-5 ? dot(ndir, bdir) : 1.0;
+                float cone = smoothstep(cosHalf, cosInner, cosAngle);
+
+                float shape = saturate(radial * cone);
+                if (shape <= 0.0)
+                    return float3(0, 0, 0);
+
+                // NIGHT-GATE (mirrors LightMath.NightGate): off by day so the beam can't wash daylight water out,
+                // full at deep night, off-by-dawn. Reads the SAME global day/night tint the land cone gates on, so
+                // tuning the day/night cycle fades land + water together. When the cycle is NOT running the tint is
+                // near-black (unset) -> use the cycle-off FALLBACK (default 1 = show, for tuning / the demo), the
+                // same convention the reflection/palette layers use for an unset tint.
+                float threshold = _BoatLightParams2.y;
+                float softness  = _BoatLightParams2.z;
+                float fallback  = _BoatLightParams2.w;
+                float dnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                float gate;
+                if (dnSum > 1e-3)
+                {
+                    // Rec.601 luma inline (PaletteLuma is defined later in the file; HLSL needs define-before-use).
+                    float tintLum = max(0.0, dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114)));
+                    float darkness = saturate(1.0 - tintLum);
+                    gate = smoothstep(saturate(threshold), saturate(threshold + max(softness, 1e-4)), darkness);
+                }
+                else
+                {
+                    gate = saturate(fallback);             // no cycle -> show (tuning / demo / edit-mode preview)
+                }
+
+                return _BoatLightColor.rgb * (intensity * shape * gate);
+            }
+
             // ====================================================================================================
             // PALETTE GUARD-RAIL — the final soft colour-grade stage (ADR 0015). Mirrors WaterPaletteGrade.cs
             // exactly (the headless determinism twin). Everything here is col.rgb-ONLY: it bounds + nudges the
@@ -1357,6 +1441,17 @@ Shader "HiddenHarbours/Water"
                     float capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
+
+                // ---- BOAT SPOTLIGHT: light the WATER from WITHIN this shader (ADR 0016) -------------------------
+                // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this water OVER the quad
+                // regardless of sorting order — so the water lights ITSELF here from the published _BoatLight*
+                // globals. ADD the cone's night-gated illumination to col.rgb AFTER the foam/reflection (so the
+                // beam reads over the surface dressing) but BEFORE the palette guard-rail (so the rail still
+                // BOUNDS the lit pool — it can't blow out). Sorting-INDEPENDENT (part of the water's own frag), so
+                // it cannot fail the way the quad did over water. col.rgb ONLY — it never touches depth/clip/
+                // _WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). Off when no boat publishes
+                // a beam (intensity 0) or in daylight (the night-gate). See BoatLightTerm() above.
+                col.rgb += BoatLightTerm(worldXY);
 
                 // ---- PALETTE GUARD-RAIL: the final soft grade (col.rgb ONLY; ADR 0015) -------------------------
                 // The LAST thing before return: bound + gently pull the composited colour into the art-directed

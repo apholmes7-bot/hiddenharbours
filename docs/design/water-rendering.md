@@ -1171,3 +1171,42 @@ higher sea threshold delays the storm); the ease is **frame-rate independent** (
 of `dt/N`); and **STRENGTH 0 / disabled == identity == today's static look** (the base anchor only, at every
 weather). The GPU blend of the actual props can't be tested headless, but the WEIGHTS that decide the mood can
 — the same precedent as `WaterReflection` / `WaterPaletteGrade` / `DayNightMath`.
+
+## 15. Boat spotlight on the water — the beam lights the sea FROM WITHIN the water shader (ADR 0016)
+
+The boat spotlight (ADR 0016) is an additive glow **quad** that lights **land** at night. It did **not** read on
+the **water**: the URP 2D renderer draws the custom-shader water `SpriteRenderer` over the additive `MeshRenderer`
+regardless of sorting order / Sort-as-2D / camera-depth pinning (two quad-sort fixes failed). The fix is to light
+the water **inside the water's own fragment** — the same idiom the water already uses for the day/night sun
+(`_SunDir`), the sky reflection, and the palette grade: read a **published global** and modify `col.rgb`.
+
+- **The beam is published as GLOBAL shader uniforms** by `HiddenHarbours.Art.BoatSpotlight` (on its existing
+  throttled tick, ~20 Hz, via `Shader.SetGlobal*` — no per-frame alloc): `_BoatLightPos` (world lamp xy at the
+  bow), `_BoatLightDir` (world beam axis = the boat heading `transform.up`), `_BoatLightColor`, `_BoatLightParams`
+  (`x` = intensity, `y` = range m, `z` = `cos(halfAngle)`, `w` = `cos(innerAngle)`), `_BoatLightParams2`
+  (`x` = radial edge softness, `y/z/w` = night-gate threshold / softness / cycle-off fallback). The half-angle is
+  a **cosine** so the water tests the cone with one `dot`, no per-pixel trig. **No boat / off** → intensity 0 →
+  the water term is skipped (no stuck beam). **One light** for now (the boat spotlight is THE night-nav light);
+  arrays + a count extend it cleanly later.
+- **The water frag adds the cone** (`HiddenHarboursWater.shader`, `BoatLightTerm()`, after the foam/reflection,
+  **before** the palette guard-rail so the rail still bounds the lit pool): for the pixel's `worldXY`
+  (pixel-snapped → the pool reads as **pixel art**) it computes the cone (lamp→pixel within range + within the
+  cone, **radial × angular** falloff), scales by the **same night-gate** the land cone uses (off by day, full at
+  deep night, off-by-dawn, read from `_DayNightTint`; cycle-off → the tunable fallback), and **ADDs** to
+  `col.rgb`. **Sorting-INDEPENDENT** — it is part of the very draw that was winning the order tie, so it cannot be
+  overdrawn like the quad. **`col.rgb` ONLY** — never `depth` / `clip()` / `_WaterLevel` / the height read / the
+  sim (the P1-integrity / determinism invariant of every prior addendum holds; the beam is purely cosmetic and
+  saves nothing).
+- **One beam, two surfaces.** The **same** `BoatSpotlight` tunables (colour / intensity / range / cone / softness)
+  drive **both** the land quad and the water term — tuning the spotlight tunes both. A water-side strength
+  multiplier (`BoatSpotlight._waterStrength`, default **1.4**) balances how strongly the beam reads on water vs
+  land. The effect defaults **ON and strong** so a midnight beam is an obvious raking pool of light on the dark
+  sea. **No new material property** → `Water.mat` (and its presets) are untouched.
+- **Magenta-safe:** no `+`/operator char in any `[Header]`, no `[unroll]` over a runtime loop, define-before-use
+  (the day/night luma is inlined in `BoatLightTerm` since `PaletteLuma` is defined later); the shipped `Water.mat`
+  variant is force-compiled by `WaterShaderCompileGuardTests` so a broken term fails CI red, not magenta-in-build.
+- **Determinism guard (headless C# twin).** The pure cone/gate maths the water term mirrors live in `LightMath`
+  (`CosFromHalfAngleDeg`, `ConeFalloffCos`, `WaterConeTerm`) and are unit-tested in `LightMathTests` (within-cone
+  vs behind/outside, range falloff, off-axis dimming, at-the-lamp core, night-gate off-by-day). The GPU term
+  itself is verified by the owner at **deep night** driving over open water (the beam is **night-gated**, so it
+  fades toward off near dawn — verify ~midnight).
