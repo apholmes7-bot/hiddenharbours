@@ -274,5 +274,93 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 prev = v;
             }
         }
+
+        // ---- WATER spotlight term (lit from within the water shader; ADR 0016) ---------------------------
+        // The water shader mirrors WaterConeTerm + the night-gate EXACTLY, so guarding the maths here guards
+        // the in-shader beam-on-water. A cone with halfAngle 30deg, softness ~0.4: cosHalf and cosInner.
+
+        private const float CosHalf30  = 0.8660254f;   // cos(30 deg)
+        // inner = 30 * (1 - 0.4) = 18 deg
+        private const float CosInner18 = 0.9510565f;   // cos(18 deg)
+
+        [Test]
+        public void CosFromHalfAngleDeg_MatchesCosine()
+        {
+            Assert.AreEqual(1f, LightMath.CosFromHalfAngleDeg(0f), Eps, "0 deg -> cos 1 (on axis)");
+            Assert.AreEqual(CosHalf30, LightMath.CosFromHalfAngleDeg(30f), Eps);
+            Assert.AreEqual(0f, LightMath.CosFromHalfAngleDeg(90f), Eps, "90 deg -> cos 0");
+        }
+
+        [Test]
+        public void ConeFalloffCos_FullOnAxis_ZeroOutsideCone()
+        {
+            // cosAngle 1 (on axis) -> full; cosAngle == cosHalf (the half-angle edge) -> 0; less than cosHalf
+            // (a wider angle than the half-angle) -> 0.
+            Assert.AreEqual(1f, LightMath.ConeFalloffCos(1f, CosHalf30, CosInner18), Eps, "on axis = full");
+            Assert.AreEqual(0f, LightMath.ConeFalloffCos(CosHalf30, CosHalf30, CosInner18), Eps, "at the edge = 0");
+            float outside = LightMath.ConeFalloffCos(LightMath.CosFromHalfAngleDeg(45f), CosHalf30, CosInner18);
+            Assert.AreEqual(0f, outside, Eps, "beyond the half-angle = 0");
+        }
+
+        [Test]
+        public void WaterConeTerm_LitOnAxisInsideRange_DarkOutside()
+        {
+            // Lamp at origin, beam pointing +Y, range 6. A pixel 3 m straight ahead (on-axis, mid-range) is lit;
+            // a pixel BEHIND the lamp (-Y) is outside the cone (dark); a pixel beyond the range is dark.
+            float onAxis = LightMath.WaterConeTerm(0f, 0f, 0f, 1f,  /*pixel*/ 0f, 3f, 6f, CosHalf30, CosInner18, 0.6f);
+            Assert.Greater(onAxis, 0f, "on-axis, in-range -> lit");
+
+            float behind = LightMath.WaterConeTerm(0f, 0f, 0f, 1f,  0f, -3f, 6f, CosHalf30, CosInner18, 0.6f);
+            Assert.AreEqual(0f, behind, Eps, "behind the lamp -> outside the cone -> dark");
+
+            float beyond = LightMath.WaterConeTerm(0f, 0f, 0f, 1f,  0f, 9f, 6f, CosHalf30, CosInner18, 0.6f);
+            Assert.AreEqual(0f, beyond, Eps, "beyond the range -> dark");
+        }
+
+        [Test]
+        public void WaterConeTerm_FadesWithDistanceAlongAxis()
+        {
+            // On the beam axis, the term must NOT increase as the pixel moves further from the lamp (radial fade).
+            float prev = 2f;
+            for (float d = 0.1f; d < 6f; d += 0.3f)
+            {
+                float v = LightMath.WaterConeTerm(0f, 0f, 0f, 1f, 0f, d, 6f, CosHalf30, CosInner18, 0.6f);
+                Assert.LessOrEqual(v, prev + Eps, $"beam brightened with distance at d={d}");
+                Assert.GreaterOrEqual(v, 0f); Assert.LessOrEqual(v, 1f);
+                prev = v;
+            }
+        }
+
+        [Test]
+        public void WaterConeTerm_DimmerOffAxisThanOnAxis()
+        {
+            // At the same distance, a pixel near the cone edge is dimmer than one on the axis (angular falloff).
+            // On-axis at (0,3); off-axis at the same radius but swung ~25 deg (inside the 30-deg cone, near edge).
+            float onAxis = LightMath.WaterConeTerm(0f, 0f, 0f, 1f, 0f, 3f, 6f, CosHalf30, CosInner18, 0.6f);
+            float ang = 25f * Mathf.Deg2Rad;
+            float ox = 3f * Mathf.Sin(ang), oy = 3f * Mathf.Cos(ang);
+            float offAxis = LightMath.WaterConeTerm(0f, 0f, 0f, 1f, ox, oy, 6f, CosHalf30, CosInner18, 0.6f);
+            Assert.Greater(onAxis, offAxis, "the beam axis should be brighter than its feathered edge");
+            Assert.Greater(offAxis, 0f, "25 deg is still inside the 30-deg cone -> some light");
+        }
+
+        [Test]
+        public void WaterConeTerm_AtLampReadsAsCore()
+        {
+            // A pixel AT the lamp (degenerate direction) must read as the bright on-axis core, not NaN/0.
+            float atLamp = LightMath.WaterConeTerm(0f, 0f, 0f, 1f, 0f, 0f, 6f, CosHalf30, CosInner18, 0.6f);
+            Assert.AreEqual(1f, atLamp, Eps, "at the lamp -> full (radial 1 × on-axis cone 1)");
+        }
+
+        [Test]
+        public void WaterTerm_NightGate_OffByDay_FullByNight()
+        {
+            // The water term reuses LightMath.NightGate (the same as the land cone). Bright day -> off; deep
+            // night -> full. (The shader multiplies the cone shape by this same gate.)
+            float day = LightMath.NightGate(LightMath.Luminance(Gray(1f)), 0.12f, 0.35f);
+            Assert.AreEqual(0f, day, Eps, "bright day -> water beam gated off");
+            float night = LightMath.NightGate(LightMath.Luminance(Gray(0.05f)), 0.12f, 0.35f);
+            Assert.AreEqual(1f, night, 0.05f, "deep night -> water beam full");
+        }
     }
 }

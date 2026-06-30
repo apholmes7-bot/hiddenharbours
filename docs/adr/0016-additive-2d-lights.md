@@ -27,6 +27,10 @@
   `Assets/_Project/Art/Shaders/HiddenHarboursAdditiveLight.shader` (+ `Assets/_Project/Resources/AdditiveLight.mat`),
   `Assets/_Project/Art/Editor/LightMenu.cs` ("Add Light to Selection" + "Build Light Test"),
   `Assets/Tests/EditMode/Art/LightMathTests.cs`.
+  **Follow-up fix 2 (the beam lit land but not the WATER — lit in-shader via globals, see the section below):**
+  `Assets/_Project/Code/Art/BoatSpotlight.cs` (publishes the `_BoatLight*` globals),
+  `Assets/_Project/Art/Shaders/HiddenHarboursWater.shader` (the `BoatLightTerm` frag term),
+  `Assets/_Project/Code/Art/LightMath.cs` (the pure water-cone twins) + its tests.
 
 ## Context
 
@@ -185,6 +189,79 @@ changes on the light quad in `SceneLight`, covering both code paths the 2D rende
 The water shader, the day/night controller + overlay, `Water.mat`/presets, the magenta guard, and the sim/depth/
 clip (P1) are **untouched** — this only changes how the existing additive quad is composited.
 
+## Follow-up fix 2 — the WATER is lit IN-SHADER via published globals (the quad-sort approach could not composite over the custom water shader)
+
+**Symptom (persisted).** The two quad-sort fixes above (the original PR, and the `SortingGroup` + camera-depth
+pin) **did not** make the beam read on the water — confirmed by owner screenshots: the additive light quad lights
+**land**, but the **water surface stays dark under the beam**. The URP 2D renderer keeps drawing the water
+`SpriteRenderer` **on top of** the additive `MeshRenderer` over water areas, regardless of `sortingOrder` /
+`SortingGroup` / camera-depth pinning. A **third** quad-sorting fix was explicitly ruled out — the quad approach
+cannot reliably composite an additive mesh over the project's **custom-shader** water in this renderer.
+
+**The robust approach — light the water FROM WITHIN the water shader.** The beam-on-water is no longer a quad at
+all: the boat spotlight **publishes its world-space cone as GLOBAL shader uniforms** (exactly like the day/night
+`_DayNightTint` / `_SunDir` already are), and the **water fragment shader adds the spotlight's cone illumination
+to its own `col.rgb`**. Because the light is computed **inside the water's own rendering**, there is **no sorting
+dependency** — it *will* show on the water, and it **composes naturally** with the water's reflections / foam /
+palette (it sits after the foam/reflection so the beam reads over them, and **before** the palette guard-rail so
+the rail still bounds the lit pool — it can't blow out). The **existing additive QUAD is kept unchanged for
+LAND** (it works there). So the **one** boat light lights **both** surfaces via **two** mechanisms: the quad on
+land, the in-shader term on water — both driven by the **same** `BoatSpotlight` tunables.
+
+**Why in-shader, not a third quad fix.** The quad-vs-sprite ordering in the URP 2D renderer is not something the
+light side can force against a full-screen **custom-shader** water sprite (sorting order, Sort-as-2D, and
+camera-depth pinning were all tried and all failed over water). Adding a colour term **inside** the water shader
+sidesteps ordering entirely — the term is part of the very draw that was winning the depth/sort tie, so it
+**cannot** be overdrawn by it. It is the same proven idiom the water already uses for the day/night sun
+(`_SunDir`), sky reflection, and palette grade: read a published global, modify `col.rgb`.
+
+**Implementation (light-side + the water frag; additive / night-gated / P1-safe all preserved).**
+
+1. **`BoatSpotlight` publishes the beam as globals** (on the existing throttled tick, ~20 Hz, via
+   `Shader.SetGlobal*` — no per-frame alloc, rule 7): `_BoatLightPos` (world lamp xy at the bow), `_BoatLightDir`
+   (world beam axis = the boat heading `transform.up`), `_BoatLightColor`, `_BoatLightParams`
+   (`x` = effective intensity = master × way-gate × **water-strength** × flicker, `y` = range, `z` =
+   `cos(halfAngle)`, `w` = `cos(innerAngle)`), `_BoatLightParams2` (`x` = radial edge softness, `y/z/w` =
+   night-gate threshold/softness/cycle-off fallback). The cone half-angle is published as a **cosine** so the
+   water tests "inside the cone" with a single `dot`, no per-pixel trig. **When no light is active** (off / not
+   lighting water / the component disabled) it publishes **intensity 0**, and the water term is skipped — no
+   stuck beam. **ONE global light** is enough for now (the boat spotlight is THE night-nav light); the clean
+   extension later is to publish **arrays** (`_BoatLightPos[]` … with a `_BoatLightCount`) and loop in the
+   shader — the single-light path is a count-1 case of that.
+
+2. **The water frag adds the cone** (`HiddenHarboursWater.shader`, `BoatLightTerm()`): for the pixel's `worldXY`
+   (pixel-snapped, so the lit pool reads as **pixel art** like every other layer), compute the cone contribution
+   from the globals (vector lamp→pixel, within range, within the cone via the published cosines, **radial ×
+   angular** falloff — mirroring `LightMath` / the AdditiveLight shader), scale by the **same night-gate** the
+   land cone uses (read from `_DayNightTint`: off by day, full at deep night, off-by-dawn; cycle-off → the
+   tunable fallback, the same unset-tint convention the reflection/palette use), and **ADD** it to `col.rgb`.
+   **P1: `col.rgb` ONLY** — it never touches `depth` / `clip()` / `_WaterLevel` / the height read / the sim
+   (rule 5, deterministic, saves nothing). **Magenta-safe:** no `+`/operator char in any `[Header]`, no
+   `[unroll]` over a runtime loop, every symbol defined before use (the day/night luma is **inlined** in
+   `BoatLightTerm` because `PaletteLuma` is defined later in the file); the shipped `Water.mat` variant is
+   force-compiled by the existing guard, so a broken term fails CI **red**, not magenta-in-build.
+
+3. **Tunables (rule 6).** The water reuses the **same** `BoatSpotlight` tunables (colour / intensity / range /
+   cone half-angle / softness), so tuning the spotlight tunes **both** land and water consistently. A water-side
+   **strength multiplier** (`BoatSpotlight._waterStrength`, default **1.4**) lets the owner balance how strongly
+   the beam reads on water vs land. The effect defaults **ON and strong** (water-strength 1.4 over the
+   spotlight's 1.5 master) so a midnight beam is an **obvious raking pool of light** on the dark sea (the prior
+   quad defaults read too soft). No new material property was added, so `Water.mat` (and its tuned values /
+   presets) are **untouched**.
+
+4. **Tests (EditMode).** The pure cone/gate maths the water term mirrors live in `LightMath`
+   (`CosFromHalfAngleDeg`, `ConeFalloffCos`, `WaterConeTerm`) and are unit-tested headless in `LightMathTests`:
+   within-cone vs behind/outside, range falloff (monotonic along the axis), dimmer off-axis than on-axis,
+   at-the-lamp core, and the night-gate (off by day / full at night). The shader visual is what the owner
+   verifies at deep night.
+
+The day/night controller + overlay, the terrain tool, the wake, the weather palette, the `Water.mat` existing
+values / presets, and the sim/depth/clip (P1) are **untouched** — this adds a published-global read + a `col.rgb`
+term to the water frag, and a globals push on the boat spotlight; the **land quad is unchanged**.
+
+**Owner verification note.** The effect is **night-gated** — it fades toward off near dawn (a daylight beam
+would wash the bright water out, which is wrong). Verify at **DEEP night (~midnight)**, driving over open water.
+
 ## Rejected alternatives
 
 - **URP `Light2D` now.** The sprites are Sprite-Unlit and sample no 2D light (the ADR-0013 finding); this needs
@@ -197,3 +274,7 @@ clip (P1) are **untouched** — this only changes how the existing additive quad
   from `transform`; the Core `IActiveBoatService` is the seam if a richer read is needed later.
 - **Building the worklight / window-glow / lightpost now.** The owner said "start with a boat spotlight"; the
   rest are structured-for follow-ups (CLAUDE.md §4 keep-PRs-small, rule 8 stay-in-phase).
+- **A third quad-sorting fix for the beam-on-water.** Two failed already (the original PR; the `SortingGroup` +
+  camera-depth pin). The URP 2D renderer will not reliably composite an additive `MeshRenderer` over the
+  full-screen **custom-shader** water `SpriteRenderer`; the water is lit **in its own fragment** instead
+  (follow-up fix 2), which sidesteps ordering entirely. The land quad is kept (it works on land).
