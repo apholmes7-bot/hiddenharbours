@@ -148,5 +148,97 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float storm = WaterReflection.ReflectionSharpness(1f, 1f, DefChopScatter, DefWindScatter);
             Assert.AreEqual(0f, storm, 1e-5f, "a full storm fully smears the reflection (sharpness clamps at 0)");
         }
+
+        // ===== SKY CONTENT: moon direction, night gate, per-element strength ==============================
+
+        [Test]
+        public void MoonDirection_IsOppositeTheSun_AndUnitLength()
+        {
+            // The moon sits roughly opposite the sun, so its reflected ground direction is the negated sun dir.
+            Vector2 sun = new Vector2(0.6f, 0.8f);          // an arbitrary sun direction (already ~unit)
+            Vector2 moon = WaterReflection.MoonDirection(sun.x, sun.y);
+            Assert.AreEqual(1f, moon.magnitude, 1e-4f, "moon direction is normalized (unit length)");
+            // opposite: the dot with the sun direction is strongly negative (pointing the other way).
+            Assert.Less(Vector2.Dot(moon, sun.normalized), -0.99f,
+                "the moon reflection sits opposite the sun (negated, normalized direction)");
+        }
+
+        [Test]
+        public void MoonDirection_FallsBackToNightArc_OnZeroSunDir()
+        {
+            // Cycle not running / unset sun dir => a fixed, believable night arc (+Y), never a NaN axis.
+            Vector2 moon = WaterReflection.MoonDirection(0f, 0f);
+            Assert.AreEqual(new Vector2(0f, 1f), moon, "zero sun dir falls back to the fixed +Y night arc");
+            Assert.AreEqual(1f, moon.magnitude, 1e-5f, "the fallback is unit length (no NaN)");
+        }
+
+        [Test]
+        public void NightFactor_IsZeroByDay_OneAtDeepNight_AndRampsAtDusk()
+        {
+            const float thr = 0.4f;    // _NightStart
+            const float soft = 0.25f;  // _NightSoftness
+            // Full daylight: tint luma ~1 => darkness ~0 => no night content.
+            Assert.AreEqual(0f, WaterReflection.NightFactor(1f, thr, soft), 1e-5f,
+                "by day (bright tint) the moon/stars do not read");
+            // Deep night: tint luma ~0 => darkness ~1 => full night content.
+            Assert.AreEqual(1f, WaterReflection.NightFactor(0f, thr, soft), 1e-5f,
+                "at deep night (dark tint) the moon/stars read fully");
+            // Dusk is between: a partial gate, and monotonic non-decreasing as the sky darkens.
+            float prev = 0f;
+            for (float luma = 1f; luma >= 0f; luma -= 0.05f)
+            {
+                float n = WaterReflection.NightFactor(luma, thr, soft);
+                Assert.That(n, Is.InRange(0f, 1f), "the night factor stays a 0..1 gate");
+                Assert.GreaterOrEqual(n + 1e-5f, prev, "the night factor only rises as the sky darkens");
+                prev = n;
+            }
+        }
+
+        [Test]
+        public void SkyElement_CloudsAreAllDay_MoonAndStarsAreNightGated()
+        {
+            // The sea-state master (calm) and per-element strengths fixed; vary only day vs night.
+            float seaCalm = WaterReflection.ReflectionStrength(0f, 0f, DefFadeChop, DefWindFade, DefMaster);
+            float day = WaterReflection.NightFactor(1f, 0.4f, 0.25f);   // ~0
+            float night = WaterReflection.NightFactor(0f, 0.4f, 0.25f); // ~1
+
+            // Clouds (nightGated:false) read by day AND night — never gated out by daylight.
+            float cloudsDay = WaterReflection.SkyElementStrength(seaCalm, 0.5f, day, nightGated: false);
+            float cloudsNight = WaterReflection.SkyElementStrength(seaCalm, 0.5f, night, nightGated: false);
+            Assert.Greater(cloudsDay, 0f, "clouds reflect during the day (all-day element)");
+            Assert.AreEqual(cloudsDay, cloudsNight, 1e-5f, "clouds are not night-gated (read day and night the same)");
+
+            // Moon (nightGated:true) is ~off by day and full at night.
+            float moonDay = WaterReflection.SkyElementStrength(seaCalm, 0.5f, day, nightGated: true);
+            float moonNight = WaterReflection.SkyElementStrength(seaCalm, 0.5f, night, nightGated: true);
+            Assert.AreEqual(0f, moonDay, 1e-5f, "the moon does not reflect by day (night-gated)");
+            Assert.Greater(moonNight, 0f, "the moon reflects at night");
+        }
+
+        [Test]
+        public void SkyElement_InheritsTheSeaStateFade_GoneInAStorm()
+        {
+            // All sky content (clouds/moon/stars) inherits the master sea-state fade — strong on calm, gone in chop.
+            float night = WaterReflection.NightFactor(0f, 0.4f, 0.25f);
+            float seaCalm = WaterReflection.ReflectionStrength(0f, 0f, DefFadeChop, DefWindFade, DefMaster);
+            float seaStorm = WaterReflection.ReflectionStrength(DefFadeChop, 0f, DefFadeChop, DefWindFade, DefMaster);
+
+            float moonCalm = WaterReflection.SkyElementStrength(seaCalm, 0.8f, night, nightGated: true);
+            float moonStorm = WaterReflection.SkyElementStrength(seaStorm, 0.8f, night, nightGated: true);
+            Assert.Greater(moonCalm, 0f, "the moon glitter reads on CALM night water (the money shot)");
+            Assert.AreEqual(0f, moonStorm, 1e-5f, "a storm does not mirror — the moon glitter is gone in chop");
+        }
+
+        [Test]
+        public void SkyElement_MasterZeroTurnsAllSkyContentOff()
+        {
+            // _ReflectionStrength = 0 => the whole reflection (sky colour AND sky content) is off (today's look).
+            float seaOff = WaterReflection.ReflectionStrength(0f, 0f, DefFadeChop, DefWindFade, /*master*/0f);
+            float night = WaterReflection.NightFactor(0f, 0.4f, 0.25f);
+            Assert.AreEqual(0f, WaterReflection.SkyElementStrength(seaOff, 1f, night, nightGated: true), 1e-6f,
+                "master 0 => no moon");
+            Assert.AreEqual(0f, WaterReflection.SkyElementStrength(seaOff, 1f, night, nightGated: false), 1e-6f,
+                "master 0 => no clouds");
+        }
     }
 }
