@@ -62,8 +62,10 @@ moods — a region **BASE**, a **CALM** mood, a **STORM** mood, and a **FOG** mo
   pale-serene**, a **clear gale reads storm** — the realistic ordering. (`BlendWeights`:
   `storm = (1−fog)·seaAmt`, `calm = (1−fog)·(1−seaAmt)·calmReach`, `fog = fogAmt`, `base` backfills.)
 
-The default anchors (St Peters): **Base = Water_NorthAtlantic**, **Calm = Water_GlassyCalm**,
-**Storm = Water_StormGrey**, **Fog = Water_FoggySmother** — all from `Art/Materials/WaterPresets/`.
+The default anchors (St Peters): **Base = the live `Water.mat`** (left UNWIRED — `WaterSurface` resolves the
+base to the renderer's own `sharedMaterial`, so the calm baseline tracks the owner's `Water.mat` tuning; see
+decision (5)), **Calm = Water_GlassyCalm**, **Storm = Water_StormGrey**, **Fog = Water_FoggySmother** — the
+calm/storm/fog presets from `Art/Materials/WaterPresets/`.
 
 **(2) Integrated into `WaterSurface`, pushed via the EXISTING MPB.** The blend is an **opt-in mode** on
 `WaterSurface` (a master enable + strength, four assignable anchor materials, the axis tunables). Each
@@ -97,8 +99,14 @@ owner's `Water.mat` preset) is unchanged. The master **strength** defaults such 
 `WaterSurface`'s overrides, so removing/disabling the component restores the authored material.
 
 **(5) Wired into St Peters; opt-in elsewhere.** `StPetersBuilder` enables the mode on the Sea's `WaterSurface`
-and assigns the four anchor presets (persisted via `SerializedObject` so they survive in the saved scene), so
-a **Build St Peters Scene** re-run gives weather-driven water immediately. No other scene turns it on.
+and assigns the **storm / fog / calm** anchor presets (persisted via `SerializedObject` so they survive in the
+saved scene), so a **Build St Peters Scene** re-run gives weather-driven water immediately. No other scene
+turns it on. The **BASE / calm anchor is left UNWIRED on purpose**: `WaterSurface.ResolveBaseAnchor` then
+falls back to the renderer's own `sharedMaterial` — the **live `Water.mat`** — as the calm baseline the
+storm/fog moods blend *relative to*. So weather-off / strength-0 reads as **exactly `Water.mat`**, and the
+owner's constant hand-tuning of `Water.mat` always flows through the calm sea — rather than being silently
+shadowed by a frozen preset COPY (assigning an explicit base would *pin* the calm look to that copy; we keep
+the field available for that opt-in but St Peters does not use it).
 
 ### Determinism & save (the invariant guarded)
 

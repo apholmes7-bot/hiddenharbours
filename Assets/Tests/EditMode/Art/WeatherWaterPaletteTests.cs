@@ -18,6 +18,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
     ///   • The 2-axis COMBINE: a foggy storm reads mostly fog; a clear gale reads storm.
     ///   • The ease is frame-rate INDEPENDENT (one step over dt == N steps of dt/N).
     ///   • STRENGTH 0 / DISABLED == identity == today's static look (base anchor only).
+    ///   • The BASE/calm anchor resolves to the renderer's LIVE Water.mat when unwired — so strength 0 is the
+    ///     live material, and the owner's Water.mat tuning always drives the calm sea (ADR 0017 review fix).
     ///
     /// Determinism (rule 5): every method under test is a pure function — no time, no randomness. The ease is a
     /// presentation-only smoothing; it drives no sim and saves nothing.
@@ -284,6 +286,95 @@ namespace HiddenHarbours.Tests.Art.EditMode
             WeatherWaterPalette.NormalizeInPlace(w);
             Assert.AreEqual(1f, w[B], 1e-6f, "a degenerate all-zero set falls back to the base mood (always a valid blend)");
             Assert.AreEqual(1f, Sum(w), 1e-6f);
+        }
+
+        // ===== BASE anchor resolves to the LIVE Water.mat when unwired (ADR 0017 review fix) ================
+        // The latent trap the review caught: if the BASE/calm anchor were pinned to a preset COPY of Water.mat,
+        // weather-off / strength-0 would read that COPY, not the live Water.mat — so the owner's constant
+        // Water.mat tuning would silently NOT change St Peters' calm sea. The fix: leave the base anchor UNWIRED
+        // so WaterSurface.ResolveBaseAnchor falls back to the renderer's own sharedMaterial (= the live
+        // Water.mat). These guard that resolve decision headlessly (pure — no scene, no rendering): an unwired
+        // base IS the live material, an explicit base PINS to that preset, and combined with strength 0 the
+        // blend's base/calm term is therefore the live material (the owner's tuning always flows through).
+
+        // Real Materials to assert reference identity through ResolveBaseAnchor. Built from a built-in shader and
+        // only inspected by reference (never rendered), so this is safe headless. Skips cleanly if the editor
+        // can't resolve a shader (defensive — shaders do compile in this project's CI).
+        private Material _live;       // stands in for the Sea's live Water.mat (the renderer's sharedMaterial)
+        private Material _presetCopy; // stands in for a pinned preset COPY (e.g. Water_NorthAtlantic.mat)
+
+        [SetUp]
+        public void SetUp()
+        {
+            var shader = Shader.Find("Sprites/Default") ?? Shader.Find("Unlit/Color");
+            if (shader == null) return;   // resolved/destroyed defensively; the tests Assert.Ignore if null
+            _live = new Material(shader) { name = "LiveWaterMatStandIn" };
+            _presetCopy = new Material(shader) { name = "PinnedPresetCopyStandIn" };
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (_live != null) Object.DestroyImmediate(_live);
+            if (_presetCopy != null) Object.DestroyImmediate(_presetCopy);
+            _live = _presetCopy = null;
+        }
+
+        [Test]
+        public void ResolveBaseAnchor_UnwiredBase_FallsBackToTheLiveSharedMaterial()
+        {
+            if (_live == null) Assert.Ignore("No built-in shader to construct a stand-in Material headlessly.");
+            // No explicit base preset assigned (the St Peters default) → the base anchor IS the renderer's own
+            // live material (Water.mat). This is the headline fix: the calm baseline tracks the owner's tuning.
+            Material resolved = WaterSurface.ResolveBaseAnchor(/*explicitBase*/ null, /*sharedMaterial*/ _live);
+            Assert.AreSame(_live, resolved,
+                "an UNWIRED base anchor resolves to the renderer's live Water.mat (sharedMaterial) — not a preset copy");
+        }
+
+        [Test]
+        public void ResolveBaseAnchor_ExplicitBase_PinsToThatPreset_NotTheLiveMaterial()
+        {
+            if (_live == null || _presetCopy == null)
+                Assert.Ignore("No built-in shader to construct stand-in Materials headlessly.");
+            // Assigning an explicit base PINS the calm look to that preset copy (the opt-in escape) — it then
+            // stops tracking the live Water.mat. The fix keeps this available; St Peters just doesn't use it.
+            Material resolved = WaterSurface.ResolveBaseAnchor(/*explicitBase*/ _presetCopy, /*sharedMaterial*/ _live);
+            Assert.AreSame(_presetCopy, resolved, "an explicit base anchor wins (pins the calm look to that preset)");
+            Assert.AreNotSame(_live, resolved, "and is NOT the live material (the pin deliberately freezes the calm look)");
+        }
+
+        [Test]
+        public void ResolveBaseAnchor_BothNull_IsNull_BlendNoOpsForTheBaseTerm()
+        {
+            // A partial wiring with no base AND no shared material (e.g. Water.mat not imported yet): the base
+            // term simply has no material, so BlendMoodProps skips it — the surface reads its own material. No
+            // throw, no false baseline.
+            Assert.IsNull(WaterSurface.ResolveBaseAnchor(null, null),
+                "no explicit base and no shared material → null (the base term no-ops; the surface keeps its own look)");
+        }
+
+        [Test]
+        public void StrengthZero_PlusUnwiredBase_TheCalmTermIsTheLiveMaterial()
+        {
+            // The end-to-end guarantee the review asked for, in weight-space: at strength 0 the blend collapses
+            // to ALL weight on the BASE anchor (every weather), and — because the base is UNWIRED — that anchor
+            // is the live Water.mat (ResolveBaseAnchor). So weather-enabled + strength 0 reproduces the LIVE
+            // material's mood at every condition, not a preset copy. (WaterSurface.BlendMoodProps then reads the
+            // base anchor's per-key values; with all weight on it, the output == that material's values.)
+            if (_live == null) Assert.Ignore("No built-in shader to construct a stand-in Material headlessly.");
+            Material baseAnchor = WaterSurface.ResolveBaseAnchor(null, _live);
+            Assert.AreSame(_live, baseAnchor, "the unwired base anchor is the live material");
+
+            foreach (SeaState st in System.Enum.GetValues(typeof(SeaState)))
+                for (float vis = 0f; vis <= 1.0001f; vis += 0.25f)
+                {
+                    float[] w = Weights(st, Mathf.Clamp01(vis));
+                    WeatherWaterPalette.ApplyStrengthInPlace(w, 0f);
+                    Assert.AreEqual(1f, w[B], 1e-5f,
+                        $"strength 0 → all weight on the (live-material) base anchor at {st}, vis {vis:0.00}");
+                    Assert.AreEqual(0f, w[C] + w[S] + w[F], 1e-5f,
+                        "no storm/fog/calm preset contributes — the calm baseline is purely the live Water.mat");
+                }
         }
     }
 }
