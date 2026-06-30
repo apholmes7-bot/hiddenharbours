@@ -64,6 +64,13 @@ namespace HiddenHarbours.App.Editor
         const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
+        // Weather-driven water palette anchor presets (ADR 0017) — the moods the deterministic weather blends
+        // between on the Sea's WaterSurface (calm <-> storm by sea-state, pulled toward fog by low visibility).
+        const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
+        const string ArtWaterBaseMood  = ArtWaterPresets + "/Water_NorthAtlantic.mat"; // BASE / region mood
+        const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
+        const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
+        const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
@@ -217,6 +224,20 @@ namespace HiddenHarbours.App.Editor
                 // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
                 // available if the crest still facets, but 192 is the ADR's recommended start.
                 ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
+
+                // (ADR 0017) WEATHER-DRIVEN PALETTE: enable the weather mood on the Sea + assign the four anchor
+                // preset moods, so this scene's sea EASES through the preset library as the deterministic weather
+                // shifts (calm <-> storm by sea-state, pulled toward fog by low visibility — P1 "the sea has
+                // moods"). The blend rides the per-renderer MPB alongside the physics props (disjoint key sets,
+                // no double-drive) and NEVER mutates Water.mat (rule 5). Opt-in elsewhere — only this builder
+                // turns it on. If a preset is missing (first checkout before import) the anchor is left null and
+                // WaterSurface falls back to the base/own material — the wiring no-ops safely.
+                ConfigureWeatherPalette(
+                    surface,
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterBaseMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
             }
             else
             {
@@ -513,6 +534,27 @@ namespace HiddenHarbours.App.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>Enable the weather-driven water palette (ADR 0017) on the Sea's
+        /// <see cref="HiddenHarbours.Art.WaterSurface"/> and assign the four anchor mood presets, persisting the
+        /// refs via SerializedObject so they survive in the saved scene (the builder's persist-the-refs
+        /// convention, same as <see cref="ConfigureWaterSurface"/>). The blend rides the per-renderer
+        /// MaterialPropertyBlock and never mutates Water.mat (CLAUDE.md rule 5); the mapping/strength tunables
+        /// live on the component defaults (no magic numbers — rule 6), the owner dials them in the Inspector.
+        /// A null anchor is left null (WaterSurface falls back to the base / its own material), so a missing
+        /// preset no-ops safely.</summary>
+        public static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
+                                                   Material baseMood, Material calmMood,
+                                                   Material stormMood, Material fogMood)
+        {
+            var so = new SerializedObject(surface);
+            SetBoolProp(so, "_weatherPaletteEnabled", true);
+            SetObjProp(so, "_baseMoodMaterial", baseMood);
+            SetObjProp(so, "_calmMoodMaterial", calmMood);
+            SetObjProp(so, "_stormMoodMaterial", stormMood);
+            SetObjProp(so, "_fogMoodMaterial", fogMood);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         /// <summary>Apply the authored elevation zones onto a <see cref="TidalTerrain"/> via SerializedObject
         /// (the builder's persist-the-refs convention). One place so the values live on the component, never
         /// duplicated — and an EditMode test asserts the same constants drive the showcase.</summary>
@@ -593,6 +635,20 @@ namespace HiddenHarbours.App.Editor
             var p = so.FindProperty(field);
             if (p != null) p.vector2Value = value;
             else Debug.LogWarning($"[StPetersBuilder] no Vector2 field '{field}'.");
+        }
+
+        static void SetBoolProp(SerializedObject so, string field, bool value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.boolValue = value;
+            else Debug.LogWarning($"[StPetersBuilder] no bool field '{field}'.");
+        }
+
+        static void SetObjProp(SerializedObject so, string field, Object value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
+            else Debug.LogWarning($"[StPetersBuilder] no object-reference field '{field}'.");
         }
 
         // Imported art is sliced (spriteMode Multiple, one sub-sprite), so LoadAssetAtPath<Sprite> returns

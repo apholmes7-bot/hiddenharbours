@@ -145,6 +145,52 @@ namespace HiddenHarbours.Art
                  "this to watch what bares/floods at any tide WITHOUT entering Play.")]
         [Range(-6f, 6f)] [SerializeField] private float _previewTideLevel = 0.5f;
 
+        [Header("Weather-driven palette (ADR 0017; OPT-IN — off = today's static look)")]
+        [Tooltip("Master ENABLE for the weather-driven water mood (ADR 0017). When ON, the sea's MOOD/COLOUR " +
+                 "(palette / foam character / swell / specular / caustics / reflection — NOT the physics props " +
+                 "the sim already drives) EASES through the assigned anchor presets as the deterministic weather " +
+                 "shifts: calm <-> storm by sea-state, pulled toward fog by low visibility. OFF (default) = the " +
+                 "Sea reads as its authored Water.mat preset exactly (today's look). Presentation only: reads the " +
+                 "sim, never writes it, blends via the per-renderer MaterialPropertyBlock (the Water.mat asset is " +
+                 "NEVER mutated), saves nothing (rule 5).")]
+        [SerializeField] private bool _weatherPaletteEnabled = false;
+        [Tooltip("Master STRENGTH of the weather mood (0..1). 0 = the BASE anchor only = today's static look " +
+                 "(the feature is inert); 1 = the full weather-driven blend. Lerps every mood prop from the base " +
+                 "preset toward the weather-blended set, so the owner dials how far the sea departs from its base " +
+                 "mood as the weather turns.")]
+        [Range(0f, 1f)] [SerializeField] private float _weatherPaletteStrength = 1f;
+        [Tooltip("The BASE / region mood preset — the look at fair, clear, calm-ish weather (e.g. " +
+                 "Water_NorthAtlantic). The blend backfills toward this; at strength 0 the sea reads as this " +
+                 "preset. Must use the HiddenHarbours/Water shader (the same property key set).")]
+        [SerializeField] private Material _baseMoodMaterial;
+        [Tooltip("The serene/glassy CALM mood preset — strongest at the lowest sea-state (e.g. Water_GlassyCalm).")]
+        [SerializeField] private Material _calmMoodMaterial;
+        [Tooltip("The grey/choppy/desaturated STORM mood preset — strongest at high sea-state (e.g. Water_StormGrey).")]
+        [SerializeField] private Material _stormMoodMaterial;
+        [Tooltip("The pale/low-contrast/soft FOG mood preset — strongest at low visibility (e.g. Water_FoggySmother).")]
+        [SerializeField] private Material _fogMoodMaterial;
+
+        [Header("Weather-palette mapping (tunable; no magic numbers — rule 6)")]
+        [Tooltip("Sea-state axis THRESHOLD (0..1 over Glass..Storm) below which the sea stays at its calm/base " +
+                 "mood — the storm pull only engages above this. Raise it so only a real blow turns the sea grey.")]
+        [Range(0f, 0.99f)] [SerializeField] private float _seaStateThreshold = 0.15f;
+        [Tooltip("Sea-state axis CURVE exponent. 1 = linear; >1 = the storm mood bites LATE (a slow build that " +
+                 "ramps near the top of the scale — most of the range stays calm-ish, only a gale/storm goes grey).")]
+        [Min(0.05f)] [SerializeField] private float _seaStateCurve = 1.4f;
+        [Tooltip("Fog axis THRESHOLD (0..1 over 1 - Visibility) below which no fog pull — light haze leaves the " +
+                 "mood alone; only a genuine smother pulls the sea pale.")]
+        [Range(0f, 0.99f)] [SerializeField] private float _fogThreshold = 0.25f;
+        [Tooltip("Fog axis CURVE exponent. 1 = linear; >1 = the fog mood bites LATE (only a thick smother goes pale).")]
+        [Min(0.05f)] [SerializeField] private float _fogCurve = 1.2f;
+        [Tooltip("How far the LOWEST sea-state pulls toward the pure CALM preset vs sitting on the BASE preset " +
+                 "(0..1). 0 = the base IS the calm look (the Calm anchor is unused); 1 = glassy water reads fully " +
+                 "as the Calm preset. The base always backfills.")]
+        [Range(0f, 1f)] [SerializeField] private float _calmReach = 0.8f;
+        [Tooltip("Response time (seconds) for the visible MOOD to ease toward the weather target — the same " +
+                 "frame-rate-independent exponential ease as the flow momentum. Larger = the palette slides more " +
+                 "slowly between moods (it never POPS); 0 = snap. Presentation only; the sim is unaffected (rule 5).")]
+        [Min(0f)] [SerializeField] private float _weatherPaletteResponseTime = 8f;
+
         [Header("Distance-to-land depth (fallback when there is no tidal terrain)")]
         [Tooltip("How far (m) the shallows reach from shore before the water hits full depth. Larger = a wider, " +
                  "gentler shelf; smaller = the bottom drops away quickly right off the beach.")]
@@ -187,6 +233,46 @@ namespace HiddenHarbours.Art
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
 
+        // ==== Weather-palette MOOD property key set (ADR 0017) ============================================
+        // The MOOD/COLOUR properties the weather blend lerps from the anchor presets and pushes via the MPB.
+        // This is EXACTLY the non-sim-overridden set the §12 preset library varies (palette grade / colours /
+        // foam character / swell / specular / caustics / reflection / fbm tint / surface dressing). It
+        // DELIBERATELY EXCLUDES every PHYSICS prop WaterSurface already drives from the sim — _Chop,
+        // _Roughness, _Flow, _FlowDir, _WindDir, _WaterLevel, _HeightTex/_Height* — so the two are disjoint
+        // and compose (no double-drive). The blend reads each anchor material's value PER KEY at runtime
+        // (HasProperty-guarded), so the set is read from the SHARED keys the presets actually carry and can't
+        // drift from the materials. Names are append-only/stable like the shader properties.
+        private static readonly string[] MoodFloatNames =
+        {
+            // palette grade (ADR 0015) — the guard-rail bounds, per-mood
+            "_PaletteGradeStrength", "_PaletteValueFloor", "_PaletteValueCeil", "_PaletteSatCap",
+            "_PalettePullStrength", "_PaletteNightFloor",
+            // surface tint + dressing strengths
+            "_SurfaceTint", "_SurfaceTexStrength", "_FbmStrength", "_SparkleTexStrength",
+            // swell character (rolling cohesion bands — visual, NOT _Chop)
+            "_OceanSwellStrength", "_OceanSwellSharpness", "_OceanSwellScale",
+            // foam character (the §5.9–§5.11 lifecycle/density — NOT _Roughness)
+            "_FoamDensity", "_FoamDensityWind", "_FoamThreshold", "_FoamThresholdSoft", "_FoamSolidThreshold",
+            "_FoamStreakStretch", "_FoamCrestGate", "_FoamSoftness", "_FoamWidth", "_FoamNoise",
+            "_FoamTexStrength", "_WhitecapTexStrength",
+            "_WhitecapFormSharpness", "_WhitecapPeakDensity", "_WhitecapCollapseRate",
+            // specular
+            "_SpecAmount", "_SpecSharpness", "_SpecSwellBias",
+            // caustics
+            "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength",
+            // reflection (the §11 sea-state mirror)
+            "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
+            "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
+            "_ReflectionSunSharp",
+        };
+        private static readonly string[] MoodColorNames =
+        {
+            "_DeepColor", "_ShallowColor", "_FoamColor", "_SpecColor", "_CausticColor", "_ReflectionColor",
+            "_FbmTint",
+            // palette grade anchor colours (ADR 0015)
+            "_PaletteDeep", "_PaletteMid", "_PaletteShallow", "_PaletteFoam",
+        };
+
         private Renderer _renderer;
         private MaterialPropertyBlock _mpb;
         private Texture2D _heightTex;
@@ -204,6 +290,15 @@ namespace HiddenHarbours.Art
         private Vector2 _smoothedWind;
         private bool _flowInitialized;     // first push snaps to the live sim (no ease-in from zero on enable)
 
+        // ==== weather-palette state (ADR 0017) — all cached/preallocated so the per-tick blend never allocs --
+        private int[] _moodFloatIds;       // cached Shader.PropertyToID for each MoodFloatNames entry
+        private int[] _moodColorIds;       // cached Shader.PropertyToID for each MoodColorNames entry
+        private float[] _weatherTargetWeights;   // freshly computed per tick (over {Base,Calm,Storm,Fog})
+        private float[] _weatherSmoothedWeights; // persistent eased twin the blend reads
+        private bool _weatherInitialized;        // first push snaps the smoothed weights (no ease-in from zero)
+        private Material[] _anchorMaterials;      // {Base,Calm,Storm,Fog} resolved once, indexed by Anchor
+        private bool _anchorsResolved;            // whether _anchorMaterials + the cached ids are ready
+
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
@@ -219,6 +314,11 @@ namespace HiddenHarbours.Art
             // First push snaps the smoothed flow to the LIVE sim (no ease-in from a stale zero on enable) — the
             // momentum kicks in only once the surface is already tracking the real current/wind.
             _flowInitialized = false;
+            // (ADR 0017) Prepare the weather-palette caches (anchor materials + cached property ids + scratch
+            // weight buffers); the first push snaps the smoothed mood weights to the live weather (no ease-in
+            // from a stale zero). Cheap; a no-op when the mode is disabled.
+            ResolveWeatherAnchorsIfNeeded();
+            _weatherInitialized = false;
             // Push once immediately so the surface is correct on the first frame (not a stale material default).
             PushUniforms();
         }
@@ -346,7 +446,171 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdWindDir, new Vector4(windDir.x, windDir.y, 0f, 0f));
             _mpb.SetFloat(IdRoughness, roughness);
             _mpb.SetFloat(IdChop, chop);
+
+            // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
+            // by the eased weather weights and override them on the SAME MPB — composing with the physics props
+            // just pushed (disjoint key sets, no double-drive). Reads the SAME deterministic EnvironmentSample
+            // `s`. The dt is the push cadence (Update's throttle), so the ease is frame-rate independent. Visual
+            // only: the Water.mat asset is never written (all overrides ride the MPB), saves nothing (rule 5).
+            ApplyWeatherPalette(s, _mpb);
+
             _renderer.SetPropertyBlock(_mpb);
+        }
+
+        // ==== Weather-driven palette (ADR 0017) ===========================================================
+
+        /// <summary>
+        /// (ADR 0017) Enable the weather-driven mood and assign the four anchor preset materials in one call —
+        /// the builder uses this so a "Build St Peters Scene" re-run gives weather-driven water immediately.
+        /// Takes Unity-generic <see cref="Material"/> args (the preset moods), keeping Art decoupled from World
+        /// (rule 4). The anchors must use the <c>HiddenHarbours/Water</c> shader (the shared mood key set); a
+        /// null anchor falls back to the base (or, for the base, to the renderer's own material) so a partial
+        /// wiring still renders. Re-resolves the caches immediately. Visual only; mutates no asset, saves
+        /// nothing (rule 5).
+        /// </summary>
+        public void ConfigureWeatherPalette(bool enabled, Material baseMood, Material calmMood,
+                                            Material stormMood, Material fogMood)
+        {
+            _weatherPaletteEnabled = enabled;
+            _baseMoodMaterial = baseMood;
+            _calmMoodMaterial = calmMood;
+            _stormMoodMaterial = stormMood;
+            _fogMoodMaterial = fogMood;
+            _anchorsResolved = false;
+            _weatherInitialized = false;
+            ResolveWeatherAnchorsIfNeeded();
+        }
+
+        /// <summary>
+        /// Resolve the weather-palette caches once: the {Base,Calm,Storm,Fog} anchor material array, the cached
+        /// <see cref="Shader.PropertyToID"/> for every mood key (no per-tick string lookups — rule 7), and the
+        /// preallocated scratch weight buffers (no per-tick alloc — rule 7). A no-op once resolved or when the
+        /// mode is disabled. The base anchor falls back to the renderer's own shared material so the blend has a
+        /// valid backfill even if no explicit base is wired.
+        /// </summary>
+        private void ResolveWeatherAnchorsIfNeeded()
+        {
+            if (_anchorsResolved) return;
+            if (!_weatherPaletteEnabled) return;
+
+            if (_moodFloatIds == null || _moodFloatIds.Length != MoodFloatNames.Length)
+            {
+                _moodFloatIds = new int[MoodFloatNames.Length];
+                for (int i = 0; i < MoodFloatNames.Length; i++)
+                    _moodFloatIds[i] = Shader.PropertyToID(MoodFloatNames[i]);
+            }
+            if (_moodColorIds == null || _moodColorIds.Length != MoodColorNames.Length)
+            {
+                _moodColorIds = new int[MoodColorNames.Length];
+                for (int i = 0; i < MoodColorNames.Length; i++)
+                    _moodColorIds[i] = Shader.PropertyToID(MoodColorNames[i]);
+            }
+
+            if (_anchorMaterials == null || _anchorMaterials.Length != WeatherWaterPalette.AnchorCount)
+                _anchorMaterials = new Material[WeatherWaterPalette.AnchorCount];
+            Material baseMat = _baseMoodMaterial != null ? _baseMoodMaterial
+                             : (_renderer != null ? _renderer.sharedMaterial : null);
+            _anchorMaterials[(int)WeatherWaterPalette.Anchor.Base]  = baseMat;
+            _anchorMaterials[(int)WeatherWaterPalette.Anchor.Calm]  = _calmMoodMaterial  != null ? _calmMoodMaterial  : baseMat;
+            _anchorMaterials[(int)WeatherWaterPalette.Anchor.Storm] = _stormMoodMaterial != null ? _stormMoodMaterial : baseMat;
+            _anchorMaterials[(int)WeatherWaterPalette.Anchor.Fog]   = _fogMoodMaterial   != null ? _fogMoodMaterial   : baseMat;
+
+            if (_weatherTargetWeights == null)
+                _weatherTargetWeights = new float[WeatherWaterPalette.AnchorCount];
+            if (_weatherSmoothedWeights == null)
+                _weatherSmoothedWeights = new float[WeatherWaterPalette.AnchorCount];
+
+            _anchorsResolved = true;
+        }
+
+        /// <summary>
+        /// (ADR 0017) Blend the MOOD/COLOUR shader props from the anchor presets by the eased, weather-driven
+        /// weights and OVERRIDE them on the supplied MPB — alongside (never replacing) the physics props the
+        /// caller already set. Disabled / unresolved → a no-op (the surface reads its authored material). The
+        /// weights come from the deterministic <paramref name="s"/> via <see cref="WeatherWaterPalette"/>; they
+        /// are eased (presentation only) so the mood never pops. The master strength lerps the whole blend back
+        /// toward the BASE anchor, so strength 0 = the base preset = today's static look. No per-tick alloc:
+        /// the weight buffers + property ids are cached; per key we do one weighted sum across ≤4 materials.
+        /// Visual only: every value goes onto the MPB (the Water.mat asset is never written), saves nothing
+        /// (rule 5). Does NOT touch _Chop/_Roughness/_Flow/_FlowDir/_WindDir/_WaterLevel/_HeightTex/_Height*.
+        /// </summary>
+        private void ApplyWeatherPalette(in EnvironmentSample s, MaterialPropertyBlock mpb)
+        {
+            if (!_weatherPaletteEnabled) return;
+            ResolveWeatherAnchorsIfNeeded();
+            if (!_anchorsResolved || _anchorMaterials == null) return;
+
+            // Target weights from the deterministic weather (pure helper).
+            WeatherWaterPalette.BlendWeightsNonAlloc(
+                _weatherTargetWeights, s.SeaState, s.Visibility,
+                _seaStateThreshold, _seaStateCurve, _fogThreshold, _fogCurve, _calmReach);
+
+            // Ease the visible weights toward the target (the mood never POPS). First push snaps (no ease-in
+            // from a stale zero on enable); subsequent pushes ease with the push cadence as dt (fps-independent).
+            if (!_weatherInitialized)
+            {
+                for (int i = 0; i < _weatherSmoothedWeights.Length; i++)
+                    _weatherSmoothedWeights[i] = _weatherTargetWeights[i];
+                _weatherInitialized = true;
+            }
+            else
+            {
+                float dt = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
+                WeatherWaterPalette.EaseWeights(
+                    _weatherSmoothedWeights, _weatherTargetWeights, _weatherPaletteResponseTime, dt);
+            }
+
+            // Master strength: lerp the whole blend back toward the BASE anchor (strength 0 = base only =
+            // today's look). Apply to a copy so the smoothed (eased) state is unscaled for the next tick.
+            for (int i = 0; i < _weatherSmoothedWeights.Length; i++)
+                _weatherTargetWeights[i] = _weatherSmoothedWeights[i];   // reuse the target buffer as scratch
+            WeatherWaterPalette.ApplyStrengthInPlace(_weatherTargetWeights, _weatherPaletteStrength);
+
+            BlendMoodProps(_weatherTargetWeights, mpb);
+        }
+
+        /// <summary>
+        /// Override every mood FLOAT + COLOUR key on the MPB with the weighted blend of the anchor materials'
+        /// values for that key. Reads each anchor's value PER KEY (HasProperty-guarded) so the blend uses the
+        /// SHARED keys the presets actually carry (it can't drift from the materials); a missing key on an
+        /// anchor contributes nothing (its weight is redistributed implicitly by skipping it). Allocation-free.
+        /// </summary>
+        private void BlendMoodProps(float[] weights, MaterialPropertyBlock mpb)
+        {
+            // ---- floats ----
+            for (int k = 0; k < _moodFloatIds.Length; k++)
+            {
+                int id = _moodFloatIds[k];
+                float sum = 0f, wsum = 0f;
+                for (int a = 0; a < _anchorMaterials.Length; a++)
+                {
+                    Material m = _anchorMaterials[a];
+                    if (m == null || !m.HasProperty(id)) continue;
+                    float w = weights[a];
+                    if (w <= 0f) continue;
+                    sum += m.GetFloat(id) * w;
+                    wsum += w;
+                }
+                if (wsum > 1e-6f) mpb.SetFloat(id, sum / wsum);
+            }
+
+            // ---- colours ----
+            for (int k = 0; k < _moodColorIds.Length; k++)
+            {
+                int id = _moodColorIds[k];
+                Color sum = new Color(0f, 0f, 0f, 0f);
+                float wsum = 0f;
+                for (int a = 0; a < _anchorMaterials.Length; a++)
+                {
+                    Material m = _anchorMaterials[a];
+                    if (m == null || !m.HasProperty(id)) continue;
+                    float w = weights[a];
+                    if (w <= 0f) continue;
+                    sum += m.GetColor(id) * w;
+                    wsum += w;
+                }
+                if (wsum > 1e-6f) mpb.SetColor(id, sum / wsum);
+            }
         }
 
         /// <summary>
