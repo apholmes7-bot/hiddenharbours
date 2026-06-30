@@ -154,14 +154,21 @@ namespace HiddenHarbours.Art
                  "sim, never writes it, blends via the per-renderer MaterialPropertyBlock (the Water.mat asset is " +
                  "NEVER mutated), saves nothing (rule 5).")]
         [SerializeField] private bool _weatherPaletteEnabled = false;
-        [Tooltip("Master STRENGTH of the weather mood (0..1). 0 = the BASE anchor only = today's static look " +
-                 "(the feature is inert); 1 = the full weather-driven blend. Lerps every mood prop from the base " +
-                 "preset toward the weather-blended set, so the owner dials how far the sea departs from its base " +
-                 "mood as the weather turns.")]
+        [Tooltip("Master STRENGTH of the weather mood (0..1). 0 (or this whole mode DISABLED) = the BASE anchor " +
+                 "only = exactly the live Water.mat look the renderer already shows (the feature is inert — no " +
+                 "departure at any weather); 1 = the full weather-driven blend. Lerps every mood prop from the " +
+                 "BASE anchor toward the weather-blended set, so the owner dials how far the sea departs from its " +
+                 "base mood as the weather turns. NB the BASE anchor is the renderer's live Water.mat unless an " +
+                 "explicit Base Mood Material is assigned below — so at strength 0 the sea is the live Water.mat, " +
+                 "and the owner's Water.mat tuning always flows through the calm baseline.")]
         [Range(0f, 1f)] [SerializeField] private float _weatherPaletteStrength = 1f;
-        [Tooltip("The BASE / region mood preset — the look at fair, clear, calm-ish weather (e.g. " +
-                 "Water_NorthAtlantic). The blend backfills toward this; at strength 0 the sea reads as this " +
-                 "preset. Must use the HiddenHarbours/Water shader (the same property key set).")]
+        [Tooltip("OPTIONAL explicit BASE / region mood preset — the calm baseline the storm/fog moods blend " +
+                 "RELATIVE TO and that the blend backfills toward (at strength 0 the sea reads as this). LEAVE " +
+                 "EMPTY (the St Peters default) to use the renderer's own live Water.mat as the base — then the " +
+                 "owner's hand-tuning of Water.mat always drives the calm sea, and weather-off / strength-0 is " +
+                 "byte-identical to Water.mat. Assign one only to PIN the calm look to a fixed preset COPY " +
+                 "instead of the live material (it then stops tracking Water.mat edits). Must use the " +
+                 "HiddenHarbours/Water shader (the same property key set).")]
         [SerializeField] private Material _baseMoodMaterial;
         [Tooltip("The serene/glassy CALM mood preset — strongest at the lowest sea-state (e.g. Water_GlassyCalm).")]
         [SerializeField] private Material _calmMoodMaterial;
@@ -485,8 +492,10 @@ namespace HiddenHarbours.Art
         /// Resolve the weather-palette caches once: the {Base,Calm,Storm,Fog} anchor material array, the cached
         /// <see cref="Shader.PropertyToID"/> for every mood key (no per-tick string lookups — rule 7), and the
         /// preallocated scratch weight buffers (no per-tick alloc — rule 7). A no-op once resolved or when the
-        /// mode is disabled. The base anchor falls back to the renderer's own shared material so the blend has a
-        /// valid backfill even if no explicit base is wired.
+        /// mode is disabled. The base anchor falls back to the renderer's own shared material (the LIVE
+        /// Water.mat) when no explicit base preset is wired — see <see cref="ResolveBaseAnchor"/> — so the
+        /// blend's calm/base term IS the live material and the owner's Water.mat tuning always flows through the
+        /// calm sea (strength 0 = exactly Water.mat).
         /// </summary>
         private void ResolveWeatherAnchorsIfNeeded()
         {
@@ -508,8 +517,8 @@ namespace HiddenHarbours.Art
 
             if (_anchorMaterials == null || _anchorMaterials.Length != WeatherWaterPalette.AnchorCount)
                 _anchorMaterials = new Material[WeatherWaterPalette.AnchorCount];
-            Material baseMat = _baseMoodMaterial != null ? _baseMoodMaterial
-                             : (_renderer != null ? _renderer.sharedMaterial : null);
+            Material baseMat = ResolveBaseAnchor(_baseMoodMaterial,
+                                                 _renderer != null ? _renderer.sharedMaterial : null);
             _anchorMaterials[(int)WeatherWaterPalette.Anchor.Base]  = baseMat;
             _anchorMaterials[(int)WeatherWaterPalette.Anchor.Calm]  = _calmMoodMaterial  != null ? _calmMoodMaterial  : baseMat;
             _anchorMaterials[(int)WeatherWaterPalette.Anchor.Storm] = _stormMoodMaterial != null ? _stormMoodMaterial : baseMat;
@@ -521,6 +530,22 @@ namespace HiddenHarbours.Art
                 _weatherSmoothedWeights = new float[WeatherWaterPalette.AnchorCount];
 
             _anchorsResolved = true;
+        }
+
+        /// <summary>
+        /// (ADR 0017) Resolve the BASE/calm anchor for the weather blend: the explicit
+        /// <paramref name="explicitBase"/> preset if one is assigned, otherwise the renderer's own
+        /// <paramref name="sharedMaterial"/> — the LIVE <c>Water.mat</c>. Leaving the base unwired (the St
+        /// Peters default) is deliberate: the calm/base term of the blend then IS the live material, so the
+        /// owner's hand-tuning of <c>Water.mat</c> always flows through the calm sea and weather-off / strength-0
+        /// is byte-identical to <c>Water.mat</c>. Assigning an explicit base instead PINS the calm look to a
+        /// fixed preset COPY that no longer tracks <c>Water.mat</c> edits. Pure (no scene state); the same
+        /// decision is unit-tested headless. Returns null only if BOTH are null (a partial wiring with no
+        /// material at all — the blend then no-ops for the base term, the surface reads its own material).
+        /// </summary>
+        public static Material ResolveBaseAnchor(Material explicitBase, Material sharedMaterial)
+        {
+            return explicitBase != null ? explicitBase : sharedMaterial;
         }
 
         /// <summary>

@@ -1084,11 +1084,13 @@ a **STORM** mood, and a **FOG** mood — that sum to 1:
    the rest. So a **foggy storm reads mostly fog** (the smother dominates), a **foggy calm reads pale-serene**,
    and a **clear gale reads storm** — the realistic ordering.
 
-The default anchors (St Peters) are all from `Art/Materials/WaterPresets/`:
+The default anchors (St Peters) — the calm/storm/fog presets are from `Art/Materials/WaterPresets/`; the
+**BASE / calm anchor is left UNWIRED so it resolves to the Sea's own LIVE `Water.mat`** (the calm baseline
+then tracks the owner's `Water.mat` tuning; weather-off / strength-0 = exactly `Water.mat` — ADR 0017):
 
 | Axis end | Anchor preset | Mood |
 |---|---|---|
-| **Base** (fair/clear/calm-ish) | `Water_NorthAtlantic` | the cold teal-navy "home" / region default |
+| **Base** (fair/clear/calm-ish) | _unwired_ → the live `Water.mat` | the renderer's own tuned look (the cold teal-navy "home"); assign an explicit preset only to *pin* the calm look |
 | **Calm** (lowest sea-state) | `Water_GlassyCalm` | serene mirror, gentle swell, restrained foam |
 | **Storm** (highest sea-state) | `Water_StormGrey` | grey gloom, dense whitecaps, reflection near-off |
 | **Fog** (lowest visibility) | `Water_FoggySmother` | pale, low-contrast, soft, eerie |

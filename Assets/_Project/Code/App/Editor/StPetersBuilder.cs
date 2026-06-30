@@ -66,8 +66,11 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         // Weather-driven water palette anchor presets (ADR 0017) — the moods the deterministic weather blends
         // between on the Sea's WaterSurface (calm <-> storm by sea-state, pulled toward fog by low visibility).
+        // The BASE / calm anchor is deliberately NOT a preset here: it is left UNWIRED so WaterSurface uses the
+        // Sea's own LIVE Water.mat as the calm baseline (see ConfigureWeatherPalette below) — that way the
+        // owner's hand-tuning of Water.mat always drives the calm sea, and weather-off / strength-0 is exactly
+        // Water.mat (no pinned-preset-copy trap; ADR 0017).
         const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
-        const string ArtWaterBaseMood  = ArtWaterPresets + "/Water_NorthAtlantic.mat"; // BASE / region mood
         const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
         const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
@@ -225,16 +228,22 @@ namespace HiddenHarbours.App.Editor
                 // available if the crest still facets, but 192 is the ADR's recommended start.
                 ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
 
-                // (ADR 0017) WEATHER-DRIVEN PALETTE: enable the weather mood on the Sea + assign the four anchor
-                // preset moods, so this scene's sea EASES through the preset library as the deterministic weather
-                // shifts (calm <-> storm by sea-state, pulled toward fog by low visibility — P1 "the sea has
-                // moods"). The blend rides the per-renderer MPB alongside the physics props (disjoint key sets,
-                // no double-drive) and NEVER mutates Water.mat (rule 5). Opt-in elsewhere — only this builder
-                // turns it on. If a preset is missing (first checkout before import) the anchor is left null and
-                // WaterSurface falls back to the base/own material — the wiring no-ops safely.
+                // (ADR 0017) WEATHER-DRIVEN PALETTE: enable the weather mood on the Sea + assign the storm/fog/
+                // calm anchor preset moods, so this scene's sea EASES through the preset library as the
+                // deterministic weather shifts (calm <-> storm by sea-state, pulled toward fog by low visibility —
+                // P1 "the sea has moods"). The blend rides the per-renderer MPB alongside the physics props
+                // (disjoint key sets, no double-drive) and NEVER mutates Water.mat (rule 5). Opt-in elsewhere —
+                // only this builder turns it on. If a preset is missing (first checkout before import) the anchor
+                // is left null and WaterSurface falls back to the base/own material — the wiring no-ops safely.
+                //
+                // BASE anchor = null (UNWIRED) ON PURPOSE: WaterSurface then uses the Sea's own LIVE Water.mat as
+                // the calm baseline the storm/fog moods blend RELATIVE TO. So weather-off / strength-0 reads as
+                // exactly Water.mat, and the owner's hand-tuning of Water.mat always flows through the calm sea —
+                // not a frozen preset COPY (the latent trap the ADR 0017 review caught). Pinning a base preset
+                // here would pin the calm look to that copy.
                 ConfigureWeatherPalette(
                     surface,
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterBaseMood),
+                    /*baseMood (null = use the live Water.mat as the calm baseline)*/ null,
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
@@ -535,13 +544,16 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>Enable the weather-driven water palette (ADR 0017) on the Sea's
-        /// <see cref="HiddenHarbours.Art.WaterSurface"/> and assign the four anchor mood presets, persisting the
+        /// <see cref="HiddenHarbours.Art.WaterSurface"/> and assign the anchor mood presets, persisting the
         /// refs via SerializedObject so they survive in the saved scene (the builder's persist-the-refs
         /// convention, same as <see cref="ConfigureWaterSurface"/>). The blend rides the per-renderer
         /// MaterialPropertyBlock and never mutates Water.mat (CLAUDE.md rule 5); the mapping/strength tunables
         /// live on the component defaults (no magic numbers — rule 6), the owner dials them in the Inspector.
-        /// A null anchor is left null (WaterSurface falls back to the base / its own material), so a missing
-        /// preset no-ops safely.</summary>
+        /// A null anchor is left null and WaterSurface falls back to the base / its own material, so a missing
+        /// preset no-ops safely. St Peters passes <paramref name="baseMood"/> = null ON PURPOSE so the BASE/calm
+        /// anchor resolves to the Sea's own LIVE Water.mat (the owner's Water.mat tuning then always drives the
+        /// calm sea; weather-off / strength-0 = exactly Water.mat — ADR 0017). Pass an explicit base only to PIN
+        /// the calm look to a fixed preset copy.</summary>
         public static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
                                                    Material baseMood, Material calmMood,
                                                    Material stormMood, Material fogMood)
