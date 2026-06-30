@@ -1054,3 +1054,118 @@ luminance; the anchor pull is soft (moves toward, never snaps to, the anchor) an
 The CI shader-compile guard (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped
 `Water.mat` AND every WaterPresets variant: no `+` in any `[Header]`/property string, no `[unroll]` over a
 runtime bound (the magenta class stays guarded), and every variant carries the same `_Palette*` key set.
+
+---
+
+## 14. Weather-driven water palette — the deterministic weather EASES the sea's mood through the presets (ADR 0017)
+
+> The owner asked the weather to *"cycle through the water presets, in a realistic fashion."* This section is
+> the result: a runtime **weather → water-mood** blend on `WaterSurface` that, when enabled, EASES the sea's
+> MOOD/COLOUR through the §12 preset library as the **deterministic** `EnvironmentSample` shifts (calm ↔ storm
+> by sea-state, pulled toward fog by low visibility — P1 "the sea has moods"). It is **opt-in** (off = today's
+> static look), **MPB-only** (the `Water.mat` asset is never written), and it drives **only** the mood props —
+> **never** the physics props `WaterSurface` already feeds from the sim. Decision of record:
+> [`../adr/0017-weather-driven-water-palette.md`](../adr/0017-weather-driven-water-palette.md). This **answers
+> the §13 / ADR 0015 open question** ("per-region palette by mood/weather").
+
+### 14.1 The realistic model (a pure 2-axis blend across four anchor moods)
+
+`WeatherWaterPalette` (a pure C# static class, `Assets/_Project/Code/Art/WeatherWaterPalette.cs`) turns the
+deterministic sample into 0..1 weights over **four anchor preset MOODS** — a region **BASE**, a **CALM** mood,
+a **STORM** mood, and a **FOG** mood — that sum to 1:
+
+1. **Sea-state axis** — `SeaStateAxis01(SeaState)` (Glass=0 .. Storm=1), shaped by a tunable threshold + curve
+   (`ShapeAxis`), drives a **CALM ↔ STORM** lerp. Low sea-state = serene; rising = the greyer/choppier/
+   desaturated **Storm** mood.
+2. **Fog axis** — `(1 − Visibility)`, shaped by its own threshold + curve, pulls the whole mood toward the
+   **FOG** mood (pale, desaturated, low-contrast, soft).
+3. **Combine** — the sea-state lerp makes a calm↔storm base mood; the fog amount then pulls THAT toward fog:
+   `storm = (1−fog)·seaAmt`, `calm = (1−fog)·(1−seaAmt)·calmReach`, `fog = fogAmt`, the **base** backfilling
+   the rest. So a **foggy storm reads mostly fog** (the smother dominates), a **foggy calm reads pale-serene**,
+   and a **clear gale reads storm** — the realistic ordering.
+
+The default anchors (St Peters) are all from `Art/Materials/WaterPresets/`:
+
+| Axis end | Anchor preset | Mood |
+|---|---|---|
+| **Base** (fair/clear/calm-ish) | `Water_NorthAtlantic` | the cold teal-navy "home" / region default |
+| **Calm** (lowest sea-state) | `Water_GlassyCalm` | serene mirror, gentle swell, restrained foam |
+| **Storm** (highest sea-state) | `Water_StormGrey` | grey gloom, dense whitecaps, reflection near-off |
+| **Fog** (lowest visibility) | `Water_FoggySmother` | pale, low-contrast, soft, eerie |
+
+### 14.2 Integration — `WaterSurface`'s opt-in mode, pushed via the EXISTING MPB
+
+`WaterSurface` already reads the `EnvironmentSample` each throttled tick and owns the per-renderer
+`MaterialPropertyBlock`. The weather blend is an **opt-in mode** on it (master enable + strength, four
+assignable anchor materials, the axis tunables). Each tick — the same tick that pushes the physics props — it:
+
+1. reads the `EnvironmentSample`;
+2. computes the target weights (`WeatherWaterPalette.BlendWeightsNonAlloc`, no alloc);
+3. **EASES** the visible weights toward the target (`EaseWeights` — a frame-rate-independent exponential ease,
+   the same form as the flow-momentum `SmoothVectorToward`, so the mood never POPS; first push snaps);
+4. applies the master **strength** (`ApplyStrengthInPlace` — lerp the weights back toward the BASE anchor;
+   **0 = base only = today's look**);
+5. blends the MOOD props by reading each anchor material's value **per key** and writing the weighted result
+   onto the **same** MPB — alongside (never replacing) the physics props.
+
+Because it rides the MPB it **never mutates `Water.mat`** (rule 5) and is **cleared on disable** like every
+other `WaterSurface` override.
+
+### 14.3 What it blends — only the mood/colour props (DISJOINT from the physics props)
+
+The blend writes exactly the §12.1 **non-sim-overridden** keys (palette grade `_Palette*`; colours
+`_DeepColor`/`_ShallowColor`/`_FoamColor`/`_SpecColor`/`_FbmTint`/`_CausticColor`/`_ReflectionColor`; swell
+`_OceanSwellStrength`/`Sharpness`/`Scale`; foam character `_FoamDensity`/`_FoamThreshold*`/`_FoamStreakStretch`/
+`_FoamSolidThreshold`/`_FoamCrestGate`/`_FoamSoftness`/`_FoamWidth`/`_FoamNoise`/`_FoamTexStrength`/
+`_WhitecapTexStrength`/`_Whitecap*`; `_SurfaceTint`/`_SurfaceTexStrength`/`_FbmStrength`/`_SparkleTexStrength`;
+specular `_SpecAmount`/`_SpecSharpness`/`_SpecSwellBias`; caustics `_CausticAmount`/`_CausticScale`/
+`_CausticDepth`/`_CausticTexStrength`; reflection `_Reflection*`). The key set is **read from the anchor
+materials at runtime** (per-key, `HasProperty`-guarded), so it **can't drift** from what the presets carry.
+
+It **deliberately EXCLUDES** every PHYSICS prop `WaterSurface` already drives — `_Chop`, `_Roughness`, `_Flow`,
+`_FlowDir`, `_WindDir`, `_WaterLevel`, `_HeightTex`/`_Height*`. The two sets are **disjoint and compose**: the
+sim drives the motion (chop/foam roughen physically with the sea-state), the weather blend sets the look. **No
+double-drive.**
+
+### 14.4 Composition (guard-rail + day/night)
+
+The blend sets the material's mood VALUES; everything downstream still applies on top:
+
+- the **§13 / ADR 0015 palette guard-rail** still bounds the FINAL `col.rgb` (and its `_Palette*` bounds are
+  themselves part of the blended set, so a stormier sea gets stormier guard-rail bounds);
+- the **ADR 0013 day/night overlay** still MULTIPLIES the whole frame on top.
+
+Both are downstream of the values blended here, so they compose by construction (verified by the disjoint
+key-set + the headless tests).
+
+### 14.5 Tunables (rule 6; off = today's exact look)
+
+All on the Sea's `WaterSurface` component (St Peters defaults):
+
+| Tunable | Default | What it does |
+|---|---|---|
+| **Weather Palette Enabled** | **off** | Master enable. **Off = the Sea reads its `Water.mat` preset exactly (today's look).** |
+| **Weather Palette Strength** | 1.0 | 0 = base anchor only (inert / today's look); 1 = the full weather-driven blend. |
+| **Base / Calm / Storm / Fog Mood Material** | NA / Glassy / StormGrey / FoggySmother | the four anchor presets the blend mixes. |
+| **Sea State Threshold** | 0.15 | sea-state axis (0..1 over Glass..Storm) below which no storm pull. |
+| **Sea State Curve** | 1.4 | shaping exponent (1 = linear; >1 = the storm bites LATE — only a real blow goes grey). |
+| **Fog Threshold** | 0.25 | fog axis (0..1 over 1−visibility) below which no fog pull (light haze leaves it alone). |
+| **Fog Curve** | 1.2 | shaping exponent (>1 = only a thick smother goes pale). |
+| **Calm Reach** | 0.8 | how far the lowest sea-state pulls toward the pure CALM preset vs the BASE (0 = base is calm). |
+| **Weather Palette Response Time** | 8 s | the ease time constant — how slowly the mood slides between presets (0 = snap). |
+
+To turn it fully off, untick **Weather Palette Enabled** (or set **Strength = 0**) — the Sea is then exactly
+its authored preset.
+
+### 14.6 Determinism guard (headless C# twin)
+
+The model is a **pure function** of the deterministic sample + tunables, so it's fully unit-testable headless
+(`Assets/Tests/EditMode/Art/WeatherWaterPaletteTests.cs`): the axes normalise/shape monotonically; the weights
+always sum to 1 and stay non-negative across the whole weather space; CALM clear water reads serene (no storm,
+no fog); a rising sea-state grows the storm mood monotonically; low visibility grows the fog mood monotonically
+and **fog dominates** on top of any sea-state (a foggy storm reads mostly fog; a foggy calm reads pale-serene);
+a clear gale reads storm-led; `calmReach`/the thresholds behave (calmReach 0 leaves glassy water on the base, a
+higher sea threshold delays the storm); the ease is **frame-rate independent** (one step over `dt` == N steps
+of `dt/N`); and **STRENGTH 0 / disabled == identity == today's static look** (the base anchor only, at every
+weather). The GPU blend of the actual props can't be tested headless, but the WEIGHTS that decide the mood can
+— the same precedent as `WaterReflection` / `WaterPaletteGrade` / `DayNightMath`.
