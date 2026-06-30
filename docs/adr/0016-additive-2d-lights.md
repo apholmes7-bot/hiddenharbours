@@ -152,6 +152,39 @@ glow).
 - **The migration to true URP 2D lights remains open** (ADR 0013 path (2)) if a future need outgrows additive
   sprites; the durable part (the deterministic day/night model + the published globals) is unchanged.
 
+## Follow-up fix — the beam lit LAND but not the WATER (the mesh-vs-sprite ordering quirk)
+
+**Symptom.** After shipping, the boat spotlight visibly brightened land/sprites at night but had **no visible
+effect over the WATER**. By sorting order this is impossible: the additive light quad sorts at ~32770 on the
+Default layer, above both the day/night overlay (~32760) and the Sea (sortingOrder −5), all on one camera / one
+sorting layer — additive-on-top should brighten the water exactly as it brightens land.
+
+**Root cause (PROVEN).** It is **not** a sort-order/layer mismatch. The light quad is a **`MeshRenderer`**, the
+Sea is a **`SpriteRenderer`** — and in the **URP 2D renderer a mesh does NOT reliably sort against sprites by
+`sortingOrder` alone**: for a mesh-vs-sprite pair the renderer falls back to **world-space DEPTH** (Unity's own
+2D sorting docs: a mesh needs a Sorting Group with "Sort as 2D" to sort like a sprite, otherwise it sorts by
+world depth). The light quad sits at the boat's **world depth (z = 0)** — the **same depth as the big Sea
+sprite** — so the full-screen Sea sprite **overdraws the light** despite the light's far-higher sorting order.
+Land "works" only because those are **small** unlit sprites the cone happened to win the depth tie against; the
+full-screen water sprite at the same depth does not. The day/night overlay dodges the same quirk by sitting **at
+the camera near plane** (the closest depth), which is why night still darkens the water correctly — the asymmetry
+that confirms the diagnosis.
+
+**Fix (light-side only; additive / night-gated / P1-safe are all preserved).** Two complementary, version-robust
+changes on the light quad in `SceneLight`, covering both code paths the 2D renderer might take:
+
+1. **A `SortingGroup` with `sortAtRoot` ("Sort as 2D")** on the quad — the Unity-documented way to make a mesh
+   participate in 2D sorting like a sprite, so its ~32770 order is honoured against **every** sprite (water
+   included). It clears the quad's depth info, which is harmless here (the light is `ZTest Always`, writes no
+   depth, and nothing depth-based reads it).
+2. **Pin the quad's DEPTH (z) just in front of the active camera** each frame (a new `_cameraDepthOffset`, default
+   0.1 m), mirroring how the overlay reliably draws over the water. Under the orthographic 2D camera, moving the
+   quad along z **never changes its on-screen x/y or the look** — only the compositing order. The pure depth math
+   is `LightMath.CameraDepthZ`, unit-tested headless alongside the rest of the light maths.
+
+The water shader, the day/night controller + overlay, `Water.mat`/presets, the magenta guard, and the sim/depth/
+clip (P1) are **untouched** — this only changes how the existing additive quad is composited.
+
 ## Rejected alternatives
 
 - **URP `Light2D` now.** The sprites are Sprite-Unlit and sample no 2D light (the ADR-0013 finding); this needs

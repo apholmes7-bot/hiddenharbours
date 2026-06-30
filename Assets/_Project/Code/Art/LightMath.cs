@@ -163,6 +163,23 @@ namespace HiddenHarbours.Art
             return new Color(color.r * k, color.g * k, color.b * k, k);
         }
 
+        /// <summary>
+        /// The world-space DEPTH (Z) at which to place the additive-light quad so it composites ABOVE the world
+        /// sprites: just in front of the camera, mirroring how the day/night overlay sits at the camera near
+        /// plane. This is the world-depth half of the "the beam lit land but NOT the water" fix (ADR 0016): in
+        /// the URP 2D renderer a MeshRenderer at the SAME world depth as a big water/ground SPRITE can be
+        /// overdrawn by it regardless of sorting order, so we pull the light to the camera's (closest) depth —
+        /// the trick the overlay already uses to reliably draw over the water. Pure function of the camera's
+        /// Z + forward-Z, the near plane and the offset, so it is unit-tested headless. For a 2D ortho camera
+        /// (forward ≈ +Z, camera behind the scene at a negative Z) this resolves to
+        /// <c>cameraZ + (nearClip + offset)</c> — a small step from the camera toward the scene. Look-direction
+        /// agnostic via <paramref name="cameraForwardZ"/>. Presentation only: the light is ZTest Always +
+        /// additive, so changing the quad's depth never changes the LOOK under an orthographic camera (depth
+        /// doesn't affect screen X/Y) — only the compositing order.
+        /// </summary>
+        public static float CameraDepthZ(float cameraZ, float cameraForwardZ, float nearClip, float offset)
+            => cameraZ + cameraForwardZ * (Mathf.Max(nearClip, 0f) + Mathf.Max(offset, 0f));
+
         // ---- small pure helpers -------------------------------------------------------------------------
 
         /// <summary>Smoothstep returning 0 below <paramref name="a"/>, 1 above <paramref name="b"/>, smooth between. Order-safe.</summary>
