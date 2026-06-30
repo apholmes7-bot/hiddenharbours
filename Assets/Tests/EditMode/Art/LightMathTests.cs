@@ -220,6 +220,38 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0.25f, quarter.a, Eps);
         }
 
+        // ---- CameraDepthZ (the over-water compositing fix; ADR 0016) -------------------------------------
+
+        [Test]
+        public void CameraDepthZ_PlacesQuadJustInFrontOfA2DOrthoCamera()
+        {
+            // The persistent-core camera sits at z = -10 looking toward +Z (forward.z = +1), near clip ~0.3.
+            // The light quad must land a small step IN FRONT of it (a more-positive z), i.e. closer to the scene,
+            // so its depth beats the big water/ground sprite at world z = 0. = camZ + (near + offset).
+            float z = LightMath.CameraDepthZ(cameraZ: -10f, cameraForwardZ: 1f, nearClip: 0.3f, offset: 0.1f);
+            Assert.AreEqual(-9.6f, z, Eps, "quad should sit just in front of the camera, ahead of world-z 0 sprites");
+            Assert.Greater(z, -10f, "the quad must be in FRONT of the camera, not behind it");
+            Assert.Less(z, 0f, "still behind the scene plane at z=0 (it's a small step from the camera)");
+        }
+
+        [Test]
+        public void CameraDepthZ_GrowsWithOffsetAndNearClip()
+        {
+            float a = LightMath.CameraDepthZ(-10f, 1f, 0.3f, 0.1f);
+            float b = LightMath.CameraDepthZ(-10f, 1f, 0.3f, 0.5f);  // bigger offset -> further from the camera
+            Assert.Greater(b, a, "a larger depth offset moves the quad further toward the scene");
+            float c = LightMath.CameraDepthZ(-10f, 1f, 1.0f, 0.1f);  // bigger near clip -> further from the camera
+            Assert.Greater(c, a, "a larger near clip moves the quad further toward the scene");
+        }
+
+        [Test]
+        public void CameraDepthZ_NegativeOffsetAndNearAreClampedToZero()
+        {
+            // Defensive: a (mis)negative offset/near must never pull the quad BEHIND the camera.
+            float z = LightMath.CameraDepthZ(-10f, 1f, -5f, -5f);
+            Assert.AreEqual(-10f, z, Eps, "negative near/offset clamp to 0 -> the quad sits at the camera, never behind");
+        }
+
         // ---- BoatSpotlight way-gate ----------------------------------------------------------------------
 
         [Test]

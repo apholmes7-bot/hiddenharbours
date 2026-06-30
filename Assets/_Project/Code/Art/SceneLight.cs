@@ -113,6 +113,17 @@ namespace HiddenHarbours.Art
                  "light brightens the darkened frame instead of being darkened by it.")]
         [SerializeField] private int _sortingOrder = 32770;
 
+        [Tooltip("Depth (metres) IN FRONT of the active camera to place the light quad each frame, mirroring how " +
+                 "the day/night overlay sits at the camera (so the light reliably composites ABOVE the world). " +
+                 "This fixes the URP-2D mesh-vs-sprite ordering quirk where a light at the SAME world depth as a " +
+                 "big water/ground SPRITE could be overdrawn by it despite a higher sorting order: pinning the " +
+                 "quad's depth to the camera (like the overlay) plus the Sort-as-2D group below makes the high " +
+                 "sorting order win against every sprite. The quad's X/Y still track the lamp in world space; " +
+                 "only its DEPTH along the view axis is camera-relative. 0 = leave the quad at world depth (the " +
+                 "old behaviour). The light is depth-test-Always + additive, so this never affects the look — " +
+                 "only the compositing order.")]
+        [Min(0f)] [SerializeField] private float _cameraDepthOffset = 0.1f;
+
         [Tooltip("Local offset of the light ORIGIN from this transform (metres), e.g. push a boat spotlight to " +
                  "the bow. For a cone the beam is thrown along this transform's local UP (the boat heading).")]
         [SerializeField] private Vector2 _originOffset = Vector2.zero;
@@ -123,6 +134,7 @@ namespace HiddenHarbours.Art
 
         private Transform _quad;
         private MeshRenderer _quadRenderer;
+        private UnityEngine.Rendering.SortingGroup _sortingGroup;   // Sort-as-2D so the mesh beats sprites by order
         private MaterialPropertyBlock _mpb;
         private int _flickerSeed;
         private float _timer;
@@ -200,6 +212,20 @@ namespace HiddenHarbours.Art
             _quadRenderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
             _quadRenderer.sortingOrder = _sortingOrder;   // ABOVE the day/night overlay (~32760)
 
+            // SORT AS 2D (the fix for "the beam lit land but NOT the water"). In the URP 2D renderer a MeshRenderer
+            // does NOT reliably sort against SpriteRenderers by sortingOrder alone — for a mesh-vs-sprite pair it
+            // falls back to world-space DEPTH, so this light quad (at the boat's world depth) could be OVERDRAWN by
+            // the big Sea SPRITE that shares that depth, even though the light's sortingOrder (~32770) is far above
+            // the Sea's (-5). Land is small unlit sprites the cone happened to win against; the full-screen water
+            // sprite is not. A SortingGroup with sortAtRoot/"sort as 2D" makes the quad participate in 2D sorting
+            // like a sprite, so its high sortingOrder is honoured against EVERY sprite (water included). It clears
+            // the quad's depth info, which is fine — the light is ZTest Always and writes no depth, and nothing
+            // depth-based reads it. (The day/night overlay dodges this quirk a different way — it sits AT the
+            // camera near plane, the closest depth — which we ALSO mirror via _cameraDepthOffset in PoseQuad.)
+            _sortingGroup = go.AddComponent<UnityEngine.Rendering.SortingGroup>();
+            _sortingGroup.sortingOrder = _sortingOrder;
+            _sortingGroup.sortAtRoot = true;   // "Sort as 2D": sort the group as one 2D element by its sorting order
+
             Material mat = Resources.Load<Material>(LightMaterialPath);
             if (mat == null)
             {
@@ -249,6 +275,7 @@ namespace HiddenHarbours.Art
             _quadRenderer.SetPropertyBlock(_mpb);
 
             _quadRenderer.sortingOrder = _sortingOrder;
+            if (_sortingGroup != null) _sortingGroup.sortingOrder = _sortingOrder;   // keep the 2D-sort group in sync
             _quadRenderer.enabled = isActiveAndEnabled && _quadRenderer.sharedMaterial != null;
         }
 
@@ -258,7 +285,10 @@ namespace HiddenHarbours.Art
         /// transform's UP (the boat heading): so we place the quad's CENTRE half a range forward of the origin
         /// and scale Y to 'range', X to the cone's far-end width. For a RADIAL the lamp is at the quad CENTRE
         /// (quad space (0,0)): the quad is centred on the origin, a 2·range square so the round halo reaches
-        /// 'range' to the edge. Cheap, no alloc.
+        /// 'range' to the edge. The quad's DEPTH (Z along the view axis) is then pinned just in front of the
+        /// active camera (like the day/night overlay) so the additive light reliably composites ABOVE the world
+        /// sprites — this is the half of the over-water fix that handles the URP-2D mesh-vs-sprite depth quirk
+        /// (the SortingGroup in EnsureQuad is the other half). Cheap, no alloc.
         /// </summary>
         private void PoseQuad()
         {
@@ -273,7 +303,7 @@ namespace HiddenHarbours.Art
             {
                 // Lamp at the quad centre: centre the quad on the origin. Quad spans 2 local units; scale by r so
                 // the world quad spans 2·r (the halo reaches r to the edge).
-                _quad.position = origin;
+                _quad.position = PinDepthToCamera(origin);
                 _quad.localScale = new Vector3(r, r, 1f);
             }
             else
@@ -285,8 +315,41 @@ namespace HiddenHarbours.Art
                 float halfWidth = r * Mathf.Tan(Mathf.Min(halfAngle, 89f) * Mathf.Deg2Rad);
                 float worldWidth = Mathf.Clamp(2f * halfWidth, 0.1f, 8f * r);
                 _quad.localScale = new Vector3(worldWidth * 0.5f, r * 0.5f, 1f);   // local span 2 -> world width/height
-                _quad.position = origin + (Vector3)((Vector2)(transform.up) * (r * 0.5f));
+                _quad.position = PinDepthToCamera(origin + (Vector3)((Vector2)(transform.up) * (r * 0.5f)));
             }
+        }
+
+        /// <summary>
+        /// Keep the quad's X/Y at the lamp's world position but pull its DEPTH (Z) to just in front of the active
+        /// 2D camera, mirroring how the day/night overlay sits at the camera near plane. This is the world-depth
+        /// half of the over-water fix: in the URP 2D renderer a MeshRenderer at the SAME world depth as a big
+        /// water/ground SPRITE can be overdrawn by it regardless of sorting order, so placing the light at the
+        /// camera's (closest) depth — the same trick the overlay uses to reliably draw over the water — makes the
+        /// light win. The camera is orthographic and looks down +Z (camera at z≈-10 looking toward +Z), so
+        /// "in front" is camera.z + offset. Look-direction-agnostic via the camera's forward. When there is no
+        /// camera, or the offset is 0, the quad keeps its world depth (the old behaviour). PRESENTATION ONLY: the
+        /// light is ZTest Always + additive, so depth never changes the LOOK — only the compositing order.
+        /// </summary>
+        private Vector3 PinDepthToCamera(Vector3 worldPos)
+        {
+            if (_cameraDepthOffset <= 0f) return worldPos;
+            Camera cam = ResolveCamera();
+            if (cam == null) return worldPos;
+            // Depth along the view axis: place the quad _cameraDepthOffset metres in front of the camera, keeping
+            // its X/Y. The pure depth math lives in LightMath.CameraDepthZ (unit-tested headless); for a 2D ortho
+            // camera moving the quad along Z never changes its on-screen X/Y, only the compositing order.
+            Transform ct = cam.transform;
+            float aheadZ = LightMath.CameraDepthZ(ct.position.z, ct.forward.z, cam.nearClipPlane, _cameraDepthOffset);
+            return new Vector3(worldPos.x, worldPos.y, aheadZ);
+        }
+
+        /// <summary>The active camera (MainCamera, else the first enabled one). Mirrors DayNightController.</summary>
+        private static Camera ResolveCamera()
+        {
+            Camera cam = Camera.main;
+            if (cam != null) return cam;
+            var all = Camera.allCameras;
+            return (all != null && all.Length > 0) ? all[0] : null;
         }
 
         /// <summary>
