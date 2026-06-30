@@ -462,3 +462,78 @@ fade-chop and stays gone, wind dims further, master 0 = off at every sea-state; 
 calm and smears monotonically toward 0, clamped. The CI shader-compile guard
 (`WaterShaderCompileGuardTests.cs`) continues to force-compile the shipped `Water.mat` variant: no `+` in
 any `[Header]`/Property string, no `[unroll]` over a runtime bound (the magenta class stays guarded).
+
+## Addendum — shipped art-pass tunables (sky CONTENT reflection: drifting clouds, a LIVING moon glitter path, faint stars)
+
+A ninth visual upgrade shipped on `HiddenHarboursWater.shader` (the owner's explicit ask: *"I do want
+cloud/sky reflections on water"*). **This is a ¾ top-down game — the player never sees the sky directly, so
+the water's reflection is the ONLY place the sky appears.** The eighth addendum reflected the sky *colour* +
+a sun glint; this reflects **sky CONTENT** on top of it: **(1) drifting CLOUDS** (day + night),
+**(2) the MOON** — a phase-shaped reflected disc + a shimmering **vertical GLITTER PATH** (the classic
+moonlight-on-water column) that **RISES, ARCS across the night, and SETS** — and **(3) faint STAR sparkle**
+(night). Mechanism: `design/water-rendering.md` §11.1.
+
+Like every prior addendum, **all of it is visual-only** — it ADDS to `col.rgb` like every other water layer
+and **never** touches `depth`, `clip()`, the deep tint, the caustic gate, or `_WaterLevel`; it drives no sim
+and saves nothing (the determinism / P1-integrity invariant above holds). It composites **after** the
+sky-colour mirror (`SkyReflection`) but **before** the foam (whitecaps read over the sky), and **before** the
+boat-light term + the palette guard-rail (which still BOUND the result — the moon can read bright without
+blowing past the value ceiling unpleasantly). Every new constant is a material property (rule 6), the layers
+stay **pixelized** (decision (2)), and they default **ON at a tasteful strength** so it reads immediately yet
+`_SkyReflectionStrength = 0` returns the exact eighth-addendum (sky-colour + sun) look.
+
+- **Inherits the SEA-STATE FADE (NO new water uniform).** Clouds/moon/stars all reuse the existing
+  `ReflectionStrength()` / `ReflectionSharpness()` curves (off the already-pushed `_Chop` / `_Roughness`), so
+  the whole sky reflection is **strongest on CALM/glassy water and gone in chop/storm** (a storm doesn't
+  mirror the sky either). The moon glitter is the **money shot on calm night water**. `WaterSurface.cs` is
+  **untouched**.
+- **Day/night-driven.** The moon + stars gate ON by **night** (`NightFactor()` — Rec.601 darkness of the
+  already-global `_DayNightTint`, the same convention the boat-light night-gate uses), off by day; clouds read
+  day + night and tint toward the current sky (warm at dusk). The cloud DRIFT reads the **shared sim wind**
+  global `_WindWorld` (the SAME one the grass + water already read), so the sky drifts cohesively with the
+  scene; it declares `_WindWorld` as a read-only global (no new push).
+
+### The LIVING moon (a new self-installing service + pure math)
+
+The moon is **alive**, not a static disc: it **moves** across the night and changes **shape** over the lunar
+month, **tied to the existing tide cycle**. This is the one piece that adds C# beyond the shader:
+
+- **`_MoonDir` / `_MoonPhaseState` globals from a new `Assets/_Project/Code/Art/MoonCycle.cs`** — a
+  **self-installing** component (a `RuntimeInitializeOnLoadMethod` + a hidden `DontDestroyOnLoad` host, mirroring
+  `GrassWindBridge` / `DayNightController`; **`DayNightController` is NOT touched**). It reads time ONLY through
+  the Core `GameServices.Clock` accessor (rule 4) and publishes, on a throttled tick (rule 7): `_MoonDir.xy` (the
+  moon's current arc direction, sweeping east→west; `(0,0)` when down) and `_MoonPhaseState` (x = phase 0..1,
+  y = signed terminator, z = live brightness, w = above-horizon presence). The water shader reads these to
+  **position** the reflected disc + glitter (`_MoonDir`) and **shape** it (the crescent/gibbous terminator) and
+  **dim** it (a thin crescent gives less light than a full moon).
+- **Phase TIED to the spring/neap TIDE cycle (vision-and-pillars §5.5).** `MoonMath.Phase01` derives the phase
+  from the **same lunar period** that drives `TideModel`'s spring/neap envelope
+  (`env = 0.5 + 0.5·cos(2π·tHours / (lunarHours/2))`). At `phase01 = 0` (new) and `phase01 = 0.5` (full) the
+  envelope is at SPRING (env = 1), so **full moon ↔ spring tide** and **new moon ↔ the other spring**, by
+  construction — proved in a headless test. The period is a serialized tunable defaulting to the canon **28
+  days / 1200 s/day** (mirroring `GameConfig.LunarMonthDays` / `SecondsPerDay`); `GameConfig` isn't in a
+  `Resources` folder so it can't be auto-loaded here without touching the builders — keep these in sync, or
+  expose `GameConfig` through Core later (an additive follow-up).
+- **Per-night presence by phase (the night-sailing stakes).** A tunable links the moon's per-night presence to
+  its phase: a **full moon** is bright and up most of the night; a **new moon** barely up — a genuinely dark
+  night you need the boat spotlight (ADR 0016) for (P1/P5). Brightness = illuminated-fraction × presence.
+
+**New pure math + headless tests.** `Assets/_Project/Code/Art/MoonMath.cs` (`Phase01`, `IlluminatedFraction`,
+`TerminatorSigned`, `MoonArc`, `NightProgress`) + `MoonCycle.ComputeState`'s global-packing are deterministic
+(rule 5) and unit-tested in `Assets/Tests/EditMode/Art/MoonMathTests.cs`: phase cycles 0..1 over the month and
+lands full-moon-on-spring-tide / quarter-on-neap; the arc rises→peaks→sets and is down by day; new moon is
+dimmer than full. The reflection curve twins gain `WaterReflection.MoonDirection` (fallback, opposite-sun) /
+`NightFactor` / `SkyElementStrength` (clouds all-day, moon/stars night-gated, all inheriting the sea-state
+fade), tested in `WaterReflectionTests.cs`. The in-shader cloud/moon/star FIELDS are GPU value-noise (not
+unit-testable headless). The CI shader-compile guard (`WaterShaderCompileGuardTests.cs`) continues to
+force-compile the shipped `Water.mat` variant: no `+` in any `[Header]`/Property string, no `[unroll]` over a
+runtime bound (the magenta class stays guarded).
+
+**New tunables (additive — none of the owner's existing tuned values changed):** `_SkyReflectionStrength`
+(0.7, master for ALL sky content; **0 = the eighth-addendum sky-colour-only look**); *clouds* —
+`_CloudStrength` (0.5), `_CloudScale` (0.06), `_CloudDriftSpeed` (0.06), `_CloudSoftness` (0.6), `_CloudColor`
+(pale); *moon* — `_MoonStrength` (0.9), `_MoonSize` (1.2 m), `_MoonGlitter` (1.0), `_MoonGlitterLength` (9 m),
+`_MoonColor` (cool silver); *stars* — `_StarStrength` (0.18), `_StarDensity` (7), `_StarTwinkleSpeed` (1.4);
+*night gate* — `_NightStart` (0.35), `_NightSoftness` (0.3). On `MoonCycle`: the lunar period, the moonrise/set
+fractions, and the phase-drives-presence link. To turn sky content OFF (the pre-feature look), set
+`_SkyReflectionStrength` to 0.

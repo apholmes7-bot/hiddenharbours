@@ -141,6 +141,20 @@ Material:
     - _ReflectionSmear: 1.6
     - _ReflectionSunStreak: 0.9
     - _ReflectionSunSharp: 6
+    - _SkyReflectionStrength: 0.7
+    - _CloudStrength: 0.5
+    - _CloudScale: 0.06
+    - _CloudDriftSpeed: 0.06
+    - _CloudSoftness: 0.6
+    - _MoonStrength: 0.9
+    - _MoonSize: 1.2
+    - _MoonGlitter: 1
+    - _MoonGlitterLength: 9
+    - _StarStrength: 0.18
+    - _StarDensity: 7
+    - _StarTwinkleSpeed: 1.4
+    - _NightStart: 0.35
+    - _NightSoftness: 0.3
     - _PaletteGradeStrength: 0.35
     - _PaletteValueFloor: 0.1
     - _PaletteValueCeil: 0.85
@@ -162,6 +176,8 @@ Material:
     - _FbmTint: {r: 0.45, g: 0.58, b: 0.63, a: 1}
     - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _ReflectionColor: {r: 0.56, g: 0.68, b: 0.8, a: 1}
+    - _CloudColor: {r: 0.86, g: 0.88, b: 0.92, a: 1}
+    - _MoonColor: {r: 0.78, g: 0.84, b: 0.95, a: 1}
     - _PaletteDeep: {r: 0.05, g: 0.135, b: 0.205, a: 1}
     - _PaletteMid: {r: 0.14, g: 0.3, b: 0.38, a: 1}
     - _PaletteShallow: {r: 0.34, g: 0.6, b: 0.62, a: 1}

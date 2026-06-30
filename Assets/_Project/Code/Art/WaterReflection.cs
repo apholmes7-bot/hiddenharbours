@@ -69,5 +69,67 @@ namespace HiddenHarbours.Art
                             + Mathf.Clamp01(roughness) * Mathf.Max(windWeight, 0f);
             return Mathf.Clamp01(1f - agitation);
         }
+
+        // ===== SKY-CONTENT REFLECTIONS (clouds + moon glitter path + stars) ===============================
+        // The sea is the ONLY place the sky appears in this ¾ top-down game, so the reflection also mirrors
+        // SKY CONTENT, not just the flat sky colour: drifting clouds (day + night), the moon with a vertical
+        // glitter path (night), and faint star sparkle (night). The in-shader fields are GPU value-noise and
+        // can't run headless, but the DIRECTION + the day/night GATES that decide WHEN/WHERE each reads are
+        // pure functions, mirrored here for the determinism/feel guard. WaterSurface.cs is NOT touched — the
+        // shader reads the already-published globals (_DayNightTint / _SunDir / _SunElevation / _WindWorld).
+
+        /// <summary>
+        /// Twin of the shader's <c>MoonDir</c>. The moon sits roughly OPPOSITE the sun in the sky, so its
+        /// reflected ground direction is the negated sun direction. Normalized (NaN-safe; falls back to a
+        /// fixed night arc <c>(0, 1)</c> on a near-zero sun direction, e.g. the cycle not running, matching
+        /// the shader). It need not be astronomically exact — just a believable, stable moon position.
+        /// </summary>
+        /// <param name="sunDirX">The ground-plane sun direction X (the <c>_SunDir.x</c> global).</param>
+        /// <param name="sunDirY">The ground-plane sun direction Y (the <c>_SunDir.y</c> global).</param>
+        public static Vector2 MoonDirection(float sunDirX, float sunDirY)
+        {
+            Vector2 opp = new Vector2(-sunDirX, -sunDirY);
+            if (opp.sqrMagnitude < 1e-6f)
+                return new Vector2(0f, 1f);   // no sun dir (cycle off) -> a fixed believable night arc (+Y)
+            return opp.normalized;
+        }
+
+        /// <summary>
+        /// Twin of the shader's <c>NightFactor</c>: a 0..1 darkness gate from the day/night multiply tint's
+        /// luminance. <c>0</c> in full daylight (bright tint), rising to <c>1</c> at deep night (dark tint),
+        /// with a smooth dusk ramp so the moon/stars fade in as the sky darkens. Mirrors the boat-light night
+        /// gate convention (Rec.601 luma of the tint, then <c>smoothstep(threshold, threshold+soft, darkness)</c>).
+        /// When the cycle is not running the tint is near-black/unset and the caller passes a fallback instead.
+        /// </summary>
+        /// <param name="tintLuma">Rec.601 luminance of the day/night tint (<c>1</c> day .. <c>~0</c> night).</param>
+        /// <param name="threshold">Darkness at which the night content STARTS to read (<c>_NightStart</c>).</param>
+        /// <param name="softness">The dusk ramp width above the threshold (<c>_NightSoftness</c>).</param>
+        public static float NightFactor(float tintLuma, float threshold, float softness)
+        {
+            float darkness = Mathf.Clamp01(1f - Mathf.Max(tintLuma, 0f));
+            float lo = Mathf.Clamp01(threshold);
+            float hi = Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f));
+            return WaterSurface.Smoothstep(lo, hi, darkness);
+        }
+
+        /// <summary>
+        /// Twin of the shader's per-element sky-content strength: the master <see cref="ReflectionStrength"/>
+        /// (sea-state fade — clouds/moon/stars all die in a storm, like the rest of the reflection) × the
+        /// element's own tunable strength × a day/night gate. <paramref name="nightGated"/> selects whether
+        /// the element is NIGHT-only (moon, stars — multiply by the night factor) or all-day (clouds —
+        /// multiply by 1). Reuses <see cref="ReflectionStrength"/> so clouds/moon/stars inherit the SAME
+        /// calm→stormy fade as the sky-colour mirror (strongest on glass, gone in chop), and the moon/stars
+        /// additionally peak at night.
+        /// </summary>
+        /// <param name="seaStateStrength">The result of <see cref="ReflectionStrength"/> (the master sea-state fade).</param>
+        /// <param name="elementStrength">The element's own tunable strength (cloud/moon/star).</param>
+        /// <param name="nightFactor">The <see cref="NightFactor"/> darkness gate (0 day .. 1 night).</param>
+        /// <param name="nightGated">True = night-only (moon/stars); false = all-day (clouds).</param>
+        public static float SkyElementStrength(
+            float seaStateStrength, float elementStrength, float nightFactor, bool nightGated)
+        {
+            float gate = nightGated ? Mathf.Clamp01(nightFactor) : 1f;
+            return Mathf.Max(seaStateStrength, 0f) * Mathf.Max(elementStrength, 0f) * gate;
+        }
     }
 }

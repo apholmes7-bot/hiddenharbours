@@ -210,6 +210,39 @@ Shader "HiddenHarbours/Water"
         _ReflectionSunStreak   ("Reflection sun streak intensity", Range(0,2)) = 0.9
         _ReflectionSunSharp    ("Reflection sun streak sharpness", Float) = 6.0
 
+        [Header(Sky CONTENT reflection (clouds   moon glitter   stars   day night driven))]
+        // This is a three-quarter top-down game: the player never sees the sky directly, so the WATER's reflection is the
+        // ONLY place the sky appears. On top of the sky-COLOUR mirror + sun glint above, this reflects SKY
+        // CONTENT — drifting CLOUDS (day + night), the MOON with a shimmering vertical glitter PATH (night), and
+        // faint STAR sparkle (night). All of it INHERITS the existing sea-state fade (strong on CALM/glassy
+        // water, gone in chop/storm — a storm doesn't mirror) and rides the surface ripple; the moon/stars
+        // additionally GATE ON by night (darkness from the day/night _DayNightTint), clouds read day and night.
+        // The clouds DRIFT along the shared sim wind (_WindWorld, the SAME global the grass + water read) so the
+        // sky moves cohesively with the scene. col.rgb ONLY: it ADDS to the colour like every other water layer
+        // and NEVER touches depth/clip/the deep tint/the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md
+        // rule 5); _SkyReflectionStrength = 0 returns the exact pre-feature (sky-colour + sun) look.
+        //   _SkyReflectionStrength — master for ALL sky-content (clouds + moon + stars); 0 = today's look.
+        //   _CloudStrength/_CloudScale/_CloudDriftSpeed/_CloudSoftness/_CloudColor — the drifting cloud bands.
+        //   _MoonStrength/_MoonSize/_MoonGlitter/_MoonGlitterLength/_MoonColor — the moon disc + glitter path.
+        //   _StarStrength/_StarDensity/_StarTwinkleSpeed — the faint twinkling star sparkle (night).
+        //   _NightStart/_NightSoftness — the darkness (from _DayNightTint) at which the moon/stars fade in.
+        _SkyReflectionStrength ("Sky content reflection master (0 = off / today's look)", Range(0,1)) = 0.7
+        _CloudStrength    ("Cloud reflection strength", Range(0,1)) = 0.5
+        _CloudScale       ("Cloud reflection scale (small = bigger clouds)", Float) = 0.06
+        _CloudDriftSpeed  ("Cloud drift speed (along the wind)", Float) = 0.06
+        _CloudSoftness    ("Cloud edge softness (0 = crisp, 1 = wispy)", Range(0,1)) = 0.6
+        _CloudColor       ("Cloud color (pale; tinted warm at dusk by the sky)", Color) = (0.86, 0.88, 0.92, 1.0)
+        _MoonStrength     ("Moon reflection strength (night)", Range(0,2)) = 0.9
+        _MoonSize         ("Moon reflected disc size (m)", Float) = 1.2
+        _MoonGlitter      ("Moon glitter path intensity", Range(0,2)) = 1.0
+        _MoonGlitterLength("Moon glitter path length (m, descending column)", Float) = 9.0
+        _MoonColor        ("Moon color (cool silver)", Color) = (0.78, 0.84, 0.95, 1.0)
+        _StarStrength     ("Star sparkle strength (night, faint)", Range(0,1)) = 0.18
+        _StarDensity      ("Star sparkle density (higher = more, smaller stars)", Float) = 7.0
+        _StarTwinkleSpeed ("Star twinkle speed", Float) = 1.4
+        _NightStart       ("Night content start (darkness 0..1 where moon/stars fade in)", Range(0,1)) = 0.35
+        _NightSoftness    ("Night content dusk ramp width", Range(0,1)) = 0.3
+
         [Header(Depth source)]
         _WaterLevel     ("Water level (m, sim-driven)", Float) = 0.0
         [NoScaleOffset] _HeightTex ("Seabed height map (R=elevation)", 2D) = "black" {}
@@ -361,6 +394,25 @@ Shader "HiddenHarbours/Water"
             // the sun sets (no glitter under a set sun). 0 when the cycle is not running -> handled by the fallback.
             float  _SunElevation;
 
+            // GLOBAL shared SIM WIND (published by HiddenHarbours.Art.GrassWindBridge via Shader.SetGlobalVector,
+            // the SAME global the grass shader reads). _WindWorld.xy = the wind DIRECTION × a 0..1 strength, so a
+            // gust leans the grass AND drifts the water's CLOUD reflections TOGETHER (cohesive sky/scene motion).
+            // (0,0,0,0) when nothing publishes it -> the cloud drift falls back to a gentle fixed +X creep, so an
+            // empty material / a bare art scene still reads sensibly (never a frozen or NaN drift). A GLOBAL
+            // (outside the per-material CBUFFER) like _SunDir; reading it adds NO new C# uniform push to this shader.
+            float4 _WindWorld;
+
+            // GLOBAL LIVING-MOON state (published by HiddenHarbours.Art.MoonCycle via Shader.SetGlobalVector).
+            // The moon RISES/ARCS/SETS across the night and cycles through its PHASES (tied to the same lunar
+            // period as the spring/neap tides). The water reflection reads these to POSITION + SHAPE the
+            // reflected moon. GLOBALS (outside the per-material CBUFFER), so an empty material still compiles and
+            // a no-MoonCycle scene reads them as zero -> the reflection falls back to a fixed opposite-sun moon.
+            //   _MoonDir.xy        — the moon's CURRENT reflected ground direction (sweeps east->west); (0,0) = down.
+            //   _MoonPhaseState    — x = phase 0..1 (0 new, 0.5 full), y = signed terminator (the crescent mask),
+            //                        z = live brightness (illuminated-fraction × presence), w = above-horizon 0..1.
+            float4 _MoonDir;
+            float4 _MoonPhaseState;
+
             // GLOBAL BOAT SPOTLIGHT (ADR 0016) — published by HiddenHarbours.Art.BoatSpotlight via Shader.SetGlobal*.
             // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this custom-shader WATER OVER the
             // quad regardless of sorting order (two quad-sort fixes failed). So the water LIGHTS ITSELF: the frag
@@ -462,6 +514,23 @@ Shader "HiddenHarbours/Water"
                 float  _ReflectionSmear;
                 float  _ReflectionSunStreak;
                 float  _ReflectionSunSharp;
+                // Sky-content reflection (clouds + moon glitter + stars; col.rgb-only dressing, day/night-driven).
+                float  _SkyReflectionStrength;
+                float  _CloudStrength;
+                float  _CloudScale;
+                float  _CloudDriftSpeed;
+                float  _CloudSoftness;
+                float4 _CloudColor;
+                float  _MoonStrength;
+                float  _MoonSize;
+                float  _MoonGlitter;
+                float  _MoonGlitterLength;
+                float4 _MoonColor;
+                float  _StarStrength;
+                float  _StarDensity;
+                float  _StarTwinkleSpeed;
+                float  _NightStart;
+                float  _NightSoftness;
                 float  _WaterLevel;
                 float  _HeightMin;
                 float  _HeightMax;
@@ -985,6 +1054,192 @@ Shader "HiddenHarbours/Water"
                 return reflectionRGB * strength;
             }
 
+            // ---- night factor: how DARK is the sky right now? (gates the moon + stars) -----------------------
+            // Mirrors WaterReflection.NightFactor (the headless determinism twin) AND the boat-light night gate
+            // convention: Rec.601 luma of the day/night tint -> darkness -> smoothstep over the dusk ramp. 0 in
+            // full daylight, 1 at deep night, a smooth dusk rise between (the moon/stars fade in as the sky
+            // darkens). When the day/night cycle is NOT running the tint is near-black/unset; we treat that as
+            // DAY (returns 0 -> no phantom night moon in a bare art scene / editor preview), the same "unset"
+            // convention the reflection/specular/palette layers use. col.rgb dressing only (P1, rule 5).
+            float NightFactor()
+            {
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                if (tintSum <= 1e-3)
+                    return 0.0;                                   // cycle off / unset -> treat as day (no moon)
+                float tintLum = max(0.0, dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114)));
+                float darkness = saturate(1.0 - tintLum);
+                float lo = saturate(_NightStart);
+                float hi = saturate(_NightStart + max(_NightSoftness, 1e-4));
+                return smoothstep(lo, hi, darkness);
+            }
+
+            // ---- moon direction: the LIVING moon's current arc position (or a fallback) ----------------------
+            // Prefer the published _MoonDir global (the MoonCycle service sweeps it east->west across the night,
+            // so the reflected disc + glitter TRAVEL over the water). When no MoonCycle is running (_MoonDir == 0,
+            // e.g. a bare art scene / editor preview) fall back to a believable FIXED moon roughly OPPOSITE the
+            // sun (negated _SunDir), or a +Y night arc if the sun dir is unset too. Mirrors
+            // WaterReflection.MoonDirection for the fallback branch (the headless determinism twin). Normalized.
+            float2 MoonDir()
+            {
+                if (dot(_MoonDir.xy, _MoonDir.xy) > 1e-6)
+                    return normalize(_MoonDir.xy);               // the live, moving moon (MoonCycle)
+                float2 opp = -_SunDir.xy;                        // fallback: opposite the sun
+                return dot(opp, opp) > 1e-6 ? normalize(opp) : float2(0, 1);
+            }
+
+            // ---- SKY CONTENT reflection: drifting CLOUDS + the MOON glitter path + faint STARS ---------------
+            // The ¾ top-down camera never shows the sky, so the water's reflection is the ONLY window onto it.
+            // This composes three additive col.rgb layers ON TOP of the sky-COLOUR + sun mirror (SkyReflection):
+            //   (1) CLOUDS  — soft elongated pale bands scrolling along the SHARED sim wind (_WindWorld) so the
+            //                 sky drifts WITH the grass/water; tinted by the current sky (warm at dusk). Day+night.
+            //   (2) MOON    — a brighter reflected disc + a shimmering VERTICAL GLITTER PATH (the classic
+            //                 moonlight-on-water column: broken, wavy, animated highlights descending toward the
+            //                 viewer from the moon's reflected position). NIGHT-gated; reads on CALM night water.
+            //   (3) STARS   — tiny twinkling glints, very sparse + faint. NIGHT-gated.
+            // ALL of it inherits the existing sea-state fade (strong on CALM, gone in a storm) via ReflectionStrength
+            // and the sharpness smear, and the moon/stars additionally gate by night. Everything is pixelized
+            // (pixel-art faithful, §3) and ADDED to col.rgb — it NEVER touches depth/clip/the deep tint/the
+            // caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). _SkyReflectionStrength = 0 = today's look.
+            //   worldXY    — pixel world position (pixelized inside each layer for the pixel-art read).
+            //   surf       — the layer-2 surface noise (0..1) so the sky ripples WITH the swell at calm.
+            //   swellCrest — the rolling-swell crest factor (0..1) so the sky brightens on the lit swell faces.
+            //   t          — _Time.y (clouds drift, the moon glitter shimmers, stars twinkle).
+            float3 SkyContentReflection(float2 worldXY, float surf, float swellCrest, float t)
+            {
+                float master = saturate(_SkyReflectionStrength);
+                if (master <= 0.001)
+                    return float3(0, 0, 0);                       // sky content off -> the pre-feature look
+
+                // The SAME sea-state fade + sharpness the sky-colour mirror uses: clouds/moon/stars die in chop.
+                float seaState = ReflectionStrength();            // strong on glass -> 0 by the fade-chop / storm
+                if (seaState <= 0.001)
+                    return float3(0, 0, 0);                       // a storm doesn't mirror the sky either
+                float sharp = ReflectionSharpness();              // 1 = crisp mirror, 0 = smeared
+                float night = NightFactor();                      // 0 day .. 1 deep night (moon/stars gate)
+
+                // the current reflected SKY colour (warm dusk / dark night / bright noon) — clouds borrow it so
+                // they tint with the time of day; reuse the SkyReflection fallback convention for an unset cycle.
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                bool cycleOn = tintSum > 1e-3;
+                float3 sky = cycleOn ? lerp(_ReflectionColor.rgb, _DayNightTint.rgb, saturate(_ReflectionSkyTint))
+                                     : _ReflectionColor.rgb;
+
+                float2 pp = Pixelize(worldXY);
+                float3 outRGB = float3(0, 0, 0);
+
+                // ---- (1) drifting CLOUDS (day + night) ------------------------------------------------------
+                // Soft, elongated pale bands scrolled along the shared sim wind. Built from a couple of FBM
+                // samples on a coord COMPRESSED across the wind so the cloud cells elongate into wisps ALONG it
+                // (like the wind-streaked foam). _CloudSoftness widens the soft edge (crisp puffs -> wispy veil).
+                if (_CloudStrength > 0.001)
+                {
+                    float2 wind = _WindWorld.xy;
+                    float2 wdir = dot(wind, wind) > 1e-6 ? normalize(wind) : float2(1, 0);   // +X creep fallback
+                    float2 wperp = float2(-wdir.y, wdir.x);
+                    float2 drift = wdir * (_CloudDriftSpeed * t);
+                    // anisotropic cloud coord: stretch ALONG the wind (compress the cross axis) so cells elongate.
+                    float2 cp = (worldXY + drift) * max(_CloudScale, 1e-4);
+                    float2 capr = float2(dot(cp, wdir), dot(cp, wperp) * 2.5);
+                    float clouds = Fbm(Pixelize(capr));            // 0..1 broad fractal field (pixelized inside Fbm)
+                    // shape into bands: a soft threshold makes pale clumps with gaps of clear sky between.
+                    float soft = lerp(0.05, 0.4, saturate(_CloudSoftness));
+                    float cloudMask = smoothstep(0.5 - soft, 0.5 + soft, clouds);
+                    // the clouds ripple a touch with the surface at calm, and catch a little more light on crests.
+                    cloudMask *= lerp(0.85, 1.15, surf) * lerp(0.9, 1.1, swellCrest);
+                    // pale cloud colour, gently tinted toward the current sky (warm at dusk, cool at night).
+                    float3 cloudCol = lerp(_CloudColor.rgb, sky, 0.35);
+                    outRGB += cloudCol * cloudMask * _CloudStrength;
+                }
+
+                // ---- (2) the LIVING MOON: a reflected disc (phase-shaped) + a vertical GLITTER PATH (night) --
+                // The moon RISES/ARCS/SETS across the night (its direction comes from MoonCycle via _MoonDir) and
+                // changes shape over the lunar month (the crescent/gibbous TERMINATOR comes from _MoonPhaseState),
+                // dimming to a thin crescent at new moon. When no MoonCycle runs, fall back to a fixed full moon
+                // opposite the sun so a bare scene still shows one.
+                // moonBright: live brightness (illuminated-fraction × presence) — fall back to 1 (full) if unset.
+                // moonPresence: 0..1 above-horizon (fades the moon at the horizons) — fall back to 1 if unset.
+                bool moonStateOn = (abs(_MoonPhaseState.x) + abs(_MoonPhaseState.y)
+                                  + _MoonPhaseState.z + _MoonPhaseState.w) > 1e-4;
+                float moonBright   = moonStateOn ? _MoonPhaseState.z : 1.0;
+                float moonPresence = moonStateOn ? _MoonPhaseState.w : 1.0;
+                float terminator   = moonStateOn ? _MoonPhaseState.y : -1.0;   // -1 = full disc by default
+                // the moon reads when the SKY is dark (day/night) AND the moon is up + lit.
+                float moonGate = night * moonPresence;
+                if (moonGate > 0.001 && moonBright > 0.001 && (_MoonStrength > 0.001 || _MoonGlitter > 0.001))
+                {
+                    // Place the moon's reflected position out along the (current arc) moon direction from a scene
+                    // anchor, so the glitter column reads from a believable spot and is STABLE in world space (it
+                    // doesn't crawl with the pixel). Anchor at the height-map world centre when baked, else origin.
+                    float2 anchor = _HeightWorldMin.xy + _HeightWorldSize.xy * 0.5;
+                    float2 mdir = MoonDir();
+                    float moonReach = max(_MoonGlitterLength, 1e-3);
+                    float2 moonPos = anchor + mdir * moonReach * 0.5;     // the reflected moon disc's centre
+
+                    // --- the disc: a soft bright spot at the reflected moon position, rippled by the surface ---
+                    float2 toMoon = pp - moonPos;
+                    float dMoon = length(toMoon);
+                    float discR = max(_MoonSize, 1e-3);
+                    float disc = 1.0 - smoothstep(discR * 0.5, discR, dMoon);
+                    // the surface breaks the disc edge so it shimmers rather than reading as a hard circle.
+                    disc *= lerp(0.7, 1.0, surf);
+                    // PHASE / terminator: carve the lit crescent. Project the in-disc offset along the moon
+                    // direction (the lit limb faces the sun); the terminator (-1 full .. +1 new) is the cut line
+                    // in that normalized along-axis coord. limbT > terminator stays lit; below is the dark limb.
+                    float limbT = discR > 1e-4 ? dot(toMoon, mdir) / discR : 0.0;   // -1..1 across the disc
+                    float litLimb = smoothstep(terminator - 0.25, terminator + 0.25, limbT);
+                    disc *= litLimb;
+
+                    // --- the GLITTER PATH: the classic moonlight column descending toward the viewer ----------
+                    // Build a coord along the moon axis (the column runs from the moon toward the camera/bottom).
+                    // alongMoon grows from the moon outward; crossMoon is the lateral distance from the column.
+                    float along = dot(toMoon, mdir);                      // <0 between the moon and the viewer
+                    float cross = dot(toMoon, float2(-mdir.y, mdir.x));   // signed lateral offset from the column
+                    // the column lives on the viewer side of the moon (along < 0) and fades over its length.
+                    float colN = saturate(-along / moonReach);           // 0 at the moon -> 1 at the far end
+                    float colSpan = 1.0 - colN;                          // bright near the moon, fading out
+                    // the column WIDENS as it descends (a fan of glints), and the surface chop scatters it.
+                    float halfWidth = discR * (0.6 + colN * 2.2) * lerp(1.0, 2.2, 1.0 - sharp);
+                    float lateral = 1.0 - smoothstep(0.0, max(halfWidth, 1e-3), abs(cross));
+                    // BROKEN, WAVY, ANIMATED highlights: ridge two scrolling noise samples so only bright lanes
+                    // show (the glints), the lanes WAVERING with the surface and TWINKLING over time. Pixelized.
+                    float2 gUV = float2(along, cross) * 0.6 + float2(-t * 0.6, sin(t * 0.7) * 0.5);
+                    float g1 = ValueNoise(Pixelize(gUV));
+                    float g2 = ValueNoise(Pixelize(gUV * 1.7 + 4.2));
+                    float glints = pow(saturate(1.0 - abs(g1 - g2) * 2.2), 3.0);
+                    // a fast shimmer flicker so the path twinkles (broken light on moving water).
+                    float shimmer = 0.6 + 0.4 * sin(t * 3.1 + (along + cross) * 1.3);
+                    float pathMask = colSpan * lateral * glints * shimmer;
+
+                    // dim the whole moon by its live brightness (thin crescent / new moon = dim) and the night-up gate.
+                    float3 moonCol = _MoonColor.rgb;
+                    outRGB += moonCol * disc * _MoonStrength * moonGate * moonBright;
+                    outRGB += moonCol * pathMask * _MoonGlitter * moonGate * moonBright;
+                }
+
+                // ---- (3) faint STAR sparkle (night) ---------------------------------------------------------
+                // Tiny, sparse, twinkling glints scattered on the surface. A high-frequency hash field thresholded
+                // hard (few cells light), each cell twinkling on its OWN phase so they don't pulse together. Very
+                // subtle (small default strength), gated by night. Pixelized so the stars read as single pixels.
+                if (_StarStrength > 0.001 && night > 0.001)
+                {
+                    float2 sp = Pixelize(worldXY * max(_StarDensity, 1e-3));
+                    float2 cell = floor(sp);
+                    float h = Hash21(cell);                              // per-cell "is there a star here" + phase
+                    // only the brightest few cells host a star (sparse); the rest are dark sky.
+                    float star = smoothstep(0.985, 1.0, h);
+                    if (star > 0.0)
+                    {
+                        // each star twinkles on its own phase (hash drives the phase offset), 0..1 brightness.
+                        float phase = Hash21(cell + 1.7) * 6.2831853;
+                        float twinkle = 0.4 + 0.6 * (0.5 + 0.5 * sin(t * max(_StarTwinkleSpeed, 0.0) + phase));
+                        outRGB += _MoonColor.rgb * star * twinkle * _StarStrength * night;
+                    }
+                }
+
+                // master + the SAME sea-state fade the sky-colour mirror gets (clouds/moon/stars die in chop).
+                return outRGB * master * seaState;
+            }
+
             // ---- the BOAT SPOTLIGHT term: light the WATER from WITHIN this shader (ADR 0016) -----------------
             // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this water shader OVER the quad
             // regardless of sorting order — so the water lights ITSELF from the published globals (_BoatLight*).
@@ -1315,6 +1570,18 @@ Shader "HiddenHarbours/Water"
                 // clip()/the deep tint/the caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). The whole
                 // layer dials to nothing with _ReflectionStrength = 0 (today's look). See SkyReflection() above.
                 col.rgb += SkyReflection(worldXY, surf, swellCrest, t);
+
+                // ---- SKY CONTENT: drifting CLOUDS + the living MOON glitter path + faint STARS ----------------
+                // This is a ¾ top-down game, so the water's reflection is the ONLY place the sky appears. On top
+                // of the sky-COLOUR + sun mirror above, reflect SKY CONTENT: clouds drifting along the shared sim
+                // wind (day + night), the MOON (a phase-shaped disc + a shimmering vertical glitter path that
+                // RISES/ARCS/SETS across the night), and faint twinkling STARS. The moon/stars gate ON by night
+                // (darkness from _DayNightTint); clouds read day + night. ALL of it inherits the SAME sea-state
+                // fade as the mirror (strong on CALM/glassy water, gone in chop/storm — a storm doesn't mirror).
+                // Added after the sky-colour mirror but BEFORE the foam (whitecaps read over the sky) — col.rgb
+                // ONLY, never depth/clip/the deep tint/the caustic gate/_WaterLevel (P1 integrity, rule 5). The
+                // whole layer dials to nothing with _SkyReflectionStrength = 0. See SkyContentReflection() above.
+                col.rgb += SkyContentReflection(worldXY, surf, swellCrest, t);
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
