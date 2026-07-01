@@ -22,9 +22,14 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>Tied to the tides (vision-and-pillars §5.5).</b> The PHASE derives from the SAME lunar period
     /// that drives the tide's spring/neap envelope (<see cref="MoonMath.Phase01"/> proves the alignment), so
-    /// FULL MOON lands on a SPRING tide. The period is a serialized tunable defaulting to the canon 28 days /
-    /// 1200 s/day — it MIRRORS <c>GameConfig.LunarMonthDays</c>/<c>SecondsPerDay</c>. (GameConfig isn't in a
-    /// Resources folder, so it can't be auto-loaded here without touching the builders/other lanes; if a
+    /// FULL MOON lands on a SPRING tide. <b>The tide envelope is keyed to the RAW clock (no offset)</b> while the
+    /// phase adds <c>_phaseOffsetDays</c>, so that offset MUST be a multiple of the HALF-lunar period
+    /// (<c>LunarMonthDays/2</c>) or the alignment breaks — a quarter-period offset would put the full moon on a
+    /// NEAP. It ships at <b>14</b> (half a 28-day month): a half-period multiple (alignment preserved) that starts
+    /// a new game on a FULL moon over a SPRING tide (the biggest low tide, for the clam-digging opening, with the
+    /// moon reflection visible from the first frame). The period is a serialized tunable defaulting to the canon
+    /// 28 days / 1200 s/day — it MIRRORS <c>GameConfig.LunarMonthDays</c>/<c>SecondsPerDay</c>. (GameConfig isn't
+    /// in a Resources folder, so it can't be auto-loaded here without touching the builders/other lanes; if a
     /// future change exposes it through Core, wire it then. Until then keep these in sync with GameConfig.)</para>
     ///
     /// <para><b>Self-installing (mirrors <see cref="GrassWindBridge"/> / <see cref="DayNightController"/>).</b>
@@ -50,8 +55,15 @@ namespace HiddenHarbours.Art
         [Min(1f)] [SerializeField] private float _secondsPerDay = 1200f;
 
         [Tooltip("Days to offset the start of the cycle, so a new game can begin on a chosen phase. " +
-                 "0 = the game starts on a new moon.")]
-        [SerializeField] private float _phaseOffsetDays = 7f;   // start near a waxing half-moon, not pitch dark
+                 "0 = the game starts on a new moon; 14 (half a 28-day month) = starts on a FULL moon. " +
+                 "MUST be a multiple of the HALF-lunar period (LunarMonthDays/2): the phase is offset here but " +
+                 "the tide's spring/neap envelope is keyed to the RAW clock, so only a half-period multiple keeps " +
+                 "full/new moon on a SPRING tide and a quarter moon on a NEAP. A quarter-period offset (e.g. 7) " +
+                 "INVERTS the alignment (full moon on a neap). See MoonMath.Phase01 for the proof.")]
+        [SerializeField] private float _phaseOffsetDays = 14f;  // half a lunar month → start on a FULL moon
+                                                                // (biggest low tide for the clam-digging opening,
+                                                                // moon reflection visible from frame one) AND a
+                                                                // half-period multiple → full-moon-on-spring holds.
 
         [Header("Nightly arc (when the moon is up)")]
         [Tooltip("Day fraction (0..1) the moon RISES. 0.78 ≈ dusk.")]

@@ -48,7 +48,11 @@ namespace HiddenHarbours.Art
         /// <param name="lunarMonthDays">The lunar month in in-game days (GameConfig.LunarMonthDays; canon 28).</param>
         /// <param name="secondsPerDay">In-game seconds per day (GameConfig.SecondsPerDay; default 1200).</param>
         /// <param name="phaseOffsetDays">Optional offset (days) to set which day the game STARTS on in the
-        /// cycle, so a new game can begin on, say, a half moon. 0 = start on a new moon.</param>
+        /// cycle, so a new game can begin on, say, a full moon. 0 = start on a new moon; 14 (half a 28-day month)
+        /// = start on a full moon. NOTE the tide envelope above is keyed to the RAW clock (it takes no offset),
+        /// so to keep full/new moon on a SPRING tide (and a quarter on a NEAP) this offset MUST be a multiple of
+        /// the HALF-lunar period (<paramref name="lunarMonthDays"/>/2). A quarter-period offset inverts the
+        /// alignment. See <see cref="MoonCycle"/> for the shipped value (14).</param>
         public static float Phase01(double totalSeconds, float lunarMonthDays, float secondsPerDay,
                                     float phaseOffsetDays = 0f)
         {
