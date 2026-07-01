@@ -23,6 +23,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const float SecPerDay = 1200f;   // canon GameConfig.SecondsPerDay
         private static double LunarSeconds => (double)LunarDays * SecPerDay;
 
+        // The phase offset the SHIPPED component uses (MoonCycle._phaseOffsetDays). Kept here so the alignment
+        // guard below exercises the REAL config, not a convenient 0. It MUST be a multiple of the half-lunar
+        // period (LunarDays/2 = 14) or full-moon-on-spring-tide breaks — the guard proves that for this value.
+        // If MoonCycle._phaseOffsetDays changes, change this to match (and the guard fails if the new value
+        // isn't a half-period multiple, catching the drift).
+        private const float ShippedPhaseOffsetDays = 14f;
+
         // ===== PHASE: cycles 0..1 over the lunar month, tied to the tide cycle ============================
 
         [Test]
@@ -69,6 +76,60 @@ namespace HiddenHarbours.Tests.Art.EditMode
             double tQuarter = LunarSeconds * 0.25;
             float envQuarter = TideEnv(tQuarter, secondsPerHour, lunarHours);
             Assert.AreEqual(0f, envQuarter, 1e-3f, "a QUARTER moon lands on a NEAP tide (envelope at 0)");
+        }
+
+        [Test]
+        public void Phase_TiesToTheTide_AtTheSHIPPEDOffset_FullMoonIsSpring_QuarterIsNeap()
+        {
+            // GUARD for the REAL config: the tide envelope is keyed to the RAW clock (no offset), while the moon
+            // PHASE adds MoonCycle._phaseOffsetDays. So the alignment only holds when that offset is a multiple of
+            // the HALF-lunar period (LunarDays/2). This drove a shipped bug: an offset of 7 (a QUARTER cycle) put
+            // the full moon on a NEAP tide — the exact opposite of the documented promise. This asserts the SHIPPED
+            // offset (ShippedPhaseOffsetDays, mirroring the component) keeps full/new = SPRING, quarter = NEAP.
+            double secondsPerHour = SecPerDay / 24.0;
+            double lunarHours = LunarDays * 24.0;
+
+            // Game time at which the moon reaches a given phase, at the shipped offset:
+            //   Phase01(t) = frac((t + offset*SecPerDay) / lunarSeconds) = targetPhase
+            //   => t = targetPhase*lunarSeconds - offset*SecPerDay  (mod lunarSeconds)
+            double offsetSeconds = ShippedPhaseOffsetDays * SecPerDay;
+            double tFull    = Mod(0.5  * LunarSeconds - offsetSeconds, LunarSeconds);  // full moon
+            double tNew     = Mod(0.0  * LunarSeconds - offsetSeconds, LunarSeconds);  // new moon
+            double tQuarter = Mod(0.25 * LunarSeconds - offsetSeconds, LunarSeconds);  // first quarter
+
+            // Sanity: at those times the SHIPPED-offset phase really is full / new / quarter.
+            Assert.AreEqual(0.5f, MoonMath.Phase01(tFull, LunarDays, SecPerDay, ShippedPhaseOffsetDays), 1e-4f,
+                "at tFull the shipped-offset moon is FULL (phase 0.5)");
+            Assert.AreEqual(0f, MoonMath.Phase01(tNew, LunarDays, SecPerDay, ShippedPhaseOffsetDays), 1e-4f,
+                "at tNew the shipped-offset moon is NEW (phase 0)");
+            Assert.AreEqual(0.25f, MoonMath.Phase01(tQuarter, LunarDays, SecPerDay, ShippedPhaseOffsetDays), 1e-4f,
+                "at tQuarter the shipped-offset moon is a QUARTER (phase 0.25)");
+
+            // The alignment the docs promise, at the config that actually ships:
+            Assert.AreEqual(1f, TideEnv(tFull, secondsPerHour, lunarHours), 1e-3f,
+                "SHIPPED offset: FULL moon lands on a SPRING tide (env 1)");
+            Assert.AreEqual(1f, TideEnv(tNew, secondsPerHour, lunarHours), 1e-3f,
+                "SHIPPED offset: NEW moon lands on the other SPRING tide (env 1)");
+            Assert.AreEqual(0f, TideEnv(tQuarter, secondsPerHour, lunarHours), 1e-3f,
+                "SHIPPED offset: a QUARTER moon lands on a NEAP tide (env 0)");
+        }
+
+        [Test]
+        public void ShippedPhaseOffset_IsAHalfLunarPeriodMultiple()
+        {
+            // The invariant that keeps the alignment above from breaking: the offset must be a multiple of the
+            // HALF-lunar period. This fails fast if someone sets a quarter-cycle offset (the original bug) — a
+            // pure-arithmetic guard, no tide maths needed.
+            float halfPeriod = LunarDays / 2f;
+            float remainder = Mathf.Repeat(ShippedPhaseOffsetDays, halfPeriod);
+            Assert.That(Mathf.Min(remainder, halfPeriod - remainder), Is.LessThan(1e-3f),
+                "the shipped phase offset MUST be a multiple of LunarDays/2 or full-moon-on-spring-tide inverts");
+        }
+
+        private static double Mod(double a, double m)
+        {
+            double r = a % m;
+            return r < 0 ? r + m : r;
         }
 
         // mirror of TideModel's spring/neap envelope (kept local so this test doesn't reach into Environment).

@@ -510,10 +510,14 @@ month, **tied to the existing tide cycle**. This is the one piece that adds C# b
   from the **same lunar period** that drives `TideModel`'s spring/neap envelope
   (`env = 0.5 + 0.5·cos(2π·tHours / (lunarHours/2))`). At `phase01 = 0` (new) and `phase01 = 0.5` (full) the
   envelope is at SPRING (env = 1), so **full moon ↔ spring tide** and **new moon ↔ the other spring**, by
-  construction — proved in a headless test. The period is a serialized tunable defaulting to the canon **28
-  days / 1200 s/day** (mirroring `GameConfig.LunarMonthDays` / `SecondsPerDay`); `GameConfig` isn't in a
-  `Resources` folder so it can't be auto-loaded here without touching the builders — keep these in sync, or
-  expose `GameConfig` through Core later (an additive follow-up).
+  construction — proved in a headless test. **The envelope is keyed to the RAW clock (no offset)**, so the
+  moon's `_phaseOffsetDays` **MUST be a multiple of the HALF-lunar period** (`LunarMonthDays/2 = 14`) or the
+  alignment inverts (a quarter-cycle offset like 7 would put the full moon on a *neap*). It ships at **14** — a
+  half-period multiple that also starts a new game on a **full moon over a spring tide** (the biggest low tide,
+  for the clam-digging opening, moon reflection visible from frame one). The period is a serialized tunable
+  defaulting to the canon **28 days / 1200 s/day** (mirroring `GameConfig.LunarMonthDays` / `SecondsPerDay`);
+  `GameConfig` isn't in a `Resources` folder so it can't be auto-loaded here without touching the builders —
+  keep these in sync, or expose `GameConfig` through Core later (an additive follow-up).
 - **Per-night presence by phase (the night-sailing stakes).** A tunable links the moon's per-night presence to
   its phase: a **full moon** is bright and up most of the night; a **new moon** barely up — a genuinely dark
   night you need the boat spotlight (ADR 0016) for (P1/P5). Brightness = illuminated-fraction × presence.
