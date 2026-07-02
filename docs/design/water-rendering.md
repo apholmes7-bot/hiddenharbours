@@ -886,7 +886,8 @@ any `[Header]`/property string, no `[unroll]` over a runtime bound (the magenta 
 §11 reflected the sky *colour* + a sun glint. **Because this is a ¾ top-down game the player never sees the
 sky directly — the water's reflection is the ONLY place the sky appears** — so the owner asked for the sky's
 *content* to reflect too. This layer adds three things ON TOP of the §11 mirror, all in
-`SkyContentReflection()` (composited after `SkyReflection()`, before the foam):
+`SkyContentReflection()` (the DAY share is composited after `SkyReflection()`, before the foam; the NIGHT-gated
+share is composited after the palette grade, overlay-compensated — see §11.6):
 
 1. **Drifting CLOUDS (day + night).** Soft, elongated pale bands built from an FBM field on a coord
    **compressed across the wind** (so the cloud cells elongate into wisps ALONG it) and **scrolled along the
@@ -901,6 +902,11 @@ sky directly — the water's reflection is the ONLY place the sky appears** — 
      glitter **travel** over the water. The current arc direction comes from the **`_MoonDir` global**
      published by the new self-installing **`MoonCycle`** service (mirrors `GrassWindBridge` /
      `DayNightController`; reads `GameServices.Clock`; **`DayNightController` is NOT touched**).
+   - **It is ANCHORED AT THE CAMERA** — the reflected disc sits offset along the arc direction from the
+     **camera's ground position** (`_WorldSpaceCameraPos.xy`), so it travels **with the viewer** like a real
+     reflection of a body at infinity (the classic "the moon follows you along the shore") and always lands on
+     water near the play area. (It was anchored at the height-map world centre — on St Peters that is the
+     middle of the bared **sandbar**, ~40 m from the play area, so the owner never actually saw it.)
    - **It has PHASES** — `_MoonPhaseState` carries a signed **terminator** the shader carves the disc with
      (new → crescent → quarter → gibbous → full → waning), and a **brightness** that dims a thin crescent.
    - **It is TIED TO THE TIDES** — `MoonMath.Phase01` derives the phase from the **same lunar period** that
@@ -915,9 +921,10 @@ sky directly — the water's reflection is the ONLY place the sky appears** — 
 **Invariants (all hold):** everything **inherits the §11 sea-state fade** (reuses `ReflectionStrength()` /
 `ReflectionSharpness()` — strong on CALM, gone in chop/storm); the moon + stars additionally **gate by night**
 (`NightFactor()`, the darkness of the global `_DayNightTint`, the same convention the boat-light night-gate
-uses), clouds read day + night. It is **col.rgb-only** — added before the boat-light term + the **palette
-guard-rail** (which still BOUNDS it, so the bright moon can't blow past the value ceiling), composes with the
-day/night overlay (multiplies on top) and the weather palette. **`_SkyReflectionStrength = 0` returns the §11
+uses), clouds read day + night. It is **col.rgb-only** — the DAY share is added before the foam and graded by
+the **palette guard-rail** as before; the NIGHT-gated share is added **after** the grade, pre-compensated for
+the day/night multiply overlay so complete dark can't crush it (§11.6) — it composes with the day/night
+overlay (multiplies on top) and the weather palette. **`_SkyReflectionStrength = 0` returns the §11
 look.** `WaterSurface.cs` is **untouched** (no new water uniform).
 
 **Determinism guard.** The cloud/moon/star FIELDS are GPU value-noise (not unit-testable headless), but the
@@ -926,6 +933,41 @@ moon's deterministic state is pure: `Assets/_Project/Code/Art/MoonMath.cs` (`Pha
 `Assets/Tests/EditMode/Art/MoonMathTests.cs` (phase cycles 0..1, full-moon-on-spring-tide /
 quarter-on-neap, arc rises→peaks→sets, down by day, new dimmer than full). The reflection-curve twins gain
 `WaterReflection.MoonDirection` / `NightFactor` / `SkyElementStrength`, tested in `WaterReflectionTests.cs`.
+
+### 11.6 Complete-dark fix — light content is PRE-COMPENSATED for the day/night multiply (post-grade)
+
+The owner reported two night-visual bugs with the same root cause: at **complete dark** the boat spotlight's
+water beam and the reflected moon/glitter/stars all but vanish. The day/night system (ADR 0013) draws a
+whole-frame **MULTIPLY** overlay after the water renders; at deepest night the tint is
+`skyTint(0.12, 0.16, 0.34) × intensity floor 0.18 ≈ (0.022, 0.029, 0.061)`, so any light the water added to
+itself survived on screen at **~3–6%, blue-shifted**. A secondary crusher: at deep night the §13 palette
+grade's day/night value floor saturates (`floorPre = 1`) and pulls **all** pre-overlay water toward luma 1 at
+`_PaletteGradeStrength`, flattening lit-vs-unlit contrast.
+
+**The fix (in `HiddenHarboursWater.shader`'s `frag()`):** the light content — `BoatLightTerm()` plus the
+NIGHT-gated share of `SkyContentReflection()` (moon disc + glitter + stars + the clouds' night portion) — is
+now added **after `PaletteGrade()`**, divided by `max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL)` so the
+overlay's downstream multiply **cancels** and the light reads at its authored brightness however dark the
+night is. This is the same pre-compensation pattern the guard-rail's `PaletteValueFloorDayNight` already uses
+(ADR 0015). Key properties:
+
+- **`DN_COMP_MIN_CHANNEL = 0.02`** bounds the boost at ≤ 50× so a near-zero tint channel can't explode the
+  divide; the shipped deepest-night channels all exceed it, so cancellation there is **exact** (no hue shift).
+- **Daylight is pixel-identical**: the beam is night-gated to 0 by day, the night share is 0 by day, and the
+  clouds' day share still composes pre-grade exactly where the whole layer used to sit. The two cloud shares
+  always sum to the original term, so dusk carries no discontinuity.
+- **Cycle off (edit mode / bare art scene / demo)**: the tint global is near-black (unset) → the content is
+  added **raw** (there is no overlay to compensate for) — the tuning/preview look is preserved.
+- **HDR dependency**: this works because the URP asset has **HDR ON** (`UniversalRP.asset m_SupportsHDR: 1`) —
+  the compensated values are far above 1 and must survive the framebuffer to reach the overlay's multiply. A
+  later mobile port that disables HDR silently regresses this; re-check there.
+- **Post-grade on purpose**: the guard-rail still bounds the SEA the light sits on, but no longer clamps the
+  compensated (>1) light values or floor-flattens the lit pool. Known side-effect: once the water-beam's
+  night gate saturates (~mid-dusk) the lit pool reads at full authored brightness — brighter than the crushed
+  look the owner saw at dusk; it stays tunable via the existing beam strength.
+- **Determinism guard**: the divide is mirrored headless in `LightMath.CompensateForDayNightTint`
+  (+ `LightMath.DayNightCompensationMinChannel`) and pinned in `LightMathTests` (on-screen constancy across
+  tint luminances, exact deepest-night cancellation, cycle-off untouched, the 50× bound).
 
 ---
 
@@ -1234,12 +1276,13 @@ the water **inside the water's own fragment** — the same idiom the water alrea
   a **cosine** so the water tests the cone with one `dot`, no per-pixel trig. **No boat / off** → intensity 0 →
   the water term is skipped (no stuck beam). **One light** for now (the boat spotlight is THE night-nav light);
   arrays + a count extend it cleanly later.
-- **The water frag adds the cone** (`HiddenHarboursWater.shader`, `BoatLightTerm()`, after the foam/reflection,
-  **before** the palette guard-rail so the rail still bounds the lit pool): for the pixel's `worldXY`
+- **The water frag adds the cone** (`HiddenHarboursWater.shader`, `BoatLightTerm()`, **after** the palette
+  guard-rail, pre-compensated for the day/night multiply overlay — the complete-dark fix, §11.6; the rail
+  bounds the sea the beam sits on, but no longer clamps/flattens the lit pool): for the pixel's `worldXY`
   (pixel-snapped → the pool reads as **pixel art**) it computes the cone (lamp→pixel within range + within the
   cone, **radial × angular** falloff), scales by the **same night-gate** the land cone uses (off by day, full at
   deep night, off-by-dawn, read from `_DayNightTint`; cycle-off → the tunable fallback), and **ADDs** to
-  `col.rgb`. **Sorting-INDEPENDENT** — it is part of the very draw that was winning the order tie, so it cannot be
+  `col.rgb` divided by `max(_DayNightTint.rgb, 0.02)` so the beam survives complete dark at authored brightness. **Sorting-INDEPENDENT** — it is part of the very draw that was winning the order tie, so it cannot be
   overdrawn like the quad. **`col.rgb` ONLY** — never `depth` / `clip()` / `_WaterLevel` / the height read / the
   sim (the P1-integrity / determinism invariant of every prior addendum holds; the beam is purely cosmetic and
   saves nothing).

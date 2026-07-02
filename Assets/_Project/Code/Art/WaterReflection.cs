@@ -77,6 +77,17 @@ namespace HiddenHarbours.Art
         // can't run headless, but the DIRECTION + the day/night GATES that decide WHEN/WHERE each reads are
         // pure functions, mirrored here for the determinism/feel guard. WaterSurface.cs is NOT touched — the
         // shader reads the already-published globals (_DayNightTint / _SunDir / _SunElevation / _WindWorld).
+        //
+        // PLACEMENT + complete-dark composition (mirrors the shader, for the record):
+        //  • The reflected moon disc is ANCHORED at the CAMERA's ground position (_WorldSpaceCameraPos.xy) and
+        //    offset along MoonDirection — it travels WITH the viewer like a real reflection of a body at
+        //    infinity, so it always lands on water near the play area. (It was anchored at the height-map world
+        //    centre, which on St Peters is the middle of the bared SANDBAR — the owner could never see it.)
+        //  • The NIGHT-gated content (moon/glitter/stars + the clouds' night share) is composited AFTER the
+        //    palette guard-rail (ADR 0015) and PRE-COMPENSATED for the day/night multiply overlay via
+        //    LightMath.CompensateForDayNightTint (divide by max(_DayNightTint.rgb, 0.02)) so complete dark
+        //    doesn't crush it to ~3%; the day share stays in the pre-grade composite so daylight is unchanged.
+        //    The compensation maths + its bounds are pinned in LightMathTests.
 
         /// <summary>
         /// Twin of the shader's <c>MoonDir</c>. The moon sits roughly OPPOSITE the sun in the sky, so its

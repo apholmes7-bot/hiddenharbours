@@ -172,3 +172,14 @@ per-material `_Palette*` properties). At `_PaletteGradeStrength = 0` the stage e
   ramp) — an art-pipeline call once the final palette is locked.
 - **Exposing a few bounds in `GameConfig`** if the owner wants a global "how hard the rail bites" knob across
   all water — currently per-material (rule 6 satisfied on the material).
+
+## Addendum — the LIGHT CONTENT now composites AFTER the grade (complete-dark fix)
+
+The grade is no longer literally the last write to `col.rgb`: the boat-spotlight water beam (ADR 0016) and
+the reflection's night-gated sky content (moon/glitter/stars) now add **after** `PaletteGrade()`,
+pre-compensated for the ADR 0013 overlay multiply (divide by `max(_DayNightTint.rgb, 0.02)` — the same
+pre-compensation idea this ADR's day/night floor established). Deliberate: at deep night the grade's floor
+saturates (`floorPre = 1`) and was flattening lit-vs-unlit contrast, and its value ceiling would clamp the >1
+compensated values the overlay needs (HDR). The rail still bounds the SEA those lights sit on; the exemption
+is only the additive light content. Mechanism + tests: `design/water-rendering.md` §11.6, ADR 0016 follow-up
+fix 3, `LightMath.CompensateForDayNightTint` / `LightMathTests`.
