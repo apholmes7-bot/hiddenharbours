@@ -182,6 +182,22 @@ tunable max so weather alone never blacks the screen out — night is the dark, 
   pins that the published `_ShadowStrength` is lower in storm/fog than in clear weather (and zero at night).
 - **A documented migration path to true 2D lights** for the M2/M3 boat-lights vision — the model is the
   durable part; the overlay is a swappable output stage.
+- **Addendum: MOONLIGHT LIFTS THE NIGHT (owner-requested).** The night tint now folds in a **moonlight
+  lift**: when the sun is down and the moon is up and lit, `DayNightMath.DayNightTint(..)` pulls the tint
+  slightly toward a cool silver-blue (`DayNightMath.MoonlightLift`, pure). The lift is the product of
+  *night depth* (`saturate(−sunElevation)` — daytime is untouched by construction), the moon's
+  **illuminated fraction** and **arc elevation** (both reused from `MoonMath` off the same deterministic
+  clock that drives the water's reflected moon — full moon ↔ spring tide stays aligned), the **same
+  `1 − WeatherDim` factor** that glooms the rest of the light (overcast hides the moon), and an
+  owner-tunable strength. **New moon, set moon, or strength 0 ⇒ bitwise-identical tint to the moonless
+  computation** — dark nights stay pitch dark (P1/P5); the lift is folded into the one published
+  `_DayNightTint`, so every consumer (overlay, water) keeps a single source of truth. Tunables in
+  `DayNightProfile` (rule 6): `MoonlightTint` (default `(0.62, 0.70, 0.90)`) and `MoonlightLiftMax`
+  (default `0.05`, `0` = feature off) — at the defaults a clear full-moon midnight reads roughly **twice**
+  the new-moon brightness (deep-night luma ≈ 0.03 → ≈ 0.06): subtly lit, still night. The controller
+  mirrors the lunar-period tunables from `MoonCycle` (which mirrors `GameConfig` — same
+  can't-auto-load-GameConfig note) — keep them in sync. EditMode tests pin brighter-full-moon,
+  bitwise-identical zero cases, untouched daytime, weather suppression, and determinism.
 
 ## Rejected alternatives
 

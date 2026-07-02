@@ -124,6 +124,71 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <see cref="DayNightTint(float, DayNightProfile, float, SeaState)"/> plus the MOONLIGHT LIFT
+        /// (owner feature: "slightly lit if the moon is visible at night"). When the sun is DOWN and the
+        /// moon is UP and LIT, the night tint is pulled slightly toward the profile's cool silver-blue
+        /// <see cref="DayNightProfile.MoonlightTint"/> — a full moon at its peak softly brightens the deep
+        /// night (default: roughly doubles its luma), while a NEW moon, a moon below the horizon, or a
+        /// zeroed <see cref="DayNightProfile.MoonlightLiftMax"/> leaves the tint <b>bitwise identical</b>
+        /// to the moonless computation (new-moon nights stay pitch dark — the owner WANTS dark nights,
+        /// P1/P5). Overcast suppresses it too: the lift is scaled by the same <c>1 − WeatherDim</c> factor
+        /// that gloomes the rest of the light (cloud hides the moon). Pure and deterministic (rule 5): the
+        /// moon inputs come from <see cref="MoonMath"/> off the clock, so identical inputs → identical
+        /// colour, every time.
+        /// </summary>
+        /// <param name="moonIllumination">The moon's illuminated fraction 0 (new) .. 1 (full) —
+        /// <see cref="MoonMath.IlluminatedFraction"/> of <see cref="MoonMath.Phase01"/>.</param>
+        /// <param name="moonElevation">How high the moon is above the horizon, 0 (down) .. 1 (peak of the
+        /// nightly arc) — the <c>aboveHorizon</c> out of <see cref="MoonMath.MoonArc"/>.</param>
+        public static Color DayNightTint(float hour, DayNightProfile profile, float visibility, SeaState seaState,
+                                         float moonIllumination, float moonElevation)
+        {
+            Color baseTint = DayNightTint(hour, profile, visibility, seaState);
+            if (profile == null) return baseTint;
+
+            float sunElevation = SunElevation(hour, profile.SunriseHour, profile.SunsetHour);
+            float weatherDim = WeatherDim(visibility, seaState, profile);
+            float lift = MoonlightLift(sunElevation, moonIllumination, moonElevation, weatherDim,
+                                       profile.MoonlightLiftMax);
+            if (lift <= 0f) return baseTint;   // no moon / daytime / feature off → EXACTLY the moonless tint
+
+            Color outCol = Color.Lerp(baseTint, profile.MoonlightTint, lift);
+            outCol.a = 1f;
+            return outCol;
+        }
+
+        /// <summary>
+        /// How strongly MOONLIGHT lifts the night tint right now, <c>0</c> (none) .. <c>liftMax</c>: the
+        /// product of
+        /// <list type="bullet">
+        /// <item><b>night depth</b> — <c>saturate(−sunElevation)</c>: exactly 0 while the sun is at/above the
+        ///   horizon (daytime is NEVER affected), ramping smoothly through dusk to its deepest at solar
+        ///   midnight (≈0.9 for the default 14h day — <see cref="SolarX"/> clamps at ±12/halfDay) — which is
+        ///   also where <see cref="MoonMath.MoonArc"/> peaks, so "full moon at peak" composes to (nearly) full
+        ///   strength with no pop at the horizons;</item>
+        /// <item><b>moon illumination</b> (0 new .. 1 full) — a NEW moon contributes exactly 0;</item>
+        /// <item><b>moon elevation</b> (0 down .. 1 peak) — a moon below the horizon contributes exactly 0;</item>
+        /// <item><b>clear sky</b> — <c>1 − weatherDim</c>, the SAME weather factor that dims the rest of the
+        ///   light (overcast hides the moon);</item>
+        /// <item><b>the owner's strength</b> — <see cref="DayNightProfile.MoonlightLiftMax"/>; 0 = feature off.</item>
+        /// </list>
+        /// Any zero factor returns exactly 0 (so the caller can skip the blend and keep the tint bitwise
+        /// stable). Pure / deterministic / monotonic in every factor.
+        /// </summary>
+        public static float MoonlightLift(float sunElevation, float moonIllumination, float moonElevation,
+                                          float weatherDim, float liftMax)
+        {
+            float nightDepth = Mathf.Clamp01(-sunElevation);   // 0 while the sun is up → daytime unaffected
+            if (nightDepth <= 0f) return 0f;
+            float lift = nightDepth
+                       * Mathf.Clamp01(moonIllumination)
+                       * Mathf.Clamp01(moonElevation)
+                       * (1f - Mathf.Clamp01(weatherDim))
+                       * Mathf.Clamp01(liftMax);
+            return Mathf.Clamp01(lift);
+        }
+
+        /// <summary>
         /// The WEATHER→LIGHT coupling: how much the current weather DIMS + COOLS the daylight, <c>0</c>
         /// (clear) .. <c>1</c> (full overcast / storm gloom). This is the clean hook the future dynamic-weather
         /// feature plugs into — it is read here from the deterministic <see cref="EnvironmentSample"/>

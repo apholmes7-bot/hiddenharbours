@@ -66,6 +66,20 @@ namespace HiddenHarbours.Art
                  "cloud removes the shadow entirely — no sun through the cloud, no shadow). PR-2 shadows.")]
         [Range(0f, 1f)] [SerializeField] private float _overcastFadesShadow = 0.85f;
 
+        [Header("Moonlight (a lit moon softly lifts the night; a new moon stays pitch dark)")]
+        [Tooltip("The cool silver-blue colour MOONLIGHT pulls the night tint TOWARD while the sun is down " +
+                 "and the moon is up. Only the direction of the lift — how far it goes is the strength below " +
+                 "times the moon's phase + height (from the same deterministic MoonMath the water's " +
+                 "reflected moon uses).")]
+        [SerializeField] private Color _moonlightTint = new Color(0.62f, 0.70f, 0.90f, 1f);
+
+        [Tooltip("The MOST moonlight may lift the night tint toward the colour above (0 = feature OFF, " +
+                 "nights are moon-blind). Reached only by a FULL moon at the PEAK of its arc under a CLEAR " +
+                 "sky; a new moon or a set moon adds exactly nothing, and overcast suppresses it like the " +
+                 "rest of the light. The default 0.05 makes a clear full-moon midnight read roughly TWICE " +
+                 "as bright as a new-moon one — subtly lit, still night.")]
+        [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.05f;
+
         // ---- read-only accessors (the controller + DayNightMath read these) ----
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
@@ -78,6 +92,8 @@ namespace HiddenHarbours.Art
         public float WeatherDimMax => _weatherDimMax;
         public Color OvercastTint => _overcastTint;
         public float OvercastFadesShadow => _overcastFadesShadow;
+        public Color MoonlightTint => _moonlightTint;
+        public float MoonlightLiftMax => _moonlightLiftMax;
 
         /// <summary>
         /// Author the shipped defaults onto a fresh asset (called from <see cref="Reset"/> in the editor and
@@ -131,6 +147,8 @@ namespace HiddenHarbours.Art
             _weatherDimMax = 0.6f;
             _overcastTint = new Color(0.5f, 0.55f, 0.62f, 1f);
             _overcastFadesShadow = 0.85f;
+            _moonlightTint = new Color(0.62f, 0.70f, 0.90f, 1f);
+            _moonlightLiftMax = 0.05f;
         }
 
         /// <summary>

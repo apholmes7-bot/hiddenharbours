@@ -66,6 +66,27 @@ namespace HiddenHarbours.Art
                  "can never reveal an un-tinted gap at the screen edge. 1.1 = 10% margin (off-screen).")]
         [Min(1f)] [SerializeField] private float _overlayOversize = 1.1f;
 
+        // ---- moonlight (the moon softly lifts the night tint; strength + colour live in the profile) ----
+        // These four mirror MoonCycle's serialized lunar tunables (which mirror GameConfig — see MoonCycle's
+        // header note for why GameConfig can't be auto-loaded here). KEEP THEM IN SYNC with MoonCycle so the
+        // moonlight on the LAND agrees with the moon the player sees reflected in the WATER.
+        [Header("Moon (KEEP IN SYNC with MoonCycle/GameConfig — the lift must match the visible moon)")]
+        [Tooltip("Lunar month in in-game DAYS. Mirrors MoonCycle/GameConfig.LunarMonthDays (canon 28).")]
+        [Min(0.1f)] [SerializeField] private float _lunarMonthDays = 28f;
+
+        [Tooltip("In-game SECONDS per day. Mirrors MoonCycle/GameConfig.SecondsPerDay (default 1200).")]
+        [Min(1f)] [SerializeField] private float _secondsPerDay = 1200f;
+
+        [Tooltip("Days offsetting the start of the lunar cycle. Mirrors MoonCycle (ships at 14 = a new game " +
+                 "starts on a FULL moon; must stay a multiple of the HALF-lunar period — see MoonMath.Phase01).")]
+        [SerializeField] private float _phaseOffsetDays = 14f;
+
+        [Tooltip("Day fraction (0..1) the moon RISES. Mirrors MoonCycle (0.78 ≈ dusk).")]
+        [Range(0f, 1f)] [SerializeField] private float _moonriseFraction = 0.78f;
+
+        [Tooltip("Day fraction (0..1) the moon SETS (wraps midnight). Mirrors MoonCycle (0.30 ≈ after dawn).")]
+        [Range(0f, 1f)] [SerializeField] private float _moonsetFraction = 0.30f;
+
         private DayNightProfile _profile;
         private float _timer;
 
@@ -119,7 +140,8 @@ namespace HiddenHarbours.Art
         private void Tick()
         {
             // --- read time + weather through Core only (rule 4); tolerate their absence ---
-            float hour = GameServices.Clock != null ? GameServices.Clock.HourOfDay : _fallbackHour;
+            var clock = GameServices.Clock;
+            float hour = clock != null ? clock.HourOfDay : _fallbackHour;
 
             float visibility = 1f;            // clear by default (no fog) when there is no sim yet
             SeaState seaState = SeaState.Glass;
@@ -131,8 +153,23 @@ namespace HiddenHarbours.Art
                 seaState = s.SeaState;
             }
 
-            // --- evaluate the pure model ---
-            Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState);
+            // --- the moon's phase + arc off the same clock (deterministic, same MoonMath the water's
+            //     reflected moon uses) so a lit, risen moon can lift the night tint. No clock (EditMode /
+            //     pre-boot) → no moon → exactly the moonless tint, as before.
+            float moonIllumination = 0f, moonElevation = 0f;
+            if (clock != null)
+            {
+                float phase01 = MoonMath.Phase01(clock.TotalSeconds, _lunarMonthDays, _secondsPerDay,
+                                                 _phaseOffsetDays);
+                moonIllumination = MoonMath.IlluminatedFraction(phase01);
+                MoonMath.MoonArc(clock.DayFraction, out _, out moonElevation,
+                                 _moonriseFraction, _moonsetFraction);
+            }
+
+            // --- evaluate the pure model (the moonlight lift is folded INTO the one published tint, so
+            //     _DayNightTint keeps meaning "the whole-frame multiply colour" for every consumer) ---
+            Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState,
+                                                   moonIllumination, moonElevation);
             float sunrise       = _profile != null ? _profile.SunriseHour : 6f;
             float sunset        = _profile != null ? _profile.SunsetHour : 20f;
             float bias          = _profile != null ? _profile.ShadowSouthBias : 0.2f;

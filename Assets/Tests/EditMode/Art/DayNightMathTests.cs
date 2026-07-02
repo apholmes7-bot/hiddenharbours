@@ -315,6 +315,124 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0f, night, Eps, "no shadow at night");
         }
 
+        // ---- Moonlight lift (the moon softly lifts the night; new moon stays pitch dark) ----------------
+
+        // Solar midnight for the default 6→20 sun (solar noon 13:00) — the deepest of the night (SunElevation
+        // ≈ −0.9, its minimum for a 14h day) and where the moon's arc peaks: the "full moon at peak
+        // elevation" the feature is specified against.
+        private const float SolarMidnight = 1f;
+
+        [Test]
+        public void Moonlight_FullMoonMidnight_IsBrighterThanNewMoonMidnight()
+        {
+            var p = MakeProfile();
+            float newMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 0f, 1f));
+            float fullMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 1f, 1f));
+            Assert.Greater(fullMoon, newMoon, "a clear full-moon midnight is brighter than a new-moon one");
+
+            // The default strength is tuned "subtle": a clear full moon at peak roughly DOUBLES the
+            // deep-night brightness — visibly lit, still genuinely night (P1/P5: dark nights stay dark).
+            float ratio = fullMoon / newMoon;
+            Assert.Greater(ratio, 1.4f, "the default lift should be clearly visible (~2x the deep night)");
+            Assert.Less(ratio, 3.0f, "the default lift must stay SUBTLE — moonlight, not daylight");
+        }
+
+        [Test]
+        public void Moonlight_NewMoon_TintIsBitwiseIdenticalToMoonless()
+        {
+            var p = MakeProfile();
+            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass);
+            Color newMoon = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass, 0f, 1f);
+            Assert.AreEqual(moonless, newMoon, "illumination 0 (new moon) must change NOTHING");
+        }
+
+        [Test]
+        public void Moonlight_MoonBelowHorizon_TintIsBitwiseIdenticalToMoonless()
+        {
+            var p = MakeProfile();
+            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass);
+            Color moonDown = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass, 1f, 0f);
+            Assert.AreEqual(moonless, moonDown, "a set moon (elevation 0) must change NOTHING");
+        }
+
+        [Test]
+        public void Moonlight_StrengthZero_DisablesTheFeatureExactly()
+        {
+            var p = MakeProfile();
+            var so = new UnityEditor.SerializedObject(p);
+            so.FindProperty("_moonlightLiftMax").floatValue = 0f;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            Color moonless = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass);
+            Color fullMoon = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 1f, 1f);
+            Assert.AreEqual(moonless, fullMoon, "MoonlightLiftMax 0 = feature OFF, even under a full moon");
+        }
+
+        [Test]
+        public void Moonlight_DaytimeIsCompletelyUnaffected()
+        {
+            var p = MakeProfile();
+            // Sweep the whole lit day, horizon to horizon inclusive, under a (hypothetical) full high moon.
+            for (float h = p.SunriseHour; h <= p.SunsetHour; h += 0.5f)
+            {
+                Color moonless = DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass);
+                Color fullMoon = DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass, 1f, 1f);
+                Assert.AreEqual(moonless, fullMoon, $"sun up at hour {h} -> moonlight must add NOTHING");
+            }
+        }
+
+        [Test]
+        public void Moonlight_IsDeterministic()
+        {
+            var p = MakeProfile();
+            Color a = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaState.Moderate, 0.8f, 0.6f);
+            Color b = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaState.Moderate, 0.8f, 0.6f);
+            Assert.AreEqual(a, b, "same (hour, weather, moon) -> same tint, always (rule 5)");
+        }
+
+        [Test]
+        public void Moonlight_TintStaysOpaque()
+        {
+            var p = MakeProfile();
+            for (float h = 0f; h < 24f; h += 1f)
+                Assert.AreEqual(1f, DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass, 1f, 1f).a, Eps);
+        }
+
+        [Test]
+        public void MoonlightLift_OvercastSuppressesIt()
+        {
+            // Full moon at peak on a deep night: clear sky gives the full lift, cloud shrinks it with the
+            // SAME weather factor the rest of the light dims by, and total overcast erases it entirely.
+            float clear = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f);
+            float cloudy = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0.6f, 0.05f);
+            float socked = DayNightMath.MoonlightLift(-1f, 1f, 1f, 1f, 0.05f);
+            Assert.Greater(clear, cloudy, "cloud hides the moon");
+            Assert.Greater(cloudy, 0f, "partial cloud still lets some moonlight through");
+            Assert.AreEqual(0f, socked, "full weather-dim -> no moonlight at all");
+        }
+
+        [Test]
+        public void MoonlightLift_AnyZeroFactorIsExactlyZero()
+        {
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(1f, 1f, 1f, 0f, 0.05f), "sun UP -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(0f, 1f, 1f, 0f, 0.05f), "sun ON the horizon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 0f, 1f, 0f, 0.05f), "new moon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 0f, 0f, 0.05f), "moon below horizon -> zero");
+            Assert.AreEqual(0f, DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0f), "strength 0 -> zero");
+        }
+
+        [Test]
+        public void MoonlightLift_ScalesWithPhaseAndElevation()
+        {
+            float full = DayNightMath.MoonlightLift(-1f, 1f, 1f, 0f, 0.05f);
+            float half = DayNightMath.MoonlightLift(-1f, 0.5f, 1f, 0f, 0.05f);
+            float low = DayNightMath.MoonlightLift(-1f, 1f, 0.3f, 0f, 0.05f);
+            Assert.Greater(full, half, "a fuller moon lifts more");
+            Assert.Greater(full, low, "a higher moon lifts more");
+            Assert.Greater(half, 0f);
+            Assert.Greater(low, 0f);
+        }
+
         private static float Brightness(Color c) => c.r + c.g + c.b;
     }
 }
