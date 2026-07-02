@@ -122,7 +122,7 @@ Presentation metadata: unsaved, no determinism concern.
 
 ## 5. Boat & entity architecture (composition)
 
-A boat is a `Rigidbody2D` (Box2D-v3 backend in Unity 6.3) assembled from data-configured
+A boat is a `Rigidbody2D` (Box2D-v3 backend in Unity 6.5) assembled from data-configured
 components:
 
 ```

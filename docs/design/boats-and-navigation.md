@@ -73,7 +73,7 @@ Eight tiers, **a branching tree near the top** (canon): the **Lobster Boat** (sh
 
 ## 2. Navigation & handling physics (Unity Box2D-v3 2D)
 
-> Engine: **Unity 6.3, 2D URP**, Box2D-v3 backed `Rigidbody2D`/physics. ¾ top-down, so the boat is a **planar rigid body** (top-down boat sim), not a side-on platformer body. We approximate marine handling with a small, tunable force model — *believable, not a CFD sim* — driven by the boat's controls **and** the environment forces from [`time-tides-weather.md`](time-tides-weather.md) §5.
+> Engine: **Unity 6.5, 2D URP**, Box2D-v3 backed `Rigidbody2D`/physics. ¾ top-down, so the boat is a **planar rigid body** (top-down boat sim), not a side-on platformer body. We approximate marine handling with a small, tunable force model — *believable, not a CFD sim* — driven by the boat's controls **and** the environment forces from [`time-tides-weather.md`](time-tides-weather.md) §5.
 
 ### 2.1 The rigid body
 

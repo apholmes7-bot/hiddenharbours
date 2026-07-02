@@ -73,7 +73,7 @@ are all unchanged.
   (still validating the force model against the arcade/virtual-stick alternate); the touch/one-thumb
   validation moves to the future mobile-port pass.
 - **Unchanged:** gameplay, simulation/determinism, economy, content, data schemas, the boat/fish/
-  region/NPC canon, and the engine choice (Unity 6.3 LTS, 2D URP, C#).
+  region/NPC canon, and the engine choice (Unity 6.5, 2D URP, C#).
 
 ## Mobile is kept viable (the standing constraint)
 
