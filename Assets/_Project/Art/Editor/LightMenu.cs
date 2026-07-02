@@ -82,14 +82,30 @@ namespace HiddenHarbours.Art.Editor
                       "component, or on Resources/AdditiveLight.mat for the shared look.");
         }
 
-        /// <summary>Attach + configure the right light component(s) on <paramref name="go"/> for the preset.</summary>
+        /// <summary>Attach + configure the right light component(s) on <paramref name="go"/> for the preset
+        /// (the boat Spotlight walks up to the Rigidbody2D root — see the comment inside).</summary>
         private static void ConfigureLightOn(GameObject go, LightPreset preset)
         {
             if (preset == LightPreset.Spotlight)
             {
                 // The concrete boat spotlight: a BoatSpotlight (which adds + drives a SceneLight cone).
-                if (go.GetComponent<BoatSpotlight>() == null)
-                    Undo.AddComponent<BoatSpotlight>(go);
+                // Attach it to the boat's PHYSICS BODY (the Rigidbody2D root), not the selected visual child:
+                // the clickable hull sprite is counter-rotated back to world-identity every LateUpdate
+                // (DirectionalBoatSprite.ApplySnap), so a beam hosted there would point north forever. The
+                // beam must ride the ROTATING body to follow the bow. The static presets below keep
+                // attaching to the exact selection.
+                var rb = go.GetComponentInParent<Rigidbody2D>();
+                var host = rb != null ? rb.gameObject : go;
+                if (host.GetComponent<BoatSpotlight>() == null)
+                    Undo.AddComponent<BoatSpotlight>(host);
+                if (host != go)
+                {
+                    EditorGUIUtility.PingObject(host);   // show WHERE it actually landed
+                    Debug.Log($"[Light] Spotlight attached to the physics body '{host.name}' (the selection " +
+                              $"'{go.name}' is a counter-rotated visual child — a beam there would always " +
+                              "point north).", host);
+                }
+                EditorUtility.SetDirty(host);
             }
             else
             {
@@ -113,8 +129,8 @@ namespace HiddenHarbours.Art.Editor
                         light.EdgeSoftness = 0.75f; light.FlickerAmount = 0.02f;
                         break;
                 }
+                EditorUtility.SetDirty(go);
             }
-            EditorUtility.SetDirty(go);
         }
 
         // Enable the Add entries only when something is selected.
