@@ -57,15 +57,16 @@ namespace HiddenHarbours.Art.Editor
             EnsureFolder(PrefabRoot);
             int n = 0;
 
-            // --- Trees: Tree01..Tree40 (BottomCenter pivot on import — they plant at the trunk).
-            //     Tree38..Tree40 are the reference-style painterly evergreens (tall, tiered, left-lit). ---
+            // --- Trees: Tree01..Tree43 (BottomCenter pivot on import — they plant at the trunk).
+            //     Tree38..Tree40 are the reference-style painterly evergreens (tall, tiered, left-lit);
+            //     Tree41..Tree43 are the owner's hand-made set (white pine, white spruce, broadleaf). ---
             EnsureFolder($"{PrefabRoot}/Trees");
             // The canopy wind material (optional — null just leaves trees static; warns once).
             var treeMaterial = AssetDatabase.LoadAssetAtPath<Material>(TreeMaterialPath);
             if (treeMaterial == null)
                 Debug.LogWarning($"[DecorPrefabBuilder] tree material {TreeMaterialPath} missing — trees built " +
                                  "without wind-sway (open Unity so it imports the TreeWind shader + material, then re-run).");
-            for (int i = 1; i <= 40; i++)
+            for (int i = 1; i <= 43; i++)
             {
                 string name = $"Tree{i:00}";
                 string sprite = $"{ArtSprites}/Environment/Trees/{name}.png";
