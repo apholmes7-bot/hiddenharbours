@@ -73,3 +73,13 @@ matter more for this team and this owner.**
 - [Unity 6.3 LTS is now available](https://unity.com/blog/unity-6-3-lts-is-now-available) · [Unity 6 support/releases](https://unity.com/releases/unity-6/support)
 - [Unity is Canceling the Runtime Fee](https://unity.com/blog/unity-is-canceling-the-runtime-fee) · [Unity pricing updates](https://unity.com/products/pricing-updates)
 - [Godot 4.5 vs Unity 6.3 for 2D in 2026 (comparison)](https://gamineai.com/blog/godot-4-5-stable-vs-unity-6-3-for-2d-games-2026)
+
+## Addendum — editor version moved to Unity 6.5 (2026-07-01)
+
+The project's editor was upgraded and now runs **Unity 6000.5.0f1 (Unity 6.5)**
+(`ProjectSettings/ProjectVersion.txt` is the ground truth). The **pinned editor version therefore
+now refers to 6000.5.x**; the pin-the-version policy itself is unchanged — no further upgrades
+without `lead-architect` sign-off, and this addendum records that sign-off after the fact
+(the docs had drifted from the actual editor version). Everything else in this ADR — the
+engine choice, the reasoning, and the reconsideration triggers — is unchanged; the original
+decision text above is left as written for the historical record.

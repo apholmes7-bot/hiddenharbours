@@ -8,7 +8,7 @@
 > Sibling docs: `../project-structure.md` (asset folders, Git LFS), `boats-and-navigation.md`
 > (boat metres), `world-and-regions.md` (region identity), `time-tides-weather.md`
 > (tide/weather/season state we render), `ux-and-mobile-controls.md` (UI behaviour/HUD; this doc
-> sets UI *art direction*), `../adr/0001-engine-choice.md` (Unity 6.3, 2D URP).
+> sets UI *art direction*), `../adr/0001-engine-choice.md` (Unity 6.5, 2D URP).
 
 ---
 
