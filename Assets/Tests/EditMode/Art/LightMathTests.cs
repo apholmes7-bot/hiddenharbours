@@ -362,5 +362,104 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float night = LightMath.NightGate(LightMath.Luminance(Gray(0.05f)), 0.12f, 0.35f);
             Assert.AreEqual(1f, night, 0.05f, "deep night -> water beam full");
         }
+
+        // ---- CompensateForDayNightTint (the complete-dark crush fix) --------------------------------------
+        // The day/night overlay MULTIPLIES the frame by _DayNightTint after the water renders; the water's own
+        // additive light content (beam / moon / stars) is pre-compensated by dividing by max(tint, minChannel)
+        // so the multiply cancels. These pins guard the shader's post-grade divide via its headless twin.
+
+        // The shipped deepest-night tint: skyTint(0.12, 0.16, 0.34) × the intensity floor 0.18. Every channel
+        // exceeds the 0.02 divide floor, so cancellation at deepest night must be EXACT (no hue shift).
+        private static readonly Color DeepestNightTint =
+            new Color(0.12f * 0.18f, 0.16f * 0.18f, 0.34f * 0.18f, 1f);
+
+        // A representative authored beam colour (warm lamp) the compensation must preserve on screen.
+        private static readonly Color WarmBeam = new Color(1.0f, 0.86f, 0.6f, 1f);
+
+        private static Color OnScreen(Color preOverlay, Color tint)   // what the overlay's multiply leaves
+            => new Color(preOverlay.r * tint.r, preOverlay.g * tint.g, preOverlay.b * tint.b, preOverlay.a);
+
+        [Test]
+        public void Compensate_ExactCancellationAtTheDeepestNightDefaultTint()
+        {
+            // At the shipped deepest night, every tint channel (~0.022, 0.029, 0.061) exceeds the 0.02 floor,
+            // so compensated × tint == the authored term exactly — the beam/moon read at authored brightness
+            // and hue in complete dark (the headline fix).
+            Color comp = LightMath.CompensateForDayNightTint(
+                WarmBeam, DeepestNightTint, LightMath.DayNightCompensationMinChannel);
+            Color onScreen = OnScreen(comp, DeepestNightTint);
+            Assert.AreEqual(WarmBeam.r, onScreen.r, 1e-4f, "R survives complete dark exactly");
+            Assert.AreEqual(WarmBeam.g, onScreen.g, 1e-4f, "G survives complete dark exactly");
+            Assert.AreEqual(WarmBeam.b, onScreen.b, 1e-4f, "B survives complete dark exactly (no blue shift)");
+        }
+
+        [Test]
+        public void Compensate_OnScreenContributionIsConstantAcrossTintLuminance()
+        {
+            // Once the night gate has saturated, the ON-SCREEN contribution (compensated term × tint) must be
+            // ~the same at every darkness level — dusk, midnight, deepest night — whenever every tint channel
+            // is at/above the divide floor. (This is what "the light survives the multiply" means.)
+            Color[] tints =
+            {
+                new Color(1f, 1f, 1f, 1f),          // full day (also the no-op case)
+                new Color(0.8f, 0.7f, 0.6f, 1f),    // golden dusk
+                new Color(0.3f, 0.35f, 0.5f, 1f),   // early night
+                new Color(0.05f, 0.06f, 0.09f, 1f), // deep night
+                DeepestNightTint,                    // the shipped deepest dark
+            };
+            foreach (Color tint in tints)
+            {
+                Color comp = LightMath.CompensateForDayNightTint(
+                    WarmBeam, tint, LightMath.DayNightCompensationMinChannel);
+                Color onScreen = OnScreen(comp, tint);
+                Assert.AreEqual(WarmBeam.r, onScreen.r, 1e-4f, $"R constant on screen at tint {tint}");
+                Assert.AreEqual(WarmBeam.g, onScreen.g, 1e-4f, $"G constant on screen at tint {tint}");
+                Assert.AreEqual(WarmBeam.b, onScreen.b, 1e-4f, $"B constant on screen at tint {tint}");
+            }
+        }
+
+        [Test]
+        public void Compensate_IsUntouchedWhenTheCycleIsOff()
+        {
+            // Cycle off/unset -> the tint global is near-black (sum <= 1e-3). There is NO overlay multiplying
+            // the frame, so there is nothing to compensate: the term must come back untouched (preserves the
+            // edit-mode / bare-art-scene / demo look, the same unset-tint convention the shader branches on).
+            Color comp = LightMath.CompensateForDayNightTint(
+                WarmBeam, new Color(0f, 0f, 0f, 0f), LightMath.DayNightCompensationMinChannel);
+            Assert.AreEqual(WarmBeam.r, comp.r, 0f, "cycle off -> untouched (no boost)");
+            Assert.AreEqual(WarmBeam.g, comp.g, 0f, "cycle off -> untouched (no boost)");
+            Assert.AreEqual(WarmBeam.b, comp.b, 0f, "cycle off -> untouched (no boost)");
+        }
+
+        [Test]
+        public void Compensate_IsANoOpInFullDaylight()
+        {
+            // Tint ~1 (full day) -> divide by 1 -> the daylight look is pixel-identical (the compensation must
+            // not brighten anything by day; the beam is also night-gated to 0 there anyway).
+            Color comp = LightMath.CompensateForDayNightTint(
+                WarmBeam, Color.white, LightMath.DayNightCompensationMinChannel);
+            Assert.AreEqual(WarmBeam.r, comp.r, 1e-5f);
+            Assert.AreEqual(WarmBeam.g, comp.g, 1e-5f);
+            Assert.AreEqual(WarmBeam.b, comp.b, 1e-5f);
+        }
+
+        [Test]
+        public void Compensate_BoostIsBoundedAt50xByTheChannelFloor()
+        {
+            // A pathological tint with near-zero / zero channels (but a live cycle: sum > 1e-3) must not explode
+            // the divide: the floor (0.02) caps the per-channel boost at 1/0.02 = 50x — never infinity/NaN.
+            Assert.AreEqual(0.02f, LightMath.DayNightCompensationMinChannel, 0f,
+                "the floor constant pins the 50x bound (and mirrors the shader's DN_COMP_MIN_CHANNEL)");
+            var nastyTint = new Color(0.001f, 0f, 0.05f, 1f);       // sum 0.051 > 1e-3 -> cycle counts as ON
+            Color comp = LightMath.CompensateForDayNightTint(
+                WarmBeam, nastyTint, LightMath.DayNightCompensationMinChannel);
+            Assert.AreEqual(WarmBeam.r * 50f, comp.r, 1e-3f, "0.001 channel floors at 0.02 -> exactly 50x");
+            Assert.AreEqual(WarmBeam.g * 50f, comp.g, 1e-3f, "zero channel floors at 0.02 -> exactly 50x");
+            Assert.AreEqual(WarmBeam.b / 0.05f, comp.b, 1e-3f, "an above-floor channel divides normally");
+            Assert.LessOrEqual(comp.r, WarmBeam.r * 50f + Eps, "boost never exceeds the 50x bound");
+            Assert.LessOrEqual(comp.g, WarmBeam.g * 50f + Eps, "boost never exceeds the 50x bound");
+            Assert.LessOrEqual(comp.b, WarmBeam.b * 50f + Eps, "boost never exceeds the 50x bound");
+            Assert.IsFalse(float.IsNaN(comp.r) || float.IsInfinity(comp.r), "no NaN/Inf from a zero channel");
+        }
     }
 }

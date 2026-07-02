@@ -394,6 +394,22 @@ Shader "HiddenHarbours/Water"
             // the sun sets (no glitter under a set sun). 0 when the cycle is not running -> handled by the fallback.
             float  _SunElevation;
 
+            // DAY/NIGHT PRE-COMPENSATION per-channel floor (the complete-dark fix; see the post-grade add in
+            // frag()). The day/night overlay MULTIPLIES the whole frame by _DayNightTint AFTER this shader runs
+            // (ADR 0013), which crushed the in-water light content (boat beam, moon/glitter/stars) to ~3-6% at
+            // deep night. The fix divides those additive terms by max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL)
+            // BEFORE the overlay so the multiply cancels — the same pre-compensation pattern the palette
+            // guard-rail's PaletteValueFloorDayNight already uses (ADR 0015). The floor bounds the boost at
+            // <= 1/0.02 = 50x so a near-zero tint channel can't explode the divide toward infinity; the shipped
+            // deepest-night tint channels (~0.022, 0.029, 0.061 = skyTint(0.12,0.16,0.34) x intensity floor 0.18)
+            // all EXCEED the floor, so at deepest night the cancellation is exact — no hue shift, no clipping.
+            // HDR DEPENDENCY: this only works because the URP asset has HDR ON (UniversalRP.asset
+            // m_SupportsHDR: 1) — the compensated values are far above 1 and must SURVIVE the framebuffer to
+            // reach the overlay's multiply. If a later mobile port turns HDR off, the buffer clamps to 1 and the
+            // lights silently go dim again — re-check this fix there. Mirrors
+            // LightMath.DayNightCompensationMinChannel / CompensateForDayNightTint (the headless twin).
+            #define DN_COMP_MIN_CHANNEL 0.02
+
             // GLOBAL shared SIM WIND (published by HiddenHarbours.Art.GrassWindBridge via Shader.SetGlobalVector,
             // the SAME global the grass shader reads). _WindWorld.xy = the wind DIRECTION × a 0..1 strength, so a
             // gust leans the grass AND drifts the water's CLOUD reflections TOGETHER (cohesive sky/scene motion).
@@ -1100,20 +1116,38 @@ Shader "HiddenHarbours/Water"
             // and the sharpness smear, and the moon/stars additionally gate by night. Everything is pixelized
             // (pixel-art faithful, §3) and ADDED to col.rgb — it NEVER touches depth/clip/the deep tint/the
             // caustic gate/_WaterLevel (P1 integrity, CLAUDE.md rule 5). _SkyReflectionStrength = 0 = today's look.
+            //
+            // OUTPUT SPLIT (the complete-dark fix): the content comes back in TWO parts so the caller composites
+            // each where it SURVIVES the day/night multiply overlay (ADR 0013):
+            //   dayRGB   — the daylit share (the clouds' day portion). Added PRE-grade, exactly where the whole
+            //              layer used to sit, so the DAYLIGHT look is pixel-identical to before the split
+            //              (night = 0 puts 100% of the content here).
+            //   nightRGB — the NIGHT-GATED share (moon disc + glitter path + stars + the clouds' night portion).
+            //              Added AFTER the palette grade, PRE-COMPENSATED by the divide-by-tint pattern (see
+            //              DN_COMP_MIN_CHANNEL above) so complete dark doesn't crush the moon/stars to ~3%, and
+            //              so the grade's saturated deep-night floor can't re-flatten them either.
+            //   The two parts always SUM to the layer's original value, so dusk carries no discontinuity in the
+            //   pre-compensation content — only the compensation boost changes as the night gate rises.
+            //
             //   worldXY    — pixel world position (pixelized inside each layer for the pixel-art read).
             //   surf       — the layer-2 surface noise (0..1) so the sky ripples WITH the swell at calm.
             //   swellCrest — the rolling-swell crest factor (0..1) so the sky brightens on the lit swell faces.
             //   t          — _Time.y (clouds drift, the moon glitter shimmers, stars twinkle).
-            float3 SkyContentReflection(float2 worldXY, float surf, float swellCrest, float t)
+            void SkyContentReflection(float2 worldXY, float surf, float swellCrest, float t,
+                                      out float3 dayRGB, out float3 nightRGB)
             {
+                // out params must be fully written on EVERY path (HLSL) — zero them before any early return.
+                dayRGB = float3(0, 0, 0);
+                nightRGB = float3(0, 0, 0);
+
                 float master = saturate(_SkyReflectionStrength);
                 if (master <= 0.001)
-                    return float3(0, 0, 0);                       // sky content off -> the pre-feature look
+                    return;                                       // sky content off -> the pre-feature look
 
                 // The SAME sea-state fade + sharpness the sky-colour mirror uses: clouds/moon/stars die in chop.
                 float seaState = ReflectionStrength();            // strong on glass -> 0 by the fade-chop / storm
                 if (seaState <= 0.001)
-                    return float3(0, 0, 0);                       // a storm doesn't mirror the sky either
+                    return;                                       // a storm doesn't mirror the sky either
                 float sharp = ReflectionSharpness();              // 1 = crisp mirror, 0 = smeared
                 float night = NightFactor();                      // 0 day .. 1 deep night (moon/stars gate)
 
@@ -1125,7 +1159,6 @@ Shader "HiddenHarbours/Water"
                                      : _ReflectionColor.rgb;
 
                 float2 pp = Pixelize(worldXY);
-                float3 outRGB = float3(0, 0, 0);
 
                 // ---- (1) drifting CLOUDS (day + night) ------------------------------------------------------
                 // Soft, elongated pale bands scrolled along the shared sim wind. Built from a couple of FBM
@@ -1148,7 +1181,13 @@ Shader "HiddenHarbours/Water"
                     cloudMask *= lerp(0.85, 1.15, surf) * lerp(0.9, 1.1, swellCrest);
                     // pale cloud colour, gently tinted toward the current sky (warm at dusk, cool at night).
                     float3 cloudCol = lerp(_CloudColor.rgb, sky, 0.35);
-                    outRGB += cloudCol * cloudMask * _CloudStrength;
+                    float3 cloudTerm = cloudCol * cloudMask * _CloudStrength;
+                    // SPLIT by the night factor: the day share stays in the pre-grade composite (daylight is
+                    // pixel-identical — night = 0 routes ALL of it here); the night share joins the compensated
+                    // post-grade add so the clouds keep reading as the overlay darkens (they were crushed with
+                    // the moon before). The shares sum to the original term — no dusk discontinuity.
+                    dayRGB += cloudTerm * (1.0 - night);
+                    nightRGB += cloudTerm * night;
                 }
 
                 // ---- (2) the LIVING MOON: a reflected disc (phase-shaped) + a vertical GLITTER PATH (night) --
@@ -1167,10 +1206,14 @@ Shader "HiddenHarbours/Water"
                 float moonGate = night * moonPresence;
                 if (moonGate > 0.001 && moonBright > 0.001 && (_MoonStrength > 0.001 || _MoonGlitter > 0.001))
                 {
-                    // Place the moon's reflected position out along the (current arc) moon direction from a scene
-                    // anchor, so the glitter column reads from a believable spot and is STABLE in world space (it
-                    // doesn't crawl with the pixel). Anchor at the height-map world centre when baked, else origin.
-                    float2 anchor = _HeightWorldMin.xy + _HeightWorldSize.xy * 0.5;
+                    // Place the moon's reflected position out along the (current arc) moon direction from the
+                    // CAMERA's ground position, so the reflection TRAVELS WITH THE VIEWER like a real reflection
+                    // of a body at infinity (the classic "the moon follows you along the shore") and always lands
+                    // on water NEAR the play area. (It was anchored at the height-map world centre — for St
+                    // Peters that is world (0,0), the middle of the SANDBAR, bared at most tides ~40 m from the
+                    // play area, so the owner literally never saw the moon.) The disc still rises/arcs/sets via
+                    // the moon DIRECTION below; per-pixel it stays stable (it moves with the camera, not the pixel).
+                    float2 anchor = _WorldSpaceCameraPos.xy;
                     float2 mdir = MoonDir();
                     float moonReach = max(_MoonGlitterLength, 1e-3);
                     float2 moonPos = anchor + mdir * moonReach * 0.5;     // the reflected moon disc's centre
@@ -1211,9 +1254,10 @@ Shader "HiddenHarbours/Water"
                     float pathMask = colSpan * lateral * glints * shimmer;
 
                     // dim the whole moon by its live brightness (thin crescent / new moon = dim) and the night-up gate.
+                    // NIGHT-gated content -> the compensated post-grade part (it must survive the overlay).
                     float3 moonCol = _MoonColor.rgb;
-                    outRGB += moonCol * disc * _MoonStrength * moonGate * moonBright;
-                    outRGB += moonCol * pathMask * _MoonGlitter * moonGate * moonBright;
+                    nightRGB += moonCol * disc * _MoonStrength * moonGate * moonBright;
+                    nightRGB += moonCol * pathMask * _MoonGlitter * moonGate * moonBright;
                 }
 
                 // ---- (3) faint STAR sparkle (night) ---------------------------------------------------------
@@ -1232,12 +1276,14 @@ Shader "HiddenHarbours/Water"
                         // each star twinkles on its own phase (hash drives the phase offset), 0..1 brightness.
                         float phase = Hash21(cell + 1.7) * 6.2831853;
                         float twinkle = 0.4 + 0.6 * (0.5 + 0.5 * sin(t * max(_StarTwinkleSpeed, 0.0) + phase));
-                        outRGB += _MoonColor.rgb * star * twinkle * _StarStrength * night;
+                        // NIGHT-gated content -> the compensated post-grade part (stars must survive the overlay).
+                        nightRGB += _MoonColor.rgb * star * twinkle * _StarStrength * night;
                     }
                 }
 
                 // master + the SAME sea-state fade the sky-colour mirror gets (clouds/moon/stars die in chop).
-                return outRGB * master * seaState;
+                dayRGB *= master * seaState;
+                nightRGB *= master * seaState;
             }
 
             // ---- the BOAT SPOTLIGHT term: light the WATER from WITHIN this shader (ADR 0016) -----------------
@@ -1578,10 +1624,18 @@ Shader "HiddenHarbours/Water"
                 // RISES/ARCS/SETS across the night), and faint twinkling STARS. The moon/stars gate ON by night
                 // (darkness from _DayNightTint); clouds read day + night. ALL of it inherits the SAME sea-state
                 // fade as the mirror (strong on CALM/glassy water, gone in chop/storm — a storm doesn't mirror).
-                // Added after the sky-colour mirror but BEFORE the foam (whitecaps read over the sky) — col.rgb
-                // ONLY, never depth/clip/the deep tint/the caustic gate/_WaterLevel (P1 integrity, rule 5). The
-                // whole layer dials to nothing with _SkyReflectionStrength = 0. See SkyContentReflection() above.
-                col.rgb += SkyContentReflection(worldXY, surf, swellCrest, t);
+                // col.rgb ONLY, never depth/clip/the deep tint/the caustic gate/_WaterLevel (P1 integrity,
+                // rule 5). The whole layer dials to nothing with _SkyReflectionStrength = 0.
+                //
+                // The content comes back SPLIT (see SkyContentReflection() above): the DAY share is added here —
+                // after the sky-colour mirror but BEFORE the foam (whitecaps read over the sky), exactly where
+                // the whole layer used to sit, so daylight is pixel-identical. The NIGHT share (moon/glitter/
+                // stars + the clouds' night portion) is held back and added AFTER the palette grade, compensated
+                // for the day/night multiply overlay — the complete-dark fix (see the post-grade add below).
+                float3 skyDayRGB;
+                float3 skyNightRGB;
+                SkyContentReflection(worldXY, surf, swellCrest, t, skyDayRGB, skyNightRGB);
+                col.rgb += skyDayRGB;
 
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
@@ -1709,32 +1763,48 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 
-                // ---- BOAT SPOTLIGHT: light the WATER from WITHIN this shader (ADR 0016) -------------------------
-                // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this water OVER the quad
-                // regardless of sorting order — so the water lights ITSELF here from the published _BoatLight*
-                // globals. ADD the cone's night-gated illumination to col.rgb AFTER the foam/reflection (so the
-                // beam reads over the surface dressing) but BEFORE the palette guard-rail (so the rail still
-                // BOUNDS the lit pool — it can't blow out). Sorting-INDEPENDENT (part of the water's own frag), so
-                // it cannot fail the way the quad did over water. col.rgb ONLY — it never touches depth/clip/
-                // _WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). Off when no boat publishes
-                // a beam (intensity 0) or in daylight (the night-gate). See BoatLightTerm() above.
-                col.rgb += BoatLightTerm(worldXY);
-
-                // ---- PALETTE GUARD-RAIL: the final soft grade (col.rgb ONLY; ADR 0015) -------------------------
-                // The LAST thing before return: bound + gently pull the composited colour into the art-directed
-                // palette so it never washes out or goes muddy, while keeping the dynamic diversity. The value
-                // FLOOR is DAY/NIGHT-AWARE — it pre-compensates for the day/night overlay's downstream MULTIPLY
-                // (ADR 0013) so daylight never goes muddy while true night still goes genuinely dark. dayNightLuma
-                // is the luminance of the global _DayNightTint the overlay multiplies the frame by; when the cycle
-                // is NOT running the global is near-black (the same "unset" convention the reflection/specular use)
-                // -> treat it as full daylight (dnLuma = 1, the daylight rail) so a bare art scene / editor preview
-                // grades to the daylight palette, never a phantom-dark one. col.rgb ONLY: this never touches depth/
-                // clip()/_WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). Strength 0 = today.
+                // ---- PALETTE GUARD-RAIL: the final soft grade of the SEA itself (col.rgb ONLY; ADR 0015) -------
+                // Bound + gently pull the composited colour into the art-directed palette so it never washes out
+                // or goes muddy, while keeping the dynamic diversity. The value FLOOR is DAY/NIGHT-AWARE — it
+                // pre-compensates for the day/night overlay's downstream MULTIPLY (ADR 0013) so daylight never
+                // goes muddy while true night still goes genuinely dark. dayNightLuma is the luminance of the
+                // global _DayNightTint the overlay multiplies the frame by; when the cycle is NOT running the
+                // global is near-black (the same "unset" convention the reflection/specular use) -> treat it as
+                // full daylight (dnLuma = 1, the daylight rail) so a bare art scene / editor preview grades to
+                // the daylight palette, never a phantom-dark one. col.rgb ONLY: this never touches depth/clip()/
+                // _WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). Strength 0 = today.
+                // (dnSum/dayNightLuma are computed BEFORE the light content below — both stages read them.)
                 float dnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
                 float dayNightLuma = (dnSum > 1e-3)
                     ? PaletteLuma(_DayNightTint.rgb)   // cycle running: the real multiply luminance (1 day .. ~0 night)
                     : 1.0;                             // cycle off / unset: full daylight rail (no phantom dark floor)
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
+
+                // ---- LIGHT CONTENT, post-grade + overlay-compensated: BOAT SPOTLIGHT + the NIGHT SKY -----------
+                // The boat beam (ADR 0016) and the night-gated sky content (moon disc/glitter/stars + the clouds'
+                // night share) are added LAST, after the palette grade, pre-compensated for the day/night multiply
+                // overlay — the complete-dark fix. Two crushers demanded this exact position:
+                //  (1) The OVERLAY: the whole frame is multiplied by _DayNightTint after this shader (ADR 0013);
+                //      at deepest night that is ~(0.022, 0.029, 0.061) — an uncompensated add survived at ~3-6%,
+                //      blue-shifted (the owner's "spotlight/moon vanish in complete dark"). Dividing the add by
+                //      max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL) cancels the multiply exactly at the shipped
+                //      deepest night (all channels exceed the floor; see the constant's comment + HDR dependency).
+                //  (2) The GRADE: at deep night PaletteValueFloorDayNight saturates (floorPre = 1) and pulls ALL
+                //      pre-overlay water toward luma 1 at _PaletteGradeStrength — lit and unlit alike — which
+                //      FLATTENS the beam/moon against their surroundings. Post-grade, the lit pool keeps its
+                //      authored contrast; the rail still bounds the SEA the light sits on. (With HDR on, the >1
+                //      compensated values also must NOT pass through the grade's value ceiling.)
+                // The cycle-off branch (dnSum ~ 0: edit mode / bare art scene / demo) adds the content RAW — no
+                // overlay is running, so there is nothing to compensate (preserves the tuning/preview look).
+                // Both terms are their own gates: the beam is night-gated + intensity 0 when no boat publishes;
+                // skyNightRGB is 0 by day — so in DAYLIGHT this whole block adds 0 and the look is pixel-identical.
+                // Sorting-INDEPENDENT (part of the water's own frag) — it cannot fail the way the land quad did
+                // over water. col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1, rule 5).
+                float3 lightContent = BoatLightTerm(worldXY) + skyNightRGB;
+                col.rgb += (dnSum > 1e-3)
+                    ? lightContent / max(_DayNightTint.rgb,
+                                         float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))
+                    : lightContent;
 
                 return col;
             }

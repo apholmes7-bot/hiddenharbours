@@ -475,12 +475,16 @@ moonlight-on-water column) that **RISES, ARCS across the night, and SETS** — a
 
 Like every prior addendum, **all of it is visual-only** — it ADDS to `col.rgb` like every other water layer
 and **never** touches `depth`, `clip()`, the deep tint, the caustic gate, or `_WaterLevel`; it drives no sim
-and saves nothing (the determinism / P1-integrity invariant above holds). It composites **after** the
-sky-colour mirror (`SkyReflection`) but **before** the foam (whitecaps read over the sky), and **before** the
-boat-light term + the palette guard-rail (which still BOUND the result — the moon can read bright without
-blowing past the value ceiling unpleasantly). Every new constant is a material property (rule 6), the layers
-stay **pixelized** (decision (2)), and they default **ON at a tasteful strength** so it reads immediately yet
-`_SkyReflectionStrength = 0` returns the exact eighth-addendum (sky-colour + sun) look.
+and saves nothing (the determinism / P1-integrity invariant above holds). Its DAY share composites **after**
+the sky-colour mirror (`SkyReflection`) but **before** the foam (whitecaps read over the sky) and is graded by
+the palette guard-rail as before; its NIGHT-gated share (the moon disc/glitter, stars, and the clouds' night
+portion) composites **after** the guard-rail alongside the boat-light term, **pre-compensated for the
+day/night multiply overlay** so complete dark can't crush it to ~3% (the complete-dark fix;
+`design/water-rendering.md` §11.6 — the moon is also anchored at the **camera's ground position** so the
+reflection travels with the viewer and always lands on nearby water). Every new constant is a material
+property (rule 6), the layers stay **pixelized** (decision (2)), and they default **ON at a tasteful
+strength** so it reads immediately yet `_SkyReflectionStrength = 0` returns the exact eighth-addendum
+(sky-colour + sun) look.
 
 - **Inherits the SEA-STATE FADE (NO new water uniform).** Clouds/moon/stars all reuse the existing
   `ReflectionStrength()` / `ReflectionSharpness()` curves (off the already-pushed `_Chop` / `_Roughness`), so

@@ -203,9 +203,10 @@ all: the boat spotlight **publishes its world-space cone as GLOBAL shader unifor
 `_DayNightTint` / `_SunDir` already are), and the **water fragment shader adds the spotlight's cone illumination
 to its own `col.rgb`**. Because the light is computed **inside the water's own rendering**, there is **no sorting
 dependency** — it *will* show on the water, and it **composes naturally** with the water's reflections / foam /
-palette (it sits after the foam/reflection so the beam reads over them, and **before** the palette guard-rail so
-the rail still bounds the lit pool — it can't blow out). The **existing additive QUAD is kept unchanged for
-LAND** (it works there). So the **one** boat light lights **both** surfaces via **two** mechanisms: the quad on
+palette (it sits after the foam/reflection so the beam reads over them; it originally sat **before** the palette
+guard-rail, but that — plus the day/night multiply overlay — crushed the beam at complete dark, so it now sits
+**after** the grade, overlay-compensated: see Follow-up fix 3 below). The **existing additive QUAD is kept
+unchanged for LAND** (it works there). So the **one** boat light lights **both** surfaces via **two** mechanisms: the quad on
 land, the in-shader term on water — both driven by the **same** `BoatSpotlight` tunables.
 
 **Why in-shader, not a third quad fix.** The quad-vs-sprite ordering in the URP 2D renderer is not something the
@@ -261,6 +262,27 @@ term to the water frag, and a globals push on the boat spotlight; the **land qua
 
 **Owner verification note.** The effect is **night-gated** — it fades toward off near dawn (a daylight beam
 would wash the bright water out, which is wrong). Verify at **DEEP night (~midnight)**, driving over open water.
+
+## Follow-up fix 3 — the water beam is added AFTER the palette grade, PRE-COMPENSATED for the day/night multiply (it was crushed at complete dark)
+
+**Symptom (owner report).** The beam-on-water read fine at dusk but all but **vanished at complete dark** —
+exactly when it matters (P1/P5: dark nights navigated by boat lights). Root cause: the fix-2 term was added to
+`col.rgb` **before** two downstream crushers. (1) The ADR 0013 overlay **multiplies** the whole frame by
+`_DayNightTint`; at deepest night that is ≈ `(0.022, 0.029, 0.061)`, so the beam survived at ~3–6%,
+blue-shifted. (2) At deep night the ADR 0015 grade's day/night value floor saturates and pulls **all**
+pre-overlay water toward luma 1, flattening lit-vs-unlit contrast. The cone/gate curves themselves were correct.
+
+**Fix.** The beam (plus the reflection's night-gated sky content — moon/glitter/stars, which had the same
+pre-overlay crush) now composites **after `PaletteGrade()`**, divided by
+`max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL = 0.02)` so the overlay's multiply **cancels** — the same
+pre-compensation pattern ADR 0015's `PaletteValueFloorDayNight` established. The 0.02 floor bounds the boost at
+≤ 50×; the shipped deepest-night channels all exceed it, so cancellation there is exact (no hue shift). Daylight
+is pixel-identical (the beam is night-gated to 0 by day); cycle-off (edit mode / demo) adds the term raw (no
+overlay to compensate for). **Depends on HDR being ON** (`UniversalRP.asset m_SupportsHDR: 1`) so the
+compensated >1 values survive to the overlay — re-check if a later mobile port disables HDR. The rail no longer
+bounds the lit pool (deliberate: it would clamp the compensated values); it still grades the sea under the beam.
+Headless twin: `LightMath.CompensateForDayNightTint` (+ `DayNightCompensationMinChannel`), pinned in
+`LightMathTests`. Full mechanism: `design/water-rendering.md` §11.6.
 
 ## Rejected alternatives
 

@@ -208,6 +208,57 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(radial * cone);
         }
 
+        // ---- DAY/NIGHT PRE-COMPENSATION (the complete-dark fix) ------------------------------------------
+        //
+        // The day/night overlay MULTIPLIES the whole frame by _DayNightTint after the water renders (ADR 0013).
+        // Anything the water shader ADDS to itself — the boat-spotlight beam, the reflected moon/glitter/stars —
+        // was therefore crushed by the same multiply: at the shipped deepest night the tint is
+        // skyTint(0.12, 0.16, 0.34) × the intensity floor 0.18 ≈ (0.022, 0.029, 0.061), so an authored beam
+        // survived on screen at ~3-6%, blue-shifted (the owner's "the spotlight/moon vanish in complete dark").
+        // The fix divides the additive term by the tint BEFORE the overlay so the multiply cancels — the same
+        // pre-compensation pattern the palette guard-rail's day/night value floor already uses (ADR 0015). The
+        // shader performs this in frag() AFTER the palette grade (the grade's saturated deep-night floor would
+        // otherwise flatten lit-vs-unlit contrast, and its value ceiling would clamp the >1 compensated values);
+        // this is the exact headless twin of that divide, tested in LightMathTests.
+
+        /// <summary>
+        /// The per-channel FLOOR of the day/night pre-compensation divide — mirrors the shader's
+        /// <c>DN_COMP_MIN_CHANNEL</c>. It bounds the boost at ≤ <c>1/0.02 = 50×</c> so a near-zero tint channel
+        /// can't explode the divide toward infinity. The shipped deepest-night tint channels
+        /// (≈ 0.022, 0.029, 0.061) all EXCEED this floor, so at deepest night the cancellation is EXACT — no
+        /// hue shift. NOTE: the whole scheme depends on HDR being ON (UniversalRP.asset <c>m_SupportsHDR: 1</c>)
+        /// so the compensated &gt;1 values survive the framebuffer to reach the overlay's multiply.
+        /// </summary>
+        public const float DayNightCompensationMinChannel = 0.02f;
+
+        /// <summary>
+        /// PRE-COMPENSATE an additive light term for the day/night multiply overlay: divide each channel by
+        /// <c>max(tint, minChannel)</c> so the overlay's downstream multiply by <paramref name="tint"/> cancels
+        /// and the term reads ON SCREEN at its authored brightness regardless of how dark the night is. Mirrors
+        /// the water shader's post-grade add EXACTLY (the headless determinism twin):
+        /// <c>col.rgb += (dnSum &gt; 1e-3) ? add / max(tint.rgb, DN_COMP_MIN_CHANNEL) : add</c>.
+        ///
+        /// <para>Behaviour pinned by the tests: a ~white tint (cycle at full day) is a NO-OP (divide by 1);
+        /// a near-black/unset tint (sum ≤ 1e-3 ⇒ the cycle is OFF — edit mode, a bare art scene, the demo)
+        /// returns the term UNTOUCHED (there is no overlay to compensate for); otherwise the on-screen product
+        /// <c>compensated × tint</c> equals the authored term whenever every tint channel ≥
+        /// <paramref name="minChannel"/>, and the boost never exceeds <c>1/minChannel</c> per channel.</para>
+        /// </summary>
+        /// <param name="additive">The authored additive RGB term (beam / moon / stars), before the overlay.</param>
+        /// <param name="tint">The published day/night multiply tint (<c>_DayNightTint</c>).</param>
+        /// <param name="minChannel">Per-channel divide floor (use <see cref="DayNightCompensationMinChannel"/>).</param>
+        public static Color CompensateForDayNightTint(Color additive, Color tint, float minChannel)
+        {
+            float sum = tint.r + tint.g + tint.b;
+            if (sum <= 1e-3f) return additive;                     // cycle off/unset -> nothing to compensate
+            float floorCh = Mathf.Max(minChannel, 1e-4f);          // defensive: a zero floor must never divide by 0
+            return new Color(
+                additive.r / Mathf.Max(tint.r, floorCh),
+                additive.g / Mathf.Max(tint.g, floorCh),
+                additive.b / Mathf.Max(tint.b, floorCh),
+                additive.a);
+        }
+
         /// <summary>
         /// A DETERMINISTIC flicker multiplier in <c>[1 − amount, 1]</c> — a lantern/torch's living wobble with
         /// NO <see cref="System.Random"/> (rule 5). It is a pure function of <c>(seed, time)</c>: a couple of
