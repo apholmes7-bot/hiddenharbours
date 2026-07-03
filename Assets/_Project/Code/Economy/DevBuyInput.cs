@@ -4,21 +4,23 @@ using UnityEngine.InputSystem;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// PLACEHOLDER: press P ("Punt") to buy the boat offered at the Shipwright — but ONLY while ON FOOT
-    /// and within reach of THIS Shipwright (buying no longer fires from anywhere). Proximity mirrors the
-    /// dock-zone test: the on-foot player must be within range of the stall's own transform. Works in
-    /// both regions (each region's Shipwright gates on its own position). ui-ux replaces this with the
-    /// real Shipwright buy screen / Interact intent later.
+    /// PLACEHOLDER INPUT (the screen it opens is real): press P while ON FOOT and within reach of a
+    /// stall to open the <see cref="BuyScreen"/> for it — browse the stall's offers, see prices and
+    /// what you can afford, and Confirm to buy through the vendors' existing seams. This replaces the
+    /// old blind insta-<c>TryBuy()</c> keypress (VS-16): the same key, the same proximity gate, but the
+    /// purchase now goes through a real screen. The instant-buy seams (<see cref="Shipwright.TryBuy()"/>
+    /// etc.) remain for tests/automation.
+    ///
+    /// <para>Vendor-agnostic: it opens the screen for WHATEVER vendor components sit on this
+    /// GameObject (Shipwright, GearShop, LicenseVendor — the screen enumerates them), so the same
+    /// driver serves the Punt shed, the dory yard, the harbourmaster, and the general store.
+    /// ui-ux swaps this key for the real Interact intent through the InputService later.</para>
     /// </summary>
-    [RequireComponent(typeof(Shipwright))]
     public class DevBuyInput : MonoBehaviour
     {
-        [Tooltip("On-foot + in-range gate: P only buys when the walking player is at this Shipwright.")]
+        [Tooltip("On-foot + in-range gate: P only opens the buy screen when the walking player is at this stall.")]
         [SerializeField] private StallReach _reach = new StallReach();
 
-        private Shipwright _shipwright;
-
-        private void Awake() => _shipwright = GetComponent<Shipwright>();
         private void OnEnable() => _reach.Enable();
         private void OnDisable() => _reach.Disable();
 
@@ -27,9 +29,9 @@ namespace HiddenHarbours.Economy
             if (Keyboard.current == null || !Keyboard.current.pKey.wasPressedThisFrame) return;
 
             if (_reach.CanInteract(transform.position))
-                _shipwright.TryBuy();
-            else if (_reach.OnFoot)
-                Debug.Log("[Shipwright] Too far — step up to the Shipwright to buy.");
+                BuyScreen.Open(gameObject);
+            else if (_reach.OnFoot && !BuyScreen.IsOpen)
+                Debug.Log("[Buy] Too far — step up to the stall to browse.");
         }
     }
 }
