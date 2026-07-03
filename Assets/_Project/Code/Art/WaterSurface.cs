@@ -17,8 +17,9 @@ namespace HiddenHarbours.Art
     /// <item><description><b>Water level → shoreline.</b> <see cref="IEnvironmentService.WaterLevelAt"/> drives
     /// the shader's <c>_WaterLevel</c>; combined with the baked seabed height map the depth gradient + foam band
     /// sweep across the SAME zero-crossing the walkability sim gates on.</description></item>
-    /// <item><description><b>Sea-state → chop.</b> <see cref="EnvironmentSample.SeaState"/> sets the swell
-    /// amplitude / choppiness — glassy to storm.</description></item>
+    /// <item><description><b>Sea-state → chop.</b> The CONTINUOUS sea-state axis
+    /// (<see cref="EnvironmentSample.SeaState01"/>) sets the swell amplitude / choppiness — glassy to storm,
+    /// easing smoothly with the wind (never popping at an enum band edge).</description></item>
     /// </list>
     ///
     /// <para><b>Depth source.</b> The shader needs the seabed elevation per pixel to draw shallow→deep and place
@@ -440,7 +441,7 @@ namespace HiddenHarbours.Art
             Vector2 flowDir = FlowDirection(_smoothedCurrent);
             Vector2 windDir = WindDirection(_smoothedWind);
             float roughness = Roughness(_smoothedWind, _windForFullRoughness);
-            float chop = Choppiness(s.SeaState);
+            float chop = Choppiness(s.SeaState01);
 
             _renderer.GetPropertyBlock(_mpb);
             _mpb.SetFloat(IdWaterLevel, waterLevel);
@@ -567,7 +568,7 @@ namespace HiddenHarbours.Art
 
             // Target weights from the deterministic weather (pure helper).
             WeatherWaterPalette.BlendWeightsNonAlloc(
-                _weatherTargetWeights, s.SeaState, s.Visibility,
+                _weatherTargetWeights, s.SeaState01, s.Visibility,
                 _seaStateThreshold, _seaStateCurve, _fogThreshold, _fogCurve, _calmReach);
 
             // Ease the visible weights toward the target (the mood never POPS). First push snaps (no ease-in
@@ -1181,13 +1182,16 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Choppiness / swell amplitude (0..1) from the sea-state scale (Glass=0 .. Storm=7), linear across the
-        /// canon range. Glassy water is flat; a storm is fully choppy.
+        /// Choppiness / swell amplitude (0..1) from the CONTINUOUS sea-state axis
+        /// (<see cref="EnvironmentSample.SeaState01"/>): glassy water (0) is flat; a storm (1) is fully choppy.
+        /// The axis already carries the canon Glass..Storm scale linearly (it equals <c>(int)state/7</c> at
+        /// every band edge), so this is just the saturate — the old <c>(int)state/7</c> quantize is gone and
+        /// the swell/chop eases with the wind instead of jumping 1/7 per enum step (the "sudden shader change"
+        /// the owner reported).
         /// </summary>
-        public static float Choppiness(SeaState seaState)
+        public static float Choppiness(float seaState01)
         {
-            int max = (int)SeaState.Storm;   // 7
-            return max > 0 ? Mathf.Clamp01((int)seaState / (float)max) : 0f;
+            return Mathf.Clamp01(seaState01);
         }
 
         // ==== Beach swash (ALWAYS-ON cosmetic shoreline wash) — pure mirror of the shader's BeachSwash ======

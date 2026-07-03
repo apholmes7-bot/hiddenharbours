@@ -422,6 +422,15 @@ We use a Beaufort-flavored, **Maritime-named** scale. `seaState` is driven mostl
 
 - Each boat declares **`maxSafeSeaState`** (seaworthiness — next doc). Exceeding it ramps capsize/swamping risk. This is the **direct bridge** between this doc and the danger model in `boats-and-navigation.md`.
 - **Continuous `roughness`** (0..1) interpolates within/around tiers for smooth wave visuals and a continuous physics input (no jarring step at a tier boundary).
+  - **Implemented (M1)** as `EnvironmentSample.SeaState01` — the piecewise-linear inverse of the
+    `WeatherModel.SeaFromWind` wind thresholds, so it equals the enum's normalized value
+    (`(int)state / 7`) exactly at every band edge and eases linearly between them. Pure function of
+    the deterministic wind (rule 5 — no smoothing state, nothing saved). **All presentation
+    consumers** (water chop/swell, the ADR 0017 palette mood axis, the day/night weather dim, sea
+    mist, boat-wake roughness) read this axis; **gameplay gates** (`maxSafeSeaState`) and the HUD
+    "Sea: Light (2/7)" readout stay on the stepped enum, where discrete tiers are intended. This
+    killed the owner-reported "sudden shader change between weather states" pop — the enum used to
+    jump every consumer 1/7 in a single tick whenever wind noise crossed a threshold.
 
 ### 4.4 Fog, rain, storms
 

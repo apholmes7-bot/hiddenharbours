@@ -260,12 +260,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void Choppiness_SpansGlassToStorm_Monotonic()
         {
-            Assert.AreEqual(0f, WaterSurface.Choppiness(SeaState.Glass), 1e-5f, "glass is flat");
-            Assert.AreEqual(1f, WaterSurface.Choppiness(SeaState.Storm), 1e-5f, "a storm is fully choppy");
-            float calm = WaterSurface.Choppiness(SeaState.Calm);
-            float rough = WaterSurface.Choppiness(SeaState.Rough);
+            // Choppiness now reads the CONTINUOUS sea-state axis (EnvironmentSample.SeaState01) — the enum's
+            // band-edge values (k/7) must still land on the exact pre-continuous outputs (a de-quantization,
+            // not a re-tune), and the axis is smooth in between (no 1/7 chop pops).
+            Assert.AreEqual(0f, WaterSurface.Choppiness(0f), 1e-5f, "glass (0) is flat");
+            Assert.AreEqual(1f, WaterSurface.Choppiness(1f), 1e-5f, "a storm (1) is fully choppy");
+            float calm = WaterSurface.Choppiness(1f / 7f);    // the Calm band edge — the old (int)Calm/7
+            float rough = WaterSurface.Choppiness(5f / 7f);   // the Rough band edge — the old (int)Rough/7
             Assert.Greater(rough, calm, "rougher seas => more chop");
-            Assert.That(WaterSurface.Choppiness(SeaState.Moderate), Is.InRange(0f, 1f), "stays in the 0..1 uniform range");
+            Assert.That(WaterSurface.Choppiness(3f / 7f), Is.InRange(0f, 1f), "stays in the 0..1 uniform range");
+            Assert.AreEqual(0f, WaterSurface.Choppiness(-0.5f), 1e-6f, "clamps below");
+            Assert.AreEqual(1f, WaterSurface.Choppiness(1.5f), 1e-6f, "clamps above");
         }
 
         // ===== WaterSurface: the distance-to-land DEPTH estimate (the no-height-map shore gradient) =======

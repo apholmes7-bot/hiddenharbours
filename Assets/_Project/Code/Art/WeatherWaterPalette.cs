@@ -55,8 +55,11 @@ namespace HiddenHarbours.Art
         public const int AnchorCount = 4;
 
         /// <summary>
-        /// Normalise a <see cref="SeaState"/> (Glass=0 .. Storm=7) into 0..1 — the raw sea-state axis BEFORE
-        /// the threshold/curve shaping. Pure; <c>Glass → 0</c>, <c>Storm → 1</c>, linear across the canon range.
+        /// Normalise a STEPPED <see cref="SeaState"/> (Glass=0 .. Storm=7) into its band-edge 0..1 value.
+        /// The live blend no longer uses this — <see cref="BlendWeightsNonAlloc"/> takes the CONTINUOUS
+        /// <see cref="EnvironmentSample.SeaState01"/> axis directly (which equals this at every band edge),
+        /// so the eased weights track a smooth target instead of a 1/7-stepping one. Kept as the enum→axis
+        /// convenience for tests/tools. Pure; <c>Glass → 0</c>, <c>Storm → 1</c>, linear across the canon range.
         /// </summary>
         public static float SeaStateAxis01(SeaState seaState)
         {
@@ -103,7 +106,8 @@ namespace HiddenHarbours.Art
         /// CALM mood vs sitting on the region BASE: 0 = the base IS the calm look (calm anchor unused), 1 =
         /// glassy water reads fully as the Calm preset. The base always backfills so the weights sum to 1.</para>
         /// </summary>
-        /// <param name="seaState">The deterministic sea-state (Glass..Storm).</param>
+        /// <param name="seaState01">The deterministic CONTINUOUS sea-state axis, 0 (glass) .. 1 (storm) —
+        /// <see cref="EnvironmentSample.SeaState01"/> (or <see cref="SeaStateAxis01"/> of an enum).</param>
         /// <param name="visibility">The deterministic visibility (1 = clear .. 0 = thick fog).</param>
         /// <param name="seaThreshold">Sea-state axis threshold below which no storm pull (0..1).</param>
         /// <param name="seaCurve">Sea-state axis shaping exponent (1 = linear; &gt;1 = storm bites late).</param>
@@ -112,13 +116,13 @@ namespace HiddenHarbours.Art
         /// <param name="calmReach">How far the lowest sea-state pulls toward the pure Calm mood (0..1).</param>
         /// <returns>A length-<see cref="AnchorCount"/> array of 0..1 weights summing to 1
         /// (indexed by <see cref="Anchor"/>).</returns>
-        public static float[] BlendWeights(SeaState seaState, float visibility,
+        public static float[] BlendWeights(float seaState01, float visibility,
                                            float seaThreshold, float seaCurve,
                                            float fogThreshold, float fogCurve,
                                            float calmReach)
         {
             var w = new float[AnchorCount];
-            BlendWeightsNonAlloc(w, seaState, visibility,
+            BlendWeightsNonAlloc(w, seaState01, visibility,
                                  seaThreshold, seaCurve, fogThreshold, fogCurve, calmReach);
             return w;
         }
@@ -128,13 +132,14 @@ namespace HiddenHarbours.Art
         /// buffer (length ≥ <see cref="AnchorCount"/>) so the per-tick blend in <see cref="WaterSurface"/>
         /// never allocates (CLAUDE.md rule 7). Same pure model and guarantees (weights ≥ 0, sum to 1).
         /// </summary>
-        public static void BlendWeightsNonAlloc(float[] weights, SeaState seaState, float visibility,
+        public static void BlendWeightsNonAlloc(float[] weights, float seaState01, float visibility,
                                                 float seaThreshold, float seaCurve,
                                                 float fogThreshold, float fogCurve,
                                                 float calmReach)
         {
-            // The two shaped axes.
-            float seaAmt = ShapeAxis(SeaStateAxis01(seaState), seaThreshold, seaCurve);
+            // The two shaped axes. seaState01 is the CONTINUOUS axis, so the target weights slide across
+            // the moods with the wind instead of stepping 1/7 per enum band (ShapeAxis clamps to 0..1).
+            float seaAmt = ShapeAxis(seaState01, seaThreshold, seaCurve);
             float fogAmt = ShapeAxis(1f - Mathf.Clamp01(visibility), fogThreshold, fogCurve);
             float reach = Mathf.Clamp01(calmReach);
 

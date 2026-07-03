@@ -131,7 +131,7 @@ namespace HiddenHarbours.Boats
             {
                 EnvironmentSample s = env.Sample();
                 current = s.CurrentVector;
-                roughness = SeaStateRoughness(s.SeaState);
+                roughness = SeaStateRoughness(s.SeaState01);
             }
             float time = GameServices.Clock != null ? (float)GameServices.Clock.TotalSeconds : Time.time;
 
@@ -178,14 +178,14 @@ namespace HiddenHarbours.Boats
         // ==== sea-state → roughness (mirrors the water's Choppiness scale) =================================
 
         /// <summary>
-        /// Map the discrete <see cref="SeaState"/> (Glass=0 .. Storm=7) to a 0..1 roughness, the SAME linear
-        /// scale the water surface uses for its choppiness — so the wake breaks up exactly when the water does
-        /// (glassy → no distortion, storm → full wobble). Pure + static; unit-testable.
+        /// Map the CONTINUOUS sea-state axis (<see cref="EnvironmentSample.SeaState01"/>, 0 glass .. 1 storm)
+        /// to a 0..1 roughness, the SAME scale the water surface uses for its choppiness — so the wake breaks
+        /// up exactly when the water does (glassy → no distortion, storm → full wobble), easing with the wind
+        /// instead of stepping at an enum band edge. Pure + static; unit-testable.
         /// </summary>
-        public static float SeaStateRoughness(SeaState seaState)
+        public static float SeaStateRoughness(float seaState01)
         {
-            int max = (int)SeaState.Storm;   // 7
-            return max > 0 ? Mathf.Clamp01((int)seaState / (float)max) : 0f;
+            return Mathf.Clamp01(seaState01);
         }
 
         // ==== procedural foam sprite (avoids the spriteMode-Multiple BoatWake.png load gotcha) =============

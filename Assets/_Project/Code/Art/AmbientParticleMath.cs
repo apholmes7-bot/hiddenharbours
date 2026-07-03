@@ -88,19 +88,20 @@ namespace HiddenHarbours.Art
         /// <list type="bullet">
         /// <item><description>LOW visibility (fog) → MORE mist: <c>(1 - visibility)</c> weighted by
         /// <paramref name="fogWeight"/>.</description></item>
-        /// <item><description>HIGHER sea-state (spray/whitecaps kicking up) → MORE mist:
-        /// <c>seaState/Storm</c> weighted by <paramref name="seaStateWeight"/>.</description></item>
+        /// <item><description>HIGHER sea-state (spray/whitecaps kicking up) → MORE mist: the CONTINUOUS
+        /// <c>EnvironmentSample.SeaState01</c> axis weighted by <paramref name="seaStateWeight"/> — smooth
+        /// in the wind, so the mist thickens gradually instead of stepping at an enum band
+        /// edge.</description></item>
         /// </list>
         /// Always at least <paramref name="baseline"/> so there is a faint ambient shimmer even on a clear,
         /// glassy day (subtle by default, as briefed). Clamped 0..1. Pure + static. Mirrors the wake's
         /// <c>SeaStateRoughness</c> linear scale so mist thickens exactly when the sea does.
         /// </summary>
-        public static float MistIntensity(float visibility, HiddenHarbours.Core.SeaState seaState,
+        public static float MistIntensity(float visibility, float seaState01,
                                           float baseline, float fogWeight, float seaStateWeight)
         {
-            int maxState = (int)HiddenHarbours.Core.SeaState.Storm;   // 7
             float fog = Mathf.Clamp01(1f - Mathf.Clamp01(visibility));
-            float sea = maxState > 0 ? Mathf.Clamp01((int)seaState / (float)maxState) : 0f;
+            float sea = Mathf.Clamp01(seaState01);
             float extra = fog * Mathf.Max(0f, fogWeight) + sea * Mathf.Max(0f, seaStateWeight);
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + extra);
         }

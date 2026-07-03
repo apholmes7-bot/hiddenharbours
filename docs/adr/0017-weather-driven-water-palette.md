@@ -52,9 +52,13 @@ Two hard constraints shape the design (the same ones every §5.6–§13 water la
 The model (`WeatherWaterPalette`, a pure C# static class) turns the sample into 0..1 weights over four anchor
 moods — a region **BASE**, a **CALM** mood, a **STORM** mood, and a **FOG** mood — that sum to 1:
 
-- **Sea-state axis** — the normalised sea-state (`SeaStateAxis01`: Glass=0 .. Storm=1), shaped by a tunable
+- **Sea-state axis** — the normalised sea-state (Glass=0 .. Storm=1), shaped by a tunable
   threshold + curve, drives a **CALM ↔ STORM** lerp: a serene clear sea at low sea-state lerping toward the
-  greyer/choppier/desaturated **Storm** mood as it rises.
+  greyer/choppier/desaturated **Storm** mood as it rises. *(Amended: the axis is now CONTINUOUS at the
+  source — `EnvironmentSample.SeaState01`, the piecewise-linear inverse of the `SeaFromWind` wind
+  thresholds, equal to the old `SeaStateAxis01(enum)` value at every band edge — so the eased weights track
+  a smooth target instead of a 1/7-stepping one, killing the visible pop when wind noise crossed a band
+  threshold.)*
 - **Fog axis** — `(1 − Visibility)`, shaped by a tunable threshold + curve, pulls the whole thing toward the
   **FOG** mood (pale, desaturated, low-contrast, soft).
 - **Combine** — the sea-state lerp produces a calm↔storm base mood; the fog amount then pulls THAT toward

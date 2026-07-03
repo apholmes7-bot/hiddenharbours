@@ -372,11 +372,16 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SeaStateRoughness_GlassIsZero_StormIsOne()
         {
-            Assert.AreEqual(0f, BoatWakeEmitter.SeaStateRoughness(SeaState.Glass), 1e-4f);
-            Assert.AreEqual(1f, BoatWakeEmitter.SeaStateRoughness(SeaState.Storm), 1e-4f);
-            Assert.Greater(BoatWakeEmitter.SeaStateRoughness(SeaState.Rough),
-                           BoatWakeEmitter.SeaStateRoughness(SeaState.Calm),
-                           "roughness rises with the sea-state tier");
+            // SeaStateRoughness now reads the CONTINUOUS axis (EnvironmentSample.SeaState01); the band-edge
+            // values (k/7 — exactly what (int)state/7 produced) pin the same outputs as the old enum path,
+            // and the wake roughness now eases with the wind instead of stepping per band.
+            Assert.AreEqual(0f, BoatWakeEmitter.SeaStateRoughness(0f), 1e-4f);
+            Assert.AreEqual(1f, BoatWakeEmitter.SeaStateRoughness(1f), 1e-4f);
+            Assert.Greater(BoatWakeEmitter.SeaStateRoughness(5f / 7f),   // the Rough band edge
+                           BoatWakeEmitter.SeaStateRoughness(1f / 7f),   // the Calm band edge
+                           "roughness rises with the sea-state axis");
+            Assert.AreEqual(0f, BoatWakeEmitter.SeaStateRoughness(-1f), 1e-6f, "clamps below");
+            Assert.AreEqual(1f, BoatWakeEmitter.SeaStateRoughness(2f), 1e-6f, "clamps above");
         }
 
         // ==== determinism across whole-system runs (rule 5) =============================================

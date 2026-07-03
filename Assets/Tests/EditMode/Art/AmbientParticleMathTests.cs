@@ -103,19 +103,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         // ---- MistIntensity (fog + sea-state thicken; baseline floor) -------------------------------------
+        // MistIntensity now reads the CONTINUOUS sea-state axis (EnvironmentSample.SeaState01); the axis
+        // equals (int)state/7 at the enum band edges, so these values (0 = Glass, 1/7 = Calm, 1 = Storm)
+        // pin exactly the outputs the old enum path produced — plus the mist now thickens smoothly.
 
         [Test]
         public void MistIntensity_ClearGlassyDay_IsBaseline()
         {
-            float m = AmbientParticleMath.MistIntensity(1f, SeaState.Glass, baseline: 0.2f, fogWeight: 1f, seaStateWeight: 1f);
+            float m = AmbientParticleMath.MistIntensity(1f, 0f, baseline: 0.2f, fogWeight: 1f, seaStateWeight: 1f);
             Assert.AreEqual(0.2f, m, Eps, "Clear, glassy → only the baseline shimmer.");
         }
 
         [Test]
         public void MistIntensity_ThickFog_RaisesMist()
         {
-            float clear = AmbientParticleMath.MistIntensity(1f, SeaState.Glass, 0.2f, 0.6f, 0.6f);
-            float foggy = AmbientParticleMath.MistIntensity(0.0f, SeaState.Glass, 0.2f, 0.6f, 0.6f);
+            float clear = AmbientParticleMath.MistIntensity(1f, 0f, 0.2f, 0.6f, 0.6f);
+            float foggy = AmbientParticleMath.MistIntensity(0.0f, 0f, 0.2f, 0.6f, 0.6f);
             Assert.Greater(foggy, clear, "Low visibility must thicken the mist.");
             Assert.AreEqual(0.8f, foggy, Eps, "baseline 0.2 + fog(1.0)*0.6 = 0.8.");
         }
@@ -123,8 +126,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void MistIntensity_HighSeaState_RaisesMist()
         {
-            float calm = AmbientParticleMath.MistIntensity(1f, SeaState.Glass, 0.1f, 0.5f, 0.7f);
-            float storm = AmbientParticleMath.MistIntensity(1f, SeaState.Storm, 0.1f, 0.5f, 0.7f);
+            float calm = AmbientParticleMath.MistIntensity(1f, 0f, 0.1f, 0.5f, 0.7f);
+            float storm = AmbientParticleMath.MistIntensity(1f, 1f, 0.1f, 0.5f, 0.7f);
             Assert.Greater(storm, calm, "A rough sea must kick up more spray/mist.");
             Assert.AreEqual(0.8f, storm, Eps, "baseline 0.1 + seastate(1.0)*0.7 = 0.8.");
         }
@@ -132,7 +135,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void MistIntensity_ClampsToOne()
         {
-            float m = AmbientParticleMath.MistIntensity(0f, SeaState.Storm, 0.9f, 2f, 2f);
+            float m = AmbientParticleMath.MistIntensity(0f, 1f, 0.9f, 2f, 2f);
             Assert.AreEqual(1f, m, Eps, "Intensity saturates at 1.");
         }
 
@@ -143,10 +146,29 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i <= 10; i++)
             {
                 float vis = 1f - i / 10f;   // visibility falls → fog rises
-                float m = AmbientParticleMath.MistIntensity(vis, SeaState.Calm, 0.1f, 0.8f, 0.4f);
+                float m = AmbientParticleMath.MistIntensity(vis, 1f / 7f, 0.1f, 0.8f, 0.4f);
                 Assert.GreaterOrEqual(m + Eps, prev, "Mist must not decrease as fog thickens.");
                 prev = m;
             }
+        }
+
+        [Test]
+        public void MistIntensity_MonotonicAndContinuous_InTheSeaStateAxis()
+        {
+            // The de-quantization guard: mist thickens smoothly along the continuous axis — a fine axis step
+            // can only move it a little (no 1/7-band jumps), and it never decreases as the sea builds.
+            float prev = -1f;
+            float maxJump = 0f;
+            const int steps = 200;
+            for (int i = 0; i <= steps; i++)
+            {
+                float sea01 = i / (float)steps;
+                float m = AmbientParticleMath.MistIntensity(1f, sea01, 0.1f, 0.5f, 0.7f);
+                Assert.GreaterOrEqual(m + Eps, prev, "Mist must not decrease as the sea-state axis rises.");
+                if (prev >= 0f) maxJump = Mathf.Max(maxJump, m - prev);
+                prev = m;
+            }
+            Assert.Less(maxJump, 0.05f, "mist thickens smoothly — no band-sized steps (the old 1/7 pop)");
         }
 
         // ---- DayNightBrightness / DayNightOpacity / MoonlightCatch ----------------------------------------
