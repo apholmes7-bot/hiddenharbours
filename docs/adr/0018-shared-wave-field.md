@@ -267,6 +267,31 @@ decisions are baked into the sections above and recorded here so they read as se
   minimum swell — and the reflection layers read at maximum. Dead-calm glass reflecting the sun
   glitter is the owner's explicit want. Glass means glass.
 
+## Addendum (2026-07-03) — the presentation smoothing layer (`WaveFieldAnimator`)
+
+B2's first playtest surfaced a structural flaw in how a *presentation* consumer refreshes the
+trains: `TrainsFrom` is a pure function of the continuously drifting wind, so each re-derivation
+moves the dominant wavelength — and with it k and the dispersion-derived c — while the closed-form
+phase `θ = k·(d·pos − c·t) + φ` multiplies both by a LARGE running t. Every refresh therefore
+JUMPED the phase (the owner's "jittery" rocking, proportionally worst on a small-amplitude calm
+sea). The fix is **`Core/Environment/WaveFieldAnimator.cs`** — a small stateful presentation-side
+helper both look consumers share (B2's `BoatWaveMotion` now; the B1 shader bridge should adopt it
+when it lands): per tick it **eases** each train's wavelength/amplitude/direction toward the
+`TrainsFrom` targets (fps-independent exponential), re-derives phase speed from the **eased**
+wavelength through the canon dispersion relation (speed still never free), and accumulates each
+train's phase **incrementally** (`Φ += k·c·dt`, wrapped) so the phase is continuous **by
+construction** — the accumulated phase rides in `PhaseOffset`, so the pure `WaveMath.Sample`
+(at t = 0) remains the single evaluator. **Glass stays sacred:** easing toward zero is asymptotic,
+so amplitudes whose target is silent snap to exactly 0 below a tiny floor — dead calm still
+reaches the true mirror.
+
+**Scope honesty (the contract boundary):** the animator is **presentation-only and stateful** —
+deterministic given the same tick sequence, but **NOT a pure function of gameTime** (different
+frame rates ease along different paths; nothing is saved). The sim contract above is unchanged:
+**B3 seakeeping forces and anything gameplay-consequential keep reading the pure
+`WaveMath.TrainsFrom` + `Sample(pos, gameTime)` path** — pointing the sim at the animator requires
+a lead-architect decision first.
+
 ## Open questions (for Arc B, with the look in front of us)
 
 - **Train count: 3 or 4?** Both fit the budget; 4 reads richer cross-chop, 3 is cheaper on mobile.
