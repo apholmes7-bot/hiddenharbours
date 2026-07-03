@@ -157,6 +157,32 @@ Concrete skill expressions the model produces *for free*:
 - **Range** (the §1.1 column) is the practical reach before fuel/time forces a return; it scales with tank size, burn rate, and cruising speed. It's a *soft* gate (you *can* push it and risk running dry — P5) reinforced by hard region gates (seaworthiness/draught) and story unlocks.
 - **Fuel burn** = `f(throttle, engineLoad, seaState)` — burning more punching into a head sea or against a foul tide. Sailing the small boats burns nothing. Fuel is bought at wharves (`economy-and-business.md`); **running out = breakdown-class event** (§3.6).
 
+### 2.7 The boat rocks on the waves (ADR 0018 — B2 shipped, visual-only)
+
+**Built** (the first seakeeping consumer of the shared deterministic wave field, ADR 0018 Arc B2).
+`BoatWaveMotion` (on the boat root) samples `WaveMath` under the hull every frame and decomposes the
+surface **slope against the hull's heading** (`BoatWaveMotionMath`, EditMode-pinned): the component
+along the bow axis **pitches** (bow riding up the face / dipping into the trough), the component
+along the starboard axis **rolls**, and the height **bobs** the whole boat — so *a wave to the beam
+rocks the vessel, sailing through the waves to the bow rocks the bow and stern* (the owner's ask,
+verbatim), and the response **retargets live as the player turns**. Glass calm is dead still (the
+field's amplitudes are exactly 0 at sea state 0 — glass is sacred).
+
+- **Visual-only, by phasing:** the motion is applied to the boat's child *visual* (roll = a small
+  additive z-rotation routed through `DirectionalBoatSprite.VisualTiltDegrees`, which composes it
+  after that component's per-frame rotation reset; pitch = a subtle screen-vertical offset + tiny
+  y-squash; bob = a small screen-vertical lift). The physics body, colliders and `BoatController`
+  forces are untouched — **B3** adds the forces (per-hull response on `BoatHullDef`, behind a
+  `GameConfig` toggle, punishing-by-place-and-time per the owner's ruling) after the owner's feel
+  verdict on B2.
+- **Tunables** live on `BoatWaveMotion` (master strength with 0 = off, roll °/slope + cap, pitch
+  offset/squash + caps, bob per metre + cap, train-refresh cadence). Amplitude caps are small on
+  purpose: pixel art reads a ±4–5° roll as a sea; big rotations read as broken sprites.
+- **Settings parity note:** the component carries a `WaveFieldSettings` starting from
+  `WaveFieldSettings.Default` — the *same* defaults the Art-side shader bridge (B1) publishes, so
+  the hull rocks on the waves the player sees. B3/GameConfig will unify the two settings instances
+  into one owner-tunable source; until then tune the field's *shape* identically in both places.
+
 ---
 
 ## 3. Danger (P5) — "cozy, but with teeth"
