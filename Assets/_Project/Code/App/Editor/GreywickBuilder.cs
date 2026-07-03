@@ -41,6 +41,13 @@ namespace HiddenHarbours.App.Editor
         const string ArtTrees    = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
         const string TreeMatPath = "Assets/_Project/Art/Materials/Tree.mat";        // canopy wind-sway material (HiddenHarbours/TreeWind)
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
+        const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
+        // Weather-driven water palette anchor presets (ADR 0017) — same wiring as St Peters: base = null on
+        // purpose so the live Water.mat is the calm baseline (never a frozen preset copy).
+        const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
+        const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
+        const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
+        const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";
@@ -67,6 +74,35 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 DockZonePos  = new Vector3(4f, 0f, 0f);  // the wharf's seaward (EAST) HEAD — dock here
         public static readonly Vector3 DisembarkPos = new Vector3(2f, 0f, 0f);  // on the public wharf deck planks (west of the head)
         public static readonly Vector3 ToCovePassagePos = new Vector3(14f, 0f, 0f); // return passage: EAST edge → sail east back to the cove
+
+        // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
+        // Greywick now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain —
+        // the town land strip + the wharf as steep-sided plateaus over a DREDGED floor) registered into
+        // GameServices.TidalTerrain, plus the layered WaterSurface shader on the harbour Sea plane baking
+        // that terrain — the visible waterline and the walkability/boat-grounding gate read the one same
+        // height (P1). The old static model (a flat tinted sea sprite + a drifting-marker scatter, no
+        // tide) is retired; the Shoreline EdgeCollider2D REMAINS as the physical land/wharf wall the boat
+        // bumps (it is bounds, not the look). Canon holds: Greywick is the DEEP, DREDGED harbour
+        // (IsDeepHarbour, -6 m floor), so its quay edge is steep and the waterline sweep is modest — the
+        // tide reads here as rising/falling against the quay, not a wandering beach (the cove and St
+        // Peters carry the big flats). NOTE the live tide is the persistent core's (St Peters ±3.5 m;
+        // nothing re-points it per region yet) — these values are authored against that swing. Public +
+        // single-source-of-truth so the EditMode convergence test asserts the same coast the scene is
+        // built from (the StPetersBuilder convention). All tunables (rule 6).
+        public const float GreywickDeepElevation = -6f;   // the dredged floor (never bares; HarbourDepthMeters 6)
+        public const float GreywickLandElevation = 6f;    // town land + wharf deck: dry/walkable at every tide
+        public const float GreywickQuayFalloff   = 3f;    // steep dredged quay edge → a modest ~1.5 m waterline sweep
+        public const float GreywickWharfFalloff  = 1.2f;  // the wharf drops fast — boats float right at the head
+        public static readonly Vector2 GreywickLandCenter   = new Vector2(-16f, 0f);
+        public static readonly Vector2 GreywickLandHalfSize = new Vector2(12f, 20f);  // x -28..-4 (the fence's waterline), y -20..20
+        public static readonly Vector2 GreywickWharfCenter   = new Vector2(0f, 0f);
+        public static readonly Vector2 GreywickWharfHalfSize = new Vector2(4f, 3f);   // the deck: x -4..4, y -3..3 (head at x=4)
+        // The Sea plane + height-map bake rectangle (the existing 120×120 harbour plane).
+        public static readonly Vector2 GreywickSeaCenter = Vector2.zero;
+        public static readonly Vector2 GreywickSeaSize   = new Vector2(120f, 120f);
+        public const int   GreywickHeightResolution = 192;   // ADR 0012 §A step 1 (the smoothed-shore bake)
+        public const float GreywickHeightMin = -6f;            // brackets the DREDGED floor …
+        public const float GreywickHeightMax = 6f;             // … and the land plateau
 
         [MenuItem("Hidden Harbours/Build Greywick Scene")]
         public static void Build()
@@ -141,38 +177,62 @@ namespace HiddenHarbours.App.Editor
                 EditorUtility.SetDirty(ppc);
             }
 
-            // --- DEEP HARBOUR WATER ---------------------------------------------------------
+            // --- TIDAL TERRAIN (the converged one-height source; ADR 0012 rec. 4) -----------
+            // Greywick's analytic seabed: town land + wharf plateaus over the dredged -6 m floor. It
+            // registers into GameServices.TidalTerrain at runtime so the walkability, boat grounding AND
+            // the water shader below read the SAME height (P1). Created BEFORE the Sea so on a region
+            // toggle-on the terrain's OnEnable registers before the WaterSurface's OnEnable bakes (scene
+            // roots activate in order). Hand-painting later replaces this via the Terrain Paint Tool's
+            // Adopt step (ADR 0014) — the same adoption seam St Peters has.
+            var terrainGo = new GameObject("TidalTerrain");
+            var terrain = terrainGo.AddComponent<RectTidalTerrain>();
+            ConfigureGreywickTerrain(terrain);
+
+            // --- DEEP HARBOUR WATER (the layered SIM-DRIVEN water shader — the St Peters model) ---
+            // The harbour plane now carries Water.mat + a WaterSurface baking the terrain above, so the
+            // depth gradient / foam / wet-dry clip follow the live deterministic tide against the quay.
+            // The old static look (a tinted flat tile + a drifting-marker scatter) is RETIRED — the shader
+            // surface moves for real. Sorting -4: ABOVE the floodable ground strips (Quay -7 / QuayEdge -6
+            // / PublicWharf -5, whose always-dry parts show through the shader's clip) and BELOW the
+            // posts (3) / buildings (2) / player (10).
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
             var seaTile = LoadSpriteAny(ArtSea);
-            var water = new GameObject("Harbour");
+            var water = new GameObject("Sea");
+            water.transform.position = new Vector3(GreywickSeaCenter.x, GreywickSeaCenter.y, 0f);
             var wsr = water.AddComponent<SpriteRenderer>();
-            wsr.sortingOrder = -10;
+            wsr.sortingOrder = -4;
             if (seaTile != null)
             {
                 wsr.sprite = seaTile;
                 wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = new Vector2(120f, 120f);
-                wsr.color = new Color(0.78f, 0.86f, 0.92f); // tint the tile a touch deeper/colder
+                wsr.size = GreywickSeaSize;
                 water.transform.localScale = Vector3.one;
             }
             else
             {
                 wsr.sprite = waterSprite; wsr.color = new Color(0.12f, 0.22f, 0.30f); // deep harbour
-                water.transform.localScale = new Vector3(120f, 120f, 1f);
+                water.transform.localScale = new Vector3(GreywickSeaSize.x, GreywickSeaSize.y, 1f);
             }
-
-            // A few drifting markers so the deep water reads as moving, not a flat slab.
-            var markerRng = new System.Random(22);
-            var markers = new GameObject("HarbourMarkers");
-            for (int i = 0; i < 24; i++)
+            var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
+            if (waterMat != null)
             {
-                var m = new GameObject("Marker");
-                m.transform.SetParent(markers.transform);
-                m.transform.position = new Vector3((float)(markerRng.NextDouble() * 80 - 40),
-                                                   (float)(markerRng.NextDouble() * 40 - 30), 0f);
-                var msr = m.AddComponent<SpriteRenderer>();
-                msr.sprite = waterSprite; msr.color = new Color(0.26f, 0.38f, 0.46f); msr.sortingOrder = -5;
-                m.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+                wsr.sharedMaterial = waterMat;
+                var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
+                ConfigureWaterSurface(surface, GreywickSeaCenter, GreywickSeaSize,
+                                      GreywickHeightResolution, GreywickHeightMin, GreywickHeightMax);
+                // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
+                // (the live Water.mat is the calm baseline); null anchors no-op safely.
+                ConfigureWeatherPalette(
+                    surface,
+                    /*baseMood (null = the live Water.mat is the calm baseline)*/ null,
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+            }
+            else
+            {
+                Debug.LogWarning("[GreywickBuilder] Water.mat not found at " + ArtWaterMat + " — the harbour " +
+                                 "Sea is a plain backdrop. Re-run after the material imports for the tide-driven water.");
             }
 
             // Reload assets from disk before wiring refs (an intervening import can invalidate the
@@ -345,7 +405,11 @@ namespace HiddenHarbours.App.Editor
                       "General Store (rod), and a Shipwright DORY YARD with the DAMAGED dory (buy + repair) — " +
                       "data-wired to the persistent wallet proxy; their buy/repair screens are ui-ux/gameplay's. " +
                       "Clams sell at the Fish Buyer (baseline Shellfish demand). The return passage heads EAST " +
-                      "back to Coddle Cove. Loaded additively via RegionSceneLoader.");
+                      "back to Coddle Cove. Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
+                      "the harbour now runs the St Peters tide-driven model — a RectTidalTerrain (dredged -6 m " +
+                      "floor, steep quay edge) + the layered WaterSurface shader on the Sea plane; the waterline " +
+                      "rises/falls against the quay off the live deterministic tide and the SAME height gates " +
+                      "walkability + boat grounding (P1). The drifting-marker scatter is retired.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Port Greywick scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Greywick " +
                 "lies WEST of the cove, so:\n• You SAIL WEST to cross\n• You ARRIVE from the EAST, heading " +
@@ -353,6 +417,84 @@ namespace HiddenHarbours.App.Editor
                 "EAST → you arrive home at the cove dock from the WEST\n\nLoaded additively by " +
                 "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Greywick Scene', then re-test.",
                 "Fair winds");
+        }
+
+        // ---- converged water model — shared config (single source of truth with the EditMode test) ----
+
+        /// <summary>Author Greywick's analytic seabed from the public constants above (the town land strip
+        /// + the wharf deck as steep-sided plateaus over the dredged floor). One place, mirrored by the
+        /// EditMode shoreline-convergence test — the StPetersBuilder convention.</summary>
+        public static void ConfigureGreywickTerrain(RectTidalTerrain terrain)
+        {
+            terrain.Configure(GreywickDeepElevation, new[]
+            {
+                new RectTidalTerrain.LandZone(GreywickLandCenter, GreywickLandHalfSize,
+                                              GreywickLandElevation, GreywickQuayFalloff),
+                new RectTidalTerrain.LandZone(GreywickWharfCenter, GreywickWharfHalfSize,
+                                              GreywickLandElevation, GreywickWharfFalloff),
+            });
+        }
+
+        /// <summary>Configure the Sea's <see cref="HiddenHarbours.Art.WaterSurface"/>: the world rectangle
+        /// the seabed height map bakes over, the bake resolution (ADR 0012 §A: 192), and the elevation range
+        /// the baked R channel maps across (must bracket the DREDGED -6 floor — the component default -4
+        /// would clip it). Persisted via SerializedObject (the persist-the-refs convention).</summary>
+        static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
+                                          Vector2 worldCenter, Vector2 worldSize, int resolution,
+                                          float heightMin, float heightMax)
+        {
+            var so = new SerializedObject(surface);
+            SetV2(so, "_heightWorldCenter", worldCenter);
+            SetV2(so, "_heightWorldSize", worldSize);
+            SetInt(so, "_heightResolution", Mathf.Clamp(resolution, 16, 256));
+            SetF(so, "_heightMin", heightMin);
+            SetF(so, "_heightMax", heightMax);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Enable the weather-driven water palette (ADR 0017) and assign the anchor mood presets —
+        /// the same wiring St Peters uses (a null base = the live Water.mat is the calm baseline; a null
+        /// anchor no-ops safely).</summary>
+        static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
+                                            Material baseMood, Material calmMood,
+                                            Material stormMood, Material fogMood)
+        {
+            var so = new SerializedObject(surface);
+            var enabledProp = so.FindProperty("_weatherPaletteEnabled");
+            if (enabledProp != null) enabledProp.boolValue = true;
+            SetObj(so, "_baseMoodMaterial", baseMood);
+            SetObj(so, "_calmMoodMaterial", calmMood);
+            SetObj(so, "_stormMoodMaterial", stormMood);
+            SetObj(so, "_fogMoodMaterial", fogMood);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void SetF(SerializedObject so, string field, float value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.floatValue = value;
+            else Debug.LogWarning($"[GreywickBuilder] no float field '{field}'.");
+        }
+
+        static void SetInt(SerializedObject so, string field, int value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.intValue = value;
+            else Debug.LogWarning($"[GreywickBuilder] no int field '{field}'.");
+        }
+
+        static void SetV2(SerializedObject so, string field, Vector2 value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.vector2Value = value;
+            else Debug.LogWarning($"[GreywickBuilder] no Vector2 field '{field}'.");
+        }
+
+        static void SetObj(SerializedObject so, string field, Object value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
+            else Debug.LogWarning($"[GreywickBuilder] no object-reference field '{field}'.");
         }
 
         // ---- helpers (self-contained; the cove builder's are private) -----------------------

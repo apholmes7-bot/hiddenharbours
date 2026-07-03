@@ -975,16 +975,21 @@ namespace HiddenHarbours.App.Editor
                 EditorUtility.SetDirty(s);
             }
 
-            // 2) Sim reads it: disable the analytic TidalTerrain (if any) and add a PaintedTidalTerrain.
-            var analytic = Object.FindFirstObjectByType<TidalTerrain>();
-            GameObject host;
-            if (analytic != null)
+            // 2) Sim reads it: disable the scene's analytic terrain(s) — the zone-based TidalTerrain
+            //    (St Peters) OR the rect-based RectTidalTerrain (the converged cove/Greywick, ADR 0012
+            //    rec. 4) — and add a PaintedTidalTerrain. Disabling (not deleting) keeps it reversible.
+            var analytics = new System.Collections.Generic.List<MonoBehaviour>();
+            analytics.AddRange(Object.FindObjectsByType<TidalTerrain>(FindObjectsSortMode.None));
+            analytics.AddRange(Object.FindObjectsByType<RectTidalTerrain>(FindObjectsSortMode.None));
+            GameObject host = null;
+            foreach (var analytic in analytics)
             {
                 Undo.RecordObject(analytic, "Adopt painted seabed");
                 analytic.enabled = false;
-                host = analytic.gameObject;
+                EditorUtility.SetDirty(analytic);
+                if (host == null) host = analytic.gameObject;
             }
-            else
+            if (host == null)
             {
                 host = new GameObject("PaintedTidalTerrain");
                 Undo.RegisterCreatedObjectUndo(host, "Adopt painted seabed");

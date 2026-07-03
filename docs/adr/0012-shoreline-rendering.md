@@ -373,9 +373,21 @@ runtime-shader-vs-M3-bake fork (ADR 0010 §7) is unchanged.
 
 - **Exact prototype resolution (192 vs 256) and whether 5b is needed** — a profiled/eyeballed call in the
   art pass on the real St Peters bar. Start at 192 + `_DepthBands 0`; escalate only if it still facets.
-- **Whether the cove/Greywick ever convert to the shader shoreline** — a world-content/owner call. They may
+- **Whether the cove/Greywick ever convert to the shader shoreline** — ~~a world-content/owner call. They may
   stay static (Greywick is canon-deep; the cove is the M1 stand-in). The *default* for new tide-gated coast
-  is the shader regardless.
+  is the shader regardless.~~ **RESOLVED (world-content): CONVERTED.** Both regions now run the approach-A model
+  (recommendation 4): each builder authors a `World.RectTidalTerrain` (a rectangular-plateau analytic seabed —
+  land strips/dock spurs over a deep floor, the rectangular twin of St Peters' `TidalTerrain`) that registers
+  into `GameServices.TidalTerrain`, plus a `WaterSurface`-driven Sea plane (Water.mat, 192² bake, the ADR 0017
+  weather palette) baking that terrain — one height, three consumers, in every region. The old treatment B is
+  retired as a *look*: the cove/Greywick `ShoreEdge`/`Shoreline` EdgeCollider2D fences REMAIN as gameplay
+  bounds (the boat wall / cozy player bounds), they just no longer stand in for a shoreline. Canon holds:
+  Greywick's floor is DREDGED (−6 m, steep quay falloff → a modest waterline sweep against the quay), while
+  the cove gets a gentle south beach the tide visibly sweeps. NOTE the on-foot walkability gate goes LIVE in
+  both regions the moment a terrain registers — the terrains are authored so all town land / wharf decks /
+  dock planks sit above the highest water. The Terrain Paint Tool's Adopt step now also swaps out a
+  `RectTidalTerrain`, so the owner can hand-paint over either region exactly as on St Peters (ADR 0014).
+  Alex must re-run **Build Greybox Scene** and **Build Greywick Scene** to see it (builder-authored).
 - **Approach-C foam-edge sprite spec** (dims, frame count, seamlessness, the edge-tangent march) — an
   art-pipeline spec coordinated with the `_FoamTex` slot (ADR 0010 §10) **if** A isn't crisp enough.
 - **`TidalFlatVisual` overlay's future** — ~~once the shader shore is smooth on St Peters, the 2 m-cell
