@@ -917,6 +917,19 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
      `MoonCycle`.
 3. **Faint STAR sparkle (night).** Tiny, sparse, per-cell-phased twinkling glints from a high-frequency hash
    field, pixelized to single pixels, very subtle. `_StarStrength` / `_StarDensity` / `_StarTwinkleSpeed`.
+4. **The SUN GLITTER PATH (golden hour)** — the moon column's daytime/dusk twin: a **warm golden glitter
+   column toward the LOW sun** at dawn and dusk (the classic "path of light to the sun" across calm water).
+   Same camera-anchored column structure as the moon's glitter path (decorrelated noise so the two never read
+   as copies), but gated by **`SunGlitterGate` over `_SunElevation`** instead of night: it rises just above
+   the horizon (full by elevation 0.02), holds through the low-sun band, and is **gone by ~0.5 elevation** (a
+   high sun glints via the specular, not a column) and **at/below the horizon** (the moon takes over; the
+   unset cycle-off elevation of 0 also gates it to 0 — no phantom glitter in a bare scene). It **reuses the
+   moon's geometry knobs** (`_MoonGlitterLength` = reach, `_MoonSize` = width basis; rule 6) and adds only
+   two tunables: **`_SunGlitterStrength`** (default 0.6; 0 = off) and **`_SunGlitterColor`** (warm gold
+   `(1.0, 0.82, 0.55)`). It is routed into the **compensated post-grade share** (§11.6, alongside the
+   moon/stars/boat beam) so the dusk tint's downstream multiply can't mute its authored warm gold — at midday
+   the tint is ~1 so the compensation is a natural no-op, and the gate is ~0 there anyway (midday water is
+   effectively unchanged). Inherits the sea-state fade + sharpness smear like all sky content.
 
 **Invariants (all hold):** everything **inherits the §11 sea-state fade** (reuses `ReflectionStrength()` /
 `ReflectionSharpness()` — strong on CALM, gone in chop/storm); the moon + stars additionally **gate by night**
@@ -933,6 +946,9 @@ moon's deterministic state is pure: `Assets/_Project/Code/Art/MoonMath.cs` (`Pha
 `Assets/Tests/EditMode/Art/MoonMathTests.cs` (phase cycles 0..1, full-moon-on-spring-tide /
 quarter-on-neap, arc rises→peaks→sets, down by day, new dimmer than full). The reflection-curve twins gain
 `WaterReflection.MoonDirection` / `NightFactor` / `SkyElementStrength`, tested in `WaterReflectionTests.cs`.
+The sun glitter's golden-hour window is the pure twin `WaterReflection.SunGlitterGate` (window constants
+`SunGlitterRiseEnd` / `SunGlitterFallStart` / `SunGlitterFallEnd`), pinned there too (zero at/below the
+horizon, peak through the low-sun band, gone by high sun, monotonic dawn rise / noon fall).
 
 ### 11.6 Complete-dark fix — light content is PRE-COMPENSATED for the day/night multiply (post-grade)
 

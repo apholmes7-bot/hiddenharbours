@@ -70,10 +70,12 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(1f - agitation);
         }
 
-        // ===== SKY-CONTENT REFLECTIONS (clouds + moon glitter path + stars) ===============================
+        // ===== SKY-CONTENT REFLECTIONS (clouds + moon glitter path + stars + the sun glitter path) =======
         // The sea is the ONLY place the sky appears in this ¾ top-down game, so the reflection also mirrors
         // SKY CONTENT, not just the flat sky colour: drifting clouds (day + night), the moon with a vertical
-        // glitter path (night), and faint star sparkle (night). The in-shader fields are GPU value-noise and
+        // glitter path (night), faint star sparkle (night), and the moon column's golden-hour twin — a warm
+        // SUN glitter path toward the LOW sun at dawn/dusk (gated by SunGlitterGate over _SunElevation,
+        // sharing the moon column's geometry knobs). The in-shader fields are GPU value-noise and
         // can't run headless, but the DIRECTION + the day/night GATES that decide WHEN/WHERE each reads are
         // pure functions, mirrored here for the determinism/feel guard. WaterSurface.cs is NOT touched — the
         // shader reads the already-published globals (_DayNightTint / _SunDir / _SunElevation / _WindWorld).
@@ -121,6 +123,40 @@ namespace HiddenHarbours.Art
             float lo = Mathf.Clamp01(threshold);
             float hi = Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f));
             return WaterSurface.Smoothstep(lo, hi, darkness);
+        }
+
+        /// <summary>The sun elevation by which the golden-hour gate has fully risen (the shader's
+        /// <c>SUN_GLITTER_RISE_END</c>): the glitter fades in just above the horizon.</summary>
+        public const float SunGlitterRiseEnd = 0.02f;
+
+        /// <summary>The sun elevation at which the golden-hour gate starts to fall (the shader's
+        /// <c>SUN_GLITTER_FALL_START</c>): above this the sun is getting high and the column shortens away.</summary>
+        public const float SunGlitterFallStart = 0.35f;
+
+        /// <summary>The sun elevation by which the golden-hour gate has fully faded (the shader's
+        /// <c>SUN_GLITTER_FALL_END</c>): a high sun casts no glitter column (the specular carries it).</summary>
+        public const float SunGlitterFallEnd = 0.5f;
+
+        /// <summary>
+        /// Twin of the shader's <c>SunGlitterGate</c>: the GOLDEN-HOUR window over the sun's elevation that
+        /// gates the warm SUN glitter path (the moon glitter column's daytime/dusk twin). A smooth 0..1
+        /// window over <c>_SunElevation</c> (−1..1; positive = sun up) that PEAKS while the sun is LOW but UP
+        /// (the long glitter path across the water at dawn/dusk): it rises 0 → 1 across elevation
+        /// 0..<see cref="SunGlitterRiseEnd"/>, holds 1 through the golden-hour band, and falls 1 → 0 across
+        /// <see cref="SunGlitterFallStart"/>..<see cref="SunGlitterFallEnd"/>. Exactly 0 at and below the
+        /// horizon (the moon's glitter takes over at night) and 0 by high sun. When the day/night cycle is
+        /// not running <c>_SunElevation</c> is 0 (unset) → the gate is 0 → no phantom glitter in a bare art
+        /// scene, the same "unset" convention the night content uses. In the shader the gated column is
+        /// composited into the COMPENSATED post-grade share (with the moon/stars/boat beam) so the dusk
+        /// tint's downstream multiply can't mute its authored warm gold; at midday the tint is ~1 so the
+        /// compensation is a natural no-op — and this gate is ~0 there anyway (daylight unchanged).
+        /// </summary>
+        /// <param name="sunElevation">The sun's height (<c>_SunElevation</c>; 1 noon, 0 horizon, ≤0 night).</param>
+        public static float SunGlitterGate(float sunElevation)
+        {
+            float rise = WaterSurface.Smoothstep(0f, SunGlitterRiseEnd, sunElevation);
+            float fall = 1f - WaterSurface.Smoothstep(SunGlitterFallStart, SunGlitterFallEnd, sunElevation);
+            return Mathf.Clamp01(rise * fall);
         }
 
         /// <summary>

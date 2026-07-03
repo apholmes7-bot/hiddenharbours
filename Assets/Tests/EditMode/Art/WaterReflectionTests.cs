@@ -229,6 +229,82 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0f, moonStorm, 1e-5f, "a storm does not mirror — the moon glitter is gone in chop");
         }
 
+        // ===== SUN GLITTER PATH: the golden-hour gate (dawn/dusk column, gone at noon and at night) =======
+
+        [Test]
+        public void SunGlitterGate_IsZeroAtAndBelowTheHorizon()
+        {
+            // Below the horizon the sun casts nothing — the moon's glitter owns the night. AT the horizon
+            // (elevation exactly 0, also the "cycle not running" unset value) the gate is 0 too, so a bare
+            // art scene / editor preview shows no phantom sun glitter.
+            foreach (float e in new[] { -1f, -0.5f, -0.05f, 0f })
+                Assert.AreEqual(0f, WaterReflection.SunGlitterGate(e), 1e-6f,
+                    $"no sun glitter at or below the horizon (elevation {e})");
+        }
+
+        [Test]
+        public void SunGlitterGate_PeaksThroughTheGoldenHourWindow()
+        {
+            // The gate holds its full peak across the LOW-but-UP band (rise end .. fall start) — the long
+            // warm glitter column of dawn and dusk.
+            for (float e = WaterReflection.SunGlitterRiseEnd; e <= WaterReflection.SunGlitterFallStart; e += 0.03f)
+                Assert.AreEqual(1f, WaterReflection.SunGlitterGate(e), 1e-5f,
+                    $"the gate peaks through the golden-hour window (elevation {e})");
+        }
+
+        [Test]
+        public void SunGlitterGate_IsGoneByHighSun()
+        {
+            // By the fall end (and all the way to noon) the column is gone — a high sun glints via the
+            // specular layer, not a glitter path. So MIDDAY water is effectively unchanged by this feature.
+            foreach (float e in new[] { WaterReflection.SunGlitterFallEnd, 0.7f, 1f })
+                Assert.AreEqual(0f, WaterReflection.SunGlitterGate(e), 1e-6f,
+                    $"no sun glitter at high sun (elevation {e})");
+        }
+
+        [Test]
+        public void SunGlitterGate_RisesMonotonicallyAtDawn_AndFallsMonotonicallyTowardNoon()
+        {
+            // Dawn: the gate only rises as the sun climbs from the horizon to the window.
+            float prev = WaterReflection.SunGlitterGate(0f);
+            for (float e = 0.002f; e <= WaterReflection.SunGlitterRiseEnd + 1e-4f; e += 0.002f)
+            {
+                float g = WaterReflection.SunGlitterGate(e);
+                Assert.GreaterOrEqual(g + 1e-5f, prev, "the gate only rises as the sun climbs out of the horizon");
+                prev = g;
+            }
+            // Toward noon: the gate only falls as the sun climbs past the window.
+            prev = WaterReflection.SunGlitterGate(WaterReflection.SunGlitterFallStart);
+            for (float e = WaterReflection.SunGlitterFallStart; e <= WaterReflection.SunGlitterFallEnd + 1e-4f; e += 0.005f)
+            {
+                float g = WaterReflection.SunGlitterGate(e);
+                Assert.LessOrEqual(g, prev + 1e-5f, "the gate only falls as the sun climbs toward noon");
+                prev = g;
+            }
+        }
+
+        [Test]
+        public void SunGlitterGate_StaysAWeight_AcrossTheWholeElevationRange()
+        {
+            // The full −1..1 elevation sweep stays a clamped 0..1 weight — no negative or >1 excursions the
+            // compensated post-grade add could amplify.
+            for (float e = -1f; e <= 1f; e += 0.01f)
+                Assert.That(WaterReflection.SunGlitterGate(e), Is.InRange(0f, 1f),
+                    $"the sun glitter gate stays a 0..1 weight (elevation {e})");
+        }
+
+        [Test]
+        public void SunGlitter_InheritsTheSeaStateFade_GoneInAStorm()
+        {
+            // Like every sky-content element the sun glitter multiplies the master sea-state fade in-shader:
+            // strong on calm golden-hour water, gone in chop (a storm doesn't mirror a sun path either).
+            float gate = WaterReflection.SunGlitterGate(0.1f);                 // golden hour, gate = 1
+            float seaCalm = WaterReflection.ReflectionStrength(0f, 0f, DefFadeChop, DefWindFade, DefMaster);
+            float seaStorm = WaterReflection.ReflectionStrength(DefFadeChop, 0f, DefFadeChop, DefWindFade, DefMaster);
+            Assert.Greater(gate * seaCalm, 0f, "the sun glitter reads on calm golden-hour water");
+            Assert.AreEqual(0f, gate * seaStorm, 1e-6f, "a storm does not mirror — the sun glitter dies in chop");
+        }
+
         [Test]
         public void SkyElement_MasterZeroTurnsAllSkyContentOff()
         {
