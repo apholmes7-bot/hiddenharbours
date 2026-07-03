@@ -31,7 +31,11 @@ namespace HiddenHarbours.App.Editor
     /// <item><b>VISUAL layer (the owner).</b> Everything you SEE — painted terrain Tilemaps + dropped decor
     /// prefab instances from the #71 toolkit. It lives OUTSIDE the <c>--LOGIC--</c> root and the builder NEVER
     /// touches it. The old placeholder visuals (the tiled sea/ground/dock sprites, the sea-marker scatter, the
-    /// cottage sprite, the hardcoded tree scatter) are RETIRED — the owner's painting replaces them.</item>
+    /// cottage sprite, the hardcoded tree scatter) are RETIRED — the owner's painting replaces them.
+    /// EXCEPTION: the SEA is back under <c>--LOGIC--</c>, but as SYSTEMIC plumbing, not a placeholder — the
+    /// tide-driven WaterSurface water (the converged St Peters model, ADR 0012) plus its RectTidalTerrain
+    /// height source. It is config-heavy and regenerated on refresh; it renders ABOVE the painted ground
+    /// (tilemaps sort at −20) and clips itself transparent over dry land, so the painting shows through.</item>
     /// </list>
     ///
     /// <para><b>Two menu entry points (ADR 0011 Option A — idempotent Refresh):</b></para>
@@ -62,6 +66,14 @@ namespace HiddenHarbours.App.Editor
         const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16) — kept on the hull asset
+        const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
+        const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
+        // Weather-driven water palette anchor presets (ADR 0017) — same wiring as St Peters: base = null on
+        // purpose so the live Water.mat is the calm baseline (never a frozen preset copy).
+        const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
+        const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
+        const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
+        const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
         const string Scenes     = "Assets/_Project/Scenes";
         const string SceneName  = "Greybox";
         const string ScenePath  = Scenes + "/" + SceneName + ".unity";
@@ -84,6 +96,39 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 CoveArrivalPos       = new Vector3(-2.5f, -13.5f, 0f); // return from Greywick: just WEST of the dock
         public static readonly Vector3 CoveDisembarkPos     = new Vector3(0f, -10.5f, 0f);    // on the dock planks
         public static readonly Vector3 ToGreywickPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
+
+        // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
+        // The cove now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain, the
+        // rectangular twin of St Peters' TidalTerrain) registered into GameServices.TidalTerrain + a Sea
+        // plane carrying the layered WaterSurface shader that bakes THAT terrain — so the visible waterline
+        // and the walkability/boat-grounding gate read the one same height (P1). The old model — a static
+        // no-tide shore (a fixed collider fence beside a flat sea sprite) — is retired as the LOOK; the
+        // ShoreEdge fence REMAINS as the cozy gameplay bounds collider (P5), it just no longer stands in for
+        // a shoreline. Geometry mirrors the existing cove layout (land north of the y=-5 fence line, the
+        // dock spur running south to y=-12): the land is a rectangular plateau whose SOUTH falloff is the
+        // visible beach the tide sweeps, and the dock spur is a second, steep-sided plateau so the planks
+        // stay walkable at high water while the moored boat floats beside them at low water.
+        //
+        // NOTE the LIVE tide these values are authored against is the persistent core's (the START scene's,
+        // St Peters: mean 0, amplitude ±3.5 m — PersistentCoreBuilder: "nothing re-points it on a region hop
+        // yet"). The cove RegionDef's gentler 1.6 m amplitude is aspirational data for the future per-region
+        // tide seam (gameplay-systems); until that lands, author against ±3.5. All tunables (rule 6);
+        // public + single-source-of-truth so the EditMode convergence test asserts the same coast the scene
+        // is built from (the StPetersBuilder convention).
+        public const float CoveDeepElevation = -4f;   // open-water floor: never bares at low water (-3.5)
+        public const float CoveLandElevation = 6f;    // the home ground: dry at every tide (high water +3.5)
+        public const float CoveBeachFalloff  = 5f;    // gentle south beach → the waterline visibly sweeps ~2-3 m
+        public const float CoveDockFalloff   = 1f;    // steep-sided dock spur → deep enough to float alongside
+        public static readonly Vector2 CoveLandCenter   = new Vector2(0f, 3.5f);
+        public static readonly Vector2 CoveLandHalfSize = new Vector2(12f, 8.5f);   // x -12..12, y -5..12 (⊇ the fence interior)
+        public static readonly Vector2 CoveDockCenter   = new Vector2(0f, -8.5f);
+        public static readonly Vector2 CoveDockHalfSize = new Vector2(1.5f, 3.5f);  // the spur: x -1.5..1.5, y -12..-5
+        // The Sea plane + height-map bake rectangle (spans the visible/playable water incl. the west passage).
+        public static readonly Vector2 CoveSeaCenter = new Vector2(0f, -2f);
+        public static readonly Vector2 CoveSeaSize   = new Vector2(80f, 50f);
+        public const int   CoveHeightResolution = 192;   // ADR 0012 §A step 1 (the smoothed-shore bake)
+        public const float CoveHeightMin = -4f;           // brackets the deep floor …
+        public const float CoveHeightMax = 6f;            // … and the land plateau
 
         // =====================================================================================
         //  ENTRY POINTS
@@ -129,8 +174,12 @@ namespace HiddenHarbours.App.Editor
             Debug.Log("[GreyboxBuilder] Built Greybox.unity (ADR 0011 committed-scene pilot): a single " +
                       $"'{LogicRootName}' root holds all of the cove's LOGIC (RegionAnchor + arrival/dock/" +
                       "disembark, Fish Buyer + Shipwright via the persistent proxies, loader + Cove→Greywick " +
-                      "passage, shore/piling colliders, fishing spot, standalone camera). NO placeholder " +
-                      "visuals — PAINT the terrain + drop decor OUTSIDE the --LOGIC-- root, then File ▸ Save. " +
+                      "passage, shore/piling colliders, fishing spot, standalone camera — PLUS the converged " +
+                      "tide-driven water, ADR 0012: a RectTidalTerrain + the layered WaterSurface Sea whose " +
+                      "shoreline visibly sweeps the south beach off the live tide, the SAME height the " +
+                      "walkability/grounding reads). NO placeholder " +
+                      "visuals — PAINT the terrain + drop decor OUTSIDE the --LOGIC-- root, then File ▸ Save " +
+                      "(the Sea clips transparent over dry land, so your painting shows through). " +
                       "After it's painted, use 'Refresh Cove Logic' (never 'Build') to update logic.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Coddle Cove baked as a COMMITTED scene (ADR 0011 pilot).\n\nThe scene now contains ONE " +
@@ -258,9 +307,11 @@ namespace HiddenHarbours.App.Editor
 
             // --- SHORE EDGE (gameplay bounds; collider only, no placeholder sprite) -------------
             // A closed collider fence tracing the beach + dock so the player can roam the island and walk out
-            // the dock, but can't wander into open water (P5 cozy bounds). The boat bumps it too. The owner
-            // paints the visible coastline to MATCH this fence (or we refine the geometry post-pilot — ADR 0011
-            // open question). The fence is LOGIC; the look is painted.
+            // the dock, but can't wander into open water (P5 cozy bounds). The boat bumps it too. NOTE this
+            // fence is BOUNDS, not the shoreline: the visible waterline is the tide-driven WaterSurface shore
+            // below (ADR 0012 — the fence sits just inside the land plateau, and the tide sweeps the beach
+            // south of it, where the shallows also SLOW the boat before it ever reaches the fence). The fence
+            // is LOGIC; the look is the shader + the owner's painting.
             var shore = new GameObject("ShoreEdge");
             shore.transform.SetParent(root, false);
             var edge = shore.AddComponent<EdgeCollider2D>();
@@ -270,6 +321,69 @@ namespace HiddenHarbours.App.Editor
                 new Vector2(1.5f, -5f), new Vector2(1.5f, -12f), new Vector2(-1.5f, -12f),
                 new Vector2(-1.5f, -5f), new Vector2(-10f, -5f), new Vector2(-10f, 9f),
             };
+
+            // --- TIDAL TERRAIN (the converged one-height source; ADR 0012 rec. 4) ----------------
+            // The cove's analytic seabed: a RectTidalTerrain (land plateau + dock spur over a deep floor)
+            // that registers into GameServices.TidalTerrain at runtime, so the on-foot walkability, the
+            // boat grounding AND the water shader below all read the SAME height (P1 — what you see is
+            // what you can sail/walk). Created BEFORE the Sea so on a region toggle-on the terrain's
+            // OnEnable registers before the WaterSurface's OnEnable bakes (children enable in order).
+            // Hand-painting later replaces this via the Terrain Paint Tool's Adopt step (ADR 0014) —
+            // the same adoption seam St Peters has.
+            var terrainGo = new GameObject("TidalTerrain");
+            terrainGo.transform.SetParent(root, false);
+            var terrain = terrainGo.AddComponent<RectTidalTerrain>();
+            ConfigureCoveTerrain(terrain);
+
+            // --- SEA (the layered SIM-DRIVEN water shader — the St Peters model; ADR 0010/0012) ---
+            // A tiled Sea plane carrying Water.mat + a WaterSurface that bakes the terrain above into the
+            // shader's height map: the depth gradient, foam band and the hard wet/dry clip all follow the
+            // live deterministic tide — the shoreline visibly advances and retreats. Sorting -5 (the St
+            // Peters slot): ABOVE the owner's painted ground tilemaps (-20, PaintableTilemapMenu) so
+            // flooded ground is covered and dry ground shows through the clip, BELOW decor/buildings
+            // (0..9) and the player (10). The Sea is builder-authored LOGIC-adjacent plumbing (config-
+            // heavy, regenerated on refresh), so it lives under --LOGIC--; the owner's painted layer
+            // stays untouched outside it (ADR 0011).
+            var seaSprite = LoadSpriteAny(ArtSea);
+            var seaGo = new GameObject("Sea");
+            seaGo.transform.SetParent(root, false);
+            seaGo.transform.position = new Vector3(CoveSeaCenter.x, CoveSeaCenter.y, 0f);
+            var seaSr = seaGo.AddComponent<SpriteRenderer>();
+            seaSr.sortingOrder = -5;
+            if (seaSprite != null)
+            {
+                seaSr.sprite = seaSprite;
+                seaSr.drawMode = SpriteDrawMode.Tiled;
+                seaSr.size = CoveSeaSize;
+            }
+            else
+            {
+                seaSr.sprite = MakeSquareSprite(ArtSprites + "/Square.png");
+                seaSr.color = new Color(0.15f, 0.27f, 0.34f);
+                seaGo.transform.localScale = new Vector3(CoveSeaSize.x, CoveSeaSize.y, 1f);
+            }
+            var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
+            if (waterMat != null)
+            {
+                seaSr.sharedMaterial = waterMat;
+                var surface = seaGo.AddComponent<HiddenHarbours.Art.WaterSurface>();
+                ConfigureWaterSurface(surface, CoveSeaCenter, CoveSeaSize,
+                                      CoveHeightResolution, CoveHeightMin, CoveHeightMax);
+                // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
+                // (the live Water.mat is the calm baseline), storm/fog/calm anchors ease with the
+                // deterministic weather. Null-safe if a preset hasn't imported yet.
+                ConfigureWeatherPalette(
+                    surface,
+                    /*baseMood (null = the live Water.mat is the calm baseline)*/ null,
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+            }
+            else
+            {
+                Debug.LogWarning("[GreyboxBuilder] Water.mat not found at " + ArtWaterMat + " — the cove Sea " +
+                                 "is a plain backdrop. Re-run after the material imports for the tide-driven water.");
+            }
 
             // --- DOCK PILING COLLIDERS (boat bumpers; collider only) ----------------------------
             // Slim circular colliders so the boat bumps the pilings (cozy, no damage) when nudging into the
@@ -466,6 +580,56 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =====================================================================================
+        //  CONVERGED WATER MODEL — shared config (single source of truth with the EditMode test)
+        // =====================================================================================
+
+        /// <summary>Author the cove's analytic seabed from the public constants above (the land plateau
+        /// whose south falloff is the visible tide beach + the steep-sided dock spur, over the deep floor).
+        /// One place, mirrored by the EditMode shoreline-convergence test — the StPetersBuilder convention.</summary>
+        public static void ConfigureCoveTerrain(RectTidalTerrain terrain)
+        {
+            terrain.Configure(CoveDeepElevation, new[]
+            {
+                new RectTidalTerrain.LandZone(CoveLandCenter, CoveLandHalfSize, CoveLandElevation, CoveBeachFalloff),
+                new RectTidalTerrain.LandZone(CoveDockCenter, CoveDockHalfSize, CoveLandElevation, CoveDockFalloff),
+            });
+        }
+
+        /// <summary>Configure the Sea's <see cref="HiddenHarbours.Art.WaterSurface"/>: the world rectangle
+        /// the seabed height map bakes over, the bake resolution (ADR 0012 §A: 192), and the elevation range
+        /// the baked R channel maps across (must bracket the deep floor and the land plateau). Persisted via
+        /// SerializedObject (the builders' persist-the-refs convention).</summary>
+        static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
+                                          Vector2 worldCenter, Vector2 worldSize, int resolution,
+                                          float heightMin, float heightMax)
+        {
+            var so = new SerializedObject(surface);
+            SetV2(so, "_heightWorldCenter", worldCenter);
+            SetV2(so, "_heightWorldSize", worldSize);
+            SetInt(so, "_heightResolution", Mathf.Clamp(resolution, 16, 256));
+            SetF(so, "_heightMin", heightMin);
+            SetF(so, "_heightMax", heightMax);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Enable the weather-driven water palette (ADR 0017) and assign the anchor mood presets —
+        /// the same wiring St Peters uses (a null base = the live Water.mat is the calm baseline; a null
+        /// anchor no-ops safely).</summary>
+        static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
+                                            Material baseMood, Material calmMood,
+                                            Material stormMood, Material fogMood)
+        {
+            var so = new SerializedObject(surface);
+            var enabledProp = so.FindProperty("_weatherPaletteEnabled");
+            if (enabledProp != null) enabledProp.boolValue = true;
+            SetObj(so, "_baseMoodMaterial", baseMood);
+            SetObj(so, "_calmMoodMaterial", calmMood);
+            SetObj(so, "_stormMoodMaterial", stormMood);
+            SetObj(so, "_fogMoodMaterial", fogMood);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // =====================================================================================
         //  HELPERS
         // =====================================================================================
 
@@ -538,6 +702,73 @@ namespace HiddenHarbours.App.Editor
 
         // Load a final art sprite if it has been imported; null if the project is still greybox-only.
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        // Imported art is sliced (spriteMode Multiple, one sub-sprite), so LoadAssetAtPath<Sprite> returns
+        // null — fall back to the first sub-sprite. Null if the art isn't imported. (Mirrors GreywickBuilder.)
+        static Sprite LoadSpriteAny(string path)
+        {
+            var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (direct != null) return direct;
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                                 .OrderBy(s => SpriteIndex(s.name)).FirstOrDefault();
+        }
+
+        static int SpriteIndex(string spriteName)
+        {
+            int u = spriteName.LastIndexOf('_');
+            return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
+        }
+
+        // The 1×1 white fallback square (created on demand; mirrors GreywickBuilder's).
+        static Sprite MakeSquareSprite(string path)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (existing != null) return existing;
+
+            var tex = new Texture2D(16, 16);
+            var px = Enumerable.Repeat(Color.white, 16 * 16).ToArray();
+            tex.SetPixels(px); tex.Apply();
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            AssetDatabase.ImportAsset(path);
+
+            var imp = (TextureImporter)AssetImporter.GetAtPath(path);
+            imp.textureType = TextureImporterType.Sprite;
+            imp.spritePixelsPerUnit = 32f;
+            imp.filterMode = FilterMode.Point;
+            imp.textureCompression = TextureImporterCompression.Uncompressed;
+            imp.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        }
+
+        // --- SerializedObject value setters (the persist-the-refs convention, scalar flavours) -------
+        static void SetF(SerializedObject so, string field, float value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.floatValue = value;
+            else Debug.LogWarning($"[GreyboxBuilder] no float field '{field}'.");
+        }
+
+        static void SetInt(SerializedObject so, string field, int value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.intValue = value;
+            else Debug.LogWarning($"[GreyboxBuilder] no int field '{field}'.");
+        }
+
+        static void SetV2(SerializedObject so, string field, Vector2 value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null) p.vector2Value = value;
+            else Debug.LogWarning($"[GreyboxBuilder] no Vector2 field '{field}'.");
+        }
+
+        static void SetObj(SerializedObject so, string field, Object value)
+        {
+            var p = so.FindProperty(field);
+            if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
+            else Debug.LogWarning($"[GreyboxBuilder] no object-reference field '{field}'.");
+        }
 
         // A single dock-piling collider (boat bumper). No sprite — the visible post is the owner's decor.
         static void MakePilingCollider(Transform parent, Vector2 pos)
