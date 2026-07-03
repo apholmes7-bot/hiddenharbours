@@ -25,10 +25,22 @@ namespace HiddenHarbours.Boats
     /// trough). BOB is a small screen-vertical lift with the crest. Every amplitude is tunable here,
     /// with a master strength (0 = off, restores the untouched visual).</para>
     ///
-    /// <para><b>Determinism &amp; rules.</b> Pure function of (wind, seaState01, position, time) —
-    /// no state, no RNG, nothing saved (rule 5); allocation-free structs on a throttled train
-    /// cadence + one <see cref="WaveMath.Sample"/> per frame (rule 7); reads the sim only through
-    /// <see cref="GameServices"/> (rule 4 — Boats references Core only).</para>
+    /// <para><b>Smooth by construction (the owner's feel pass on B2).</b> The trains ride a
+    /// per-frame <see cref="WaveFieldAnimator"/> tick instead of a throttled
+    /// <see cref="WaveMath.TrainsFrom"/> snapshot: the old 4 Hz re-derivation moved the dominant
+    /// wavelength (and its dispersion-derived speed) under a large running t, JUMPING the phase at
+    /// every refresh — the jitter, proportionally worst on a calm sea. The animator eases the train
+    /// parameters and accumulates phase incrementally, so the surface is continuous no matter how
+    /// the weather drifts; a short fps-independent output smoothing
+    /// (<see cref="_motionSmoothingSeconds"/>) then velvets what little residual noise remains.
+    /// Presentation-only statefulness lives in the animator (see its class doc) — the sim reference
+    /// stays the pure <see cref="WaveMath"/> path.</para>
+    ///
+    /// <para><b>Determinism &amp; rules.</b> The wave FIELD stays deterministic
+    /// (wind, seaState01, position, time) — no RNG, nothing saved (rule 5); the smoothing layer is
+    /// stateful but presentation-only and never feeds back into the sim. Allocation-free structs,
+    /// one field tick + one <see cref="WaveMath.Sample"/> per frame (rule 7); reads the sim only
+    /// through <see cref="GameServices"/> (rule 4 — Boats references Core only).</para>
     ///
     /// <para>⚠ <b>Settings parity (ADR 0018 §(4)).</b> <see cref="_settings"/> starts from
     /// <see cref="WaveFieldSettings.Default"/> — the SAME defaults the Art-side WaveFieldBridge (B1)
@@ -45,30 +57,32 @@ namespace HiddenHarbours.Boats
         [SerializeField] private float _masterStrength = 1f;
 
         [Header("Roll (beam sea → the deck tilts)")]
-        [Tooltip("Degrees of visual z-rotation per unit of beam-axis wave slope. The slope of the Default field peaks around ~0.5–1 in a full gale, so ~8 reads as a clear-but-small roll.")]
-        [SerializeField] private float _rollDegreesPerSlope = 8f;
-        [Tooltip("Hard cap on the visual roll (degrees) — pixel art hates large rotations; ±3–6° at full sea is the readable band.")]
-        [SerializeField] private float _maxRollDegrees = 4.5f;
+        [Tooltip("Degrees of visual z-rotation per unit of beam-axis wave slope. The slope of the Default field peaks around ~0.5–1 in a full gale, so ~16 reads as a clear roll (owner feel pass: doubled from 8).")]
+        [SerializeField] private float _rollDegreesPerSlope = 16f;
+        [Tooltip("Hard cap on the visual roll (degrees). Owner feel pass: doubled from 4.5 — ±9° at full sea is the readable band he asked for.")]
+        [SerializeField] private float _maxRollDegrees = 9f;
 
         [Header("Pitch (head sea → bow rides the face)")]
-        [Tooltip("Screen-vertical offset (world units) per unit of bow-axis wave slope — the sprite riding up the face (+) and dipping into the trough (−).")]
-        [SerializeField] private float _pitchOffsetPerSlope = 0.05f;
-        [Tooltip("Hard cap on the pitch offset (world units). Keep SMALL — this is a read, not a jump.")]
-        [SerializeField] private float _maxPitchOffset = 0.08f;
-        [Tooltip("Vertical squash per unit of |bow-axis slope| — a subtle foreshortening as the hull tips through a wave. 0 disables the squash entirely.")]
-        [SerializeField] private float _pitchSquashPerSlope = 0.05f;
-        [Tooltip("Hard cap on the squash (fraction of the visual's base y-scale). Keep well under 0.1 or the sprite visibly 'breathes'.")]
-        [SerializeField] private float _maxPitchSquash = 0.06f;
+        [Tooltip("Screen-vertical offset (world units) per unit of bow-axis wave slope — the sprite riding up the face (+) and dipping into the trough (−). Owner feel pass: doubled from 0.05.")]
+        [SerializeField] private float _pitchOffsetPerSlope = 0.1f;
+        [Tooltip("Hard cap on the pitch offset (world units). Keep SMALL — this is a read, not a jump. Owner feel pass: doubled from 0.08.")]
+        [SerializeField] private float _maxPitchOffset = 0.16f;
+        [Tooltip("Vertical squash per unit of |bow-axis slope| — a subtle foreshortening as the hull tips through a wave. 0 disables the squash entirely. Owner feel pass: doubled from 0.05.")]
+        [SerializeField] private float _pitchSquashPerSlope = 0.1f;
+        [Tooltip("Hard cap on the squash (fraction of the visual's base y-scale). Owner feel pass: doubled from 0.06 — past ~0.15 the sprite visibly 'breathes'.")]
+        [SerializeField] private float _maxPitchSquash = 0.12f;
 
         [Header("Bob (the crest lifts the whole boat)")]
-        [Tooltip("Screen-vertical lift (world units) per metre of wave height under the hull. The Default field's envelope tops out ~1.5 m in a full gale.")]
-        [SerializeField] private float _bobPerHeightMeter = 0.06f;
-        [Tooltip("Hard cap on the bob (world units).")]
-        [SerializeField] private float _maxBob = 0.1f;
+        [Tooltip("Screen-vertical lift (world units) per metre of wave height under the hull. The Default field's envelope tops out ~1.5 m in a full gale. Owner feel pass: doubled from 0.06.")]
+        [SerializeField] private float _bobPerHeightMeter = 0.12f;
+        [Tooltip("Hard cap on the bob (world units). Owner feel pass: doubled from 0.1.")]
+        [SerializeField] private float _maxBob = 0.2f;
 
-        [Header("Cadence")]
-        [Tooltip("How often (Hz) the wave TRAINS are re-derived from the weather (wind + sea state change slowly). The surface itself is sampled every frame — this only throttles the derivation.")]
-        [SerializeField] private float _trainsRefreshHz = 4f;
+        [Header("Smoothing (the owner's 'smooth rock, especially in calm seas')")]
+        [Tooltip("Output damping (seconds, exponential time constant) on the roll/pitch/bob reads — fps-independent. ~0.2 velvets residual noise without the boat feeling laggy; 0 = raw samples.")]
+        [SerializeField] private float _motionSmoothingSeconds = 0.2f;
+        [Tooltip("The wave-field animator's own smoothing: how languidly the train parameters chase the drifting weather, and the glass snap floor (glass is sacred — see WaveFieldAnimator).")]
+        [SerializeField] private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
 
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The child VISUAL transform the motion is applied to (e.g. the FishingBoatVisual sprite child). NEVER the physics root — this is visual-only; the body and colliders must not move. Null = the component idles.")]
@@ -79,8 +93,14 @@ namespace HiddenHarbours.Boats
         [Header("Wave field (parity: keep identical to the shader bridge until GameConfig unifies them — see class doc)")]
         [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
 
-        private WaveTrains _trains = WaveTrains.None;
-        private float _trainsTimer;
+        private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
+        private bool _hasLastTime;
+        private double _lastTimeSeconds;
+
+        // fps-independently smoothed motion reads (raw sim units, pre-mapping — the caps stay hard).
+        private float _smoothedPitch;
+        private float _smoothedRoll;
+        private float _smoothedBob;
 
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
@@ -106,7 +126,11 @@ namespace HiddenHarbours.Boats
 
         private void OnEnable()
         {
-            _trainsTimer = 0f;        // re-derive immediately on wake
+            _hasLastTime = false;     // fresh dt baseline — never ease across a disabled gap
+            _animator.Reset();        // snap to the live weather on wake, don't chase a stale sea
+            _smoothedPitch = 0f;
+            _smoothedRoll = 0f;
+            _smoothedBob = 0f;
         }
 
         private void OnDisable()
@@ -131,34 +155,43 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
-            // Re-derive the trains from the weather on the throttled cadence (they only change as
-            // the wind/sea state drift); sample the surface itself every frame.
-            _trainsTimer -= Time.deltaTime;
-            if (_trainsTimer <= 0f)
+            // Game-time delta for this presentation tick (the clock advances smoothly per frame;
+            // a paused clock yields dt 0 and the sea freezes with it, correctly).
+            double time = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+            float dt = _hasLastTime ? Mathf.Max(0f, (float)(time - _lastTimeSeconds)) : Time.deltaTime;
+            _lastTimeSeconds = time;
+            _hasLastTime = true;
+
+            // Tick the eased, phase-continuous field every frame (see the class doc — this replaced
+            // the 4 Hz TrainsFrom snapshot whose phase jumped at every refresh). The accumulated
+            // phase is baked into the trains, so the surface is sampled at time 0.
+            WaveSample wave;
+            var env = GameServices.Environment;
+            if (env != null)
             {
-                _trainsTimer = _trainsRefreshHz > 0f ? 1f / _trainsRefreshHz : 0f;
-                var env = GameServices.Environment;
-                if (env != null)
-                {
-                    EnvironmentSample sample = env.Sample();
-                    _trains = WaveMath.TrainsFrom(sample.WindVector, sample.SeaState01, in _settings);
-                }
-                else
-                {
-                    _trains = WaveTrains.None;   // no sim, no sea — dead still, never stale
-                }
+                EnvironmentSample sample = env.Sample();
+                _animator.Tick(dt, sample.WindVector, sample.SeaState01, in _settings, in _animatorSettings);
+                wave = _animator.Sample((Vector2)transform.position);
+            }
+            else
+            {
+                wave = WaveSample.Flat;   // no sim, no sea — dead still, never stale
             }
 
-            double time = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
-            WaveSample wave = WaveMath.Sample((Vector2)transform.position, time, in _trains);
             BoatWaveMotionSample motion =
                 BoatWaveMotionMath.Decompose(wave.Slope, wave.Height, (Vector2)transform.up, _masterStrength);
 
-            Apply(motion);
+            // fps-independent output damping (owner: "a smooth rock") — on the raw reads, so the
+            // degree/pixel caps in Apply stay hard.
+            _smoothedPitch = WaveFieldAnimator.Smooth(_smoothedPitch, motion.Pitch, dt, _motionSmoothingSeconds);
+            _smoothedRoll = WaveFieldAnimator.Smooth(_smoothedRoll, motion.Roll, dt, _motionSmoothingSeconds);
+            _smoothedBob = WaveFieldAnimator.Smooth(_smoothedBob, motion.Bob, dt, _motionSmoothingSeconds);
+
+            Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob));
         }
 
-        /// <summary>Map the raw decomposition onto the visual: roll → additive z-rotation (through the
-        /// DirectionalBoatSprite hook when present — it stomps rotation every LateUpdate); pitch+bob →
+        /// <summary>Map the smoothed decomposition onto the visual: roll → additive z-rotation (through
+        /// the DirectionalBoatSprite hook when present — it stomps rotation every LateUpdate); pitch+bob →
         /// a screen-vertical (world +Y) offset so the lift always reads UP on screen regardless of the
         /// body's physics yaw; |pitch| → a subtle y-squash. Everything clamped to its cap.</summary>
         private void Apply(in BoatWaveMotionSample motion)

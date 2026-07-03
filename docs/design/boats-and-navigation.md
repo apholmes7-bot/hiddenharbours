@@ -176,8 +176,16 @@ field's amplitudes are exactly 0 at sea state 0 — glass is sacred).
   `GameConfig` toggle, punishing-by-place-and-time per the owner's ruling) after the owner's feel
   verdict on B2.
 - **Tunables** live on `BoatWaveMotion` (master strength with 0 = off, roll °/slope + cap, pitch
-  offset/squash + caps, bob per metre + cap, train-refresh cadence). Amplitude caps are small on
-  purpose: pixel art reads a ±4–5° roll as a sea; big rotations read as broken sprites.
+  offset/squash + caps, bob per metre + cap, output smoothing, animator ease/glass-snap). Caps sit
+  where the owner's feel pass put them (±9° max roll): readable sea, not broken sprites.
+- **Smooth + doubled (owner feel pass, 2026-07-03):** the first playtest read "jittery… especially
+  in calm seas" and "could likely be doubled". Cause: the old throttled `TrainsFrom` refresh jumped
+  the phase whenever the drifting wind moved the dominant wavelength (k and its dispersion-derived
+  c changed under a large running t). Now the trains ride a per-frame **`WaveFieldAnimator`** tick
+  (ADR 0018 addendum) — eased parameters, incrementally accumulated phase, continuous by
+  construction, glass snap intact — plus a short fps-independent output damping (~0.2 s) on
+  roll/pitch/bob, and the default motion amplitudes/caps are **doubled**. The animator is
+  presentation-only; B3 forces keep the pure `WaveMath` path.
 - **Settings parity note:** the component carries a `WaveFieldSettings` starting from
   `WaveFieldSettings.Default` — the *same* defaults the Art-side shader bridge (B1) publishes, so
   the hull rocks on the waves the player sees. B3/GameConfig will unify the two settings instances
