@@ -75,11 +75,22 @@ sum of 3–4 trains whose parameters are a **pure function** of the deterministi
 (`EnvironmentSample.WindVector`) and the continuous sea-state axis (`SeaState01`): the primary train
 runs downwind at the dominant wavelength; the secondary trains sit at tunable angular offsets with
 shorter wavelengths and smaller amplitudes (the cross-chop that makes a real sea read); amplitudes
-scale with `SeaState01` so Glass is near-flat and Storm is heavy. **Crest sharpening** — a
-Gerstner-style horizontal pinch toward crests, or an equivalent cheap shaping exponent — makes crests
-read as crests sitting above broad troughs, not sine mush. Every constant is a tunable (rule 6), and
-the derivation (`WaveMath.TrainsFrom(windVector, seaState01)`) is deterministic: same inputs, same
-trains, on both sides of the twin.
+scale with `SeaState01`. **Crest sharpening** — a Gerstner-style horizontal pinch toward crests, or
+an equivalent cheap shaping exponent — makes crests read as crests sitting above broad troughs, not
+sine mush. Every constant is a tunable (rule 6), and the derivation
+(`WaveMath.TrainsFrom(windVector, seaState01)`) is deterministic: same inputs, same trains, on both
+sides of the twin.
+
+Two owner rulings (2026-07-02) are **requirements of the model, not options**:
+
+- **Dispersion is canon.** *"The larger the distance between crests, the faster the wave."* Phase
+  speed is **derived from wavelength via the deep-water dispersion relation** —
+  `c = sqrt(g·λ / 2π)`, i.e. `c ∝ √λ` — so long swells visibly outrun short chop and a mixed sea
+  reads true. Computed once per train per tick (not per pixel): free at runtime, physical by
+  construction. A train carries its wavelength; its speed is not an independent tunable.
+- **Glass calm is SACRED.** At `SeaState01 ≈ 0` the train amplitudes scale to (near) **zero** — no
+  minimum swell, no floor — and the water becomes the full mirror: the reflection layers (sun/moon
+  glitter, sky — ADR 0017/#137) read at maximum on the dead-calm glass. Glass means glass.
 
 ### (2) The API — `WaveField.Sample(worldPos, time)` → height, slope, crestFactor
 
@@ -149,7 +160,16 @@ changes (the `MoonMath`/`WaterReflection` discipline). Enforcement, per the proj
    and stern. Presentation-only first — no forces — so the owner can feel the read before it bites.
 3. **B3 — seakeeping forces v1 (gameplay-systems).** Data-driven per-hull response on **`BoatHullDef`**
    (rule 2 — a dory corks about, a tanker shrugs), behind a **`GameConfig` toggle** so the owner can
-   tune or switch it off without code (rule 6).
+   tune or switch it off without code (rule 6). **Punishing seas are ratified** (owner, 2026-07-02):
+   *"waves should be punishing in certain areas at certain times"* — v1 ships with **real
+   consequences**, not cosmetic wobble, modulated on two axes:
+   - **TIME** — the sea state / weather, via the continuous `SeaState01` axis the trains already
+     scale with (a Gale beam sea bites; a Calm one doesn't);
+   - **PLACE** — **exposure**: open water takes the full sea, the lee of land is sheltered. For v1 a
+     simple deterministic exposure factor suffices (e.g. derived from the ADR 0014 painted height
+     map / distance-to-land — a `feat/water-depth-distance-to-land` prototype branch explored this
+     signal once); the **exact** exposure model is a design detail for the B3 PR, but the principle
+     — *place matters* — is decided here.
 4. **(Later, its own arc) — shore breakers.** Shoaling: the ADR 0014 painted height map feeds depth
    into the train parameters so waves steepen, slow, and break toward the beach. Explicitly out of
    Arc B's scope — logged, not built (rule 8).
@@ -232,16 +252,26 @@ portable: the whole feature is arithmetic.
 - **Saving wave state / integrating waves in the save.** Violates rule 5 — recomputed from
   `(worldSeed, gameTime)`, like tide and wind. Not saved, ever.
 
-## Open questions (for the owner — answer before/while Arc B lands)
+## Owner rulings (2026-07-02 — decided, no longer open)
 
-- **How punishing is a beam sea in M1 vs M2?** B2/B3 can range from *comfort wobble* (pure feel, no
-  danger) to *capsize risk in a Gale beam sea* (P5 teeth). Proposed default: M1 ships feel-only
-  (B2) + gentle forces (B3, toggle on, tuned soft); real danger (shipping water, capsize) waits for
-  M2 weather — but the owner sets the dial (`GameConfig` + `BoatHullDef`).
-- **Are wave trains visible at Glass/Calm at all?** A truly glassy sea (mirror reflections, ADR
-  0017's serene mood) argues for amplitude → ~0 below a low `SeaState01` threshold; a barely-living
-  long swell even on calm days argues for a small floor. Tunable either way — owner's art call.
+Three questions this ADR originally left open were ruled on by the owner before it merged; the
+decisions are baked into the sections above and recorded here so they read as settled canon:
+
+- **Dispersion is canon** (§(1)): phase speed derives from wavelength — `c ∝ √λ`, the deep-water
+  dispersion relation — so long swells outrun short chop. A requirement, not a tunable.
+- **Punishing seas are ratified** (§(5) B3): *"waves should be punishing in certain areas at certain
+  times"* — seakeeping v1 ships with real consequences, modulated by **TIME** (`SeaState01`) and
+  **PLACE** (exposure: open water vs the lee of land). The exact exposure model is a B3 design
+  detail; the principle is decided.
+- **Glass calm is sacred** (§(1)): at `SeaState01 ≈ 0` the trains flatten to (near) zero — no
+  minimum swell — and the reflection layers read at maximum. Dead-calm glass reflecting the sun
+  glitter is the owner's explicit want. Glass means glass.
+
+## Open questions (for Arc B, with the look in front of us)
+
 - **Train count: 3 or 4?** Both fit the budget; 4 reads richer cross-chop, 3 is cheaper on mobile.
-  Decide in B1 with the look in front of us.
+  Decide in B1.
 - **How long does the legacy noise-swell path live?** Proposed: through Arc B as the fallback, removed
   once the owner signs off the reworked look — its tunables then become the mapped train scales.
+- **The exact v1 exposure model** (B3): painted-height-map shoaling signal vs a distance-to-land
+  falloff vs a hand-tunable per-region factor — pick when B3 is in hand; deterministic either way.
