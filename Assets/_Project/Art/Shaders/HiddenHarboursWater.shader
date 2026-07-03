@@ -226,6 +226,10 @@ Shader "HiddenHarbours/Water"
         //   _MoonStrength/_MoonSize/_MoonGlitter/_MoonGlitterLength/_MoonColor — the moon disc + glitter path.
         //   _StarStrength/_StarDensity/_StarTwinkleSpeed — the faint twinkling star sparkle (night).
         //   _NightStart/_NightSoftness — the darkness (from _DayNightTint) at which the moon/stars fade in.
+        //   _SunGlitterStrength/_SunGlitterColor — the SUN glitter path (the moon column's golden-hour twin):
+        //       a warm glitter column toward the LOW sun at dawn/dusk, gone by high noon and below the horizon
+        //       (SunGlitterGate over _SunElevation). Shares the moon's geometry knobs (_MoonGlitterLength =
+        //       reach, _MoonSize = column width basis) so the two paths stay visually consistent (rule 6).
         _SkyReflectionStrength ("Sky content reflection master (0 = off / today's look)", Range(0,1)) = 0.7
         _CloudStrength    ("Cloud reflection strength", Range(0,1)) = 0.5
         _CloudScale       ("Cloud reflection scale (small = bigger clouds)", Float) = 0.06
@@ -242,6 +246,8 @@ Shader "HiddenHarbours/Water"
         _StarTwinkleSpeed ("Star twinkle speed", Float) = 1.4
         _NightStart       ("Night content start (darkness 0..1 where moon/stars fade in)", Range(0,1)) = 0.35
         _NightSoftness    ("Night content dusk ramp width", Range(0,1)) = 0.3
+        _SunGlitterStrength ("Sun glitter path intensity (golden hour; 0 = off)", Range(0,2)) = 0.6
+        _SunGlitterColor  ("Sun glitter color (warm gold)", Color) = (1.0, 0.82, 0.55, 1.0)
 
         [Header(Depth source)]
         _WaterLevel     ("Water level (m, sim-driven)", Float) = 0.0
@@ -547,6 +553,8 @@ Shader "HiddenHarbours/Water"
                 float  _StarTwinkleSpeed;
                 float  _NightStart;
                 float  _NightSoftness;
+                float  _SunGlitterStrength;
+                float4 _SunGlitterColor;
                 float  _WaterLevel;
                 float  _HeightMin;
                 float  _HeightMax;
@@ -1089,6 +1097,26 @@ Shader "HiddenHarbours/Water"
                 return smoothstep(lo, hi, darkness);
             }
 
+            // ---- sun glitter gate: the GOLDEN-HOUR window over the sun's elevation ---------------------------
+            // The daytime/dusk twin of NightFactor: a smooth 0..1 window over _SunElevation that peaks when the
+            // sun is LOW but UP (the long glitter path across the water at dawn/dusk), fading to 0 by high sun
+            // (a high sun glints via the specular layer, not a column) and 0 below the horizon (the moon's
+            // glitter takes over at night). The window: rises 0 -> 1 across elevation 0..RISE_END, holds 1
+            // through the golden-hour band, falls 1 -> 0 across FALL_START..FALL_END. When the day/night cycle
+            // is NOT running _SunElevation is 0 (unset) -> the gate is 0 -> no phantom glitter in a bare art
+            // scene / editor preview (the same "unset" convention the moon/night content uses). Mirrors
+            // WaterReflection.SunGlitterGate EXACTLY (the headless determinism twin; window constants pinned
+            // in WaterReflectionTests). col.rgb dressing only (P1, rule 5).
+            #define SUN_GLITTER_RISE_END   0.02
+            #define SUN_GLITTER_FALL_START 0.35
+            #define SUN_GLITTER_FALL_END   0.5
+            float SunGlitterGate(float sunElevation)
+            {
+                float rise = smoothstep(0.0, SUN_GLITTER_RISE_END, sunElevation);
+                float fall = 1.0 - smoothstep(SUN_GLITTER_FALL_START, SUN_GLITTER_FALL_END, sunElevation);
+                return saturate(rise * fall);
+            }
+
             // ---- moon direction: the LIVING moon's current arc position (or a fallback) ----------------------
             // Prefer the published _MoonDir global (the MoonCycle service sweeps it east->west across the night,
             // so the reflected disc + glitter TRAVEL over the water). When no MoonCycle is running (_MoonDir == 0,
@@ -1122,10 +1150,14 @@ Shader "HiddenHarbours/Water"
             //   dayRGB   — the daylit share (the clouds' day portion). Added PRE-grade, exactly where the whole
             //              layer used to sit, so the DAYLIGHT look is pixel-identical to before the split
             //              (night = 0 puts 100% of the content here).
-            //   nightRGB — the NIGHT-GATED share (moon disc + glitter path + stars + the clouds' night portion).
-            //              Added AFTER the palette grade, PRE-COMPENSATED by the divide-by-tint pattern (see
-            //              DN_COMP_MIN_CHANNEL above) so complete dark doesn't crush the moon/stars to ~3%, and
-            //              so the grade's saturated deep-night floor can't re-flatten them either.
+            //   nightRGB — the COMPENSATED share: the NIGHT-GATED content (moon disc + glitter path + stars +
+            //              the clouds' night portion) PLUS the golden-hour SUN glitter path (sun-gated, not
+            //              night-gated — it rides this bucket so the dusk tint's multiply can't mute its warm
+            //              gold; at midday the tint is ~1 so the compensation is a natural no-op, and the gate
+            //              is ~0 there anyway). Added AFTER the palette grade, PRE-COMPENSATED by the
+            //              divide-by-tint pattern (see DN_COMP_MIN_CHANNEL above) so complete dark doesn't
+            //              crush the moon/stars to ~3%, and so the grade's saturated deep-night floor can't
+            //              re-flatten them either.
             //   The two parts always SUM to the layer's original value, so dusk carries no discontinuity in the
             //   pre-compensation content — only the compensation boost changes as the night gate rises.
             //
@@ -1281,7 +1313,60 @@ Shader "HiddenHarbours/Water"
                     }
                 }
 
-                // master + the SAME sea-state fade the sky-colour mirror gets (clouds/moon/stars die in chop).
+                // ---- (4) the SUN GLITTER PATH: the moon column's GOLDEN-HOUR twin (dawn / dusk) -------------
+                // A warm golden glitter column toward the LOW sun — the classic "path of light to the sun" that
+                // stretches across calm water at dawn and dusk. Same structure as the moon's glitter path above
+                // (a camera-anchored column of broken, wavy, animated glints; decorrelated noise offsets so the
+                // two paths never read as copies), but gated by SunGlitterGate over _SunElevation instead of
+                // night: it peaks while the sun is LOW but UP, is gone by high sun (the specular + sun streak
+                // carry a high sun) and gone below the horizon (the moon takes over). Reuses the moon's geometry
+                // knobs (_MoonGlitterLength = reach, _MoonSize = width basis) so the two paths stay visually
+                // consistent with ONE set of tunables (rule 6). Routed into nightRGB — the COMPENSATED post-grade
+                // bucket — so the dusk tint's downstream multiply can't mute the authored warm gold (at midday
+                // the tint is ~1 and the compensation is a no-op; the gate is ~0 there anyway).
+                float sunGate = SunGlitterGate(_SunElevation);
+                if (_SunGlitterStrength > 0.001 && sunGate > 0.001)
+                {
+                    // direction TOWARD the sun; fall back to the material's authored light dir like the specular
+                    // (the gate already returns 0 when the cycle is off, so the fallback is belt-and-braces).
+                    float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                    float2 sdir = normalize(sunXY + float2(1e-4, 0));
+                    // CAMERA-ANCHORED like the moon (PR #143): the glitter column travels WITH the viewer like a
+                    // real reflection of a body at infinity, so it always lands on water near the play area.
+                    float2 sunAnchor = _WorldSpaceCameraPos.xy;
+                    float sunReach = max(_MoonGlitterLength, 1e-3);
+                    float2 sunPos = sunAnchor + sdir * sunReach * 0.5;   // the reflected sun's spot (no disc drawn
+                                                                         // — the sun is too bright to read as one;
+                                                                         // the column IS the reflection)
+                    float2 toSun = pp - sunPos;
+                    float sunWidthR = max(_MoonSize, 1e-3);              // shared column width basis
+                    // the column runs from the sun spot toward the viewer; sAlong < 0 on the viewer side.
+                    float sAlong = dot(toSun, sdir);
+                    float sCross = dot(toSun, float2(-sdir.y, sdir.x));  // signed lateral offset from the column
+                    float sColN = saturate(-sAlong / sunReach);          // 0 at the sun spot -> 1 at the far end
+                    float sColSpan = 1.0 - sColN;                        // bright near the sun, fading out
+                    // the column WIDENS as it descends and the surface chop scatters it (the sharpness smear,
+                    // exactly like the moon's column — a storm doesn't mirror a sun path either).
+                    float sHalfWidth = sunWidthR * (0.6 + sColN * 2.2) * lerp(1.0, 2.2, 1.0 - sharp);
+                    float sLateral = 1.0 - smoothstep(0.0, max(sHalfWidth, 1e-3), abs(sCross));
+                    // BROKEN, WAVY, ANIMATED glints (ridged noise lanes), pixelized; offset constants differ
+                    // from the moon's so the two glitter fields are decorrelated.
+                    float2 sgUV = float2(sAlong, sCross) * 0.6 + float2(-t * 0.6, sin(t * 0.7) * 0.5);
+                    float sg1 = ValueNoise(Pixelize(sgUV + 13.7));
+                    float sg2 = ValueNoise(Pixelize(sgUV * 1.7 + 9.1));
+                    float sGlints = pow(saturate(1.0 - abs(sg1 - sg2) * 2.2), 3.0);
+                    // a fast shimmer flicker so the path twinkles (broken light on moving water).
+                    float sShimmer = 0.6 + 0.4 * sin(t * 3.1 + (sAlong + sCross) * 1.3);
+                    float sunPathMask = sColSpan * sLateral * sGlints * sShimmer;
+                    // ripple a touch with the surface at calm, like the rest of the sky content.
+                    sunPathMask *= lerp(0.85, 1.15, surf);
+
+                    // sun-gated content -> the compensated post-grade bucket (survives the dusk tint).
+                    nightRGB += _SunGlitterColor.rgb * sunPathMask * _SunGlitterStrength * sunGate;
+                }
+
+                // master + the SAME sea-state fade the sky-colour mirror gets (clouds/moon/stars/sun glitter
+                // all die in chop).
                 dayRGB *= master * seaState;
                 nightRGB *= master * seaState;
             }
@@ -1629,9 +1714,11 @@ Shader "HiddenHarbours/Water"
                 //
                 // The content comes back SPLIT (see SkyContentReflection() above): the DAY share is added here —
                 // after the sky-colour mirror but BEFORE the foam (whitecaps read over the sky), exactly where
-                // the whole layer used to sit, so daylight is pixel-identical. The NIGHT share (moon/glitter/
-                // stars + the clouds' night portion) is held back and added AFTER the palette grade, compensated
-                // for the day/night multiply overlay — the complete-dark fix (see the post-grade add below).
+                // the whole layer used to sit, so daylight is pixel-identical. The COMPENSATED share (the night
+                // content: moon/glitter/stars + the clouds' night portion, PLUS the golden-hour SUN glitter
+                // path, which is sun-gated rather than night-gated) is held back and added AFTER the palette
+                // grade, compensated for the day/night multiply overlay — the complete-dark fix (see the
+                // post-grade add below).
                 float3 skyDayRGB;
                 float3 skyNightRGB;
                 SkyContentReflection(worldXY, surf, swellCrest, t, skyDayRGB, skyNightRGB);
@@ -1781,9 +1868,11 @@ Shader "HiddenHarbours/Water"
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
 
                 // ---- LIGHT CONTENT, post-grade + overlay-compensated: BOAT SPOTLIGHT + the NIGHT SKY -----------
-                // The boat beam (ADR 0016) and the night-gated sky content (moon disc/glitter/stars + the clouds'
-                // night share) are added LAST, after the palette grade, pre-compensated for the day/night multiply
-                // overlay — the complete-dark fix. Two crushers demanded this exact position:
+                // The boat beam (ADR 0016) and the compensated sky share (the night content — moon disc/glitter/
+                // stars + the clouds' night share — plus the golden-hour SUN glitter path, which rides this bucket
+                // so the dusk tint can't mute its warm gold) are added LAST, after the palette grade,
+                // pre-compensated for the day/night multiply overlay — the complete-dark fix. Two crushers
+                // demanded this exact position:
                 //  (1) The OVERLAY: the whole frame is multiplied by _DayNightTint after this shader (ADR 0013);
                 //      at deepest night that is ~(0.022, 0.029, 0.061) — an uncompensated add survived at ~3-6%,
                 //      blue-shifted (the owner's "spotlight/moon vanish in complete dark"). Dividing the add by
@@ -1797,7 +1886,9 @@ Shader "HiddenHarbours/Water"
                 // The cycle-off branch (dnSum ~ 0: edit mode / bare art scene / demo) adds the content RAW — no
                 // overlay is running, so there is nothing to compensate (preserves the tuning/preview look).
                 // Both terms are their own gates: the beam is night-gated + intensity 0 when no boat publishes;
-                // skyNightRGB is 0 by day — so in DAYLIGHT this whole block adds 0 and the look is pixel-identical.
+                // skyNightRGB is 0 at HIGH SUN (the night content gates off by day, the sun glitter gates off by
+                // ~0.5 elevation) — so at MIDDAY this whole block adds 0 and the look is pixel-identical; at
+                // golden hour it carries the intended sun glitter, at night the moon/stars/beam.
                 // Sorting-INDEPENDENT (part of the water's own frag) — it cannot fail the way the land quad did
                 // over water. col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1, rule 5).
                 float3 lightContent = BoatLightTerm(worldXY) + skyNightRGB;
