@@ -105,7 +105,7 @@ namespace HiddenHarbours.Art
         /// the weather coupling (<see cref="WeatherDim"/>). Alpha is forced to 1 (a multiply overlay uses
         /// rgb only). Pure: identical inputs → identical colour, every time (rule 5).
         /// </summary>
-        public static Color DayNightTint(float hour, DayNightProfile profile, float visibility, SeaState seaState)
+        public static Color DayNightTint(float hour, DayNightProfile profile, float visibility, float seaState01)
         {
             if (profile == null) return Color.white;   // no profile → no tint (full daylight); never throw
             float t = Mathf.Repeat(hour, 24f) / 24f;    // 0..1 through the day
@@ -113,7 +113,7 @@ namespace HiddenHarbours.Art
             float intensity = Mathf.Max(profile.Intensity.Evaluate(t), 0f);
             Color lit = new Color(sky.r * intensity, sky.g * intensity, sky.b * intensity, 1f);
 
-            float dim = WeatherDim(visibility, seaState, profile);
+            float dim = WeatherDim(visibility, seaState01, profile);
             // Under cloud the light loses its colour and dims toward a cool overcast grey (also scaled by the
             // time-of-day intensity so overcast at night is darker than overcast at noon).
             Color overcast = profile.OvercastTint;
@@ -124,7 +124,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// <see cref="DayNightTint(float, DayNightProfile, float, SeaState)"/> plus the MOONLIGHT LIFT
+        /// <see cref="DayNightTint(float, DayNightProfile, float, float)"/> plus the MOONLIGHT LIFT
         /// (owner feature: "slightly lit if the moon is visible at night"). When the sun is DOWN and the
         /// moon is UP and LIT, the night tint is pulled slightly toward the profile's cool silver-blue
         /// <see cref="DayNightProfile.MoonlightTint"/> — a full moon at its peak softly brightens the deep
@@ -140,14 +140,14 @@ namespace HiddenHarbours.Art
         /// <see cref="MoonMath.IlluminatedFraction"/> of <see cref="MoonMath.Phase01"/>.</param>
         /// <param name="moonElevation">How high the moon is above the horizon, 0 (down) .. 1 (peak of the
         /// nightly arc) — the <c>aboveHorizon</c> out of <see cref="MoonMath.MoonArc"/>.</param>
-        public static Color DayNightTint(float hour, DayNightProfile profile, float visibility, SeaState seaState,
+        public static Color DayNightTint(float hour, DayNightProfile profile, float visibility, float seaState01,
                                          float moonIllumination, float moonElevation)
         {
-            Color baseTint = DayNightTint(hour, profile, visibility, seaState);
+            Color baseTint = DayNightTint(hour, profile, visibility, seaState01);
             if (profile == null) return baseTint;
 
             float sunElevation = SunElevation(hour, profile.SunriseHour, profile.SunsetHour);
-            float weatherDim = WeatherDim(visibility, seaState, profile);
+            float weatherDim = WeatherDim(visibility, seaState01, profile);
             float lift = MoonlightLift(sunElevation, moonIllumination, moonElevation, weatherDim,
                                        profile.MoonlightLiftMax);
             if (lift <= 0f) return baseTint;   // no moon / daytime / feature off → EXACTLY the moonless tint
@@ -192,19 +192,22 @@ namespace HiddenHarbours.Art
         /// The WEATHER→LIGHT coupling: how much the current weather DIMS + COOLS the daylight, <c>0</c>
         /// (clear) .. <c>1</c> (full overcast / storm gloom). This is the clean hook the future dynamic-weather
         /// feature plugs into — it is read here from the deterministic <see cref="EnvironmentSample"/>
-        /// (<paramref name="visibility"/> = 1 − fog, and the <paramref name="seaState"/> storminess), NOT
-        /// from rain/particles (those are a later feature, ADR 0013). Fog and sea-state each push the dim up
-        /// and the larger wins; the result is capped by <see cref="DayNightProfile.WeatherDimMax"/> so weather
-        /// alone can never black the screen out. Deterministic; monotonic in worsening weather.
+        /// (<paramref name="visibility"/> = 1 − fog, and the CONTINUOUS <paramref name="seaState01"/>
+        /// storminess axis), NOT from rain/particles (those are a later feature, ADR 0013). Fog and sea-state
+        /// each push the dim up and the larger wins; the result is capped by
+        /// <see cref="DayNightProfile.WeatherDimMax"/> so weather alone can never black the screen out.
+        /// Deterministic; monotonic in worsening weather — and CONTINUOUS in it: because the axis is smooth,
+        /// the whole-frame dim RAMPS in as an M2+ storm builds past <see cref="DayNightProfile.SeaStateDimStart"/>
+        /// instead of step-darkening the screen 1/7 at an enum flip.
         /// </summary>
-        public static float WeatherDim(float visibility, SeaState seaState, DayNightProfile profile)
+        public static float WeatherDim(float visibility, float seaState01, DayNightProfile profile)
         {
             if (profile == null) return 0f;
             // Fog: visibility 1 (clear) → 0 dim; at/below the profile's "full dim" visibility → 1.
             float fog = Mathf.InverseLerp(1f, Mathf.Clamp01(profile.FogVisibilityForFullDim), Mathf.Clamp01(visibility));
-            // Sea-state gloom: Glass(0)..Storm(7) normalised, gated so calm seas add nothing and it ramps in
+            // Sea-state gloom: the continuous 0..1 axis, gated so calm seas add nothing and it ramps in
             // from the profile's start fraction up to a full storm.
-            float seaN = (int)SeaState.Storm > 0 ? (int)seaState / (float)(int)SeaState.Storm : 0f;
+            float seaN = Mathf.Clamp01(seaState01);
             float storm = Mathf.InverseLerp(Mathf.Clamp01(profile.SeaStateDimStart), 1f, seaN);
             float dim = Mathf.Max(fog, storm) * Mathf.Clamp01(profile.WeatherDimMax);
             return Mathf.Clamp01(dim);

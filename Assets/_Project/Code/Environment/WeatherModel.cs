@@ -82,17 +82,47 @@ namespace HiddenHarbours.Environment
             return new Vector2(Mathf.Cos(dirRad), Mathf.Sin(dirRad)) * strength;
         }
 
-        /// <summary>Map wind strength (m/s) to the canon sea-state scale (rough Beaufort-ish).</summary>
+        // The wind-strength (m/s) band edges of the canon sea-state scale (rough Beaufort-ish).
+        // SeaBandEdges[k] is where the enum flips from state k-1 to state k; the LAST edge is where
+        // Storm begins. Shared by BOTH SeaFromWind (the stepped enum, gameplay gates + the HUD readout)
+        // and SeaState01 (the continuous presentation axis) so the two can never drift apart.
+        private static readonly float[] SeaBandEdges = { 0f, 0.5f, 2f, 4f, 6f, 8f, 11f, 14f };
+
+        /// <summary>Map wind strength (m/s) to the canon sea-state scale (rough Beaufort-ish).
+        /// STEPPED by design — gameplay gates (e.g. <c>MaxSafeSeaState</c>) and the HUD readout want
+        /// discrete bands. Presentation consumers (chop, palette, dim, mist, wake) must use the
+        /// continuous <see cref="SeaState01"/> instead so the look never pops at a band edge.</summary>
         public static SeaState SeaFromWind(float strength)
         {
-            if (strength < 0.5f) return SeaState.Glass;
-            if (strength < 2f)   return SeaState.Calm;
-            if (strength < 4f)   return SeaState.Light;
-            if (strength < 6f)   return SeaState.Moderate;
-            if (strength < 8f)   return SeaState.Lively;
-            if (strength < 11f)  return SeaState.Rough;
-            if (strength < 14f)  return SeaState.Gale;
+            for (int k = 1; k < SeaBandEdges.Length; k++)
+                if (strength < SeaBandEdges[k]) return (SeaState)(k - 1);
             return SeaState.Storm;
+        }
+
+        /// <summary>
+        /// The CONTINUOUS sea-state axis (0..1): the piecewise-linear inverse of the
+        /// <see cref="SeaFromWind"/> thresholds. Monotonic in wind strength, clamped to [0, 1], and it
+        /// equals the enum's normalised value (<c>(int)state / 7</c>) EXACTLY at every band edge — so
+        /// converting a consumer from <c>(int)SeaFromWind(w)/7</c> to this is a pure de-quantization:
+        /// identical output at the enum's flip points, smooth in between, no re-tune. Above the Storm
+        /// edge it saturates at 1. A pure function of the wind strength (itself deterministic from
+        /// (worldSeed, gameTime) — rule 5): no smoothing state, nothing saved; the enum's threshold
+        /// chatter in a dithering wind becomes a small smooth wiggle here instead of a 1/7 jump.
+        /// </summary>
+        public static float SeaState01(float strength)
+        {
+            int top = SeaBandEdges.Length - 1;                      // 7 — the Storm edge index
+            if (strength <= 0f) return 0f;
+            if (strength >= SeaBandEdges[top]) return 1f;
+            for (int k = 1; k <= top; k++)
+            {
+                if (strength < SeaBandEdges[k])
+                {
+                    float t = (strength - SeaBandEdges[k - 1]) / (SeaBandEdges[k] - SeaBandEdges[k - 1]);
+                    return (k - 1 + t) / top;
+                }
+            }
+            return 1f;   // unreachable (the >= top edge case returned above); keeps the compiler happy
         }
 
         // --- deterministic 1D value noise in [-1, 1] ---

@@ -12,17 +12,41 @@ namespace HiddenHarbours.Core
         public readonly Vector2 WindVector;     // direction * strength, m/s
         public readonly Vector2 CurrentVector;  // tidal current "set", m/s
         public readonly float   TideHeight;     // metres relative to chart datum
-        public readonly SeaState SeaState;
+        public readonly SeaState SeaState;      // STEPPED canon scale — gameplay gates + the HUD readout
         public readonly float   Visibility;     // 0 (thick fog) .. 1 (clear)
 
+        /// <summary>
+        /// The CONTINUOUS sea-state axis, 0 (glass) .. 1 (storm) — the smooth counterpart of
+        /// <see cref="SeaState"/>. Equals <c>(int)SeaState / 7</c> exactly at every band edge and eases
+        /// linearly between them (see <c>WeatherModel.SeaState01</c>), so PRESENTATION consumers (water
+        /// chop/swell, palette mood, weather dim, sea mist, wake roughness) track the weather without the
+        /// 1/7 pops the stepped enum produces. Gameplay gates (e.g. <c>MaxSafeSeaState</c>) and the HUD
+        /// "Sea: Light (2/7)" readout keep reading the enum — stepping is intended there.
+        /// </summary>
+        public readonly float SeaState01;
+
         public EnvironmentSample(Vector2 windVector, Vector2 currentVector,
-                                 float tideHeight, SeaState seaState, float visibility)
+                                 float tideHeight, SeaState seaState, float visibility,
+                                 float seaState01)
         {
             WindVector = windVector;
             CurrentVector = currentVector;
             TideHeight = tideHeight;
             SeaState = seaState;
             Visibility = visibility;
+            SeaState01 = Mathf.Clamp01(seaState01);
+        }
+
+        /// <summary>
+        /// Convenience constructor (kept for existing callers/tests): derives the continuous axis from
+        /// the enum's normalised value (<c>(int)state / 7</c> — the band-edge value), so a sample built
+        /// from just the enum behaves exactly as the pre-continuous-axis code did.
+        /// </summary>
+        public EnvironmentSample(Vector2 windVector, Vector2 currentVector,
+                                 float tideHeight, SeaState seaState, float visibility)
+            : this(windVector, currentVector, tideHeight, seaState, visibility,
+                   (int)seaState / (float)SeaState.Storm)
+        {
         }
     }
 

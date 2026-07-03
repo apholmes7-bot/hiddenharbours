@@ -123,17 +123,17 @@ namespace HiddenHarbours.Art
             float brightness = AmbientParticleMath.DayNightBrightness(tint);
 
             float visibility = 1f;
-            SeaState seaState = SeaState.Glass;
+            float seaState01 = 0f;   // glassy default; the CONTINUOUS axis (no per-band mist steps)
             var env = GameServices.Environment;
             if (env != null)
             {
                 EnvironmentSample s = env.Sample();
                 visibility = s.Visibility;
-                seaState = s.SeaState;
+                seaState01 = s.SeaState01;
             }
 
             float intensity = AmbientParticleMath.MistIntensity(
-                visibility, seaState, _config.BaselineIntensity, _config.FogWeight, _config.SeaStateWeight);
+                visibility, seaState01, _config.BaselineIntensity, _config.FogWeight, _config.SeaStateWeight);
 
             // --- spawn (rate ∝ intensity, integrated with a carry; recycle round-robin) ---
             // Aim to keep ~intensity fraction of the pool alive: target a spawn rate that fills the pool over

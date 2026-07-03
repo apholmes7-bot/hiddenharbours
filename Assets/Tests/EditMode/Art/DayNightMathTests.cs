@@ -19,6 +19,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         private static DayNightProfile MakeProfile() => DayNightProfile.CreateDefault();
 
+        // The CONTINUOUS sea-state axis (EnvironmentSample.SeaState01) at the enum band edges — exactly the
+        // (int)state/7 values the pre-continuous enum path fed WeatherDim/DayNightTint, so every pinned
+        // output below is unchanged by the de-quantization (same inputs at the flip points).
+        private const float SeaGlass    = 0f;
+        private const float SeaCalm     = 1f / 7f;
+        private const float SeaLight    = 2f / 7f;
+        private const float SeaModerate = 3f / 7f;
+        private const float SeaGale     = 6f / 7f;
+        private const float SeaStorm    = 1f;
+
         // ---- SolarX ------------------------------------------------------------------------------------
 
         [Test]
@@ -127,23 +137,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void DayNightTint_IsDeterministic()
         {
             var p = MakeProfile();
-            Color a = DayNightMath.DayNightTint(8.3f, p, 0.8f, SeaState.Light);
-            Color b = DayNightMath.DayNightTint(8.3f, p, 0.8f, SeaState.Light);
+            Color a = DayNightMath.DayNightTint(8.3f, p, 0.8f, SeaLight);
+            Color b = DayNightMath.DayNightTint(8.3f, p, 0.8f, SeaLight);
             Assert.AreEqual(a, b);
         }
 
         [Test]
         public void DayNightTint_NullProfile_IsWhite()
         {
-            Assert.AreEqual(Color.white, DayNightMath.DayNightTint(12f, null, 1f, SeaState.Glass));
+            Assert.AreEqual(Color.white, DayNightMath.DayNightTint(12f, null, 1f, SeaGlass));
         }
 
         [Test]
         public void DayNightTint_NightIsDarkerThanNoon()
         {
             var p = MakeProfile();
-            float noon = Brightness(DayNightMath.DayNightTint(13f, p, 1f, SeaState.Glass));
-            float night = Brightness(DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass));
+            float noon = Brightness(DayNightMath.DayNightTint(13f, p, 1f, SeaGlass));
+            float night = Brightness(DayNightMath.DayNightTint(2f, p, 1f, SeaGlass));
             Assert.Less(night, noon * 0.6f, "night must be GENUINELY dark vs noon (boat lights will matter)");
         }
 
@@ -152,15 +162,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var p = MakeProfile();
             for (float h = 0f; h < 24f; h += 1f)
-                Assert.AreEqual(1f, DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass).a, Eps);
+                Assert.AreEqual(1f, DayNightMath.DayNightTint(h, p, 1f, SeaGlass).a, Eps);
         }
 
         [Test]
         public void DayNightTint_OvercastDimsTheNoonLight()
         {
             var p = MakeProfile();
-            float clear = Brightness(DayNightMath.DayNightTint(13f, p, 1f, SeaState.Glass));
-            float foggy = Brightness(DayNightMath.DayNightTint(13f, p, 0f, SeaState.Glass));
+            float clear = Brightness(DayNightMath.DayNightTint(13f, p, 1f, SeaGlass));
+            float foggy = Brightness(DayNightMath.DayNightTint(13f, p, 0f, SeaGlass));
             Assert.Less(foggy, clear, "thick fog dims the daylight");
         }
 
@@ -170,14 +180,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void WeatherDim_ClearWeatherIsZero()
         {
             var p = MakeProfile();
-            Assert.AreEqual(0f, DayNightMath.WeatherDim(1f, SeaState.Glass, p), Eps);
+            Assert.AreEqual(0f, DayNightMath.WeatherDim(1f, SeaGlass, p), Eps);
         }
 
         [Test]
         public void WeatherDim_IsCappedAtProfileMax()
         {
             var p = MakeProfile();   // WeatherDimMax default 0.6
-            float full = DayNightMath.WeatherDim(0f, SeaState.Storm, p);
+            float full = DayNightMath.WeatherDim(0f, SeaStorm, p);
             Assert.LessOrEqual(full, p.WeatherDimMax + Eps);
             Assert.Greater(full, 0f);
         }
@@ -186,12 +196,37 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void WeatherDim_RisesWithWorseningSeaState()
         {
             var p = MakeProfile();
-            float calm = DayNightMath.WeatherDim(1f, SeaState.Calm, p);
-            float gale = DayNightMath.WeatherDim(1f, SeaState.Gale, p);
-            float storm = DayNightMath.WeatherDim(1f, SeaState.Storm, p);
+            float calm = DayNightMath.WeatherDim(1f, SeaCalm, p);
+            float gale = DayNightMath.WeatherDim(1f, SeaGale, p);
+            float storm = DayNightMath.WeatherDim(1f, SeaStorm, p);
             Assert.AreEqual(0f, calm, Eps, "calm seas add no gloom");
             Assert.Greater(storm, gale, "a storm is gloomier than a gale");
             Assert.GreaterOrEqual(gale, 0f);
+        }
+
+        [Test]
+        public void WeatherDim_IsContinuousInTheSeaStateAxis_NoStepDarkening()
+        {
+            // The latent M2 fix: the sea-state term now reads the CONTINUOUS axis, so when a building storm
+            // crosses the profile's SeaStateDimStart gate the whole-frame dim RAMPS in — the old (int)state/7
+            // input would have step-darkened the entire screen by a band's worth in one tick. Fine sweep:
+            // monotonic, and no single move anywhere near a 1/7-band's dim jump.
+            var p = MakeProfile();
+            const int steps = 400;
+            float prev = -1f;
+            float maxJump = 0f;
+            for (int i = 0; i <= steps; i++)
+            {
+                float sea01 = i / (float)steps;
+                float dim = DayNightMath.WeatherDim(1f, sea01, p);
+                Assert.GreaterOrEqual(dim, prev - 1e-6f, $"dim monotonic in the axis at {sea01:0.000}");
+                if (prev >= 0f) maxJump = Mathf.Max(maxJump, dim - prev);
+                prev = dim;
+            }
+            // A whole enum band used to be able to move the dim by WeatherDimMax/(bands past the gate) in
+            // one tick; a fine-sweep step must move it far less (continuity).
+            Assert.Less(maxJump, 0.02f, "the weather dim ramps smoothly — no band-sized screen darkening");
+            Assert.Greater(DayNightMath.WeatherDim(1f, 1f, p), 0f, "a full storm still glooms the light");
         }
 
         // ---- ShadowStrength ----------------------------------------------------------------------------
@@ -326,8 +361,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Moonlight_FullMoonMidnight_IsBrighterThanNewMoonMidnight()
         {
             var p = MakeProfile();
-            float newMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 0f, 1f));
-            float fullMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 1f, 1f));
+            float newMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaGlass, 0f, 1f));
+            float fullMoon = Brightness(DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaGlass, 1f, 1f));
             Assert.Greater(fullMoon, newMoon, "a clear full-moon midnight is brighter than a new-moon one");
 
             // The default strength is tuned "subtle": a clear full moon at peak roughly DOUBLES the
@@ -341,8 +376,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Moonlight_NewMoon_TintIsBitwiseIdenticalToMoonless()
         {
             var p = MakeProfile();
-            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass);
-            Color newMoon = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass, 0f, 1f);
+            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaGlass);
+            Color newMoon = DayNightMath.DayNightTint(2f, p, 1f, SeaGlass, 0f, 1f);
             Assert.AreEqual(moonless, newMoon, "illumination 0 (new moon) must change NOTHING");
         }
 
@@ -350,8 +385,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Moonlight_MoonBelowHorizon_TintIsBitwiseIdenticalToMoonless()
         {
             var p = MakeProfile();
-            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass);
-            Color moonDown = DayNightMath.DayNightTint(2f, p, 1f, SeaState.Glass, 1f, 0f);
+            Color moonless = DayNightMath.DayNightTint(2f, p, 1f, SeaGlass);
+            Color moonDown = DayNightMath.DayNightTint(2f, p, 1f, SeaGlass, 1f, 0f);
             Assert.AreEqual(moonless, moonDown, "a set moon (elevation 0) must change NOTHING");
         }
 
@@ -363,8 +398,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             so.FindProperty("_moonlightLiftMax").floatValue = 0f;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            Color moonless = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass);
-            Color fullMoon = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaState.Glass, 1f, 1f);
+            Color moonless = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaGlass);
+            Color fullMoon = DayNightMath.DayNightTint(SolarMidnight, p, 1f, SeaGlass, 1f, 1f);
             Assert.AreEqual(moonless, fullMoon, "MoonlightLiftMax 0 = feature OFF, even under a full moon");
         }
 
@@ -375,8 +410,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Sweep the whole lit day, horizon to horizon inclusive, under a (hypothetical) full high moon.
             for (float h = p.SunriseHour; h <= p.SunsetHour; h += 0.5f)
             {
-                Color moonless = DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass);
-                Color fullMoon = DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass, 1f, 1f);
+                Color moonless = DayNightMath.DayNightTint(h, p, 1f, SeaGlass);
+                Color fullMoon = DayNightMath.DayNightTint(h, p, 1f, SeaGlass, 1f, 1f);
                 Assert.AreEqual(moonless, fullMoon, $"sun up at hour {h} -> moonlight must add NOTHING");
             }
         }
@@ -385,8 +420,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void Moonlight_IsDeterministic()
         {
             var p = MakeProfile();
-            Color a = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaState.Moderate, 0.8f, 0.6f);
-            Color b = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaState.Moderate, 0.8f, 0.6f);
+            Color a = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaModerate, 0.8f, 0.6f);
+            Color b = DayNightMath.DayNightTint(23.4f, p, 0.7f, SeaModerate, 0.8f, 0.6f);
             Assert.AreEqual(a, b, "same (hour, weather, moon) -> same tint, always (rule 5)");
         }
 
@@ -395,7 +430,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var p = MakeProfile();
             for (float h = 0f; h < 24f; h += 1f)
-                Assert.AreEqual(1f, DayNightMath.DayNightTint(h, p, 1f, SeaState.Glass, 1f, 1f).a, Eps);
+                Assert.AreEqual(1f, DayNightMath.DayNightTint(h, p, 1f, SeaGlass, 1f, 1f).a, Eps);
         }
 
         [Test]

@@ -45,6 +45,9 @@ namespace HiddenHarbours.Environment
         {
             double t = Clock?.TotalSeconds ?? 0.0;
             WeatherModel.Sample(t, _worldSeed, _config, _activeWindProfile, out Vector2 wind, out SeaState sea, out float vis);
+            // The continuous sea-state axis rides alongside the stepped enum: same wind, same thresholds,
+            // just not quantized — presentation consumers ease across the bands instead of popping 1/7.
+            float sea01 = WeatherModel.SeaState01(wind.magnitude);
             float tide = TideModel.Height(t, _activeTideProfile, _config);
 
             // Flood runs along +channelAxis (ebb reverses), strongest at mid-tide (max rate). The channel
@@ -54,7 +57,7 @@ namespace HiddenHarbours.Environment
             Vector2 current = CurrentModel.SampleCurrent(
                 t, _worldSeed, _config.SecondsPerHour, _channelAxis, _currentFactor, rate, _activeCurrentProfile);
 
-            return new EnvironmentSample(wind, current, tide, sea, vis);
+            return new EnvironmentSample(wind, current, tide, sea, vis, sea01);
         }
 
         public float TideHeightAt(double totalSeconds) =>

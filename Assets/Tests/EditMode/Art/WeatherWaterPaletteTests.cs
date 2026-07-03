@@ -39,8 +39,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static int S => (int)WeatherWaterPalette.Anchor.Storm;
         private static int F => (int)WeatherWaterPalette.Anchor.Fog;
 
+        // BlendWeights now takes the CONTINUOUS sea-state axis (EnvironmentSample.SeaState01); the enum
+        // helper converts through its band-edge value (SeaStateAxis01 == the axis at the enum flip points),
+        // so these tests exercise the exact values the old stepped path produced.
         private static float[] Weights(SeaState sea, float vis) =>
-            WeatherWaterPalette.BlendWeights(sea, vis, SeaThreshold, SeaCurve, FogThreshold, FogCurve, CalmReach);
+            Weights(WeatherWaterPalette.SeaStateAxis01(sea), vis);
+
+        private static float[] Weights(float sea01, float vis) =>
+            WeatherWaterPalette.BlendWeights(sea01, vis, SeaThreshold, SeaCurve, FogThreshold, FogCurve, CalmReach);
 
         private static float Sum(float[] w)
         {
@@ -113,6 +119,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ContinuousSeaAxis_MovesTheStormMoodSmoothly_NoBandSteps()
+        {
+            // The de-quantization fix (the owner's "sudden shader change" pop): the target weights are now a
+            // CONTINUOUS function of the axis, so a small axis change can only move the storm weight a small
+            // amount — no 1/7 band jumps anywhere on the axis. Also monotonic across the fine sweep.
+            const int steps = 200;
+            float prevStorm = -1f;
+            float maxJump = 0f;
+            for (int i = 0; i <= steps; i++)
+            {
+                float sea01 = i / (float)steps;
+                float storm = Weights(sea01, 1f)[S];
+                Assert.GreaterOrEqual(storm, prevStorm - 1e-6f, $"storm weight monotonic at axis {sea01:0.000}");
+                if (prevStorm >= 0f) maxJump = Mathf.Max(maxJump, storm - prevStorm);
+                prevStorm = storm;
+            }
+            // A 1/7 enum step used to move the axis ~0.143 in ONE tick; on this fine sweep any single move
+            // must be a small fraction of that (continuity — the pop is structurally gone at the source).
+            Assert.Less(maxJump, 0.05f, "the storm mood moves smoothly along the axis (no band-sized jumps)");
+        }
+
+        [Test]
         public void RisingSeaState_GrowsTheStormMood_Monotonically()
         {
             // Clear air, sweep Glass -> Storm: the storm weight only ever grows.
@@ -178,7 +206,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void CalmReachZero_LeavesGlassyWaterOnTheBase_NoCalmAnchor()
         {
             // calmReach = 0 => the base IS the calm look; the Calm anchor is unused at the lowest sea-state.
-            float[] w = WeatherWaterPalette.BlendWeights(SeaState.Glass, 1f,
+            float[] w = WeatherWaterPalette.BlendWeights(WeatherWaterPalette.SeaStateAxis01(SeaState.Glass), 1f,
                 SeaThreshold, SeaCurve, FogThreshold, FogCurve, /*calmReach*/0f);
             Assert.AreEqual(0f, w[C], 1e-5f, "calmReach 0 => no pull toward the Calm anchor");
             Assert.AreEqual(1f, w[B], 1e-4f, "glassy clear water with calmReach 0 reads fully as the BASE preset");
@@ -188,9 +216,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void RaisingSeaThreshold_DelaysTheStormMood()
         {
             // A higher sea-state threshold keeps the sea calm-ish to a higher sea-state (the storm bites later).
-            float lowThr = WeatherWaterPalette.BlendWeights(SeaState.Light, 1f,
+            float lowThr = WeatherWaterPalette.BlendWeights(WeatherWaterPalette.SeaStateAxis01(SeaState.Light), 1f,
                 0.1f, SeaCurve, FogThreshold, FogCurve, CalmReach)[S];
-            float highThr = WeatherWaterPalette.BlendWeights(SeaState.Light, 1f,
+            float highThr = WeatherWaterPalette.BlendWeights(WeatherWaterPalette.SeaStateAxis01(SeaState.Light), 1f,
                 0.5f, SeaCurve, FogThreshold, FogCurve, CalmReach)[S];
             Assert.Less(highThr, lowThr, "a higher sea-state threshold delays the storm mood (less storm at a Light sea)");
         }

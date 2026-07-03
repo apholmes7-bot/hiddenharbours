@@ -144,13 +144,13 @@ namespace HiddenHarbours.Art
             float hour = clock != null ? clock.HourOfDay : _fallbackHour;
 
             float visibility = 1f;            // clear by default (no fog) when there is no sim yet
-            SeaState seaState = SeaState.Glass;
+            float seaState01 = 0f;            // glassy by default; the CONTINUOUS axis (no 1/7 dim steps)
             var env = GameServices.Environment;
             if (env != null)
             {
                 EnvironmentSample s = env.Sample();
                 visibility = s.Visibility;
-                seaState = s.SeaState;
+                seaState01 = s.SeaState01;
             }
 
             // --- the moon's phase + arc off the same clock (deterministic, same MoonMath the water's
@@ -168,7 +168,7 @@ namespace HiddenHarbours.Art
 
             // --- evaluate the pure model (the moonlight lift is folded INTO the one published tint, so
             //     _DayNightTint keeps meaning "the whole-frame multiply colour" for every consumer) ---
-            Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState,
+            Color tint = DayNightMath.DayNightTint(hour, _profile, visibility, seaState01,
                                                    moonIllumination, moonElevation);
             float sunrise       = _profile != null ? _profile.SunriseHour : 6f;
             float sunset        = _profile != null ? _profile.SunsetHour : 20f;
@@ -181,7 +181,7 @@ namespace HiddenHarbours.Art
             // Live cast-shadow strength: the sun being up folded with the live weather (overcast/storm
             // fades it). Computed here — where the real weather already is — and published as a global so
             // SpriteShadow gets a true weather source without each caster re-reading the sim (rule 4/7).
-            float weatherDim     = DayNightMath.WeatherDim(visibility, seaState, _profile);
+            float weatherDim     = DayNightMath.WeatherDim(visibility, seaState01, _profile);
             float shadowStrength = DayNightMath.ShadowStrength(hour, sunrise, sunset, weatherDim, overcastFades);
 
             // --- push the globals (read by the overlay + the water specular + the projected shadows) ---
