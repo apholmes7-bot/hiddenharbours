@@ -56,6 +56,17 @@ namespace HiddenHarbours.Boats
 
         private int _lastIndex = -1;
 
+        /// <summary>
+        /// Additive visual tilt (degrees, +CCW about z) composed into the child renderer AFTER this
+        /// component's per-mode rotation policy each LateUpdate — the seam <see cref="BoatWaveMotion"/>
+        /// drives the wave ROLL through (ADR 0018 B2). This component force-resets the renderer's
+        /// rotation every frame (screen-identity in Snap, hull yaw in Smooth — the stomp that once ate
+        /// the boat spotlight), so an external rotation write would be silently overwritten; routing
+        /// the tilt through here composes it after the reset instead of fighting it. 0 (the default)
+        /// is EXACTLY today's behaviour.
+        /// </summary>
+        public float VisualTiltDegrees { get; set; }
+
         /// <summary>The mode this prototype is currently presenting. Settable so the harness can toggle it live.</summary>
         public RotationMode Mode
         {
@@ -163,7 +174,8 @@ namespace HiddenHarbours.Boats
                 : (_facings != null && _facings.Length > 0 ? _facings[0] : null);
             if (single != null && _renderer.sprite != single) _renderer.sprite = single;
             _lastIndex = -1;                                   // so re-entering Snap re-applies the facing
-            _renderer.transform.localRotation = Quaternion.identity; // rotate WITH the hull (inherit body yaw)
+            // Rotate WITH the hull (inherit body yaw) + the additive wave tilt (0 = identity = today).
+            _renderer.transform.localRotation = Quaternion.Euler(0f, 0f, VisualTiltDegrees);
         }
 
         // The prototype under test: swap to the nearest pre-drawn facing and counter-rotate the renderer so
@@ -181,8 +193,9 @@ namespace HiddenHarbours.Boats
                 _lastIndex = idx;
             }
             // Counter-rotate to world-identity: cancel whatever yaw the body has so the chosen facing is
-            // drawn screen-aligned (the snap shows a DIFFERENT picture, it never rotates one).
-            _renderer.transform.rotation = Quaternion.identity;
+            // drawn screen-aligned (the snap shows a DIFFERENT picture, it never rotates one) — then
+            // compose the additive wave tilt ON the screen-aligned picture (0 = identity = today).
+            _renderer.transform.rotation = Quaternion.Euler(0f, 0f, VisualTiltDegrees);
         }
     }
 }

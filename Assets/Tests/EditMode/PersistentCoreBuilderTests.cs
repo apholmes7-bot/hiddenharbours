@@ -245,6 +245,44 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Build_WaveMotion_IsWiredToTheDirectionalVisual_AndItsTiltHook()
+        {
+            if (!SkinSwapApplied())
+                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported — the swap (and the " +
+                              "wave-motion rig on its child visual) no-ops by design; nothing to assert.");
+
+            // B2 (ADR 0018): the boat ROCKS on the shared wave field — visual-only. The builder must wire
+            // BoatWaveMotion to the FishingBoatVisual CHILD (never the physics root: no forces until B3) and
+            // to the DirectionalBoatSprite tilt hook (that component stomps the child's rotation every
+            // LateUpdate, so an unrouted roll would be silently overwritten — the spotlight lesson).
+            var waveMotion = _core.DoryGo.GetComponent<BoatWaveMotion>();
+            Assert.IsNotNull(waveMotion, "the playable boat carries BoatWaveMotion (ADR 0018 B2)");
+
+            var so = new UnityEditor.SerializedObject(waveMotion);
+            var visual = so.FindProperty("_visual").objectReferenceValue as Transform;
+            Assert.IsNotNull(visual, "the wave motion drives a visual transform");
+            Assert.AreEqual(_core.DoryGo.transform.Find("FishingBoatVisual"), visual,
+                "…and it is the FishingBoatVisual CHILD, never the physics root (visual-only by phasing)");
+
+            var hook = so.FindProperty("_directionalSprite").objectReferenceValue as DirectionalBoatSprite;
+            Assert.AreEqual(_core.DoryGo.GetComponent<DirectionalBoatSprite>(), hook,
+                "the roll routes through DirectionalBoatSprite.VisualTiltDegrees (it stomps rotation each frame)");
+
+            Assert.Greater(so.FindProperty("_masterStrength").floatValue, 0f,
+                "the rock ships ON (master strength > 0) so the owner can feel it without touching the Inspector");
+
+            // Settings parity (ADR 0018 §(4)): the boat derives its trains from the same Default settings the
+            // Art-side bridge publishes to the shader — same field, same waves. Spot-check the anchors.
+            var settings = so.FindProperty("_settings");
+            Assert.AreEqual(WaveFieldSettings.Default.PrimaryAmplitude,
+                settings.FindPropertyRelative("PrimaryAmplitude").floatValue, 1e-6f,
+                "wave-field settings start from WaveFieldSettings.Default (parity with the shader bridge)");
+            Assert.AreEqual(WaveFieldSettings.Default.CrestSharpening,
+                settings.FindPropertyRelative("CrestSharpening").floatValue, 1e-6f,
+                "…crest sharpening too (B3/GameConfig unifies the two instances into one tunable source)");
+        }
+
+        [Test]
         public void Build_DirectionalVisual_HidesTheDoryHullAndOarRig()
         {
             if (!SkinSwapApplied())

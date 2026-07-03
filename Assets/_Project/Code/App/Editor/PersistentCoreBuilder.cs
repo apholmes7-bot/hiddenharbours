@@ -439,6 +439,17 @@ namespace HiddenHarbours.App.Editor
                 smoothModeSprite: facings[0],                 // unused in Snap; same art if ever toggled to Smooth
                 mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
 
+            // (4) B2 (ADR 0018): the boat ROCKS on the shared wave field — visual-only. BoatWaveMotion
+            // samples WaveMath under the hull each frame and rolls/pitches/bobs the FishingBoatVisual
+            // CHILD (roll routed through DirectionalBoatSprite.VisualTiltDegrees, because that component
+            // stomps the child's rotation every LateUpdate). The physics body, colliders and controller
+            // forces are untouched (forces are B3, after the owner's feel verdict). NOTE: the plain
+            // fallback path above draws its hull sprite ON the physics root — there is no separate
+            // visual child to offset there, so the rock rides the directional-visual path only; B3
+            // moves the body itself and will cover both.
+            var waveMotion = doryGo.AddComponent<BoatWaveMotion>();
+            waveMotion.Configure(spriteGo.transform, directional);
+
             Debug.Log("[PersistentCoreBuilder] Playable boat wears the 4-way DIRECTIONAL FISHING-BOAT skin " +
                       "(#93/#94 visual, #97 propulsion): hull + oar rig hidden, FishingBoat_N/E/S/W snap by " +
                       "heading, and the hull is boat.fishing_skiff (Propulsion = Engine) so the controls are " +
