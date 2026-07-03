@@ -1315,3 +1315,98 @@ the water **inside the water's own fragment** — the same idiom the water alrea
   vs behind/outside, range falloff, off-axis dimming, at-the-lamp core, night-gate off-by-day). The GPU term
   itself is verified by the owner at **deep night** driving over open water (the beam is **night-gated**, so it
   fades toward off near dawn — verify ~midnight).
+
+## 16. The shared wave field — whitecaps ride REAL crests (ADR 0018, Arc B1)
+
+The swell layer's next life. §5.8's `SwellField` was **paint** — value-noise brightness bands that existed
+only in HLSL, so the whitecap lifecycle (§5.11) gated on noise: the owner's verdict, *"unconvincing… a foggy
+white soup."* ADR 0018 replaced the truth: **one deterministic directional wave field** (3–4 wave trains,
+`Core/Environment/WaveMath.cs`) that BOTH the boat (B2 rocking, `BoatWaveMotion`) and the water shader sample.
+B1 is the shader side: the trains become the water's **primary swell brightness source**, and the whitecaps are
+re-keyed to **form → break → streak → fade on real, advancing crests** — foam that visibly **travels with the
+wave**, which is what kills the static-soup read.
+
+### 16.1 The bridge (`Art/WaveFieldBridge.cs`) — the same eased sea the hull rides
+
+A self-installing `[RuntimeInitializeOnLoadMethod]` host (the `GrassWindBridge`/`MoonCycle` pattern). Every
+frame it ticks the **same `WaveFieldAnimator`** (ADR 0018 addendum) `BoatWaveMotion` ticks — eased train
+parameters chasing the weather-derived `WaveMath.TrainsFrom` targets, dispersion speed re-derived from the
+**eased** wavelength (speed is never free), phase accumulated **incrementally in double** and baked into each
+train's `PhaseOffset` — then publishes the trains as **global vectors** (outside every CBUFFER; `Water.mat`
+untouched):
+
+> `_WaveTrain0..3` — `xy` = unit travel direction, `z` = wave number `k = 2π/λ` (precomputed; the shader never
+> divides by a wavelength), `w` = amplitude (m). Dead slots publish zero.
+> `_WavePhases` — per-train phase (radians, wrapped to `[0, 2π)` in C# **double** before the float cast).
+> `_WaveFieldParams` — `x` = live train count (**0 = nothing published → the LEGACY §5.8 path holds**),
+> `y` = crest sharpening p, `z` = total amplitude (the crest normalizer), `w` reserved.
+
+**No time uniform exists**: the shader evaluates `θ = k·(dir·worldPos) + φ` — the advancing time lives entirely
+in the phase the animator accumulates, so the unbounded game time never touches float trig on the GPU, and the
+water pixels and the hull provably ride the **identical eased sea** (both consumers tick the same animator code
+with the same inputs; `WaveFieldBridgeTests` pins the parity). Cycle-off (EditMode / a bare art scene / no sim)
+publishes count 0 → the pre-B1 look, the `_DayNightTint`/`_MoonDir` "unset" convention. The bridge's
+`WaveFieldSettings`/`WaveFieldAnimatorSettings` start at the same `Default`s `BoatWaveMotion` uses — keep them
+identical until a later Arc B PR unifies them on `GameConfig`.
+
+### 16.2 The HLSL twin (`WaveFieldSample()`) and the §(6) transition mapping
+
+A line-by-line transcription of `WaveMath.Sample` (mirrored headless by `WaveFieldBridge.ShaderTwinSample`;
+change one, change all **in the same PR**): sharpened sine height, analytic slope, crest factor — plus
+`primaryCos`, the primary train's face sign (negative = the wave's front face, the crest is arriving; positive
+= behind, it just passed) that drives the foam lifecycle's fore/aft asymmetry. Fixed `[unroll]` bound of 4 with
+the live count masked **inside** (never `[unroll]` a runtime count — the #96 trap); pow bases floored at 1e-6
+(HLSL `pow(0,0)` NaN guard).
+
+When trains are live, `swellCrest` — the 0..1 crest driver every downstream layer already reads (spec bias
+`_SpecSwellBias`, whitecap gate `_FoamCrestGate`, sky-reflection lit faces) — comes from the real field, and
+the owner's tuned `_OceanSwell*` values **map on instead of resetting** (ADR 0018 §(6)):
+
+> `_OceanSwellStrength` → the brightness amplitude (identical role/scale: `swellSigned × strength × 0.25`, now
+> with `swellSigned = height/totalAmp` — zero-mean, so **glass = zero bands = the untouched mirror**).
+> `_OceanSwellSharpness` → the crest-shaping exponent on the 0..1 crest signal (its exact legacy role).
+> `_OceanSwellScale` → a **visual wavelength scale**, normalized to the shipped default **0.025**: at 0.025 the
+> water renders the field's TRUE wavelengths (pixel == hull); the current tuned 0.07 renders ~2.8× shorter
+> waves — retune toward 0.025 when the B2 rocking should visibly match the crests on screen.
+
+**Not carried over** (out of Arc B scope — shore breakers are a later arc, ADR §(5)): the legacy path's
+*shoreward crest-bias* — live trains run downwind everywhere; the foam **drift** shoreward bias (§5.12) is
+untouched. The legacy `SwellField` path itself stays byte-for-byte behind the count-0 fallback until the owner
+signs off the reworked look.
+
+### 16.3 The whitecap rework — form, BREAK, streak, fade (the soup fix)
+
+Open-water caps only (`_Roughness > 0.01` branch); the §5.3 fringe foam is untouched. With live trains the
+**lifecycle places the foam on the advancing wave** (`WhitecapLifecycleWave()`, C#-twinned in
+`WaveFieldBridgeTests`) and the §5.9 evolving wind-streaked cap field only **textures** it — nothing is a
+field-wide veil any more:
+
+- **FORM** — on the wave's **front face** (`primaryCos < 0`) the foam whitens in as the crest builds toward the
+  break band.
+- **BREAK** — a **tight band at the crest tip**: the `SolidCore` dense heart over the pixelized cap field →
+  bright, **crisp pixel-art edges**, not soft alpha fog. `_WhitecapFormSharpness` narrows the band (its legacy
+  role); wind lowers it (`− _Roughness × 0.35`, the cap-threshold discipline) so **a gale breaks more crests —
+  marching whitecaps**.
+- **STREAK** — the residual spreads **downwind** through the existing wind-aniso coord (`_FoamStreakStretch`,
+  reused as-is).
+- **FADE** — behind the crest (`primaryCos > 0`) the milky remnant decays at `_WhitecapCollapseRate` (its
+  legacy role). `_WhitecapPeakDensity` still caps the newborn opacity; `_FoamCrestGate` still dials how tightly
+  foam hugs the crest — the same knobs, a truer crest.
+- **Sea-state coupling through the trains' amplitudes**: the one new knob, **`_WhitecapOnsetAmp`** (default
+  0.5 m) — full caps by that much total train amplitude, first foam from ~10% of it. Glass = zero amplitude =
+  **zero foam, automatically** (and the crest factor is already exactly 0 on dead glass — the mirror keeps the
+  §11 reflections at full strength).
+
+Composition unchanged: everything is `col.rgb`-only (P1, rule 5 — never depth/`clip()`/`_WaterLevel`/the sim),
+sits **below** the palette guard-rail (§13) and **below** the post-grade compensated light block (§11.6 / §15);
+the sky reflection's sea-state fade keeps working (it keys off `_Chop`/`_Roughness`, untouched).
+
+### 16.4 Determinism guard (headless C# twins)
+
+`WaveFieldBridgeTests` pins: the **packing layout** (k = 2π/λ, dead slots zero, empty field all-zero); **twin
+parity** — `ShaderTwinSample` (the C# mirror of the HLSL) vs the reference `WaveMath.Sample` across the
+WaveMathTests sweep, AND through the full runtime path (5 000 uneven animator ticks → `Pack` → reconstruct ==
+`animator.Sample`, phases still wrapped — the hull/water same-sea contract); **glass silence**; and the
+**lifecycle gates** (forms only on the front face, breaks at the tip, residual dies behind at the collapse
+rate, wind widens the breaking population, zero density/troughs = nothing). The shipped `Water.mat` variant is
+force-compiled by `WaterShaderCompileGuardTests`, so a broken twin fails CI red, not magenta-in-build.

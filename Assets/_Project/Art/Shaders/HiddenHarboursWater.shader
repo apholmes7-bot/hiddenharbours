@@ -142,6 +142,21 @@ Shader "HiddenHarbours/Water"
         _WhitecapPeakDensity   ("Whitecap peak density (newborn crest opacity)", Range(0,1)) = 0.95
         _WhitecapCollapseRate  ("Whitecap collapse rate (age to milky off-crest)", Range(0,4)) = 1.5
 
+        [Header(Shared wave field (ADR 0018   trains published by WaveFieldBridge))]
+        // When HiddenHarbours.Art.WaveFieldBridge publishes live wave trains (the shared deterministic
+        // wave field — the SAME field the seakeeping sim samples), the swell brightness + whitecap
+        // lifecycle re-key onto the REAL ADVANCING CRESTS (see WaveFieldSample below). The legacy
+        // noise-swell path stays intact behind the "no trains published" fallback (edit mode / a bare
+        // art scene / cycle off), and the owner's tuned _OceanSwell* values map onto the field (§(6)
+        // of the ADR): _OceanSwellStrength = the brightness amplitude (unchanged role),
+        // _OceanSwellSharpness = the crest-shaping exponent on the 0..1 crest signal (unchanged role),
+        // _OceanSwellScale = a VISUAL wavelength scale normalized to its shipped default 0.025 (0.025
+        // renders the field's TRUE wavelengths; bigger = shorter waves, the knob's legacy sense).
+        //   _WhitecapOnsetAmp — the total train amplitude (m) at which whitecaps reach FULL presence
+        //       (first foam from ~10% of it). This is the sea-state coupling of the reworked caps:
+        //       glass = zero amplitude = zero foam, automatically; a gale = full marching whitecaps.
+        _WhitecapOnsetAmp ("Whitecap onset amplitude (m of total wave amplitude for full caps)", Float) = 0.5
+
         [Header(Shoreward swell and foam bias (waves roll IN near the coast))]
         // The rolling swell + the foam drift used to follow ONLY the wandering WIND (and the tidal current),
         // and the wind blows OFFSHORE part of the time — so near the beach the wave trains and foam streamed
@@ -449,6 +464,24 @@ Shader "HiddenHarbours/Water"
             float4 _BoatLightParams;    // x = intensity (<=0 means OFF), y = range (m), z = cos(halfAngle), w = cos(innerAngle)
             float4 _BoatLightParams2;   // x = radial edge softness, y = gate threshold, z = gate softness, w = cycle-off fallback
 
+            // GLOBAL SHARED WAVE FIELD (ADR 0018 B1) — published by HiddenHarbours.Art.WaveFieldBridge via
+            // Shader.SetGlobalVector, EVERY FRAME. The bridge ticks the SAME WaveFieldAnimator the boat's
+            // rocking (BoatWaveMotion, B2) ticks — eased train parameters, dispersion speed re-derived from
+            // the EASED wavelength in C#, phase accumulated INCREMENTALLY in double and BAKED into the
+            // published phase — so the water pixels and the hull ride the IDENTICAL eased sea, and there is
+            // NO time uniform here at all: WaveFieldSample() below evaluates theta = k*(dir.worldPos) + phi.
+            // The shader NEVER re-derives the phase speed (dispersion lives in C# only, ADR 0018 §(4)).
+            // GLOBALS (outside the per-material CBUFFER) like _SunDir/_WindWorld/_MoonDir: an empty material
+            // still compiles, and a no-bridge scene (edit mode / bare art scene / cycle off) reads them as
+            // ZERO -> count 0 -> the legacy noise-swell path holds (the "unset" convention).
+            float4 _WaveTrain0;      // xy = unit travel direction, z = wave number k = 2pi/lambda, w = amplitude (m)
+            float4 _WaveTrain1;
+            float4 _WaveTrain2;
+            float4 _WaveTrain3;
+            float4 _WavePhases;      // per-train phase (rad), accumulated in C# DOUBLE + wrapped to [0, 2pi)
+            float4 _WaveFieldParams; // x = live train count (0 = not published), y = crest sharpening p,
+                                     // z = total amplitude (m; the crest normalizer), w = reserved
+
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
             CBUFFER_START(UnityPerMaterial)
@@ -510,6 +543,8 @@ Shader "HiddenHarbours/Water"
                 float  _WhitecapFormSharpness;
                 float  _WhitecapPeakDensity;
                 float  _WhitecapCollapseRate;
+                // Shared wave field (ADR 0018 B1): the whitecap sea-state onset over total train amplitude.
+                float  _WhitecapOnsetAmp;
                 // Shoreward swell/foam bias (near-coast roll-in; visual direction only).
                 float  _ShorewardBias;
                 float  _ShorewardFalloff;
@@ -912,6 +947,116 @@ Shader "HiddenHarbours/Water"
                 float aged = pow(c, max(_WhitecapCollapseRate, 0.05));
                 // the cap is born dense on the crest, aging into milky residual — take the stronger of the two.
                 return saturate(max(newborn, aged * saturate(density)));
+            }
+
+            // ====================================================================================================
+            // THE SHARED WAVE FIELD — the HLSL twin of WaveMath.Sample (ADR 0018 §(4), Arc B1).
+            // A line-by-line transcription of the C# reference (Core/Environment/WaveMath.cs `Sample`,
+            // mirrored headless by WaveFieldBridge.ShaderTwinSample — change one, change ALL in the same PR),
+            // reading the packed globals the WaveFieldBridge publishes (see the _WaveTrain* declarations).
+            // theta = k*(dir.worldPos) + phi: the phi already carries the advancing time (accumulated in C#
+            // DOUBLE by the shared WaveFieldAnimator and wrapped to [0, 2pi) before the float cast), so the
+            // position math here is plain float (world coords are small) and NO time uniform exists. The
+            // shader never re-derives the phase speed — dispersion lives in C# only.
+            //   worldXY   — the sample position (pass it PIXELIZED so the field reads as pixel art, §3).
+            //   freqScale — a VISUAL wavelength scale on k (the legacy _OceanSwellScale mapping; 1 = the
+            //               field's TRUE wavelengths — what the hull rocks on).
+            //   height    — surface offset (m) about the tide level (sharpened sine, narrow crests over
+            //               broad troughs). col.rgb DRESSING only downstream — never depth/clip/_WaterLevel.
+            //   slopeXY   — the ANALYTIC gradient of height (kept for twin completeness/parity; the B2 hull
+            //               tilt reads the C# side of this same formula).
+            //   crestF    — 0..1, the crest factor (height normalized by the amplitude envelope, sharpened):
+            //               the whitecap driver. 0 through the troughs and on dead glass.
+            //   primaryCos— cos(theta) of the PRIMARY train: NEGATIVE on the wave's FRONT face (this point
+            //               crests next — foam FORMS), POSITIVE behind the crest (it just passed — foam
+            //               FADES). The fore/aft asymmetry the whitecap lifecycle keys on.
+            // HLSL discipline: a FIXED [unroll] bound of WAVE_MAX_TRAINS with the live count masked INSIDE
+            // (NEVER [unroll] a runtime count — the #96 magenta trap); pow bases floored at 1e-6 because
+            // HLSL pow(0, 0) is NaN on some GPUs (the deviation lives where cos(theta) ~ 0 — invisible).
+            // ====================================================================================================
+            #define WAVE_MAX_TRAINS 4
+            void WaveFieldSample(float2 worldXY, float freqScale,
+                                 out float height, out float2 slopeXY, out float crestF, out float primaryCos)
+            {
+                height = 0.0;
+                slopeXY = float2(0.0, 0.0);
+                crestF = 0.0;
+                primaryCos = 0.0;
+
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x, _WavePhases.y, _WavePhases.z, _WavePhases.w };
+                int count = (int)(_WaveFieldParams.x + 0.5);
+                float p = max(_WaveFieldParams.y, 1.0);            // crest sharpening (>= 1, like the C# clamp)
+                float totalAmp = _WaveFieldParams.z;
+                float fs = max(freqScale, 1e-3);
+
+                [unroll]
+                for (int i = 0; i < WAVE_MAX_TRAINS; i++)          // FIXED bound; the count masks inside
+                {
+                    float amplitude = trains[i].w;
+                    if (i < count && amplitude > 0.0)              // a dead/silent slot contributes nothing
+                    {
+                        float k = trains[i].z * fs;                // published k = 2pi/lambda, visually scaled
+                        float theta = k * dot(trains[i].xy, worldXY) + phis[i];
+                        float sinT = sin(theta);
+                        float cosT = cos(theta);
+
+                        float s = (sinT + 1.0) * 0.5;              // 0 in the trough .. 1 at the crest
+                        float shaped = pow(max(s, 1e-6), p);       // pinch: narrow crest, broad trough
+                        height += amplitude * (2.0 * shaped - 1.0);
+
+                        // the ANALYTIC derivative (chain rule) of the height term — the C# reference's slope.
+                        float slopeMag = amplitude * p * pow(max(s, 1e-6), p - 1.0) * cosT * k;
+                        slopeXY += slopeMag * trains[i].xy;
+
+                        if (i == 0) primaryCos = cosT;             // the primary train's face sign (see doc)
+                    }
+                }
+
+                if (totalAmp > 1e-6)                               // WaveMath.GlassAmplitudeMeters guard
+                    crestF = pow(saturate(height / totalAmp), p);
+            }
+
+            // ---- whitecap LIFECYCLE on the REAL wave field (ADR 0018 B1): form -> BREAK -> fade ---------------
+            // The trains-live re-key of WhitecapLifecycle() above — same tunables, but the crest now has a
+            // POSITION, a DIRECTION and a LIFETIME (it advances with the train), so the foam visibly forms,
+            // breaks, streaks and dies ON a travelling wave instead of gating on noise (the "foggy white
+            // soup" fix at the root). Inputs: crest = the twin's crestFactor (0..1); primCos = the primary
+            // train's face sign (negative = front face, the crest is arriving; positive = behind, it has
+            // passed); density = FoamDensity() (the sea-state coupling, unchanged).
+            // The legacy lifecycle tunables carry over, re-keyed:
+            //   _WhitecapFormSharpness — how tightly the BREAKING band hugs the crest tip (higher = a
+            //                            crisper, narrower break). Wind (_Roughness) lowers the band the
+            //                            same way it lowers the cap threshold — a gale breaks more crests.
+            //   _WhitecapPeakDensity   — applied by the CALLER to the break core (the newborn opacity).
+            //   _WhitecapCollapseRate  — how fast the milky residual dies behind the crest (higher = a
+            //                            shorter trailing tail).
+            // Two outputs so the caller composites them differently (crisp core vs milky residual):
+            //   breakCore — 0..1: the dense breaking cap at/approaching the crest tip (crisp, bright).
+            //   residual  — 0..1: the aged milky remnant trailing BEHIND the crest (the caller's wind-aniso
+            //               coord streaks it downwind — _FoamStreakStretch, reused).
+            // col.rgb-only dressing — drives no depth/clip/_WaterLevel/sim (P1 integrity, rule 5).
+            void WhitecapLifecycleWave(float crest, float primCos, float density,
+                                       out float breakCore, out float residual)
+            {
+                float c = saturate(crest);
+                float building = saturate(-primCos);   // 1 on the front face (the crest is arriving)
+                float passed   = saturate(primCos);    // 1 behind the crest (it has passed)
+
+                // BREAK: a tight band at the crest tip — crisp edges over the pixelized cap field, not a
+                // wash. FormSharpness slides the band's lower edge toward the tip AND narrows it; wind
+                // lowers it (rougher => more crests break), the capThr discipline reused.
+                float breakLo = max(lerp(0.3, 0.8, saturate(_WhitecapFormSharpness))
+                                    - saturate(_Roughness) * 0.35, 0.05);
+                float breakHi = min(breakLo + lerp(0.3, 0.1, saturate(_WhitecapFormSharpness)), 1.0);
+                float breaking = smoothstep(breakLo, breakHi, c);
+                // FORM: on the FRONT face the foam whitens in early as the crest builds toward the break.
+                float forming = smoothstep(breakLo * 0.5, breakLo, c) * building * 0.6;
+                breakCore = saturate(max(breaking, forming) * saturate(density));
+
+                // FADE: behind the crest the cap ages to milky residual, dying at the collapse rate.
+                residual = saturate(pow(max(c, 1e-4), max(_WhitecapCollapseRate, 0.05))
+                                    * passed * saturate(density));
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -1625,11 +1770,52 @@ Shader "HiddenHarbours/Water"
                 // deep tint/the caustic gate/_WaterLevel, so the cohesion cannot move the gameplay waterline
                 // (P1 integrity, CLAUDE.md rule 5). Direction comes from the (wandering) wind, so the bands
                 // reorient as the weather shifts.
-                float swellCrest = SwellField(worldXY, depth, t);     // 0..1: 1 on crests, 0 in troughs (rolls IN near shore)
+                // ---- THE SHARED WAVE FIELD (ADR 0018 B1) — the PRIMARY swell source when trains are live ------
+                // WaveFieldBridge publishes the eased, phase-continuous trains (count >= 1) whenever the sim
+                // runs; count 0 (edit mode / bare art scene / cycle off) keeps the LEGACY SwellField path
+                // below byte-for-byte, so the pre-B1 look is always reachable (ADR 0018 §(6): replace over a
+                // transition, the tuned look survives). The owner's tuned _OceanSwell* values MAP onto the
+                // field instead of resetting:
+                //   _OceanSwellStrength  -> the brightness amplitude (identical role and scale to legacy);
+                //   _OceanSwellSharpness -> the crest-shaping exponent on the 0..1 crest signal (its exact
+                //                           legacy role — it shaped SwellField's crest the same way);
+                //   _OceanSwellScale     -> a VISUAL wavelength scale, normalized to the property's shipped
+                //                           default 0.025 so that default renders the field's TRUE
+                //                           wavelengths (= what the hull rocks on); bigger = shorter waves,
+                //                           the knob's legacy sense (SMALL = long wavelength).
+                // NOT carried over (out of Arc B scope, ADR §(5): shore breakers are a later arc): the
+                // legacy path's shoreward crest-bias — the trains run downwind everywhere. The foam DRIFT
+                // shoreward bias below is untouched. All of it col.rgb-only dressing (P1, rule 5).
+                #define WAVE_LEGACY_SCALE_REF 0.025
+                float waveHeight;
+                float2 waveSlope;
+                float waveCrest;
+                float wavePrimCos;
+                float waveFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
+                WaveFieldSample(Pixelize(worldXY), waveFreqScale,
+                                waveHeight, waveSlope, waveCrest, wavePrimCos);
+                bool trainsLive = _WaveFieldParams.x >= 0.5;
+
+                float swellCrest;   // the 0..1 crest driver every downstream layer reads (spec bias,
+                                    // whitecap crest gate, sky reflection lit faces)
+                float swellSigned;  // the -1..1 brightness modulation (crests lighter, troughs darker)
+                if (trainsLive)
+                {
+                    float waveTotalAmp = max(_WaveFieldParams.z, 1e-5);
+                    float waveHN = saturate(waveHeight / waveTotalAmp);          // the 0..1 crest signal
+                    swellCrest = pow(max(waveHN, 1e-6), max(_OceanSwellSharpness, 0.05));
+                    // signed by the field itself (zero-mean-ish): dead glass = 0 = NO brightness bands at
+                    // all — the mirror stays a mirror (glass is sacred, ADR 0018 §(1)).
+                    swellSigned = clamp(waveHeight / waveTotalAmp, -1.0, 1.0);
+                }
+                else
+                {
+                    // LEGACY noise swell — the cycle-off fallback, unchanged.
+                    swellCrest = SwellField(worldXY, depth, t);   // 0..1 (rolls IN near shore)
+                    swellSigned = (swellCrest - 0.5) * 2.0;       // -1..1
+                }
                 if (_OceanSwellStrength > 0.001)
                 {
-                    // signed around the midpoint: crests brighten, troughs darken, by the amplitude.
-                    float swellSigned = (swellCrest - 0.5) * 2.0;     // -1..1
                     col.rgb += swellSigned * _OceanSwellStrength * 0.25;
                 }
 
@@ -1813,40 +1999,80 @@ Shader "HiddenHarbours/Water"
                     // the MILKY soft coverage (the #101 metaball look): the merge/separate band, kept as the
                     // light/dissipating end. The SOLID core (below) lifts it to dense white on the breaking crest.
                     float capMilky = smoothstep(capThr - capSoft, capThr + capSoft, cap);
-                    float capMask = capMilky * saturate(dt);  // deeper water
                 #if defined(_USE_WHITECAPTEX)
                     // Painted whitecap pattern (white-on-transparent) drifted WITH the body (the foam drift
-                    // blend, not a fixed current scroll); coverage SCALES BY ROUGHNESS (the wind uniform) so
-                    // caps appear/intensify with wind, gated to deeper water by dt. Blends over the speckle.
-                    // Routed through UntileSampleW (like the other painted slots) so the small seamless tile's
-                    // REPEAT GRID stops reading — the painted-texture culprit behind any residual tiling the
-                    // owner still sees — dialed by _UntileStrength, kept pixel-snapped (PaintUV inside).
+                    // blend, not a fixed current scroll). Routed through UntileSampleW (like the other painted
+                    // slots) so the small seamless tile's REPEAT GRID stops reading — dialed by _UntileStrength,
+                    // kept pixel-snapped (PaintUV inside). Sampled ONCE here; each path below folds it in.
                     half4 capSample = UntileSampleW(TEXTURE2D_ARGS(_WhitecapTex, sampler_WhitecapTex),
                                           worldXY, _PaintScale, capDrift, _UntileStrength);
                     float capPat = max(capSample.a, dot(capSample.rgb, float3(0.299, 0.587, 0.114)));
-                    float capTexMask = capPat * saturate(_Roughness) * saturate(dt);
-                    capMask = lerp(capMask, capTexMask, _WhitecapTexStrength);
                 #endif
-                    // SWELL-CREST GATE: lift the caps toward the swell crests so the foam rides the rolling
-                    // swell instead of speckling evenly. _FoamCrestGate dials it (0 = even, 1 = crest-only).
+                    // SWELL-CREST GATE: lift the caps toward the swell crests so the foam rides the swell
+                    // instead of speckling evenly. _FoamCrestGate dials it (0 = even, 1 = crest-only). With
+                    // live trains, swellCrest IS the real advancing crest, so the tuned value now reads as
+                    // "how tightly the foam hugs the moving crest" — the same knob, a truer crest.
                     float crestGate = lerp(1.0, swellCrest, saturate(_FoamCrestGate));
-                    capMask *= crestGate;
-                    // ---- DUAL-ZONE DENSITY + WAVE LIFECYCLE (form -> peak -> collapse) ------------------------
-                    // The cap was capped at a flat 0.6 opacity (always milky). Now: a SOLID-WHITE CORE where the
-                    // cap field is WELL above threshold, lifted by sea-state DENSITY, and shaped by the wave
-                    // LIFECYCLE off the swell crest — BORN dense & solid on the breaking crest, AGING into milky
-                    // residual as the crest passes (the residual spreads downwind via the wind-streaked aniso
-                    // coord above). col.rgb-only dressing — drives no depth/clip/_WaterLevel (P1, rule 5).
-                    float capDens   = FoamDensity();
-                    float capCore   = SolidCore(cap, capThr, capDens);            // 0..1: the dense solid heart
-                    float life      = WhitecapLifecycle(swellCrest, capDens);     // form/peak/collapse density scale
-                    // peak opacity ceiling for a NEWBORN cap (replaces the old hard 0.6); the milky residual sits
-                    // below it. The solid core × the lifecycle drives the dense white; the milky coverage carries
-                    // the soft, aged remnant so off-crest the cap reads thin/milky, not a hard speckle.
-                    float capPeak   = saturate(_WhitecapPeakDensity);
-                    float capSolid  = capCore * life * capPeak;                   // dense white on the breaking crest
-                    float capMilkyOpacity = capMask * lerp(0.45, capPeak, capDens); // milky residual (scales gently with sea-state)
-                    float capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
+                    float capDens = FoamDensity();
+                    // peak opacity ceiling for a NEWBORN cap (replaces the old hard 0.6); the milky residual
+                    // sits below it.
+                    float capPeak = saturate(_WhitecapPeakDensity);
+
+                    float capOpacity;
+                    if (trainsLive)
+                    {
+                        // ==== ADR 0018 B1 — WHITECAPS RIDE REAL CRESTS (the "foggy white soup" fix) ===========
+                        // The LIFECYCLE places the foam on the advancing wave — FORMS on the front face as the
+                        // crest builds, BREAKS crisp and bright at the tip, FADES to milky residual behind —
+                        // and the evolving wind-streaked cap field TEXTURES it (patches along the crest line;
+                        // the aniso coord above streaks the residual downwind — _FoamStreakStretch, reused).
+                        // Because the crests ADVANCE (they ride the published trains), the foam visibly
+                        // TRAVELS with the wave. Nothing here is a field-wide veil: every term is keyed to the
+                        // crest's position and life, which is exactly what kills the static-soup read.
+                        // The cap field TEXTURE source; the painted slot replaces it at its blend strength.
+                        float capField = cap;
+                    #if defined(_USE_WHITECAPTEX)
+                        capField = lerp(capField, capPat, _WhitecapTexStrength);
+                    #endif
+                        float capMilkyT = smoothstep(capThr - capSoft, capThr + capSoft, capField);
+                        float capCoreT  = SolidCore(capField, capThr, capDens);  // the dense, crisp-edged heart
+                        float breakCore;
+                        float residualLife;
+                        WhitecapLifecycleWave(waveCrest, wavePrimCos, capDens, breakCore, residualLife);
+                        // sea-state coupling THROUGH THE TRAINS' AMPLITUDES: full caps by _WhitecapOnsetAmp of
+                        // total amplitude, first foam from ~10% of it. Glass = zero amplitude = zero foam,
+                        // automatically (and crestF is already exactly 0 on a dead-glass sea).
+                        float waveGate = smoothstep(_WhitecapOnsetAmp * 0.1, max(_WhitecapOnsetAmp, 1e-3),
+                                                    _WaveFieldParams.z);
+                        // BREAK: bright and crisp on the crest tip — the solid core's tight edge over the
+                        // pixelized field reads as pixel-art foam edges, not soft alpha fog.
+                        float solidPart = capCoreT * breakCore * capPeak;
+                        // RESIDUAL: milky, trailing BEHIND the crest, streaked downwind by the aniso coord.
+                        float milkyPart = capMilkyT * residualLife * lerp(0.45, capPeak, capDens);
+                        capOpacity = saturate(max(solidPart, milkyPart)) * crestGate * waveGate * saturate(dt);
+                    }
+                    else
+                    {
+                        // ==== LEGACY path (no trains published — edit mode / bare art scene / cycle off) ======
+                        // The pre-B1 noise-keyed dual-zone + lifecycle, unchanged (design doc §5.11): kept
+                        // intact through the ADR 0018 §(6) transition so the tuned look is always reachable.
+                        float capMask = capMilky * saturate(dt);  // deeper water
+                    #if defined(_USE_WHITECAPTEX)
+                        // coverage SCALES BY ROUGHNESS (the wind uniform) so caps appear/intensify with wind.
+                        float capTexMask = capPat * saturate(_Roughness) * saturate(dt);
+                        capMask = lerp(capMask, capTexMask, _WhitecapTexStrength);
+                    #endif
+                        capMask *= crestGate;
+                        // DUAL-ZONE DENSITY + WAVE LIFECYCLE (form -> peak -> collapse) off the noise swell:
+                        // a SOLID-WHITE CORE where the cap field is WELL above threshold, lifted by sea-state
+                        // DENSITY, shaped by WhitecapLifecycle — born dense on the crest, aging into milky
+                        // residual. col.rgb-only dressing — drives no depth/clip/_WaterLevel (P1, rule 5).
+                        float capCore   = SolidCore(cap, capThr, capDens);            // 0..1: the dense solid heart
+                        float life      = WhitecapLifecycle(swellCrest, capDens);     // form/peak/collapse density scale
+                        float capSolid  = capCore * life * capPeak;                   // dense white on the breaking crest
+                        float capMilkyOpacity = capMask * lerp(0.45, capPeak, capDens); // milky residual (scales gently with sea-state)
+                        capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
+                    }
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 
