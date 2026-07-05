@@ -142,21 +142,11 @@ namespace HiddenHarbours.App.Editor
         [MenuItem("Hidden Harbours/Build Greybox Scene")]
         public static void Build()
         {
-            // ADR 0011 guard: a from-zero build wipes the owner's painted/decor layer. If a committed cove
-            // already exists, make the owner confirm — Refresh Cove Logic is the safe path once it's painted.
-            bool sceneExists = File.Exists(ScenePath);
-            if (sceneExists && !EditorUtility.DisplayDialog(
-                    "Hidden Harbours — full rebuild will WIPE hand-authored visuals",
-                    "'Build Greybox Scene' rebuilds Coddle Cove FROM ZERO. It will DISCARD any terrain you've " +
-                    "painted and any decor you've dropped (the whole VISUAL layer).\n\nIf you only want to " +
-                    "update the gameplay logic and KEEP your painting, cancel and run " +
-                    "'Hidden Harbours ▸ Refresh Cove Logic' instead.\n\nRebuild from zero anyway?",
-                    "Rebuild from zero (lose painting)", "Cancel"))
-            {
-                Debug.Log("[GreyboxBuilder] Full rebuild cancelled — run 'Refresh Cove Logic' to update logic " +
-                          "without touching the painted visual layer (ADR 0011).");
+            // ADR 0019 §1 / ADR 0011 guard: a from-zero build wipes the owner's hand-authored layer. If a
+            // committed cove already exists, make the owner confirm — Refresh Cove Logic is the safe path once
+            // it's painted. Shared with every region builder via RegionBuildGuard so the wording is identical.
+            if (!RegionBuildGuard.ConfirmOverwrite("Coddle Cove", ScenePath))
                 return;
-            }
 
             var data = PrepareData();
 

@@ -140,6 +140,14 @@ namespace HiddenHarbours.App.Editor
         [MenuItem("Hidden Harbours/Build St Peters Scene")]
         public static void Build()
         {
+            // ADR 0019 §1 guard: this is a from-zero build (NewScene(EmptyScene) below) that WIPES anything the
+            // owner has hand-authored in StPeters.unity — the exact failure that ate a boat spotlight elsewhere.
+            // If the committed scene already exists on disk, make the owner confirm before we clear it; abort
+            // (touch nothing) on cancel. First-ever build (no file) proceeds silently. Shared wording with every
+            // region builder via RegionBuildGuard.
+            if (!RegionBuildGuard.ConfirmOverwrite("St Peters Island", ScenePath))
+                return;
+
             EnsureFolders();
 
             // --- DATA: the St Peters region + the regions it links to (by stable id) -------------------
