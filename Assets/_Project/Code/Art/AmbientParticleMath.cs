@@ -145,14 +145,26 @@ namespace HiddenHarbours.Art
         {
             float vis = Mathf.Clamp01(visibility);
             float sea = Mathf.Clamp01(seaState01);
+            // CAUTION: Unity's Mathf.SmoothStep(a, b, t) is a smooth LERP from a to b by t — it is NOT the
+            // HLSL smoothstep(edge0, edge1, x) EDGE GATE this maths needs (that was the leak: a lerp left a
+            // ~0.30 floor at glass and ~0.40 in clear air). Use the explicit SmoothGate helper below.
             // MURK GATE: 0 while the air is clear (vis >= visOnset), ramping to 1 as visibility FALLS to visFull.
-            // SmoothStep(from, to, value) returns 0 at value==from and 1 at value==to; passing (visOnset, visFull)
-            // with visOnset > visFull makes it rise as visibility falls — a soft-shouldered onset, not a leak.
-            float murk = Mathf.SmoothStep(Mathf.Clamp01(visOnset), Mathf.Clamp01(visFull), vis);
+            float murk = 1f - SmoothGate(Mathf.Clamp01(visFull), Mathf.Clamp01(visOnset), vis);
             // SEA-STATE ONSET: 0 on near-glass (sea <= seaOnset), ramping to 1 at a full gale.
-            float seaband = Mathf.SmoothStep(Mathf.Clamp01(seaOnset), 1f, sea);
+            float seaband = SmoothGate(Mathf.Clamp01(seaOnset), 1f, sea);
             float driven = Mathf.Max(0f, seaStateWeight) * seaband * murk;
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + driven);
+        }
+
+        /// <summary>HLSL-style smoothstep EDGE GATE (Unity's <c>Mathf.SmoothStep</c> is a lerp, NOT this):
+        /// 0 at/below <paramref name="edge0"/>, 1 at/above <paramref name="edge1"/>, a smooth 3t²−2t³ ramp
+        /// between. Requires edge0 &lt; edge1 (guards a zero/negative span). Pure + deterministic.</summary>
+        private static float SmoothGate(float edge0, float edge1, float x)
+        {
+            float span = edge1 - edge0;
+            if (span <= 1e-6f) return x >= edge1 ? 1f : 0f;
+            float t = Mathf.Clamp01((x - edge0) / span);
+            return t * t * (3f - 2f * t);
         }
 
         // ==== spray intensity (a whitecapping sea flings torn spray off the crests) =========================
