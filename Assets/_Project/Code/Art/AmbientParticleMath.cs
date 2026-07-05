@@ -106,6 +106,40 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + extra);
         }
 
+        // ==== rain intensity (a squall = chop kicked up AND the light gone murky) ==========================
+
+        /// <summary>
+        /// A 0..1 "rain intensity" the FALLING rain scales its spawn-rate + opacity by — and the SHARED source
+        /// of truth a later water-shader pass reads for surface rain-rings, so the drops and the rings always
+        /// agree. Rain is DERIVED, art-only: there is NO precipitation signal in the sim, so we read a squall
+        /// off the two mood axes the environment already publishes (both pure functions of
+        /// <c>(worldSeed, gameTime)</c> — no save, no determinism concern):
+        /// <list type="bullet">
+        /// <item><description>HIGHER sea-state (the wind is up, chop building) is the DRIVER: the continuous
+        /// <c>EnvironmentSample.SeaState01</c> axis weighted by <paramref name="seaStateWeight"/>.</description></item>
+        /// <item><description>LOW visibility (the light gone murky) is the GATE: a rough-but-clear sea is a
+        /// blustery bright day, NOT a downpour — so fog UNLOCKS the rain. The gate rises from
+        /// <c>(1 - visibilityGate)</c> in clear air to 1 in thick fog, i.e. clear skies throttle the rain to a
+        /// fraction and murk opens it fully. With <paramref name="visibilityGate"/> = 1 the sea must go murky
+        /// before it rains at all; = 0 removes the gate (rain purely on chop).</description></item>
+        /// </list>
+        /// So <c>intensity = baseline + seaStateWeight · seaState01 · gate(visibility)</c>. Monotonic
+        /// increasing in sea-state, increasing as visibility falls, ~<paramref name="baseline"/> on a glassy
+        /// clear day (default baseline 0 = the feature is OFF until the owner dials it in). Clamped 0..1. Pure +
+        /// static — the intensity the tests pin and the shader will share.
+        /// </summary>
+        public static float RainIntensity(float visibility, float seaState01,
+                                          float baseline, float seaStateWeight, float visibilityGate)
+        {
+            float sea = Mathf.Clamp01(seaState01);
+            float fog = Mathf.Clamp01(1f - Mathf.Clamp01(visibility));   // 0 clear .. 1 thick murk
+            float g = Mathf.Clamp01(visibilityGate);
+            // Gate: clear air lets through (1 - g); murk opens it to 1. g=0 → gate is always 1 (no gate).
+            float gate = Mathf.Clamp01((1f - g) + g * fog);
+            float driven = Mathf.Max(0f, seaStateWeight) * sea * gate;
+            return Mathf.Clamp01(Mathf.Clamp01(baseline) + driven);
+        }
+
         // ==== day/night response (read the global _DayNightTint, never write it) ===========================
 
         /// <summary>
