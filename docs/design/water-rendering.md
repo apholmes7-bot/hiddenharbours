@@ -1553,3 +1553,94 @@ guard-rail grade (§13, `col.rgb`-only) and the post-grade compensated light con
 foam + whitecaps occupy, so the guard-rail bounds it and it composes cleanly with everything downstream. No
 `WaterSurface.cs` change is needed (it reuses `_FlowDir` / `_Flow`). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not magenta-in-build).
+
+## 19. Surface rain rings (night-visible) + storm foam lanes (Arc C water visuals — final piece)
+
+The closing Arc C shader pass adds two opt-in `col.rgb`-only dressings that read the live sea mood: **surface
+rain rings** (dimple rings where rain strikes the water) and **storm foam lanes** (long downwind foam streaks
+that come up in a blow). Both default **OFF** (strength `0` = today's look byte-identical) and, like every
+water dressing, never touch depth / `clip()` / `_WaterLevel` / the height read / the sim (P1 integrity, rule 5).
+They sit in **opposite** day/night buckets on purpose — see below.
+
+### 19.1 The shared `_RainIntensity` derivation (derived ONCE in C#, never in HLSL)
+
+Rain has no signal in the sim, so its strength is **derived** from two mood axes exactly like the falling-rain
+particles (§`RainEmitter`, PR #156): `AmbientParticleMath.RainIntensity(visibility, seaState01, baseline,
+seaStateWeight, visibilityGate)` — rain builds as the **sea-state** rises and the **visibility** drops (a
+squall). `WaterSurface.PushUniforms` computes it **once** (reading the deterministic `EnvironmentSample`) and
+pushes it to the cached `_RainIntensity` uniform right next to the `_Chop` push. The shader **never re-derives**
+rain from `_Chop`: `_Chop == SeaState01` today but is a distinct retunable knob, so the C# passes `s.SeaState01`
+directly. `_RainIntensity` is a **physics-style derived push, NOT a per-mood colour**, so it is deliberately
+kept **out** of `MoodFloatNames` (putting it there would double-drive it via the weather-palette blend).
+
+The three shape floats are serialized on `WaterSurface` (`_rainBaselineIntensity` `0`, `_rainSeaStateWeight`
+`1.0`, `_rainVisibilityGate` `0.6`) with defaults **matching `RainConfig.Default`** so the surface **rings**
+and the falling **rain particles** agree out of the box. **If the owner retunes rain feel, match BOTH** this
+and `RainEmitter`'s `RainConfig` — a future refactor can unify them into one shared rain config (flagged, not
+built here).
+
+### 19.2 Surface rain rings — `RainRings()` (`col.rgb` only; **night-visible, post-grade compensated**)
+
+Expanding concentric **dimple rings** stippled over the water where rain strikes (P1). A pixelized value-noise
+grid (`_RainRingScale`) seeds ring **centres**: each cell that passes the `_RainRingDensity` lottery (a stable
+per-cell `Hash21`) hosts one raindrop strike, its centre jittered inside the cell and its phase offset per-cell
+so the rings do not pulse in lockstep. `RAINRING_TAPS` concentric rings expand from each centre — radius =
+`frac(strike phase)` so a ring is born at the centre, grows, and recycles; a thin bright edge (a narrow band
+around the growing radius) is the ring line, fading as it expands (a dying ripple). The whole term is gated by
+the derived `_RainIntensity` and masked to **open water** via the **read-only** depth key (`dt`) so rings never
+stipple the dry shore. The tap count is a **compile-time `#define`** driving a bare `[unroll]` (the `FBM_OCTAVES`
+idiom) — **never an `[unroll]` over a runtime count** (the #96 magenta trap).
+
+**OWNER RULING (2026-07-05): the rings must STAY VISIBLE THROUGH THE DARK — a night squall still shows rain on
+the water.** So `RainRings()` is added in the **post-grade, overlay-compensated** light block (§11.6), folded
+into the same `lightContent` bucket as the boat beam + moon/sun glitter: `float3 lightContent =
+BoatLightTerm(...) + skyNightRGB + RainRings(...)`. That bucket is divided by `max(_DayNightTint.rgb,
+DN_COMP_MIN_CHANNEL)` when the day/night cycle runs, so the downstream night **MULTIPLY** (ADR 0013) cancels
+and the rings read on **black water day AND night**; when the cycle is off (edit mode / bare art / demo) the
+same branch adds the content **raw**. This is the deliberate opposite of the storm foam lanes below.
+
+### 19.3 Storm foam lanes — `StormFoamLanes()` (`col.rgb` only; **dims with the night** like the foam)
+
+Long **downwind** foam streaks that come up in a building sea (P1) — the storm sibling of the drift lines (§18),
+but keyed to the **wind** (the `_WindDir` aniso basis reused from the whitecaps) not the current, and gated by
+`_Roughness` as a **monotone** rise (`blow = _Roughness²`): **gone on calm, strong in a gale** (not a bell).
+It reuses the living-whitecap `EvolvingField` + the `pow(saturate(1 - |g1-g2|·k))` ridged-lane streak idiom,
+the coord **stretched along the wind** by `_StormFoamLaneStretch` so a round cell reads as a long thin lane,
+streamed downwind over time (`t · _Flow`). Depth is read **only** via `dt` (fade at the wet shore edge). Its
+locals are named `laneAlong` / `laneAcross` to avoid shadowing the `cross` intrinsic / other helpers' locals.
+
+`StormFoamLanes()` returns an additive `col.rgb` term placed **pre-grade**, right after the whitecap block and
+before the drift-line call — the **same** foam dressing zone the whitecaps occupy — so the palette guard-rail
+(§13) bounds it **and** so it **dims with the night** overlay like the rest of the foam. That is the opposite of
+the rain rings, which sit post-grade in the compensated bucket to survive the dark.
+
+### 19.4 Tunables (rule 6; all default to today's exact look)
+
+| Property | Default | Meaning |
+|---|---|---|
+| `_RainIntensity` | `0.0` | **C#-driven** (derived), not hand-tuned; `0` = no rings. |
+| `_RainRingStrength` | `0.0` | Master rain-ring strength; `0` = off / today. |
+| `_RainRingScale` | `0.4` | Ring-centre cell scale (rings/unit). |
+| `_RainRingDensity` | `1.0` | Fraction of cells that host a strike. |
+| `_RainRingSpeed` | `1.5` | Ring expansion speed (rings/sec). |
+| `_RainRingColor` | pale cool white | Ring line colour. |
+| `_StormFoamLaneStrength` | `0.0` | Master storm-lane strength; `0` = off / today. |
+| `_StormFoamLaneStretch` | `6.0` | Along-wind stretch (thin lanes). |
+| `_StormFoamLaneScale` | `0.3` | Lane scale (lanes/unit). |
+
+Plus the three C#-side shape floats on `WaterSurface`: `_rainBaselineIntensity` `0`, `_rainSeaStateWeight`
+`1.0`, `_rainVisibilityGate` `0.6` (mirror `RainConfig.Default`).
+
+**How the owner steers it:** raise `_RainRingStrength` **and** `_StormFoamLaneStrength`, then sail into a
+building blow. Rain rings dimple the surface and now **read even at night** (per the owner ruling); the storm
+lanes streak **downwind** and **dim with the dark** like the foam they belong to. The surface rings and the
+falling-rain particles share the one derived `_RainIntensity`, so they thicken together.
+
+### 19.5 Composition + guard
+
+`StormFoamLanes` is `col.rgb`-only, added **pre-grade** with the whitecaps (bounded by the §13 guard-rail).
+`RainRings` is `col.rgb`-only, added **post-grade** inside the §11.6 overlay-compensated `lightContent` bucket
+(so it survives the night multiply). `WaterSurface.cs` gains the derived `_RainIntensity` push (reusing the
+shared `AmbientParticleMath.RainIntensity`); `Water.mat` stays **byte-identical OFF**. The shipped `Water.mat`
+variant is force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not
+magenta-in-build).
