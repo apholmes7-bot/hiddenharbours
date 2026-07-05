@@ -41,6 +41,21 @@ namespace HiddenHarbours.Boats
         [SerializeField] private BoatHullDef _hull;
         [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
         [SerializeField] private float _localSeabedDepth = 3f;
+
+        [Header("Seakeeping (ADR 0018 B3 — the sea pushes the boat)")]
+        [Tooltip("Optional shared GameConfig. When wired, its Seakeeping policy (master switch, bite strength, " +
+                 "exposure falloff, per-axis weights) drives the environmental force — no magic numbers (rule 6). " +
+                 "Left null (EditMode / unwired greybox) the serialized fallback below applies, which mirrors the " +
+                 "config default.")]
+        [SerializeField] private GameConfig _config;
+        [Tooltip("Fallback seakeeping policy when no GameConfig is wired (mirrors SeakeepingSettings.Default). " +
+                 "The FIELD shape is the same WaveFieldSettings the visual rock (BoatWaveMotion) and the shader " +
+                 "bridge use — keep them identical until GameConfig unifies them (ADR 0018 note).")]
+        [SerializeField] private SeakeepingSettings _seakeeping = SeakeepingSettings.Default;
+        [Tooltip("The shared deterministic wave field's shape (ADR 0018). SIM path — the pure WaveMath the boat " +
+                 "is pushed by, NOT the presentation animator (addendum). Keep identical to BoatWaveMotion's copy " +
+                 "so the hull is shoved by the same waves it visibly rocks on, until GameConfig unifies them.")]
+        [SerializeField] private WaveFieldSettings _waveField = WaveFieldSettings.Default;
         [Tooltip("Shallows SLOW the boat — they never cut the helm. When the hull is aground/touching " +
                  "bottom this design-unit drag opposes its motion through the water, so the boat feels " +
                  "heavy and sluggish (the desired 'teeth'), but throttle, oars and rudder stay FULLY " +
@@ -84,7 +99,17 @@ namespace HiddenHarbours.Boats
             // Don't tunnel the thin shore-edge / dock colliders when nudging up to the dock.
             _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             if (_hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+
+            // Seakeeping policy: prefer the shared GameConfig (no magic numbers, rule 6); the serialized
+            // field is the fallback (it mirrors the config default) so EditMode/unwired scenes still work.
+            if (_config != null) _seakeeping = _config.Seakeeping;
         }
+
+        /// <summary>
+        /// The active seakeeping policy this controller is running (config-preferred, else the serialized
+        /// fallback). Exposed for tests / dev rigs; resolved once at <see cref="Awake"/>.
+        /// </summary>
+        public SeakeepingSettings SeakeepingPolicy => _seakeeping;
 
         /// <summary>
         /// Set helm input. Throttle is -1..1: ahead (forward) or astern (reverse, for backing onto the
@@ -292,6 +317,14 @@ namespace HiddenHarbours.Boats
             // --- Wind shove (Pillar 1: the dory gets pushed around) ---
             _rb.AddForce(env.WindVector * (_hull.WindExposure * ForceFeelScale), ForceMode2D.Force);
 
+            // --- Seakeeping: THE SEA PUSHES THE BOAT (ADR 0018 B3, P1/P5). On top of everything above,
+            // never replacing it. Head sea slows headway + a pitching shove; a beam sea shoves sideways +
+            // yaws (demands the helm); a following sea surges + can slew. Scaled by SeaState01 (TIME) ×
+            // exposure (PLACE) × the per-hull response, so calm sheltered water is UNCHANGED by
+            // construction — and the whole thing is off when the policy switch is off. Gentle-to-medium
+            // for M1: it makes rough/exposed water a real challenge, it does NOT capsize/swamp (M2). ---
+            ApplySeakeeping(fwd, env);
+
             // --- Boat-cross gate (St Peters, P1/P5): can't pass water too shallow to float the hull. ---
             // The inverse of the on-foot walkability gate, over the SAME authored terrain + tide. Forgiving:
             // it eases the hull to a stop at the shallows — no grounding, no damage (that's a later wave).
@@ -353,6 +386,63 @@ namespace HiddenHarbours.Boats
             {
                 Vector2 throughWater = vel - env.CurrentVector;
                 _rb.AddForce(BraceDragForce(throughWater, _hull.OarBraceDrag) * ForceFeelScale, ForceMode2D.Force);
+            }
+        }
+
+        /// <summary>
+        /// The per-hull seakeeping response for a hull (how much the sea moves + slews it, and how it
+        /// self-damps) — the small value <see cref="SeakeepingForcesMath.Resolve"/> takes. Pulled from the
+        /// hull's seakeeping data (rule 2 — a dory corks about, a heavy hull shrugs). Null hull → inert.
+        /// </summary>
+        public static SeakeepingResponse ResponseFor(BoatHullDef hull)
+            => hull == null
+                ? SeakeepingResponse.Inert
+                : SeakeepingForcesMath.ResponseFrom(hull.SeakeepingMassFactor, hull.SeakeepingLiveliness, hull.SeakeepingDamping);
+
+        /// <summary>
+        /// Assemble and apply the sea's force + yaw on the hull this tick (ADR 0018 B3). Samples the shared
+        /// deterministic wave field under the hull via the PURE SIM PATH — <see cref="WaveMath.TrainsFrom"/>
+        /// + <see cref="WaveMath.Sample"/> at the clock's game-time, NOT the presentation animator (the ADR
+        /// addendum boundary: gameplay-consequential reads stay on the pure, gameTime-deterministic path).
+        /// Exposure (PLACE) comes from the water depth under the hull (the same boat-cross signal — seabed +
+        /// tide); open water reads fully exposed. The result rides on top of the existing forces at the
+        /// shared feel-scale, and a light hull-specific damping settles the wave-driven motion between
+        /// crests. A disabled policy / glass / full shelter / null hull all short-circuit to no force, so
+        /// today's handling is preserved exactly.
+        /// </summary>
+        private void ApplySeakeeping(Vector2 fwd, EnvironmentSample env)
+        {
+            if (!_seakeeping.Enabled) return;
+
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            Vector2 pos = _rb.position;
+
+            // The field this tick (SIM path — pure function of the deterministic wind + sea state).
+            WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in _waveField);
+            WaveSample wave = WaveMath.Sample(pos, now, in trains);
+
+            // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
+            // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.
+            float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment, now, pos);
+            float exposure = SeakeepingForcesMath.Exposure01(
+                depth, _seakeeping.ShelterDepthMeters, _seakeeping.FullExposureDepthMeters);
+
+            SeakeepingResponse response = ResponseFor(_hull);
+            SeakeepingForce sea = SeakeepingForcesMath.Resolve(
+                in wave, fwd, exposure, env.SeaState01, in response, in _seakeeping);
+            if (sea.Force == Vector2.zero && sea.Torque == 0f) return;
+
+            _rb.AddForce(sea.Force * ForceFeelScale, ForceMode2D.Force);
+            _rb.AddTorque(sea.Torque * ForceFeelScale);
+
+            // Light hull-specific damping: a steadier hull settles faster between crests, so it wanders off
+            // course less in a beam sea. Only while the sea is actually working the boat (scaled by the same
+            // exposure), so calm/sheltered water is untouched. Opposes linear + angular motion.
+            if (response.Damping > 0f)
+            {
+                float damp = response.Damping * exposure * ForceFeelScale;
+                _rb.AddForce(-_rb.linearVelocity * damp, ForceMode2D.Force);
+                _rb.AddTorque(-_rb.angularVelocity * damp);
             }
         }
     }

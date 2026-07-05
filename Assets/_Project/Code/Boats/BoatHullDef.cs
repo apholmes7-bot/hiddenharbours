@@ -73,6 +73,20 @@ namespace HiddenHarbours.Boats
         [Tooltip("Worst sea state this boat can work safely. Above it, danger rises (P5).")]
         public SeaState MaxSafeSeaState = SeaState.Lively;
 
+        [Header("Seakeeping (ADR 0018 B3 — how the sea moves THIS hull)")]
+        [Tooltip("Seakeeping mass factor (≥ 0): how much inertia the hull opposes to the sea. Higher = the " +
+                 "waves move it LESS (a laden trader shrugs). Combined with liveliness below (response = " +
+                 "liveliness / mass factor). Defaults suit a light dory that corks about; leave existing " +
+                 "hull assets on the default and they load unchanged.")]
+        public float SeakeepingMassFactor = 1f;
+        [Tooltip("How readily the hull corks about in a sea (≥ 0). A dory is high (lively, knocked around); a " +
+                 "big/heavy hull is low. Higher = the sea shoves and slews it more. Feel-tunable per hull.")]
+        public float SeakeepingLiveliness = 1f;
+        [Tooltip("Self-damping the hull applies to its wave-driven motion (≥ 0) — a steadier hull settles " +
+                 "faster between crests, so it wanders off course less in a beam sea. A light drag against " +
+                 "the boat's motion while the sea is working it; 0 = undamped.")]
+        public float SeakeepingDamping = 0f;
+
         [Header("Camera")]
         [Tooltip("World height in metres the camera frames for this hull — bigger boat = more water.")]
         public float CameraWorldHeightMeters = 14f;
