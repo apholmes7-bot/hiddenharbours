@@ -36,6 +36,25 @@ namespace HiddenHarbours.Core
         [Tooltip("Base fog tendency for the world (0..1). Regions add their own bias later.")]
         [Range(0f, 1f)] public float BaseFogBias = 0.15f;
 
+        [Header("On-foot / Wading")]
+        [Tooltip("Deepest water still WALKABLE on foot (m). At/under this the player wades — walkable but " +
+                 "slowed, more as it deepens. 0 would collapse the wade band and make any water a wall. " +
+                 "Global for M1 (per-region override is a later item). Owner-tunable feel.")]
+        [Min(0f)] public float WadeDepth = 0.5f;
+        [Tooltip("Deepest water the player can still move through ON FOOT (m) — the escape-valve limit. " +
+                 "Between WadeDepth and this the player SLOW-SWIMS: very slow + vulnerable, used to get OUT " +
+                 "toward shallower ground so a rising tide never traps them, never to cross. Deeper than " +
+                 "this is BOAT-ONLY — a soft wall stops the player stepping in. Must be > WadeDepth.")]
+        [Min(0f)] public float SwimLimit = 2.0f;
+        [Tooltip("Move-speed multiplier at the DEEP edge of the wade band (0..1): full speed on dry ground " +
+                 "ramps down to this by WadeDepth. Lower = wading feels heavier. Cozy-but-teeth: a drag, " +
+                 "not a wall.")]
+        [Range(0f, 1f)] public float WadeSlowFactor = 0.6f;
+        [Tooltip("Move-speed multiplier in the SLOW-SWIM band (0..1): the crawl the player swims OUT at. " +
+                 "Deliberately low so swimming is an escape, never a travel shortcut. Never lethal — just " +
+                 "slow + exposed.")]
+        [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;

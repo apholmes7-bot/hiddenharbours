@@ -114,5 +114,33 @@ namespace HiddenHarbours.Tests.EditMode
             var v = PlayerWalkController.ApplyWadingEdge(new Vector2(1f, 2f), Vector2.zero, null, 1f);
             Assert.AreEqual(new Vector2(1f, 2f), v, "a null walkability probe disables the gate");
         }
+
+        // ---- Depth / band reads (the wade model's inputs) -------------------------------------
+
+        [Test]
+        public void DepthAt_IsWaterLevelMinusGround_NegativeInfinityWhenGateOff()
+        {
+            var terrain = new SlopeTerrain { Slope = 1f };
+            var env = new FlatEnv { Level = 5f };
+
+            Assert.AreEqual(1f,  TidalWalkability.DepthAt(terrain, env, 0.0, new Vector2(4f, 0f)), 1e-5f, "ground 4 m under a 5 m surface → 1 m deep");
+            Assert.AreEqual(-1f, TidalWalkability.DepthAt(terrain, env, 0.0, new Vector2(6f, 0f)), 1e-5f, "ground 6 m above a 5 m surface → 1 m dry");
+            Assert.AreEqual(float.NegativeInfinity, TidalWalkability.DepthAt(null, env, 0.0, Vector2.zero), "no terrain → gate off → 'as dry as can be'");
+            Assert.AreEqual(float.NegativeInfinity, TidalWalkability.DepthAt(terrain, null, 0.0, Vector2.zero), "no env → gate off");
+        }
+
+        [Test]
+        public void BandAt_ClassifiesTheThreeBandsOverTheSlope()
+        {
+            var terrain = new SlopeTerrain { Slope = 1f };
+            var env = new FlatEnv { Level = 5f };
+            const float wade = 0.5f, swim = 2.0f;
+
+            // x maps to ground = x; depth = 5 - x.
+            Assert.AreEqual(DepthBand.Dry,  TidalWalkability.BandAt(terrain, env, 0.0, new Vector2(5.5f, 0f), wade, swim), "ground above surface → dry");
+            Assert.AreEqual(DepthBand.Wade, TidalWalkability.BandAt(terrain, env, 0.0, new Vector2(4.7f, 0f), wade, swim), "0.3 m deep → wade");
+            Assert.AreEqual(DepthBand.Swim, TidalWalkability.BandAt(terrain, env, 0.0, new Vector2(4.0f, 0f), wade, swim), "1.0 m deep → swim");
+            Assert.AreEqual(DepthBand.Deep, TidalWalkability.BandAt(terrain, env, 0.0, new Vector2(2.0f, 0f), wade, swim), "3.0 m deep → boat-only deep");
+        }
     }
 }
