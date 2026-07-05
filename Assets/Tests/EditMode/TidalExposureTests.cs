@@ -75,6 +75,76 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(TidalExposure.IsExposed(null, totalSeconds: 0.0, terrainElevation: 999f));
         }
 
+        // ---- The wade model: IsWalkable is a strict SUPERSET of IsExposed at wadeDepth=0 -------
+
+        [Test]
+        public void IsWalkable_AtZeroWadeDepth_ExactlyMatchesIsExposed()
+        {
+            // The superset invariant that keeps every existing walkability behaviour intact.
+            foreach (var wl in new[] { -1f, 0f, 1.5f, 3f, 4f })
+            foreach (var te in new[] { -1f, 0f, 1.49f, 1.5f, 1.51f, 4f })
+                Assert.AreEqual(
+                    TidalExposure.IsExposed(wl, te),
+                    TidalExposure.IsWalkable(wl, te, wadeDepth: 0f),
+                    $"IsWalkable(wade=0) must equal IsExposed at wl={wl}, te={te}");
+        }
+
+        [Test]
+        public void IsWalkable_WithWadeDepth_AdmitsShallowWater_ButNotDeeper()
+        {
+            // Water surface 5.0 m. wadeDepth 0.5 m → walkable down to ground 4.5 m (0.5 m of water).
+            const float wl = 5.0f;
+            Assert.IsTrue(TidalExposure.IsWalkable(wl, terrainElevation: 5.0f, wadeDepth: 0.5f), "dry ground walkable");
+            Assert.IsTrue(TidalExposure.IsWalkable(wl, terrainElevation: 4.6f, wadeDepth: 0.5f), "0.4 m of water: wadeable");
+            Assert.IsTrue(TidalExposure.IsWalkable(wl, terrainElevation: 4.5f, wadeDepth: 0.5f), "exactly wadeDepth: still wadeable (inclusive)");
+            Assert.IsFalse(TidalExposure.IsWalkable(wl, terrainElevation: 4.4f, wadeDepth: 0.5f), "0.6 m of water: too deep to walk");
+        }
+
+        // ---- Depth bands: dry/wade/swim/deep at 0, WadeDepth, SwimLimit ------------------------
+
+        [Test]
+        public void BandForDepth_TilesTheThreeBands_AtTheBoundaries()
+        {
+            const float wade = 0.5f, swim = 2.0f;
+            Assert.AreEqual(DepthBand.Dry,  TidalExposure.BandForDepth(-0.1f, wade, swim), "negative depth is dry");
+            Assert.AreEqual(DepthBand.Dry,  TidalExposure.BandForDepth(0f,    wade, swim), "exactly 0 is dry (≤ 0)");
+            Assert.AreEqual(DepthBand.Wade, TidalExposure.BandForDepth(0.01f, wade, swim), "just wet → wade");
+            Assert.AreEqual(DepthBand.Wade, TidalExposure.BandForDepth(0.5f,  wade, swim), "exactly WadeDepth → wade (inclusive)");
+            Assert.AreEqual(DepthBand.Swim, TidalExposure.BandForDepth(0.51f, wade, swim), "just past WadeDepth → swim");
+            Assert.AreEqual(DepthBand.Swim, TidalExposure.BandForDepth(2.0f,  wade, swim), "exactly SwimLimit → swim (inclusive)");
+            Assert.AreEqual(DepthBand.Deep, TidalExposure.BandForDepth(2.01f, wade, swim), "past SwimLimit → boat-only deep");
+        }
+
+        // ---- The speed-by-depth curve: full at 0, WadeSlowFactor at WadeDepth, SwimSlowFactor --
+
+        [Test]
+        public void MoveScaleForDepth_FollowsTheOwnerCurve()
+        {
+            const float wade = 0.5f, swim = 2.0f, wadeF = 0.6f, swimF = 0.25f;
+
+            Assert.AreEqual(1f,    TidalExposure.MoveScaleForDepth(0f,   wade, swim, wadeF, swimF), 1e-5f, "dry → full speed");
+            Assert.AreEqual(1f,    TidalExposure.MoveScaleForDepth(-1f,  wade, swim, wadeF, swimF), 1e-5f, "above water → full speed");
+            Assert.AreEqual(0.8f,  TidalExposure.MoveScaleForDepth(0.25f,wade, swim, wadeF, swimF), 1e-5f, "mid-wade → halfway 1→0.6");
+            Assert.AreEqual(wadeF, TidalExposure.MoveScaleForDepth(0.5f, wade, swim, wadeF, swimF), 1e-5f, "at WadeDepth → WadeSlowFactor");
+            // Mid-swim (depth 1.25 = halfway 0.5→2.0) → halfway 0.6→0.25 = 0.425.
+            Assert.AreEqual(0.425f,TidalExposure.MoveScaleForDepth(1.25f,wade, swim, wadeF, swimF), 1e-5f, "mid-swim → halfway wadeF→swimF");
+            Assert.AreEqual(swimF, TidalExposure.MoveScaleForDepth(2.0f, wade, swim, wadeF, swimF), 1e-5f, "at SwimLimit → SwimSlowFactor");
+            Assert.AreEqual(swimF, TidalExposure.MoveScaleForDepth(5.0f, wade, swim, wadeF, swimF), 1e-5f, "deep → holds at SwimSlowFactor (escape crawl)");
+        }
+
+        [Test]
+        public void MoveScaleForDepth_IsMonotonicNonIncreasing_WithDepth()
+        {
+            const float wade = 0.5f, swim = 2.0f, wadeF = 0.6f, swimF = 0.25f;
+            float prev = 2f;
+            for (float d = -0.5f; d <= 3f; d += 0.05f)
+            {
+                float s = TidalExposure.MoveScaleForDepth(d, wade, swim, wadeF, swimF);
+                Assert.LessOrEqual(s, prev + 1e-5f, $"speed must never increase with depth (d={d})");
+                prev = s;
+            }
+        }
+
         // ---- Determinism: identical inputs → identical answer (rule 5) -------------------------
 
         [Test]
@@ -88,6 +158,21 @@ namespace HiddenHarbours.Tests.EditMode
                     TidalExposure.IsExposed(env, 12345.0, 1.8f),
                     "same (water level, time, elevation) must give the same exposure every call");
                 Assert.AreEqual(0.1f, TidalExposure.WaterDepth(1.8f, 1.7f), 1e-5f, "and the depth is stable");
+            }
+        }
+
+        [Test]
+        public void Band_And_MoveScale_AreDeterministic_ForIdenticalInputs()
+        {
+            const float wade = 0.5f, swim = 2.0f, wadeF = 0.6f, swimF = 0.25f;
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.AreEqual(TidalExposure.BandForDepth(0.9f, wade, swim),
+                                TidalExposure.BandForDepth(0.9f, wade, swim),
+                                "same depth+thresholds → same band every call");
+                Assert.AreEqual(TidalExposure.MoveScaleForDepth(0.9f, wade, swim, wadeF, swimF),
+                                TidalExposure.MoveScaleForDepth(0.9f, wade, swim, wadeF, swimF), 0f,
+                                "same depth+tunables → same speed scale every call");
             }
         }
 

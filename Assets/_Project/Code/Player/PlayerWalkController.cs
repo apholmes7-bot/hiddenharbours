@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Player
 {
@@ -42,6 +43,23 @@ namespace HiddenHarbours.Player
                  "— the gate self-disables when no height map is present.")]
         [SerializeField] private bool _tideGatedWalk = false;
 
+        [Tooltip("Optional shared GameConfig — the owner's wade tunables (WadeDepth / SwimLimit / " +
+                 "WadeSlowFactor / SwimSlowFactor). When wired, its values override the serialized " +
+                 "fallbacks below at Awake so there are no magic numbers in the build (rule 6). Left null " +
+                 "in EditMode / non-tidal scenes the fallbacks apply (which mirror the config defaults).")]
+        [SerializeField] private GameConfig _config;
+
+        [Header("Wade model (owner-tunable; mirror GameConfig)")]
+        [Tooltip("Deepest water still walkable on foot (m). Fallback for _config.WadeDepth.")]
+        [SerializeField, Min(0f)] private float _wadeDepth = 0.5f;
+        [Tooltip("Deepest water the player can move through on foot (m) — the escape-valve limit; deeper " +
+                 "is boat-only (soft wall). Fallback for _config.SwimLimit.")]
+        [SerializeField, Min(0f)] private float _swimLimit = 2.0f;
+        [Tooltip("Move-speed multiplier at the deep edge of the wade band (0..1). Fallback for _config.WadeSlowFactor.")]
+        [SerializeField, Range(0f, 1f)] private float _wadeSlowFactor = 0.6f;
+        [Tooltip("Move-speed multiplier in the slow-swim band (0..1). Fallback for _config.SwimSlowFactor.")]
+        [SerializeField, Range(0f, 1f)] private float _swimSlowFactor = 0.25f;
+
         [Tooltip("Seconds per animation frame (~230 ms — a gentle, readable walk).")]
         [SerializeField] private float _frameSeconds = 0.23f;
 
@@ -60,7 +78,16 @@ namespace HiddenHarbours.Player
         private float _animTimer;
         private int _animStep;
 
+        // On-foot water state — the last band we published, so the signal fires only on a genuine change.
+        private OnFootWaterState _waterState = OnFootWaterState.Dry;
+        private bool _waterStateInit;
+
         public Facing CurrentFacing => _facing;
+
+        /// <summary>The player's current on-foot water state (Dry/Wade/Swim) — public so the HUD/VFX can
+        /// read it directly as well as via the <see cref="OnFootWaterStateChanged"/> signal. Deep never
+        /// occurs on foot (it is soft-walled off).</summary>
+        public OnFootWaterState WaterState => _waterState;
 
         // ---- pure logic (unit-testable) -----------------------------------------------------
 
@@ -146,6 +173,72 @@ namespace HiddenHarbours.Player
             return v;
         }
 
+        /// <summary>
+        /// Resolve a move against the owner's three-band wade model (P1/P5), depth-aware. Unlike the binary
+        /// <see cref="ApplyWadingEdge"/>, this reads the water <b>depth</b> along each axis so it can (a)
+        /// soft-wall only the boat-only band (depth &gt; <paramref name="swimLimit"/>) while <em>allowing</em>
+        /// wade + swim (depth ≤ swimLimit), and (b) scale the whole velocity by the depth at the fisher's
+        /// feet via <see cref="TidalExposure.MoveScaleForDepth"/> (full on dry, heavier as it deepens).
+        ///
+        /// <para><b>Never trapped (P5).</b> If the fisher's ORIGIN is already deeper than the wade band
+        /// (swim or deep — caught by a rising tide, or just disembarked), the boat-only wall is lifted for
+        /// this tick so they can always move OUT toward shallower ground (they just move at the slow-swim
+        /// crawl). The wall only ever blocks STEPPING FROM shallow-enough water INTO boat-only depth.</para>
+        ///
+        /// <para>Pure + static, fully EditMode-testable with a fake depth probe (depth in metres at a world
+        /// position; ≤ 0 is dry). The controller supplies a probe backed by <see cref="TidalWalkability.DepthNow"/>.</para>
+        /// </summary>
+        /// <param name="desiredVelocity">The velocity the input wants this tick (m/s).</param>
+        /// <param name="origin">The fisher's current world position.</param>
+        /// <param name="depthAt">Probe: water depth (m) at a world position (≤ 0 = dry).</param>
+        /// <param name="probeDistance">Look-ahead along each axis (m) for the soft wall.</param>
+        /// <param name="wadeDepth">Deepest walkable-wade water (m).</param>
+        /// <param name="swimLimit">Deepest on-foot water (m) — beyond is boat-only.</param>
+        /// <param name="wadeSlowFactor">Speed multiplier at the deep edge of the wade band (0..1).</param>
+        /// <param name="swimSlowFactor">Speed multiplier in the slow-swim band (0..1).</param>
+        public static Vector2 ApplyWaterEdge(Vector2 desiredVelocity, Vector2 origin,
+                                             System.Func<Vector2, float> depthAt, float probeDistance,
+                                             float wadeDepth, float swimLimit,
+                                             float wadeSlowFactor, float swimSlowFactor)
+        {
+            if (depthAt == null) return desiredVelocity;
+
+            float originDepth = depthAt(origin);
+            // Scale the whole move by how deep the fisher is standing (feel curve; full on dry ground).
+            float scale = TidalExposure.MoveScaleForDepth(originDepth, wadeDepth, swimLimit, wadeSlowFactor, swimSlowFactor);
+            Vector2 v = desiredVelocity * scale;
+
+            // If the fisher is ALREADY beyond the wade band (swim/deep), never trap them: lift the wall so
+            // any direction is allowed — they swim OUT (at the slow-swim crawl already applied above).
+            bool alreadyBeyondWade = originDepth > wadeDepth;
+            if (alreadyBeyondWade) return v;
+
+            float look = Mathf.Max(0f, probeDistance);
+
+            // Soft-wall the boat-only band (depth > swimLimit) per axis, so you can still slide along shore.
+            if (v.x != 0f)
+            {
+                Vector2 probe = origin + new Vector2(Mathf.Sign(v.x) * look, 0f);
+                if (depthAt(probe) > swimLimit) v.x = 0f;
+            }
+            if (v.y != 0f)
+            {
+                Vector2 probe = origin + new Vector2(0f, Mathf.Sign(v.y) * look);
+                if (depthAt(probe) > swimLimit) v.y = 0f;
+            }
+            return v;
+        }
+
+        /// <summary>The on-foot <see cref="OnFootWaterState"/> for a <see cref="DepthBand"/> — Deep folds to
+        /// Swim because the player is soft-walled out of the deep band, so on foot they are only ever
+        /// Dry/Wade/Swim.</summary>
+        public static OnFootWaterState StateForBand(DepthBand band) => band switch
+        {
+            DepthBand.Dry => OnFootWaterState.Dry,
+            DepthBand.Wade => OnFootWaterState.Wade,
+            _ => OnFootWaterState.Swim, // Swim and (soft-walled) Deep both read as "in the water, swim out".
+        };
+
         // ---- lifecycle ----------------------------------------------------------------------
 
         private void Awake()
@@ -155,6 +248,17 @@ namespace HiddenHarbours.Player
             _rb.gravityScale = 0f;
             _rb.freezeRotation = true;
             _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // don't tunnel the shore edge
+
+            // Owner's wade tunables: prefer the shared GameConfig (no magic numbers, rule 6); the serialized
+            // fields are the fallback (they mirror the config defaults) so EditMode/non-tidal scenes work unwired.
+            if (_config != null)
+            {
+                _wadeDepth = _config.WadeDepth;
+                _swimLimit = _config.SwimLimit;
+                _wadeSlowFactor = _config.WadeSlowFactor;
+                _swimSlowFactor = _config.SwimSlowFactor;
+            }
+
             ApplyFrame(_facing, 0);
         }
 
@@ -193,13 +297,40 @@ namespace HiddenHarbours.Player
             if (_rb == null) return;
             Vector2 desired = VelocityFor(_moveInput, _moveSpeed);
 
-            // Falling-tide walkability (St Peters, P1): cut any component that would step off exposed
-            // ground into the water — a gentle wading-edge stop, not a wall or a teleport. Pure helper +
-            // a Core-seam probe (TidalWalkability), so it self-disables where no terrain/tide is wired.
+            // The owner's three-band wade model (St Peters, P1/P5): full speed on dry ground, slowed as you
+            // wade, a crawl in the slow-swim escape band, and a soft wall at boat-only depth — but NEVER a
+            // trap (already-deep → free to swim out). Depth-aware, per-axis so you slide along the shore.
+            // Pure helper + a Core-seam depth probe (TidalWalkability.DepthNow), self-disabling where no
+            // terrain/tide is wired (DepthNow returns -inf → dry → full speed, no wall).
             if (_tideGatedWalk)
-                desired = ApplyWadingEdge(desired, _rb.position, TidalWalkability.IsWalkableNow, _wadeProbeDistance);
+            {
+                desired = ApplyWaterEdge(desired, _rb.position, TidalWalkability.DepthNow, _wadeProbeDistance,
+                                         _wadeDepth, _swimLimit, _wadeSlowFactor, _swimSlowFactor);
+                UpdateWaterState(TidalWalkability.DepthNow(_rb.position));
+            }
 
             _rb.linearVelocity = desired;
+        }
+
+        /// <summary>
+        /// Track the on-foot water band at the fisher's feet and publish <see cref="OnFootWaterStateChanged"/>
+        /// on a genuine transition (never per frame) — the single edge the HUD hooks for the canon "flood
+        /// making — head in" warning and audio/VFX for a wade splash. Deep folds to Swim (soft-walled).
+        /// </summary>
+        private void UpdateWaterState(float depth)
+        {
+            var band = TidalExposure.BandForDepth(depth, _wadeDepth, _swimLimit);
+            var next = StateForBand(band);
+            if (_waterStateInit && next == _waterState) return;
+
+            var prev = _waterState;
+            _waterState = next;
+            bool firstEdge = !_waterStateInit;
+            _waterStateInit = true;
+            if (firstEdge && next == OnFootWaterState.Dry) return; // don't announce "already dry" at spawn
+
+            bool deepening = (int)next > (int)prev;
+            EventBus.Publish(new OnFootWaterStateChanged(next, prev, deepening, Mathf.Max(0f, depth)));
         }
 
         private static Vector2 ReadInput()
