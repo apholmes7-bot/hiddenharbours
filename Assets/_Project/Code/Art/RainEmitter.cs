@@ -158,7 +158,8 @@ namespace HiddenHarbours.Art
             }
 
             float intensity = AmbientParticleMath.RainIntensity(
-                visibility, seaState01, _config.BaselineIntensity, _config.SeaStateWeight, _config.FogWeight);
+                visibility, seaState01, _config.BaselineIntensity, _config.SeaStateWeight,
+                _config.VisOnset, _config.VisFull, _config.SeaOnset);
 
             // --- spawn (rate ∝ intensity, integrated with a carry; recycle round-robin) ---
             float targetRate = _config.MaxDrops / Mathf.Max(0.1f, _config.Lifetime) * Mathf.Clamp01(intensity);

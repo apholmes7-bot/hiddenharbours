@@ -231,18 +231,24 @@ namespace HiddenHarbours.Art
         [Header("Surface rain rings (derived _RainIntensity push; Arc C)")]
         // The SHADER draws the surface rain rings; the INTENSITY is DERIVED here (not in HLSL) and pushed as
         // _RainIntensity, mirroring how RainEmitter derives its falling rain via AmbientParticleMath.RainIntensity
-        // (visibility + sea-state). These three shape floats DEFAULT to RainConfig.Default (baseline 0,
-        // seaStateWeight 1.0, visibilityGate 0.6) so the surface RINGS and the falling-RAIN particles agree out
-        // of the box. NOTE: if the owner retunes rain FEEL, match BOTH this and the RainEmitter's RainConfig
-        // (a future refactor can unify them into one shared config - flagged, not built here). Derived-physics
-        // push, NOT a per-mood colour, so it is NOT in MoodFloatNames (that would double-drive it). Visual only;
-        // reads the deterministic EnvironmentSample, feeds no sim, saves nothing (rule 5).
+        // (visibility + sea-state). Rain is an OCCASIONAL SQUALL: it needs BOTH genuine low visibility (real
+        // murk) AND real chop, so a clear or lightly-choppy night rings NOTHING. These shape floats DEFAULT to
+        // RainConfig.Default (baseline 0, seaStateWeight 1.0, visOnset 0.65, visFull 0.40, seaOnset 0.30) so the
+        // surface RINGS and the falling-RAIN particles agree out of the box. CRITICAL: if the owner retunes rain
+        // FEEL, match BOTH this and the RainEmitter's RainConfig — they MUST stay in lockstep so rings + drops
+        // share the one derivation (a future refactor can unify them into one shared config - flagged, not built
+        // here). Derived-physics push, NOT a per-mood colour, so it is NOT in MoodFloatNames (that would
+        // double-drive it). Visual only; reads the deterministic EnvironmentSample, feeds no sim, saves nothing (rule 5).
         [Tooltip("Rain on a clear, glassy day (0..1). DEFAULT 0 = the rings are OFF until the sea builds AND murks up (matches RainConfig.Default).")]
         [Range(0f, 1f)] [SerializeField] private float _rainBaselineIntensity = 0f;
-        [Tooltip("How much HIGHER sea-state (the wind is up, chop building) drives the rings - the main knob (matches RainConfig SeaStateWeight).")]
+        [Tooltip("How much HIGHER sea-state (above the onset) drives the rings - the main knob (matches RainConfig SeaStateWeight).")]
         [Range(0f, 2f)] [SerializeField] private float _rainSeaStateWeight = 1.0f;
-        [Tooltip("The VISIBILITY gate (0..1): how murky it must get before it rings. 1 = must fog up first; 0 = purely on chop (matches RainConfig FogWeight).")]
-        [Range(0f, 1f)] [SerializeField] private float _rainVisibilityGate = 0.6f;
+        [Tooltip("Visibility (0..1) AT/ABOVE which there is NO rain - clear/lightly-hazy air stays dry (matches RainConfig VisOnset).")]
+        [Range(0f, 1f)] [SerializeField] private float _rainVisOnset = 0.65f;
+        [Tooltip("Visibility (0..1) AT/BELOW which the murk gate is fully OPEN. Must be < VisOnset (matches RainConfig VisFull).")]
+        [Range(0f, 1f)] [SerializeField] private float _rainVisFull = 0.40f;
+        [Tooltip("Sea-state (0..1) AT/BELOW which the sea is too near-glassy to rain even in murk (matches RainConfig SeaOnset).")]
+        [Range(0f, 1f)] [SerializeField] private float _rainSeaOnset = 0.30f;
 
         // --- shader property ids (cached; no per-frame string lookups) ---
         private static readonly int IdWaterLevel = Shader.PropertyToID("_WaterLevel");
@@ -481,7 +487,8 @@ namespace HiddenHarbours.Art
             // colour (so it stays out of MoodFloatNames - no double-drive). _Chop == SeaState01 today but is a
             // distinct retunable knob, so we pass s.SeaState01 directly, not the pushed _Chop. Visual only.
             float rainIntensity = AmbientParticleMath.RainIntensity(
-                s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight, _rainVisibilityGate);
+                s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight,
+                _rainVisOnset, _rainVisFull, _rainSeaOnset);
             _mpb.SetFloat(IdRainIntensity, rainIntensity);
 
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets

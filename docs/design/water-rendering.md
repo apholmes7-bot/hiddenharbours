@@ -1582,18 +1582,23 @@ They sit in **opposite** day/night buckets on purpose — see below.
 
 Rain has no signal in the sim, so its strength is **derived** from two mood axes exactly like the falling-rain
 particles (§`RainEmitter`, PR #156): `AmbientParticleMath.RainIntensity(visibility, seaState01, baseline,
-seaStateWeight, visibilityGate)` — rain builds as the **sea-state** rises and the **visibility** drops (a
-squall). `WaterSurface.PushUniforms` computes it **once** (reading the deterministic `EnvironmentSample`) and
-pushes it to the cached `_RainIntensity` uniform right next to the `_Chop` push. The shader **never re-derives**
-rain from `_Chop`: `_Chop == SeaState01` today but is a distinct retunable knob, so the C# passes `s.SeaState01`
-directly. `_RainIntensity` is a **physics-style derived push, NOT a per-mood colour**, so it is deliberately
-kept **out** of `MoodFloatNames` (putting it there would double-drive it via the weather-palette blend).
+seaStateWeight, visOnset, visFull, seaOnset)` — rain is an **occasional squall** that needs BOTH real murk AND
+real chop, via **two onsets, not a leaky linear gate**: a **murk gate** (`smoothstep(visOnset, visFull,
+visibility)`, `0` while the air is clear at/above `visOnset`, ramping to `1` as visibility falls to `visFull`)
+times a **sea-state onset** (`smoothstep(seaOnset, 1, seaState01)`, `0` on near-glass). So a clear or
+lightly-choppy night stays **dry** — the fix for the owner playtest where the old `(1-g)+g·fog` gate leaked
+~40% of the sea-state drive through even in perfectly clear air (constant rain on any Moderate sea).
+`WaterSurface.PushUniforms` computes it **once** (reading the deterministic `EnvironmentSample`) and pushes it
+to the cached `_RainIntensity` uniform right next to the `_Chop` push. The shader **never re-derives** rain from
+`_Chop`: `_Chop == SeaState01` today but is a distinct retunable knob, so the C# passes `s.SeaState01` directly.
+`_RainIntensity` is a **physics-style derived push, NOT a per-mood colour**, so it is deliberately kept **out**
+of `MoodFloatNames` (putting it there would double-drive it via the weather-palette blend).
 
-The three shape floats are serialized on `WaterSurface` (`_rainBaselineIntensity` `0`, `_rainSeaStateWeight`
-`1.0`, `_rainVisibilityGate` `0.6`) with defaults **matching `RainConfig.Default`** so the surface **rings**
-and the falling **rain particles** agree out of the box. **If the owner retunes rain feel, match BOTH** this
-and `RainEmitter`'s `RainConfig` — a future refactor can unify them into one shared rain config (flagged, not
-built here).
+The shape floats are serialized on `WaterSurface` (`_rainBaselineIntensity` `0`, `_rainSeaStateWeight` `1.0`,
+`_rainVisOnset` `0.65`, `_rainVisFull` `0.40`, `_rainSeaOnset` `0.30`) with defaults **matching
+`RainConfig.Default`** so the surface **rings** and the falling **rain particles** agree out of the box. **If
+the owner retunes rain feel, match BOTH** this and `RainEmitter`'s `RainConfig` — a future refactor can unify
+them into one shared rain config (flagged, not built here).
 
 ### 19.2 Surface rain rings — `RainRings()` (`col.rgb` only; **night-visible, post-grade compensated**)
 
@@ -1649,8 +1654,8 @@ the rain rings, which sit post-grade in the compensated bucket to survive the da
 | `_StormFoamLaneStretch` | `6.0` | Along-wind stretch (thin lanes). |
 | `_StormFoamLaneScale` | `0.3` | Lane scale (lanes/unit). |
 
-Plus the three C#-side shape floats on `WaterSurface`: `_rainBaselineIntensity` `0`, `_rainSeaStateWeight`
-`1.0`, `_rainVisibilityGate` `0.6` (mirror `RainConfig.Default`).
+Plus the C#-side shape floats on `WaterSurface`: `_rainBaselineIntensity` `0`, `_rainSeaStateWeight` `1.0`,
+`_rainVisOnset` `0.65`, `_rainVisFull` `0.40`, `_rainSeaOnset` `0.30` (mirror `RainConfig.Default`).
 
 **How the owner steers it:** raise `_RainRingStrength` **and** `_StormFoamLaneStrength`, then sail into a
 building blow. Rain rings dimple the surface and now **read even at night** (per the owner ruling); the storm
