@@ -1471,3 +1471,85 @@ The alpha multiply is `col.a`-only and the caustic day gate rides the pre-existi
 sit **before** the palette guard-rail grade (§13, `col.rgb`-only) and the post-grade compensated light content
 (§11.6), which are left untouched, so they compose cleanly. The shipped `Water.mat` variant is force-compiled by
 `WaterShaderCompileGuardTests`, so any HLSL slip fails CI red (not magenta-in-build).
+
+## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
+
+Faint foam **streaks aligned with the tidal current** so the player can **read which way the sea is setting**
+(P1 *The Sea Has Moods*) — the same way real drift lines, foam windrows, and slicks betray a tide rip. It ships
+**OFF** (`_DriftLineStrength = 0`), so the shipped `Water.mat` look is byte-identical until the owner dials it in
+(rule 6, like `_ReflectionStrength`). It lives entirely in `HiddenHarboursWater.shader` and touches **only
+`col.rgb`** — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim (P1 integrity, CLAUDE.md rule 5).
+
+### 18.1 It reads the CURRENT for free (NO new C# uniform)
+
+The lines are built from the **same `_FlowDir` / `_Flow`** the surface scroll already uses. Those are pushed by
+`WaterSurface.cs` from **`EnvironmentSample.CurrentVector`** — the tide's **smoothed set** (direction + speed) via
+the `CurrentModel`. So the streaks orient with, and drift downstream along, the live current with **no new uniform
+push**. This is the same "reuse an already-published uniform" trick the sky reflection (§11.1) uses with the
+sea-state — the cheapest correct wiring.
+
+Note the **correction baked into the design**: the aniso streak basis is keyed to **`_FlowDir` (the current)**, not
+`_WindDir` (the wind) — the wind drives *roughness / whitecaps* (§5.8), the current drives *where the water is
+going*, which is what a drift line shows.
+
+### 18.2 The streak build (`col.rgb` only)
+
+A small HLSL helper `DriftLines(worldXY, dt, t)` added in the **same pre-grade dressing zone the foam + whitecaps
+occupy** (after the whitecap block, **before** the palette guard-rail §13), so the guard-rail bounds it like all the
+other dressing:
+
+- **Flow-aligned anisotropic basis** — the wind-streak idiom (§5.8), keyed to the current:
+  `flowdir = normalize(_FlowDir.xy)`, `flowperp = (-flowdir.y, flowdir.x)`.
+- **Advance downstream over time** — `along = dot(pp, flowdir) / _DriftLineStretch − t·_Flow·_DriftLineSpeed`, so
+  the streaks **travel with the current**. The along-axis is **stretched** by `_DriftLineStretch` so a round noise
+  cell reads as a long thin lane running *with* the flow.
+- **Thin ridged-noise lanes across the flow** — the shader's own `pow(saturate(1 − |g1−g2|·k), n)` ridge idiom
+  (the same one the caustics/moon glitter use) over two `ValueNoise` samples of the stretched coord → bright thin
+  veins = the streaks.
+- **Wander** — a slow low-freq `ValueNoise` nudge on the along-coord so the lanes **bend and drift** instead of
+  reading as a marching ruler grid.
+- **Pixelized** coords throughout (pixel-art faithful, ADR 0010), and the noise is the shader's existing
+  `ValueNoise` / `Hash21` + `_Time.y` — **deterministic, no new RNG** (rule 5).
+- Tinted faintly toward `_FoamColor` (or the optional `_DriftLineColor`), added — *streaks, not a paint layer*.
+
+### 18.3 The sea-state WINDOW — a BELL, not a fade
+
+The lines **peak on calm-to-moderate water** and are **zero on dead glass** *and* **zero in a storm's chaos**:
+
+- **Zero on dead glass** so the glassy mirror (§11) stays a mirror — a drift line on perfectly still water would
+  read as noise, not information.
+- **Zero in a storm** because whitecaps + chop (§5.11) already scream the sea-state; drift lines there would just
+  add mud to the "foggy white soup" the whitecap rework fought.
+
+So it is a **band over `_Chop`**, not a monotone fade: rises from `_DriftLineSeaStateLo`, holds through the middle,
+falls back to 0 by `_DriftLineSeaStateHi` (`rise·fall` of two `smoothstep`s). It **also** eases **down as wind
+roughness `_Roughness` rises** (the foam-dodge) so the streaks don't fight the whitecaps, and fades out at the very
+**shore** via the read-only depth key `dt` so they live on **open, navigable water**, not the wet foam edge.
+
+> Implementation note: the foam-dodge gates on **`_Roughness`** (a CBUFFER uniform, always in scope), **not** the
+> block-local `foamCoverage` (which is computed *inside* the foam branch and is out of scope where the lines are
+> added). Simpler and correct.
+
+### 18.4 Tunables (rule 6; all default to today's look)
+
+| Property | Default | Effect |
+|---|---|---|
+| `_DriftLineStrength` | `0` (**OFF**) | Master; 0 = `col.rgb` untouched (today). The owner's main dial. |
+| `_DriftLineSpeed` | `0.5` | How fast the streaks drift downstream, as a multiple of `_Flow`. |
+| `_DriftLineStretch` | `5` | Along-flow stretch — higher = longer, thinner lanes. |
+| `_DriftLineScale` | `0.3` | Lane density (lanes per world unit). |
+| `_DriftLineSeaStateLo` | `0.05` | `_Chop` where the lines start rising (below = glass, none). |
+| `_DriftLineSeaStateHi` | `0.6` | `_Chop` where the lines are gone (above = storm, none). |
+| `_DriftLineColor` | `(…, a=0)` | Optional streak colour; **`a = 0` reuses `_FoamColor`**. |
+
+**How the owner steers it:** raise `_DriftLineStrength` on **calm-to-moderate** water and watch faint streaks trace
+the current across the surface — they vanish on dead glass and vanish in a storm. `_DriftLineStretch` /
+`_DriftLineScale` tune how ropy vs fine the lines read; `_DriftLineSpeed` how briskly they run with the set.
+
+### 18.5 Composition + guard
+
+`DriftLines` returns an additive `col.rgb` term placed **after** the whitecap block and **before** the palette
+guard-rail grade (§13, `col.rgb`-only) and the post-grade compensated light content (§11.6) — the same slot the
+foam + whitecaps occupy, so the guard-rail bounds it and it composes cleanly with everything downstream. No
+`WaterSurface.cs` change is needed (it reuses `_FlowDir` / `_Flow`). The shipped `Water.mat` variant is
+force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not magenta-in-build).
