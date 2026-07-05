@@ -357,6 +357,26 @@ Shader "HiddenHarbours/Water"
         _ShallowMinAlpha      ("Shallow min alpha at the waterline (keep above 0.5)", Range(0,1)) = 0.65
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+
+        [Header(Current drift lines (Arc C   col.rgb only   reads the tidal set   default OFF))]
+        // Faint foam STREAKS aligned with the tidal CURRENT so the player can READ which way the sea is
+        // setting (P1 Sea Has Moods). Built from the SAME _FlowDir/_Flow the surface scroll uses — those are
+        // pushed from EnvironmentSample.CurrentVector (the tide's SMOOTHED set), so the lines "read the tide"
+        // for FREE (no new C# uniform push). Thin ridged-noise lanes ACROSS the flow, stretched ALONG it and
+        // advanced downstream over time, tinted toward the foam colour, faint. Added in the same pre-grade
+        // dressing zone the foam + whitecaps occupy so the palette guard-rail bounds them. col.rgb ONLY:
+        // never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5).
+        // SEA-STATE WINDOW (a BELL, not a fade): the lines PEAK on calm-to-moderate water and are ZERO on dead
+        // glass (a mirror stays a mirror) AND ZERO in a storm's chaos — a band over _Chop (rises from Lo, holds,
+        // falls to 0 by Hi). They also fade DOWN as wind roughness (_Roughness) rises so they don't fight foam.
+        // _DriftLineStrength = 0 is an EXACT passthrough (opt-in, revertible — rule 6): today's look byte-identical.
+        _DriftLineStrength   ("Drift line strength (0 = off / today)", Range(0,1)) = 0.0
+        _DriftLineSpeed      ("Drift line downstream speed (x _Flow)", Float) = 0.5
+        _DriftLineStretch    ("Drift line along-flow stretch (thin lanes)", Float) = 5.0
+        _DriftLineScale      ("Drift line scale (lanes/unit)", Float) = 0.3
+        _DriftLineSeaStateLo ("Drift line sea-state rise (_Chop; 0 = glass has none)", Range(0,1)) = 0.05
+        _DriftLineSeaStateHi ("Drift line sea-state gone (_Chop; storm has none)", Range(0,1)) = 0.6
+        _DriftLineColor      ("Drift line colour (a=0 reuses foam colour)", Color) = (0.92, 0.96, 0.98, 0.0)
     }
 
     SubShader
@@ -642,6 +662,14 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowMinAlpha;
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
+                // Current drift lines (col.rgb; keyed to _FlowDir/_Flow — the tidal set) — Arc C, default OFF.
+                float  _DriftLineStrength;
+                float  _DriftLineSpeed;
+                float  _DriftLineStretch;
+                float  _DriftLineScale;
+                float  _DriftLineSeaStateLo;
+                float  _DriftLineSeaStateHi;
+                float4 _DriftLineColor;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1717,6 +1745,67 @@ Shader "HiddenHarbours/Water"
                 return lerp(rgb, graded, strength);
             }
 
+            // ---- CURRENT DRIFT LINES (col.rgb-only dressing; reads the tidal set — Arc C, default OFF) --------
+            // Faint foam streaks aligned with the tidal CURRENT so the player reads which way the sea is setting
+            // (P1). The aniso basis is built from _FlowDir (the CURRENT axis, NOT the wind) — _FlowDir/_Flow are
+            // already pushed from the SMOOTHED EnvironmentSample.CurrentVector, so the lines track the tide's set
+            // for free (no new C# push). Depth is read ONLY via `dt` (the depth key) — never depth/clip/
+            // _WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5).
+            //   * ALONG the flow: advance the sample downstream over time (t * _Flow * _DriftLineSpeed).
+            //   * ACROSS the flow: thin ridged-noise lanes (the pow(saturate(1-|g1-g2|k)) streak idiom), the
+            //     coord STRETCHED along-flow by _DriftLineStretch so a round cell reads as a long thin lane.
+            //   * WANDER: a low-freq ValueNoise nudges the along-coord so the lanes aren't a marching ruler grid.
+            //   * SEA-STATE WINDOW (a BELL, not a fade): 0 on dead glass, peak on calm-to-moderate, 0 by storm —
+            //     rises from _DriftLineSeaStateLo, holds, falls to 0 by _DriftLineSeaStateHi over _Chop.
+            //   * FOAM-DODGE: fade down as wind roughness (_Roughness) rises (in scope; foamCoverage is not).
+            //   * DEPTH: fade out at the very shore (dt) so the lines live on open, navigable water, not the wet
+            //     foam edge. All coords Pixelized (pixel-art faithful); noise is the shader's own ValueNoise
+            //     (deterministic — no new RNG). Returns the additive RGB (faint, tinted toward the foam colour).
+            float3 DriftLines(float2 worldXY, float dt, float t)
+            {
+                if (_DriftLineStrength <= 0.001)
+                    return float3(0, 0, 0);                 // EXACT passthrough — opt-in (rule 6): today's look
+
+                // (1) SEA-STATE BELL over _Chop: rise (Lo -> mid), hold, fall to 0 by Hi. Zero on glass + storm.
+                float lo = saturate(_DriftLineSeaStateLo);
+                float hi = max(_DriftLineSeaStateHi, lo + 1e-3);
+                float mid = (lo + hi) * 0.5;
+                float rise = smoothstep(lo, mid, _Chop);            // 0 below Lo -> 1 at the middle
+                float fall = 1.0 - smoothstep(mid, hi, _Chop);      // 1 at the middle -> 0 by Hi
+                float seaState = rise * fall;                       // a band (bell), NOT a monotone fade
+                if (seaState <= 0.001)
+                    return float3(0, 0, 0);                 // dead glass or full storm => no lines
+
+                // (2) the flow (CURRENT) aniso basis — the wind-aniso idiom keyed to _FlowDir, not _WindDir.
+                float2 flowdir = normalize(_FlowDir.xy + float2(1e-4, 0));  // safe axis on a zero flow
+                float2 flowperp = float2(-flowdir.y, flowdir.x);
+                float2 pp = Pixelize(worldXY * _DriftLineScale);
+
+                // WANDER: a slow low-freq noise nudge along the flow so the lanes drift/bend, not a ruler grid.
+                float wander = (ValueNoise(Pixelize(worldXY * _DriftLineScale * 0.35)) - 0.5) * 2.0;
+
+                // (3) advance ALONG the flow over time; stretch the along-axis so lanes read long + thin.
+                float stretch = max(_DriftLineStretch, 1.0);
+                float along = (dot(pp, flowdir) + wander * 0.6) / stretch
+                              - t * _Flow * _DriftLineSpeed;         // downstream drift (with the current)
+                float across = dot(pp, flowperp);
+                float2 lineUV = float2(along, across);
+
+                // (4) THIN RIDGED-NOISE LANES across the flow (the pow(saturate(1-|g1-g2|k)) streak idiom).
+                float g1 = ValueNoise(Pixelize(lineUV));
+                float g2 = ValueNoise(Pixelize(lineUV * 1.7 + 3.3));
+                float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.4), 3.0);   // bright thin veins => streaks
+
+                // (5) gates: sea-state bell * foam-dodge (fade down as wind rises) * open-water (fade at shore).
+                float windDodge = 1.0 - saturate(_Roughness) * 0.7;          // ease off so they don't fight foam
+                float openWater = saturate(dt);                              // ~0 at the wet edge -> 1 offshore
+                float amount = lanes * seaState * windDodge * openWater * saturate(_DriftLineStrength);
+
+                // (6) faint tint toward the foam colour (a=0 on _DriftLineColor reuses _FoamColor — rule 6 knob).
+                float3 tint = _DriftLineColor.a > 0.001 ? _DriftLineColor.rgb : _FoamColor.rgb;
+                return tint * amount * 0.35;                                  // faint: streaks, not a paint layer
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -2130,6 +2219,13 @@ Shader "HiddenHarbours/Water"
                     }
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
+
+                // ---- CURRENT DRIFT LINES: faint streaks tracing the tidal set (col.rgb ONLY; Arc C, default OFF)
+                // Added in the same pre-grade dressing zone the foam + whitecaps occupy, so the palette guard-rail
+                // below bounds them. Reads the CURRENT (_FlowDir/_Flow — the SMOOTHED tidal set) so the lines
+                // "read the tide" for free; a BELL over _Chop keeps them off dead glass AND out of a storm.
+                // dt (the depth key) is READ-ONLY here (never depth/clip/_WaterLevel/the sim — P1, rule 5).
+                col.rgb += DriftLines(worldXY, dt, t);
 
                 // ---- PALETTE GUARD-RAIL: the final soft grade of the SEA itself (col.rgb ONLY; ADR 0015) -------
                 // Bound + gently pull the composited colour into the art-directed palette so it never washes out
