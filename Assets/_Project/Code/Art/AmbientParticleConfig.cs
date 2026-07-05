@@ -321,4 +321,82 @@ namespace HiddenHarbours.Art
             MoonlightCatch    = 0.1f,
         };
     }
+
+    /// <summary>
+    /// Every tunable of the wind-blown SPRAY effect (rule 6) — small torn puffs FLUNG off the wave crests and
+    /// streaking DOWNWIND once the sea starts to whitecap. <see cref="SprayEmitter"/> serializes an
+    /// owner-editable instance. Spray is DERIVED art-only from the ONE sea-state axis via
+    /// <see cref="AmbientParticleMath.SprayIntensity"/> — a threshold gate: a glassy or gently rippled sea
+    /// throws nothing, then past the whitecap onset spray comes on sharply into a gale (no sim/save change).
+    /// Unlike falling rain, spray reads the ONE mood axis (sea-state), and it launches at a SPEED proportional
+    /// to the real wind magnitude in m/s (a gale flings it hard, a breeze barely lifts it). Defaults ship the
+    /// feature OFF (<see cref="BaselineIntensity"/> 0, and spray only appears once the sea crosses the whitecap
+    /// threshold) so a calm day stays spray-free until the owner dials it in.
+    /// </summary>
+    [System.Serializable]
+    public struct SprayConfig
+    {
+        [Header("Pool & area")]
+        [Tooltip("Max live spray wisps (the pool is fixed and recycled — zero per-frame allocation). Rule 7 budget cap.")]
+        [Min(1)] public int MaxWisps;
+        [Tooltip("Half-size (m) of the area, centred on the camera, spray launches within (x = across, y = up/down).")]
+        public Vector2 AreaHalfSize;
+
+        [Header("Intensity (derived — the whitecapping gate)")]
+        [Tooltip("Baseline spray on a calm sea (0..1). DEFAULT 0 = feature OFF until you dial it in.")]
+        [Range(0f, 1f)] public float BaselineIntensity;
+        [Tooltip("How much a WHITECAPPING sea (past the onset) drives the spray — the main knob.")]
+        [Range(0f, 2f)] public float SeaStateWeight;
+        [Tooltip("The WHITECAP ONSET (0..1 sea-state): below this the sea is unbroken and throws NO spray; " +
+                 "past it spray comes on steeply. The threshold at which the crests start to break.")]
+        [Range(0f, 1f)] public float SeaStateThreshold;
+
+        [Header("Launch & drift")]
+        [Tooltip("Launch SPEED (m/s of initial burst) per m/s of the REAL sim wind — so a gale flings spray hard " +
+                 "and a breeze barely lifts it (reads the sim WindVector for m/s, not the normalised 0..1 wind).")]
+        public float LaunchSpeedPerWind;
+        [Tooltip("Metres of extra sustained DOWNWIND drift per m/s of the sim wind — the tail that streaks the " +
+                 "torn puff off downwind after the launch burst.")]
+        public float DownwindDrift;
+
+        [Header("Look")]
+        [Tooltip("Seconds a spray wisp lives before it is recycled (short — a torn puff, not a lingering cloud).")]
+        [Min(0.1f)] public float Lifetime;
+        [Tooltip("Spray wisp size (m) — a small torn puff.")]
+        [Min(0.01f)] public float Size;
+        [Tooltip("Fraction of life spent fading IN (0..1) — spray bursts in fast off the crest.")]
+        [Range(0f, 1f)] public float FadeIn;
+        [Tooltip("Fraction of life spent fading OUT (0..1) — spray thins as it is carried downwind.")]
+        [Range(0f, 1f)] public float FadeOut;
+        [Tooltip("Spray tint. A cool near-white reads as torn foam over the water; alpha is driven by life + intensity + day/night.")]
+        public Color Color;
+        [Tooltip("Peak opacity at full intensity (0..1) before the life envelope + day/night scale it.")]
+        [Range(0f, 1f)] public float MaxAlpha;
+
+        [Header("Day / night")]
+        [Tooltip("How strongly night dims the spray (0 = ignore time of day, 1 = tracks the light exactly). " +
+                 "Spray keeps flying in a night gale, so a low fade reads true.")]
+        [Range(0f, 1f)] public float NightFade;
+        [Tooltip("How faintly the spray catches MOONLIGHT at night so a night gale's spray never blacks out entirely (0..1 floor).")]
+        [Range(0f, 1f)] public float MoonlightCatch;
+
+        public static SprayConfig Default => new SprayConfig
+        {
+            MaxWisps           = 48,
+            AreaHalfSize       = new Vector2(16f, 10f),
+            BaselineIntensity  = 0f,     // feature OFF by default — no spray until the sea whitecaps
+            SeaStateWeight     = 1.0f,
+            SeaStateThreshold  = 0.55f,  // the whitecap onset — calm/light chop stays spray-free
+            LaunchSpeedPerWind = 0.4f,   // m/s of launch burst per m/s of sim wind (a gale flings hard)
+            DownwindDrift      = 0.25f,
+            Lifetime           = 1.1f,
+            Size               = 0.5f,
+            FadeIn             = 0.12f,
+            FadeOut            = 0.4f,
+            Color              = new Color(0.9f, 0.94f, 0.97f, 1f),
+            MaxAlpha           = 0.45f,
+            NightFade          = 0.25f,
+            MoonlightCatch     = 0.1f,
+        };
+    }
 }
