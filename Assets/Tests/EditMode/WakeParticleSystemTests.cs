@@ -423,5 +423,131 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(h, WakeParticleSystem.Hash01(i), "the hash is pure/stable");
             }
         }
+
+        // ==== CREST LINES — the added wave-crest streaks (pure geometry/shaping seam) ====================
+        //
+        // The crest lines reuse the WakeParticleSystem simulation wholesale (emit-on-arm, advect-with-current,
+        // fade, lifetime — all covered above). What's NEW and worth pinning is the streak-specific PURE math in
+        // BoatWakeEmitter.WakeLineGeometry: the speed-onset ramp (none at rest, full underway), the onset-gated
+        // emission cadence, the crest orientation from a velocity vector, and the length curve vs speed+age.
+
+        private static WakeLineConfig LineCfg() => WakeLineConfig.Default;
+
+        [Test]
+        public void LineOnset_ZeroAtRest_RisesWithSpeed_SaturatesToOne()
+        {
+            var cfg = LineCfg();
+            Assert.AreEqual(0f, BoatWakeEmitter.WakeLineGeometry.SpeedOnset(0f, cfg), 1e-5f,
+                "no crest lines when the boat isn't making way");
+            Assert.AreEqual(0f, BoatWakeEmitter.WakeLineGeometry.SpeedOnset(cfg.SpeedOnset, cfg), 1e-5f,
+                "still zero right at the onset speed");
+            float mid = BoatWakeEmitter.WakeLineGeometry.SpeedOnset(cfg.SpeedOnset + cfg.SpeedOnsetRange * 0.5f, cfg);
+            Assert.Greater(mid, 0f, "the lines ramp in above the onset speed");
+            Assert.Less(mid, 1f, "and haven't saturated at the mid-point");
+            Assert.AreEqual(1f, BoatWakeEmitter.WakeLineGeometry.SpeedOnset(cfg.SpeedOnset + cfg.SpeedOnsetRange, cfg),
+                1e-5f, "full strength once clearly underway");
+            Assert.AreEqual(1f, BoatWakeEmitter.WakeLineGeometry.SpeedOnset(cfg.SpeedOnset + cfg.SpeedOnsetRange * 3f, cfg),
+                1e-5f, "and stays saturated (clamped) at higher speed");
+        }
+
+        [Test]
+        public void LineOnset_IsMonotonicNonDecreasingInSpeed()
+        {
+            var cfg = LineCfg();
+            float prev = -1f;
+            for (float s = 0f; s <= cfg.SpeedOnset + cfg.SpeedOnsetRange + 2f; s += 0.1f)
+            {
+                float o = BoatWakeEmitter.WakeLineGeometry.SpeedOnset(s, cfg);
+                Assert.GreaterOrEqual(o, prev - 1e-5f, "the onset ramp never decreases with speed");
+                prev = o;
+            }
+        }
+
+        [Test]
+        public void LineEmission_NoneBelowOnset_NoneAground()
+        {
+            var cfg = LineCfg();
+            float carry = 0f;
+            int below = BoatWakeEmitter.WakeLineGeometry.EmissionCount(cfg.SpeedOnset * 0.5f, false, cfg, 1f, ref carry);
+            Assert.AreEqual(0, below, "no crest lines below the onset speed (only foam, if any)");
+            float carry2 = 0f;
+            int aground = BoatWakeEmitter.WakeLineGeometry.EmissionCount(cfg.SpeedOnset + 5f, true, cfg, 1f, ref carry2);
+            Assert.AreEqual(0, aground, "an aground boat throws no crest lines");
+        }
+
+        [Test]
+        public void LineEmission_RisesWithSpeed_AboveOnset()
+        {
+            var cfg = LineCfg();
+            float slowCarry = 0f, fastCarry = 0f;
+            int slow = BoatWakeEmitter.WakeLineGeometry.EmissionCount(
+                cfg.SpeedOnset + cfg.SpeedOnsetRange, false, cfg, 1f, ref slowCarry);
+            int fast = BoatWakeEmitter.WakeLineGeometry.EmissionCount(
+                cfg.SpeedOnset + cfg.SpeedOnsetRange + 4f, false, cfg, 1f, ref fastCarry);
+            Assert.Greater(fast, slow, "a faster boat sheds more crest lines per second");
+            Assert.Greater(slow, 0, "above the onset a feathered wake forms");
+        }
+
+        [Test]
+        public void LineEmission_Stopping_ResetsCarry_NoBurpOnRestart()
+        {
+            var cfg = LineCfg();
+            float carry = 0.9f;
+            BoatWakeEmitter.WakeLineGeometry.EmissionCount(0f, false, cfg, 1f, ref carry);
+            Assert.AreEqual(0f, carry, "stopping clears the carried fraction so the lines don't burp on restart");
+        }
+
+        [Test]
+        public void CrestAngle_OrientsAlongTheVelocityDirection()
+        {
+            // A streak washing down the starboard arm (astern+right) → its sprite orients to that vector.
+            Vector2 vel = new Vector2(1f, -1f);   // 45° below +X
+            float deg = BoatWakeEmitter.WakeLineGeometry.CrestAngleDeg(vel, fallbackDeg: 123f);
+            Assert.AreEqual(-45f, deg, 1e-3f, "the crest sprite lies along its own (feather-wave) direction");
+        }
+
+        [Test]
+        public void CrestAngle_FallsBackWhenVelocityCollapsed()
+        {
+            float deg = BoatWakeEmitter.WakeLineGeometry.CrestAngleDeg(Vector2.zero, fallbackDeg: 37f);
+            Assert.AreEqual(37f, deg, 1e-4f, "a spent streak keeps the fallback angle, never a garbage NaN/0 snap");
+        }
+
+        [Test]
+        public void StreakLength_GrowsWithSpeed_ShrinksWithAge_NeverNegative()
+        {
+            var cfg = LineCfg();
+            float atOnsetFresh = BoatWakeEmitter.WakeLineGeometry.StreakLength(0f, 0f, cfg);
+            float atSpeedFresh = BoatWakeEmitter.WakeLineGeometry.StreakLength(1f, 0f, cfg);
+            Assert.Greater(atSpeedFresh, atOnsetFresh, "a faster boat throws longer feather crests");
+            Assert.AreEqual(cfg.LineLength, atSpeedFresh, 1e-4f, "full speed + fresh = the full base length");
+
+            float freshAtSpeed = BoatWakeEmitter.WakeLineGeometry.StreakLength(1f, 0f, cfg);
+            float oldAtSpeed = BoatWakeEmitter.WakeLineGeometry.StreakLength(1f, 1f, cfg);
+            Assert.Less(oldAtSpeed, freshAtSpeed, "a crest shortens toward its remnant as it ages");
+            Assert.GreaterOrEqual(oldAtSpeed, 0f, "length is never negative");
+
+            // Monotonic non-increasing over life at a fixed speed.
+            float prev = float.MaxValue;
+            for (float t = 0f; t <= 1f + 1e-4f; t += 0.05f)
+            {
+                float len = BoatWakeEmitter.WakeLineGeometry.StreakLength(1f, t, cfg);
+                Assert.LessOrEqual(len, prev + 1e-5f, "the streak never lengthens as it ages");
+                prev = len;
+            }
+        }
+
+        [Test]
+        public void LineConfig_Default_IsLinesOnly_NoSternFill_AndSubtle()
+        {
+            var cfg = LineCfg();
+            Assert.AreEqual(0f, cfg.ArmConfig.SternFillFraction, 1e-6f,
+                "crest lines are the clean diverging arms only — the foam owns the centre churn");
+            Assert.LessOrEqual(cfg.LineOpacity, 1f, "the line opacity is a 0..1 dimmer");
+            Assert.Greater(cfg.LineOpacity, 0f, "the lines are on by default");
+            Assert.Less(cfg.LineWidthScale, 1f, "the crest reads as a THIN line, not a blob");
+            Assert.Greater(cfg.SpeedOnset, WakeConfig.Default.SpeedThreshold,
+                "crest lines start a touch above the foam threshold — dawdling leaves foam, not crests");
+        }
     }
 }
