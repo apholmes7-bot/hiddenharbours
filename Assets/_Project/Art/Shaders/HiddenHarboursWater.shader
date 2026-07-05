@@ -72,7 +72,7 @@ Shader "HiddenHarbours/Water"
         _OceanSwellScale    ("Ocean swell scale (SMALL = long wavelength)", Float) = 0.025
         _OceanSwellSpeed    ("Ocean swell scroll speed (slow)", Float) = 0.018
         _OceanSwellStrength ("Ocean swell brightness amplitude (0..1)", Range(0,1)) = 0.16
-        _OceanSwellSharpness("Ocean swell crest sharpness (1 = round)", Float) = 1.4
+        _OceanSwellSharpness("Ocean swell crest sharpness (1 = round; higher = narrow crest over broad trough)", Float) = 2.2
 
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
@@ -390,8 +390,8 @@ Shader "HiddenHarbours/Water"
         // still shows rain on black water. _RainRingStrength = 0 is an EXACT passthrough (opt-in, revertible).
         _RainIntensity     ("Rain intensity (0..1; DERIVED in C# — not hand-tuned)", Range(0,1)) = 0.0
         _RainRingStrength  ("Rain ring strength (0 = off / today)", Range(0,2)) = 0.0
-        _RainRingScale     ("Rain ring cell scale (rings/unit)", Float) = 0.4
-        _RainRingDensity   ("Rain ring density (fraction of cells that ring)", Range(0,1)) = 1.0
+        _RainRingScale     ("Rain ring cell scale (cells/unit; BIGGER = smaller rings)", Float) = 6.0
+        _RainRingDensity   ("Rain ring density (fraction of cells that ring)", Range(0,1)) = 0.35
         _RainRingSpeed     ("Rain ring expansion speed (rings/sec)", Float) = 1.5
         _RainRingColor     ("Rain ring colour (pale cool white)", Color) = (0.86, 0.92, 0.98, 1.0)
 
@@ -1875,12 +1875,12 @@ Shader "HiddenHarbours/Water"
                 // pattern EVOLVING in place (the boil) via EvolvingField so lanes are not a fixed sliding stamp.
                 float g1 = EvolvingField(laneUV, float2(0, 0), 1.0, _FoamEvolveSpeed, t);
                 float g2 = ValueNoise(Pixelize(laneUV * 1.7 + 5.1));
-                float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.2), 3.0);   // bright thin veins => streaks
+                float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.2), 5.0);   // higher exp => thinner, more defined veins
 
                 // gates: the wind blow (monotone) * open-water (fade at the wet shore edge, dt read-only).
                 float openWater = saturate(dt);
                 float amount = lanes * blow * openWater * saturate(_StormFoamLaneStrength);
-                return _FoamColor.rgb * amount * 0.4;                         // streaks, tinted to the foam
+                return _FoamColor.rgb * amount * 0.25;                        // crisp streaks (was 0.4), tinted to the foam
             }
 
             // ---- CURRENT DRIFT LINES (col.rgb-only dressing; reads the tidal set — Arc C, default OFF) --------
@@ -2071,9 +2071,18 @@ Shader "HiddenHarbours/Water"
                     float waveTotalAmp = max(_WaveFieldParams.z, 1e-5);
                     float waveHN = saturate(waveHeight / waveTotalAmp);          // the 0..1 crest signal
                     swellCrest = pow(max(waveHN, 1e-6), max(_OceanSwellSharpness, 0.05));
-                    // signed by the field itself (zero-mean-ish): dead glass = 0 = NO brightness bands at
-                    // all — the mirror stays a mirror (glass is sacred, ADR 0018 §(1)).
-                    swellSigned = clamp(waveHeight / waveTotalAmp, -1.0, 1.0);
+                    // Brightness reads the SHARPENED crest (not raw height): a narrow bright ridge over a
+                    // broad dark trough = the defined-crest look, instead of 4 summed trains smearing into a
+                    // wide soft "white cloud". swellCrest is the already-sharpened 0..1 crest from the line
+                    // above; remap 0..1 -> -1..1 so troughs still darken. This local feeds ONLY the
+                    // brightness add below (no other consumer reads swellSigned — verified).
+                    //   GLASS IS SACRED (ADR 0018 §(1)): on a truly flat field the remap would floor at -1
+                    //   (waveHN 0 => swellCrest ~0 => -1) and paint a uniform dim wash on the mirror. Gate by
+                    //   the field's UN-CLAMPED total amplitude (_WaveFieldParams.z, metres; 0 = dead glass)
+                    //   so the band eases to 0 as the sea eases to glass. ~0.025 m of swell fully engages it;
+                    //   any real sea reads the full defined-crest look. One madd + saturate, no new uniform.
+                    float swellLive = saturate(_WaveFieldParams.z * 40.0);
+                    swellSigned = (swellCrest * 2.0 - 1.0) * swellLive;
                 }
                 else
                 {
@@ -2083,7 +2092,10 @@ Shader "HiddenHarbours/Water"
                 }
                 if (_OceanSwellStrength > 0.001)
                 {
-                    col.rgb += swellSigned * _OceanSwellStrength * 0.25;
+                    // 0.30 (was 0.25): a pinched crest covers less area than the old wide band, so a touch
+                    // more gain restores the punch without a black sea (max swing = +/-0.30*_OceanSwellStrength;
+                    // at the 0.16 default that is +/-0.048 — a defined ridge, not an over-dark trough).
+                    col.rgb += swellSigned * _OceanSwellStrength * 0.30;
                 }
 
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
