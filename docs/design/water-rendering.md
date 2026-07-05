@@ -896,6 +896,12 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
    read-only global; **no new push**, falling back to a gentle +X creep when nothing publishes it). A soft
    threshold (`_CloudSoftness`) shapes pale clumps with clear sky between; the clouds tint toward the current
    sky (warm at dusk). `_CloudStrength` / `_CloudScale` / `_CloudDriftSpeed` / `_CloudColor` tune them.
+   The cloud FBM coord is **camera-anchored** (`worldXY − _WorldSpaceCameraPos.xy`) exactly like the moon
+   disc below, so distant clouds — a reflection of the sky at infinity — **stay put as the follow-cam tracks
+   the sailing boat** and drift **only** with the wind at `_CloudDriftSpeed` (owner playtest fix, 2026-07-05:
+   sampling the raw `worldXY` scrolled them past at BOAT speed, which is why lowering `_CloudDriftSpeed` alone
+   never fixed it — that dial only rode ON TOP of the boat-motion scroll). `_WorldSpaceCameraPos` is the URP
+   built-in the moon/sun anchors already read — no new uniform. (Stars remain world-anchored, unchanged.)
 2. **The LIVING MOON** — a reflected disc + a shimmering **vertical GLITTER PATH** (the classic moonlight
    column: broken, wavy, animated highlights descending toward the viewer; pixelized so it reads as pixel
    art). The money shot on **calm night water**. It is **alive**:

@@ -1441,8 +1441,15 @@ Shader "HiddenHarbours/Water"
                     float2 wdir = dot(wind, wind) > 1e-6 ? normalize(wind) : float2(1, 0);   // +X creep fallback
                     float2 wperp = float2(-wdir.y, wdir.x);
                     float2 drift = wdir * (_CloudDriftSpeed * t);
+                    // CAMERA-ANCHORED like the moon disc below (float2 anchor = _WorldSpaceCameraPos.xy): distant
+                    // clouds are a reflection of the sky at infinity, so they must STAY PUT as the follow-cam
+                    // tracks the sailing boat and drift ONLY with the wind at _CloudDriftSpeed. Sampling the FBM
+                    // on the raw worldXY made the pattern scroll past at BOAT speed — which is why lowering
+                    // _CloudDriftSpeed never fixed it (that dial only rode ON TOP of the boat-motion scroll).
+                    // Subtracting the camera ground position cancels the boat motion; _WorldSpaceCameraPos is a
+                    // URP built-in already read by the moon anchor — no new uniform. col.rgb-only, deterministic.
                     // anisotropic cloud coord: stretch ALONG the wind (compress the cross axis) so cells elongate.
-                    float2 cp = (worldXY + drift) * max(_CloudScale, 1e-4);
+                    float2 cp = ((worldXY - _WorldSpaceCameraPos.xy) + drift) * max(_CloudScale, 1e-4);
                     float2 capr = float2(dot(cp, wdir), dot(cp, wperp) * 2.5);
                     float clouds = Fbm(Pixelize(capr));            // 0..1 broad fractal field (pixelized inside Fbm)
                     // shape into bands: a soft threshold makes pale clumps with gaps of clear sky between.
