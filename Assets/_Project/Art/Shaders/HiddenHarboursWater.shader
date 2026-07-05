@@ -337,6 +337,26 @@ Shader "HiddenHarbours/Water"
         _PaletteMid     ("Palette anchor   mid", Color)     = (0.14, 0.30, 0.38, 1)
         _PaletteShallow ("Palette anchor   shallow", Color) = (0.34, 0.60, 0.62, 1)
         _PaletteFoam    ("Palette anchor   foam", Color)    = (0.92, 0.96, 0.98, 1)
+
+        [Header(See through shallows and day gated caustics (Arc C   col.a plus col.rgb only))]
+        // TWO owner-opt-in shallow-water effects, both default OFF (today's look byte-identical):
+        //  (1) SEE-THROUGH SHALLOWS lowers col.a in a thin band right at the shore so the SEABED sprite
+        //      drawn behind (lower sorting) BLEEDS THROUGH the transparent water (Blend SrcAlpha
+        //      OneMinusSrcAlpha). Only col.a is touched, and only AFTER the depth-colour block settles alpha
+        //      and BEFORE the shoreline foam re-opacifies it — never depth/clip/_WaterLevel/the sim (P1, rule 5).
+        //  (2) DAY-GATED CAUSTICS multiplies the existing shallow caustic add by a DAY factor
+        //      (saturate(_SunElevation): peaks at noon, naturally 0 at night) so the sun-dappled light nets
+        //      only show by day. When the day/night cycle is NOT running (_DayNightTint sum ~ 0: editor /
+        //      bare art scene) it treats the world as full day — the same "unset" convention NightFactor /
+        //      the palette grade use (NOT _SunElevation == 0, which is a real horizon value at sunrise/sunset).
+        // Because see-through lowers alpha in the SAME shallow band the caustics live in, the lowered alpha
+        // partly FADES the caustic-lit water under the blend — keep _ShallowMinAlpha conservative (> 0.5: the
+        // seabed shows UNGRADED so it must read as a HINT, not a hole) and optionally bias caustics deeper.
+        _ShallowTranslucency  ("Shallow see-through amount (0 = off / today)", Range(0,1)) = 0.0
+        _ShallowSeeThroughDepth("Shallow see-through band depth (m)", Float) = 0.6
+        _ShallowMinAlpha      ("Shallow min alpha at the waterline (keep above 0.5)", Range(0,1)) = 0.65
+        _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
+        _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
     }
 
     SubShader
@@ -616,6 +636,12 @@ Shader "HiddenHarbours/Water"
                 float4 _PaletteMid;
                 float4 _PaletteShallow;
                 float4 _PaletteFoam;
+                // See-through shallows (col.a) + day-gated caustics (col.rgb) — Arc C, all default OFF.
+                float  _ShallowTranslucency;
+                float  _ShallowSeeThroughDepth;
+                float  _ShallowMinAlpha;
+                float  _CausticDayGate;
+                float  _CausticShallowBias;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1745,6 +1771,20 @@ Shader "HiddenHarbours/Water"
                 half4 col = lerp(_ShallowColor, _DeepColor, dt);
             #endif
 
+                // ---- SEE-THROUGH SHALLOWS (col.a ONLY; Arc C, default OFF) -------------------------------------
+                // Lower the water's ALPHA in a thin band right at the shore so the SEABED sprite drawn behind
+                // the Sea plane (lower sorting) bleeds through under the Blend SrcAlpha OneMinusSrcAlpha above.
+                // Applied HERE — after whatever alpha the depth block settled (the _USE_DEPTHRAMP sample OR the
+                // _ShallowColor/_DeepColor lerp), and BEFORE the shoreline foam re-opacifies col.a (the max()
+                // below) so the wet foam edge stays solid. `depth` is READ-ONLY here (the sim waterline is
+                // untouched — never depth/clip/_WaterLevel/the height read; P1 integrity, CLAUDE.md rule 5).
+                // _ShallowTranslucency = 0 is an EXACT passthrough (col.a unchanged = today's opaque look).
+                if (_ShallowTranslucency > 0.001)
+                {
+                    float shallowT = 1.0 - saturate(depth / max(_ShallowSeeThroughDepth, 1e-3));  // 1 at edge -> 0 deep
+                    col.a *= lerp(1.0, _ShallowMinAlpha, shallowT * saturate(_ShallowTranslucency));
+                }
+
                 // Tint the base by the surface so the swell is visible even in flat light.
                 col.rgb += swell * _SurfaceTint * 0.15;
 
@@ -1820,7 +1860,12 @@ Shader "HiddenHarbours/Water"
                 }
 
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
-                float causticGate = 1.0 - saturate(depth / max(_CausticDepth, 1e-3));   // 1 shallow -> 0 deep
+                // Optional _CausticShallowBias pushes the caustic band a little DEEPER off the very edge (m),
+                // so the day-dapple doesn't fight the see-through band where lowered alpha would fade it. 0 =
+                // today's band (the veins still gate off at _CausticDepth). col.rgb dressing only (rule 5).
+                float causticDepth = depth - _CausticShallowBias;
+                float causticGate = 1.0 - saturate(causticDepth / max(_CausticDepth, 1e-3));   // 1 shallow -> 0 deep
+                causticGate = saturate(causticGate);
                 if (causticGate > 0.001 && _CausticAmount > 0.001)
                 {
                     float2 cp = Pixelize(worldXY * _CausticScale + float2(t * _Flow, -t * _Flow * 0.7));
@@ -1838,7 +1883,17 @@ Shader "HiddenHarbours/Water"
                                    worldXY, _PaintScale * 2.0, -cScroll * 1.3, _UntileStrength).r;
                     caustic = lerp(caustic, ct * 2.0, _CausticTexStrength);   // *2: counter-mul darkens, restore range
                 #endif
-                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate;
+                    // DAY GATE (Arc C, default OFF): fade the sun-dappled caustic add out at night so the light
+                    // nets only show when the sun is UP. Driver is saturate(_SunElevation) — 1 at noon, 0 below
+                    // the horizon (the RIGHT curve; NOT SunGlitterGate, which peaks at golden hour and is 0 by
+                    // high sun, backwards for caustics). When the day/night cycle is NOT running (_DayNightTint
+                    // sum ~ 0: editor / bare art scene) treat as full day — the same "unset" convention as
+                    // NightFactor / the palette grade (NOT _SunElevation == 0, a real value at sunrise/sunset).
+                    // _CausticDayGate = 0 = OFF (caustics always on = today's look). col.rgb only (rule 5).
+                    float causticDnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                    float causticSunUp = (causticDnSum > 1e-3) ? saturate(_SunElevation) : 1.0;
+                    float causticDay = lerp(1.0, causticSunUp, saturate(_CausticDayGate));
+                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate * causticDay;
                 }
 
                 // ---- layer 4 specular glints (implied single sun; pixelized so it sparkles, not smears) -------

@@ -266,8 +266,10 @@ namespace HiddenHarbours.Art
             "_WhitecapFormSharpness", "_WhitecapPeakDensity", "_WhitecapCollapseRate",
             // specular
             "_SpecAmount", "_SpecSharpness", "_SpecSwellBias",
-            // caustics
-            "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength",
+            // caustics (+ the Arc C day gate, so a FoggySmother preset can kill the sun-dapple)
+            "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength", "_CausticDayGate",
+            // shallows see-through (Arc C — how much the seabed hints through the water per mood)
+            "_ShallowTranslucency",
             // reflection (the §11 sea-state mirror)
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",

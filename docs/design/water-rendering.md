@@ -1410,3 +1410,64 @@ WaveMathTests sweep, AND through the full runtime path (5 000 uneven animator ti
 **lifecycle gates** (forms only on the front face, breaks at the tip, residual dies behind at the collapse
 rate, wind widens the breaking population, zero density/troughs = nothing). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so a broken twin fails CI red, not magenta-in-build.
+
+## 17. See-through shallows + day-gated caustics (Arc C water visuals)
+
+Two owner-opt-in shallow-water effects, both shipping **OFF** (their strength = 0), so the shipped `Water.mat`
+look is byte-identical until the owner dials them in — exactly like `_ReflectionStrength` / `_SkyReflectionStrength`
+(rule 6). They live entirely in `HiddenHarboursWater.shader`, touching **only `col.a` and `col.rgb`** — never
+`depth` / `clip()` / `_WaterLevel` / the height read / the sim (P1 integrity, CLAUDE.md rule 5). Both key off the
+read-only `depth` (`_WaterLevel - seabedElevation`, metres), so they naturally hug the moving shoreline.
+
+### 17.1 See-through shallows (`col.a` only)
+
+Right at the shore the water goes slightly **translucent** so the **seabed sprite drawn behind the Sea plane**
+(lower sorting) bleeds through under the shader's `Blend SrcAlpha OneMinusSrcAlpha`. It runs **after** the depth
+block settles the base alpha (the `_USE_DEPTHRAMP` sample *or* the `_ShallowColor`/`_DeepColor` lerp — note the
+shipped material has the depth-ramp keyword ON, so the alpha comes from the *ramp texture*, which is fully opaque)
+and **before** the shoreline foam re-opacifies `col.a`, so the wet foam edge stays solid:
+
+```hlsl
+float shallowT = 1 - saturate(depth / max(_ShallowSeeThroughDepth, 1e-3));   // 1 at the waterline -> 0 deep
+col.a *= lerp(1, _ShallowMinAlpha, shallowT * saturate(_ShallowTranslucency));
+```
+
+### 17.2 Day-gated caustics (`col.rgb` only)
+
+Folds a **day gate** into the existing shallow caustic add so the sun-dappled light nets only show when the sun
+is up. The driver is **`saturate(_SunElevation)`** — 1 at noon, naturally 0 below the horizon at night (this is the
+right curve; it is deliberately **not** `SunGlitterGate`, which peaks at *golden hour* and falls to 0 by high sun —
+backwards for caustics). When the day/night cycle is **not running** (`_DayNightTint` sum ≈ 0: editor / bare art
+scene) it treats the world as **full day**, the same "unset" convention `NightFactor` and the palette grade use —
+**not** `_SunElevation == 0`, which is a legitimate value at real sunrise/sunset. An optional `_CausticShallowBias`
+pushes the caustic band a little deeper off the very edge (see below).
+
+### 17.3 The interaction (they partly cancel — tune for it)
+
+See-through lowers `col.a` in the **same shallow band** where caustics live in `col.rgb`, and under the SrcAlpha
+blend the lowered alpha **fades** the caustic-lit water. So the two effects partly cancel where they overlap.
+Mitigations: keep **`_ShallowMinAlpha` conservative** (default `0.65`, and **keep it above 0.5** — the seabed
+shows through **ungraded**, so it must read as a *hint of the bottom*, not a hole in the sea); and/or set
+`_CausticShallowBias` to bias the dapple a touch deeper so it sits just inside the see-through fringe. The shipped
+defaults are tuned so that with both features OFF the look is unchanged.
+
+### 17.4 Tunables (rule 6; all default to today's look)
+
+| Property | Default | Effect |
+|---|---|---|
+| `_ShallowTranslucency` | `0` (**OFF**) | Master for see-through; 0 = `col.a` untouched (today). |
+| `_ShallowSeeThroughDepth` | `0.6` m | How far out from the waterline the see-through band reaches. |
+| `_ShallowMinAlpha` | `0.65` | Alpha right at the waterline. **Keep > 0.5** — this is the owner's dial for "how much seabed hints through." |
+| `_CausticDayGate` | `0` (**OFF**) | 0 = caustics always on (today); 1 = day-only (fades out at night). |
+| `_CausticShallowBias` | `0` m | Push the caustic band deeper off the very edge (0 = today's band). |
+
+`_ShallowTranslucency` and `_CausticDayGate` are appended to `WaterSurface.MoodFloatNames`, so the
+weather-driven palette (§14) and the preset library (§12) **ease** them per mood — e.g. a `FoggySmother` preset
+can kill the sun-dapple and thicken the water so nothing shows through. This is art-lane dressing, not a sim change.
+
+### 17.5 Composition + guard
+
+The alpha multiply is `col.a`-only and the caustic day gate rides the pre-existing `col.rgb` caustic add — both
+sit **before** the palette guard-rail grade (§13, `col.rgb`-only) and the post-grade compensated light content
+(§11.6), which are left untouched, so they compose cleanly. The shipped `Water.mat` variant is force-compiled by
+`WaterShaderCompileGuardTests`, so any HLSL slip fails CI red (not magenta-in-build).
