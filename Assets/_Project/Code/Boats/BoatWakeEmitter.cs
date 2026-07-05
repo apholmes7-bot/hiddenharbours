@@ -40,18 +40,34 @@ namespace HiddenHarbours.Boats
                  "wave-distort, foam size. Tune to taste; defaults are a lively inshore greybox wake.")]
         [SerializeField] private WakeConfig _config = WakeConfig.Default;
 
+        [Header("Wake CREST LINES (the little waves you see, not just foam)")]
+        [Tooltip("The Kelvin wake's visible wave CRESTS — the thin, elongated feather-wave streaks that peel " +
+                 "off the hull along the diverging V arms — as a SECOND pooled stream ALONGSIDE the foam " +
+                 "bubbles. Same shed/advect/fade/lifetime infrastructure; a lighter, longer, oriented look. " +
+                 "Every knob is tunable; defaults read a subtle feathered wake, not a busy one.")]
+        [SerializeField] private WakeLineConfig _lineConfig = WakeLineConfig.Default;
+
         [Header("Pool & render")]
         [Tooltip("Max live foam puffs PER BOAT. The pool is fixed and recycled — zero per-frame allocation.")]
         [Min(8)] [SerializeField] private int _poolPerBoat = 96;
+        [Tooltip("Max live crest-LINE streaks PER BOAT (a separate fixed, recycled pool). Kept smaller than the " +
+                 "foam pool — a few crisp crests read richer than a wall of lines.")]
+        [Min(0)] [SerializeField] private int _linePoolPerBoat = 48;
         [Tooltip("How many boats to drive at once (each gets its own pool). One active player boat dominates; " +
                  "spare slots cover NPC traffic when it arrives.")]
         [Min(1)] [SerializeField] private int _maxBoats = 4;
         [Tooltip("Foam tint. White-ish reads as sea-foam over the blue water; the alpha is driven per-puff by the fade.")]
         [SerializeField] private Color _foamColor = new Color(0.92f, 0.96f, 1f, 1f);
-        [Tooltip("Sorting layer name for the foam sprites (leave blank for the default layer).")]
+        [Tooltip("Crest-LINE tint. A lighter, cooler-than-foam wave-crest colour so the lines read as the small " +
+                 "waves peeling off the hull rather than white churn. Alpha is driven per-streak by the fade.")]
+        [SerializeField] private Color _lineColor = new Color(0.78f, 0.90f, 0.98f, 1f);
+        [Tooltip("Sorting layer name for the wake sprites (leave blank for the default layer).")]
         [SerializeField] private string _sortingLayer = "";
         [Tooltip("Order in the sorting layer. Foam should sit ABOVE the water plane but BELOW the boat hull.")]
         [SerializeField] private int _sortingOrder = -1;
+        [Tooltip("Order for the crest LINES. One BELOW the foam by default so the bright foam bubbles read on " +
+                 "top of the fainter wave-crest streaks (both still above the water plane, below the hull).")]
+        [SerializeField] private int _lineSortingOrder = -2;
 
         [Header("Cadence")]
         [Tooltip("How often (Hz) the wake sim ticks (emit + advect + render). The sea is slow; the boat moves " +
@@ -63,6 +79,7 @@ namespace HiddenHarbours.Boats
         // ---- runtime ----------------------------------------------------------------------------------------
         private readonly List<WakeRig> _rigs = new();
         private Sprite _foamSprite;
+        private Sprite _lineSprite;
         private float _tickTimer;
         private float _rescanTimer;
 
@@ -83,6 +100,7 @@ namespace HiddenHarbours.Boats
         private void Awake()
         {
             _foamSprite = BuildFoamSprite();
+            _lineSprite = BuildLineSprite();
         }
 
         private void OnEnable()
@@ -136,7 +154,7 @@ namespace HiddenHarbours.Boats
             float time = GameServices.Clock != null ? (float)GameServices.Clock.TotalSeconds : Time.time;
 
             for (int r = 0; r < _rigs.Count; r++)
-                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor);
+                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor);
         }
 
         /// <summary>
@@ -164,7 +182,8 @@ namespace HiddenHarbours.Boats
                 if (boat == null) continue;
                 if (_rigs.Count >= _maxBoats) break;
                 if (HasRigFor(boat)) continue;
-                _rigs.Add(new WakeRig(boat, _poolPerBoat, _foamSprite, transform, _sortingLayer, _sortingOrder));
+                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _foamSprite, _lineSprite, transform,
+                                      _sortingLayer, _sortingOrder, _lineSortingOrder));
             }
         }
 
@@ -186,6 +205,88 @@ namespace HiddenHarbours.Boats
         public static float SeaStateRoughness(float seaState01)
         {
             return Mathf.Clamp01(seaState01);
+        }
+
+        // ==== CREST-LINE geometry (the wave-crest streaks — pure, EditMode-tested) ==========================
+
+        /// <summary>
+        /// The PURE geometry + shaping math for the wake CREST LINES (the "small waves you see" — the divergent
+        /// feather-wave crests that peel off the hull along the Kelvin V). It is deliberately side-effect-free and
+        /// static so the Kelvin-angle placement, the speed-onset ramp, the crest orientation and the length curve
+        /// can be EditMode-tested headless (no scene, no Unity object). The particle SIMULATION (advect with the
+        /// current, fade, spread, lifetime, recycle) is NOT re-implemented here — the crest streaks reuse the very
+        /// same <see cref="WakeParticleSystem"/> the foam bubbles use; this class only supplies the streak-specific
+        /// spawn geometry and per-streak render shaping on top of it.
+        /// </summary>
+        public static class WakeLineGeometry
+        {
+            /// <summary>
+            /// Speed-onset ramp, 0..1: <b>0 at rest</b> (no crest lines when the boat isn't making way), rising to
+            /// 1 once the boat is clearly underway. Below <paramref name="cfg"/>.SpeedOnset it is 0; it then ramps
+            /// linearly to 1 over the next <paramref name="cfg"/>.SpeedOnsetRange (m/s). Monotonic non-decreasing in
+            /// speed. Used to scale the streak shed-rate/length/brightness with speed (the brief: "a clear feathered
+            /// wake underway, none at rest"). Pure + static.
+            /// </summary>
+            public static float SpeedOnset(float speed, in WakeLineConfig cfg)
+            {
+                float range = Mathf.Max(1e-3f, cfg.SpeedOnsetRange);
+                return Mathf.Clamp01((speed - cfg.SpeedOnset) / range);
+            }
+
+            /// <summary>
+            /// How many crest streaks to shed this tick: the foam's per-speed cadence
+            /// (<see cref="WakeParticleSystem.EmissionCount"/> against the streak's own <see cref="WakeConfig"/>)
+            /// further GATED by the <see cref="SpeedOnset"/> ramp so lines appear only once genuinely underway and
+            /// the count grows smoothly with speed. Returns 0 at rest / aground / below onset. Pure + static (the
+            /// stateful fractional carry is threaded in exactly like the foam's).
+            /// </summary>
+            public static int EmissionCount(float speed, bool aground, in WakeLineConfig cfg, float dt, ref float carry)
+            {
+                float onset = SpeedOnset(speed, in cfg);
+                if (aground || onset <= 0f || dt <= 0f)
+                {
+                    carry = 0f;
+                    return 0;
+                }
+                // Reuse the foam emission cadence against the streak arm-config, scaled by the onset ramp so the
+                // line density eases in with speed rather than snapping on at the threshold.
+                WakeConfig arm = cfg.ArmConfig;
+                float over = Mathf.Max(0f, speed - arm.SpeedThreshold);
+                carry += arm.ShedPerSpeed * over * dt * onset;
+                int whole = Mathf.FloorToInt(carry);
+                if (whole > 0) carry -= whole;
+                return whole;
+            }
+
+            /// <summary>
+            /// The render ROTATION (degrees) that orients a streak sprite ALONG its local crest / feather-wave
+            /// direction. The crest peels off the hull down the V arm, so early in a streak's life (while it still
+            /// carries its shed momentum) its own velocity vector points down that arm — orient the sprite to it.
+            /// The sprite's long axis is +X at 0°, so the returned angle is simply <c>atan2(vel.y, vel.x)</c>. If
+            /// the velocity has collapsed (a spent streak that now only drifts with the current) we fall back to
+            /// <paramref name="fallbackDeg"/> so the orientation never snaps to a garbage angle. Pure + static.
+            /// </summary>
+            public static float CrestAngleDeg(Vector2 vel, float fallbackDeg = 0f)
+            {
+                if (vel.sqrMagnitude <= 1e-8f) return fallbackDeg;
+                return Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
+            }
+
+            /// <summary>
+            /// The streak LENGTH (m) at a moment in its life: base length scaled UP with the speed onset (a faster
+            /// boat throws longer feather crests) and DOWN as the streak ages (<paramref name="life01"/> 0→1), so a
+            /// fresh crest is a long clean line and an old one has shortened toward its foam-like remnant before it
+            /// fades out. Never negative. Pure + static — this is the per-streak length the rig writes into the
+            /// sprite's long-axis scale.
+            /// </summary>
+            public static float StreakLength(float speedOnset01, float life01, in WakeLineConfig cfg)
+            {
+                float onset = Mathf.Clamp01(speedOnset01);
+                float life = Mathf.Clamp01(life01);
+                float speedGrow = Mathf.Lerp(cfg.LengthAtOnset, 1f, onset);     // shorter just after onset, full at speed
+                float ageShrink = Mathf.Lerp(1f, Mathf.Clamp01(cfg.LengthAtDeath), life);
+                return Mathf.Max(0f, cfg.LineLength * speedGrow * ageShrink);
+            }
         }
 
         // ==== procedural foam sprite (avoids the spriteMode-Multiple BoatWake.png load gotcha) =============
@@ -226,6 +327,57 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// Build a small ELONGATED wave-crest streak sprite in code — a thin horizontal bar with a bright core
+        /// and feathered ends (soft along its length, hard-ish across its thin axis), point-filtered so it stays
+        /// crisp pixel-art over the water. This is the "small wave you see" peeling off the hull: at native scale
+        /// it is roughly a 1×N crest line; the rig stretches it to the streak length and rotates it to the local
+        /// crest (feather-wave) direction. Generated in code for the same reason as the foam puff — one shared
+        /// sprite + one material for every streak (batched, rule 7), no BoatWake.png load gotcha.
+        /// </summary>
+        // Native pixel dims of the code-built crest-line sprite, shared by the builder and the render so the
+        // world-space length/width scaling below is exact (no drift if the sprite is retuned).
+        private const int LineSpritePx = 32;    // long axis (the crest line runs along X)
+        private const int LineSpritePy = 5;     // thin cross axis
+        private const int LineSpritePpu = 32;   // project PPU (1 world unit = 1 m at 32px)
+        // World-space native size = pixels / PPU. Used to convert a desired world length/thickness into scale.
+        private const float LineNativeLength = LineSpritePx / (float)LineSpritePpu;   // 1.0 m long
+        private const float LineNativeWidth = LineSpritePy / (float)LineSpritePpu;    // 0.15625 m thin
+
+        private static Sprite BuildLineSprite()
+        {
+            const int w = LineSpritePx;   // long axis (the crest line runs along X)
+            const int h = LineSpritePy;   // thin cross axis
+            const int ppu = LineSpritePpu;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false, true)
+            {
+                name = "BoatWake.CrestLine",
+                filterMode = FilterMode.Point,        // pixel-crisp
+                wrapMode = TextureWrapMode.Clamp,
+            };
+            float cx = (w - 1) * 0.5f;
+            float cy = (h - 1) * 0.5f;
+            float rx = w * 0.5f;
+            float ry = h * 0.5f;
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+            {
+                float dx = (x - cx) / rx;             // -1..1 along the crest
+                float dy = (y - cy) / ry;             // -1..1 across the thin axis
+                // Feather the ENDS (soft along length) but keep the crest reasonably solid across its width.
+                float along = Mathf.Clamp01(1f - dx * dx);        // 1 centre → 0 ends (parabolic taper)
+                float across = Mathf.Clamp01(1f - Mathf.Abs(dy)); // 1 centre-line → 0 top/bottom edge
+                float a = along * across;
+                a *= a;                                            // tighten toward a crisp line
+                byte alpha = (byte)Mathf.RoundToInt(Mathf.Clamp01(a) * 255f);
+                px[y * w + x] = new Color32(255, 255, 255, alpha);
+            }
+            tex.SetPixels32(px);
+            tex.Apply(false, false);
+            return Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), ppu);
+        }
+
+        /// <summary>
         /// One boat's wake: a <see cref="WakeParticleSystem"/> plus a fixed pool of <see cref="SpriteRenderer"/>s
         /// (one per particle slot) parented under the host. Each tick it emits at the stern proportional to the
         /// boat's speed, advances every puff (own momentum + the current, with decay), and writes each live
@@ -235,13 +387,16 @@ namespace HiddenHarbours.Boats
         private sealed class WakeRig
         {
             public readonly BoatController Boat;
-            private readonly WakeParticleSystem _sys;
+            private readonly WakeParticleSystem _sys;         // the foam BUBBLES (unchanged)
             private readonly SpriteRenderer[] _renderers;
+            private readonly WakeParticleSystem _lineSys;     // the crest LINES (same infra, streak-tuned)
+            private readonly SpriteRenderer[] _lineRenderers;
             private readonly Transform _root;
             private float _emitCarry;
+            private float _lineEmitCarry;
 
-            public WakeRig(BoatController boat, int pool, Sprite foam, Transform parent,
-                           string sortingLayer, int sortingOrder)
+            public WakeRig(BoatController boat, int pool, int linePool, Sprite foam, Sprite line, Transform parent,
+                           string sortingLayer, int sortingOrder, int lineSortingOrder)
             {
                 Boat = boat;
                 _sys = new WakeParticleSystem(pool);
@@ -249,22 +404,39 @@ namespace HiddenHarbours.Boats
                 _root = new GameObject($"Wake[{boat.name}]").transform;
                 _root.SetParent(parent, worldPositionStays: false);
 
-                _renderers = new SpriteRenderer[pool];
-                for (int i = 0; i < pool; i++)
+                _renderers = BuildRenderers(pool, "foam", foam, sortingLayer, sortingOrder);
+
+                // The crest LINES: a SECOND pooled system + renderer slice under the same root, sharing all the
+                // emit/advect/fade/lifetime machinery of the foam — only the sprite, config, colour, sorting and
+                // per-streak orientation differ. Guarded so a 0 line-pool cleanly disables the lines.
+                int lp = Mathf.Max(0, linePool);
+                if (lp > 0 && line != null)
                 {
-                    var go = new GameObject("foam");
-                    go.transform.SetParent(_root, worldPositionStays: false);
-                    var sr = go.AddComponent<SpriteRenderer>();
-                    sr.sprite = foam;
-                    if (!string.IsNullOrEmpty(sortingLayer)) sr.sortingLayerName = sortingLayer;
-                    sr.sortingOrder = sortingOrder;
-                    go.SetActive(false);
-                    _renderers[i] = sr;
+                    _lineSys = new WakeParticleSystem(lp);
+                    _lineRenderers = BuildRenderers(lp, "crest", line, sortingLayer, lineSortingOrder);
                 }
             }
 
+            private SpriteRenderer[] BuildRenderers(int count, string name, Sprite sprite,
+                                                    string sortingLayer, int sortingOrder)
+            {
+                var arr = new SpriteRenderer[count];
+                for (int i = 0; i < count; i++)
+                {
+                    var go = new GameObject(name);
+                    go.transform.SetParent(_root, worldPositionStays: false);
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite = sprite;
+                    if (!string.IsNullOrEmpty(sortingLayer)) sr.sortingLayerName = sortingLayer;
+                    sr.sortingOrder = sortingOrder;
+                    go.SetActive(false);
+                    arr[i] = sr;
+                }
+                return arr;
+            }
+
             public void Tick(Vector2 current, float roughness, float time, float dt,
-                             in WakeConfig cfg, Color foamColor)
+                             in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor)
             {
                 if (Boat == null) return;
 
@@ -273,18 +445,29 @@ namespace HiddenHarbours.Boats
                 float speed = Boat.Velocity.magnitude;
                 bool aground = Boat.IsAground;
 
+                // --- FOAM BUBBLES (unchanged) ---
                 // 1) EMIT from the stern, rate ∝ speed (none below threshold / when aground).
                 int count = WakeParticleSystem.EmissionCount(speed, aground, cfg, dt, ref _emitCarry);
                 if (count > 0) _sys.Emit(count, pos, bow, speed, cfg);
-
                 // 2) TRAVEL WITH THE CURRENT (+ own momentum) and DISSIPATE (age toward lifetime).
                 _sys.Step(current, cfg.VelocityDecay, dt);
-
                 // 3 + 4) RENDER: wave-distort the position, fade + spread over life.
-                Render(roughness, time, cfg, foamColor);
+                RenderFoam(roughness, time, cfg, foamColor);
+
+                // --- CREST LINES (added: the small waves you see) ---
+                // Same three stages against the streak system, gated by the speed-onset ramp; each live streak is
+                // rendered as an elongated sprite oriented to its crest direction and stretched by StreakLength.
+                if (_lineSys != null)
+                {
+                    WakeConfig arm = lineCfg.ArmConfig;
+                    int lineCount = WakeLineGeometry.EmissionCount(speed, aground, lineCfg, dt, ref _lineEmitCarry);
+                    if (lineCount > 0) _lineSys.Emit(lineCount, pos, bow, speed, arm);
+                    _lineSys.Step(current, arm.VelocityDecay, dt);
+                    RenderLines(roughness, time, speed, lineCfg, arm, lineColor);
+                }
             }
 
-            private void Render(float roughness, float time, in WakeConfig cfg, Color foamColor)
+            private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor)
             {
                 var pool = _sys.Pool;
                 for (int i = 0; i < pool.Length; i++)
@@ -311,10 +494,133 @@ namespace HiddenHarbours.Boats
                 }
             }
 
+            private void RenderLines(float roughness, float time, float speed,
+                                     in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor)
+            {
+                float onset = WakeLineGeometry.SpeedOnset(speed, in lineCfg);
+                var pool = _lineSys.Pool;
+                for (int i = 0; i < pool.Length; i++)
+                {
+                    var sr = _lineRenderers[i];
+                    ref readonly var p = ref pool[i];
+                    if (!p.Alive)
+                    {
+                        if (sr.gameObject.activeSelf) sr.gameObject.SetActive(false);
+                        continue;
+                    }
+
+                    float life = WakeParticleSystem.Life01(p.Age, p.Lifetime);
+                    // The crest lines fade + advect + distort exactly like the foam (shared arm config), but read
+                    // subtler: their own StartAlpha (via LifeFade) is already the streak alpha, scaled by onset so
+                    // faint at the onset speed and full underway.
+                    float alpha = WakeParticleSystem.LifeFade(life, arm) * Mathf.Clamp01(lineCfg.LineOpacity) * onset;
+                    Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, arm);
+
+                    // Orient along the crest (feather-wave) direction — the streak's own velocity while it carries
+                    // its shed momentum; the sprite's long axis is +X, so we stretch X to the streak length and Y
+                    // to a thin cross-width. Both are WORLD-space targets, converted to local scale by dividing by
+                    // the sprite's native world size so the length/width are exact regardless of the sprite dims.
+                    // The particle's BaseSize carries the cross-width seed (the foam's FoamSize idiom).
+                    float lengthM = WakeLineGeometry.StreakLength(onset, life, in lineCfg);
+                    float widthM = Mathf.Max(0.001f, p.BaseSize * lineCfg.LineWidthScale);
+                    float angleDeg = WakeLineGeometry.CrestAngleDeg(p.Vel);
+
+                    var t = sr.transform;
+                    t.position = new Vector3(renderPos.x, renderPos.y, 0f);
+                    t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
+                    t.localScale = new Vector3(lengthM / LineNativeLength, widthM / LineNativeWidth, 1f);
+                    var col = lineColor; col.a = Mathf.Clamp01(alpha);
+                    sr.color = col;
+                    if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
+                }
+            }
+
             public void Dispose()
             {
                 if (_root != null) Destroy(_root.gameObject);
             }
+        }
+    }
+
+    /// <summary>
+    /// Every tunable of the wake CREST LINES (the divergent feather-wave crests — the "small waves you see"),
+    /// in one struct so the added stream stays free of magic numbers (CLAUDE.md rule 6). It wraps a full
+    /// <see cref="WakeConfig"/> (<see cref="ArmConfig"/>) which the crest streaks reuse for the SAME
+    /// emit-on-the-Kelvin-arm / advect-with-the-current / fade / lifetime machinery as the foam bubbles — so
+    /// there is no duplicated simulation — plus the streak-only knobs (length, width, opacity, speed onset).
+    /// <see cref="BoatWakeEmitter"/> serializes an owner-editable instance. Defaults read a subtle feathered
+    /// wake alongside the foam, not a busy one.
+    /// </summary>
+    [System.Serializable]
+    public struct WakeLineConfig
+    {
+        [Header("Where the crest lines live (reuses the foam's V-arm machinery)")]
+        [Tooltip("The arm/emit/advect/fade config the crest streaks reuse — the SAME WakeConfig the foam bubbles " +
+                 "use, tuned for lines: NO stern fill (clean arms only), a wider/longer V so the crests read as " +
+                 "the feather waves peeling off the hull, a modest shed-rate and a shorter lifetime than the foam.")]
+        public WakeConfig ArmConfig;
+
+        [Header("Streak look")]
+        [Tooltip("Base length (m) of a crest streak at full speed and birth. Scaled down near the onset speed and " +
+                 "as the streak ages (see LengthAtOnset / LengthAtDeath). Longer = a more obvious feathered wake.")]
+        public float LineLength;
+        [Tooltip("Streak length as a fraction of LineLength right at the speed onset (0..1). <1 means the crests " +
+                 "start short as the boat just gets underway and grow to full length at speed.")]
+        public float LengthAtOnset;
+        [Tooltip("Streak length as a fraction of full at the END of a streak's life (0..1). <1 shortens the crest " +
+                 "as it ages so it dwindles toward a foam-like remnant before it fades out.")]
+        public float LengthAtDeath;
+        [Tooltip("Multiplies the streak's cross-width relative to the reused ArmConfig.FoamSize. <1 keeps the " +
+                 "crest a THIN line (the whole point — a wave crest, not a blob).")]
+        public float LineWidthScale;
+        [Tooltip("Overall crest-line opacity multiplier (0..1) ON TOP of ArmConfig's own fade — a master dimmer " +
+                 "so the lines stay subtler than the white foam. 0 = lines off.")]
+        public float LineOpacity;
+
+        [Header("Speed onset (none at rest, clear underway)")]
+        [Tooltip("Boat speed (m/s) at which the crest lines BEGIN to appear. Below this: no lines at all. Usually " +
+                 "a touch above the foam's own SpeedThreshold so faint dawdling leaves only foam, not crests.")]
+        public float SpeedOnset;
+        [Tooltip("Speed range (m/s) over which the crest lines ramp from just-appearing to full strength/length. " +
+                 "Wider = a gentler fade-in of the feathered wake as the boat speeds up.")]
+        public float SpeedOnsetRange;
+
+        /// <summary>The greybox default — a subtle feathered crest wake alongside the foam. The owner tunes from here.</summary>
+        public static WakeLineConfig Default => new WakeLineConfig
+        {
+            // Reuse the foam's default as the base, then tune it for CLEAN, LONGER, LINE-only arms.
+            ArmConfig = MakeArmConfig(),
+            LineLength      = 1.1f,   // m — a clear feather-wave streak
+            LengthAtOnset   = 0.45f,  // short as the boat just gets underway
+            LengthAtDeath   = 0.35f,  // dwindles toward a remnant before it fades
+            LineWidthScale  = 0.35f,  // keep it a THIN crest line, not a blob
+            LineOpacity     = 0.55f,  // subtler than the white foam
+            SpeedOnset      = 0.8f,   // a touch above the foam's 0.4 threshold
+            SpeedOnsetRange = 2.0f,   // ramp to full over the next 2 m/s
+        };
+
+        /// <summary>
+        /// The streak arm config: the foam's <see cref="WakeConfig.Default"/> retuned for crest LINES — a wider,
+        /// longer, clean-armed V (no stern fill), a lighter shed-rate, a shorter life and no size-spread (a crest
+        /// keeps its shape then fades rather than blooming like foam). Pure builder so the defaults live in code,
+        /// not scattered magic numbers.
+        /// </summary>
+        private static WakeConfig MakeArmConfig()
+        {
+            WakeConfig c = WakeConfig.Default;
+            c.ShedPerSpeed      = 4f;     // fewer, cleaner crests than the dense foam
+            c.VHalfAngleDeg     = 20f;    // the Kelvin feather angle, a hair wider than the foam V
+            c.ArmLength         = 4.0f;   // the crests reach a little farther astern than the foam arms
+            c.SternFillFraction = 0f;     // LINES only — no turbulent centre churn (that's the foam's job)
+            c.SternFillWidth    = 0f;
+            c.WashSpeedScale    = 0.25f;  // a touch more along-arm flow so the streak orients cleanly down the arm
+            c.Lifetime          = 1.6f;   // shorter than the foam — a crest passes, then it's gone
+            c.StartAlpha        = 0.9f;   // bright at birth; LineOpacity + onset dim the final result
+            c.FadePower         = 1.2f;
+            c.SpreadFactor      = 1f;     // a crest keeps its width (no bloom) — length/fade carry the dissolve
+            c.FoamSize          = 0.5f;   // the cross-width seed; LineWidthScale thins it to a line
+            c.SizeJitter        = 0.2f;
+            return c;
         }
     }
 }
