@@ -140,6 +140,50 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + driven);
         }
 
+        // ==== spray intensity (a whitecapping sea flings torn spray off the crests) =========================
+
+        /// <summary>
+        /// A 0..1 "spray intensity" the wind-blown SPRAY emitter scales its spawn-rate + opacity by — a
+        /// scene-level "is the sea whitecapping?" gate. Spray is DERIVED, art-only and, unlike the falling rain,
+        /// keys off ONE axis: the sea-state. Whitecaps (and the torn spray they throw) are a THRESHOLD
+        /// phenomenon — a glassy or gently rippled sea throws no spray at all, then past a wind/sea-state onset
+        /// the crests start to break and spray is flung hard and rising fast into a gale. Since the real
+        /// per-pixel wave crest-factor lives GPU-side (the shader whitecaps of ADR 0018 B1), the particle lane
+        /// uses the scene-level <c>EnvironmentSample.SeaState01</c> axis as its whitecapping proxy so the
+        /// scene-wide spray and the on-crest shader foam agree on WHEN the sea is breaking.
+        /// <list type="bullet">
+        /// <item><description>BELOW <paramref name="threshold"/> (calm → light chop) the gate is ~0: no spray,
+        /// so a glassy or breezy-but-unbroken sea stays clean.</description></item>
+        /// <item><description>PAST <paramref name="threshold"/> it ramps up STEEPLY (smootherstep across the
+        /// remaining <c>[threshold, 1]</c> band) so spray comes on sharply as the sea starts to break and keeps
+        /// building to a gale, weighted by <paramref name="seaStateWeight"/>.</description></item>
+        /// </list>
+        /// So spray = <c>baseline + seaStateWeight · onset(seaState01, threshold)</c> where <c>onset</c> is 0
+        /// below the threshold and a steep smootherstep 0→1 above it. Monotonic non-decreasing in sea-state,
+        /// ~<paramref name="baseline"/> on a calm sea (default baseline 0 = OFF until the owner dials it in),
+        /// clamped 0..1. Pure + static — no RNG (rule 5), the intensity the tests pin.
+        /// </summary>
+        public static float SprayIntensity(float seaState01, float baseline, float seaStateWeight, float threshold)
+        {
+            float sea = Mathf.Clamp01(seaState01);
+            float th = Mathf.Clamp01(threshold);
+            // Onset: 0 at/below the whitecap threshold, a steep smootherstep to 1 across the band above it. If
+            // the threshold is pinned at 1 there is no band left, so the onset is simply 0 (never whitecaps).
+            float band = 1f - th;
+            float onset;
+            if (band <= 1e-4f)
+            {
+                onset = 0f;
+            }
+            else
+            {
+                float t = Mathf.Clamp01((sea - th) / band);           // 0 at the threshold, 1 at a full gale
+                onset = t * t * t * (t * (t * 6f - 15f) + 10f);       // smootherstep — flat foot, steep rise
+            }
+            float driven = Mathf.Max(0f, seaStateWeight) * onset;
+            return Mathf.Clamp01(Mathf.Clamp01(baseline) + driven);
+        }
+
         // ==== day/night response (read the global _DayNightTint, never write it) ===========================
 
         /// <summary>
