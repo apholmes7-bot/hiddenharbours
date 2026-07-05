@@ -110,33 +110,48 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// A 0..1 "rain intensity" the FALLING rain scales its spawn-rate + opacity by — and the SHARED source
-        /// of truth a later water-shader pass reads for surface rain-rings, so the drops and the rings always
-        /// agree. Rain is DERIVED, art-only: there is NO precipitation signal in the sim, so we read a squall
-        /// off the two mood axes the environment already publishes (both pure functions of
-        /// <c>(worldSeed, gameTime)</c> — no save, no determinism concern):
+        /// of truth the water-shader pass reads for surface rain-rings, so the drops and the rings always agree.
+        /// Rain is DERIVED, art-only: there is NO precipitation signal in the sim, so we read an OCCASIONAL
+        /// SQUALL off the two mood axes the environment already publishes (both pure functions of
+        /// <c>(worldSeed, gameTime)</c> — no save, no determinism concern). A squall needs BOTH a genuinely
+        /// murky sky AND real chop — TWO onsets, not a leaky linear gate — so the ordinary Moderate sea on a
+        /// clear night stays DRY (the owner-playtest fix: rain was constant because a rough-ish sea alone
+        /// leaked ~40% of the drive through the old gate even in perfectly clear air):
         /// <list type="bullet">
-        /// <item><description>HIGHER sea-state (the wind is up, chop building) is the DRIVER: the continuous
-        /// <c>EnvironmentSample.SeaState01</c> axis weighted by <paramref name="seaStateWeight"/>.</description></item>
-        /// <item><description>LOW visibility (the light gone murky) is the GATE: a rough-but-clear sea is a
-        /// blustery bright day, NOT a downpour — so fog UNLOCKS the rain. The gate rises from
-        /// <c>(1 - visibilityGate)</c> in clear air to 1 in thick fog, i.e. clear skies throttle the rain to a
-        /// fraction and murk opens it fully. With <paramref name="visibilityGate"/> = 1 the sea must go murky
-        /// before it rains at all; = 0 removes the gate (rain purely on chop).</description></item>
+        /// <item><description>MURK GATE (the hard requirement) — driven by visibility: <c>murk</c> is 0 while
+        /// the air is clear (visibility ≥ <paramref name="visOnset"/>) so a clear or lightly-hazy night rains
+        /// NOTHING, then ramps smoothly to 1 as visibility FALLS to <paramref name="visFull"/> (real murk).
+        /// A rough-but-clear sea is a blustery BRIGHT day, not a downpour.</description></item>
+        /// <item><description>SEA-STATE ONSET (the gentle driver) — <c>seaband</c> is 0 on near-glassy water
+        /// (sea-state ≤ <paramref name="seaOnset"/>) and ramps to 1 at a full gale, so even in thick murk a
+        /// calm sea rains nothing.</description></item>
         /// </list>
-        /// So <c>intensity = baseline + seaStateWeight · seaState01 · gate(visibility)</c>. Monotonic
-        /// increasing in sea-state, increasing as visibility falls, ~<paramref name="baseline"/> on a glassy
-        /// clear day (default baseline 0 = the feature is OFF until the owner dials it in). Clamped 0..1. Pure +
-        /// static — the intensity the tests pin and the shader will share.
+        /// So <c>intensity = clamp01(baseline + seaStateWeight · seaband · murk)</c> — rain only emerges where
+        /// the two onsets OVERLAP (real chop AND real murk), i.e. a genuine squall. Monotonic non-decreasing in
+        /// sea-state (above the onset), non-decreasing as visibility FALLS (into the gate), ~<paramref name="baseline"/>
+        /// on a glassy clear day (default baseline 0 = the feature is OFF until the owner dials it in). Clamped
+        /// 0..1. Pure + static — the intensity the tests pin and the shader shares. No RNG (rule 5).
         /// </summary>
+        /// <param name="visibility">0..1 air clarity (1 = crystal clear, 0 = thick murk). LOW visibility opens the murk gate.</param>
+        /// <param name="seaState01">0..1 continuous sea-state (the chop). The gentle driver, above its onset.</param>
+        /// <param name="baseline">0..1 rain floor on a clear glassy day (default 0 = feature OFF).</param>
+        /// <param name="seaStateWeight">How much the sea-state (above its onset) drives the rain — the main knob.</param>
+        /// <param name="visOnset">Visibility at/above which there is NO rain (the gate is shut). Rain begins only as visibility falls BELOW this.</param>
+        /// <param name="visFull">Visibility at/below which the murk gate is fully OPEN (must be &lt; <paramref name="visOnset"/>).</param>
+        /// <param name="seaOnset">Sea-state at/below which the sea is too glassy to rain even in murk.</param>
         public static float RainIntensity(float visibility, float seaState01,
-                                          float baseline, float seaStateWeight, float visibilityGate)
+                                          float baseline, float seaStateWeight,
+                                          float visOnset, float visFull, float seaOnset)
         {
+            float vis = Mathf.Clamp01(visibility);
             float sea = Mathf.Clamp01(seaState01);
-            float fog = Mathf.Clamp01(1f - Mathf.Clamp01(visibility));   // 0 clear .. 1 thick murk
-            float g = Mathf.Clamp01(visibilityGate);
-            // Gate: clear air lets through (1 - g); murk opens it to 1. g=0 → gate is always 1 (no gate).
-            float gate = Mathf.Clamp01((1f - g) + g * fog);
-            float driven = Mathf.Max(0f, seaStateWeight) * sea * gate;
+            // MURK GATE: 0 while the air is clear (vis >= visOnset), ramping to 1 as visibility FALLS to visFull.
+            // SmoothStep(from, to, value) returns 0 at value==from and 1 at value==to; passing (visOnset, visFull)
+            // with visOnset > visFull makes it rise as visibility falls — a soft-shouldered onset, not a leak.
+            float murk = Mathf.SmoothStep(Mathf.Clamp01(visOnset), Mathf.Clamp01(visFull), vis);
+            // SEA-STATE ONSET: 0 on near-glass (sea <= seaOnset), ramping to 1 at a full gale.
+            float seaband = Mathf.SmoothStep(Mathf.Clamp01(seaOnset), 1f, sea);
+            float driven = Mathf.Max(0f, seaStateWeight) * seaband * murk;
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + driven);
         }
 

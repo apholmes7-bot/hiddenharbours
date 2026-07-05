@@ -250,8 +250,11 @@ namespace HiddenHarbours.Art
     /// the deterministic weather drives up the chop AND drops the visibility (a squall). <see cref="RainEmitter"/>
     /// serializes an owner-editable instance. There is NO precipitation signal in the sim, so rain is DERIVED
     /// art-only from sea-state + visibility via <see cref="AmbientParticleMath.RainIntensity"/> (no sim/save
-    /// change). Defaults ship the feature OFF (<see cref="BaselineIntensity"/> 0, and the rain only appears once
-    /// chop + murk cross in) so it never rains on a calm clear day until the owner dials it in.
+    /// change). Rain is an OCCASIONAL SQUALL: it needs BOTH genuine low visibility (real murk) AND real chop,
+    /// so a clear or lightly-choppy night stays DRY until the owner dials it in. Defaults ship the feature OFF
+    /// (<see cref="BaselineIntensity"/> 0). NOTE: these intensity onsets MUST stay in lockstep with
+    /// <see cref="WaterSurface"/>'s serialized rain-shape floats so the surface RINGS and the falling DROPS
+    /// share the one derivation.
     /// </summary>
     [System.Serializable]
     public struct RainConfig
@@ -262,14 +265,18 @@ namespace HiddenHarbours.Art
         [Tooltip("Half-size (m) of the area, centred on the camera, rain falls within (x = across, y = up/down).")]
         public Vector2 AreaHalfSize;
 
-        [Header("Intensity (derived — no forecast in the sim)")]
+        [Header("Intensity (derived — an occasional squall needs murk AND chop)")]
         [Tooltip("Baseline rain on a clear, glassy day (0..1). DEFAULT 0 = feature OFF until you dial it in.")]
         [Range(0f, 1f)] public float BaselineIntensity;
-        [Tooltip("How much HIGHER sea-state (the wind is up, chop building) drives the rain — the main knob.")]
+        [Tooltip("How much HIGHER sea-state (above the onset) drives the rain — the main knob.")]
         [Range(0f, 2f)] public float SeaStateWeight;
-        [Tooltip("The VISIBILITY gate (0..1): how much the rain needs the light to go MURKY. 1 = must fog up " +
-                 "before it rains (a clear blustery day stays dry); 0 = rain purely on chop, no gate.")]
-        [Range(0f, 1f)] public float FogWeight;
+        [Tooltip("Visibility (0..1) AT/ABOVE which there is NO rain — clear/lightly-hazy air stays dry. Rain " +
+                 "only begins as visibility falls BELOW this. Higher = rain needs less murk to start.")]
+        [Range(0f, 1f)] public float VisOnset;
+        [Tooltip("Visibility (0..1) AT/BELOW which the murk gate is fully OPEN (real murk). Must be < VisOnset.")]
+        [Range(0f, 1f)] public float VisFull;
+        [Tooltip("Sea-state (0..1) AT/BELOW which the sea is too near-glassy to rain even in thick murk.")]
+        [Range(0f, 1f)] public float SeaOnset;
 
         [Header("Fall & slant")]
         [Tooltip("How fast a drop falls (m/s DOWN the screen). Rain is fast — this is the streak's speed.")]
@@ -307,7 +314,9 @@ namespace HiddenHarbours.Art
             AreaHalfSize      = new Vector2(16f, 10f),
             BaselineIntensity = 0f,      // feature OFF by default — no rain until the sea builds AND murks up
             SeaStateWeight    = 1.0f,
-            FogWeight         = 0.6f,
+            VisOnset          = 0.65f,   // clear/lightly-hazy air (vis >= 0.65) → NO rain
+            VisFull           = 0.40f,   // murk gate fully open once visibility falls to 0.40
+            SeaOnset          = 0.30f,   // near-glass (sea <= 0.30) → no rain even in murk
             FallSpeed         = 14f,
             WindResponse      = 0.35f,
             Length            = 0.9f,
