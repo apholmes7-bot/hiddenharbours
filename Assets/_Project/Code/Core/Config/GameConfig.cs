@@ -55,6 +55,15 @@ namespace HiddenHarbours.Core
                  "slow + exposed.")]
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
+        [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
+        [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
+                 "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +
+                 "bites, the lee of land is sheltered), and how much a head / beam / following sea matters. " +
+                 "ON by default with a moderate 'first feel' bite — calm sheltered water is UNCHANGED by " +
+                 "construction (force scales by SeaState01 × exposure). Dial Strength to taste; set Enabled " +
+                 "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
+        public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
