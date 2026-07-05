@@ -377,6 +377,35 @@ Shader "HiddenHarbours/Water"
         _DriftLineSeaStateLo ("Drift line sea-state rise (_Chop; 0 = glass has none)", Range(0,1)) = 0.05
         _DriftLineSeaStateHi ("Drift line sea-state gone (_Chop; storm has none)", Range(0,1)) = 0.6
         _DriftLineColor      ("Drift line colour (a=0 reuses foam colour)", Color) = (0.92, 0.96, 0.98, 0.0)
+
+        [Header(Surface RAIN RINGS (dimple rings   night visible   Arc C   default OFF))]
+        // Expanding concentric dimple RINGS stippled over the water where rain strikes the surface (P1 Sea
+        // Has Moods). Pixelized value-noise seeds the ring CENTRES per cell; each ring expands (frac-phase
+        // radius) with a thin bright edge, gated by _RainIntensity (DERIVED in C# from sea-state + visibility
+        // via AmbientParticleMath.RainIntensity and pushed as the _RainIntensity uniform — NOT re-derived here,
+        // NOT hand-tuned). Masked to open water via the READ-ONLY depth key. col.rgb ONLY: never depth/clip/
+        // _WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5). OWNER RULING (2026-07-05): the
+        // rings are added in the POST-GRADE OVERLAY-COMPENSATED block (beside the boat beam / moon glitter) and
+        // divided by max(_DayNightTint.rgb) so the downstream night MULTIPLY (ADR 0013) cancels — a night squall
+        // still shows rain on black water. _RainRingStrength = 0 is an EXACT passthrough (opt-in, revertible).
+        _RainIntensity     ("Rain intensity (0..1; DERIVED in C# — not hand-tuned)", Range(0,1)) = 0.0
+        _RainRingStrength  ("Rain ring strength (0 = off / today)", Range(0,2)) = 0.0
+        _RainRingScale     ("Rain ring cell scale (rings/unit)", Float) = 0.4
+        _RainRingDensity   ("Rain ring density (fraction of cells that ring)", Range(0,1)) = 1.0
+        _RainRingSpeed     ("Rain ring expansion speed (rings/sec)", Float) = 1.5
+        _RainRingColor     ("Rain ring colour (pale cool white)", Color) = (0.86, 0.92, 0.98, 1.0)
+
+        [Header(STORM FOAM LANES (downwind foam streaks in a blow   Arc C   default OFF))]
+        // Long downwind foam streaks that come up in a building sea (P1) — the storm sibling of the drift
+        // lines, but keyed to the WIND (the _WindDir aniso basis, reused from the whitecaps) not the current,
+        // and gated by _Roughness so they are STRONG in a blow and GONE on calm (not a bell — a monotone rise).
+        // Reuse the EvolvingField + the ridged-lane streak idiom, stretched ALONG the wind so a round cell
+        // reads as a long thin lane. Placed PRE-grade next to the whitecaps so they DIM with the night like the
+        // rest of the foam (opposite of the night-visible rain rings). col.rgb ONLY: never depth/clip/
+        // _WaterLevel/the height read/the sim (P1 integrity, rule 5). _StormFoamLaneStrength = 0 = today.
+        _StormFoamLaneStrength ("Storm foam lane strength (0 = off / today)", Range(0,2)) = 0.0
+        _StormFoamLaneStretch  ("Storm foam lane along-wind stretch (thin lanes)", Float) = 6.0
+        _StormFoamLaneScale    ("Storm foam lane scale (lanes/unit)", Float) = 0.3
     }
 
     SubShader
@@ -670,6 +699,17 @@ Shader "HiddenHarbours/Water"
                 float  _DriftLineSeaStateLo;
                 float  _DriftLineSeaStateHi;
                 float4 _DriftLineColor;
+                // Surface rain rings (col.rgb; _RainIntensity is DERIVED in C# and pushed) — Arc C, default OFF.
+                float  _RainIntensity;
+                float  _RainRingStrength;
+                float  _RainRingScale;
+                float  _RainRingDensity;
+                float  _RainRingSpeed;
+                float4 _RainRingColor;
+                // Storm foam lanes (col.rgb; keyed to _WindDir/_Roughness — the blow) — Arc C, default OFF.
+                float  _StormFoamLaneStrength;
+                float  _StormFoamLaneStretch;
+                float  _StormFoamLaneScale;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1745,6 +1785,104 @@ Shader "HiddenHarbours/Water"
                 return lerp(rgb, graded, strength);
             }
 
+            // ---- SURFACE RAIN RINGS (col.rgb-only dressing; NIGHT-VISIBLE via post-grade compensation) -------
+            // Expanding concentric dimple RINGS where rain strikes the sea (P1). _RainIntensity is DERIVED in
+            // C# (AmbientParticleMath.RainIntensity of sea-state + visibility) and pushed as the uniform - this
+            // helper NEVER re-derives it (WaterSurface owns the physics; the shader just draws). Mechanism, all
+            // deterministic (reuses the shader ValueNoise/Hash21/Pixelize/_Time.y - no new RNG, rule 5):
+            //   * CELLS: a pixelized grid at _RainRingScale; each cell that passes the _RainRingDensity lottery
+            //     (a stable per-cell Hash21) hosts one raindrop strike, its CENTRE jittered inside the cell and
+            //     its phase offset per-cell so the rings do not pulse in lockstep.
+            //   * RINGS: RAINRING_TAPS concentric rings expand from the centre - radius = frac(strike phase) so
+            //     each ring is born at the centre, grows, then recycles; a thin bright edge (a narrow band around
+            //     the growing radius) is the ring line, fading as the ring grows (a dying ripple).
+            //   * The tap count is a COMPILE-TIME constant (RAINRING_TAPS), NEVER an [unroll] over a runtime
+            //     count - the #96 magenta trap. Masked to open water by the READ-ONLY depth key (dt passed in).
+            // Returns the additive RGB (BEFORE the day/night compensation the caller applies). col.rgb ONLY:
+            // never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, CLAUDE.md rule 5).
+            #define RAINRING_TAPS 3
+            float3 RainRings(float2 worldXY, float dt, float t)
+            {
+                if (_RainRingStrength <= 0.001 || _RainIntensity <= 0.001)
+                    return float3(0, 0, 0);                 // EXACT passthrough - opt-in (rule 6): today's look
+
+                float2 pp   = Pixelize(worldXY * max(_RainRingScale, 1e-4));
+                float2 cell = floor(pp);                    // the ring-centre cell
+                float2 fr   = pp - cell;                    // 0..1 position inside the cell
+
+                // Per-cell strike: a stable lottery (density) + a jittered centre + a phase offset (no lockstep).
+                float present = step(1.0 - saturate(_RainRingDensity), Hash21(cell + 0.5));
+                float2 centre = float2(Hash21(cell + 1.3), Hash21(cell + 7.9));   // jittered inside the cell
+                float phase0  = Hash21(cell + 3.7);                               // per-cell phase offset
+                float d = length(fr - centre);              // distance (cell units) from this drop's strike
+
+                // A family of concentric ripples at different points in their life (compile-time tap count).
+                float rings = 0.0;
+                [unroll]                                     // bare [unroll] over the #define bound (the FBM idiom; not a runtime count => no #96)
+                for (int i = 0; i < RAINRING_TAPS; i++)
+                {
+                    float life   = frac(phase0 + t * max(_RainRingSpeed, 0.0) + (float)i / RAINRING_TAPS);
+                    float radius = life * 0.5;              // grow from centre out to ~half a cell
+                    float edge   = 1.0 - saturate(abs(d - radius) / 0.05);  // narrow band around the radius
+                    edge = pow(edge, 3.0);                  // thin the ring line to a crisp stipple
+                    rings += edge * (1.0 - life);           // a dying ripple fades as it expands
+                }
+
+                // Masked to OPEN water via the READ-ONLY depth key so rings do not stipple the dry shore.
+                float openWater = saturate(dt);
+                float amount = rings * present * openWater
+                             * saturate(_RainIntensity) * saturate(_RainRingStrength);
+                return _RainRingColor.rgb * amount;
+            }
+
+            // ---- STORM FOAM LANES (col.rgb-only dressing; DIMS with the night like the rest of the foam) -----
+            // Long downwind foam streaks that come up in a building sea (P1) - the storm sibling of DriftLines,
+            // but keyed to the WIND (the _WindDir aniso basis reused from the whitecaps) not the current, and
+            // gated by _Roughness (a MONOTONE rise: gone on calm, strong in a blow - not a bell). Reuses the
+            // EvolvingField (the living whitecap field) + the pow(saturate(1-|g1-g2|k)) ridged-lane streak idiom,
+            // the coord STRETCHED along the wind by _StormFoamLaneStretch so a round cell reads as a long thin
+            // lane. Depth is read ONLY via dt (the depth key). Placed PRE-grade next to the whitecaps so it dims
+            // with the night like the foam it belongs to (opposite of the night-visible rain rings). Returns the
+            // additive RGB (tinted to the foam colour). col.rgb ONLY: never depth/clip/_WaterLevel/the height
+            // read/the sim (P1 integrity, rule 5). Deterministic (ValueNoise/EvolvingField, no RNG).
+            float3 StormFoamLanes(float2 worldXY, float dt, float t)
+            {
+                if (_StormFoamLaneStrength <= 0.001)
+                    return float3(0, 0, 0);                 // EXACT passthrough - opt-in (rule 6): today's look
+
+                // MONOTONE wind gate: gone on calm, rising with _Roughness (the wind uniform), eased in so the
+                // lanes come up as the blow builds rather than snapping on.
+                float blow = saturate(_Roughness);
+                blow = blow * blow;                          // ease-in: they belong to a real wind, not a breeze
+                if (blow <= 0.001)
+                    return float3(0, 0, 0);
+
+                // wind aniso basis (same idiom as the whitecaps): keep along-wind, compress cross-wind.
+                float2 wdir  = normalize(_WindDir.xy + float2(0, 1e-4));   // safe axis on a zero wind
+                float2 wperp = float2(-wdir.y, wdir.x);
+                float2 pp = Pixelize(worldXY * max(_StormFoamLaneScale, 1e-4));
+
+                // WANDER: a slow low-freq noise nudge along the wind so lanes drift/bend, not a ruler grid.
+                float wander = (ValueNoise(Pixelize(worldXY * max(_StormFoamLaneScale, 1e-4) * 0.35)) - 0.5) * 2.0;
+
+                // advance ALONG the wind over time; stretch the along-axis so lanes read long + thin.
+                float stretch = max(_StormFoamLaneStretch, 1.0);
+                float laneAlong  = (dot(pp, wdir) + wander * 0.6) / stretch - t * _Flow * 0.6;   // stream downwind
+                float laneAcross = dot(pp, wperp);
+                float2 laneUV = float2(laneAlong, laneAcross);
+
+                // THIN RIDGED-NOISE LANES across the wind (the pow(saturate(1-|g1-g2|k)) streak idiom), the
+                // pattern EVOLVING in place (the boil) via EvolvingField so lanes are not a fixed sliding stamp.
+                float g1 = EvolvingField(laneUV, float2(0, 0), 1.0, _FoamEvolveSpeed, t);
+                float g2 = ValueNoise(Pixelize(laneUV * 1.7 + 5.1));
+                float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.2), 3.0);   // bright thin veins => streaks
+
+                // gates: the wind blow (monotone) * open-water (fade at the wet shore edge, dt read-only).
+                float openWater = saturate(dt);
+                float amount = lanes * blow * openWater * saturate(_StormFoamLaneStrength);
+                return _FoamColor.rgb * amount * 0.4;                         // streaks, tinted to the foam
+            }
+
             // ---- CURRENT DRIFT LINES (col.rgb-only dressing; reads the tidal set — Arc C, default OFF) --------
             // Faint foam streaks aligned with the tidal CURRENT so the player reads which way the sea is setting
             // (P1). The aniso basis is built from _FlowDir (the CURRENT axis, NOT the wind) — _FlowDir/_Flow are
@@ -2220,6 +2358,14 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 
+                // ---- STORM FOAM LANES: long downwind foam streaks in a blow (col.rgb ONLY; Arc C, default OFF)
+                // Added in the SAME pre-grade dressing zone the foam + whitecaps occupy (so the palette
+                // guard-rail below bounds them AND so they DIM with the night like the rest of the foam - the
+                // opposite of the night-visible rain rings added post-grade below). Keyed to the WIND
+                // (_WindDir/_Roughness - the blow), a MONOTONE gate: gone on calm, strong in a gale. dt (the
+                // depth key) is READ-ONLY here (never depth/clip/_WaterLevel/the sim - P1, rule 5).
+                col.rgb += StormFoamLanes(worldXY, dt, t);
+
                 // ---- CURRENT DRIFT LINES: faint streaks tracing the tidal set (col.rgb ONLY; Arc C, default OFF)
                 // Added in the same pre-grade dressing zone the foam + whitecaps occupy, so the palette guard-rail
                 // below bounds them. Reads the CURRENT (_FlowDir/_Flow — the SMOOTHED tidal set) so the lines
@@ -2268,7 +2414,14 @@ Shader "HiddenHarbours/Water"
                 // golden hour it carries the intended sun glitter, at night the moon/stars/beam.
                 // Sorting-INDEPENDENT (part of the water's own frag) — it cannot fail the way the land quad did
                 // over water. col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1, rule 5).
-                float3 lightContent = BoatLightTerm(worldXY) + skyNightRGB;
+                // OWNER RULING (2026-07-05): the SURFACE RAIN RINGS join this POST-GRADE, overlay-COMPENSATED
+                // bucket (beside the boat beam + moon/sun glitter) - NOT the pre-grade dressing - so the
+                // downstream day/night MULTIPLY (ADR 0013) cancels and a night squall STILL shows rain on black
+                // water (day AND night). They ride the exact same dnSum branch below: compensated when the cycle
+                // runs (divided by max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL)), raw when it is off (edit mode /
+                // bare art / demo). _RainIntensity is the C#-DERIVED gate (0 => the rings add nothing, so a
+                // clear/calm sea is pixel-identical). col.rgb ONLY (P1, rule 5).
+                float3 lightContent = BoatLightTerm(worldXY) + skyNightRGB + RainRings(worldXY, dt, t);
                 col.rgb += (dnSum > 1e-3)
                     ? lightContent / max(_DayNightTint.rgb,
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))

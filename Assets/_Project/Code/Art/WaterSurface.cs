@@ -228,6 +228,22 @@ namespace HiddenHarbours.Art
         [Tooltip("Names searched (in order) to auto-find the shore fence when none is assigned.")]
         [SerializeField] private string[] _shoreFenceNames = { "ShoreEdge", "Shoreline" };
 
+        [Header("Surface rain rings (derived _RainIntensity push; Arc C)")]
+        // The SHADER draws the surface rain rings; the INTENSITY is DERIVED here (not in HLSL) and pushed as
+        // _RainIntensity, mirroring how RainEmitter derives its falling rain via AmbientParticleMath.RainIntensity
+        // (visibility + sea-state). These three shape floats DEFAULT to RainConfig.Default (baseline 0,
+        // seaStateWeight 1.0, visibilityGate 0.6) so the surface RINGS and the falling-RAIN particles agree out
+        // of the box. NOTE: if the owner retunes rain FEEL, match BOTH this and the RainEmitter's RainConfig
+        // (a future refactor can unify them into one shared config - flagged, not built here). Derived-physics
+        // push, NOT a per-mood colour, so it is NOT in MoodFloatNames (that would double-drive it). Visual only;
+        // reads the deterministic EnvironmentSample, feeds no sim, saves nothing (rule 5).
+        [Tooltip("Rain on a clear, glassy day (0..1). DEFAULT 0 = the rings are OFF until the sea builds AND murks up (matches RainConfig.Default).")]
+        [Range(0f, 1f)] [SerializeField] private float _rainBaselineIntensity = 0f;
+        [Tooltip("How much HIGHER sea-state (the wind is up, chop building) drives the rings - the main knob (matches RainConfig SeaStateWeight).")]
+        [Range(0f, 2f)] [SerializeField] private float _rainSeaStateWeight = 1.0f;
+        [Tooltip("The VISIBILITY gate (0..1): how murky it must get before it rings. 1 = must fog up first; 0 = purely on chop (matches RainConfig FogWeight).")]
+        [Range(0f, 1f)] [SerializeField] private float _rainVisibilityGate = 0.6f;
+
         // --- shader property ids (cached; no per-frame string lookups) ---
         private static readonly int IdWaterLevel = Shader.PropertyToID("_WaterLevel");
         private static readonly int IdFlow       = Shader.PropertyToID("_Flow");
@@ -235,6 +251,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdWindDir    = Shader.PropertyToID("_WindDir");
         private static readonly int IdRoughness  = Shader.PropertyToID("_Roughness");
         private static readonly int IdChop       = Shader.PropertyToID("_Chop");
+        private static readonly int IdRainIntensity = Shader.PropertyToID("_RainIntensity");
         private static readonly int IdHeightTex  = Shader.PropertyToID("_HeightTex");
         private static readonly int IdHeightMin  = Shader.PropertyToID("_HeightMin");
         private static readonly int IdHeightMax  = Shader.PropertyToID("_HeightMax");
@@ -456,6 +473,16 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdWindDir, new Vector4(windDir.x, windDir.y, 0f, 0f));
             _mpb.SetFloat(IdRoughness, roughness);
             _mpb.SetFloat(IdChop, chop);
+
+            // DERIVED rain intensity for the shader's surface RAIN RINGS. Computed ONCE here (never re-derived
+            // in HLSL) via the SHARED AmbientParticleMath.RainIntensity - the exact call RainEmitter makes for
+            // the falling rain - so the surface rings and the rain particles share one derivation. It reads the
+            // deterministic EnvironmentSample (sea-state + visibility); it is a physics-style push, NOT a mood
+            // colour (so it stays out of MoodFloatNames - no double-drive). _Chop == SeaState01 today but is a
+            // distinct retunable knob, so we pass s.SeaState01 directly, not the pushed _Chop. Visual only.
+            float rainIntensity = AmbientParticleMath.RainIntensity(
+                s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight, _rainVisibilityGate);
+            _mpb.SetFloat(IdRainIntensity, rainIntensity);
 
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
             // by the eased weather weights and override them on the SAME MPB — composing with the physics props
