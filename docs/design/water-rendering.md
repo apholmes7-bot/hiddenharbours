@@ -388,7 +388,8 @@ the NaN-safe fallbacks — the determinism guard for the cohesion reorientation.
 
 > **Property summary (all additive — none of the owner's existing tuned values changed):**
 > *ocean swell* — `_OceanSwellDir` (vec, `(0,0)` = auto-from-`_WindDir`), `_OceanSwellScale` (0.025, SMALL =
-> long wavelength), `_OceanSwellSpeed` (0.018), `_OceanSwellStrength` (0.16), `_OceanSwellSharpness` (1.4).
+> long wavelength), `_OceanSwellSpeed` (0.018), `_OceanSwellStrength` (0.16), `_OceanSwellSharpness` (2.2 —
+> raised from 1.4 so the crest brightness reads as a defined ridge, matching the wave field's own sharpening).
 > *foam streaks* — `_FoamStreakStretch` (3.5; 1 = round, higher = longer streaks). *coupling* —
 > `_FoamCrestGate` (0.6), `_SpecSwellBias` (0.35), `_FoamDriftWindVsCurrent` (0.6). To dissolve the cohesion
 > back toward the §5.7 look, set `_OceanSwellStrength` / `_FoamCrestGate` / `_SpecSwellBias` to 0 and
@@ -895,6 +896,12 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
    read-only global; **no new push**, falling back to a gentle +X creep when nothing publishes it). A soft
    threshold (`_CloudSoftness`) shapes pale clumps with clear sky between; the clouds tint toward the current
    sky (warm at dusk). `_CloudStrength` / `_CloudScale` / `_CloudDriftSpeed` / `_CloudColor` tune them.
+   The cloud FBM coord is **camera-anchored** (`worldXY − _WorldSpaceCameraPos.xy`) exactly like the moon
+   disc below, so distant clouds — a reflection of the sky at infinity — **stay put as the follow-cam tracks
+   the sailing boat** and drift **only** with the wind at `_CloudDriftSpeed` (owner playtest fix, 2026-07-05:
+   sampling the raw `worldXY` scrolled them past at BOAT speed, which is why lowering `_CloudDriftSpeed` alone
+   never fixed it — that dial only rode ON TOP of the boat-motion scroll). `_WorldSpaceCameraPos` is the URP
+   built-in the moon/sun anchors already read — no new uniform. (Stars remain world-anchored, unchanged.)
 2. **The LIVING MOON** — a reflected disc + a shimmering **vertical GLITTER PATH** (the classic moonlight
    column: broken, wavy, animated highlights descending toward the viewer; pixelized so it reads as pixel
    art). The money shot on **calm night water**. It is **alive**:
@@ -1362,9 +1369,18 @@ When trains are live, `swellCrest` — the 0..1 crest driver every downstream la
 `_SpecSwellBias`, whitecap gate `_FoamCrestGate`, sky-reflection lit faces) — comes from the real field, and
 the owner's tuned `_OceanSwell*` values **map on instead of resetting** (ADR 0018 §(6)):
 
-> `_OceanSwellStrength` → the brightness amplitude (identical role/scale: `swellSigned × strength × 0.25`, now
-> with `swellSigned = height/totalAmp` — zero-mean, so **glass = zero bands = the untouched mirror**).
-> `_OceanSwellSharpness` → the crest-shaping exponent on the 0..1 crest signal (its exact legacy role).
+> `_OceanSwellStrength` → the brightness amplitude (`swellSigned × strength × 0.30`). **The brightness now
+> reads the SHARPENED crest, not raw height** (owner playtest fix, 2026-07-05): `swellSigned` derives from
+> `swellCrest` — `swellSigned = (swellCrest × 2 − 1) × swellLive` — so a **narrow bright ridge sits over a
+> broad dark trough (a DEFINED crest)** instead of four summed trains smearing into a wide soft "white
+> cloud". Raw un-sharpened height (the old `height/totalAmp`) never reached the eye's brightness; only the
+> whitecap gate saw the sharpening. The gain nudged `0.25 → 0.30` because a pinched crest covers less area.
+> `swellLive = saturate(_WaveFieldParams.z × 40)` gates the band by the field's un-clamped total amplitude so
+> **glass = zero bands = the untouched mirror** stays true even though the remap alone would floor at −1.
+> `_OceanSwellSharpness` → the crest-shaping exponent on the 0..1 crest signal (its exact legacy role);
+> **default raised 1.4 → 2.2** so the brightness sharpening agrees with the wave field's own crest geometry.
+> (The owner's Water.mat override, if any, still wins — his tuned swell dials now read as more DEFINED, so he
+> may want to re-tune `_OceanSwellStrength`/`_OceanSwellSharpness`.)
 > `_OceanSwellScale` → a **visual wavelength scale**, normalized to the shipped default **0.025**: at 0.025 the
 > water renders the field's TRUE wavelengths (pixel == hull); the current tuned 0.07 renders ~2.8× shorter
 > waves — retune toward 0.025 when the B2 rocking should visibly match the crests on screen.
@@ -1609,6 +1625,11 @@ the coord **stretched along the wind** by `_StormFoamLaneStretch` so a round cel
 streamed downwind over time (`t · _Flow`). Depth is read **only** via `dt` (fade at the wet shore edge). Its
 locals are named `laneAlong` / `laneAcross` to avoid shadowing the `cross` intrinsic / other helpers' locals.
 
+**Tightened to crisp streaks (owner playtest, 2026-07-05):** the ridge exponent was raised `3.0 → 5.0`
+(`pow(saturate(1 − |g1−g2|·2.2), 5.0)` — thinner, more defined veins) and the output multiplier dropped
+`0.4 → 0.25`, so the lanes stay **tight streaks even at max `_StormFoamLaneStrength`** instead of blooming
+into a broad white wash. `_StormFoamLaneStrength`'s default is unchanged (`0` / off).
+
 `StormFoamLanes()` returns an additive `col.rgb` term placed **pre-grade**, right after the whitecap block and
 before the drift-line call — the **same** foam dressing zone the whitecaps occupy — so the palette guard-rail
 (§13) bounds it **and** so it **dims with the night** overlay like the rest of the foam. That is the opposite of
@@ -1620,8 +1641,8 @@ the rain rings, which sit post-grade in the compensated bucket to survive the da
 |---|---|---|
 | `_RainIntensity` | `0.0` | **C#-driven** (derived), not hand-tuned; `0` = no rings. |
 | `_RainRingStrength` | `0.0` | Master rain-ring strength; `0` = off / today. |
-| `_RainRingScale` | `0.4` | Ring-centre cell scale (rings/unit). |
-| `_RainRingDensity` | `1.0` | Fraction of cells that host a strike. |
+| `_RainRingScale` | `6.0` | Ring-centre cell scale (**cells/unit — BIGGER = smaller rings**; the label misled: it is cells-per-unit, so a larger value shrinks each ripple). Raised 0.4 → 6.0 (owner playtest, 2026-07-05): at 0.4 one cell was 2.5 world units, so a ripple spanned ~2.5 tiles (a dinner plate); at 6.0 a cell ≈ 0.17 units → fine sub-tile dimples. Pure default change, no math (radius/band are already in cell-units and shrink with the scale). |
+| `_RainRingDensity` | `0.35` | Fraction of cells that host a strike. Dropped 1.0 → 0.35 (owner playtest) so drops **scatter sparsely** instead of striking every cell. |
 | `_RainRingSpeed` | `1.5` | Ring expansion speed (rings/sec). |
 | `_RainRingColor` | pale cool white | Ring line colour. |
 | `_StormFoamLaneStrength` | `0.0` | Master storm-lane strength; `0` = off / today. |
