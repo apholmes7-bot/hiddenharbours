@@ -244,4 +244,81 @@ namespace HiddenHarbours.Art
             NightFade    = 1f,
         };
     }
+
+    /// <summary>
+    /// Every tunable of the FALLING-RAIN effect (rule 6) — short vertical streaks that fall over the sea when
+    /// the deterministic weather drives up the chop AND drops the visibility (a squall). <see cref="RainEmitter"/>
+    /// serializes an owner-editable instance. There is NO precipitation signal in the sim, so rain is DERIVED
+    /// art-only from sea-state + visibility via <see cref="AmbientParticleMath.RainIntensity"/> (no sim/save
+    /// change). Defaults ship the feature OFF (<see cref="BaselineIntensity"/> 0, and the rain only appears once
+    /// chop + murk cross in) so it never rains on a calm clear day until the owner dials it in.
+    /// </summary>
+    [System.Serializable]
+    public struct RainConfig
+    {
+        [Header("Pool & area")]
+        [Tooltip("Max live rain drops (the pool is fixed and recycled — zero per-frame allocation). Rule 7 budget cap.")]
+        [Min(1)] public int MaxDrops;
+        [Tooltip("Half-size (m) of the area, centred on the camera, rain falls within (x = across, y = up/down).")]
+        public Vector2 AreaHalfSize;
+
+        [Header("Intensity (derived — no forecast in the sim)")]
+        [Tooltip("Baseline rain on a clear, glassy day (0..1). DEFAULT 0 = feature OFF until you dial it in.")]
+        [Range(0f, 1f)] public float BaselineIntensity;
+        [Tooltip("How much HIGHER sea-state (the wind is up, chop building) drives the rain — the main knob.")]
+        [Range(0f, 2f)] public float SeaStateWeight;
+        [Tooltip("The VISIBILITY gate (0..1): how much the rain needs the light to go MURKY. 1 = must fog up " +
+                 "before it rains (a clear blustery day stays dry); 0 = rain purely on chop, no gate.")]
+        [Range(0f, 1f)] public float FogWeight;
+
+        [Header("Fall & slant")]
+        [Tooltip("How fast a drop falls (m/s DOWN the screen). Rain is fast — this is the streak's speed.")]
+        [Min(0.1f)] public float FallSpeed;
+        [Tooltip("Metres of sideways SLANT per m/s of the REAL sim wind — so a gale visibly slants the rain " +
+                 "(reads the sim WindVector directly for m/s, not the normalised 0..1 shader wind).")]
+        public float WindResponse;
+        [Tooltip("Length (m) of a rain streak — the vertical extent of the drop sprite before slant stretches it.")]
+        [Min(0.01f)] public float Length;
+
+        [Header("Look")]
+        [Tooltip("Rain streak width scale (m) — keep thin; the sprite is a short vertical line.")]
+        [Min(0.01f)] public float Size;
+        [Tooltip("Seconds a drop lives before it is recycled (roughly how long it takes to cross the field).")]
+        [Min(0.1f)] public float Lifetime;
+        [Tooltip("Fraction of life spent fading IN (0..1) — drops ease in near the top.")]
+        [Range(0f, 1f)] public float FadeIn;
+        [Tooltip("Fraction of life spent fading OUT (0..1) — drops fade near the bottom.")]
+        [Range(0f, 1f)] public float FadeOut;
+        [Tooltip("Rain tint. A cool pale streak reads as rain over the water; alpha is driven by life + intensity + day/night.")]
+        public Color Color;
+        [Tooltip("Peak opacity at full intensity (0..1) before the life envelope + day/night scale it.")]
+        [Range(0f, 1f)] public float MaxAlpha;
+
+        [Header("Day / night")]
+        [Tooltip("How strongly night dims the rain (0 = ignore time of day, 1 = tracks the light exactly). " +
+                 "Rain keeps falling at night, so a low fade reads true.")]
+        [Range(0f, 1f)] public float NightFade;
+        [Tooltip("How faintly the rain catches MOONLIGHT at night so a downpour never blacks out entirely (0..1 floor).")]
+        [Range(0f, 1f)] public float MoonlightCatch;
+
+        public static RainConfig Default => new RainConfig
+        {
+            MaxDrops          = 64,
+            AreaHalfSize      = new Vector2(16f, 10f),
+            BaselineIntensity = 0f,      // feature OFF by default — no rain until the sea builds AND murks up
+            SeaStateWeight    = 1.0f,
+            FogWeight         = 0.6f,
+            FallSpeed         = 14f,
+            WindResponse      = 0.35f,
+            Length            = 0.9f,
+            Size              = 0.06f,
+            Lifetime          = 1.6f,
+            FadeIn            = 0.15f,
+            FadeOut           = 0.25f,
+            Color             = new Color(0.78f, 0.85f, 0.92f, 1f),
+            MaxAlpha          = 0.5f,
+            NightFade         = 0.25f,
+            MoonlightCatch    = 0.1f,
+        };
+    }
 }
