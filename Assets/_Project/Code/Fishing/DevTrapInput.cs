@@ -6,27 +6,32 @@ using HiddenHarbours.Economy;   // BaitDef (Fishing → Economy is allowed)
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// PLACEHOLDER dev input to prove the trap loop end-to-end (trap-fishing arc Build 3) — <b>NOT</b> the
-    /// real placement flow. Two keys: <b>T drops</b> a baited trap at the drop point, and <b>Y checks/hauls</b>
-    /// the nearest trap (resolves its deterministic catch and lands it into the active boat's hold, like
-    /// <c>ClamDigger</c>). It exists ONLY so the owner can feel the loop: <i>drop → wait → ready → reload =
-    /// identical catch</i>. It is not depth-gated placement and not the haul minigame (both Build 4).
+    /// PLACEHOLDER dev input for the trap loop (trap-fishing arc Build 4) — <b>NOT</b> the real place/haul UX.
+    /// It scaffolds the two ends of the manual loop so the owner can play it end-to-end in the greybox:
     ///
-    /// <para>Mirrors the <see cref="DevFishingInput"/>/<c>ClamDigger</c> dev scaffolds: a serialized drop
-    /// point + hold provider, dev-keyed via the New Input System (legacy Input throws at runtime — memory),
-    /// stood down under a modal dialogue (<see cref="InteractionGate"/>). Replaced by the InputService +
-    /// the real place/haul UX later (ui-ux). Touches no sim state directly — it drives the
-    /// <see cref="PlacedTrapService"/>, which owns determinism + save.</para>
+    /// <list type="bullet">
+    ///   <item><b>T — set a baited trap</b> at the drop point via the REAL Build-4 depth gate
+    ///   (<see cref="PlacedTrapService.TryPlaceGated"/>): it drops only where the water is deep enough
+    ///   (<see cref="TrapPlacement"/>) and only if the required bait is in stock, consuming one. Refusals log
+    ///   a cozy reason (too shoal / no bait). This REPLACES the Build-3 unconditional dev drop.</item>
+    ///   <item><b>G — dev-grant supply</b> (greybox only): tops up a small stock of the dev trap's bait so
+    ///   the loop is playable NOW. Real trap/bait acquisition is a later ECONOMY offer (a Shipwright/gear
+    ///   sale) — flagged, not built here.</item>
+    /// </list>
+    ///
+    /// <para>The HAUL is no longer here — it's the rhythm minigame on <see cref="TrapHaulController"/> (lay
+    /// alongside a buoy, H to start, pull to the swell). This dev input only PLACES + grants. Mirrors the
+    /// <see cref="DevFishingInput"/>/<c>ClamDigger</c> dev scaffolds: dev-keyed via the New Input System
+    /// (legacy Input throws at runtime — memory), stood down under a modal dialogue
+    /// (<see cref="InteractionGate"/>). Replaced by the InputService + the real place UX later (ui-ux).</para>
     /// </summary>
     public sealed class DevTrapInput : MonoBehaviour
     {
         [Header("Wiring")]
-        [Tooltip("The service that owns placed traps (place/haul/save). Required.")]
+        [Tooltip("The service that owns placed traps (place/save). Required.")]
         [SerializeField] private PlacedTrapService _service;
         [Tooltip("Where a trap drops (the active boat / player). Defaults to this object's transform.")]
         [SerializeField] private Transform _dropPoint;
-        [Tooltip("A GameObject carrying an IHold (the boat's ShipHold) a hauled catch lands into.")]
-        [SerializeField] private GameObject _holdProvider;
 
         [Header("What to drop (greybox — a fixed baited trap for the dev loop)")]
         [Tooltip("The trap kind the dev drop places.")]
@@ -34,96 +39,85 @@ namespace HiddenHarbours.Fishing
         [Tooltip("The bait the dev drop loads (its FavorsSpeciesIds soft-weight the catch). Null = unbaited.")]
         [SerializeField] private BaitDef _bait;
         [Tooltip("The region id placed traps are tagged with (scene-per-region).")]
-        [SerializeField] private string _regionId = "region.coddle_cove";
+        [SerializeField] private string _regionId = "region.st_peters";
+
+        [Header("Dev supply grant (greybox — real acquisition is a later ECONOMY offer)")]
+        [Tooltip("How many bait the G key grants per press, so the loop is playable before the economy sells " +
+                 "bait. Tunable; greybox only.")]
+        [Min(1)][SerializeField] private int _devBaitGrant = 5;
 
         [Header("Keys (dev only)")]
         [SerializeField] private Key _dropKey = Key.T;
-        [SerializeField] private Key _haulKey = Key.Y;
+        [SerializeField] private Key _grantKey = Key.G;
 
-        private IHold _hold;
+        private bool _aboard;   // setting a pot is a BOAT action — keys only live while aboard (ControlModeChanged)
 
         private void Awake()
         {
             if (_dropPoint == null) _dropPoint = transform;
-            if (_holdProvider != null) _hold = _holdProvider.GetComponent<IHold>();
         }
+
+        private void OnEnable()
+        {
+            _aboard = GameServices.ActiveBoat != null && GameServices.ActiveBoat.HasActiveBoat;
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+        }
+
+        private void OnDisable() => EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+
+        private void OnControlModeChanged(ControlModeChanged e) => _aboard = e.Mode == ControlMode.Aboard;
 
         private void Update()
         {
+            if (!_aboard) return;                    // on foot → setting a pot is a boat action, keys are dead
             if (InteractionGate.IsBlocked) return;   // a modal dialogue owns the keys while up
             var kb = Keyboard.current;
             if (kb == null) return;
 
             if (kb[_dropKey].wasPressedThisFrame) DropTrap();
-            if (kb[_haulKey].wasPressedThisFrame) HaulNearest();
+            if (kb[_grantKey].wasPressedThisFrame) GrantDevSupply();
         }
 
-        /// <summary>Drop a baited trap at the drop point. Public so a test/tool can drive it without input.</summary>
-        public PlacedTrap DropTrap()
+        /// <summary>Set a baited trap at the drop point through the real Build-4 depth+bait gate. Public so a
+        /// test/tool can drive it without input. Returns the placement result.</summary>
+        public PlacedTrapService.PlaceResult DropTrap()
         {
             if (_service == null || _trapDef == null)
             {
                 Debug.LogWarning("[DevTrapInput] No service/trap wired.");
-                return null;
+                return PlacedTrapService.PlaceResult.NoTrap;
             }
             Vector2 pos = _dropPoint != null ? (Vector2)_dropPoint.position : Vector2.zero;
-            return _service.PlaceTrap(_trapDef, _bait, pos, _regionId);
+            return _service.TryPlaceGated(_trapDef, _bait, pos, _regionId, out _);
         }
 
-        /// <summary>Check/haul the nearest placed trap into the hold — logs the state + soak %, and on a ready
-        /// trap resolves + lands the deterministic catch. Public so a test/tool can drive it without input.</summary>
-        public bool HaulNearest()
+        /// <summary>Dev-grant a few bait into the save so the loop is playable now (greybox only). Real bait
+        /// acquisition is a later economy offer. Public so a test/tool can drive it without input.</summary>
+        public void GrantDevSupply()
         {
-            if (_service == null) return false;
-            EnsureHold();
+            var save = GameServices.Save?.Current;
+            if (save == null || _bait == null) { Debug.Log("[DevTrapInput] No save / bait to grant."); return; }
 
-            PlacedTrap best = Nearest(_dropPoint != null ? (Vector2)_dropPoint.position : Vector2.zero);
-            if (best == null) { Debug.Log("[DevTrapInput] No traps down to check."); return false; }
-
-            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            Debug.Log($"[DevTrapInput] Nearest trap: {best.StateAt(now)} — soak {best.Progress01(now) * 100f:0}%.");
-
-            CatchContext ctx = BuildContext();
-            return _service.HaulTrap(best, _hold, in ctx);
-        }
-
-        private PlacedTrap Nearest(Vector2 from)
-        {
-            PlacedTrap best = null;
-            float bestSqr = float.MaxValue;
-            var live = _service.Live;
-            for (int i = 0; i < live.Count; i++)
+            save.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
+            for (int i = 0; i < save.BaitStock.Count; i++)
             {
-                PlacedTrap t = live[i];
-                if (t == null) continue;
-                float sqr = ((Vector2)t.transform.position - from).sqrMagnitude;
-                if (sqr < bestSqr) { bestSqr = sqr; best = t; }
+                if (save.BaitStock[i].BaitId == _bait.Id)
+                {
+                    save.BaitStock[i] = new BaitStock(_bait.Id, save.BaitStock[i].Count + _devBaitGrant);
+                    Debug.Log($"[DevTrapInput] Granted {_devBaitGrant} {_bait.DisplayName} (now {save.BaitStock[i].Count}).");
+                    return;
+                }
             }
-            return best;
-        }
-
-        private CatchContext BuildContext()
-        {
-            IGameClock clock = GameServices.Clock;
-            IEnvironmentService env = GameServices.Environment;
-            float tide = env != null ? env.Sample().TideHeight : 0f;
-            float hour = clock != null ? clock.HourOfDay : 12f;
-            Season season = clock != null ? clock.Season : Season.HighSummer;
-            return new CatchContext(_regionId, tide, hour, season, Gear.Trap);
-        }
-
-        private void EnsureHold()
-        {
-            if (_hold == null && _holdProvider != null) _hold = _holdProvider.GetComponent<IHold>();
+            save.BaitStock.Add(new BaitStock(_bait.Id, _devBaitGrant));
+            Debug.Log($"[DevTrapInput] Granted {_devBaitGrant} {_bait.DisplayName} (dev supply).");
         }
 
         /// <summary>Wire the dev input in one call (tests / editor).</summary>
-        public void Configure(PlacedTrapService service, Transform dropPoint, IHold hold,
-                              TrapDef trapDef, BaitDef bait, string regionId)
+        public void Configure(PlacedTrapService service, Transform dropPoint, TrapDef trapDef, BaitDef bait,
+                              string regionId)
         {
             _service = service;
             _dropPoint = dropPoint;
-            _hold = hold;
             _trapDef = trapDef;
             _bait = bait;
             _regionId = regionId;
