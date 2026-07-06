@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
-  m_Name: AmericanLobster
+  m_Name: RockCrab
   m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
-  Id: fish.lobster
-  DisplayName: American Lobster
+  Id: fish.rock_crab
+  DisplayName: Rock Crab
   Category: 1
-  Rarity: 3
-  Flavor:
-  Sprite: {fileID: -8456290002298016751, guid: 040a0268a1bccd349b770115adf7e914, type: 3}
+  Rarity: 0
+  Flavor: 'Underfoot in every tide pool, taken in the crab pot. Good bait and a modest
+    sale. The trap-arc''s common shellfish. BALANCE NOTE: greybox values (base value,
+    elasticity, weight) - flagged for economy-sim to tune.'
+  Sprite: {fileID: 0}
   RegionIds:
   - region.coddle_cove
   AllowedGear: 8
@@ -26,8 +28,8 @@ MonoBehaviour:
   MaxTide: 10
   StartHour: 0
   EndHour: 24
-  MinWeightKg: 0.4
-  MaxWeightKg: 4
-  BaseValue: 28
-  SupplyElasticity: 0.35
-  SpawnWeight: 0.4
+  MinWeightKg: 0.1
+  MaxWeightKg: 0.4
+  BaseValue: 4
+  SupplyElasticity: 0.45
+  SpawnWeight: 1
