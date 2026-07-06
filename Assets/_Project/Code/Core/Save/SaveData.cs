@@ -62,6 +62,85 @@ namespace HiddenHarbours.Core
         /// "gear.shovel"). gameplay-systems maps an owned id to its Gear capability; Economy only records
         /// the purchase. Append-only; acquisition order. Added in v2.</summary>
         public List<string> OwnedGear = new();
+
+        /// <summary>Every persistent object the player has DROPPED INTO THE WORLD — currently just placed
+        /// traps (the first world-placed object; trap-fishing arc Build 0). Each entry is the irreducible
+        /// PLACEMENT record only: the trap's soak progress and contents are recomputed from
+        /// <see cref="WorldSeed"/> + <see cref="GameTimeSeconds"/> + the placement facts, never stored
+        /// (rule 5 / determinism — the same discipline that keeps tide/wind/weather out of the save).
+        /// UNUSED until the trap runtime lands (arc Build 3); this field is the durable groundwork, inert
+        /// like <c>Fishing.Gear.Trap</c> until a consumer exists. Append-only; order is placement order.
+        /// Added in v3. (ADR 0020, extending ADR 0008; diegetic-ui-and-inventory §4.3.)</summary>
+        public List<PlacedTrapDto> PlacedTraps = new();
+
+        /// <summary>Bait the player owns, as COUNTED stock (unlike <see cref="OwnedGear"/>, which is a
+        /// presence-only wallet — bait is consumable, so it needs a quantity). One record per bait kind.
+        /// UNUSED until the trap runtime lands (arc Build 3). Added in v3. (ADR 0020.)</summary>
+        public List<BaitStock> BaitStock = new();
+    }
+
+    /// <summary>
+    /// The persisted PLACEMENT record for one world-placed trap — the irreducible facts that cannot be
+    /// recomputed (a player's placement choice), and nothing else. The trap's soak progress and catch are
+    /// a deterministic function of <see cref="SaveData.WorldSeed"/> + <see cref="PlacementGameTimeSeconds"/>
+    /// → now + the trap/bait Defs, so they are RECOMPUTED, never stored (rule 5), exactly as tide/wind are.
+    ///
+    /// <para>Shaped as a special case of the future world-placed-CONTAINER record
+    /// (diegetic-ui-and-inventory §4.3): a stable instance id, a Def id, a position, a region, and a
+    /// placement time are the same skeleton a placed bucket/rack would carry — a later container ADR can
+    /// generalize this, but we keep it concrete and minimal now (ADR 0020, no generic system yet).</para>
+    /// </summary>
+    [Serializable]
+    public struct PlacedTrapDto
+    {
+        /// <summary>Stable id UNIQUE PER PLACED INSTANCE (many traps of the same kind can be down at once).
+        /// The sim keys this trap's deterministic soak stream on this id, so it must survive save/load.</summary>
+        public string InstanceId;
+
+        /// <summary>Stable Def id of the trap KIND (e.g. "trap.lobster_pot"), resolved against the
+        /// ContentDatabase at load. The save carries the reference, never the trap's stats (rules 2/6).</summary>
+        public string TrapDefId;
+
+        /// <summary>World X position. Stored as two flat floats (not a Vector2) to keep the JSON clean and
+        /// human-readable; <see cref="SaveData"/> stores no vectors, so this sets the flat-scalar precedent.</summary>
+        public float PosX;
+
+        /// <summary>World Y position (see <see cref="PosX"/>).</summary>
+        public float PosY;
+
+        /// <summary>Stable Def id of the bait loaded (e.g. "bait.herring"), or empty for an unbaited trap.
+        /// What's baited drives what soaks — an irreducible placement fact, not derivable.</summary>
+        public string BaitId;
+
+        /// <summary>The game-clock instant the trap was placed, at full precision (matching
+        /// <see cref="SaveData.GameTimeSeconds"/>). The anchor the deterministic soak is computed FROM;
+        /// storing the anchor, not the result, is what keeps the catch recomputable (rule 5).</summary>
+        public double PlacementGameTimeSeconds;
+
+        /// <summary>Region id the trap lives in (scene-per-region, ADR 0004), so a trap in an unloaded
+        /// region is still recorded and restored when that region loads.</summary>
+        public string Region;
+    }
+
+    /// <summary>
+    /// One bait kind the player owns, with a quantity. Bait is consumable (spent to arm a trap), so unlike
+    /// the presence-only <see cref="SaveData.OwnedGear"/> wallet it carries a <see cref="Count"/>. A list of
+    /// these is JsonUtility-friendly where a Dictionary is not (same reason <see cref="SaveFlag"/> is).
+    /// </summary>
+    [Serializable]
+    public struct BaitStock
+    {
+        /// <summary>Stable bait Def id (e.g. "bait.herring").</summary>
+        public string BaitId;
+
+        /// <summary>How many of this bait the player holds.</summary>
+        public int Count;
+
+        public BaitStock(string baitId, int count)
+        {
+            BaitId = baitId;
+            Count = count;
+        }
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         /// <summary>A fresh save for a brand-new game — current version, empty collections.</summary>
         public static SaveData NewGame() => new SaveData { SchemaVersion = CurrentVersion };
@@ -47,6 +47,18 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 2;
             }
 
+            // ---- v2 → v3: world-placed persistent objects (the placed-traps list) and counted bait stock
+            // are new in v3 (trap-fishing arc Build 0 — the save groundwork so a dropped trap survives
+            // save/load once Build 3's runtime lands). An older save had no placed traps and no bait; the
+            // null-repair below gives them empty lists. Only PLACEMENT facts are ever stored — soak/contents
+            // recompute from seed+time (rule 5), so there is nothing else to fill. (ADR 0020.)
+            if (data.SchemaVersion < 3)
+            {
+                data.PlacedTraps ??= new System.Collections.Generic.List<PlacedTrapDto>();
+                data.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
+                data.SchemaVersion = 3;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -55,6 +67,8 @@ namespace HiddenHarbours.Core
             data.OwnedLicenses ??= new System.Collections.Generic.List<string>();
             data.RepairedBoats ??= new System.Collections.Generic.List<string>();
             data.OwnedGear ??= new System.Collections.Generic.List<string>();
+            data.PlacedTraps ??= new System.Collections.Generic.List<PlacedTrapDto>();
+            data.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).
