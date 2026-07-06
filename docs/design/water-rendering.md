@@ -38,7 +38,8 @@
 >    width/softness, specular amount/sharpness/light-dir, caustic amount/scale/depth, the pixel grid
 >    (`Pixels Per Unit`, default 32), the **anti-tiling** lever (`Untile Strength`, default 0.6 — raise
 >    it if the painted surface grid reads at CALM) and the **always-on beach swash** (`Swash Amplitude`
->    0.3 m, `Swash Speed` 0.5, `Swash Scale` 0.25 — the fast in/out shoreline wash, §5.6). No graph
+>    0.3 m, `Swash Speed` 0.5, `Swash Wavelength` 1.2, `Swash Along-Shore Vary` 0.35 — the fast in/out
+>    shoreline wash that now rolls **in** from the sea, §5.6). No graph
 >    editing, no code.
 > 5. **Art-direct beyond procedural (optional):** drop owner-painted textures into the **Painted
 >    textures** slots to override or blend with the matching procedural layer — foam shape, caustics,
@@ -254,12 +255,32 @@ remains point-sampled. `0` = the raw repeating grid; `1` = fully broken up. Cost
 plus two extra texture taps per untiled slot only when `_UntileStrength > 0` — within the rule-7 budget.
 
 **(B) Always-on beach swash — `_SwashAmplitude` (m, default 0.3), `_SwashSpeed` (default 0.5),
-`_SwashScale` (default 0.25).** Before this, the **only** in/out shoreline motion was the slow
-deterministic tide. The swash adds a **fast, continuous, cosmetic** waterline wash — "waves crashing in
-and out" — driven off `_Time` in the shader (`BeachSwash`): a two-beat sine (`_SwashSpeed` sets the
-rate; `_SwashScale` varies the phase along-shore so it doesn't pulse as one flat line) produces a signed
-**depth offset** (`±_SwashAmplitude` m) that advances (run-up) and recedes (backwash) the wet edge.
+`_SwashWavelength` (default 1.2), `_SwashAlongShoreVary` (0..1, default 0.35).** Before this, the
+**only** in/out shoreline motion was the slow deterministic tide. The swash adds a **fast, continuous,
+cosmetic** waterline wash — "waves crashing in and out" — driven off `_Time` in the shader
+(`BeachSwash`): a two-beat sine produces a signed **depth offset** (`±_SwashAmplitude` m) that advances
+(run-up) and recedes (backwash) the wet edge.
 
+- **The crest rolls SHOREWARD, not around the island (the rotation fix).** The original phase advanced
+  along a **fixed world diagonal** (`(worldX+worldY)·_SwashScale`). On the round island's ring-shaped
+  foam band a crest travelling in one compass direction sweeps *around* the ring's circumference — the
+  owner saw the foam **rotate** around the island. Real run-up rolls **shoreward**, perpendicular to the
+  local coast, everywhere at once. So the phase is now driven by the **shoreward coordinate**: the local
+  visual `depth` (which decreases toward shore). A crest sits at constant total phase
+  `θ = t·speed·2π + depth·_SwashWavelength`; holding `θ` as `t` grows forces `depth` to **shrink**, so
+  each crest marches to ever-shallower water — **in** toward the beach — the same radial run-up at every
+  point on the ring. The shore-normal comes from `ShoreDir()` (the baked-seabed height gradient, §11), so
+  no fixed compass direction is involved. `_SwashWavelength` sets the shoreward wave spacing (crests per
+  metre of depth); larger = tighter-packed run-up lines.
+- **Along-shore desync, not a travelling wave.** To keep the wash from pulsing as one flat ring, a
+  **small** value-noise offset (`_SwashAlongShoreVary`) sampled along the shore **tangent** (perpendicular
+  to `ShoreDir`) breaks neighbouring stretches of coast slightly out of sync — organic, but it carries
+  **no** single world direction, so it can never re-form a coherent wave circling the island. The
+  dominant motion stays shoreward (in/out); this term is only a subtle desync. `0` = a perfectly
+  in-phase ring; the default `0.35` reads natural.
+- **Flat-seabed fallback.** Where `ShoreDir()` returns zero (open deep water / no height map) there is no
+  shoreward axis, so the swash falls back to a **gentle time-only pulse** (no travelling term) — the wet
+  edge still animates, and there is no fixed-direction sweep to circle anything.
 - **Confined to the foam band (the P1 integrity rule).** The swash offset is multiplied by a band gate
   (`1 − smoothstep(0, foamWidth·2 + |amp|, depth)` — full at the wet edge, **zero** by the band reach)
   and applied **only** to a *local foam-only depth* (`foamDepth`). The real `depth` that drives
@@ -270,7 +291,15 @@ rate; `_SwashScale` varies the phase along-shore so it doesn't pulse as one flat
 The swash math has a pure-C# twin in `WaterSurface.cs` (`SwashOffset` + `SwashBandGate`) so the
 oscillation, the amplitude bound, and **the band-confinement invariant** are unit-tested headless
 (`Assets/Tests/EditMode/Art/ArtRenderingTests.cs`) without opening Unity — the twin feeds no sim and is
-not pushed to the material; the shader owns the live wash.
+not pushed to the material; the shader owns the live wash. (The twin's `alongShore` phase parameter is
+now a generic phase seed; the shoreward-phase rework lives in the shader — updating the C# twin's phase
+formula to mirror it is a small gameplay-systems follow-up and does not affect the bounded-oscillation
+contract the tests assert.)
+
+> **Retired dial:** `_SwashScale` (the old fixed-diagonal along-shore scale) is replaced by
+> `_SwashWavelength` + `_SwashAlongShoreVary`. Any `_SwashScale` value serialized in `Water.mat` / the
+> Water Presets is now **inert** (Unity ignores a serialized property the shader no longer declares); the
+> new dials pick up their Properties-block defaults until the owner tunes them.
 
 ### 5.7 Wind direction + syncopation + FBM variance (shipped upgrade)
 

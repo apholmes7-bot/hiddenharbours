@@ -178,9 +178,10 @@ Shader "HiddenHarbours/Water"
         _ShoreSampleStep  ("Shore gradient sample step (m)", Float) = 0.4
 
         [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
-        _SwashAmplitude ("Swash amplitude (m, foam-band only)", Float) = 0.3
-        _SwashSpeed     ("Swash speed (waves / 2pi sec)", Float)      = 0.5
-        _SwashScale     ("Swash along-shore variation scale", Float)  = 0.25
+        _SwashAmplitude    ("Swash amplitude (m, foam-band only)", Float)        = 0.3
+        _SwashSpeed        ("Swash speed (run-ups / 2pi sec)", Float)            = 0.5
+        _SwashWavelength   ("Swash shoreward wave spacing (per m depth)", Float) = 1.2
+        _SwashAlongShoreVary ("Swash along-shore desync (0..1, subtle)", Range(0,1)) = 0.35
 
         [Header(Specular glints (layer 4))]
         _SpecColor      ("Specular color", Color)       = (1.0, 0.98, 0.86, 1.0)
@@ -630,7 +631,8 @@ Shader "HiddenHarbours/Water"
                 float  _ShoreSampleStep;
                 float  _SwashAmplitude;
                 float  _SwashSpeed;
-                float  _SwashScale;
+                float  _SwashWavelength;
+                float  _SwashAlongShoreVary;
                 float4 _SpecColor;
                 float  _SpecAmount;
                 float  _SpecSharpness;
@@ -1228,13 +1230,42 @@ Shader "HiddenHarbours/Water"
             // back. The caller GATES it to the depth~0 foam band and applies it to a LOCAL foam-only depth, so
             // it NEVER touches the real `depth` that drives clip()/the deep tint/the caustic gate, NEVER moves
             // the gameplay waterline, and saves nothing (the P1 integrity rule, CLAUDE.md rule 5). Visual-only.
-            // Along-shore variation (_SwashScale over world X+Y) keeps the wash from pulsing as one flat line.
-            float BeachSwash(float2 worldXY, float t)
+            //
+            // SHOREWARD PHASE (the fix): the crest travels IN from the sea toward the beach, not around it.
+            // The old phase advanced along a FIXED WORLD DIAGONAL (world X+Y): on the round island's ring-
+            // shaped foam band a crest moving in one compass direction sweeps AROUND the ring's circumference
+            // — reading as the foam "rotating" around the island. Real run-up rolls SHOREWARD, perpendicular
+            // to the local coast, everywhere. So we drive the phase by the SHOREWARD coordinate: `depth`
+            // (which decreases toward shore). A crest sits at constant total phase theta = t*speed*2pi +
+            // depth*wavelength; holding theta as time grows forces depth to SHRINK, so over time each crest
+            // marches to ever-shallower water — i.e. IN toward the beach — the SAME radial motion everywhere.
+            //   depth  — the LOCAL (visual) depth at this pixel; shoreward = decreasing depth. Never the real
+            //            clip depth (caller passes the same read-only depth it feeds the foam gate). P1-safe.
+            // A subtle along-shore DESYNC (value-noise sampled along the shore TANGENT, low _SwashAlongShoreVary)
+            // breaks neighbouring stretches slightly out of sync so the wash isn't one flat pulsing line —
+            // WITHOUT a single world direction, so it never becomes a coherent wave travelling around the ring.
+            float BeachSwash(float2 worldXY, float depth, float t)
             {
-                float alongShore = (worldXY.x + worldXY.y) * _SwashScale;
+                // shore-normal (toward land) from the seabed gradient; tangent = along the coast.
+                float2 shore = ShoreDir(worldXY);
+                float2 tangent = float2(-shore.y, shore.x);   // 90deg rotation; length matches shore (0 if flat)
+                // low-amplitude desync sampled ALONG the coast (per-stretch offset), so adjacent bits of beach
+                // break a touch out of phase — organic, but carries no fixed travel direction around the ring.
+                float alongCoord = dot(Pixelize(worldXY), tangent) * 0.35;
+                float desync = (ValueNoise(float2(alongCoord, alongCoord * 0.7 + 11.3)) - 0.5)
+                               * _SwashAlongShoreVary * 6.2831853;
+                // On the real coast the phase RUNS UP the beach. A crest sits at a constant total phase
+                // theta = t*w + depth*k; holding theta as t grows forces depth to SHRINK, i.e. the crest
+                // marches to ever-shallower water = IN toward the beach (the same radial run-up everywhere on
+                // the ring). On flat seabed (ShoreDir == 0, open deep water / no height map) there is no
+                // shoreward axis — fall back to a gentle time-only pulse so the wet edge still animates, but
+                // with NO travelling term (so no fixed-direction sweep can circle the island there either).
+                bool haveShore = dot(shore, shore) > 1e-6;
+                float shoreward = haveShore ? (max(depth, 0.0) * _SwashWavelength) : 0.0;
+                float base = t * _SwashSpeed * 6.2831853 + shoreward;
                 // two beats slightly out of phase read as overlapping run-up/backwash, not a metronome.
-                float wave = sin(t * _SwashSpeed * 6.2831853 + alongShore) * 0.7
-                           + sin(t * _SwashSpeed * 6.2831853 * 0.5 + alongShore * 1.7) * 0.3;
+                float wave = sin(base + desync) * 0.7
+                           + sin(base * 0.5 + desync * 1.7) * 0.3;
                 return wave * _SwashAmplitude;
             }
 
@@ -2247,7 +2278,7 @@ Shader "HiddenHarbours/Water"
                 // water and the gameplay waterline don't move. Pure foam dressing (P1 integrity, rule 5).
                 float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);
                 float swashGate  = 1.0 - smoothstep(0.0, swashReach, depth);   // 1 at the wet edge -> 0 deeper
-                float foamDepth  = depth - BeachSwash(worldXY, t) * swashGate;  // local, foam-only
+                float foamDepth  = depth - BeachSwash(worldXY, depth, t) * swashGate;  // local, foam-only
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
                 float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
                 if (foamEdge > 0.001)
