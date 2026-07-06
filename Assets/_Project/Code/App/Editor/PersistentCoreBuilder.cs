@@ -10,6 +10,7 @@ using HiddenHarbours.Player;
 using HiddenHarbours.World;         // RegionSceneLoader (the persistent travel rig's loader)
 using HiddenHarbours.UI;            // HudController (the single ui-ux touch, mirrored from the cove)
 using HiddenHarbours.App;           // PersistentObject / CameraFollow / RegionTravelCoordinator
+using HiddenHarbours.Art;           // BoatSpotlight (durable night-nav beam on the boat root, ADR 0016)
 using HiddenHarbours.Art.Editor;    // VS-23 locked Pixel-Perfect camera convention
 using UnityEngine.Rendering.Universal; // PixelPerfectCamera
 
@@ -252,6 +253,18 @@ namespace HiddenHarbours.App.Editor
             // modified — this only re-points the serialized hull refs the same way the dory hull was set.
             if (UseDirectionalFishingBoatVisual)
                 ApplyDirectionalFishingBoatVisual(doryGo, sr, oarRig, rowAnim, boat, hold);
+
+            // --- THE BOAT SPOTLIGHT (ADR 0016) — durable, root-hosted, follows the bow -----------------------
+            // The owner re-added this by hand every session and lost it on rebuild; mount it at BUILD time so the
+            // night-nav beam is durable. It rides the BoatController ROOT (the Rigidbody2D 'Dory'), NOT the
+            // counter-rotated FishingBoatVisual child — the beam must ride the ROTATING body to follow the bow
+            // (the child is stomped back to world-identity every LateUpdate). BoatSpotlight adds + drives its own
+            // SceneLight cone and auto-gates to night (invisible by day). This mirrors the 'Lighting ▸ Add
+            // Spotlight' menu (GetComponentInParent<Rigidbody2D>). Its bounce reads the FishingBoatVisual child's
+            // wave rock by NAME (Art stays decoupled from Boats), so it bobs/sways with the hull when B2 is on.
+            // Added AFTER the directional skin so the visual child exists for the bounce to find.
+            if (doryGo.GetComponent<BoatSpotlight>() == null)
+                doryGo.AddComponent<BoatSpotlight>();
 
             // Active-boat heading seam (VS-19): the HUD pulls heading/COG through Core; HasActiveBoat tracks
             // the controller's enabled flag (moored/on-foot → false).

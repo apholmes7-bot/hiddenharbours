@@ -314,6 +314,53 @@ namespace HiddenHarbours.Art
         public static float CameraDepthZ(float cameraZ, float cameraForwardZ, float nearClip, float offset)
             => cameraZ + cameraForwardZ * (Mathf.Max(nearClip, 0f) + Mathf.Max(offset, 0f));
 
+        // ---- the BOAT-SPOTLIGHT BOUNCE (the lamp rocks with the hull; ADR 0018 B2 read) ------------------
+        //
+        // The boat spotlight lives on the STEADY physics ROOT (correct for AIMING — the cone follows the bow
+        // and does NOT inherit the visual's counter-rotation), so it does not share the wave ROCK the hull's
+        // visual gets (BoatWaveMotion bobs/rolls the FishingBoatVisual child, B2). A lamp mounted on a rolling
+        // deck should BOB and SWAY with that rock — so BoatSpotlight reads the hull's current bob (a screen-Y
+        // offset) + roll (a small tilt) off the visual and feeds them here to nudge the PUBLISHED beam:
+        //   • the lamp POSITION offsets vertically by the bob (a mounted lamp rides up/down with the deck), and
+        //   • the beam DIRECTION sways by a small angle proportional to the roll (the cone leans as the deck
+        //     tilts) — subtle, a mounted light sways a little, not wildly.
+        // PURE + deterministic (no scene/GPU/RNG): a headless twin of what the component publishes, so the
+        // bob→offset + roll→sway mapping is unit-tested (rule 5). Zero rock (glass calm) => zero offset AND the
+        // beam direction returned UNCHANGED (the cone sits exactly still) — the identity the tests pin.
+
+        /// <summary>
+        /// The vertical (world-Y) POSITION offset to add to the published lamp position from the hull's current
+        /// BOB, in world units: simply <c>bob × scale</c>. A mounted lamp rides up and down with the deck. Zero
+        /// bob (or zero scale) ⇒ zero offset (glass calm ⇒ the lamp sits still). Linear + monotonic in bob;
+        /// pure / deterministic. Kept separate from the sway so each half is pinned independently by the tests.
+        /// </summary>
+        public static float BounceLampYOffset(float bob, float scale)
+            => bob * scale;
+
+        /// <summary>
+        /// Sway the beam DIRECTION by the hull's current ROLL: rotate <paramref name="beamDir"/> about the
+        /// screen normal by <c>roll × degreesPerRoll</c> degrees (a subtle lean — a mounted light sways a
+        /// LITTLE with the deck, not wildly). Zero roll (or zero degreesPerRoll) ⇒ the direction is returned
+        /// UNCHANGED (glass calm ⇒ the cone points exactly where it aimed). The input need not be unit length;
+        /// the output preserves its magnitude (a pure rotation). Pure / deterministic — the headless twin of the
+        /// sway the component applies before publishing. A degenerate (near-zero) beamDir is returned as-is.
+        ///
+        /// <param name="beamDir">The aimed beam axis (the boat heading, transform.up) — rotated, not normalized.</param>
+        /// <param name="rollDegrees">The hull's current visual roll (degrees; sign carries the lean direction).</param>
+        /// <param name="degreesPerRoll">Sway gain: swayed angle = rollDegrees × this. Small (e.g. 0.5) = subtle.</param>
+        /// </summary>
+        public static Vector2 BounceSwayDir(Vector2 beamDir, float rollDegrees, float degreesPerRoll)
+        {
+            if (beamDir.sqrMagnitude < 1e-12f) return beamDir;         // no aim to sway
+            float swayDeg = rollDegrees * degreesPerRoll;
+            if (Mathf.Abs(swayDeg) < 1e-6f) return beamDir;            // glass calm ⇒ exactly unchanged
+            float rad = swayDeg * Mathf.Deg2Rad;
+            float c = Mathf.Cos(rad), s = Mathf.Sin(rad);
+            // Standard 2D rotation (CCW for +angle): preserves |beamDir| (pure rotation, no scale).
+            return new Vector2(beamDir.x * c - beamDir.y * s,
+                               beamDir.x * s + beamDir.y * c);
+        }
+
         // ---- small pure helpers -------------------------------------------------------------------------
 
         /// <summary>Smoothstep returning 0 below <paramref name="a"/>, 1 above <paramref name="b"/>, smooth between. Order-safe.</summary>
