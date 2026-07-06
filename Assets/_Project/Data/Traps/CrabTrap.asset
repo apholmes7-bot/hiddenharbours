@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d8d4954f83f4295941323d0e8621465, type: 3}
+  m_Name: CrabTrap
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.TrapDef
+  Id: trap.crab
+  DisplayName: Crab Pot
+  TrapSprite: {fileID: -8456290002298016751, guid: 040a0268a1bccd349b770115adf7e914, type: 3}
+  BuoySprite: {fileID: 1189902111904977172, guid: 8679e628e90ab3d4580f4dc81f470e00, type: 3}
+  CapacityUnits: 3
+  AllowedCatchFishIds:
+  - fish.rock_crab
+  RequiredBaitId: bait.fish_scrap
+  SoakHours: 8
+  MinSoakDepthMeters: 1
+  MaxSoakDepthMeters: 20
