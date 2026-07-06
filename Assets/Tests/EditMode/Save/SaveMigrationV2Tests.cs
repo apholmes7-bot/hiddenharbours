@@ -39,7 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             SaveData up = SaveMigration.Migrate(v1);
 
-            Assert.AreEqual(2, up.SchemaVersion, "v1 is stamped v2");
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion, "a v1 save climbs to the current schema version");
             // Scalars carried through untouched.
             Assert.AreEqual(999, up.WorldSeed);
             Assert.AreEqual(3600.5, up.GameTimeSeconds, 1e-6);
@@ -65,7 +65,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             SaveData up = SaveMigration.Migrate(v1);
 
-            Assert.AreEqual(2, up.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
             CollectionAssert.Contains(up.RepairedBoats, "boat.dory", "an already-owned boat stays usable after upgrade");
             CollectionAssert.Contains(up.RepairedBoats, "boat.punt");
         }
@@ -97,17 +97,20 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void V0Save_StillUpgradesAllTheWay_ToV2()
         {
-            // The original v0 shape (no fleet/flags/licence lists at all) must climb both steps to v2.
+            // The original v0 shape (no fleet/flags/licence lists at all) must climb every step to the
+            // current schema version, filling each version's new lists as it goes.
             var v0 = new SaveData { SchemaVersion = 0, Money = 30 };
 
             SaveData up = SaveMigration.Migrate(v0);
 
-            Assert.AreEqual(2, up.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
             Assert.AreEqual(30, up.Money);
             Assert.IsNotNull(up.OwnedBoats);
             Assert.IsNotNull(up.OwnedLicenses);
             Assert.IsNotNull(up.RepairedBoats);
             Assert.IsNotNull(up.OwnedGear);
+            Assert.IsNotNull(up.PlacedTraps);
+            Assert.IsNotNull(up.BaitStock);
         }
     }
 }
