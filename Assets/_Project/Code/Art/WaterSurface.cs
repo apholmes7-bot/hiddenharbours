@@ -1237,17 +1237,37 @@ namespace HiddenHarbours.Art
         // for the "swash stays in the foam band and never moves the gameplay waterline" rule (P1, rule 5).
 
         /// <summary>
-        /// The signed swash depth offset (metres) at a shoreline position and time — the same two-beat sine the
+        /// The signed swash depth offset (metres) at a shoreline pixel and time — the same two-beat sine the
         /// shader's <c>BeachSwash</c> uses. Positive pulls the wet edge inshore (run-up), negative pushes it back
-        /// (backwash). Bounded by |result| ≤ <paramref name="amplitude"/>. Continuous and periodic in time,
-        /// independent of the tide. <paramref name="alongShore"/> is the shader's <c>(worldX+worldY)*_SwashScale</c>
-        /// phase term that keeps the wash from pulsing as one flat line.
+        /// (backwash). Bounded by |result| ≤ <paramref name="amplitude"/> (the two beats weigh 0.7 + 0.3 = 1).
+        /// Continuous in time, independent of the tide.
+        /// <para>
+        /// SHOREWARD PHASE (mirrors PR #170's shader): the crest travels IN from the sea toward the beach, not
+        /// around the island. The phase is driven by the SHOREWARD coordinate — the LOCAL visual
+        /// <paramref name="depth"/>, which decreases toward shore — via <c>base = time*speed*2π +
+        /// depth*wavelength</c> (<paramref name="wavelength"/> = <c>_SwashWavelength</c>). A crest sits at a
+        /// constant total phase; holding it as time grows forces depth to shrink, so every crest marches to
+        /// ever-shallower water (IN toward the beach). When <paramref name="haveShore"/> is false (flat seabed /
+        /// no height map — the shader's <c>ShoreDir == 0</c>) the travelling term drops out and it degrades to a
+        /// gentle time-only pulse.
+        /// </para>
+        /// The along-shore DESYNC comes from <paramref name="alongShoreNoise01"/> — a 0..1 value-noise sample the
+        /// shader draws along the shore TANGENT (GPU-only, so passed in here, the same way the old twin took its
+        /// along-shore term) — mapped to a phase offset scaled by <paramref name="alongShoreVary"/>
+        /// (<c>_SwashAlongShoreVary</c>): <c>(sample−0.5)·vary·2π</c>. It nudges neighbouring stretches slightly
+        /// out of phase without a fixed travel direction. Foam-visual only — this twin feeds no sim, is never
+        /// pushed to the material, and never touches the real depth/clip/_WaterLevel/waterline (rule 5).
         /// </summary>
-        public static float SwashOffset(float time, float speed, float amplitude, float alongShore)
+        public static float SwashOffset(float time, float speed, float amplitude,
+                                        float depth, float wavelength,
+                                        float alongShoreVary, float alongShoreNoise01,
+                                        bool haveShore)
         {
-            float w = time * speed * 2f * Mathf.PI;
-            float wave = Mathf.Sin(w + alongShore) * 0.7f
-                       + Mathf.Sin(w * 0.5f + alongShore * 1.7f) * 0.3f;
+            float desync = (alongShoreNoise01 - 0.5f) * alongShoreVary * 2f * Mathf.PI;
+            float shoreward = haveShore ? Mathf.Max(depth, 0f) * wavelength : 0f;
+            float basePhase = time * speed * 2f * Mathf.PI + shoreward;
+            float wave = Mathf.Sin(basePhase + desync) * 0.7f
+                       + Mathf.Sin(basePhase * 0.5f + desync * 1.7f) * 0.3f;
             return wave * amplitude;
         }
 
