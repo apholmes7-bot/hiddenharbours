@@ -96,6 +96,12 @@ namespace HiddenHarbours.Art.Editor
             foreach (var p in props)
                 if (BuildDecorPrefab(p, $"{ArtSprites}/{p}.png", $"{PrefabRoot}/Props/{p}.prefab", PropSortingOrder)) n++;
 
+            // --- LAMPPOST (a PRECONFIGURED light source, ADR 0016): a greybox post + lamp head that carries its
+            //     OWN warm night light. Drop it in a scene and it lights the ground beneath it at night, all
+            //     automatic (self-installing + night-gated). Built greybox (no lamppost sprite imported yet) from
+            //     the shared square sprite; re-skins for free when a real lamp-post sprite lands. ---
+            if (BuildLamppostPrefab($"{PrefabRoot}/Props/Lamppost.prefab")) n++;
+
             // --- Grass (wind-swaying living grass, PR #102): a stamp-a-patch GrassClump + a single GrassTuft. ---
             EnsureFolder($"{PrefabRoot}/Grass");
             n += BuildGrassPrefabs($"{PrefabRoot}/Grass");
@@ -104,7 +110,9 @@ namespace HiddenHarbours.Art.Editor
             AssetDatabase.Refresh();
             Debug.Log($"[DecorPrefabBuilder] Built {n} decor prefabs under {PrefabRoot} (Trees/ Buildings/ Props/ Grass/). " +
                       "Drag one from the Project window into a scene to place it (see docs/authoring-scenes.md). " +
-                      "Grass sways in Play automatically; for the footstep bend, put a GrassFootstep on the player.");
+                      "Grass sways in Play automatically; for the footstep bend, put a GrassFootstep on the player. " +
+                      "The Lamppost (Props/) carries its OWN warm night light — drop it and it lights the ground " +
+                      "beneath it at night automatically (scrub the clock to night to see it).");
         }
 
         /// <summary>
@@ -211,6 +219,103 @@ namespace HiddenHarbours.Art.Editor
                 return true;
             }
             finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>
+        /// A LAMPPOST that comes PRECONFIGURED with its own night light (ADR 0016, the owner's lighting
+        /// principle): a slim greybox POST with a small warm LAMP HEAD on top, carrying a
+        /// <see cref="PreconfiguredLight"/> set to <see cref="LightPresets.Kind.Lightpost"/>. Dropping it in a
+        /// scene lights the ground beneath it at night — automatically (the light self-installs a
+        /// <see cref="SceneLight"/> radial pool and NIGHT-GATES in-shader off the published day/night tint; no
+        /// owner wiring, no clock read). The visual is GREYBOX (a dark post + a warm-tinted head built from the
+        /// shared square sprite) because no lamp-post art is imported yet — re-run after importing a real
+        /// Lamppost.png and swap the head/post sprite refs; the LIGHT stays identical. Everything is at honest
+        /// metric scale (PPU 32) so the pool sits right under the head. Returns false (with a warning) if the
+        /// shared square sprite can't be created.
+        /// </summary>
+        static bool BuildLamppostPrefab(string prefabPath)
+        {
+            // Shared white square (persisted so the prefab can reference it), tinted per part.
+            var square = MakeSquareSprite($"{ArtSprites}/Square.png");
+            if (square == null)
+            {
+                Debug.LogWarning("[DecorPrefabBuilder] couldn't create the shared square sprite — Lamppost skipped.");
+                return false;
+            }
+
+            const float PostHeight = 2.2f;   // metres — the lamp head rides at the top (matches the preset offset)
+
+            var root = new GameObject("Lamppost");
+            try
+            {
+                // The POST: a slim dark upright, pivoted so the root sits at its BASE (BottomCenter-ish) — the
+                // square sprite is centre-pivoted, so offset the child up by half its height to plant the base at
+                // the root. YSort so a lamp post up-screen draws behind the player and down-screen in front.
+                var post = new GameObject("Post");
+                post.transform.SetParent(root.transform, false);
+                post.transform.localPosition = new Vector3(0f, PostHeight * 0.5f, 0f);
+                post.transform.localScale = new Vector3(0.12f, PostHeight, 1f);
+                var postSr = post.AddComponent<SpriteRenderer>();
+                postSr.sprite = square;
+                postSr.color = new Color(0.20f, 0.19f, 0.17f, 1f);   // dark weathered iron/wood
+                postSr.sortingOrder = PropSortingOrder;
+                post.AddComponent<YSortSprite>();
+
+                // The LAMP HEAD: a small warm block on top (reads as the lit lamp itself). It sits just under
+                // where the glow pools; the PreconfiguredLight below is what actually CASTS the light.
+                var head = new GameObject("LampHead");
+                head.transform.SetParent(root.transform, false);
+                head.transform.localPosition = new Vector3(0f, PostHeight, 0f);
+                head.transform.localScale = new Vector3(0.42f, 0.34f, 1f);
+                var headSr = head.AddComponent<SpriteRenderer>();
+                headSr.sprite = square;
+                headSr.color = new Color(1f, 0.86f, 0.55f, 1f);      // warm lamp glass
+                headSr.sortingOrder = PropSortingOrder + 1;
+
+                // The PRECONFIGURED LIGHT — the lamp pool on the ground. Parent it at the lamp HEAD so the glow's
+                // origin sits at the top of the post (the Lightpost preset then pools it just below). Self-installs
+                // its SceneLight + night-gates automatically; no wiring.
+                var glow = new GameObject("LampGlow");
+                glow.transform.SetParent(root.transform, false);
+                glow.transform.localPosition = new Vector3(0f, PostHeight, 0f);
+                var pre = glow.AddComponent<PreconfiguredLight>();
+                pre.Preset = LightPresets.Kind.Lightpost;
+
+                SavePrefabReplacing(root, prefabPath);
+                return true;
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>
+        /// Get (or create + import) a shared 16×16 white SQUARE sprite asset the greybox decor can reference at
+        /// honest metric scale (PPU 32, point-filtered, uncompressed). Persisted so a saved PREFAB can point at
+        /// it (a runtime-created texture can't be serialized into a prefab). Idempotent — returns the existing
+        /// asset if present. Mirrors the scene builders' greybox-square helper.
+        /// </summary>
+        static Sprite MakeSquareSprite(string path)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (existing != null) return existing;
+
+            var tex = new Texture2D(16, 16);
+            var px = new Color[16 * 16];
+            for (int i = 0; i < px.Length; i++) px[i] = Color.white;
+            tex.SetPixels(px); tex.Apply();
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            AssetDatabase.ImportAsset(path);
+
+            var imp = (TextureImporter)AssetImporter.GetAtPath(path);
+            if (imp != null)
+            {
+                imp.textureType = TextureImporterType.Sprite;
+                imp.spritePixelsPerUnit = 32f;
+                imp.filterMode = FilterMode.Point;
+                imp.textureCompression = TextureImporterCompression.Uncompressed;
+                imp.SaveAndReimport();
+            }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
         /// <summary>Save <paramref name="go"/> as a prefab, replacing any existing one in place.</summary>

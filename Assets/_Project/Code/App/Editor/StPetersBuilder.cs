@@ -78,6 +78,7 @@ namespace HiddenHarbours.App.Editor
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
+        const string ArtCottageNight = "Assets/_Project/Art/Sprites/Buildings/CottageNight.png";  // lit-window night swap
         const string ArtClamHole   = "Assets/_Project/Art/Sprites/ClamHole.png";    // the still dig-spot sprite
         const string ArtClamSquirt = "Assets/_Project/Art/Sprites/ClamSquirt.png";  // 4-frame "two squirts" tell
         const string Scenes      = "Assets/_Project/Scenes";
@@ -316,6 +317,30 @@ namespace HiddenHarbours.App.Editor
             var cottageSprite = LoadSpriteAny(ArtCottage);
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
+
+            // NIGHT WINDOWS — the cottage's lit-window SPRITE SWAP (CottageDayNight): swap to the lit-window
+            // night sprite after dusk (through the Core clock only). Complements the window GLOW below: the swap
+            // shows lit panes, the glow makes the cottage actually CAST warm light onto the ground. Both are
+            // automatic + self-driven; if the night sprite isn't imported yet the swap simply no-ops (the glow
+            // still reads as light spilling from the windows).
+            var cottageNightSprite = LoadSpriteAny(ArtCottageNight);
+            if (cottageSprite != null && cottageNightSprite != null)
+            {
+                var dayNight = cottageGo.AddComponent<CottageDayNight>();
+                SetRef(dayNight, "_renderer", cottageSr);
+                SetRef(dayNight, "_daySprite", cottageSprite);
+                SetRef(dayNight, "_nightSprite", cottageNightSprite);
+            }
+
+            // PRECONFIGURED WINDOW GLOW — the cottage carries its OWN night light (the owner's lighting principle,
+            // ADR 0016): a soft warm RADIAL pool that self-installs + NIGHT-GATES automatically (on at dusk, off
+            // by day, reading the published _DayNightTint in-shader — no owner wiring, no clock read here). So the
+            // cottage doesn't just SWAP to lit panes, it CASTS warm light spilling from the windows. Sits a touch
+            // below the sprite centre (the preset's origin offset pools the light at the sill/ground). Same
+            // attach-and-forget pattern any future lit object reuses.
+            var cottageGlowGo = new GameObject("WindowGlow");
+            cottageGlowGo.transform.SetParent(cottageGo.transform, worldPositionStays: false);
+            cottageGlowGo.AddComponent<PreconfiguredLight>();   // defaults to LightPresets.Kind.WindowGlow
 
             // Cosy HEARTH SMOKE off the cottage chimney — the one positioned living-coast ambient effect (P3).
             // A thin pooled plume that rises and bends DOWNWIND on the SAME shared wind the grass/water/mist

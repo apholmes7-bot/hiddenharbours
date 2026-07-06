@@ -12,11 +12,11 @@ namespace HiddenHarbours.Art.Editor
     ///
     /// <list type="bullet">
     /// <item><description><b>Hidden Harbours ▸ Lighting ▸ Add Light to Selection</b> — adds a light to every
-    /// selected object. The TYPE is chosen by the sub-menu; today the built one is <b>Spotlight</b> (a
-    /// <see cref="BoatSpotlight"/> cone — drop it on the boat). The other types (Worklight = radial,
-    /// Window Glow = warm radial spill, Lightpost = static radial) are FOLLOW-UPS — their menu entries are
-    /// present + structured (<see cref="LightPreset"/>) but route through the same generic radial
-    /// <see cref="SceneLight"/> setup as stubs, not bespoke components yet.</description></item>
+    /// selected object. The TYPE is chosen by the sub-menu: <b>Spotlight</b> (a <see cref="BoatSpotlight"/> cone
+    /// — drop it on the boat) and the PRECONFIGURED placed glows <b>Window Glow / Lightpost / Worklight</b>. The
+    /// placed glows now attach a real <see cref="PreconfiguredLight"/> carrying the matching
+    /// <see cref="LightPresets.Kind"/> — the SAME attach-and-forget, self-installing, night-gated light a cottage
+    /// / lamp-post prefab carries in-game (not the old empty inline stubs).</description></item>
     /// <item><description><b>Hidden Harbours ▸ Build Light Test</b> — a REVERSIBLE demo (mirrors "Build Shadow
     /// Test"): drops a DARK ground plane and a couple of lights — a boat-spotlight-like CONE and a round
     /// RADIAL — into the current scene. Press Play, scrub the clock to NIGHT, and watch the beam CUT THROUGH
@@ -30,17 +30,17 @@ namespace HiddenHarbours.Art.Editor
     public static class LightMenu
     {
         private const string AddSpotlightPath = "Hidden Harbours/Lighting/Add Light to Selection/Spotlight (boat)";
-        private const string AddWorklightPath = "Hidden Harbours/Lighting/Add Light to Selection/Worklight (radial, stub)";
-        private const string AddWindowPath    = "Hidden Harbours/Lighting/Add Light to Selection/Window Glow (radial, stub)";
-        private const string AddLightpostPath = "Hidden Harbours/Lighting/Add Light to Selection/Lightpost (radial, stub)";
+        private const string AddWorklightPath = "Hidden Harbours/Lighting/Add Light to Selection/Worklight (radial)";
+        private const string AddWindowPath    = "Hidden Harbours/Lighting/Add Light to Selection/Window Glow (radial)";
+        private const string AddLightpostPath = "Hidden Harbours/Lighting/Add Light to Selection/Lightpost (radial)";
         private const string BuildMenuPath    = "Hidden Harbours/Build Light Test";
         private const string RootName         = "LightTest";
 
         /// <summary>
-        /// The light TYPES the menu can add. Spotlight is the concrete, shipped one (a <see cref="BoatSpotlight"/>);
-        /// the rest are structured FOLLOW-UPS (ADR 0016) — they currently configure a generic radial
-        /// <see cref="SceneLight"/> as a sensible stub so the extension points are real and demonstrable, and a
-        /// future bespoke component (Worklight / WindowGlow / Lightpost) slots in here.
+        /// The light TYPES the menu can add. Spotlight is the aimed directional beam (a <see cref="BoatSpotlight"/>);
+        /// the rest are the PRECONFIGURED placed glows — each adds a <see cref="PreconfiguredLight"/> carrying the
+        /// matching <see cref="LightPresets.Kind"/> (the same real, self-installing, night-gated light a cottage /
+        /// lamp-post prefab carries in-game — ADR 0016).
         /// </summary>
         public enum LightPreset { Spotlight, Worklight, WindowGlow, Lightpost }
 
@@ -78,8 +78,9 @@ namespace HiddenHarbours.Art.Editor
 
             Debug.Log($"[Light] Added a {preset} light to {targets.Count} object(s). Press Play and scrub the " +
                       "clock to NIGHT — the light cuts through the dark (it auto-gates: ~invisible by day, full " +
-                      "at night). Tune colour / cone / intensity / range on the SceneLight (and BoatSpotlight) " +
-                      "component, or on Resources/AdditiveLight.mat for the shared look.");
+                      "at night). The boat Spotlight tunes on the BoatSpotlight component; the placed glows tune " +
+                      "in ONE place — LightPresets (rule 6) — or per-placement via the PreconfiguredLight's " +
+                      "intensity scale; the shared look lives on Resources/AdditiveLight.mat.");
         }
 
         /// <summary>Attach + configure the right light component(s) on <paramref name="go"/> for the preset
@@ -109,27 +110,27 @@ namespace HiddenHarbours.Art.Editor
             }
             else
             {
-                // FOLLOW-UP stubs (Worklight / WindowGlow / Lightpost): a generic radial SceneLight, lightly
-                // themed. Bespoke components land later; the extension point is here.
-                var light = go.GetComponent<SceneLight>();
-                if (light == null) light = Undo.AddComponent<SceneLight>(go);
-                light.Shape = SceneLight.LightShape.Radial;
-                switch (preset)
-                {
-                    case LightPreset.Worklight:
-                        light.Color = new Color(1f, 0.97f, 0.9f, 1f); light.Intensity = 1.3f; light.Range = 5f;
-                        light.EdgeSoftness = 0.7f; light.FlickerAmount = 0f;
-                        break;
-                    case LightPreset.WindowGlow:
-                        light.Color = new Color(1f, 0.84f, 0.5f, 1f); light.Intensity = 0.9f; light.Range = 3.5f;
-                        light.EdgeSoftness = 0.85f; light.FlickerAmount = 0.04f;
-                        break;
-                    case LightPreset.Lightpost:
-                        light.Color = new Color(1f, 0.9f, 0.7f, 1f); light.Intensity = 1.1f; light.Range = 4.5f;
-                        light.EdgeSoftness = 0.75f; light.FlickerAmount = 0.02f;
-                        break;
-                }
+                // The PRECONFIGURED placed glows (Worklight / WindowGlow / Lightpost): attach the real
+                // PreconfiguredLight carrying the matching LightPresets.Kind — the exact same self-installing,
+                // night-gated light a cottage / lamp-post prefab carries in-game. No inline magic numbers: the
+                // look lives ONCE in LightPresets (rule 6), applied here and on the prefab identically.
+                var pre = go.GetComponent<PreconfiguredLight>();
+                if (pre == null) pre = Undo.AddComponent<PreconfiguredLight>(go);
+                pre.Preset = MapPreset(preset);
                 EditorUtility.SetDirty(go);
+            }
+        }
+
+        /// <summary>Map the menu's placed-glow presets to their <see cref="LightPresets.Kind"/> (Spotlight is the
+        /// boat cone, handled separately above, never reaches here).</summary>
+        private static LightPresets.Kind MapPreset(LightPreset preset)
+        {
+            switch (preset)
+            {
+                case LightPreset.Worklight:  return LightPresets.Kind.Worklight;
+                case LightPreset.Lightpost:  return LightPresets.Kind.Lightpost;
+                case LightPreset.WindowGlow:
+                default:                     return LightPresets.Kind.WindowGlow;
             }
         }
 
