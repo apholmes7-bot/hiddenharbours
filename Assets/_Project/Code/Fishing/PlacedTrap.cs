@@ -34,10 +34,12 @@ namespace HiddenHarbours.Fishing
     /// projection of one such record, reconstructed on load. So a save→load→haul lands the identical catch:
     /// the seed is a pure function of the placement facts that DO survive the save.</para>
     ///
-    /// <para><b>Scope (Build 3, greybox).</b> This is the logical runtime + the deterministic catch + the
-    /// buoy. It is NOT the depth-gated placement rule (checking the trap sits within the Def's
-    /// <c>Min/MaxSoakDepthMeters</c> band) nor the haul minigame — those are Build 4. The dev drop
-    /// (<see cref="DevTrapInput"/>) places without the depth gate; the haul is a single resolve-and-land call.</para>
+    /// <para><b>Scope.</b> This is the logical runtime + the deterministic catch + the buoy (Build 3). The
+    /// depth-gated placement (<see cref="TrapPlacement"/> via <see cref="PlacedTrapService.TryPlaceGated"/>)
+    /// and the rhythm-timed haul minigame (<see cref="TrapHaulController"/>) that drives the retrieval are
+    /// Build 4 — but note <see cref="TryHaul"/> here stays the single resolve-and-land call the minigame
+    /// invokes ON SURFACE (the minigame is the ACT of hauling; it does not change WHAT is caught — that's
+    /// fixed by soak + bait + seed, rule 5).</para>
     ///
     /// <para><b>Seam discipline (rule 4).</b> Reads the clock through <see cref="GameServices.Clock"/> and the
     /// catch pool through <see cref="FishSpeciesRegistry"/> (Fishing-lane); lands into an

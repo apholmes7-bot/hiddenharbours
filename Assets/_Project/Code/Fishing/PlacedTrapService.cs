@@ -24,9 +24,11 @@ namespace HiddenHarbours.Fishing
     /// world seed off the restored save. Each restored trap re-publishes <see cref="TrapPlaced"/> so the
     /// Boats-lane buoy re-appears; no buoy/soak state is persisted.</para>
     ///
-    /// <para><b>Scope (Build 3, greybox).</b> Placement here is unconditional (the <see cref="DevTrapInput"/>
-    /// dev drop) — the depth-gated placement rule and the haul minigame are Build 4. Bait consumption on
-    /// placement (the owner's model) is applied here against <see cref="SaveData.BaitStock"/>.</para>
+    /// <para><b>Scope (Build 4, greybox).</b> The unconditional drop (<see cref="PlaceTrap"/>) is still the
+    /// Build-3 dev path; Build 4 adds the real, <b>depth-gated + bait-checked</b> placement
+    /// (<see cref="TryPlaceGated"/>) — a trap may only be set where the water is deep enough
+    /// (<see cref="TrapPlacement"/>) and only if the required bait is in stock, consuming one. Bait
+    /// consumption (the owner's model) is applied here against <see cref="SaveData.BaitStock"/>.</para>
     /// </summary>
     public sealed class PlacedTrapService : MonoBehaviour
     {
@@ -100,6 +102,58 @@ namespace HiddenHarbours.Fishing
             Debug.Log($"[PlacedTrapService] Set a {trapDef.DisplayName} at ({position.x:0.0}, {position.y:0.0}), " +
                       $"soaking {trapDef.SoakHours}h.");
             return trap;
+        }
+
+        /// <summary>Why a gated placement was refused (or that it succeeded) — so the caller/UI can phrase a
+        /// cozy "can't set here" without a HUD number. All refusals are no-ops (nothing placed, no bait spent).</summary>
+        public enum PlaceResult
+        {
+            /// <summary>The trap was set — the buoy's down, one bait consumed.</summary>
+            Placed = 0,
+            /// <summary>No trap Def supplied (a wiring error).</summary>
+            NoTrap = 1,
+            /// <summary>The water here is too shoal (or dry) for this trap's <see cref="TrapDef.MinSoakDepthMeters"/>.</summary>
+            TooShallow = 2,
+            /// <summary>The required bait isn't in stock — can't arm the pot.</summary>
+            NoBait = 3,
+        }
+
+        /// <summary>
+        /// The <b>real</b> Build-4 placement: drop a baited trap at <paramref name="position"/> only if
+        /// (1) the water there is <b>deep enough</b> for the trap (<see cref="TrapPlacement.CanPlaceAt"/> —
+        /// the inverse of the clam dig's exposure gate: deep water, not bared ground) AND (2) the trap's
+        /// required bait is <b>in stock</b>. On success it delegates to <see cref="PlaceTrap"/> (which mints
+        /// the instance, spawns the live trap, mirrors the DTO, consumes one bait, shows the buoy). Any refusal
+        /// is a cozy no-op — nothing placed, no bait spent — and the reason is returned so the caller can
+        /// phrase the "too shoal to set here" / "no bait" prompt. Reads the deterministic water level +
+        /// terrain through Core (<see cref="GameServices"/>), so the gate matches the SAME depth the
+        /// walkability/boat-cross/shader read (rule 5). <paramref name="placedTrap"/> is the live trap on
+        /// success, else null.
+        /// </summary>
+        public PlaceResult TryPlaceGated(TrapDef trapDef, BaitDef bait, Vector2 position, string regionId,
+                                         out PlacedTrap placedTrap)
+        {
+            placedTrap = null;
+            if (trapDef == null) { Debug.LogWarning("[PlacedTrapService] No trap def to place."); return PlaceResult.NoTrap; }
+
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            if (!TrapPlacement.CanPlaceAt(trapDef, GameServices.Environment, GameServices.TidalTerrain, now, position))
+            {
+                float depth = TrapPlacement.DepthAt(GameServices.Environment, GameServices.TidalTerrain, now, position);
+                Debug.Log($"[PlacedTrapService] Too shoal to set a {trapDef.DisplayName} here " +
+                          $"({depth:0.0} m; needs ≥ {trapDef.MinSoakDepthMeters:0.0} m). Try deeper water.");
+                return PlaceResult.TooShallow;
+            }
+
+            // The real flow requires the bait in the locker (unlike the Build-3 dev drop, which let it stand).
+            if (bait != null && !HasBaitInStock(GameServices.Save?.Current, bait.Id))
+            {
+                Debug.Log($"[PlacedTrapService] No {bait.DisplayName} in the locker to bait the {trapDef.DisplayName}.");
+                return PlaceResult.NoBait;
+            }
+
+            placedTrap = PlaceTrap(trapDef, bait, position, regionId);
+            return placedTrap != null ? PlaceResult.Placed : PlaceResult.NoTrap;
         }
 
         /// <summary>
@@ -216,6 +270,16 @@ namespace HiddenHarbours.Fishing
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             _instanceCounter++;
             return $"{trapDefId}#{(long)now}.{_instanceCounter}";
+        }
+
+        /// <summary>Does the save hold at least one of <paramref name="baitId"/>? The stock check the gated
+        /// placement applies before it arms a pot. A null save / empty id reads as "no stock" (can't place).</summary>
+        private static bool HasBaitInStock(SaveData save, string baitId)
+        {
+            if (save?.BaitStock == null || string.IsNullOrEmpty(baitId)) return false;
+            for (int i = 0; i < save.BaitStock.Count; i++)
+                if (save.BaitStock[i].BaitId == baitId && save.BaitStock[i].Count > 0) return true;
+            return false;
         }
 
         private static void ConsumeOneBait(SaveData save, string baitId)

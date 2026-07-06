@@ -7,7 +7,8 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using HiddenHarbours.Boats;               // BoatHullDef (the carried Dory/Punt hulls handed to the core)
-using HiddenHarbours.Fishing;             // FishSpeciesDef + ClamDig/ClamHoleVisual (the clam dig action + look)
+using HiddenHarbours.Fishing;             // FishSpeciesDef + ClamDig/ClamHoleVisual + the trap-haul rig (Build 4)
+using HiddenHarbours.Economy;             // BaitDef (the trap loop's bait content, Economy data)
 using HiddenHarbours.Player;              // ClamBucket (the on-foot clam hold the dig fills)
 using HiddenHarbours.App;                 // RegionAnchor — St Peters' travel bind point (the persistent rig rebinds here)
 using HiddenHarbours.Art;                 // ChimneySmoke — the cosy hearth plume off the cottage chimney (ambient VFX)
@@ -55,6 +56,8 @@ namespace HiddenHarbours.App.Editor
         const string DataConfig  = "Assets/_Project/Data/Config";   // shared GameConfig (cove builder authors it)
         const string DataBoats   = "Assets/_Project/Data/Boats";    // the Dory + Punt hulls (the carried rig)
         const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
+        const string DataTraps   = "Assets/_Project/Data/Traps";    // the lobster/crab pots (the trap-haul loop, Build 4)
+        const string DataBait    = "Assets/_Project/Data/Bait";     // the trap bait (herring/fish-scrap/mackerel)
         const string DataNpcs    = "Assets/_Project/Data/NPCs";     // the opening cast (Aunt Ginny, Ned's letter)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
@@ -428,6 +431,63 @@ namespace HiddenHarbours.App.Editor
             // carries across region hops with the player (no per-region re-wire needed).
             var digger = core.PlayerGo.AddComponent<ClamDigger>();
             SetRef(digger, "_player", core.PlayerGo.transform);
+
+            // --- THE TRAP-HAUL LOOP (gameplay-systems, Build 4 — the playable manual loop) ---------------
+            // Set → soak → lay alongside → HAUL IN RHYTHM WITH THE SWELL → collect → sell. The trap runtime
+            // (PlacedTrapService) owns determinism + save; the DevTrapInput drops a baited pot through the
+            // REAL depth gate (only in deep-enough water, consuming one bait); the TrapHaulController runs the
+            // diegetic rhythm haul (lay the boat alongside a buoy, H to start, tap the pull key/click on the
+            // passing swell's beat — calm is forgiving, a big sea tightens the window and strains the rope).
+            // On surface it lands Build 3's already-deterministic catch into the boat's hold (sellable at
+            // Greywick like any fish). The buoy is the self-installing TrapBuoyPresenter (Build 1/3). All the
+            // trap/service objects live under one plain root so they never touch authored content.
+            //
+            // WIRED ON THE BOAT: the DevTrapInput + TrapHaulController sit on the persistent Dory
+            // (core.DoryGo), so the drop point / rail / hold are the boat you sail — you set + haul FROM the
+            // boat (a boat action, canon §6.3). Content is DATA: the LobsterTrap/CrabTrap Defs + the
+            // Herring/FishScrap/Mackerel BaitDefs (Build 2), loaded by path (null-safe if not imported).
+            var lobsterTrap = AssetDatabase.LoadAssetAtPath<TrapDef>(DataTraps + "/LobsterTrap.asset");
+            var crabTrap    = AssetDatabase.LoadAssetAtPath<TrapDef>(DataTraps + "/CrabTrap.asset");
+            var herring     = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/Herring.asset");
+            var fishScrap   = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/FishScrap.asset");
+            var mackerel    = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/Mackerel.asset");
+
+            if (lobsterTrap != null && herring != null && core.DoryGo != null)
+            {
+                // The trap runtime service (owns place/haul/save; restores traps off the load edge). Its
+                // registry is every trap/bait KIND that can be restored by id (the OwnedFleet pattern).
+                var trapServiceGo = new GameObject("PlacedTrapService");
+                var trapService = trapServiceGo.AddComponent<PlacedTrapService>();
+                var trapRegistry = crabTrap != null ? new[] { lobsterTrap, crabTrap } : new[] { lobsterTrap };
+                var baitRegistry = new[] { herring, fishScrap, mackerel }.Where(b => b != null).ToArray();
+                trapService.Configure(trapRegistry, baitRegistry, trapServiceGo.transform);
+
+                // GREYBOX starting bait so the loop is playable NOW (real acquisition is a later economy
+                // offer). Seeds a handful of herring once per game into the save's BaitStock.
+                var startBaitGo = new GameObject("StartingBait");
+                startBaitGo.AddComponent<StartingBait>();
+
+                // DevTrapInput on the BOAT: T sets a baited lobster pot at the boat (depth-gated), G tops up
+                // dev bait. Placement region = St Peters (the save/scene region); the dev drop is disabled
+                // until aboard, like the boat input, so on-foot keys never fire it (it's a boat action).
+                var devTrap = core.DoryGo.AddComponent<DevTrapInput>();
+                devTrap.Configure(trapService, core.DoryGo.transform, lobsterTrap, herring, "region.st_peters");
+
+                // The RHYTHM HAUL controller on the BOAT: rail = the boat, hold = the boat's ShipHold. The
+                // CATCH region is region.coddle_cove because the lobster/crab are authored for the cove in the
+                // greybox content (Build 2) — a St-Peters-set pot uses that catch region until the species are
+                // region-tagged for St Peters. FLAG economy-sim/world-content: add region.st_peters to the
+                // lobster + crab RegionIds so the catch region matches the placement region (Data/Fish is
+                // economy-sim's lane — not touched here).
+                var haul = core.DoryGo.AddComponent<TrapHaulController>();
+                haul.Configure(trapService, core.DoryGo.transform, core.Hold, "region.coddle_cove");
+                SetRef(haul, "_holdProvider", core.DoryGo);
+            }
+            else
+            {
+                Debug.LogWarning("[StPetersBuilder] Trap/bait content missing (LobsterTrap/Herring) — the " +
+                                 "trap-haul loop was not wired. Re-run after Data/Traps + Data/Bait import.");
+            }
 
             // --- THE MOORED DORY'S SLIP (set dressing; the persistent Dory floats at DoryMooredPos) ------
             // The real, controllable Player is now spawned by the PersistentCoreBuilder above at
