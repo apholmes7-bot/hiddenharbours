@@ -107,6 +107,7 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 - **Economy:** supply-and-demand market at Greywick; storage to time sales; refine/manufacture for value-add; ship to distant markets; hire & manage staff to automate. → `design/economy-and-business.md`
 - **NPCs:** handcrafted named core cast with routines + procedurally varied "extras" for crowds/crew. → `design/npcs-and-routines.md`
 - **Housing:** start at uncle's cottage; buy / upgrade / refurnish homes, plus commercial property (warehouses, plants, shops). → `design/progression-and-housing.md`
+- **UI & inventory (diegetic direction, owner-ratified 2026; M2/M3 shape — *not yet built*):** the world *is* the interface — a minimal HUD where **every readout is gated behind owning its instrument** (a watch reveals the clock, a compass heading, a depth finder depth), a **physical, limited inventory** of hand-crafted objects (two hands, one tool at a time, bucket → cart → boat hold), and **merchants as conversation**. The current M1 always-on HUD and buy/sell menus are **scaffolding** that evolves toward this. → `design/diegetic-ui-and-inventory.md`
 
 ### 5.6 Platform & engine (see `adr/0001-engine-choice.md`, `adr/0005-pc-first-target.md`)
 - **Engine:** **Unity 6.5**, 2D URP.
