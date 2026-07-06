@@ -271,6 +271,18 @@ owned by [`boats-and-navigation.md`](boats-and-navigation.md)** (the trap-hauler
 **stamina action** (P4, "by hand first"); the winch automates the tedium later (P4). Trap soak /
 bycatch follows the passive-gear model (§3.4 and the multi-catch open question §7.2).
 
+> **Trap runtime status (arc builds).** The trap arc ships in slices: **Build 1** the wave-driven buoy
+> (visual), **Build 2** the trap/bait/crab **content** (`TrapDef`/`BaitDef` + the lobster/crab pot and
+> herring/mackerel/fish-scrap assets), **Build 3** the **logical `PlacedTrap` runtime** — a deterministic
+> **soak** (ready when `now − placedAt ≥ SoakHours·3600`, recomputed not saved, rule 5) and a **seeded
+> catch** resolved on-demand from a *stable* hash of `(worldSeed, InstanceId, placementTime)` so a
+> save→load→haul lands the **identical** catch. The catch reuses the existing `CatchResolver` over the
+> trap's `AllowedCatchFishIds` (resolved id→Def at runtime via a Resources-loaded `FishSpeciesLibrary`);
+> the loaded **bait soft-weights** the roll toward its `FavorsSpeciesIds` (a nudge, both catches stay
+> possible — owner's call), it does **not** hard-gate. Build 3 wires this to save/restore
+> (`SaveData.PlacedTraps`) and a **dev key** (drop / check-haul) only. The **depth-gated placement** (the
+> `Min/MaxSoakDepthMeters` band) and the real **gaff-the-buoy haul interaction** are **Build 4**.
+
 **(c) Aquaculture — mussel/oyster leases, buoys-in-series, season-grown (M3, advanced/late).** A new
 **farmed-shellfish** path distinct from wild hand-gathering: you **lease a patch of water**, set
 **buoys in series** with grow-ropes/socks beneath, seed them, and the crop **grows over a season**

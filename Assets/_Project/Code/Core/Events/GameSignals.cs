@@ -125,4 +125,38 @@ namespace HiddenHarbours.Core
         public readonly ControlMode Mode;
         public ControlModeChanged(ControlMode mode) { Mode = mode; }
     }
+
+    /// <summary>
+    /// Raised when a trap is dropped into the world (trap-fishing arc Build 3). The gameplay side
+    /// (<c>Fishing</c>) owns the logical placed trap and its deterministic soak/catch; it publishes this so
+    /// the <b>visual</b> side (<c>Boats</c>' buoy) can drop a bobbing buoy at the set position WITHOUT the
+    /// two modules referencing each other — the same one-way Core handoff <see cref="BoatPurchased"/> uses
+    /// (Fishing never references Boats, Boats never references Fishing). Keyed by the trap's stable
+    /// <see cref="PlacedTrapDto.InstanceId"/> so the buoy can be matched and removed on
+    /// <see cref="TrapRemoved"/>. Carries a plain position (Core stays engine-light — no GameObject handle).
+    /// </summary>
+    public readonly struct TrapPlaced
+    {
+        /// <summary>Stable per-instance id of the placed trap (matches its <see cref="PlacedTrapDto.InstanceId"/>).</summary>
+        public readonly string InstanceId;
+        /// <summary>World X of the set trap (where the buoy floats).</summary>
+        public readonly float PosX;
+        /// <summary>World Y of the set trap.</summary>
+        public readonly float PosY;
+        public TrapPlaced(string instanceId, float posX, float posY)
+        {
+            InstanceId = instanceId; PosX = posX; PosY = posY;
+        }
+    }
+
+    /// <summary>
+    /// Raised when a placed trap leaves the world — hauled up or cleared (trap-fishing arc Build 3). The
+    /// buoy side listens to remove the matching buoy by <see cref="InstanceId"/>. The twin of
+    /// <see cref="TrapPlaced"/>; same Core-mediated, one-way handoff.
+    /// </summary>
+    public readonly struct TrapRemoved
+    {
+        public readonly string InstanceId;
+        public TrapRemoved(string instanceId) { InstanceId = instanceId; }
+    }
 }
