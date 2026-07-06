@@ -406,6 +406,16 @@ Shader "HiddenHarbours/Water"
         _StormFoamLaneStrength ("Storm foam lane strength (0 = off / today)", Range(0,2)) = 0.0
         _StormFoamLaneStretch  ("Storm foam lane along-wind stretch (thin lanes)", Float) = 6.0
         _StormFoamLaneScale    ("Storm foam lane scale (lanes/unit)", Float) = 0.3
+
+        [Header(BOAT SPOTLIGHT REVEAL (searchlight not floodlamp   owner tunes here or on BoatSpotlight))]
+        // The boat beam REVEALS the water rather than painting an amber slab on it: inside the cone the water's
+        // OWN colour is multiply-brightened (col.rgb *= 1 + weight*brighten, so crests/foam/troughs scale up
+        // TOGETHER, still readable, merely lit), plus a FAINT warm additive tint. See BoatLightTerm + the
+        // composite (ADR 0016). All three are per-material so the owner can dial the look on Water.mat directly.
+        // col.rgb ONLY (P1, rule 5).
+        _BoatLightBrighten   ("Beam brighten (multiply-lift of the water inside the cone)", Range(0,8)) = 2.5
+        _BoatLightTintAmount ("Beam warm tint (faint additive warmth inside the cone)", Range(0,2)) = 0.25
+        _BoatLightGain       ("Beam cone weight gain (shapes the cone weight before the lift)", Range(0,4)) = 0.5
     }
 
     SubShader
@@ -710,6 +720,12 @@ Shader "HiddenHarbours/Water"
                 float  _StormFoamLaneStrength;
                 float  _StormFoamLaneStretch;
                 float  _StormFoamLaneScale;
+                // Boat spotlight REVEAL (searchlight not floodlamp; ADR 0016). Per-material so the owner tunes the
+                // look on Water.mat: how strongly the cone multiply-lifts the water's own colour, the faint warm
+                // additive tint, and a gain that shapes the cone weight before the lift. col.rgb ONLY (P1, rule 5).
+                float  _BoatLightBrighten;
+                float  _BoatLightTintAmount;
+                float  _BoatLightGain;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1617,22 +1633,31 @@ Shader "HiddenHarbours/Water"
                 nightRGB *= master * seaState;
             }
 
-            // ---- the BOAT SPOTLIGHT term: light the WATER from WITHIN this shader (ADR 0016) -----------------
+            // ---- the BOAT SPOTLIGHT term: REVEAL the WATER from WITHIN this shader (ADR 0016) -----------------
             // The boat's additive QUAD lights LAND, but the URP 2D renderer draws this water shader OVER the quad
             // regardless of sorting order — so the water lights ITSELF from the published globals (_BoatLight*).
-            // For this water pixel's worldXY it computes the cone contribution (lamp->pixel within range + within
-            // the cone half-angle, radial × angular falloff), scales it by the SAME night-gate the land cone uses
-            // (off by day, full at deep night, off-by-dawn), and the caller ADDS it to col.rgb. Sorting-INDEPENDENT
-            // by construction (it is part of the water's own fragment), so it cannot fail the way the quad did.
-            // Mirrors LightMath.WaterConeTerm + LightMath.NightGate EXACTLY (the headless determinism twins).
+            // For this water pixel's worldXY it computes the cone WEIGHT (a SCALAR 0..1+: lamp->pixel within range +
+            // within the cone half-angle, radial × angular falloff × intensity × gain), scales it by the SAME
+            // night-gate the land cone uses (off by day, full at deep night, off-by-dawn), and RETURNS THAT WEIGHT.
+            //
+            // WHY A WEIGHT, NOT A COLOUR (owner night playtest, 2026-07-05): the old term returned a water-INDEPENDENT
+            // amber colour slab (_BoatLightColor.rgb × intensity×shape×gate) that the caller added PURELY ADDITIVELY.
+            // At the effective drive that over-wrote the few-percent night sea — a flat amber SLAB that OBSCURED the
+            // waves/foam/depth instead of revealing them. Now the caller MULTIPLY-BRIGHTENS the water's OWN col.rgb
+            // by this weight (crests/foam/troughs/depth all scale up TOGETHER, still readable, merely LIT), plus a
+            // faint warm tint bias — a searchlight that reveals, not a floodlamp that paints.
+            //
+            // Sorting-INDEPENDENT by construction (it is part of the water's own fragment), so it cannot fail the way
+            // the quad did. Mirrors LightMath.WaterConeTerm + LightMath.NightGate EXACTLY (the headless twins).
             // col.rgb ONLY — it never touches depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
             //
             //   worldXY — this water pixel's world position (pixelized inside, so the pool of light reads pixel-art).
-            float3 BoatLightTerm(float2 worldXY)
+            //   RETURNS the cone WEIGHT (>=0; 0 outside the cone / by day / no boat), NOT a colour.
+            float BoatLightTerm(float2 worldXY)
             {
                 float intensity = _BoatLightParams.x;
                 if (intensity <= 0.001)
-                    return float3(0, 0, 0);                 // light off / not lighting water / no boat -> nothing
+                    return 0.0;                             // light off / not lighting water / no boat -> nothing
 
                 float range    = max(_BoatLightParams.y, 1e-4);
                 float cosHalf  = _BoatLightParams.z;
@@ -1644,7 +1669,7 @@ Shader "HiddenHarbours/Water"
                 float2 toPixel = p - _BoatLightPos.xy;
                 float dist = length(toPixel);
                 if (dist >= range)
-                    return float3(0, 0, 0);                 // beyond the throw -> dark
+                    return 0.0;                             // beyond the throw -> dark
 
                 // RADIAL falloff (mirrors LightMath.RadialFalloff): (1 - d)^power, power eased by edge softness.
                 float nd = saturate(dist / range);
@@ -1660,7 +1685,7 @@ Shader "HiddenHarbours/Water"
 
                 float shape = saturate(radial * cone);
                 if (shape <= 0.0)
-                    return float3(0, 0, 0);
+                    return 0.0;
 
                 // NIGHT-GATE (mirrors LightMath.NightGate): off by day so the beam can't wash daylight water out,
                 // full at deep night, off-by-dawn. Reads the SAME global day/night tint the land cone gates on, so
@@ -1684,7 +1709,11 @@ Shader "HiddenHarbours/Water"
                     gate = saturate(fallback);             // no cycle -> show (tuning / demo / edit-mode preview)
                 }
 
-                return _BoatLightColor.rgb * (intensity * shape * gate);
+                // Return the cone WEIGHT (a scalar), NOT a colour: intensity × shape × gate, scaled by the
+                // per-material gain the owner tunes (how strongly the cone weight ramps before the caller's
+                // multiply-brighten lift). >= 0; the caller lifts the water's OWN col.rgb by this (reveal, not
+                // paint). max() keeps it non-negative even if a tunable is set negative in the inspector.
+                return max(0.0, intensity * shape * gate * max(_BoatLightGain, 0.0));
             }
 
             // ====================================================================================================
@@ -2409,12 +2438,27 @@ Shader "HiddenHarbours/Water"
                     : 1.0;                             // cycle off / unset: full daylight rail (no phantom dark floor)
                 col.rgb = PaletteGrade(col.rgb, dayNightLuma);
 
-                // ---- LIGHT CONTENT, post-grade + overlay-compensated: BOAT SPOTLIGHT + the NIGHT SKY -----------
-                // The boat beam (ADR 0016) and the compensated sky share (the night content — moon disc/glitter/
-                // stars + the clouds' night share — plus the golden-hour SUN glitter path, which rides this bucket
-                // so the dusk tint can't mute its warm gold) are added LAST, after the palette grade,
-                // pre-compensated for the day/night multiply overlay — the complete-dark fix. Two crushers
-                // demanded this exact position:
+                // ---- THE BOAT SPOTLIGHT: REVEAL the water inside the cone (searchlight, not floodlamp) ----------
+                // The beam no longer PAINTS an amber slab (the old purely-additive _BoatLightColor term that
+                // over-wrote the few-percent night sea into a flat wash — the owner's 2026-07-05 night playtest).
+                // Instead it REVEALS: BoatLightTerm returns a SCALAR cone weight, and we MULTIPLY-BRIGHTEN the
+                // water's OWN col.rgb inside the cone — so crests/foam/troughs/depth all scale up TOGETHER and stay
+                // readable, merely LIT. A FAINT warm additive tint (scaled by the same weight) rides the SAME
+                // post-grade overlay-compensated bucket as the sky content below (so it survives the deep-night
+                // multiply). The multiply-lift itself operates on the ALREADY-COMPOSITED (post-grade) water and is
+                // NOT separately compensated: a multiply of the water scales with the water through the downstream
+                // day/night overlay, so lit water tracks the sea it lights (a floodlamp-flat compensation would
+                // re-introduce the wash). Weight 0 (by day / outside the cone / no boat) => an EXACT passthrough.
+                // col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1 integrity, rule 5).
+                float beamW = BoatLightTerm(worldXY);
+                col.rgb *= (1.0 + beamW * max(_BoatLightBrighten, 0.0));   // the REVEAL: lift the water's own colour
+
+                // ---- LIGHT CONTENT, post-grade + overlay-compensated: BEAM WARM TINT + the NIGHT SKY ------------
+                // The beam's faint warm TINT (a small additive warmth biased by the cone weight, NOT a slab) and
+                // the compensated sky share (the night content — moon disc/glitter/stars + the clouds' night share
+                // — plus the golden-hour SUN glitter path, which rides this bucket so the dusk tint can't mute its
+                // warm gold) are added LAST, after the palette grade, pre-compensated for the day/night multiply
+                // overlay — the complete-dark fix. Two crushers demanded this exact position:
                 //  (1) The OVERLAY: the whole frame is multiplied by _DayNightTint after this shader (ADR 0013);
                 //      at deepest night that is ~(0.022, 0.029, 0.061) — an uncompensated add survived at ~3-6%,
                 //      blue-shifted (the owner's "spotlight/moon vanish in complete dark"). Dividing the add by
@@ -2427,20 +2471,24 @@ Shader "HiddenHarbours/Water"
                 //      compensated values also must NOT pass through the grade's value ceiling.)
                 // The cycle-off branch (dnSum ~ 0: edit mode / bare art scene / demo) adds the content RAW — no
                 // overlay is running, so there is nothing to compensate (preserves the tuning/preview look).
-                // Both terms are their own gates: the beam is night-gated + intensity 0 when no boat publishes;
-                // skyNightRGB is 0 at HIGH SUN (the night content gates off by day, the sun glitter gates off by
-                // ~0.5 elevation) — so at MIDDAY this whole block adds 0 and the look is pixel-identical; at
-                // golden hour it carries the intended sun glitter, at night the moon/stars/beam.
+                // Every term is its own gate: the beam's warm tint carries the night-gate + intensity-0 the cone
+                // weight already applied (0 by day / no boat); skyNightRGB is 0 at HIGH SUN (the night content
+                // gates off by day, the sun glitter gates off by ~0.5 elevation) — so at MIDDAY this whole block
+                // adds 0 and the look is pixel-identical; at golden hour it carries the intended sun glitter, at
+                // night the moon/stars + the beam's faint warmth.
                 // Sorting-INDEPENDENT (part of the water's own frag) — it cannot fail the way the land quad did
                 // over water. col.rgb ONLY — never depth/clip/_WaterLevel/the height read/the sim (P1, rule 5).
                 // OWNER RULING (2026-07-05): the SURFACE RAIN RINGS join this POST-GRADE, overlay-COMPENSATED
-                // bucket (beside the boat beam + moon/sun glitter) - NOT the pre-grade dressing - so the
+                // bucket (beside the beam's warm tint + moon/sun glitter) - NOT the pre-grade dressing - so the
                 // downstream day/night MULTIPLY (ADR 0013) cancels and a night squall STILL shows rain on black
                 // water (day AND night). They ride the exact same dnSum branch below: compensated when the cycle
                 // runs (divided by max(_DayNightTint.rgb, DN_COMP_MIN_CHANNEL)), raw when it is off (edit mode /
                 // bare art / demo). _RainIntensity is the C#-DERIVED gate (0 => the rings add nothing, so a
                 // clear/calm sea is pixel-identical). col.rgb ONLY (P1, rule 5).
-                float3 lightContent = BoatLightTerm(worldXY) + skyNightRGB + RainRings(worldXY, dt, t);
+                // The beam's WARM TINT is the cone weight × _BoatLightColor × _BoatLightTintAmount — a faint warmth
+                // biased to the lit pool, NOT the old colour slab; the REVEAL (multiply-lift) already happened above.
+                float3 beamTint = _BoatLightColor.rgb * (beamW * max(_BoatLightTintAmount, 0.0));
+                float3 lightContent = beamTint + skyNightRGB + RainRings(worldXY, dt, t);
                 col.rgb += (dnSum > 1e-3)
                     ? lightContent / max(_DayNightTint.rgb,
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))

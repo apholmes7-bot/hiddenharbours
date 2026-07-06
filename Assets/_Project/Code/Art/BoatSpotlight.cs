@@ -52,8 +52,9 @@ namespace HiddenHarbours.Art
         [Tooltip("Angular edge softness of the beam (0 = hard-edged cone, 1 = very soft-edged).")]
         [Range(0f, 1f)] [SerializeField] private float _angularSoftness = 0.45f;
 
-        [Tooltip("Radial edge softness (how gently the beam fades to its far/round edge).")]
-        [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0.6f;
+        [Tooltip("Radial edge softness (how gently the beam fades to its far/round edge). Higher keeps the lit " +
+                 "core from clipping to a hard disc — a searchlight pool that feathers out, not a stamped circle.")]
+        [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0.7f;
 
         [Tooltip("Subtle deterministic flicker (a lamp's living wobble). 0 = rock-steady searchlight.")]
         [Range(0f, 1f)] [SerializeField] private float _flickerAmount = 0.06f;
@@ -81,8 +82,11 @@ namespace HiddenHarbours.Art
 
         [Tooltip("Water-side strength multiplier on the published beam intensity, so the owner can balance how " +
                  "strongly the beam reads on WATER vs LAND independently (land = the quad; water = this term). " +
-                 "1 = the same intensity as land; higher = a stronger raking pool of light on the dark sea.")]
-        [Min(0f)] [SerializeField] private float _waterStrength = 1.4f;
+                 "1 = the same intensity as land; higher = a stronger raking pool of light on the dark sea. " +
+                 "Default 0.8 = a SEARCHLIGHT that reveals the waves, not a floodlamp that washes them flat — the " +
+                 "water shader now MULTIPLY-brightens the sea's own colour by the cone weight (owner tunes the " +
+                 "reveal strength/warmth via _BoatLightBrighten/_BoatLightTintAmount on Water.mat).")]
+        [Min(0f)] [SerializeField] private float _waterStrength = 0.8f;
 
         [Tooltip("Frame DARKNESS (0 = bright noon .. 1 = pitch black) at/below which the WATER term is fully OFF " +
                  "(so the beam can't wash daylight water out). Mirrors SceneLight's night-gate; the water reads " +
@@ -97,6 +101,34 @@ namespace HiddenHarbours.Art
                  "the demo before Play): 1 = fully show (so the beam reads for tuning), 0 = hidden. Mirrors how " +
                  "the water shader's other layers treat an unset day/night tint.")]
         [Range(0f, 1f)] [SerializeField] private float _gateFallback = 1f;
+
+        [Header("Bounce with the hull (the lamp rocks on the rolling deck; ADR 0018 B2 read)")]
+        [Tooltip("Let the beam BOB and SWAY with the boat's wave rock, like a lamp mounted on a rolling deck. " +
+                 "The spotlight sits on the steady physics ROOT (correct for AIMING — the cone follows the bow), " +
+                 "so on its own it does NOT share the visual rock. On, it reads the hull's current bob + roll off " +
+                 "the boat's VISUAL child and nudges the published beam. Off = the beam sits rock-steady on the " +
+                 "root (exactly today's behaviour). Glass calm ⇒ zero rock ⇒ zero sway either way.")]
+        [SerializeField] private bool _bounceWithHull = true;
+
+        [Tooltip("How much of the hull's visual BOB (its screen-vertical wave lift, world units) the lamp shares " +
+                 "— 1 = the lamp bobs exactly with the deck, less = a stiffer mount. 0 disables the bob share.")]
+        [Range(0f, 2f)] [SerializeField] private float _bounceBobScale = 1f;
+
+        [Tooltip("How far the cone SWAYS per degree of the hull's visual ROLL (degrees of beam sway per degree " +
+                 "of deck roll). Keep SMALL — a mounted lamp leans a LITTLE with the deck, it doesn't slew. 0 " +
+                 "disables the sway. E.g. 0.5 = the cone leans half a degree for each degree the deck rolls.")]
+        [Range(0f, 2f)] [SerializeField] private float _bounceSwayDegreesPerRoll = 0.5f;
+
+        [Tooltip("The boat's VISUAL child transform the wave rock is applied to (e.g. FishingBoatVisual). The " +
+                 "bounce reads its live bob + roll. Auto-found by name at runtime if left null; leaving it null on " +
+                 "a boat with no such child simply means no bounce (the beam sits steady on the root).")]
+        [SerializeField] private Transform _hullVisual;
+
+        [Tooltip("Name of the visual child to auto-find when Hull Visual is null (the builder names it " +
+                 "'FishingBoatVisual'). Reads the rock WITHOUT referencing the Boats module (rule 4 — Art stays " +
+                 "decoupled): the bob is the child's world-Y deviation from its rest pose, the roll its renderer's " +
+                 "world z-tilt.")]
+        [SerializeField] private string _hullVisualName = "FishingBoatVisual";
 
         // ---- the published GLOBAL shader uniforms (the water shader reads these; ADR 0016) ----------------
         // ONE boat "water light" is published as a handful of globals (like _SunDir / _DayNightTint already are),
@@ -121,6 +153,19 @@ namespace HiddenHarbours.Art
         private float _smoothedSpeed;
         private float _publishTimer;
 
+        // ---- bounce-with-the-hull read state (decoupled from Boats — Transform/SpriteRenderer only, rule 4) ----
+        // The hull visual (auto-found by name), its child whose local z-rotation carries the wave ROLL, and the
+        // REST local pose we measure the live BOB against. BoatWaveMotion lifts the visual by (bob+pitch) in WORLD
+        // Y off a FIXED base local pose (the builder parents FishingBoatVisual at local (0,0,0)); so the current
+        // bob is the visual's world-Y deviation from where its rest local pose maps under the (possibly yawed +
+        // moving) root — computed against the root's live transform, so it stays correct as the boat sails/turns.
+        // We snapshot the rest local pose the first time we see the visual; any one-frame rock baked in is a tiny
+        // constant bias, dwarfed by _bounceBobScale (and the builder's base is exactly zero anyway).
+        private Transform _hullVisualCached;
+        private Transform _rollSource;                 // the child whose local z-rotation carries the wave roll
+        private bool _restCaptured;
+        private Vector3 _restLocalPos;                 // the visual's rest LOCAL position (bob measured vs this)
+
         // How often (Hz) the water-light globals are re-published. The beam is slow; the sim throttles to a few
         // Hz elsewhere too (rule 7). The POSE the LAND quad follows every frame in SceneLight; the water globals
         // need only track the boat at a few Hz — cheap, no per-frame alloc.
@@ -144,6 +189,11 @@ namespace HiddenHarbours.Art
             _lastPos = transform.position;
             _smoothedSpeed = 0f;
             _publishTimer = 0f;
+            // Re-resolve the hull visual + its rest pose on wake (the boat may have been re-skinned / re-parented
+            // while disabled). A fresh find on the next bounce read; the rest is re-snapshotted then.
+            _hullVisualCached = null;
+            _rollSource = null;
+            _restCaptured = false;
         }
 
         private void OnDisable()
@@ -206,6 +256,20 @@ namespace HiddenHarbours.Art
                 // the SAME geometry SceneLight throws the land cone along — so land + water read one beam.
                 Vector3 lampWorld = transform.TransformPoint(new Vector3(_sideOffset, _bowOffset, 0f));
                 Vector2 beamDir = transform.up;
+
+                // ---- BOUNCE WITH THE HULL (ADR 0018 B2 read): a lamp on a rolling deck bobs + sways ----------
+                // The spotlight sits on the steady physics ROOT (correct for AIMING — the cone follows the bow),
+                // so on its own it does NOT share the wave rock BoatWaveMotion gives the hull's VISUAL child. Read
+                // that visual's live BOB (its world-Y wave lift) + ROLL (its child renderer's z-tilt) WITHOUT a
+                // Boats reference (Transform/SpriteRenderer only, rule 4), and nudge the published beam: offset the
+                // lamp up/down by the bob, sway the cone a touch by the roll. Glass calm ⇒ zero rock ⇒ zero nudge.
+                if (_bounceWithHull)
+                {
+                    ReadHullRock(out float bob, out float rollDegrees);
+                    lampWorld.y += LightMath.BounceLampYOffset(bob, _bounceBobScale);
+                    beamDir = LightMath.BounceSwayDir(beamDir, rollDegrees, _bounceSwayDegreesPerRoll);
+                }
+
                 // The water term reuses the SAME deterministic flicker SceneLight applies to the land quad, so the
                 // two surfaces wobble together (LightMath.Flicker is a pure hash of (seed, time) — rule 5). Use a
                 // stable per-boat seed so it is reproducible. The water-side strength lets the owner balance the
@@ -243,6 +307,85 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdBoatLightParams2,
                 new Vector4(Mathf.Clamp01(_edgeSoftness), Mathf.Clamp01(_gateThreshold),
                             Mathf.Clamp01(_gateSoftness), Mathf.Clamp01(_gateFallback)));
+        }
+
+        /// <summary>
+        /// Read the hull's CURRENT wave rock off the boat's VISUAL child — the BOB (its screen-vertical wave
+        /// lift, world units) and the ROLL (the renderer's WORLD z-tilt, degrees) — WITHOUT referencing the Boats
+        /// module (Transform + SpriteRenderer only, rule 4 — the Art lane stays decoupled). BoatWaveMotion
+        /// (ADR 0018 B2) lifts the visual by (bob+pitch) in WORLD Y off a fixed rest local pose and routes the
+        /// roll through the renderer's WORLD z-rotation (screen-aligned + leant); so the bob is the visual's
+        /// world-Y deviation from where its rest local pose maps under the live (yawed + moving) root, and the
+        /// roll is the renderer's world euler z (heading-independent). Auto-finds + caches the visual (and its
+        /// roll host) by name; if none is found the boat simply has no visual rock, so both are 0 (the beam sits
+        /// steady — no bounce). Visual-only.
+        /// </summary>
+        private void ReadHullRock(out float bob, out float rollDegrees)
+        {
+            bob = 0f;
+            rollDegrees = 0f;
+
+            // Resolve (once, then cached) the visual child to read the rock from. Prefer the wired ref; else find
+            // the named child (the builder names it "FishingBoatVisual"). No alloc on the cached path.
+            if (_hullVisualCached == null)
+            {
+                _hullVisualCached = _hullVisual != null ? _hullVisual : FindChildByName(transform, _hullVisualName);
+                _rollSource = null;
+                _restCaptured = false;
+                if (_hullVisualCached == null) return;    // no visual child on this boat -> no bounce
+            }
+            Transform visual = _hullVisualCached;
+
+            // Snapshot the REST local pose once, so BOB is measured as a deviation from it (the un-rocked pose).
+            if (!_restCaptured)
+            {
+                _restLocalPos = visual.localPosition;
+                _restCaptured = true;
+            }
+
+            // BOB: the visual's world-Y minus where its REST local pose maps under the root's live transform.
+            // Using world positions keeps it correct as the boat sails and yaws (a local-Y read would swing with
+            // the hull). The builder's rest local is (0,0,0), so this is just the visual's world-Y lift.
+            Vector3 restWorld = transform.TransformPoint(_restLocalPos);
+            bob = visual.position.y - restWorld.y;
+
+            // ROLL: the wave roll is composed onto the visual's renderer as a WORLD z-rotation each LateUpdate —
+            // DirectionalBoatSprite.ApplySnap sets the renderer's world rotation to Euler(0,0,VisualTiltDegrees)
+            // (it counter-rotates the root's heading yaw AWAY so the picture stays screen-aligned, then leans it
+            // by the tilt) — so the renderer's WORLD z-euler IS the wave roll, independent of the boat's heading.
+            // Read the visual's own SpriteRenderer transform (the tilt host); the world read stays correct as the
+            // boat turns (a LOCAL read would fold the heading yaw back in). Cached after the first find.
+            if (_rollSource == null)
+            {
+                var childSr = visual.GetComponentInChildren<SpriteRenderer>();
+                _rollSource = childSr != null ? childSr.transform : visual;
+            }
+            rollDegrees = NormalizeSignedDegrees(_rollSource.eulerAngles.z);
+        }
+
+        /// <summary>Depth-first find a descendant Transform by exact name (no alloc beyond the recursion; runs
+        /// once then the result is cached). Null if none matches — the boat then simply has no bounce source.</summary>
+        private static Transform FindChildByName(Transform root, string childName)
+        {
+            if (string.IsNullOrEmpty(childName)) return null;
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform c = root.GetChild(i);
+                if (c.name == childName) return c;
+                Transform found = FindChildByName(c, childName);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        /// <summary>Map a 0..360 Euler angle to a signed [-180, 180] so a small negative roll reads as a small
+        /// negative sway (a wrapped 359° reads as -1°, not +359°). Pure.</summary>
+        private static float NormalizeSignedDegrees(float deg)
+        {
+            deg %= 360f;
+            if (deg > 180f) deg -= 360f;
+            else if (deg < -180f) deg += 360f;
+            return deg;
         }
 
         /// <summary>
