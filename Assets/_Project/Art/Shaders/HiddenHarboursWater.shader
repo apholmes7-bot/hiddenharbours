@@ -183,6 +183,24 @@ Shader "HiddenHarbours/Water"
         _SwashWavelength   ("Swash shoreward wave spacing (per m depth)", Float) = 1.2
         _SwashAlongShoreVary ("Swash along-shore desync (0..1, subtle)", Range(0,1)) = 0.35
 
+        [Header(Organic shore fringe (LOOK ONLY prototype   default OFF   ADR 0012))]
+        // A revertible, defaults-off COSMETIC prototype (ADR 0012 exploration) so the owner can SEE an
+        // organic, wiggly coast on the glassy-calm St Peters bar and judge it by feel. It perturbs a
+        // LOCAL, foam-only "cosmetic depth" (depthC) near the waterline with pixel-grid-quantized noise,
+        // and feeds THAT into the VISIBLE shore read ONLY — the see-through-shallows alpha fringe + the
+        // foam/shallow band. It NEVER touches the real `depth`/`clip()` (the gameplay waterline where the
+        // player wades), the deep tint, the caustic gate, or _WaterLevel — so the sim/walkability edge is
+        // untouched by construction (P1 integrity, CLAUDE.md rule 5). Unlike the chop-gated `warp`, the
+        // wiggle is ALWAYS-ON (not sea-state-gated) so it reads even on dead-calm glass — that is the point.
+        // Sim-true promotion (mirroring this into the real clip contour / PaintedHeightField) is a SEPARATE
+        // owner-gated decision (ADR 0012), deliberately NOT done here.
+        //   _ShoreNoise      — cosmetic fringe amplitude (m). 0 = byte-identical to today's clean iso-contour.
+        //   _ShoreNoiseScale — the pixel-grid noise frequency (bigger = finer, busier wiggle; smaller = broad lobes).
+        //   _ShoreNoiseBand  — the depth (m) half-band around the waterline the fringe lives in (0 outside it).
+        _ShoreNoise        ("Shore fringe amount (m, 0 = off / today's clean edge)", Float) = 0
+        _ShoreNoiseScale   ("Shore fringe noise scale (bigger = finer wiggle)", Float)      = 0.6
+        _ShoreNoiseBand    ("Shore fringe depth band (m around the waterline)", Float)      = 0.8
+
         [Header(Specular glints (layer 4))]
         _SpecColor      ("Specular color", Color)       = (1.0, 0.98, 0.86, 1.0)
         _SpecAmount     ("Specular amount (0..1)", Range(0,1)) = 0.35
@@ -633,6 +651,10 @@ Shader "HiddenHarbours/Water"
                 float  _SwashSpeed;
                 float  _SwashWavelength;
                 float  _SwashAlongShoreVary;
+                // Organic shore fringe (LOOK-ONLY prototype; cosmetic, foam/alpha band only — ADR 0012).
+                float  _ShoreNoise;
+                float  _ShoreNoiseScale;
+                float  _ShoreNoiseBand;
                 float4 _SpecColor;
                 float  _SpecAmount;
                 float  _SpecSharpness;
@@ -2050,7 +2072,23 @@ Shader "HiddenHarbours/Water"
                 float depth = _WaterLevel - elevation;             // metres; <= 0 means dry/exposed
 
                 // Dry ground: the shader hands off to the terrain tiles below (draw nothing).
+                // NOTE the clip() uses the REAL `depth` — the gameplay waterline where the player wades is
+                // NEVER moved by the cosmetic fringe below (P1 integrity, CLAUDE.md rule 5).
                 clip(depth + 1e-4);
+
+                // ---- ORGANIC SHORE FRINGE (LOOK-ONLY prototype; cosmetic depthC — ADR 0012) ------------------
+                // A revertible, defaults-off wiggle so the visible water-meets-land edge reads like a natural
+                // coast even on glassy calm. `depthC` is a LOCAL cosmetic twin of `depth`, perturbed by
+                // pixel-grid-quantized noise ONLY inside a thin band around the waterline. It feeds the VISIBLE
+                // shore read (see-through alpha fringe + foam/shallow band) BELOW — never clip()/dt/the deep
+                // tint/the caustic gate/_WaterLevel. At _ShoreNoise = 0 (the shipped property default) depthC ==
+                // depth byte-for-byte, so every other material is unchanged. ALWAYS-ON (not chop-gated like the
+                // `warp` above) so it reads on dead-calm glass — the whole point of the prototype.
+                float shoreEdge = 1.0 - smoothstep(0.0, max(_ShoreNoiseBand, 1e-3), abs(depth));  // 1 at edge -> 0 outside the band
+                // Pixel-grid-quantized value noise (organic SHAPE at the pixel scale, not sub-pixel smoothness —
+                // the pixelization principle, ADR 0010 (2)); reuse the existing Pixelize + ValueNoise helpers.
+                float shoreN = ValueNoise(Pixelize(worldXY) * max(_ShoreNoiseScale, 1e-3)) - 0.5;  // -0.5..0.5
+                float depthC = depth + shoreN * _ShoreNoise * shoreEdge;   // cosmetic; == depth when _ShoreNoise = 0
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
@@ -2075,7 +2113,9 @@ Shader "HiddenHarbours/Water"
                 // _ShallowTranslucency = 0 is an EXACT passthrough (col.a unchanged = today's opaque look).
                 if (_ShallowTranslucency > 0.001)
                 {
-                    float shallowT = 1.0 - saturate(depth / max(_ShallowSeeThroughDepth, 1e-3));  // 1 at edge -> 0 deep
+                    // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the
+                    // see-through band wiggles WITH the visible shore instead of following the clean iso-contour.
+                    float shallowT = 1.0 - saturate(depthC / max(_ShallowSeeThroughDepth, 1e-3));  // 1 at edge -> 0 deep
                     col.a *= lerp(1.0, _ShallowMinAlpha, shallowT * saturate(_ShallowTranslucency));
                 }
 
@@ -2276,9 +2316,12 @@ Shader "HiddenHarbours/Water"
                 // GATED to the depth~0 band (full at the wet edge, 0 by ~2x the foam width) and applied ONLY
                 // to a LOCAL foam-only depth — the real `depth` (clip/dt/caustics) is never touched, so deep
                 // water and the gameplay waterline don't move. Pure foam dressing (P1 integrity, rule 5).
+                // depthC (the cosmetic organic-fringe depth; == depth when _ShoreNoise = 0) drives the VISIBLE
+                // foam band so the wet edge reads wiggly on calm water — while the real `depth`/clip() (the
+                // gameplay waterline) stays the clean iso-contour. depthC is local + foam-only (P1, rule 5).
                 float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);
-                float swashGate  = 1.0 - smoothstep(0.0, swashReach, depth);   // 1 at the wet edge -> 0 deeper
-                float foamDepth  = depth - BeachSwash(worldXY, depth, t) * swashGate;  // local, foam-only
+                float swashGate  = 1.0 - smoothstep(0.0, swashReach, depthC);   // 1 at the wet edge -> 0 deeper
+                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * swashGate;  // local, foam-only
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
                 float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
                 if (foamEdge > 0.001)

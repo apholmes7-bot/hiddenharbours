@@ -79,6 +79,9 @@ Material:
     - _PixelsPerUnit: 12
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
+    - _ShoreNoise: 0.75
+    - _ShoreNoiseBand: 0.8
+    - _ShoreNoiseScale: 0.6
     - _ShoreSampleStep: 0.4
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
