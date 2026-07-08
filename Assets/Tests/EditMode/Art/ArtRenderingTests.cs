@@ -343,18 +343,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         // ===== WaterSurface: the ALWAYS-ON beach swash (cosmetic shoreline wash) ==========================
         // These guard the C# twin of the shader's swash math: it oscillates over time (waves in/out), stays
-        // within the amplitude, and — the P1 integrity invariant — is CONFINED to the foam band by the gate
-        // (zero in deep water), so the cosmetic wash can never move deep water or the gameplay waterline.
+        // within the amplitude, rolls SHOREWARD (its phase carries depth*wavelength, so the wash advances IN
+        // toward the beach instead of sweeping around the island — PR #170), and — the P1 integrity invariant —
+        // is CONFINED to the foam band by the gate (zero in deep water), so the cosmetic wash can never move
+        // deep water or the gameplay waterline.
 
         [Test]
         public void SwashOffset_OscillatesInTime_WithinAmplitude()
         {
-            const float speed = 0.5f, amp = 0.3f, alongShore = 0f;
+            // A fixed shoreline pixel (depth 0.5 m, shore present, no desync); sweep time across a full beat.
+            const float speed = 0.5f, amp = 0.3f, depth = 0.5f, wavelength = 1.2f, vary = 0.35f, noise = 0.5f;
             float minV = float.MaxValue, maxV = float.MinValue;
             // Sample a full beat (the slow octave has period 1/(speed*0.5) = 4s at speed 0.5).
             for (float tm = 0f; tm <= 4f; tm += 0.05f)
             {
-                float v = WaterSurface.SwashOffset(tm, speed, amp, alongShore);
+                float v = WaterSurface.SwashOffset(tm, speed, amp, depth, wavelength, vary, noise, haveShore: true);
                 Assert.LessOrEqual(Mathf.Abs(v), amp + 1e-4f, "swash never exceeds its amplitude");
                 minV = Mathf.Min(minV, v);
                 maxV = Mathf.Max(maxV, v);
@@ -366,10 +369,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void SwashOffset_IsContinuousAndTimeDriven_NotFrozen()
         {
-            // Two distinct times give distinct offsets => it's animated, not a static fringe.
-            float a = WaterSurface.SwashOffset(0.3f, 0.5f, 0.3f, 1.2f);
-            float b = WaterSurface.SwashOffset(0.9f, 0.5f, 0.3f, 1.2f);
+            // Two distinct times at the same shoreline pixel give distinct offsets => animated, not a static fringe.
+            float a = WaterSurface.SwashOffset(0.3f, 0.5f, 0.3f, 0.5f, 1.2f, 0.35f, 0.5f, haveShore: true);
+            float b = WaterSurface.SwashOffset(0.9f, 0.5f, 0.3f, 0.5f, 1.2f, 0.35f, 0.5f, haveShore: true);
             Assert.AreNotEqual(a, b, "swash advances with time (the always-on motion the tide alone lacked)");
+        }
+
+        [Test]
+        public void SwashOffset_PhaseRollsShoreward_DependsOnDepthWithShore()
+        {
+            // PR #170: the phase carries a depth*wavelength term, so two depths at the SAME instant read
+            // differently — that spatial structure IS the shoreward run-up (a crest sits at ever-shallower
+            // depth as time grows, rolling IN toward the beach rather than sweeping around the island).
+            const float t = 0.4f, speed = 0.5f, amp = 0.3f, wavelength = 1.2f, vary = 0.35f, noise = 0.5f;
+            float shallow = WaterSurface.SwashOffset(t, speed, amp, 0.1f, wavelength, vary, noise, haveShore: true);
+            float deeper  = WaterSurface.SwashOffset(t, speed, amp, 1.3f, wavelength, vary, noise, haveShore: true);
+            Assert.AreNotEqual(shallow, deeper, "the swash phase varies with depth — the wash rolls SHOREWARD");
+
+            // Flat seabed (no shore axis): the travelling term drops out, so depth no longer matters — the
+            // shader's time-only fallback pulse, with no fixed direction that could circle the island.
+            float flatA = WaterSurface.SwashOffset(t, speed, amp, 0.1f, wavelength, vary, noise, haveShore: false);
+            float flatB = WaterSurface.SwashOffset(t, speed, amp, 1.3f, wavelength, vary, noise, haveShore: false);
+            Assert.AreEqual(flatA, flatB, 1e-6f, "flat seabed falls back to a depth-independent time-only pulse");
         }
 
         [Test]
