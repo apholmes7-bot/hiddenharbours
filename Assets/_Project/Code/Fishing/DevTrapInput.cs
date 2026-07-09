@@ -24,6 +24,11 @@ namespace HiddenHarbours.Fishing
     /// <see cref="DevFishingInput"/>/<c>ClamDigger</c> dev scaffolds: dev-keyed via the New Input System
     /// (legacy Input throws at runtime — memory), stood down under a modal dialogue
     /// (<see cref="InteractionGate"/>). Replaced by the InputService + the real place UX later (ui-ux).</para>
+    ///
+    /// <para><b>Build 5:</b> the keys live only while the player stands <b>ON DECK</b>
+    /// (<see cref="ControlMode.OnDeck"/>) — working the gear is a deck action; at the helm you're steering
+    /// and on foot you're ashore. Every outcome raises a Core <see cref="DevNotice"/> toast so the owner
+    /// sees refusals/grants/sets on screen instead of the Console.</para>
     /// </summary>
     public sealed class DevTrapInput : MonoBehaviour
     {
@@ -50,7 +55,13 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private Key _dropKey = Key.T;
         [SerializeField] private Key _grantKey = Key.G;
 
-        private bool _aboard;   // setting a pot is a BOAT action — keys only live while aboard (ControlModeChanged)
+        // Working the gear is a DECK action (owner's Build-5 split): keys live only while standing ON
+        // DECK — never at the helm (you're steering) and never on foot (ControlModeChanged, via Core).
+        private bool _onDeck;
+
+        /// <summary>True while the dev gear keys are live — ON DECK and not under a modal dialogue.
+        /// Public + input-free so the gate itself is EditMode-testable.</summary>
+        public bool GearKeysLive => _onDeck && !InteractionGate.IsBlocked;
 
         private void Awake()
         {
@@ -59,18 +70,20 @@ namespace HiddenHarbours.Fishing
 
         private void OnEnable()
         {
-            _aboard = GameServices.ActiveBoat != null && GameServices.ActiveBoat.HasActiveBoat;
+            // Fresh components start un-decked; every transition (and the region-arrival re-assert)
+            // republishes the mode, which keeps this true across scene hops.
+            _onDeck = false;
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
         }
 
         private void OnDisable() => EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
 
-        private void OnControlModeChanged(ControlModeChanged e) => _aboard = e.Mode == ControlMode.Aboard;
+        /// <summary>Public so tests can drive the deck gate through the same path the bus uses.</summary>
+        public void OnControlModeChanged(ControlModeChanged e) => _onDeck = e.Mode == ControlMode.OnDeck;
 
         private void Update()
         {
-            if (!_aboard) return;                    // on foot → setting a pot is a boat action, keys are dead
-            if (InteractionGate.IsBlocked) return;   // a modal dialogue owns the keys while up
+            if (!GearKeysLive) return;               // gear is worked from the DECK; keys are dead elsewhere
             var kb = Keyboard.current;
             if (kb == null) return;
 
@@ -78,17 +91,34 @@ namespace HiddenHarbours.Fishing
             if (kb[_grantKey].wasPressedThisFrame) GrantDevSupply();
         }
 
+        // On-screen greybox feedback (DevNotice → DevToast) so the owner reads the loop without the
+        // Console. Event-time strings only (a keypress), never per frame.
+        private const string NoticePotSet = "Pot set";
+        private const string NoticeTooShallow = "Too shallow here";
+        private const string NoticeNoBait = "No bait aboard";
+        private const string NoticeNotWired = "No trap gear wired (dev)";
+
         /// <summary>Set a baited trap at the drop point through the real Build-4 depth+bait gate. Public so a
-        /// test/tool can drive it without input. Returns the placement result.</summary>
+        /// test/tool can drive it without input. Returns the placement result. Every outcome raises a Core
+        /// <see cref="DevNotice"/> so the owner sees the refusal/success on screen, not in the Console.</summary>
         public PlacedTrapService.PlaceResult DropTrap()
         {
             if (_service == null || _trapDef == null)
             {
                 Debug.LogWarning("[DevTrapInput] No service/trap wired.");
+                EventBus.Publish(new DevNotice(NoticeNotWired));
                 return PlacedTrapService.PlaceResult.NoTrap;
             }
             Vector2 pos = _dropPoint != null ? (Vector2)_dropPoint.position : Vector2.zero;
-            return _service.TryPlaceGated(_trapDef, _bait, pos, _regionId, out _);
+            var result = _service.TryPlaceGated(_trapDef, _bait, pos, _regionId, out _);
+            EventBus.Publish(new DevNotice(result switch
+            {
+                PlacedTrapService.PlaceResult.Placed => NoticePotSet,
+                PlacedTrapService.PlaceResult.TooShallow => NoticeTooShallow,
+                PlacedTrapService.PlaceResult.NoBait => NoticeNoBait,
+                _ => NoticeNotWired,
+            }));
+            return result;
         }
 
         /// <summary>Dev-grant a few bait into the save so the loop is playable now (greybox only). Real bait
@@ -104,12 +134,12 @@ namespace HiddenHarbours.Fishing
                 if (save.BaitStock[i].BaitId == _bait.Id)
                 {
                     save.BaitStock[i] = new BaitStock(_bait.Id, save.BaitStock[i].Count + _devBaitGrant);
-                    Debug.Log($"[DevTrapInput] Granted {_devBaitGrant} {_bait.DisplayName} (now {save.BaitStock[i].Count}).");
+                    EventBus.Publish(new DevNotice($"+{_devBaitGrant} {_bait.DisplayName} bait ({save.BaitStock[i].Count} aboard)"));
                     return;
                 }
             }
             save.BaitStock.Add(new BaitStock(_bait.Id, _devBaitGrant));
-            Debug.Log($"[DevTrapInput] Granted {_devBaitGrant} {_bait.DisplayName} (dev supply).");
+            EventBus.Publish(new DevNotice($"+{_devBaitGrant} {_bait.DisplayName} bait"));
         }
 
         /// <summary>Wire the dev input in one call (tests / editor).</summary>

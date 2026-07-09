@@ -111,19 +111,48 @@ namespace HiddenHarbours.Core
     {
     }
 
-    /// <summary>Whether the player is walking the coast or sailing the boat.</summary>
-    public enum ControlMode { OnFoot, Aboard }
+    /// <summary>
+    /// Where the player's control lives (trap arc Build 5 split the old binary on-foot/aboard model).
+    /// <list type="bullet">
+    ///   <item><see cref="OnFoot"/> — walking the coast; the walk controller drives.</item>
+    ///   <item><see cref="Aboard"/> — <b>at the helm</b>, piloting: steering input is live, the walk is
+    ///   frozen. The name is kept from the old binary model (least-breaking: every existing consumer
+    ///   that read <c>Aboard</c> as "actively piloting" — camera boat-framing, propulsion audio, the
+    ///   fleet's reframe-on-grant — stays correct unchanged).</item>
+    ///   <item><see cref="OnDeck"/> — standing on the boat's deck as a walkable character (boarded, but
+    ///   NOT at the helm). This is where boat/gear work happens (set a pot, haul a trap); steering is
+    ///   dead. Boarding lands here; take the helm to get <see cref="Aboard"/>; disembark from here.</item>
+    /// </list>
+    /// Values are append-only (the enum is a Core contract): OnDeck was appended so the numeric values
+    /// of the two original states never shifted.
+    /// </summary>
+    public enum ControlMode { OnFoot, Aboard, OnDeck }
 
     /// <summary>
-    /// Raised when control switches between on-foot and aboard (board / disembark). Lets the camera
-    /// (App) retarget between the player and the boat WITHOUT the switcher referencing the camera — a
-    /// Player/Boats-lane switcher can't reference App (that would be circular), so the handoff goes
-    /// through Core. The boat's framing still arrives via <see cref="ActiveBoatChanged"/> on boarding.
+    /// Raised when control switches between on-foot, on-deck and the helm (board / take the helm /
+    /// step back / disembark). Lets the camera (App) retarget between the player and the boat WITHOUT
+    /// the switcher referencing the camera — a Player/Boats-lane switcher can't reference App (that
+    /// would be circular), so the handoff goes through Core. The boat's framing still arrives via
+    /// <see cref="ActiveBoatChanged"/> on taking the helm.
     /// </summary>
     public readonly struct ControlModeChanged
     {
         public readonly ControlMode Mode;
         public ControlModeChanged(ControlMode mode) { Mode = mode; }
+    }
+
+    /// <summary>
+    /// A short, transient, player-facing GREYBOX notice ("Pot set", "Too shallow here", "+5 herring
+    /// bait") — the owner's on-screen feedback for the trap loop so he never needs the Unity Console.
+    /// Published by gameplay systems (Fishing etc.) and rendered by whatever toast/dev overlay is
+    /// listening (<c>DevToast</c> in the greybox) — the usual one-way Core handoff, so Fishing never
+    /// references a UI class. Deliberately dumb (a string): this whole channel is scaffolding that the
+    /// diegetic UI direction replaces later; nothing downstream may make gameplay decisions off it.
+    /// </summary>
+    public readonly struct DevNotice
+    {
+        public readonly string Text;
+        public DevNotice(string text) { Text = text; }
     }
 
     /// <summary>

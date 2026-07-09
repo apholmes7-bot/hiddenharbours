@@ -479,8 +479,8 @@ namespace HiddenHarbours.Tests.EditMode
             // Walk back to the boat and re-board (board from anywhere within reach of the boat).
             walk.transform.position = boatGo.transform.position;
             Assert.IsTrue(sw.TryInteract(), "re-board");
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
-            Assert.AreEqual(MooringState.Stowed, mooring.State, "boarding stows the rope (the helm takes over)");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
+            Assert.AreEqual(MooringState.Stowed, mooring.State, "boarding stows the rope (you're aboard her now)");
         }
     }
 }

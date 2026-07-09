@@ -62,7 +62,9 @@ the owning lanes rather than reached across:
 
 - **A "reached safe harbour" signal** (world-content / Core). The home-exhale wants to fire on **arriving
   at the wharf/safe harbour**, but Core has **no harbour/wharf/safe-zone concept** and no such event. As a
-  faithful v1 we proxy it: coming ashore (`ControlModeChanged` Aboard→OnFoot) **after the sea had become a
+  faithful v1 we proxy it: coming ashore (`ControlModeChanged` on-boat→OnFoot; Build 5 split "on the
+  boat" into OnDeck + Aboard-at-the-helm, and a helm⇄deck hop is neither boarding nor coming ashore —
+  see `AudioDirectorLogic.IsOnBoat`) **after the sea had become a
   worry** (peak wind tell past threshold). The robust fix is a small Core signal like
   `EnteredSafeHarbour` (or a "safe zone" flag on the disembark) published by world-content when the player
   docks at a harbour — then the warmth keys off *actually being home*, not a wind proxy.

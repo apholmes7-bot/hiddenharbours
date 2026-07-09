@@ -312,6 +312,15 @@ namespace HiddenHarbours.App.Editor
             var bucket = playerGo.AddComponent<ClamBucket>();
             playerGo.AddComponent<StartingGear>();
 
+            // DECK WALKING (trap arc Build 5 — the on-deck control state): boarding lands the player ON
+            // THE DECK as a walkable character; this controller drives them around the small bounded deck
+            // while the boat rocks/drifts under them. Disabled here — the ControlSwitcher owns it (enabled
+            // only while OnDeck; the walk controller drives ashore, the helm drives when taken). The deck
+            // bounds/speed are its serialized tunables; the switcher parents the player to the boat's
+            // PHYSICS ROOT (never the counter-rotated visual child) when boarding.
+            var deckWalk = playerGo.AddComponent<DeckWalkController>();
+            deckWalk.enabled = false;
+
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
             var cameraFollow = camGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
@@ -327,6 +336,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(switcher, "_playerWalk", walk);
             SetRef(switcher, "_boatController", boat);
             SetRef(switcher, "_boatInput", devBoat);
+            SetRef(switcher, "_deckWalk", deckWalk);   // Build 5: board → deck; walk to the helm to drive
             // _dockZone / _disembarkPoint are left for the scene to wire via its RegionAnchor (SetDock on
             // arrival) — a start scene that wants an immediate cove-style dock can SetRef them after Build.
 
@@ -334,6 +344,12 @@ namespace HiddenHarbours.App.Editor
             var loaderGo = new GameObject("RegionSceneLoader");
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
             SetString(loader, "_currentSceneName", p.CurrentSceneName);
+
+            // --- GREYBOX TOASTS (Build 5 — DevToast): on-screen feedback for the trap loop so the owner
+            // never needs the Unity Console. Listens to the Core DevNotice/FishCaught signals only (the
+            // Fishing publishers never reference it — rule 4); pre-allocates its text pool (rule 7).
+            var toastGo = new GameObject("DevToast");
+            toastGo.AddComponent<DevToast>();
 
             var coordinatorGo = new GameObject("RegionTravelCoordinator");
             var coordinator = coordinatorGo.AddComponent<RegionTravelCoordinator>();
@@ -351,6 +367,7 @@ namespace HiddenHarbours.App.Editor
             camGo.AddComponent<PersistentObject>();
             switcherGo.AddComponent<PersistentObject>();
             gaugeGo.AddComponent<PersistentObject>();
+            toastGo.AddComponent<PersistentObject>();
             loaderGo.AddComponent<PersistentObject>();
             coordinatorGo.AddComponent<PersistentObject>();
 

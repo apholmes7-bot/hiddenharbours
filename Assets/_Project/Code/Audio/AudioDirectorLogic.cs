@@ -107,8 +107,18 @@ namespace HiddenHarbours.Audio
 
         // ---- aboard layer + cue ducking -----------------------------------------------------
 
-        /// <summary>The hull-slap/row layer plays only while aboard.</summary>
+        /// <summary>The hull-slap/row layer plays only while AT THE HELM (piloting). Standing on the
+        /// deck (Build 5 <see cref="ControlMode.OnDeck"/>) is quiet — nobody's rowing/driving.</summary>
         public static bool HullLayerActive(ControlMode mode) => mode == ControlMode.Aboard;
+
+        /// <summary>
+        /// True while the player is physically ON THE BOAT — on deck or at the helm (Build 5 split the
+        /// old binary Aboard). This is the "a trip is in progress" read: the wind-worry high-water mark
+        /// accrues and the came-ashore beat resolves against BEING ON THE BOAT, not just piloting —
+        /// stepping from the helm to the deck is NOT coming ashore.
+        /// </summary>
+        public static bool IsOnBoat(ControlMode mode)
+            => mode == ControlMode.Aboard || mode == ControlMode.OnDeck;
 
         // ---- aboard propulsion bed: Dory oars vs Punt engine --------------------------------
         // The boat you hear depends on how the active hull is driven: the hand-rowed dory gets an

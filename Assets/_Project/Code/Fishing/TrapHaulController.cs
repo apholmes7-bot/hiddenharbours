@@ -129,7 +129,9 @@ namespace HiddenHarbours.Fishing
         private float _pullCooldownTimer;  // >0 while a fresh pull is debounced
         private bool _hasLastTime;
         private double _lastTimeSeconds;
-        private bool _aboard;              // hauling is a BOAT action — only live while aboard (ControlModeChanged)
+        // Hauling is a DECK action (owner's Build-5 split): only live while standing ON DECK — never at
+        // the helm (you're steering) and never on foot (ControlModeChanged, via Core).
+        private bool _onDeck;
 
         /// <summary>True while a haul is live (a trap is being pulled up). The rope shows only then.</summary>
         public bool IsHauling => _hauling != null;
@@ -149,13 +151,18 @@ namespace HiddenHarbours.Fishing
             BuildRopeVisual();
         }
 
+        /// <summary>True while the haul keys are live — ON DECK and not under a modal dialogue.
+        /// Public + input-free so the gate itself is EditMode-testable.</summary>
+        public bool GearKeysLive => _onDeck && !InteractionGate.IsBlocked;
+
         private void OnEnable()
         {
             _hasLastTime = false;
             _animator.Reset();
-            // Hauling is a BOAT action — track aboard/on-foot through Core so the keys only work aboard and a
-            // disembark cozily drops a live haul (no penalty). Seed from the live active-boat read.
-            _aboard = GameServices.ActiveBoat != null && GameServices.ActiveBoat.HasActiveBoat;
+            // Hauling is a DECK action — track the mode through Core so the keys only work on deck and
+            // leaving the deck (helm or ashore) cozily drops a live haul (no penalty). Fresh components
+            // start un-decked; every transition (and the region-arrival re-assert) republishes the mode.
+            _onDeck = false;
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
         }
 
@@ -165,16 +172,16 @@ namespace HiddenHarbours.Fishing
             CancelHaul();   // dropping the component / leaving the scene never leaves a rope dangling
         }
 
-        private void OnControlModeChanged(ControlModeChanged e)
+        /// <summary>Public so tests can drive the deck gate through the same path the bus uses.</summary>
+        public void OnControlModeChanged(ControlModeChanged e)
         {
-            _aboard = e.Mode == ControlMode.Aboard;
-            if (!_aboard) CancelHaul();   // stepped ashore mid-haul → let go (the trap stays down, no penalty)
+            _onDeck = e.Mode == ControlMode.OnDeck;
+            if (!_onDeck) CancelHaul();   // took the helm / stepped ashore mid-haul → let go (no penalty)
         }
 
         private void Update()
         {
-            if (!_aboard) { return; }                     // on foot → hauling is a boat action, keys are dead
-            if (InteractionGate.IsBlocked) { return; }   // a modal dialogue owns the keys while up
+            if (!GearKeysLive) { return; }   // hauling is worked from the DECK; keys are dead elsewhere
 
             var kb = Keyboard.current;
             float dt = Time.deltaTime;
@@ -198,6 +205,13 @@ namespace HiddenHarbours.Fishing
 
         // ---- start / cancel -------------------------------------------------------------------
 
+        // On-screen greybox feedback (DevNotice → DevToast) so the owner reads the loop without the
+        // Console. Event-time strings only, never per frame. The landed-catch name arrives separately
+        // via FishCaught (the toast side formats it), so a success here needs no extra notice.
+        private const string NoticeNoPot = "No pot alongside — lay up to a buoy";
+        private const string NoticeDrifted = "Drifted off the buoy";
+        private const string NoticeEmpty = "Empty pot — not ready yet";
+
         /// <summary>Begin hauling the nearest set trap in reach of the rail (any state — a not-yet-soaked
         /// trap still hauls, and surfaces empty). Public so a test/tool can drive it without input. Returns
         /// true iff a haul started.</summary>
@@ -205,7 +219,11 @@ namespace HiddenHarbours.Fishing
         {
             if (_service == null) return false;
             PlacedTrap best = NearestInReach();
-            if (best == null) { Debug.Log("[TrapHaul] No pot alongside to haul — lay the boat up to a buoy."); return false; }
+            if (best == null)
+            {
+                EventBus.Publish(new DevNotice(NoticeNoPot));
+                return false;
+            }
 
             _hauling = best;
             _line01 = 0f;
@@ -235,7 +253,12 @@ namespace HiddenHarbours.Fishing
             if (_hauling == null) return;
 
             // If the boat drifted off the mark, cozily let go (no penalty; re-approach to resume).
-            if (!InReach(_hauling)) { Debug.Log("[TrapHaul] Drifted off the buoy — lay alongside again."); CancelHaul(); return; }
+            if (!InReach(_hauling))
+            {
+                EventBus.Publish(new DevNotice(NoticeDrifted));
+                CancelHaul();
+                return;
+            }
 
             // Drive the strain read from the live sea + progress, and ease the rope's taut/slack shape.
             float sea = SeaState01();
@@ -295,6 +318,7 @@ namespace HiddenHarbours.Fishing
                 // Ready-gate: an unsoaked (or empty-pool / no-room) haul surfaces nothing. The trap stays down
                 // to keep soaking (HaulTrap leaves it on a not-ready/empty result). Cozy — no penalty.
                 Publish(TrapHaulPhase.Empty, pullOnBeat: false);
+                EventBus.Publish(new DevNotice(NoticeEmpty));
                 Debug.Log("[TrapHaul] Up she comes — empty. Not ready yet (or no room aboard). Left her to soak.");
             }
             _line01 = 0f;

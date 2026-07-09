@@ -156,9 +156,9 @@ namespace HiddenHarbours.Audio
             _tellActive = AudioDirectorLogic.TellActive(wind, _tellActive);
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
 
-            // High-water mark of the tell while ABOARD — it's how worrying the sea got this trip, which
-            // decides whether coming ashore earns the home-exhale (reset on boarding).
-            if (_mode == ControlMode.Aboard && _tell01 > _peakTellThisTrip)
+            // High-water mark of the tell while ON THE BOAT (deck or helm — Build 5) — it's how worrying
+            // the sea got this trip, which decides whether coming ashore earns the home-exhale.
+            if (AudioDirectorLogic.IsOnBoat(_mode) && _tell01 > _peakTellThisTrip)
                 _peakTellThisTrip = _tell01;
         }
 
@@ -201,15 +201,19 @@ namespace HiddenHarbours.Audio
 
         private void OnControlModeChanged(ControlModeChanged e)
         {
-            bool wasAboard = _mode == ControlMode.Aboard;
+            // A "trip" is being ON THE BOAT (deck or helm — Build 5's split): the helm⇄deck hop mid-sea
+            // is neither a fresh trip nor coming ashore. Only stepping ONTO the boat starts the worry
+            // meter, and only stepping OFF it (to foot) can resolve to the made-it-home warmth.
+            bool wasOnBoat = AudioDirectorLogic.IsOnBoat(_mode);
             _mode = e.Mode;
+            bool onBoat = AudioDirectorLogic.IsOnBoat(_mode);
 
-            if (_mode == ControlMode.Aboard)
+            if (onBoat)
             {
                 // Boarding starts a fresh trip — the home-exhale is judged on THIS trip's worst sea.
-                if (!wasAboard) _peakTellThisTrip = 0f;
+                if (!wasOnBoat) _peakTellThisTrip = 0f;
             }
-            else if (wasAboard)
+            else if (wasOnBoat)
             {
                 // Coming ashore = "made it home" — but only EARNED if the sea had become a worry this
                 // trip (a flat-calm hop ends quietly; charter guardrail "warmth is earned, not constant").

@@ -8,12 +8,24 @@ using HiddenHarbours.Economy;   // RepairLedger only — the boarding gate's sin
 namespace HiddenHarbours.Player
 {
     /// <summary>
-    /// The control-mode state machine (OnFoot ⇄ Aboard) — step 2 of the on-foot player, completing the
-    /// walk → board → sail → fish/sell/buy → dock → disembark → walk loop. Owns the active mode and
-    /// gates which controller receives input: on foot the <see cref="PlayerWalkController"/> drives;
-    /// aboard the <see cref="BoatController"/> + its dev input drive. INTERACT (dev key E) BOARDS when on
-    /// foot within reach of the boat (anywhere, not only at the dock), and DISEMBARKS when aboard with the
-    /// step-off point over standable LAND.
+    /// The control-mode state machine (OnFoot ⇄ OnDeck ⇄ Aboard-at-the-helm) — trap arc Build 5, the
+    /// owner's on-deck control state replacing the old binary board-and-drive model:
+    ///
+    /// <list type="bullet">
+    ///   <item><b>Boarding lands you ON THE DECK.</b> INTERACT (dev key E) within reach of the boat puts
+    ///   the player standing on the deck as a walkable character (<see cref="DeckWalkController"/>) while
+    ///   the boat rocks and drifts under them — NOT instantly driving. The deck is where boat/gear work
+    ///   happens (set a pot, haul a trap — those systems gate themselves to <see cref="ControlMode.OnDeck"/>
+    ///   via the Core signal).</item>
+    ///   <item><b>The helm is a station.</b> Walk to the helm spot (a tunable offset — the tiller on the
+    ///   dory) and INTERACT to take the helm → <see cref="ControlMode.Aboard"/>, steering exactly as
+    ///   before. INTERACT again steps back onto the deck. Steering input is dead unless at the helm.</item>
+    ///   <item><b>Disembark happens from the deck</b> (near a dock or over standable land — the same
+    ///   step-off rules as before, just sourced from the deck state).</item>
+    /// </list>
+    ///
+    /// The deck-walking player (and the helm spot / deck bounds maths) ride the boat's PHYSICS ROOT —
+    /// never the counter-rotated visual child, which is stomped back to identity every LateUpdate.
     ///
     /// Cross-module via Core only: it toggles the Player + Boats controllers it holds and hands the
     /// camera off through the Core <see cref="ControlModeChanged"/> / <see cref="ActiveBoatChanged"/>
@@ -71,6 +83,21 @@ namespace HiddenHarbours.Player
                  "Forgiving (P5 cozy) so you don't have to stand on the exact spot.")]
         [SerializeField] private float _moorReach = 4f;
 
+        [Header("Deck & helm (Build 5 — the on-deck control state; all greybox tunables, rule 6)")]
+        [Tooltip("The deck-walk controller on the PLAYER — enabled only while OnDeck. Auto-resolved off " +
+                 "the walk controller's object if left empty (so tests/older wiring need no change).")]
+        [SerializeField] private DeckWalkController _deckWalk;
+        [Tooltip("The HELM STATION spot as a world-axis offset from the boat's position (the tiller at " +
+                 "the dory's stern). World-aligned to match the snap-directional boat picture the player " +
+                 "sees (the physics body's true rotation is hidden). Walk here + E to take the helm.")]
+        [SerializeField] private Vector2 _helmLocalOffset = new Vector2(0f, -1.3f);
+        [Tooltip("How close (m) the on-deck player must stand to the helm spot for E to take the helm. " +
+                 "Kept tighter than the deck so there's still deck left to disembark from.")]
+        [SerializeField] private float _helmReach = 0.9f;
+        [Tooltip("Where boarding LANDS you on the deck, as a world-axis offset from the boat's position " +
+                 "(clamped to the deck bounds) — amidships, a step away from the helm.")]
+        [SerializeField] private Vector2 _boardLocalOffset = new Vector2(0f, 0.4f);
+
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
         private Text _hint;
@@ -91,6 +118,20 @@ namespace HiddenHarbours.Player
             }
         }
 
+        /// <summary>The player's deck-walk controller — the explicit wired reference, else auto-resolved
+        /// off the walk controller's object (so the builder and existing Configure() call sites need no
+        /// change). Null if the player has no <see cref="DeckWalkController"/> (deck walking self-disables;
+        /// the mode machine still works — tests position the player directly).</summary>
+        private DeckWalkController DeckWalk
+        {
+            get
+            {
+                if (_deckWalk == null && _playerWalk != null)
+                    _deckWalk = _playerWalk.GetComponent<DeckWalkController>();
+                return _deckWalk;
+            }
+        }
+
         // ---- zone tests (testable via positioned transforms) --------------------------------
 
         /// <summary>True when the boat is within the dock-landing radius (used only to pick the tidy
@@ -106,6 +147,19 @@ namespace HiddenHarbours.Player
         public bool WithinBoardReach()
             => Player != null && Boat != null
                && Vector2.Distance(Player.position, Boat.position) <= _boardReach;
+
+        /// <summary>The helm station's world position — the boat's position plus the tunable world-axis
+        /// helm offset (the tiller). World-aligned to match the screen-aligned boat picture.</summary>
+        public Vector3 HelmWorldPosition
+            => Boat != null
+               ? Boat.position + new Vector3(_helmLocalOffset.x, _helmLocalOffset.y, 0f)
+               : Vector3.zero;
+
+        /// <summary>True when the player stands close enough to the helm spot for E to take the helm
+        /// (pure proximity; the mode dispatch decides when it applies).</summary>
+        public bool WithinHelmReach()
+            => Player != null && Boat != null
+               && Vector2.Distance(Player.position, HelmWorldPosition) <= _helmReach;
 
         /// <summary>
         /// Pure test: is the step-off point over standable LAND by tidal terrain — i.e. the ground is EXPOSED
@@ -178,25 +232,43 @@ namespace HiddenHarbours.Player
             return RepairLedger.IsRepaired(save, hullId);
         }
 
-        /// <summary>True if INTERACT would transition right now. On foot you may board whenever within reach
-        /// of the boat (anywhere) and the boat is boardable (a damaged dory blocks boarding until repaired).
-        /// Aboard, you may disembark only onto a standable step-off: at an authored DOCK/wharf (you step onto
-        /// the planks) OR where the boat is over standable LAND (<see cref="OnLand"/>) — NEVER over open or
-        /// merely-shallow-but-submerged water. The dock is the built place you step ashore; the land test is
-        /// the bared-flats/shore-collider case away from any dock. The removed allowance is "shallow but
-        /// still submerged water with no dock" (owner playtest: you couldn't step off onto water).</summary>
-        public bool CanInteract()
-            => Mode == ControlMode.OnFoot
-                ? (WithinBoardReach() && BoardableNow())
-                : (InDockZone() || OnLand());
+        /// <summary>True if INTERACT would transition right now.
+        /// <para><b>On foot</b>: you may board (→ the DECK) whenever within reach of the boat (anywhere)
+        /// and the boat is boardable (a damaged dory blocks boarding until repaired).</para>
+        /// <para><b>On deck</b>: E is contextual — at the helm spot it takes the helm; elsewhere it
+        /// disembarks, allowed only onto a standable step-off: at an authored DOCK/wharf (you step onto
+        /// the planks) OR where the boat is over standable LAND (<see cref="OnLand"/>) — NEVER over open
+        /// or merely-shallow-but-submerged water (owner playtest: you couldn't step off onto water).</para>
+        /// <para><b>At the helm</b>: you may always step back onto the deck.</para></summary>
+        public bool CanInteract() => Mode switch
+        {
+            ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
+            ControlMode.OnDeck => WithinHelmReach() || InDockZone() || OnLand(),
+            _ => true,   // at the helm → step back onto the deck, always allowed
+        };
 
-        /// <summary>Attempt the board/disembark transition. Returns true if it happened.</summary>
+        /// <summary>Attempt the contextual INTERACT transition for the current mode (board the deck /
+        /// take the helm / step back / disembark). Returns true if a transition happened.</summary>
         public bool TryInteract()
         {
-            if (!CanInteract()) return false;
-            if (Mode == ControlMode.OnFoot) Board();
-            else Disembark();
-            return true;
+            switch (Mode)
+            {
+                case ControlMode.OnFoot:
+                    if (!(WithinBoardReach() && BoardableNow())) return false;
+                    BoardDeck();
+                    return true;
+
+                case ControlMode.OnDeck:
+                    // The helm is a STATION: standing at it, E takes the helm; elsewhere on the deck,
+                    // E steps ashore (when a standable step-off is there).
+                    if (WithinHelmReach()) { TakeHelm(); return true; }
+                    if (InDockZone() || OnLand()) { Disembark(); return true; }
+                    return false;
+
+                default: // Aboard (at the helm) → step back onto the deck
+                    LeaveHelm();
+                    return true;
+            }
         }
 
         // ---- rope: hold / root (the mooring mechanic — the owner's refinement) --------------
@@ -204,7 +276,7 @@ namespace HiddenHarbours.Player
         /// <summary>
         /// True when the on-foot player may hold/root the rope right now: on foot, the boat has a mooring,
         /// it's actually moored (held or rooted), and the player stands within <see cref="_moorReach"/> of
-        /// it. (Aboard, the rope is stowed — boarding takes the helm.)
+        /// it. (Aboard — deck or helm — the rope is stowed; boarding stows it.)
         /// </summary>
         public bool CanToggleMooring()
             => Mode == ControlMode.OnFoot
@@ -227,10 +299,29 @@ namespace HiddenHarbours.Player
 
         // ---- transitions --------------------------------------------------------------------
 
-        private void Board()
+        /// <summary>OnFoot → OnDeck: step aboard onto the DECK (owner's Build-5 model — boarding never
+        /// takes the helm). The player stays visible and walks the deck; the boat stays un-driven (its
+        /// controller/input off) and rocks/drifts under them; the rope is stowed while anyone's aboard.</summary>
+        private void BoardDeck()
         {
-            SetPlayerActive(false);                                  // hide & freeze the on-foot player
-            if (Mooring != null) Mooring.Stow();                     // stow the rope; the helm takes over
+            if (Mooring != null) Mooring.Stow();                     // the rope's stowed while you're aboard
+            if (_boatController != null) _boatController.enabled = false;   // nobody at the helm yet
+            if (_boatInput != null) _boatInput.enabled = false;
+
+            ApplyPlayerFor(ControlMode.OnDeck);
+            SnapPlayerToDeck(_boardLocalOffset);
+            Mode = ControlMode.OnDeck;
+
+            // Camera: retarget stays on the (visible, deck-walking) player at the on-foot framing —
+            // the boat framing arrives only when the helm is taken (ActiveBoatChanged there).
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
+        }
+
+        /// <summary>OnDeck → Aboard: take the HELM station. The player figure hands over to the boat
+        /// picture (hidden, still riding the hull); steering input goes live.</summary>
+        private void TakeHelm()
+        {
+            ApplyPlayerFor(ControlMode.Aboard);
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
             Mode = ControlMode.Aboard;
@@ -243,6 +334,22 @@ namespace HiddenHarbours.Player
             EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
         }
 
+        /// <summary>Aboard → OnDeck: step back from the helm onto the deck. Steering goes dead and the
+        /// boat is brought to rest (throttle dropped — nobody's at the tiller); the player reappears at
+        /// the helm spot and can walk the deck / work the gear / step ashore.</summary>
+        private void LeaveHelm()
+        {
+            if (_boatController != null) { _boatController.enabled = false; _boatController.Stop(); }
+            if (_boatInput != null) _boatInput.enabled = false;
+
+            ApplyPlayerFor(ControlMode.OnDeck);
+            SnapPlayerToDeck(_helmLocalOffset);                      // you step back from the tiller
+            Mode = ControlMode.OnDeck;
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
+        }
+
+        /// <summary>OnDeck → OnFoot: step ashore (the same standable-step-off rules as ever, now sourced
+        /// from the deck state).</summary>
         private void Disembark()
         {
             // Drop the helm. The player steps off onto land and HOLDS the rope (the boat is tethered to the
@@ -262,7 +369,7 @@ namespace HiddenHarbours.Player
                 else if (Boat != null) Player.position = Boat.position;
             }
 
-            SetPlayerActive(true);
+            ApplyPlayerFor(ControlMode.OnFoot);
             Mode = ControlMode.OnFoot;
 
             // HOLD the rope (the owner's refinement): on disembark the player takes the line in hand, so the
@@ -291,8 +398,8 @@ namespace HiddenHarbours.Player
         {
             if (Mode == ControlMode.Aboard)
             {
-                SetPlayerActive(false);
-                if (Mooring != null) Mooring.Stow();                 // aboard → the helm drives, rope stowed
+                if (Mooring != null) Mooring.Stow();                 // at the helm → rope stowed
+                ApplyPlayerFor(ControlMode.Aboard);
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -302,28 +409,87 @@ namespace HiddenHarbours.Player
                 EventBus.Publish(new ActiveBoatChanged(id, height));
                 EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
             }
+            else if (Mode == ControlMode.OnDeck)
+            {
+                if (Mooring != null) Mooring.Stow();                 // aboard (deck) → rope stowed
+                if (_boatController != null) _boatController.enabled = false;   // nobody at the helm
+                if (_boatInput != null) _boatInput.enabled = false;
+                ApplyPlayerFor(ControlMode.OnDeck);
+                // The hop may have teleported the player to the region's disembark spot — re-seat them
+                // on the deck (the coordinator repositions player + boat independently).
+                SnapPlayerToDeck(_boardLocalOffset);
+                EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
+            }
             else
             {
                 if (_boatController != null) _boatController.enabled = false;
                 if (_boatInput != null) _boatInput.enabled = false;
-                SetPlayerActive(true);
+                ApplyPlayerFor(ControlMode.OnFoot);
                 EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
             }
         }
 
-        private void SetPlayerActive(bool active)
+        /// <summary>
+        /// Put the PLAYER OBJECT into the right shape for a mode — the one place the walk/deck controllers,
+        /// sprite, physics and parenting are toggled, shared by every transition and the re-assert:
+        /// <list type="bullet">
+        ///   <item><b>OnFoot</b> — walk controller live, sprite shown, footprint collider + physics on,
+        ///   un-parented (free to roam).</item>
+        ///   <item><b>OnDeck</b> — deck-walk controller live, sprite shown, physics OFF (the deck is
+        ///   transform-driven; the hull collider must never fight the footprint collider), parented to the
+        ///   boat's PHYSICS ROOT so its drift carries the player (never the counter-rotated visual child).</item>
+        ///   <item><b>Aboard (helm)</b> — both walk controllers dead, sprite hidden, physics off, still
+        ///   parented (the hidden player rides the hull; stepping back to the deck re-shows them).</item>
+        /// </list>
+        /// Null-safe throughout: tests build a player without a footprint collider / deck controller.
+        /// </summary>
+        private void ApplyPlayerFor(ControlMode mode)
         {
             if (_playerWalk == null) return;
-            _playerWalk.enabled = active;
+            bool onFoot = mode == ControlMode.OnFoot;
+            bool onDeck = mode == ControlMode.OnDeck;
+
+            _playerWalk.enabled = onFoot;
+
             var sr = _playerWalk.GetComponent<SpriteRenderer>();
-            if (sr != null) sr.enabled = active;
+            if (sr != null) sr.enabled = onFoot || onDeck;           // visible ashore + on deck; hidden at the helm
+
             var rb = _playerWalk.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.linearVelocity = Vector2.zero;        // no residual drift while hidden
-            // Drop the player's footprint collider while aboard so the boat backing onto the dock can't
-            // bump the hidden, frozen on-foot player (the boat gained a hull collider this pass). Restored
-            // on disembark. Null-safe: tests build a player without a footprint collider.
+            if (rb != null)
+            {
+                rb.simulated = onFoot;                               // aboard, the transform (not physics) drives
+                rb.linearVelocity = Vector2.zero;                    // no residual drift across the switch
+            }
+            // Drop the player's footprint collider while aboard so the hull collider can't bump the
+            // frozen on-foot body. Restored on disembark.
             var col = _playerWalk.GetComponent<Collider2D>();
-            if (col != null) col.enabled = active;
+            if (col != null) col.enabled = onFoot;
+
+            // Ride the boat: parent to the PHYSICS ROOT while aboard (deck or helm) so the boat's drift
+            // carries the player for free; stand free ashore. worldPositionStays keeps the handoff clean.
+            if (Player != null)
+            {
+                Transform parent = onFoot ? null : Boat;
+                if (Player.parent != parent) Player.SetParent(parent, worldPositionStays: true);
+                if (onFoot) Player.rotation = Quaternion.identity;   // never keep a hull tilt ashore
+            }
+
+            var deck = DeckWalk;
+            if (deck != null)
+            {
+                if (onDeck) deck.Bind(Boat);
+                deck.enabled = onDeck;
+            }
+        }
+
+        /// <summary>Seat the player on the deck at a boat-relative (world-axis) spot, clamped to the deck
+        /// bounds when a <see cref="DeckWalkController"/> is present (raw offset otherwise — tests).</summary>
+        private void SnapPlayerToDeck(Vector2 boatRelative)
+        {
+            if (Player == null || Boat == null) return;
+            var deck = DeckWalk;
+            if (deck != null) deck.SnapTo(boatRelative);
+            else Player.position = Boat.position + new Vector3(boatRelative.x, boatRelative.y, 0f);
         }
 
         /// <summary>Wire the switcher in one call (tests / editor) and start on foot.</summary>
@@ -337,6 +503,14 @@ namespace HiddenHarbours.Player
             _zoneRadius = zoneRadius;
             _disembarkPoint = disembarkPoint;
             Mode = ControlMode.OnFoot;
+        }
+
+        /// <summary>Tune the helm station in one call (tests / editor): where the helm spot sits relative
+        /// to the boat (world-axis offset) and how close E must be pressed to take it.</summary>
+        public void ConfigureHelm(Vector2 helmLocalOffset, float helmReach)
+        {
+            _helmLocalOffset = helmLocalOffset;
+            _helmReach = helmReach;
         }
 
         /// <summary>
@@ -389,7 +563,9 @@ namespace HiddenHarbours.Player
                 string text;
                 if (atDamagedBoat) text = "She needs repairs before she'll sail";
                 else if (Mode == ControlMode.OnFoot) text = CanInteract() ? "E: Board" : null;
-                else text = InDockZone() ? "E: Dock" : "E: Get off";   // onto land away from the dock
+                else if (Mode == ControlMode.Aboard) text = "E: Leave the helm";
+                else if (WithinHelmReach()) text = "E: Take the helm";
+                else text = InDockZone() ? "E: Dock" : "E: Get off";   // step ashore from the deck
 
                 // Rope prompt (the mooring interaction): while holding the rope, offer to root it to the
                 // ground; while rooted, offer to take it back in hand. Shown alongside the board prompt when

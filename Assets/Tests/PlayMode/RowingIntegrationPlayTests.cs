@@ -122,10 +122,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "the loop starts on foot");
 
                 // --- BOARD: the player is within reach of the boat (board from anywhere) ---
+                // Build 5: boarding lands ON THE DECK; the helm is a station you walk to and take.
                 Assert.IsTrue(sw.WithinBoardReach(), "the player is within reach of the boat");
                 Assert.IsTrue(sw.TryInteract(), "boarding succeeds within reach");
-                Assert.AreEqual(ControlMode.Aboard, sw.Mode, "now aboard");
-                Assert.IsTrue(boat.enabled, "the boat controller drives while aboard");
+                Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
+                Assert.IsFalse(boat.enabled, "the boat isn't driven from the deck");
+                Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.OnDeck),
+                    "ControlModeChanged(OnDeck) fired on the Core control seam");
+
+                // --- TAKE THE HELM: walk to the tiller and interact again ---
+                playerGo.transform.position = sw.HelmWorldPosition;
+                Assert.IsTrue(sw.TryInteract(), "taking the helm at the helm spot");
+                Assert.AreEqual(ControlMode.Aboard, sw.Mode, "now at the helm");
+                Assert.IsTrue(boat.enabled, "the boat controller drives at the helm");
                 Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.Aboard),
                     "ControlModeChanged(Aboard) fired on the Core control seam");
 
@@ -147,7 +156,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Less(rb.angularVelocity, 0f, "a left-only stroke yaws the bow to starboard (clockwise), the specced way");
                 Assert.Greater((rb.position - startPos).magnitude, 0.02f, "the stroke drives the boat off the mooring (makes way)");
 
-                // --- DISEMBARK: park the boat at the mooring (over standable land) and step off ---
+                // --- DISEMBARK: leave the helm, walk clear of it on the deck, and step off onto land ---
                 GameServices.TidalTerrain = new FlatTerrain { Elevation = 0.2f };  // ground bared (exposed)
                 GameServices.Environment = new FlatEnv { Level = 0f };             // depth -0.2 m ≤ 0 = land
                 boat.SetOarInput(0f, 0f, false);                         // ship the oars
@@ -155,7 +164,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 boatGo.transform.position = dock.transform.position;     // teleport both transform + body to the mooring
                 rb.position = dock.transform.position;
                 Assert.IsTrue(sw.OnLand(), "the parked boat is over standable land");
-                Assert.IsTrue(sw.TryInteract(), "disembarking succeeds onto land");
+                Assert.IsTrue(sw.TryInteract(), "stepping back from the helm onto the deck");
+                Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "on the deck again");
+                playerGo.transform.position = boatGo.transform.position + new Vector3(0f, 1.2f, 0f); // walk clear of the tiller
+                Assert.IsTrue(sw.TryInteract(), "disembarking succeeds onto land from the deck");
                 Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "back on foot");
                 Assert.IsFalse(boat.enabled, "the boat controller is released on foot");
                 Assert.IsTrue(modeEvents.Exists(e => e.Mode == ControlMode.OnFoot),

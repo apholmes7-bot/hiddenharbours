@@ -163,13 +163,15 @@ namespace HiddenHarbours.App
         private void OnActiveBoatChanged(ActiveBoatChanged e)
             => SetFraming(e.CameraWorldHeightMeters, animate: true);
 
-        // Switching between on-foot and aboard retargets the follow-cam (and, on foot, reframes to the
-        // tighter on-foot view; the boat's framing arrives via ActiveBoatChanged on boarding).
+        // Switching control retargets the follow-cam. Only the HELM (Aboard) gets the boat target + the
+        // boat's framing (which arrives via ActiveBoatChanged on taking the helm); on foot AND on deck the
+        // camera follows the visible, walking player at the tighter on-foot framing — the deck-walking
+        // fisher is the subject, the boat just happens to be under them (Build 5 on-deck state).
         private void OnControlModeChanged(ControlModeChanged e)
         {
             Transform next = e.Mode == ControlMode.Aboard ? _boatTarget : _onFootTarget;
             if (next != null) Target = next;
-            if (e.Mode == ControlMode.OnFoot) SetFraming(OnFootWorldHeightMeters, animate: true);
+            if (e.Mode != ControlMode.Aboard) SetFraming(OnFootWorldHeightMeters, animate: true);
         }
 
         /// <summary>

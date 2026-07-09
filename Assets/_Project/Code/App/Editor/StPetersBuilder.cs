@@ -468,8 +468,8 @@ namespace HiddenHarbours.App.Editor
                 startBaitGo.AddComponent<StartingBait>();
 
                 // DevTrapInput on the BOAT: T sets a baited lobster pot at the boat (depth-gated), G tops up
-                // dev bait. Placement region = St Peters (the save/scene region); the dev drop is disabled
-                // until aboard, like the boat input, so on-foot keys never fire it (it's a boat action).
+                // dev bait. Placement region = St Peters (the save/scene region); the keys live only while
+                // the player stands ON DECK (Build 5) — never at the helm, never on foot (a deck action).
                 var devTrap = core.DoryGo.AddComponent<DevTrapInput>();
                 devTrap.Configure(trapService, core.DoryGo.transform, lobsterTrap, herring, "region.st_peters");
 
