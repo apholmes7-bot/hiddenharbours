@@ -437,11 +437,12 @@ namespace HiddenHarbours.App.Editor
             SetRef(digger, "_player", core.PlayerGo.transform);
 
             // --- THE TRAP-HAUL LOOP (gameplay-systems, Build 4 — the playable manual loop) ---------------
-            // Set → soak → lay alongside → HAUL IN RHYTHM WITH THE SWELL → collect → sell. The trap runtime
+            // Set → soak → lay alongside → HAUL WITH THE SWELL → collect → sell. The trap runtime
             // (PlacedTrapService) owns determinism + save; the DevTrapInput drops a baited pot through the
             // REAL depth gate (only in deep-enough water, consuming one bait); the TrapHaulController runs the
-            // diegetic rhythm haul (lay the boat alongside a buoy, H to start, tap the pull key/click on the
-            // passing swell's beat — calm is forgiving, a big sea tightens the window and strains the rope).
+            // diegetic haul-with-the-swell (lay the boat alongside a buoy, H to start, then HOLD the pull
+            // key/click WITH the swell — take line as she lifts, ease as she falls; calm is a quick steady
+            // wind-in, a big sea is a fight where holding through the drop strains and slips the rope).
             // On surface it lands Build 3's already-deterministic catch into the boat's hold (sellable at
             // Greywick like any fish). The buoy is the self-installing TrapBuoyPresenter (Build 1/3). All the
             // trap/service objects live under one plain root so they never touch authored content.
@@ -477,7 +478,7 @@ namespace HiddenHarbours.App.Editor
                 var devTrap = core.DoryGo.AddComponent<DevTrapInput>();
                 devTrap.Configure(trapService, core.DoryGo.transform, lobsterTrap, herring, "region.st_peters");
 
-                // The RHYTHM HAUL controller on the BOAT: rail = the boat, hold = the boat's ShipHold. The
+                // The HAUL-WITH-THE-SWELL controller on the BOAT: rail = the boat, hold = the boat's ShipHold. The
                 // CATCH region is region.st_peters — the region this scene's pots are PLACED in (DevTrapInput
                 // tags them region.st_peters), so a St-Peters-set pot draws St Peters' LOCAL lobster/crab, not
                 // Coddle Cove's. This is now correct because the lobster + crab FishSpeciesDefs are region-

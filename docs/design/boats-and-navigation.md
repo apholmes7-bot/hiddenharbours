@@ -427,24 +427,29 @@ The lobster loop the owner specifies, expressed as a boat interaction:
    pot for you — the canon "earn it, then automate it" arc expressed in deck hardware. Some boats
    mount the winch, some don't (branch/tier-gated).
 
-> **Built — the playable manual loop (trap arc Build 4, greybox).** The whole hand loop is now
-> playable end-to-end: **set → soak → lay alongside → haul in rhythm → collect → sell**. Two new pure,
-> EditMode-pinned pieces plus a driver, all Fishing-lane (`Code/Fishing`):
+> **Built — the playable manual loop (trap arc Build 4, greybox; haul redesigned Build 6).** The whole
+> hand loop is now playable end-to-end: **set → soak → lay alongside → haul with the swell → collect →
+> sell**. Two new pure, EditMode-pinned pieces plus a driver, all Fishing-lane (`Code/Fishing`):
 > - **Depth-gated placement** (`TrapPlacement` + `PlacedTrapService.TryPlaceGated`) — a pot may be set
 >   only where the water is deep enough for the Def's `MinSoakDepthMeters` (the **inverse** of the clam
 >   dig's exposure gate; the *same* `waterLevel − terrainElevation` the walkability/boat-cross/shader
 >   read) and only with the required **bait in stock**, consuming one. Refusals are cozy no-ops.
-> - **The haul-by-hand minigame (the owner's pick: RHYTHM TIMED TO THE SWELL)** (`TrapHaulController` +
->   `TrapHaulMath`) — lay the boat **alongside** a buoy, interact to start, then **pull the rope in time
->   with the passing swell**. The cadence comes from the **shared deterministic wave field** under the
->   buoy (the same height read the buoy bobs on and the hull rocks to, §2.7). A pull near the crest
->   **gains line**; a mistimed one **slips** (no gain). **Calm ⇒ a broad, forgiving window; a big swell
->   ⇒ the window tightens and the rope strains** (P5 teeth — the swell-coupling knob). Enough good pulls
->   and the pot surfaces. **Diegetic, low-HUD (owner's strong direction):** the read is the **rope in the
->   world** — its taut shape + a strain shade + the pot rising, plus a `TrapHaulStateChanged` **audio
->   hook** (creak/strain cue for the audio lane) — **no HUD meter/bar**. Mapped to **KB/mouse + gamepad**
->   (H to start, Space/click/gamepad-South to pull). **No penalty (owner's M2 call):** a mistimed pull
->   just gains nothing — you never lose the catch or the pot.
+> - **The haul-with-the-swell minigame (the owner's redesign: a richer, faster, DIEGETIC action)**
+>   (`TrapHaulController` + `TrapHaulMath`) — lay the boat **alongside** a buoy, interact to start, then
+>   **HOLD with the swell**: as the sea **lifts** the boat and pot the rope eases — **hold to take line
+>   in**; as it **drops** into the trough the rope **loads up** — holding through the drop **strains and
+>   slips line back** (the rope fights you). So the play is **hold on the lift, ease on the fall** —
+>   continuous engagement, physically true, read straight off the **shared deterministic wave field**
+>   under the buoy (the same height read the buoy bobs on and the hull rocks to, §2.7). **Calm ⇒ a quick,
+>   forgiving steady wind-in (no swell to time); a big sea ⇒ a real fight** where a clean haul (hold the
+>   lifts) far outpaces a sloppy one (P5 teeth — the swell-coupling knob). **Diegetic, low-HUD (owner's
+>   strong direction):** the read is the **rope in the world** — **slack on the lift** (take now),
+>   **taut + shuddering on the drop** (ease off), shaded by strain, the pot rising — plus a
+>   `TrapHaulStateChanged` **audio hook** (creak/strain cue for the audio lane). **No HUD meter/bar and no
+>   per-pull timing TEXT** — the rope carries the timing; the toasts carry only OUTCOMES. Mapped to
+>   **KB/mouse + gamepad** (H to start, Space/click/gamepad-South to hold). **Cozy — no penalty (owner's
+>   M2 call):** missing the phase slips line back and costs **time**, but you never lose the catch, the
+>   pot, or take damage.
 >
 > Only a **ready (soaked)** trap yields; an unsoaked haul surfaces empty ("not ready yet"). The minigame
 > is the **ACT** of retrieving — it does **not** re-roll or gate *what* is caught (that's fixed by
