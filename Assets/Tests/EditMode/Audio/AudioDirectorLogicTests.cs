@@ -155,10 +155,22 @@ namespace HiddenHarbours.Tests.Audio
         // ---- aboard layer -------------------------------------------------------------------
 
         [Test]
-        public void HullLayer_OnlyWhenAboard()
+        public void HullLayer_OnlyWhenAtTheHelm()
         {
-            Assert.IsTrue(AudioDirectorLogic.HullLayerActive(ControlMode.Aboard), "hull/row plays aboard");
+            Assert.IsTrue(AudioDirectorLogic.HullLayerActive(ControlMode.Aboard), "hull/row plays at the helm");
             Assert.IsFalse(AudioDirectorLogic.HullLayerActive(ControlMode.OnFoot), "silent ashore");
+            Assert.IsFalse(AudioDirectorLogic.HullLayerActive(ControlMode.OnDeck),
+                "standing on the deck is quiet — nobody's rowing/driving (Build 5)");
+        }
+
+        [Test]
+        public void IsOnBoat_DeckAndHelmCount_FootDoesNot()
+        {
+            // The "trip in progress" read (Build 5): the worry meter accrues and came-ashore resolves
+            // against BEING ON THE BOAT — a helm⇄deck hop is neither boarding nor coming ashore.
+            Assert.IsTrue(AudioDirectorLogic.IsOnBoat(ControlMode.Aboard), "at the helm = on the boat");
+            Assert.IsTrue(AudioDirectorLogic.IsOnBoat(ControlMode.OnDeck), "on the deck = on the boat");
+            Assert.IsFalse(AudioDirectorLogic.IsOnBoat(ControlMode.OnFoot), "ashore is off the boat");
         }
 
         // ---- aboard propulsion bed: Dory oars vs Punt engine --------------------------------
@@ -199,7 +211,7 @@ namespace HiddenHarbours.Tests.Audio
         public void BoatLayer_SoundsIffTheAboardHullLayerIsActive()
         {
             // The boat bed plays exactly when the aboard layer is active — they agree.
-            foreach (var mode in new[] { ControlMode.OnFoot, ControlMode.Aboard })
+            foreach (var mode in new[] { ControlMode.OnFoot, ControlMode.OnDeck, ControlMode.Aboard })
                 Assert.AreEqual(AudioDirectorLogic.HullLayerActive(mode),
                     AudioDirectorLogic.BoatLayerFor(mode, "boat.punt") != BoatAudioLayer.None,
                     $"layer-active and boat-bed-present must agree ({mode})");

@@ -121,7 +121,11 @@ namespace HiddenHarbours.Tests.PlayMode
             // just flips enabled with the mode).
             sw.Configure(walk, boat, input, dock.transform, 3.5f, disembark.transform);
 
-            Assert.IsTrue(sw.TryInteract(), "boards in-zone");
+            // Build 5: boarding lands ON DECK; walk to the helm station and interact again to pilot.
+            Assert.IsTrue(sw.TryInteract(), "boards in-reach (→ the deck)");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
+            playerGo.transform.position = sw.HelmWorldPosition;    // walk to the tiller
+            Assert.IsTrue(sw.TryInteract(), "takes the helm at the helm spot");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
 
             // Simulate the scene-toggle bug: the active boat's control is blanked while the mode stays Aboard.
@@ -188,10 +192,11 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Add(sw.gameObject);
             sw.Configure(walk, boat, null, dock.transform, 3.5f, disembark.transform);
 
-            Assert.IsTrue(sw.TryInteract(), "boards in-zone");
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.IsTrue(sw.TryInteract(), "boards in-reach (→ the deck, Build 5)");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
 
-            // Sail off far from the dock, up onto an exposed flat, still making way.
+            // Sail off far from the dock, up onto an exposed flat, still making way. (The parented
+            // deckhand rides the hull; disembark below happens straight from the deck.)
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
             var rb = boatGo.GetComponent<Rigidbody2D>();
             rb.position = new Vector2(40f, 40f);

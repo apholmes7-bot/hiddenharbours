@@ -109,6 +109,16 @@ namespace HiddenHarbours.Tests.EditMode
             return (sw, walk, boat, input, boatGo);
         }
 
+        // Build 5: boarding lands ON DECK; walk to the helm station and interact again to pilot.
+        private static void BoardAndTakeHelm(ControlSwitcher sw, Transform player)
+        {
+            Assert.IsTrue(sw.TryInteract(), "boarding (→ the deck) succeeds");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck");
+            player.position = sw.HelmWorldPosition;                 // walk to the tiller
+            Assert.IsTrue(sw.TryInteract(), "taking the helm succeeds at the helm spot");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "at the helm");
+        }
+
         // ---- FIX 1: re-assert control mode after a scene return ----------------------------------
 
         [Test]
@@ -116,8 +126,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var (sw, walk, boat, input, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                    Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); // board → Aboard, controllers enabled
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            BoardAndTakeHelm(sw, walk.transform); // board → deck → helm, controllers enabled
 
             // Simulate the scene-toggle blanking the boat control (the bug: a re-activated region leaves
             // the helm dead) — disable the controllers WITHOUT touching the switcher's mode.
@@ -160,9 +169,9 @@ namespace HiddenHarbours.Tests.EditMode
             // The owner's exact repro: sail region→region→back; confirm helm works on return for BOTH boats.
             foreach (var propulsion in new[] { PropulsionType.Oars, PropulsionType.Engine })
             {
-                var (sw, _, boat, input, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
-                                                         Hull("boat.test", propulsion));
-                sw.TryInteract(); // board in region A
+                var (sw, walk, boat, input, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
+                                                            Hull("boat.test", propulsion));
+                BoardAndTakeHelm(sw, walk.transform); // board + take the helm in region A
 
                 var gw = NewGo("GwAnchor", Vector3.zero).AddComponent<RegionAnchor>();
                 gw.Configure("region.b", NewGo("GwArr", new Vector3(100f, 0f, 0f)).transform,
@@ -238,13 +247,13 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, _, boat, _, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                  Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); // board
+            sw.TryInteract(); // board → deck (the disembark now sources from the deck state)
             boatGo.transform.position = new Vector3(40f, 40f, 0f); // over shallow but still-submerged water
 
             Assert.IsFalse(sw.OnLand(), "shallow-but-submerged water is not standable land");
-            Assert.IsFalse(sw.CanInteract(), "so disembark is refused over water");
+            Assert.IsFalse(sw.CanInteract(), "so disembark is refused over water (and the helm's out of reach)");
             Assert.IsFalse(sw.TryInteract());
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "still aboard — can't step off onto water");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "still on deck — can't step off onto water");
         }
 
         [Test]
@@ -256,14 +265,13 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, _, boat, _, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                  Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); // board
+            sw.TryInteract(); // board → deck
             boatGo.transform.position = new Vector3(0f, -60f, 0f); // far out in deep water
 
             Assert.IsFalse(sw.OnLand(), "deep open water is not land");
-            Assert.IsFalse(sw.CanInteract(), "so disembark is refused out at sea");
+            Assert.IsFalse(sw.CanInteract(), "so disembark is refused out at sea (and the helm's out of reach)");
             Assert.IsFalse(sw.TryInteract());
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
-            Assert.IsTrue(boat.enabled, "still piloting");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "still safely on the deck — no stranding mid-sea");
         }
 
         [Test]
@@ -271,11 +279,18 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Board-from-anywhere (owner playtest): boarding is gated by proximity to the boat, not a dock
             // zone. Place the player right beside a boat far from any dock and confirm she boards.
-            var (sw, _, boat, input, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f),
-                                                Hull("boat.dory", PropulsionType.Oars));
+            var (sw, walk, boat, input, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f),
+                                                   Hull("boat.dory", PropulsionType.Oars));
             Assert.IsFalse(sw.InDockZone(), "nowhere near the dock");
             Assert.IsTrue(sw.WithinBoardReach(), "but the player is right beside the boat");
             Assert.IsTrue(sw.TryInteract(), "boarding succeeds from anywhere within reach of the boat");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the DECK (Build 5)");
+            Assert.IsFalse(boat.enabled, "the boat isn't driven from the deck — take the helm to steer");
+            Assert.IsFalse(input.enabled);
+
+            // …and the helm station is a walk + E away.
+            walk.transform.position = sw.HelmWorldPosition;
+            Assert.IsTrue(sw.TryInteract(), "taking the helm at the spot");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
             Assert.IsTrue(boat.enabled);
             Assert.IsTrue(input.enabled);

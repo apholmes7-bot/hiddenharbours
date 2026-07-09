@@ -80,7 +80,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(GreywickBuilder.ArrivalPos, boatGo.transform.position,
                 "the boat is parked at the Greywick arrival point on arrival");
-            Assert.AreEqual(ControlMode.Aboard, switcher.Mode, "you arrive still aboard");
+            Assert.AreEqual(ControlMode.OnDeck, switcher.Mode, "you arrive still aboard — standing on the deck (Build 5)");
             Assert.IsTrue(switcher.InDockZone(),
                 "with the boat parked at arrival, the Greywick dock zone is in range → E disembarks (the fix)");
             Assert.IsTrue(switcher.CanInteract(),

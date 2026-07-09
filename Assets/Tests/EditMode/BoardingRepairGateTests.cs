@@ -104,7 +104,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(sw.BoardableNow(), "after repair the dory is boardable");
             Assert.IsTrue(sw.TryInteract(), "and INTERACT boards her");
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace HiddenHarbours.Tests.EditMode
             var sw = BuildInBoardZone();
             Assert.IsTrue(sw.BoardableNow(), "no save → gate off, ordinary boarding");
             Assert.IsTrue(sw.TryInteract());
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(sw.BoardableNow(), "an un-owned hull isn't subject to the buy+repair gate");
             Assert.IsTrue(sw.TryInteract());
-            Assert.AreEqual(ControlMode.Aboard, sw.Mode);
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
         }
     }
 }
