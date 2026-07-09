@@ -26,3 +26,5 @@ MonoBehaviour:
   TidePhaseHours: 1
   SpawnFishIds:
   - fish.soft_shell_clam
+  - fish.lobster
+  - fish.rock_crab

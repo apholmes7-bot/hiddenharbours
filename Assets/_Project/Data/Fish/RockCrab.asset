@@ -22,6 +22,7 @@ MonoBehaviour:
   Sprite: {fileID: 0}
   RegionIds:
   - region.coddle_cove
+  - region.st_peters
   AllowedGear: 8
   Seasons: 15
   MinTide: -10
