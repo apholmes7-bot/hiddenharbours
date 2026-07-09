@@ -293,6 +293,12 @@ namespace HiddenHarbours.Art
             "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength", "_CausticDayGate",
             // shallows see-through (Arc C — how much the seabed hints through the water per mood)
             "_ShallowTranslucency",
+            // aesthetic pass (owner mandate 2026-07-08): deep-blue enrichment, foam clumping, face shading —
+            // all look/mood props (a fog preset kills the navy pull + the lit faces; a storm mood can gather
+            // the foam harder), never physics.
+            "_DeepBlueStrength", "_DeepBlueStart",
+            "_FoamClumpStrength", "_FoamClumpScale", "_FoamClumpStretch",
+            "_SwellFaceShade",
             // reflection (the §11 sea-state mirror)
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
@@ -304,6 +310,8 @@ namespace HiddenHarbours.Art
             "_FbmTint",
             // palette grade anchor colours (ADR 0015)
             "_PaletteDeep", "_PaletteMid", "_PaletteShallow", "_PaletteFoam",
+            // deep-blue enrichment target (the aesthetic pass; per-mood navy)
+            "_DeepBlueColor",
         };
 
         private Renderer _renderer;
