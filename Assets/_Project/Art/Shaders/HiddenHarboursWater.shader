@@ -24,6 +24,20 @@ Shader "HiddenHarbours/Water"
         _DeepDepth      ("Deep depth (m)", Float)       = 3.0
         _DepthBands     ("Depth posterize bands (0=off)", Float) = 5
 
+        [Header(DEEP BLUE enrichment (bounded pull toward a rich navy in DEEP water   col.rgb only))]
+        // The owner's "deep blues" ask (2026-07-08). The shipped material reads its base colour from his
+        // HAND-PAINTED _DepthRamp (_USE_DEPTHRAMP is ON), whose deep end lands on a muted slate-teal — so
+        // this pulls the settled BASE colour toward a rich navy as the water deepens WITHOUT repainting his
+        // art. Keyed to the READ-ONLY deep fraction (dt), applied BEFORE every additive layer (the #182
+        // swell-read, the swell bands, spec and foam all ride on top at FULL amplitude — nothing is washed
+        // out) and BEFORE the palette guard-rail (ADR 0015), which stays the final colour owner and bounds
+        // the result like every other layer. Pre-grade water colour (not light content), so it dims with
+        // the night overlay like the rest of the sea. col.rgb ONLY — never depth/clip()/dt/_WaterLevel/the
+        // sim (P1 integrity, CLAUDE.md rule 5). _DeepBlueStrength = 0 is an EXACT passthrough.
+        _DeepBlueStrength ("Deep blue strength (0 = the painted ramp as-is)", Range(0,1)) = 0.45
+        _DeepBlueColor    ("Deep blue target (rich navy)", Color) = (0.02, 0.09, 0.30, 1)
+        _DeepBlueStart    ("Deep blue onset (fraction of the deep ramp)", Range(0,1)) = 0.25
+
         [Header(Pixelization (all layers))]
         _PixelsPerUnit  ("Pixels per unit", Float)      = 32
 
@@ -96,6 +110,20 @@ Shader "HiddenHarbours/Water"
         _SwellReadStrength ("Swell read contrast (0 = off, ~0.35 = legible)", Range(0,1)) = 0.35
         _SwellReadBands    ("Swell read posterize bands (0 = smooth)", Float) = 0
 
+        [Header(Swell FACE SHADING (lit face   shaded back   the modelled wave))]
+        // The owner's "better looking waves" ask (2026-07-08). The shared wave field's ANALYTIC slope
+        // (waveSlope — already computed by WaveFieldSample, previously unused in the composite) tilts each
+        // swell face toward or away from the ONE implied sun (_SunDir, falling back to the material's
+        // _LightDir — the ADR 0006 single-light discipline, the same fallback the specular uses). A face
+        // whose downhill side looks at the sun is LIT; the back of the crest is SHADED. Where the #182
+        // swell-read band is SYMMETRIC (crest bright / trough dark), this is ANTISYMMETRIC (lit face vs
+        // shaded back) — the two COMPOSE into a modelled, directional wave instead of doubling one band
+        // into glare. Self-gating: dead glass publishes zero amplitude => zero slope => zero term, and the
+        // legacy no-trains path leaves waveSlope at 0 (the pre-B1 look is untouched there). col.rgb ONLY —
+        // never depth/clip()/the deep tint/_WaterLevel/the sim wave field (P1 integrity, CLAUDE.md
+        // rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
+        _SwellFaceShade ("Swell face shading (0 = off / flat bands)", Range(0,1)) = 0.22
+
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
@@ -163,6 +191,26 @@ Shader "HiddenHarbours/Water"
         _WhitecapFormSharpness ("Whitecap form sharpness at crest (0 = soft, 1 = sharp break)", Range(0,1)) = 0.5
         _WhitecapPeakDensity   ("Whitecap peak density (newborn crest opacity)", Range(0,1)) = 0.95
         _WhitecapCollapseRate  ("Whitecap collapse rate (age to milky off-crest)", Range(0,4)) = 1.5
+
+        [Header(Foam CLUMPING (windrows and rafts   foam gathers in patches   col.rgb only))]
+        // The owner's "better clumping of foam" ask (2026-07-08): the open-water whitecaps read as an EVEN
+        // SPRINKLE — statistically uniform speckle however organic each fleck is. Real foam GATHERS: wind
+        // rows (long lanes of foam down the wind) and rafts shed by breaking crests, with stretches of
+        // bare water between. This is a second, much BROADER and SLOWER evolving field — stretched along
+        // the wind like the caps and drifting with the same foam drift, so the patches travel with the
+        // weather — that REDISTRIBUTES the cap coverage: inside a patch the caps read a touch denser,
+        // between patches they thin toward bare water. The same foam, gathered instead of sprinkled.
+        // Reuses EvolvingField + Pixelize (no new noise machinery; pixel-art faithful, §3). col.rgb/col.a
+        // foam dressing ONLY — never depth/clip()/the deep tint/_WaterLevel/the sim (P1 integrity,
+        // CLAUDE.md rule 5). _FoamClumpStrength = 0 is an EXACT passthrough (today's even sprinkle).
+        //   _FoamClumpStrength — master: how strongly the foam gathers (0 = even sprinkle, 1 = fully
+        //                        patch-gated with bare lanes between rafts).
+        //   _FoamClumpScale    — the patch frequency (patches/unit). SMALLER = broader rafts and wider
+        //                        clear lanes; larger = tighter, busier patchwork.
+        //   _FoamClumpStretch  — anisotropy along the WIND (1 = round rafts; higher = long thin windrows).
+        _FoamClumpStrength ("Foam clump strength (0 = even sprinkle / today)", Range(0,1)) = 0.55
+        _FoamClumpScale    ("Foam clump scale (patches/unit; smaller = broader rafts)", Float) = 0.10
+        _FoamClumpStretch  ("Foam clump wind stretch (1 = round rafts, higher = windrows)", Float) = 2.5
 
         [Header(Shared wave field (ADR 0018   trains published by WaveFieldBridge))]
         // When HiddenHarbours.Art.WaveFieldBridge publishes live wave trains (the shared deterministic
@@ -610,6 +658,10 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowDepth;
                 float  _DeepDepth;
                 float  _DepthBands;
+                // Deep-blue enrichment (bounded base-colour pull toward a rich navy in deep water).
+                float  _DeepBlueStrength;
+                float4 _DeepBlueColor;
+                float  _DeepBlueStart;
                 float  _PixelsPerUnit;
                 float  _NoiseScale;
                 float  _Flow;
@@ -643,6 +695,8 @@ Shader "HiddenHarbours/Water"
                 // Swell READ legibility (crest/trough VALUE contrast; col.rgb-only, its own gate).
                 float  _SwellReadStrength;
                 float  _SwellReadBands;
+                // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
+                float  _SwellFaceShade;
                 float4 _FoamColor;
                 float  _FoamWidth;
                 float  _FoamSoftness;
@@ -666,6 +720,10 @@ Shader "HiddenHarbours/Water"
                 float  _WhitecapFormSharpness;
                 float  _WhitecapPeakDensity;
                 float  _WhitecapCollapseRate;
+                // Foam clumping (broad slow patch field: windrows + crest-shed rafts, not an even sprinkle).
+                float  _FoamClumpStrength;
+                float  _FoamClumpScale;
+                float  _FoamClumpStretch;
                 // Shared wave field (ADR 0018 B1): the whitecap sea-state onset over total train amplitude.
                 float  _WhitecapOnsetAmp;
                 // Shoreward swell/foam bias (near-coast roll-in; visual direction only).
@@ -2128,6 +2186,25 @@ Shader "HiddenHarbours/Water"
                 half4 col = lerp(_ShallowColor, _DeepColor, dt);
             #endif
 
+                // ---- DEEP BLUE enrichment (owner mandate: "deep blues"; col.rgb ONLY) -------------------------
+                // Pull the settled BASE colour toward a rich navy as the water deepens. The shipped material
+                // reads its base from the owner's HAND-PAINTED _DepthRamp (its deep end is a muted slate-teal);
+                // this deepens that read WITHOUT repainting his art. Keyed to the READ-ONLY deep fraction dt
+                // and applied BEFORE every additive layer — the #182 swell-read, the swell bands, spec and
+                // foam all ride on top at FULL amplitude (nothing is washed out) — and BEFORE the palette
+                // guard-rail (ADR 0015), which stays the final colour owner and bounds this like every other
+                // layer. Pre-grade WATER colour (not light content), so it dims with the night overlay like
+                // the rest of the sea. smoothstep from _DeepBlueStart leaves the shallows and the mid ramp
+                // untouched. col.rgb ONLY — never depth/clip()/dt/_WaterLevel/the height read/the sim
+                // (P1 integrity, CLAUDE.md rule 5). _DeepBlueStrength = 0 is an EXACT passthrough.
+                if (_DeepBlueStrength > 0.001)
+                {
+                    // onset capped below 1 so the smoothstep interval can never degenerate (edge0 == edge1
+                    // is NaN territory on some GPUs); at the cap the pull applies only at the very deepest dt.
+                    float deepT = smoothstep(min(saturate(_DeepBlueStart), 0.99), 1.0, dt);
+                    col.rgb = lerp(col.rgb, _DeepBlueColor.rgb, deepT * saturate(_DeepBlueStrength));
+                }
+
                 // ---- SEE-THROUGH SHALLOWS (col.a ONLY; Arc C, default OFF) -------------------------------------
                 // Lower the water's ALPHA in a thin band right at the shore so the SEABED sprite drawn behind
                 // the Sea plane (lower sorting) bleeds through under the Blend SrcAlpha OneMinusSrcAlpha above.
@@ -2259,6 +2336,32 @@ Shader "HiddenHarbours/Water"
                     // extremes so troughs never go muddy nor crests blow out. A dedicated add (not a bump to
                     // _OceanSwellStrength) so the owner has ONE clear "how readable is the swell" knob.
                     col.rgb += readBand * _SwellReadStrength * 0.25;
+                }
+
+                // ---- SWELL FACE SHADING (owner mandate: "better looking waves"; col.rgb ONLY) -----------------
+                // The shared wave field's ANALYTIC slope (waveSlope — computed by WaveFieldSample above and
+                // previously unused in the composite) tilts each swell face toward or away from the ONE implied
+                // sun (_SunDir, falling back to the material's _LightDir — the ADR 0006 single-light discipline,
+                // the exact fallback the specular layer uses below). The surface normal's ground component is
+                // MINUS the height gradient, so a face is LIT where -slope·light is positive (its downhill side
+                // looks at the sun) and SHADED behind the crest. Where the #182 swell-read band is SYMMETRIC
+                // (crest bright / trough dark), this is ANTISYMMETRIC (lit face vs shaded back) — the two
+                // COMPOSE into a modelled, directional wave instead of doubling one band into glare. Self-
+                // gating: dead glass publishes zero amplitude => zero slope => zero term (the §11 mirror is
+                // untouched), and the legacy no-trains path leaves waveSlope at 0 (the pre-B1 look is unchanged
+                // there). col.rgb ONLY — never depth/clip()/the deep tint/_WaterLevel/the sim wave field
+                // (P1 integrity, CLAUDE.md rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
+                if (_SwellFaceShade > 0.001)
+                {
+                    float2 shadeSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
+                    float2 shadeLd = normalize(shadeSunXY + float2(1e-4, 0));
+                    // x2 normalizes the field's small physical slopes (amp x k, ~0.1..0.8 in a real sea,
+                    // already carrying the _OceanSwellScale visual-frequency factor) to a legible -1..1
+                    // signal; the clamp bounds a heavy sea. 0.15 is the add ceiling (the swell-read idiom):
+                    // at the 0.22 default the swing is +/-0.033 — shading, not glare — and the §13 palette
+                    // rail bounds the extremes like every other layer.
+                    float faceSigned = clamp(-dot(waveSlope, shadeLd) * 2.0, -1.0, 1.0);
+                    col.rgb += faceSigned * saturate(_SwellFaceShade) * 0.15;
                 }
 
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
@@ -2478,6 +2581,32 @@ Shader "HiddenHarbours/Water"
                     // sits below it.
                     float capPeak = saturate(_WhitecapPeakDensity);
 
+                    // ---- FOAM CLUMPING (owner mandate: rafts + windrows, not an even sprinkle) ----------------
+                    // A second, much BROADER and SLOWER evolving field REDISTRIBUTES the cap coverage so the
+                    // foam gathers into patches with bare water between, instead of speckling uniformly. It is
+                    // stretched along the WIND like the caps (windrows are wind-aligned lanes) and sampled on
+                    // the same drifted coord (wp = worldXY + capDrift) so the rafts TRAVEL with the foam and
+                    // reorient as the weather wanders. Evolves at 0.35x the foam boil rate — big rafts morph
+                    // slower than the flecks riding them (a documented shaping constant, like the lifecycle's
+                    // band edges). Reuses EvolvingField + Pixelize: no new noise machinery, pixel-art faithful
+                    // (§3). col.rgb/col.a foam dressing ONLY — never depth/clip()/dt/_WaterLevel/the sim
+                    // (P1 integrity, CLAUDE.md rule 5). _FoamClumpStrength = 0 is an EXACT passthrough.
+                    float clumpGate = 1.0;
+                    if (_FoamClumpStrength > 0.001)
+                    {
+                        float2 clumpAniso = float2(dot(wp, wdir), dot(wp, wperp) * max(_FoamClumpStretch, 1.0));
+                        float clumpField = EvolvingField(clumpAniso, float2(0, 0), max(_FoamClumpScale, 1e-4),
+                                                         _FoamEvolveSpeed * 0.35, t);
+                        // A soft patch mask around the evolving field's midline (its values centre on ~0.5, so
+                        // the 0.35..0.65 band yields roughly half patch coverage at full strength): high field
+                        // = a foam raft, low field = the clear lane between windrows.
+                        float patch = smoothstep(0.35, 0.65, clumpField);
+                        // REDISTRIBUTE rather than merely thin: in-patch coverage lifts x1.25 (denser hearts —
+                        // the caller saturates), between-patch coverage falls toward bare water, the whole gate
+                        // dialed by the master strength so 0 = today's even sprinkle.
+                        clumpGate = lerp(1.0, patch * 1.25, saturate(_FoamClumpStrength));
+                    }
+
                     float capOpacity;
                     if (trainsLive)
                     {
@@ -2533,6 +2662,9 @@ Shader "HiddenHarbours/Water"
                         float capMilkyOpacity = capMask * lerp(0.45, capPeak, capDens); // milky residual (scales gently with sea-state)
                         capOpacity = saturate(max(capMilkyOpacity, capMask * capSolid));
                     }
+                    // FOAM CLUMPING: gather the coverage into the rafts/windrows (both paths; see the gate
+                    // above). The saturate bounds the x1.25 in-patch lift so the lerp below never overshoots.
+                    capOpacity = saturate(capOpacity * clumpGate);
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 

@@ -73,6 +73,7 @@ Material:
     - _CloudStrength: 0.5
     - _CrossSwellScale: 0.16
     - _CrossSwellSpeed: 0.025
+    - _DeepBlueStrength: 0
     - _DeepDepth: 4
     - _DepthBands: 0
     - _DriftLineScale: 0.3
@@ -165,6 +166,7 @@ Material:
     - _SwashAmplitude: 1
     - _SwashScale: 0.2
     - _SwashSpeed: 0.08
+    - _SwellFaceShade: 0
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1

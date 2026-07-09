@@ -65,6 +65,7 @@ Material:
     - _CausticScale: 0.9
     - _CausticTexStrength: 0.78
     - _Chop: 0.12
+    - _DeepBlueStrength: 0.7
     - _DeepDepth: 4
     - _DepthBands: 0
     - _Flow: 0.06

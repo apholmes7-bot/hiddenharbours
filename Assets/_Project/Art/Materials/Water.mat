@@ -76,6 +76,8 @@ Material:
     - _CloudStrength: 0.5
     - _CrossSwellScale: 0.16
     - _CrossSwellSpeed: 0.025
+    - _DeepBlueStart: 0.25
+    - _DeepBlueStrength: 0.45
     - _DeepDepth: 4
     - _DepthBands: 0
     - _DriftLineScale: 0.3
@@ -91,6 +93,9 @@ Material:
     - _FbmStrength: 0.045
     - _Flow: 0.06
     - _FoamBlobScale: 5.17
+    - _FoamClumpScale: 0.1
+    - _FoamClumpStrength: 0.55
+    - _FoamClumpStretch: 2.5
     - _FoamCrestGate: 0.88
     - _FoamDensity: 0.5
     - _FoamDensityWind: 0.5
@@ -173,6 +178,9 @@ Material:
     - _SwashScale: 0.2
     - _SwashSpeed: 0.08
     - _SwashWavelength: 1.2
+    - _SwellFaceShade: 0.22
+    - _SwellReadBands: 0
+    - _SwellReadStrength: 0.35
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
@@ -194,6 +202,7 @@ Material:
     - _CausticColor: {r: 0.5, g: 0.85, b: 0.95, a: 1}
     - _CloudColor: {r: 0.86, g: 0.88, b: 0.92, a: 1}
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
+    - _DeepBlueColor: {r: 0.02, g: 0.09, b: 0.3, a: 1}
     - _DeepColor: {r: 0.02, g: 0.08, b: 0.26, a: 1}
     - _DriftLineColor: {r: 0.92, g: 0.96, b: 0.97999996, a: 0}
     - _FbmTint: {r: 0.18, g: 0.42, b: 0.66, a: 1}
