@@ -17,7 +17,10 @@ namespace HiddenHarbours.Boats
     /// turns that into the buoy prop. Keyed by <see cref="TrapPlaced.InstanceId"/> so a haul removes exactly
     /// the right buoy.</para>
     ///
-    /// <para><b>Self-installing, removable (the <see cref="BuoyGreyboxSpawner"/> convention, ADR 0011).</b> A
+    /// <para><b>Self-installing, removable (the project's visual-scaffold convention, ADR 0011 —
+    /// the retired Build-1 <c>BuoyGreyboxSpawner</c> decor established it; its three look-at demo buoys
+    /// were deleted in Build 5 once real player-placed buoys existed, because the owner tried to haul
+    /// them).</b> A
     /// <see cref="RuntimeInitializeOnLoadMethod"/> host subscribes at boot; buoys live under its own plain
     /// root and never touch authored/painted content. Visual-only: drives no sim, saves nothing, so on a
     /// save/load the buoys are re-created from the restored traps' fresh <see cref="TrapPlaced"/> signals —
@@ -26,8 +29,8 @@ namespace HiddenHarbours.Boats
     /// </summary>
     public sealed class TrapBuoyPresenter : MonoBehaviour
     {
-        // Match BuoyGreyboxSpawner: draw ABOVE the Sea plane (St Peters' Sea is order -5), same order as the
-        // LobsterBuoy decor, so the buoy sits ON the water in front of the surface.
+        // Draw ABOVE the Sea plane (St Peters' Sea is order -5), the water-surface-prop order the
+        // LobsterBuoy decor used, so the buoy sits ON the water in front of the surface.
         private const int BuoySortingOrder = 3;
 
         private static TrapBuoyPresenter _instance;
@@ -96,9 +99,8 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// A tiny greybox lobster-buoy silhouette in code (16×32, 32 PPU ⇒ ~0.5×1 m), BOTTOM-CENTRE pivot so
-        /// the reused PlayerSubmerge shader clips the waterline from the base up. Mirrors
-        /// <see cref="BuoyGreyboxSpawner"/>'s stand-in; one shared sprite → the buoys batch (rule 7). Replaced
-        /// by the real LobsterBuoy art when the trap arc's art handoff lands.
+        /// the reused PlayerSubmerge shader clips the waterline from the base up. One shared sprite → the
+        /// buoys batch (rule 7). Replaced by the real LobsterBuoy art when the trap arc's art handoff lands.
         /// </summary>
         private static Sprite BuildGreyboxBuoySprite()
         {
