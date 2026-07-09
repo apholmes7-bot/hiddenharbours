@@ -26,7 +26,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties:
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -61,31 +61,105 @@ Material:
     m_Ints: []
     m_Floats:
     - _CausticAmount: 0.18
+    - _CausticDayGate: 0
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
+    - _CausticShallowBias: 0
     - _CausticTexStrength: 0.5
     - _Chop: 0.12
+    - _CloudDriftSpeed: 0.06
+    - _CloudScale: 0.06
+    - _CloudSoftness: 0.6
+    - _CloudStrength: 0.5
+    - _CrossSwellScale: 0.16
+    - _CrossSwellSpeed: 0.025
     - _DeepDepth: 4
     - _DepthBands: 0
+    - _DriftLineScale: 0.3
+    - _DriftLineSeaStateHi: 0.6
+    - _DriftLineSeaStateLo: 0.05
+    - _DriftLineSpeed: 0.5
+    - _DriftLineStrength: 0
+    - _DriftLineStretch: 5
+    - _FbmDriftSpeed: -0.12
+    - _FbmGateHi: 1
+    - _FbmGateLo: 0.452
+    - _FbmScale: 3.27
+    - _FbmStrength: 0.08
     - _Flow: 0.06
+    - _FoamBlobScale: 5.17
+    - _FoamCrestGate: 0.88
+    - _FoamDensity: 0.3
+    - _FoamDensityWind: 0.4
+    - _FoamDriftWindVsCurrent: 0.84
+    - _FoamEvolveSpeed: 0.08
     - _FoamNoise: 0.09
     - _FoamSoftness: 0.26
+    - _FoamSolidThreshold: 0.84
+    - _FoamStreakStretch: 2.2
     - _FoamTexStrength: 0.5
+    - _FoamThreshold: 0.88
+    - _FoamThresholdSoft: 0.22
     - _FoamWidth: 0.45
     - _HeightMax: 6
     - _HeightMin: -4
+    - _MoonGlitter: 1
+    - _MoonGlitterLength: 9
+    - _MoonSize: 1.2
+    - _MoonStrength: 0.9
+    - _NightSoftness: 0.3
+    - _NightStart: 0.35
     - _NoiseScale: 0.35
+    - _OceanSwellScale: 0.07
+    - _OceanSwellSharpness: 3
+    - _OceanSwellSpeed: 0.014
+    - _OceanSwellStrength: 0.05
+    - _Octave2Weight: 0.288
+    - _Octave3Weight: 0.108
     - _PaintScale: 0.25
-    - _PixelsPerUnit: 12
+    - _PaletteGradeStrength: 0.4
+    - _PaletteNightFloor: 0.04
+    - _PalettePullStrength: 0.35
+    - _PaletteSatCap: 0.3
+    - _PaletteValueCeil: 0.75
+    - _PaletteValueFloor: 0.2
+    - _PixelsPerUnit: 24
+    - _RainIntensity: 0
+    - _RainRingDensity: 1
+    - _RainRingScale: 0.4
+    - _RainRingSpeed: 1.5
+    - _RainRingStrength: 0
+    - _ReflectionChopScatter: 2.2
+    - _ReflectionFadeChop: 0.6
+    - _ReflectionSkyTint: 0.85
+    - _ReflectionSmear: 2.4
+    - _ReflectionStrength: 0.45
+    - _ReflectionSunSharp: 4
+    - _ReflectionSunStreak: 0.2
+    - _ReflectionWindFade: 0.5
+    - _ReflectionWindScatter: 1.4
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
+    - _ShallowMinAlpha: 0.65
+    - _ShallowSeeThroughDepth: 0.6
+    - _ShallowTranslucency: 0
     - _ShoreSampleStep: 0.4
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
-    - _SpecAmount: 0.07
-    - _SpecSharpness: 12
+    - _SkyReflectionStrength: 0.7
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.4
+    - _SpecAmount: 0.07
+    - _SpecBands: 3.38
+    - _SpecSharpness: 12
+    - _SpecSwellBias: 0.15
+    - _StarDensity: 7
+    - _StarStrength: 0.18
+    - _StarTwinkleSpeed: 1.4
+    - _StormFoamLaneScale: 0.3
+    - _StormFoamLaneStrength: 0
+    - _StormFoamLaneStretch: 6
+    - _SunGlitterStrength: 0.6
     - _SurfaceTexStrength: 0.169
     - _SurfaceTint: 0.12
     - _SwashAmplitude: 1
@@ -100,71 +174,37 @@ Material:
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
     - _WaterLevel: 0
+    - _WhitecapCollapseRate: 1.5
+    - _WhitecapFormSharpness: 0.4
+    - _WhitecapOnsetAmp: 0.5
+    - _WhitecapPeakDensity: 0.5
     - _WhitecapTexStrength: 0.55
     - _WindChop: 0.07
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09
-    - _CrossSwellSpeed: 0.025
-    - _CrossSwellScale: 0.16
-    - _Octave2Weight: 0.288
-    - _Octave3Weight: 0.108
-    - _FbmScale: 3.27
-    - _FbmDriftSpeed: -0.12
-    - _FbmStrength: 0.08
-    - _FbmGateLo: 0.452
-    - _FbmGateHi: 1
-    - _SpecBands: 3.38
-    - _OceanSwellScale: 0.07
-    - _OceanSwellSpeed: 0.014
-    - _OceanSwellStrength: 0.05
-    - _OceanSwellSharpness: 3
-    - _FoamStreakStretch: 2.2
-    - _FoamCrestGate: 0.88
-    - _SpecSwellBias: 0.15
-    - _FoamDriftWindVsCurrent: 0.84
-    - _FoamEvolveSpeed: 0.08
-    - _FoamBlobScale: 5.17
-    - _FoamThreshold: 0.88
-    - _FoamThresholdSoft: 0.22
-    - _FoamSolidThreshold: 0.84
-    - _FoamDensity: 0.3
-    - _FoamDensityWind: 0.4
-    - _WhitecapFormSharpness: 0.4
-    - _WhitecapPeakDensity: 0.5
-    - _WhitecapCollapseRate: 1.5
-    - _ReflectionStrength: 0.45
-    - _ReflectionFadeChop: 0.6
-    - _ReflectionWindFade: 0.5
-    - _ReflectionChopScatter: 2.2
-    - _ReflectionWindScatter: 1.4
-    - _ReflectionSkyTint: 0.85
-    - _ReflectionSmear: 2.4
-    - _ReflectionSunStreak: 0.2
-    - _ReflectionSunSharp: 4
-    - _PaletteGradeStrength: 0.4
-    - _PaletteValueFloor: 0.2
-    - _PaletteValueCeil: 0.75
-    - _PaletteSatCap: 0.3
-    - _PalettePullStrength: 0.35
-    - _PaletteNightFloor: 0.04
     m_Colors:
     - _CausticColor: {r: 0.74, g: 0.78, b: 0.78, a: 1}
+    - _CloudColor: {r: 0.86, g: 0.88, b: 0.92, a: 1}
+    - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
     - _DeepColor: {r: 0.2, g: 0.26, b: 0.29, a: 1}
+    - _DriftLineColor: {r: 0.92, g: 0.96, b: 0.97999996, a: 0}
+    - _FbmTint: {r: 0.56, g: 0.62, b: 0.64, a: 1}
     - _FlowDir: {r: 1, g: 0, b: 0, a: 0}
     - _FoamColor: {r: 0.86, g: 0.88, b: 0.89, a: 1}
     - _HeightWorldMin: {r: -80, g: -60, b: 0, a: 0}
     - _HeightWorldSize: {r: 160, g: 120, b: 0, a: 0}
     - _LightDir: {r: -0.6, g: 0.8, b: 0, a: 0}
-    - _ShallowColor: {r: 0.5, g: 0.58, b: 0.59, a: 0.95}
-    - _SpecColor: {r: 0.8, g: 0.82, b: 0.84, a: 1}
-    - _WindDir: {r: 0, g: 1, b: 0, a: 0}
-    - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}
-    - _FbmTint: {r: 0.56, g: 0.62, b: 0.64, a: 1}
+    - _MoonColor: {r: 0.78, g: 0.8399999, b: 0.95, a: 1}
     - _OceanSwellDir: {r: 0, g: 0, b: 0, a: 0}
-    - _ReflectionColor: {r: 0.66, g: 0.7, b: 0.74, a: 1}
     - _PaletteDeep: {r: 0.2, g: 0.26, b: 0.29, a: 1}
+    - _PaletteFoam: {r: 0.86, g: 0.88, b: 0.89, a: 1}
     - _PaletteMid: {r: 0.36, g: 0.43, b: 0.45, a: 1}
     - _PaletteShallow: {r: 0.5, g: 0.58, b: 0.59, a: 1}
-    - _PaletteFoam: {r: 0.86, g: 0.88, b: 0.89, a: 1}
+    - _RainRingColor: {r: 0.86, g: 0.92, b: 0.97999996, a: 1}
+    - _ReflectionColor: {r: 0.66, g: 0.7, b: 0.74, a: 1}
+    - _ShallowColor: {r: 0.5, g: 0.58, b: 0.59, a: 0.95}
+    - _SpecColor: {r: 0.8, g: 0.82, b: 0.84, a: 1}
+    - _SunGlitterColor: {r: 1, g: 0.82, b: 0.54999995, a: 1}
+    - _WindDir: {r: 0, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
