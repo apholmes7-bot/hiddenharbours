@@ -161,7 +161,11 @@ namespace HiddenHarbours.App.Editor
                 r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
                 r.TideMeanLevel = TideMean; r.TideAmplitude = TideAmplitude; r.TidePhaseHours = TidePhaseHours;
                 r.UnlockFlag = "";   // the opening — always reachable, no gate
-                r.SpawnFishIds = new[] { "fish.soft_shell_clam" };  // the flats' by-hand catch (gated by exposure)
+                // The region's spawn table: the flats' hand-dug clam PLUS the trap-caught shellfish now that
+                // the lobster/crab are region-tagged for St Peters (their FishSpeciesDef.RegionIds include
+                // region.st_peters — the actual catch gate). This list is region metadata (validated to
+                // resolve to real fish); the catch itself is filtered by the species' RegionIds.
+                r.SpawnFishIds = new[] { "fish.soft_shell_clam", "fish.lobster", "fish.rock_crab" };
                 r.Description = "The home island where the game begins: a tiny weathered coast cut off from " +
                                 "the mainland except when the big tide bares the sandbar. Dig clams on the " +
                                 "flats at low water, walk the bar to Greywick, earn your way to the dory.";
@@ -474,13 +478,14 @@ namespace HiddenHarbours.App.Editor
                 devTrap.Configure(trapService, core.DoryGo.transform, lobsterTrap, herring, "region.st_peters");
 
                 // The RHYTHM HAUL controller on the BOAT: rail = the boat, hold = the boat's ShipHold. The
-                // CATCH region is region.coddle_cove because the lobster/crab are authored for the cove in the
-                // greybox content (Build 2) — a St-Peters-set pot uses that catch region until the species are
-                // region-tagged for St Peters. FLAG economy-sim/world-content: add region.st_peters to the
-                // lobster + crab RegionIds so the catch region matches the placement region (Data/Fish is
-                // economy-sim's lane — not touched here).
+                // CATCH region is region.st_peters — the region this scene's pots are PLACED in (DevTrapInput
+                // tags them region.st_peters), so a St-Peters-set pot draws St Peters' LOCAL lobster/crab, not
+                // Coddle Cove's. This is now correct because the lobster + crab FishSpeciesDefs are region-
+                // tagged for St Peters (their RegionIds include region.st_peters — the actual catch gate the
+                // CatchResolver filters on). Determinism is unaffected — the region only filters the pool
+                // (rule 5). Was region.coddle_cove as a stopgap before the species were tagged for St Peters.
                 var haul = core.DoryGo.AddComponent<TrapHaulController>();
-                haul.Configure(trapService, core.DoryGo.transform, core.Hold, "region.coddle_cove");
+                haul.Configure(trapService, core.DoryGo.transform, core.Hold, "region.st_peters");
                 SetRef(haul, "_holdProvider", core.DoryGo);
             }
             else
