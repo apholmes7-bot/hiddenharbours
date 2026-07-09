@@ -74,6 +74,28 @@ Shader "HiddenHarbours/Water"
         _OceanSwellStrength ("Ocean swell brightness amplitude (0..1)", Range(0,1)) = 0.16
         _OceanSwellSharpness("Ocean swell crest sharpness (1 = round; higher = narrow crest over broad trough)", Float) = 2.2
 
+        [Header(Swell READ legibility (crest trough VALUE contrast   time the heave))]
+        // THE lever for "I can see the swell rise and pass under the boat." The passing swell IS the
+        // shared deterministic wave field the hull rocks on and the trap-haul times against
+        // (WaveFieldSample reads the trains WaveFieldBridge publishes from the sim — ADR 0018). The stock
+        // crest/trough brightness (_OceanSwell*) is tuned SUBTLE (and pinched sharp), so a rising swell is
+        // nearly invisible — you cannot time a heave to a wave you cannot read. This is a dedicated,
+        // ON-by-default legibility knob that AMPLIFIES the crest->trough VALUE contrast of that SAME crest
+        // signal so a swell reads as a raised, MOVING band of light over dark that lifts and passes under
+        // the boat. Value contrast is the single biggest readability win and it works on calm water too.
+        // It keys the BROAD normalized crest (not the pinched spike) so the swell reads as the water
+        // RISING, not a thin line. Keyed to the REAL advancing crest -> SEE == FEEL (P1). Its own gate,
+        // INDEPENDENT of _OceanSwellStrength, so it reads even where the owner dialed the stock swell down.
+        // GLASS STAYS GLASS: it inherits the wave field's amplitude gate, so a dead-flat sea shows no band.
+        // col.rgb ONLY: it ADDS to the colour like every water layer and NEVER touches depth/clip/the deep
+        // tint/_WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5) — the waterline the player
+        // wades and the crest the haul samples are byte-identical. _SwellReadStrength = 0 = EXACT passthrough.
+        //   _SwellReadStrength — master contrast amount (0 = off / stock look; ~0.35 = a clearly legible swell).
+        //   _SwellReadBands    — posterize the moving band into N discrete VALUE steps for a crisp pixel-art
+        //                        marching-contour read (0 = smooth). Mirrors _DepthBands / _SpecBands.
+        _SwellReadStrength ("Swell read contrast (0 = off, ~0.35 = legible)", Range(0,1)) = 0.35
+        _SwellReadBands    ("Swell read posterize bands (0 = smooth)", Float) = 0
+
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
@@ -618,6 +640,9 @@ Shader "HiddenHarbours/Water"
                 float  _OceanSwellSpeed;
                 float  _OceanSwellStrength;
                 float  _OceanSwellSharpness;
+                // Swell READ legibility (crest/trough VALUE contrast; col.rgb-only, its own gate).
+                float  _SwellReadStrength;
+                float  _SwellReadBands;
                 float4 _FoamColor;
                 float  _FoamWidth;
                 float  _FoamSoftness;
@@ -2173,6 +2198,7 @@ Shader "HiddenHarbours/Water"
                 float swellCrest;   // the 0..1 crest driver every downstream layer reads (spec bias,
                                     // whitecap crest gate, sky reflection lit faces)
                 float swellSigned;  // the -1..1 brightness modulation (crests lighter, troughs darker)
+                float swellReadSigned; // the -1..1 BROAD, glass-gated crest signal for the legibility band
                 if (trainsLive)
                 {
                     float waveTotalAmp = max(_WaveFieldParams.z, 1e-5);
@@ -2190,12 +2216,17 @@ Shader "HiddenHarbours/Water"
                     //   any real sea reads the full defined-crest look. One madd + saturate, no new uniform.
                     float swellLive = saturate(_WaveFieldParams.z * 40.0);
                     swellSigned = (swellCrest * 2.0 - 1.0) * swellLive;
+                    // The LEGIBILITY band reads the BROAD normalized crest (waveHN, pre-sharpen) not the
+                    // pinched swellCrest, so the swell reads as the water RISING/FALLING (a wide moving
+                    // band) rather than a thin spike — much easier to time a heave against. Same glass gate.
+                    swellReadSigned = (waveHN * 2.0 - 1.0) * swellLive;
                 }
                 else
                 {
                     // LEGACY noise swell — the cycle-off fallback, unchanged.
                     swellCrest = SwellField(worldXY, depth, t);   // 0..1 (rolls IN near shore)
                     swellSigned = (swellCrest - 0.5) * 2.0;       // -1..1
+                    swellReadSigned = swellSigned;                // legacy path has no separate broad signal
                 }
                 if (_OceanSwellStrength > 0.001)
                 {
@@ -2203,6 +2234,31 @@ Shader "HiddenHarbours/Water"
                     // more gain restores the punch without a black sea (max swing = +/-0.30*_OceanSwellStrength;
                     // at the 0.16 default that is +/-0.048 — a defined ridge, not an over-dark trough).
                     col.rgb += swellSigned * _OceanSwellStrength * 0.30;
+                }
+
+                // ---- SWELL READ (legibility): make the passing swell VISIBLE so the player can time the
+                // heave. Amplifies the crest->trough VALUE contrast of the SAME shared wave field the hull
+                // rocks on and the haul times against (swellReadSigned = the broad, glass-gated crest signal),
+                // so the swell reads as a raised, MOVING band of light over dark that lifts and passes under
+                // the boat — SEE == FEEL (P1). Independent of _OceanSwellStrength (reads even where the stock
+                // swell is dialed down). col.rgb ONLY — never depth/clip/the deep tint/_WaterLevel/the sim
+                // wave field (P1 integrity, CLAUDE.md rule 5). _SwellReadStrength = 0 is an EXACT passthrough.
+                if (_SwellReadStrength > 0.001)
+                {
+                    float readBand = swellReadSigned;                 // -1..1, already travels with the real crest
+                    // Optional pixel-art posterize: quantize the moving band into N discrete VALUE steps so
+                    // it reads as a crisp marching contour (0 = smooth). Done in 0..1 space like _DepthBands.
+                    if (_SwellReadBands >= 1.0)
+                    {
+                        float b01 = readBand * 0.5 + 0.5;
+                        b01 = floor(b01 * _SwellReadBands + 0.5) / _SwellReadBands;
+                        readBand = b01 * 2.0 - 1.0;
+                    }
+                    // 0.25 ceiling: at the 0.35 default the swing is +/-0.0875 (a clearly legible band, ~3x
+                    // the owner's tuned stock swell); the palette guard-rail's value floor/ceiling bounds the
+                    // extremes so troughs never go muddy nor crests blow out. A dedicated add (not a bump to
+                    // _OceanSwellStrength) so the owner has ONE clear "how readable is the swell" knob.
+                    col.rgb += readBand * _SwellReadStrength * 0.25;
                 }
 
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
