@@ -211,6 +211,11 @@ namespace HiddenHarbours.Fishing
         private const string NoticeNoPot = "No pot alongside — lay up to a buoy";
         private const string NoticeDrifted = "Drifted off the buoy";
         private const string NoticeEmpty = "Empty pot — not ready yet";
+        // Legibility (owner "doesn't know how to haul"): teach the rhythm on screen. Event-time only — the
+        // start fires once per haul, and per-pull cues fire on a (debounced) keypress, NEVER per frame.
+        private const string NoticeHaulStart = "Haul! Tap in time with the swell";
+        private const string NoticeHeave = "Heave!";     // a clean, on-beat pull won line
+        private const string NoticeSlipping = "Slipping!"; // a mistimed pull — no line (no penalty, try the crest)
 
         /// <summary>Begin hauling the nearest set trap in reach of the rail (any state — a not-yet-soaked
         /// trap still hauls, and surfaces empty). Public so a test/tool can drive it without input. Returns
@@ -230,6 +235,7 @@ namespace HiddenHarbours.Fishing
             _strain01 = 0f;
             _pullTautTimer = 0f;
             Publish(TrapHaulPhase.Hauling, pullOnBeat: false);
+            EventBus.Publish(new DevNotice(NoticeHaulStart));   // teach the pull on screen (owner legibility)
             Debug.Log($"[TrapHaul] Hauling — pull the rope in time with the swell (readiness: {best.StateAt(NowSeconds())}).");
             return true;
         }
@@ -288,7 +294,11 @@ namespace HiddenHarbours.Fishing
             }
 
             _strain01 = TrapHaulMath.RopeStrain01(sea, _line01, _lineRelief);
-            Publish(TrapHaulPhase.Hauling, pullOnBeat: onBeat && gain > 0f);
+            bool cleanPull = onBeat && gain > 0f;
+            Publish(TrapHaulPhase.Hauling, pullOnBeat: cleanPull);
+            // Per-pull on-screen cue so the owner FEELS the rhythm: a clean on-beat heave reads differently
+            // from a mistimed slip. Event-time (a debounced keypress), never per frame — rule 7.
+            EventBus.Publish(new DevNotice(cleanPull ? NoticeHeave : NoticeSlipping));
             UpdateRope();
 
             if (_line01 >= 1f) Surface();

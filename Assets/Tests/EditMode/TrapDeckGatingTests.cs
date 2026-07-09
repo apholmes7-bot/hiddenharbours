@@ -222,6 +222,59 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, _notices.Count, "…and the refusal shows on screen");
         }
 
+        // ---- haul legibility (owner "doesn't know how to haul") — the on-screen cues ---------------
+
+        [Test]
+        public void StartHaul_Success_RaisesTheHaulStartNotice()
+        {
+            var svcGo = NewGo("PlacedTrapService");
+            var svc = svcGo.AddComponent<PlacedTrapService>();
+            svc.Configure(new[] { _trap }, new[] { _bait }, svcGo.transform);
+            svc.PlaceTrap(_trap, _bait, new Vector2(1f, 1f), "region.st_peters");
+
+            var railGo = NewGo("Rail"); railGo.transform.position = new Vector2(1f, 1f);
+            var haul = NewGo("TrapHaul").AddComponent<TrapHaulController>();
+            haul.Configure(svc, railGo.transform, null, "region.coddle_cove",
+                           maxGainPerPull: 0.5f, pullCooldownSeconds: 0f);
+            haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            Assert.IsTrue(haul.TryStartHaul(), "a pot alongside starts the haul");
+            Assert.AreEqual(1, _notices.Count, "the haul-start teaches the pull on screen (exactly one notice)");
+            StringAssert.Contains("swell", _notices[0], "…and it tells the owner to tap in time with the swell");
+        }
+
+        [Test]
+        public void EachPull_RaisesExactlyOneNotice_EventTimeNotPerFrame()
+        {
+            // Null the sea so the swell read is the forgiving calm path (phase 0 → always on the beat), so
+            // every pull here is a deterministic CLEAN heave. The point is the per-EVENT contract: one cue
+            // per pull, never per frame (the mistimed "Slipping!" branch is the same event-time publish).
+            GameServices.Environment = null;
+
+            var svcGo = NewGo("PlacedTrapService");
+            var svc = svcGo.AddComponent<PlacedTrapService>();
+            svc.Configure(new[] { _trap }, new[] { _bait }, svcGo.transform);
+            svc.PlaceTrap(_trap, _bait, new Vector2(1f, 1f), "region.st_peters");
+
+            var railGo = NewGo("Rail"); railGo.transform.position = new Vector2(1f, 1f);
+            var haul = NewGo("TrapHaul").AddComponent<TrapHaulController>();
+            // Small gain so three pulls don't surface the pot (a surface would add its own notice).
+            haul.Configure(svc, railGo.transform, null, "region.coddle_cove",
+                           maxGainPerPull: 0.1f, pullCooldownSeconds: 0f);
+            haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            Assert.IsTrue(haul.TryStartHaul());
+            _notices.Clear();   // drop the start notice; count only the pulls
+
+            Assert.IsTrue(haul.Pull(), "a calm-sea pull lands on the beat");
+            Assert.IsTrue(haul.Pull());
+            Assert.IsTrue(haul.Pull());
+
+            Assert.AreEqual(3, _notices.Count, "one on-screen cue per pull — event-time, not per frame");
+            foreach (var n in _notices)
+                StringAssert.Contains("Heave", n, "a clean on-beat pull reads as a heave");
+        }
+
         private FishSpeciesDef MakeSpecies()
         {
             var f = ScriptableObject.CreateInstance<FishSpeciesDef>();
