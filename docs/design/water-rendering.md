@@ -1730,3 +1730,82 @@ falling-rain particles share the one derived `_RainIntensity`, so they thicken t
 shared `AmbientParticleMath.RainIntensity`); `Water.mat` stays **byte-identical OFF**. The shipped `Water.mat`
 variant is force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not
 magenta-in-build).
+
+## 20. Aesthetic pass — clumping foam, deep blues, crest-face shading (owner mandate, 2026-07-08)
+
+> The owner delegated taste (verbatim): *"feel free to tune the water in whatever fashion you think will lead
+> to better looking waves, better clumping of foam, deep blues."* This pass builds ON his committed baseline
+> (#183 — his own `Water.mat` tuning is the canon this refines, never bulldozes; his locked `_Flow`/`_WindChop`
+> stay locked and untouched) and COMPOSES with the #182 swell-read. Three additive levers, one per ask, each a
+> named tunable defaulting **ON at a modest strength** (this pass IS the mandate) and each an **exact
+> passthrough at 0**. All three are `col.rgb`/`col.a` dressing only — never `depth`/`clip()`/`dt`/
+> `_WaterLevel`/the height read/the wave-field sample/the sim (P1 integrity, CLAUDE.md rule 5) — and all three
+> sit **pre-grade**, so the §13 palette guard-rail remains the single final colour owner and bounds them like
+> every other layer (they are water colour, not light content — they correctly dim with the night overlay;
+> the §11.6 post-grade compensated bucket is untouched).
+
+### 20.1 Deep-blue enrichment (the `_USE_DEPTHRAMP` trap, resolved)
+
+The shipped material's base colour comes from the owner's **hand-painted `_DepthRamp`** (`_USE_DEPTHRAMP` ON) —
+the `lerp(_ShallowColor, _DeepColor, dt)` path does not run, so `_DeepColor` alone is inert, and repainting his
+ramp would bulldoze his art. The lever chosen instead: a **bounded pull of the settled base colour** toward a
+rich navy, keyed to the read-only deep fraction `dt`, applied immediately after the base block — **before every
+additive layer** (the #182 swell-read, swell bands, spec and foam ride on top at full amplitude; nothing is
+washed out) and **before the guard-rail**. `smoothstep(_DeepBlueStart, 1, dt)` leaves the shallows and mid ramp
+untouched. The default target `(0.02, 0.09, 0.30)` is the deeper-saturated cousin of the owner's own
+`_PaletteDeep` anchor `(0.02, 0.08, 0.26)`, so the grade's anchor pull agrees with it; the enriched deep sits
+below his `_PaletteSatCap 0.78` and above his value floor `0.08`, so the rail neither greys it nor lifts it.
+
+| Property | Default (Water.mat) | Meaning |
+|---|---|---|
+| `_DeepBlueStrength` | `0.45` | Master pull toward the navy; `0` = the painted ramp exactly. |
+| `_DeepBlueColor` | `(0.02, 0.09, 0.30)` | The navy target (per-mood: FoggySmother pins strength `0`, StormGrey `0.1`, Water_DeepBlue `0.7`). |
+| `_DeepBlueStart` | `0.25` | The `dt` fraction where the pull begins (shallower water untouched). |
+
+### 20.2 Foam clumping — windrows + crest-shed rafts (`_FoamClump*`)
+
+The open-water whitecaps read as an **even sprinkle** — organic per-fleck (§5.9) but statistically uniform.
+Real foam **gathers**: wind rows (lanes of foam down the wind) and rafts shed by breaking crests, with bare
+water between. A second, much **broader and slower** `EvolvingField` (reused helper; pixel-snapped; evolving at
+0.35× the foam boil rate — rafts morph slower than the flecks riding them), **stretched along the wind** like
+the caps and sampled on the same drifted coord, **REDISTRIBUTES** the cap coverage: a soft patch mask
+(`smoothstep(0.35, 0.65, field)` around the field's midline) lifts in-patch coverage ×1.25 (saturated) and
+thins between-patch coverage toward bare water. The same foam, gathered instead of thinned. Applied to **both**
+whitecap paths (trains-live and legacy) via one gate on `capOpacity`; the §5.3 shoreline fringe is deliberately
+untouched (the sprinkle complaint is the open water; the fringe already has the swash/churn character).
+
+| Property | Default (Water.mat) | Meaning |
+|---|---|---|
+| `_FoamClumpStrength` | `0.55` | Master gathering; `0` = today's even sprinkle. |
+| `_FoamClumpScale` | `0.10` | Patch frequency (patches/unit) — smaller = broader rafts, wider clear lanes. |
+| `_FoamClumpStretch` | `2.5` | Wind anisotropy — `1` = round rafts, higher = long thin windrows. |
+
+### 20.3 Swell face shading — the modelled wave (`_SwellFaceShade`)
+
+`WaveFieldSample()` already computes the field's **analytic slope** (`waveSlope`) for twin parity — previously
+unused in the composite. This shades each swell face against the **one implied sun** (`_SunDir`, falling back
+to `_LightDir` — the ADR 0006 single-light discipline, the specular's exact fallback): the surface normal's
+ground component is minus the height gradient, so `-dot(waveSlope, lightDir)` is positive on the **lit face**
+and negative behind the crest. Where the #182 swell-read is **symmetric** (crest bright / trough dark), this is
+**antisymmetric** (lit face vs shaded back) — they compose into a directional, modelled wave instead of
+doubling one band into glare (combined worst-case crest add ≈ 0.16 pre-grade, inside the rail's ceiling). The
+×2 slope normalizer and the 0.15 add ceiling follow the swell-read's documented-constant idiom (at the 0.22
+default the swing is ±0.033 — shading, not glare). **Self-gating:** glass publishes zero amplitude ⇒ zero slope
+⇒ zero term (the §11 mirror is untouched); the legacy count-0 path leaves `waveSlope` at 0 (pre-B1 look
+unchanged there). No new uniform and **no C# twin needed** — it consumes `WaveFieldSample`'s existing outputs
+(the #182 precedent); `WaveMath`/`ShaderTwinSample` are untouched.
+
+| Property | Default (Water.mat) | Meaning |
+|---|---|---|
+| `_SwellFaceShade` | `0.22` | Lit-face/shaded-back contrast; `0` = flat bands (FoggySmother pins `0` — flat fog light). |
+
+### 20.4 Composition, registration + guard
+
+Perf (rule 7): +1 `EvolvingField` (4 value-noise taps) per **whitecap-branch** pixel when clumping is on, one
+`smoothstep` chain for the deep pull, one dot/clamp for the face shade — no new texture fetches. The new float
+keys join `WaterSurface.MoodFloatNames` (+ `_DeepBlueColor` in `MoodColorNames`) so the §12 preset library and
+the §14 weather blend ease them per mood — look props only, disjoint from the physics set (no double-drive).
+`Water.mat` serializes the new keys explicitly at their defaults (and pins the previously-unserialized
+`_SwellReadStrength 0.35` / `_SwellReadBands 0`); the owner's tuned values are otherwise byte-identical. The
+shipped `Water.mat` + every `WaterPresets/` variant stay force-compiled by `WaterShaderCompileGuardTests`
+(no `+` in any `[Header]`, no `[unroll]` over a runtime bound — the magenta class stays guarded).
