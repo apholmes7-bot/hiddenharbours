@@ -1456,6 +1456,37 @@ WaveMathTests sweep, AND through the full runtime path (5 000 uneven animator ti
 rate, wind widens the breaking population, zero density/troughs = nothing). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so a broken twin fails CI red, not magenta-in-build.
 
+### 16.5 Swell READ legibility — the passing swell you can SEE (`_SwellReadStrength`)
+
+**Owner playtest (2026-07-08):** working the trap-haul minigame — which times a heave against the passing
+swell — the owner reported *"it's hard to see the swells and to know when to time the heave,"* and localized it
+to **the water itself**, not the cue: he could not see the wave rise and pass under the boat. The stock
+crest/trough brightness (`_OceanSwellStrength × 0.30`) is tuned **subtle** — the shipped `Water.mat` sits at
+`_OceanSwellStrength 0.09` × `_OceanSwellSharpness 6`, a swing of only **~±0.027** and a razor-thin pinched
+ridge. See must equal feel (P1): the crest the haul samples has to be legible on screen.
+
+The fix is a dedicated, **ON-by-default** legibility knob that amplifies the crest→trough **VALUE contrast** of
+the **same shared wave field** (§16) the hull rocks on and the haul times against — value contrast is the
+single biggest readability win and works on calm water too. It reads the **BROAD normalized crest**
+(`waveHN`, pre-sharpen) rather than the pinched `swellCrest`, so the swell reads as the water **rising/falling**
+in a wide moving band instead of a thin line, and adds `readBand × _SwellReadStrength × 0.25` to `col.rgb`
+right after the stock swell add. It carries **its own gate, independent of `_OceanSwellStrength`** (so it reads
+even where the owner dialed the stock swell down), and **inherits the field's `swellLive` amplitude gate — so
+glass stays glass** (a dead-flat sea shows no band; the §11 mirror is untouched).
+
+- `_SwellReadStrength` (default **0.35**) — master contrast amount. `0` = exact passthrough (the pre-feature
+  look). At 0.35 the swing is **±0.0875** (~3× the owner's tuned stock swell) — a clearly legible band; the
+  §13 palette guard-rail's value floor/ceiling bounds the extremes so troughs never go muddy nor crests blow
+  out.
+- `_SwellReadBands` (default **0** = smooth) — optional pixel-art posterize of the moving band into N discrete
+  value steps for a crisp marching-contour read, mirroring `_DepthBands` / `_SpecBands`.
+
+`col.rgb`-only, additive like every water layer — **never** `depth` / `clip()` / the deep tint / `_WaterLevel` /
+the sim wave field (P1 integrity, CLAUDE.md rule 5): the waterline the player wades and the crest the haul
+samples are byte-identical, so the sim is provably unchanged. No new C# uniform and no twin — it reads only the
+already-sampled `waveHN`; `WaveFieldSample` / `WaveFieldBridge` / `WaveMath` are untouched. Legacy count-0
+path (edit mode / cycle off) reuses `swellSigned` so the knob still reads there.
+
 ## 17. See-through shallows + day-gated caustics (Arc C water visuals)
 
 Two owner-opt-in shallow-water effects, both shipping **OFF** (their strength = 0), so the shipped `Water.mat`
