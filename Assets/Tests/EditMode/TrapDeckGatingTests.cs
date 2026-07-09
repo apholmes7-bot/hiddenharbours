@@ -169,8 +169,7 @@ namespace HiddenHarbours.Tests.EditMode
             var railGo = NewGo("Rail");
             railGo.transform.position = new Vector2(1f, 1f);
             var haul = NewGo("TrapHaul").AddComponent<TrapHaulController>();
-            haul.Configure(svc, railGo.transform, null, "region.coddle_cove",
-                           maxGainPerPull: 0.5f, pullCooldownSeconds: 0f);
+            haul.Configure(svc, railGo.transform, null, "region.coddle_cove", calmHaulRate: 0.6f);
 
             haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
             Assert.IsTrue(haul.TryStartHaul(), "a pot alongside starts a haul from the deck");
@@ -234,23 +233,21 @@ namespace HiddenHarbours.Tests.EditMode
 
             var railGo = NewGo("Rail"); railGo.transform.position = new Vector2(1f, 1f);
             var haul = NewGo("TrapHaul").AddComponent<TrapHaulController>();
-            haul.Configure(svc, railGo.transform, null, "region.coddle_cove",
-                           maxGainPerPull: 0.5f, pullCooldownSeconds: 0f);
+            haul.Configure(svc, railGo.transform, null, "region.coddle_cove", calmHaulRate: 0.6f);
             haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
 
             Assert.IsTrue(haul.TryStartHaul(), "a pot alongside starts the haul");
-            Assert.AreEqual(1, _notices.Count, "the haul-start teaches the pull on screen (exactly one notice)");
-            StringAssert.Contains("swell", _notices[0], "…and it tells the owner to tap in time with the swell");
+            Assert.AreEqual(1, _notices.Count, "the haul-start teaches the action on screen (exactly one notice)");
+            StringAssert.Contains("swell", _notices[0], "…and it tells the owner to haul with the swell");
         }
 
         [Test]
-        public void EachPull_RaisesExactlyOneNotice_EventTimeNotPerFrame()
+        public void HoldingTheHaul_RaisesNoTimingText_TheRopeCarriesIt()
         {
-            // Null the sea so the swell read is the forgiving calm path (phase 0 → always on the beat), so
-            // every pull here is a deterministic CLEAN heave. The point is the per-EVENT contract: one cue
-            // per pull, never per frame (the mistimed "Slipping!" branch is the same event-time publish).
-            GameServices.Environment = null;
-
+            // Owner's redesign: the per-pull timing TEXT ("Heave!"/"Slipping!") is gone — the diegetic rope
+            // carries the timing. A small calm wind-in so many hold ticks don't surface the pot (which would
+            // add its own outcome notice). The point: holding raises ZERO on-screen text beyond the one
+            // teach-notice at start — never per tick, never per frame.
             var svcGo = NewGo("PlacedTrapService");
             var svc = svcGo.AddComponent<PlacedTrapService>();
             svc.Configure(new[] { _trap }, new[] { _bait }, svcGo.transform);
@@ -258,21 +255,16 @@ namespace HiddenHarbours.Tests.EditMode
 
             var railGo = NewGo("Rail"); railGo.transform.position = new Vector2(1f, 1f);
             var haul = NewGo("TrapHaul").AddComponent<TrapHaulController>();
-            // Small gain so three pulls don't surface the pot (a surface would add its own notice).
-            haul.Configure(svc, railGo.transform, null, "region.coddle_cove",
-                           maxGainPerPull: 0.1f, pullCooldownSeconds: 0f);
+            haul.Configure(svc, railGo.transform, null, "region.coddle_cove", calmHaulRate: 0.02f);
             haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
 
             Assert.IsTrue(haul.TryStartHaul());
-            _notices.Clear();   // drop the start notice; count only the pulls
+            _notices.Clear();   // drop the start notice; count only what the holding produces
 
-            Assert.IsTrue(haul.Pull(), "a calm-sea pull lands on the beat");
-            Assert.IsTrue(haul.Pull());
-            Assert.IsTrue(haul.Pull());
+            for (int i = 0; i < 20; i++) haul.TickHaul(0.1f, holding: true);
+            Assert.IsFalse(haul.Line01 >= 1f, "the test never surfaces the pot (no outcome notice to confuse the count)");
 
-            Assert.AreEqual(3, _notices.Count, "one on-screen cue per pull — event-time, not per frame");
-            foreach (var n in _notices)
-                StringAssert.Contains("Heave", n, "a clean on-beat pull reads as a heave");
+            Assert.AreEqual(0, _notices.Count, "holding raises NO timing text — the rope is the instrument, not a toast");
         }
 
         private FishSpeciesDef MakeSpecies()

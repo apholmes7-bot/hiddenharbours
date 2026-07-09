@@ -142,7 +142,7 @@ namespace HiddenHarbours.Tests.EditMode
             var fishing = go.AddComponent<FishingController>();
             fishing.Configure(hold, new[] { MakeFish("fish.cod") }, "region.coddle_cove", Gear.Handline, seed: 7);
             var haul = go.AddComponent<TrapHaulController>();
-            haul.Configure(svc, rail, hold, "region.coddle_cove", maxGainPerPull: 0.1f, pullCooldownSeconds: 0f);
+            haul.Configure(svc, rail, hold, "region.coddle_cove", calmHaulRate: 0.6f);
             var dev = go.AddComponent<DevFishingInput>();
             return (dev, fishing, haul);
         }
@@ -183,12 +183,55 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
                 "pressing the pull key mid-haul must never cast a handline");
 
-            // Positive control: once the haul lets go, Space casts again (nothing was permanently broken).
+            // The haul ends WITH the key still held (the hold-haul reality). The carried-over hold must NOT
+            // flip into a cast — the release latch swallows it until a genuine release-then-press.
             haul.CancelHaul();
             Assert.IsFalse(haul.IsHauling);
-            Assert.IsTrue(dev.FishingLive, "haul over → the handline is live again");
+            Assert.IsTrue(dev.FishingLive, "haul over → the handline gate is open again");
             dev.TickFishing(0.05f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "a fresh press now casts");
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "a key still held from the haul must NOT auto-cast");
+
+            // Release, then a fresh press — now it casts (nothing was permanently broken).
+            dev.TickFishing(0.05f, rawHeld: false);
+            dev.TickFishing(0.05f, rawHeld: true);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "a genuine release-then-press casts again");
+        }
+
+        // ---- (a′) the resurrected bug: a HOLD-haul that ends with the key down must not auto-cast --------
+
+        [Test]
+        public void HoldingThroughTheEndOfAHaul_DoesNotAutoCast_ReleaseThenPressDoes()
+        {
+            var svc = MakeServiceWithPotAt(new Vector2(1f, 1f));
+            var rail = NewGo("Rail"); rail.transform.position = new Vector2(1f, 1f);
+            var hold = new FakeHold();
+            var (dev, fishing, haul) = BuildRig(svc, rail.transform, hold);
+
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            // Start the haul and HOLD Space through it — the hold takes line, the cast stays down.
+            Assert.IsTrue(haul.TryStartHaul());
+            for (int i = 0; i < 30 && haul.IsHauling; i++)
+            {
+                haul.TickHaul(0.1f, holding: true);       // the player holds with the swell
+                dev.TickFishing(0.1f, rawHeld: true);     // …the SAME Space, ticked into the fishing gate
+            }
+            Assert.IsFalse(haul.IsHauling, "the hold surfaced the pot — the haul ended");
+
+            // The pot's aboard but Space is STILL held. The instant the haul ended the cast gate reopened —
+            // the exact frame FishingController would see a false→true rising edge and fling a line. The
+            // latch must prevent it: a still-held key casts NOTHING.
+            dev.TickFishing(0.1f, rawHeld: true);
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
+                "holding through the end of a haul must NEVER auto-cast a handline (the resurrected bug)");
+            dev.TickFishing(0.1f, rawHeld: true);
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "…still no cast while the key stays held");
+
+            // Release, then press — a genuine fresh cast.
+            dev.TickFishing(0.1f, rawHeld: false);
+            dev.TickFishing(0.1f, rawHeld: true);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-press casts a fresh line");
         }
 
         // ---- (b) handline is a DECK action — gated off the deck ------------------------------------

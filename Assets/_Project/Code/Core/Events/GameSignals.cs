@@ -190,18 +190,20 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// The stage of the manual trap-HAUL minigame (trap-fishing arc Build 4) — pull the rope in rhythm with
-    /// the passing swell. Deliberately tiny and diegetic (the owner's low-HUD direction): the READ is the
-    /// rope in the world (its taut shape + a strain shade) and a creak/strain audio cue, NOT a HUD bar. This
-    /// enum + <see cref="TrapHaulState"/> let AUDIO (a creak groan, a "good pull" clunk) and any future
-    /// diegetic listener react WITHOUT referencing the Fishing module — the same Core-mediated handoff the
-    /// fishing fight uses (<see cref="FishingStateChanged"/>).
+    /// The stage of the manual trap-HAUL minigame (trap-fishing arc Build 4, redesigned Build 6) — haul WITH
+    /// the swell (hold as she lifts, ease as she falls). Deliberately tiny and diegetic (the owner's low-HUD
+    /// direction): the READ is the rope in the world (its taut/slack shape + a strain shudder) and a
+    /// creak/strain audio cue, NOT a HUD bar. This enum + <see cref="TrapHaulState"/> let AUDIO (a creak groan
+    /// that tightens with strain, a "good take" clunk) and any future diegetic listener react WITHOUT
+    /// referencing the Fishing module — the same Core-mediated handoff the fishing fight uses
+    /// (<see cref="FishingStateChanged"/>).
     /// </summary>
     public enum TrapHaulPhase
     {
         /// <summary>Not hauling — nothing to react to.</summary>
         Idle = 0,
-        /// <summary>Laid alongside a ready pot, hauling in rhythm — pulls gain line toward the surface.</summary>
+        /// <summary>Laid alongside a pot, hauling with the swell — holding on the lift gains line toward the
+        /// surface; holding through the drop strains and slips it back.</summary>
         Hauling = 1,
         /// <summary>The pot broke the surface — the catch is landing (a ready trap). A brief success beat.</summary>
         Surfaced = 2,
@@ -210,22 +212,25 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// A read-only snapshot of the live trap-haul minigame (Build 4), published on
-    /// <see cref="TrapHaulStateChanged"/> so audio/diegetic listeners can voice the STRAIN and the beat
-    /// without knowing the rhythm maths or referencing Fishing. Carries the diegetic reads: how taut/strained
-    /// the rope is, how far the pot has been hauled, and whether the last pull landed on the swell's beat
-    /// (a clean pull that gained line) — enough for a creak that tightens with strain and a satisfying clunk
-    /// on a good pull. Value struct (no GC).
+    /// A read-only snapshot of the live trap-haul minigame (Build 4, redesigned Build 6), published on
+    /// <see cref="TrapHaulStateChanged"/> so audio/diegetic listeners can voice the STRAIN and the take
+    /// without knowing the take maths or referencing Fishing. Carries the diegetic reads: how taut/strained
+    /// the rope is, how far the pot has been hauled, and whether the player is currently taking line well on
+    /// the lift (a good take) — enough for a creak that tightens with strain and a satisfying clunk on a good
+    /// take. Value struct (no GC).
     /// </summary>
     public readonly struct TrapHaulState
     {
         public readonly TrapHaulPhase Phase;
-        /// <summary>0..1 rope strain — the diegetic "how hard is she pulling" read (calm ≈ 0, gale ≈ 1).</summary>
+        /// <summary>0..1 rope strain — the diegetic "how hard is she pulling" read (calm ≈ 0, gale ≈ 1, and it
+        /// spikes when you hold THROUGH a drop and fight the loading rope).</summary>
         public readonly float Strain01;
         /// <summary>0..1 haul progress — 0 on the bottom, 1 as the pot breaks the surface.</summary>
         public readonly float Line01;
-        /// <summary>True on the tick a pull LANDED ON THE BEAT (a clean pull that gained line) — the "good
-        /// pull" clunk cue. False on idle ticks and on a mistimed pull (which gains nothing, no penalty).</summary>
+        /// <summary>True while the player is taking line WELL ON THE LIFT (a clean, gaining take) — the "good
+        /// take" clunk cue. False on idle ticks, on a slack pawl, and while fighting/slipping on a drop. (Kept
+        /// as <c>PullOnBeat</c> for the append-only Core contract; the meaning is now "a good take on the
+        /// lift".)</summary>
         public readonly bool PullOnBeat;
 
         public TrapHaulState(TrapHaulPhase phase, float strain01, float line01, bool pullOnBeat)

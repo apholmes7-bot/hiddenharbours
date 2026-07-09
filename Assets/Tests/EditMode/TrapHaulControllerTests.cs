@@ -8,11 +8,12 @@ using HiddenHarbours.Fishing;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// The rhythm-haul CONTROLLER end-to-end at the seam level (trap-fishing arc Build 4): the ready-gate
-    /// (a soaked trap surfaces + LANDS its catch, an unsoaked one comes up EMPTY and stays down), and that
-    /// enough on-beat pulls surface the pot. The scoring MATH is pinned in TrapHaulMathTests and the catch
-    /// determinism in PlacedTrapRuntimeTests — this drives the live controller/service against fakes (glass
-    /// sea → every pull is on the beat, so the rhythm is deterministic here). No scene, no input, no Time.
+    /// The haul-with-the-swell CONTROLLER end-to-end at the seam level (trap-fishing arc Build 4, redesigned
+    /// Build 6): the ready-gate (a soaked trap surfaces + LANDS its catch, an unsoaked one comes up EMPTY and
+    /// stays down), and that holding the pull winds the pot to the surface. The take MATH is pinned in
+    /// TrapHaulMathTests and the catch determinism in PlacedTrapRuntimeTests — this drives the live
+    /// controller/service against fakes (a GLASS sea → no swell → holding is the steady, deterministic
+    /// wind-in, so the seam is deterministic here). No scene, no input, no Time.
     /// </summary>
     public class TrapHaulControllerTests
     {
@@ -144,8 +145,8 @@ namespace HiddenHarbours.Tests.EditMode
             return svc;
         }
 
-        // A haul controller wired to the service, with the rail AT the trap (in reach) and a big per-pull gain
-        // + no debounce so the test surfaces the pot in a few direct Pull() calls. Catch region matches the
+        // A haul controller wired to the service, with the rail AT the trap (in reach) and a big calm wind-in
+        // rate so a 1-second HOLD tick wins ~0.6 line — two ticks surface the pot. Catch region matches the
         // registered species (region.coddle_cove).
         private TrapHaulController MakeController(PlacedTrapService svc, FakeHold hold, Vector2 railPos)
         {
@@ -156,10 +157,12 @@ namespace HiddenHarbours.Tests.EditMode
             var go = new GameObject("TrapHaul");
             _spawned.Add(go);
             var ctrl = go.AddComponent<TrapHaulController>();
-            ctrl.Configure(svc, railGo.transform, hold, "region.coddle_cove",
-                           maxGainPerPull: 0.5f, pullCooldownSeconds: 0f);
+            ctrl.Configure(svc, railGo.transform, hold, "region.coddle_cove", calmHaulRate: 0.6f);
             return ctrl;
         }
+
+        // One HOLD tick of the haul, 1 second long — in a glass sea that winds in calmHaulRate (0.6) of line.
+        private static void Hold(TrapHaulController ctrl) => ctrl.TickHaul(1f, holding: true);
 
         private PlacedTrap PlaceAt(PlacedTrapService svc, Vector2 pos)
             => svc.PlaceTrap(_trap, _bait, pos, "region.st_peters");
@@ -179,9 +182,9 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Subscribe<FishCaught>(OnCaught);
 
             Assert.IsTrue(ctrl.TryStartHaul(), "a pot alongside starts a haul");
-            // Glass sea → every pull is on the beat; 0.5 gain/pull → 2 pulls surface it.
-            ctrl.Pull();
-            ctrl.Pull();
+            // Glass sea → holding is the steady wind-in; 0.6 line/tick → 2 one-second holds surface it.
+            Hold(ctrl);
+            Hold(ctrl);
             EventBus.Unsubscribe<FishCaught>(OnCaught);
 
             Assert.IsFalse(ctrl.IsHauling, "the haul ended on surface");
@@ -205,8 +208,8 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Subscribe<TrapHaulStateChanged>(OnState);
 
             Assert.IsTrue(ctrl.TryStartHaul());
-            ctrl.Pull();
-            ctrl.Pull();   // surfaces (line reaches 1) — but the trap wasn't ready
+            Hold(ctrl);
+            Hold(ctrl);   // surfaces (line reaches 1) — but the trap wasn't ready
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnState);
 
             Assert.AreEqual(0, hold.UsedUnits, "an unready pot lands nothing");
@@ -229,7 +232,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Pull_AddsLine_TowardTheSurface()
+        public void Holding_TakesLine_TowardTheSurface()
         {
             var svc = MakeService();
             PlaceAt(svc, new Vector2(0f, 0f));
@@ -240,8 +243,28 @@ namespace HiddenHarbours.Tests.EditMode
 
             ctrl.TryStartHaul();
             Assert.AreEqual(0f, ctrl.Line01, 1e-6f, "starts at the bottom");
-            ctrl.Pull();
-            Assert.Greater(ctrl.Line01, 0f, "an on-beat pull wins line");
+            Assert.IsTrue(ctrl.TickHaul(0.5f, holding: true), "a hold wins line (the steady wind-in in a calm)");
+            Assert.Greater(ctrl.Line01, 0f, "holding takes line toward the surface");
+        }
+
+        [Test]
+        public void NotHolding_HoldsTheLine_WhereItIs()
+        {
+            var svc = MakeService();
+            PlaceAt(svc, new Vector2(0f, 0f));
+            _clock.Seconds = PlaceTime + SoakSpan;
+
+            var hold = new FakeHold();
+            var ctrl = MakeController(svc, hold, new Vector2(0f, 0f));
+
+            ctrl.TryStartHaul();
+            ctrl.TickHaul(0.5f, holding: true);      // win some line
+            float held = ctrl.Line01;
+            Assert.Greater(held, 0f);
+
+            // Not holding = the pawl holds the line (easing on the fall is safe — the whole play). No slip.
+            Assert.IsFalse(ctrl.TickHaul(0.5f, holding: false), "not holding gains nothing");
+            Assert.AreEqual(held, ctrl.Line01, 1e-6f, "…and the line stays exactly where it was (the pawl holds)");
         }
     }
 }

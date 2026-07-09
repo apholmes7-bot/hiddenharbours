@@ -19,6 +19,17 @@ namespace HiddenHarbours.Fishing
     /// a <see cref="TrapHaulController"/> haul is live, so pressing Space during a haul pulls the rope and
     /// never also casts a line (the owner's blocking bug: Space double-bound cast + pull).</para>
     ///
+    /// <para><b>The haul is now a HOLD — the release latch (Build 6, the resurrected bug).</b> The trap haul
+    /// was redesigned from a tap into a <b>hold</b> (hold Space with the swell), so the player is very likely
+    /// STILL HOLDING Space at the instant the haul ends. The cast gate reopens on that same frame, and
+    /// <see cref="FishingController"/> starts a cast on the RISING EDGE of <c>held</c> — so the held key would
+    /// flip false→true and immediately fling out a handline (exactly the owner's bug, resurrected by the hold).
+    /// This component kills it with a <b>latch</b>: any tick during which a haul is live ARMS a
+    /// "require-release" flag, and once armed the cast swallows the still-held key until it sees a genuine
+    /// RELEASE. So after a haul a new cast needs an actual release-then-press, never the carried-over hold.
+    /// (The off-deck / modal gates do NOT arm the latch — only a live haul does — so coming on deck with the
+    /// key already down still casts, the established behaviour.)</para>
+    ///
     /// <para><b>No stranded casts.</b> When the gate is closed we do NOT stop calling <see cref="FishingController.Tick"/>
     /// — that would freeze a cast/fight already in flight. We keep ticking with <c>held=false</c>, which
     /// (a) can never START a new cast (a fresh cast needs a rising edge, impossible while held is forced
@@ -33,6 +44,10 @@ namespace HiddenHarbours.Fishing
         // Handline fishing is a DECK action (owner's Build-5 split): the cast lives only while standing ON
         // DECK — never at the helm (you're steering) and never on foot (ControlModeChanged, via Core).
         private bool _onDeck;
+        // The hold-haul release latch (Build 6): true once a live haul has been seen, until the pull key is
+        // released. While set, a still-held key is swallowed so the haul's carried-over hold can never flip
+        // into a fresh cast the instant the haul ends. Only a live haul arms it (not the deck/modal gates).
+        private bool _requireReleaseBeforeCast;
 
         /// <summary>The handline FSM this drives (required sibling). Resolved lazily + cached so it works
         /// whether Awake has run (play mode) or not (EditMode AddComponent doesn't fire Awake).</summary>
@@ -67,12 +82,26 @@ namespace HiddenHarbours.Fishing
             TickFishing(Time.deltaTime, rawHeld);
         }
 
-        /// <summary>Advance the handline FSM by <paramref name="dt"/>, applying the deck/haul gate to the raw
-        /// Space state. When the gate is closed the fishing tick still runs but with <c>held=false</c> — it
-        /// can never start a fresh cast (needs a rising edge) yet lets any cast/fight in flight ease to its
-        /// cozy resolution rather than strand. Public so a test can drive it without real key input.</summary>
+        /// <summary>Advance the handline FSM by <paramref name="dt"/>, applying the deck/haul gate AND the
+        /// hold-haul release latch to the raw Space state. When the gate is closed the fishing tick still runs
+        /// but with <c>held=false</c> — it can never start a fresh cast (needs a rising edge) yet lets any
+        /// cast/fight in flight ease to its cozy resolution rather than strand. The latch (see the class doc)
+        /// additionally swallows a key still held from a just-ended HAUL until it is released, so the haul's
+        /// carried-over hold never flips into a cast. Public so a test can drive it without real key input.</summary>
         public void TickFishing(float dt, bool rawHeld)
         {
+            // Arm the release latch for as long as a haul is (or has just been) live — any haul tick sets it,
+            // so however the haul ends the still-held pull key is caught before it can become a cast.
+            if (Haul != null && Haul.IsHauling) _requireReleaseBeforeCast = true;
+
+            // Once armed, require a genuine RELEASE before the key counts as a press again. A still-held key
+            // is swallowed (held=false); seeing it up re-arms the cast.
+            if (_requireReleaseBeforeCast)
+            {
+                if (rawHeld) { Fishing.Tick(dt, false); return; }
+                _requireReleaseBeforeCast = false;
+            }
+
             bool held = FishingLive && rawHeld;
             Fishing.Tick(dt, held);
         }
