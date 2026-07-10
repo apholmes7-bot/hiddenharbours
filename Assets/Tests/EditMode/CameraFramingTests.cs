@@ -183,5 +183,62 @@ namespace HiddenHarbours.Tests.EditMode
             float boatLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, bw, bh), LockedPPU);
             Assert.Less(footLive, boatLive, "the on-foot live framing shows less water than the dory");
         }
+
+        // ---- on-deck zoom steps (owner playtest 2026-07-08: step in close on the deck) --------
+
+        [Test]
+        public void DeckFraming_IsExactlyTheNextPixelPerfectStep_InsideOnFoot()
+        {
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.DeckWorldHeightMeters, out int w, out int h);
+            Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, "the deck reference is 16:9 landscape");
+
+            int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
+            Assert.AreEqual(5, zoom, "the deck step is the exact ×5 integer zoom at 1080p — one step in from on-foot's ×4");
+
+            float live = CameraFollow.WorldHeightAtZoom(1080, zoom, LockedPPU);
+            Assert.AreEqual(CameraFollow.DeckWorldHeightMeters, live, 1e-4f,
+                "the default lands EXACTLY on the pixel-perfect step — no quantisation drift, no shimmer");
+        }
+
+        [Test]
+        public void HaulFraming_IsOneStepTighterAgain_AndLandsOnTheStep()
+        {
+            CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.HaulWorldHeightMeters, out int w, out int h);
+            Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, "the haul reference is 16:9 landscape");
+
+            int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
+            Assert.AreEqual(6, zoom, "the live-haul step is the exact ×6 integer zoom at 1080p");
+
+            float live = CameraFollow.WorldHeightAtZoom(1080, zoom, LockedPPU);
+            Assert.AreEqual(CameraFollow.HaulWorldHeightMeters, live, 1e-4f,
+                "the haul default lands EXACTLY on the pixel-perfect step");
+        }
+
+        [Test]
+        public void TheZoomLadder_IsStrictlyOrdered_HaulInsideDeckInsideOnFootInsideBoat()
+        {
+            Assert.Less(CameraFollow.HaulWorldHeightMeters, CameraFollow.DeckWorldHeightMeters,
+                "a live haul is the tightest framing");
+            Assert.Less(CameraFollow.DeckWorldHeightMeters, CameraFollow.OnFootWorldHeightMeters,
+                "the deck is a step closer than walking ashore");
+            Assert.Less(CameraFollow.OnFootWorldHeightMeters, CameraFollow.DefaultWorldHeightMeters,
+                "and every on-your-feet framing is tighter than the helm's");
+        }
+
+        [Test]
+        public void AFreshCamera_MapsEachFraming_ToItsDefaultStep()
+        {
+            var go = new GameObject("Cam");
+            try
+            {
+                var follow = go.AddComponent<CameraFollow>();
+                Assert.AreEqual(CameraFollow.OnFootWorldHeightMeters, follow.WorldHeightFor(CameraFraming.OnFoot), 1e-4f);
+                Assert.AreEqual(CameraFollow.DeckWorldHeightMeters, follow.WorldHeightFor(CameraFraming.Deck), 1e-4f);
+                Assert.AreEqual(CameraFollow.HaulWorldHeightMeters, follow.WorldHeightFor(CameraFraming.DeckHaul), 1e-4f);
+                Assert.AreEqual(CameraFollow.DefaultWorldHeightMeters, follow.WorldHeightFor(CameraFraming.Boat), 1e-4f,
+                    "before any ActiveBoatChanged the boat framing falls back to the Dory default");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
     }
 }
