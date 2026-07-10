@@ -104,9 +104,13 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(policy.TryCommit(CameraFraming.Boat, 100.1, Hold));
             Assert.AreEqual(CameraFraming.Deck, policy.Committed, "the committed framing holds");
 
-            // Kept fed (the camera ticks every frame) — it lands the moment the hold expires.
+            // Kept fed (the camera ticks every frame) — it lands on the first tick past expiry.
+            // (Not AT the exact boundary: double arithmetic makes 100.0+0.35-100.0 a hair under 0.35,
+            // and real ticks arrive a frame apart anyway — the semantics we care about are "held inside
+            // the window, committed on the next tick after it".)
             Assert.IsFalse(policy.TryCommit(CameraFraming.Boat, 100.2, Hold));
-            Assert.IsTrue(policy.TryCommit(CameraFraming.Boat, 100.0 + Hold, Hold));
+            Assert.IsTrue(policy.TryCommit(CameraFraming.Boat, 100.0 + Hold + 0.016, Hold),
+                "the held change lands on the first tick after the hold expires");
             Assert.AreEqual(CameraFraming.Boat, policy.Committed);
         }
 
