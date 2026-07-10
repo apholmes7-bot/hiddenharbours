@@ -648,6 +648,30 @@ the four-point mapping, the tunable list and the test coverage live in
 `Code/Boats/BoatWakeEmitter.cs` (the self-installing driver — no builder change). Because it self-installs
 (a `RuntimeInitializeOnLoadMethod` host, like the grass-wind bridge), no scene or builder needs editing.
 
+### 9.8 On-deck camera zoom (control-mode-keyed, pixel-perfect steps)
+
+Owner playtest (2026-07-08): *"when in the back of the boat the screen zooms in more, allowing for more
+detailed boat gameplay."* Built as a **diegetic zoom, not a picture-in-picture window** (a PiP is HUD and
+against the low-HUD direction; the zoom feeds the same goal and the coming deck-workspace vision):
+
+- **Stepping ON DECK steps the camera IN one discrete pixel-perfect step** past the on-foot framing
+  (default 6.75 m of world height = the exact **×5** PPU-32 step at 1080p; on foot is ×4, the helm keeps the
+  hull's data-driven framing). The boat fills the screen and deck work — pots, bait, the rail — reads in
+  detail. The helm (`Aboard`) and walking ashore (`OnFoot`) keep their existing framing untouched.
+- **A LIVE trap haul (tunably) tightens one step more** (default 5.625 m = the exact **×6** step) so the
+  rope-and-buoy action is the star; it **releases the moment the pot surfaces or the haul goes idle**. The
+  extra tighten can be disabled entirely (`_haulTightensZoom`).
+- **Never an arbitrary ortho zoom** — every stop is a PPU-integer Pixel-Perfect step (the ratified
+  per-context discrete-zoom vision); a short ease bridges the steps with the Pixel Perfect Camera paused for
+  just those frames, then snaps crisp onto the new step (the same mechanism as the boat-upgrade beat).
+- **Signal-driven through Core only** (rule 4): the App camera (`CameraFollow`) listens to
+  `ControlModeChanged` / `TrapHaulStateChanged` on the EventBus — it never references Player/Boats/Fishing.
+  The decision (mode→step mapping + a **commit hold** so rapid helm⇄deck hops collapse into one re-zoom, and
+  a there-and-back hop re-zooms zero times) is a pure, EditMode-tested POCO (`CameraZoomPolicy`).
+- **Owner-tunable, no magic numbers** (rule 6), serialized on the camera: the deck and haul step heights,
+  the haul-tighten toggle, the deck-step ease seconds (0 = snap), and the anti-thrash hold seconds.
+  Nothing is saved; the zoom is derived state, recomputed from the live control mode.
+
 ---
 
 ## 10. Open questions
