@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a036d25d35aa4026ac6703fae8aa2791, type: 3}
+  m_Name: StPetersAmbientFleet
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.AmbientFleetDef
+  Id: fleet.st_peters_ambient
+  RegionSceneName: StPeters
+  BoatCount: 4
+  HullSprite: {fileID: -9123468264540553371, guid: 316df445f2d30ea48931a6a543c821bc, type: 3}
+  HullSortingOrder: 0
+  MinSpeedMetersPerSecond: 1.6
+  MaxSpeedMetersPerSecond: 2.4
+  TurnRateDegreesPerSecond: 70
+  GroundsCenter: {x: 5, y: -32}
+  GroundsSize: {x: 85, y: 22}
+  SpotsPerBoat: 2
+  MinDepthMeters: 0.4
+  SpotSpacingMeters: 8
+  LegSampleStepMeters: 4
+  MaxCandidateTries: 64
+  SlotsPerDay: 12
+  WorkWindowStartFraction: 0.55
+  WorkWindowEndFraction: 0.8
+  BuoyBeatSeconds: 0.9
+  BuoyDipMeters: 0.45
+  BoatAvoidRadius: 6
+  PlayerAvoidRadius: 8
+  PlayerBuoyAvoidRadius: 4
+  DepthLookAheadMeters: 6
+  DepthProbeSideDegrees: 40
+  ArriveSlowRadius: 5
+  HoldRadius: 1.2
+  BuoyPalette:
+  - {r: 0.85, g: 0.2, b: 0.15, a: 1}
+  - {r: 0.92, g: 0.92, b: 0.88, a: 1}
+  - {r: 0.2, g: 0.65, b: 0.3, a: 1}
+  - {r: 0.95, g: 0.55, b: 0.15, a: 1}
+  BuoySortingOrder: 3
