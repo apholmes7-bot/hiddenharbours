@@ -488,6 +488,10 @@ namespace HiddenHarbours.App.Editor
                 var haul = core.DoryGo.AddComponent<TrapHaulController>();
                 haul.Configure(trapService, core.DoryGo.transform, core.Hold, "region.st_peters");
                 SetRef(haul, "_holdProvider", core.DoryGo);
+                // The rope's PLAYER-SIDE anchor: draw the haul rope from the deck-walking fisher's HANDS
+                // (the persistent Player + the tunable hand offset), not the boat's centre — so the line
+                // meets the haul sprite. Visual only; reach/drift still measure from the rail (the boat).
+                SetRef(haul, "_ropeAnchor", core.PlayerGo.transform);
             }
             else
             {

@@ -119,6 +119,15 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private float _ropeShudderHz = 20f;
         [Tooltip("Segments the rope is drawn with (more = smoother sag/shudder). Visual only.")]
         [SerializeField] private int _ropeSegments = 14;
+        [Tooltip("Optional PLAYER-SIDE anchor the rope is DRAWN from — the deck hauler. When set, the rope's " +
+                 "near end tracks this transform plus the hand offset, so the line meets the hauling sprite's " +
+                 "HANDS instead of the boat's centre. Reach + drift-off still measure from the RAIL (gameplay " +
+                 "unchanged); this is the visual anchor only. Null = the rail (the old draw).")]
+        [SerializeField] private Transform _ropeAnchor;
+        [Tooltip("Hand offset (m) from the rope anchor's origin (the sprite's FEET — bottom-centre pivot) to " +
+                 "the hauler's hands. X is applied TOWARD the buoy's side (the sprite faces the pot and the " +
+                 "rope leaves on that side), Y straight up. Tune to land the rope in the drawn fists.")]
+        [SerializeField] private Vector2 _ropeHandOffset = new Vector2(0.35f, 0.9f);
 
         [Header("Wave field (parity: keep identical to the shader bridge / BoatWaveMotion — see BoatWaveMotion)")]
         [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
@@ -134,6 +143,12 @@ namespace HiddenHarbours.Fishing
         // Above this lift signal, a tick that gained line reads as a "good take on the lift" — the clean-pull
         // clunk cue audio voices off TrapHaulState.PullOnBeat. A read threshold, not a balance number.
         private const float GoodTakeLift = 0.15f;
+
+        // Publish-throttle quantum for the haul PROGRESS (like the 10 strain buckets): a snapshot goes out when
+        // line01 crosses a 1/32 step, so a diegetic listener (the deck hauler's frame animator) can read the
+        // take rate off consecutive snapshots without a per-frame bus publish (rule 7). Bounded to ≤32 gain
+        // publishes per haul. A cadence quantum, not a balance number.
+        private const int LinePublishBuckets = 32;
 
         // ---- runtime state (all real-time / presentation — NOTHING saved, no sim path, rule 5) ----
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
@@ -153,6 +168,8 @@ namespace HiddenHarbours.Fishing
         private double _lastTimeSeconds;
         private int _lastStrainBucket = -1;   // throttles the strain publish (quantized to 10 buckets)
         private bool _wasGoodTake;            // edge-detects the "good take" clunk publish
+        private int _lastLineBucket = -1;     // throttles the progress publish (quantized to LinePublishBuckets)
+        private bool _wasHolding;             // edge-detects hold/release so listeners see the pawl take over
         // Hauling is a DECK action (owner's Build-5 split): only live while standing ON DECK — never at
         // the helm (you're steering) and never on foot (ControlModeChanged, via Core).
         private bool _onDeck;
@@ -256,7 +273,9 @@ namespace HiddenHarbours.Fishing
             _swellLoad = 0f;
             _hasLastHeight = false;
             _lastStrainBucket = -1;
+            _lastLineBucket = -1;
             _wasGoodTake = false;
+            _wasHolding = false;
             Publish(TrapHaulPhase.Hauling, pullOnBeat: false);
             EventBus.Publish(new DevNotice(NoticeHaulStart));   // teach the action on screen (owner legibility)
             Debug.Log($"[TrapHaul] Hauling — hold with the swell, take line as she lifts (readiness: {best.StateAt(NowSeconds())}).");
@@ -328,7 +347,7 @@ namespace HiddenHarbours.Fishing
             UpdateRope();
 
             bool gained = _line01 > before + 1e-5f;
-            MaybePublishStrain(goodTake: gained && lift > GoodTakeLift);
+            MaybePublishStrain(goodTake: gained && lift > GoodTakeLift, holding: holding);
 
             if (_line01 >= 1f) { Surface(); return gained; }
             return gained;
@@ -443,19 +462,31 @@ namespace HiddenHarbours.Fishing
         }
 
         private void Publish(TrapHaulPhase phase, bool pullOnBeat)
-            => EventBus.Publish(new TrapHaulStateChanged(new TrapHaulState(phase, _strain01, _line01, pullOnBeat)));
+        {
+            // Carry the worked buoy's position so a diegetic listener can point at it (the deck hauler's
+            // facing; a panned creak). (0,0) once the haul has ended — Phase says so.
+            Vector2 buoy = _hauling != null ? (Vector2)_hauling.transform.position : Vector2.zero;
+            EventBus.Publish(new TrapHaulStateChanged(
+                new TrapHaulState(phase, _strain01, _line01, pullOnBeat, buoy.x, buoy.y)));
+        }
 
-        /// <summary>Publish a live-haul snapshot only on a meaningful CHANGE — a quantized strain bucket shift
-        /// or the rising edge of a good take — so audio can follow the strain/clunk WITHOUT a per-frame bus
-        /// publish (rule 7). Bounded to ~a dozen strain steps + a few takes per haul.</summary>
-        private void MaybePublishStrain(bool goodTake)
+        /// <summary>Publish a live-haul snapshot only on a meaningful CHANGE — a quantized strain bucket shift,
+        /// the rising edge of a good take, a quantized PROGRESS step (line01 crossing a 1/32 bucket — how the
+        /// deck hauler's animation reads "line is coming in" and its take rate off consecutive snapshots), or a
+        /// hold/release edge (so letting the pawl take the line reads immediately as line-delta 0) — never per
+        /// frame (rule 7). Bounded to ~a dozen strain steps + ≤32 progress steps + a few takes/edges per haul.</summary>
+        private void MaybePublishStrain(bool goodTake, bool holding)
         {
             int bucket = Mathf.RoundToInt(Mathf.Clamp01(_strain01) * 10f);
+            int lineBucket = Mathf.FloorToInt(Mathf.Clamp01(_line01) * LinePublishBuckets);
             bool takeEdge = goodTake && !_wasGoodTake;
+            bool holdEdge = holding != _wasHolding;
             _wasGoodTake = goodTake;
-            if (bucket != _lastStrainBucket || takeEdge)
+            _wasHolding = holding;
+            if (bucket != _lastStrainBucket || lineBucket != _lastLineBucket || takeEdge || holdEdge)
             {
                 _lastStrainBucket = bucket;
+                _lastLineBucket = lineBucket;
                 Publish(TrapHaulPhase.Hauling, goodTake);
             }
         }
@@ -478,12 +509,30 @@ namespace HiddenHarbours.Fishing
             _rope.enabled = false;
         }
 
+        /// <summary>
+        /// Where the drawn rope's PLAYER-SIDE end sits for a hauler standing at <paramref name="anchor"/>
+        /// (the sprite's feet — bottom-centre pivot) working a pot at <paramref name="buoy"/>: the hand
+        /// offset is applied straight up and TOWARD the buoy's side, because the hauling sprite faces the
+        /// pot (flipX) and the rope leaves at its hands on that side. Pure + static so the hand-anchor rule
+        /// is EditMode-testable. Visual only — reach/drift still measure from the rail.
+        /// </summary>
+        public static Vector2 RopeStartPoint(Vector2 anchor, Vector2 buoy, Vector2 handOffset)
+        {
+            float side = buoy.x >= anchor.x ? 1f : -1f;
+            return new Vector2(anchor.x + side * handOffset.x, anchor.y + handOffset.y);
+        }
+
         private void UpdateRope()
         {
             if (_rope == null || _hauling == null) return;
 
-            Vector2 rail = Rail.position;
             Vector2 pot = _hauling.transform.position;
+            // The near end meets the deck hauler's HANDS when a player-side anchor is wired (the builder
+            // points it at the persistent Player); otherwise the rail — the old draw — so tests and any
+            // unwired scene are unchanged.
+            Vector2 rail = _ropeAnchor != null
+                ? RopeStartPoint(_ropeAnchor.position, pot, _ropeHandOffset)
+                : (Vector2)Rail.position;
 
             // Taut/slack from the swell load (slack on the lift, taut on the drop) OR the active fight,
             // whichever is tauter — the diegetic phase read the player acts on.
