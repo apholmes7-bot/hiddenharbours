@@ -45,6 +45,12 @@ namespace HiddenHarbours.App.Editor
         const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";           // one oar (used ×2, mirrored)
         const string ArtDoryRower= "Assets/_Project/Art/Boats/DoryRower.png";     // rower figure
         const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png"; // on-foot player (sliced 3×4)
+        const string ArtPlayerHaul = "Assets/_Project/Art/Characters/PlayerHaul.png"; // deck-haul sheet (sliced 3×4; frames 0..7 used)
+
+        // The owner's PlayerHaul sheet spec: the first HaulFrameCount slices are the animation — 0..5 the
+        // hand-over-hand pull cycle, 6 STRAIN, 7 EASE. The sheet keeps the historical 12-cell shape (like
+        // FisherSheet); the tail cells are unused alternates the animator never reads.
+        const int HaulFrameCount = 8;
 
         // --- DIRECTIONAL FISHING-BOAT VISUAL ("for now" placeholder swap; #93 DirectionalBoatSprite) ------
         // REVERSIBLE FLAG. While true, the playable boat WEARS the owner's 4-way hand-drawn fishing-boat
@@ -320,6 +326,21 @@ namespace HiddenHarbours.App.Editor
             // PHYSICS ROOT (never the counter-rotated visual child) when boarding.
             var deckWalk = playerGo.AddComponent<DeckWalkController>();
             deckWalk.enabled = false;
+
+            // THE HAUL ANIMATION (owner's PlayerHaul sheet): while a trap haul is live the deck-walking
+            // fisher plays the hand-over-hand cycle as line comes in, the STRAIN frame while the rope
+            // fights back, the EASE frame while the pawl holds — all read off the Core TrapHaulStateChanged
+            // snapshots (rule 4: no Fishing reference), facing the worked buoy via flipX. Frames are the
+            // first 8 slices of the sheet in slice order (0..5 cycle, 6 strain, 7 ease — the owner's spec);
+            // missing art → an empty array → the component is inert (null-safe greybox rule).
+            var haulAnim = playerGo.AddComponent<PlayerHaulAnimator>();
+            var haulFrames = LoadSheetFrames(ArtPlayerHaul).Take(HaulFrameCount).ToArray();
+            SetRefArray(haulAnim, "_frames", haulFrames.Cast<Object>().ToArray());
+            if (haulFrames.Length < HaulFrameCount)
+                Debug.LogWarning($"[PersistentCoreBuilder] PlayerHaul sheet gave {haulFrames.Length}/" +
+                                 $"{HaulFrameCount} frames ({ArtPlayerHaul}) — the haul animation will be " +
+                                 "inert/partial until the sheet imports with its 3×4 slicing. Re-run the " +
+                                 "start builder after import.");
 
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
             var cameraFollow = camGo.AddComponent<CameraFollow>();
