@@ -100,7 +100,9 @@ Shader "HiddenHarbours/Water"
         // It keys the BROAD normalized crest (not the pinched spike) so the swell reads as the water
         // RISING, not a thin line. Keyed to the REAL advancing crest -> SEE == FEEL (P1). Its own gate,
         // INDEPENDENT of _OceanSwellStrength, so it reads even where the owner dialed the stock swell down.
-        // GLASS STAYS GLASS: it inherits the wave field's amplitude gate, so a dead-flat sea shows no band.
+        // GLASS STAYS GLASS: it inherits the wave field's amplitude gate, so a dead-flat sea shows no band —
+        // and the CALM GATE below (_SwellReadSeaStateLo/Hi) melts the read away over the whole glass-to-calm
+        // range, because the amplitude gate alone engages at ~0.025 m and let a calm day read banded.
         // col.rgb ONLY: it ADDS to the colour like every water layer and NEVER touches depth/clip/the deep
         // tint/_WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5) — the waterline the player
         // wades and the crest the haul samples are byte-identical. _SwellReadStrength = 0 = EXACT passthrough.
@@ -123,6 +125,26 @@ Shader "HiddenHarbours/Water"
         // never depth/clip()/the deep tint/_WaterLevel/the sim wave field (P1 integrity, CLAUDE.md
         // rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
         _SwellFaceShade ("Swell face shading (0 = off / flat bands)", Range(0,1)) = 0.22
+
+        [Header(Modelled swell CALM gate (glassy calm shows no read))]
+        // Owner playtest (2026-07-08): "i can definitely notice the swells now better. although i still do
+        // see them at calm." The wave field's own amplitude gate (swellLive) fully engages at ~0.025 m, so a
+        // small-but-real calm-day swell still earns the full ~3x legibility contrast — a calm sea read as
+        // moving bands, not glass. This gate melts BOTH modelled-swell reads (the #182 legibility band AND
+        // the #185 face shading — they are one modelled swell, so one shared pair) away as the sea flattens:
+        // a smoothstep RISE over _Chop (== EnvironmentSample.SeaState01, the same axis the drift-line window
+        // keys — the _DriftLineSeaStateLo/Hi precedent). MONOTONE, not the drift-line BELL: drift lines are
+        // delicate texture a storm erases, but the swell read must SURVIVE a heavy sea — the haul is timed
+        // against the swell precisely when the sea is up. Defaults key the canon sea-state bands (SeaState01
+        // equals enum/7 at every band edge): Lo 0.28 sits just under the Calm-to-Light edge (2/7) so ALL of
+        // Glass + Calm shows essentially no read; Hi 0.45 sits just past the Light-to-Moderate edge (3/7) so
+        // the read ramps in across Light and a moderate sea keeps today's full read (gate ~0.96 at the
+        // Moderate onset). Set BOTH to 0 to disable the gate (today's pre-gate look on any non-glass sea).
+        // col.rgb ONLY: it merely scales the two existing pre-grade adds — never depth/clip/the deep tint/
+        // _WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5); the stock _OceanSwellStrength
+        // band is NOT gated (that is the owner's tuned-subtle base look, not the amplified read).
+        _SwellReadSeaStateLo ("Swell read sea-state rise (_Chop; at or below = glassy)", Range(0,1)) = 0.28
+        _SwellReadSeaStateHi ("Swell read sea-state full (_Chop; above = today's read)", Range(0,1)) = 0.45
 
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
@@ -697,6 +719,9 @@ Shader "HiddenHarbours/Water"
                 float  _SwellReadBands;
                 // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
                 float  _SwellFaceShade;
+                // Modelled-swell CALM gate (shared by the read band + the face shade; keys _Chop).
+                float  _SwellReadSeaStateLo;
+                float  _SwellReadSeaStateHi;
                 float4 _FoamColor;
                 float  _FoamWidth;
                 float  _FoamSoftness;
@@ -2313,6 +2338,19 @@ Shader "HiddenHarbours/Water"
                     col.rgb += swellSigned * _OceanSwellStrength * 0.30;
                 }
 
+                // ---- MODELLED-SWELL CALM GATE (owner playtest 2026-07-08: "i still do see them at calm") ----
+                // Shared by the SWELL READ band and the SWELL FACE SHADING below — they are one modelled
+                // swell, so one gate. The wave field's amplitude gate (swellLive) engages by ~0.025 m, so a
+                // small-but-real calm-day swell still earned the full amplified read; this smoothstep RISE
+                // over _Chop (== SeaState01 — the drift-line window's axis) melts both terms away toward
+                // glass. MONOTONE, not the drift-line bell: the read must survive a heavy sea (the haul is
+                // timed against the swell exactly when the sea is up). The property-block comment carries the
+                // canon band mapping for the defaults. Scales two existing pre-grade adds only (col.rgb;
+                // rule 5). Both-props-0 disables the gate (hi clamps to lo + 1e-3 => 1 on any non-glass sea).
+                float srLo = saturate(_SwellReadSeaStateLo);
+                float srHi = max(_SwellReadSeaStateHi, srLo + 1e-3);
+                float swellReadGate = smoothstep(srLo, srHi, _Chop);
+
                 // ---- SWELL READ (legibility): make the passing swell VISIBLE so the player can time the
                 // heave. Amplifies the crest->trough VALUE contrast of the SAME shared wave field the hull
                 // rocks on and the haul times against (swellReadSigned = the broad, glass-gated crest signal),
@@ -2320,7 +2358,7 @@ Shader "HiddenHarbours/Water"
                 // the boat — SEE == FEEL (P1). Independent of _OceanSwellStrength (reads even where the stock
                 // swell is dialed down). col.rgb ONLY — never depth/clip/the deep tint/_WaterLevel/the sim
                 // wave field (P1 integrity, CLAUDE.md rule 5). _SwellReadStrength = 0 is an EXACT passthrough.
-                if (_SwellReadStrength > 0.001)
+                if (_SwellReadStrength > 0.001 && swellReadGate > 0.001)
                 {
                     float readBand = swellReadSigned;                 // -1..1, already travels with the real crest
                     // Optional pixel-art posterize: quantize the moving band into N discrete VALUE steps so
@@ -2335,7 +2373,9 @@ Shader "HiddenHarbours/Water"
                     // the owner's tuned stock swell); the palette guard-rail's value floor/ceiling bounds the
                     // extremes so troughs never go muddy nor crests blow out. A dedicated add (not a bump to
                     // _OceanSwellStrength) so the owner has ONE clear "how readable is the swell" knob.
-                    col.rgb += readBand * _SwellReadStrength * 0.25;
+                    // The calm gate scales the FINISHED layer (after the posterize), so on a falling sea the
+                    // whole contour fades as one — the quantized steps never re-shuffle mid-melt.
+                    col.rgb += readBand * _SwellReadStrength * swellReadGate * 0.25;
                 }
 
                 // ---- SWELL FACE SHADING (owner mandate: "better looking waves"; col.rgb ONLY) -----------------
@@ -2350,8 +2390,9 @@ Shader "HiddenHarbours/Water"
                 // gating: dead glass publishes zero amplitude => zero slope => zero term (the §11 mirror is
                 // untouched), and the legacy no-trains path leaves waveSlope at 0 (the pre-B1 look is unchanged
                 // there). col.rgb ONLY — never depth/clip()/the deep tint/_WaterLevel/the sim wave field
-                // (P1 integrity, CLAUDE.md rule 5). _SwellFaceShade = 0 is an EXACT passthrough.
-                if (_SwellFaceShade > 0.001)
+                // (P1 integrity, CLAUDE.md rule 5). _SwellFaceShade = 0 is an EXACT passthrough. Shares the
+                // calm gate with the read band above — one modelled swell melts away as one on a glassy calm.
+                if (_SwellFaceShade > 0.001 && swellReadGate > 0.001)
                 {
                     float2 shadeSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                     float2 shadeLd = normalize(shadeSunXY + float2(1e-4, 0));
@@ -2361,7 +2402,7 @@ Shader "HiddenHarbours/Water"
                     // at the 0.22 default the swing is +/-0.033 — shading, not glare — and the §13 palette
                     // rail bounds the extremes like every other layer.
                     float faceSigned = clamp(-dot(waveSlope, shadeLd) * 2.0, -1.0, 1.0);
-                    col.rgb += faceSigned * saturate(_SwellFaceShade) * 0.15;
+                    col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
                 }
 
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
