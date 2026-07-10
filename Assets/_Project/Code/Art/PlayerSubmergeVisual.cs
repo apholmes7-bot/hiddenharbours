@@ -42,6 +42,21 @@ namespace HiddenHarbours.Art
             float frac = bodyHeightMeters > 1e-4f ? depth / bodyHeightMeters : cap;
             return Mathf.Clamp(frac, 0f, cap);
         }
+
+        /// <summary>
+        /// Whether a control mode WADES — i.e. the player's own feet are in the water, so the water depth
+        /// under them may drive the submersion shader. Only <see cref="ControlMode.OnFoot"/> does: on the
+        /// DECK or at the helm the fisher stands on planking ABOVE the water, so however deep the sea under
+        /// the hull, their body must read fully dry (the owner's "underwater animation on deck" bug). Pure +
+        /// static so the gate is EditMode-testable.
+        /// </summary>
+        public static bool DrivesSubmersion(ControlMode mode) => mode == ControlMode.OnFoot;
+
+        /// <summary>The depth the submersion driver may act on for a control mode: the real depth on foot,
+        /// FULLY DRY (NegativeInfinity → a pixel-identical passthrough) aboard — deck or helm. Pure + static;
+        /// the single rule <see cref="PlayerSubmergeVisual.Tick"/> reads through.</summary>
+        public static float GatedDepth(ControlMode mode, float depth)
+            => DrivesSubmersion(mode) ? depth : float.NegativeInfinity;
     }
 
     /// <summary>
@@ -159,6 +174,10 @@ namespace HiddenHarbours.Art
         private float _waterlineFrac;
         private float _spriteHeightPx = 64f;
         private Texture _lastTexture;
+        // Where the player's control lives (Core signal): only ON FOOT does the wade depth drive the shader —
+        // on the deck / at the helm the body is forced fully dry (standing on planking, not in the sea). Boot
+        // starts ashore and every transition (and the region-arrival re-assert) republishes the mode.
+        private ControlMode _mode = ControlMode.OnFoot;
 
         private void Reset() => _renderer = GetComponent<SpriteRenderer>();
 
@@ -173,17 +192,32 @@ namespace HiddenHarbours.Art
         {
             if (_instanceMaterial != null && _renderer != null)
                 _renderer.sharedMaterial = _instanceMaterial;
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             _timer = 0f;
             Tick();   // correct on the first frame, not a stale default
         }
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             // Restore the player's original material so a disabled component leaves the sprite exactly as it
             // was (no lingering shader). The per-player instance is kept for a re-enable, freed in OnDestroy.
             if (_renderer != null && _originalMaterial != null)
                 _renderer.sharedMaterial = _originalMaterial;
         }
+
+        /// <summary>Track the control mode (board / helm / ashore) and re-push the waterline IMMEDIATELY on a
+        /// change — stepping onto the deck dries the body the same frame, not up to a refresh-tick later.
+        /// Public so tests can drive the gate through the same path the bus uses (the established pattern).</summary>
+        public void OnControlModeChanged(ControlModeChanged e)
+        {
+            if (_mode == e.Mode) return;
+            _mode = e.Mode;
+            Tick();
+        }
+
+        /// <summary>The control mode the driver last saw (the submersion gate's input). For tests/tooling.</summary>
+        public ControlMode Mode => _mode;
 
         private void OnDestroy()
         {
@@ -237,8 +271,11 @@ namespace HiddenHarbours.Art
 
             // Live water depth over the player's feet, read through the SAME Core services the wade model + the
             // water render use (render == sim). Seam-clean: no Player-module reference — compose the depth from
-            // Core the way TidalWalkability.DepthNow does internally.
-            float depth = DepthOverFeet(transform.position);
+            // Core the way TidalWalkability.DepthNow does internally. GATED by control mode: only ON FOOT does
+            // the depth drive the waterline — on the deck / at the helm the fisher stands on planking above the
+            // water, so the body is forced fully dry (a pixel-identical passthrough) however deep the sea under
+            // the hull. The buoys' bobbing waterline uses its own driver and is untouched.
+            float depth = PlayerSubmergeMath.GatedDepth(_mode, DepthOverFeet(transform.position));
             _waterlineFrac = PlayerSubmergeMath.WaterlineFraction(depth, _bodyHeightMeters, _maxSubmerge);
 
             // The sprite may animate every frame; keep the material's texture + pixel height in sync so the
