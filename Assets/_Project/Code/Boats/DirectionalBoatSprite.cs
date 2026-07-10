@@ -145,6 +145,44 @@ namespace HiddenHarbours.Boats
             return idx;
         }
 
+        /// <summary>
+        /// The compass heading the PICTURE is drawn for when a true heading snaps to the nearest of
+        /// <paramref name="count"/> facings — i.e. quantize <paramref name="headingDeg"/> to the facing grid
+        /// and give back that facing's heading (in [0, 360)). This is the heading anything that must match
+        /// the DRAWN hull (the walkable deck clamp) should use: the physics body turns continuously, but the
+        /// on-screen boat only ever points at one of the pre-drawn facings. <paramref name="count"/> ≤ 0
+        /// falls back to the un-snapped heading (no facing art → the picture rotates with the hull).
+        /// Pure + static + deterministic.
+        /// </summary>
+        public static float SnapHeadingDegrees(float headingDeg, int count, float zeroHeadingDeg)
+        {
+            if (count <= 0) return NormalizeDegrees(headingDeg);
+            int idx = HeadingToFacingIndex(headingDeg, count, zeroHeadingDeg);
+            return NormalizeDegrees(zeroHeadingDeg + idx * (360f / count));
+        }
+
+        private static float NormalizeDegrees(float deg)
+        {
+            deg %= 360f;
+            if (deg < 0f) deg += 360f;
+            return deg;
+        }
+
+        /// <summary>
+        /// The compass heading of the hull picture CURRENTLY on screen. In SnapDirectional mode this is the
+        /// quantized facing heading (the same bucket <see cref="ApplySnap"/> shows); in SmoothRotateSingle —
+        /// or with no facing art — it is the hull's true heading (the picture rotates with the body). The
+        /// deck-walk clamp reads this so the walkable deck always matches the boat the player SEES, not the
+        /// hidden physics rotation.
+        /// </summary>
+        public float DrawnHeadingDegrees()
+        {
+            float heading = HeadingDegreesFromBow(transform.up);
+            if (_mode != RotationMode.SnapDirectional) return heading;
+            int count = _facings != null ? _facings.Length : 0;
+            return SnapHeadingDegrees(heading, count, _zeroHeadingDegrees);
+        }
+
         // ---- runtime ------------------------------------------------------------------------
 
         private void Reset()
