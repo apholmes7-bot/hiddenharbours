@@ -232,13 +232,28 @@ namespace HiddenHarbours.Core
         /// as <c>PullOnBeat</c> for the append-only Core contract; the meaning is now "a good take on the
         /// lift".)</summary>
         public readonly bool PullOnBeat;
+        /// <summary>World X of the hauled pot's BUOY — appended (the Core contract grows append-only) so a
+        /// diegetic listener can point AT the worked buoy without referencing Fishing: the deck hauler's
+        /// sprite faces it (flipX), audio could pan a creak toward it. (0,0) when idle / no live haul —
+        /// only meaningful while <see cref="Phase"/> is <see cref="TrapHaulPhase.Hauling"/>.</summary>
+        public readonly float BuoyX;
+        /// <summary>World Y of the hauled pot's buoy (see <see cref="BuoyX"/>).</summary>
+        public readonly float BuoyY;
 
         public TrapHaulState(TrapHaulPhase phase, float strain01, float line01, bool pullOnBeat)
+            : this(phase, strain01, line01, pullOnBeat, 0f, 0f)
+        {
+        }
+
+        public TrapHaulState(TrapHaulPhase phase, float strain01, float line01, bool pullOnBeat,
+                             float buoyX, float buoyY)
         {
             Phase = phase;
             Strain01 = strain01;
             Line01 = line01;
             PullOnBeat = pullOnBeat;
+            BuoyX = buoyX;
+            BuoyY = buoyY;
         }
 
         /// <summary>The idle snapshot (not hauling).</summary>

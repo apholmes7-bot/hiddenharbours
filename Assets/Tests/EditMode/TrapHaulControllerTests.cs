@@ -266,5 +266,72 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(ctrl.TickHaul(0.5f, holding: false), "not holding gains nothing");
             Assert.AreEqual(held, ctrl.Line01, 1e-6f, "…and the line stays exactly where it was (the pawl holds)");
         }
+
+        // ---- the publish cadence for diegetic listeners (the deck hauler's animation reads these) ------
+
+        [Test]
+        public void GainingLine_PublishesProgressSnapshots_WithTheBuoyPosition()
+        {
+            var svc = MakeService();
+            PlaceAt(svc, new Vector2(3f, 4f));
+            _clock.Seconds = PlaceTime + SoakSpan;
+
+            var ctrl = MakeController(svc, new FakeHold(), new Vector2(3f, 4f));
+
+            var states = new List<TrapHaulState>();
+            void OnState(TrapHaulStateChanged e) => states.Add(e.State);
+            EventBus.Subscribe<TrapHaulStateChanged>(OnState);
+
+            ctrl.TryStartHaul();
+            states.Clear();                                    // drop the haul-start snapshot
+            ctrl.TickHaul(0.5f, holding: true);                // calm wind-in: +0.3 line — crosses 1/32 steps
+            EventBus.Unsubscribe<TrapHaulStateChanged>(OnState);
+
+            Assert.Greater(states.Count, 0, "a gaining tick publishes a progress snapshot (quantized, not per frame)");
+            TrapHaulState last = states[states.Count - 1];
+            Assert.Greater(last.Line01, 0f, "the snapshot carries the gained line (the animator's take read)");
+            Assert.AreEqual(3f, last.BuoyX, 1e-4f, "…and the worked buoy's X (the hauler faces it)");
+            Assert.AreEqual(4f, last.BuoyY, 1e-4f, "…and Y");
+        }
+
+        [Test]
+        public void ReleasingTheHold_PublishesAHoldEdge_WithTheLineUnchanged()
+        {
+            var svc = MakeService();
+            PlaceAt(svc, new Vector2(0f, 0f));
+            _clock.Seconds = PlaceTime + SoakSpan;
+
+            var ctrl = MakeController(svc, new FakeHold(), new Vector2(0f, 0f));
+            ctrl.TryStartHaul();
+            ctrl.TickHaul(0.5f, holding: true);                // win some line first
+            float held = ctrl.Line01;
+
+            var states = new List<TrapHaulState>();
+            void OnState(TrapHaulStateChanged e) => states.Add(e.State);
+            EventBus.Subscribe<TrapHaulStateChanged>(OnState);
+            ctrl.TickHaul(0.1f, holding: false);               // the release edge — the pawl takes the line
+            EventBus.Unsubscribe<TrapHaulStateChanged>(OnState);
+
+            Assert.Greater(states.Count, 0, "the hold→release edge publishes immediately (the hauler EASES the same beat)");
+            Assert.AreEqual(held, states[states.Count - 1].Line01, 1e-6f,
+                "…and the snapshot shows the line holding still — the animator reads EASE off the zero delta");
+        }
+
+        // ---- the rope's player-side hand anchor (visual only — reach still measures from the rail) -----
+
+        [Test]
+        public void RopeStartPoint_OffsetsTheHands_TowardTheBuoy()
+        {
+            var anchor = new Vector2(10f, 5f);                 // the hauler's feet (bottom-centre pivot)
+            var hands = new Vector2(0.35f, 0.9f);
+
+            Vector2 right = TrapHaulController.RopeStartPoint(anchor, new Vector2(14f, 6f), hands);
+            Assert.AreEqual(10.35f, right.x, 1e-4f, "buoy to the RIGHT → the rope leaves at the right hand");
+            Assert.AreEqual(5.9f, right.y, 1e-4f, "…at hand height above the feet");
+
+            Vector2 left = TrapHaulController.RopeStartPoint(anchor, new Vector2(2f, 9f), hands);
+            Assert.AreEqual(9.65f, left.x, 1e-4f, "buoy to the LEFT → the mirrored hand");
+            Assert.AreEqual(5.9f, left.y, 1e-4f);
+        }
     }
 }
