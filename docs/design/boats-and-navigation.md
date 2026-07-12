@@ -672,6 +672,41 @@ against the low-HUD direction; the zoom feeds the same goal and the coming deck-
   the haul-tighten toggle, the deck-step ease seconds (0 = snap), and the anti-thrash hold seconds.
   Nothing is saved; the zoom is derived state, recomputed from the live control mode.
 
+### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
+
+Owner ask (2026-07-08): *"a few npc fishers… 3-5 boats sailing that can place their own buoys and haul
+them. make them avoid collisions, or driving through land."* Built as **decor-level simulation**, NOT the
+player's systems: NPC buoys never touch `PlacedTrapService`, the save, or the player's catch/economy —
+the fleet is the coast *looking* worked.
+
+- **Deterministic from `(worldSeed, gameTime)` (rule 5), recomputed never saved.** Buoy spots re-plan per
+  game day from `(worldSeed, fleetId, boatIndex, dayIndex)` (`AmbientFleetPlan`, FNV-1a + avalanche — the
+  `StableHash` idiom); the place → soak → haul beat is **closed-form off the clock**
+  (`AmbientFleetSchedule`: the day divides into slots, a boat round-robins her K spots, visits to a spot
+  alternate place/haul so a buoy's presence is just visit parity). Join a session at any moment and the
+  fleet is exactly where the clock says. Only the frame-to-frame steering track is live (it must dodge the
+  player) — the same "reads a deterministic sample, isn't bit-deterministic itself" contract as §2.
+- **Land/shoal safety is the height field, twice.** Plan-time: spots and every travel leg (including the
+  cycle's closing leg) are accepted only where depth at the tide's **all-time floor** (spring low,
+  `mean − amplitude`) keeps the Def's margin — so no planned route can EVER be stranded by a falling tide.
+  Live: a 3-probe bow look-ahead on the slow tick (`AmbientFleetSteering.DepthAvoid`, current water level)
+  swings a player-displaced boat toward the deeper bow and eases her down. **No NavMesh** — the painted
+  seabed (`ITidalTerrain` via Core) is the map.
+- **Collision avoidance is local steering**: linear-falloff repulsion from other NPC boats, the player's
+  boat (a bigger berth), and the player's placed buoys (positions off the Core `TrapPlaced`/`TrapRemoved`
+  signals — Fishing is never referenced), with a starboard bias so a head-on meet curls both boats the
+  same way instead of deadlocking. Kinematic transforms + a rate-limited bow swing; no rigidbodies.
+- **Content is data (rule 2/6):** one `AmbientFleetDef` per region (`Data/Boats`,
+  `fleet.st_peters_ambient`) carries every tunable — boat count (3-5), hull sprite, speed band, grounds
+  rect, depth margin, work rhythm (slots/day + work window), avoidance radii, buoy palette. Fleets are
+  indexed by the Resources `AmbientFleetLibrary` (the `FishSpeciesLibrary` pattern).
+- **Self-installing host (ADR 0011, the `TrapBuoyPresenter` convention):** `AmbientFleetPresenter`
+  bootstraps at `AfterSceneLoad`, gates on the Def's region scene + a registered tidal terrain, owns its
+  own root, pools everything at activation (zero per-frame alloc), and never touches builders or authored
+  content. Hulls ride the shared wave field via `BoatWaveMotion`; buoys reuse `BuoyWaveVisual`
+  (bob + waterline + vanish-under-a-crest) with a **per-fisher float colour** — buoy colour = whose gear
+  it is, so NPC pots never read as the player's yellow.
+
 ---
 
 ## 10. Open questions
