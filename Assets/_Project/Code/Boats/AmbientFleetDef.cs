@@ -163,5 +163,35 @@ namespace HiddenHarbours.Boats
         [Tooltip("Angle (degrees) at which the starboard bias is FULLY engaged. Keep above " +
                  "HeadOnBiasBeginDegrees.")]
         [Range(90f, 180f)] public float HeadOnBiasFullDegrees = 155f;
+
+        // Appended after the seamanship/passing blocks (owner ask 2026-07-12 — "the fleet wears my
+        // boat"). Fields are append-only: shipped assets pick these defaults up without an edit.
+        [Header("Hull art (the owner's 8-way fishing boat — the same compass the player sails)")]
+        [Tooltip("The pre-drawn hull facings in CLOCKWISE order from North (N, NE, E, SE, S, SW, W, NW) — " +
+                 "the same eight pictures the player's boat snaps through. ALL-OR-NOTHING, like the " +
+                 "player-boat builder guard: leave it empty (or any slot unassigned) and the fleet renders " +
+                 "exactly as before (HullSprite, or the greybox wedge, rotating smoothly with the bow) — " +
+                 "never a partial compass that snaps into a stale picture mid-turn.")]
+        public Sprite[] HullFacings = System.Array.Empty<Sprite>();
+        [Tooltip("How strongly each fisher's identity colour (their BuoyPalette colour — hull matches " +
+                 "gear, whose-boat-is-whose at a glance) tints their hull, 0..1. The tint multiplies the " +
+                 "WHOLE sprite (teal cabin included), so keep it subtle: ~0.35 reads as paintwork, not a " +
+                 "stage light. 0 = every hull plain.")]
+        [Range(0f, 1f)] public float HullTintStrength = 0.35f;
+
+        /// <summary>
+        /// True when <see cref="HullFacings"/> is a COMPLETE compass (non-empty, every slot assigned) —
+        /// the all-or-nothing gate the presenter renders the directional hull behind, mirroring the
+        /// player-boat builder's guard. A partial set never half-ships: one missing facing would snap
+        /// into a stale picture mid-turn, so anything short of the full set falls back to exactly the
+        /// pre-compass rendering (<see cref="HullSprite"/> or the greybox wedge on a rotating root).
+        /// </summary>
+        public bool HasFullHullCompass()
+        {
+            if (HullFacings == null || HullFacings.Length == 0) return false;
+            for (int i = 0; i < HullFacings.Length; i++)
+                if (HullFacings[i] == null) return false;
+            return true;
+        }
     }
 }
