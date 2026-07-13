@@ -115,5 +115,53 @@ namespace HiddenHarbours.Boats
         [Tooltip("SpriteRenderer sortingOrder for the buoys. 3 matches the player's trap buoys (above the " +
                  "Sea plane at -5).")]
         public int BuoySortingOrder = 3;
+
+        // Appended after BuoySortingOrder (owner feedback on #189 — "spinning in circles"). Fields are
+        // append-only: the shipped asset picks these defaults up without an edit.
+        [Header("Seamanship (how she handles — arrive, settle, turn with way)")]
+        [Tooltip("Fraction of the turn rate she keeps with no way on (bare steerage). She turns WITH " +
+                 "way: full rate at cruise, this floor when nearly stopped — so she can't pirouette on " +
+                 "the spot. Keep near the default: much lower (or a much faster fleet) and a boat can " +
+                 "end up circling a spot she can never quite reach.")]
+        [Range(0.05f, 1f)] public float SteerageTurnFraction = 0.45f;
+        [Tooltip("Heading error (degrees) at which she is fully eased down for the turn — slow through " +
+                 "the turn, drive out of it. Smaller = she slows for gentler course changes.")]
+        [Range(10f, 180f)] public float SlowForTurnDegrees = 90f;
+        [Tooltip("Fraction of speed she keeps through the hardest turn (a come-about). 1 = never slows " +
+                 "for a turn (the old spin); lower reads as more deliberate seamanship.")]
+        [Range(0.05f, 1f)] public float SlowForTurnSpeedFraction = 0.35f;
+        [Tooltip("How fast way builds when she gets under way (fraction of cruise per second — 0.7 ≈ " +
+                 "stopped to full in a second and a half). Way comes OFF instantly: drag stops a punt " +
+                 "far faster than oars drive one.")]
+        [Min(0.05f)] public float AccelFractionPerSecond = 0.7f;
+        [Tooltip("Minimum speed (fraction of cruise) she keeps while genuinely manoeuvring clear of " +
+                 "something — enough way to steer with, engaged only against a real push (see " +
+                 "HoldEnterRepulsion), never by a faint far-off neighbour.")]
+        [Range(0f, 1f)] public float AvoidNudgeSpeedFraction = 0.4f;
+
+        [Header("Lying-to at the spot (the settle gate — with hysteresis so she isn't easily woken)")]
+        [Tooltip("Social push (summed avoidance from boats/player/buoys; ~0.25 ≈ the player about 6 m " +
+                 "off) above which she won't SETTLE at her spot — she stands off politely instead. " +
+                 "Below it she comes alongside, takes the way off, and lies-to.")]
+        [Min(0f)] public float HoldEnterRepulsion = 0.25f;
+        [Tooltip("Social push it takes to WAKE a boat already lying at her spot (~0.6 ≈ the player " +
+                 "within about 3 m). Keep it well above HoldEnterRepulsion — the gap is the hysteresis " +
+                 "that stops a drifting-past player rousing her into circles.")]
+        [Min(0f)] public float HoldWakeRepulsion = 0.6f;
+        [Tooltip("A held boat displaced beyond HoldRadius × this gets under way again to re-take her " +
+                 "spot. 2 = she tolerates small nudges without fuss.")]
+        [Min(1f)] public float HoldReleaseRadiusFactor = 2f;
+
+        [Header("Passing head-on (the starboard convention — gated to a true bow-to-bow meet)")]
+        [Tooltip("How hard two boats meeting head-on both bear away to starboard so they agree how to " +
+                 "pass (0 = deadlock risk; higher = a wider, earlier swing).")]
+        [Range(0f, 1f)] public float HeadOnStarboardBias = 0.35f;
+        [Tooltip("Angle (degrees) between her course and the push at which the starboard bias STARTS " +
+                 "to engage (180 = dead opposed). Below this a push composes straight — glancing " +
+                 "avoidance must never curl sideways into an orbit.")]
+        [Range(90f, 180f)] public float HeadOnBiasBeginDegrees = 120f;
+        [Tooltip("Angle (degrees) at which the starboard bias is FULLY engaged. Keep above " +
+                 "HeadOnBiasBeginDegrees.")]
+        [Range(90f, 180f)] public float HeadOnBiasFullDegrees = 155f;
     }
 }
