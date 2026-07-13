@@ -709,9 +709,17 @@ the fleet is the coast *looking* worked.
   a content test): `MaxSpeed < ArriveSlowRadius × TurnRate × SteerageTurnFraction` — the turning circle
   always shrinks inside the distance left, so no stable orbit exists at any radius.
 - **Content is data (rule 2/6):** one `AmbientFleetDef` per region (`Data/Boats`,
-  `fleet.st_peters_ambient`) carries every tunable — boat count (3-5), hull sprite, speed band, grounds
+  `fleet.st_peters_ambient`) carries every tunable — boat count (3-5), hull art, speed band, grounds
   rect, depth margin, work rhythm (slots/day + work window), avoidance radii, buoy palette. Fleets are
   indexed by the Resources `AmbientFleetLibrary` (the `FishSpeciesLibrary` pattern).
+- **The fleet wears the owner's boat (owner ask 2026-07-12).** `AmbientFleetDef.HullFacings` takes the
+  8-way fishing-boat compass (CW from North — the same art the player sails), **all-or-nothing** like
+  the player-boat builder guard: the full set gives each fisher the player's exact snap-directional rig
+  (`DirectionalBoatSprite` on the root, the child counter-rotated to screen-identity, the wave roll
+  routed through `VisualTiltDegrees`); empty or partial falls back to exactly the pre-compass rendering
+  (single `HullSprite`/greybox wedge on a rotating root) — never a partial compass. Each hull is tinted
+  ONCE at build time toward that fisher's `BuoyPalette` colour (`HullTintStrength`, default 0.35 —
+  multiply-tint shifts the whole sprite, so subtle): hull matches gear, whose-boat-is-whose at a glance.
 - **Self-installing host (ADR 0011, the `TrapBuoyPresenter` convention):** `AmbientFleetPresenter`
   bootstraps at `AfterSceneLoad`, gates on the Def's region scene + a registered tidal terrain, owns its
   own root, pools everything at activation (zero per-frame alloc), and never touches builders or authored

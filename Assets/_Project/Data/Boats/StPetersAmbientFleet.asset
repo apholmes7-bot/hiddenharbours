@@ -45,3 +45,13 @@ MonoBehaviour:
   - {r: 0.2, g: 0.65, b: 0.3, a: 1}
   - {r: 0.95, g: 0.55, b: 0.15, a: 1}
   BuoySortingOrder: 3
+  HullFacings:
+  - {fileID: 21300000, guid: 448528f32fbf4a50bbcfad3b0799c75e, type: 3}
+  - {fileID: 21300000, guid: bfb53834ee714ec9a3e96abc8c8ab8c3, type: 3}
+  - {fileID: 21300000, guid: 8ea64ba83d8c46279c4591a0f9ee166a, type: 3}
+  - {fileID: 21300000, guid: 5c6812f65c7648658e031493637aa322, type: 3}
+  - {fileID: 21300000, guid: d808a43d7dfd42b991bbe4d04e0b54ae, type: 3}
+  - {fileID: 21300000, guid: 4607d25a35134200a4437393a6db1429, type: 3}
+  - {fileID: 21300000, guid: 1319e85fa1874603b7322963b3002da2, type: 3}
+  - {fileID: 21300000, guid: bd8395c920d64fb8acd34d831bde726c, type: 3}
+  HullTintStrength: 0.35
