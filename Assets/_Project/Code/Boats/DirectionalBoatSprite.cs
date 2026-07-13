@@ -18,7 +18,8 @@ namespace HiddenHarbours.Boats
     /// sits on a separate test boat and never changes how the existing Dory/Punt render.
     ///
     /// The heading→facing-index math is a pure static helper (<see cref="HeadingToFacingIndex"/>),
-    /// generalised to ANY facing count so 8/16-way art drops in later; shipped configured for 4 (N/E/S/W).
+    /// generalised to ANY facing count so 16-way art drops in later; shipped configured for the owner's
+    /// full 8-way compass (N/NE/E/SE/S/SW/W/NW, CW from North).
     /// </summary>
     [DisallowMultipleComponent]
     public class DirectionalBoatSprite : MonoBehaviour
@@ -39,7 +40,7 @@ namespace HiddenHarbours.Boats
 
         [Header("Facings (CW from the zero heading)")]
         [Tooltip("The pre-drawn facings in CLOCKWISE order starting at the zero heading. " +
-                 "For the 4-way fishing boat: element 0 = North (up), then East, South, West.")]
+                 "For the 8-way fishing boat: element 0 = North (up), then NE, E, SE, S, SW, W, NW.")]
         [SerializeField] private Sprite[] _facings;
 
         [Tooltip("The compass heading (degrees, 0 = North/up, CW) that element 0 of the array is drawn for. " +
