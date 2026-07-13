@@ -282,6 +282,23 @@ bycatch follows the passive-gear model (§3.4 and the multi-catch open question 
 > possible — owner's call), it does **not** hard-gate. Build 3 wires this to save/restore
 > (`SaveData.PlacedTraps`) and a **dev key** (drop / check-haul) only. The **depth-gated placement** (the
 > `Min/MaxSoakDepthMeters` band) and the real **gaff-the-buoy haul interaction** are **Build 4**.
+>
+> **Build 7 — the post-haul DECK WORK (owner ask 2026-07-12).** A surfacing haul no longer lands the
+> catch instantly: the **pot lands on the deck** with the Build-3 catch still inside (WHAT was caught is
+> untouched — only when/how it lands changed), and the player works her by hand on deck (`OnDeck`):
+> **pick** each animal out (a HOLD, released — a grab can get **nipped**: recoil, animal stays, try
+> again; a fuller hold is a safer grab), **sort** it by a deterministic per-animal **size** (and
+> **berried** flag) — shorts and berried hens splash back over the side, value zero (the honest-fishery
+> read) — **band** each keeper's claws (a second short hold; only a banded keeper lands, through the
+> unchanged `FishCaught` path), and **re-bait** the emptied pot by hand (consumes one `BaitStock` — the
+> physical replacement for the abstract at-placement charge; the T-set of a worked pot charges nothing
+> extra). All rules and feel numbers are data: the per-species gauge/size-window/berried rules live in a
+> **`DeckWorkDef`** (`deckwork.pot`, Data/Traps) a `TrapDef` opts into (no Def → the old instant land).
+> Per-animal size/berried/nip streams hash off the SAME seed lineage as the catch roll
+> (`worldSeed + instanceId + placementTime` + species + index + channel — rule 5, EditMode-pinned).
+> **Save (ADR 0020, greybox compromise):** a pot on deck is transient like `ControlMode` — its DTO
+> leaves the save at pot-aboard (no re-haul dupes) and a load/region change **auto-resolves** it cozily
+> (keepers land per the deterministic sort, one toast). Persisting a mid-sort pot needs an ADR — deferred.
 
 **(c) Aquaculture — mussel/oyster leases, buoys-in-series, season-grown (M3, advanced/late).** A new
 **farmed-shellfish** path distinct from wild hand-gathering: you **lease a patch of water**, set

@@ -89,6 +89,10 @@ namespace HiddenHarbours.Fishing
         /// <summary>The bait id (or empty) — the persisted placement fact.</summary>
         public string BaitId => _bait != null ? _bait.Id : "";
 
+        /// <summary>The world seed this trap was placed under — the seed lineage the deterministic catch
+        /// AND the Build-7 deck-work streams (per-animal size/berried/nip) hash from (rule 5).</summary>
+        public int WorldSeed => _worldSeed;
+
         /// <summary>
         /// Soak progress in [0,1] at the given game time — a pure readout, nothing stored. A configured trap
         /// with no Def reads as complete (nothing to soak).
