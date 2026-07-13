@@ -153,25 +153,38 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the directional fishing-boat SKIN swap (reversible "for now" placeholder; #93/#94/#97) -----
-        // The owner wants the playable boat to WEAR the 4-way directional fishing-boat facings AND drive as an
+        // The owner wants the playable boat to WEAR the 8-way directional fishing-boat facings AND drive as an
         // ENGINE boat ("a power boat skin, not a rowboat") instead of the dory hull + oars. The builder gates
         // this on the UseDirectionalFishingBoatVisual flag (currently ON). These guard the swap's observable
         // effects — the boat's hull is swapped to the Engine boat.fishing_skiff (propulsion match), the
         // directional component is added + configured, the hull picture is hidden, and the oar rig is hidden
         // (with its BoatRowAnimator ref severed so it can't re-show the rig). The swap loads the real committed
-        // FishingBoat_*.png + FishingSkiff.asset via AssetDatabase; if EITHER isn't imported in this environment
+        // FishingBoat_*.png + FishingSkiff.asset via AssetDatabase; if ANY isn't imported in this environment
         // the builder no-ops the swap (by design — no half-state), so the tests skip rather than false-fail.
 
         // The facings the builder loads (CW from North) — mirrors PersistentCoreBuilder.FishingBoatFacingPaths.
-        const string FishingBoatNorthPath = "Assets/_Project/Art/Boats/FishingBoat_N.png";
+        static readonly string[] FishingBoatFacingPaths =
+        {
+            "Assets/_Project/Art/Boats/FishingBoat_N.png",
+            "Assets/_Project/Art/Boats/FishingBoat_NE.png",
+            "Assets/_Project/Art/Boats/FishingBoat_E.png",
+            "Assets/_Project/Art/Boats/FishingBoat_SE.png",
+            "Assets/_Project/Art/Boats/FishingBoat_S.png",
+            "Assets/_Project/Art/Boats/FishingBoat_SW.png",
+            "Assets/_Project/Art/Boats/FishingBoat_W.png",
+            "Assets/_Project/Art/Boats/FishingBoat_NW.png",
+        };
         // The Engine hull the skin drives on — mirrors PersistentCoreBuilder.DataFishingSkiff.
         const string FishingSkiffPath     = "Assets/_Project/Data/Boats/FishingSkiff.asset";
 
         private static bool FishingBoatArtImported()
         {
-            if (UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(FishingBoatNorthPath) != null) return true;
-            // Match the builder's Single-OR-Multiple-import-tolerant lookup.
-            return UnityEditor.AssetDatabase.LoadAllAssetsAtPath(FishingBoatNorthPath).OfType<Sprite>().Any();
+            // The builder no-ops unless EVERY facing loads (a partial compass would snap into a stale
+            // picture), so the skip-guard must demand all of them too. Match the builder's
+            // Single-OR-Multiple-import-tolerant lookup per path.
+            return FishingBoatFacingPaths.All(p =>
+                UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(p) != null ||
+                UnityEditor.AssetDatabase.LoadAllAssetsAtPath(p).OfType<Sprite>().Any());
         }
 
         private static bool FishingSkiffDefImported()
@@ -221,7 +234,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Build_DirectionalVisual_AddsConfiguredSnapDirectionalSprite_WithFourFacings()
+        public void Build_DirectionalVisual_AddsConfiguredSnapDirectionalSprite_WithTheFullEightFacingCompass()
         {
             if (!SkinSwapApplied())
                 Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported in this environment — " +
@@ -230,11 +243,11 @@ namespace HiddenHarbours.Tests.EditMode
             var directional = _core.DoryGo.GetComponent<DirectionalBoatSprite>();
             Assert.IsNotNull(directional, "the playable boat wears the DirectionalBoatSprite (the #93 component)");
             Assert.AreEqual(DirectionalBoatSprite.RotationMode.SnapDirectional, directional.Mode,
-                "configured for 4-way SNAP (swap facings, keep the picture screen-aligned) — the owner's ask");
+                "configured for 8-way SNAP (swap facings, keep the picture screen-aligned) — the owner's ask");
 
             var so = new UnityEditor.SerializedObject(directional);
             var facings = so.FindProperty("_facings");
-            Assert.AreEqual(4, facings.arraySize, "all 4 N/E/S/W facings are assigned");
+            Assert.AreEqual(8, facings.arraySize, "all 8 N/NE/E/SE/S/SW/W/NW facings are assigned");
             for (int i = 0; i < facings.arraySize; i++)
                 Assert.IsNotNull(facings.GetArrayElementAtIndex(i).objectReferenceValue, $"facing {i} is assigned");
 

@@ -53,26 +53,33 @@ namespace HiddenHarbours.App.Editor
         const int HaulFrameCount = 8;
 
         // --- DIRECTIONAL FISHING-BOAT VISUAL ("for now" placeholder swap; #93 DirectionalBoatSprite) ------
-        // REVERSIBLE FLAG. While true, the playable boat WEARS the owner's 4-way hand-drawn fishing-boat
-        // facings (snap to the nearest of N/E/S/W from heading, picture stays screen-aligned) instead of the
-        // hand-rowed dory hull + oar rig — the owner LOVES the directional boat and wants it on the boat he
-        // sails NOW, until he draws 8/16-way art. It is a VISUAL swap only: the boat PHYSICS + controls (the
+        // REVERSIBLE FLAG. While true, the playable boat WEARS the owner's 8-way hand-drawn fishing-boat
+        // facings (snap to the nearest of N/NE/E/SE/S/SW/W/NW from heading, picture stays screen-aligned)
+        // instead of the hand-rowed dory hull + oar rig — the owner LOVES the directional boat and wants it
+        // on the boat he sails NOW. It is a VISUAL swap only: the boat PHYSICS + controls (the
         // BoatController / hull def / OwnedFleet) are UNCHANGED — the dory is still hand-rowed under the hood;
         // we only HIDE the oar-rig + hull picture and draw the chosen facing on top. Flip this to FALSE and
         // re-run the start builder (StPetersBuilder) to restore the dory hull + oars exactly as before (the
-        // swap is the only thing this flag gates). The 4 facings are M2 fleet art used as a placeholder
+        // swap is the only thing this flag gates). The facings are M2 fleet art used as a placeholder
         // (memory: M2 fleet art banked + frozen) — kept reversible so the dory render path returns with one bool.
         const bool UseDirectionalFishingBoatVisual = true;
 
-        // The 4 owner-drawn facings, in CLOCKWISE order from the ZERO heading (North): N, E, S, W. The
-        // DirectionalBoatSprite math (#93) already maps heading→facing; element 0 must be the North-facing
+        // The 8 owner-drawn facings, in CLOCKWISE order from the ZERO heading (North):
+        // N, NE, E, SE, S, SW, W, NW. The DirectionalBoatSprite math (#93) is generalised to any facing
+        // count, so the full compass drops in with NO math change; element 0 must be the North-facing
         // sprite and the zero-heading is 0° (North/up), matching the project's bearing convention.
+        // Every facing shares the 128×128 canvas and the bbox-centre custom pivot convention from the
+        // 4-cardinal pass (pivot = alpha-bbox centre, set in each .png.meta) so the hull stays put on a snap.
         static readonly string[] FishingBoatFacingPaths =
         {
             "Assets/_Project/Art/Boats/FishingBoat_N.png",
+            "Assets/_Project/Art/Boats/FishingBoat_NE.png",
             "Assets/_Project/Art/Boats/FishingBoat_E.png",
+            "Assets/_Project/Art/Boats/FishingBoat_SE.png",
             "Assets/_Project/Art/Boats/FishingBoat_S.png",
+            "Assets/_Project/Art/Boats/FishingBoat_SW.png",
             "Assets/_Project/Art/Boats/FishingBoat_W.png",
+            "Assets/_Project/Art/Boats/FishingBoat_NW.png",
         };
 
         // The dedicated Engine-propulsion hull for the directional fishing-boat skin (boat.fishing_skiff).
@@ -404,7 +411,7 @@ namespace HiddenHarbours.App.Editor
         // ---- directional fishing-boat skin (reversible "for now" swap; #93/#94 visual, #97 propulsion) ----
 
         /// <summary>
-        /// Make the playable boat WEAR the owner's 4-way directional fishing-boat facings AND drive as an
+        /// Make the playable boat WEAR the owner's 8-way directional fishing-boat facings AND drive as an
         /// ENGINE boat instead of the hand-rowed dory hull + oar rig — the reversible "for now" placeholder
         /// the owner asked for (#93/#94 put the picture on; #97 makes the CONTROLS match it, "a power boat
         /// skin, not a rowboat"). It (0) swaps the boat's hull + hold to the dedicated Engine
@@ -415,7 +422,7 @@ namespace HiddenHarbours.App.Editor
         /// severing the <see cref="BoatRowAnimator"/>'s <c>_oarRig</c> ref — so the animator can't re-activate
         /// it each frame (it re-enables the rig whenever the home hull is active) — then deactivating the rig
         /// object; and (3) adds a <see cref="DirectionalBoatSprite"/> on a child renderer, configured with the
-        /// 4 facings (CW from North, snap mode).
+        /// 8 facings (CW from North, snap mode).
         ///
         /// <para>The Engine hull is a dedicated MINIMAL Def, NOT the Punt and NOT in OwnedFleet's registry —
         /// so the buy-the-Punt grant + save-restore (both id-keyed) never revert the skin's hull on
@@ -430,7 +437,7 @@ namespace HiddenHarbours.App.Editor
                                                       GameObject oarRig, BoatRowAnimator rowAnim,
                                                       BoatController boat, ShipHold hold)
         {
-            // Load the 4 facings up-front (CW from North). LoadSpriteAny handles Single OR Multiple import.
+            // Load the 8 facings up-front (CW from North). LoadSpriteAny handles Single OR Multiple import.
             var facings = new Sprite[FishingBoatFacingPaths.Length];
             for (int i = 0; i < FishingBoatFacingPaths.Length; i++)
                 facings[i] = LoadSpriteAny(FishingBoatFacingPaths[i]);
@@ -439,14 +446,16 @@ namespace HiddenHarbours.App.Editor
             // intervening import can't hand back a stale instance (the builder's persist-the-refs gotcha).
             var engineHull = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataFishingSkiff);
 
-            if (facings[0] == null || engineHull == null)
+            if (facings.Any(f => f == null) || engineHull == null)
             {
                 // Art or the Engine Def not imported yet → leave the dory hull + oars EXACTLY as built (no
                 // half-swap: never a powerboat picture on rowboat controls, nor engine controls under the dory
-                // hull). Re-run after the FishingBoat_N/E/S/W PNGs + FishingSkiff.asset import to get the skin.
-                Debug.LogWarning("[PersistentCoreBuilder] Fishing-boat skin assets missing (facings[0]=" +
-                                 (facings[0] != null) + ", engineHull=" + (engineHull != null) + "; e.g. " +
-                                 FishingBoatFacingPaths[0] + " / " + DataFishingSkiff + ") — left the hand-rowed " +
+                // hull, and never a PARTIAL compass that snaps into a stale facing). Re-run after the eight
+                // FishingBoat_N/NE/E/SE/S/SW/W/NW PNGs + FishingSkiff.asset import to get the skin.
+                string missing = string.Join(", ", FishingBoatFacingPaths.Where((p, i) => facings[i] == null));
+                Debug.LogWarning("[PersistentCoreBuilder] Fishing-boat skin assets missing (facings: " +
+                                 (missing.Length > 0 ? missing : "all present") + "; engineHull=" +
+                                 (engineHull != null) + " at " + DataFishingSkiff + ") — left the hand-rowed " +
                                  "dory hull + oars in place. Open Unity so the assets import, then re-run the " +
                                  "start builder to get the directional ENGINE fishing-boat skin.");
                 return;
@@ -501,9 +510,10 @@ namespace HiddenHarbours.App.Editor
             var waveMotion = doryGo.AddComponent<BoatWaveMotion>();
             waveMotion.Configure(spriteGo.transform, directional);
 
-            Debug.Log("[PersistentCoreBuilder] Playable boat wears the 4-way DIRECTIONAL FISHING-BOAT skin " +
-                      "(#93/#94 visual, #97 propulsion): hull + oar rig hidden, FishingBoat_N/E/S/W snap by " +
-                      "heading, and the hull is boat.fishing_skiff (Propulsion = Engine) so the controls are " +
+            Debug.Log("[PersistentCoreBuilder] Playable boat wears the 8-way DIRECTIONAL FISHING-BOAT skin " +
+                      "(#93/#94 visual, #97 propulsion): hull + oar rig hidden, the full FishingBoat_N/NE/E/" +
+                      "SE/S/SW/W/NW compass snaps by heading, and the hull is boat.fishing_skiff (Propulsion " +
+                      "= Engine) so the controls are " +
                       "an OUTBOARD HELM (throttle ahead/astern + a speed-scaled rudder that bites with way), " +
                       "NOT hand-rowed oars. The Engine hull is not in OwnedFleet's registry, so it sticks past " +
                       "boarding/grants/load. Reversible — set UseDirectionalFishingBoatVisual=false + re-run " +
