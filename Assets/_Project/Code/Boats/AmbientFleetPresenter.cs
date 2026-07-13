@@ -43,7 +43,6 @@ namespace HiddenHarbours.Boats
         private const float GateCheckSeconds = 0.5f;   // how often the scene/services gate is re-evaluated
         private const float SlowTickSeconds = 0.25f;   // shoal probes + target refresh (the "plan on the slow tick" rate)
         private const float DepthAvoidWeight = 2f;     // shoal correction outweighs the seek — never argue with the bar
-        private const float AvoidNudgeSpeedFraction = 0.4f;   // a held boat still gives way at this fraction of cruise
 
         private static AmbientFleetPresenter _instance;
 
@@ -321,6 +320,12 @@ namespace HiddenHarbours.Boats
                 fisher.Position = fisher.Spots[targetIdx];
                 fisher.Root.transform.position = new Vector3(fisher.Position.x, fisher.Position.y, 0f);
 
+                // She joins ON station, lying-to: way off, no stale corrections from a previous day.
+                fisher.Holding = true;
+                fisher.SpeedFraction = 0f;
+                fisher.DepthCorrection = Vector2.zero;
+                fisher.DepthHeading = fisher.Heading;
+
                 for (int j = 0; j < fisher.Buoys.Length; j++)
                 {
                     var buoy = fisher.Buoys[j];
@@ -365,35 +370,37 @@ namespace HiddenHarbours.Boats
 
                 if (slowTick)
                 {
-                    fisher.TargetSpotIndex = AmbientFleetSchedule.TargetSpot(s, fisher.Spots.Length, workEnd);
+                    int nextSpot = AmbientFleetSchedule.TargetSpot(s, fisher.Spots.Length, workEnd);
+                    if (nextSpot != fisher.TargetSpotIndex)
+                    {
+                        fisher.TargetSpotIndex = nextSpot;
+                        fisher.Holding = false;   // work's done here — get under way for the next spot
+                    }
+                    // Probe in the current bow frame and REMEMBER that frame: the correction is kept
+                    // bow-relative (re-expressed every frame below), so a bow that swings between
+                    // slow ticks can't leave the stored push pointing the wrong way.
                     fisher.DepthCorrection = AmbientFleetSteering.DepthAvoid(
                         fisher.Position, fisher.Heading, def.DepthLookAheadMeters, def.DepthProbeSideDegrees,
                         _depthAt, def.MinDepthMeters, out fisher.DepthSpeedScale);
+                    fisher.DepthHeading = fisher.Heading;
                 }
 
-                Vector2 target = fisher.Spots[fisher.TargetSpotIndex];
-                Vector2 toTarget = target - fisher.Position;
-                float dist = toTarget.magnitude;
-
-                Vector2 avoid =
+                // Social push (gates the settle) and the shoal correction (steers, never wakes her —
+                // a planned spot is depth-safe at spring low by construction) stay separate.
+                Vector2 social =
                     AmbientFleetSteering.Repulsion(fisher.Position, fleet.BoatPositions, fleet.BoatPositions.Length, def.BoatAvoidRadius) +
                     AmbientFleetSteering.Repulsion(fisher.Position, _playerPosBuffer, playerCount, def.PlayerAvoidRadius) +
-                    AmbientFleetSteering.Repulsion(fisher.Position, _playerBuoyPositions, _playerBuoyCount, def.PlayerBuoyAvoidRadius) +
-                    fisher.DepthCorrection * DepthAvoidWeight;
+                    AmbientFleetSteering.Repulsion(fisher.Position, _playerBuoyPositions, _playerBuoyCount, def.PlayerBuoyAvoidRadius);
+                Vector2 depth = AmbientFleetSteering.RotateFromTo(
+                    fisher.DepthCorrection, fisher.DepthHeading, fisher.Heading) * DepthAvoidWeight;
 
-                bool holding = dist <= def.HoldRadius && avoid.sqrMagnitude < 1e-4f;
-                if (!holding && dt > 0f)
+                // The whole drive is the shared, EditMode-proven integrator (see AmbientFleetSteering.Step).
+                AmbientFleetSteering.Step(ref fisher.Position, ref fisher.Heading, ref fisher.SpeedFraction,
+                                          ref fisher.Holding, fisher.Spots[fisher.TargetSpotIndex],
+                                          social, depth, fisher.DepthSpeedScale, fisher.CruiseSpeed, def, dt);
+
+                if (!fisher.Holding && dt > 0f)
                 {
-                    Vector2 seek = dist > 1e-3f ? toTarget / dist : Vector2.zero;
-                    Vector2 desired = AmbientFleetSteering.ComposeHeading(seek, avoid);
-                    fisher.Heading = AmbientFleetSteering.RotateToward(
-                        fisher.Heading, desired, def.TurnRateDegreesPerSecond * dt);
-
-                    float arrive = Mathf.Clamp01(dist / Mathf.Max(0.1f, def.ArriveSlowRadius));
-                    float speed = fisher.CruiseSpeed * fisher.DepthSpeedScale *
-                                  Mathf.Max(arrive, avoid.sqrMagnitude > 1e-4f ? AvoidNudgeSpeedFraction : 0f);
-                    fisher.Position += fisher.Heading * (speed * dt);
-
                     fisher.Root.transform.position = new Vector3(fisher.Position.x, fisher.Position.y, 0f);
                     fisher.Root.transform.up = fisher.Heading;   // bow-up art rides the rotating root
                 }
@@ -573,7 +580,10 @@ namespace HiddenHarbours.Boats
             public Vector2[] Spots = System.Array.Empty<Vector2>();
             public int TargetSpotIndex;
             public Vector2 DepthCorrection;
+            public Vector2 DepthHeading = Vector2.up;   // bow frame the correction was probed in
             public float DepthSpeedScale = 1f;
+            public float SpeedFraction;                 // way she carries, 0..1 of cruise
+            public bool Holding;                        // lying-to alongside the buoy
             public Buoy[] Buoys = System.Array.Empty<Buoy>();
         }
 

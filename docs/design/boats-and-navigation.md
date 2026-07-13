@@ -696,6 +696,18 @@ the fleet is the coast *looking* worked.
   boat (a bigger berth), and the player's placed buoys (positions off the Core `TrapPlaced`/`TrapRemoved`
   signals — Fishing is never referenced), with a starboard bias so a head-on meet curls both boats the
   same way instead of deadlocking. Kinematic transforms + a rate-limited bow swing; no rigidbodies.
+- **Seamanship, not spin (owner feedback on #189).** The whole per-boat drive is one pure integrator
+  (`AmbientFleetSteering.Step` — the presenter and the EditMode convergence tests run the same code):
+  she **turns with way** (bow swing scales with the way she carries, never below a bare-steerage floor,
+  and she slows through a hard turn), **arrives and lies-to** (`HoldStation`: settle inside the hold
+  radius when the *social* push is faint; hysteresis — a higher wake gate — so a neighbour's residual
+  push or the player drifting past never rouses a working boat), and the **starboard bias is gated to
+  near-head-on** (glancing repulsion composes straight — curling it sideways is what made "keep clear"
+  orbit). The seek *yields* to a saturating push and an argued demand checks her way (`resolve01`), so a
+  blocked mark reads as standing off, not ringing the blockage. The shoal correction is stored
+  **bow-relative** and re-expressed as the bow swings between slow ticks. No-orbit invariant (guarded by
+  a content test): `MaxSpeed < ArriveSlowRadius × TurnRate × SteerageTurnFraction` — the turning circle
+  always shrinks inside the distance left, so no stable orbit exists at any radius.
 - **Content is data (rule 2/6):** one `AmbientFleetDef` per region (`Data/Boats`,
   `fleet.st_peters_ambient`) carries every tunable — boat count (3-5), hull sprite, speed band, grounds
   rect, depth margin, work rhythm (slots/day + work window), avoidance radii, buoy palette. Fleets are

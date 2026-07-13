@@ -59,6 +59,33 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Greater(def.GroundsSize.x * def.GroundsSize.y, 0f, $"{path}: degenerate grounds rect");
                 Assert.IsNotNull(def.BuoyPalette, $"{path}: no buoy palette");
                 Assert.IsNotEmpty(def.BuoyPalette, $"{path}: buoy colour = whose gear it is — the palette can't be empty");
+
+                // Seamanship gates must keep their ordering or the hysteresis/gating inverts.
+                Assert.Greater(def.HoldWakeRepulsion, def.HoldEnterRepulsion,
+                               $"{path}: the wake gate must sit ABOVE the enter gate — the gap is the " +
+                               "hysteresis that stops a drifting-past player waking a working boat");
+                Assert.GreaterOrEqual(def.HeadOnBiasFullDegrees, def.HeadOnBiasBeginDegrees,
+                                      $"{path}: the starboard-bias gate ramps up, not down");
+            }
+        }
+
+        [Test]
+        public void FleetDefs_TurnFloorOutrunsTheArriveEase_SoNoSpotIsOrbitable()
+        {
+            // The no-orbit invariant behind AmbientFleetSteering (owner feedback on #189, "spinning
+            // in circles"): approaching a spot, speed sheds with distance (the arrive ease) while the
+            // turn rate never drops below the steerage floor — so the turning circle always shrinks
+            // faster than the distance left, and no stable orbit exists at ANY radius. That holds
+            // only while the fastest cruise stays under ArriveSlowRadius × TurnRate × SteerageTurnFraction.
+            foreach (var def in LoadAll())
+            {
+                string path = AssetDatabase.GetAssetPath(def);
+                float turnFloorRadPerSec = def.TurnRateDegreesPerSecond * Mathf.Deg2Rad * def.SteerageTurnFraction;
+                Assert.Less(def.MaxSpeedMetersPerSecond, def.ArriveSlowRadius * turnFloorRadPerSec,
+                            $"{path}: MaxSpeed must stay under ArriveSlowRadius × TurnRate(rad/s) × " +
+                            "SteerageTurnFraction, or a boat can circle a spot she can never quite reach " +
+                            "(the owner's 'spinning in circles'). Slow the fleet, quicken the turn rate, " +
+                            "raise SteerageTurnFraction, or widen ArriveSlowRadius.");
             }
         }
 
