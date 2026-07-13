@@ -65,6 +65,13 @@ namespace HiddenHarbours.Fishing
         /// placed — e.g. a null Def). Greybox: no depth gate (Build 4).
         /// </summary>
         public PlacedTrap PlaceTrap(TrapDef trapDef, BaitDef bait, Vector2 position, string regionId)
+            => PlaceTrap(trapDef, bait, position, regionId, consumeBait: true);
+
+        /// <summary>The one placement body, with the bait-consumption switch: the ordinary drop consumes
+        /// one bait from stock (the abstract at-placement model); a Build-7 PRE-BAITED deck pot already
+        /// consumed its bait during the deck's re-bait, so setting it must not charge twice.</summary>
+        private PlacedTrap PlaceTrap(TrapDef trapDef, BaitDef bait, Vector2 position, string regionId,
+                                     bool consumeBait)
         {
             if (trapDef == null) { Debug.LogWarning("[PlacedTrapService] No trap def to place."); return null; }
 
@@ -95,7 +102,7 @@ namespace HiddenHarbours.Fishing
                     PlacementGameTimeSeconds = now,
                     Region = regionId,
                 });
-                if (bait != null) ConsumeOneBait(save, bait.Id);
+                if (consumeBait && bait != null) ConsumeOneBait(save, bait.Id);
             }
 
             EventBus.Publish(new TrapPlaced(instanceId, position.x, position.y));
@@ -116,6 +123,10 @@ namespace HiddenHarbours.Fishing
             TooShallow = 2,
             /// <summary>The required bait isn't in stock — can't arm the pot.</summary>
             NoBait = 3,
+
+            /// <summary>Build 7 (append-only): a hauled pot is aboard but not yet worked to READY — pick /
+            /// band / bait her on the deck before she can be set. Nothing placed, nothing spent.</summary>
+            PotNotReady = 4,
         }
 
         /// <summary>
@@ -155,6 +166,48 @@ namespace HiddenHarbours.Fishing
             placedTrap = PlaceTrap(trapDef, bait, position, regionId);
             return placedTrap != null ? PlaceResult.Placed : PlaceResult.NoTrap;
         }
+
+        /// <summary>
+        /// Set a Build-7 <b>pre-baited</b> deck pot: the same depth gate as <see cref="TryPlaceGated"/>,
+        /// but NO stock check and NO consumption — the pot was baited by hand on the deck and its bait was
+        /// consumed there (<see cref="TryConsumeBaitFromStock"/>). Charging again at the set would double-
+        /// spend. Refusals are the same cozy no-ops.
+        /// </summary>
+        public PlaceResult TryPlacePreBaited(TrapDef trapDef, BaitDef bait, Vector2 position, string regionId,
+                                             out PlacedTrap placedTrap)
+        {
+            placedTrap = null;
+            if (trapDef == null) { Debug.LogWarning("[PlacedTrapService] No trap def to place."); return PlaceResult.NoTrap; }
+
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            if (!TrapPlacement.CanPlaceAt(trapDef, GameServices.Environment, GameServices.TidalTerrain, now, position))
+            {
+                float depth = TrapPlacement.DepthAt(GameServices.Environment, GameServices.TidalTerrain, now, position);
+                Debug.Log($"[PlacedTrapService] Too shoal to set a {trapDef.DisplayName} here " +
+                          $"({depth:0.0} m; needs ≥ {trapDef.MinSoakDepthMeters:0.0} m). Try deeper water.");
+                return PlaceResult.TooShallow;
+            }
+
+            placedTrap = PlaceTrap(trapDef, bait, position, regionId, consumeBait: false);
+            return placedTrap != null ? PlaceResult.Placed : PlaceResult.NoTrap;
+        }
+
+        /// <summary>
+        /// Consume ONE of <paramref name="baitId"/> from <see cref="SaveData.BaitStock"/> if any is held —
+        /// the Build-7 deck re-bait's physical consumption (the same stock the at-placement model and the
+        /// dev G-grant use). Returns false (nothing spent) when the locker has none.
+        /// </summary>
+        public bool TryConsumeBaitFromStock(string baitId)
+        {
+            var save = GameServices.Save?.Current;
+            if (save == null || !HasBaitInStock(save, baitId)) return false;
+            ConsumeOneBait(save, baitId);
+            return true;
+        }
+
+        /// <summary>Resolve a bait Def by id from the serialized registry (the restore-path lookup made
+        /// public for the deck re-bait, so the loaded bait's favours ride into the next set). Null on a miss.</summary>
+        public BaitDef ResolveBait(string id) => FindBait(id);
 
         /// <summary>
         /// Haul <paramref name="trap"/> into <paramref name="hold"/> (its deterministic catch), then remove it

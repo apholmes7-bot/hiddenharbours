@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41be2af1882848878d2f076e0b256ce8, type: 3}
+  m_Name: PotDeckWork
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.DeckWorkDef
+  Id: deckwork.pot
+  DisplayName: Pot deck work
+  PotSpriteWet: {fileID: 0}
+  PotSpriteDry: {fileID: 0}
+  WorkReachMeters: 1.2
+  QuickGrabSeconds: 0.15
+  FullGrabSeconds: 0.9
+  NipChanceRushed01: 0.55
+  NipChanceCareful01: 0.06
+  NipRecoilSeconds: 0.8
+  GrabLiftMeters: 0.35
+  BandSeconds: 0.7
+  BaitSeconds: 1
+  SplashOutSeconds: 0.7
+  SplashOutDistanceMeters: 1.6
+  PotDeckOffset: {x: 0, y: 0.55}
+  KeeperRowOffset: {x: 0.45, y: -0.25}
+  KeeperSpacingMeters: 0.3
+  SpeciesRules:
+  - SpeciesId: fish.lobster
+    MinKeepSizeMm: 83
+    SizeMinMm: 62
+    SizeMaxMm: 140
+    CanBeBerried: 1
+    BerriedChance01: 0.15
+    Shape: 0
+    AnimalSprite: {fileID: 0}
+  - SpeciesId: fish.rock_crab
+    MinKeepSizeMm: 102
+    SizeMinMm: 70
+    SizeMaxMm: 150
+    CanBeBerried: 0
+    BerriedChance01: 0
+    Shape: 1
+    AnimalSprite: {fileID: 0}

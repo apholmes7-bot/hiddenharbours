@@ -59,6 +59,14 @@ namespace HiddenHarbours.Fishing
         // DECK — never at the helm (you're steering) and never on foot (ControlModeChanged, via Core).
         private bool _onDeck;
 
+        // Build 7: the deck-work sibling (lazy + cached, the DevFishingInput convention). While a hauled
+        // pot sits on the deck, T sets THAT pot (pre-baited by the deck's re-bait) instead of conjuring a
+        // fresh abstract one — the deck absorbs the abstract at-placement flow whenever a pot is aboard.
+        private PotDeckWorkController _deckWork;
+
+        private PotDeckWorkController DeckWork
+            => _deckWork != null ? _deckWork : (_deckWork = GetComponent<PotDeckWorkController>());
+
         /// <summary>True while the dev gear keys are live — ON DECK and not under a modal dialogue.
         /// Public + input-free so the gate itself is EditMode-testable.</summary>
         public bool GearKeysLive => _onDeck && !InteractionGate.IsBlocked;
@@ -97,6 +105,10 @@ namespace HiddenHarbours.Fishing
         private const string NoticeTooShallow = "Too shallow here";
         private const string NoticeNoBait = "No bait aboard";
         private const string NoticeNotWired = "No trap gear wired (dev)";
+        // Build 7 deck-pot refusals — the pot aboard must be worked to READY before T sets her.
+        private const string NoticeDeckStillFull = "She's still full — pick her out first";
+        private const string NoticeDeckUnbanded = "Band the keepers first";
+        private const string NoticeDeckUnbaited = "Bait her first";
 
         /// <summary>Set a baited trap at the drop point through the real Build-4 depth+bait gate. Public so a
         /// test/tool can drive it without input. Returns the placement result. Every outcome raises a Core
@@ -110,6 +122,14 @@ namespace HiddenHarbours.Fishing
                 return PlacedTrapService.PlaceResult.NoTrap;
             }
             Vector2 pos = _dropPoint != null ? (Vector2)_dropPoint.position : Vector2.zero;
+
+            // Build 7: a hauled pot on the deck ABSORBS the T flow — set HER (pre-baited by the deck's
+            // re-bait; no second bait charge), or say cozily why she isn't ready. The abstract fresh-pot
+            // drop below only applies while no pot is aboard (it still makes sense for pots not yet
+            // in hand — trap acquisition stays a later economy offer).
+            var deck = DeckWork;
+            if (deck != null && deck.HasPotAboard) return TrySetDeckPot(deck, pos);
+
             var result = _service.TryPlaceGated(_trapDef, _bait, pos, _regionId, out _);
             EventBus.Publish(new DevNotice(result switch
             {
@@ -118,6 +138,40 @@ namespace HiddenHarbours.Fishing
                 PlacedTrapService.PlaceResult.NoBait => NoticeNoBait,
                 _ => NoticeNotWired,
             }));
+            return result;
+        }
+
+        /// <summary>Set the worked deck pot back in the water (Build 7): only a READY pot (picked empty,
+        /// keepers banded, re-baited) goes — refusals name the missing step. The set runs the same depth
+        /// gate as ever but consumes NO bait (the deck's re-bait already did). Public-path helper of
+        /// <see cref="DropTrap"/>; toasts every outcome.</summary>
+        private PlacedTrapService.PlaceResult TrySetDeckPot(PotDeckWorkController deck, Vector2 pos)
+        {
+            switch (deck.SetState)
+            {
+                case PotDeckWorkController.DeckSetState.StillFull:
+                    EventBus.Publish(new DevNotice(NoticeDeckStillFull));
+                    return PlacedTrapService.PlaceResult.PotNotReady;
+                case PotDeckWorkController.DeckSetState.KeepersUnbanded:
+                    EventBus.Publish(new DevNotice(NoticeDeckUnbanded));
+                    return PlacedTrapService.PlaceResult.PotNotReady;
+                case PotDeckWorkController.DeckSetState.Unbaited:
+                    EventBus.Publish(new DevNotice(NoticeDeckUnbaited));
+                    return PlacedTrapService.PlaceResult.PotNotReady;
+            }
+
+            DeckPot pot = deck.Pot;
+            var result = _service.TryPlacePreBaited(pot.Trap, pot.LoadedBait, pos, _regionId, out _);
+            if (result == PlacedTrapService.PlaceResult.Placed)
+            {
+                deck.ClearPot();   // she's back in the water — the deck is clear for the next haul
+                EventBus.Publish(new DevNotice(NoticePotSet));
+            }
+            else
+            {
+                EventBus.Publish(new DevNotice(result == PlacedTrapService.PlaceResult.TooShallow
+                    ? NoticeTooShallow : NoticeNotWired));
+            }
             return result;
         }
 

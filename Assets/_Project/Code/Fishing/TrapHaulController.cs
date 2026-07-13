@@ -157,6 +157,7 @@ namespace HiddenHarbours.Fishing
         private Vector2[] _curveBuffer;
 
         private PlacedTrap _hauling;       // the trap being hauled, or null when idle
+        private PotDeckWorkController _deckWork;   // the Build-7 deck-work sibling (lazy; spawned on demand)
         private float _line01;             // haul progress 0..1
         private float _strain01;           // the displayed strain shade (max of ambient + active fight)
         private float _fightStrain;        // eased active-fight strain (holding through the drop)
@@ -184,6 +185,24 @@ namespace HiddenHarbours.Fishing
         public float Strain01 => _strain01;
 
         private Transform Rail => _rail != null ? _rail : transform;
+
+        /// <summary>The Build-7 deck-work sibling, if one exists on this boat (lazy + cached — the
+        /// DevFishingInput sibling convention). Null until a deck-working trap first surfaces.</summary>
+        private PotDeckWorkController DeckWork
+            => _deckWork != null ? _deckWork : (_deckWork = GetComponent<PotDeckWorkController>());
+
+        /// <summary>The deck-work sibling, created on demand (first deck-working pot aboard). Configured
+        /// fresh each time so late wiring (hold resolved lazily, rail re-pointed) stays current.</summary>
+        private PotDeckWorkController EnsureDeckWork()
+        {
+            if (_deckWork == null) _deckWork = GetComponent<PotDeckWorkController>();
+            if (_deckWork == null) _deckWork = gameObject.AddComponent<PotDeckWorkController>();
+            _deckWork.Configure(_service, _hold, Rail, _ropeAnchor);
+            // A component added mid-session missed the last ControlModeChanged — seed it with the state
+            // this controller tracks (a surfacing haul only happens ON DECK, so this is true here).
+            _deckWork.SeedDeckGate(_onDeck);
+            return _deckWork;
+        }
 
         private void Awake()
         {
@@ -252,6 +271,8 @@ namespace HiddenHarbours.Fishing
         // Teach the new action ONCE at haul-start (owner legibility) — the only haul TEXT that remains. Fires
         // once per haul (never per frame / per tick). "swell" + "lifts" name the hold-with-the-swell action.
         private const string NoticeHaulStart = "Haul with the swell — take line as she lifts";
+        // Build 7: one pot is worked at a time — a fresh haul waits until the deck is squared away.
+        private const string NoticeDeckBusy = "A pot's already aboard — square her away first";
 
         /// <summary>Begin hauling the nearest set trap in reach of the rail (any state — a not-yet-soaked
         /// trap still hauls, and surfaces empty). Public so a test/tool can drive it without input. Returns
@@ -259,6 +280,13 @@ namespace HiddenHarbours.Fishing
         public bool TryStartHaul()
         {
             if (_service == null) return false;
+            // Build 7: the deck works ONE pot at a time. A pot still being picked/banded/baited owns the
+            // deck — square her away (or T-set her) before hauling the next. Cozy refusal, nothing lost.
+            if (DeckWork != null && DeckWork.HasPotAboard)
+            {
+                EventBus.Publish(new DevNotice(NoticeDeckBusy));
+                return false;
+            }
             PlacedTrap best = NearestInReach();
             if (best == null)
             {
@@ -353,8 +381,11 @@ namespace HiddenHarbours.Fishing
             return gained;
         }
 
-        /// <summary>The pot has broken the surface — land the (already-deterministic) catch through the
-        /// service and end the haul. A ready trap lands its Build-3 catch; an unready one comes up empty.</summary>
+        /// <summary>The pot has broken the surface — Build 7: a trap whose Def carries a
+        /// <see cref="DeckWorkDef"/> lands the POT on the deck with its (already-deterministic) catch
+        /// still inside, handing off to the <see cref="PotDeckWorkController"/> (pick / sort / band /
+        /// bait). A trap WITHOUT one keeps the legacy instant-land through the service — older content
+        /// and every existing test unchanged. An unready pot comes up empty either way.</summary>
         private void Surface()
         {
             PlacedTrap trap = _hauling;
@@ -364,6 +395,15 @@ namespace HiddenHarbours.Fishing
 
             EnsureHold();
             CatchContext ctx = BuildContext();
+
+            if (TryBringPotAboard(trap, in ctx))
+            {
+                Publish(TrapHaulPhase.Surfaced, pullOnBeat: false);
+                Debug.Log("[TrapHaul] The pot's aboard — work her on the deck (pick, sort, band, bait).");
+                ResetHaulState();
+                return;
+            }
+
             bool landed = _service != null && _service.HaulTrap(trap, _hold, in ctx);
 
             if (landed)
@@ -379,12 +419,46 @@ namespace HiddenHarbours.Fishing
                 EventBus.Publish(new DevNotice(NoticeEmpty));
                 Debug.Log("[TrapHaul] Up she comes — empty. Not ready yet (or no room aboard). Left her to soak.");
             }
+            ResetHaulState();
+        }
+
+        private void ResetHaulState()
+        {
             _line01 = 0f;
             _strain01 = 0f;
             _fightStrain = 0f;
             _swellLoad = 0f;
             _hasLastHeight = false;
         }
+
+        /// <summary>
+        /// The Build-7 handoff: if this trap opts into deck work (its Def carries a DeckWorkDef) and its
+        /// deterministic catch resolves (ready + non-empty pool), bring the POT aboard — the resolved
+        /// contents ride in it (WHAT was caught is untouched, rule 5; only WHEN/HOW it lands changes) and
+        /// the trap leaves the world + the save exactly as a haul always removed it (so a reload can never
+        /// re-haul it — no dupes; the pot aboard is transient, the documented ADR 0020 greybox compromise).
+        /// Returns false to fall through to the legacy instant-land / cozy-empty path.
+        /// </summary>
+        private bool TryBringPotAboard(PlacedTrap trap, in CatchContext ctx)
+        {
+            if (trap == null || trap.Trap == null || trap.Trap.DeckWork == null) return false;
+
+            CatchItem? maybe = trap.ResolveCatch(NowSeconds(), in ctx);
+            if (maybe == null) return false;   // not soaked / empty pool → the legacy empty beat
+
+            PotDeckWorkController deck = EnsureDeckWork();
+            if (deck == null || deck.HasPotAboard) return false;   // deck busy → legacy land (defensive)
+
+            _catchScratch[0] = maybe.Value;
+            if (!deck.BringAboard(trap, _catchScratch)) return false;
+
+            _service.RemoveTrap(trap);   // out of the world + the save; the buoy goes
+            return true;
+        }
+
+        // Scratch for the single-item catch handoff (the Build-3 resolver lands one item today; the deck
+        // work is N-ready). Reused — no per-haul allocation.
+        private readonly CatchItem[] _catchScratch = new CatchItem[1];
 
         // ---- swell read (the presentation animator path — matches BoatWaveMotion's feel) --------
 

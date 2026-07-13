@@ -41,6 +41,7 @@ namespace HiddenHarbours.Fishing
     {
         private FishingController _fishing;
         private TrapHaulController _haul;   // sibling on the same Dory GO; may be null on a fishing-only rig
+        private PotDeckWorkController _deckWork;   // Build-7 deck-work sibling; may be null / appear late
         // Handline fishing is a DECK action (owner's Build-5 split): the cast lives only while standing ON
         // DECK — never at the helm (you're steering) and never on foot (ControlModeChanged, via Core).
         private bool _onDeck;
@@ -59,6 +60,14 @@ namespace HiddenHarbours.Fishing
         /// on the one boat object until it resolves).</summary>
         private TrapHaulController Haul => _haul != null ? _haul : (_haul = GetComponent<TrapHaulController>());
 
+        /// <summary>The Build-7 deck-work sibling (spawned on demand by the haul controller when the first
+        /// deck-working pot surfaces — so this MUST stay lazy and self-healing, same as <see cref="Haul"/>).
+        /// While a pot is aboard being worked, Space belongs to the DECK (pick/band/bait holds): the cast
+        /// stands down and, because those are HOLDS, the release latch arms exactly as it does for the
+        /// haul — the deck's carried-over hold can never flip into a cast when the pot clears.</summary>
+        private PotDeckWorkController DeckWork
+            => _deckWork != null ? _deckWork : (_deckWork = GetComponent<PotDeckWorkController>());
+
         private void OnEnable()
         {
             // Fresh components start un-decked; every transition (and the region-arrival re-assert)
@@ -73,8 +82,11 @@ namespace HiddenHarbours.Fishing
         public void OnControlModeChanged(ControlModeChanged e) => _onDeck = e.Mode == ControlMode.OnDeck;
 
         /// <summary>True while the handline cast is worked — ON DECK, not under a modal dialogue, and not
-        /// while a trap haul owns the Space key. Public + input-free so the gate itself is EditMode-testable.</summary>
-        public bool FishingLive => _onDeck && !InteractionGate.IsBlocked && !(Haul != null && Haul.IsHauling);
+        /// while a trap haul OR a deck pot being worked (Build 7) owns the Space key. Public + input-free
+        /// so the gate itself is EditMode-testable.</summary>
+        public bool FishingLive => _onDeck && !InteractionGate.IsBlocked
+                                   && !(Haul != null && Haul.IsHauling)
+                                   && !(DeckWork != null && DeckWork.HasPotAboard);
 
         private void Update()
         {
@@ -91,8 +103,11 @@ namespace HiddenHarbours.Fishing
         public void TickFishing(float dt, bool rawHeld)
         {
             // Arm the release latch for as long as a haul is (or has just been) live — any haul tick sets it,
-            // so however the haul ends the still-held pull key is caught before it can become a cast.
-            if (Haul != null && Haul.IsHauling) _requireReleaseBeforeCast = true;
+            // so however the haul ends the still-held pull key is caught before it can become a cast. Build 7:
+            // a pot being worked on the deck arms it the same way (its pick/band/bait actions are HOLDS on
+            // the same key; the pot clearing — set, or auto-resolved — must not turn a held key into a cast).
+            if ((Haul != null && Haul.IsHauling) || (DeckWork != null && DeckWork.HasPotAboard))
+                _requireReleaseBeforeCast = true;
 
             // Once armed, require a genuine RELEASE before the key counts as a press again. A still-held key
             // is swallowed (held=false); seeing it up re-arms the cast.

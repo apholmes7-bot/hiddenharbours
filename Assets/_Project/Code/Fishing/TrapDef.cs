@@ -42,6 +42,12 @@ namespace HiddenHarbours.Fishing
                  "FavorsSpeciesIds soft-weight the Build 3 catch roll.")]
         public string RequiredBaitId = "bait.herring";
 
+        [Header("Deck work (Build 7 — the post-haul pick/sort/band/bait minigame)")]
+        [Tooltip("The deck-work ruleset this pot uses once hauled aboard (pick / sort / band / bait — " +
+                 "DeckWorkDef, data not code). Append-only opt-in: leave EMPTY and the haul lands the " +
+                 "catch instantly, exactly the pre-Build-7 behaviour (older content and tests unchanged).")]
+        public DeckWorkDef DeckWork;
+
         [Header("Soak (greybox placeholders — flag for economy-sim / gameplay tuning)")]
         [Min(0f)]
         [Tooltip("How long the trap must soak before it's worth hauling, in in-game hours. Greybox.")]
