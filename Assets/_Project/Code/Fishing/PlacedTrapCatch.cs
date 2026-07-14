@@ -5,9 +5,11 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// The <b>deterministic</b> catch resolution for a placed trap (trap-fishing arc Build 3). When a soaked
-    /// trap is hauled (or the dev "check" fires), this decides <em>what</em> it caught — and it is a pure
-    /// function of the trap's placement facts, so a save→load→haul lands the <b>identical</b> catch (rule 5).
+    /// The <b>deterministic</b> catch resolution for a placed trap (trap-fishing arc Build 3; multi-catch
+    /// 2026-07-13). When a soaked trap is hauled (or the dev "check" fires), this decides <em>what</em> it
+    /// caught — one animal per filled slot (<see cref="ResolveMany"/>; the soak-to-fill count is
+    /// <see cref="TrapFill"/>'s call) — and it is a pure function of the trap's placement facts, so a
+    /// save→load→haul lands the <b>identical</b> catch list, order included (rule 5).
     ///
     /// <para><b>Reuses the one roller (no new catch logic).</b> The species pick and the size roll are the
     /// existing <see cref="CatchResolver"/> — the same <see cref="CatchResolver.Resolve"/> weighted pick and
@@ -68,6 +70,50 @@ namespace HiddenHarbours.Fishing
             float weightKg = CatchResolver.RollWeight(fish, rng);   // same size roll the rod uses
             return new CatchItem(fish.Id, fish.DisplayName, fish.Category,
                                  weightKg, fish.BaseValue, fish.SupplyElasticity);
+        }
+
+        /// <summary>
+        /// Resolve a pot's WHOLE catch deterministically — <paramref name="count"/> animals (the
+        /// soak-to-fill count <see cref="TrapFill.ResolveCount"/> already decided), each rolled on its own
+        /// stable indexed stream (<see cref="TrapFill.AnimalCatchSeed"/> — the same
+        /// seed-lineage-plus-index-plus-channel pattern the deck work's size/berried/nip streams use), so
+        /// animal 2's species and size are as reproducible as animal 0's and INDEPENDENT of it. Fills
+        /// <paramref name="results"/> (cleared first — pass a pooled list; the caller owns it) in stable
+        /// index order and returns how many landed. Same placement facts + same count + same pool/context/
+        /// bait ⇒ the identical list, order included, this run and every future run (rule 5). An animal
+        /// whose roll finds nothing (empty/filtered-out pool) is skipped — with one shared context that
+        /// means all-or-none in practice, and the old "everything gates out ⇒ empty haul" behaviour holds.
+        /// </summary>
+        public static int ResolveMany(
+            IReadOnlyList<FishSpeciesDef> pool,
+            in CatchContext ctx,
+            IReadOnlyList<string> baitFavours,
+            int favourMultiplier,
+            int count,
+            int worldSeed,
+            string instanceId,
+            double placementGameTimeSeconds,
+            List<CatchItem> results)
+        {
+            if (results == null) return 0;
+            results.Clear();
+            if (pool == null || pool.Count == 0 || count <= 0) return 0;
+
+            // Weight the pool ONCE (the bait lean is per-pot, not per-animal), then roll each animal on
+            // its own indexed stream against the same weighted pool — reusing the one roller unchanged.
+            List<FishSpeciesDef> weighted = BuildWeightedPool(pool, baitFavours, favourMultiplier);
+
+            for (int i = 0; i < count; i++)
+            {
+                var rng = new System.Random(TrapFill.AnimalCatchSeed(worldSeed, instanceId, placementGameTimeSeconds, i));
+                FishSpeciesDef fish = CatchResolver.Resolve(weighted, in ctx, rng);
+                if (fish == null) continue;
+
+                float weightKg = CatchResolver.RollWeight(fish, rng);   // same size roll the rod uses
+                results.Add(new CatchItem(fish.Id, fish.DisplayName, fish.Category,
+                                          weightKg, fish.BaseValue, fish.SupplyElasticity));
+            }
+            return results.Count;
         }
 
         /// <summary>

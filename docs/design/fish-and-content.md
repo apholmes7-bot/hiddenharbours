@@ -299,6 +299,21 @@ bycatch follows the passive-gear model (§3.4 and the multi-catch open question 
 > **Save (ADR 0020, greybox compromise):** a pot on deck is transient like `ControlMode` — its DTO
 > leaves the save at pot-aboard (no re-haul dupes) and a load/region change **auto-resolves** it cozily
 > (keepers land per the deterministic sort, one toast). Persisting a mid-sort pot needs an ADR — deferred.
+>
+> **Multi-catch — the pot FILLS with the soak (owner ask 2026-07-13).** A pot no longer holds exactly
+> one animal: she's ready with her **first** animal at `SoakHours` (a soaked pot never comes up empty,
+> the old rule kept) and **fills to `CapacityUnits`** — the Def field now means what its doc always
+> said — **by `HoursToFullPot`** (a new append-only `TrapDef` tunable; ≤ `SoakHours` = full at ready).
+> Each further slot fills on its own **stable per-slot roll** (`TrapFill` — the catch-seed lineage +
+> a `"fill"` channel + the slot index) against the current fill fraction, so a pot **monotonically
+> fills, never un-catches**, and the count reproduces bit-identically across a save→load. Each animal
+> then rolls species + size on its own indexed `"catch"` stream (`PlacedTrapCatch.ResolveMany`) from
+> the same region/gear/bait-weighted pool as before — **bait leans WHAT, never HOW MANY**. Nothing new
+> is saved (ADR 0020 unchanged: contents recomputed, placement only). The deck work runs the whole
+> list through the same pick/sort/band cycle; the legacy instant-land path takes the whole catch
+> **all-or-nothing** (not enough hold room ⇒ the haul is refused and the pot stays down — a partial
+> take of a recomputed catch would dupe). This answers §7.2's multi-catch question for **pots**
+> ("N entries scaled by soak"); trawl/gillnet remain open.
 
 **(c) Aquaculture — mussel/oyster leases, buoys-in-series, season-grown (M3, advanced/late).** A new
 **farmed-shellfish** path distinct from wild hand-gathering: you **lease a patch of water**, set
@@ -521,6 +536,8 @@ Balance dashboards (§6.2) report these coverage percentages so no single condit
 2. **Bycatch/multi-catch:** should passive gear (trawl/gillnet/pots) resolve *several* species per haul
    (a mixed net), not one? Feels right for P2 scale and processing chains — propose: passive gear rolls
    N entries scaled by hold/soak, active gear rolls 1. Needs an economy check (gluts get easier).
+   **Pots: answered (2026-07-13)** — the soak-to-fill model above (§3.5b trap-status note): 1 at ready,
+   `CapacityUnits` by `HoursToFullPot`, per-slot deterministic rolls. Trawl/gillnet remain open.
 2. **Conservation / over-fishing pressure:** should a region's species `localStock` deplete with
    sustained pressure (player + NPC fleet) and need a fallow season to recover, beyond the *market*
    glut already modeled in economy §1? Strong P1/P3 flavor, but risks feeling punishing — gate behind

@@ -22,5 +22,6 @@ MonoBehaviour:
   RequiredBaitId: bait.herring
   DeckWork: {fileID: 11400000, guid: 3d1e65ad02c04ab984c8e4c00f97169e, type: 2}
   SoakHours: 12
+  HoursToFullPot: 36
   MinSoakDepthMeters: 3
   MaxSoakDepthMeters: 40

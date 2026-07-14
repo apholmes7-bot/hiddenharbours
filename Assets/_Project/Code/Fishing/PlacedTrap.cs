@@ -22,8 +22,10 @@ namespace HiddenHarbours.Fishing
     /// <summary>
     /// A logical <b>placed trap</b> at rest on the seabed (trap-fishing arc Build 3 — the runtime). It ties
     /// together the irreducible placement facts (which trap kind, where, when placed, what bait, which
-    /// region, a stable instance id) with the two things derived from them: the <b>soak</b> readout
-    /// (<see cref="TrapSoak"/>) and, on haul, the <b>deterministic catch</b> (<see cref="PlacedTrapCatch"/>).
+    /// region, a stable instance id) with the things derived from them: the <b>soak</b> readout
+    /// (<see cref="TrapSoak"/>), the <b>soak-to-fill count</b> (<see cref="TrapFill"/> — the pot fills from
+    /// 1 at ready to capacity by <see cref="TrapDef.HoursToFullPot"/>) and, on haul, the <b>deterministic
+    /// catch list</b> (<see cref="PlacedTrapCatch"/>).
     /// It shows the Build-1 <see cref="Boats.BuoyWaveVisual"/> at its position so a set trap reads as a
     /// bobbing buoy on the swell.
     ///
@@ -115,7 +117,7 @@ namespace HiddenHarbours.Fishing
         /// <summary>True once this trap has been hauled this session (session-only, never saved).</summary>
         public bool Hauled => _hauled;
 
-        /// <summary>The catch the last <see cref="TryHaul"/> resolved, if any (for the dev readout / tooling).</summary>
+        /// <summary>The LAST animal the last <see cref="TryHaul"/> landed, if any (dev readout / tooling).</summary>
         public bool TryGetLastCatch(out CatchItem item)
         {
             item = _lastCatch;
@@ -141,34 +143,52 @@ namespace HiddenHarbours.Fishing
         }
 
         /// <summary>
-        /// Resolve THIS trap's catch deterministically (pure — no side effects, nothing landed). Same
-        /// placement facts + same pool + same context ⇒ identical <see cref="CatchItem"/>, this run and every
-        /// future run (rule 5). The pool is built from the Def's allowed species via
-        /// <see cref="FishSpeciesRegistry"/>; the bait's favours soft-weight it. Returns null if not yet
-        /// soaked, or if the pool is empty / everything gates out.
+        /// Resolve THIS trap's whole catch deterministically (pure — no side effects, nothing landed) into
+        /// <paramref name="results"/> (cleared first; the caller owns/pools the list). The pot <b>fills
+        /// with the soak</b>: 1 animal the moment she's ready (<see cref="TrapDef.SoakHours"/>), up to
+        /// <see cref="TrapDef.CapacityUnits"/> by <see cref="TrapDef.HoursToFullPot"/> — the count is
+        /// <see cref="TrapFill"/>'s deterministic per-slot call, each animal then rolled on its own indexed
+        /// stream (<see cref="PlacedTrapCatch.ResolveMany"/>). Same placement facts + same haul time + same
+        /// pool/context ⇒ the identical list, order included, this run and every future run (rule 5). The
+        /// pool is built from the Def's allowed species via <see cref="FishSpeciesRegistry"/>; the bait's
+        /// favours soft-weight species per animal (never the count — bait leans WHAT, not HOW MANY, the
+        /// Build-3 rule kept). Returns 0 if not yet soaked, or if the pool is empty / everything gates out.
         /// </summary>
-        public CatchItem? ResolveCatch(double nowSeconds, in CatchContext ctx)
+        public int ResolveCatches(double nowSeconds, in CatchContext ctx, List<CatchItem> results)
         {
-            if (_trapDef == null) return null;
-            if (!IsReady(nowSeconds)) return null;   // must soak first — a not-ready trap yields nothing
+            if (results == null) return 0;
+            results.Clear();
+            if (_trapDef == null) return 0;
+            if (!IsReady(nowSeconds)) return 0;   // must soak first — a not-ready trap yields nothing
 
             List<FishSpeciesDef> pool = FishSpeciesRegistry.Resolve(_trapDef.AllowedCatchFishIds);
-            if (pool.Count == 0) return null;
+            if (pool.Count == 0) return 0;
 
-            int seed = StableHash.TrapCatchSeed(_worldSeed, _instanceId, _placementGameTimeSeconds);
-            var rng = new System.Random(seed);
+            float fill01 = TrapFill.Fill01(_placementGameTimeSeconds, nowSeconds,
+                                           _trapDef.SoakHours, _trapDef.HoursToFullPot);
+            int count = TrapFill.ResolveCount(fill01, _trapDef.CapacityUnits,
+                                              _worldSeed, _instanceId, _placementGameTimeSeconds);
 
             IReadOnlyList<string> favours = _bait != null ? _bait.FavorsSpeciesIds : null;
-            return PlacedTrapCatch.Resolve(pool, in ctx, favours, _baitFavourMultiplier, rng);
+            return PlacedTrapCatch.ResolveMany(pool, in ctx, favours, _baitFavourMultiplier, count,
+                                               _worldSeed, _instanceId, _placementGameTimeSeconds, results);
         }
 
+        // Scratch for the instant-land haul's resolved list (event-time reuse, never per frame — rule 7).
+        private readonly List<CatchItem> _haulScratch = new();
+
         /// <summary>
-        /// Haul the trap: resolve its deterministic catch and land it into <paramref name="hold"/> (the same
-        /// <see cref="IHold.TryAdd"/> + <see cref="FishCaught"/> path the rod and clam dig use). Returns true
-        /// iff a catch was landed. A not-ready or already-hauled trap, an empty pool, or a full hold is a
-        /// cozy no-op (a log, no penalty). Marks the trap <see cref="Hauled"/> this session on a successful
-        /// haul (session-only; a reload reconstructs it as Ready and it hauls the SAME catch again — the
-        /// deterministic guarantee the tests assert).
+        /// Haul the trap: resolve its deterministic catch list and land ALL of it into
+        /// <paramref name="hold"/> (the same <see cref="IHold.TryAdd"/> + <see cref="FishCaught"/> path the
+        /// rod and clam dig use — one publish per animal). Returns true iff the catch was landed. A
+        /// not-ready or already-hauled trap or an empty pool is a cozy no-op (a log, no penalty). The whole
+        /// catch lands or none of it does: if the hold hasn't room for ALL the resolved animals the haul is
+        /// refused and the trap stays down — the N-animal generalization of the old "full hold ⇒ try again
+        /// with room" rule, and the only shape that can't silently lose part of a recomputed catch (the
+        /// contents aren't stored, so a partial take would re-resolve and dupe on the next haul). One
+        /// animal = one hold unit, the codebase-wide convention. Marks the trap <see cref="Hauled"/> this
+        /// session on a successful haul (session-only; a reload reconstructs it as Ready and it hauls the
+        /// SAME list again — the deterministic guarantee the tests assert).
         /// </summary>
         public bool TryHaul(IHold hold, in CatchContext ctx)
         {
@@ -181,22 +201,34 @@ namespace HiddenHarbours.Fishing
                 return false;
             }
 
-            CatchItem? maybe = ResolveCatch(now, in ctx);
-            if (maybe == null) { Debug.Log("[PlacedTrap] Hauled it up empty — nothing in the pot."); return false; }
+            int count = ResolveCatches(now, in ctx, _haulScratch);
+            if (count == 0) { Debug.Log("[PlacedTrap] Hauled it up empty — nothing in the pot."); return false; }
 
-            CatchItem catchItem = maybe.Value;
-            _lastCatch = catchItem;
-            _lastCatchValid = true;
-
-            if (hold == null || !hold.TryAdd(catchItem))
+            // All-or-nothing room check (one animal = one hold unit, the IHold convention everywhere).
+            int freeUnits = hold != null ? hold.CapacityUnits - hold.UsedUnits : 0;
+            if (freeUnits < count)
             {
-                Debug.Log($"[PlacedTrap] Landed a {catchItem}, but there's nowhere to stow it (no/full hold).");
-                return false;   // don't mark hauled — the catch wasn't taken; try again with room
+                Debug.Log($"[PlacedTrap] {count} in the pot but no room for them all " +
+                          $"({freeUnits} free) — make room and haul her again.");
+                return false;   // don't mark hauled — nothing taken; the trap stays down, try again with room
             }
 
-            EventBus.Publish(new FishCaught(catchItem));   // same land path the rod uses
+            for (int i = 0; i < count; i++)
+            {
+                CatchItem catchItem = _haulScratch[i];
+                if (!hold.TryAdd(catchItem))
+                {
+                    // Can't happen under the 1-unit convention the pre-check assumes; honest if it ever does.
+                    Debug.LogWarning($"[PlacedTrap] Hold refused a {catchItem} despite room — {count - i} left unlanded.");
+                    break;
+                }
+                _lastCatch = catchItem;
+                _lastCatchValid = true;
+                EventBus.Publish(new FishCaught(catchItem));   // same land path the rod uses, per animal
+            }
+
             _hauled = true;
-            Debug.Log($"[PlacedTrap] Hauled a {catchItem} from the {(_trapDef != null ? _trapDef.DisplayName : "trap")}.");
+            Debug.Log($"[PlacedTrap] Hauled {count} from the {(_trapDef != null ? _trapDef.DisplayName : "trap")}.");
             return true;
         }
     }

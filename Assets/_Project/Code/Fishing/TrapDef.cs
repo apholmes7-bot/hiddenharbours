@@ -33,7 +33,9 @@ namespace HiddenHarbours.Fishing
 
         [Header("Capacity & catch")]
         [Min(1)]
-        [Tooltip("How many hold units of catch a full soak yields (the pot's capacity). Greybox placeholder.")]
+        [Tooltip("How many ANIMALS a fully soaked pot comes up with (the pot's capacity — one hold unit " +
+                 "each). The pot FILLS with the soak: one animal the moment she's ready (SoakHours), up " +
+                 "to this many by HoursToFullPot. Raise for a bigger pot; 1 = the old single-catch pot.")]
         public int CapacityUnits = 4;
         [Tooltip("The FishSpeciesDef ids this trap can take (explicit allow-list). The Build 3 resolver rolls " +
                  "the catch from these; each must name a real FishSpeciesDef (content validation checks this).")]
@@ -50,8 +52,16 @@ namespace HiddenHarbours.Fishing
 
         [Header("Soak (greybox placeholders — flag for economy-sim / gameplay tuning)")]
         [Min(0f)]
-        [Tooltip("How long the trap must soak before it's worth hauling, in in-game hours. Greybox.")]
+        [Tooltip("How long the trap must soak before it's worth hauling, in in-game hours. A pot hauled " +
+                 "before this comes up EMPTY; at this mark she's ready with her FIRST animal. Greybox.")]
         public float SoakHours = 12f;
+        [Min(0f)]
+        [Tooltip("How long (in-game hours, from placement) until the pot is expected FULL — the soak-to-" +
+                 "fill curve's far end: at SoakHours she holds 1 animal, by here she holds CapacityUnits, " +
+                 "each further slot filling on its own deterministic per-pot roll between the two marks. " +
+                 "Longer = a slower fill (leave her down to earn the full pot); anything ≤ SoakHours = " +
+                 "full the moment she's ready. The owner's main multi-catch pacing knob.")]
+        public float HoursToFullPot = 36f;
         [Tooltip("Shallowest depth (m) the trap fishes well. Below this the set is too shoal. Greybox.")]
         public float MinSoakDepthMeters = 3f;
         [Tooltip("Deepest depth (m) the trap fishes well. Beyond this it's out of the species' band. Greybox.")]
