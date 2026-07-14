@@ -168,6 +168,23 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        [Test]
+        public void TrapFillWindows_AreAuthored_NotStale()
+        {
+            foreach (var t in LoadAll<TrapDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(t);
+                // The soak-to-fill window (multi-catch): a pot is ready with 1 animal at SoakHours and
+                // full at HoursToFullPot. An asset serialized BEFORE the field existed deserializes it
+                // as 0 — which silently means "full the moment she's ready" (max yield). Require every
+                // shipped trap to author the window explicitly: equal-to-SoakHours is the legitimate
+                // instant-full choice; below it is a stale asset. (Re-save the asset to fix.)
+                Assert.GreaterOrEqual(t.HoursToFullPot, t.SoakHours,
+                    $"{path}: HoursToFullPot ({t.HoursToFullPot}) < SoakHours ({t.SoakHours}) — stale asset? " +
+                    "Author the fill window (set it ≥ SoakHours; equal = full at ready, deliberate).");
+            }
+        }
+
         // ---- boats --------------------------------------------------------------------------
 
         [Test]

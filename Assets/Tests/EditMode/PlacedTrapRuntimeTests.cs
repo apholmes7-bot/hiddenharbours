@@ -131,7 +131,7 @@ namespace HiddenHarbours.Tests.EditMode
             t.Id = "trap.lobster"; t.DisplayName = "Lobster Pot";
             t.AllowedCatchFishIds = new[] { "fish.lobster", "fish.rock_crab" };
             t.RequiredBaitId = "bait.herring";
-            t.SoakHours = 12f; t.CapacityUnits = 4;
+            t.SoakHours = 12f; t.CapacityUnits = 4; t.HoursToFullPot = 36f;
             t.MinSoakDepthMeters = 3f; t.MaxSoakDepthMeters = 40f;
             _spawned.Add(t);
             return t;
@@ -190,21 +190,24 @@ namespace HiddenHarbours.Tests.EditMode
             RegisterCatchSpecies();
             var trap = MakeTrapObject("trap.lobster#1", PlaceTime);
             var ctx = TrapContext();
+            var results = new List<CatchItem>();
 
             double midSoak = PlaceTime + LobsterSoakSpan * 0.5;   // mid-soak → not ready
             Assert.IsFalse(trap.IsReady(midSoak));
-            Assert.IsNull(trap.ResolveCatch(midSoak, in ctx), "a not-ready trap resolves no catch");
+            Assert.AreEqual(0, trap.ResolveCatches(midSoak, in ctx, results), "a not-ready trap resolves no catch");
 
             double soaked = PlaceTime + LobsterSoakSpan;          // fully soaked → ready
             Assert.IsTrue(trap.IsReady(soaked));
-            Assert.IsNotNull(trap.ResolveCatch(soaked, in ctx), "a soaked trap resolves a catch");
+            Assert.AreEqual(1, trap.ResolveCatches(soaked, in ctx, results),
+                "a just-ready pot holds exactly her first animal (the ready floor — never empty, not yet filling)");
         }
 
         [Test]
-        public void SaveLoad_YieldsIdenticalCatch()
+        public void SaveLoad_YieldsIdenticalCatchList()
         {
-            // THE headline guarantee. Place a trap, resolve its catch (pre-save), then reconstruct it from the
-            // saved DTO (as a load would) and resolve again — the CatchItem must be identical.
+            // THE headline guarantee, at N. Place a trap, resolve its catch LIST mid-fill (pre-save), then
+            // reconstruct it from the saved DTO (as a load would) and resolve again — the whole list must be
+            // identical: same count, same species, same sizes, same ORDER.
             RegisterCatchSpecies();
             var svc = MakeService();
 
@@ -212,21 +215,29 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(live);
             Assert.AreEqual(1, _save.PlacedTraps.Count, "the placement was mirrored into the save");
 
-            double soaked = live.PlacementGameTimeSeconds + LobsterSoakSpan;
+            // Half-way up the fill curve (12h ready → 36h full ⇒ 24h is fill 0.5): the count itself is a
+            // seed-varied roll here, which is exactly what must reproduce across the reload.
+            double midFill = live.PlacementGameTimeSeconds + 24.0 * 3600.0;
             var ctx = TrapContext();
-            CatchItem? before = live.ResolveCatch(soaked, in ctx);
-            Assert.IsTrue(before.HasValue, "the placed trap resolves a catch once soaked");
+            var before = new List<CatchItem>();
+            int beforeCount = live.ResolveCatches(midFill, in ctx, before);
+            Assert.GreaterOrEqual(beforeCount, 1, "a soaked pot never comes up empty");
+            Assert.LessOrEqual(beforeCount, _lobsterTrap.CapacityUnits, "never over capacity");
 
             // "Reload": rebuild the live traps purely from the saved DTOs (+ the saved world seed).
             svc.RestoreFromSave(_save);
             Assert.AreEqual(1, svc.Live.Count, "one trap restored from the save");
             PlacedTrap restored = svc.Live[0];
 
-            CatchItem? after = restored.ResolveCatch(soaked, in ctx);
-            Assert.IsTrue(after.HasValue, "the restored trap resolves a catch");
-            Assert.AreEqual(before.Value.SpeciesId, after.Value.SpeciesId, "same species across save→load");
-            Assert.AreEqual(before.Value.WeightKg, after.Value.WeightKg, 1e-6f, "same size across save→load");
-            Assert.AreEqual(before.Value.BaseValue, after.Value.BaseValue, "same value across save→load");
+            var after = new List<CatchItem>();
+            int afterCount = restored.ResolveCatches(midFill, in ctx, after);
+            Assert.AreEqual(beforeCount, afterCount, "same COUNT across save→load");
+            for (int i = 0; i < beforeCount; i++)
+            {
+                Assert.AreEqual(before[i].SpeciesId, after[i].SpeciesId, $"animal {i}: same species across save→load");
+                Assert.AreEqual(before[i].WeightKg, after[i].WeightKg, 1e-6f, $"animal {i}: same size across save→load");
+                Assert.AreEqual(before[i].BaseValue, after[i].BaseValue, $"animal {i}: same value across save→load");
+            }
         }
 
         [Test]
@@ -265,6 +276,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, caught, "FishCaught fired (same land path as the rod)");
             Assert.AreEqual(0, svc.Live.Count, "the trap left the world after the haul");
             Assert.AreEqual(0, _save.PlacedTraps.Count, "the DTO was dropped from the save");
+        }
+
+        [Test]
+        public void Haul_FullSoak_LandsTheFullPot()
+        {
+            // The owner's ask, end to end at the service: leave her down to HoursToFullPot and the pot
+            // comes up with CapacityUnits animals — every one through the FishCaught land path.
+            RegisterCatchSpecies();
+            var svc = MakeService();
+            PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
+
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;
+
+            int caught = 0;
+            void OnCaught(FishCaught _) => caught++;
+            EventBus.Subscribe<FishCaught>(OnCaught);
+
+            var hold = new FakeHold { Capacity = 6 };
+            bool landed = svc.HaulTrap(live, hold, TrapContext());
+            EventBus.Unsubscribe<FishCaught>(OnCaught);
+
+            Assert.IsTrue(landed, "a fully soaked pot hauls her whole catch");
+            Assert.AreEqual(_lobsterTrap.CapacityUnits, hold.UsedUnits, "a full soak fills the pot to capacity");
+            Assert.AreEqual(_lobsterTrap.CapacityUnits, caught, "one FishCaught per animal (the rod's land path)");
+            Assert.AreEqual(0, svc.Live.Count, "the trap left the world after the haul");
+        }
+
+        [Test]
+        public void Haul_NoRoomForTheWholeCatch_IsRefused_AndTheTrapStays()
+        {
+            // The N-animal "full hold" rule: the whole catch lands or none of it does. Contents are
+            // recomputed, not stored — a partial take would dupe on the next haul, so the haul is refused
+            // honestly and the trap stays down to try again with room. Nothing is silently lost.
+            RegisterCatchSpecies();
+            var svc = MakeService();
+            PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
+
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;   // full pot: 4
+
+            var hold = new FakeHold { Capacity = 2 };   // room for 2 of the 4
+            Assert.IsFalse(svc.HaulTrap(live, hold, TrapContext()), "not enough room for the whole catch → refused");
+            Assert.AreEqual(0, hold.UsedUnits, "all-or-nothing: nothing landed");
+            Assert.AreEqual(1, svc.Live.Count, "the trap stays down");
+            Assert.AreEqual(1, _save.PlacedTraps.Count, "its DTO stays in the save");
         }
 
         [Test]

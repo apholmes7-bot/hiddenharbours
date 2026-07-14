@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
@@ -434,31 +435,32 @@ namespace HiddenHarbours.Fishing
         /// <summary>
         /// The Build-7 handoff: if this trap opts into deck work (its Def carries a DeckWorkDef) and its
         /// deterministic catch resolves (ready + non-empty pool), bring the POT aboard — the resolved
-        /// contents ride in it (WHAT was caught is untouched, rule 5; only WHEN/HOW it lands changes) and
-        /// the trap leaves the world + the save exactly as a haul always removed it (so a reload can never
-        /// re-haul it — no dupes; the pot aboard is transient, the documented ADR 0020 greybox compromise).
-        /// Returns false to fall through to the legacy instant-land / cozy-empty path.
+        /// contents ride in it, ALL of them (the soak-to-fill list: 1 at ready, filling to capacity by
+        /// <see cref="TrapDef.HoursToFullPot"/> — WHAT was caught is untouched, rule 5; only WHEN/HOW it
+        /// lands changes) and the trap leaves the world + the save exactly as a haul always removed it
+        /// (so a reload can never re-haul it — no dupes; the pot aboard is transient, the documented
+        /// ADR 0020 greybox compromise). Returns false to fall through to the legacy instant-land /
+        /// cozy-empty path.
         /// </summary>
         private bool TryBringPotAboard(PlacedTrap trap, in CatchContext ctx)
         {
             if (trap == null || trap.Trap == null || trap.Trap.DeckWork == null) return false;
 
-            CatchItem? maybe = trap.ResolveCatch(NowSeconds(), in ctx);
-            if (maybe == null) return false;   // not soaked / empty pool → the legacy empty beat
+            int count = trap.ResolveCatches(NowSeconds(), in ctx, _catchScratch);
+            if (count == 0) return false;   // not soaked / empty pool → the legacy empty beat
 
             PotDeckWorkController deck = EnsureDeckWork();
             if (deck == null || deck.HasPotAboard) return false;   // deck busy → legacy land (defensive)
 
-            _catchScratch[0] = maybe.Value;
             if (!deck.BringAboard(trap, _catchScratch)) return false;
 
             _service.RemoveTrap(trap);   // out of the world + the save; the buoy goes
             return true;
         }
 
-        // Scratch for the single-item catch handoff (the Build-3 resolver lands one item today; the deck
-        // work is N-ready). Reused — no per-haul allocation.
-        private readonly CatchItem[] _catchScratch = new CatchItem[1];
+        // Scratch for the resolved-catch handoff (the DeckPot copies it at BringAboard). Reused — no
+        // per-haul allocation beyond first growth (rule 7).
+        private readonly List<CatchItem> _catchScratch = new();
 
         // ---- swell read (the presentation animator path — matches BoatWaveMotion's feel) --------
 

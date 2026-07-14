@@ -76,7 +76,6 @@ namespace HiddenHarbours.Tests.PlayMode
         private SaveData _save;
 
         private const double PlaceTime = 5000.0;
-        private static readonly double SoakSpan = 12.0 * 3600.0;
 
         [SetUp]
         public void SetUp()
@@ -133,6 +132,12 @@ namespace HiddenHarbours.Tests.PlayMode
             var d = ScriptableObject.CreateInstance<DeckWorkDef>();
             d.Id = "deckwork.play_test"; d.DisplayName = "Play-test deck work";
             d.NipChanceRushed01 = 0f; d.NipChanceCareful01 = 0f;
+            // Multi-animal layout for a FIXED test worker (the real player walks the deck): the keeper
+            // row starts farther from the worker than the pot, so the contextual "nearest work wins"
+            // verb keeps GRABBING while the pot holds animals (keepers never out-rank her mid-pick),
+            // and the reach covers the whole 3-keeper row for the banding pass.
+            d.WorkReachMeters = 2.0f;
+            d.KeeperRowOffset = new Vector2(0.6f, -0.25f);
             d.SpeciesRules = new[]
             {
                 new SpeciesDeckRule
@@ -157,6 +162,10 @@ namespace HiddenHarbours.Tests.PlayMode
             trap.AllowedCatchFishIds = new[] { "fish.lobster" };
             trap.RequiredBaitId = "bait.herring";
             trap.SoakHours = 12f; trap.MinSoakDepthMeters = 3f; trap.MaxSoakDepthMeters = 40f;
+            // Multi-catch: a 3-animal pot, full at 24h (ready at 12h) — the test soaks her to FULL so the
+            // deck works a whole pot, not one animal. Capacity 3 keeps the greybox keeper row within the
+            // Def's default working reach of the fixed test worker (the real player walks the deck).
+            trap.CapacityUnits = 3; trap.HoursToFullPot = 24f;
             trap.DeckWork = deckDef;
             _spawned.Add(trap);
             return (trap, bait);
@@ -209,24 +218,35 @@ namespace HiddenHarbours.Tests.PlayMode
             // On deck — through the BUS, the real path (the components subscribed in OnEnable).
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
 
-            // SET the pot (consumes bait #1), soak it ready.
+            // SET the pot (consumes bait #1), soak it FULL (24h = HoursToFullPot — the whole pot).
             PlacedTrap placed = svc.PlaceTrap(trap, bait, new Vector2(1f, 1f), "region.st_peters");
             Assert.IsNotNull(placed);
             Assert.AreEqual(1, BaitCount(_save, bait.Id));
-            _clock.Seconds = PlaceTime + SoakSpan;
+            _clock.Seconds = PlaceTime + trap.HoursToFullPot * 3600.0;
 
-            // What WILL the pot land? Derive the expected sort from the same pure streams the game uses
-            // BEFORE the haul — the test's determinism oracle (rule 5: recompute, don't peek).
+            // What WILL the pot land? Derive the expected LIST + per-animal sort from the same pure
+            // streams the game uses BEFORE the haul — the test's determinism oracle (rule 5: recompute,
+            // don't peek).
             var ctx = new CatchContext("region.coddle_cove", 2f, 12f, Season.HighSummer, Gear.Trap);
-            CatchItem? expected = placed.ResolveCatch(_clock.Seconds, in ctx);
-            Assert.IsTrue(expected.HasValue, "a soaked, baited pot resolves a catch");
-            uint sizeHash = DeckWork.AnimalHash(placed.WorldSeed, placed.InstanceId,
-                placed.PlacementGameTimeSeconds, expected.Value.SpeciesId, 0, DeckWork.SizeChannel);
-            uint berriedHash = DeckWork.AnimalHash(placed.WorldSeed, placed.InstanceId,
-                placed.PlacementGameTimeSeconds, expected.Value.SpeciesId, 0, DeckWork.BerriedChannel);
-            float expectedSize = DeckWork.SizeMm(sizeHash, 62f, 140f);
-            bool expectedBerried = DeckWork.RollBerried(berriedHash, true, 0.15f);
-            bool expectedKeeper = DeckWork.IsKeeper(expectedSize, expectedBerried, 83f);
+            var expected = new List<CatchItem>();
+            int expectedCount = placed.ResolveCatches(_clock.Seconds, in ctx, expected);
+            Assert.AreEqual(trap.CapacityUnits, expectedCount,
+                "a full soak fills the pot to capacity — the owner's multi-catch ask");
+            var expectedSize = new float[expectedCount];
+            var expectedBerried = new bool[expectedCount];
+            var expectedKeeper = new bool[expectedCount];
+            int expectedKeepers = 0;
+            for (int i = 0; i < expectedCount; i++)
+            {
+                uint sizeHash = DeckWork.AnimalHash(placed.WorldSeed, placed.InstanceId,
+                    placed.PlacementGameTimeSeconds, expected[i].SpeciesId, i, DeckWork.SizeChannel);
+                uint berriedHash = DeckWork.AnimalHash(placed.WorldSeed, placed.InstanceId,
+                    placed.PlacementGameTimeSeconds, expected[i].SpeciesId, i, DeckWork.BerriedChannel);
+                expectedSize[i] = DeckWork.SizeMm(sizeHash, 62f, 140f);
+                expectedBerried[i] = DeckWork.RollBerried(berriedHash, true, 0.15f);
+                expectedKeeper[i] = DeckWork.IsKeeper(expectedSize[i], expectedBerried[i], 83f);
+                if (expectedKeeper[i]) expectedKeepers++;
+            }
 
             int caught = 0;
             void OnCaught(FishCaught _) => caught++;
@@ -251,37 +271,41 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.IsTrue(deck.HasPotAboard, "the pot rides the deck across frames");
 
-            // The game derived the same animal the oracle did.
-            DeckPot.Animal animal = deck.Pot.Animals[0];
-            Assert.AreEqual(expected.Value.SpeciesId, animal.Item.SpeciesId, "WHAT was caught is untouched");
-            Assert.AreEqual(expected.Value.WeightKg, animal.Item.WeightKg, 0f, "the Build-3 weight untouched");
-            Assert.AreEqual(expectedSize, animal.SizeMm, 0f, "the size matches the pure-stream oracle exactly");
-            Assert.AreEqual(expectedBerried, animal.Berried);
-            Assert.AreEqual(expectedKeeper, animal.Keeper, "the sort verdict is the deterministic one");
+            // The game derived the same ANIMALS the oracle did — the whole list, in catch order.
+            Assert.AreEqual(expectedCount, deck.Pot.Animals.Count, "all the pot's animals came aboard");
+            for (int i = 0; i < expectedCount; i++)
+            {
+                DeckPot.Animal animal = deck.Pot.Animals[i];
+                Assert.AreEqual(expected[i].SpeciesId, animal.Item.SpeciesId, $"animal {i}: WHAT was caught is untouched");
+                Assert.AreEqual(expected[i].WeightKg, animal.Item.WeightKg, 0f, $"animal {i}: the resolved weight untouched");
+                Assert.AreEqual(expectedSize[i], animal.SizeMm, 0f, $"animal {i}: size matches the pure-stream oracle");
+                Assert.AreEqual(expectedBerried[i], animal.Berried, $"animal {i}: berried flag matches");
+                Assert.AreEqual(expectedKeeper[i], animal.Keeper, $"animal {i}: the sort verdict is the deterministic one");
+            }
 
-            // PICK (a full, careful hold — nips are off in this ruleset so one grab does it).
-            Work(deck, 1.0f);
+            // PICK the pot empty (full, careful holds — nips are off, so one grab per animal). Each
+            // clean grab sorts on the spot: keepers wait on the deck row, shorts/berried splash back.
+            for (int grabs = 0; grabs < expectedCount; grabs++)
+            {
+                Assert.AreEqual(expectedCount - grabs, deck.Pot.InPotCount, "one animal leaves the pot per grab");
+                Work(deck, 1.0f);
+            }
             Assert.AreEqual(0, deck.Pot.InPotCount, "picked out");
+            Assert.AreEqual(expectedKeepers, deck.Pot.OnDeckCount, "the keepers wait on the deck, unbanded");
+            Assert.AreEqual(expectedCount - expectedKeepers, deck.Pot.ReturnedCount,
+                "the honest fishery returned every short/berried hen");
+            Assert.AreEqual(0, hold.UsedUnits, "nothing counts until it's banded");
+            Assert.AreEqual(0, caught);
 
-            if (expectedKeeper)
-            {
-                // SORT said keeper → BAND it (only then does it count), and the pot wants bait.
-                Assert.AreEqual(1, deck.Pot.OnDeckCount);
-                Work(deck, 1.0f);   // band
-                Assert.AreEqual(1, hold.UsedUnits, "the banded keeper landed");
-                Assert.AreEqual(1, caught, "through the unchanged FishCaught path");
-                Assert.AreEqual(expected.Value.SpeciesId, hold.Items[0].SpeciesId);
-                Assert.AreEqual(expected.Value.WeightKg, hold.Items[0].WeightKg, 0f,
-                    "the landed item IS the resolved catch — zero economy change");
-            }
-            else
-            {
-                // SORT said short/berried → she went straight back over the side, value zero.
-                Assert.AreEqual(0, deck.Pot.OnDeckCount);
-                Assert.AreEqual(1, deck.Pot.ReturnedCount, "the honest fishery returned her");
-                Assert.AreEqual(0, hold.UsedUnits);
-                Assert.AreEqual(0, caught);
-            }
+            // BAND every waiting keeper (only banded keepers count — the unchanged FishCaught path).
+            for (int bands = 0; bands < expectedKeepers; bands++)
+                Work(deck, 1.0f);
+            Assert.AreEqual(0, deck.Pot.OnDeckCount, "every keeper banded");
+            Assert.AreEqual(expectedKeepers, hold.UsedUnits, "every banded keeper landed in the hold");
+            Assert.AreEqual(expectedKeepers, caught, "one FishCaught per keeper — counts match the oracle");
+            for (int i = 0; i < hold.UsedUnits; i++)
+                Assert.AreEqual("fish.lobster", hold.Items[i].SpeciesId,
+                    "the landed items ARE the resolved catch — zero economy change");
 
             // RE-BAIT (consumes bait #2) → READY → T-set her again, pre-baited (no third bait).
             Assert.IsTrue(deck.Pot.NeedsBait);
