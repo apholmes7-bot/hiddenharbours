@@ -38,12 +38,14 @@ namespace HiddenHarbours.Fishing
         public string Id = "deckwork.pot";
         public string DisplayName = "Pot deck work";
 
-        [Header("Pot art (owner's painted wet/dry states drop in here — no code change)")]
-        [Tooltip("The pot as it lands on deck, dripping (shown while she still holds animals). Empty = " +
-                 "the TrapDef's TrapSprite, else a code-built greybox box.")]
+        [Header("Pot art (ruleset-wide OVERRIDE — the per-kind art lives on the TrapDef)")]
+        [Tooltip("Ruleset-wide override: the pot as it lands on deck, dripping (shown while she still holds " +
+                 "animals). Leave EMPTY to use the trap's own wet/dry art (TrapDef.TrapSpriteWet / " +
+                 "TrapSprite — wood vs wire read apart); a sprite here forces every pot on this ruleset to " +
+                 "the same look. Last fallback is a code-built greybox box.")]
         public Sprite PotSpriteWet;
-        [Tooltip("The pot dried off on deck (shown once she's been picked empty). Empty = same fallback " +
-                 "as the wet slot.")]
+        [Tooltip("Ruleset-wide override: the pot dried off on deck (shown once she's been picked empty). " +
+                 "Empty = the trap's own TrapSprite, then the wet chain.")]
         public Sprite PotSpriteDry;
 
         [Header("Working reach (walk-to, diegetic — no menus)")]
@@ -169,8 +171,26 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Greybox silhouette shape while no sprite is authored (lobster vs crab must read apart).")]
         public DeckAnimalShape Shape;
 
-        [Tooltip("The owner's painted animal sprite — drops in over the code-built silhouette, no code " +
-                 "change. Empty = silhouette.")]
+        [Tooltip("The owner's painted animal sprite (the still) — drops in over the code-built silhouette, " +
+                 "no code change. Empty = silhouette. With CrawlFrames authored this is the resting frame " +
+                 "the splash-out arc carries.")]
         public Sprite AnimalSprite;
+
+        [Tooltip("The crawl / tail-flip LOOP (the deck sheet's frames 0-5, in order) a keeper plays while it " +
+                 "waits on the deck. Empty = the still AnimalSprite / silhouette (the greybox behaviour). " +
+                 "Append-only art slot.")]
+        public Sprite[] CrawlFrames;
+
+        [Min(0f)]
+        [Tooltip("Frames per second the crawl loop plays at. 0 freezes on the first frame. A feel knob.")]
+        public float CrawlFps;
+
+        [Tooltip("The REAR pose (the deck sheet's frame 6) — shown while the animal is being picked out of " +
+                 "the pot (the diegetic lift). Empty = the still AnimalSprite / silhouette.")]
+        public Sprite RearSprite;
+
+        [Tooltip("The DEFEND pose, claws up and gaping (the deck sheet's frame 7) — flashed at the pot when " +
+                 "a rushed grab gets NIPPED (the recoil beat). Empty = the still AnimalSprite / silhouette.")]
+        public Sprite DefendSprite;
     }
 }

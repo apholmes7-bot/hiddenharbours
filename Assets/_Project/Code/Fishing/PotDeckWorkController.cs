@@ -540,23 +540,34 @@ namespace HiddenHarbours.Fishing
                 if (_animalRenderers[i] == null) continue;
                 _animalRenderers[i].enabled = false;
                 if (i < need)
-                {
-                    DeckPot.Animal a = _pot.Animals[i];
-                    _animalRenderers[i].sprite = a.SpriteOverride != null ? a.SpriteOverride : Silhouette(a.Shape);
-                }
+                    _animalRenderers[i].sprite = StillSprite(_pot.Animals[i]);
             }
             _splashes.Clear();
         }
 
-        /// <summary>The pot reads WET while she still holds animals, DRY once picked empty — the owner's
-        /// painted states drop into the Def; greybox falls back to the TrapDef sprite, then a built box.</summary>
+        /// <summary>The pot reads WET while she still holds animals, DRY once picked empty — the readable
+        /// state signal. Ruleset-wide override first (DeckWorkDef.PotSpriteWet/Dry), then the trap's own
+        /// painted wet/dry pair (TrapDef.TrapSpriteWet / TrapSprite — wood vs wire read apart), then the
+        /// wet look for an unauthored dry, then the code-built greybox box.</summary>
         private void RefreshPotSprite()
         {
             if (_potRenderer == null || _pot == null) return;
             bool wet = _pot.InPotCount > 0;
-            Sprite s = wet ? _pot.Def.PotSpriteWet : _pot.Def.PotSpriteDry;
-            if (s == null) s = _pot.Def.PotSpriteWet;                       // dry unauthored → stay wet-look
-            if (s == null && _pot.Trap != null) s = _pot.Trap.TrapSprite;
+            TrapDef trap = _pot.Trap;
+            Sprite s;
+            if (wet)
+            {
+                s = _pot.Def.PotSpriteWet;
+                if (s == null && trap != null) s = trap.TrapSpriteWet;
+                if (s == null && trap != null) s = trap.TrapSprite;
+            }
+            else
+            {
+                s = _pot.Def.PotSpriteDry;
+                if (s == null && trap != null) s = trap.TrapSprite;
+                if (s == null) s = _pot.Def.PotSpriteWet;                   // dry unauthored → stay wet-look
+                if (s == null && trap != null) s = trap.TrapSpriteWet;
+            }
             if (s == null) s = FallbackPotSprite();
             _potRenderer.sprite = s;
         }
@@ -624,20 +635,35 @@ namespace HiddenHarbours.Fishing
 
                 if (a.Fate == DeckAnimalFate.OnDeck)
                 {
+                    // A waiting keeper plays its crawl / tail-flip loop (the owner's deck-sheet frames
+                    // 0-5, authored on the rule) — staggered by its stable index so a row of keepers
+                    // doesn't move in lockstep. No frames authored → the still (the greybox behaviour).
                     sr.enabled = true;
                     sr.transform.position = KeeperWorldPos(a);
+                    SetSpriteIfChanged(sr, CrawlSprite(a));
                 }
                 else if (a.Fate == DeckAnimalFate.InPot)
                 {
+                    // The nip beat: the animal that got you rears up at the pot with claws gaping (the
+                    // sheet's DEFEND pose) for the recoil window — the P5 teeth made visible.
+                    bool nipped = _recoilLeft > 0f && a == _pot.NextInPot();
                     // The diegetic care read: the animal being grabbed LIFTS out of the pot as the hold
                     // matures — a full lift is a full, safe grab. No meter, the pot is the interface.
-                    bool lifting = _holdVerb == DeckVerb.Grab && _wasHolding && a == _pot.NextInPot();
-                    sr.enabled = lifting;
-                    if (lifting && _pot.Def != null)
+                    bool lifting = !nipped && _holdVerb == DeckVerb.Grab && _wasHolding && a == _pot.NextInPot();
+                    sr.enabled = nipped || lifting;
+                    if (nipped && _pot.Def != null)
+                    {
+                        // At the top of the reach — where she got you (the Def's lift height, no new number).
+                        sr.transform.position = PotWorldPos + Vector2.up * _pot.Def.GrabLiftMeters;
+                        SetSpriteIfChanged(sr, a.DefendSprite != null ? a.DefendSprite : StillSprite(a));
+                    }
+                    else if (lifting && _pot.Def != null)
                     {
                         float lift01 = _pot.Def.FullGrabSeconds > 0f
                             ? Mathf.Clamp01(_holdSeconds / _pot.Def.FullGrabSeconds) : 1f;
                         sr.transform.position = PotWorldPos + Vector2.up * (_pot.Def.GrabLiftMeters * lift01);
+                        // Lifted clear, the animal REARS (the sheet's frame-6 pose) — the picked/held read.
+                        SetSpriteIfChanged(sr, a.RearSprite != null ? a.RearSprite : StillSprite(a));
                     }
                 }
             }
@@ -673,6 +699,32 @@ namespace HiddenHarbours.Fishing
                 }
                 _splashes[i] = s;
             }
+        }
+
+        // ---- animal state sprites (the owner's deck-sheet poses, all data on the rule) ---------------
+
+        /// <summary>The animal's still: the owner's painted sprite from the rule, else the code-built
+        /// silhouette — the splash-out look and the fallback for every unauthored pose.</summary>
+        private static Sprite StillSprite(DeckPot.Animal a)
+            => a.SpriteOverride != null ? a.SpriteOverride : Silhouette(a.Shape);
+
+        /// <summary>The crawl-loop frame a waiting keeper shows right now (presentation time through the
+        /// pure <see cref="FlipbookMath"/>; cadence is the rule's CrawlFps — data). Staggered by the
+        /// animal's stable index so keepers desync without a tuning number. No frames → the still.</summary>
+        private static Sprite CrawlSprite(DeckPot.Animal a)
+        {
+            Sprite[] frames = a.CrawlFrames;
+            if (frames == null || frames.Length == 0) return StillSprite(a);
+            int frame = FlipbookMath.LoopFrame(Time.timeAsDouble, a.CrawlFps, frames.Length);
+            if (frame < 0) return StillSprite(a);
+            frame = (frame + a.Index) % frames.Length;   // the index stagger
+            return frames[frame] != null ? frames[frame] : StillSprite(a);
+        }
+
+        /// <summary>Assign only on change — the per-frame path never dirties a renderer redundantly.</summary>
+        private static void SetSpriteIfChanged(SpriteRenderer sr, Sprite s)
+        {
+            if (sr.sprite != s) sr.sprite = s;
         }
 
         // ---- code-built greybox silhouettes (cached; the owner's sprites replace them via the Def) ----

@@ -20,7 +20,9 @@ MonoBehaviour:
   - Id: fish.mackerel
     Icon: {fileID: -8407166883477379423, guid: e9ea28cbd0a514a408c7c9cc278ef42d, type: 3}
   - Id: fish.lobster
-    Icon: {fileID: -8456290002298016751, guid: 040a0268a1bccd349b770115adf7e914, type: 3}
+    Icon: {fileID: 21300000, guid: 555eeebc25e370ae12601d4252236302, type: 3}
+  - Id: fish.rock_crab
+    Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
   - Id: fish.soft_shell_clam
     Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
   - Id: gear.rod
@@ -39,3 +41,5 @@ MonoBehaviour:
     Icon: {fileID: 464206127066122051, guid: ae88fbc6dd049644e9c607c33c4c34e7, type: 3}
   - Id: ui.hold
     Icon: {fileID: 8828844319154872306, guid: 1c7cd2647a21e114a9b2fbe5d8bba682, type: 3}
+  - Id: buoy.player
+    Icon: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}

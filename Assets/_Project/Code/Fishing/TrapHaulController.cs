@@ -394,6 +394,14 @@ namespace HiddenHarbours.Fishing
             HideRope();
             if (trap == null) { Publish(TrapHaulPhase.Idle, false); return; }
 
+            // She breaks the surface — the owner's painted haul-break burst at the buoy, whatever the
+            // outcome (aboard, instant-land, or up empty: the pot physically surfaced either way). Purely
+            // cosmetic and data-driven (TrapDef.SplashBurstFrames; empty slot = no splash), played BEFORE
+            // the landing path can remove the trap object.
+            if (trap.Trap != null)
+                TrapSplashFx.Play(trap.Trap.SplashBurstFrames, trap.Trap.SplashBurstFps,
+                                  trap.transform.position);
+
             EnsureHold();
             CatchContext ctx = BuildContext();
 

@@ -38,7 +38,17 @@ MonoBehaviour:
     CanBeBerried: 1
     BerriedChance01: 0.15
     Shape: 0
-    AnimalSprite: {fileID: 0}
+    AnimalSprite: {fileID: -4280876885085530330, guid: f39b9348109705340060053c1546da73, type: 3}
+    CrawlFrames:
+    - {fileID: -4280876885085530330, guid: f39b9348109705340060053c1546da73, type: 3}
+    - {fileID: -547175732954413048, guid: f39b9348109705340060053c1546da73, type: 3}
+    - {fileID: -2759606815526473755, guid: f39b9348109705340060053c1546da73, type: 3}
+    - {fileID: -9137216014045997752, guid: f39b9348109705340060053c1546da73, type: 3}
+    - {fileID: 8396967145299811873, guid: f39b9348109705340060053c1546da73, type: 3}
+    - {fileID: 8127585584009961185, guid: f39b9348109705340060053c1546da73, type: 3}
+    CrawlFps: 8
+    RearSprite: {fileID: 7832157052086797378, guid: f39b9348109705340060053c1546da73, type: 3}
+    DefendSprite: {fileID: -6570287229520662744, guid: f39b9348109705340060053c1546da73, type: 3}
   - SpeciesId: fish.rock_crab
     MinKeepSizeMm: 102
     SizeMinMm: 70
@@ -46,4 +56,14 @@ MonoBehaviour:
     CanBeBerried: 0
     BerriedChance01: 0
     Shape: 1
-    AnimalSprite: {fileID: 0}
+    AnimalSprite: {fileID: 1523059436520814979, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    CrawlFrames:
+    - {fileID: 1523059436520814979, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 6296961827655795346, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 885980829398931710, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: 3246202016240231304, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: -2435556665039615672, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    - {fileID: -8200094991845692985, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    CrawlFps: 8
+    RearSprite: {fileID: -4082586718090169636, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}
+    DefendSprite: {fileID: 8224166611285054158, guid: 13f0c02469227bcb81a79ccca9f8941e, type: 3}

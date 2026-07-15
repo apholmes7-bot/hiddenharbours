@@ -120,6 +120,12 @@ namespace HiddenHarbours.Fishing
             }
 
             EventBus.Publish(new TrapPlaced(instanceId, position.x, position.y));
+
+            // A fresh set hits the water — the owner's painted splash at the drop point (data on the
+            // trap; empty slot = no splash). Deliberately HERE and not in SpawnTrap: the save-restore
+            // path re-publishes TrapPlaced for every trap on load, and a load must not splash.
+            TrapSplashFx.Play(trapDef.SplashBurstFrames, trapDef.SplashBurstFps, position);
+
             Debug.Log($"[PlacedTrapService] Set a {trapDef.DisplayName} at ({position.x:0.0}, {position.y:0.0}), " +
                       $"soaking {trapDef.SoakHours}h.");
             return trap;
