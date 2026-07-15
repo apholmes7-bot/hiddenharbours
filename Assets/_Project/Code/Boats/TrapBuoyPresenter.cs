@@ -24,14 +24,25 @@ namespace HiddenHarbours.Boats
     /// <see cref="RuntimeInitializeOnLoadMethod"/> host subscribes at boot; buoys live under its own plain
     /// root and never touch authored/painted content. Visual-only: drives no sim, saves nothing, so on a
     /// save/load the buoys are re-created from the restored traps' fresh <see cref="TrapPlaced"/> signals —
-    /// no buoy state is persisted (rule 5). The greybox buoy sprite is generated in code (no asset
-    /// dependency), a stand-in until the real LobsterBuoy art wires in.</para>
+    /// no buoy state is persisted (rule 5).</para>
+    ///
+    /// <para><b>The buoy art (ratified canon: buoy COLOUR = whose gear; the player's is YELLOW).</b> The
+    /// owner's painted player buoy resolves through the Core <see cref="IconRegistry"/> under the authored
+    /// <see cref="PlayerBuoyIconId"/> key (an <c>IconLibrary</c> entry — data, not code), because this
+    /// Boats-lane presenter cannot see the Fishing lane's <c>TrapDef</c> and the <see cref="TrapPlaced"/>
+    /// signal deliberately carries no asset handle. Unregistered (EditMode, a stripped build) → the
+    /// code-built yellow greybox, exactly as before.</para>
     /// </summary>
     public sealed class TrapBuoyPresenter : MonoBehaviour
     {
         // Draw ABOVE the Sea plane (St Peters' Sea is order -5), the water-surface-prop order the
         // LobsterBuoy decor used, so the buoy sits ON the water in front of the surface.
         private const int BuoySortingOrder = 3;
+
+        /// <summary>The Core icon key the player's trap-buoy sprite is authored under (an IconLibrary
+        /// entry). A registry KEY like the UI's "ui.coin" glyphs, not a Def id — the colour-of-ownership
+        /// canon means ONE player buoy look regardless of trap kind, so one key is the honest shape.</summary>
+        public const string PlayerBuoyIconId = "buoy.player";
 
         private static TrapBuoyPresenter _instance;
 
@@ -66,7 +77,15 @@ namespace HiddenHarbours.Boats
         {
             if (string.IsNullOrEmpty(e.InstanceId) || _buoys.ContainsKey(e.InstanceId)) return;
 
-            if (_sprite == null) _sprite = BuildGreyboxBuoySprite();
+            // The owner's painted YELLOW player buoy (authored data via the Core icon seam), falling back
+            // to the code-built greybox when unregistered. Resolved per placement (event-time, a dict
+            // lookup) so late registration is picked up without a restart.
+            Sprite art = IconRegistry.Get(PlayerBuoyIconId);
+            if (art == null)
+            {
+                if (_sprite == null) _sprite = BuildGreyboxBuoySprite();
+                art = _sprite;
+            }
 
             var go = new GameObject("TrapBuoy_" + e.InstanceId);
             go.transform.SetParent(transform, worldPositionStays: true);
@@ -78,7 +97,7 @@ namespace HiddenHarbours.Boats
             visualGo.transform.SetParent(go.transform, worldPositionStays: false);
 
             var sr = visualGo.AddComponent<SpriteRenderer>();
-            sr.sprite = _sprite;
+            sr.sprite = art;
             sr.sortingOrder = BuoySortingOrder;
 
             var buoy = go.AddComponent<BuoyWaveVisual>();
@@ -100,7 +119,8 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// A tiny greybox lobster-buoy silhouette in code (16×32, 32 PPU ⇒ ~0.5×1 m), BOTTOM-CENTRE pivot so
         /// the reused PlayerSubmerge shader clips the waterline from the base up. One shared sprite → the
-        /// buoys batch (rule 7). Replaced by the real LobsterBuoy art when the trap arc's art handoff lands.
+        /// buoys batch (rule 7). The FALLBACK once the owner's painted buoy registers under
+        /// <see cref="PlayerBuoyIconId"/> (same yellow read, so the ownership colour holds either way).
         /// </summary>
         private static Sprite BuildGreyboxBuoySprite()
         {

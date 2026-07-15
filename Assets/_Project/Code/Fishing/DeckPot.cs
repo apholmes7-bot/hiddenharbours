@@ -78,6 +78,14 @@ namespace HiddenHarbours.Fishing
             public DeckAnimalShape Shape;
             /// <summary>Owner-authored sprite override from the rule (null = code-built silhouette).</summary>
             public UnityEngine.Sprite SpriteOverride;
+            /// <summary>The rule's crawl/tail-flip loop frames (null/empty = still sprite). Presentation only.</summary>
+            public UnityEngine.Sprite[] CrawlFrames;
+            /// <summary>Crawl-loop cadence (frames/second) from the rule. Presentation only.</summary>
+            public float CrawlFps;
+            /// <summary>The REAR pose shown while this animal is lifted out of the pot (null = still).</summary>
+            public UnityEngine.Sprite RearSprite;
+            /// <summary>The DEFEND pose (claws up) flashed on a nip (null = still).</summary>
+            public UnityEngine.Sprite DefendSprite;
             /// <summary>Where the animal is in the cycle.</summary>
             public DeckAnimalFate Fate;
             /// <summary>How many grab attempts this animal has seen (the nip stream's attempt index).</summary>
@@ -134,6 +142,10 @@ namespace HiddenHarbours.Fishing
                     a.HasRule = true;
                     a.Shape = rule.Shape;
                     a.SpriteOverride = rule.AnimalSprite;
+                    a.CrawlFrames = rule.CrawlFrames;
+                    a.CrawlFps = rule.CrawlFps;
+                    a.RearSprite = rule.RearSprite;
+                    a.DefendSprite = rule.DefendSprite;
                     uint sizeHash = DeckWork.AnimalHash(worldSeed, instanceId, placementGameTimeSeconds,
                                                         item.SpeciesId, i, DeckWork.SizeChannel);
                     uint berriedHash = DeckWork.AnimalHash(worldSeed, instanceId, placementGameTimeSeconds,

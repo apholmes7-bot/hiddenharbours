@@ -19,7 +19,7 @@ MonoBehaviour:
   Flavor: 'Underfoot in every tide pool, taken in the crab pot. Good bait and a modest
     sale. The trap-arc''s common shellfish. BALANCE NOTE: greybox values (base value,
     elasticity, weight) - flagged for economy-sim to tune.'
-  Sprite: {fileID: 0}
+  Sprite: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
   RegionIds:
   - region.coddle_cove
   - region.st_peters

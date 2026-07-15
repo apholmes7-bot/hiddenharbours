@@ -24,12 +24,30 @@ namespace HiddenHarbours.Fishing
         public string Id = "trap.lobster";
         public string DisplayName = "Lobster Pot";
 
-        [Header("Art (greybox placeholders until art-pipeline authors trap/buoy art)")]
-        [Tooltip("The trap/pot sprite (the thing that sits on the seabed). Placeholder for now — a dedicated " +
-                 "trap sprite is an art-pipeline handoff.")]
+        [Header("Art (the owner's painted trap kit drops in here — data, not code)")]
+        [Tooltip("The pot DRY — how she reads once picked empty and squared away on the deck (and the trap's " +
+                 "identity sprite anywhere one image must stand for the kind). Wood bow-top for the lobster " +
+                 "pot, wire mesh for the crab pot.")]
         public Sprite TrapSprite;
-        [Tooltip("The surface buoy marking the set trap (what the player gaffs to haul). Lobster ≠ crab.")]
+        [Tooltip("The surface buoy marking the set trap (what the player gaffs to haul). Ratified canon: buoy " +
+                 "COLOUR says WHOSE gear it is — the player's is the YELLOW float. (The world buoy itself is " +
+                 "drawn by the Boats-lane presenter off the Core icon key \"buoy.player\"; this slot keeps the " +
+                 "trap's own data complete for any per-kind consumer.)")]
         public Sprite BuoySprite;
+        [Tooltip("The pot WET — hauled up dripping, rockweed and barnacles still on her (shown on the deck " +
+                 "while she still holds animals). Empty = the dry TrapSprite stands in. Append-only art slot " +
+                 "for the owner's *Wet.png states.")]
+        public Sprite TrapSpriteWet;
+
+        [Header("Splash (the haul-break burst — pooled one-shot FX, data not code)")]
+        [Tooltip("The splash flipbook played ONCE at the buoy when this pot breaks the surface at haul-end, " +
+                 "and when a fresh set hits the water (T). Sheet cells in order; empty = no splash (the " +
+                 "greybox behaviour). Pivot = the artist's surface point, so frame 0 sits on the waterline.")]
+        public Sprite[] SplashBurstFrames = System.Array.Empty<Sprite>();
+        [Min(1f)]
+        [Tooltip("Frames per second the splash burst plays at (the artist's brief: ~14-18; 16 reads right). " +
+                 "A feel knob, not code.")]
+        public float SplashBurstFps = 16f;
 
         [Header("Capacity & catch")]
         [Min(1)]

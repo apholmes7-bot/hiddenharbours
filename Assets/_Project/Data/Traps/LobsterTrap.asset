@@ -14,8 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.TrapDef
   Id: trap.lobster
   DisplayName: Lobster Pot
-  TrapSprite: {fileID: -8456290002298016751, guid: 040a0268a1bccd349b770115adf7e914, type: 3}
-  BuoySprite: {fileID: 1189902111904977172, guid: 8679e628e90ab3d4580f4dc81f470e00, type: 3}
+  TrapSprite: {fileID: 21300000, guid: dfba696f6702a3afc9b58099eccc2964, type: 3}
+  BuoySprite: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}
+  TrapSpriteWet: {fileID: 21300000, guid: 4d6c8b8694ff1d2a4f7ddfc547b47f5b, type: 3}
+  SplashBurstFrames:
+  - {fileID: -1164736854261958497, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: 732158073382240692, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: -1929976222771213117, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: 7502845539170666822, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: 437714781892716645, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: -1280746555800692511, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: 8958423535173121114, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  - {fileID: -4411448151709350727, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+  SplashBurstFps: 16
   CapacityUnits: 4
   AllowedCatchFishIds:
   - fish.lobster
