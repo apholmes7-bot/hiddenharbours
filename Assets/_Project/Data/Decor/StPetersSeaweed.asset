@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ab85a2faad47909799b771e432d99e, type: 3}
+  m_Name: StPetersSeaweed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SeaweedDef
+  Id: decor.seaweed_st_peters
+  RegionSceneName: StPeters
+  BedCenter: {x: 5, y: -30}
+  BedSize: {x: 90, y: 26}
+  PieceCount: 18
+  MinSpawnDepthMeters: 0.5
+  MaxSpawnTries: 12
+  RespawnSeconds: 120
+  DriftBoundsPaddingMeters: 12
+  FlowResponse: 1
+  WindResponse: 0.12
+  TroughSeek: 0.6
+  MaxDriftSpeedMetersPerSecond: 0.4
+  MergeRadiusMeters: 0.8
+  BuoySnagRadiusMeters: 0.9
+  BuoyRestRadiusMeters: 0.35
+  SnagReleaseSeconds: 0
+  StrandDepthMeters: 0.08
+  RefloatDepthMeters: 0.25
+  BobPerMeter: 0.2
+  MaxBobMeters: 0.35
+  WobbleMaxDegrees: 9
+  TierSizesMeters:
+  - 0.45
+  - 0.75
+  - 1.15
+  TierSprites: []
+  Palette:
+  - {r: 0.23, g: 0.29, b: 0.16, a: 1}
+  - {r: 0.18, g: 0.24, b: 0.15, a: 1}
+  - {r: 0.3, g: 0.26, b: 0.13, a: 1}
+  - {r: 0.16, g: 0.21, b: 0.17, a: 1}
+  MaxAlpha: 0.95
+  FadeInSeconds: 1.5
+  SortingOrder: -3
+  CameraZOffset: 0.2
