@@ -593,6 +593,7 @@ namespace HiddenHarbours.Fishing
             if (sr == null || _pot == null) return;
             sr.color = Color.white;
             sr.enabled = true;
+            SetSpriteIfChanged(sr, StillSprite(a));   // the arc flies the still, not the lift's REAR pose
 
             // Over the nearest side: away from the worker, so the throw reads from the hands. Degenerate
             // (worker on the pot) falls to starboard. Visual only.
