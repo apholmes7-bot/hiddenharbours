@@ -90,5 +90,18 @@ namespace HiddenHarbours.Boats
         [Header("Camera")]
         [Tooltip("World height in metres the camera frames for this hull — bigger boat = more water.")]
         public float CameraWorldHeightMeters = 14f;
+
+        [Header("Deck container (the diegetic catch read — tray now, blue totes up the ladder in M2)")]
+        [Tooltip("The catch container this hull carries on deck. Its fill-state sprites ARE the 'how " +
+                 "full is my hold' read (owner canon: no HUD counter — you look at the tray). Small " +
+                 "boats carry the fish TRAY (container.fish_tray); big hulls take the North Atlantic " +
+                 "blue TOTES in M2 — swap the referenced asset, never code. Null = no container shown.")]
+        public DeckContainerDef DeckContainer;
+        [Tooltip("Where the container sits, in the DRAWN hull's DECK FRAME (x = abeam, +starboard; " +
+                 "y = along the keel, +toward the bow; metres). Rotated with the snapped facing so it " +
+                 "stays on the same spot of the pictured deck at every heading (the deck-walk clamp " +
+                 "convention). NOTE: hull assets serialized before this field existed deserialize it as " +
+                 "(0,0) = dead amidships — author it explicitly on any hull that carries a container.")]
+        public Vector2 DeckContainerOffset = new Vector2(0.35f, -0.9f);
     }
 }

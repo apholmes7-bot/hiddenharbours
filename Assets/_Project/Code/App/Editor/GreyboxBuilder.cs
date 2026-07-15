@@ -548,6 +548,7 @@ namespace HiddenHarbours.App.Editor
                 dory.Propulsion = PropulsionType.Oars;   // the dory is hand-rowed (the oar-tunable defaults ride the Def)
                 dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
                 dory.CameraWorldHeightMeters = 14f;
+                ApplyDeckTray(dory);   // small boat → the fish tray (the deck-container ladder, data)
                 EditorUtility.SetDirty(dory);
             }
             var punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
@@ -650,6 +651,16 @@ namespace HiddenHarbours.App.Editor
             h.ForwardDrag = 140f; h.LateralDrag = 360f; h.WindExposure = 0.5f;
             h.MaxSafeSeaState = SeaState.Lively;
             h.CameraWorldHeightMeters = 17f;   // a bigger boat → the camera pulls back a touch on the upgrade
+            ApplyDeckTray(h);                  // still a small boat → the fish tray (blue totes are M2 hulls)
+        }
+
+        // The deck-container ladder (owner canon): every small hull the builders generate carries the
+        // committed fish tray, anchored on the starboard quarter of the drawn deck. Values mirror the
+        // committed Dory/FishingSkiff assets — one place for the builder-generated hulls.
+        static void ApplyDeckTray(BoatHullDef h)
+        {
+            h.DeckContainer = AssetDatabase.LoadAssetAtPath<DeckContainerDef>(DataBoats + "/Containers/FishTray.asset");
+            h.DeckContainerOffset = new Vector2(0.35f, -0.9f);
         }
 
         static T LoadOrCreate<T>(string path, System.Action<T> init = null) where T : ScriptableObject

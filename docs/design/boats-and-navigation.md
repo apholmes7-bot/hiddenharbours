@@ -727,6 +727,31 @@ the fleet is the coast *looking* worked.
   (bob + waterline + vanish-under-a-crest) with a **per-fisher float colour** — buoy colour = whose gear
   it is, so NPC pots never read as the player's yellow.
 
+### 9.10 The deck catch container (fish tray) — the diegetic hold read *(first slice of the physical-inventory vision)*
+
+The catch is **visible on the deck**: a fish tray sits at a fixed spot on the boat and its sprite steps
+through **fill states** as the hold fills — band a keeper and the tray gains; sell at the wharf and it
+empties. No HUD, no counter: the tray IS the "how full am I?" readout (owner canon: *fill-state sprites
+are important — you read roughly how full a tray/tote is by looking at it*).
+
+- **A pure read of `ShipHold` — not a container system.** The catch still lands via the unchanged
+  `IHold.TryAdd` + `FishCaught` path and leaves via `IHold.Clear` + `CatchSold`. The tray
+  (`DeckContainerPresenter`, Boats lane, runtime-spawned by `ShipHold` — no builder wiring) subscribes to
+  those Core edges (+ `GameLoaded`, `BoatPurchased`) and re-reads `UsedUnits / CapacityUnits`; sprite
+  swaps are event-time only. The full deck-grid / container-nesting / fullscreen-view vision is **M2/M3**.
+- **The container ladder is data.** `DeckContainerDef` (`Data/Boats/Containers`, id
+  `container.fish_tray`) carries the ordered `FillSprites` (empty first → brim last; the owner's painted
+  states drop in with zero code — an empty array falls back to 4 code-built greybox states). Which
+  container a hull carries + where it sits are hull data: `BoatHullDef.DeckContainer` /
+  `DeckContainerOffset`. Small boats carry the **tray**; the big **blue totes** are new Defs on M2 hulls.
+- **Fill mapping (tested):** state 0 is pinned to an EMPTY hold, the last state to a FULL one, partials
+  spread linearly between — so one banded keeper always shows, and only a truly full hold heaps the tray.
+- **It rides the drawn facing.** The anchor is authored in the **deck frame** (x abeam → starboard,
+  y along the keel → bow) and rotated by `DirectionalBoatSprite.DrawnHeadingDegrees()` each LateUpdate —
+  the same frame as the §9.5 deck-walk clamp (an EditMode parity test keeps the two maths in lockstep) —
+  so the tray snaps with the picture and stays on the same spot of the *pictured* deck; the sprite itself
+  stays screen-upright and never anchors to the counter-rotated visual child.
+
 ---
 
 ## 10. Open questions
