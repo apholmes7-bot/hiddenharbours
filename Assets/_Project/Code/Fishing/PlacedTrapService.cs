@@ -150,8 +150,10 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// The <b>real</b> Build-4 placement: drop a baited trap at <paramref name="position"/> only if
-        /// (1) the water there is <b>deep enough</b> for the trap (<see cref="TrapPlacement.CanPlaceAt"/> —
-        /// the inverse of the clam dig's exposure gate: deep water, not bared ground) AND (2) the trap's
+        /// (1) a <b>spare owned pot</b> of this kind is in the locker (pots are bought, not conjured —
+        /// available = owned − deployed − aboard, <see cref="PotLocker"/>), (2) the water there is
+        /// <b>deep enough</b> for the trap (<see cref="TrapPlacement.CanPlaceAt"/> — the inverse of the
+        /// clam dig's exposure gate: deep water, not bared ground) AND (3) the trap's
         /// required bait is <b>in stock</b>. On success it delegates to <see cref="PlaceTrap"/> (which mints
         /// the instance, spawns the live trap, mirrors the DTO, consumes one bait, shows the buoy). Any refusal
         /// is a cozy no-op — nothing placed, no bait spent — and the reason is returned so the caller can

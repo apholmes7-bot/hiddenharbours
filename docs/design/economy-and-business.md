@@ -492,6 +492,32 @@ module refs):
 > Economy provides the components + data; the **builders are re-run by those lanes next wave** to surface
 > the vendors/clam spots. The full M2 proficiency/reputation licence tower stays deferred.
 
+### 9.1b Pots are bought, not conjured (owner green-light 2026-07-15)
+
+The trap loop's first real **P2/P4 money turn**: lobster/crab pots are **owned, finite, counted
+stock**, purchased at the Greywick shipwright — catch lobster → afford more pots → catch more lobster.
+All data-driven, behind Core seams:
+
+- **`PotOffer` (ScriptableObject, `Data/Shipwright/`):** the *economic* side of a pot — `Id`
+  (`offer.lobster_pot` ₲120 / `offer.crab_pot` ₲60), `TrapDefId` (the Fishing `TrapDef` it stocks, by
+  stable id only), `DisplayName`, `Price`. The counted-stock sibling of `GearOffer`: gear is a
+  presence-only wallet; pots are inventory you buy repeatedly. **Pricing rule of thumb:** a pot pays
+  for itself in ~2 good hauls (a full lobster pot sorts to ≈ ₲70 — the #194 balance note).
+- **`PotShop` (vendor, on the shipwright stall):** the `GearShop` buy pattern (wallet `TrySpend`,
+  atomic; save write; Core event `PotPurchased(trapDefId, price, ownedCount)`) minus the
+  "already owned" refusal — pots never sell out. Rows surface in the existing stall **buy screen**
+  via `BuyCatalog`/`BuyLogic` (`BuyRowKind.Pot`, appended) with an honest stock note
+  ("You own 3 - 2 in the water.").
+- **Owned vs. available (`SaveData.PotStock` v4 + `Core/PotLocker`):** the save stores only what you
+  **own**, counted per `TrapDef` id; what's free to set is **derived** — `owned − deployed − aboard`
+  — so the #193 haul→deck→re-set cycle is stock-neutral by construction (see ADR 0020 addendum).
+  Fishing gates the fresh T-set on that derivation (`PlaceResult.NoPotStock`, cozy toast: *"No spare
+  pots aboard — the shipwright sells them"*) without referencing Economy.
+- **The cozy starter kit (`GameConfig.StarterPotKit`, default 2 lobster + 1 crab):** granted once per
+  game, flag-guarded (`StartingPots`, the `StartingGear`/`StartingBait` pattern) — new games and
+  pre-update saves alike start playable; every further pot is bought. Owner-tunable on the config
+  asset, no code, no scene rebuild.
+
 ### 9.2 The market simulation tick
 
 - A single **`MarketSim` service** advances all markets on the hourly/daily cadence (§1.3): updates
