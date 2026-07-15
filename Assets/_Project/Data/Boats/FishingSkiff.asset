@@ -31,3 +31,5 @@ MonoBehaviour:
   WindExposure: 0.6
   MaxSafeSeaState: 4
   CameraWorldHeightMeters: 14
+  DeckContainer: {fileID: 11400000, guid: f7df1f31d5e24f2ea7d873c9c16dcb54, type: 2}
+  DeckContainerOffset: {x: 0.35, y: -0.9}

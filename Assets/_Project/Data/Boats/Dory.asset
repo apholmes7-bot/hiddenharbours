@@ -14,14 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
   Id: boat.dory
   DisplayName: The Dory
+  Sprite: {fileID: 0}
   LengthMeters: 4.5
   DraughtMeters: 0.3
   MassKg: 400
   HoldUnits: 6
   CrewSlots: 1
+  Propulsion: 0
   EnginePower: 500
   RudderAuthority: 600
+  OarPower: 300
+  OarLateralOffset: 0.6
+  OarBraceDrag: 400
   ForwardDrag: 120
   LateralDrag: 320
   WindExposure: 0.6
   MaxSafeSeaState: 4
+  SeakeepingMassFactor: 1
+  SeakeepingLiveliness: 1
+  SeakeepingDamping: 0
+  CameraWorldHeightMeters: 14
+  DeckContainer: {fileID: 11400000, guid: f7df1f31d5e24f2ea7d873c9c16dcb54, type: 2}
+  DeckContainerOffset: {x: 0.35, y: -0.9}
