@@ -117,6 +117,11 @@ namespace HiddenHarbours.Tests.EditMode
             _bait = ScriptableObject.CreateInstance<BaitDef>();
             _bait.Id = "bait.herring"; _bait.DisplayName = "Herring";
             _spawned.Add(_bait);
+
+            // Pots are OWNED now (schema v4): the gated placement also checks the pot locker, so these
+            // depth/bait-focused tests seed plenty of owned pots — the stock gate has its own tests
+            // (PotStockGatingTests).
+            PotLocker.AddOwned(_save, _trap.Id, 8);
         }
 
         [TearDown]

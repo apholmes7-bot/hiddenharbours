@@ -46,8 +46,22 @@ namespace HiddenHarbours.Fishing
         private readonly List<PlacedTrap> _live = new();
         private int _instanceCounter;
 
+        // Pots ABOARD (the transient hauled deck pot) count against the owned stock in the fresh-set
+        // gate, but that state lives on the deck-work controller — registered here as a plain counter
+        // (same-module wiring; Core stays out of it) so the availability derivation stays honest even
+        // if a fresh set is attempted while a pot rides the deck. Null (nothing registered) reads 0.
+        private System.Func<string, int> _aboardPotCounter;
+
         /// <summary>The live placed traps this service owns (read-only view for tests / tooling).</summary>
         public IReadOnlyList<PlacedTrap> Live => _live;
+
+        /// <summary>Register the "pots currently aboard of this kind" source the fresh-set stock gate
+        /// consults (the deck-work controller registers itself on Configure). Null to clear.</summary>
+        public void SetAboardPotCounter(System.Func<string, int> counter) => _aboardPotCounter = counter;
+
+        /// <summary>Pots of <paramref name="trapDefId"/> currently ABOARD (the transient deck pot).
+        /// 0 when no source is registered or nothing is aboard.</summary>
+        public int AboardPotCount(string trapDefId) => _aboardPotCounter?.Invoke(trapDefId) ?? 0;
 
         private void Awake() => EventBus.Subscribe<GameLoaded>(OnGameLoaded);
         private void OnDestroy() => EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
@@ -127,6 +141,11 @@ namespace HiddenHarbours.Fishing
             /// <summary>Build 7 (append-only): a hauled pot is aboard but not yet worked to READY — pick /
             /// band / bait her on the deck before she can be set. Nothing placed, nothing spent.</summary>
             PotNotReady = 4,
+
+            /// <summary>Pots-are-owned (append-only): no SPARE pot of this kind in the locker — every pot
+            /// you own is already in the water or aboard (available = owned − deployed − aboard ≤ 0,
+            /// <see cref="PotLocker"/>). The shipwright sells more. Nothing placed, nothing spent.</summary>
+            NoPotStock = 5,
         }
 
         /// <summary>
@@ -146,6 +165,18 @@ namespace HiddenHarbours.Fishing
         {
             placedTrap = null;
             if (trapDef == null) { Debug.LogWarning("[PlacedTrapService] No trap def to place."); return PlaceResult.NoTrap; }
+
+            // The P2 stock gate (pots are OWNED, bought at the shipwright): a FRESH set takes a spare
+            // pot from the locker — available = owned − deployed − aboard must be positive (PotLocker;
+            // the transient deck pot is counted through the registered aboard source, so a hauled pot
+            // waiting on the deck can never double as a second, conjured set). The deck RE-SET
+            // (TryPlacePreBaited) sets the pot that is ALREADY aboard and is deliberately NOT gated —
+            // that flow is stock-neutral by construction.
+            if (PotLocker.AvailableCount(GameServices.Save?.Current, trapDef.Id, AboardPotCount(trapDef.Id)) <= 0)
+            {
+                Debug.Log($"[PlacedTrapService] No spare {trapDef.DisplayName} in the locker — the shipwright sells them.");
+                return PlaceResult.NoPotStock;
+            }
 
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             if (!TrapPlacement.CanPlaceAt(trapDef, GameServices.Environment, GameServices.TidalTerrain, now, position))

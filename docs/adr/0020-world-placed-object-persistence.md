@@ -191,3 +191,37 @@ usable. No shipped field is renamed or repurposed (append-only, ADR 0008).
   Build 0), inert, keeps each PR small and single-purpose (§6) and every save backward-compatible
   from the moment the field exists — the same reason `Gear.Trap` was reserved as a bit before its
   gear existed.
+
+---
+
+## Addendum — schema v4 (2026-07-15): owned pot stock (`PotStock`)
+
+**Pots become owned, finite stock** (owner green-light 2026-07-15: pots are *bought at the
+shipwright, not conjured* — the trap loop's first P2/P4 money turn). This addendum extends the v3
+schema with one append-only field, following this ADR's own contract (add a field, bump the version,
+migrate forward; never rename or repurpose):
+
+- **`SaveData.PotStock` — `List<PotStock>`**, one record per trap kind: `TrapDefId` (stable Def id,
+  e.g. `trap.lobster`) + `Count` (how many the player **owns**). The counted-stock twin of
+  `BaitStock` (v3): pots are physical, finite gear, so presence isn't enough. Keyed by **TrapDef id**
+  (what you own), never the shop-offer id (where you bought it).
+- **Owned is the only stored number.** How many pots are *free to set* is **derived, never stored**:
+  `available = owned − deployed − aboard`, where *deployed* is counted from `PlacedTraps` and
+  *aboard* is the transient hauled deck pot (Build 7). `Core/Save/PotLocker.cs` owns the derivation;
+  both Economy (purchase increments owned) and Fishing (the T-set gates on available) meet there —
+  rule 5's recompute-don't-store discipline applied to gear, so the count can never desync across
+  haul → deck → re-set.
+- **Migration v3 → v4** adds the list empty, then **adopts the pots already in the water**: each
+  existing `PlacedTraps` record counts one pot of its kind into owned. Pre-v4 pots were conjured
+  free, but the ones a player has deployed are physically theirs — adoption means the derivation
+  starts at exactly zero spare (never negative) and hauling a pre-v4 pot returns it to the locker
+  like any bought pot. No one's set gear is confiscated by the update.
+- **The cozy starter kit is data, not schema.** New games and pre-v4 saves alike receive
+  `GameConfig.StarterPotKit` (default **2 lobster + 1 crab**, owner-tunable on the config asset)
+  **once**, flag-guarded (`pot_starter_kit_granted`), via Economy's `StartingPots` — the established
+  `StartingGear`/`StartingBait` grant pattern. The migration itself stays pure and asset-free
+  (`SaveMigration` runs before any scene or asset is loadable), which is why the grant rides the
+  scene-side pattern rather than the version step; the flag guard makes the two paths equivalent and
+  idempotent.
+- The unconditional null-repair at the tail of `Migrate` gains `PotStock`, and the round-trip /
+  migration tests pin all of the above (`SaveMigrationV4Tests`).

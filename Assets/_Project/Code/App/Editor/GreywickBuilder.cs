@@ -161,6 +161,24 @@ namespace HiddenHarbours.App.Editor
                 o.Price = 400; o.StartsDamaged = true; o.RepairCost = 300;
             });
 
+            // Pot offers (pots are BOUGHT, not conjured — the trap loop's P2 money wheel): counted,
+            // repeatable stock sold at the shipwright shed. Committed canonical assets (economy-sim);
+            // created here only if absent so the builder stays self-sufficient. Prices are the offer
+            // assets' balance call: a full lobster pot sorts to ≈ ₲70 (#194), so a pot pays for itself
+            // in about two good hauls.
+            var lobsterPotOffer = LoadOrCreate<PotOffer>(DataShip + "/LobsterPotOffer.asset", o =>
+            {
+                o.Id = "offer.lobster_pot"; o.TrapDefId = "trap.lobster"; o.DisplayName = "Lobster Pot";
+                o.Price = 120;
+                o.Flavor = "A slatted timber pot. Bait her with herring, set her deep, come back to the buoy.";
+            });
+            var crabPotOffer = LoadOrCreate<PotOffer>(DataShip + "/CrabPotOffer.asset", o =>
+            {
+                o.Id = "offer.crab_pot"; o.TrapDefId = "trap.crab"; o.DisplayName = "Crab Pot";
+                o.Price = 60;
+                o.Flavor = "A low, wide pot for the mud crab grounds. Takes fish scrap for bait.";
+            });
+
             // --- SCENE ----------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -252,6 +270,8 @@ namespace HiddenHarbours.App.Editor
             codLicense       = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/CodLicense.asset");
             rodOffer         = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
             damagedDoryOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/DamagedDoryOffer.asset");
+            lobsterPotOffer  = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/LobsterPotOffer.asset");
+            crabPotOffer     = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/CrabPotOffer.asset");
 
             // --- QUAY (the land the town sits on, along the WEST) ---------------------------
             // Greywick lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
@@ -316,6 +336,17 @@ namespace HiddenHarbours.App.Editor
             shipwrightShed.AddComponent<DevBuyInput>();      // RequireComponent(Shipwright) — present
             SetRef(shipwright, "_offer", puntOffer);
             SetRef(shipwright, "_walletProvider", providersGo);
+
+            // The shed also sells POTS (pots are bought, not conjured): one PotShop per pot kind on the
+            // SAME stall, so the existing buy screen lists them beside the Punt (BuyCatalog enumerates
+            // every vendor component on the stall — no new UI). Counted, repeatable stock: a purchase
+            // increments SaveData.PotStock; the T-set spends from it (PotLocker).
+            var lobsterPotShop = shipwrightShed.AddComponent<PotShop>();
+            SetRef(lobsterPotShop, "_offer", lobsterPotOffer);
+            SetRef(lobsterPotShop, "_walletProvider", providersGo);
+            var crabPotShop = shipwrightShed.AddComponent<PotShop>();
+            SetRef(crabPotShop, "_offer", crabPotOffer);
+            SetRef(crabPotShop, "_walletProvider", providersGo);
 
             // --- ST PETERS OPENING VENDORS (places + data wiring; interaction drivers are gameplay/ui) ---
             // The opening's earn-your-way loop ends at Greywick: sell clams (the Fish Buyer above —

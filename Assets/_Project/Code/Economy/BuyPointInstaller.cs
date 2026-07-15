@@ -39,6 +39,7 @@ namespace HiddenHarbours.Economy
             Ensure(Object.FindObjectsByType<Shipwright>(FindObjectsSortMode.None));
             Ensure(Object.FindObjectsByType<GearShop>(FindObjectsSortMode.None));
             Ensure(Object.FindObjectsByType<LicenseVendor>(FindObjectsSortMode.None));
+            Ensure(Object.FindObjectsByType<PotShop>(FindObjectsSortMode.None));
         }
 
         private static void Ensure<T>(T[] vendors) where T : Component

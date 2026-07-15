@@ -45,7 +45,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             SaveData up = SaveMigration.Migrate(v2);
 
-            Assert.AreEqual(3, up.SchemaVersion, "v2 is stamped v3");
+            // Migrate always climbs the whole ladder, so a v2 save lands at the CURRENT version (≥ v3) —
+            // asserting CurrentVersion (not a literal 3) keeps this resilient to later bumps, the same
+            // convention SaveMigrationV2Tests already uses.
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion, "a v2 save climbs to the current schema version");
+            Assert.GreaterOrEqual(up.SchemaVersion, 3, "and v3's fields exist from that climb");
             // Scalars carried through untouched.
             Assert.AreEqual(4242, up.WorldSeed);
             Assert.AreEqual(7200.25, up.GameTimeSeconds, 1e-6);
@@ -69,7 +73,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             SaveData up = SaveMigration.Migrate(v0);
 
-            Assert.AreEqual(3, up.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion,
+                "a v0 save climbs every step to the current version (≥ v3)");
             Assert.AreEqual(40, up.Money);
             // Every list from every schema step is non-null after a full climb.
             Assert.IsNotNull(up.OwnedBoats);
