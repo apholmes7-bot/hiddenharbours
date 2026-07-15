@@ -35,8 +35,8 @@ namespace HiddenHarbours.Economy
 
     /// <summary>
     /// Builds the buy screen's rows from whatever vendor components sit on a stall GameObject
-    /// (VS-16): every <see cref="Shipwright"/>, <see cref="GearShop"/>, and <see cref="LicenseVendor"/>
-    /// contributes one row from its wired Def asset. Ownership is read through the Core seams the
+    /// (VS-16): every <see cref="Shipwright"/>, <see cref="GearShop"/>, <see cref="PotShop"/>, and
+    /// <see cref="LicenseVendor"/> contributes one row from its wired Def asset. Ownership is read through the Core seams the
     /// vendors themselves use (<see cref="SaveData"/>.OwnedBoats/OwnedGear, <see cref="RepairLedger"/>,
     /// <see cref="ILicenseService"/>) so the screen and the purchase can never disagree. Runs only when
     /// the screen opens or refreshes after a purchase — never per frame.
@@ -75,6 +75,16 @@ namespace HiddenHarbours.Economy
                     BuyLogic.Gear(o.Price, money, owned)));
             }
 
+            foreach (var ps in stall.GetComponents<PotShop>())
+            {
+                PotOffer o = ps.Offer;
+                if (o == null) continue;
+                // Pots are counted, repeatable stock — never "owned out". The Note carries the honest
+                // inventory read (own N, M in the water) so the buy decision is informed at a glance.
+                into.Add(new BuyRow(ps, o.Id, o.DisplayName, o.Flavor, PotNoteFor(save, o),
+                    BuyLogic.Pot(o.Price, money)));
+            }
+
             foreach (var lv in stall.GetComponents<LicenseVendor>())
             {
                 LicenseDef l = lv.License;
@@ -86,6 +96,20 @@ namespace HiddenHarbours.Economy
                 into.Add(new BuyRow(lv, l.Id, l.DisplayName, l.Flavor, "",
                     BuyLogic.License(l.Price, money, held)));
             }
+        }
+
+        // Stock note for a pot row: how many the player owns and how many are working in the water —
+        // read through the same Core save the purchase writes (PotLocker), so screen and stock can
+        // never disagree. Empty until the first pot is owned. (Loc-seam literals, HudStrings convention.)
+        private static string PotNoteFor(SaveData save, PotOffer o)
+        {
+            int owned = PotLocker.OwnedCount(save, o.TrapDefId);
+            if (owned <= 0) return "";
+            int wet = PotLocker.DeployedCount(save, o.TrapDefId);
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            return wet > 0
+                ? "You own " + owned.ToString(ci) + " - " + wet.ToString(ci) + " in the water."
+                : "You own " + owned.ToString(ci) + ".";
         }
 
         // Condition note for a boat row (loc-seam literals, same convention as HudStrings: centralise

@@ -472,6 +472,14 @@ namespace HiddenHarbours.App.Editor
                 var startBaitGo = new GameObject("StartingBait");
                 startBaitGo.AddComponent<StartingBait>();
 
+                // THE POT STARTER KIT (pots are OWNED now — bought at the Greywick shipwright): grants
+                // GameConfig.StarterPotKit once per game, flag-guarded — a new game starts with a couple
+                // of pots, and a pre-update save gets the same kit on first load, so nobody is stranded
+                // potless mid-loop. Counts live on the config asset (owner-tunable, rule 6).
+                var startPotsGo = new GameObject("StartingPots");
+                var startingPots = startPotsGo.AddComponent<StartingPots>();
+                SetRef(startingPots, "_config", config);
+
                 // DevTrapInput on the BOAT: T sets a baited lobster pot at the boat (depth-gated), G tops up
                 // dev bait. Placement region = St Peters (the save/scene region); the keys live only while
                 // the player stands ON DECK (Build 5) — never at the helm, never on foot (a deck action).

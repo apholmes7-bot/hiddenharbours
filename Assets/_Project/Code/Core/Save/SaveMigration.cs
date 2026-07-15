@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 3;
+        public const int CurrentVersion = 4;
 
         /// <summary>A fresh save for a brand-new game — current version, empty collections.</summary>
         public static SaveData NewGame() => new SaveData { SchemaVersion = CurrentVersion };
@@ -59,6 +59,29 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 3;
             }
 
+            // ---- v3 → v4: pots become OWNED, counted stock (the shipwright sells them; T spends them —
+            // ADR 0020 addendum). The new list starts empty, then ADOPTS the pots already in the water:
+            // pre-v4 pots were conjured free, but the ones a player has deployed are physically theirs —
+            // counting each PlacedTraps record into owned means the availability derivation
+            // (owned − deployed − aboard, PotLocker) starts at exactly zero spare instead of negative,
+            // and hauling a pre-v4 pot returns it to the locker like any bought pot. Nobody's set gear is
+            // confiscated by the update. (The cozy STARTER KIT — a couple of fresh pots — is data, not
+            // schema: granted once, flag-guarded, by Economy's StartingPots off GameConfig.StarterPotKit,
+            // the StartingGear/StartingBait pattern. The migration stays pure and asset-free.)
+            if (data.SchemaVersion < 4)
+            {
+                data.PotStock ??= new System.Collections.Generic.List<PotStock>();
+                if (data.PlacedTraps != null)
+                {
+                    for (int i = 0; i < data.PlacedTraps.Count; i++)
+                    {
+                        string kind = data.PlacedTraps[i].TrapDefId;
+                        if (!string.IsNullOrEmpty(kind)) PotLocker.AddOwned(data, kind, 1);
+                    }
+                }
+                data.SchemaVersion = 4;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -69,6 +92,7 @@ namespace HiddenHarbours.Core
             data.OwnedGear ??= new System.Collections.Generic.List<string>();
             data.PlacedTraps ??= new System.Collections.Generic.List<PlacedTrapDto>();
             data.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
+            data.PotStock ??= new System.Collections.Generic.List<PotStock>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).

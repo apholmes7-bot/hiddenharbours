@@ -76,10 +76,45 @@ namespace HiddenHarbours.Core
                  "on day rollover, not per frame.")]
         [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
 
+        [Header("Pots (trap-fishing — the starter kit)")]
+        [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
+                 "guarded): a new game starts with these, and an existing save gets them on its first " +
+                 "load after the pots-are-owned update — so nobody is ever stranded potless mid-loop. " +
+                 "Each entry names an authored TrapDef by stable id with a count. Owner-tunable; every " +
+                 "FURTHER pot is bought at the shipwright (the P2 money wheel).")]
+        public PotStarterEntry[] StarterPotKit =
+        {
+            new PotStarterEntry("trap.lobster", 2),
+            new PotStarterEntry("trap.crab", 1),
+        };
+
         // Convenience
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
         public float SecondsPerYear => SecondsPerSeason * 4f;
+    }
+
+    /// <summary>
+    /// One entry of the pot starter kit (<see cref="GameConfig.StarterPotKit"/>): a trap kind by stable
+    /// TrapDef id, and how many the kit grants. Plain serializable data so the owner tunes the kit on
+    /// the GameConfig asset — no code, no scene rebuild (rule 6).
+    /// </summary>
+    [System.Serializable]
+    public struct PotStarterEntry
+    {
+        [Tooltip("Stable TrapDef id to grant (e.g. \"trap.lobster\"). Must name an authored TrapDef " +
+                 "(content validation checks this).")]
+        public string TrapDefId;
+
+        [Min(0)]
+        [Tooltip("How many of this pot the starter kit grants. 0 disables the entry.")]
+        public int Count;
+
+        public PotStarterEntry(string trapDefId, int count)
+        {
+            TrapDefId = trapDefId;
+            Count = count;
+        }
     }
 }

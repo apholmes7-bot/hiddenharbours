@@ -10,7 +10,10 @@ namespace HiddenHarbours.Economy
         /// <summary>A gear purchase (<see cref="GearShop"/>.TryBuy).</summary>
         Gear,
         /// <summary>A licence purchase (<see cref="LicenseVendor"/>.TryBuy).</summary>
-        License
+        License,
+        /// <summary>A pot purchase (<see cref="PotShop"/>.TryBuy) — counted stock, always re-buyable.
+        /// Appended (the enum is a shipped contract; earlier values never shift).</summary>
+        Pot
     }
 
     /// <summary>
@@ -52,6 +55,11 @@ namespace HiddenHarbours.Economy
         /// <summary>Quote a licence: an already-held licence shows as owned; otherwise gate on money.</summary>
         public static BuyQuote License(int fee, int money, bool held)
             => new BuyQuote(BuyRowKind.License, fee, held, money >= fee);
+
+        /// <summary>Quote a pot offer: pots are counted, repeatable stock — the row is NEVER "owned out"
+        /// (you can always buy another), so the only gate is money.</summary>
+        public static BuyQuote Pot(int price, int money)
+            => new BuyQuote(BuyRowKind.Pot, price, owned: false, affordable: money >= price);
 
         /// <summary>
         /// Quote a boat offer through its whole life:

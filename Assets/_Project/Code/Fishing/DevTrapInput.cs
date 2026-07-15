@@ -12,8 +12,10 @@ namespace HiddenHarbours.Fishing
     /// <list type="bullet">
     ///   <item><b>T — set a baited trap</b> at the drop point via the REAL Build-4 depth gate
     ///   (<see cref="PlacedTrapService.TryPlaceGated"/>): it drops only where the water is deep enough
-    ///   (<see cref="TrapPlacement"/>) and only if the required bait is in stock, consuming one. Refusals log
-    ///   a cozy reason (too shoal / no bait). This REPLACES the Build-3 unconditional dev drop.</item>
+    ///   (<see cref="TrapPlacement"/>), only if a SPARE OWNED pot is in the locker (pots are bought at
+    ///   the shipwright — the P2 stock gate), and only if the required bait is in stock, consuming one.
+    ///   Refusals log a cozy reason (too shoal / no pots / no bait). This REPLACES the Build-3
+    ///   unconditional dev drop.</item>
     ///   <item><b>G — dev-grant supply</b> (greybox only): tops up a small stock of the dev trap's bait so
     ///   the loop is playable NOW. Real trap/bait acquisition is a later ECONOMY offer (a Shipwright/gear
     ///   sale) — flagged, not built here.</item>
@@ -105,6 +107,8 @@ namespace HiddenHarbours.Fishing
         private const string NoticeTooShallow = "Too shallow here";
         private const string NoticeNoBait = "No bait aboard";
         private const string NoticeNotWired = "No trap gear wired (dev)";
+        // Pots-are-owned: a fresh set needs a SPARE owned pot — the cozy refusal names the fix.
+        private const string NoticeNoPots = "No spare pots aboard — the shipwright sells them";
         // Build 7 deck-pot refusals — the pot aboard must be worked to READY before T sets her.
         private const string NoticeDeckStillFull = "She's still full — pick her out first";
         private const string NoticeDeckUnbanded = "Band the keepers first";
@@ -124,9 +128,9 @@ namespace HiddenHarbours.Fishing
             Vector2 pos = _dropPoint != null ? (Vector2)_dropPoint.position : Vector2.zero;
 
             // Build 7: a hauled pot on the deck ABSORBS the T flow — set HER (pre-baited by the deck's
-            // re-bait; no second bait charge), or say cozily why she isn't ready. The abstract fresh-pot
-            // drop below only applies while no pot is aboard (it still makes sense for pots not yet
-            // in hand — trap acquisition stays a later economy offer).
+            // re-bait; no second bait charge, no stock charge — she's already one of your owned pots),
+            // or say cozily why she isn't ready. The fresh-pot drop below only applies while no pot is
+            // aboard, and it SPENDS one of the pots you own (bought at the shipwright — the P2 wheel).
             var deck = DeckWork;
             if (deck != null && deck.HasPotAboard) return TrySetDeckPot(deck, pos);
 
@@ -136,6 +140,7 @@ namespace HiddenHarbours.Fishing
                 PlacedTrapService.PlaceResult.Placed => NoticePotSet,
                 PlacedTrapService.PlaceResult.TooShallow => NoticeTooShallow,
                 PlacedTrapService.PlaceResult.NoBait => NoticeNoBait,
+                PlacedTrapService.PlaceResult.NoPotStock => NoticeNoPots,
                 _ => NoticeNotWired,
             }));
             return result;

@@ -77,6 +77,14 @@ namespace HiddenHarbours.Core
         /// presence-only wallet — bait is consumable, so it needs a quantity). One record per bait kind.
         /// UNUSED until the trap runtime lands (arc Build 3). Added in v3. (ADR 0020.)</summary>
         public List<BaitStock> BaitStock = new();
+
+        /// <summary>Pots/traps the player OWNS, as counted stock keyed by stable TrapDef id (e.g.
+        /// "trap.lobster") — the physical gear inventory behind the trap loop's P2 money wheel: pots are
+        /// BOUGHT at the shipwright, not conjured. This is the OWNED total; how many are free to set is
+        /// DERIVED (owned − deployed-in-<see cref="PlacedTraps"/> − aboard-the-deck) by
+        /// <see cref="PotLocker"/>, never stored — the same recompute-don't-store discipline as the soak
+        /// (rule 5). One record per trap kind. Added in v4. (ADR 0020 addendum.)</summary>
+        public List<PotStock> PotStock = new();
     }
 
     /// <summary>
@@ -139,6 +147,30 @@ namespace HiddenHarbours.Core
         public BaitStock(string baitId, int count)
         {
             BaitId = baitId;
+            Count = count;
+        }
+    }
+
+    /// <summary>
+    /// One pot/trap kind the player owns, with a quantity — the counted-gear twin of
+    /// <see cref="BaitStock"/> (pots are finite physical stock, so like bait they carry a
+    /// <see cref="Count"/>, not just presence). Keyed by the stable TrapDef id, never the offer id —
+    /// the save records WHAT you own; where you bought it is the economy's business. A list of these is
+    /// JsonUtility-friendly where a Dictionary is not (the <see cref="SaveFlag"/> reason).
+    /// </summary>
+    [Serializable]
+    public struct PotStock
+    {
+        /// <summary>Stable trap Def id (e.g. "trap.lobster").</summary>
+        public string TrapDefId;
+
+        /// <summary>How many of this pot kind the player OWNS (deployed + aboard + spare — the physical
+        /// total; the free-to-set number is derived by <see cref="PotLocker"/>).</summary>
+        public int Count;
+
+        public PotStock(string trapDefId, int count)
+        {
+            TrapDefId = trapDefId;
             Count = count;
         }
     }

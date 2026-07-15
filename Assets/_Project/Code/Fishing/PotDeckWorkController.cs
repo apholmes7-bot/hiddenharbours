@@ -206,7 +206,19 @@ namespace HiddenHarbours.Fishing
             _hold = hold;
             _boatRoot = boatRoot;
             _worker = worker;
+
+            // Pots-are-owned: the pot riding the deck is one of the player's OWNED pots, so it must
+            // count against the fresh-set stock gate (available = owned − deployed − ABOARD). Register
+            // this controller as the service's aboard source (same-module wiring; the method reference
+            // allocates once here, never per query).
+            if (_service != null) _service.SetAboardPotCounter(CountAboardOf);
         }
+
+        /// <summary>How many pots of <paramref name="trapDefId"/> are ABOARD this deck right now:
+        /// 1 while the hauled pot of that kind rides the deck, else 0 (one deck pot at a time by
+        /// construction — <see cref="BringAboard"/> refuses a second).</summary>
+        public int CountAboardOf(string trapDefId)
+            => _pot != null && _pot.Trap != null && _pot.Trap.Id == trapDefId ? 1 : 0;
 
         // ---- pot aboard --------------------------------------------------------------------------
 
