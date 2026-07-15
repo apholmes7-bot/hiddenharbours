@@ -138,7 +138,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(expected.y, rel.y, 1e-3f, "the anchor turned with the drawn bow");
 
             // …but the tray PICTURE never rotates (screen-upright, the DirectionalBoatSprite convention).
-            Assert.AreEqual(Quaternion.identity, tray.transform.rotation, "the tray sprite stays screen-upright");
+            // Angle, not exact equality: stomping world rotation under a rotated parent recomputes the
+            // quaternion with float error — identity to the eye (and to Unity's approximate ==), not bitwise.
+            Assert.Less(Quaternion.Angle(Quaternion.identity, tray.transform.rotation), 0.01f,
+                "the tray sprite stays screen-upright");
         }
 
         [UnityTest]
