@@ -30,7 +30,9 @@ namespace HiddenHarbours.Boats
     /// so a bigger/heavier hull, or the same hull pushed harder, throws a visibly bigger wake, and future heavier
     /// hulls scale automatically (driven off the hull stats, never a per-hull hard-code). The tier sprites are
     /// built once from the authored textures via the <see cref="WakeSpriteLibrary"/> (Resources); if a load fails
-    /// the plume falls back to the procedural foam puff so a bad load never leaves an invisible wake.</para>
+    /// the plume falls back to the procedural foam puff so a bad load never leaves an invisible wake. A graded
+    /// <b>BOW SPRAY</b> rides the same machinery at the other end of the hull (<see cref="BowSprayGrading"/>) with
+    /// its own SPEED-FORWARD config, so the slow dory shows only a gradual wisp and faster hulls earn the sheet.</para>
     ///
     /// <para><b>Seam discipline (rule 4) &amp; determinism (rule 5).</b> Reads the boat through its public
     /// surface (<see cref="BoatController.Velocity"/>, <see cref="BoatController.IsAground"/>,
@@ -66,6 +68,13 @@ namespace HiddenHarbours.Boats
                  "wake stays coherent.")]
         [SerializeField] private WakeGradeConfig _grade = WakeGradeConfig.Default;
 
+        [Header("BOW SPRAY (speed-forward, gentle on the dory — owner's brief)")]
+        [Tooltip("The graded spray at the cutwater: the same size+weight+speed blend as the wake but with its " +
+                 "OWN speed-forward weights and a HIGHER speed onset, so the slow dory shows at most a subtle " +
+                 "gradual wisp at a hard row and the full sheet is reserved for the faster hulls to come. Every " +
+                 "number is tunable here.")]
+        [SerializeField] private BowSprayGradeConfig _spray = BowSprayGradeConfig.Default;
+
         [Header("Pool & render")]
         [Tooltip("Max live foam puffs PER BOAT. The pool is fixed and recycled — zero per-frame allocation.")]
         [Min(8)] [SerializeField] private int _poolPerBoat = 96;
@@ -80,6 +89,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Crest-LINE tint. A lighter, cooler-than-foam wave-crest colour so the lines read as the small " +
                  "waves peeling off the hull rather than white churn. Alpha is driven per-streak by the fade.")]
         [SerializeField] private Color _lineColor = new Color(0.78f, 0.90f, 0.98f, 1f);
+        [Tooltip("Bow-spray tint. Bright white droplets off the cutwater; the alpha is driven by the spray's " +
+                 "speed-onset ramp (the dory only ever sees a faint fraction of it).")]
+        [SerializeField] private Color _sprayColor = new Color(0.95f, 0.98f, 1f, 1f);
         [Tooltip("Sorting layer name for the wake sprites (leave blank for the default layer).")]
         [SerializeField] private string _sortingLayer = "";
         [Tooltip("Order in the sorting layer. Foam should sit ABOVE the water plane but BELOW the boat hull.")]
@@ -90,6 +102,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Order for the graded PLUME (the broad authored wake sprite). BELOW the foam + crest lines by " +
                  "default so it reads as the base wash they sit on top of — still above the water plane, below the hull.")]
         [SerializeField] private int _plumeSortingOrder = -3;
+        [Tooltip("Order for the BOW SPRAY. Same band as the foam by default — above the water plane, below the " +
+                 "hull, so the droplets read as kicked up at the cutwater without covering the boat.")]
+        [SerializeField] private int _spraySortingOrder = -1;
 
         [Header("Cadence")]
         [Tooltip("How often (Hz) the wake sim ticks (emit + advect + render). The sea is slow; the boat moves " +
@@ -106,6 +121,8 @@ namespace HiddenHarbours.Boats
         // Any slot may be null if the library/texture failed to load — the rig falls back to the foam puff so a
         // bad load never leaves an invisible plume.
         private Sprite[] _tierSprites;
+        // The four graded BOW SPRAY sprites [Small, Medium, Large, Huge] — same build, same per-tier fallback.
+        private Sprite[] _spraySprites;
         private float _tickTimer;
         private float _rescanTimer;
 
@@ -127,7 +144,24 @@ namespace HiddenHarbours.Boats
         {
             _foamSprite = BuildFoamSprite();
             _lineSprite = BuildLineSprite();
-            _tierSprites = BuildTierSprites(_grade.PlumePivotY);
+
+            // ONE library load feeds both graded sprite sets. The pivot must sit on the art's BOAT end
+            // whichever way the art is authored: the serialized pivot when un-flipped, mirrored when the owner
+            // toggles the flip (art re-authored upside-down) — WakeArtOrientationTests pixel-verifies the
+            // defaults against the actual textures.
+            var lib = Resources.Load<WakeSpriteLibrary>(WakeSpriteLibrary.ResourcesPath);
+            if (lib == null)
+            {
+                Debug.LogWarning("[BoatWakeEmitter] No WakeSpriteLibrary in Resources — the graded plume and " +
+                                 "bow spray fall back to the procedural foam puff. (Expected at " +
+                                 "Resources/WakeSpriteLibrary.)");
+            }
+            _tierSprites = BuildTierSprites(lib != null ? lib.Ordered() : null,
+                                            WakeGrading.FlipPivotY(_grade.PlumePivotY, _grade.PlumeFlip),
+                                            "Plume");
+            _spraySprites = BuildTierSprites(lib != null ? lib.OrderedSpray() : null,
+                                             WakeGrading.FlipPivotY(_spray.SprayPivotY, _spray.SprayFlip),
+                                             "BowSpray");
         }
 
         /// <summary>Project PPU (1 world unit = 1 m at 32 px). Matches the Wake PNGs' import (spritePixelsToUnits: 32),
@@ -135,43 +169,38 @@ namespace HiddenHarbours.Boats
         private const int WakePlumePpu = 32;
 
         /// <summary>
-        /// Build ONE full-image <see cref="Sprite"/> per graded wake TEXTURE (Small/Medium/Large/Huge), loaded from
-        /// the <see cref="WakeSpriteLibrary"/> in Resources. We reference the TEXTURE (the always-present main asset)
-        /// and build the sprite in code — the SAME technique the foam/crest sprites use — because the Wake PNGs
-        /// import as <c>spriteMode: Multiple</c> and Unity auto-slices each into many disconnected alpha islands, so
-        /// there is no single full-image sub-sprite to reference and <c>Resources.Load&lt;Sprite&gt;</c> returns null
-        /// (the documented trap). Building from the texture yields the whole authored plume regardless of slicing.
+        /// Build ONE full-image <see cref="Sprite"/> per graded TEXTURE (Small/Medium/Large/Huge) from a
+        /// <see cref="WakeSpriteLibrary"/> tier array — used for both the wake plume and the bow spray. We
+        /// reference the TEXTURE (the always-present main asset) and build the sprite in code — the SAME
+        /// technique the foam/crest sprites use — because these PNGs import as <c>spriteMode: Multiple</c> and
+        /// Unity auto-slices each into many disconnected alpha islands, so there is no single full-image
+        /// sub-sprite to reference and <c>Resources.Load&lt;Sprite&gt;</c> returns null (the documented trap).
+        /// Building from the texture yields the whole authored image regardless of slicing.
         ///
-        /// <para>The pivot is the art's narrow APEX (the boat end, at the top of the image) so the plume pins to the
-        /// stern and widens astern. Any slot the library couldn't supply comes back null; the rig then falls back to
-        /// the procedural foam puff so a bad load never leaves an invisible plume. Built once at boot, shared across
-        /// every boat, so the ≤4 tier sprites batch (rule 7).</para>
+        /// <para>The pivot is the art's BOAT end — the plume's narrow apex (image top) or the spray's impact
+        /// churn (image bottom), pixel-verified by <c>WakeArtOrientationTests</c> and flip-mirrored by the
+        /// caller. Any slot the library couldn't supply comes back null; the rig then falls back to the
+        /// procedural foam puff so a bad load never leaves an invisible effect. Built once at boot, shared
+        /// across every boat, so the ≤8 graded sprites batch (rule 7).</para>
         /// </summary>
-        private static Sprite[] BuildTierSprites(float pivotY)
+        private static Sprite[] BuildTierSprites(Texture2D[] textures, float pivotY, string label)
         {
             var sprites = new Sprite[WakeGrading.TierCount];
-            var lib = Resources.Load<WakeSpriteLibrary>(WakeSpriteLibrary.ResourcesPath);
-            if (lib == null)
-            {
-                Debug.LogWarning("[BoatWakeEmitter] No WakeSpriteLibrary in Resources — the graded plume falls " +
-                                 "back to the procedural foam puff. (Expected at Resources/WakeSpriteLibrary.)");
-                return sprites;   // all null → rig uses the foam fallback
-            }
+            if (textures == null) return sprites;   // no library → all null → rig uses the foam fallback
 
-            Texture2D[] textures = lib.Ordered();
             var pivot = new Vector2(0.5f, Mathf.Clamp01(pivotY));
             for (int i = 0; i < sprites.Length && i < textures.Length; i++)
             {
                 Texture2D tex = textures[i];
                 if (tex == null)
                 {
-                    Debug.LogWarning($"[BoatWakeEmitter] Wake tier {i} texture missing in the library — that tier " +
-                                     "falls back to the procedural foam puff.");
+                    Debug.LogWarning($"[BoatWakeEmitter] {label} tier {i} texture missing in the library — that " +
+                                     "tier falls back to the procedural foam puff.");
                     continue;
                 }
                 var full = new Rect(0f, 0f, tex.width, tex.height);
                 sprites[i] = Sprite.Create(tex, full, pivot, WakePlumePpu);
-                sprites[i].name = $"BoatWake.Plume[{i}]";
+                sprites[i].name = $"BoatWake.{label}[{i}]";
             }
             return sprites;
         }
@@ -227,7 +256,8 @@ namespace HiddenHarbours.Boats
             float time = GameServices.Clock != null ? (float)GameServices.Clock.TotalSeconds : Time.time;
 
             for (int r = 0; r < _rigs.Count; r++)
-                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor, _grade);
+                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor, _grade,
+                              _spray, _sprayColor);
         }
 
         /// <summary>
@@ -256,7 +286,8 @@ namespace HiddenHarbours.Boats
                 if (_rigs.Count >= _maxBoats) break;
                 if (HasRigFor(boat)) continue;
                 _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _foamSprite, _lineSprite, _tierSprites,
-                                      transform, _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder));
+                                      _spraySprites, transform, _sortingLayer, _sortingOrder, _lineSortingOrder,
+                                      _plumeSortingOrder, _spraySortingOrder));
             }
         }
 
@@ -470,16 +501,20 @@ namespace HiddenHarbours.Boats
             private readonly Sprite[] _tierSprites;
             private readonly Sprite _fallbackSprite;
             private readonly SpriteRenderer _plume;
+            // The graded BOW SPRAY: ONE bow-anchored sibling renderer, same tier-swap + fallback discipline.
+            private readonly Sprite[] _spraySprites;
+            private readonly SpriteRenderer _sprayRenderer;
             private float _emitCarry;
             private float _lineEmitCarry;
 
             public WakeRig(BoatController boat, int pool, int linePool, Sprite foam, Sprite line, Sprite[] tierSprites,
-                           Transform parent, string sortingLayer, int sortingOrder, int lineSortingOrder,
-                           int plumeSortingOrder)
+                           Sprite[] spraySprites, Transform parent, string sortingLayer, int sortingOrder,
+                           int lineSortingOrder, int plumeSortingOrder, int spraySortingOrder)
             {
                 Boat = boat;
                 _sys = new WakeParticleSystem(pool);
                 _tierSprites = tierSprites;
+                _spraySprites = spraySprites;
                 _fallbackSprite = foam;
 
                 _root = new GameObject($"Wake[{boat.name}]").transform;
@@ -494,6 +529,14 @@ namespace HiddenHarbours.Boats
                 _plume.sortingOrder = plumeSortingOrder;
                 plumeGo.SetActive(false);
 
+                // The BOW SPRAY renderer (one, created once) — the plume's sibling at the other end of the hull.
+                var sprayGo = new GameObject("bowSpray");
+                sprayGo.transform.SetParent(_root, worldPositionStays: false);
+                _sprayRenderer = sprayGo.AddComponent<SpriteRenderer>();
+                if (!string.IsNullOrEmpty(sortingLayer)) _sprayRenderer.sortingLayerName = sortingLayer;
+                _sprayRenderer.sortingOrder = spraySortingOrder;
+                sprayGo.SetActive(false);
+
                 _renderers = BuildRenderers(pool, "foam", foam, sortingLayer, sortingOrder);
 
                 // The crest LINES: a SECOND pooled system + renderer slice under the same root, sharing all the
@@ -507,12 +550,13 @@ namespace HiddenHarbours.Boats
                 }
             }
 
-            /// <summary>The tier sprite for an index, or the foam-puff fallback if that tier failed to load (so a
-            /// bad art load never leaves an invisible plume). Null only if even the fallback is missing.</summary>
-            private Sprite TierSpriteOrFallback(int tier)
+            /// <summary>The tier sprite for an index from a graded set (plume or spray), or the foam-puff fallback
+            /// if that tier failed to load (so a bad art load never leaves an invisible effect). Null only if even
+            /// the fallback is missing.</summary>
+            private Sprite TierSpriteOrFallback(Sprite[] set, int tier)
             {
-                if (_tierSprites != null && tier >= 0 && tier < _tierSprites.Length && _tierSprites[tier] != null)
-                    return _tierSprites[tier];
+                if (set != null && tier >= 0 && tier < set.Length && set[tier] != null)
+                    return set[tier];
                 return _fallbackSprite;
             }
 
@@ -536,7 +580,7 @@ namespace HiddenHarbours.Boats
 
             public void Tick(Vector2 current, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
-                             in WakeGradeConfig grade)
+                             in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor)
             {
                 if (Boat == null) return;
 
@@ -560,7 +604,10 @@ namespace HiddenHarbours.Boats
                 WakeConfig fcfg = ScaleFoamExtent(cfg, foamFactor);
 
                 // --- GRADED PLUME (the primary size read) ---
-                RenderPlume(pos, bow, speed, aground, magnitude, tier, foamColor, grade);
+                RenderPlume(pos, bow, speed, aground, magnitude, tier, length, foamColor, grade);
+
+                // --- GRADED BOW SPRAY (speed-forward, its own grade — gentle on the dory by onset) ---
+                RenderSpray(pos, bow, speed, aground, length, mass, sprayColor, spray);
 
                 // --- FOAM BUBBLES (now grown by the grade) ---
                 // 1) EMIT from the stern, rate ∝ speed (none below threshold / when aground).
@@ -600,14 +647,22 @@ namespace HiddenHarbours.Boats
             /// astern, scaled continuously by the magnitude and faded in with the speed onset (none at rest / when
             /// aground). Hidden when the plume is disabled, off-onset, or has no usable sprite. One renderer, one
             /// shared sprite per tier — no allocation.
+            ///
+            /// <para><b>The orientation fix.</b> The apex is anchored at the boat's actual STERN
+            /// (<see cref="WakeGrading.SternAnchor"/> walks half the hull length back from the boat-origin, which
+            /// sits at the hull centre) — the old code offset from the ORIGIN, which buried ~the whole plume under
+            /// the hull so only its wide faint tail showed past the stern and the wake read as backwards. The art's
+            /// narrow apex is at the image TOP (pixel-verified by <c>WakeArtOrientationTests</c>); the apex pivot
+            /// pins there and the body trails + widens astern because local +Y is aligned with the bow
+            /// (<see cref="WakeGrading.OrientAngleDeg"/>, which also carries the owner's PlumeFlip escape hatch).</para>
             /// </summary>
             private void RenderPlume(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude, int tier,
-                                     Color tint, in WakeGradeConfig grade)
+                                     float hullLength, Color tint, in WakeGradeConfig grade)
             {
                 if (_plume == null) return;
 
                 float onset = WakeGrading.SpeedOnset(speed, in grade);
-                Sprite sprite = TierSpriteOrFallback(tier);
+                Sprite sprite = TierSpriteOrFallback(_tierSprites, tier);
                 if (!grade.PlumeEnabled || aground || onset <= 0f || sprite == null)
                 {
                     if (_plume.gameObject.activeSelf) _plume.gameObject.SetActive(false);
@@ -616,11 +671,9 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                // Apex a touch astern of the boat origin; the sprite's APEX pivot (top-centre) pins there and the
-                // body trails + widens astern because we align the sprite's local +Y with the bow.
-                Vector2 apex = pos - bow * grade.PlumeAsternOffset;
+                Vector2 apex = WakeGrading.SternAnchor(pos, bow, hullLength, grade.PlumeAsternOffset);
                 float scale = WakeGrading.PlumeScale(magnitude, in grade);
-                float angleDeg = Vector2.SignedAngle(Vector2.up, bow);   // sprite up (+Y) → bow
+                float angleDeg = WakeGrading.OrientAngleDeg(bow, grade.PlumeFlip);
 
                 var t = _plume.transform;
                 t.position = new Vector3(apex.x, apex.y, 0f);
@@ -629,6 +682,46 @@ namespace HiddenHarbours.Boats
                 var col = tint; col.a = Mathf.Clamp01(grade.PlumeStartAlpha) * onset;
                 _plume.color = col;
                 if (!_plume.gameObject.activeSelf) _plume.gameObject.SetActive(true);
+            }
+
+            /// <summary>
+            /// Draw the graded BOW SPRAY: the authored tier sprite pinned IMPACT-at-the-cutwater
+            /// (<see cref="BowSprayGrading.BowAnchor"/> — half the hull ahead of the boat origin) with the
+            /// droplet fan spreading ahead of the bow, tier-swapped + continuously scaled by the spray's own
+            /// speed-forward magnitude and faded in by its speed-onset ramp. That ramp is what keeps the dory
+            /// honest to the owner's brief: its rowed top speed only reaches the bottom of the ramp, so the
+            /// slowest boat in the game shows at most a subtle gradual wisp while faster hulls earn the full
+            /// sheet. Hidden at rest, when aground, when disabled, or with no usable sprite. One renderer, one
+            /// shared sprite per tier — no allocation (rule 7); visual-only (rule 5).
+            /// </summary>
+            private void RenderSpray(Vector2 pos, Vector2 bow, float speed, bool aground,
+                                     float hullLength, float massKg, Color tint, in BowSprayGradeConfig spray)
+            {
+                if (_sprayRenderer == null) return;
+
+                float onset = BowSprayGrading.SpeedOnset(speed, in spray);
+                float magnitude = BowSprayGrading.Magnitude01(hullLength, massKg, speed, in spray);
+                int tier = BowSprayGrading.TierIndex(magnitude, in spray);
+                Sprite sprite = TierSpriteOrFallback(_spraySprites, tier);
+                if (!spray.SprayEnabled || aground || onset <= 0f || sprite == null)
+                {
+                    if (_sprayRenderer.gameObject.activeSelf) _sprayRenderer.gameObject.SetActive(false);
+                    return;
+                }
+
+                _sprayRenderer.sprite = sprite;
+
+                Vector2 impact = BowSprayGrading.BowAnchor(pos, bow, hullLength, spray.SprayBowOffset);
+                float scale = BowSprayGrading.SprayScale(magnitude, in spray);
+                float angleDeg = WakeGrading.OrientAngleDeg(bow, spray.SprayFlip);
+
+                var t = _sprayRenderer.transform;
+                t.position = new Vector3(impact.x, impact.y, 0f);
+                t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
+                t.localScale = new Vector3(scale, scale, 1f);
+                var col = tint; col.a = Mathf.Clamp01(spray.SprayStartAlpha) * onset;
+                _sprayRenderer.color = col;
+                if (!_sprayRenderer.gameObject.activeSelf) _sprayRenderer.gameObject.SetActive(true);
             }
 
             private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor)

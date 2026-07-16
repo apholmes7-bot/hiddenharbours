@@ -16,3 +16,7 @@ MonoBehaviour:
   Medium: {fileID: 2800000, guid: 3681023d814dfeb4286d8ff5e00bdc82, type: 3}
   Large: {fileID: 2800000, guid: dbbd6fc03caae6442aeb7ad571537266, type: 3}
   Huge: {fileID: 2800000, guid: 7adf1c72ac5b26e4ca72a221040af08d, type: 3}
+  SpraySmall: {fileID: 2800000, guid: 01519e4d9cbe01b4091f8c328f0f4fd0, type: 3}
+  SprayMedium: {fileID: 2800000, guid: aad9acfbcc679044aace4bece5ee4406, type: 3}
+  SprayLarge: {fileID: 2800000, guid: 564d9ebcddf90c94794ab3b76e58ba61, type: 3}
+  SprayHuge: {fileID: 2800000, guid: 9ff37d5ce962f3f468543e679e708be9, type: 3}

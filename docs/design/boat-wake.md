@@ -98,6 +98,30 @@ keeps the edges razor-sharp; sea-state wobble (brief point 3) breaks them up as 
 | `_maxBoats` | 4 | boats driven at once (player dominates) |
 | `_tickHz` / `_rescanHz` | 30 / 1 | sim tick / boat-rescan cadence |
 
+## The graded plume & bow spray (size + weight + speed)
+
+On top of the particle wake, each boat carries two **authored, graded** sprites driven by a blend of hull
+size (`BoatHullDef.LengthMeters`) + weight (`MassKg`) + live speed (`WakeGrading` — tunable reference
+ranges, weights and tier thresholds; four authored tiers Small/Medium/Large/Huge each, loaded as
+**Texture2D refs** through `Resources/WakeSpriteLibrary` and built into full-image sprites in code, because
+the PNGs import `spriteMode: Multiple`):
+
+- **The stern PLUME** (`Art/VFX/Wake/*`) — art is authored **narrow-apex-at-the-TOP, widening downward**
+  (pixel-verified by `WakeArtOrientationTests`). The apex is anchored at the boat's **actual stern**
+  (`WakeGrading.SternAnchor`: half the hull length back from the boat origin + a tunable nudge — anchoring
+  at the origin was the "wake reads backwards" playtest bug: the plume hid under the hull with only its
+  wide faint tail showing). Local +Y points at the bow so the plume widens + fades astern; `PlumeFlip`
+  (serialized) turns it 180° and mirrors the pivot if the art is ever re-authored the other way up.
+- **The BOW SPRAY** (`Art/VFX/BowSpray/*`) — art is authored **impact-churn-at-the-BOTTOM, fan spreading
+  up** (same pixel test). Pinned at the cutwater (`BowSprayGrading.BowAnchor`, the stern anchor's mirror),
+  fan ahead of the bow, with its **own speed-forward config** (`BowSprayGradeConfig`): weights ≈
+  0.20 size / 0.15 weight / **0.65 speed**, and a speed onset at ~⅔ of the dory's real rowed top speed
+  (≈2.5 m/s from `OarPower/ForwardDrag`) ramping to full only **beyond** it — so the dory (the slowest
+  boat in the game, per the owner) shows at most a gradual subtle wisp at a hard row, and the prominent
+  sheet belongs to the faster hulls. `SprayFlip`/`SprayPivotY` mirror the plume's escape hatch. Both
+  sprites are one renderer per boat, built once, tier-swapped + continuously scaled + onset-faded,
+  hidden at rest/aground — zero per-tick allocation, visual-only.
+
 ## Tests
 `Assets/Tests/EditMode/WakeParticleSystemTests.cs` — pure-logic guards for all four brief points
 (emission gating vs speed / aground; **the crisp-V geometry: apex at the stern, arms widening at the Kelvin
@@ -105,6 +129,12 @@ half-angle, mirrored wings, and the stern fill staying inside the arms**; fresh 
 apex; advection by velocity+current and momentum decay toward current-only drift; monotonic fade-to-0 and
 monotonic spread; lifetime death; sea-state-scaled + bounded + deterministic wave distortion) plus whole-run
 determinism (same inputs → bit-stable particle field, no RNG).
+`WakeGradingTests` / `BowSprayGradingTests` — the graded selection math (monotone in every input, bounded,
+defensively-sorted thresholds, and the dory's spray pinned gentle against its real hull data).
+`WakeArtOrientationTests` — the **pixel-verified orientation contract**: reads the raw wake/spray PNGs and
+asserts the narrow apex is at the image top (wake) and the impact churn at the image bottom (spray), so a
+flipped art re-export fails the suite instead of shipping a backwards wake again. PlayMode
+`WakePlumePlayTests` proves both texture sets load through the spriteMode-Multiple trap at runtime.
 
 ## Future work (not built)
 The procedurally-generated round foam puff is a **greybox** placeholder. The authored V sprite

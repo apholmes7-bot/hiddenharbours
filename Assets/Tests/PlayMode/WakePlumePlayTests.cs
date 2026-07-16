@@ -49,5 +49,44 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Greater(ordered[i].height, ordered[i - 1].height,
                     "each graded tier texture is taller than the previous — a bigger authored wake");
         }
+
+        /// <summary>
+        /// The same runtime guard for the graded BOW SPRAY: the four BowSpray textures resolve through the
+        /// library (they import spriteMode-Multiple exactly like the Wake PNGs, so the naive Sprite load would
+        /// return null) and build full-image sprites with the emitter's impact pivot. If this regresses the
+        /// spray silently vanishes.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BowSprayLibrary_LoadsFourFullImageSprites_ThroughTheMultipleSpriteTrap()
+        {
+            yield return null;
+
+            var lib = Resources.Load<WakeSpriteLibrary>(WakeSpriteLibrary.ResourcesPath);
+            Assert.IsNotNull(lib, "the WakeSpriteLibrary must be present at Resources/WakeSpriteLibrary");
+
+            var textures = lib.OrderedSpray();
+            Assert.AreEqual(WakeGrading.TierCount, textures.Length, "one spray texture per graded tier");
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                Texture2D tex = textures[i];
+                Assert.IsNotNull(tex, $"spray tier {i} texture reference resolves (the always-present main asset)");
+
+                // Build the sprite EXACTLY as the emitter does — impact pivot at bottom-centre (the art's dense
+                // cutwater churn, pixel-verified in WakeArtOrientationTests), spanning the full texture.
+                var full = new Rect(0f, 0f, tex.width, tex.height);
+                var sprite = Sprite.Create(tex, full, new Vector2(0.5f, 0f), 32);
+                Assert.IsNotNull(sprite, $"spray tier {i} full-image sprite builds from the texture");
+                Assert.AreEqual(tex.width, sprite.rect.width, 0.5f, $"spray tier {i} sprite spans the full width");
+                Assert.AreEqual(tex.height, sprite.rect.height, 0.5f, $"spray tier {i} sprite spans the full height");
+                Object.Destroy(sprite);
+            }
+
+            // The spray tiers grow too (Small < Medium < Large < Huge).
+            var ordered = lib.OrderedSpray();
+            for (int i = 1; i < ordered.Length; i++)
+                Assert.Greater(ordered[i].height, ordered[i - 1].height,
+                    "each graded spray texture is taller than the previous — a bigger authored sheet");
+        }
     }
 }
