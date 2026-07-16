@@ -1,0 +1,2210 @@
+fileFormatVersion: 2
+guid: 38cec518694486e47a89e11c64645a39
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6730753832145728815
+    second: DoryOarPort_0
+  - first:
+      213: -7091044196222181276
+    second: DoryOarPort_1
+  - first:
+      213: -8585808694831940045
+    second: DoryOarPort_2
+  - first:
+      213: 2534469889875010385
+    second: DoryOarPort_3
+  - first:
+      213: 1522220154444844329
+    second: DoryOarPort_4
+  - first:
+      213: -2088602487386378003
+    second: DoryOarPort_5
+  - first:
+      213: 3522062316535870823
+    second: DoryOarPort_6
+  - first:
+      213: 3999786817496748278
+    second: DoryOarPort_7
+  - first:
+      213: -6573741549983828783
+    second: DoryOarPort_8
+  - first:
+      213: -6361356371324126640
+    second: DoryOarPort_9
+  - first:
+      213: -6862334598594573673
+    second: DoryOarPort_10
+  - first:
+      213: -4787644516532503543
+    second: DoryOarPort_11
+  - first:
+      213: -5903903845767293109
+    second: DoryOarPort_12
+  - first:
+      213: 4591301189614761331
+    second: DoryOarPort_13
+  - first:
+      213: 8845747333279825008
+    second: DoryOarPort_14
+  - first:
+      213: -8815855342726435865
+    second: DoryOarPort_15
+  - first:
+      213: 4891336477059032461
+    second: DoryOarPort_16
+  - first:
+      213: -6762112099362503068
+    second: DoryOarPort_17
+  - first:
+      213: 8631673711094605777
+    second: DoryOarPort_18
+  - first:
+      213: -1857083628900523440
+    second: DoryOarPort_19
+  - first:
+      213: 963964295923688686
+    second: DoryOarPort_20
+  - first:
+      213: 7099278147419867000
+    second: DoryOarPort_21
+  - first:
+      213: 8239037072634824590
+    second: DoryOarPort_22
+  - first:
+      213: 8647502934283923004
+    second: DoryOarPort_23
+  - first:
+      213: 1965988453866493859
+    second: DoryOarPort_24
+  - first:
+      213: 5790102876174166517
+    second: DoryOarPort_25
+  - first:
+      213: 5393785755855184337
+    second: DoryOarPort_26
+  - first:
+      213: 7737045117687410173
+    second: DoryOarPort_27
+  - first:
+      213: 841685968347364393
+    second: DoryOarPort_28
+  - first:
+      213: -5045657349734511799
+    second: DoryOarPort_29
+  - first:
+      213: 2400468178720145733
+    second: DoryOarPort_30
+  - first:
+      213: 3563874988270496063
+    second: DoryOarPort_31
+  - first:
+      213: 4262422392267552515
+    second: DoryOarPort_32
+  - first:
+      213: 6529438080087370119
+    second: DoryOarPort_33
+  - first:
+      213: -560175364778792655
+    second: DoryOarPort_34
+  - first:
+      213: -4866044389714749560
+    second: DoryOarPort_35
+  - first:
+      213: -8686740760304439907
+    second: DoryOarPort_36
+  - first:
+      213: -2601143023301417872
+    second: DoryOarPort_37
+  - first:
+      213: 1802140537156679633
+    second: DoryOarPort_38
+  - first:
+      213: -8381920821429943262
+    second: DoryOarPort_39
+  - first:
+      213: 3891273417316824360
+    second: DoryOarPort_40
+  - first:
+      213: 5846480739852414259
+    second: DoryOarPort_41
+  - first:
+      213: 4208908365874972335
+    second: DoryOarPort_42
+  - first:
+      213: -6967212707959896489
+    second: DoryOarPort_43
+  - first:
+      213: -597314004375246080
+    second: DoryOarPort_44
+  - first:
+      213: 8674213056220960843
+    second: DoryOarPort_45
+  - first:
+      213: 7454809551732709136
+    second: DoryOarPort_46
+  - first:
+      213: -310245538082170635
+    second: DoryOarPort_47
+  - first:
+      213: -5102586505010899227
+    second: DoryOarPort_48
+  - first:
+      213: -299205126303549802
+    second: DoryOarPort_49
+  - first:
+      213: -8476088109741077185
+    second: DoryOarPort_50
+  - first:
+      213: 7515771245826231003
+    second: DoryOarPort_51
+  - first:
+      213: 1401674566994272550
+    second: DoryOarPort_52
+  - first:
+      213: -6855689920281194082
+    second: DoryOarPort_53
+  - first:
+      213: 7850361500310165626
+    second: DoryOarPort_54
+  - first:
+      213: 7788162506239359023
+    second: DoryOarPort_55
+  - first:
+      213: 3858111055736364105
+    second: DoryOarPort_56
+  - first:
+      213: 5350302494110076183
+    second: DoryOarPort_57
+  - first:
+      213: -1060470780065169762
+    second: DoryOarPort_58
+  - first:
+      213: -2804247900592182096
+    second: DoryOarPort_59
+  - first:
+      213: -3428448533310611481
+    second: DoryOarPort_60
+  - first:
+      213: -5915271860689132033
+    second: DoryOarPort_61
+  - first:
+      213: 7367179549211450921
+    second: DoryOarPort_62
+  - first:
+      213: -1604785623246541342
+    second: DoryOarPort_63
+  - first:
+      213: -5257540986334695007
+    second: DoryOarPort_64
+  - first:
+      213: 9095354789197297320
+    second: DoryOarPort_65
+  - first:
+      213: -1688253040550143988
+    second: DoryOarPort_66
+  - first:
+      213: -4382623638237544210
+    second: DoryOarPort_67
+  - first:
+      213: -6274678184303506828
+    second: DoryOarPort_68
+  - first:
+      213: 4416622394835336803
+    second: DoryOarPort_69
+  - first:
+      213: -3732123508444584746
+    second: DoryOarPort_70
+  - first:
+      213: 2632448268578325450
+    second: DoryOarPort_71
+  - first:
+      213: 4397373229521126909
+    second: DoryOarPort_72
+  - first:
+      213: 7509745720238203684
+    second: DoryOarPort_73
+  - first:
+      213: -293048961421318768
+    second: DoryOarPort_74
+  - first:
+      213: -4945567303872119112
+    second: DoryOarPort_75
+  - first:
+      213: 6993825273705695067
+    second: DoryOarPort_76
+  - first:
+      213: -4695666067364824453
+    second: DoryOarPort_77
+  - first:
+      213: 2650494142025751530
+    second: DoryOarPort_78
+  - first:
+      213: 4641104178835519633
+    second: DoryOarPort_79
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DoryOarPort_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ed30b98160029c4799cdc5031da5bcd
+      internalID: 6730753832145728815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_1
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 321ba2107f8b3bb48b28b1d40704b4d3
+      internalID: -7091044196222181276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_2
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8512de721f257240b067a34dbb119ed
+      internalID: -8585808694831940045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_3
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95c982d5b16f10845bed264cd6203079
+      internalID: 2534469889875010385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_4
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed13af4e498cfa649b5f53061c41c605
+      internalID: 1522220154444844329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_5
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d884a03f797a48f49ad199ecbb38623a
+      internalID: -2088602487386378003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_6
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6de6858244ad683418c8a607ba5b3d9d
+      internalID: 3522062316535870823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_7
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccc4aa73aa87e5d46aa8cf529ae08883
+      internalID: 3999786817496748278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_8
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8473c4cf96685b543ba1c2976463227f
+      internalID: -6573741549983828783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_9
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ae2e9bd054759544a01dd75287dd650
+      internalID: -6361356371324126640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5144f2fce74c8c242a48fd0cc83b068b
+      internalID: -6862334598594573673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_11
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f11ba8a65cf1f4469f9ff420ba99b5e
+      internalID: -4787644516532503543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_12
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f040f30b25fbcb49b6aa8361c6d6ba6
+      internalID: -5903903845767293109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_13
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17b0ad6304ff46d4ba249ef0a9ac0963
+      internalID: 4591301189614761331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_14
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec45e15b1b3b9be4eb7ac46cd5bcc3d4
+      internalID: 8845747333279825008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_15
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e1ba6d541fb5f14f9befffb7243403a
+      internalID: -8815855342726435865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_16
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e54c8f1971425641a74946ced1b5b02
+      internalID: 4891336477059032461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_17
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2934cd98bea97bc47b8f09d73d1c2f5e
+      internalID: -6762112099362503068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_18
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bebc0ba8d1b0ba48859382e7a02e621
+      internalID: 8631673711094605777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_19
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 583ba7038f7846349b057b79f569f958
+      internalID: -1857083628900523440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 337fb23b832a14445894348aaffc3152
+      internalID: 963964295923688686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_21
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64232b74370356743ab47bed109d84a1
+      internalID: 7099278147419867000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_22
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83bd18af9c46fb64c8802beff0a662b2
+      internalID: 8239037072634824590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_23
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00a823a7b6cbe344c9e9658be5df57f5
+      internalID: 8647502934283923004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_24
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0c6a7d8ea5d8404fbae78efab592105
+      internalID: 1965988453866493859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_25
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e2f878b21f142248b8f5766524df67c
+      internalID: 5790102876174166517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_26
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f31b056840c3ba44aa46313933dd260c
+      internalID: 5393785755855184337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_27
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4b33b43ad46dcc45b2efe1450019836
+      internalID: 7737045117687410173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_28
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70baa3acbe7e1ee47b49c3408390024a
+      internalID: 841685968347364393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_29
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d412f418e5473bd49b05d6d4e5a7b5dc
+      internalID: -5045657349734511799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_30
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13cd621beb4407f4da1b20bc6ba57403
+      internalID: 2400468178720145733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_31
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c46323351b6111e40a77357d9c748239
+      internalID: 3563874988270496063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_32
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85ffac543463c69489a7c77028f6b533
+      internalID: 4262422392267552515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_33
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d419b6d2fbdf5c94597dbd9322bf3809
+      internalID: 6529438080087370119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_34
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f29f82be3177b4468759ba7178570cd
+      internalID: -560175364778792655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_35
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed2a5a98819985845ab9f37cbeb70447
+      internalID: -4866044389714749560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_36
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acd317756c076404e9dc41f98fdeb5c1
+      internalID: -8686740760304439907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_37
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67d36499b8c46fb49b27bb0f9fe30df8
+      internalID: -2601143023301417872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_38
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba3b49976a9cd6d41b7bebddc6ef027d
+      internalID: 1802140537156679633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_39
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cde2444925b3084ba3614d2e142c3b3
+      internalID: -8381920821429943262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85dad82486ad0154f8dc9660ac3a1de7
+      internalID: 3891273417316824360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_41
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac9febee91e18aa479cf144677dd1ee0
+      internalID: 5846480739852414259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_42
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77fcd16922a2a094385de113f382ea71
+      internalID: 4208908365874972335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_43
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9c31f44d2ed3b441a25ca94fddd0e20
+      internalID: -6967212707959896489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_44
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7037f0fdb653ac5408ae0cd6af5b6be2
+      internalID: -597314004375246080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_45
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce0595009fde2224c8d4756244c0cd39
+      internalID: 8674213056220960843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_46
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2cea555ba771b7498b49b5216295462
+      internalID: 7454809551732709136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_47
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc0c50e248ef9c9439a507fab68ae709
+      internalID: -310245538082170635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_48
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76a8a4e5cbd283f42a9553acb5c7fdc7
+      internalID: -5102586505010899227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_49
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77f42ddb64db28f42a6d091dab3267bf
+      internalID: -299205126303549802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 871e1e65ca03d1f4dac4142a220c82ff
+      internalID: -8476088109741077185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_51
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d28e31c481a83264f8e3aa59d8dbc89d
+      internalID: 7515771245826231003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_52
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bb0ab017c6e56b4faa77f51f7d21052
+      internalID: 1401674566994272550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_53
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89f64ea339ca517449a405a3e15d531f
+      internalID: -6855689920281194082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_54
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aaed7a37e8c7f2f40aa23a7245c3de68
+      internalID: 7850361500310165626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_55
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7aa25196bda772e408656c84f63582a6
+      internalID: 7788162506239359023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_56
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cf39c9bba93b4246ad1521b5b4d21db
+      internalID: 3858111055736364105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_57
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1dd9ff169ff2bd48a24e4187fc10bc2
+      internalID: 5350302494110076183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_58
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fef6c52f61451d44cac60a1e02016062
+      internalID: -1060470780065169762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_59
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e183025d843244649bf79ed69c1875ce
+      internalID: -2804247900592182096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_60
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10fe488a6027a754ca9d80310f42e006
+      internalID: -3428448533310611481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_61
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f858748c28d43d4fa656ec6a77bfceb
+      internalID: -5915271860689132033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_62
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92eaebcfbad3e63449d549e279acc565
+      internalID: 7367179549211450921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_63
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e68b40af9f2d1444ca2a9b893f7b707d
+      internalID: -1604785623246541342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_64
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 243c2387d3c1d49408d0a97fe3053944
+      internalID: -5257540986334695007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_65
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1107336d3b23cb0409de5b6c6a2d686e
+      internalID: 9095354789197297320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_66
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 965b11eeea13d794d830f007bb8e11a8
+      internalID: -1688253040550143988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_67
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a197d0ff217b97446883bb577cc7a712
+      internalID: -4382623638237544210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_68
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9870f906ee3df0f40b9093f2e7d0bfe8
+      internalID: -6274678184303506828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_69
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6effbd837a28154cb103d79873b5ef2
+      internalID: 4416622394835336803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_70
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ea485857dcbc204ebdbe1f9b32d9251
+      internalID: -3732123508444584746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_71
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 801102fdb049abf4a81bf5ea19d9376e
+      internalID: 2632448268578325450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_72
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82491b46e513042498bd4b246f32bae3
+      internalID: 4397373229521126909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_73
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 645625fd0b1a72243a3a0428ebc4615d
+      internalID: 7509745720238203684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_74
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0b3c26f03051954e9e3950e59d71fda
+      internalID: -293048961421318768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_75
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ac0db6f75435df44bb77e9456be64a2
+      internalID: -4945567303872119112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_76
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 197fe8486b1d75e468921ba99ff51135
+      internalID: 6993825273705695067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_77
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c642a036e993dd84b9f94f6328c1ce45
+      internalID: -4695666067364824453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_78
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89548e410dd86ee4aa1b90d0427fb8a8
+      internalID: 2650494142025751530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarPort_79
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37d56b82fb498e64a80f1f4aa6de74c2
+      internalID: 4641104178835519633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8d8fa3d97f615e1458838c58be95aeec
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DoryOarPort_0: 6730753832145728815
+      DoryOarPort_1: -7091044196222181276
+      DoryOarPort_10: -6862334598594573673
+      DoryOarPort_11: -4787644516532503543
+      DoryOarPort_12: -5903903845767293109
+      DoryOarPort_13: 4591301189614761331
+      DoryOarPort_14: 8845747333279825008
+      DoryOarPort_15: -8815855342726435865
+      DoryOarPort_16: 4891336477059032461
+      DoryOarPort_17: -6762112099362503068
+      DoryOarPort_18: 8631673711094605777
+      DoryOarPort_19: -1857083628900523440
+      DoryOarPort_2: -8585808694831940045
+      DoryOarPort_20: 963964295923688686
+      DoryOarPort_21: 7099278147419867000
+      DoryOarPort_22: 8239037072634824590
+      DoryOarPort_23: 8647502934283923004
+      DoryOarPort_24: 1965988453866493859
+      DoryOarPort_25: 5790102876174166517
+      DoryOarPort_26: 5393785755855184337
+      DoryOarPort_27: 7737045117687410173
+      DoryOarPort_28: 841685968347364393
+      DoryOarPort_29: -5045657349734511799
+      DoryOarPort_3: 2534469889875010385
+      DoryOarPort_30: 2400468178720145733
+      DoryOarPort_31: 3563874988270496063
+      DoryOarPort_32: 4262422392267552515
+      DoryOarPort_33: 6529438080087370119
+      DoryOarPort_34: -560175364778792655
+      DoryOarPort_35: -4866044389714749560
+      DoryOarPort_36: -8686740760304439907
+      DoryOarPort_37: -2601143023301417872
+      DoryOarPort_38: 1802140537156679633
+      DoryOarPort_39: -8381920821429943262
+      DoryOarPort_4: 1522220154444844329
+      DoryOarPort_40: 3891273417316824360
+      DoryOarPort_41: 5846480739852414259
+      DoryOarPort_42: 4208908365874972335
+      DoryOarPort_43: -6967212707959896489
+      DoryOarPort_44: -597314004375246080
+      DoryOarPort_45: 8674213056220960843
+      DoryOarPort_46: 7454809551732709136
+      DoryOarPort_47: -310245538082170635
+      DoryOarPort_48: -5102586505010899227
+      DoryOarPort_49: -299205126303549802
+      DoryOarPort_5: -2088602487386378003
+      DoryOarPort_50: -8476088109741077185
+      DoryOarPort_51: 7515771245826231003
+      DoryOarPort_52: 1401674566994272550
+      DoryOarPort_53: -6855689920281194082
+      DoryOarPort_54: 7850361500310165626
+      DoryOarPort_55: 7788162506239359023
+      DoryOarPort_56: 3858111055736364105
+      DoryOarPort_57: 5350302494110076183
+      DoryOarPort_58: -1060470780065169762
+      DoryOarPort_59: -2804247900592182096
+      DoryOarPort_6: 3522062316535870823
+      DoryOarPort_60: -3428448533310611481
+      DoryOarPort_61: -5915271860689132033
+      DoryOarPort_62: 7367179549211450921
+      DoryOarPort_63: -1604785623246541342
+      DoryOarPort_64: -5257540986334695007
+      DoryOarPort_65: 9095354789197297320
+      DoryOarPort_66: -1688253040550143988
+      DoryOarPort_67: -4382623638237544210
+      DoryOarPort_68: -6274678184303506828
+      DoryOarPort_69: 4416622394835336803
+      DoryOarPort_7: 3999786817496748278
+      DoryOarPort_70: -3732123508444584746
+      DoryOarPort_71: 2632448268578325450
+      DoryOarPort_72: 4397373229521126909
+      DoryOarPort_73: 7509745720238203684
+      DoryOarPort_74: -293048961421318768
+      DoryOarPort_75: -4945567303872119112
+      DoryOarPort_76: 6993825273705695067
+      DoryOarPort_77: -4695666067364824453
+      DoryOarPort_78: 2650494142025751530
+      DoryOarPort_79: 4641104178835519633
+      DoryOarPort_8: -6573741549983828783
+      DoryOarPort_9: -6361356371324126640
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
