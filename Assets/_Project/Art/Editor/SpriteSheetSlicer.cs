@@ -102,6 +102,15 @@ namespace HiddenHarbours.Art.Editor
             //     (row-major from top-left, per BuildRects), i.e. heading = index/8, frame = index%8.
             new SheetSpec(Root + "Boats/DoryIso.png",     8, 1, 160, 156, SpriteAlignment.Custom, DoryWaterline),
             new SheetSpec(Root + "Boats/DoryIsoRock.png", 8, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
+
+            // ---- Iso dory INDEPENDENT OAR overlays (per-side, layered over the hull) -------------------
+            //   DoryOarPort/DoryOarStar: 10 cols (row-stroke frame 0..7, 8 = resting/shipped, 9 = trailing)
+            //   × 8 rows (heading N..NW, same CW order as DoryIsoRock) → 80 each; index = heading×10 + col
+            //   (row-major from top-left, per BuildRects), i.e. heading = index/10, col = index%10. Same
+            //   160×156 cell + waterline pivot as the hull sheets, so the oar overlays register pixel-perfect
+            //   on the hull at identical localPosition (art README: all layers pinned to pivot (80,88)).
+            new SheetSpec(Root + "Boats/DoryOarPort.png", 10, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
+            new SheetSpec(Root + "Boats/DoryOarStar.png", 10, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
         };
 
         // ---- entry points -------------------------------------------------------------------------

@@ -1,0 +1,2210 @@
+fileFormatVersion: 2
+guid: 42ab595f190dfc54bbe9ab02297d8c44
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7414183688090616659
+    second: DoryOarStar_0
+  - first:
+      213: 6894651126422441052
+    second: DoryOarStar_1
+  - first:
+      213: -4085035540200007919
+    second: DoryOarStar_2
+  - first:
+      213: -8687603235263213392
+    second: DoryOarStar_3
+  - first:
+      213: -1861179498676126830
+    second: DoryOarStar_4
+  - first:
+      213: 8788935348403430671
+    second: DoryOarStar_5
+  - first:
+      213: -2020259143235647539
+    second: DoryOarStar_6
+  - first:
+      213: 2168387975609438152
+    second: DoryOarStar_7
+  - first:
+      213: -8943789888850765649
+    second: DoryOarStar_8
+  - first:
+      213: -8308079426281854420
+    second: DoryOarStar_9
+  - first:
+      213: -5908731483039318458
+    second: DoryOarStar_10
+  - first:
+      213: -8502845720330010850
+    second: DoryOarStar_11
+  - first:
+      213: 7844240666021564014
+    second: DoryOarStar_12
+  - first:
+      213: 1887409671029992293
+    second: DoryOarStar_13
+  - first:
+      213: 5926019461406764588
+    second: DoryOarStar_14
+  - first:
+      213: 6711719168794774715
+    second: DoryOarStar_15
+  - first:
+      213: -8112796538624350970
+    second: DoryOarStar_16
+  - first:
+      213: 2088754851105217863
+    second: DoryOarStar_17
+  - first:
+      213: 2012037121754447988
+    second: DoryOarStar_18
+  - first:
+      213: -1437571239503135959
+    second: DoryOarStar_19
+  - first:
+      213: -7063361647204536921
+    second: DoryOarStar_20
+  - first:
+      213: -1036015803849031442
+    second: DoryOarStar_21
+  - first:
+      213: 845332377526975438
+    second: DoryOarStar_22
+  - first:
+      213: 2367282362138620981
+    second: DoryOarStar_23
+  - first:
+      213: 4593252063158676275
+    second: DoryOarStar_24
+  - first:
+      213: 4366685380283495504
+    second: DoryOarStar_25
+  - first:
+      213: -99572096998546664
+    second: DoryOarStar_26
+  - first:
+      213: 2846980926426222044
+    second: DoryOarStar_27
+  - first:
+      213: -8591024305868343826
+    second: DoryOarStar_28
+  - first:
+      213: 13630705018676494
+    second: DoryOarStar_29
+  - first:
+      213: -1710712615196946548
+    second: DoryOarStar_30
+  - first:
+      213: -4149783627326339422
+    second: DoryOarStar_31
+  - first:
+      213: 6906266956204534526
+    second: DoryOarStar_32
+  - first:
+      213: -7206406960333637794
+    second: DoryOarStar_33
+  - first:
+      213: 400715104206027853
+    second: DoryOarStar_34
+  - first:
+      213: 7560352791843304888
+    second: DoryOarStar_35
+  - first:
+      213: 1264553462437531043
+    second: DoryOarStar_36
+  - first:
+      213: -1529997263848723745
+    second: DoryOarStar_37
+  - first:
+      213: 407513363509786039
+    second: DoryOarStar_38
+  - first:
+      213: 8687407709211445558
+    second: DoryOarStar_39
+  - first:
+      213: 1370874511079534495
+    second: DoryOarStar_40
+  - first:
+      213: -1262778383330948390
+    second: DoryOarStar_41
+  - first:
+      213: -75840776310527554
+    second: DoryOarStar_42
+  - first:
+      213: 6673293146823867298
+    second: DoryOarStar_43
+  - first:
+      213: -6124411207021669740
+    second: DoryOarStar_44
+  - first:
+      213: -6461117089049678808
+    second: DoryOarStar_45
+  - first:
+      213: 7137315259690219860
+    second: DoryOarStar_46
+  - first:
+      213: 6606100029701358902
+    second: DoryOarStar_47
+  - first:
+      213: -3596680483989852223
+    second: DoryOarStar_48
+  - first:
+      213: 2875419278258211064
+    second: DoryOarStar_49
+  - first:
+      213: -335897182949789126
+    second: DoryOarStar_50
+  - first:
+      213: -1167885906162500422
+    second: DoryOarStar_51
+  - first:
+      213: -7734787073729422887
+    second: DoryOarStar_52
+  - first:
+      213: -3511902293148988542
+    second: DoryOarStar_53
+  - first:
+      213: -4002717176136942238
+    second: DoryOarStar_54
+  - first:
+      213: 4803524212301743057
+    second: DoryOarStar_55
+  - first:
+      213: 1435599350731748423
+    second: DoryOarStar_56
+  - first:
+      213: -1697776020506228927
+    second: DoryOarStar_57
+  - first:
+      213: -8149584915853634015
+    second: DoryOarStar_58
+  - first:
+      213: 6520166721165975545
+    second: DoryOarStar_59
+  - first:
+      213: -9005873742651436506
+    second: DoryOarStar_60
+  - first:
+      213: 350779949460874733
+    second: DoryOarStar_61
+  - first:
+      213: 9187196217655252784
+    second: DoryOarStar_62
+  - first:
+      213: 1032795491242779210
+    second: DoryOarStar_63
+  - first:
+      213: 2537832841642796642
+    second: DoryOarStar_64
+  - first:
+      213: -1003608307091487300
+    second: DoryOarStar_65
+  - first:
+      213: -5980364209116857573
+    second: DoryOarStar_66
+  - first:
+      213: -2128321880051579630
+    second: DoryOarStar_67
+  - first:
+      213: -5952803184843123851
+    second: DoryOarStar_68
+  - first:
+      213: -6560780207409062678
+    second: DoryOarStar_69
+  - first:
+      213: -3828381254536827517
+    second: DoryOarStar_70
+  - first:
+      213: -1994140459101203580
+    second: DoryOarStar_71
+  - first:
+      213: 7864565932771066423
+    second: DoryOarStar_72
+  - first:
+      213: 7221177995957828366
+    second: DoryOarStar_73
+  - first:
+      213: 5756733859881496526
+    second: DoryOarStar_74
+  - first:
+      213: -5913031068932098999
+    second: DoryOarStar_75
+  - first:
+      213: 785612302891100798
+    second: DoryOarStar_76
+  - first:
+      213: 599752803751847393
+    second: DoryOarStar_77
+  - first:
+      213: 5912096091688918295
+    second: DoryOarStar_78
+  - first:
+      213: 1707885623860978299
+    second: DoryOarStar_79
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DoryOarStar_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1db7aff7b225a434d95b8ad9ab79cd08
+      internalID: -7414183688090616659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_1
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c91fa35114f8465468dbd4ae4cd8b2bd
+      internalID: 6894651126422441052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_2
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d5d6c90c9bf2424e8450f02448e6d60
+      internalID: -4085035540200007919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_3
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d964e5b764547e459b4cc3beb3d7fe4
+      internalID: -8687603235263213392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_4
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5a1f891928148c40b8ef496fbca57f5
+      internalID: -1861179498676126830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_5
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 242ad35f6d9c24f4ca057aac03014aad
+      internalID: 8788935348403430671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_6
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3102ac35eb139664a85346e66849332a
+      internalID: -2020259143235647539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_7
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6148d4965edba0044b615aa02724afa4
+      internalID: 2168387975609438152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_8
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 457ed07dda235fc44a25019c2741963f
+      internalID: -8943789888850765649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_9
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7793aa54b282e174db1840ce47a14f60
+      internalID: -8308079426281854420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b0e91c814b8c86468ff6aba86b3bb94
+      internalID: -5908731483039318458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_11
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 251711fcebde0504e88d9a2dfc2eeee1
+      internalID: -8502845720330010850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_12
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6ab6acab1399b040a0136f9f06f9f9b
+      internalID: 7844240666021564014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_13
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0b2e895bc2e85e4aa372460c1e6e50b
+      internalID: 1887409671029992293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_14
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff9746821b8313249ab45ccc6aae9604
+      internalID: 5926019461406764588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_15
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0493219b03e58a04aa668971d1c3ad97
+      internalID: 6711719168794774715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_16
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb39ce12ffd84b64f87a594a97825fd2
+      internalID: -8112796538624350970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_17
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d325ded028b41154c90ca1942f65b322
+      internalID: 2088754851105217863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_18
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7deb7d29a4a84084b999350617477c81
+      internalID: 2012037121754447988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_19
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bbe29b0d64616b4ca09533a9cdf4802
+      internalID: -1437571239503135959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05c8861effbac454b91118b22b23111a
+      internalID: -7063361647204536921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_21
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd3008c594764b447a9a02da24875e92
+      internalID: -1036015803849031442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_22
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7205561d1b059a842a22a2b5c5df865b
+      internalID: 845332377526975438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_23
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdd33b1fed5477d40ac971a0d6cb571b
+      internalID: 2367282362138620981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_24
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1a0b95bc0ed714d81adfe74cd457bd
+      internalID: 4593252063158676275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_25
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ac54e47470378b4bbc2abe3b419e363
+      internalID: 4366685380283495504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_26
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a79e5756477dcf94c88aa6590ab82adc
+      internalID: -99572096998546664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_27
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96ff1fdfe5bd14f49ba3d31a5a84c193
+      internalID: 2846980926426222044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_28
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a342f171cef47d4ab0c45018612b08f
+      internalID: -8591024305868343826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_29
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d21b61ba6135b846a340e4dc57653c3
+      internalID: 13630705018676494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_30
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3360d1ab202febf4691826a9cffbc31f
+      internalID: -1710712615196946548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_31
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e86584ba3c3e10449b3a079343af8368
+      internalID: -4149783627326339422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_32
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a27e0ddc26caf25418430b5aed156234
+      internalID: 6906266956204534526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_33
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be960a61a83339e4aa3faf0ec5108737
+      internalID: -7206406960333637794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_34
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebf79a330930d924d98ef58bf02eb642
+      internalID: 400715104206027853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_35
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4ca7ca5982acde4086ca5902cc1988a
+      internalID: 7560352791843304888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_36
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b377940b0a939f344911191e357d4760
+      internalID: 1264553462437531043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_37
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccb9ac64eae985347afce99c65853799
+      internalID: -1529997263848723745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_38
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbb2f3e5fdd62cd46a2cd3da6b1fcff6
+      internalID: 407513363509786039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_39
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4d70e6d8ac19c14b910a859b54bc8c5
+      internalID: 8687407709211445558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 198c25553272a76419ba617de9c9bd41
+      internalID: 1370874511079534495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_41
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e512683e739534ea8b19282072e0be
+      internalID: -1262778383330948390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_42
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6a6aaaf7c408be48abbe0d68ff80f9e
+      internalID: -75840776310527554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_43
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 327bd9d57603bcf4bb324e67a1c7f756
+      internalID: 6673293146823867298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_44
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddd3abede99b9954fb4480b0ba07fdc5
+      internalID: -6124411207021669740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_45
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85c7d4611de582a48befb7eee02b1daa
+      internalID: -6461117089049678808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_46
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e07082b741596944dbd912f61ce5c404
+      internalID: 7137315259690219860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_47
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a25a0ac51140b9549861d3a4b2487d71
+      internalID: 6606100029701358902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_48
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24d38ad7624cd9941a26a965a703f164
+      internalID: -3596680483989852223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_49
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 372f129009eef1d40a1ad2971f4293f3
+      internalID: 2875419278258211064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7114c87d2e83204eb129013605fa62f
+      internalID: -335897182949789126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_51
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c7f8dfc899e4d043b49481ba5720bf2
+      internalID: -1167885906162500422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_52
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdc4bd3ce7ad3a446a8cfcc9783e479f
+      internalID: -7734787073729422887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_53
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4099f9c23793d644490f15c88a506701
+      internalID: -3511902293148988542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_54
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 012233a5c2d223645aeeb96ea30baa96
+      internalID: -4002717176136942238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_55
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 351356aa3d8abe140b0dc487e6df6ad1
+      internalID: 4803524212301743057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_56
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b678ef4f89fd81548a951676f5a1489a
+      internalID: 1435599350731748423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_57
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 556d2a52eaca6644bb06477de356a601
+      internalID: -1697776020506228927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_58
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a219515250c51442a5f3c728bd58e44
+      internalID: -8149584915853634015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_59
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 476731c97f8c28d40970c192e95dea35
+      internalID: 6520166721165975545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_60
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7edbeac81ae7c2343a0d2abbec27a4c9
+      internalID: -9005873742651436506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_61
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a47a70fd938c196428290dc33b80c29e
+      internalID: 350779949460874733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_62
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e030fe8c763f3543a7494ea0fe48aa1
+      internalID: 9187196217655252784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_63
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36d1026145ebd7c47aebd7b312323184
+      internalID: 1032795491242779210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_64
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35ed26588da26574bb24b44b9a7e1f4b
+      internalID: 2537832841642796642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_65
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08c40b6044e38c745a3d8219ba269aa4
+      internalID: -1003608307091487300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_66
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33debda1d220d3a4db0c24d6e26f84ba
+      internalID: -5980364209116857573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_67
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a63018ba717da334a87cfd5cf440fca6
+      internalID: -2128321880051579630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_68
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50f483cfbdb2f644d969db2090d3ef3d
+      internalID: -5952803184843123851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_69
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e78063bb6ecc7644a947934faeaefcf5
+      internalID: -6560780207409062678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_70
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c83e5a757ea0054aae3ce7f48e1a81a
+      internalID: -3828381254536827517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_71
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfebbb2e56f34c642b415c44b8fe0b2b
+      internalID: -1994140459101203580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_72
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e253b2503df31049aa9feb6ff72318d
+      internalID: 7864565932771066423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_73
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7143b7de5b5ae1408b55c06f0af3660
+      internalID: 7221177995957828366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_74
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e860d9aaf0d179743ac773e3de9fc0b5
+      internalID: 5756733859881496526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_75
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5609ed1a05ffb5488265e5ae4f0133b
+      internalID: -5913031068932098999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_76
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75e72f7626558b143a539015bed7fe39
+      internalID: 785612302891100798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_77
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9602018b3d9d36c4d963c629c81f050d
+      internalID: 599752803751847393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_78
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5afe3041e5d7dd46beae1c2b2c481b3
+      internalID: 5912096091688918295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryOarStar_79
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e6ebff46f9bd141a5fe0678b92f0c4
+      internalID: 1707885623860978299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a58c3ec7d797525428ef4c07fa03d5f2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DoryOarStar_0: -7414183688090616659
+      DoryOarStar_1: 6894651126422441052
+      DoryOarStar_10: -5908731483039318458
+      DoryOarStar_11: -8502845720330010850
+      DoryOarStar_12: 7844240666021564014
+      DoryOarStar_13: 1887409671029992293
+      DoryOarStar_14: 5926019461406764588
+      DoryOarStar_15: 6711719168794774715
+      DoryOarStar_16: -8112796538624350970
+      DoryOarStar_17: 2088754851105217863
+      DoryOarStar_18: 2012037121754447988
+      DoryOarStar_19: -1437571239503135959
+      DoryOarStar_2: -4085035540200007919
+      DoryOarStar_20: -7063361647204536921
+      DoryOarStar_21: -1036015803849031442
+      DoryOarStar_22: 845332377526975438
+      DoryOarStar_23: 2367282362138620981
+      DoryOarStar_24: 4593252063158676275
+      DoryOarStar_25: 4366685380283495504
+      DoryOarStar_26: -99572096998546664
+      DoryOarStar_27: 2846980926426222044
+      DoryOarStar_28: -8591024305868343826
+      DoryOarStar_29: 13630705018676494
+      DoryOarStar_3: -8687603235263213392
+      DoryOarStar_30: -1710712615196946548
+      DoryOarStar_31: -4149783627326339422
+      DoryOarStar_32: 6906266956204534526
+      DoryOarStar_33: -7206406960333637794
+      DoryOarStar_34: 400715104206027853
+      DoryOarStar_35: 7560352791843304888
+      DoryOarStar_36: 1264553462437531043
+      DoryOarStar_37: -1529997263848723745
+      DoryOarStar_38: 407513363509786039
+      DoryOarStar_39: 8687407709211445558
+      DoryOarStar_4: -1861179498676126830
+      DoryOarStar_40: 1370874511079534495
+      DoryOarStar_41: -1262778383330948390
+      DoryOarStar_42: -75840776310527554
+      DoryOarStar_43: 6673293146823867298
+      DoryOarStar_44: -6124411207021669740
+      DoryOarStar_45: -6461117089049678808
+      DoryOarStar_46: 7137315259690219860
+      DoryOarStar_47: 6606100029701358902
+      DoryOarStar_48: -3596680483989852223
+      DoryOarStar_49: 2875419278258211064
+      DoryOarStar_5: 8788935348403430671
+      DoryOarStar_50: -335897182949789126
+      DoryOarStar_51: -1167885906162500422
+      DoryOarStar_52: -7734787073729422887
+      DoryOarStar_53: -3511902293148988542
+      DoryOarStar_54: -4002717176136942238
+      DoryOarStar_55: 4803524212301743057
+      DoryOarStar_56: 1435599350731748423
+      DoryOarStar_57: -1697776020506228927
+      DoryOarStar_58: -8149584915853634015
+      DoryOarStar_59: 6520166721165975545
+      DoryOarStar_6: -2020259143235647539
+      DoryOarStar_60: -9005873742651436506
+      DoryOarStar_61: 350779949460874733
+      DoryOarStar_62: 9187196217655252784
+      DoryOarStar_63: 1032795491242779210
+      DoryOarStar_64: 2537832841642796642
+      DoryOarStar_65: -1003608307091487300
+      DoryOarStar_66: -5980364209116857573
+      DoryOarStar_67: -2128321880051579630
+      DoryOarStar_68: -5952803184843123851
+      DoryOarStar_69: -6560780207409062678
+      DoryOarStar_7: 2168387975609438152
+      DoryOarStar_70: -3828381254536827517
+      DoryOarStar_71: -1994140459101203580
+      DoryOarStar_72: 7864565932771066423
+      DoryOarStar_73: 7221177995957828366
+      DoryOarStar_74: 5756733859881496526
+      DoryOarStar_75: -5913031068932098999
+      DoryOarStar_76: 785612302891100798
+      DoryOarStar_77: 599752803751847393
+      DoryOarStar_78: 5912096091688918295
+      DoryOarStar_79: 1707885623860978299
+      DoryOarStar_8: -8943789888850765649
+      DoryOarStar_9: -8308079426281854420
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
