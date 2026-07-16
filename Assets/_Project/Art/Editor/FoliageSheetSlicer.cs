@@ -104,6 +104,102 @@ namespace HiddenHarbours.Art.Editor
             }
         }
 
+        /// <summary>
+        /// Batch verifier for <c>-executeMethod</c>: loads every sheet with
+        /// <see cref="AssetDatabase.LoadAllAssetsAtPath"/> (Multiple-mode sheets return null from
+        /// <c>LoadAssetAtPath&lt;Sprite&gt;</c> — LoadAllAssets is the rule) and asserts the per-tier
+        /// slice count and pivot. Exits non-zero on any mismatch so a bad bake fails loudly.
+        /// </summary>
+        public static void VerifyAllFromCommandLine()
+        {
+            try
+            {
+                AssetDatabase.Refresh();
+                bool ok = VerifyAll(logEachPass: true);
+                if (!ok)
+                {
+                    Debug.LogError("[FoliageSheetSlicer] VERIFY FAILED — see mismatches above.");
+                    EditorApplication.Exit(1);
+                }
+                else
+                {
+                    Debug.Log("[FoliageSheetSlicer] VERIFY PASSED — all foliage sheets sliced correctly.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[FoliageSheetSlicer] verify threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Assert every matching sheet under <see cref="FlowersRoot"/> imports Multiple-mode with the
+        /// tier's expected sprite count and pivot. Returns true only if every sheet passes.
+        /// </summary>
+        public static bool VerifyAll(bool logEachPass)
+        {
+            if (!Directory.Exists(FlowersRoot))
+            {
+                Debug.LogError($"[FoliageSheetSlicer] No folder at '{FlowersRoot}' — nothing to verify.");
+                return false;
+            }
+
+            string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { FlowersRoot.TrimEnd('/') });
+            bool allOk = true;
+            int checkedCount = 0;
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!path.StartsWith(FlowersRoot, StringComparison.Ordinal)) continue;
+                if (!path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) continue;
+
+                string stem = Path.GetFileNameWithoutExtension(path);
+                if (!TryMatchTier(stem, out TierSpec spec)) continue; // not a tier sheet
+
+                checkedCount++;
+
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer == null || importer.spriteImportMode != SpriteImportMode.Multiple)
+                {
+                    Debug.LogError($"[FoliageSheetSlicer] VERIFY: '{path}' is not Multiple-mode.");
+                    allOk = false;
+                    continue;
+                }
+
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+                if (sprites.Length != spec.Count)
+                {
+                    Debug.LogError($"[FoliageSheetSlicer] VERIFY: '{stem}' ({spec.Suffix}) has " +
+                                   $"{sprites.Length} sprites, expected {spec.Count}.");
+                    allOk = false;
+                    continue;
+                }
+
+                bool pivotOk = true;
+                float expX = spec.Pivot.x * spec.CellW;
+                float expY = spec.Pivot.y * spec.CellH;
+                foreach (var s in sprites)
+                {
+                    if (Mathf.Abs(s.pivot.x - expX) > 0.01f || Mathf.Abs(s.pivot.y - expY) > 0.01f)
+                    {
+                        Debug.LogError($"[FoliageSheetSlicer] VERIFY: '{s.name}' pivot {s.pivot} " +
+                                       $"expected ({expX},{expY}).");
+                        pivotOk = false;
+                    }
+                }
+                if (!pivotOk) { allOk = false; continue; }
+
+                if (logEachPass)
+                    Debug.Log($"[FoliageSheetSlicer] VERIFY OK: {stem} ({spec.Suffix}) = {sprites.Length} sprites, " +
+                              $"pivot {spec.Alignment}.");
+            }
+
+            Debug.Log($"[FoliageSheetSlicer] VERIFY: checked {checkedCount} sheet(s) — " +
+                      (allOk ? "ALL PASS" : "FAILURES PRESENT"));
+            return allOk && checkedCount > 0;
+        }
+
         // ---- the work -----------------------------------------------------------------------------
 
         /// <summary>
