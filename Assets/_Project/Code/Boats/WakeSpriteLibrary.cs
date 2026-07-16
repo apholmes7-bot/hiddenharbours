@@ -35,10 +35,28 @@ namespace HiddenHarbours.Boats
         [Tooltip("The graded wake plume, biggest (tier 3). A heavy hull driven hard.")]
         public Texture2D Huge;
 
+        [Header("Bow spray (Art/VFX/BowSpray — same Texture2D-ref pattern, same slicing trap)")]
+        [Tooltip("The graded bow spray, smallest (tier 0). The dory's occasional wisp.")]
+        public Texture2D SpraySmall;
+        [Tooltip("The graded bow spray, tier 1.")]
+        public Texture2D SprayMedium;
+        [Tooltip("The graded bow spray, tier 2.")]
+        public Texture2D SprayLarge;
+        [Tooltip("The graded bow spray, biggest (tier 3). A fast hull throwing a full sheet.")]
+        public Texture2D SprayHuge;
+
         /// <summary>
-        /// The tier textures in ascending order [Small, Medium, Large, Huge], for indexing by the grade tier.
-        /// Allocates a small array — call once at boot, not per frame.
+        /// The wake plume tier textures in ascending order [Small, Medium, Large, Huge], for indexing by the
+        /// grade tier. Allocates a small array — call once at boot, not per frame.
         /// </summary>
         public Texture2D[] Ordered() => new[] { Small, Medium, Large, Huge };
+
+        /// <summary>
+        /// The BOW SPRAY tier textures in ascending order [Small, Medium, Large, Huge]. Any slot may be null
+        /// on an older library asset (the fields were added after the wake shipped) — the emitter falls back
+        /// per-tier, so an un-migrated asset degrades gracefully instead of breaking the wake. Allocates a
+        /// small array — call once at boot, not per frame.
+        /// </summary>
+        public Texture2D[] OrderedSpray() => new[] { SpraySmall, SprayMedium, SprayLarge, SprayHuge };
     }
 }

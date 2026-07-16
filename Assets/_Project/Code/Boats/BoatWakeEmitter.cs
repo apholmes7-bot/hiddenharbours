@@ -66,6 +66,13 @@ namespace HiddenHarbours.Boats
                  "wake stays coherent.")]
         [SerializeField] private WakeGradeConfig _grade = WakeGradeConfig.Default;
 
+        [Header("BOW SPRAY (speed-forward, gentle on the dory — owner's brief)")]
+        [Tooltip("The graded spray at the cutwater: the same size+weight+speed blend as the wake but with its " +
+                 "OWN speed-forward weights and a HIGHER speed onset, so the slow dory shows at most a subtle " +
+                 "gradual wisp at a hard row and the full sheet is reserved for the faster hulls to come. Every " +
+                 "number is tunable here.")]
+        [SerializeField] private BowSprayGradeConfig _spray = BowSprayGradeConfig.Default;
+
         [Header("Pool & render")]
         [Tooltip("Max live foam puffs PER BOAT. The pool is fixed and recycled — zero per-frame allocation.")]
         [Min(8)] [SerializeField] private int _poolPerBoat = 96;
@@ -80,6 +87,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Crest-LINE tint. A lighter, cooler-than-foam wave-crest colour so the lines read as the small " +
                  "waves peeling off the hull rather than white churn. Alpha is driven per-streak by the fade.")]
         [SerializeField] private Color _lineColor = new Color(0.78f, 0.90f, 0.98f, 1f);
+        [Tooltip("Bow-spray tint. Bright white droplets off the cutwater; the alpha is driven by the spray's " +
+                 "speed-onset ramp (the dory only ever sees a faint fraction of it).")]
+        [SerializeField] private Color _sprayColor = new Color(0.95f, 0.98f, 1f, 1f);
         [Tooltip("Sorting layer name for the wake sprites (leave blank for the default layer).")]
         [SerializeField] private string _sortingLayer = "";
         [Tooltip("Order in the sorting layer. Foam should sit ABOVE the water plane but BELOW the boat hull.")]
@@ -90,6 +100,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Order for the graded PLUME (the broad authored wake sprite). BELOW the foam + crest lines by " +
                  "default so it reads as the base wash they sit on top of — still above the water plane, below the hull.")]
         [SerializeField] private int _plumeSortingOrder = -3;
+        [Tooltip("Order for the BOW SPRAY. Same band as the foam by default — above the water plane, below the " +
+                 "hull, so the droplets read as kicked up at the cutwater without covering the boat.")]
+        [SerializeField] private int _spraySortingOrder = -1;
 
         [Header("Cadence")]
         [Tooltip("How often (Hz) the wake sim ticks (emit + advect + render). The sea is slow; the boat moves " +
@@ -106,6 +119,8 @@ namespace HiddenHarbours.Boats
         // Any slot may be null if the library/texture failed to load — the rig falls back to the foam puff so a
         // bad load never leaves an invisible plume.
         private Sprite[] _tierSprites;
+        // The four graded BOW SPRAY sprites [Small, Medium, Large, Huge] — same build, same per-tier fallback.
+        private Sprite[] _spraySprites;
         private float _tickTimer;
         private float _rescanTimer;
 
@@ -127,7 +142,9 @@ namespace HiddenHarbours.Boats
         {
             _foamSprite = BuildFoamSprite();
             _lineSprite = BuildLineSprite();
-            _tierSprites = BuildTierSprites(_grade.PlumePivotY);
+            // The pivot must sit on the art's NARROW apex whichever way the art is authored: the serialized
+            // PlumePivotY when un-flipped, mirrored when the owner toggles PlumeFlip (art re-authored upside-down).
+            _tierSprites = BuildTierSprites(WakeGrading.FlipPivotY(_grade.PlumePivotY, _grade.PlumeFlip));
         }
 
         /// <summary>Project PPU (1 world unit = 1 m at 32 px). Matches the Wake PNGs' import (spritePixelsToUnits: 32),
@@ -560,7 +577,7 @@ namespace HiddenHarbours.Boats
                 WakeConfig fcfg = ScaleFoamExtent(cfg, foamFactor);
 
                 // --- GRADED PLUME (the primary size read) ---
-                RenderPlume(pos, bow, speed, aground, magnitude, tier, foamColor, grade);
+                RenderPlume(pos, bow, speed, aground, magnitude, tier, length, foamColor, grade);
 
                 // --- FOAM BUBBLES (now grown by the grade) ---
                 // 1) EMIT from the stern, rate ∝ speed (none below threshold / when aground).
@@ -600,9 +617,17 @@ namespace HiddenHarbours.Boats
             /// astern, scaled continuously by the magnitude and faded in with the speed onset (none at rest / when
             /// aground). Hidden when the plume is disabled, off-onset, or has no usable sprite. One renderer, one
             /// shared sprite per tier — no allocation.
+            ///
+            /// <para><b>The orientation fix.</b> The apex is anchored at the boat's actual STERN
+            /// (<see cref="WakeGrading.SternAnchor"/> walks half the hull length back from the boat-origin, which
+            /// sits at the hull centre) — the old code offset from the ORIGIN, which buried ~the whole plume under
+            /// the hull so only its wide faint tail showed past the stern and the wake read as backwards. The art's
+            /// narrow apex is at the image TOP (pixel-verified by <c>WakeArtOrientationTests</c>); the apex pivot
+            /// pins there and the body trails + widens astern because local +Y is aligned with the bow
+            /// (<see cref="WakeGrading.OrientAngleDeg"/>, which also carries the owner's PlumeFlip escape hatch).</para>
             /// </summary>
             private void RenderPlume(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude, int tier,
-                                     Color tint, in WakeGradeConfig grade)
+                                     float hullLength, Color tint, in WakeGradeConfig grade)
             {
                 if (_plume == null) return;
 
@@ -616,11 +641,9 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                // Apex a touch astern of the boat origin; the sprite's APEX pivot (top-centre) pins there and the
-                // body trails + widens astern because we align the sprite's local +Y with the bow.
-                Vector2 apex = pos - bow * grade.PlumeAsternOffset;
+                Vector2 apex = WakeGrading.SternAnchor(pos, bow, hullLength, grade.PlumeAsternOffset);
                 float scale = WakeGrading.PlumeScale(magnitude, in grade);
-                float angleDeg = Vector2.SignedAngle(Vector2.up, bow);   // sprite up (+Y) → bow
+                float angleDeg = WakeGrading.OrientAngleDeg(bow, grade.PlumeFlip);
 
                 var t = _plume.transform;
                 t.position = new Vector3(apex.x, apex.y, 0f);

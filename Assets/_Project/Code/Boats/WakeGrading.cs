@@ -39,44 +39,60 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// The weight-blend CORE shared by the wake plume and the bow spray (<see cref="BowSprayGrading"/>):
+        /// three already-normalized 0..1 inputs combined by three weights (the weights are normalized
+        /// internally so they always sum to 1 — an owner can retune the balance without worrying the total
+        /// drifts). Monotonic non-decreasing in each input. Returns 0 if all weights are zero (never a
+        /// divide-by-zero). Pure + static.
+        /// </summary>
+        public static float Blend01(float size01, float mass01, float speed01, float wSize, float wMass, float wSpeed)
+        {
+            float ws = Mathf.Max(0f, wSize);
+            float wm = Mathf.Max(0f, wMass);
+            float wv = Mathf.Max(0f, wSpeed);
+            float sum = ws + wm + wv;
+            if (sum <= 1e-6f) return 0f;
+
+            return Mathf.Clamp01((Mathf.Clamp01(size01) * ws + Mathf.Clamp01(mass01) * wm +
+                                  Mathf.Clamp01(speed01) * wv) / sum);
+        }
+
+        /// <summary>
         /// The blended wake magnitude in 0..1 from the three inputs. Each is normalized against its reference
-        /// range then combined by the config's weights (the weights are normalized internally so they always
-        /// sum to 1 — an owner can retune the balance without worrying the total drifts). Monotonic
-        /// non-decreasing in EACH input (more size, weight or speed never shrinks the wake). Returns 0 if all
-        /// weights are zero. Pure + static.
+        /// range then combined by the config's weights via <see cref="Blend01"/>. Monotonic non-decreasing in
+        /// EACH input (more size, weight or speed never shrinks the wake). Returns 0 if all weights are zero.
+        /// Pure + static.
         /// </summary>
         public static float Magnitude01(float lengthMeters, float massKg, float speed, in WakeGradeConfig c)
         {
             float s = Normalize01(lengthMeters, c.LengthRefMin, c.LengthRefMax);
             float w = Normalize01(massKg, c.MassRefMin, c.MassRefMax);
             float v = Normalize01(speed, c.SpeedRefMin, c.SpeedRefMax);
-
-            float ws = Mathf.Max(0f, c.WeightSize);
-            float wm = Mathf.Max(0f, c.WeightMass);
-            float wv = Mathf.Max(0f, c.WeightSpeed);
-            float sum = ws + wm + wv;
-            if (sum <= 1e-6f) return 0f;
-
-            return Mathf.Clamp01((s * ws + w * wm + v * wv) / sum);
+            return Blend01(s, w, v, c.WeightSize, c.WeightMass, c.WeightSpeed);
         }
 
         /// <summary>
-        /// Map a 0..1 magnitude to a discrete tier index in [0, <see cref="TierCount"/>-1]. The three
-        /// thresholds are clamped and sorted ascending defensively, so the mapping is ALWAYS monotonic
-        /// non-decreasing in magnitude no matter how the owner tunes them (a mis-ordered threshold can never
-        /// make a bigger wake pick a smaller tier). Pure + static.
+        /// The magnitude→tier CORE shared by the wake plume and the bow spray: map a 0..1 magnitude to a
+        /// discrete tier index in [0, <see cref="TierCount"/>-1]. The three thresholds are clamped and sorted
+        /// ascending defensively, so the mapping is ALWAYS monotonic non-decreasing in magnitude no matter how
+        /// the owner tunes them (a mis-ordered threshold can never make a bigger wake pick a smaller tier).
+        /// Pure + static.
         /// </summary>
-        public static int TierIndex(float magnitude01, in WakeGradeConfig c)
+        public static int TierIndexCore(float magnitude01, float threshold1, float threshold2, float threshold3)
         {
             float m = Mathf.Clamp01(magnitude01);
-            float t1 = Mathf.Clamp01(c.Threshold1);
-            float t2 = Mathf.Clamp01(Mathf.Max(c.Threshold2, t1));
-            float t3 = Mathf.Clamp01(Mathf.Max(c.Threshold3, t2));
+            float t1 = Mathf.Clamp01(threshold1);
+            float t2 = Mathf.Clamp01(Mathf.Max(threshold2, t1));
+            float t3 = Mathf.Clamp01(Mathf.Max(threshold3, t2));
             if (m >= t3) return 3;
             if (m >= t2) return 2;
             if (m >= t1) return 1;
             return 0;
         }
+
+        /// <summary>Map a 0..1 magnitude to the wake plume tier via <see cref="TierIndexCore"/>. Pure + static.</summary>
+        public static int TierIndex(float magnitude01, in WakeGradeConfig c)
+            => TierIndexCore(magnitude01, c.Threshold1, c.Threshold2, c.Threshold3);
 
         /// <summary>
         /// The one-call selection the emitter uses: blend the three inputs into a magnitude, then pick the tier.
@@ -96,15 +112,62 @@ namespace HiddenHarbours.Boats
             => Mathf.Max(0f, Mathf.Lerp(c.PlumeMinScale, c.PlumeMaxScale, Mathf.Clamp01(magnitude01)));
 
         /// <summary>
+        /// The speed-onset ramp CORE shared by the wake plume and the bow spray, 0..1: 0 at/below
+        /// <paramref name="onset"/>, rising linearly to 1 over the next <paramref name="range"/> (m/s), then
+        /// saturating. A degenerate range collapses to a tight step (never a divide-by-zero). Monotonic
+        /// non-decreasing in speed. Pure + static.
+        /// </summary>
+        public static float Ramp01(float speed, float onset, float range)
+        {
+            float r = Mathf.Max(1e-3f, range);
+            return Mathf.Clamp01((speed - onset) / r);
+        }
+
+        /// <summary>
         /// Speed-onset ramp for the plume/foam growth, 0..1: 0 at/below <paramref name="c"/>.PlumeSpeedOnset
         /// (no plume at rest), rising linearly to 1 over the next PlumeSpeedOnsetRange (m/s), then saturating.
         /// Monotonic non-decreasing in speed. Pure + static.
         /// </summary>
         public static float SpeedOnset(float speed, in WakeGradeConfig c)
+            => Ramp01(speed, c.PlumeSpeedOnset, c.PlumeSpeedOnsetRange);
+
+        // ==== plume placement + orientation (the pure math the orientation fix pins) =======================
+
+        /// <summary>
+        /// Where the plume's APEX pivot goes: at the boat's actual STERN (half the hull length back from the
+        /// boat origin, which sits at the hull's centre) plus a small tunable nudge further astern. This is
+        /// the orientation FIX: the apex used to be pinned <c>asternOffset</c> from the boat ORIGIN, which on
+        /// a 4.5 m dory buried ~the whole plume UNDER the hull sprite — only the wide faint tail peeked out
+        /// past the stern, so the wake read as backwards in game. Anchoring at the stern shows the authored
+        /// plume the right way round: dense narrow churn AT the stern, widening + fading astern. A degenerate
+        /// bow vector falls back to +Y so the anchor is never NaN. Pure + static.
+        /// </summary>
+        public static Vector2 SternAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float asternOffset)
         {
-            float range = Mathf.Max(1e-3f, c.PlumeSpeedOnsetRange);
-            return Mathf.Clamp01((speed - c.PlumeSpeedOnset) / range);
+            Vector2 dir = bow.sqrMagnitude > 1e-8f ? bow.normalized : Vector2.up;
+            float back = Mathf.Max(0f, hullLengthMeters) * 0.5f + Mathf.Max(0f, asternOffset);
+            return boatPos - dir * back;
         }
+
+        /// <summary>
+        /// The Z rotation (degrees) that points the sprite's local +Y at the bow — plus a 180° flip when the
+        /// owner toggles it (the escape hatch for art re-authored with the narrow apex at the BOTTOM of the
+        /// image instead of the top). Pure + static.
+        /// </summary>
+        public static float OrientAngleDeg(Vector2 bow, bool flip)
+        {
+            float deg = Vector2.SignedAngle(Vector2.up, bow);
+            return flip ? deg + 180f : deg;
+        }
+
+        /// <summary>
+        /// The sprite pivot Y to BUILD the tier sprites with: the authored pivot when un-flipped, mirrored
+        /// (1 − pivot) when flipped — so the pivot stays on the art's NARROW end (the boat end) whichever way
+        /// the art was authored, and <see cref="OrientAngleDeg"/>'s 180° turn then trails the body astern.
+        /// Clamped to 0..1. Pure + static.
+        /// </summary>
+        public static float FlipPivotY(float pivotY, bool flip)
+            => Mathf.Clamp01(flip ? 1f - pivotY : pivotY);
 
         /// <summary>
         /// The foam/V-extent growth factor for a given magnitude: 1 at magnitude 0, rising to
@@ -170,14 +233,21 @@ namespace HiddenHarbours.Boats
         [Tooltip("Continuous plume size multiplier at magnitude 1. >1 lets the Huge sprite grow further so the " +
                  "biggest, fastest hull's wake reads as genuinely massive.")]
         public float PlumeMaxScale;
-        [Tooltip("How far astern of the stern the plume's apex sits (m) — a small nudge so it trails behind the hull.")]
+        [Tooltip("How far astern of the STERN the plume's apex sits (m) — a small nudge past the hull's rear " +
+                 "edge. The stern itself is found from the hull's LengthMeters (the boat origin is the hull " +
+                 "centre), so the plume always starts BEHIND the boat, never buried under it.")]
         public float PlumeAsternOffset;
         [Tooltip("Plume opacity at full onset (0..1). Kept subtler than the white foam — it's the broad wash the " +
                  "foam bubbles and crest lines sit on top of.")]
         public float PlumeStartAlpha;
         [Tooltip("Vertical pivot (0..1) of the authored plume sprite. The art's narrow apex (the boat end) is at " +
-                 "the TOP, so 1 pins the apex at the stern and the plume widens astern. Lower it if art is reauthored.")]
+                 "the TOP of the image (pixel-verified by WakeArtOrientationTests), so 1 pins the apex at the " +
+                 "stern and the plume widens astern.")]
         public float PlumePivotY;
+        [Tooltip("Flip the plume 180° (and mirror its pivot) — the no-code escape hatch if the wake art is ever " +
+                 "re-authored with the narrow apex at the BOTTOM of the image instead of the top. Leave OFF for " +
+                 "the current art (narrow end at the top, verified from the pixels).")]
+        public bool PlumeFlip;
         [Tooltip("Boat speed (m/s) at which the plume begins to appear — no plume at rest. Usually the foam threshold.")]
         public float PlumeSpeedOnset;
         [Tooltip("Speed range (m/s) over which the plume ramps from just-appearing to full opacity/scale onset.")]
@@ -213,6 +283,7 @@ namespace HiddenHarbours.Boats
             PlumeAsternOffset    = 0.3f,
             PlumeStartAlpha      = 0.5f,
             PlumePivotY          = 1.0f,
+            PlumeFlip            = false,
             PlumeSpeedOnset      = 0.4f,
             PlumeSpeedOnsetRange = 2.0f,
 
