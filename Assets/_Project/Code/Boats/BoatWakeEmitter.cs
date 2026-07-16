@@ -23,14 +23,25 @@ namespace HiddenHarbours.Boats
     /// wake. The host discovers <see cref="BoatController"/>s on a throttled scan and gives each a per-boat rig
     /// (its own <see cref="WakeParticleSystem"/> + a slice of the shared sprite pool).</para>
     ///
+    /// <para><b>Graded by hull (the owner's brief).</b> The wake scales with hull SIZE + WEIGHT + SPEED: each
+    /// tick it blends <see cref="BoatHullDef.LengthMeters"/> (size), <see cref="BoatHullDef.MassKg"/> (weight) and
+    /// the live speed into one magnitude (the pure, EditMode-tested <see cref="WakeGrading"/>), picks an authored
+    /// graded plume TIER (Small/Medium/Large/Huge) from tunable thresholds, and grows the foam footprint to match —
+    /// so a bigger/heavier hull, or the same hull pushed harder, throws a visibly bigger wake, and future heavier
+    /// hulls scale automatically (driven off the hull stats, never a per-hull hard-code). The tier sprites are
+    /// built once from the authored textures via the <see cref="WakeSpriteLibrary"/> (Resources); if a load fails
+    /// the plume falls back to the procedural foam puff so a bad load never leaves an invisible wake.</para>
+    ///
     /// <para><b>Seam discipline (rule 4) &amp; determinism (rule 5).</b> Reads the boat through its public
-    /// surface (<see cref="BoatController.Velocity"/>, <see cref="BoatController.IsAground"/>, bow =
-    /// <c>transform.up</c>) and the sea ONLY through the Core <see cref="GameServices.Environment"/> accessor
+    /// surface (<see cref="BoatController.Velocity"/>, <see cref="BoatController.IsAground"/>,
+    /// <see cref="BoatController.Hull"/> for size/weight, bow = <c>transform.up</c>) and the sea ONLY through the
+    /// Core <see cref="GameServices.Environment"/> accessor
     /// (the same <see cref="EnvironmentSample.CurrentVector"/> / <see cref="EnvironmentSample.SeaState"/> the
     /// water shader reads, so wake + water move together) — never the Environment concrete classes. It drives no
     /// simulation and saves nothing; the per-puff jitter is a deterministic hash, not <see cref="System.Random"/>.
-    /// <b>Performance (rule 7):</b> one fixed sprite pool (no per-frame allocation), one shared material/sprite
-    /// (batched), sim sampled once per throttled tick. Mobile-portable.</para>
+    /// <b>Performance (rule 7):</b> fixed sprite pools (no per-frame allocation), a handful of shared sprites —
+    /// the foam puff, the crest line, and the ≤4 graded tier plumes — all batched, sim sampled once per throttled
+    /// tick. Mobile-portable.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BoatWakeEmitter : MonoBehaviour
@@ -46,6 +57,14 @@ namespace HiddenHarbours.Boats
                  "bubbles. Same shed/advect/fade/lifetime infrastructure; a lighter, longer, oriented look. " +
                  "Every knob is tunable; defaults read a subtle feathered wake, not a busy one.")]
         [SerializeField] private WakeLineConfig _lineConfig = WakeLineConfig.Default;
+
+        [Header("Wake GRADING (bigger/heavier/faster hull → a bigger wake — owner's brief)")]
+        [Tooltip("How the wake tier (Small/Medium/Large/Huge authored plume) is chosen per boat, per tick from a " +
+                 "blend of hull SIZE (LengthMeters) + WEIGHT (MassKg) + live SPEED. Every reference range, blend " +
+                 "weight and tier threshold is tunable here — nothing is hard-coded to the current hulls, so future " +
+                 "heavier hulls scale automatically. Also grows the foam footprint with the grade so the whole " +
+                 "wake stays coherent.")]
+        [SerializeField] private WakeGradeConfig _grade = WakeGradeConfig.Default;
 
         [Header("Pool & render")]
         [Tooltip("Max live foam puffs PER BOAT. The pool is fixed and recycled — zero per-frame allocation.")]
@@ -68,6 +87,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Order for the crest LINES. One BELOW the foam by default so the bright foam bubbles read on " +
                  "top of the fainter wave-crest streaks (both still above the water plane, below the hull).")]
         [SerializeField] private int _lineSortingOrder = -2;
+        [Tooltip("Order for the graded PLUME (the broad authored wake sprite). BELOW the foam + crest lines by " +
+                 "default so it reads as the base wash they sit on top of — still above the water plane, below the hull.")]
+        [SerializeField] private int _plumeSortingOrder = -3;
 
         [Header("Cadence")]
         [Tooltip("How often (Hz) the wake sim ticks (emit + advect + render). The sea is slow; the boat moves " +
@@ -80,6 +102,10 @@ namespace HiddenHarbours.Boats
         private readonly List<WakeRig> _rigs = new();
         private Sprite _foamSprite;
         private Sprite _lineSprite;
+        // The four GRADED plume sprites [Small, Medium, Large, Huge], built once from the authored textures.
+        // Any slot may be null if the library/texture failed to load — the rig falls back to the foam puff so a
+        // bad load never leaves an invisible plume.
+        private Sprite[] _tierSprites;
         private float _tickTimer;
         private float _rescanTimer;
 
@@ -101,6 +127,53 @@ namespace HiddenHarbours.Boats
         {
             _foamSprite = BuildFoamSprite();
             _lineSprite = BuildLineSprite();
+            _tierSprites = BuildTierSprites(_grade.PlumePivotY);
+        }
+
+        /// <summary>Project PPU (1 world unit = 1 m at 32 px). Matches the Wake PNGs' import (spritePixelsToUnits: 32),
+        /// so a built full-image plume sprite comes out at its authored metres (Small ≈ 2×3.25 m … Huge ≈ 6.6×10.3 m).</summary>
+        private const int WakePlumePpu = 32;
+
+        /// <summary>
+        /// Build ONE full-image <see cref="Sprite"/> per graded wake TEXTURE (Small/Medium/Large/Huge), loaded from
+        /// the <see cref="WakeSpriteLibrary"/> in Resources. We reference the TEXTURE (the always-present main asset)
+        /// and build the sprite in code — the SAME technique the foam/crest sprites use — because the Wake PNGs
+        /// import as <c>spriteMode: Multiple</c> and Unity auto-slices each into many disconnected alpha islands, so
+        /// there is no single full-image sub-sprite to reference and <c>Resources.Load&lt;Sprite&gt;</c> returns null
+        /// (the documented trap). Building from the texture yields the whole authored plume regardless of slicing.
+        ///
+        /// <para>The pivot is the art's narrow APEX (the boat end, at the top of the image) so the plume pins to the
+        /// stern and widens astern. Any slot the library couldn't supply comes back null; the rig then falls back to
+        /// the procedural foam puff so a bad load never leaves an invisible plume. Built once at boot, shared across
+        /// every boat, so the ≤4 tier sprites batch (rule 7).</para>
+        /// </summary>
+        private static Sprite[] BuildTierSprites(float pivotY)
+        {
+            var sprites = new Sprite[WakeGrading.TierCount];
+            var lib = Resources.Load<WakeSpriteLibrary>(WakeSpriteLibrary.ResourcesPath);
+            if (lib == null)
+            {
+                Debug.LogWarning("[BoatWakeEmitter] No WakeSpriteLibrary in Resources — the graded plume falls " +
+                                 "back to the procedural foam puff. (Expected at Resources/WakeSpriteLibrary.)");
+                return sprites;   // all null → rig uses the foam fallback
+            }
+
+            Texture2D[] textures = lib.Ordered();
+            var pivot = new Vector2(0.5f, Mathf.Clamp01(pivotY));
+            for (int i = 0; i < sprites.Length && i < textures.Length; i++)
+            {
+                Texture2D tex = textures[i];
+                if (tex == null)
+                {
+                    Debug.LogWarning($"[BoatWakeEmitter] Wake tier {i} texture missing in the library — that tier " +
+                                     "falls back to the procedural foam puff.");
+                    continue;
+                }
+                var full = new Rect(0f, 0f, tex.width, tex.height);
+                sprites[i] = Sprite.Create(tex, full, pivot, WakePlumePpu);
+                sprites[i].name = $"BoatWake.Plume[{i}]";
+            }
+            return sprites;
         }
 
         private void OnEnable()
@@ -154,7 +227,7 @@ namespace HiddenHarbours.Boats
             float time = GameServices.Clock != null ? (float)GameServices.Clock.TotalSeconds : Time.time;
 
             for (int r = 0; r < _rigs.Count; r++)
-                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor);
+                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor, _grade);
         }
 
         /// <summary>
@@ -182,8 +255,8 @@ namespace HiddenHarbours.Boats
                 if (boat == null) continue;
                 if (_rigs.Count >= _maxBoats) break;
                 if (HasRigFor(boat)) continue;
-                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _foamSprite, _lineSprite, transform,
-                                      _sortingLayer, _sortingOrder, _lineSortingOrder));
+                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _foamSprite, _lineSprite, _tierSprites,
+                                      transform, _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder));
             }
         }
 
@@ -392,17 +465,34 @@ namespace HiddenHarbours.Boats
             private readonly WakeParticleSystem _lineSys;     // the crest LINES (same infra, streak-tuned)
             private readonly SpriteRenderer[] _lineRenderers;
             private readonly Transform _root;
+            // The graded PLUME: ONE stern-anchored renderer that swaps to the selected tier sprite each tick (the
+            // primary size read). Shared across boats via the tier-sprite array; the foam puff is the fallback.
+            private readonly Sprite[] _tierSprites;
+            private readonly Sprite _fallbackSprite;
+            private readonly SpriteRenderer _plume;
             private float _emitCarry;
             private float _lineEmitCarry;
 
-            public WakeRig(BoatController boat, int pool, int linePool, Sprite foam, Sprite line, Transform parent,
-                           string sortingLayer, int sortingOrder, int lineSortingOrder)
+            public WakeRig(BoatController boat, int pool, int linePool, Sprite foam, Sprite line, Sprite[] tierSprites,
+                           Transform parent, string sortingLayer, int sortingOrder, int lineSortingOrder,
+                           int plumeSortingOrder)
             {
                 Boat = boat;
                 _sys = new WakeParticleSystem(pool);
+                _tierSprites = tierSprites;
+                _fallbackSprite = foam;
 
                 _root = new GameObject($"Wake[{boat.name}]").transform;
                 _root.SetParent(parent, worldPositionStays: false);
+
+                // The graded PLUME renderer (one, created once). Sits UNDER the foam/crest by sort order so it reads
+                // as the base wash. Starts hidden; the tick shows it and swaps its sprite to the selected tier.
+                var plumeGo = new GameObject("plume");
+                plumeGo.transform.SetParent(_root, worldPositionStays: false);
+                _plume = plumeGo.AddComponent<SpriteRenderer>();
+                if (!string.IsNullOrEmpty(sortingLayer)) _plume.sortingLayerName = sortingLayer;
+                _plume.sortingOrder = plumeSortingOrder;
+                plumeGo.SetActive(false);
 
                 _renderers = BuildRenderers(pool, "foam", foam, sortingLayer, sortingOrder);
 
@@ -415,6 +505,15 @@ namespace HiddenHarbours.Boats
                     _lineSys = new WakeParticleSystem(lp);
                     _lineRenderers = BuildRenderers(lp, "crest", line, sortingLayer, lineSortingOrder);
                 }
+            }
+
+            /// <summary>The tier sprite for an index, or the foam-puff fallback if that tier failed to load (so a
+            /// bad art load never leaves an invisible plume). Null only if even the fallback is missing.</summary>
+            private Sprite TierSpriteOrFallback(int tier)
+            {
+                if (_tierSprites != null && tier >= 0 && tier < _tierSprites.Length && _tierSprites[tier] != null)
+                    return _tierSprites[tier];
+                return _fallbackSprite;
             }
 
             private SpriteRenderer[] BuildRenderers(int count, string name, Sprite sprite,
@@ -436,7 +535,8 @@ namespace HiddenHarbours.Boats
             }
 
             public void Tick(Vector2 current, float roughness, float time, float dt,
-                             in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor)
+                             in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
+                             in WakeGradeConfig grade)
             {
                 if (Boat == null) return;
 
@@ -445,26 +545,90 @@ namespace HiddenHarbours.Boats
                 float speed = Boat.Velocity.magnitude;
                 bool aground = Boat.IsAground;
 
-                // --- FOAM BUBBLES (unchanged) ---
+                // --- GRADE the wake by hull SIZE + WEIGHT + SPEED (the owner's brief). Static hull stats come
+                // through the boat's public seam (rule 4); speed is live. The magnitude drives BOTH the plume
+                // tier/scale AND a coherent growth of the foam footprint so the whole wake scales with the boat. ---
+                float length = Boat.Hull != null ? Boat.Hull.LengthMeters : grade.LengthRefMin;
+                float mass = Boat.Hull != null ? Boat.Hull.MassKg : grade.MassRefMin;
+                float magnitude = WakeGrading.Magnitude01(length, mass, speed, grade);
+                int tier = WakeGrading.TierIndex(magnitude, grade);
+                float foamFactor = WakeGrading.FoamExtentFactor(magnitude, grade);
+
+                // Grow the foam bubbles + crisp Kelvin arms with the grade (a bigger hull's whole wake is bigger).
+                // A per-tick copy of the tuned config — the pure functions take it by value, so this never mutates
+                // the owner's serialized config and allocates nothing on the heap (struct copy).
+                WakeConfig fcfg = ScaleFoamExtent(cfg, foamFactor);
+
+                // --- GRADED PLUME (the primary size read) ---
+                RenderPlume(pos, bow, speed, aground, magnitude, tier, foamColor, grade);
+
+                // --- FOAM BUBBLES (now grown by the grade) ---
                 // 1) EMIT from the stern, rate ∝ speed (none below threshold / when aground).
-                int count = WakeParticleSystem.EmissionCount(speed, aground, cfg, dt, ref _emitCarry);
-                if (count > 0) _sys.Emit(count, pos, bow, speed, cfg);
+                int count = WakeParticleSystem.EmissionCount(speed, aground, fcfg, dt, ref _emitCarry);
+                if (count > 0) _sys.Emit(count, pos, bow, speed, fcfg);
                 // 2) TRAVEL WITH THE CURRENT (+ own momentum) and DISSIPATE (age toward lifetime).
-                _sys.Step(current, cfg.VelocityDecay, dt);
+                _sys.Step(current, fcfg.VelocityDecay, dt);
                 // 3 + 4) RENDER: wave-distort the position, fade + spread over life.
-                RenderFoam(roughness, time, cfg, foamColor);
+                RenderFoam(roughness, time, fcfg, foamColor);
 
                 // --- CREST LINES (added: the small waves you see) ---
                 // Same three stages against the streak system, gated by the speed-onset ramp; each live streak is
                 // rendered as an elongated sprite oriented to its crest direction and stretched by StreakLength.
+                // The arm config grows with the grade too, so the feathered crests widen with the boat.
                 if (_lineSys != null)
                 {
-                    WakeConfig arm = lineCfg.ArmConfig;
+                    WakeConfig arm = ScaleFoamExtent(lineCfg.ArmConfig, foamFactor);
                     int lineCount = WakeLineGeometry.EmissionCount(speed, aground, lineCfg, dt, ref _lineEmitCarry);
                     if (lineCount > 0) _lineSys.Emit(lineCount, pos, bow, speed, arm);
                     _lineSys.Step(current, arm.VelocityDecay, dt);
                     RenderLines(roughness, time, speed, lineCfg, arm, lineColor);
                 }
+            }
+
+            /// <summary>A per-tick copy of a foam <see cref="WakeConfig"/> with its FOOTPRINT (foam size + Kelvin
+            /// arm length) grown by the grade factor, so the procedural wake scales coherently with the graded
+            /// plume. Struct copy — no heap allocation, never mutates the serialized config.</summary>
+            private static WakeConfig ScaleFoamExtent(WakeConfig c, float factor)
+            {
+                c.FoamSize *= factor;
+                c.ArmLength *= factor;
+                return c;
+            }
+
+            /// <summary>
+            /// Draw the graded plume: the authored tier sprite pinned APEX-at-the-stern and oriented so it widens
+            /// astern, scaled continuously by the magnitude and faded in with the speed onset (none at rest / when
+            /// aground). Hidden when the plume is disabled, off-onset, or has no usable sprite. One renderer, one
+            /// shared sprite per tier — no allocation.
+            /// </summary>
+            private void RenderPlume(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude, int tier,
+                                     Color tint, in WakeGradeConfig grade)
+            {
+                if (_plume == null) return;
+
+                float onset = WakeGrading.SpeedOnset(speed, in grade);
+                Sprite sprite = TierSpriteOrFallback(tier);
+                if (!grade.PlumeEnabled || aground || onset <= 0f || sprite == null)
+                {
+                    if (_plume.gameObject.activeSelf) _plume.gameObject.SetActive(false);
+                    return;
+                }
+
+                _plume.sprite = sprite;
+
+                // Apex a touch astern of the boat origin; the sprite's APEX pivot (top-centre) pins there and the
+                // body trails + widens astern because we align the sprite's local +Y with the bow.
+                Vector2 apex = pos - bow * grade.PlumeAsternOffset;
+                float scale = WakeGrading.PlumeScale(magnitude, in grade);
+                float angleDeg = Vector2.SignedAngle(Vector2.up, bow);   // sprite up (+Y) → bow
+
+                var t = _plume.transform;
+                t.position = new Vector3(apex.x, apex.y, 0f);
+                t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
+                t.localScale = new Vector3(scale, scale, 1f);
+                var col = tint; col.a = Mathf.Clamp01(grade.PlumeStartAlpha) * onset;
+                _plume.color = col;
+                if (!_plume.gameObject.activeSelf) _plume.gameObject.SetActive(true);
             }
 
             private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor)

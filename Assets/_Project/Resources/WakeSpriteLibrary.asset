@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f9b0bad6d2b4234937d0785e79befd3, type: 3}
+  m_Name: WakeSpriteLibrary
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.WakeSpriteLibrary
+  Small: {fileID: 2800000, guid: ceb1e57f3c45fa54a838455c350a826e, type: 3}
+  Medium: {fileID: 2800000, guid: 3681023d814dfeb4286d8ff5e00bdc82, type: 3}
+  Large: {fileID: 2800000, guid: dbbd6fc03caae6442aeb7ad571537266, type: 3}
+  Huge: {fileID: 2800000, guid: 7adf1c72ac5b26e4ca72a221040af08d, type: 3}
