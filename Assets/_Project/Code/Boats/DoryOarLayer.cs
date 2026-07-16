@@ -34,6 +34,11 @@ namespace HiddenHarbours.Boats
     /// the wave under the hull) is turned into a small pose — heave EXACT, roll/pitch approximated — by
     /// <see cref="DoryOarMath.RockPose"/>. A calm/level hull (RockFrame −1) puts the oars back level.</para>
     ///
+    /// <para><b>A dropped helm ships the oars.</b> The state is read only while the
+    /// <see cref="BoatController"/> is enabled, so a boat left moored, trailing on its rope, or waiting while
+    /// the player works the deck never rows itself — see the note in <c>LateUpdate</c> for why trusting
+    /// <c>BoatController.Stop()</c> to have cleared it isn't enough.</para>
+    ///
     /// <para><b>Rules.</b> Visual-only: it READS the oar state the controller already computed and writes
     /// nothing back (rule 5), and there is no RNG. Every rate/threshold/amplitude is serialized (rule 6). Two
     /// renderers, two array look-ups and no allocation per LateUpdate (rule 7). Boats-internal — no other
@@ -60,7 +65,7 @@ namespace HiddenHarbours.Boats
         [SerializeField] private SpriteRenderer _portRenderer;
         [Tooltip("The starboard oar's renderer — same parent, drawn above the port oar (art README's order).")]
         [SerializeField] private SpriteRenderer _starRenderer;
-        [Tooltip("The boat whose REAL per-oar state (LeftOar = port, RightOar = starboard) drives the strokes. Null = the component idles.")]
+        [Tooltip("The boat whose REAL per-oar state (LeftOar = port, RightOar = starboard) drives the strokes. Read only while the controller is enabled — a dropped helm ships the oars. Null = the component idles.")]
         [SerializeField] private BoatController _boat;
         [Tooltip("The hull's directional sprite: the source of the DRAWN heading (so the oars pick the hull's row) and of the baked rock frame the oars ride. Null = the heading falls back to this transform's bow and no rock coupling.")]
         [SerializeField] private DirectionalBoatSprite _directionalSprite;
@@ -157,8 +162,18 @@ namespace HiddenHarbours.Boats
             }
 
             float dt = Time.deltaTime;
-            float portState = _boat != null ? _boat.LeftOar : 0f;      // port = the LEFT oar
-            float starState = _boat != null ? _boat.RightOar : 0f;     // starboard = the RIGHT oar
+
+            // NOBODY AT THE HELM = NOBODY ROWING. The oar state is only read while the controller is actually
+            // driving: BoatController.Stop() clears it on SOME helm-drop paths but not all (ControlSwitcher's
+            // normal Disembark hands the rope to Mooring.Hold and only falls back to Stop() when there's no
+            // mooring; stepping OnDeck doesn't stop either), so a player who disembarks mid-stroke would leave
+            // LeftOar/RightOar pinned at their last value — and an empty boat would row itself across the
+            // harbour. Gating on the controller instead of trusting the state to be cleared keeps this
+            // visual-only (we never write to the sim) and is right by construction: a dropped helm ships the
+            // oars after the usual grace.
+            bool helmManned = _boat != null && _boat.isActiveAndEnabled;
+            float portState = helmManned ? _boat.LeftOar : 0f;      // port = the LEFT oar
+            float starState = helmManned ? _boat.RightOar : 0f;     // starboard = the RIGHT oar
 
             bool portWorking = DoryOarMath.IsWorking(portState, _oarDeadzone);
             bool starWorking = DoryOarMath.IsWorking(starState, _oarDeadzone);
