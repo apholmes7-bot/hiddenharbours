@@ -12,18 +12,21 @@ using UnityEditor;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// On-water integration for the DIRECTIONAL FISHING-BOAT SKIN's propulsion (#97). PR #94 put the owner's
-    /// 4-way fishing-boat picture on the St Peters playable boat, but the hull stayed the rowed Dory (Oars),
-    /// so the player drove a powerboat with rowboat mechanics. The skin now drives on a dedicated Engine hull
-    /// (<c>boat.fishing_skiff</c>, <see cref="PersistentCoreBuilder.ApplyDirectionalFishingBoatVisual"/>), so
-    /// the controls MATCH the picture — "a power boat skin, not a rowboat" (owner).
+    /// On-water integration for the ENGINE-helm hull <c>boat.fishing_skiff</c>.
     ///
-    /// <para>Scene-faithful: the hull under test is the REAL authored <c>FishingSkiff.asset</c> the builder
-    /// assigns (loaded from disk in the editor; mirrored in-code only as a player-build fallback), driven on a
-    /// boat with the same hull collider the builder gives the playable boat (1.7×4.0, so the auto-computed
-    /// rotational inertia matches the boat the owner actually drives — the seam the punt-steer fix exposed).
-    /// The pure thrust/rudder math is covered headless in EditMode (BoatHandlingTests); this proves the LIVE
-    /// rigidbody on the SKIN's hull responds as an ENGINE boat:</para>
+    /// <para>⚠ <b>This is no longer the player's boat.</b> #97 gave the directional skin this Engine hull so
+    /// the controls matched what was then a POWERBOAT picture ("a power boat skin, not a rowboat"). The owner
+    /// has since decided the dory ROWS again — the art is a rowboat (the iso dory) and the independent oars
+    /// have landed — so <c>PersistentCoreBuilder</c> leaves the playable boat on the rowed
+    /// <c>boat.dory</c> (Oars) and never loads this Def. The Def stays on disk (ids are append-only), and
+    /// these tests stay as the ENGINE-helm branch's on-water coverage: <c>RowingIntegrationPlayTests</c> is
+    /// the player's boat now. Nothing here asserts anything about what the player drives.</para>
+    ///
+    /// <para>The hull under test is the REAL authored <c>FishingSkiff.asset</c> (loaded from disk in the
+    /// editor; mirrored in-code only as a player-build fallback), driven on a boat with the same hull collider
+    /// the builder gives the playable boat (1.7×4.0, so the auto-computed rotational inertia matches a real
+    /// 4 m hull — the seam the punt-steer fix exposed). The pure thrust/rudder math is covered headless in
+    /// EditMode (BoatHandlingTests); this proves the LIVE rigidbody on an Engine hull responds as one:</para>
     /// <list type="number">
     ///   <item><b>THROTTLE makes way</b> — ahead throttle drives the boat forward along its bow.</item>
     ///   <item><b>The RUDDER bites with way</b> — full ahead + full helm turns the bow clearly while making
@@ -38,7 +41,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// </summary>
     public class FishingSkiffEnginePlayTests
     {
-        // The on-disk Def the StPeters builder assigns to the directional-skin boat (one source of truth).
+        // The on-disk Engine Def under test (one source of truth). NOT the player's boat — see the class doc.
         const string FishingSkiffPath = "Assets/_Project/Data/Boats/FishingSkiff.asset";
 
         private readonly List<Object> _spawned = new();
@@ -55,14 +58,14 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Clear();
         }
 
-        // The hull the skin drives on. In the editor (and CI's editor-run PlayMode) this is the REAL authored
-        // FishingSkiff.asset — so the test asserts the actual Def the builder ships is an Engine hull. In a
-        // built player (no AssetDatabase) it falls back to an in-code mirror of the same stats.
+        // The Engine hull under test. In the editor (and CI's editor-run PlayMode) this is the REAL authored
+        // FishingSkiff.asset — so the test asserts the actual committed Def is an Engine hull. In a built
+        // player (no AssetDatabase) it falls back to an in-code mirror of the same stats.
         private BoatHullDef LoadSkiffHull()
         {
 #if UNITY_EDITOR
             var asset = AssetDatabase.LoadAssetAtPath<BoatHullDef>(FishingSkiffPath);
-            if (asset != null) return asset;   // the real, authored skin hull
+            if (asset != null) return asset;   // the real, authored Engine hull
 #endif
             var h = ScriptableObject.CreateInstance<BoatHullDef>();
             h.Id = "boat.fishing_skiff"; h.DisplayName = "Fishing Skiff";
@@ -92,15 +95,15 @@ namespace HiddenHarbours.Tests.PlayMode
             return (go, boat, go.GetComponent<Rigidbody2D>());
         }
 
-        // ---- The skin's hull IS an Engine hull (the authored Def the builder assigns) -------------
+        // ---- The fishing skiff IS an Engine hull (the committed Def) ------------------------------
 
         [Test]
         public void SkiffHull_IsAnEngineHull_NotOars()
         {
             var hull = LoadSkiffHull();
-            Assert.AreEqual("boat.fishing_skiff", hull.Id, "the skin drives on the dedicated fishing-skiff hull");
+            Assert.AreEqual("boat.fishing_skiff", hull.Id, "the Def under test is the dedicated fishing-skiff hull");
             Assert.AreEqual(PropulsionType.Engine, hull.Propulsion,
-                "the directional fishing-boat skin must drive on an ENGINE hull (a power boat, not a rowboat)");
+                "the fishing skiff is an ENGINE hull (a power boat) — the branch these tests cover");
             Assert.IsTrue(BoatController.UsesEngineHelm(hull.Propulsion),
                 "the controller takes the outboard helm for this hull (throttle + speed-scaled rudder)");
             Assert.Greater(hull.EnginePower, 0f, "an engine hull needs real thrust");
@@ -189,8 +192,8 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetHull(LoadSkiffHull());
 
             // A one-sided oar stroke YAWS + drives a rowed Dory. On the Engine hull the controller ignores
-            // SetOarInput entirely (it reads SetControl), so this must produce neither thrust nor yaw — proving
-            // the powerboat skin is NOT on rowboat mechanics. Throttle/helm are left at zero (SetControl(0,0)
+            // SetOarInput entirely (it reads SetControl), so this must produce neither thrust nor yaw — the
+            // Engine and Oars helms stay strictly separate. Throttle/helm are left at zero (SetControl(0,0)
             // is the default), so any motion could only come from the oar path.
             Vector2 startPos = rb.position;
             for (int i = 0; i < 60; i++)
