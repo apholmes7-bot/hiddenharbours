@@ -55,7 +55,35 @@ namespace HiddenHarbours.Boats
                  "so the comparison is the SAME artwork, just rotated vs snapped.")]
         [SerializeField] private Sprite _smoothModeSprite;
 
+        [Header("Rock grid (wave-coupled rock — the iso dory)")]
+        [Tooltip("OPTIONAL heading×frame rock sheet: element [heading·RockFrameCount + frame]. When present " +
+                 "(length == facings.Length × RockFrameCount) and RockFrame ≥ 0, the SnapDirectional path draws " +
+                 "rockGrid[heading·RockFrameCount + RockFrame] instead of the static facing — so the drawn rock " +
+                 "frame tracks the wave under the hull (BoatWaveMotion sets RockFrame). Empty/mismatched = the " +
+                 "static facings behave exactly as before.")]
+        [SerializeField] private Sprite[] _rockGrid;
+
+        [Tooltip("Rock frames per heading in the grid (the DoryIsoRock sheet ships 8).")]
+        [SerializeField] private int _rockFrameCount = 8;
+
         private int _lastIndex = -1;
+
+        /// <summary>
+        /// The wave-driven rock frame to draw in <see cref="RotationMode.SnapDirectional"/> when a
+        /// <see cref="HasRockGrid"/> is wired: <see cref="BoatWaveMotion"/> writes the phase→frame each
+        /// LateUpdate (crest → 2, trough → 6). <b>−1 (the default) = draw the static hull facing</b> — no
+        /// rock, the calm/level pose. Out-of-range values wrap into the frame count. When no rock grid is
+        /// present this is ignored and the component behaves exactly as the static-facings prototype did.
+        /// </summary>
+        public int RockFrame { get; set; } = -1;
+
+        /// <summary>True when a full heading×frame rock grid is wired (its length matches the facing count
+        /// times <see cref="_rockFrameCount"/>) — the gate the SnapDirectional path uses to choose a rock
+        /// frame over the static facing. False keeps the plain directional-facing behaviour untouched.</summary>
+        public bool HasRockGrid =>
+            _rockGrid != null && _rockFrameCount > 0 &&
+            _facings != null && _facings.Length > 0 &&
+            _rockGrid.Length == _facings.Length * _rockFrameCount;
 
         /// <summary>
         /// Additive visual tilt (degrees, +CCW about z) composed into the child renderer AFTER this
@@ -101,6 +129,20 @@ namespace HiddenHarbours.Boats
             _zeroHeadingDegrees = zeroHeadingDegrees;
             _smoothModeSprite = smoothModeSprite;
             _mode = mode;
+            _lastIndex = -1;
+        }
+
+        /// <summary>
+        /// Wire the wave-coupled rock grid from code (the builders' path). <paramref name="rockGrid"/> is
+        /// the heading×frame sheet laid out row-major (element <c>heading·frameCount + frame</c>);
+        /// <paramref name="rockFrameCount"/> is the frames per heading (8 for the DoryIsoRock sheet).
+        /// Passing null / a mismatched length simply disables the rock path (<see cref="HasRockGrid"/> →
+        /// false) and the static facings stand.
+        /// </summary>
+        public void ConfigureRock(Sprite[] rockGrid, int rockFrameCount)
+        {
+            _rockGrid = rockGrid;
+            _rockFrameCount = Mathf.Max(1, rockFrameCount);
             _lastIndex = -1;
         }
 
@@ -218,22 +260,37 @@ namespace HiddenHarbours.Boats
         }
 
         // The prototype under test: swap to the nearest pre-drawn facing and counter-rotate the renderer so
-        // the picture stays screen-axis-aligned — the body's physics yaw must NOT rotate the artwork.
+        // the picture stays screen-axis-aligned — the body's physics yaw must NOT rotate the artwork. When a
+        // rock grid is wired (the iso dory), the chosen sprite is the wave-driven rock frame FOR that heading
+        // (rockGrid[heading·frameCount + RockFrame]) instead of the static facing — so the drawn rock tracks
+        // the swell under the hull (BoatWaveMotion writes RockFrame; −1 holds the static/level hull).
         private void ApplySnap()
         {
             if (_facings == null || _facings.Length == 0) return;
 
             float heading = HeadingDegreesFromBow(transform.up);
             int idx = HeadingToFacingIndex(heading, _facings.Length, _zeroHeadingDegrees);
-            if (idx != _lastIndex)
+
+            Sprite target;
+            if (HasRockGrid && RockFrame >= 0)
             {
-                Sprite s = _facings[idx];
-                if (s != null) _renderer.sprite = s;
-                _lastIndex = idx;
+                int frame = RockFrame % _rockFrameCount;
+                if (frame < 0) frame += _rockFrameCount;
+                target = _rockGrid[DoryRockMath.RockGridIndex(idx, frame, _rockFrameCount)];
             }
-            // Counter-rotate to world-identity: cancel whatever yaw the body has so the chosen facing is
+            else
+            {
+                target = _facings[idx];   // static hull (no rock grid, or calm/level RockFrame < 0)
+            }
+            // Direct sprite compare (not a cached index) so a heading OR frame change both refresh with no
+            // per-frame allocation; the assignment is skipped when nothing changed.
+            if (target != null && _renderer.sprite != target) _renderer.sprite = target;
+            _lastIndex = idx;
+
+            // Counter-rotate to world-identity: cancel whatever yaw the body has so the chosen sprite is
             // drawn screen-aligned (the snap shows a DIFFERENT picture, it never rotates one) — then
-            // compose the additive wave tilt ON the screen-aligned picture (0 = identity = today).
+            // compose the additive wave tilt ON the screen-aligned picture (0 = identity; the iso rock is
+            // baked into the frames, so the dory keeps VisualTiltDegrees at 0).
             _renderer.transform.rotation = Quaternion.Euler(0f, 0f, VisualTiltDegrees);
         }
     }

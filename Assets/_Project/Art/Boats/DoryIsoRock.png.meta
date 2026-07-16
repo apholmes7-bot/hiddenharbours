@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 193dfb1b6446c56408c5036e488dd7d5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5771573901658288150
+    second: DoryIsoRock_0
+  - first:
+      213: -1582593547443542453
+    second: DoryIsoRock_1
+  - first:
+      213: 9211415368667208832
+    second: DoryIsoRock_2
+  - first:
+      213: -3499440779775311215
+    second: DoryIsoRock_3
+  - first:
+      213: 5913271071944041803
+    second: DoryIsoRock_4
+  - first:
+      213: 1498524296815745498
+    second: DoryIsoRock_5
+  - first:
+      213: 2969524792590199882
+    second: DoryIsoRock_6
+  - first:
+      213: -180111846628705097
+    second: DoryIsoRock_7
+  - first:
+      213: 6135512166848852766
+    second: DoryIsoRock_8
+  - first:
+      213: 7737453268363740179
+    second: DoryIsoRock_9
+  - first:
+      213: -6410123817076348940
+    second: DoryIsoRock_10
+  - first:
+      213: -3189079229162312615
+    second: DoryIsoRock_11
+  - first:
+      213: 3029486705050039224
+    second: DoryIsoRock_12
+  - first:
+      213: -6977497060613930636
+    second: DoryIsoRock_13
+  - first:
+      213: -5462703634259736405
+    second: DoryIsoRock_14
+  - first:
+      213: 8782716240950404302
+    second: DoryIsoRock_15
+  - first:
+      213: 293885693701895316
+    second: DoryIsoRock_16
+  - first:
+      213: -7880197374395559837
+    second: DoryIsoRock_17
+  - first:
+      213: -1593114815499081269
+    second: DoryIsoRock_18
+  - first:
+      213: -5301320329617679350
+    second: DoryIsoRock_19
+  - first:
+      213: -265066178320666900
+    second: DoryIsoRock_20
+  - first:
+      213: 7100381804780680751
+    second: DoryIsoRock_21
+  - first:
+      213: -7193805970460901393
+    second: DoryIsoRock_22
+  - first:
+      213: -2283483226384981386
+    second: DoryIsoRock_23
+  - first:
+      213: 5700285658001585729
+    second: DoryIsoRock_24
+  - first:
+      213: 8164223276102366071
+    second: DoryIsoRock_25
+  - first:
+      213: 1669650490552061040
+    second: DoryIsoRock_26
+  - first:
+      213: 7319078902877324332
+    second: DoryIsoRock_27
+  - first:
+      213: -2751765299928880278
+    second: DoryIsoRock_28
+  - first:
+      213: 3696475338040980425
+    second: DoryIsoRock_29
+  - first:
+      213: -4869212895683536632
+    second: DoryIsoRock_30
+  - first:
+      213: 1038330582886623242
+    second: DoryIsoRock_31
+  - first:
+      213: 8935042051593938483
+    second: DoryIsoRock_32
+  - first:
+      213: -5105328765085661777
+    second: DoryIsoRock_33
+  - first:
+      213: -3933723113601440663
+    second: DoryIsoRock_34
+  - first:
+      213: -3564243427958915414
+    second: DoryIsoRock_35
+  - first:
+      213: -3613552586723196463
+    second: DoryIsoRock_36
+  - first:
+      213: 6634147805850750024
+    second: DoryIsoRock_37
+  - first:
+      213: -7547277970729768667
+    second: DoryIsoRock_38
+  - first:
+      213: -4198819688909530350
+    second: DoryIsoRock_39
+  - first:
+      213: -6356812323657184094
+    second: DoryIsoRock_40
+  - first:
+      213: 3435915091136098335
+    second: DoryIsoRock_41
+  - first:
+      213: -4889269656107089164
+    second: DoryIsoRock_42
+  - first:
+      213: -5596620917208783037
+    second: DoryIsoRock_43
+  - first:
+      213: -9009948955740523833
+    second: DoryIsoRock_44
+  - first:
+      213: 6740360673288095968
+    second: DoryIsoRock_45
+  - first:
+      213: 79412918772596488
+    second: DoryIsoRock_46
+  - first:
+      213: 3098975018164089441
+    second: DoryIsoRock_47
+  - first:
+      213: -1414355498063016057
+    second: DoryIsoRock_48
+  - first:
+      213: -2905965931438765440
+    second: DoryIsoRock_49
+  - first:
+      213: -2705949893479280236
+    second: DoryIsoRock_50
+  - first:
+      213: -2959318788905682771
+    second: DoryIsoRock_51
+  - first:
+      213: 6078260572050872491
+    second: DoryIsoRock_52
+  - first:
+      213: 5108584776059024926
+    second: DoryIsoRock_53
+  - first:
+      213: -3772443628977504111
+    second: DoryIsoRock_54
+  - first:
+      213: -4024765913009173625
+    second: DoryIsoRock_55
+  - first:
+      213: 1149375050147348611
+    second: DoryIsoRock_56
+  - first:
+      213: 2857121324238136704
+    second: DoryIsoRock_57
+  - first:
+      213: -3396310138058134172
+    second: DoryIsoRock_58
+  - first:
+      213: 3774918044849876107
+    second: DoryIsoRock_59
+  - first:
+      213: 599878079981557091
+    second: DoryIsoRock_60
+  - first:
+      213: 6646291398498856335
+    second: DoryIsoRock_61
+  - first:
+      213: 8403780162468345310
+    second: DoryIsoRock_62
+  - first:
+      213: -5195648075785850023
+    second: DoryIsoRock_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DoryIsoRock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef2eb5945e9dbd0499b9f4e998df906b
+      internalID: 5771573901658288150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_1
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33c5455be259dc54eaf2742bc541bac8
+      internalID: -1582593547443542453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_2
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf3c98e9d0258e648bc92be60d81b9c6
+      internalID: 9211415368667208832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_3
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74f6293ef4613154c9eb30563265fc54
+      internalID: -3499440779775311215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_4
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a7277ceffc545c40b74407bfa062605
+      internalID: 5913271071944041803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_5
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf8f4017665c65d4d8dcabea58b99666
+      internalID: 1498524296815745498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_6
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8e640152ee4a1442a692c7431231679
+      internalID: 2969524792590199882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_7
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 1092
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4799165c01b9264bb856853c71dd62e
+      internalID: -180111846628705097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b98385e69bf40494d9c17054a038548e
+      internalID: 6135512166848852766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_9
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a0b889e80a18f5418534f5bc8fa2f3a
+      internalID: 7737453268363740179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4564df4ebbc6d504582801550d47d6b8
+      internalID: -6410123817076348940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_11
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4bf5ef6c2373c84b8854277eb6d2c85
+      internalID: -3189079229162312615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_12
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ee9f2c3ffa4b24ea40bcaf3badcbed
+      internalID: 3029486705050039224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_13
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eef0d2da77c5a944a9f0ce596cec0b23
+      internalID: -6977497060613930636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_14
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0c12e134d2497241b0bf0efafd615d0
+      internalID: -5462703634259736405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_15
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 936
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cd0b29541873e34c8cc68d8b4871b0b
+      internalID: 8782716240950404302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 699631365155b9a43a689fd4b72864f5
+      internalID: 293885693701895316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_17
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98c0b97480d0b064db7eb826dee1b383
+      internalID: -7880197374395559837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_18
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90ce6ac14fa85364a8a1c6145b084f45
+      internalID: -1593114815499081269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_19
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82666302d763248478d93910136175eb
+      internalID: -5301320329617679350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_20
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dbf914dd8036eb44b2d6339d21ba68e
+      internalID: -265066178320666900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_21
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ea06867aa05d3e45b696c6fbec13cac
+      internalID: 7100381804780680751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_22
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab99b0c9dd436f34eb82fcac98333075
+      internalID: -7193805970460901393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_23
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 780
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99fd7342a521b984aa8d71585fa52847
+      internalID: -2283483226384981386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8737d4f533bdc6f4b923e76cb913c00f
+      internalID: 5700285658001585729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_25
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cdfdcffff0bd5a4fb283c955de07b54
+      internalID: 8164223276102366071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_26
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85435d29e543b8e47ba573bc7cc93278
+      internalID: 1669650490552061040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_27
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f5d3615c8b5ecd4683d088508a0a9d1
+      internalID: 7319078902877324332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_28
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ccc3b169de0abd4a895d40e02baab6d
+      internalID: -2751765299928880278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_29
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc42cd10f8d42654c8530fb31e83a132
+      internalID: 3696475338040980425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_30
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca73152c061cda940bbbf0300d5d8508
+      internalID: -4869212895683536632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_31
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 624
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e38b455f85783474abad8166b169ef96
+      internalID: 1038330582886623242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7ed43c8157c26347916ed8b8729f052
+      internalID: 8935042051593938483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_33
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80686b0fba9cae34c82f1cdbafdff1f8
+      internalID: -5105328765085661777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_34
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf880da545716df449ce725864f4f93a
+      internalID: -3933723113601440663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_35
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b2785482f33f0b4d895a9bbac98ddb2
+      internalID: -3564243427958915414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_36
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da7eda885c3d1454485fa875407082b1
+      internalID: -3613552586723196463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_37
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e3db14346625d142a9a118793b8b386
+      internalID: 6634147805850750024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_38
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62874643a2413674594be93bcfc4b4cc
+      internalID: -7547277970729768667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_39
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 468
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5aae6a5ab409e854d870919ffb2d5513
+      internalID: -4198819688909530350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d8233d38ff9a5a44b0c787008ffbb4b
+      internalID: -6356812323657184094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_41
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b47ab5cff41a95f49bbfece71dec56a5
+      internalID: 3435915091136098335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_42
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37d4b3a059e187b4098a5ccbb24018c0
+      internalID: -4889269656107089164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_43
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7ca4b5e7d9bb5f48ac4885a06c451ae
+      internalID: -5596620917208783037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_44
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47c0ce82f203e32499fa75004e61bfdd
+      internalID: -9009948955740523833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_45
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f50bea34a8f642499b39d81e62fe8d2
+      internalID: 6740360673288095968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_46
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f972a936b40f7004ebf7ff42c429b817
+      internalID: 79412918772596488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_47
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 312
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6b0c6d0fb6574f40bbd1fba1426f515
+      internalID: 3098975018164089441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a65d0fab70532cc4c8486bc656494246
+      internalID: -1414355498063016057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_49
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 469f59c0bfbba5040844dcb78fe7b37b
+      internalID: -2905965931438765440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_50
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 909c3f4137ec36345b66d143f0dbe8b9
+      internalID: -2705949893479280236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_51
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5da75cb529fd1645835e3fe9ad21324
+      internalID: -2959318788905682771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_52
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1feb67b01327ac40a8656de08481625
+      internalID: 6078260572050872491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_53
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 153a42a40c607e04f950d0dac5f5b0e9
+      internalID: 5108584776059024926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_54
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d09ab8764ebb3c4e98641fd03a4151e
+      internalID: -3772443628977504111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_55
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 156
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd3fb045fd6215446971296142b14bb4
+      internalID: -4024765913009173625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71500add92e0f03428db76fccecc0901
+      internalID: 1149375050147348611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_57
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cc19544b9f3a8d44b0e39de4c48aced
+      internalID: 2857121324238136704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_58
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10fcacb8b442e144e989ff622b11719e
+      internalID: -3396310138058134172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_59
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 280a100d2d881704caf72ad9b459aa84
+      internalID: 3774918044849876107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_60
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d71d055ddce67e4088ae827772a4cfb
+      internalID: 599878079981557091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_61
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 818987d3cdaa8964b9554b6e993a6565
+      internalID: 6646291398498856335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_62
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd1edb965c3791540924c9f9f1eaaf8a
+      internalID: 8403780162468345310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DoryIsoRock_63
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 160
+        height: 156
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43589744}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 475c7a422a54aae4cb9761ed2890b9ea
+      internalID: -5195648075785850023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d7d6dcabe11812a46abe91ff128513d6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DoryIsoRock_0: 5771573901658288150
+      DoryIsoRock_1: -1582593547443542453
+      DoryIsoRock_10: -6410123817076348940
+      DoryIsoRock_11: -3189079229162312615
+      DoryIsoRock_12: 3029486705050039224
+      DoryIsoRock_13: -6977497060613930636
+      DoryIsoRock_14: -5462703634259736405
+      DoryIsoRock_15: 8782716240950404302
+      DoryIsoRock_16: 293885693701895316
+      DoryIsoRock_17: -7880197374395559837
+      DoryIsoRock_18: -1593114815499081269
+      DoryIsoRock_19: -5301320329617679350
+      DoryIsoRock_2: 9211415368667208832
+      DoryIsoRock_20: -265066178320666900
+      DoryIsoRock_21: 7100381804780680751
+      DoryIsoRock_22: -7193805970460901393
+      DoryIsoRock_23: -2283483226384981386
+      DoryIsoRock_24: 5700285658001585729
+      DoryIsoRock_25: 8164223276102366071
+      DoryIsoRock_26: 1669650490552061040
+      DoryIsoRock_27: 7319078902877324332
+      DoryIsoRock_28: -2751765299928880278
+      DoryIsoRock_29: 3696475338040980425
+      DoryIsoRock_3: -3499440779775311215
+      DoryIsoRock_30: -4869212895683536632
+      DoryIsoRock_31: 1038330582886623242
+      DoryIsoRock_32: 8935042051593938483
+      DoryIsoRock_33: -5105328765085661777
+      DoryIsoRock_34: -3933723113601440663
+      DoryIsoRock_35: -3564243427958915414
+      DoryIsoRock_36: -3613552586723196463
+      DoryIsoRock_37: 6634147805850750024
+      DoryIsoRock_38: -7547277970729768667
+      DoryIsoRock_39: -4198819688909530350
+      DoryIsoRock_4: 5913271071944041803
+      DoryIsoRock_40: -6356812323657184094
+      DoryIsoRock_41: 3435915091136098335
+      DoryIsoRock_42: -4889269656107089164
+      DoryIsoRock_43: -5596620917208783037
+      DoryIsoRock_44: -9009948955740523833
+      DoryIsoRock_45: 6740360673288095968
+      DoryIsoRock_46: 79412918772596488
+      DoryIsoRock_47: 3098975018164089441
+      DoryIsoRock_48: -1414355498063016057
+      DoryIsoRock_49: -2905965931438765440
+      DoryIsoRock_5: 1498524296815745498
+      DoryIsoRock_50: -2705949893479280236
+      DoryIsoRock_51: -2959318788905682771
+      DoryIsoRock_52: 6078260572050872491
+      DoryIsoRock_53: 5108584776059024926
+      DoryIsoRock_54: -3772443628977504111
+      DoryIsoRock_55: -4024765913009173625
+      DoryIsoRock_56: 1149375050147348611
+      DoryIsoRock_57: 2857121324238136704
+      DoryIsoRock_58: -3396310138058134172
+      DoryIsoRock_59: 3774918044849876107
+      DoryIsoRock_6: 2969524792590199882
+      DoryIsoRock_60: 599878079981557091
+      DoryIsoRock_61: 6646291398498856335
+      DoryIsoRock_62: 8403780162468345310
+      DoryIsoRock_63: -5195648075785850023
+      DoryIsoRock_7: -180111846628705097
+      DoryIsoRock_8: 6135512166848852766
+      DoryIsoRock_9: 7737453268363740179
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -82,6 +82,19 @@ namespace HiddenHarbours.App.Editor
             "Assets/_Project/Art/Boats/FishingBoat_NW.png",
         };
 
+        // The owner's NEW isometric dory art (wave-coupled rock). DoryIso = 8 static hull headings
+        // (index = heading N..NW); DoryIsoRock = 64 rock frames (index = heading×8 + frame). When both
+        // import + slice (SpriteSheetSlicer manifest), the playable boat wears these AS the directional
+        // facings PLUS a rock grid, so BoatWaveMotion drives the visible rock by frame from the wave
+        // phase under the hull (crest → frame 2, trough → 6). Preferred over the FishingBoat_* placeholder
+        // facings; if the iso sheets aren't imported yet, the FishingBoat compass stands (with the legacy
+        // transform rock) so the build never breaks before the art lands.
+        const string ArtDoryIso     = "Assets/_Project/Art/Boats/DoryIso.png";       // 8 static headings
+        const string ArtDoryIsoRock = "Assets/_Project/Art/Boats/DoryIsoRock.png";   // 64 rock frames
+        const int DoryIsoStaticCount = 8;
+        const int DoryIsoRockFrameCount = 8;
+        const int DoryIsoRockCount = DoryIsoStaticCount * DoryIsoRockFrameCount; // 64
+
         // The dedicated Engine-propulsion hull for the directional fishing-boat skin (boat.fishing_skiff).
         // While the directional visual is on, the playable boat is given THIS hull instead of the rowed
         // Dory, so the CONTROLS MATCH the powerboat picture (throttle ahead/astern + a speed-scaled rudder)
@@ -483,21 +496,41 @@ namespace HiddenHarbours.App.Editor
             SetRef(rowAnim, "_oarRig", null);
             if (oarRig != null) oarRig.SetActive(false);
 
+            // (2.5) Prefer the owner's ISO DORY art: 8 static hull headings + a 64-frame heading×rock grid.
+            // When both sheets import + slice, the boat wears the iso dory AND gets a rock grid, so the
+            // visible rock is DRAWN by frame from the wave under the hull (wave-coupled rock — the ask). If
+            // the iso sheets aren't imported yet, fall back to the FishingBoat_* placeholder compass (which
+            // rocks via the legacy transform path) so the build never breaks before the art lands.
+            var isoStatic = LoadSheetFrames(ArtDoryIso);       // ordered DoryIso_0..7 (index = heading)
+            var isoRock = LoadSheetFrames(ArtDoryIsoRock);     // ordered DoryIsoRock_0..63 (index = heading×8+frame)
+            bool useIsoDory =
+                isoStatic.Length == DoryIsoStaticCount && isoStatic.All(s => s != null) &&
+                isoRock.Length == DoryIsoRockCount && isoRock.All(s => s != null);
+
+            Sprite[] visualFacings = useIsoDory ? isoStatic : facings;
+
             // (3) Add the DirectionalBoatSprite on a CHILD renderer of the boat body (the body transform
             // turns with physics; the component counter-rotates this child to keep the facing screen-aligned).
             // sortingOrder 1 draws it above the (now-hidden) hull at 0 and below the on-foot player at 10.
             var spriteGo = new GameObject("FishingBoatVisual");
             spriteGo.transform.SetParent(doryGo.transform, false);
             var sr = spriteGo.AddComponent<SpriteRenderer>();
-            sr.sprite = facings[0];          // start facing North (until the first LateUpdate snaps to heading)
+            sr.sprite = visualFacings[0];    // start facing North (until the first LateUpdate snaps to heading)
             sr.sortingOrder = 1;
 
             var directional = doryGo.AddComponent<DirectionalBoatSprite>();
             directional.Configure(
-                facings, sr,
-                zeroHeadingDegrees: 0f,                       // facings[0] is the North-facing sprite
-                smoothModeSprite: facings[0],                 // unused in Snap; same art if ever toggled to Smooth
+                visualFacings, sr,
+                zeroHeadingDegrees: 0f,                       // element 0 is the North-facing sprite
+                smoothModeSprite: visualFacings[0],           // unused in Snap; same art if ever toggled to Smooth
                 mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
+
+            // Wire the wave-coupled ROCK GRID (iso dory only): DirectionalBoatSprite draws
+            // rockGrid[heading×8 + RockFrame] instead of the static facing, and BoatWaveMotion below sets
+            // RockFrame from the wave phase. With the FishingBoat fallback there is no rock grid, so the
+            // static compass stands and BoatWaveMotion uses its legacy transform rock.
+            if (useIsoDory)
+                directional.ConfigureRock(isoRock, DoryIsoRockFrameCount);
 
             // (4) B2 (ADR 0018): the boat ROCKS on the shared wave field — visual-only. BoatWaveMotion
             // samples WaveMath under the hull each frame and rolls/pitches/bobs the FishingBoatVisual
@@ -509,6 +542,15 @@ namespace HiddenHarbours.App.Editor
             // moves the body itself and will cover both.
             var waveMotion = doryGo.AddComponent<BoatWaveMotion>();
             waveMotion.Configure(spriteGo.transform, directional);
+
+            Debug.Log(useIsoDory
+                ? "[PersistentCoreBuilder] Playable boat wears the ISO DORY skin (8 static headings + 64-frame " +
+                  "rock grid): BoatWaveMotion drives the visible rock BY FRAME from the wave phase under the hull " +
+                  "(crest → frame 2, trough → 6), so the rock corresponds to the waves. The fake transform rock is " +
+                  "retired for this hull (frames own it). Controls/hull unchanged (still the fishing_skiff Engine helm)."
+                : "[PersistentCoreBuilder] Iso dory art not imported — fell back to the FishingBoat_* compass with " +
+                  "the legacy transform rock. Import + slice DoryIso/DoryIsoRock, then re-run the start builder for " +
+                  "the wave-coupled iso dory.");
 
             Debug.Log("[PersistentCoreBuilder] Playable boat wears the 8-way DIRECTIONAL FISHING-BOAT skin " +
                       "(#93/#94 visual, #97 propulsion): hull + oar rig hidden, the full FishingBoat_N/NE/E/" +

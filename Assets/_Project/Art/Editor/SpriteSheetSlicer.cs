@@ -62,6 +62,13 @@ namespace HiddenHarbours.Art.Editor
         private static readonly Vector2 Centre = new Vector2(0.5f, 0.5f);
         private static readonly Vector2 Bottom = new Vector2(0.5f, 0f);
 
+        // The iso-dory waterline pivot: the art director's README fixes the anchor at (80, 88) measured
+        // from each 160×156 cell's TOP-LEFT (the hull's waterline contact point). Unity pivots are
+        // normalized from the BOTTOM-left, so the bottom-origin y is (156−88)=68 → (80/160, 68/156) =
+        // ≈(0.5, 0.4359). Every heading/frame slice shares it so a heading- or rock-frame swap never
+        // shifts the boat (README: "so a heading- or frame-swap never shifts the boat").
+        private static readonly Vector2 DoryWaterline = new Vector2(80f / 160f, 68f / 156f);
+
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
         // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
         // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
@@ -88,6 +95,13 @@ namespace HiddenHarbours.Art.Editor
 
             // ---- Deck fish tray: 5 cols (fill 0..4) × 3 rows (lobster/crab/mixed) → 15, bottom-centre --
             new SheetSpec(Root + "Sprites/Gear/FishTray.png",       5, 3, 32, 24, SpriteAlignment.BottomCenter, Bottom),
+
+            // ---- Iso dory (player boat, wave-coupled rock) — custom waterline pivot on every slice ----
+            //   DoryIso: 8 cols × 1 row → 8 static hull headings (N,NE,E,SE,S,SW,W,NW; index = heading).
+            //   DoryIsoRock: 8 cols (rock frame 0..7) × 8 rows (heading) → 64; index = heading×8 + frame
+            //     (row-major from top-left, per BuildRects), i.e. heading = index/8, frame = index%8.
+            new SheetSpec(Root + "Boats/DoryIso.png",     8, 1, 160, 156, SpriteAlignment.Custom, DoryWaterline),
+            new SheetSpec(Root + "Boats/DoryIsoRock.png", 8, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
         };
 
         // ---- entry points -------------------------------------------------------------------------

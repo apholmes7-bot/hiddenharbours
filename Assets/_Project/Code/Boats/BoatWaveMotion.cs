@@ -11,6 +11,15 @@ namespace HiddenHarbours.Boats
     /// bow and stern, a quartering sea does both off-beat — and the split retargets live as the
     /// player turns. Glass calm is dead still (the field's amplitudes are exactly 0 at sea state 0).
     ///
+    /// <para><b>Two output paths.</b> When the wired <see cref="DirectionalBoatSprite"/> carries a
+    /// wave-coupled ROCK GRID (the iso dory), the visible rock is <b>drawn by swapping rock frames</b>:
+    /// this component reconstructs the wave phase under the hull (<see cref="DoryRockMath"/>) and picks
+    /// the frame — crest → 2, trough → 6 — so the hand-drawn roll/pitch/heave tracks the swell in
+    /// lockstep (owner: <i>"I want the rock animation to correspond to the waves"</i>). The frames OWN
+    /// the rock, so the transform roll/pitch/bob below is <b>not applied</b> (no double-rock) and the
+    /// tilt hook is held at 0. With no rock grid the legacy TRANSFORM rock (next paragraph) drives the
+    /// visual instead — one sampling path, two ways to show it, chosen by <c>_driveRockFrames</c>.</para>
+    ///
     /// <para><b>Visual-only by design (the ADR's phasing).</b> The physics body, colliders and
     /// <see cref="BoatController"/> forces are untouched — the rock is applied to the boat's child
     /// VISUAL so the owner can feel the read before it bites. B3 (seakeeping forces, per-hull
@@ -78,6 +87,29 @@ namespace HiddenHarbours.Boats
         [Tooltip("Hard cap on the bob (world units). Owner feel pass: doubled from 0.1.")]
         [SerializeField] private float _maxBob = 0.2f;
 
+        [Header("Rock frame (wave-coupled SPRITE rock — the iso dory owns the visible rock)")]
+        [Tooltip("When the wired DirectionalBoatSprite carries a rock grid (the iso dory), the visible rock is " +
+                 "DRAWN by swapping rock frames — this component then selects the frame from the wave PHASE " +
+                 "under the hull (crest → 2, trough → 6) and STOPS applying the transform roll/pitch/bob below " +
+                 "(the frames own the rock; no double-rock). Off → the legacy transform rock (roll/pitch/bob) " +
+                 "still drives the visual, for a hull with no rock sheet.")]
+        [SerializeField] private bool _driveRockFrames = true;
+        [Tooltip("Frames per heading in the rock sheet (DoryIsoRock ships 8). Must match the grid the " +
+                 "DirectionalBoatSprite was configured with.")]
+        [SerializeField] private int _rockFrameCount = 8;
+        [Tooltip("Degrees added to the reconstructed wave phase before it is rounded to a frame — the crest-frame " +
+                 "calibration. 0 puts the crest on frame 2 / trough on frame 6 (the README's sync); nudge only if " +
+                 "the art is ever re-baked off phase.")]
+        [SerializeField] private float _crestFrameCalibrationDegrees = 0f;
+        [Tooltip("Wave-height envelope (metres) below which the sea is treated as calm: the dory holds its static " +
+                 "level hull (RockFrame −1) so there is no phantom rocking on glass. Above it, the frames track " +
+                 "the swell.")]
+        [SerializeField] private float _calmAmplitudeThreshold = 0.02f;
+        [Tooltip("Hysteresis band (degrees) around each frame boundary so cross-chop can't flip-flop the frame at " +
+                 "an edge. ~half a frame step reads steady without lagging the rock. 0 = pick the nearest frame every " +
+                 "tick (may jitter on a noisy sea).")]
+        [SerializeField] private float _frameHysteresisDegrees = 8f;
+
         [Header("Smoothing (the owner's 'smooth rock, especially in calm seas')")]
         [Tooltip("Output damping (seconds, exponential time constant) on the roll/pitch/bob reads — fps-independent. ~0.2 velvets residual noise without the boat feeling laggy; 0 = raw samples.")]
         [SerializeField] private float _motionSmoothingSeconds = 0.2f;
@@ -107,6 +139,9 @@ namespace HiddenHarbours.Boats
         private Vector3 _baseLocalScale;
         private bool _applied;
 
+        // The rock frame currently drawn (frame-driven path). −1 = static/level hull (calm or off).
+        private int _currentRockFrame = -1;
+
         /// <summary>Master strength, settable at runtime (dev rigs / feel sessions). 0 = off.</summary>
         public float MasterStrength
         {
@@ -131,10 +166,13 @@ namespace HiddenHarbours.Boats
             _smoothedPitch = 0f;
             _smoothedRoll = 0f;
             _smoothedBob = 0f;
+            _currentRockFrame = -1;   // wake on the static/level hull; the first tick picks the wave frame
         }
 
         private void OnDisable()
         {
+            SetRockFrame(-1);         // disabled → static level hull, never a frozen rock frame
+            _currentRockFrame = -1;
             RestoreVisual();
         }
 
@@ -151,6 +189,7 @@ namespace HiddenHarbours.Boats
 
             if (_masterStrength <= 0f)
             {
+                if (DrivingRockFrames) SetRockFrame(-1);   // off → static/level hull, not a frozen frame
                 RestoreVisual();      // 0 = off, and the visual sits exactly where it was built
                 return;
             }
@@ -178,6 +217,17 @@ namespace HiddenHarbours.Boats
                 wave = WaveSample.Flat;   // no sim, no sea — dead still, never stale
             }
 
+            // THE WAVE-COUPLED SPRITE ROCK (the iso dory): when the wired DirectionalBoatSprite carries a
+            // rock grid, the visible rock is DRAWN by frame — select the frame from the wave phase under
+            // the hull and STOP applying the transform rock below (the frames own the roll/pitch/heave;
+            // applying both would double-rock). This keeps the wave SAMPLING above (the input) and only
+            // changes the OUTPUT from a transform to a frame index.
+            if (DrivingRockFrames)
+            {
+                DriveRockFrame(wave);
+                return;
+            }
+
             BoatWaveMotionSample motion =
                 BoatWaveMotionMath.Decompose(wave.Slope, wave.Height, (Vector2)transform.up, _masterStrength);
 
@@ -188,6 +238,47 @@ namespace HiddenHarbours.Boats
             _smoothedBob = WaveFieldAnimator.Smooth(_smoothedBob, motion.Bob, dt, _motionSmoothingSeconds);
 
             Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob));
+        }
+
+        /// <summary>True when the visible rock is drawn by SWAPPING rock frames on the wired
+        /// <see cref="DirectionalBoatSprite"/> (the iso dory) rather than transforming the visual — the
+        /// gate between the frame path and the legacy transform-rock path.</summary>
+        private bool DrivingRockFrames =>
+            _driveRockFrames && _directionalSprite != null && _directionalSprite.HasRockGrid;
+
+        /// <summary>
+        /// Select the rock frame from the wave under the hull and write it to the
+        /// <see cref="DirectionalBoatSprite"/>. Calm (or no live field) holds the static/level hull
+        /// (frame −1); otherwise the phase is reconstructed against the DOMINANT train (so crest → 2,
+        /// trough → 6) and rounded to a frame with hysteresis. The transform is left at its base pose —
+        /// the drawn frames own the rock, so no roll/pitch/bob is applied (no double-rock), and the
+        /// roll hook is held at 0.
+        /// </summary>
+        private void DriveRockFrame(in WaveSample wave)
+        {
+            // The frames own the rock: keep the additive roll hook and the transform pose neutral.
+            _directionalSprite.VisualTiltDegrees = 0f;
+            RestoreVisual();
+
+            WaveTrains field = _animator.Current;
+            if (field.Count <= 0 || field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold))
+            {
+                _currentRockFrame = -1;           // glass / near-calm → static level hull, no phantom rock
+                SetRockFrame(-1);
+                return;
+            }
+
+            WaveTrain dominant = field[0];
+            float waveNumber = (2f * Mathf.PI) / Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength);
+            float phaseDeg = DoryRockMath.PhaseDegrees(wave.Height, wave.Slope, dominant.Direction, waveNumber);
+            _currentRockFrame = DoryRockMath.AdvanceFrame(
+                _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);
+            SetRockFrame(_currentRockFrame);
+        }
+
+        private void SetRockFrame(int frame)
+        {
+            if (_directionalSprite != null) _directionalSprite.RockFrame = frame;
         }
 
         /// <summary>Map the smoothed decomposition onto the visual: roll → additive z-rotation (through
