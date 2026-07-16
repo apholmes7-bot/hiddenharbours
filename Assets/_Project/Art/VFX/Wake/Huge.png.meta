@@ -1,0 +1,2470 @@
+fileFormatVersion: 2
+guid: 7adf1c72ac5b26e4ca72a221040af08d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8068003082528988731
+    second: Huge_0
+  - first:
+      213: -744958973323064734
+    second: Huge_1
+  - first:
+      213: -7032191783490420599
+    second: Huge_2
+  - first:
+      213: -6965396426010682094
+    second: Huge_3
+  - first:
+      213: -20716462305400261
+    second: Huge_4
+  - first:
+      213: 3594425910769561131
+    second: Huge_5
+  - first:
+      213: -1952631596405809747
+    second: Huge_6
+  - first:
+      213: 4395932398835826365
+    second: Huge_7
+  - first:
+      213: 5131587886740209976
+    second: Huge_8
+  - first:
+      213: 457678564893982715
+    second: Huge_9
+  - first:
+      213: 2360403923905444063
+    second: Huge_10
+  - first:
+      213: 767163634168356004
+    second: Huge_11
+  - first:
+      213: -4070636347820116694
+    second: Huge_12
+  - first:
+      213: 512364988317641983
+    second: Huge_13
+  - first:
+      213: 4943543252202098233
+    second: Huge_14
+  - first:
+      213: 3369702022193654154
+    second: Huge_15
+  - first:
+      213: 2047636707767370557
+    second: Huge_16
+  - first:
+      213: -6900374586552762149
+    second: Huge_17
+  - first:
+      213: 1345428459466550562
+    second: Huge_18
+  - first:
+      213: -4271270334965054452
+    second: Huge_19
+  - first:
+      213: 5208528745687266835
+    second: Huge_20
+  - first:
+      213: -557092464945580600
+    second: Huge_21
+  - first:
+      213: 1136939761102361524
+    second: Huge_22
+  - first:
+      213: 5744201233324262393
+    second: Huge_23
+  - first:
+      213: 2077120037615751318
+    second: Huge_24
+  - first:
+      213: -7613558484548901173
+    second: Huge_25
+  - first:
+      213: -1617886926243496755
+    second: Huge_26
+  - first:
+      213: -6057041143068885308
+    second: Huge_27
+  - first:
+      213: 4822825934096440682
+    second: Huge_28
+  - first:
+      213: -2800439885215790603
+    second: Huge_29
+  - first:
+      213: 8922410189084302430
+    second: Huge_30
+  - first:
+      213: 2971875978298255499
+    second: Huge_31
+  - first:
+      213: 9206992862017969016
+    second: Huge_32
+  - first:
+      213: 8680083110911278573
+    second: Huge_33
+  - first:
+      213: -5414621407052478320
+    second: Huge_34
+  - first:
+      213: -4701277387176180107
+    second: Huge_35
+  - first:
+      213: 7592793630624918072
+    second: Huge_36
+  - first:
+      213: 2087197107828150375
+    second: Huge_37
+  - first:
+      213: 2768040435135712802
+    second: Huge_38
+  - first:
+      213: 8706012129689817343
+    second: Huge_39
+  - first:
+      213: 4409669739569299677
+    second: Huge_40
+  - first:
+      213: -6962798886720309304
+    second: Huge_41
+  - first:
+      213: 5486281936987278979
+    second: Huge_42
+  - first:
+      213: 5105361286543376050
+    second: Huge_43
+  - first:
+      213: -4545341400710417666
+    second: Huge_44
+  - first:
+      213: 106407282419495660
+    second: Huge_45
+  - first:
+      213: -6468122068021158081
+    second: Huge_46
+  - first:
+      213: -5927924543764103551
+    second: Huge_47
+  - first:
+      213: -5414067895234362512
+    second: Huge_48
+  - first:
+      213: -2566863830323643387
+    second: Huge_49
+  - first:
+      213: -1751725506732474297
+    second: Huge_50
+  - first:
+      213: 3538968926907061611
+    second: Huge_51
+  - first:
+      213: 5259245970019008570
+    second: Huge_52
+  - first:
+      213: -7065039177206632769
+    second: Huge_53
+  - first:
+      213: -6661478247100133340
+    second: Huge_54
+  - first:
+      213: 2028734422400538809
+    second: Huge_55
+  - first:
+      213: 8310857588579897303
+    second: Huge_56
+  - first:
+      213: -5770067675246669829
+    second: Huge_57
+  - first:
+      213: -7299308557910306033
+    second: Huge_58
+  - first:
+      213: -5754555087875036273
+    second: Huge_59
+  - first:
+      213: -7473172563438659923
+    second: Huge_60
+  - first:
+      213: -5283133231924432155
+    second: Huge_61
+  - first:
+      213: -2590960180581426580
+    second: Huge_62
+  - first:
+      213: -8234274629282987158
+    second: Huge_63
+  - first:
+      213: -6678468971847991983
+    second: Huge_64
+  - first:
+      213: 9052714960424618961
+    second: Huge_65
+  - first:
+      213: -8752736843655099312
+    second: Huge_66
+  - first:
+      213: -6028122324779811555
+    second: Huge_67
+  - first:
+      213: 9057053686682918987
+    second: Huge_68
+  - first:
+      213: 3662863907620046645
+    second: Huge_69
+  - first:
+      213: 8302990804449518381
+    second: Huge_70
+  - first:
+      213: -7045814693081981569
+    second: Huge_71
+  - first:
+      213: 5817229759754251357
+    second: Huge_72
+  - first:
+      213: 8627358205558016736
+    second: Huge_73
+  - first:
+      213: 5940811452561036814
+    second: Huge_74
+  - first:
+      213: -3846797564899966685
+    second: Huge_75
+  - first:
+      213: -101532674063751067
+    second: Huge_76
+  - first:
+      213: 2506758415523279694
+    second: Huge_77
+  - first:
+      213: 490201351635542329
+    second: Huge_78
+  - first:
+      213: -7023421050961479571
+    second: Huge_79
+  - first:
+      213: 3817235986693842489
+    second: Huge_80
+  - first:
+      213: -2680026254171138469
+    second: Huge_81
+  - first:
+      213: -2051342665413377398
+    second: Huge_82
+  - first:
+      213: -6846760712927262107
+    second: Huge_83
+  - first:
+      213: 9046746909987207257
+    second: Huge_84
+  - first:
+      213: 5762180664429839550
+    second: Huge_85
+  - first:
+      213: 1900586911756306548
+    second: Huge_86
+  - first:
+      213: -6536486499328575965
+    second: Huge_87
+  - first:
+      213: 377288866198055737
+    second: Huge_88
+  - first:
+      213: 5682794963440418272
+    second: Huge_89
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Huge_0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 287
+        width: 52
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c16a1b41f1b80090800000000000000
+      internalID: -8068003082528988731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_1
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 311
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26ac6deb2cf59a5f0800000000000000
+      internalID: -744958973323064734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_2
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 306
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98002a0c4d2a86e90800000000000000
+      internalID: -7032191783490420599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 6
+        width: 102
+        height: 297
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21d9bd3dad0f55f90800000000000000
+      internalID: -6965396426010682094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_4
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 268
+        width: 11
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3aa84fbc7666bff0800000000000000
+      internalID: -20716462305400261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_5
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 296
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2e21ee5257f1e130800000000000000
+      internalID: 3594425910769561131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_6
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 297
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dad170798ebd6e4e0800000000000000
+      internalID: -1952631596405809747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_7
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 292
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbe7d31e93d710d30800000000000000
+      internalID: 4395932398835826365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_8
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 257
+        width: 15
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83109d2aeff073740800000000000000
+      internalID: 5131587886740209976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_9
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 283
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfff0d9da300a5600800000000000000
+      internalID: 457678564893982715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_10
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 257
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd872d2ecd6d1c020800000000000000
+      internalID: 2360403923905444063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_11
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 200
+        width: 20
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4acd33bb24385aa00800000000000000
+      internalID: 767163634168356004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_12
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 266
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a25736e0fc13287c0800000000000000
+      internalID: -4070636347820116694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_13
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 245
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffc25040e394c1700800000000000000
+      internalID: 512364988317641983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_14
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 250
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93e0947556efa9440800000000000000
+      internalID: 4943543252202098233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_15
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 217
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a89a4cfb22693ce20800000000000000
+      internalID: 3369702022193654154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_16
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 230
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d334683acbaaa6c10800000000000000
+      internalID: 2047636707767370557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_17
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 227
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd0c36f8fd1fc30a0800000000000000
+      internalID: -6900374586552762149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_18
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 6
+        width: 47
+        height: 236
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22d64353e0ceba210800000000000000
+      internalID: 1345428459466550562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_19
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 219
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c048eb0b24669b4c0800000000000000
+      internalID: -4271270334965054452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_20
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 215
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 316b9195c49684840800000000000000
+      internalID: 5208528745687266835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_21
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 177
+        width: 26
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c53fdfca5fc448f0800000000000000
+      internalID: -557092464945580600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_22
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 204
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b3168f50b837cf00800000000000000
+      internalID: 1136939761102361524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_23
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 207
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f347ae669087bf40800000000000000
+      internalID: 5744201233324262393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_24
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 204
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 690deed4ba963dc10800000000000000
+      internalID: 2077120037615751318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_25
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 186
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc62dcb85e4375690800000000000000
+      internalID: -7613558484548901173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_26
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 182
+        width: 14
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dccf18a996c1c89e0800000000000000
+      internalID: -1617886926243496755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_27
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 191
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cef3750c2111fba0800000000000000
+      internalID: -6057041143068885308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_28
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 180
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6d1c5772ae1ee240800000000000000
+      internalID: 4822825934096440682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_29
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 166
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f980e203c6d229d0800000000000000
+      internalID: -2800439885215790603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_30
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 177
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5c12b44bc4c2db70800000000000000
+      internalID: 8922410189084302430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_31
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 169
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88ebf2e4793e3920800000000000000
+      internalID: 2971875978298255499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_32
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 176
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87b532e2a3fc5cf70800000000000000
+      internalID: 9206992862017969016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_33
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 160
+        width: 11
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dedfbbea999d57870800000000000000
+      internalID: 8680083110911278573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_34
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 144
+        width: 12
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0984967a4866bd4b0800000000000000
+      internalID: -5414621407052478320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_35
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 158
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57689c2ff15b1ceb0800000000000000
+      internalID: -4701277387176180107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_36
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 160
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83a2f3624950f5960800000000000000
+      internalID: 7592793630624918072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_37
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 168
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 760d15c06b637fc10800000000000000
+      internalID: 2087197107828150375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_38
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 152
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22e8e2c2c1e0a6620800000000000000
+      internalID: 2768040435135712802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_39
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 156
+        width: 15
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff05760d7e7f1d870800000000000000
+      internalID: 8706012129689817343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_40
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 145
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd041d3c34b423d30800000000000000
+      internalID: 4409669739569299677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_41
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 107
+        width: 23
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c7fc829d4b2f5f90800000000000000
+      internalID: -6962798886720309304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_42
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 138
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38ec4c7aa50332c40800000000000000
+      internalID: 5486281936987278979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_43
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 140
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bef27e6a03e9d640800000000000000
+      internalID: 5105361286543376050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_44
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 138
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef277cb0414bbe0c0800000000000000
+      internalID: -4545341400710417666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_45
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 131
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce2f02e0cd80a7100800000000000000
+      internalID: 106407282419495660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_46
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 105
+        width: 17
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3fdbbbaf3d9c36a0800000000000000
+      internalID: -6468122068021158081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_47
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 120
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18efe91f808cbbda0800000000000000
+      internalID: -5927924543764103551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_48
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 119
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07385ba2fed5dd4b0800000000000000
+      internalID: -5414067895234362512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_49
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 41
+        width: 41
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50cb2c632faa06cd0800000000000000
+      internalID: -2566863830323643387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_50
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 125
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7404833ceee90b7e0800000000000000
+      internalID: -1751725506732474297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_51
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 67
+        width: 21
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b65d07f1d71fc1130800000000000000
+      internalID: 3538968926907061611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_52
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 107
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a30436558589cf840800000000000000
+      internalID: 5259245970019008570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_53
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 114
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbe616eec40f3fd90800000000000000
+      internalID: -7065039177206632769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_54
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 112
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 420da9a04dcad83a0800000000000000
+      internalID: -6661478247100133340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_55
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 97
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b89ace5533872c10800000000000000
+      internalID: 2028734422400538809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_56
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 101
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7df0a2aa1f8165370800000000000000
+      internalID: 8310857588579897303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_57
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 101
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bff45fe350a9cefa0800000000000000
+      internalID: -5770067675246669829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_58
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 85
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0399cb3a85a3ba90800000000000000
+      internalID: -7299308557910306033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_59
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 71
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8baac2f2a6b320b0800000000000000
+      internalID: -5754555087875036273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_60
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 85
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da61b0be525f94890800000000000000
+      internalID: -7473172563438659923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_61
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 82
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e2351a115a8ea6b0800000000000000
+      internalID: -5283133231924432155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_62
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 83
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6a1349717f0b0cd0800000000000000
+      internalID: -2590960180581426580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_63
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 83
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a63839a0adaf9bd80800000000000000
+      internalID: -8234274629282987158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_64
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 74
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15d3889aadf4153a0800000000000000
+      internalID: -6678468971847991983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_65
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 2
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1db49fc0b44b1ad70800000000000000
+      internalID: 9052714960424618961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_66
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 13
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05cc675f638088680800000000000000
+      internalID: -8752736843655099312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_67
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 24
+        width: 10
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1db5e81faec75ca0800000000000000
+      internalID: -6028122324779811555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_68
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 36
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b40a06a775e11bd70800000000000000
+      internalID: 9057053686682918987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_69
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 6
+        width: 31
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 537ca4a315b15d230800000000000000
+      internalID: 3662863907620046645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_70
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 49
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d236c8045262a3370800000000000000
+      internalID: 8302990804449518381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_71
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 62
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7dde91fddc383e90800000000000000
+      internalID: -7045814693081981569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_72
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 21
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5cabfe35a3fab050800000000000000
+      internalID: 5817229759754251357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_73
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 61
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ea465804988ab770800000000000000
+      internalID: 8627358205558016736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_74
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 22
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0619735a80027250800000000000000
+      internalID: 5940811452561036814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_75
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 56
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 321cc45fefd6d9ac0800000000000000
+      internalID: -3846797564899966685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_76
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 42
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568a5552298479ef0800000000000000
+      internalID: -101532674063751067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_77
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 22
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e437cfe5f7bc9c220800000000000000
+      internalID: 2506758415523279694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_78
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 55
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93127a8388b8dc600800000000000000
+      internalID: 490201351635542329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_79
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 46
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d68b07d04cbc78e90800000000000000
+      internalID: -7023421050961479571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_80
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 60
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93669b2c7eb89f430800000000000000
+      internalID: 3817235986693842489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_81
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 40
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b56986b3252aecad0800000000000000
+      internalID: -2680026254171138469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_82
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 5
+        width: 18
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a82ce6bd6ba2883e0800000000000000
+      internalID: -2051342665413377398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_83
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 7
+        width: 20
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56aced3486b6bf0a0800000000000000
+      internalID: -6846760712927262107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_84
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 52
+        width: 17
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95876a602608c8d70800000000000000
+      internalID: 9046746909987207257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_85
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 44
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb407f2f8c067ff40800000000000000
+      internalID: 5762180664429839550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_86
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 34
+        width: 13
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 478cdfbf9bd306a10800000000000000
+      internalID: 1900586911756306548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_87
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 24
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3263260292cb945a0800000000000000
+      internalID: -6536486499328575965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_88
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 2
+        width: 20
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93be17f89366c3500800000000000000
+      internalID: 377288866198055737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Huge_89
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 27
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0edbe3719e75dde40800000000000000
+      internalID: 5682794963440418272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Huge_0: -8068003082528988731
+      Huge_1: -744958973323064734
+      Huge_10: 2360403923905444063
+      Huge_11: 767163634168356004
+      Huge_12: -4070636347820116694
+      Huge_13: 512364988317641983
+      Huge_14: 4943543252202098233
+      Huge_15: 3369702022193654154
+      Huge_16: 2047636707767370557
+      Huge_17: -6900374586552762149
+      Huge_18: 1345428459466550562
+      Huge_19: -4271270334965054452
+      Huge_2: -7032191783490420599
+      Huge_20: 5208528745687266835
+      Huge_21: -557092464945580600
+      Huge_22: 1136939761102361524
+      Huge_23: 5744201233324262393
+      Huge_24: 2077120037615751318
+      Huge_25: -7613558484548901173
+      Huge_26: -1617886926243496755
+      Huge_27: -6057041143068885308
+      Huge_28: 4822825934096440682
+      Huge_29: -2800439885215790603
+      Huge_3: -6965396426010682094
+      Huge_30: 8922410189084302430
+      Huge_31: 2971875978298255499
+      Huge_32: 9206992862017969016
+      Huge_33: 8680083110911278573
+      Huge_34: -5414621407052478320
+      Huge_35: -4701277387176180107
+      Huge_36: 7592793630624918072
+      Huge_37: 2087197107828150375
+      Huge_38: 2768040435135712802
+      Huge_39: 8706012129689817343
+      Huge_4: -20716462305400261
+      Huge_40: 4409669739569299677
+      Huge_41: -6962798886720309304
+      Huge_42: 5486281936987278979
+      Huge_43: 5105361286543376050
+      Huge_44: -4545341400710417666
+      Huge_45: 106407282419495660
+      Huge_46: -6468122068021158081
+      Huge_47: -5927924543764103551
+      Huge_48: -5414067895234362512
+      Huge_49: -2566863830323643387
+      Huge_5: 3594425910769561131
+      Huge_50: -1751725506732474297
+      Huge_51: 3538968926907061611
+      Huge_52: 5259245970019008570
+      Huge_53: -7065039177206632769
+      Huge_54: -6661478247100133340
+      Huge_55: 2028734422400538809
+      Huge_56: 8310857588579897303
+      Huge_57: -5770067675246669829
+      Huge_58: -7299308557910306033
+      Huge_59: -5754555087875036273
+      Huge_6: -1952631596405809747
+      Huge_60: -7473172563438659923
+      Huge_61: -5283133231924432155
+      Huge_62: -2590960180581426580
+      Huge_63: -8234274629282987158
+      Huge_64: -6678468971847991983
+      Huge_65: 9052714960424618961
+      Huge_66: -8752736843655099312
+      Huge_67: -6028122324779811555
+      Huge_68: 9057053686682918987
+      Huge_69: 3662863907620046645
+      Huge_7: 4395932398835826365
+      Huge_70: 8302990804449518381
+      Huge_71: -7045814693081981569
+      Huge_72: 5817229759754251357
+      Huge_73: 8627358205558016736
+      Huge_74: 5940811452561036814
+      Huge_75: -3846797564899966685
+      Huge_76: -101532674063751067
+      Huge_77: 2506758415523279694
+      Huge_78: 490201351635542329
+      Huge_79: -7023421050961479571
+      Huge_8: 5131587886740209976
+      Huge_80: 3817235986693842489
+      Huge_81: -2680026254171138469
+      Huge_82: -2051342665413377398
+      Huge_83: -6846760712927262107
+      Huge_84: 9046746909987207257
+      Huge_85: 5762180664429839550
+      Huge_86: 1900586911756306548
+      Huge_87: -6536486499328575965
+      Huge_88: 377288866198055737
+      Huge_89: 5682794963440418272
+      Huge_9: 457678564893982715
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
