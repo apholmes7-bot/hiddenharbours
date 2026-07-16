@@ -152,15 +152,23 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(2, registry.arraySize, "the fleet registry holds the Dory + the Punt swap hull");
         }
 
-        // ---- the directional fishing-boat SKIN swap (reversible "for now" placeholder; #93/#94/#97) -----
-        // The owner wants the playable boat to WEAR the 8-way directional fishing-boat facings AND drive as an
-        // ENGINE boat ("a power boat skin, not a rowboat") instead of the dory hull + oars. The builder gates
-        // this on the UseDirectionalFishingBoatVisual flag (currently ON). These guard the swap's observable
-        // effects — the boat's hull is swapped to the Engine boat.fishing_skiff (propulsion match), the
-        // directional component is added + configured, the hull picture is hidden, and the oar rig is hidden
-        // (with its BoatRowAnimator ref severed so it can't re-show the rig). The swap loads the real committed
-        // FishingBoat_*.png + FishingSkiff.asset via AssetDatabase; if ANY isn't imported in this environment
-        // the builder no-ops the swap (by design — no half-state), so the tests skip rather than false-fail.
+        // ---- the directional boat SKIN (the iso dory; #93/#94 visual, #202 rock, #204 oars) -------------
+        // The playable boat WEARS 8-way directional facings (the iso dory art when imported, else the older
+        // FishingBoat_* compass) instead of the single rotating dory hull picture + the legacy transform oar
+        // rig. The builder gates this on the UseDirectionalFishingBoatVisual flag (currently ON). These guard
+        // the skin's observable effects — the directional component is added + configured, the hull picture is
+        // hidden, the LEGACY oar rig is retired (with its BoatRowAnimator ref severed so it can't re-show the
+        // rig and double-render against the baked DoryOarLayer overlay), and — the REVERT — the boat still
+        // drives ROWED on boat.dory.
+        //
+        // HISTORY: #93/#94/#97 ALSO swapped the hull to the Engine boat.fishing_skiff so the CONTROLS matched
+        // a POWERBOAT picture ("a power boat skin, not a rowboat" — the facings were M2 fleet art). The owner
+        // has since decided the dory ROWS again (the art is a rowboat; the independent oars landed), so that
+        // swap is gone and Build_DirectionalSkin_DrivesOnTheRowedDoryHull below asserts the new truth — it is
+        // the direct rewrite of the old Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull.
+        //
+        // The skin loads the real committed art via AssetDatabase; if it isn't imported in this environment
+        // the builder no-ops (by design — no half-state), so the tests skip rather than false-fail.
 
         // The facings the builder loads (CW from North) — mirrors PersistentCoreBuilder.FishingBoatFacingPaths.
         static readonly string[] FishingBoatFacingPaths =
@@ -174,8 +182,14 @@ namespace HiddenHarbours.Tests.EditMode
             "Assets/_Project/Art/Boats/FishingBoat_W.png",
             "Assets/_Project/Art/Boats/FishingBoat_NW.png",
         };
-        // The Engine hull the skin drives on — mirrors PersistentCoreBuilder.DataFishingSkiff.
-        const string FishingSkiffPath     = "Assets/_Project/Data/Boats/FishingSkiff.asset";
+        // The iso dory sheets the skin PREFERS (mirrors PersistentCoreBuilder.ArtDoryIso*) + the oar overlays.
+        const string IsoDoryPath     = "Assets/_Project/Art/Boats/DoryIso.png";
+        const string IsoDoryRockPath = "Assets/_Project/Art/Boats/DoryIsoRock.png";
+        const string OarPortPath     = "Assets/_Project/Art/Boats/DoryOarPort.png";
+        const string OarStarPath     = "Assets/_Project/Art/Boats/DoryOarStar.png";
+
+        private static Sprite[] Slices(string path)
+            => UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
 
         private static bool FishingBoatArtImported()
         {
@@ -187,58 +201,128 @@ namespace HiddenHarbours.Tests.EditMode
                 UnityEditor.AssetDatabase.LoadAllAssetsAtPath(p).OfType<Sprite>().Any());
         }
 
-        private static bool FishingSkiffDefImported()
-            => UnityEditor.AssetDatabase.LoadAssetAtPath<BoatHullDef>(FishingSkiffPath) != null;
+        // The iso art the skin prefers: 8 static headings + the 64-frame rock grid, fully sliced.
+        private static bool IsoDoryArtImported()
+            => Slices(IsoDoryPath).Length == 8 && Slices(IsoDoryRockPath).Length == 64;
 
-        // The swap (visual + propulsion) only runs when BOTH the facing art AND the Engine Def are present —
-        // the builder no-ops to the rowed dory otherwise (no half-state). Tests that assert the swap skip
-        // unless both are imported in this environment.
-        private static bool SkinSwapApplied() => FishingBoatArtImported() && FishingSkiffDefImported();
+        // Both 80-slice oar sheets — the gate the builder's oar-overlay wiring demands (no partial sheet).
+        private static bool OarSheetsImported()
+            => Slices(OarPortPath).Length == 80 && Slices(OarStarPath).Length == 80;
 
-        // ---- the propulsion match: the skin drives on the Engine fishing-skiff hull (#97) ---------
+        // The skin runs when EITHER facing set is present (iso preferred, FishingBoat_* the fallback); with
+        // neither, the builder no-ops to the plain dory look. Tests that assert the skin skip unless one is.
+        private static bool SkinSwapApplied() => IsoDoryArtImported() || FishingBoatArtImported();
+
+        // ---- THE REVERT: the skin is VISUAL — the dory drives ROWED on boat.dory -----------------
+        // (The direct rewrite of Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull, which asserted the
+        // OLD #97 truth — that the skin swapped the hull to the Engine boat.fishing_skiff. The owner has
+        // decided the dory rows again, so this now guards the opposite: the skin must NOT touch the hull.)
 
         [Test]
-        public void Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull()
+        public void Build_DirectionalSkin_DrivesOnTheRowedDoryHull()
         {
             if (!SkinSwapApplied())
-                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported in this environment — " +
-                              "the builder no-ops the skin swap by design (leaves the rowed dory); nothing to assert.");
+                Assert.Ignore("No directional boat art imported in this environment — the builder no-ops the " +
+                              "skin by design; the rowed hull assertions below are what it leaves anyway, but " +
+                              "the skin path they guard didn't run.");
 
             var boat = _core.DoryGo.GetComponent<BoatController>();
-            Assert.IsNotNull(boat.Hull, "the swapped boat has a hull");
-            Assert.AreEqual("boat.fishing_skiff", boat.Hull.Id,
-                "the directional skin must drive on the dedicated Engine hull (a power boat, not the rowed dory)");
-            Assert.AreEqual(PropulsionType.Engine, boat.Hull.Propulsion,
-                "the skin's hull is Engine-propelled so the controls match the powerboat picture");
-            Assert.IsTrue(BoatController.UsesEngineHelm(boat.Hull.Propulsion),
-                "the controller takes the outboard helm (throttle + speed-scaled rudder), not the oars");
+            Assert.IsNotNull(boat.Hull, "the skinned boat has a hull");
+            Assert.AreEqual("boat.dory", boat.Hull.Id,
+                "the skin is VISUAL — the boat must still drive on the ROWED dory hull (the owner's call: the " +
+                "art is a rowboat again, so the helm is oars again; #97's fishing_skiff swap is gone)");
+            Assert.AreEqual(PropulsionType.Oars, boat.Hull.Propulsion,
+                "boat.dory is oar-propelled, so the controls are per-oar strokes (BoatController.ApplyOarDrive)");
+            Assert.IsFalse(BoatController.UsesEngineHelm(boat.Hull.Propulsion),
+                "the controller must NOT take the outboard helm — no throttle/rudder on the dory");
 
-            // The hold tracks the same Engine hull so capacity/feel stay consistent with the boat under helm.
+            // The hold tracks the same rowed hull (the skin never re-points it either).
             var hold = _core.DoryGo.GetComponent<ShipHold>();
             var hso = new UnityEditor.SerializedObject(hold);
-            Assert.AreEqual("boat.fishing_skiff",
+            Assert.AreEqual("boat.dory",
                 ((BoatHullDef)hso.FindProperty("_hull").objectReferenceValue).Id,
-                "the hold is on the same Engine skiff hull");
+                "the hold is on the same rowed dory hull");
 
-            // The Engine skiff is deliberately NOT in OwnedFleet's id-keyed registry ({Dory, Punt}), so a
-            // buy/grant/load never reverts the skin's hull — it STICKS.
+            // The dory IS in OwnedFleet's id-keyed registry — this is the seam #97's skiff was deliberately
+            // kept OUT of. Reverting to boat.dory must leave the buy-the-Punt grant + save-restore (both keyed
+            // off ActiveHullId/BoatPurchased) resolving the boat's own hull, not a hull they've never heard of.
             var fleet = _core.DoryGo.GetComponent<OwnedFleet>();
             var fso = new UnityEditor.SerializedObject(fleet);
             var registry = fso.FindProperty("_registry");
+            bool doryRegistered = false;
             for (int i = 0; i < registry.arraySize; i++)
             {
                 var h = registry.GetArrayElementAtIndex(i).objectReferenceValue as BoatHullDef;
+                if (h != null && h.Id == "boat.dory") doryRegistered = true;
                 Assert.AreNotEqual("boat.fishing_skiff", h != null ? h.Id : null,
-                    "the fishing-skiff hull must NOT be in the fleet registry (so OwnedFleet never reverts it)");
+                    "the Engine fishing-skiff hull is not the player's boat and stays out of the fleet registry");
             }
+            Assert.IsTrue(doryRegistered,
+                "the active hull (boat.dory) is in the fleet registry, so OwnedFleet's id-keyed grant/restore " +
+                "resolves it — the seam the engine skin used to sidestep");
+        }
+
+        // ---- the independent OAR OVERLAY (#204) — the builder wires the baked sheets --------------
+
+        [Test]
+        public void Build_IsoDory_LayersTheIndependentOarOverlays_AboveTheHull()
+        {
+            if (!IsoDoryArtImported() || !OarSheetsImported())
+                Assert.Ignore("Iso dory and/or the 80-slice oar sheets not imported in this environment — the " +
+                              "builder wires no oar overlay by design (no half-state); nothing to assert.");
+
+            var layer = _core.DoryGo.GetComponent<DoryOarLayer>();
+            Assert.IsNotNull(layer, "the playable dory carries DoryOarLayer (the baked oar overlay)");
+            Assert.IsTrue(layer.IsWired, "…wired with both full 80-frame heading×column sheets + both renderers");
+
+            // The overlays are CHILDREN of the hull's visual, so they inherit DirectionalBoatSprite's snap /
+            // counter-rotation stomp — they can never smooth-rotate while the hull snaps.
+            var visual = _core.DoryGo.transform.Find("FishingBoatVisual");
+            Assert.IsNotNull(visual, "the hull's directional visual child exists");
+            var port = visual.Find("OarPort");
+            var star = visual.Find("OarStar");
+            Assert.IsNotNull(port, "the port oar renders under the hull's visual child (same snap treatment)");
+            Assert.IsNotNull(star, "…and so does the starboard oar");
+
+            // Draw order (art README): hull → port oar → star oar, on the SAME sorting layer.
+            var hullSr = visual.GetComponent<SpriteRenderer>();
+            var portSr = port.GetComponent<SpriteRenderer>();
+            var starSr = star.GetComponent<SpriteRenderer>();
+            Assert.AreEqual(hullSr.sortingLayerID, portSr.sortingLayerID, "the oars share the hull's sorting layer");
+            Assert.AreEqual(hullSr.sortingLayerID, starSr.sortingLayerID, "…both of them");
+            Assert.Greater(portSr.sortingOrder, hullSr.sortingOrder, "the port oar draws ABOVE the hull");
+            Assert.Greater(starSr.sortingOrder, portSr.sortingOrder, "…and the starboard oar above the port oar");
+
+            // Shared cell + waterline pivot ⇒ the overlay registers on the hull at the hull's own position.
+            Assert.AreEqual(Vector3.zero, port.localPosition, "the port overlay registers on the hull (pivot-shared)");
+            Assert.AreEqual(Vector3.zero, star.localPosition, "…and so does the starboard overlay");
+        }
+
+        [Test]
+        public void Build_IsoDory_RetiresTheLegacyOarRig_SoTheOarsAreNeverDoubleRendered()
+        {
+            if (!SkinSwapApplied())
+                Assert.Ignore("No directional boat art imported — the skin (and the rig retirement) no-ops.");
+
+            // The baked DoryOarLayer overlay now draws this hull's oars from the SAME LeftOar/RightOar state
+            // the legacy BoatRowAnimator rig reads. Both up = two sets of oars on one boat.
+            var oarRig = _core.DoryGo.transform.Find("OarRig");
+            Assert.IsNotNull(oarRig, "the legacy rig object still exists (kept so the skin flag stays reversible)");
+            Assert.IsFalse(oarRig.gameObject.activeSelf, "…but it's DEACTIVATED — the baked overlay owns the oars");
+
+            var rowAnim = _core.DoryGo.GetComponent<BoatRowAnimator>();
+            Assert.IsNotNull(rowAnim, "BoatRowAnimator stays on the boat (the class serves non-iso hulls)");
+            var so = new UnityEditor.SerializedObject(rowAnim);
+            Assert.IsNull(so.FindProperty("_oarRig").objectReferenceValue,
+                "its _oarRig ref is severed, so it can't re-activate the rig each Update and double-render oars");
         }
 
         [Test]
         public void Build_DirectionalVisual_AddsConfiguredSnapDirectionalSprite_WithTheFullEightFacingCompass()
         {
             if (!SkinSwapApplied())
-                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported in this environment — " +
-                              "the builder no-ops the swap by design (it warns + leaves the dory look); nothing to assert.");
+                Assert.Ignore("No directional boat art imported in this environment — the builder no-ops the " +
+                              "skin by design (it warns + leaves the plain dory look); nothing to assert.");
 
             var directional = _core.DoryGo.GetComponent<DirectionalBoatSprite>();
             Assert.IsNotNull(directional, "the playable boat wears the DirectionalBoatSprite (the #93 component)");
@@ -261,8 +345,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void Build_WaveMotion_IsWiredToTheDirectionalVisual_AndItsTiltHook()
         {
             if (!SkinSwapApplied())
-                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported — the swap (and the " +
-                              "wave-motion rig on its child visual) no-ops by design; nothing to assert.");
+                Assert.Ignore("No directional boat art imported — the skin (and the wave-motion rig on its " +
+                              "child visual) no-ops by design; nothing to assert.");
 
             // B2 (ADR 0018): the boat ROCKS on the shared wave field — visual-only. The builder must wire
             // BoatWaveMotion to the FishingBoatVisual CHILD (never the physics root: no forces until B3) and
@@ -296,29 +380,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Build_DirectionalVisual_HidesTheDoryHullAndOarRig()
+        public void Build_DirectionalVisual_HidesTheSingleRotatingHullPicture()
         {
             if (!SkinSwapApplied())
-                Assert.Ignore("FishingBoat facings and/or FishingSkiff.asset not imported — the swap no-ops by " +
-                              "design; nothing to assert.");
+                Assert.Ignore("No directional boat art imported — the skin no-ops by design; nothing to assert.");
 
-            // The hull picture is hidden (renderer disabled) so the owner doesn't see the dory hull under the
-            // fishing boat. The renderer + its sprite ref stay (OwnedFleet's id-keyed swap sets .sprite, not
-            // .enabled), so ownership logic is unaffected — we only stopped DRAWING it.
+            // The single rotating hull picture is hidden (renderer disabled) so the owner doesn't see it under
+            // the directional facing. The renderer + its sprite ref stay (OwnedFleet's id-keyed swap sets
+            // .sprite, not .enabled), so ownership logic is unaffected — we only stopped DRAWING it.
             var hull = _core.DoryGo.GetComponent<SpriteRenderer>();
             Assert.IsNotNull(hull, "the hull SpriteRenderer still exists (kept for OwnedFleet's sprite swap)");
-            Assert.IsFalse(hull.enabled, "but it's DISABLED so the dory hull isn't drawn under the fishing boat");
-
-            // The oar rig (rower + both oars) is hidden, and the BoatRowAnimator's _oarRig ref is SEVERED so
-            // the animator can't re-activate the rig each frame (it re-enables it while the home hull is active).
-            var oarRig = _core.DoryGo.transform.Find("OarRig");
-            Assert.IsNotNull(oarRig, "the oar rig object still exists (kept so the swap is reversible)");
-            Assert.IsFalse(oarRig.gameObject.activeSelf, "but it's DEACTIVATED — no oars on the motorboat");
-
-            var rowAnim = _core.DoryGo.GetComponent<BoatRowAnimator>();
-            var so = new UnityEditor.SerializedObject(rowAnim);
-            Assert.IsNull(so.FindProperty("_oarRig").objectReferenceValue,
-                "the animator's _oarRig ref is severed so it can't re-show the rig each Update");
+            Assert.IsFalse(hull.enabled, "but it's DISABLED so it isn't drawn under the directional facing");
         }
     }
 }
