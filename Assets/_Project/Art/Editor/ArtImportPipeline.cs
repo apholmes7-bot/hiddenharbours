@@ -105,12 +105,17 @@ namespace HiddenHarbours.Art.Editor
 
         /// <summary>
         /// Folder-driven default pivot. Characters pivot on the feet (so they plant on the ground grid);
+        /// standing foliage (trees) and iso buildings pivot on their base (so they plant on the ground);
         /// boats pivot on the hull centre (rotation point); everything else centres.
+        /// (Sliced sheets — e.g. the flowers under <c>/foliage/flowers/</c> — set their own per-tier pivots
+        /// via the sheet slicers, so this Single-mode default doesn't govern them.)
         /// </summary>
         static SpriteAlignment PivotFor(string path)
         {
             string p = path.ToLowerInvariant();
             if (p.Contains("/characters/")) return SpriteAlignment.BottomCenter; // feet
+            if (p.Contains("/foliage/"))    return SpriteAlignment.BottomCenter; // tree trunk on the ground
+            if (p.Contains("/buildings/"))  return SpriteAlignment.BottomCenter; // building foot on the ground
             if (p.Contains("/boats/"))      return SpriteAlignment.Center;        // hull centre
             return SpriteAlignment.Center;
         }
