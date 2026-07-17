@@ -89,6 +89,8 @@ namespace HiddenHarbours.Tests.EditMode
             return h;
         }
 
+        /// <summary>A boat root as the builder leaves it: physics body, controller, and the plain hull
+        /// renderer already showing the start hull's fallback picture.</summary>
         private (GameObject go, SpriteRenderer sr, BoatController boat) MakeBoat(BoatHullDef startHull)
         {
             var go = new GameObject("Boat");
@@ -96,6 +98,7 @@ namespace HiddenHarbours.Tests.EditMode
             go.AddComponent<Rigidbody2D>();
             var boat = go.AddComponent<BoatController>();
             var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = startHull.Sprite;
             boat.SetHull(startHull);
             return (go, sr, boat);
         }
@@ -175,14 +178,17 @@ namespace HiddenHarbours.Tests.EditMode
         public void SkinnedHull_HidesThePlainPicture_AndBuildsTheCompassChild()
         {
             var visual = MakeIsoVisual();
-            var hull = MakeHull("boat.dory", visual, MakeSprite("PlainDory"));
+            var plain = MakeSprite("PlainDory");
+            var hull = MakeHull("boat.dory", visual, plain);
             var (go, sr, boat) = MakeBoat(hull);
 
             var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
 
             Assert.IsTrue(rig.Skinned);
             Assert.IsFalse(sr.enabled, "the plain hull PICTURE is hidden while a directional skin is worn");
-            Assert.IsNotNull(sr.sprite, "…but its sprite ref stays intact, so an unskinned hull can fall back to it");
+            Assert.AreSame(plain, sr.sprite,
+                "…by .enabled ONLY: the sprite ref must stay intact, so a later swap to an unskinned hull " +
+                "can bring this renderer back with something to draw");
 
             var child = Skin(go);
             Assert.IsNotNull(child,
@@ -194,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsNotNull(rig.Directional, "the compass component rides the PHYSICS ROOT…");
             Assert.AreSame(go, rig.Directional.gameObject, "…never the counter-rotated child");
-            Assert.IsTrue(rig.Directional.HasRockGrid(), "the rock grid is wired from data");
+            Assert.IsTrue(rig.Directional.HasRockGrid, "the rock grid is wired from data");
             Assert.IsNotNull(rig.Wave, "the hull rides the shared wave field (ADR 0018 B2)");
             Assert.IsNotNull(rig.Oars, "the baked oar overlays are layered from data");
         }

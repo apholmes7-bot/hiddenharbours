@@ -1,5 +1,4 @@
 using System.IO;
-using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -28,14 +27,30 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly string[] ExpectedSuffixes =
             { "_N", "_NE", "_E", "_SE", "_S", "_SW", "_W", "_NW" };
 
+        // Where the compass LIVES now. It used to be a private string[] of art paths inside
+        // PersistentCoreBuilder, read here by reflection — but the player's boat wears the ISO DORY, and the
+        // skin became data (BoatHullDef.Visual → BoatVisualDef), so that array is gone. The live consumer of
+        // the FishingBoat_* art is the AMBIENT FLEET, whose Def authors the same compass as sprite refs. That
+        // asset is the contract now: element i must be the facing for heading i*45° CW from North, so the
+        // fleet snaps to the picture the filename promises. Paths are recovered from the authored refs, which
+        // keeps the end-to-end guard (art order ↔ heading math) pointed at a real consumer rather than a
+        // builder constant.
+        private const string FleetDefPath = "Assets/_Project/Data/Boats/StPetersAmbientFleet.asset";
+
         private static string[] FacingPaths()
         {
-            // The builder's private facing array, by reflection: the ORDER is the contract under test —
-            // element i must be the facing for heading i*45° CW from North.
-            var t = typeof(HiddenHarbours.App.Editor.PersistentCoreBuilder);
-            var f = t.GetField("FishingBoatFacingPaths", BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.IsNotNull(f, "PersistentCoreBuilder.FishingBoatFacingPaths field exists (renamed? update this test)");
-            return (string[])f.GetValue(null);
+            var def = AssetDatabase.LoadAssetAtPath<AmbientFleetDef>(FleetDefPath);
+            Assert.IsNotNull(def, $"the ambient fleet def exists at {FleetDefPath} (moved? update this test)");
+            Assert.IsTrue(def.HasFullHullCompass(),
+                "the fleet authors the FULL 8-way compass — a partial set would snap into a stale picture");
+
+            var paths = new string[def.HullFacings.Length];
+            for (int i = 0; i < paths.Length; i++)
+            {
+                paths[i] = AssetDatabase.GetAssetPath(def.HullFacings[i]);
+                Assert.IsNotEmpty(paths[i], $"facing[{i}] resolves to an asset on disk");
+            }
+            return paths;
         }
 
         [Test]
