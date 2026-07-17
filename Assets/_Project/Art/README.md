@@ -123,9 +123,17 @@ Art/
 └── Editor/       ArtImportPipeline.cs (import lock) · ArtCameraSetup.cs (camera lock)
 ```
 
-**Parametric source rigs** for the skiff fleet (re-bakeable JS + the art director's README) live outside
-`Assets/` in [`docs/art/skiff-fleet-rigs/`](../../../docs/art/skiff-fleet-rigs/) — Unity would try to
-read a `.js` under `Assets/` as a legacy script. Drop log: `imported-assets.md`.
+**Parametric source rigs** for the boat kits (re-bakeable JS + the art director's READMEs) live outside
+`Assets/` — Unity would try to read a `.js` under `Assets/` as a legacy script:
+[`docs/art/skiff-fleet-rigs/`](../../../docs/art/skiff-fleet-rigs/) (the two 7 m centre-console skiffs +
+their shared remote-steer outboard) and [`docs/art/punt-iso-rig/`](../../../docs/art/punt-iso-rig/) (the
+~5.2 m tiller punt + her two-build tiller outboard). Drop log: `imported-assets.md`.
+
+⚠️ **The iso boat kits do NOT share a pivot.** Each derives the same *concept* — the boat origin
+(amidships, keel bottom, centreline) — from its own cell size, so each keeps its own const in
+`SpriteSheetSlicer`: dory `(0.5, 68/156)`, skiffs `(0.5, 96/216)`, punt `(0.5, 74/168)`. Within a kit the
+hull and the (deliberately wider) motor cell **do** share one pivot — that identity is what pins the
+outboard to the transom. Composite every layer by pinning pivots to one point, never by corner.
 
 **LFS:** every binary (`.png .psd .tga .aseprite .ase .wav .ogg …`) is LFS-tracked via `.gitattributes`.
 Never commit one that isn't. **Grow art region-by-region with the milestones — never front-load.**

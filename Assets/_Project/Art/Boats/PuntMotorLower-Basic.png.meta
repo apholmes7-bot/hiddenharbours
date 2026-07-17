@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: 15fa01fca19730e46ae265d43d9d1876
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -648970982898611038
+    second: PuntMotorLower-Basic_0
+  - first:
+      213: 5271988659370945306
+    second: PuntMotorLower-Basic_1
+  - first:
+      213: -3831411371563754722
+    second: PuntMotorLower-Basic_2
+  - first:
+      213: 431728679887115291
+    second: PuntMotorLower-Basic_3
+  - first:
+      213: 7747449546852409137
+    second: PuntMotorLower-Basic_4
+  - first:
+      213: -4605384049990557413
+    second: PuntMotorLower-Basic_5
+  - first:
+      213: -7421040377945075415
+    second: PuntMotorLower-Basic_6
+  - first:
+      213: -5005293310790363051
+    second: PuntMotorLower-Basic_7
+  - first:
+      213: -2087340050055889657
+    second: PuntMotorLower-Basic_8
+  - first:
+      213: 6561841068823151619
+    second: PuntMotorLower-Basic_9
+  - first:
+      213: -1623533541741125482
+    second: PuntMotorLower-Basic_10
+  - first:
+      213: -1294378980146383628
+    second: PuntMotorLower-Basic_11
+  - first:
+      213: 5170886212866659956
+    second: PuntMotorLower-Basic_12
+  - first:
+      213: -8333509435732975997
+    second: PuntMotorLower-Basic_13
+  - first:
+      213: -2130793793110975172
+    second: PuntMotorLower-Basic_14
+  - first:
+      213: 3573243009743108867
+    second: PuntMotorLower-Basic_15
+  - first:
+      213: 5871084467050962429
+    second: PuntMotorLower-Basic_16
+  - first:
+      213: 8191689489553851841
+    second: PuntMotorLower-Basic_17
+  - first:
+      213: -8975592127975302474
+    second: PuntMotorLower-Basic_18
+  - first:
+      213: -384040831320759194
+    second: PuntMotorLower-Basic_19
+  - first:
+      213: -4064194434449261776
+    second: PuntMotorLower-Basic_20
+  - first:
+      213: -6226431407885522130
+    second: PuntMotorLower-Basic_21
+  - first:
+      213: -6321683701787822323
+    second: PuntMotorLower-Basic_22
+  - first:
+      213: 890815202693057414
+    second: PuntMotorLower-Basic_23
+  - first:
+      213: 7213799583850619894
+    second: PuntMotorLower-Basic_24
+  - first:
+      213: -8866584407862334724
+    second: PuntMotorLower-Basic_25
+  - first:
+      213: 7105229606289392178
+    second: PuntMotorLower-Basic_26
+  - first:
+      213: -1218797187493837383
+    second: PuntMotorLower-Basic_27
+  - first:
+      213: -6778223494783089510
+    second: PuntMotorLower-Basic_28
+  - first:
+      213: -3175268637331126740
+    second: PuntMotorLower-Basic_29
+  - first:
+      213: -1662427542021668576
+    second: PuntMotorLower-Basic_30
+  - first:
+      213: -7055959470319466915
+    second: PuntMotorLower-Basic_31
+  - first:
+      213: -6631435256178238606
+    second: PuntMotorLower-Basic_32
+  - first:
+      213: -4951868741445968716
+    second: PuntMotorLower-Basic_33
+  - first:
+      213: 1046451718378159753
+    second: PuntMotorLower-Basic_34
+  - first:
+      213: -6674802989170619073
+    second: PuntMotorLower-Basic_35
+  - first:
+      213: -6517991502571066718
+    second: PuntMotorLower-Basic_36
+  - first:
+      213: -6381711216075239260
+    second: PuntMotorLower-Basic_37
+  - first:
+      213: 6619808835365325003
+    second: PuntMotorLower-Basic_38
+  - first:
+      213: 8131758126127487443
+    second: PuntMotorLower-Basic_39
+  - first:
+      213: 206153056848897970
+    second: PuntMotorLower-Basic_40
+  - first:
+      213: -5485470350162532941
+    second: PuntMotorLower-Basic_41
+  - first:
+      213: -2233463478019592793
+    second: PuntMotorLower-Basic_42
+  - first:
+      213: 4096792305150961825
+    second: PuntMotorLower-Basic_43
+  - first:
+      213: -807001413034044099
+    second: PuntMotorLower-Basic_44
+  - first:
+      213: -1051572115206815789
+    second: PuntMotorLower-Basic_45
+  - first:
+      213: 7517665449129307467
+    second: PuntMotorLower-Basic_46
+  - first:
+      213: -4599210009668994399
+    second: PuntMotorLower-Basic_47
+  - first:
+      213: 8417067938392535211
+    second: PuntMotorLower-Basic_48
+  - first:
+      213: 3287452161103054385
+    second: PuntMotorLower-Basic_49
+  - first:
+      213: -9142190586045188554
+    second: PuntMotorLower-Basic_50
+  - first:
+      213: 6115856374919893458
+    second: PuntMotorLower-Basic_51
+  - first:
+      213: -5701576530347985380
+    second: PuntMotorLower-Basic_52
+  - first:
+      213: -8196652450230755157
+    second: PuntMotorLower-Basic_53
+  - first:
+      213: -8770951035599129263
+    second: PuntMotorLower-Basic_54
+  - first:
+      213: 2994348279420591619
+    second: PuntMotorLower-Basic_55
+  - first:
+      213: 1922572489264869793
+    second: PuntMotorLower-Basic_56
+  - first:
+      213: 8203185516272859867
+    second: PuntMotorLower-Basic_57
+  - first:
+      213: 9080161890983003768
+    second: PuntMotorLower-Basic_58
+  - first:
+      213: 5038002961518770449
+    second: PuntMotorLower-Basic_59
+  - first:
+      213: 7082268906268695859
+    second: PuntMotorLower-Basic_60
+  - first:
+      213: 828751301836293281
+    second: PuntMotorLower-Basic_61
+  - first:
+      213: -6534360761819756639
+    second: PuntMotorLower-Basic_62
+  - first:
+      213: -758368890154727436
+    second: PuntMotorLower-Basic_63
+  - first:
+      213: -9187397629503321769
+    second: PuntMotorLower-Basic_64
+  - first:
+      213: -8455907085656890528
+    second: PuntMotorLower-Basic_65
+  - first:
+      213: 7462828988476595121
+    second: PuntMotorLower-Basic_66
+  - first:
+      213: 587100459656117337
+    second: PuntMotorLower-Basic_67
+  - first:
+      213: 8839715017435654295
+    second: PuntMotorLower-Basic_68
+  - first:
+      213: -5488651069218347869
+    second: PuntMotorLower-Basic_69
+  - first:
+      213: 4207956913254601979
+    second: PuntMotorLower-Basic_70
+  - first:
+      213: -4159163234254647536
+    second: PuntMotorLower-Basic_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 979e535eee9d5654aa3f28a5338a4c9a
+      internalID: -648970982898611038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_1
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 648ab7f6275d6de4280e0b576ad9f86e
+      internalID: 5271988659370945306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_2
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8579b8bffb80ff44c828e91e83c1293e
+      internalID: -3831411371563754722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_3
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68e63c662cc03574b8f8e1127fdb1809
+      internalID: 431728679887115291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_4
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a089e3bf15432574b9763df698fdc8cf
+      internalID: 7747449546852409137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_5
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7ecc37738cb6e64e8587dec5ea58232
+      internalID: -4605384049990557413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_6
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 450603ec29159d841b349f8c78e1aaac
+      internalID: -7421040377945075415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_7
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81b8f1002372ab149a0d10f533575534
+      internalID: -5005293310790363051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_8
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0bb8d7ce4342394d9eb2d5ebf1d59e0
+      internalID: -2087340050055889657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 211b51a8b6e9a364e994c6589c0b6607
+      internalID: 6561841068823151619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_10
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3acd413ad969bc84180a043d4eab11a2
+      internalID: -1623533541741125482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_11
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e381e9e5025c8149b6dd04a4bc6faa8
+      internalID: -1294378980146383628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_12
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3bb0d903d4d0d14c86db6a1de7f275b
+      internalID: 5170886212866659956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_13
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 727aa67d9493d014abe5c178c1c535a0
+      internalID: -8333509435732975997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_14
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c28b35ad0c50058499a86e90984484d8
+      internalID: -2130793793110975172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_15
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 087b2667fd86cb14bbb032030b7b3cee
+      internalID: 3573243009743108867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_16
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 054c41e7a51a3e043a3db162f4ebc13a
+      internalID: 5871084467050962429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_17
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57f6eae84da70a5419588256a00c7a20
+      internalID: 8191689489553851841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1553a85f47eeb754fa54336ab985fd31
+      internalID: -8975592127975302474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_19
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dea5a7b4566f2240929ad8c94802b41
+      internalID: -384040831320759194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_20
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80c394ed37449044b817c9ddb9cbc193
+      internalID: -4064194434449261776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_21
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d83fb5a32af08774dbafe45a8403fac7
+      internalID: -6226431407885522130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_22
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d24b5400834c6a447a25303a2968a868
+      internalID: -6321683701787822323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_23
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aeda731d6a30480409ed079ed0a17d78
+      internalID: 890815202693057414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_24
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4621c4e1ba5f59342aa5240cbf203485
+      internalID: 7213799583850619894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_25
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ffaf8cefa876c14d865f2c05effa63b
+      internalID: -8866584407862334724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_26
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95b0cb8b5aa30c54b955b2eb3545ff65
+      internalID: 7105229606289392178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 808ceff36cfdfe94b99b3e416416d87c
+      internalID: -1218797187493837383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_28
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 293184f9dc570f04988d756f4c3573b1
+      internalID: -6778223494783089510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_29
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa8cc8cb124790147915ccc677ab898b
+      internalID: -3175268637331126740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_30
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b507d9860fe86e34497e5c773b2f438d
+      internalID: -1662427542021668576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_31
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0dc3b54cca22a24581bd6cd9aed14dc
+      internalID: -7055959470319466915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_32
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2997c49ab2b728742a31f505ab1bf509
+      internalID: -6631435256178238606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_33
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 853a4d69a66ff7e47b4ec1c23af87477
+      internalID: -4951868741445968716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_34
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8af303ceb0bbb3c40a3e09a57cb521ee
+      internalID: 1046451718378159753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_35
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e274fe6eefed9d458b2c63e79779881
+      internalID: -6674802989170619073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 278e4ae89bfe0424598456d9357ff4f0
+      internalID: -6517991502571066718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_37
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed920981b2d573b4b8c25bae8b62c37e
+      internalID: -6381711216075239260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_38
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7c3ab72fb468bb428a9b7a7ec140249
+      internalID: 6619808835365325003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_39
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba2f9148c9961e34bbf17d3200463292
+      internalID: 8131758126127487443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_40
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 239019221926a5d44a9dba4cbe2ea050
+      internalID: 206153056848897970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_41
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1fb9376a6089224ab15ab2593dcfae2
+      internalID: -5485470350162532941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_42
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 021cc3049d025ae40b8236fd49117c20
+      internalID: -2233463478019592793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_43
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4d3e6e02e1f13441a9166d789885617
+      internalID: 4096792305150961825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_44
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69faf5aefc175dd41b156601602bf1ee
+      internalID: -807001413034044099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_45
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe44d17b71fc0394090621cd8a45f007
+      internalID: -1051572115206815789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_46
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89a2e629cf30c3c4c872d1d70bd698a5
+      internalID: 7517665449129307467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_47
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b067a48d705067b41b874d36c611fe61
+      internalID: -4599210009668994399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_48
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d3aa3133e17019479b648a2570e5e6f
+      internalID: 8417067938392535211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_49
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed64e8b3993f54747a7f790b0560843e
+      internalID: 3287452161103054385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_50
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bd0e9b16c7aa4948ae70c72fec83474
+      internalID: -9142190586045188554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_51
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c696beb7eb46b074b9467efe25118f17
+      internalID: 6115856374919893458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_52
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49b48a93ae1539541b59d6c17a8be4cc
+      internalID: -5701576530347985380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_53
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2a7ecc0a75330e4bad12ccd2a258e0f
+      internalID: -8196652450230755157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_54
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6aa2479500fcbf45ba1a2ca0d205d1e
+      internalID: -8770951035599129263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_55
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d60d861e5b80814ba13e3d35f11cfd9
+      internalID: 2994348279420591619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_56
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fbc968087ba35342baffdedb64a9562
+      internalID: 1922572489264869793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_57
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff76ddc75012e9442b97f30e5077b9b2
+      internalID: 8203185516272859867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_58
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 206e0b6233a4f464fa2962ef5a275895
+      internalID: 9080161890983003768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_59
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b31a371c36d3064f8153e867195c63f
+      internalID: 5038002961518770449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_60
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2b28bc9e798e3340b34a8f502d5cc1f
+      internalID: 7082268906268695859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_61
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80e8bb1b9a3ad01468a136b6b4a44d0d
+      internalID: 828751301836293281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_62
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24a195991ddc3aa4e9a7641ca1a0ea21
+      internalID: -6534360761819756639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_63
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 499c1ae5db638cb469acbd1bdd9a4b31
+      internalID: -758368890154727436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_64
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8618687642549424d94651dd8fedab27
+      internalID: -9187397629503321769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_65
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef14486aaacd60e42832cb1daeae3268
+      internalID: -8455907085656890528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_66
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8da3d84627d4ff54aa92c21b369c1e31
+      internalID: 7462828988476595121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_67
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c31a6e1fd6f819a4ebf78c1888b0e283
+      internalID: 587100459656117337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_68
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a59d42aa46eb7c4cac63db97b14ef9a
+      internalID: 8839715017435654295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_69
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f198f92fe6c0084282aba0b2448ef6f
+      internalID: -5488651069218347869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_70
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adc4b5b0e8898d84091d4f9e668c10dc
+      internalID: 4207956913254601979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorLower-Basic_71
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de41bbd29f144c94fb7c802db2c36dfc
+      internalID: -4159163234254647536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fa72c5a77d180094e85363b8defa55ce
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PuntMotorLower-Basic_0: -648970982898611038
+      PuntMotorLower-Basic_1: 5271988659370945306
+      PuntMotorLower-Basic_10: -1623533541741125482
+      PuntMotorLower-Basic_11: -1294378980146383628
+      PuntMotorLower-Basic_12: 5170886212866659956
+      PuntMotorLower-Basic_13: -8333509435732975997
+      PuntMotorLower-Basic_14: -2130793793110975172
+      PuntMotorLower-Basic_15: 3573243009743108867
+      PuntMotorLower-Basic_16: 5871084467050962429
+      PuntMotorLower-Basic_17: 8191689489553851841
+      PuntMotorLower-Basic_18: -8975592127975302474
+      PuntMotorLower-Basic_19: -384040831320759194
+      PuntMotorLower-Basic_2: -3831411371563754722
+      PuntMotorLower-Basic_20: -4064194434449261776
+      PuntMotorLower-Basic_21: -6226431407885522130
+      PuntMotorLower-Basic_22: -6321683701787822323
+      PuntMotorLower-Basic_23: 890815202693057414
+      PuntMotorLower-Basic_24: 7213799583850619894
+      PuntMotorLower-Basic_25: -8866584407862334724
+      PuntMotorLower-Basic_26: 7105229606289392178
+      PuntMotorLower-Basic_27: -1218797187493837383
+      PuntMotorLower-Basic_28: -6778223494783089510
+      PuntMotorLower-Basic_29: -3175268637331126740
+      PuntMotorLower-Basic_3: 431728679887115291
+      PuntMotorLower-Basic_30: -1662427542021668576
+      PuntMotorLower-Basic_31: -7055959470319466915
+      PuntMotorLower-Basic_32: -6631435256178238606
+      PuntMotorLower-Basic_33: -4951868741445968716
+      PuntMotorLower-Basic_34: 1046451718378159753
+      PuntMotorLower-Basic_35: -6674802989170619073
+      PuntMotorLower-Basic_36: -6517991502571066718
+      PuntMotorLower-Basic_37: -6381711216075239260
+      PuntMotorLower-Basic_38: 6619808835365325003
+      PuntMotorLower-Basic_39: 8131758126127487443
+      PuntMotorLower-Basic_4: 7747449546852409137
+      PuntMotorLower-Basic_40: 206153056848897970
+      PuntMotorLower-Basic_41: -5485470350162532941
+      PuntMotorLower-Basic_42: -2233463478019592793
+      PuntMotorLower-Basic_43: 4096792305150961825
+      PuntMotorLower-Basic_44: -807001413034044099
+      PuntMotorLower-Basic_45: -1051572115206815789
+      PuntMotorLower-Basic_46: 7517665449129307467
+      PuntMotorLower-Basic_47: -4599210009668994399
+      PuntMotorLower-Basic_48: 8417067938392535211
+      PuntMotorLower-Basic_49: 3287452161103054385
+      PuntMotorLower-Basic_5: -4605384049990557413
+      PuntMotorLower-Basic_50: -9142190586045188554
+      PuntMotorLower-Basic_51: 6115856374919893458
+      PuntMotorLower-Basic_52: -5701576530347985380
+      PuntMotorLower-Basic_53: -8196652450230755157
+      PuntMotorLower-Basic_54: -8770951035599129263
+      PuntMotorLower-Basic_55: 2994348279420591619
+      PuntMotorLower-Basic_56: 1922572489264869793
+      PuntMotorLower-Basic_57: 8203185516272859867
+      PuntMotorLower-Basic_58: 9080161890983003768
+      PuntMotorLower-Basic_59: 5038002961518770449
+      PuntMotorLower-Basic_6: -7421040377945075415
+      PuntMotorLower-Basic_60: 7082268906268695859
+      PuntMotorLower-Basic_61: 828751301836293281
+      PuntMotorLower-Basic_62: -6534360761819756639
+      PuntMotorLower-Basic_63: -758368890154727436
+      PuntMotorLower-Basic_64: -9187397629503321769
+      PuntMotorLower-Basic_65: -8455907085656890528
+      PuntMotorLower-Basic_66: 7462828988476595121
+      PuntMotorLower-Basic_67: 587100459656117337
+      PuntMotorLower-Basic_68: 8839715017435654295
+      PuntMotorLower-Basic_69: -5488651069218347869
+      PuntMotorLower-Basic_7: -5005293310790363051
+      PuntMotorLower-Basic_70: 4207956913254601979
+      PuntMotorLower-Basic_71: -4159163234254647536
+      PuntMotorLower-Basic_8: -2087340050055889657
+      PuntMotorLower-Basic_9: 6561841068823151619
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

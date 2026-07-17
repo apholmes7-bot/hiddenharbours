@@ -84,6 +84,23 @@ namespace HiddenHarbours.Art.Editor
         // Do NOT align by the top-left corner."
         private static readonly Vector2 SkiffOrigin = new Vector2(122f / 244f, 96f / 216f);
 
+        // The iso-punt boat origin (amidships, keel bottom, centreline), derived exactly as the two consts
+        // above — but from the punt kit's OWN, SMALLER cells, so this is NOT SkiffOrigin and must not be
+        // folded into it. The punt README fixes the anchor at (92,94) from a 184×168 HULL cell's TOP-LEFT
+        // and at (106,94) from a 212×168 MOTOR cell's TOP-LEFT — again two cell widths pinning the SAME
+        // world point (the motor cell is wider on purpose so hard-over and raised poses never clip).
+        // Flipping to Unity's bottom-left origin, y = (168−94) = 74 for both:
+        //     hull  → (92/184,  74/168) = (0.5, 0.440476…)
+        //     motor → (106/212, 74/168) = (0.5, 0.440476…)
+        // Both normalize to the SAME pivot — that identity IS the mechanism that lands the wider motor cell
+        // on the transom, so ONE const serves every sheet in the kit. The y differs from the skiffs'
+        // (0.4405 vs 0.4444): same anchor *concept*, different cell — reusing SkiffOrigin would sink the
+        // punt ~0.7 px at PPU 32. Verified pixel-exact (zero RGB diff over all 8 headings, both paint
+        // builds) by re-compositing the kit's _preview-*.png reference sheets from these slices at this
+        // pivot in the documented draw order. README: "Composite every layer by pinning its pivot to one
+        // screen point. Do NOT align by the top-left corner."
+        private static readonly Vector2 PuntOrigin = new Vector2(92f / 184f, 74f / 168f);
+
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
         // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
         // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
@@ -152,6 +169,37 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Boats/SkiffMotorLower-Work.png",  9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
             new SheetSpec(Root + "Boats/SkiffMotorUpper-Sport.png", 9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
             new SheetSpec(Root + "Boats/SkiffMotorLower-Sport.png", 9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
+
+            // ---- Iso punt HULL: the ~5.2 m tiller punt — flat-floored, beamier and slightly longer than
+            //      the dory, wide low transom cut for an outboard. Her OWN cell + pivot (PuntOrigin), NOT
+            //      the skiffs'.
+            //   PuntIso: 8 cols × 1 row → 8 static hull headings; index = heading
+            //     (0 N, 1 NE, 2 E, 3 SE, 4 S, 5 SW, 6 W, 7 NW — same CW order as the dory/skiffs).
+            //   PuntIsoRock: 8 cols (wave frame 0..7) × 8 rows (heading) → 64; index = heading×8 + frame
+            //     (row-major from top-left, per BuildRects), i.e. heading = index/8, frame = index%8.
+            //     README: play ~7 fps to idle; she is beamier than the dory, so she rolls stiffer.
+            new SheetSpec(Root + "Boats/PuntIso.png",     8, 1, 184, 168, SpriteAlignment.Custom, PuntOrigin),
+            new SheetSpec(Root + "Boats/PuntIsoRock.png", 8, 8, 184, 168, SpriteAlignment.Custom, PuntOrigin),
+
+            // ---- Iso punt OUTBOARD: one engine, two PAINT BUILDS (Basic = weathered grey/black starter,
+            //      Upgraded = larger domed cowl, gloss pan, red stripe). Both builds share the same cell,
+            //      pivot, steer cols and grip JSON — they are drop-in swaps, picked per boat instance.
+            //      Two layers each (Upper = bracket + cowl + tiller, Lower = leg + plate + skeg + prop).
+            //      Wider 212×168 cell, SAME PuntOrigin pivot.
+            //   9 cols (steer) × 8 rows (heading) → 72 each; index = heading×9 + steerCol (row-major from
+            //     top-left, per BuildRects), i.e. heading = index/9, steerCol = index%9.
+            //   steerCol: 0 = −32° (full port) … 4 = dead ahead … 8 = +32° (full starboard), 8° steps
+            //     (rig: angle(f) = −32 + 64f/8). NOTE this is NOT the skiffs' ±30° / 7.5° steps — the punt
+            //     is TILLER-steered (steering swings the tiller across the transom and the operator's aft
+            //     hand follows it — see PuntMotorGrips.json), where the skiff engine swivels whole on its
+            //     clamp under a remote helm. There is no console, no wheel, and no twin fit.
+            //   Draw order per heading (README, verified pixel-exact against the previews): UPPER always
+            //     over the hull (the tiller arcs inboard, above the deck); LOWER goes UNDER the hull for
+            //     the stern-away headings SE/S/SW (3,4,5) and over it everywhere else.
+            new SheetSpec(Root + "Boats/PuntMotorUpper-Basic.png",    9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
+            new SheetSpec(Root + "Boats/PuntMotorLower-Basic.png",    9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
+            new SheetSpec(Root + "Boats/PuntMotorUpper-Upgraded.png", 9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
+            new SheetSpec(Root + "Boats/PuntMotorLower-Upgraded.png", 9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
         };
 
         // ---- entry points -------------------------------------------------------------------------
