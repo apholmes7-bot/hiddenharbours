@@ -401,3 +401,72 @@ Sliced by `Editor/SpriteSheetSlicer.cs` (manifest-driven, pivot asserted per-spr
 **WIRE-IN (NOT done here — import + slice only):** no `BoatHullDef`, prefab, scene or spawner references
 these yet. Wiring the fleet (hull defs, the rock loop, the steer column, twin-fit offsets) is
 *gameplay-systems*' job; this lane provides the locked, correctly-pivoted, stable-GUID slices.
+
+---
+
+## Iso punt — the ~5.2 m tiller punt + her two-build outboard (IMPORT-ONLY)
+
+The art director's punt kit: the flat-floored tiller punt (beamier and slightly longer than the dory,
+wide low transom cut for an outboard; painted white topsides, teal sheer band + bottom, gold cove
+pinstripe, bare-wood interior — the same fleet scheme as her buoy) and her outboard in **two paint
+builds**. Same iso bake as the dory/skiff kits: 32 px = 1 m, fixed ¾ camera, elev 40°, 45° steps, no AA,
+upper-left key.
+
+| Sheet | Size | Grid | Slices | Index math |
+|---|---|---|---|---|
+| `Boats/PuntIso.png` | 1472×168 | 8 × 1 of **184×168** | 8 | `index = heading` |
+| `Boats/PuntIsoRock.png` | 1472×1344 | 8 cols × 8 rows of **184×168** | 64 | `index = heading×8 + frame` |
+| `Boats/PuntMotorUpper-Basic.png` | 1908×1344 | 9 cols × 8 rows of **212×168** | 72 | `index = heading×9 + steerCol` |
+| `Boats/PuntMotorLower-Basic.png` | 1908×1344 | 9 × 8 of **212×168** | 72 | ″ |
+| `Boats/PuntMotorUpper-Upgraded.png` | 1908×1344 | 9 × 8 of **212×168** | 72 | ″ |
+| `Boats/PuntMotorLower-Upgraded.png` | 1908×1344 | 9 × 8 of **212×168** | 72 | ″ |
+
+- **Headings** (all sheets, rows on the grid sheets): `0 N · 1 NE · 2 E · 3 SE · 4 S · 5 SW · 6 W · 7 NW`
+  — clockwise, same order as the dory/skiffs. Rock cols = an 8-frame wave loop (roll+pitch+heave), ~7 fps
+  to idle on the water; she is **beamier than the dory, so she rolls stiffer**.
+- **Steer cols:** `0 = −32°` (full port) … `4 = dead ahead` … `8 = +32°` (full starboard), **8° steps**
+  (rig: `angle(f) = −32 + 64f/8`). ⚠️ **Not the skiffs' ±30° / 7.5° steps** — check the sheet you're on.
+  This is a **TILLER** outboard: steering swings the tiller across the transom and the operator's aft hand
+  follows it. **No console, no wheel, no twin fit.** Tie the steer column to the helm/rudder state and step
+  at ~8 fps, the same cadence as the oars.
+- **THE PIVOT (the load-bearing bit).** Every slice on every punt sheet shares one normalized pivot
+  **(0.5, 0.440476…)** = the boat origin (amidships, keel bottom, centreline). The kit README fixes the
+  anchor from each cell's **top-left**: hull `(92,94)` of 184×168, motor `(106,94)` of 212×168 — the motor
+  cell is wider *on purpose* so hard-over/raised poses never clip. Flipped to Unity's bottom-left origin
+  (`y = 168−94 = 74`), `92/184` and `106/212` **both** normalize to 0.5 — that identity is what pins the
+  wider motor cell onto the transom. Composite by pinning pivots to one point, never by corner.
+  ⚠️ **This is NOT `SkiffOrigin`.** Same anchor *concept*, different cell: the skiffs derive
+  `(0.5, 96/216 = 0.4444)` from a 244×216 cell, the punt `(0.5, 74/168 = 0.4405)` from her own. Reusing the
+  skiffs' would sink the punt ~0.7 px at PPU 32 — `SpriteSheetSlicer` keeps a separate `PuntOrigin` const
+  and `PuntSheetSliceTests` asserts the two stay distinct.
+- **DRAW ORDER (per heading):** UPPER always composites **over** the hull (the tiller arcs inboard, above
+  the deck). LOWER goes **under** the hull for the stern-away headings **SE/S/SW (3,4,5)** and over it
+  everywhere else. So: `lower → hull → upper` for SE/S/SW; `hull → lower → upper` otherwise.
+- **PAINT BUILDS:** `Basic` = weathered grey/black starter (paint scuffs, pan rust); `Upgraded` = ~15%
+  larger domed cowl, gloss-black pan, white top, red wrap stripe + side flashes, brighter prop. Both builds
+  share the **same cell, pivot, steer cols and grip JSON** — they are drop-in swaps (pick one per boat
+  instance and swap the two PNGs).
+- **Verified pixel-exact against the kit previews:** re-compositing all 8 headings of both builds from the
+  source cells at this pivot in the draw order above gives **zero RGB diff** vs `_preview-basic.png` /
+  `_preview-upgraded.png`. (The previews are reference-only and deliberately **not** imported.)
+- **`Boats/PuntMotorGrips.json`** — the tiller-grip `x,y` per heading × steer frame, in **motor-cell**
+  space, for seating an operator's aft hand on the tiller. Shared by both builds (tiller geometry is
+  identical). Keys: `cell, pivot, hullPivot, cols, maxSteerDeg, order, grips{HEADING:[{x,y}×9]}`.
+  **Nothing consumes it yet** — there is no punt operator sprite; committed unwired for later, exactly as
+  `DoryOarHandles.json` was.
+- **Not on the sheets:** the raised/tilt pose (prop clear, parked/beaching) — bake on demand from the rig
+  with `tilt 0..40`.
+- **Source rig** (parametric, re-bakeable, JS/no-deps) + the art director's README live in
+  [`docs/art/punt-iso-rig/`](../../../docs/art/punt-iso-rig/) — deliberately **not** under `Assets/`
+  (Unity would try to treat `.js` as legacy script). It exposes `render(dir, …)`, `rock(i)`,
+  `renderMotor(dir, {steer, tilt, part, variant, …})`, `tillerGrip(dir)`, `motorMount(dir)` and
+  `tubMounts(dir)` if a pose ever needs re-baking.
+- **Import note:** unlike the 2448-wide skiff-motor sheets, every punt sheet fits under Unity's default
+  **2048** `maxTextureSize`, so the downscale trap does not fire here. `PuntSheetSliceTests` asserts native
+  res anyway — a downscaled sheet still yields the *right sprite count*, so only the res + pivot asserts
+  would catch it.
+
+**WIRE-IN (NOT done here — import + slice only):** no `BoatHullDef`, prefab, scene or spawner references
+these yet, and `PuntMotorGrips.json` is unread. Wiring the punt (hull def, the rock loop, the tiller steer
+column, the grip-seated operator) is *gameplay-systems*' job; this lane provides the locked,
+correctly-pivoted, stable-GUID slices.
