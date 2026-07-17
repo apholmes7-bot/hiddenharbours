@@ -51,8 +51,8 @@ namespace HiddenHarbours.App.Editor
             public int RockFrames;
             public int OarColumns;
             public int MotorColumns;
-            public SkiffMotorLayer.MotorVariant MotorVariant;
-            public SkiffMotorLayer.MotorFit MotorFit;
+            public OutboardMotorLayer.MotorVariant MotorVariant;
+            public OutboardMotorLayer.MotorFit MotorFit;
             public float MotorRockRollDegrees;
             public float MotorRockPitchOffsetMeters;
             public float MotorRockHeavePixels;
@@ -98,7 +98,7 @@ namespace HiddenHarbours.App.Editor
                 AssetName = "FishingBoat", Id = "visual.fishing_boat",
                 HullPaths = CompassFiles("FishingBoat"),
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = SkiffMotorMath.SteerColumns, SortingOrder = 1,
+                MotorColumns = OutboardMotorMath.SteerColumns, SortingOrder = 1,
             },
 
             // THE CONSOLE SKIFF — the 7 m workboat. 8 headings + a 64-frame rock grid, and a SINGLE
@@ -111,9 +111,9 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Work.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Work.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = SkiffMotorMath.SteerColumns,
-                MotorVariant = SkiffMotorLayer.MotorVariant.Work,
-                MotorFit = SkiffMotorLayer.MotorFit.Single,
+                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Work,
+                MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = ConsoleRockRoll,
                 MotorRockPitchOffsetMeters = ConsoleRockPitch,
                 MotorRockHeavePixels = ConsoleRockHeave,
@@ -129,9 +129,9 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Sport.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = SkiffMotorMath.SteerColumns,
-                MotorVariant = SkiffMotorLayer.MotorVariant.Sport,
-                MotorFit = SkiffMotorLayer.MotorFit.Single,
+                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
+                MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = SportRockRoll,
                 MotorRockPitchOffsetMeters = SportRockPitch,
                 MotorRockHeavePixels = SportRockHeave,
@@ -139,7 +139,7 @@ namespace HiddenHarbours.App.Editor
             },
 
             // THE SPORT SKIFF, TWIN — byte-for-byte the SAME sheets as the single, with MotorFit.Twin. The
-            // second engine costs NO art: the bake is orthographic, so SkiffMotorMath.MountOffset places a
+            // second engine costs NO art: the bake is orthographic, so OutboardMotorMath.MountOffset places a
             // ±0.34 m clamp shift exactly, and the layer blits the one sheet twice. This entry exists purely
             // so the twin is a hull the owner can select, not a runtime flag someone has to remember to set.
             new Sheet
@@ -150,9 +150,9 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Sport.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = SkiffMotorMath.SteerColumns,
-                MotorVariant = SkiffMotorLayer.MotorVariant.Sport,
-                MotorFit = SkiffMotorLayer.MotorFit.Twin,
+                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
+                MotorFit = OutboardMotorLayer.MotorFit.Twin,
                 MotorRockRollDegrees = SportRockRoll,
                 MotorRockPitchOffsetMeters = SportRockPitch,
                 MotorRockHeavePixels = SportRockHeave,

@@ -18,7 +18,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// the engine is actually running. (1) Terminal speed is the fixed point of BoatController's force
     /// assembly PLUS the rigidbody's own <c>linearDamping</c> — and that damping is applied by Unity's
     /// integrator, not by any code we could call. Algebra predicts it; only a real physics step proves the
-    /// prediction. (2) <see cref="SkiffMotorLayer"/> draws in <c>LateUpdate</c>, so its swivel and its
+    /// prediction. (2) <see cref="OutboardMotorLayer"/> draws in <c>LateUpdate</c>, so its swivel and its
     /// unmanned-helm centring simply never happen outside play mode.</para>
     ///
     /// <para>The hulls are the REAL committed assets (loaded off disk in the editor), so these tests fail
@@ -110,15 +110,15 @@ namespace HiddenHarbours.Tests.PlayMode
         /// owner halved it — and green for a reason that no longer matches the product. Read it, derive the wait
         /// from it, and a re-tune re-times the test for free.
         /// </summary>
-        private static float SteerColumnsPerSecond(SkiffMotorLayer motor)
+        private static float SteerColumnsPerSecond(OutboardMotorLayer motor)
         {
 #if UNITY_EDITOR
             var field = new SerializedObject(motor).FindProperty("_steerColumnsPerSecond");
             Assert.IsNotNull(field,
-                "SkiffMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
+                "OutboardMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
                 "that cadence on purpose — re-point this read; do not paper over it with a magic sleep.");
             Assert.Greater(field.floatValue, 0f,
-                "a zero/negative cadence snaps the engine instantly (SkiffMotorMath.StepTowardColumn), which " +
+                "a zero/negative cadence snaps the engine instantly (OutboardMotorMath.StepTowardColumn), which " +
                 "would make the swivel this test exists to prove unobservable");
             return field.floatValue;
 #else
@@ -302,23 +302,23 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "precondition: the dory has her oars");
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(), "precondition: …and no engine");
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "precondition: …and no engine");
 
             picker.Next();
             yield return null;
 
             Assert.IsNull(go.GetComponent<DoryOarLayer>(),
                 "the dory's oars must not row a skiff — and they'd z-fight the engine leg if they stayed");
-            var motor = go.GetComponent<SkiffMotorLayer>();
+            var motor = go.GetComponent<OutboardMotorLayer>();
             Assert.IsNotNull(motor, "the twin's outboards are bolted on");
             Assert.IsTrue(motor.IsWired);
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Twin, motor.Fit);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Twin, motor.Fit);
 
             picker.Next();   // wrap back to the dory
             yield return null;
 
             Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "…and back: the oars return");
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(), "the engine comes off the rowboat");
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "the engine comes off the rowboat");
         }
 
         [UnityTest]
@@ -349,11 +349,11 @@ namespace HiddenHarbours.Tests.PlayMode
             var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
             Assert.IsNotNull(rig.Motor, "precondition: the sport skiff wears her outboard");
 
-            int centre = SkiffMotorMath.CenterColumn(SkiffMotorMath.SteerColumns);
+            int centre = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns);
             // Hard a-starboard is the sheet's LAST column, derived through the same public mapping the layer
             // uses rather than spelled "8" — the sheets' column count is an art fact that may yet grow.
-            int hardStarboard = SkiffMotorMath.ColumnForSteerDegrees(
-                SkiffMotorMath.MaxSteerDegrees, SkiffMotorMath.SteerColumns, SkiffMotorMath.MaxSteerDegrees);
+            int hardStarboard = OutboardMotorMath.ColumnForSteerDegrees(
+                OutboardMotorMath.MaxSteerDegrees, OutboardMotorMath.SteerColumns, OutboardMotorMath.MaxSteerDegrees);
 
             // The swivel is rate-limited, so the wait must be a DURATION, never a frame count. Budget the full
             // centre→hard-over travel at the layer's own cadence, times a slack factor so this is decided by the

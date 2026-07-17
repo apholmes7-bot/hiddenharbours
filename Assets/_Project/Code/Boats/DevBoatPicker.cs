@@ -26,7 +26,7 @@ namespace HiddenHarbours.Boats
     /// fills, not a list of ids in C#. Adding a boat to the picker is adding an asset to the array.</para>
     ///
     /// <para><b>Only at the helm.</b> Gated on the controller actually driving, exactly as
-    /// <see cref="SkiffMotorLayer"/> gates its helm read: on foot, <c>F</c> does nothing. Re-skinning a boat
+    /// <see cref="OutboardMotorLayer"/> gates its helm read: on foot, <c>F</c> does nothing. Re-skinning a boat
     /// the player is standing next to (or worse, standing ON, mid-deck-walk) is not the affordance asked
     /// for, and it would fight the ControlSwitcher for the player's parent.</para>
     ///

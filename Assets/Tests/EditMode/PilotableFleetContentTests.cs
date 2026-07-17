@@ -240,21 +240,21 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(console.HasMotor(),
                 "the console's outboard is unwired — the boat would sail with no engine drawn. Re-run " +
                 "Build Boat Visual Defs.");
-            Assert.AreEqual(SkiffMotorLayer.MotorVariant.Work, console.MotorVariant,
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Work, console.MotorVariant,
                 "the console is the workboat: the graphite-cowl paint build");
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Single, console.MotorFit,
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, console.MotorFit,
                 "the console workboat is single-engine — the twin is sport only");
 
             var sport = Visual("SportSkiffSingle");
             Assert.IsTrue(sport.HasMotor());
-            Assert.AreEqual(SkiffMotorLayer.MotorVariant.Sport, sport.MotorVariant,
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Sport, sport.MotorVariant,
                 "the sport skiff takes the white-cowl build");
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Single, sport.MotorFit);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, sport.MotorFit);
 
             var twin = Visual("SportSkiffTwin");
             Assert.IsTrue(twin.HasMotor());
-            Assert.AreEqual(SkiffMotorLayer.MotorVariant.Sport, twin.MotorVariant);
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Twin, twin.MotorFit, "…and this one hangs two of them");
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Sport, twin.MotorVariant);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Twin, twin.MotorFit, "…and this one hangs two of them");
         }
 
         [Test]
@@ -284,7 +284,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "Boat Visual Defs.");
                 Assert.AreEqual(8, v.RockFrameCount, $"{name}: the skiff rock sheets ship 8 frames");
                 Assert.AreEqual(64, v.RockGrid.Length, $"{name}: 8 headings × 8 frames");
-                Assert.AreEqual(SkiffMotorMath.SteerColumns, v.MotorColumnCount,
+                Assert.AreEqual(OutboardMotorMath.SteerColumns, v.MotorColumnCount,
                     $"{name}: the motor sheets bake 9 steer columns");
             }
 

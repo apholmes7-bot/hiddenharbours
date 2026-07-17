@@ -21,7 +21,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>Everything is built in-code. The helm PULL (rather than a pushed copy) is covered here too,
     /// since it is the reason <see cref="BoatController.Steer"/> now exists.</para>
     /// </summary>
-    public class SkiffMotorBindingTests
+    public class OutboardMotorBindingTests
     {
         private readonly List<Object> _spawned = new();
 
@@ -54,7 +54,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>A skiff visual at the real sheet shape: 8 headings, a 64-cell rock grid, and 72-cell
         /// motor sheets (8 headings × 9 steer columns).</summary>
-        private BoatVisualDef MakeSkiffVisual(SkiffMotorLayer.MotorFit fit = SkiffMotorLayer.MotorFit.Single,
+        private BoatVisualDef MakeSkiffVisual(OutboardMotorLayer.MotorFit fit = OutboardMotorLayer.MotorFit.Single,
                                               bool motor = true)
         {
             var v = ScriptableObject.CreateInstance<BoatVisualDef>();
@@ -62,8 +62,8 @@ namespace HiddenHarbours.Tests.EditMode
             v.Facings = MakeSprites("Hull", 8);
             v.RockFrameCount = 8;
             v.RockGrid = MakeSprites("Rock", 64);
-            v.MotorColumnCount = SkiffMotorMath.SteerColumns;
-            v.MotorVariant = SkiffMotorLayer.MotorVariant.Sport;
+            v.MotorColumnCount = OutboardMotorMath.SteerColumns;
+            v.MotorVariant = OutboardMotorLayer.MotorVariant.Sport;
             v.MotorFit = fit;
             v.MotorLower = motor ? MakeSprites("Lower", 72) : System.Array.Empty<Sprite>();
             v.MotorUpper = motor ? MakeSprites("Upper", 72) : System.Array.Empty<Sprite>();
@@ -143,8 +143,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(rig.Motor, "a visual binding motor sheets installs the outboard");
             Assert.IsTrue(rig.Motor.IsWired, "…fully wired: sheets, renderers, counts");
             Assert.AreSame(go, rig.Motor.gameObject, "the layer rides the physics ROOT, like every other layer");
-            Assert.AreEqual(SkiffMotorLayer.MotorVariant.Sport, rig.Motor.Variant);
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Single, rig.Motor.Fit);
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Sport, rig.Motor.Variant);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, rig.Motor.Fit);
 
             // The renderers must hang UNDER the counter-rotated visual child, or they'd have to re-derive
             // the hull's screen-alignment themselves (and would be stomped if they tried).
@@ -160,7 +160,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SingleFit_HangsOneEngine_TwinFitHangsTwo()
         {
-            var single = MakeHull("boat.sport_skiff", MakeSkiffVisual(SkiffMotorLayer.MotorFit.Single));
+            var single = MakeHull("boat.sport_skiff", MakeSkiffVisual(OutboardMotorLayer.MotorFit.Single));
             var (goS, srS, boatS) = MakeBoat(single);
             var rigS = BoatHullSkinner.ApplyHull(goS, srS, single, boatS);
 
@@ -168,11 +168,11 @@ namespace HiddenHarbours.Tests.EditMode
                 "a single fit is one engine on the centreline — no second engine");
             Assert.IsTrue(rigS.Motor.IsWired);
 
-            var twin = MakeHull("boat.sport_skiff_twin", MakeSkiffVisual(SkiffMotorLayer.MotorFit.Twin));
+            var twin = MakeHull("boat.sport_skiff_twin", MakeSkiffVisual(OutboardMotorLayer.MotorFit.Twin));
             var (goT, srT, boatT) = MakeBoat(twin);
             var rigT = BoatHullSkinner.ApplyHull(goT, srT, twin, boatT);
 
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Twin, rigT.Motor.Fit);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Twin, rigT.Motor.Fit);
             Assert.IsNotNull(rigT.Visual.Find(BoatHullSkinner.LowerMotorBChildName),
                 "the twin's second engine costs no art — the same sheets, blitted twice");
             Assert.IsNotNull(rigT.Visual.Find(BoatHullSkinner.UpperMotorBChildName));
@@ -184,12 +184,12 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // The transition the owner will actually make with F: sport twin → (wrap) → dory → … and back.
             // A leftover engine B would hang in the water off a boat that doesn't have it.
-            var hull = MakeHull("boat.sport_skiff", MakeSkiffVisual(SkiffMotorLayer.MotorFit.Twin));
+            var hull = MakeHull("boat.sport_skiff", MakeSkiffVisual(OutboardMotorLayer.MotorFit.Twin));
             var (go, sr, boat) = MakeBoat(hull);
             var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
             Assert.IsNotNull(rig.Visual.Find(BoatHullSkinner.LowerMotorBChildName), "precondition: two engines");
 
-            hull.Visual = MakeSkiffVisual(SkiffMotorLayer.MotorFit.Single);
+            hull.Visual = MakeSkiffVisual(OutboardMotorLayer.MotorFit.Single);
             rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
 
             Assert.IsNull(rig.Visual.Find(BoatHullSkinner.LowerMotorBChildName),
@@ -204,13 +204,13 @@ namespace HiddenHarbours.Tests.EditMode
             var skiff = MakeHull("boat.sport_skiff", MakeSkiffVisual());
             var (go, sr, boat) = MakeBoat(skiff);
             BoatHullSkinner.ApplyHull(go, sr, skiff, boat);
-            Assert.IsNotNull(go.GetComponent<SkiffMotorLayer>(), "precondition: the skiff has its engine");
+            Assert.IsNotNull(go.GetComponent<OutboardMotorLayer>(), "precondition: the skiff has its engine");
 
             var dory = MakeHull("boat.dory", MakeSkiffVisual(motor: false));
             var rig = BoatHullSkinner.ApplyHull(go, sr, dory, boat);
 
             Assert.IsNull(rig.Motor);
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(), "the layer goes…");
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "the layer goes…");
             Assert.IsNull(rig.Visual.Find(BoatHullSkinner.LowerMotorAChildName), "…and so do its renderers");
             Assert.IsNull(rig.Visual.Find(BoatHullSkinner.UpperMotorAChildName));
         }
@@ -227,7 +227,7 @@ namespace HiddenHarbours.Tests.EditMode
             var punt = MakeHull("boat.punt", null);
             BoatHullSkinner.ApplyHull(go, sr, punt, boat);
 
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(),
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(),
                 "an unskinned hull strips the whole rig — engine included");
             Assert.IsTrue(sr.enabled, "…and the plain rotating picture comes back");
         }
@@ -242,7 +242,7 @@ namespace HiddenHarbours.Tests.EditMode
             hull.Visual = MakeSkiffVisual();
             var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
 
-            Assert.AreEqual(1, go.GetComponents<SkiffMotorLayer>().Length, "one engine, not a pile");
+            Assert.AreEqual(1, go.GetComponents<OutboardMotorLayer>().Length, "one engine, not a pile");
             Assert.AreEqual(1, CountChildrenNamed(rig.Visual, BoatHullSkinner.LowerMotorAChildName));
         }
 
@@ -265,10 +265,10 @@ namespace HiddenHarbours.Tests.EditMode
             int portOar = hullOrder + 1;
             int starOar = hullOrder + 2;
 
-            int lowerOver = SkiffMotorMath.SortingOrder(
-                hullOrder, SkiffMotorMath.MotorPart.Lower, headingRow: 0, headingCount: 8, isFarEngine: true);
-            int lowerOverNear = SkiffMotorMath.SortingOrder(
-                hullOrder, SkiffMotorMath.MotorPart.Lower, headingRow: 0, headingCount: 8, isFarEngine: false);
+            int lowerOver = OutboardMotorMath.SortingOrder(
+                hullOrder, OutboardMotorMath.MotorPart.Lower, headingRow: 0, headingCount: 8, isFarEngine: true);
+            int lowerOverNear = OutboardMotorMath.SortingOrder(
+                hullOrder, OutboardMotorMath.MotorPart.Lower, headingRow: 0, headingCount: 8, isFarEngine: false);
 
             Assert.AreEqual(portOar, lowerOver, "the engine leg lands exactly on the port oar's order at N");
             Assert.AreEqual(starOar, lowerOverNear, "…and on the starboard oar's");

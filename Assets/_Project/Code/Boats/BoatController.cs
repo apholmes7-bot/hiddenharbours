@@ -90,7 +90,7 @@ namespace HiddenHarbours.Boats
         /// branch steers on, as set by <see cref="SetControl"/>. Symmetric with <see cref="LeftOar"/>/
         /// <see cref="RightOar"/>: the drive state a presentation layer must read to draw the boat honestly.
         ///
-        /// <para>The outboard overlay (<c>SkiffMotorLayer</c>) PULLS this rather than being pushed a copy of
+        /// <para>The outboard overlay (<c>OutboardMotorLayer</c>) PULLS this rather than being pushed a copy of
         /// it every frame. Pull is self-sourcing — the picture cannot fall out of step because some driving
         /// system forgot to write it, which is exactly the dropped-state blind spot #205 fixed for the oars.
         /// Read-only: presentation never writes back into the sim (rule 5).</para>

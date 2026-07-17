@@ -88,7 +88,7 @@ namespace HiddenHarbours.Boats
         [Header("Outboard motor (OPTIONAL — the skiffs' remote-steer engine)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
-                 "alongside MotorUpper, SkiffMotorLayer swivels the engine from the boat's REAL helm. Empty " +
+                 "alongside MotorUpper, OutboardMotorLayer swivels the engine from the boat's REAL helm. Empty " +
                  "= this hull has no engine drawn (the dory and the fishing boat).")]
         public Sprite[] MotorLower = System.Array.Empty<Sprite>();
 
@@ -96,17 +96,17 @@ namespace HiddenHarbours.Boats
         public Sprite[] MotorUpper = System.Array.Empty<Sprite>();
 
         [Tooltip("Steer columns per heading row (the shipped SkiffMotor* sheets have 9).")]
-        [Min(1)] public int MotorColumnCount = SkiffMotorMath.SteerColumns;
+        [Min(1)] public int MotorColumnCount = OutboardMotorMath.SteerColumns;
 
         [Tooltip("Which paint build of the outboard this hull carries — Work (graphite cowl, the console " +
                  "workboat) or Sport (white cowl + teal flash, the sport skiff). Identity only: the sheets " +
                  "above are what actually get drawn.")]
-        public SkiffMotorLayer.MotorVariant MotorVariant = SkiffMotorLayer.MotorVariant.Work;
+        public OutboardMotorLayer.MotorVariant MotorVariant = OutboardMotorLayer.MotorVariant.Work;
 
         [Tooltip("How many engines hang on the transom: Single (one, on the centreline) or Twin (two at " +
                  "±0.34 m, steering together off the one wheel — the SAME sheets blitted twice). Twin is the " +
                  "sport skiff's upgrade; it needs no extra art.")]
-        public SkiffMotorLayer.MotorFit MotorFit = SkiffMotorLayer.MotorFit.Single;
+        public OutboardMotorLayer.MotorFit MotorFit = OutboardMotorLayer.MotorFit.Single;
 
         [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
         [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
@@ -175,7 +175,7 @@ namespace HiddenHarbours.Boats
         /// <b>Oars and an outboard are mutually exclusive</b>, and this is the assertion that says so out
         /// loud. The two overlays' sorting bands OVERLAP by construction: the oars take hull+1 (port) and
         /// hull+2 (starboard), while the motor's lower layer takes hull+1/+2 whenever it draws OVER the hull
-        /// (<see cref="SkiffMotorMath.SortingOrder"/>). A hull wearing both would have its port oar and its
+        /// (<see cref="OutboardMotorMath.SortingOrder"/>). A hull wearing both would have its port oar and its
         /// engine leg fighting for the same order — a z-flicker that changes with heading.
         ///
         /// <para>Re-basing a band would be the fix if a hull ever genuinely needed both (an auxiliary

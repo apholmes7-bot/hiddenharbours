@@ -102,7 +102,7 @@ namespace HiddenHarbours.Boats
             /// <summary>The oar overlay, when this visual binds oar sheets and a controller was supplied.</summary>
             public DoryOarLayer Oars;
             /// <summary>The outboard overlay, when this visual binds a complete pair of motor sheets.</summary>
-            public SkiffMotorLayer Motor;
+            public OutboardMotorLayer Motor;
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace HiddenHarbours.Boats
             // gate handles the driving. Mutually exclusive with the oars: their sorting bands overlap, so a
             // visual binding both would z-fight — we drop the MOTOR and shout, because the oars are the
             // older, load-bearing rig and a rowboat that grew an engine is the authoring mistake.
-            SkiffMotorLayer motor;
+            OutboardMotorLayer motor;
             if (visual.HasMotor() && visual.HasConflictingOverlays())
             {
                 Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' binds BOTH oar sheets and motor " +
@@ -258,7 +258,7 @@ namespace HiddenHarbours.Boats
             var oars = root.GetComponent<DoryOarLayer>();
             if (oars != null) DestroyComponent(oars);
 
-            var motor = root.GetComponent<SkiffMotorLayer>();
+            var motor = root.GetComponent<OutboardMotorLayer>();
             if (motor != null) DestroyComponent(motor);
 
             // Destroying the visual child takes every overlay's renderer with it, so the layers above only
@@ -331,15 +331,15 @@ namespace HiddenHarbours.Boats
         // (motor 272×216 pivot (136,120) vs hull 244×216 pivot (122,120) — both normalise to the same
         // origin), so localPosition zero registers pixel-perfect. Pin by PIVOT, never by corners.
         //
-        // Sorting is NOT set here: SkiffMotorLayer re-decides each renderer's order every frame, because
+        // Sorting is NOT set here: OutboardMotorLayer re-decides each renderer's order every frame, because
         // the lower layer's band FLIPS under the hull across the stern-away headings (SE/S/SW). Handing it
         // a static order would be a lie that only shows up when the owner turns the boat.
-        private static SkiffMotorLayer WireMotor(GameObject root, Transform visual, SpriteRenderer hullVisual,
+        private static OutboardMotorLayer WireMotor(GameObject root, Transform visual, SpriteRenderer hullVisual,
                                                  BoatVisualDef def, BoatController boat,
                                                  DirectionalBoatSprite directional)
         {
-            bool twin = def.MotorFit == SkiffMotorLayer.MotorFit.Twin;
-            int center = SkiffMotorMath.CenterColumn(def.MotorColumnCount);   // wake dead ahead, never hard-over
+            bool twin = def.MotorFit == OutboardMotorLayer.MotorFit.Twin;
+            int center = OutboardMotorMath.CenterColumn(def.MotorColumnCount);   // wake dead ahead, never hard-over
 
             var lowerA = MakeMotorRenderer(visual, LowerMotorAChildName, hullVisual, def.MotorLower[center]);
             var upperA = MakeMotorRenderer(visual, UpperMotorAChildName, hullVisual, def.MotorUpper[center]);
@@ -349,8 +349,8 @@ namespace HiddenHarbours.Boats
             // A Single fit must not keep a previous TWIN hull's second engine hanging off the transom.
             if (!twin) RemoveMotorEngineB(visual);
 
-            var layer = root.GetComponent<SkiffMotorLayer>();
-            if (layer == null) layer = root.AddComponent<SkiffMotorLayer>();
+            var layer = root.GetComponent<OutboardMotorLayer>();
+            if (layer == null) layer = root.AddComponent<OutboardMotorLayer>();
             layer.Configure(def.MotorLower, def.MotorUpper, lowerA, upperA, lowerB, upperB,
                             boat, directional, hullVisual, def.MotorVariant, def.MotorFit,
                             def.HeadingCount, def.MotorColumnCount);
@@ -376,9 +376,9 @@ namespace HiddenHarbours.Boats
         }
 
         // A hull whose visual binds no motor must not keep the previous hull's engine bolted to its transom.
-        private static SkiffMotorLayer RemoveMotor(GameObject root, Transform visual)
+        private static OutboardMotorLayer RemoveMotor(GameObject root, Transform visual)
         {
-            var layer = root.GetComponent<SkiffMotorLayer>();
+            var layer = root.GetComponent<OutboardMotorLayer>();
             if (layer != null) DestroyComponent(layer);
             if (visual != null)
             {
