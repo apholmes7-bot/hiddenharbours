@@ -79,6 +79,53 @@ namespace HiddenHarbours.Tests.PlayMode
             return (go, boat, go.GetComponent<Rigidbody2D>());
         }
 
+        /// <summary>
+        /// Spin the MAIN loop (Update/LateUpdate — not physics) until <paramref name="settled"/> holds, giving up
+        /// after <paramref name="budgetSeconds"/> of <see cref="Time.time"/>. Returns either way: the caller's
+        /// assertion is the verdict, so a timeout fails with the caller's own message rather than a generic one.
+        ///
+        /// <para><b>Why this is not a frame count.</b> The sibling loops in this file wait on
+        /// <c>WaitForFixedUpdate</c>, where N steps really is N×<see cref="Time.fixedDeltaTime"/> of sim time on
+        /// any machine. <c>yield return null</c> has no such guarantee: a main-loop frame is worth whatever wall
+        /// clock it took, so a frame count is only a duration if you already know the frame rate. In headless
+        /// batchmode there is nothing to render and frames cost ~0.7 ms, so the 60-frame wait this replaced
+        /// bought ~0.045 s — where the author's editor, at ~60 fps, bought ~1 s. Anything paced off
+        /// <see cref="Time.deltaTime"/> (which is the engine's whole job) then passes locally and fails in CI.
+        ///
+        /// <para>Waiting on <see cref="Time.time"/> is frame-rate independent <b>by construction</b>, not by
+        /// tuning: <see cref="Time.time"/> is the running sum of the very <see cref="Time.deltaTime"/> the layer
+        /// under test integrates. One 0.5 s frame and five hundred 1 ms frames advance the engine by exactly the
+        /// same swivel — so this waits for the same amount of ENGINE, whatever the machine.</para></para>
+        /// </summary>
+        private IEnumerator SpinUntil(System.Func<bool> settled, float budgetSeconds)
+        {
+            float deadline = Time.time + budgetSeconds;
+            while (!settled() && Time.time < deadline)
+                yield return null;
+        }
+
+        /// <summary>
+        /// The layer's OWN swivel cadence, read off the component rather than mirrored as a const here. The rate
+        /// is a serialized owner tunable (rule 6); a test that re-declared it would still be green the day the
+        /// owner halved it — and green for a reason that no longer matches the product. Read it, derive the wait
+        /// from it, and a re-tune re-times the test for free.
+        /// </summary>
+        private static float SteerColumnsPerSecond(SkiffMotorLayer motor)
+        {
+#if UNITY_EDITOR
+            var field = new SerializedObject(motor).FindProperty("_steerColumnsPerSecond");
+            Assert.IsNotNull(field,
+                "SkiffMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
+                "that cadence on purpose — re-point this read; do not paper over it with a magic sleep.");
+            Assert.Greater(field.floatValue, 0f,
+                "a zero/negative cadence snaps the engine instantly (SkiffMotorMath.StepTowardColumn), which " +
+                "would make the swivel this test exists to prove unobservable");
+            return field.floatValue;
+#else
+            return 0f;
+#endif
+        }
+
         /// <summary>Run full ahead until the hull stops accelerating, and report the speed it settles at.
         /// Bails out at <paramref name="maxSeconds"/> of sim time rather than looping forever.</summary>
         private IEnumerator RunToTerminal(BoatController boat, Rigidbody2D rb, float maxSeconds = 60f)
@@ -303,16 +350,43 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(rig.Motor, "precondition: the sport skiff wears her outboard");
 
             int centre = SkiffMotorMath.CenterColumn(SkiffMotorMath.SteerColumns);
+            // Hard a-starboard is the sheet's LAST column, derived through the same public mapping the layer
+            // uses rather than spelled "8" — the sheets' column count is an art fact that may yet grow.
+            int hardStarboard = SkiffMotorMath.ColumnForSteerDegrees(
+                SkiffMotorMath.MaxSteerDegrees, SkiffMotorMath.SteerColumns, SkiffMotorMath.MaxSteerDegrees);
+
+            // The swivel is rate-limited, so the wait must be a DURATION, never a frame count. Budget the full
+            // centre→hard-over travel at the layer's own cadence, times a slack factor so this is decided by the
+            // engine's behaviour and never by a knife-edge on the clock. SpinUntil returns as soon as she
+            // arrives, so the slack costs nothing when the product is healthy — it is only ever spent failing.
+            float cadence = SteerColumnsPerSecond(rig.Motor);
+            float fullSwivel = Mathf.Abs(hardStarboard - centre) / cadence;
+            float budget = fullSwivel * 4f;
+
             yield return null;
             Assert.AreEqual(centre, rig.Motor.SteerColumn, "she wakes dead ahead, never on a stale hard-over");
 
             boat.SetControl(1f, 1f);                     // hard a-starboard
-            for (int i = 0; i < 60; i++) yield return null;   // let the engine swivel on its clamp
+            yield return SpinUntil(() => rig.Motor.SteerColumn == hardStarboard, budget);
+
+            // DECISIVE, not one column past centre. The old assertion (Greater than centre) only needed half a
+            // column of travel and was therefore a coin-flip on frame rate; requiring the FULL hard-over means a
+            // broken cadence cannot squeak past, and it earns the precondition the drop test needs below.
+            Assert.AreEqual(hardStarboard, rig.Motor.SteerColumn,
+                $"{fullSwivel:0.00}s of swivel ({cadence:0.#} columns/sec) must walk the engine from dead ahead " +
+                "to hard a-starboard");
             Assert.Greater(rig.Motor.SteerColumn, centre,
                 "the engine swung to starboard off the WHEEL alone — no push, no driving system writing it");
 
+            // …and THAT is what makes the next assertion mean something. Before this test waited on time it
+            // never got off centre in CI, so "a dropped helm centres the engine" passed by never having left —
+            // the #205 guard was vacuous. It can only be reached now from a genuinely hard-over engine.
             boat.enabled = false;                        // the player steps off, mid-turn
-            for (int i = 0; i < 60; i++) yield return null;
+            yield return SpinUntil(() => rig.Motor.SteerColumn == centre, budget);
+
+            // Note the helm is STILL hard-over: BoatController.Stop() clears _steer, disabling it does not. So
+            // the engine can only come back by the layer refusing to read an unmanned helm (IsHelmManned) —
+            // delete that gate and this fails, which is exactly the regression #205 fixed.
             Assert.AreEqual(centre, rig.Motor.SteerColumn,
                 "a dropped helm centres the engine — an empty skiff must never sit frozen hard-over (#205)");
         }
