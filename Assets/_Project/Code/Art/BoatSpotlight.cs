@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace HiddenHarbours.Art
 {
@@ -19,6 +20,15 @@ namespace HiddenHarbours.Art
     /// is wired into the active boat, this can opt into it; today the transform-speed read is sufficient and
     /// dependency-free.)</para>
     ///
+    /// <para><b>It is a SWITCH, and it starts OFF.</b> The owner's call: "spotlight should be a toggle button…
+    /// the rowboat should not have one currently". Press <see cref="ToggleKey"/> (L, serialized) at the helm and
+    /// the beam lights; press it again and it goes out. Deliberately NOT a per-hull data field — a button means
+    /// ANY boat can light up when the player wants one, which is what was asked for. (It used to be
+    /// unconditional: the builder bolted a spotlight onto the ONE persistent player boat at build time, and
+    /// because the dev boat picker re-skins that same boat IN PLACE the component survived every swap — so every
+    /// hull, the rowboat included, inherited a searchlight nobody asked for. Nothing about HOW the beam works
+    /// changed; only WHEN it is on.)</para>
+    ///
     /// <para><b>Composition, not duplication.</b> All the drawing/pooling/night-gating lives in
     /// <see cref="SceneLight"/>; this just owns one and pushes the boat-spotlight feel (warm, soft, forward) +
     /// the bow anchor + the way-gate. Mirrors the drop-on pattern (<see cref="SpriteShadow"/>). Visual-only:
@@ -27,6 +37,23 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     public sealed class BoatSpotlight : MonoBehaviour
     {
+        [Header("The switch (the owner asked for a BUTTON, not a per-hull field)")]
+        [Tooltip("Is the beam lit when the boat wakes? OFF by default — the owner's call: a spotlight is " +
+                 "something you REACH FOR, not something that is simply on. (It used to be unconditional: the " +
+                 "builder bolted one to the single persistent player boat, and because the boat picker re-skins " +
+                 "that same boat IN PLACE, every hull inherited it — which is why the ROWBOAT had a searchlight.)")]
+        [SerializeField] private bool _startOn = false;
+
+        [Tooltip("The key that toggles the beam on/off. L for Light. AUDITED free of every other binding in the " +
+                 "project: WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, C/1/2/Enter/" +
+                 "LeftShift (InputSystem_Actions), F next-hull, G grant, H haul, T trap-drop/rotation-mode, " +
+                 "Y auto-yaw, Esc close. Serialized so the owner can rebind it without touching code.")]
+        [SerializeField] private Key _toggleKey = Key.L;
+
+        [Tooltip("Let the toggle key work at all. Off = the beam is driven only through code/the Inspector " +
+                 "(SetBeam), e.g. on an NPC boat that should never answer the player's light switch.")]
+        [SerializeField] private bool _keyTogglesBeam = true;
+
         [Header("Bow anchor")]
         [Tooltip("How far FORWARD of the boat origin (along the bow / transform.up, metres) the spotlight sits — " +
                  "push it out to the bow so the beam starts at the front of the hull.")]
@@ -174,18 +201,77 @@ namespace HiddenHarbours.Art
         // expose for the editor menu / tests to read the configured light
         public SceneLight Light => _light;
 
+        // The switch state. Seeded ONCE from _startOn (in Awake) and then owned by the player: a re-enable —
+        // stepping back aboard, a region hop, the boat picker re-skinning the hull under you — must NOT relight
+        // a beam the player deliberately switched off, nor douse one they switched on. Hence the latch: OnEnable
+        // re-APPLIES the remembered state rather than re-seeding it.
+        private bool _beamOn;
+        private bool _beamLatched;
+
+        /// <summary>
+        /// Is the beam lit? The player's switch, not the night-gate: <c>true</c> means "the lamp is ON", and the
+        /// shader still decides whether that reads (a lit beam is ~invisible at noon by design, ADR 0016).
+        /// Off by default (<see cref="_startOn"/>). Drive it with <see cref="SetBeam"/>/<see cref="ToggleBeam"/>.
+        /// </summary>
+        public bool BeamOn => _beamOn;
+
+        /// <summary>The key that flips the beam, for a HUD hint / a test that wants to press the real thing.</summary>
+        public Key ToggleKey => _toggleKey;
+
+        /// <summary>
+        /// Throw the light switch. Turning the beam OFF must leave NOTHING lit, and the beam reaches the frame by
+        /// TWO independent mechanisms (ADR 0016), so both are shut down here: the additive <see cref="SceneLight"/>
+        /// quad lights LAND (disabling it pools the quad renderer off — <c>SceneLight.OnDisable</c>), and the
+        /// published <c>_BoatLight*</c> globals light WATER from inside the water shader (zero intensity = the
+        /// water term is skipped). Kill only one and the "off" beam still burns on the other surface.
+        /// Idempotent and safe before Awake.
+        /// </summary>
+        public void SetBeam(bool on)
+        {
+            _beamOn = on;
+            _beamLatched = true;
+            ApplyBeamState();
+        }
+
+        /// <summary>Flip the beam — what the toggle key does. Public so tests/UI can drive it without the input loop.</summary>
+        public void ToggleBeam() => SetBeam(!_beamOn);
+
+        /// <summary>
+        /// Push the switch state onto both light paths. Off ⇒ the land quad is disabled AND the water globals are
+        /// zeroed. On ⇒ the quad is re-enabled; the water globals are re-published by the next <see cref="Update"/>.
+        /// </summary>
+        private void ApplyBeamState()
+        {
+            if (_light == null) _light = GetComponent<SceneLight>();
+            if (_light != null) _light.enabled = _beamOn;
+
+            if (!_beamOn) { PublishWaterLight(0f, Vector3.zero, Vector2.up); return; }
+
+            // Relighting: publish on the VERY NEXT Update, not whenever the throttle happens to come round.
+            // The water globals refresh at PublishHz (20 Hz), and that timer is mid-cycle when the switch is
+            // thrown — so without this the land quad lights instantly while the sea stays dark for up to 50 ms
+            // behind it. Small, but it is the difference between one beam and two lights that disagree.
+            _publishTimer = 0f;
+        }
+
         private void Awake()
         {
             _light = GetComponent<SceneLight>();
             if (_light == null) _light = gameObject.AddComponent<SceneLight>();
             ConfigureLight();
             _lastPos = transform.position;
+            if (!_beamLatched) { _beamOn = _startOn; _beamLatched = true; }
+            ApplyBeamState();
         }
 
         private void OnEnable()
         {
             if (_light == null) _light = GetComponent<SceneLight>();
             ConfigureLight();
+            // Re-APPLY, never re-seed (see the latch note): a boat coming back to life keeps the switch the
+            // player left it on.
+            if (!_beamLatched) { _beamOn = _startOn; _beamLatched = true; }
+            ApplyBeamState();
             _lastPos = transform.position;
             _smoothedSpeed = 0f;
             _publishTimer = 0f;
@@ -223,6 +309,20 @@ namespace HiddenHarbours.Art
         private void Update()
         {
             if (_light == null) return;
+
+            // --- THE SWITCH. New Input System only (Keyboard.current): legacy UnityEngine.Input compiles in this
+            // project and then THROWS at runtime. Read BEFORE the off-gate below, or the key that turns the beam
+            // back ON would itself be gated off by the beam being off. ---
+            if (_keyTogglesBeam)
+            {
+                var kb = Keyboard.current;
+                if (kb != null && kb[_toggleKey].wasPressedThisFrame) ToggleBeam();
+            }
+
+            // Beam off = nothing to drive. The land quad is already disabled and the water globals already read
+            // zero (ApplyBeamState), so there is no per-frame work and, crucially, no stale re-publish that would
+            // relight the water from under a switched-off lamp.
+            if (!_beamOn) return;
 
             // Re-apply the live-tunable feel so inspector edits show immediately (cheap, no alloc).
             _light.ConeHalfAngle = _coneHalfAngle;

@@ -11,9 +11,10 @@ namespace HiddenHarbours.Tests.EditMode
     /// <c>WakeGradingTests</c>:
     /// <list type="bullet">
     /// <item><description><b>The dory stays gentle</b> — pinned to the REAL hull data: the dory is 4.5 m /
-    /// 400 kg (`Data/Boats/Dory.asset`) with a rowed terminal speed of OarPower 300 N / ForwardDrag 120 ≈
-    /// 2.5 m/s. No spray at cruise, a subtle partial wisp at a flat-out row, never past the Small tier, and
-    /// FULL spray is unreachable at any speed the dory can make.</description></item>
+    /// 400 kg (`Data/Boats/Dory.asset`) with a rowed terminal speed of <b>2.0 m/s, MEASURED</b> (see
+    /// <see cref="DoryTopSpeed"/> — the old ratio-derived 2.5 was wrong, and she really did 2.95). No spray at
+    /// cruise, a barely-there wisp at a flat-out row, never past the Small tier, and FULL spray is unreachable
+    /// at any speed the dory can make.</description></item>
     /// <item><description><b>Speed-forward by construction</b> — the speed weight dominates size + weight
     /// combined, and the onset sits between the dory's cruise and its top speed.</description></item>
     /// <item><description><b>Faster/heavier hulls earn the sheet</b> — an engine-speed hull grades up and
@@ -26,11 +27,26 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private static BowSprayGradeConfig Cfg() => BowSprayGradeConfig.Default;
 
-        // The dory's REAL stats (Data/Boats/Dory.asset) and derived speeds — the inputs, not hard-coded feel.
+        // The dory's REAL stats (Data/Boats/Dory.asset) — the inputs, not hard-coded feel.
         private const float DoryLength = 4.5f;
         private const float DoryMass = 400f;
-        private const float DoryCruise = 2.0f;                    // a steady row
-        private const float DoryTopSpeed = 300f / 120f;           // OarPower / ForwardDrag ≈ 2.5 m/s terminal
+        private const float DoryCruise = 1.4f;                    // a steady, unhurried row
+
+        /// <summary>
+        /// The dory's rowed terminal speed — <b>MEASURED</b> on real physics
+        /// (<c>PilotableFleetPlayTests.TheDory_IsTheSlowestBoatAfloat</c>), never derived here.
+        ///
+        /// <para>This used to read <c>300f / 120f</c> — "OarPower / ForwardDrag ≈ 2.5 m/s" — and that ratio is
+        /// wrong TWICE. (1) BOTH oars pull: <c>BoatController.OarThrust</c> sums them, so a flat-out row is
+        /// 600 N, not 300. (2) The rigidbody's own <c>linearDamping</c> is ~40–50% of the dory's resistance and
+        /// appears in no stat on the asset. She actually did <b>2.95</b> m/s — which is how the boat the owner
+        /// calls the slowest in the game came to out-run three others and cross into bow spray she was never
+        /// meant to throw. She is now tuned (ForwardDrag 215) and MEASURES 2.0.</para>
+        ///
+        /// <para><b>Do not re-derive it.</b> A ratio here would be a second copy of a model that is already
+        /// wrong; the PlayMode test runs the real hull on the real integrator and is the only thing that knows.</para>
+        /// </summary>
+        private const float DoryTopSpeed = 2.0f;
 
         // ==== the owner's brief: the dory's spray is gradual/subtle at its REAL speeds =====================
 
@@ -51,7 +67,11 @@ namespace HiddenHarbours.Tests.EditMode
             var c = Cfg();
             float onset = BowSprayGrading.SpeedOnset(DoryTopSpeed, c);
             Assert.Greater(onset, 0f, "rowing hard JUST starts to show spray (the owner's 'gradual')");
-            Assert.Less(onset, 0.5f, "even flat-out, the dory sees less than half the onset ramp");
+            Assert.Less(onset, 0.25f,
+                "even flat-out, the dory sees only the very bottom of the onset ramp — a barely-there wisp. " +
+                "This was 0.5 when her top speed was believed to be 2.5; at her REAL 2.95 she was seeing 62% " +
+                "of the ramp and this assertion was passing anyway, which is why it is tightened now that she " +
+                "is measured at 2.0.");
             Assert.Less(BowSprayGrading.SpeedOnset(DoryTopSpeed, c), 1f,
                 "FULL spray needs a speed the dory cannot reach — it belongs to the faster hulls to come");
         }
@@ -71,8 +91,9 @@ namespace HiddenHarbours.Tests.EditMode
         public void FasterHulls_EarnTheSpray_TheDoryCannot()
         {
             var c = Cfg();
-            // The skiff hull under engine: same 4.5 m / 400 kg, EnginePower 500 N / ForwardDrag 120 ≈ 4.2 m/s.
-            const float skiffTop = 500f / 120f;
+            // The sport skiff's MEASURED terminal speed (PilotableFleetPlayTests) — not a ratio. The figure this
+            // replaced, "EnginePower 500 / ForwardDrag 120 ≈ 4.2", was the same bad derivation the dory's was.
+            const float skiffTop = 4.57f;
             Assert.AreEqual(1f, BowSprayGrading.SpeedOnset(skiffTop, c), 1e-5f,
                 "an engine hull reaches FULL spray opacity — the ramp tops out beyond the dory but within reach " +
                 "of the next tier");

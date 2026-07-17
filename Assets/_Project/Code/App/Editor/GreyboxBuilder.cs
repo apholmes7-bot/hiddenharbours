@@ -557,7 +557,24 @@ namespace HiddenHarbours.App.Editor
             if (dory != null)   // gentle greybox tuning so the dory is slow enough to control on screen
             {
                 dory.Propulsion = PropulsionType.Oars;   // the dory is hand-rowed (the oar-tunable defaults ride the Def)
-                dory.EnginePower = 500f; dory.ForwardDrag = 120f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
+                // FORWARDDRAG 215 = "the dory should be the slowest boat" (the owner's call). MEASURED, not derived.
+                //
+                // She was NOT the slowest. At ForwardDrag 120 she MEASURED 2.95 m/s on real physics — FOURTH of
+                // seven, ahead of the punt (2.26), the fishing skiff (2.45) and the upgraded punt (2.83). Two
+                // compounding errors hid that for a long time:
+                //   (1) BOTH oars pull. OarThrust(1,1,300) = (left+right)×OarPower = 600 N, not 300 — the old
+                //       "300/120 ≈ 2.5 m/s" note that this number was picked against forgot the second oar.
+                //   (2) The rigidbody's OWN linearDamping (BoatController.Awake sets 0.2) is ~40–50% of her total
+                //       resistance and appears in no design-unit stat, so a naive OarPower/ForwardDrag ratio is
+                //       wrong by ~2.4×.
+                // The honest model — the same one the engine ladder is derived from — is
+                //   v = (2 × OarPower × ForceFeelScale) / (ForwardDrag × ForceFeelScale + (MassKg/100) × linearDamping)
+                //     = 6 / (2.15 + 0.8) = 2.03 … and she MEASURES 2.00 m/s (PilotableFleetPlayTests).
+                //
+                // DRAG is the lever, NOT OarPower, deliberately: the stroke keeps its full shove (rowing already
+                // feels good — don't make the rower's arms feel weak) while the hull refuses to run, which is
+                // what a dory IS. No other hull is touched; the ladder below is measured, never restated.
+                dory.EnginePower = 500f; dory.ForwardDrag = 215f; dory.LateralDrag = 320f; dory.WindExposure = 0.6f;
                 dory.CameraWorldHeightMeters = 14f;
                 ApplyDeckTray(dory);   // small boat → the fish tray (the deck-container ladder, data)
                 EditorUtility.SetDirty(dory);

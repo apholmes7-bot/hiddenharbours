@@ -251,6 +251,14 @@ namespace HiddenHarbours.App.Editor
             // Spotlight' menu (GetComponentInParent<Rigidbody2D>). Its bounce reads the FishingBoatVisual child's
             // wave rock by NAME (Art stays decoupled from Boats), so it bobs/sways with the hull when B2 is on.
             // Added AFTER the directional skin so the visual child exists for the bounce to find.
+            //
+            // MOUNTED, BUT DARK. The beam is now a TOGGLE — press L at the helm — and it starts OFF: the owner's
+            // call, "spotlight should be a toggle button… the rowboat should not have one currently". Note the
+            // mount here is still UNCONDITIONAL, and must be: this is the ONE persistent player boat, and the dev
+            // picker re-skins it IN PLACE, so the component rides EVERY hull. That inheritance is precisely why
+            // the rowboat wore a lit searchlight nobody asked for. The fix is therefore the DEFAULT
+            // (BoatSpotlight._startOn = false), not a per-hull mount — a button means any boat can light up when
+            // the owner wants it, which is the affordance he chose.
             if (doryGo.GetComponent<BoatSpotlight>() == null)
                 doryGo.AddComponent<BoatSpotlight>();
 

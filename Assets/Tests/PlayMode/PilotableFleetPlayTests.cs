@@ -159,7 +159,94 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// Row flat out (both oars) until the hull stops accelerating. The oars' twin of
+        /// <see cref="RunToTerminal"/> — an Oars hull ignores <c>SetControl</c> entirely
+        /// (<see cref="BoatController.UsesEngineHelm"/> branches the whole drive), so running the dory through
+        /// the engine harness would have measured a boat with no propulsion at all.
+        /// </summary>
+        private IEnumerator RowToTerminal(BoatController boat, Rigidbody2D rb, float maxSeconds = 60f)
+        {
+            float elapsed = 0f, previous = -1f;
+            while (elapsed < maxSeconds)
+            {
+                boat.SetOarInput(1f, 1f, false);   // both oars, hard ahead, no brace
+                yield return new WaitForFixedUpdate();
+                elapsed += Time.fixedDeltaTime;
+
+                if (elapsed > 5f && Mathf.Abs(rb.linearVelocity.magnitude - previous) < 0.0005f) break;
+                previous = rb.linearVelocity.magnitude;
+            }
+        }
+
+        /// <summary>Drive a hull to terminal on whichever helm it actually has, and report the speed.</summary>
+        private IEnumerator DriveToTerminal(BoatHullDef hull, System.Action<float> report)
+        {
+            var (go, boat, rb) = NewBoat(hull, Vector3.zero);
+            if (BoatController.UsesEngineHelm(hull.Propulsion)) yield return RunToTerminal(boat, rb);
+            else                                                yield return RowToTerminal(boat, rb);
+            report(rb.linearVelocity.magnitude);
+            Object.Destroy(go);
+            yield return null;
+        }
+
         // ---- (1) the speed ladder, measured -------------------------------------------------------
+
+        [UnityTest]
+        public IEnumerator TheDory_RowsToHerMeasuredTerminal()
+        {
+            // 2.0 m/s is MEASURED here, not solved for. Nobody had ever run her: the number everyone believed,
+            // 2.5, came from "OarPower 300 / ForwardDrag 120" — a ratio that drops BOTH the second oar
+            // (OarThrust sums them) and the rigidbody's own linearDamping (~40-50% of her resistance). She
+            // really did 2.95. ForwardDrag 120 -> 215 is what brought her here.
+            var hull = LoadHull("Dory");
+            Assert.AreEqual(PropulsionType.Oars, hull.Propulsion,
+                "precondition: the dory is hand-rowed — if she ever takes an engine, this harness measures the " +
+                "wrong helm and every assertion below is meaningless");
+
+            float measured = 0f;
+            yield return DriveToTerminal(hull, v => measured = v);
+
+            Assert.AreEqual(2.0f, measured, 0.15f,
+                $"the dory settles at ≈2.0 m/s (measured {measured:0.00}). If this moved, someone retuned the " +
+                "starter boat the owner rows every session — and 'the dory is the slowest boat' is his call.");
+        }
+
+        [UnityTest]
+        public IEnumerator TheDory_IsTheSlowestBoatAfloat()
+        {
+            // The OWNER'S RULE, measured end to end rather than trusted to a table: "yes the dory should be the
+            // slowest boat". She was not — at ForwardDrag 120 she made 2.95 and beat three hulls. This is the
+            // test that would have caught that, and the one that catches the next person who re-tunes her (or
+            // any other hull) back over the line. Every boat runs the identical harness on its own helm, so the
+            // ordering is decided by the assets and by nothing else.
+            var others = new List<(string name, float speed)>();
+            foreach (var file in new[] { "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" })
+            {
+                float v = 0f;
+                yield return DriveToTerminal(LoadHull(file), s => v = s);
+                others.Add((file, v));
+            }
+
+            // The basic punt is builder-generated and never committed, so she is only measured where someone has
+            // run the cove builder (see LoadOptionalHull). She is also the dory's NEAREST rival at ≈2.26 m/s —
+            // the margin that matters most — so when she is on disk she is absolutely included.
+            var punt = LoadOptionalHull("Punt");
+            if (punt != null)
+            {
+                float v = 0f;
+                yield return DriveToTerminal(punt, s => v = s);
+                others.Add(("Punt", v));
+            }
+
+            float dory = 0f;
+            yield return DriveToTerminal(LoadHull("Dory"), s => dory = s);
+
+            foreach (var (name, speed) in others)
+                Assert.Less(dory, speed,
+                    $"the dory ({dory:0.00} m/s) must be slower than {name} ({speed:0.00} m/s). The whole " +
+                    $"ladder, measured: {string.Join(", ", others.ConvertAll(o => $"{o.name} {o.speed:0.00}"))}.");
+        }
 
         [UnityTest]
         public IEnumerator ConsoleSkiff_SettlesAtAWorkboatsSpeed()
