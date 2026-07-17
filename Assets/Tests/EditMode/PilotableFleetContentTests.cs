@@ -411,13 +411,21 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(8, v.RockFrameCount, $"{name}: her rock sheet ships 8 frames");
                 Assert.AreEqual(64, v.RockGrid.Length, $"{name}: 8 headings × 8 frames");
 
-                // Read off her rig — and DERIVED for the pitch: the rigs give degrees, the field wants
-                // screen-vertical metres, and the dory pins the rate at 0.02 m / 3.0° = 0.006667 m/deg. Her
-                // 2.4° through that rate is 0.016 — NOT the console's 0.0127 copied across.
+                // Read STRAIGHT off her rig now — all three, no conversion. The pitch used to be pushed
+                // through a borrowed "0.02 m / 3.0°" rate off the dory; that rate ignored the mount's lever
+                // arm, which is the only thing that actually decides the answer, and shipped an engine rocking
+                // in anti-phase with its own transom. MountedRockPoseMath derives the travel from the MOUNT.
                 Assert.AreEqual(4.2f, v.MotorRockRollDegrees, 0.001f, $"{name}: her rig's rollA");
                 Assert.AreEqual(1.5f, v.MotorRockHeavePixels, 0.001f, $"{name}: her rig's heaveA");
-                Assert.AreEqual(2.4f * (0.02f / 3.0f), v.MotorRockPitchOffsetMeters, 0.0005f,
-                    $"{name}: pitch is her OWN 2.4° through the dory's metres-per-degree rate");
+                Assert.AreEqual(2.4f, v.MotorRockPitchDegrees, 0.001f,
+                    $"{name}: her rig's pitchA, in DEGREES — transcribed, not converted");
+
+                // Her MOUNT is her own: a 5.2 m boat clamps her engine 2.63 m aft, not the 7 m skiffs' 3.53.
+                // Copying theirs across would give her ~34% too much pitch travel at every heading.
+                Assert.AreEqual(0f, v.MotorMountLocalMeters.x, 0.001f, $"{name}: single engine, on the centreline");
+                Assert.AreEqual(-2.63f, v.MotorMountLocalMeters.y, 0.001f, $"{name}: her rig's MOUNT.y − 0.03");
+                Assert.AreEqual(0.56f, v.MotorMountLocalMeters.z, 0.001f, $"{name}: her rig's MOUNT.z");
+                Assert.AreEqual(40f, v.ArtBakeElevationDegrees, 0.001f, $"{name}: her rig's DEFAULT_ELEV");
             }
 
             // The rock ladder must read like the boats do: beamier than the dory (so stiffer than her), but a
@@ -533,6 +541,55 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreNotEqual(1f, punt.SeakeepingLiveliness,
                 "the raw default (1/1/0) means UNAUTHORED — she is a real boat and must sit on the ladder");
+        }
+
+        [Test]
+        public void EveryVisual_DeclaresTheCameraItsArtWasBakedAt()
+        {
+            // THE #212 TRAP, GUARDED. A committed .asset that predates a field deserialises it to ZERO — which
+            // is how #212 nearly shipped a no-op fix. ArtBakeElevationDegrees at 0 would mean sin(0) = 0 and
+            // fold every hull-anchored effect onto the boat's own middle, so it must be present and sane in
+            // the ASSETS, not merely correct in the builder that writes them.
+            foreach (var name in new[] { "DoryIso", "ConsoleSkiff", "SportSkiffSingle", "SportSkiffTwin",
+                                         "PuntIsoBasic", "PuntIsoUpgraded" })
+                Assert.AreEqual(40f, Visual(name).ArtBakeElevationDegrees, 0.001f,
+                    $"{name}: an iso rig bake — its DEFAULT_ELEV is 40. If this reads 0, the asset predates " +
+                    "the field and the wake fix is a silent no-op: re-run Hidden Harbours ▸ Art ▸ Build Boat " +
+                    "Visual Defs, or the committed asset is wrong.");
+
+            // The odd one out, deliberately: 8 hand-drawn files, no camera, no bake. 90 = a plan view = do not
+            // foreshorten = its wake (and the whole ambient fleet's, which wears these facings) stays put.
+            Assert.AreEqual(90f, Visual("FishingBoat").ArtBakeElevationDegrees, 0.001f,
+                "FishingBoat is NOT a rig bake — foreshortening it would invent a camera it never had, the " +
+                "same trap the per-artwork mirror flag avoids");
+        }
+
+        [Test]
+        public void EveryPoweredHull_CarriesItsOwnClampPointAndItsRigsPitchInDegrees()
+        {
+            // The pitch used to be screen-METRES, produced by pushing each rig's pitchA through a rate borrowed
+            // from the DORY. It ignored the mount's lever arm, which is the whole quantity — 8x too small and
+            // wrong-signed, so the engine lifted on the wave its hull dropped into. Both halves are asserted:
+            // the degrees are transcription, the mount is the thing that was missing.
+            foreach (var name in new[] { "ConsoleSkiff", "SportSkiffSingle", "SportSkiffTwin" })
+            {
+                var v = Visual(name);
+                Assert.AreEqual(-3.53f, v.MotorMountLocalMeters.y, 0.001f,
+                    $"{name}: a 7 m skiff clamps at MOUNT.y − 0.03 = −3.53 (her rig's L/2, just aft)");
+                Assert.AreEqual(0.72f, v.MotorMountLocalMeters.z, 0.001f, $"{name}: her rig's transom top");
+                Assert.Greater(v.MotorRockPitchDegrees, 1f,
+                    $"{name}: this field is DEGREES now (1.9/2.2), not the old ~0.013 screen-metres fudge — a " +
+                    "value under 1 means a stale asset and an engine with ~1/100th of its pitch");
+                Assert.Less(v.MotorRockPitchDegrees, 5f, $"{name}: …and no rig bakes more than a few degrees");
+            }
+
+            Assert.AreEqual(1.9f, Visual("ConsoleSkiff").MotorRockPitchDegrees, 0.001f, "consoleIsoRig's pitchA");
+            Assert.AreEqual(2.2f, Visual("SportSkiffSingle").MotorRockPitchDegrees, 0.001f, "sportSkiffIsoRig's pitchA");
+
+            // The punt is a SHORTER boat and her clamp is her own. Copying the skiffs' across would give her
+            // ~34% too much pitch travel at every heading — the exact class of mistake the fudge institutionalised.
+            Assert.AreEqual(-2.63f, Visual("PuntIsoBasic").MotorMountLocalMeters.y, 0.001f,
+                "the punt's own MOUNT — 5.2 m of boat, not 7");
         }
 
         [Test]

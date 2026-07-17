@@ -212,15 +212,19 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ==== the bow anchor (the placement mirror of the stern fix) ======================================
 
+        /// <summary>A plan view — no foreshortening, i.e. the top-down placement these cases were written
+        /// against. The ¾ projection is pinned in WakeProjectionTests.</summary>
+        private const float PlanViewElev = 90f;
+
         [Test]
         public void BowAnchor_SitsAheadOfTheBowTip()
         {
-            Vector2 a = BowSprayGrading.BowAnchor(Vector2.zero, Vector2.up, DoryLength, 0.05f);
+            Vector2 a = BowSprayGrading.BowAnchor(Vector2.zero, Vector2.up, DoryLength, 0.05f, PlanViewElev);
             Assert.AreEqual(0f, a.x, 1e-4f);
             Assert.AreEqual(2.3f, a.y, 1e-4f, "half the hull + the nudge — AT the cutwater, ahead of the origin");
 
             Vector2 bow = new Vector2(-1f, 2f).normalized;
-            Vector2 b = BowSprayGrading.BowAnchor(new Vector2(5f, 1f), bow, 6f, 0.1f);
+            Vector2 b = BowSprayGrading.BowAnchor(new Vector2(5f, 1f), bow, 6f, 0.1f, PlanViewElev);
             float ahead = Vector2.Dot(b - new Vector2(5f, 1f), bow);
             Assert.GreaterOrEqual(ahead, 3f, "anchor is ahead of the hull's front edge (≥ length/2 along the bow)");
         }
@@ -228,7 +232,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void BowAnchor_DegenerateBow_FallsBackToUp_NoNaN()
         {
-            Vector2 a = BowSprayGrading.BowAnchor(Vector2.zero, Vector2.zero, DoryLength, 0.05f);
+            Vector2 a = BowSprayGrading.BowAnchor(Vector2.zero, Vector2.zero, DoryLength, 0.05f, PlanViewElev);
             Assert.IsFalse(float.IsNaN(a.x) || float.IsNaN(a.y), "zero bow never yields NaN");
             Assert.AreEqual(2.3f, a.y, 1e-4f, "falls back to +Y as the bow");
         }
