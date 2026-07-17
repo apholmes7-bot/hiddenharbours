@@ -149,5 +149,94 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, DirectionalBoatSprite.HeadingToFacingIndex(123f, 0, Zero), "count 0 -> 0, no divide-by-zero");
             Assert.AreEqual(0, DirectionalBoatSprite.HeadingToFacingIndex(123f, -3, Zero), "negative count -> 0");
         }
+
+        // ---- The counter-clockwise mirror (art whose cell i depicts -step·i) --------------------
+        //
+        // NOTE these assert the MAPPING only, self-consistently — which is precisely the blind spot that let
+        // the mirrored art ship. What the pictures actually DEPICT is asserted from real pixels in
+        // BoatFacingDepictedHeadingTests; that is the test with the teeth. These just pin the algebra.
+
+        [Test]
+        public void Facing8_CounterClockwiseArt_PicksTheMirroredCell()
+        {
+            // CCW art: cell i is drawn for -45·i. So heading 45 (NE) is in cell 7, heading 90 (E) in cell 6...
+            // North is its own mirror, which is exactly why this bug was invisible head-on.
+            Assert.AreEqual(0, DirectionalBoatSprite.HeadingToFacingIndex(0f,   N8, Zero, true), "N -> 0 (its own mirror)");
+            Assert.AreEqual(7, DirectionalBoatSprite.HeadingToFacingIndex(45f,  N8, Zero, true), "NE -> cell 7");
+            Assert.AreEqual(6, DirectionalBoatSprite.HeadingToFacingIndex(90f,  N8, Zero, true), "E -> cell 6");
+            Assert.AreEqual(4, DirectionalBoatSprite.HeadingToFacingIndex(180f, N8, Zero, true), "S -> 4 (its own mirror)");
+            Assert.AreEqual(2, DirectionalBoatSprite.HeadingToFacingIndex(270f, N8, Zero, true), "W -> cell 2");
+        }
+
+        [Test]
+        public void Facing_MirrorDefaultsOff_SoNoExistingSkinSilentlyFlips()
+        {
+            for (float deg = 0f; deg < 360f; deg += 7f)
+                Assert.AreEqual(
+                    DirectionalBoatSprite.HeadingToFacingIndex(deg, N8, Zero),
+                    DirectionalBoatSprite.HeadingToFacingIndex(deg, N8, Zero, false),
+                    $"the default is the clockwise convention at {deg}");
+        }
+
+        [Test]
+        public void Facing_MirrorIsItsOwnInverse_AndAlwaysInRange()
+        {
+            foreach (int count in new[] { N4, N8, 16 })
+                for (float deg = -720f; deg <= 720f; deg += 3.5f)
+                {
+                    int mirrored = DirectionalBoatSprite.HeadingToFacingIndex(deg, count, Zero, true);
+                    Assert.That(mirrored, Is.InRange(0, count - 1), $"in range: {deg}, count {count}");
+
+                    // Mirroring the mirrored cell's own heading must land back on the plain CW cell.
+                    int plain = DirectionalBoatSprite.HeadingToFacingIndex(deg, count, Zero);
+                    int back = (count - mirrored) % count;
+                    Assert.AreEqual(plain, back, $"mirror is an involution at {deg}, count {count}");
+                }
+        }
+
+        // ---- SnapHeadingDegrees: the TRUE heading, never the cell's label -----------------------
+
+        [Test]
+        public void SnapHeading_QuantizesToTheGrid_HalfUp_MatchingTheIndexRule()
+        {
+            Assert.AreEqual(0f,   DirectionalBoatSprite.SnapHeadingDegrees(10f,  N4, Zero), 1e-3f, "10 -> N");
+            Assert.AreEqual(90f,  DirectionalBoatSprite.SnapHeadingDegrees(45f,  N4, Zero), 1e-3f, "45 edge -> E (half-up, NOT banker's)");
+            Assert.AreEqual(180f, DirectionalBoatSprite.SnapHeadingDegrees(135f, N4, Zero), 1e-3f, "135 edge -> S (half-up)");
+            Assert.AreEqual(0f,   DirectionalBoatSprite.SnapHeadingDegrees(315f, N4, Zero), 1e-3f, "315 edge -> N (half-up, wraps)");
+            Assert.AreEqual(270f, DirectionalBoatSprite.SnapHeadingDegrees(-90f, N4, Zero), 1e-3f, "negative headings wrap");
+        }
+
+        [Test]
+        public void SnapHeading_IsTheTrueHeading_EvenForCounterClockwiseArt()
+        {
+            // THE TRAP, pinned. SnapHeadingDegrees used to read back the CHOSEN CELL's label
+            // (zeroHeading + idx·step). For CCW art that hands back the MIRRORED cell's heading — a boat
+            // going East reported as going West — and everything pinned to the drawn hull (the deck-walk
+            // clamp, the deck props, the oar and motor overlays) would fly off the boat. The picture always
+            // points at the boat's TRUE snapped heading; only WHICH CELL draws it is mirrored. So the snapped
+            // heading must not depend on the convention at all — the function takes no mirror flag, and this
+            // asserts that the two can never drift apart.
+            for (float deg = 0f; deg < 360f; deg += 3f)
+            {
+                float snapped = DirectionalBoatSprite.SnapHeadingDegrees(deg, N8, Zero);
+
+                int cw = DirectionalBoatSprite.HeadingToFacingIndex(deg, N8, Zero, false);
+                int ccw = DirectionalBoatSprite.HeadingToFacingIndex(deg, N8, Zero, true);
+
+                // Re-snapping an already-snapped heading is idempotent — the property the oar and motor
+                // layers rely on to land on the hull's own row.
+                Assert.AreEqual(cw, DirectionalBoatSprite.HeadingToFacingIndex(snapped, N8, Zero, false),
+                    $"CW row is idempotent under the snap at {deg}");
+                Assert.AreEqual(ccw, DirectionalBoatSprite.HeadingToFacingIndex(snapped, N8, Zero, true),
+                    $"CCW row is idempotent under the snap at {deg}");
+
+                // And the snapped heading is a real compass bearing on the grid, not a cell label: it is the
+                // nearest multiple of the step to the TRUE heading. (Floor(x+0.5), the same half-up rule the
+                // index uses — Mathf.Round would be banker's and disagree on a bucket edge.)
+                float expected = Mathf.Floor(deg / 45f + 0.5f) * 45f;
+                Assert.AreEqual(0f, Mathf.DeltaAngle(snapped, expected), 1e-2f,
+                    $"snapped heading is the TRUE quantized heading at {deg}");
+            }
+        }
     }
 }

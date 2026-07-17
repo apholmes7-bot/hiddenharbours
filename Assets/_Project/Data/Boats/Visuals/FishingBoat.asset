@@ -23,6 +23,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1319e85fa1874603b7322963b3002da2, type: 3}
   - {fileID: 21300000, guid: bd8395c920d64fb8acd34d831bde726c, type: 3}
   ZeroHeadingDegrees: 0
+  FacingsAreCounterClockwise: 0
   SortingOrder: 1
   RockGrid: []
   RockFrameCount: 8
