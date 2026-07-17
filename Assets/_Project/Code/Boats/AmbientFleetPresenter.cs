@@ -219,6 +219,13 @@ namespace HiddenHarbours.Boats
             bool wearsCompass = def.HasFullHullCompass();
             Sprite hull = wearsCompass ? null
                 : (def.HullSprite != null ? def.HullSprite : GetGreyboxHullSprite());
+
+            // The fleet keeps its OWN facings field (its data, its asset — decor tier: no rock grid, no
+            // oars), so it adapts them into ONE in-memory skin binding for the whole fleet rather than
+            // pointing at a BoatVisualDef asset. Built once per fleet, not per boat — every fisher wears
+            // the same compass; only the paintwork differs.
+            BoatVisualDef fleetSkin = wearsCompass
+                ? BoatVisualDef.CreateRuntime(def.HullFacings, def.HullSortingOrder) : null;
             int spotsPerBoat = Mathf.Max(1, def.SpotsPerBoat);
 
             fleet.Boats = new Fisher[Mathf.Max(1, def.BoatCount)];
@@ -236,40 +243,37 @@ namespace HiddenHarbours.Boats
                     ? def.BuoyPalette[b % def.BuoyPalette.Length]
                     : Color.red;
 
-                var visualGo = new GameObject("Visual");
-                visualGo.transform.SetParent(fisher.Root.transform, worldPositionStays: false);
-                var sr = visualGo.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = def.HullSortingOrder;
-
-                DirectionalBoatSprite directional = null;
                 if (wearsCompass)
                 {
-                    // The player's rig, verbatim (PersistentCoreBuilder.ApplyDirectionalFishingBoatVisual):
-                    // the ROOT keeps rotating with the heading exactly as the steering left it (#190) —
-                    // this component swaps the CHILD to the nearest facing and counter-rotates it back to
-                    // screen-identity every LateUpdate, so the picture never rotates, it only changes.
-                    sr.sprite = def.HullFacings[0];   // facing North until the first LateUpdate snaps
-                    directional = fisher.Root.AddComponent<DirectionalBoatSprite>();
-                    directional.Configure(def.HullFacings, sr, zeroHeadingDegrees: 0f,
-                                          smoothModeSprite: def.HullFacings[0],
-                                          mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
+                    // The player's rig — now literally the SAME code, not "verbatim" by hand-copy. The ROOT
+                    // keeps rotating with the heading exactly as the steering left it (#190); the skinner's
+                    // DirectionalBoatSprite swaps the CHILD to the nearest facing and counter-rotates it
+                    // back to screen-identity every LateUpdate, so the picture never rotates, it only
+                    // changes. BoatWaveMotion comes with it (the roll routes through VisualTiltDegrees —
+                    // the child's rotation is stomped, so a direct write would be eaten). The child keeps
+                    // the historic name "Visual": nothing looks it up, and converging must not rename it.
+                    //
+                    // Hull paintwork: ONE colour write, at build time (rule 7 — no per-frame colour churn).
+                    // Multiply-tint shifts the whole sprite (teal cabin included), which is why the Def's
+                    // default strength is subtle. Alpha stays 1 so the skinner reads it as a real tint.
+                    var paint = Color.Lerp(Color.white, tint, Mathf.Clamp01(def.HullTintStrength));
+                    paint.a = 1f;
 
-                    // Hull paintwork: ONE colour write, at build time (rule 7 — no per-frame colour
-                    // churn). Multiply-tint shifts the whole sprite (teal cabin included), which is why
-                    // the Def's default strength is subtle.
-                    sr.color = Color.Lerp(Color.white, tint, Mathf.Clamp01(def.HullTintStrength));
+                    BoatHullSkinner.Apply(fisher.Root, fleetSkin, boat: null,
+                                          new BoatHullSkinner.Options { ChildName = "Visual", Tint = paint });
                 }
                 else
                 {
-                    sr.sprite = hull;   // pre-compass behaviour, exactly: one picture on a rotating root
-                }
+                    // Pre-compass behaviour, exactly: one picture on a rotating root, riding the wave field.
+                    var visualGo = new GameObject("Visual");
+                    visualGo.transform.SetParent(fisher.Root.transform, worldPositionStays: false);
+                    var sr = visualGo.AddComponent<SpriteRenderer>();
+                    sr.sortingOrder = def.HullSortingOrder;
+                    sr.sprite = hull;
 
-                // Ride the shared wave field like the player's hull — same component, same defaults.
-                // With the compass on, the wave ROLL must route through DirectionalBoatSprite's
-                // VisualTiltDegrees hook (it stomps the child's rotation every LateUpdate — a direct
-                // write would be silently eaten), exactly the player-boat wiring.
-                var wave = fisher.Root.AddComponent<BoatWaveMotion>();
-                wave.Configure(visualGo.transform, directional);
+                    var wave = fisher.Root.AddComponent<BoatWaveMotion>();
+                    wave.Configure(visualGo.transform, null);
+                }
 
                 fisher.Heading = Vector2.up;
 

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -52,63 +52,22 @@ namespace HiddenHarbours.App.Editor
         // FisherSheet); the tail cells are unused alternates the animator never reads.
         const int HaulFrameCount = 8;
 
-        // --- DIRECTIONAL BOAT VISUAL (the ISO DORY skin; #93 DirectionalBoatSprite, #202 rock grid) -------
-        // REVERSIBLE FLAG. While true, the playable boat WEARS a directional facing set — snap to the nearest
-        // of N/NE/E/SE/S/SW/W/NW from heading, picture stays screen-aligned — instead of the single rotating
-        // DoryHull picture + the legacy transform oar rig. It is a VISUAL swap ONLY: the boat drives on the
-        // ROWED dory hull (boat.dory, Propulsion = Oars → per-oar strokes), and the layered oar overlay
-        // (DoryOarLayer) animates from the same LeftOar/RightOar state the physics reads.
+        // --- THE HULL SKIN — DATA, NOT A CONST ------------------------------------------------------
+        // The 8-way iso-dory facings, the 64-frame wave-coupled rock grid and the two 80-cell oar sheets
+        // used to be a const bool + a fistful of const art paths RIGHT HERE, which meant a hull could not
+        // say what it looked like and OwnedFleet could not re-skin the boat on a swap. That is now DATA
+        // (rule 2): p.StartDory.Visual points at a BoatVisualDef, BoatVisualLibraryBuilder imports the
+        // sheets into it, and BoatHullSkinner (runtime, shared with OwnedFleet and the ambient fleet) is
+        // the one place that installs the rig. To take the skin off, clear the hull asset's Visual ref and
+        // re-run — no code edit, no flag.
         //
-        // HISTORY (read before touching): #93/#94/#97 also swapped the hull to the Engine boat.fishing_skiff
-        // so the CONTROLS matched a POWERBOAT picture ("a power boat skin, not a rowboat" — the facings were
-        // M2 fleet art). The owner has since decided the dory ROWS again: the art is a rowboat (#202 iso dory)
-        // and the independent oars landed (#204), so the engine-helm swap is GONE and boat.dory stands.
-        // FishingSkiff.asset is left on disk (append-only ids; ambient/M2 hulls may want it) but the player's
-        // boat never loads it. Flip this flag FALSE + re-run the start builder to get the plain rotating
-        // DoryHull picture + the legacy oar rig back; the hull/propulsion is boat.dory either way.
-        const bool UseDirectionalFishingBoatVisual = true;
-
-        // The 8 owner-drawn facings, in CLOCKWISE order from the ZERO heading (North):
-        // N, NE, E, SE, S, SW, W, NW. The DirectionalBoatSprite math (#93) is generalised to any facing
-        // count, so the full compass drops in with NO math change; element 0 must be the North-facing
-        // sprite and the zero-heading is 0° (North/up), matching the project's bearing convention.
-        // Every facing shares the 128×128 canvas and the bbox-centre custom pivot convention from the
-        // 4-cardinal pass (pivot = alpha-bbox centre, set in each .png.meta) so the hull stays put on a snap.
-        static readonly string[] FishingBoatFacingPaths =
-        {
-            "Assets/_Project/Art/Boats/FishingBoat_N.png",
-            "Assets/_Project/Art/Boats/FishingBoat_NE.png",
-            "Assets/_Project/Art/Boats/FishingBoat_E.png",
-            "Assets/_Project/Art/Boats/FishingBoat_SE.png",
-            "Assets/_Project/Art/Boats/FishingBoat_S.png",
-            "Assets/_Project/Art/Boats/FishingBoat_SW.png",
-            "Assets/_Project/Art/Boats/FishingBoat_W.png",
-            "Assets/_Project/Art/Boats/FishingBoat_NW.png",
-        };
-
-        // The owner's NEW isometric dory art (wave-coupled rock). DoryIso = 8 static hull headings
-        // (index = heading N..NW); DoryIsoRock = 64 rock frames (index = heading×8 + frame). When both
-        // import + slice (SpriteSheetSlicer manifest), the playable boat wears these AS the directional
-        // facings PLUS a rock grid, so BoatWaveMotion drives the visible rock by frame from the wave
-        // phase under the hull (crest → frame 2, trough → 6). Preferred over the FishingBoat_* placeholder
-        // facings; if the iso sheets aren't imported yet, the FishingBoat compass stands (with the legacy
-        // transform rock) so the build never breaks before the art lands.
-        const string ArtDoryIso     = "Assets/_Project/Art/Boats/DoryIso.png";       // 8 static headings
-        const string ArtDoryIsoRock = "Assets/_Project/Art/Boats/DoryIsoRock.png";   // 64 rock frames
-        const int DoryIsoStaticCount = 8;
-        const int DoryIsoRockFrameCount = 8;
-        const int DoryIsoRockCount = DoryIsoStaticCount * DoryIsoRockFrameCount; // 64
-
-        // The INDEPENDENT OAR overlays (#204 art): one sheet per side, 10 cols × 8 heading rows → 80 each,
-        // index = heading×10 + col (cols 0..7 = the row-stroke cycle, 8 = resting/shipped, 9 = trailing).
-        // Same 160×156 cell + waterline pivot as the hull sheets, so an overlay at the SAME localPosition
-        // registers pixel-perfect on the hull (art README: every layer pinned to pivot (80,88); draw order
-        // hull → rower → port oar → star oar). DoryOarLayer animates each side from BoatController's real
-        // per-oar state, replacing the legacy transform oar rig for this hull.
-        const string ArtDoryOarPort = "Assets/_Project/Art/Boats/DoryOarPort.png";
-        const string ArtDoryOarStar = "Assets/_Project/Art/Boats/DoryOarStar.png";
-        const int DoryOarColumnCount = 10;                                        // per heading row
-        const int DoryOarFrameCount = DoryIsoStaticCount * DoryOarColumnCount;    // 80
+        // HISTORY (read before touching): #93/#94/#97 also swapped the hull to the Engine
+        // boat.fishing_skiff so the CONTROLS matched a POWERBOAT picture ("a power boat skin, not a
+        // rowboat" — the facings were M2 fleet art). The owner has since decided the dory ROWS again: the
+        // art is a rowboat (#202 iso dory) and the independent oars landed (#204), so the engine-helm swap
+        // is GONE and boat.dory stands. The FishingBoat_* placeholder compass this builder used to fall
+        // back to is likewise gone: it was never reachable once the iso art landed, and a compass is now
+        // authorable as a BoatVisualDef asset if one is ever wanted again.
 
         const string ArtTensionGauge   = "Assets/_Project/Art/UI/TensionGauge.png";
         const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
@@ -269,15 +228,15 @@ namespace HiddenHarbours.App.Editor
             SetRef(fleet, "_hold", hold);
             SetRef(fleet, "_spriteRenderer", sr);
 
-            // --- THE ISO DORY SKIN (directional facings + rock grid + independent oars; #93/#202/#204) ----
-            // When the flag is on, the boat the player sails WEARS the owner's 8-way iso dory facings, its
-            // wave-coupled rock grid, and the layered per-side oar overlays — instead of the single rotating
+            // --- THE HULL SKIN (directional facings + rock grid + independent oars; #93/#202/#204) --------
+            // The boat the player sails wears whatever its HULL ASSET says it looks like: p.StartDory.Visual
+            // → a BoatVisualDef → BoatHullSkinner. For the dory that is the owner's 8-way iso facings, the
+            // wave-coupled rock grid and the layered per-side oar overlays, instead of the single rotating
             // DoryHull picture + the legacy transform oar rig. VISUAL ONLY: the hull stays the ROWED
             // p.StartDory (boat.dory, Propulsion = Oars) set above, so the helm is per-oar strokes and
             // OwnedFleet's id-keyed registry/save-restore behave exactly as they do without the skin.
-            // Self-contained + null-safe (no-ops to the plain dory look if the art isn't imported).
-            if (UseDirectionalFishingBoatVisual)
-                ApplyDirectionalFishingBoatVisual(doryGo, sr, oarRig, rowAnim, boat);
+            // Null-safe: a hull with no Visual (or an unsliced sheet) keeps the plain dory look.
+            ApplyHullSkin(doryGo, sr, oarRig, rowAnim, boat, p.StartDory);
 
             // --- THE BOAT SPOTLIGHT (ADR 0016) — durable, root-hosted, follows the bow -----------------------
             // The owner re-added this by hand every session and lost it on rebuild; mount it at BUILD time so the
@@ -420,181 +379,88 @@ namespace HiddenHarbours.App.Editor
             };
         }
 
-        // ---- the iso-dory skin (directional facings #93 · wave rock grid #202 · independent oars #204) ----
+        // ---- the hull skin (directional facings #93 · wave rock grid #202 · independent oars #204) ----
 
         /// <summary>
-        /// Make the playable boat WEAR the owner's 8-way directional facings — preferring the ISO DORY art
-        /// (8 static headings + a 64-frame heading×rock grid + the two independent oar overlays) and falling
-        /// back to the older FishingBoat_* compass while that art isn't imported. It (1) HIDES the single
-        /// rotating dory hull picture (disables the hull SpriteRenderer; its sprite ref stays so OwnedFleet's
-        /// id-keyed swap is unaffected); (2) retires the LEGACY transform oar rig (rower + rotating Oar.png on
-        /// pivots) by severing the <see cref="BoatRowAnimator"/>'s <c>_oarRig</c> ref — the animator re-activates
-        /// the rig every Update while its home hull is active, so the ref must go BEFORE the object is
-        /// deactivated — because the baked <see cref="DoryOarLayer"/> overlay draws the oars for this hull and
-        /// two rigs would double-render them; (3) adds a <see cref="DirectionalBoatSprite"/> on a child renderer
-        /// (8 facings, CW from North, snap mode); (4) adds <see cref="BoatWaveMotion"/> on that child; and
-        /// (5) layers the two baked oar overlays over it, animated from the boat's real per-oar state.
+        /// Dress the persistent Dory in the skin ITS HULL ASSET asks for. Formerly
+        /// <c>ApplyDirectionalFishingBoatVisual</c> — a misnomer since #205: it applies no fishing-boat
+        /// skin (the owner decided the dory rows again) and no fishing-boat HULL (the engine-helm swap was
+        /// reverted). It applies whatever <see cref="BoatHullDef.Visual"/> binds; today, for
+        /// <c>boat.dory</c>, that is the iso dory.
         ///
-        /// <para><b>VISUAL ONLY — the dory ROWS.</b> The hull the boat drives on is the rowed <c>boat.dory</c>
-        /// (Propulsion = Oars → per-oar strokes, <c>BoatController.ApplyOarDrive</c>) that the caller already
-        /// serialized; nothing here re-points <c>_hull</c>. #93/#94/#97 used to swap it to the Engine
-        /// <c>boat.fishing_skiff</c> so the helm matched a POWERBOAT picture ("a power boat skin, not a
-        /// rowboat") — the owner has since decided the dory rows again now the art is a rowboat and the
-        /// independent oars have landed, so that swap is gone and the fleet registry / save-restore see the
-        /// plain <c>boat.dory</c> they were always keyed to.</para>
+        /// <para>All this does is the two things the SKINNER cannot: (1) it HIDES the plain rotating dory
+        /// hull picture — renderer <c>.enabled</c> only, never its sprite ref, so an unskinned hull can
+        /// still fall back to it; and (2) it retires the LEGACY transform OAR RIG (rower + two rotating
+        /// Oar.png pivots), because the baked <see cref="DoryOarLayer"/> overlay draws this hull's oars
+        /// from the SAME LeftOar/RightOar state and two rigs would double-render them. <b>Order is
+        /// load-bearing:</b> <see cref="BoatRowAnimator"/> RE-ACTIVATES its <c>_oarRig</c> every Update
+        /// while its home hull is active, so the ref must be SEVERED (null) BEFORE the rig object is
+        /// deactivated, or the animator turns it straight back on. The animator class itself stays
+        /// (Boats-core; any hull that still wires a rig keeps using it).</para>
         ///
-        /// <para>Null-safe: with NEITHER facing set imported the plain rotating dory hull + its legacy oar rig
-        /// are left exactly as built (no half-state, no PARTIAL compass snapping into a stale facing), the skin
-        /// no-ops with a warning, and the build never breaks before the assets are in. With the iso hull but no
-        /// oar sheets, the hull skin still applies and the oar layer alone no-ops (the legacy rig stays retired
-        /// — a rowboat with no oars drawn beats two oar rigs fighting).</para>
+        /// <para>The rig itself — the screen-aligned compass child, the wave-coupled rock grid, the wave
+        /// motion, the layered oars — is built by <see cref="BoatHullSkinner"/>, the ONE shared installer
+        /// that <see cref="OwnedFleet"/> (on a hull swap) and the ambient fleet also use, so the player's
+        /// rig can only be wrong in one place.</para>
+        ///
+        /// <para><b>VISUAL ONLY — the dory ROWS.</b> Nothing here re-points <c>_hull</c>: the boat drives
+        /// on the rowed <c>boat.dory</c> (Propulsion = Oars → per-oar strokes,
+        /// <c>BoatController.ApplyOarDrive</c>) the caller already serialized. #93/#94/#97 used to swap it
+        /// to the Engine <c>boat.fishing_skiff</c> so the helm matched a POWERBOAT picture ("a power boat
+        /// skin, not a rowboat") — that swap is gone, and the fleet registry / save-restore see the plain
+        /// <c>boat.dory</c> they were always keyed to.</para>
+        ///
+        /// <para>Null-safe: a hull with no <see cref="BoatHullDef.Visual"/> — or one whose sheets are
+        /// unsliced, so the def's compass is empty — leaves the plain rotating dory hull + its legacy oar
+        /// rig EXACTLY as built (no half-state, no PARTIAL compass snapping into a stale facing), warns,
+        /// and the build never breaks before the assets are in. With the iso hull but no oar sheets the
+        /// hull skin still applies and the oar layer alone no-ops (the legacy rig stays retired — a rowboat
+        /// with no oars drawn beats two oar rigs fighting).</para>
         /// </summary>
-        static void ApplyDirectionalFishingBoatVisual(GameObject doryGo, SpriteRenderer hullRenderer,
-                                                      GameObject oarRig, BoatRowAnimator rowAnim,
-                                                      BoatController boat)
+        static void ApplyHullSkin(GameObject doryGo, SpriteRenderer hullRenderer, GameObject oarRig,
+                                  BoatRowAnimator rowAnim, BoatController boat, BoatHullDef hull)
         {
-            // Prefer the owner's ISO DORY art: 8 static hull headings + a 64-frame heading×rock grid. When
-            // both sheets import + slice, the boat wears the iso dory AND gets a rock grid, so the visible
-            // rock is DRAWN by frame from the wave under the hull (wave-coupled rock — the ask).
-            var isoStatic = LoadSheetFrames(ArtDoryIso);       // ordered DoryIso_0..7 (index = heading)
-            var isoRock = LoadSheetFrames(ArtDoryIsoRock);     // ordered DoryIsoRock_0..63 (index = heading×8+frame)
-            bool useIsoDory =
-                isoStatic.Length == DoryIsoStaticCount && isoStatic.All(s => s != null) &&
-                isoRock.Length == DoryIsoRockCount && isoRock.All(s => s != null);
-
-            // Fallback compass (pre-iso placeholder art). LoadSpriteAny handles Single OR Multiple import.
-            var facings = new Sprite[FishingBoatFacingPaths.Length];
-            for (int i = 0; i < FishingBoatFacingPaths.Length; i++)
-                facings[i] = LoadSpriteAny(FishingBoatFacingPaths[i]);
-            bool useFallbackCompass = !useIsoDory && facings.All(f => f != null);
-
-            if (!useIsoDory && !useFallbackCompass)
+            var visual = hull != null ? hull.Visual : null;
+            if (visual == null || !visual.HasFullCompass())
             {
-                // No directional art imported → leave the plain dory hull + its legacy oar rig EXACTLY as
-                // built. Re-run after DoryIso/DoryIsoRock import + slice to get the iso dory skin.
-                string missing = string.Join(", ", FishingBoatFacingPaths.Where((p, i) => facings[i] == null));
-                Debug.LogWarning("[PersistentCoreBuilder] No directional boat art imported (iso dory sheets " +
-                                 "missing/unsliced; fallback facings missing: " +
-                                 (missing.Length > 0 ? missing : "none") + ") — left the plain rotating dory " +
-                                 "hull + the legacy oar rig in place. Open Unity so the sheets import + slice " +
-                                 "(Hidden Harbours ▸ Art ▸ Slice…), then re-run the start builder.");
+                Debug.LogWarning("[PersistentCoreBuilder] Hull '" + (hull != null ? hull.Id : "(none)") +
+                                 "' binds no directional Visual with a full compass — left the plain rotating " +
+                                 "dory hull + the legacy oar rig in place. Point the hull asset's Visual at a " +
+                                 "BoatVisualDef; if its sheets are unsliced, slice them (Hidden Harbours ▸ Art " +
+                                 "▸ Slice…), re-run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs, then re-run " +
+                                 "the start builder.");
                 return;
             }
 
-            Sprite[] visualFacings = useIsoDory ? isoStatic : facings;
-
-            // (1) Hide the dory HULL picture. Disable the renderer only — keep its sprite ref intact so
-            // OwnedFleet's id-keyed hull swap (which sets .sprite, never .enabled) is unaffected by the swap.
+            // (1) Hide the plain hull PICTURE. Renderer .enabled only — the sprite ref stays intact so a
+            // later swap to an UNSKINNED hull can bring this renderer back with something to draw.
             if (hullRenderer != null) hullRenderer.enabled = false;
 
-            // (2) Retire the LEGACY transform OAR RIG (rower + two rotating Oar.png pivots). The baked
-            // DoryOarLayer overlay below draws this hull's oars from the SAME LeftOar/RightOar state, so
-            // leaving the old rig up would double-render them. The BoatRowAnimator RE-ACTIVATES its _oarRig
-            // every Update while the home hull is active, so SEVER that ref first (null) — then the animator
-            // can't turn the rig back on — before deactivating the rig object. The animator class itself stays
-            // (Boats-core; any non-iso hull that still wires a rig keeps using it). Fully reversible: flip the
-            // flag false + re-run to re-wire _oarRig and leave the rig active.
+            // (2) Retire the LEGACY transform oar rig. Sever the ref FIRST (see the order note above), then
+            // deactivate. Fully reversible: clear the hull asset's Visual + re-run to get the old rig back.
             SetRef(rowAnim, "_oarRig", null);
             if (oarRig != null) oarRig.SetActive(false);
 
-            // (3) Add the DirectionalBoatSprite on a CHILD renderer of the boat body (the body transform
-            // turns with physics; the component counter-rotates this child to keep the facing screen-aligned).
-            // sortingOrder 1 draws it above the (now-hidden) hull at 0 and below the on-foot player at 10.
-            var spriteGo = new GameObject("FishingBoatVisual");
-            spriteGo.transform.SetParent(doryGo.transform, false);
-            var sr = spriteGo.AddComponent<SpriteRenderer>();
-            sr.sprite = visualFacings[0];    // start facing North (until the first LateUpdate snaps to heading)
-            sr.sortingOrder = 1;
+            // (3) The rig, from data, through the one shared installer.
+            var rig = BoatHullSkinner.Apply(doryGo, visual, boat);
 
-            var directional = doryGo.AddComponent<DirectionalBoatSprite>();
-            directional.Configure(
-                visualFacings, sr,
-                zeroHeadingDegrees: 0f,                       // element 0 is the North-facing sprite
-                smoothModeSprite: visualFacings[0],           // unused in Snap; same art if ever toggled to Smooth
-                mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
-
-            // Wire the wave-coupled ROCK GRID (iso dory only): DirectionalBoatSprite draws
-            // rockGrid[heading×8 + RockFrame] instead of the static facing, and BoatWaveMotion below sets
-            // RockFrame from the wave phase. With the FishingBoat fallback there is no rock grid, so the
-            // static compass stands and BoatWaveMotion uses its legacy transform rock.
-            if (useIsoDory)
-                directional.ConfigureRock(isoRock, DoryIsoRockFrameCount);
-
-            // (4) B2 (ADR 0018): the boat ROCKS on the shared wave field — visual-only. BoatWaveMotion
-            // samples WaveMath under the hull each frame and rolls/pitches/bobs the FishingBoatVisual
-            // CHILD (roll routed through DirectionalBoatSprite.VisualTiltDegrees, because that component
-            // stomps the child's rotation every LateUpdate). The physics body, colliders and controller
-            // forces are untouched (forces are B3, after the owner's feel verdict). NOTE: the plain
-            // fallback path above draws its hull sprite ON the physics root — there is no separate
-            // visual child to offset there, so the rock rides the directional-visual path only; B3
-            // moves the body itself and will cover both.
-            var waveMotion = doryGo.AddComponent<BoatWaveMotion>();
-            waveMotion.Configure(spriteGo.transform, directional);
-
-            // (5) THE OARS (#204): layer the two baked per-side overlays over the hull picture and animate
-            // them from the boat's real per-oar state. Iso art only — the fallback compass has no oar sheets.
-            bool oarsWired = useIsoDory && WireIsoDoryOars(doryGo, spriteGo.transform, sr, boat, directional);
-
-            Debug.Log(useIsoDory
-                ? "[PersistentCoreBuilder] Playable boat wears the ISO DORY skin (8 static headings + 64-frame " +
-                  "rock grid): BoatWaveMotion drives the visible rock BY FRAME from the wave phase under the hull " +
-                  "(crest → frame 2, trough → 6), so the rock corresponds to the waves. The fake transform rock is " +
-                  "retired for this hull (frames own it). The boat drives ROWED on " +
-                  (boat.Hull != null ? boat.Hull.Id : "(no hull)") + " (per-oar strokes), and the independent oar " +
-                  "overlays are " + (oarsWired ? "LAYERED + animated from the live LeftOar/RightOar state." :
-                  "NOT wired (DoryOarPort/DoryOarStar missing or unsliced) — no oars are drawn; import + slice " +
-                  "them and re-run.")
-                : "[PersistentCoreBuilder] Iso dory art not imported — fell back to the FishingBoat_* compass with " +
-                  "the legacy transform rock and NO oar overlay. Import + slice DoryIso/DoryIsoRock/DoryOarPort/" +
-                  "DoryOarStar, then re-run the start builder for the wave-coupled iso dory that rows.");
-        }
-
-        /// <summary>
-        /// Layer the two BAKED oar overlays (port + starboard) over the iso hull picture and wire
-        /// <see cref="DoryOarLayer"/> to animate them from the boat's real per-oar state. Both renderers are
-        /// CHILDREN of the hull's visual child, so they inherit the exact snap/counter-rotation treatment the
-        /// hull gets (they must never smooth-rotate while the hull snaps) and register pixel-perfect on it —
-        /// the sheets share the hull's cell + waterline pivot, so localPosition is zero. Sorting follows the
-        /// art README's draw order (hull → port oar → star oar) on the hull's own sorting layer. Returns false
-        /// (wiring nothing) unless BOTH sheets give their full 80 ordered slices — a partial sheet would index
-        /// into a stale cell.
-        /// </summary>
-        static bool WireIsoDoryOars(GameObject doryGo, Transform visual, SpriteRenderer hullVisual,
-                                    BoatController boat, DirectionalBoatSprite directional)
-        {
-            var port = LoadSheetFrames(ArtDoryOarPort);   // DoryOarPort_0..79 (index = heading×10 + col)
-            var star = LoadSheetFrames(ArtDoryOarStar);   // DoryOarStar_0..79
-            if (port.Length != DoryOarFrameCount || port.Any(s => s == null) ||
-                star.Length != DoryOarFrameCount || star.Any(s => s == null))
-            {
-                Debug.LogWarning($"[PersistentCoreBuilder] Oar sheets gave {port.Length}/{star.Length} of " +
-                                 $"{DoryOarFrameCount} slices each ({ArtDoryOarPort} / {ArtDoryOarStar}) — the " +
-                                 "independent oar overlay is NOT wired (no half-state: a partial sheet would " +
-                                 "index a stale cell). Slice them (Hidden Harbours ▸ Art ▸ Slice Environment + " +
-                                 "VFX Sheets) and re-run the start builder.");
-                return false;
-            }
-
-            SpriteRenderer MakeOarRenderer(string name, Sprite first, int sortingOrder)
-            {
-                var go = new GameObject(name);
-                go.transform.SetParent(visual, false);        // rides the hull picture: same snap, same pose
-                go.transform.localPosition = Vector3.zero;    // shared pivot ⇒ pixel-perfect registration
-                var r = go.AddComponent<SpriteRenderer>();
-                r.sprite = first;
-                r.sortingLayerID = hullVisual.sortingLayerID; // same layer as the hull — only the order differs
-                r.sortingOrder = sortingOrder;
-                return r;
-            }
-
-            // Draw order (art README): hull → rower → port oar → star oar. The hull visual sits at its own
-            // order; the oars take the next two so they always draw ON it and never against each other.
-            var portSr = MakeOarRenderer("OarPort", port[DoryOarMath.RestingColumn], hullVisual.sortingOrder + 1);
-            var starSr = MakeOarRenderer("OarStar", star[DoryOarMath.RestingColumn], hullVisual.sortingOrder + 2);
-
-            var layer = doryGo.AddComponent<DoryOarLayer>();
-            layer.Configure(port, star, portSr, starSr, boat, directional, DoryIsoStaticCount, DoryOarColumnCount);
-            return true;
+            Debug.Log("[PersistentCoreBuilder] Playable boat wears the '" + visual.Id + "' skin (" +
+                      visual.HeadingCount + " facings" +
+                      (visual.HasRockGrid() ? ", " + visual.RockFrameCount + " rock frames per heading" : "") +
+                      ") bound by " + hull.Id + ".Visual — no const flag, no art paths: re-skin by re-pointing " +
+                      "the hull asset. " +
+                      (visual.HasRockGrid()
+                          ? "BoatWaveMotion drives the visible rock BY FRAME from the wave phase under the hull " +
+                            "(crest → frame 2, trough → 6), so the rock corresponds to the waves and the fake " +
+                            "transform rock is retired for this hull. "
+                          : "No rock grid bound — the static compass stands with the legacy transform rock. ") +
+                      "The boat drives ROWED on " +
+                      (boat != null && boat.Hull != null ? boat.Hull.Id : "(no hull)") +
+                      " (per-oar strokes), and the independent oar overlays are " +
+                      (rig.Oars != null
+                          ? "LAYERED + animated from the live LeftOar/RightOar state."
+                          : "NOT wired (the Visual binds no complete oar sheets) — no oars are drawn; slice " +
+                            "DoryOarPort/DoryOarStar, re-run Build Boat Visual Defs, then re-run this builder."));
         }
 
         // ---- serialized-ref helpers (the builders' persist-the-refs convention) --------------------

@@ -83,21 +83,21 @@ namespace HiddenHarbours.Tools.Editor
             controller.SetHull(hull);
             root.AddComponent<DevBoatInput>();
 
-            // --- Child renderer: the picture. SnapDirectional counter-rotates this to stay screen-aligned;
-            //     SmoothRotateSingle leaves it at local identity so it inherits the body's yaw. ---
-            var spriteGo = new GameObject("Sprite");
-            spriteGo.transform.SetParent(root.transform, false);
-            var sr = spriteGo.AddComponent<SpriteRenderer>();
-            sr.sprite = facings[0];           // start facing North
-            sr.sortingOrder = 10;
+            // --- The picture: the SHARED skin rig (BoatHullSkinner), not a third hand-rolled copy of it.
+            //     The child renderer is what SnapDirectional counter-rotates to stay screen-aligned, and
+            //     what SmoothRotateSingle leaves at local identity so it inherits the body's yaw.
+            //
+            //     This harness carries its own 4 facings and its own in-memory hull, so it adapts them into
+            //     a runtime binding rather than pointing at a BoatVisualDef asset. It keeps its historic
+            //     child name ("Sprite") and opts out of the wave motion + oars the player's boat wants —
+            //     this is an A/B rig for comparing snap vs smooth, nothing more. ---
+            var skin = BoatVisualDef.CreateRuntime(facings, sortingOrder: 10);
+            var directional = BoatHullSkinner.Apply(
+                root, skin, controller,
+                new BoatHullSkinner.Options { ChildName = "Sprite", SkipWaveMotion = true, SkipOars = true })
+                .Directional;
 
-            // --- The prototype component + its dev rig (mode toggle + auto-yaw), wired from code. ---
-            var directional = root.AddComponent<DirectionalBoatSprite>();
-            directional.Configure(
-                facings, sr,
-                zeroHeadingDegrees: 0f,                       // facings[0] is the North-facing sprite
-                smoothModeSprite: facings[0],                 // same artwork in smooth mode, just rotated
-                mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
+            // --- The dev rig (mode toggle + auto-yaw), wired from code. ---
 
             var rig = root.AddComponent<BoatRotationTestRig>();
             // Wire the rig's DirectionalBoatSprite reference via SerializedObject (the field is private).

@@ -49,6 +49,12 @@ namespace HiddenHarbours.Boats
         /// <summary>Optional knobs a caller varies. Defaults are the player boat's rig, exactly.</summary>
         public struct Options
         {
+            /// <summary>Name of the visual child. Null/empty = <see cref="VisualChildName"/>, which is what
+            /// the PLAYER's boat must use (BoatSpotlight finds it by name). Decor rigs that no one looks up
+            /// — the ambient fleet's "Visual" — pass their own historic name so converging on this installer
+            /// doesn't silently rename their children.</summary>
+            public string ChildName;
+
             /// <summary>Multiply-tint written ONCE onto the hull picture at install (rule 7 — no per-frame
             /// colour churn). The ambient fleet paints each fisher's identity colour through this; the
             /// player's boat leaves it clear. Default (a == 0) = untinted white.</summary>
@@ -140,10 +146,11 @@ namespace HiddenHarbours.Boats
 
             // (1) The visual CHILD: screen-aligned, carries the hull picture. Reused if a skin is already
             // worn, so a re-skin swaps the art instead of stacking a second rig.
-            var child = root.transform.Find(VisualChildName);
+            string childName = string.IsNullOrEmpty(options.ChildName) ? VisualChildName : options.ChildName;
+            var child = root.transform.Find(childName);
             if (child == null)
             {
-                var go = new GameObject(VisualChildName);
+                var go = new GameObject(childName);
                 go.transform.SetParent(root.transform, false);
                 child = go.transform;
             }
