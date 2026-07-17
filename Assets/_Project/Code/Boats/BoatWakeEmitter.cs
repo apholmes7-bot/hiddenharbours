@@ -506,6 +506,13 @@ namespace HiddenHarbours.Boats
             private readonly SpriteRenderer _sprayRenderer;
             private float _emitCarry;
             private float _lineEmitCarry;
+            // The boat's own compass — the source of its artwork's bake elevation. Resolved lazily (a boat can
+            // be skinned after its wake rig was built) and cached once found.
+            private DirectionalBoatSprite _directional;
+
+            /// <summary>The elevation that means "a plan view": no foreshortening, today's placement. What a
+            /// boat with no directional skin reads.</summary>
+            private const float PlanViewElevationDegrees = 90f;
 
             public WakeRig(BoatController boat, int pool, int linePool, Sprite foam, Sprite line, Sprite[] tierSprites,
                            Sprite[] spraySprites, Transform parent, string sortingLayer, int sortingOrder,
@@ -588,6 +595,7 @@ namespace HiddenHarbours.Boats
                 Vector2 bow = Boat.transform.up;
                 float speed = Boat.Velocity.magnitude;
                 bool aground = Boat.IsAground;
+                float bakeElev = BakeElevationDegrees();
 
                 // --- GRADE the wake by hull SIZE + WEIGHT + SPEED (the owner's brief). Static hull stats come
                 // through the boat's public seam (rule 4); speed is live. The magnitude drives BOTH the plume
@@ -604,10 +612,10 @@ namespace HiddenHarbours.Boats
                 WakeConfig fcfg = ScaleFoamExtent(cfg, foamFactor);
 
                 // --- GRADED PLUME (the primary size read) ---
-                RenderPlume(pos, bow, speed, aground, magnitude, tier, length, foamColor, grade);
+                RenderPlume(pos, bow, speed, aground, magnitude, tier, length, bakeElev, foamColor, grade);
 
                 // --- GRADED BOW SPRAY (speed-forward, its own grade — gentle on the dory by onset) ---
-                RenderSpray(pos, bow, speed, aground, length, mass, sprayColor, spray);
+                RenderSpray(pos, bow, speed, aground, length, mass, bakeElev, sprayColor, spray);
 
                 // --- FOAM BUBBLES (now grown by the grade) ---
                 // 1) EMIT from the stern, rate ∝ speed (none below threshold / when aground).
@@ -630,6 +638,26 @@ namespace HiddenHarbours.Boats
                     _lineSys.Step(current, arm.VelocityDecay, dt);
                     RenderLines(roughness, time, speed, lineCfg, arm, lineColor);
                 }
+            }
+
+            /// <summary>
+            /// The bake elevation of THIS boat's current skin — what the plume and spray anchors must be
+            /// projected through, because the hull is drawn by a ¾ camera while the anchors are computed in
+            /// honest top-down world metres. Read off the boat's own
+            /// <see cref="DirectionalBoatSprite.BakeElevationDegrees"/>, which the skinner sets from the
+            /// artwork's <see cref="BoatVisualDef.ArtBakeElevationDegrees"/> — per-artwork, never a global
+            /// sin(40°): the iso kits bake at 40, the hand-drawn compass the ambient fleet wears is not a bake
+            /// at all and must not be foreshortened.
+            ///
+            /// <para>An unskinned boat (no compass component) has no baked camera to speak of, so it reads 90 —
+            /// a plan view, i.e. exactly where its wake has always gone. The component is re-resolved while it
+            /// is missing so a boat skinned AFTER its rig was built still finds it; once found it is cached,
+            /// and a hull swap re-Configures the same component in place rather than replacing it.</para>
+            /// </summary>
+            private float BakeElevationDegrees()
+            {
+                if (_directional == null && Boat != null) _directional = Boat.GetComponent<DirectionalBoatSprite>();
+                return _directional != null ? _directional.BakeElevationDegrees : PlanViewElevationDegrees;
             }
 
             /// <summary>A per-tick copy of a foam <see cref="WakeConfig"/> with its FOOTPRINT (foam size + Kelvin
@@ -657,7 +685,8 @@ namespace HiddenHarbours.Boats
             /// (<see cref="WakeGrading.OrientAngleDeg"/>, which also carries the owner's PlumeFlip escape hatch).</para>
             /// </summary>
             private void RenderPlume(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude, int tier,
-                                     float hullLength, Color tint, in WakeGradeConfig grade)
+                                     float hullLength, float bakeElevationDegrees, Color tint,
+                                     in WakeGradeConfig grade)
             {
                 if (_plume == null) return;
 
@@ -671,7 +700,7 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                Vector2 apex = WakeGrading.SternAnchor(pos, bow, hullLength, grade.PlumeAsternOffset);
+                Vector2 apex = WakeGrading.SternAnchor(pos, bow, hullLength, grade.PlumeAsternOffset, bakeElevationDegrees);
                 float scale = WakeGrading.PlumeScale(magnitude, in grade);
                 float angleDeg = WakeGrading.OrientAngleDeg(bow, grade.PlumeFlip);
 
@@ -695,7 +724,8 @@ namespace HiddenHarbours.Boats
             /// shared sprite per tier — no allocation (rule 7); visual-only (rule 5).
             /// </summary>
             private void RenderSpray(Vector2 pos, Vector2 bow, float speed, bool aground,
-                                     float hullLength, float massKg, Color tint, in BowSprayGradeConfig spray)
+                                     float hullLength, float massKg, float bakeElevationDegrees, Color tint,
+                                     in BowSprayGradeConfig spray)
             {
                 if (_sprayRenderer == null) return;
 
@@ -711,7 +741,7 @@ namespace HiddenHarbours.Boats
 
                 _sprayRenderer.sprite = sprite;
 
-                Vector2 impact = BowSprayGrading.BowAnchor(pos, bow, hullLength, spray.SprayBowOffset);
+                Vector2 impact = BowSprayGrading.BowAnchor(pos, bow, hullLength, spray.SprayBowOffset, bakeElevationDegrees);
                 float scale = BowSprayGrading.SprayScale(magnitude, in spray);
                 float angleDeg = WakeGrading.OrientAngleDeg(bow, spray.SprayFlip);
 

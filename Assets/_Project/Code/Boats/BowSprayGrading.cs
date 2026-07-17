@@ -74,14 +74,19 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// Where the spray's IMPACT pivot goes: at the boat's actual BOW (half the hull length ahead of the
         /// boat origin, which sits at the hull's centre) plus a small tunable nudge — the cutwater, where the
-        /// stem actually hits the water. The mirror of <see cref="WakeGrading.SternAnchor"/>. A degenerate bow
-        /// vector falls back to +Y so the anchor is never NaN. Pure + static.
+        /// stem actually hits the water. The exact mirror of <see cref="WakeGrading.SternAnchor"/>, including
+        /// its projection fix: the cutwater is half a hull AHEAD <b>on the water</b>, and the ¾ camera draws
+        /// that distance foreshortened at N/S and full at E/W, so a top-down anchor slid the spray off the stem
+        /// as she turned exactly as the plume slid off the transom.
+        /// <paramref name="bakeElevationDegrees"/> is the artwork's own bake elevation (90 = a plan view = no
+        /// foreshortening — see <see cref="WakeGrading.ForeshortenY"/>). A degenerate bow vector falls back to
+        /// +Y so the anchor is never NaN. Pure + static.
         /// </summary>
-        public static Vector2 BowAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float aheadOffset)
+        public static Vector2 BowAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float aheadOffset,
+                                        float bakeElevationDegrees)
         {
-            Vector2 dir = bow.sqrMagnitude > 1e-8f ? bow.normalized : Vector2.up;
             float ahead = Mathf.Max(0f, hullLengthMeters) * 0.5f + aheadOffset;
-            return boatPos + dir * ahead;
+            return WakeGrading.ProjectAlongHeading(boatPos, bow, ahead, bakeElevationDegrees);
         }
     }
 

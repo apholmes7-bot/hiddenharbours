@@ -22,6 +22,12 @@ namespace HiddenHarbours.Boats
     /// full 8-way compass (N/NE/E/SE/S/SW/W/NW, CW from North).
     /// </summary>
     [DisallowMultipleComponent]
+    // READS the rock frame BoatWaveMotion writes, and every overlay layer reads what this one draws — so the
+    // three run in a fixed order (wave −120 → this −110 → overlays −100) rather than whatever order Unity
+    // happened to build the boat in. Left implicit, a writer landing BETWEEN two readers desynchronises them
+    // by one frame, which on an 8-frame rock cycle is 45° of wave phase — a real bug that would have been
+    // deterministic per boat and so looked like "works on my machine".
+    [DefaultExecutionOrder(-110)]
     public class DirectionalBoatSprite : MonoBehaviour
     {
         /// <summary>How this test boat presents its turn — the thing the owner is comparing.</summary>
@@ -52,6 +58,12 @@ namespace HiddenHarbours.Boats
                  "mirrored; the older FishingBoat_* compass is CW and correct. Per-artwork, never global. " +
                  "Set from BoatVisualDef.FacingsAreCounterClockwise; default false = today's CW convention.")]
         [SerializeField] private bool _facingsAreCounterClockwise = false;
+
+        [Tooltip("Elevation (degrees above the horizon) of the camera this artwork was baked at — 40 for every " +
+                 "iso rig, 90 (= a plan view, so no foreshortening at all) for art that is not a rig bake, such " +
+                 "as the hand-drawn FishingBoat_* compass. Set from BoatVisualDef.ArtBakeElevationDegrees; " +
+                 "default 90 so an unskinned or half-wired boat is placed exactly as it always was.")]
+        [Range(0f, 90f)] [SerializeField] private float _bakeElevationDegrees = 90f;
 
         [Tooltip("Child SpriteRenderer the facing is written to. In SnapDirectional it is counter-rotated " +
                  "to stay screen-axis-aligned; in SmoothRotateSingle it is left to rotate with the hull.")]
@@ -129,7 +141,8 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Configure(Sprite[] facings, SpriteRenderer renderer, float zeroHeadingDegrees = 0f,
                               Sprite smoothModeSprite = null, RotationMode mode = RotationMode.SnapDirectional,
-                              bool facingsAreCounterClockwise = false)
+                              bool facingsAreCounterClockwise = false,
+                              float bakeElevationDegrees = 90f)
         {
             _facings = facings;
             _renderer = renderer;
@@ -137,8 +150,22 @@ namespace HiddenHarbours.Boats
             _smoothModeSprite = smoothModeSprite;
             _mode = mode;
             _facingsAreCounterClockwise = facingsAreCounterClockwise;
+            _bakeElevationDegrees = Mathf.Clamp(bakeElevationDegrees, 0f, 90f);
             _lastIndex = -1;
         }
+
+        /// <summary>
+        /// The elevation (degrees above the horizon) of the camera THIS artwork was baked at — 40 for the iso
+        /// kits, 90 (a plan view: no foreshortening) for the hand-drawn compass. Exposed for everything that
+        /// pins itself to a point ON the drawn hull: <see cref="BoatWakeEmitter"/>'s plume at the transom and
+        /// spray at the cutwater, and <see cref="OutboardMotorLayer"/>'s rock pose.
+        ///
+        /// <para><b>It lives here for the same reason <see cref="FacingsAreCounterClockwise"/> does</b>: it is a
+        /// fact about the SHEETS, and the two art lineages genuinely disagree. A blanket sin(40°) in the code
+        /// would fix the iso kits and break the fishing boat and the whole ambient fleet that shares its
+        /// facings — the exact trap #212 avoided.</para>
+        /// </summary>
+        public float BakeElevationDegrees => _bakeElevationDegrees;
 
         /// <summary>
         /// True when this skin's cells run COUNTER-CLOCKWISE (cell i depicts −step·i) — see

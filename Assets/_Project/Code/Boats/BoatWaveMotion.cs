@@ -59,6 +59,13 @@ namespace HiddenHarbours.Boats
     /// there (or identically in both places), and only the RESPONSE amplitudes here.</para>
     /// </summary>
     [DisallowMultipleComponent]
+    // THE WRITER of DirectionalBoatSprite.RockFrame, so it runs FIRST of the boat's visual chain
+    // (this −120 → DirectionalBoatSprite −110 → the overlay layers −100). All three work in LateUpdate, and
+    // with no explicit order Unity picks one arbitrarily: a writer landing between two readers leaves them a
+    // frame apart, which on the 8-frame rock cycle is 45° of wave phase — the hull leaning one way and its
+    // engine another. It resolves per boat at build time, so it would have been permanently fine or
+    // permanently broken with nothing in the code to say which. These three attributes are ONE decision.
+    [DefaultExecutionOrder(-120)]
     public class BoatWaveMotion : MonoBehaviour
     {
         [Header("Master")]

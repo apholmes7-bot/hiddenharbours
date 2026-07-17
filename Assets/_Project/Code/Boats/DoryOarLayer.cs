@@ -46,6 +46,10 @@ namespace HiddenHarbours.Boats
     /// and the ambient fleet are untouched.</para>
     /// </summary>
     [DisallowMultipleComponent]
+    // A READER of the rock frame + drawn heading, so it runs LAST of the boat's visual chain
+    // (BoatWaveMotion −120 → DirectionalBoatSprite −110 → this −100). See BoatWaveMotion for why. This pins
+    // the ORDER only — the oars' pose math is untouched.
+    [DefaultExecutionOrder(-100)]
     public class DoryOarLayer : MonoBehaviour
     {
         [Header("Sheets (heading×column; the builder wires these — index = heading·columns + col)")]

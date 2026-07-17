@@ -24,6 +24,7 @@ MonoBehaviour:
   - {fileID: 7023253876662829883, guid: 2026e67792789e4428f35d85e8262dd2, type: 3}
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 1
+  ArtBakeElevationDegrees: 40
   SortingOrder: 1
   RockGrid:
   - {fileID: 3689547679082727975, guid: a893b7ba6bc883a44899c2cc3dd60eda, type: 3}
@@ -245,5 +246,6 @@ MonoBehaviour:
   MotorVariant: 3
   MotorFit: 0
   MotorRockRollDegrees: 4.2
-  MotorRockPitchOffsetMeters: 0.016
+  MotorRockPitchDegrees: 2.4
   MotorRockHeavePixels: 1.5
+  MotorMountLocalMeters: {x: 0, y: -2.63, z: 0.56}

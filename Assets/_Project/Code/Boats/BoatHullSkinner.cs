@@ -186,7 +186,11 @@ namespace HiddenHarbours.Boats
                 smoothModeSprite: visual.Facings[0],             // unused in Snap; same art if toggled
                 mode: DirectionalBoatSprite.RotationMode.SnapDirectional,
                 // Per-ARTWORK, never global: the iso sheets are baked CCW; the FishingBoat compass is CW.
-                facingsAreCounterClockwise: visual.FacingsAreCounterClockwise);
+                facingsAreCounterClockwise: visual.FacingsAreCounterClockwise,
+                // Also per-artwork, and for the same reason: the iso kits were baked by a 40° camera, the
+                // hand-drawn compass by nobody's. Everything anchored to a point ON the hull picture reads it
+                // off here — this component is where an artwork's own facts live.
+                bakeElevationDegrees: visual.ArtBakeElevationDegrees);
 
             // (3) The rock grid: DirectionalBoatSprite draws rockGrid[heading·frames + RockFrame] instead
             // of the static facing, and BoatWaveMotion sets RockFrame from the wave phase under the hull —
@@ -356,8 +360,9 @@ namespace HiddenHarbours.Boats
             layer.Configure(def.MotorLower, def.MotorUpper, lowerA, upperA, lowerB, upperB,
                             boat, directional, hullVisual, def.MotorVariant, def.MotorFit,
                             def.HeadingCount, def.MotorColumnCount, def.MotorMaxSteerDegrees);
-            layer.ConfigureRock(def.MotorRockRollDegrees, def.MotorRockPitchOffsetMeters,
-                                def.MotorRockHeavePixels, def.RockFrameCount);
+            layer.ConfigureRock(def.MotorRockRollDegrees, def.MotorRockPitchDegrees,
+                                def.MotorRockHeavePixels, def.RockFrameCount,
+                                def.MotorMountLocalMeters, def.ArtBakeElevationDegrees);
             return layer;
         }
 
