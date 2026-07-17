@@ -26,8 +26,18 @@ namespace HiddenHarbours.Boats
         public string DisplayName = "The Dory";
 
         [Header("Art")]
-        [Tooltip("Optional hull sprite. When a boat is granted, the fleet swaps the renderer to this " +
-                 "(null-safe). Attached by art-pipeline / wired in the greybox builder.")]
+        [Tooltip("Optional DIRECTIONAL SKIN — how this hull LOOKS, as data (rule 2). Points at a " +
+                 "BoatVisualDef binding the hull compass, the wave-coupled rock grid and the baked oar " +
+                 "overlays. BoatHullSkinner is the ONE place that installs it, and OwnedFleet re-skins " +
+                 "through it on a hull swap, so a bought boat changes its picture as well as its feel. " +
+                 "Null (or an incomplete compass) = this hull wears the plain rotating Sprite below, " +
+                 "exactly as it did before skins existed.")]
+        public BoatVisualDef Visual;
+
+        [Tooltip("Fallback hull sprite: ONE picture that rotates with the hull, for hulls with no " +
+                 "directional Visual above (the Punt, the FishingSkiff). When a boat is granted, the " +
+                 "fleet swaps the renderer to this (null-safe). Attached by art-pipeline / wired in the " +
+                 "greybox builder.")]
         public Sprite Sprite;
 
         [Header("Dimensions & mass")]

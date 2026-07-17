@@ -34,6 +34,10 @@ namespace HiddenHarbours.Tests.EditMode
             _config = ScriptableObject.CreateInstance<GameConfig>();
             _dory = ScriptableObject.CreateInstance<BoatHullDef>();
             _dory.Id = "boat.dory"; _dory.HoldUnits = 6;
+            // The skin is DATA now: the builder dresses the boat in whatever the HULL ASSET binds, so a
+            // test hull that wants the skin must bind it exactly as the shipped Dory.asset does. (The old
+            // builder had it as a const flag + const art paths, so an in-code hull got the skin for free.)
+            _dory.Visual = DoryVisual();
             _punt = ScriptableObject.CreateInstance<BoatHullDef>();
             _punt.Id = "boat.punt"; _punt.HoldUnits = 14;
 
@@ -153,65 +157,51 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the directional boat SKIN (the iso dory; #93/#94 visual, #202 rock, #204 oars) -------------
-        // The playable boat WEARS 8-way directional facings (the iso dory art when imported, else the older
-        // FishingBoat_* compass) instead of the single rotating dory hull picture + the legacy transform oar
-        // rig. The builder gates this on the UseDirectionalFishingBoatVisual flag (currently ON). These guard
-        // the skin's observable effects — the directional component is added + configured, the hull picture is
-        // hidden, the LEGACY oar rig is retired (with its BoatRowAnimator ref severed so it can't re-show the
-        // rig and double-render against the baked DoryOarLayer overlay), and — the REVERT — the boat still
-        // drives ROWED on boat.dory.
+        // The playable boat WEARS the 8-way directional facings its HULL ASSET binds (BoatHullDef.Visual →
+        // BoatVisualDef → BoatHullSkinner) instead of the single rotating dory hull picture + the legacy
+        // transform oar rig. This used to be gated on a const UseDirectionalFishingBoatVisual flag with the
+        // art paths hard-coded in the builder; it is DATA now, so the gate is "does the hull bind a full
+        // compass". These guard the skin's observable effects — the directional component is added +
+        // configured, the hull picture is hidden, the LEGACY oar rig is retired (with its BoatRowAnimator ref
+        // severed so it can't re-show the rig and double-render against the baked DoryOarLayer overlay) — and
+        // the REVERT: the boat still drives ROWED on boat.dory.
         //
         // HISTORY: #93/#94/#97 ALSO swapped the hull to the Engine boat.fishing_skiff so the CONTROLS matched
         // a POWERBOAT picture ("a power boat skin, not a rowboat" — the facings were M2 fleet art). The owner
         // has since decided the dory ROWS again (the art is a rowboat; the independent oars landed), so that
         // swap is gone and Build_DirectionalSkin_DrivesOnTheRowedDoryHull below asserts the new truth — it is
         // the direct rewrite of the old Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull.
-        //
-        // The skin loads the real committed art via AssetDatabase; if it isn't imported in this environment
-        // the builder no-ops (by design — no half-state), so the tests skip rather than false-fail.
 
-        // The facings the builder loads (CW from North) — mirrors PersistentCoreBuilder.FishingBoatFacingPaths.
-        static readonly string[] FishingBoatFacingPaths =
+        // The dory's skin, as DATA: the committed BoatVisualDef the shipped Dory.asset points at. The
+        // builder no longer knows any art paths — it dresses the boat in whatever hull.Visual binds — so
+        // these guards ask the DEF what it has, not the disk. If the sheets aren't sliced in this
+        // environment the def's blocks come up empty, the builder no-ops (by design — no half-state), and
+        // the skin tests skip rather than false-fail.
+        const string DoryVisualPath = "Assets/_Project/Data/Boats/Visuals/DoryIso.asset";
+
+        private static BoatVisualDef DoryVisual()
+            => UnityEditor.AssetDatabase.LoadAssetAtPath<BoatVisualDef>(DoryVisualPath);
+
+        // The skin runs when the hull's Visual binds a COMPLETE compass; anything less and the builder
+        // no-ops to the plain rotating dory look. Tests that assert the skin skip unless it does.
+        private static bool SkinSwapApplied()
         {
-            "Assets/_Project/Art/Boats/FishingBoat_N.png",
-            "Assets/_Project/Art/Boats/FishingBoat_NE.png",
-            "Assets/_Project/Art/Boats/FishingBoat_E.png",
-            "Assets/_Project/Art/Boats/FishingBoat_SE.png",
-            "Assets/_Project/Art/Boats/FishingBoat_S.png",
-            "Assets/_Project/Art/Boats/FishingBoat_SW.png",
-            "Assets/_Project/Art/Boats/FishingBoat_W.png",
-            "Assets/_Project/Art/Boats/FishingBoat_NW.png",
-        };
-        // The iso dory sheets the skin PREFERS (mirrors PersistentCoreBuilder.ArtDoryIso*) + the oar overlays.
-        const string IsoDoryPath     = "Assets/_Project/Art/Boats/DoryIso.png";
-        const string IsoDoryRockPath = "Assets/_Project/Art/Boats/DoryIsoRock.png";
-        const string OarPortPath     = "Assets/_Project/Art/Boats/DoryOarPort.png";
-        const string OarStarPath     = "Assets/_Project/Art/Boats/DoryOarStar.png";
-
-        private static Sprite[] Slices(string path)
-            => UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
-
-        private static bool FishingBoatArtImported()
-        {
-            // The builder no-ops unless EVERY facing loads (a partial compass would snap into a stale
-            // picture), so the skip-guard must demand all of them too. Match the builder's
-            // Single-OR-Multiple-import-tolerant lookup per path.
-            return FishingBoatFacingPaths.All(p =>
-                UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(p) != null ||
-                UnityEditor.AssetDatabase.LoadAllAssetsAtPath(p).OfType<Sprite>().Any());
+            var v = DoryVisual();
+            return v != null && v.HasFullCompass();
         }
 
-        // The iso art the skin prefers: 8 static headings + the 64-frame rock grid, fully sliced.
+        // The rock grid + the two oar sheets are separate all-or-nothing blocks on the same def.
         private static bool IsoDoryArtImported()
-            => Slices(IsoDoryPath).Length == 8 && Slices(IsoDoryRockPath).Length == 64;
+        {
+            var v = DoryVisual();
+            return v != null && v.HasRockGrid();
+        }
 
-        // Both 80-slice oar sheets — the gate the builder's oar-overlay wiring demands (no partial sheet).
         private static bool OarSheetsImported()
-            => Slices(OarPortPath).Length == 80 && Slices(OarStarPath).Length == 80;
-
-        // The skin runs when EITHER facing set is present (iso preferred, FishingBoat_* the fallback); with
-        // neither, the builder no-ops to the plain dory look. Tests that assert the skin skip unless one is.
-        private static bool SkinSwapApplied() => IsoDoryArtImported() || FishingBoatArtImported();
+        {
+            var v = DoryVisual();
+            return v != null && v.HasOarSheets();
+        }
 
         // ---- THE REVERT: the skin is VISUAL — the dory drives ROWED on boat.dory -----------------
         // (The direct rewrite of Build_DirectionalSkin_DrivesOnTheEngineFishingSkiffHull, which asserted the

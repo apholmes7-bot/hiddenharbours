@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
   Id: boat.dory
   DisplayName: The Dory
+  Visual: {fileID: 11400000, guid: e0445924d0f5ab146b4dc99d015bb0e8, type: 2}
   Sprite: {fileID: 0}
   LengthMeters: 4.5
   DraughtMeters: 0.3

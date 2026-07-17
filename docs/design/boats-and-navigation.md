@@ -530,6 +530,51 @@ class Boat {
 - **Stats derive from components:** `maxSafeSeaState`, `baseStability`, `mass`, drag coefficients, capacity, instrument capabilities are all read from the assembled components — the §1.1 table is the *default chassis + stock fit*; upgrades modify it.
 - **`BoatPhysicsController`** (one MonoBehaviour) reads components + the per-tick `EnvironmentSample` and assembles the forces in §2.3. **Danger systems** (`GroundingCheck`, `StabilityCheck`, `IngressCheck`, `EngineHealth`, `FuelCheck`) are small components that read the same sample + boat state and raise events (`OnAground`, `OnBroaching`, `OnTakingWater`, `OnBreakdown`, `OnStranded`) consumed by a `RescueController` (§3.7) and the HUD.
 
+### 9.1a How a hull LOOKS is data too (the skin binding)
+
+A hull says what it looks like the same way it says what it weighs: **in its asset**. `BoatHullDef.Visual`
+points at a **`BoatVisualDef`** (`Data/Boats/Visuals`) — the complete directional skin — and
+**`BoatHullSkinner`** is the single, *runtime-callable* installer every consumer goes through. Before
+this, the player's skin was a `const bool` + a fistful of `const string` art paths inside the editor-only
+start builder, three call sites re-implemented the same rig by hand, and a hull could not be re-skinned
+on a swap at all (see the swap gap below).
+
+- **What a `BoatVisualDef` binds:** the hull **compass** (`Facings`, element 0 = North, then clockwise —
+  the snap math is generalised to any count, so 16-way art drops in with no code change); the optional
+  wave-coupled **rock grid** (`RockGrid` + `RockFrameCount`, element `heading·frames + frame`); the
+  optional per-side baked **oar overlays** (`OarPort`/`OarStar` + `OarColumnCount`); and the hull's
+  `SortingOrder`. The dory's is `visual.dory_iso` (8 facings · a 64-frame rock grid · two 80-cell oar
+  sheets).
+- **All-or-nothing, per block** (`HasFullCompass()` / `HasRockGrid()` / `HasOarSheets()`): a partial set
+  never half-ships — one missing facing snaps the boat into a stale picture mid-turn — so an incomplete
+  block falls back to the block below it, ending at the plain rotating `BoatHullDef.Sprite`. Hulls with no
+  facings (the Punt, the `FishingSkiff`) are never stranded: they keep the one-picture-on-a-rotating-root
+  rendering exactly as before.
+- **The three consumers converge on the skinner:** `PersistentCoreBuilder.ApplyHullSkin` (the player's
+  boat — renamed from `ApplyDirectionalFishingBoatVisual`, a misnomer once the dory rowed again: it
+  applies no fishing-boat skin and no fishing-boat hull), `OwnedFleet.ApplyHull` (a purchase or a
+  save-restore), and `AmbientFleetPresenter` / the rotation-test harness (which carry their own facings
+  and adapt them via `BoatVisualDef.CreateRuntime`).
+- **The swap gap, fixed.** `OwnedFleet` used to make the picture change by writing
+  `_spriteRenderer.sprite = hull.Sprite` — onto the very renderer the skin had **disabled**. So buying the
+  Punt swapped your feel, your hold and your camera while the picture stayed the iso dory. The swap now
+  goes through `BoatHullSkinner.ApplyHull`, which handles **both** directions (install/refresh the compass,
+  or tear it down and bring the base renderer back with the new hull's sprite).
+- **Sheet paths are an import concern, not a gameplay one:** `BoatVisualLibraryBuilder`
+  (*Hidden Harbours ▸ Art ▸ Build Boat Visual Defs*) is the only thing that knows where boat art lives on
+  disk; it imports the sliced sheets into the def asset, which is committed. Re-run it only when a sheet is
+  **re-sliced** (the sprite sub-asset ids change and the def's refs go stale).
+- **Invariants the rig rests on** (breaking any of these breaks the boat): bow = `transform.up`; heading 0
+  = North, clockwise; `DirectionalBoatSprite` lives on the **physics root** and stomps the visual child's
+  world rotation to identity every `LateUpdate` — additive rotation only via `VisualTiltDegrees`, and
+  anything that must follow the bow rides the **root** (this ate the boat spotlight once). The visual child
+  keeps the historic name `FishingBoatVisual` because `BoatSpotlight` finds it **by name** to read its rock
+  without referencing the Boats module (rule 4).
+- **Extending it:** a new overlay (e.g. a motor layer) adds its own append-only block of fields to
+  `BoatVisualDef` and installs from `BoatHullSkinner.Apply`, which returns a `Rig` handle carrying the
+  visual child, the hull renderer and the `DirectionalBoatSprite` to layer onto. Bind sheets to the def —
+  never add art paths to a builder.
+
 ### 9.2 Physics tuning
 
 - **Mass/inertia** from `Hull` (`mass ∝ length³` scaled to feel; clamp so the dory isn't *too* twitchy and the tanker isn't unmovably slow). Tune `dragSide/dragFwd` ratio (~6–12×) for the "tracks forward, skids reluctantly" feel.
