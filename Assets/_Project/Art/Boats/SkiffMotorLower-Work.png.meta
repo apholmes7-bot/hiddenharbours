@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: 570821dd9bdef574e9384d4c8df20e94
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -845709291150461024
+    second: SkiffMotorLower-Work_0
+  - first:
+      213: -4274342088327765730
+    second: SkiffMotorLower-Work_1
+  - first:
+      213: -1075718709832735485
+    second: SkiffMotorLower-Work_2
+  - first:
+      213: 5997635214417343010
+    second: SkiffMotorLower-Work_3
+  - first:
+      213: 4645300372102265602
+    second: SkiffMotorLower-Work_4
+  - first:
+      213: -2636532977759543745
+    second: SkiffMotorLower-Work_5
+  - first:
+      213: -2713088115255830963
+    second: SkiffMotorLower-Work_6
+  - first:
+      213: 3507388661817404839
+    second: SkiffMotorLower-Work_7
+  - first:
+      213: -8655490425226805833
+    second: SkiffMotorLower-Work_8
+  - first:
+      213: 7434785254330759433
+    second: SkiffMotorLower-Work_9
+  - first:
+      213: -2021042323807877253
+    second: SkiffMotorLower-Work_10
+  - first:
+      213: 8882279103171843063
+    second: SkiffMotorLower-Work_11
+  - first:
+      213: 5805888544855426412
+    second: SkiffMotorLower-Work_12
+  - first:
+      213: -3732214757573674692
+    second: SkiffMotorLower-Work_13
+  - first:
+      213: -7619058535668937689
+    second: SkiffMotorLower-Work_14
+  - first:
+      213: 875035455875354511
+    second: SkiffMotorLower-Work_15
+  - first:
+      213: 1134149693120852598
+    second: SkiffMotorLower-Work_16
+  - first:
+      213: -6861637125345313326
+    second: SkiffMotorLower-Work_17
+  - first:
+      213: -3606234551171720165
+    second: SkiffMotorLower-Work_18
+  - first:
+      213: 4800546147234546884
+    second: SkiffMotorLower-Work_19
+  - first:
+      213: -3665604681178803819
+    second: SkiffMotorLower-Work_20
+  - first:
+      213: 2485374063503413106
+    second: SkiffMotorLower-Work_21
+  - first:
+      213: 736176058195526812
+    second: SkiffMotorLower-Work_22
+  - first:
+      213: -2263993056755874746
+    second: SkiffMotorLower-Work_23
+  - first:
+      213: -5921734900965301171
+    second: SkiffMotorLower-Work_24
+  - first:
+      213: -6455524427835645860
+    second: SkiffMotorLower-Work_25
+  - first:
+      213: -1367580818557235688
+    second: SkiffMotorLower-Work_26
+  - first:
+      213: -3678538252212994859
+    second: SkiffMotorLower-Work_27
+  - first:
+      213: -8264250301125816588
+    second: SkiffMotorLower-Work_28
+  - first:
+      213: 885989257304993573
+    second: SkiffMotorLower-Work_29
+  - first:
+      213: 4588104891925657434
+    second: SkiffMotorLower-Work_30
+  - first:
+      213: -4497691025103639129
+    second: SkiffMotorLower-Work_31
+  - first:
+      213: -7848231255359449445
+    second: SkiffMotorLower-Work_32
+  - first:
+      213: -5272216908416566693
+    second: SkiffMotorLower-Work_33
+  - first:
+      213: 7118624873258683500
+    second: SkiffMotorLower-Work_34
+  - first:
+      213: 3885479219944612675
+    second: SkiffMotorLower-Work_35
+  - first:
+      213: -1018888420397271874
+    second: SkiffMotorLower-Work_36
+  - first:
+      213: 5316151525662528738
+    second: SkiffMotorLower-Work_37
+  - first:
+      213: -1380839587786057807
+    second: SkiffMotorLower-Work_38
+  - first:
+      213: -4182894208702473677
+    second: SkiffMotorLower-Work_39
+  - first:
+      213: -7895956031551350674
+    second: SkiffMotorLower-Work_40
+  - first:
+      213: -4448461780260168109
+    second: SkiffMotorLower-Work_41
+  - first:
+      213: -5639310236161340102
+    second: SkiffMotorLower-Work_42
+  - first:
+      213: 2387807066369646645
+    second: SkiffMotorLower-Work_43
+  - first:
+      213: -1002578631403413307
+    second: SkiffMotorLower-Work_44
+  - first:
+      213: 3852903679748155975
+    second: SkiffMotorLower-Work_45
+  - first:
+      213: 4301169487854543987
+    second: SkiffMotorLower-Work_46
+  - first:
+      213: 8846348365868233159
+    second: SkiffMotorLower-Work_47
+  - first:
+      213: 7381154241950637127
+    second: SkiffMotorLower-Work_48
+  - first:
+      213: 4761856896329368185
+    second: SkiffMotorLower-Work_49
+  - first:
+      213: 7212825967617259867
+    second: SkiffMotorLower-Work_50
+  - first:
+      213: -8501384452612555877
+    second: SkiffMotorLower-Work_51
+  - first:
+      213: 2498209606717189403
+    second: SkiffMotorLower-Work_52
+  - first:
+      213: 3781763663945713831
+    second: SkiffMotorLower-Work_53
+  - first:
+      213: -6896533786744282621
+    second: SkiffMotorLower-Work_54
+  - first:
+      213: 2977118384452162216
+    second: SkiffMotorLower-Work_55
+  - first:
+      213: 3492088181882744003
+    second: SkiffMotorLower-Work_56
+  - first:
+      213: 2010907658817916369
+    second: SkiffMotorLower-Work_57
+  - first:
+      213: 1243546982920806902
+    second: SkiffMotorLower-Work_58
+  - first:
+      213: 3659147863386316398
+    second: SkiffMotorLower-Work_59
+  - first:
+      213: 4365691280933311537
+    second: SkiffMotorLower-Work_60
+  - first:
+      213: -4943487809208259721
+    second: SkiffMotorLower-Work_61
+  - first:
+      213: -563112996139218723
+    second: SkiffMotorLower-Work_62
+  - first:
+      213: 6184902991342984047
+    second: SkiffMotorLower-Work_63
+  - first:
+      213: -130669113508151908
+    second: SkiffMotorLower-Work_64
+  - first:
+      213: 7947032515889052459
+    second: SkiffMotorLower-Work_65
+  - first:
+      213: -7725259367185848990
+    second: SkiffMotorLower-Work_66
+  - first:
+      213: 1342831983683284224
+    second: SkiffMotorLower-Work_67
+  - first:
+      213: 4693773161997495255
+    second: SkiffMotorLower-Work_68
+  - first:
+      213: 3281314890474231679
+    second: SkiffMotorLower-Work_69
+  - first:
+      213: 620426844237442450
+    second: SkiffMotorLower-Work_70
+  - first:
+      213: 6442441799346479974
+    second: SkiffMotorLower-Work_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5796f60b9ed4c6249b28a2eb0565760e
+      internalID: -845709291150461024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_1
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63fd704ec7e27054095334a074abb8c2
+      internalID: -4274342088327765730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_2
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e03e367f86a8d3b4189dc460213d61ae
+      internalID: -1075718709832735485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_3
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca6a703fec2170d4f89fc7fbce144d84
+      internalID: 5997635214417343010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_4
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90ebacdb858ef154ea081aaa9d2b9ee6
+      internalID: 4645300372102265602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_5
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2958d7083ec0e0d4b9fb0a5bc41ddbb2
+      internalID: -2636532977759543745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_6
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 120898888e70c5546bd23c108b474e6e
+      internalID: -2713088115255830963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_7
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6782f6265012dbd4eaa6549ad9065213
+      internalID: 3507388661817404839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_8
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6932f9269c5a2b6428c29eb05070bc19
+      internalID: -8655490425226805833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18c4ae6e87ebbdd44b6250666b01e30a
+      internalID: 7434785254330759433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_10
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73f8fc7f1b56feb45b1343a636f588dd
+      internalID: -2021042323807877253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_11
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0734e12816b2764d98b664ba1e82aa8
+      internalID: 8882279103171843063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_12
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1abba4b0c10bc44ca60d30ec73feff0
+      internalID: 5805888544855426412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_13
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2817521b062cdaf4aa955918fc24b5a7
+      internalID: -3732214757573674692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_14
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d5d06124f8637f4fa29c170b100873c
+      internalID: -7619058535668937689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_15
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f393c04625f43e45b97bc7f86c26751
+      internalID: 875035455875354511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_16
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2229386056b97b34c89e6c1e1a474f4b
+      internalID: 1134149693120852598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_17
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 167700a5f6703a649a5a8dc4faf5f6dc
+      internalID: -6861637125345313326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aef218532fda587488279b056cf56441
+      internalID: -3606234551171720165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_19
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d505b092dff2cfd499932c6e3e8ca0b1
+      internalID: 4800546147234546884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_20
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc3ea55ede3b124bbab196a47ffce20
+      internalID: -3665604681178803819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_21
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1de83cb6ed0f3ab42bc8efe361c3829b
+      internalID: 2485374063503413106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_22
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b937f7938a06ce948b3c18bb3bd3d241
+      internalID: 736176058195526812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_23
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d7466cb427eeb4ab7fcc944d943d6e
+      internalID: -2263993056755874746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_24
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40bea3eb6ae8fde4a9680f85e7e326c1
+      internalID: -5921734900965301171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_25
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0de8d416ebc262e49a570cd06f466d11
+      internalID: -6455524427835645860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_26
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6f716547d3897b4cb51d0db33f5edf9
+      internalID: -1367580818557235688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 405f0a6abc17a0b49b53022fee48f947
+      internalID: -3678538252212994859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_28
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 227e596407c3bf845b2e4b99afc130c7
+      internalID: -8264250301125816588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_29
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 832348f7bbfadbe478cdc6bf8b181f2e
+      internalID: 885989257304993573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_30
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5094ebeaa0d5a864d9d611a1d7905d82
+      internalID: 4588104891925657434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_31
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cddf2cfde706cd8469717c4a0bfd0584
+      internalID: -4497691025103639129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_32
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db7407064a677e54999eee407d1f1a10
+      internalID: -7848231255359449445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_33
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3c8df3030abcc146ac2846700204b97
+      internalID: -5272216908416566693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_34
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85ed9f71fe2f0c84a9d3ae773faa8d42
+      internalID: 7118624873258683500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_35
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c0736ad318397b4b86e406cdfaf1c02
+      internalID: 3885479219944612675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b28cdb4a7db42e84bbeebd865975d075
+      internalID: -1018888420397271874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_37
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d6d29d69dffe4b44833cfb3db5544e9
+      internalID: 5316151525662528738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_38
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb8234a8e8d527f4fb7322ea8f937711
+      internalID: -1380839587786057807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_39
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e04f6bdd081b00947bd87ceabf2dbfda
+      internalID: -4182894208702473677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_40
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0b3d988732ea2a47a2d10851ea521ed
+      internalID: -7895956031551350674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_41
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3be80169e41755e4388fca211a98bf2c
+      internalID: -4448461780260168109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_42
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4c86ebc22236824d9a5c862adc2fa25
+      internalID: -5639310236161340102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_43
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1bc36a17edeee34fa130194c84ae1ae
+      internalID: 2387807066369646645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_44
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 684c072b622d62a46895359b00142564
+      internalID: -1002578631403413307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_45
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 122bade31fc475746a15b18fe811b0a6
+      internalID: 3852903679748155975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_46
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1beab1fd615485418daa0ff6d44e2d6
+      internalID: 4301169487854543987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_47
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e930ce731b47534580e693fccc97a8c
+      internalID: 8846348365868233159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_48
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1ead14e372b89d45b0c30e1024a54b9
+      internalID: 7381154241950637127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_49
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 003eb1f29dd0bd2469497b74f4537a87
+      internalID: 4761856896329368185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_50
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce917b5ad23f6da44ac9d9d9193a2bb8
+      internalID: 7212825967617259867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_51
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dea517451b6bed042b4f1f43f2468cf8
+      internalID: -8501384452612555877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_52
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10d9b81943d5af64eafa253e53feca6b
+      internalID: 2498209606717189403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_53
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b35486a3b74e54db26b7826e06a850
+      internalID: 3781763663945713831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_54
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd47c9635a313104fab5d0f6eb3c5129
+      internalID: -6896533786744282621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_55
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c5a7942150a707459a3cb6604f84b6f
+      internalID: 2977118384452162216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_56
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d41dd2225331a824f8c7412accbeb95e
+      internalID: 3492088181882744003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_57
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a7424db07f7deb41ba145ab8172e420
+      internalID: 2010907658817916369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_58
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8fa7d7b426bb134ca66e8d8ca22a423
+      internalID: 1243546982920806902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_59
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00b78bca205bc5e4f98e1d499df0d369
+      internalID: 3659147863386316398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_60
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bc79319259af2c44bfbe4b3d9f7f089
+      internalID: 4365691280933311537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_61
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4224c81537f8ee2458eb00c571b1c6fb
+      internalID: -4943487809208259721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_62
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcef3bdd081de9741a858fa5e8be3e6f
+      internalID: -563112996139218723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_63
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb264956ce8dea643a52cfe8b58d923d
+      internalID: 6184902991342984047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_64
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 860f517941e42314788e2cdf22b53bac
+      internalID: -130669113508151908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_65
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1aa6f8a7e90cc40b20268270d2ed9a
+      internalID: 7947032515889052459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_66
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: deba4c4f360ad114a8e0b88f18f695a0
+      internalID: -7725259367185848990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_67
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7926352082080d4469327be451409301
+      internalID: 1342831983683284224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_68
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 026dbc9ceb6069142830839a6e90de01
+      internalID: 4693773161997495255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_69
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca7fad918c1bb4742bc4ca4e77c2413f
+      internalID: 3281314890474231679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_70
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a390c99cf5ff9c4cb64ce3dd4f231d2
+      internalID: 620426844237442450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorLower-Work_71
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a3ad1b40bba59345a0dbd62323336b8
+      internalID: 6442441799346479974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 308673cafd2c80442a771a1a7c847700
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SkiffMotorLower-Work_0: -845709291150461024
+      SkiffMotorLower-Work_1: -4274342088327765730
+      SkiffMotorLower-Work_10: -2021042323807877253
+      SkiffMotorLower-Work_11: 8882279103171843063
+      SkiffMotorLower-Work_12: 5805888544855426412
+      SkiffMotorLower-Work_13: -3732214757573674692
+      SkiffMotorLower-Work_14: -7619058535668937689
+      SkiffMotorLower-Work_15: 875035455875354511
+      SkiffMotorLower-Work_16: 1134149693120852598
+      SkiffMotorLower-Work_17: -6861637125345313326
+      SkiffMotorLower-Work_18: -3606234551171720165
+      SkiffMotorLower-Work_19: 4800546147234546884
+      SkiffMotorLower-Work_2: -1075718709832735485
+      SkiffMotorLower-Work_20: -3665604681178803819
+      SkiffMotorLower-Work_21: 2485374063503413106
+      SkiffMotorLower-Work_22: 736176058195526812
+      SkiffMotorLower-Work_23: -2263993056755874746
+      SkiffMotorLower-Work_24: -5921734900965301171
+      SkiffMotorLower-Work_25: -6455524427835645860
+      SkiffMotorLower-Work_26: -1367580818557235688
+      SkiffMotorLower-Work_27: -3678538252212994859
+      SkiffMotorLower-Work_28: -8264250301125816588
+      SkiffMotorLower-Work_29: 885989257304993573
+      SkiffMotorLower-Work_3: 5997635214417343010
+      SkiffMotorLower-Work_30: 4588104891925657434
+      SkiffMotorLower-Work_31: -4497691025103639129
+      SkiffMotorLower-Work_32: -7848231255359449445
+      SkiffMotorLower-Work_33: -5272216908416566693
+      SkiffMotorLower-Work_34: 7118624873258683500
+      SkiffMotorLower-Work_35: 3885479219944612675
+      SkiffMotorLower-Work_36: -1018888420397271874
+      SkiffMotorLower-Work_37: 5316151525662528738
+      SkiffMotorLower-Work_38: -1380839587786057807
+      SkiffMotorLower-Work_39: -4182894208702473677
+      SkiffMotorLower-Work_4: 4645300372102265602
+      SkiffMotorLower-Work_40: -7895956031551350674
+      SkiffMotorLower-Work_41: -4448461780260168109
+      SkiffMotorLower-Work_42: -5639310236161340102
+      SkiffMotorLower-Work_43: 2387807066369646645
+      SkiffMotorLower-Work_44: -1002578631403413307
+      SkiffMotorLower-Work_45: 3852903679748155975
+      SkiffMotorLower-Work_46: 4301169487854543987
+      SkiffMotorLower-Work_47: 8846348365868233159
+      SkiffMotorLower-Work_48: 7381154241950637127
+      SkiffMotorLower-Work_49: 4761856896329368185
+      SkiffMotorLower-Work_5: -2636532977759543745
+      SkiffMotorLower-Work_50: 7212825967617259867
+      SkiffMotorLower-Work_51: -8501384452612555877
+      SkiffMotorLower-Work_52: 2498209606717189403
+      SkiffMotorLower-Work_53: 3781763663945713831
+      SkiffMotorLower-Work_54: -6896533786744282621
+      SkiffMotorLower-Work_55: 2977118384452162216
+      SkiffMotorLower-Work_56: 3492088181882744003
+      SkiffMotorLower-Work_57: 2010907658817916369
+      SkiffMotorLower-Work_58: 1243546982920806902
+      SkiffMotorLower-Work_59: 3659147863386316398
+      SkiffMotorLower-Work_6: -2713088115255830963
+      SkiffMotorLower-Work_60: 4365691280933311537
+      SkiffMotorLower-Work_61: -4943487809208259721
+      SkiffMotorLower-Work_62: -563112996139218723
+      SkiffMotorLower-Work_63: 6184902991342984047
+      SkiffMotorLower-Work_64: -130669113508151908
+      SkiffMotorLower-Work_65: 7947032515889052459
+      SkiffMotorLower-Work_66: -7725259367185848990
+      SkiffMotorLower-Work_67: 1342831983683284224
+      SkiffMotorLower-Work_68: 4693773161997495255
+      SkiffMotorLower-Work_69: 3281314890474231679
+      SkiffMotorLower-Work_7: 3507388661817404839
+      SkiffMotorLower-Work_70: 620426844237442450
+      SkiffMotorLower-Work_71: 6442441799346479974
+      SkiffMotorLower-Work_8: -8655490425226805833
+      SkiffMotorLower-Work_9: 7434785254330759433
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

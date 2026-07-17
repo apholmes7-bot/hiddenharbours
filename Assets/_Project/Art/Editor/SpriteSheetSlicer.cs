@@ -319,7 +319,25 @@ namespace HiddenHarbours.Art.Editor
                 return SliceResult.Failed;
             }
 
+            // Lift the size cap FIRST, before anything reads the texture. Unity's default maxTextureSize is
+            // 2048: a sheet wider/taller than that imports DOWNSCALED, and slicing a downscaled sheet is
+            // silent poison — the grid rects are authored in source pixels, then the reimport refits them to
+            // the smaller texture and they come back alpha-trimmed with the pivot thrown away (this bit the
+            // 2448×1728 skiff-motor sheets: every rect landed ~20×21 with pivot (0,0)). The manifest's
+            // SheetW/SheetH are the source of truth for what "native" means, so raise the cap to the next
+            // power of two that holds the sheet, then reimport so the on-disk texture is native-res again.
+            int needed = Mathf.NextPowerOfTwo(Mathf.Max(spec.SheetW, spec.SheetH));
+            if (importer.maxTextureSize < needed)
+            {
+                Debug.Log($"[SpriteSheetSlicer] '{spec.Stem}' is {spec.SheetW}×{spec.SheetH} but the importer " +
+                          $"caps at {importer.maxTextureSize} — raising maxTextureSize to {needed} so the sheet " +
+                          "imports at native res (a downscaled sheet cannot be grid-sliced).");
+                importer.maxTextureSize = needed;
+                importer.SaveAndReimport();
+            }
+
             // Guard the sheet size: a re-export that drifted the grid must fail loudly, not slice garbage.
+            // Load AFTER the reimport above — a mid-build import invalidates any texture read before it.
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(spec.AssetPath);
             if (tex == null)
             {

@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 3ce1ed11517c73341b762311a25ad089
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7087686473144945006
+    second: ConsoleIsoRock_0
+  - first:
+      213: -5989865712150687816
+    second: ConsoleIsoRock_1
+  - first:
+      213: -5110540707818870522
+    second: ConsoleIsoRock_2
+  - first:
+      213: 3180990066403793016
+    second: ConsoleIsoRock_3
+  - first:
+      213: -4950257848425524409
+    second: ConsoleIsoRock_4
+  - first:
+      213: -632579074832612607
+    second: ConsoleIsoRock_5
+  - first:
+      213: -4636500096034607637
+    second: ConsoleIsoRock_6
+  - first:
+      213: -6371526140833769446
+    second: ConsoleIsoRock_7
+  - first:
+      213: 2840006103290705280
+    second: ConsoleIsoRock_8
+  - first:
+      213: -8619759168862189838
+    second: ConsoleIsoRock_9
+  - first:
+      213: -5107587201542365821
+    second: ConsoleIsoRock_10
+  - first:
+      213: 6179593833880533869
+    second: ConsoleIsoRock_11
+  - first:
+      213: 7143388586293129537
+    second: ConsoleIsoRock_12
+  - first:
+      213: -4194682893081978418
+    second: ConsoleIsoRock_13
+  - first:
+      213: -7488750153733425202
+    second: ConsoleIsoRock_14
+  - first:
+      213: 6106459015620139988
+    second: ConsoleIsoRock_15
+  - first:
+      213: 7915308965995004996
+    second: ConsoleIsoRock_16
+  - first:
+      213: -1347629396486033942
+    second: ConsoleIsoRock_17
+  - first:
+      213: 5709835963360041891
+    second: ConsoleIsoRock_18
+  - first:
+      213: 9111130890408944979
+    second: ConsoleIsoRock_19
+  - first:
+      213: 1637797835157849363
+    second: ConsoleIsoRock_20
+  - first:
+      213: 6753607284092108328
+    second: ConsoleIsoRock_21
+  - first:
+      213: 6041380075401145219
+    second: ConsoleIsoRock_22
+  - first:
+      213: -2917377747587058022
+    second: ConsoleIsoRock_23
+  - first:
+      213: -9157396583219403942
+    second: ConsoleIsoRock_24
+  - first:
+      213: 8830819347806980218
+    second: ConsoleIsoRock_25
+  - first:
+      213: 166217808358052564
+    second: ConsoleIsoRock_26
+  - first:
+      213: -1531512510601341077
+    second: ConsoleIsoRock_27
+  - first:
+      213: -2746521379229806508
+    second: ConsoleIsoRock_28
+  - first:
+      213: -779213634668032806
+    second: ConsoleIsoRock_29
+  - first:
+      213: -2048283223424999583
+    second: ConsoleIsoRock_30
+  - first:
+      213: -5931477818636333498
+    second: ConsoleIsoRock_31
+  - first:
+      213: 1638139406923723746
+    second: ConsoleIsoRock_32
+  - first:
+      213: -3230396826905824643
+    second: ConsoleIsoRock_33
+  - first:
+      213: 4566973052003839656
+    second: ConsoleIsoRock_34
+  - first:
+      213: 580473308625626354
+    second: ConsoleIsoRock_35
+  - first:
+      213: 1022470893800118291
+    second: ConsoleIsoRock_36
+  - first:
+      213: -4389204209940475881
+    second: ConsoleIsoRock_37
+  - first:
+      213: -6616823084094732434
+    second: ConsoleIsoRock_38
+  - first:
+      213: 4520373639425349630
+    second: ConsoleIsoRock_39
+  - first:
+      213: 4132112942941728576
+    second: ConsoleIsoRock_40
+  - first:
+      213: 4614293713618426861
+    second: ConsoleIsoRock_41
+  - first:
+      213: -1335246294423994510
+    second: ConsoleIsoRock_42
+  - first:
+      213: 2579859701827852700
+    second: ConsoleIsoRock_43
+  - first:
+      213: 8879211023964076149
+    second: ConsoleIsoRock_44
+  - first:
+      213: -3419361102869113916
+    second: ConsoleIsoRock_45
+  - first:
+      213: 6019131251926672682
+    second: ConsoleIsoRock_46
+  - first:
+      213: -1665864180727068719
+    second: ConsoleIsoRock_47
+  - first:
+      213: -3085492803609180341
+    second: ConsoleIsoRock_48
+  - first:
+      213: -8096285935742015729
+    second: ConsoleIsoRock_49
+  - first:
+      213: 4275451096660637894
+    second: ConsoleIsoRock_50
+  - first:
+      213: -9074507582554786521
+    second: ConsoleIsoRock_51
+  - first:
+      213: 7559962563713924551
+    second: ConsoleIsoRock_52
+  - first:
+      213: 6478027614900494073
+    second: ConsoleIsoRock_53
+  - first:
+      213: -3655777410938916244
+    second: ConsoleIsoRock_54
+  - first:
+      213: 2323774446439591115
+    second: ConsoleIsoRock_55
+  - first:
+      213: -9107826724075051434
+    second: ConsoleIsoRock_56
+  - first:
+      213: 2521744206821530184
+    second: ConsoleIsoRock_57
+  - first:
+      213: 3850177770884387643
+    second: ConsoleIsoRock_58
+  - first:
+      213: -8737548363144457750
+    second: ConsoleIsoRock_59
+  - first:
+      213: -657614364306379317
+    second: ConsoleIsoRock_60
+  - first:
+      213: -6816029269822915568
+    second: ConsoleIsoRock_61
+  - first:
+      213: -553927074213458000
+    second: ConsoleIsoRock_62
+  - first:
+      213: 5482469560530942976
+    second: ConsoleIsoRock_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ConsoleIsoRock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33ced6dcb7b211d41abe9482b6d555d2
+      internalID: -7087686473144945006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97e7a05ff61020e44aadb62a17f40788
+      internalID: -5989865712150687816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b39cd0268710c2949be44927ac0e6488
+      internalID: -5110540707818870522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_3
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f352fb7ef735824d8ae1c31739f7f36
+      internalID: 3180990066403793016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_4
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eac8b57ac147cbb49966279c774ba147
+      internalID: -4950257848425524409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_5
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d421d14fa6aee9f498763273b6199bad
+      internalID: -632579074832612607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_6
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2200bf86f2ed3754da35a0addb163b6c
+      internalID: -4636500096034607637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_7
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b7b1ccd98283e54fa480cb534ea3715
+      internalID: -6371526140833769446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f29198bec3046c647beb2e345cf83340
+      internalID: 2840006103290705280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_9
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2a834c1c8ff53d4684d3732a0c066ee
+      internalID: -8619759168862189838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_10
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab463a023d6c9ca4596ae964c2704e9f
+      internalID: -5107587201542365821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_11
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8144bdbadd315a949b5d57f7efff75b1
+      internalID: 6179593833880533869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_12
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66bd6f34ec9d2bc4496cede63afbf755
+      internalID: 7143388586293129537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_13
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be8bd6b2097a04545943f3f54675e360
+      internalID: -4194682893081978418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_14
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4784eddc3481d340bd3a635a6eafcd0
+      internalID: -7488750153733425202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_15
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff1f05f39ab72c04c85ab6f0a7f27d40
+      internalID: 6106459015620139988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c9d071bc77cdba4c84fa54b5303515d
+      internalID: 7915308965995004996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_17
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52e9380cd878ddc41aeff1239fb8fd18
+      internalID: -1347629396486033942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_18
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90decc8d670fdb540ac9cafd9ecd4db1
+      internalID: 5709835963360041891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_19
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dbd8b996697a3d43a35ccd8372d1c38
+      internalID: 9111130890408944979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_20
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fd38957c33ebe243bbef55fb6058b45
+      internalID: 1637797835157849363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_21
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbf94c426e04177468b9577e5734fdc2
+      internalID: 6753607284092108328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_22
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7284b6fcea09574c9f0ddd0a3cb0758
+      internalID: 6041380075401145219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_23
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53a361858d8e7224bab329b3f58bf06f
+      internalID: -2917377747587058022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 128e3ed21e7ef214b9a67fb7eaeb9be5
+      internalID: -9157396583219403942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_25
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1762060de3badc47b87236caaedd006
+      internalID: 8830819347806980218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_26
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54a777c09e868c74284f12521553da19
+      internalID: 166217808358052564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_27
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a868e12152d41a409ff8d7d39c4a83d
+      internalID: -1531512510601341077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_28
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 745af17ae6b778e469c537b50936a6db
+      internalID: -2746521379229806508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_29
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1a31aecd2695df4f84c5e2d977a573d
+      internalID: -779213634668032806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_30
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e55a0e3336748b44d8f8254168bbf36b
+      internalID: -2048283223424999583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_31
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84ff1a2dae9dddc42aa146f82322df13
+      internalID: -5931477818636333498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 235d9ae4ae97dab4fb74620504f4f1c4
+      internalID: 1638139406923723746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_33
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cdee1bf9d23391419a0edb84e215115
+      internalID: -3230396826905824643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_34
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8b4bcb4253faf046a2ad6f64842db62
+      internalID: 4566973052003839656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_35
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae4f48609d815b54fbc9a523385b07b0
+      internalID: 580473308625626354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_36
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f566d0a721a8bfa459535b2d64387443
+      internalID: 1022470893800118291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_37
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ec7067a1adb4764691c4c6339822b49
+      internalID: -4389204209940475881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_38
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1a1eee477d56804988b5a21889566e7
+      internalID: -6616823084094732434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_39
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf22ab2f4a8ac564b968bc30218eb177
+      internalID: 4520373639425349630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bfc2059e6f613a4fa8daaadfab0b549
+      internalID: 4132112942941728576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_41
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 209a25382ab036c4893b016acbdc9b8c
+      internalID: 4614293713618426861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_42
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65e7bc86503549744a3bd27354cd7b7e
+      internalID: -1335246294423994510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_43
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cc1828dadfd3654983ed9593f93b2a4
+      internalID: 2579859701827852700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_44
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cb5f70898127f242b361d3637450ad8
+      internalID: 8879211023964076149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_45
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5babeb0c55fb144483b7159ff148601
+      internalID: -3419361102869113916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_46
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44b38834592f9404a9e3c84d75037843
+      internalID: 6019131251926672682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_47
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 529c7f4747d2d6d428b20daa11d3e4a7
+      internalID: -1665864180727068719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35aa9b96c434fa7468f983643b6f8095
+      internalID: -3085492803609180341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_49
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d68eddb89c118d04caba9dcf5d88bb28
+      internalID: -8096285935742015729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_50
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41e7d7bd07bc49547b5fe6fa2ebc64ac
+      internalID: 4275451096660637894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_51
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 305a8c54276d0284e9af39bb1b239e8c
+      internalID: -9074507582554786521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_52
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f0924cfa63a236448c632e554a6272d
+      internalID: 7559962563713924551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_53
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04c5301babfbc534bae5f158a7eff494
+      internalID: 6478027614900494073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_54
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6fbc7dadeeeccc4aa8abaf6bf792e93
+      internalID: -3655777410938916244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_55
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07d20e0755de39142a7979e37a5ce863
+      internalID: 2323774446439591115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 297e0b70b1308f844b099cdcf48cd723
+      internalID: -9107826724075051434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_57
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c41848b4889bc8459291b380a3ed29f
+      internalID: 2521744206821530184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_58
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d589fed4674108a43ab0c07cd0ce9228
+      internalID: 3850177770884387643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_59
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c88ca823edf79d4594ca75048c2f7d9
+      internalID: -8737548363144457750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_60
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d73044fee31b2c64e8516806baf41654
+      internalID: -657614364306379317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_61
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 506df32267a703d4e82f8a20140f3976
+      internalID: -6816029269822915568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_62
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0e8bf1f9a2590741a317ee523a72bfc
+      internalID: -553927074213458000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ConsoleIsoRock_63
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d56d195df63968a4b95ac0787bc4451f
+      internalID: 5482469560530942976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f3ab1c8ff287b314fbef21bc1cecde85
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ConsoleIsoRock_0: -7087686473144945006
+      ConsoleIsoRock_1: -5989865712150687816
+      ConsoleIsoRock_10: -5107587201542365821
+      ConsoleIsoRock_11: 6179593833880533869
+      ConsoleIsoRock_12: 7143388586293129537
+      ConsoleIsoRock_13: -4194682893081978418
+      ConsoleIsoRock_14: -7488750153733425202
+      ConsoleIsoRock_15: 6106459015620139988
+      ConsoleIsoRock_16: 7915308965995004996
+      ConsoleIsoRock_17: -1347629396486033942
+      ConsoleIsoRock_18: 5709835963360041891
+      ConsoleIsoRock_19: 9111130890408944979
+      ConsoleIsoRock_2: -5110540707818870522
+      ConsoleIsoRock_20: 1637797835157849363
+      ConsoleIsoRock_21: 6753607284092108328
+      ConsoleIsoRock_22: 6041380075401145219
+      ConsoleIsoRock_23: -2917377747587058022
+      ConsoleIsoRock_24: -9157396583219403942
+      ConsoleIsoRock_25: 8830819347806980218
+      ConsoleIsoRock_26: 166217808358052564
+      ConsoleIsoRock_27: -1531512510601341077
+      ConsoleIsoRock_28: -2746521379229806508
+      ConsoleIsoRock_29: -779213634668032806
+      ConsoleIsoRock_3: 3180990066403793016
+      ConsoleIsoRock_30: -2048283223424999583
+      ConsoleIsoRock_31: -5931477818636333498
+      ConsoleIsoRock_32: 1638139406923723746
+      ConsoleIsoRock_33: -3230396826905824643
+      ConsoleIsoRock_34: 4566973052003839656
+      ConsoleIsoRock_35: 580473308625626354
+      ConsoleIsoRock_36: 1022470893800118291
+      ConsoleIsoRock_37: -4389204209940475881
+      ConsoleIsoRock_38: -6616823084094732434
+      ConsoleIsoRock_39: 4520373639425349630
+      ConsoleIsoRock_4: -4950257848425524409
+      ConsoleIsoRock_40: 4132112942941728576
+      ConsoleIsoRock_41: 4614293713618426861
+      ConsoleIsoRock_42: -1335246294423994510
+      ConsoleIsoRock_43: 2579859701827852700
+      ConsoleIsoRock_44: 8879211023964076149
+      ConsoleIsoRock_45: -3419361102869113916
+      ConsoleIsoRock_46: 6019131251926672682
+      ConsoleIsoRock_47: -1665864180727068719
+      ConsoleIsoRock_48: -3085492803609180341
+      ConsoleIsoRock_49: -8096285935742015729
+      ConsoleIsoRock_5: -632579074832612607
+      ConsoleIsoRock_50: 4275451096660637894
+      ConsoleIsoRock_51: -9074507582554786521
+      ConsoleIsoRock_52: 7559962563713924551
+      ConsoleIsoRock_53: 6478027614900494073
+      ConsoleIsoRock_54: -3655777410938916244
+      ConsoleIsoRock_55: 2323774446439591115
+      ConsoleIsoRock_56: -9107826724075051434
+      ConsoleIsoRock_57: 2521744206821530184
+      ConsoleIsoRock_58: 3850177770884387643
+      ConsoleIsoRock_59: -8737548363144457750
+      ConsoleIsoRock_6: -4636500096034607637
+      ConsoleIsoRock_60: -657614364306379317
+      ConsoleIsoRock_61: -6816029269822915568
+      ConsoleIsoRock_62: -553927074213458000
+      ConsoleIsoRock_63: 5482469560530942976
+      ConsoleIsoRock_7: -6371526140833769446
+      ConsoleIsoRock_8: 2840006103290705280
+      ConsoleIsoRock_9: -8619759168862189838
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

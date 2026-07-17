@@ -123,5 +123,9 @@ Art/
 └── Editor/       ArtImportPipeline.cs (import lock) · ArtCameraSetup.cs (camera lock)
 ```
 
+**Parametric source rigs** for the skiff fleet (re-bakeable JS + the art director's README) live outside
+`Assets/` in [`docs/art/skiff-fleet-rigs/`](../../../docs/art/skiff-fleet-rigs/) — Unity would try to
+read a `.js` under `Assets/` as a legacy script. Drop log: `imported-assets.md`.
+
 **LFS:** every binary (`.png .psd .tga .aseprite .ase .wav .ogg …`) is LFS-tracked via `.gitattributes`.
 Never commit one that isn't. **Grow art region-by-region with the milestones — never front-load.**
