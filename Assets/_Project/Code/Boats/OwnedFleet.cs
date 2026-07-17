@@ -95,8 +95,16 @@ namespace HiddenHarbours.Boats
 
             if (_boat != null) _boat.SetHull(hull);                                  // feel + mass
             if (_hold != null) _hold.SetHull(hull);                                  // capacity 6→14
-            if (_spriteRenderer != null && hull.Sprite != null)
-                _spriteRenderer.sprite = hull.Sprite;                               // visible swap
+
+            // THE VISIBLE SWAP — through the data-driven skin seam, never by poking a renderer. This used
+            // to read `_spriteRenderer.sprite = hull.Sprite`, which was a REAL BUG for as long as the
+            // player's boat has worn a directional skin: the skin DISABLES that base renderer and draws
+            // the hull on a compass child instead, so writing its sprite changed nothing you could see.
+            // Buying the Punt swapped your feel, your hold and your camera while the picture stayed the
+            // iso dory. BoatHullSkinner handles BOTH directions — a hull that binds a Visual installs or
+            // refreshes the compass; a plain hull tears the compass down and brings the base renderer back
+            // with the new hull's Sprite — so every rung of the ladder shows the boat you actually bought.
+            BoatHullSkinner.ApplyHull(gameObject, _spriteRenderer, hull, _boat);
 
             // Re-point the camera ONLY when actively piloting this boat — framing keys off PILOTING, not
             // ownership. A buy at the wharf (on foot) grants the hull but must NOT zoom the on-foot view;
