@@ -134,19 +134,70 @@ namespace HiddenHarbours.Boats
         // ==== plume placement + orientation (the pure math the orientation fix pins) =======================
 
         /// <summary>
-        /// Where the plume's APEX pivot goes: at the boat's actual STERN (half the hull length back from the
-        /// boat origin, which sits at the hull's centre) plus a small tunable nudge further astern. This is
-        /// the orientation FIX: the apex used to be pinned <c>asternOffset</c> from the boat ORIGIN, which on
-        /// a 4.5 m dory buried ~the whole plume UNDER the hull sprite — only the wide faint tail peeked out
-        /// past the stern, so the wake read as backwards in game. Anchoring at the stern shows the authored
-        /// plume the right way round: dense narrow churn AT the stern, widening + fading astern. A degenerate
-        /// bow vector falls back to +Y so the anchor is never NaN. Pure + static.
+        /// The FORESHORTENING factor a piece of artwork applies to screen-Y, for art baked at
+        /// <paramref name="bakeElevationDegrees"/> above the horizon: <c>sin(elev)</c>.
+        ///
+        /// <para><b>Why the wake needs this at all.</b> The boat's position and heading are honest top-down world
+        /// metres, but the hull is DRAWN by a ¾ camera at 40° — which squashes along-heading distance on screen-Y
+        /// by sin(40°) ≈ 0.643 and leaves screen-X alone. Anything pinned to a point ON the hull (the transom, the
+        /// cutwater) must be placed the way the ART places it, or it drifts as she turns: at 3.5 m aft, a
+        /// top-down anchor sits 1.6 m past a drawn transom at N and lands right on it at E.</para>
+        ///
+        /// <para><b>90° = a plan view = no foreshortening = today's behaviour</b>, and that is the deliberate
+        /// answer for artwork that is NOT a rig bake (the hand-drawn <c>FishingBoat_*</c> compass, which the
+        /// ambient fleet also wears — foreshortening it would be inventing a camera it never had). Anything
+        /// non-positive or ≥ 90 collapses to 1, so a half-authored visual degrades to the old placement rather
+        /// than to a wake stapled to the boat's middle. Pure + static.</para>
         /// </summary>
-        public static Vector2 SternAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float asternOffset)
+        public static float ForeshortenY(float bakeElevationDegrees)
+        {
+            if (float.IsNaN(bakeElevationDegrees)) return 1f;
+            if (bakeElevationDegrees <= 0f || bakeElevationDegrees >= 90f) return 1f;
+            return Mathf.Sin(bakeElevationDegrees * Mathf.Deg2Rad);
+        }
+
+        /// <summary>
+        /// Where an along-heading anchor lands ON SCREEN: walk <paramref name="alongHeading"/> metres from the
+        /// boat's origin (+ = toward the bow, − = astern) and project it the way the artwork was baked — X
+        /// untouched, Y squashed by <see cref="ForeshortenY"/>.
+        ///
+        /// <para>This is the shared core of <see cref="SternAnchor"/> and <see cref="BowSprayGrading.BowAnchor"/>,
+        /// and it is exactly the art rigs' own <c>projVert</c> for a point on the centreline at the waterline —
+        /// <c>MountedRockPoseMath.Project</c> agrees with it at every heading, which is what
+        /// <c>WakeProjectionTests</c> pins rather than trusting either alone. A degenerate bow vector falls back
+        /// to +Y so the anchor is never NaN. Pure + static.</para>
+        /// </summary>
+        public static Vector2 ProjectAlongHeading(Vector2 boatPos, Vector2 bow, float alongHeading,
+                                                  float bakeElevationDegrees)
         {
             Vector2 dir = bow.sqrMagnitude > 1e-8f ? bow.normalized : Vector2.up;
+            Vector2 off = dir * alongHeading;
+            return boatPos + new Vector2(off.x, off.y * ForeshortenY(bakeElevationDegrees));
+        }
+
+        /// <summary>
+        /// Where the plume's APEX pivot goes: at the boat's actual STERN (half the hull length back from the
+        /// boat origin, which sits at the hull's centre) plus a small tunable nudge further astern, <b>projected
+        /// the way the hull art is drawn</b>.
+        ///
+        /// <para>Two fixes live here. The first pinned the apex to the STERN rather than the ORIGIN — offsetting
+        /// from the origin buried ~the whole plume UNDER a 4.5 m dory, so only the wide faint tail peeked out and
+        /// the wake read as backwards. The second is <paramref name="bakeElevationDegrees"/>: the stern is 3.5 m
+        /// astern <b>on the water</b>, but the ¾ camera draws that as only 2.25 m of screen at N and the full
+        /// 3.5 m at E — so a top-down anchor left the skiff's plume floating 1.6 m clear of her transom heading
+        /// north and touching it heading east. That breathing gap is what the owner saw ("not even connected to
+        /// it and way off to the stern", and the rowboat's wake being off only <i>sometimes</i>). Projecting the
+        /// whole offset — hull half-length AND the nudge, since both are distances on the water — pins the gap at
+        /// a constant <c>PlumeAsternOffset</c> metres astern at every heading.</para>
+        ///
+        /// <para>The anchor rides the boat's TRUE continuous heading, not the drawn/snapped one — that is
+        /// deliberate and correct: the wake is where the water actually is. Pure + static.</para>
+        /// </summary>
+        public static Vector2 SternAnchor(Vector2 boatPos, Vector2 bow, float hullLengthMeters, float asternOffset,
+                                          float bakeElevationDegrees)
+        {
             float back = Mathf.Max(0f, hullLengthMeters) * 0.5f + Mathf.Max(0f, asternOffset);
-            return boatPos - dir * back;
+            return ProjectAlongHeading(boatPos, bow, -back, bakeElevationDegrees);
         }
 
         /// <summary>

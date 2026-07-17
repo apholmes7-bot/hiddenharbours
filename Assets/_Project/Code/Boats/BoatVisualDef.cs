@@ -69,6 +69,17 @@ namespace HiddenHarbours.Boats
                  "heading, the wake and the spotlight always rode the real heading and were never wrong.")]
         public bool FacingsAreCounterClockwise = false;
 
+        [Tooltip("The ELEVATION, in degrees above the horizon, of the camera this artwork was baked at — an ART " +
+                 "FACT of the sheets, not a feel knob. Every iso rig (dory, punt, skiffs) bakes at 40. " +
+                 "USE 90 FOR ART THAT IS NOT A RIG BAKE: 90 means a plan view — no foreshortening at all — " +
+                 "which is the honest answer for the hand-drawn FishingBoat_* compass (it never had a camera to " +
+                 "measure) and leaves its wake exactly where it has always been. Everything anchored to a point " +
+                 "ON the drawn hull reads this: the wake plume at the transom, the bow spray at the cutwater, " +
+                 "the outboard's rock pose. Those anchors are computed in honest top-down world metres, and " +
+                 "this is the ONLY thing that says how the picture squashes them onto the screen — get it wrong " +
+                 "and they drift as she turns.")]
+        [Range(0f, 90f)] public float ArtBakeElevationDegrees = 90f;
+
         [Tooltip("SpriteRenderer sortingOrder for the hull picture. 1 draws it above the hidden base hull " +
                  "renderer at 0 and below the on-foot player at 10. Overlays take the orders above this.")]
         public int SortingOrder = 1;
@@ -135,15 +146,25 @@ namespace HiddenHarbours.Boats
                  "double-rock.")]
         public float MotorRockRollDegrees = 3.4f;
 
-        [Tooltip("Screen-vertical METRES at the peak of the PITCH. The art rigs give pitchA in DEGREES " +
-                 "(console 1.9, sport 2.2, punt 2.4, dory 3.0) and the dory reads its 3.0 as 0.02 m of " +
-                 "vertical travel in the ¾ view — 0.00667 m per degree. The same conversion puts the console " +
-                 "at 0.0127, the sport at 0.0147 and the punt at 0.016. Keep small; this is a screen offset, " +
-                 "not a rotation.")]
-        public float MotorRockPitchOffsetMeters = 0.0127f;
+        [Tooltip("Degrees of bow-up/bow-down tip at the peak of the PITCH — the art rigs' pitchA, read straight " +
+                 "off them: console 1.9, sport 2.2, punt 2.4 (the dory reference is 3.0). This is a ROTATION, " +
+                 "in degrees, exactly as the rig states it. How much SCREEN travel it causes at the engine is " +
+                 "not a number anyone tunes: MountedRockPoseMath works it out from MotorMountLocalMeters and " +
+                 "ArtBakeElevationDegrees, because a pitch at a mount 3.5 m aft reads very differently from one " +
+                 "amidships, and differently again at each heading. (This field replaced a screen-metres fudge " +
+                 "that was a flat rescale of the dory's hand-tuned 0.02 m — it ignored the outboard's lever arm " +
+                 "entirely, came out ~8× short AND wrong-signed, and so LIFTED the engine on the wave the hull " +
+                 "was dropping it into. That is the 'motor bounces independently' bug.)")]
+        public float MotorRockPitchDegrees = 1.9f;
 
         [Tooltip("Baked HEAVE amplitude in pixels (the rigs' heaveA). Console 1.3, Sport 1.5, Punt 1.5.")]
         public float MotorRockHeavePixels = 1.3f;
+
+        [Tooltip("Where the engine's clamp actually hangs, in boat-local METRES (x = starboard, y = bow, " +
+                 "z = up) — the rigs' MOUNT, read at motorMount's y − 0.03. Skiffs (0, −3.53, 0.72); punt " +
+                 "(0, −2.63, 0.56). NOT a nudge knob: it is the lever arm the whole rock pose turns on. Moving " +
+                 "it moves where the pose thinks the engine is, not where the engine is drawn.")]
+        public Vector3 MotorMountLocalMeters = new Vector3(0f, -3.53f, 0.72f);
 
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
 

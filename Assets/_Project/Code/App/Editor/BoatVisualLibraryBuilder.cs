@@ -55,8 +55,10 @@ namespace HiddenHarbours.App.Editor
             public OutboardMotorLayer.MotorVariant MotorVariant;
             public OutboardMotorLayer.MotorFit MotorFit;
             public float MotorRockRollDegrees;
-            public float MotorRockPitchOffsetMeters;
+            public float MotorRockPitchDegrees;      // the rigs' pitchA, in DEGREES — a rotation, not an offset
             public float MotorRockHeavePixels;
+            public Vector3 MotorMountLocalMeters;    // the rigs' MOUNT (at motorMount's y - 0.03), boat-local m
+            public float ArtBakeElevationDegrees;    // the rigs' DEFAULT_ELEV; 90 = not a bake, do not foreshorten
             public int SortingOrder;
             public bool FacingsAreCounterClockwise;
         }
@@ -74,26 +76,51 @@ namespace HiddenHarbours.App.Editor
         const bool IsoSheetsAreCounterClockwise = true;   // the rigs' bake order — not a feel knob
         const bool CompassFilesAreClockwise = false;      // the hand-drawn FishingBoat compass: already right
 
-        // The per-hull motor ROCK amplitudes are ART FACTS read off the outboard rigs, not feel knobs: they
-        // pose the LEVEL-baked engine cells onto the hull's rock, which is already baked into the hull's own
-        // frames. Get them wrong and the engine slides on the transom; DOUBLE them onto the hull's rock and
-        // the boat shakes itself apart. The dory's reference read is roll 5° / pitch 3° / heave 1.6 px, and
-        // the dory converts its 3° of pitch to 0.02 m of screen-vertical travel in the ¾ view.
+        // The per-hull motor ROCK amplitudes are ART FACTS read STRAIGHT off the outboard rigs' ROCK block —
+        // not feel knobs, and no longer derived from anything. They pose the LEVEL-baked engine cells onto the
+        // hull's rock, which is already baked into the hull's own frames. Get them wrong and the engine slides
+        // on the transom; DOUBLE them onto the hull's rock and the boat shakes itself apart.
         //
-        // THE PITCH CONVERSION, since it is the one number that is derived rather than read: the rigs give
-        // pitchA in DEGREES but this field is screen-vertical METRES, and the dory pins the exchange rate at
-        //     0.02 m / 3.0° = 0.006667 m per degree.
-        // Every hull takes its own rig's pitchA through that same rate — never another hull's answer:
-        //     console 1.9° → 0.0127    sport 2.2° → 0.0147    punt 2.4° → 0.0160
-        //
-        //   hull      rollA  pitchA  heaveA   (rig)          character
+        //   hull      rollA  pitchA  heaveA   (rig ROCK)     character
         //   dory       5.0    3.0     1.6     the reference: light, narrow, corks about
         //   punt       4.2    2.4     1.5     beamier than the dory → a stiffer roll than her
         //   sport      3.8    2.2     1.5     light glass hull, livelier
         //   console    3.4    1.9     1.3     heaviest hull, stiffest
-        const float ConsoleRockRoll = 3.4f, ConsoleRockPitch = 0.0127f, ConsoleRockHeave = 1.3f;  // heavier hull, stiffer
-        const float SportRockRoll   = 3.8f, SportRockPitch   = 0.0147f, SportRockHeave   = 1.5f;  // light glass hull, livelier
-        const float PuntRockRoll    = 4.2f, PuntRockPitch    = 0.0160f, PuntRockHeave    = 1.5f;  // beamier boat, stiffer roll than the dory
+        //
+        // THE PITCH FIELD IS NOW THE RIG'S pitchA, IN DEGREES. It used to be screen-vertical METRES, filled by
+        // pushing each rig's pitchA through an "exchange rate" of 0.02 m / 3.0° = 0.006667 m per degree —
+        // borrowed from the DORY, whose 0.02 was itself hand-tuned and has no derivation anywhere in this
+        // project. The rate was linear in pitchA, which looked principled, but the quantity it stood in for is
+        // dominated by the MOUNT'S LEVER ARM, which it ignored entirely: the dory's 0.02 was tuned for oarlocks
+        // near amidships, while an outboard hangs ~3.5 m AFT. The result was ~8x too small and, worse, the
+        // wrong SIGN — a positive pitch is bow-UP, which drops the stern and everything clamped to it, but the
+        // code LIFTED the engine. The motor rocked in anti-phase with its own transom: the owner's "the skiffs
+        // motor doesnt rock/bounce in synch with the boat itself, it seems to bounce independtly".
+        //
+        // Nothing is converted now. MountedRockPoseMath re-runs the rig's own camera over the MOUNT below and
+        // works the screen travel out per heading, so these three numbers are only ever transcription.
+        const float ConsoleRockRoll = 3.4f, ConsoleRockPitch = 1.9f, ConsoleRockHeave = 1.3f;  // heavier hull, stiffer
+        const float SportRockRoll   = 3.8f, SportRockPitch   = 2.2f, SportRockHeave   = 1.5f;  // light glass hull, livelier
+        const float PuntRockRoll    = 4.2f, PuntRockPitch    = 2.4f, PuntRockHeave    = 1.5f;  // beamier boat, stiffer roll than the dory
+
+        // WHERE THE ENGINE ACTUALLY HANGS, in boat-local metres (x = starboard, y = bow, z = up) — the rigs'
+        //     const MOUNT = { x:0, y:-L/2, z:T[0][3]+T[0][2] }
+        // read at the point motorMount() actually projects, which is MOUNT.y - 0.03 (just aft of the transom
+        // top). Both skiffs are 7.0 m with a 0.06 keel + 0.66 transom depth; the punt is 5.2 m with 0.08 +
+        // 0.48. This is the lever arm the whole rock pose turns on — it is not a nudge knob.
+        static readonly Vector3 SkiffMotorMount = new Vector3(0f, -3.53f, 0.72f);   // consoleIsoRig / sportSkiffIsoRig
+        static readonly Vector3 PuntMotorMount  = new Vector3(0f, -2.63f, 0.56f);   // puntIsoRig
+
+        // The camera every iso rig bakes at (their DEFAULT_ELEV). It squashes along-heading distance on screen-Y
+        // by sin(40°) ~ 0.643 and leaves screen-X alone — which is why anything pinned to a point ON the drawn
+        // hull (the wake at the transom, the spray at the cutwater, the outboard's mount) has to be projected
+        // rather than placed in top-down metres.
+        const float IsoBakeElevation = 40f;
+
+        // ...and the elevation for art that is NOT a rig bake. 90 = a plan view = no foreshortening = exactly
+        // where the FishingBoat compass's wake has always gone. Same reasoning as CompassFilesAreClockwise
+        // above: that art is a different lineage and must not be "fixed" by the iso kits' facts.
+        const float PlanViewBakeElevation = 90f;
 
         // Steer authority baked into each kit's motor sheets, in degrees either side of dead ahead. NOT a
         // feel knob — it says what the 9 columns are DRAWN at, and the punt is genuinely different from the
@@ -120,6 +147,11 @@ namespace HiddenHarbours.App.Editor
                 OarPortPath = $"{ArtBoats}/DoryOarPort.png",
                 OarStarPath = $"{ArtBoats}/DoryOarStar.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10, SortingOrder = 1,
+                // The dory is an iso bake like the rest. She has no motor, but her WAKE is anchored on her
+                // drawn transom and so is foreshortened exactly the same way — which is the owner's "the wake
+                // from the rowboat still doesnt ALWAYS seem accurate". Always: it was only ever right on the
+                // E/W axis, where the ¾ camera happens not to squash the along-heading distance at all.
+                ArtBakeElevationDegrees = IsoBakeElevation,
             },
 
             // The 8-direction fishing boat: the ODD ONE OUT of this library. Its compass is 8 SEPARATE
@@ -132,6 +164,10 @@ namespace HiddenHarbours.App.Editor
                 HullPaths = CompassFiles("FishingBoat"),
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
                 MotorColumns = OutboardMotorMath.SteerColumns, SortingOrder = 1,
+                // NOT a rig bake — 8 hand-drawn files with no camera to measure. Declared a plan view, which
+                // leaves its wake (and the whole ambient fleet's, which wears these very facings) exactly where
+                // it has always been. Foreshortening it would be inventing a camera it never had.
+                ArtBakeElevationDegrees = PlanViewBakeElevation,
             },
 
             // THE CONSOLE SKIFF — the 7 m workboat. 8 headings + a 64-frame rock grid, and a SINGLE
@@ -148,8 +184,10 @@ namespace HiddenHarbours.App.Editor
                 MotorVariant = OutboardMotorLayer.MotorVariant.Work,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = ConsoleRockRoll,
-                MotorRockPitchOffsetMeters = ConsoleRockPitch,
+                MotorRockPitchDegrees = ConsoleRockPitch,
                 MotorRockHeavePixels = ConsoleRockHeave,
+                MotorMountLocalMeters = SkiffMotorMount,
+                ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
 
@@ -166,8 +204,10 @@ namespace HiddenHarbours.App.Editor
                 MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = SportRockRoll,
-                MotorRockPitchOffsetMeters = SportRockPitch,
+                MotorRockPitchDegrees = SportRockPitch,
                 MotorRockHeavePixels = SportRockHeave,
+                MotorMountLocalMeters = SkiffMotorMount,
+                ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
 
@@ -187,8 +227,10 @@ namespace HiddenHarbours.App.Editor
                 MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
                 MotorFit = OutboardMotorLayer.MotorFit.Twin,
                 MotorRockRollDegrees = SportRockRoll,
-                MotorRockPitchOffsetMeters = SportRockPitch,
+                MotorRockPitchDegrees = SportRockPitch,
                 MotorRockHeavePixels = SportRockHeave,
+                MotorMountLocalMeters = SkiffMotorMount,
+                ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
 
@@ -216,8 +258,10 @@ namespace HiddenHarbours.App.Editor
                 MotorVariant = OutboardMotorLayer.MotorVariant.Basic,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = PuntRockRoll,
-                MotorRockPitchOffsetMeters = PuntRockPitch,
+                MotorRockPitchDegrees = PuntRockPitch,
                 MotorRockHeavePixels = PuntRockHeave,
+                MotorMountLocalMeters = PuntMotorMount,
+                ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
 
@@ -238,8 +282,10 @@ namespace HiddenHarbours.App.Editor
                 MotorVariant = OutboardMotorLayer.MotorVariant.Upgraded,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = PuntRockRoll,
-                MotorRockPitchOffsetMeters = PuntRockPitch,
+                MotorRockPitchDegrees = PuntRockPitch,
                 MotorRockHeavePixels = PuntRockHeave,
+                MotorMountLocalMeters = PuntMotorMount,
+                ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
         };
@@ -289,8 +335,14 @@ namespace HiddenHarbours.App.Editor
             def.MotorVariant = sheet.MotorVariant;
             def.MotorFit = sheet.MotorFit;
             if (sheet.MotorRockRollDegrees > 0f) def.MotorRockRollDegrees = sheet.MotorRockRollDegrees;
-            if (sheet.MotorRockPitchOffsetMeters > 0f) def.MotorRockPitchOffsetMeters = sheet.MotorRockPitchOffsetMeters;
+            if (sheet.MotorRockPitchDegrees > 0f) def.MotorRockPitchDegrees = sheet.MotorRockPitchDegrees;
             if (sheet.MotorRockHeavePixels > 0f) def.MotorRockHeavePixels = sheet.MotorRockHeavePixels;
+            if (sheet.MotorMountLocalMeters.sqrMagnitude > 1e-6f)
+                def.MotorMountLocalMeters = sheet.MotorMountLocalMeters;
+            // Written UNCONDITIONALLY, unlike the motor block above: every sheet either has a camera or is
+            // declaring at 90 that it has none, and a silent 0 would foreshorten every anchor on that hull
+            // onto the boat's own middle.
+            def.ArtBakeElevationDegrees = Mathf.Clamp(sheet.ArtBakeElevationDegrees, 0f, 90f);
 
             // All-or-nothing per block, mirroring BoatVisualDef's own gates: a partial sheet is dropped
             // whole rather than half-bound, because one missing slice would index a stale cell.

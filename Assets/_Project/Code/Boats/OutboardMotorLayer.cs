@@ -68,6 +68,9 @@ namespace HiddenHarbours.Boats
     /// RAISED/TILT pose is not on the sheets and is deliberately not faked.</para>
     /// </summary>
     [DisallowMultipleComponent]
+    // A READER of the rock frame + drawn heading, so it runs LAST of the boat's visual chain
+    // (BoatWaveMotion −120 → DirectionalBoatSprite −110 → this −100). See BoatWaveMotion for why.
+    [DefaultExecutionOrder(-100)]
     public class OutboardMotorLayer : MonoBehaviour
     {
         /// <summary>
@@ -167,8 +170,10 @@ namespace HiddenHarbours.Boats
         [SerializeField] private float _pixelsPerUnit = 32f;
         [Tooltip("Degrees of lean at the peak of the roll. Console 3.4, Sport 3.8 (the rigs' rollA).")]
         [SerializeField] private float _rockRollDegrees = 3.4f;
-        [Tooltip("Screen-vertical metres at the peak of the PITCH (the rigs' pitchA read as vertical travel in ¾ view). Keep small.")]
-        [SerializeField] private float _rockPitchOffsetMeters = 0.02f;
+        [Tooltip("Degrees of bow-up/bow-down tip at the peak of the PITCH — the rigs' pitchA, verbatim (console 1.9, sport 2.2, punt 2.4). A ROTATION, not a screen offset: the screen travel it causes is derived from the mount below.")]
+        [SerializeField] private float _rockPitchDegrees = 1.9f;
+        [Tooltip("Where the clamp hangs, in boat-local metres (x = starboard, y = bow, z = up) — the rigs' MOUNT. Skiffs (0, −3.53, 0.72); punt (0, −2.63, 0.56). The lever arm the whole pose turns on.")]
+        [SerializeField] private Vector3 _mountLocalMeters = new Vector3(0f, -3.53f, 0.72f);
         [Tooltip("Rock frames per heading in the hull's rock sheet (the skiff rock sheets ship 8) — the cycle the coupling reads.")]
         [SerializeField] private int _rockFrameCount = 8;
 
@@ -280,12 +285,19 @@ namespace HiddenHarbours.Boats
         /// values are ignored rather than zeroing the coupling, so a half-authored asset degrades to the
         /// default lean instead of a dead-level engine on a rocking hull.</para>
         /// </summary>
-        public void ConfigureRock(float rollDegrees, float pitchOffsetMeters, float heavePixels, int rockFrameCount)
+        public void ConfigureRock(float rollDegrees, float pitchDegrees, float heavePixels, int rockFrameCount,
+                                  Vector3 mountLocalMeters, float bakeElevationDegrees)
         {
             if (rollDegrees > 0f) _rockRollDegrees = rollDegrees;
-            if (pitchOffsetMeters > 0f) _rockPitchOffsetMeters = pitchOffsetMeters;
+            if (pitchDegrees > 0f) _rockPitchDegrees = pitchDegrees;
             if (heavePixels > 0f) _rockHeavePixels = heavePixels;
             if (rockFrameCount > 0) _rockFrameCount = rockFrameCount;
+            // A zeroed mount is never authored — it would put the clamp on the boat's own origin, amidships at
+            // the waterline, and quietly flatten the lever arm the pose is built on. Ignore it, like the rest.
+            if (mountLocalMeters.sqrMagnitude > 1e-6f) _mountLocalMeters = mountLocalMeters;
+            // The bake elevation is the sheets' camera. 40 on every kit shipped; a stale asset deserialises 0
+            // (the #212 trap) and 0 would collapse the projection, so non-positive keeps the serialized value.
+            if (bakeElevationDegrees > 0f) _bakeElevationDegrees = bakeElevationDegrees;
         }
 
         private void OnEnable()
@@ -325,9 +337,7 @@ namespace HiddenHarbours.Boats
             int row = HeadingRow();
             HeadingRowDrawn = row;
 
-            DoryOarMath.OarRockPose pose = RockPose();
-            var lift = new Vector3(0f, pose.OffsetY, 0f);
-            var lean = Quaternion.Euler(0f, 0f, pose.RollDegrees);
+            int rockFrame = RockFrame();
             int hullOrder = _hullRenderer != null ? _hullRenderer.sortingOrder : _fallbackHullSortingOrder;
 
             if (_fit == MotorFit.Twin)
@@ -338,15 +348,15 @@ namespace HiddenHarbours.Boats
                 bool portIsFar = OutboardMotorMath.IsFarEngine(portMount, starMount, row, _headingCount);
 
                 DrawEngine(_lowerA, _upperA, _lowerABaseLocalPosition, _upperABaseLocalPosition,
-                           row, hullOrder, portMount, portIsFar, lift, lean);
+                           row, rockFrame, hullOrder, portMount, portIsFar);
                 DrawEngine(_lowerB, _upperB, _lowerBBaseLocalPosition, _upperBBaseLocalPosition,
-                           row, hullOrder, starMount, !portIsFar, lift, lean);
+                           row, rockFrame, hullOrder, starMount, !portIsFar);
             }
             else
             {
-                // Single engine, on the centreline: no mount offset, and it is trivially the near one.
+                // Single engine, on the centreline: no clamp shift, and it is trivially the near one.
                 DrawEngine(_lowerA, _upperA, _lowerABaseLocalPosition, _upperABaseLocalPosition,
-                           row, hullOrder, 0f, false, lift, lean);
+                           row, rockFrame, hullOrder, 0f, false);
             }
         }
 
@@ -371,27 +381,46 @@ namespace HiddenHarbours.Boats
             return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees, ccw);
         }
 
-        /// <summary>The pose that rides the level-baked motor cells on the hull's currently-drawn rock frame.
-        /// <see cref="DoryOarMath.RockPose"/> is REUSED, not re-derived: every boat rig's rockMotion(i) is
-        /// algebraically identical to the dory's baked cycle (roll = rollA·sin(a), offsetY = heave·sin(a) +
-        /// pitch·cos(a), a = frame·45°) — only the amplitudes differ, and those are tunables above.</summary>
-        private DoryOarMath.OarRockPose RockPose()
-        {
-            int rockFrame = _directionalSprite != null && _directionalSprite.HasRockGrid
+        /// <summary>The hull's currently-drawn rock frame — the wave the engine must ride. −1 (level) when the
+        /// hull is drawing its static facing or has no rock grid at all, so a calm hull never gets a moving
+        /// engine.</summary>
+        private int RockFrame()
+            => _directionalSprite != null && _directionalSprite.HasRockGrid
                 ? _directionalSprite.RockFrame
                 : OutboardMotorMath.LevelRockFrame;
 
-            return DoryOarMath.RockPose(rockFrame, _rockFrameCount, _rockRollDegrees, _rockPitchOffsetMeters,
-                                        _rockHeavePixels, _pixelsPerUnit, _rockStrength);
-        }
+        /// <summary>
+        /// The pose that rides ONE level-baked engine on the hull's currently-drawn rock frame — derived by
+        /// <see cref="MountedRockPoseMath.Pose"/> from this kit's MOUNT POINT and bake elevation, at this
+        /// heading.
+        ///
+        /// <para><b>This used to call <see cref="DoryOarMath.RockPose"/> and it was wrong four ways.</b> That
+        /// function takes pitch as a pre-baked screen offset, and the value handed to it was the dory's
+        /// hand-tuned 0.02 m linearly rescaled by pitchA — which threw away the one thing that actually decides
+        /// the answer, the mount's lever arm. The dory's oarlocks sit near amidships; the outboard hangs ~3.5 m
+        /// aft. So the engine got ~1/8 of the travel it needed, in the WRONG DIRECTION (a positive pitch is
+        /// bow-UP, which puts the stern — and everything clamped to it — DOWN), no lateral travel at all, and a
+        /// roll that was constant at every heading when the truth swings from full at N/S to nothing at E/W. The
+        /// error was bigger than the signal: the engine was in ANTI-PHASE with the transom it hangs on, which is
+        /// exactly the "bounces independently" the owner reported.</para>
+        ///
+        /// <para>The dory's oars keep <see cref="DoryOarMath.RockPose"/> deliberately — see
+        /// <see cref="MountedRockPoseMath"/>. Their approximation is close where their oarlocks are, and the
+        /// owner has a standing verdict that the rowing feels right.</para>
+        /// </summary>
+        private MountedRockPoseMath.MountRockPose RockPose(int row, int rockFrame, float lateralMetres)
+            => MountedRockPoseMath.Pose(rockFrame, _rockFrameCount, row, _headingCount,
+                                        _mountLocalMeters, lateralMetres, _bakeElevationDegrees,
+                                        _rockRollDegrees, _rockPitchDegrees, _rockHeavePixels,
+                                        _pixelsPerUnit, _rockStrength);
 
         /// <summary>Draw one engine's two layers: the steer frame, the per-heading sorting order (the lower
-        /// layer's band flips across the stern-away headings), and the pose — the shared rock lean plus this
-        /// engine's exact clamp offset.</summary>
+        /// layer's band flips across the stern-away headings), and the pose. The pose is derived PER ENGINE
+        /// because it is derived from the mount, and a twin's two engines hang at different mounts — it carries
+        /// the rock AND the clamp shift in one, so there is nothing left to add on top.</summary>
         private void DrawEngine(SpriteRenderer lower, SpriteRenderer upper,
                                 Vector3 lowerBase, Vector3 upperBase,
-                                int row, int hullOrder, float mountMetres, bool isFar,
-                                Vector3 lift, Quaternion lean)
+                                int row, int rockFrame, int hullOrder, float mountMetres, bool isFar)
         {
             Draw(lower, _lowerFrames, row, SteerColumn);
             Draw(upper, _upperFrames, row, SteerColumn);
@@ -407,12 +436,12 @@ namespace HiddenHarbours.Boats
                 upper.sortingLayerID = _hullRenderer.sortingLayerID;
             }
 
-            // The clamp offset is EXACT (orthographic bake), so the second engine lands where the art would
-            // have baked it. A single engine is on the centreline and this is Vector2.zero.
-            Vector2 mount = mountMetres != 0f
-                ? OutboardMotorMath.MountOffset(row, mountMetres, _headingCount, _bakeElevationDegrees)
-                : Vector2.zero;
-            var offset = new Vector3(mount.x, mount.y, 0f) + lift;
+            // ONE pose per engine: the rock travel of ITS mount, plus its clamp shift off the centreline — the
+            // level case collapses to exactly OutboardMotorMath.MountOffset (and to zero for a single engine),
+            // which MountedRockPoseTests pins as a cross-check between the two derivations.
+            MountedRockPoseMath.MountRockPose pose = RockPose(row, rockFrame, mountMetres);
+            var offset = new Vector3(pose.Offset.x, pose.Offset.y, 0f);
+            var lean = Quaternion.Euler(0f, 0f, pose.RollDegrees);
 
             lower.transform.localPosition = lowerBase + offset;
             lower.transform.localRotation = lean;

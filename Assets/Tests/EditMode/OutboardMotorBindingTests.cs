@@ -68,7 +68,9 @@ namespace HiddenHarbours.Tests.EditMode
             v.MotorLower = motor ? MakeSprites("Lower", 72) : System.Array.Empty<Sprite>();
             v.MotorUpper = motor ? MakeSprites("Upper", 72) : System.Array.Empty<Sprite>();
             v.MotorRockRollDegrees = 3.8f;
-            v.MotorRockPitchOffsetMeters = 0.0147f;
+            v.MotorRockPitchDegrees = 2.2f;                            // her rig's pitchA, in DEGREES
+            v.MotorMountLocalMeters = new Vector3(0f, -3.53f, 0.72f);  // her rig's MOUNT
+            v.ArtBakeElevationDegrees = 40f;                          // her rig's DEFAULT_ELEV
             v.MotorRockHeavePixels = 1.5f;
             _spawned.Add(v);
             return v;
@@ -91,7 +93,9 @@ namespace HiddenHarbours.Tests.EditMode
             v.MotorLower = MakeSprites("PuntLower", 72);
             v.MotorUpper = MakeSprites("PuntUpper", 72);
             v.MotorRockRollDegrees = 4.2f;
-            v.MotorRockPitchOffsetMeters = 0.016f;
+            v.MotorRockPitchDegrees = 2.4f;                           // her rig's pitchA, in DEGREES
+            v.MotorMountLocalMeters = new Vector3(0f, -2.63f, 0.56f);  // her OWN mount — a shorter boat
+            v.ArtBakeElevationDegrees = 40f;
             v.MotorRockHeavePixels = 1.5f;
             _spawned.Add(v);
             return v;

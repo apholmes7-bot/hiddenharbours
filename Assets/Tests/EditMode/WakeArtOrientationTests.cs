@@ -145,17 +145,22 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ==== the pure placement/orientation math the fix rides on =======================================
 
+        /// <summary>A plan view — no foreshortening. These cases were written against the top-down placement,
+        /// which is still exactly what art declaring 90 must get; the PROJECTION for art that is a real ¾ bake
+        /// is pinned separately, in WakeProjectionTests.</summary>
+        private const float PlanViewElev = 90f;
+
         [Test]
         public void SternAnchor_SitsAtTheSternNotTheBoatOrigin()
         {
             // The dory: 4.5 m hull, origin at the hull centre, 0.3 m nudge → apex 2.55 m astern of the origin.
-            Vector2 a = WakeGrading.SternAnchor(Vector2.zero, Vector2.up, 4.5f, 0.3f);
+            Vector2 a = WakeGrading.SternAnchor(Vector2.zero, Vector2.up, 4.5f, 0.3f, PlanViewElev);
             Assert.AreEqual(0f, a.x, 1e-4f);
             Assert.AreEqual(-2.55f, a.y, 1e-4f, "half the hull + the nudge — BEHIND the stern, never under the hull");
 
             // Whatever the heading, the anchor is at least half the hull astern (the old bug: only the offset).
             Vector2 bow = new Vector2(1f, 1f).normalized;
-            Vector2 b = WakeGrading.SternAnchor(new Vector2(3f, -2f), bow, 6f, 0.25f);
+            Vector2 b = WakeGrading.SternAnchor(new Vector2(3f, -2f), bow, 6f, 0.25f, PlanViewElev);
             float astern = Vector2.Dot(b - new Vector2(3f, -2f), bow);
             Assert.LessOrEqual(astern, -3f, "anchor is astern of the hull's rear edge (≤ −length/2 along the bow)");
         }
@@ -163,7 +168,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SternAnchor_DegenerateBow_FallsBackToUp_NoNaN()
         {
-            Vector2 a = WakeGrading.SternAnchor(Vector2.zero, Vector2.zero, 4.5f, 0.3f);
+            Vector2 a = WakeGrading.SternAnchor(Vector2.zero, Vector2.zero, 4.5f, 0.3f, PlanViewElev);
             Assert.IsFalse(float.IsNaN(a.x) || float.IsNaN(a.y), "zero bow never yields NaN");
             Assert.AreEqual(-2.55f, a.y, 1e-4f, "falls back to +Y as the bow");
         }
