@@ -172,8 +172,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // punt ~0.7 px at PPU 32. This test exists so a future "tidy-up" that folds the two consts
             // together fails loudly instead of quietly settling the boat.
             const float skiffOriginY = 96f / 216f;
-            Assert.AreNotEqual(skiffOriginY, OriginY, 1e-4f,
-                               "the punt's origin must be derived from her own cell, not reused from the skiffs'");
+            Assert.That(OriginY, Is.Not.EqualTo(skiffOriginY).Within(1e-4f),
+                        "the punt's origin must be derived from her own cell, not reused from the skiffs'");
 
             var punt = LoadSlices("PuntIso.png").First();
             Assert.AreEqual(OriginY, punt.pivot.y / punt.rect.height, 1e-4f,
