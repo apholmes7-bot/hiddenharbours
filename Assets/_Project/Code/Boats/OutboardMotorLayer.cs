@@ -355,13 +355,20 @@ namespace HiddenHarbours.Boats
         /// hull's already-DRAWN (quantized) heading and re-snapping it is idempotent, so the motor lands on the
         /// hull's row by construction — it can never show a different heading than the transom under it. With no
         /// directional sprite wired, this transform's bow stands in (the same convention).
+        ///
+        /// <para>The MIRROR travels with it: the motor sheets are baked by the same rig as the hull, so they
+        /// share its counter-clockwise cell order and must be mirrored the same way
+        /// (<see cref="DirectionalBoatSprite.FacingsAreCounterClockwise"/>) — otherwise the engine would hang
+        /// off the bow of a hull drawn from the mirrored cell. Note the row is all that flips: MountOffset,
+        /// the LowerGoesUnderHull band and the rock pose are all correct in CELL space already.</para>
         /// </summary>
         private int HeadingRow()
         {
             float heading = _directionalSprite != null
                 ? _directionalSprite.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
-            return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees);
+            bool ccw = _directionalSprite != null && _directionalSprite.FacingsAreCounterClockwise;
+            return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees, ccw);
         }
 
         /// <summary>The pose that rides the level-baked motor cells on the hull's currently-drawn rock frame.

@@ -184,7 +184,9 @@ namespace HiddenHarbours.Boats
                 visual.Facings, sr,
                 zeroHeadingDegrees: visual.ZeroHeadingDegrees,   // element 0 is the North-facing sprite
                 smoothModeSprite: visual.Facings[0],             // unused in Snap; same art if toggled
-                mode: DirectionalBoatSprite.RotationMode.SnapDirectional);
+                mode: DirectionalBoatSprite.RotationMode.SnapDirectional,
+                // Per-ARTWORK, never global: the iso sheets are baked CCW; the FishingBoat compass is CW.
+                facingsAreCounterClockwise: visual.FacingsAreCounterClockwise);
 
             // (3) The rock grid: DirectionalBoatSprite draws rockGrid[heading·frames + RockFrame] instead
             // of the static facing, and BoatWaveMotion sets RockFrame from the wave phase under the hull —

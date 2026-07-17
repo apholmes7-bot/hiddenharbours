@@ -47,6 +47,12 @@ namespace HiddenHarbours.Boats
                  "Default 0 because element 0 is the North-facing sprite.")]
         [SerializeField] private float _zeroHeadingDegrees = 0f;
 
+        [Tooltip("Tick ONLY for art baked COUNTER-CLOCKWISE — cell i depicts −45°·i, not +45°·i. The iso " +
+                 "rigs (dory/punt/skiffs) rotate the model CCW but label the cells CW, so their sheets are " +
+                 "mirrored; the older FishingBoat_* compass is CW and correct. Per-artwork, never global. " +
+                 "Set from BoatVisualDef.FacingsAreCounterClockwise; default false = today's CW convention.")]
+        [SerializeField] private bool _facingsAreCounterClockwise = false;
+
         [Tooltip("Child SpriteRenderer the facing is written to. In SnapDirectional it is counter-rotated " +
                  "to stay screen-axis-aligned; in SmoothRotateSingle it is left to rotate with the hull.")]
         [SerializeField] private SpriteRenderer _renderer;
@@ -122,15 +128,26 @@ namespace HiddenHarbours.Boats
         /// Inspector). All optional past the facings array.
         /// </summary>
         public void Configure(Sprite[] facings, SpriteRenderer renderer, float zeroHeadingDegrees = 0f,
-                              Sprite smoothModeSprite = null, RotationMode mode = RotationMode.SnapDirectional)
+                              Sprite smoothModeSprite = null, RotationMode mode = RotationMode.SnapDirectional,
+                              bool facingsAreCounterClockwise = false)
         {
             _facings = facings;
             _renderer = renderer;
             _zeroHeadingDegrees = zeroHeadingDegrees;
             _smoothModeSprite = smoothModeSprite;
             _mode = mode;
+            _facingsAreCounterClockwise = facingsAreCounterClockwise;
             _lastIndex = -1;
         }
+
+        /// <summary>
+        /// True when this skin's cells run COUNTER-CLOCKWISE (cell i depicts −step·i) — see
+        /// <see cref="BoatVisualDef.FacingsAreCounterClockwise"/>. Exposed so the overlay layers
+        /// (<see cref="DoryOarLayer"/>, <see cref="OutboardMotorLayer"/>) pick their sheet row with the SAME
+        /// convention the hull picked its facing with. They index sheets baked by the same rig as the hull,
+        /// so they mirror together or the engine ends up on the bow.
+        /// </summary>
+        public bool FacingsAreCounterClockwise => _facingsAreCounterClockwise;
 
         /// <summary>
         /// Wire the wave-coupled rock grid from code (the builders' path). <paramref name="rockGrid"/> is
@@ -172,8 +189,15 @@ namespace HiddenHarbours.Boats
         /// NEXT facing clockwise (half-up), so e.g. for count=4 a heading of 45° (dead between N and E) picks
         /// East, 135° picks South, etc. — never an ambiguous tie. The result is always in [0, count).
         /// Pure + static + deterministic (no engine state, no allocation).
+        ///
+        /// <para><paramref name="facingsAreCounterClockwise"/> mirrors the lookup for art whose cells run the
+        /// OTHER way — cell i depicting −step·i rather than +step·i (see
+        /// <see cref="BoatVisualDef.FacingsAreCounterClockwise"/>: the iso rigs bake CCW but label CW).
+        /// Default false = the clockwise convention, unchanged. Note this only picks a different CELL; the
+        /// heading itself is never altered, which is why <see cref="SnapHeadingDegrees"/> ignores the flag.</para>
         /// </summary>
-        public static int HeadingToFacingIndex(float headingDeg, int count, float zeroHeadingDeg)
+        public static int HeadingToFacingIndex(float headingDeg, int count, float zeroHeadingDeg,
+                                               bool facingsAreCounterClockwise = false)
         {
             if (count <= 0) return 0;
             float step = 360f / count;
@@ -183,6 +207,9 @@ namespace HiddenHarbours.Boats
             // Half-up rounding (FloorToInt(x + 0.5)) so bucket edges resolve to the next facing CW,
             // deterministically — no banker's-rounding tie at 45/135/225/315 for count=4.
             int idx = Mathf.FloorToInt(rel / step + 0.5f);
+            // CCW art: the cell that DEPICTS +rel is the one the rig baked at −rel, i.e. count − idx.
+            // (Element 0 is its own mirror — North is North either way — hence the wrap below, not count−1−idx.)
+            if (facingsAreCounterClockwise) idx = count - idx;
             idx %= count;             // 360°≡0° wraps the top bucket back to element 0
             if (idx < 0) idx += count;
             return idx;
@@ -196,12 +223,25 @@ namespace HiddenHarbours.Boats
         /// on-screen boat only ever points at one of the pre-drawn facings. <paramref name="count"/> ≤ 0
         /// falls back to the un-snapped heading (no facing art → the picture rotates with the hull).
         /// Pure + static + deterministic.
+        ///
+        /// <para><b>This quantizes the HEADING, not the cell index — deliberately.</b> It used to read back
+        /// the chosen facing's own heading (<c>zeroHeadingDeg + idx·step</c>), which is the same answer only
+        /// while cell i means +step·i. For CCW art (<see cref="BoatVisualDef.FacingsAreCounterClockwise"/>)
+        /// that would hand back the MIRRORED cell's label — a boat heading East reported as heading West —
+        /// and everything pinned to the drawn hull (the deck-walk clamp, the deck props, the oar and motor
+        /// overlays) would fly off it. The picture the player sees always points at the boat's TRUE snapped
+        /// heading; only which cell draws it differs. So this function has no mirror parameter at all: there
+        /// is nothing here to mirror.</para>
         /// </summary>
         public static float SnapHeadingDegrees(float headingDeg, int count, float zeroHeadingDeg)
         {
             if (count <= 0) return NormalizeDegrees(headingDeg);
-            int idx = HeadingToFacingIndex(headingDeg, count, zeroHeadingDeg);
-            return NormalizeDegrees(zeroHeadingDeg + idx * (360f / count));
+            float step = 360f / count;
+            // Mathf.Floor(x + 0.5) — NOT Mathf.Round, which is banker's rounding and would resolve a
+            // bucket-edge heading (45° at count=4) to the EVEN bucket instead of the next one clockwise,
+            // silently contradicting HeadingToFacingIndex's documented half-up rule.
+            float bucket = Mathf.Floor((headingDeg - zeroHeadingDeg) / step + 0.5f);
+            return NormalizeDegrees(zeroHeadingDeg + bucket * step);
         }
 
         private static float NormalizeDegrees(float deg)
@@ -269,7 +309,8 @@ namespace HiddenHarbours.Boats
             if (_facings == null || _facings.Length == 0) return;
 
             float heading = HeadingDegreesFromBow(transform.up);
-            int idx = HeadingToFacingIndex(heading, _facings.Length, _zeroHeadingDegrees);
+            int idx = HeadingToFacingIndex(heading, _facings.Length, _zeroHeadingDegrees,
+                                           _facingsAreCounterClockwise);
 
             Sprite target;
             if (HasRockGrid && RockFrame >= 0)

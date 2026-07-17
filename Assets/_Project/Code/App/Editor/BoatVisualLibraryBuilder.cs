@@ -58,7 +58,21 @@ namespace HiddenHarbours.App.Editor
             public float MotorRockPitchOffsetMeters;
             public float MotorRockHeavePixels;
             public int SortingOrder;
+            public bool FacingsAreCounterClockwise;
         }
+
+        // THE ISO SHEETS ARE BAKED COUNTER-CLOCKWISE. Every iso kit here (dory, punt, skiffs) comes off the
+        // same 3D rig recipe, and that recipe rotates the model CCW — projVert's `xr = x1·ct − y2·stt` with
+        // th = +dir·45° and bow = +y — and then declares the cells clockwise ('N','NE','E',...). So cell i
+        // actually DEPICTS heading −45°·i: the 'E' cell is a boat pointing West. Drawn-minus-true = −2·heading,
+        // which is 0 at N/S (why it hid), 90° at the diagonals and a full 180° at E/W.
+        //
+        // This is an ART FACT of those sheets, and it is per-artwork rather than a blanket code fix for one
+        // reason: the FishingBoat_* compass below is a DIFFERENT lineage — 8 hand-drawn files, labelled
+        // CORRECTLY (verified from its pixels: E's bow points right). Mirroring everything would have fixed
+        // the iso kits and broken the fishing boat and the whole ambient fleet that shares its facings.
+        const bool IsoSheetsAreCounterClockwise = true;   // the rigs' bake order — not a feel knob
+        const bool CompassFilesAreClockwise = false;      // the hand-drawn FishingBoat compass: already right
 
         // The per-hull motor ROCK amplitudes are ART FACTS read off the outboard rigs, not feel knobs: they
         // pose the LEVEL-baked engine cells onto the hull's rock, which is already baked into the hull's own
@@ -100,7 +114,7 @@ namespace HiddenHarbours.App.Editor
             // overlays register pixel-perfect on the hull at localPosition zero. ROWED — no motor.
             new Sheet
             {
-                AssetName = "DoryIso", Id = "visual.dory_iso",
+                AssetName = "DoryIso", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.dory_iso",
                 HullPath = $"{ArtBoats}/DoryIso.png",
                 RockPath = $"{ArtBoats}/DoryIsoRock.png",
                 OarPortPath = $"{ArtBoats}/DoryOarPort.png",
@@ -114,7 +128,7 @@ namespace HiddenHarbours.App.Editor
             // before. It is here so the owner can pilot it, not because it grew a rig.
             new Sheet
             {
-                AssetName = "FishingBoat", Id = "visual.fishing_boat",
+                AssetName = "FishingBoat", FacingsAreCounterClockwise = CompassFilesAreClockwise, Id = "visual.fishing_boat",
                 HullPaths = CompassFiles("FishingBoat"),
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
                 MotorColumns = OutboardMotorMath.SteerColumns, SortingOrder = 1,
@@ -124,7 +138,7 @@ namespace HiddenHarbours.App.Editor
             // graphite-cowl outboard on the centreline (72-cell sheets, 9 steer columns).
             new Sheet
             {
-                AssetName = "ConsoleSkiff", Id = "visual.console_skiff",
+                AssetName = "ConsoleSkiff", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.console_skiff",
                 HullPath = $"{ArtBoats}/ConsoleIso.png",
                 RockPath = $"{ArtBoats}/ConsoleIsoRock.png",
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Work.png",
@@ -142,7 +156,7 @@ namespace HiddenHarbours.App.Editor
             // THE SPORT SKIFF — the console's glass sister, one white-cowl outboard.
             new Sheet
             {
-                AssetName = "SportSkiffSingle", Id = "visual.sport_skiff_single",
+                AssetName = "SportSkiffSingle", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.sport_skiff_single",
                 HullPath = $"{ArtBoats}/SportSkiffIso.png",
                 RockPath = $"{ArtBoats}/SportSkiffIsoRock.png",
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
@@ -163,7 +177,7 @@ namespace HiddenHarbours.App.Editor
             // so the twin is a hull the owner can select, not a runtime flag someone has to remember to set.
             new Sheet
             {
-                AssetName = "SportSkiffTwin", Id = "visual.sport_skiff_twin",
+                AssetName = "SportSkiffTwin", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.sport_skiff_twin",
                 HullPath = $"{ArtBoats}/SportSkiffIso.png",
                 RockPath = $"{ArtBoats}/SportSkiffIsoRock.png",
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
@@ -192,7 +206,7 @@ namespace HiddenHarbours.App.Editor
             // operator's aft hand, and no punt operator sprite exists yet. Do not fake one.
             new Sheet
             {
-                AssetName = "PuntIsoBasic", Id = "visual.punt_iso_basic",
+                AssetName = "PuntIsoBasic", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.punt_iso_basic",
                 HullPath = $"{ArtBoats}/PuntIso.png",
                 RockPath = $"{ArtBoats}/PuntIsoRock.png",
                 MotorLowerPath = $"{ArtBoats}/PuntMotorLower-Basic.png",
@@ -214,7 +228,7 @@ namespace HiddenHarbours.App.Editor
             // else on this entry is byte-for-byte the basic's, and a test asserts that rather than trusting it.
             new Sheet
             {
-                AssetName = "PuntIsoUpgraded", Id = "visual.punt_iso_upgraded",
+                AssetName = "PuntIsoUpgraded", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.punt_iso_upgraded",
                 HullPath = $"{ArtBoats}/PuntIso.png",
                 RockPath = $"{ArtBoats}/PuntIsoRock.png",
                 MotorLowerPath = $"{ArtBoats}/PuntMotorLower-Upgraded.png",
@@ -262,6 +276,9 @@ namespace HiddenHarbours.App.Editor
             def.Id = sheet.Id;
             def.SortingOrder = sheet.SortingOrder;
             def.ZeroHeadingDegrees = 0f;             // element 0 is the North-facing picture
+            // Which way this artwork's cells actually run. The iso rigs bake CCW and label CW; the
+            // hand-drawn FishingBoat compass is genuinely CW. Stated per sheet above, never assumed.
+            def.FacingsAreCounterClockwise = sheet.FacingsAreCounterClockwise;
             def.RockFrameCount = Mathf.Max(1, sheet.RockFrames);
             def.OarColumnCount = Mathf.Max(1, sheet.OarColumns);
             def.MotorColumnCount = Mathf.Max(1, sheet.MotorColumns);

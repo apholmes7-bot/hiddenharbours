@@ -207,13 +207,19 @@ namespace HiddenHarbours.Boats
         /// hull's already-DRAWN (quantized) heading and re-snapping it is idempotent, so the oars land on the
         /// hull's row by construction — they can never show a different heading than the boat under them. With
         /// no directional sprite wired, this transform's bow stands in (the same convention).
+        ///
+        /// <para>The MIRROR travels with it: the oar sheets are baked by the same rig as the hull, so they
+        /// share its counter-clockwise cell order and must be mirrored the same way
+        /// (<see cref="DirectionalBoatSprite.FacingsAreCounterClockwise"/>). Snapping the drawn heading stays
+        /// idempotent because that heading is the TRUE quantized one — only the cell lookup flips.</para>
         /// </summary>
         private int HeadingRow()
         {
             float heading = _directionalSprite != null
                 ? _directionalSprite.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
-            return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees);
+            bool ccw = _directionalSprite != null && _directionalSprite.FacingsAreCounterClockwise;
+            return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees, ccw);
         }
 
         private void Draw(SpriteRenderer renderer, Sprite[] frames, int row, int column)

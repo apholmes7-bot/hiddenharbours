@@ -58,6 +58,17 @@ namespace HiddenHarbours.Boats
                  "unless the art is genuinely drawn off-axis.")]
         public float ZeroHeadingDegrees = 0f;
 
+        [Tooltip("Tick ONLY for art whose cells run COUNTER-CLOCKWISE — i.e. cell i depicts heading −45°·i, " +
+                 "not +45°·i. The 3D rigs that bake the iso kits (dory, punt, skiffs) rotate the model CCW " +
+                 "but LABEL the cells clockwise (N, NE, E...), so their sheets are mirrored: their 'E' cell " +
+                 "is really a boat pointing West. This flag is the un-mirror, and it lives here — per " +
+                 "artwork — because the two art lineages genuinely disagree: the iso sheets are CCW, while " +
+                 "the older FishingBoat_* compass (8 separate hand-drawn files) is CW and CORRECT. A blanket " +
+                 "fix in the code would have fixed the first and broken the second. Default false = the CW " +
+                 "convention, so no existing skin silently flips. Only the ART is affected: the boat's true " +
+                 "heading, the wake and the spotlight always rode the real heading and were never wrong.")]
+        public bool FacingsAreCounterClockwise = false;
+
         [Tooltip("SpriteRenderer sortingOrder for the hull picture. 1 draws it above the hidden base hull " +
                  "renderer at 0 and below the on-foot player at 10. Overlays take the orders above this.")]
         public int SortingOrder = 1;
