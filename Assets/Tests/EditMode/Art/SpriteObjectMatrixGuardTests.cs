@@ -33,6 +33,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const float LeftX = -2f;
         private const float RightX = 3f;
 
+        // A camera renders the whole scene, and EditMode fixtures share one — other tests' leftover GameObjects
+        // sat in front of the probe sprites and this read THEIR pixels (it passed alone and failed in-suite until
+        // the probe was isolated onto its own layer). Layer 31 is unused by the game; nothing else is on it.
+        private const int ProbeLayer = 31;
+
         [Test]
         public void SpriteRenderer_KeepsItsPerObjectMatrix_SoFlowersCanPhasePerInstance()
         {
@@ -50,6 +55,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             cam.transform.position = new Vector3(0f, 0f, -10f);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = Color.black;
+            cam.cullingMask = 1 << ProbeLayer;      // see ProbeLayer: ignore whatever else the suite left lying about
 
             var rt = new RenderTexture(64, 64, 0, RenderTextureFormat.ARGB32);
             cam.targetTexture = rt;
@@ -132,6 +138,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static GameObject MakeProbeSprite(Sprite sprite, Material mat, float x)
         {
             var go = new GameObject("ProbeSprite");
+            go.layer = ProbeLayer;
             go.transform.position = new Vector3(x, 0f, 0f);
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;

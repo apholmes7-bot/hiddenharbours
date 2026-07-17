@@ -37,6 +37,10 @@ namespace HiddenHarbours.Art.Editor
         // trunk overlaps the grass in front of it). A constant order keeps a clump from ever poking above
         // other decor; within a clump the back-to-front draw order gives the ¾ depth read (see scatter below).
         const int GrassSortingOrder    = 2;
+        // Flowers sit with the grass, just above it (3) — a bloom reads as standing up out of the tuft it grows
+        // among. Like the trees, this is only the pre-YSort default: every flower carries a YSortSprite, which
+        // OWNS sortingOrder and recomputes it from world Y, so what actually layers a flower is where it stands.
+        const int FlowerSortingOrder   = 3;
 
         const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
         // The tree canopy wind-sway material (HiddenHarbours/TreeWind). Assigned to every tree prefab so the
@@ -106,11 +110,17 @@ namespace HiddenHarbours.Art.Editor
             EnsureFolder($"{PrefabRoot}/Grass");
             n += BuildGrassPrefabs($"{PrefabRoot}/Grass");
 
+            // --- Flowers (the PEI wildflowers): one drag-and-drop prefab per sheet. ---
+            EnsureFolder($"{PrefabRoot}/Flowers");
+            n += BuildFlowerPrefabs($"{PrefabRoot}/Flowers");
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"[DecorPrefabBuilder] Built {n} decor prefabs under {PrefabRoot} (Trees/ Buildings/ Props/ Grass/). " +
+            Debug.Log($"[DecorPrefabBuilder] Built {n} decor prefabs under {PrefabRoot} " +
+                      "(Trees/ Buildings/ Props/ Grass/ Flowers/). " +
                       "Drag one from the Project window into a scene to place it (see docs/authoring-scenes.md). " +
-                      "Grass sways in Play automatically; for the footstep bend, put a GrassFootstep on the player. " +
+                      "Grass and flowers sway in Play automatically; for the footstep bend, put a GrassFootstep " +
+                      "on the player. To scatter flowers by hand use Hidden Harbours ▸ Tools ▸ Flower Paint Tool. " +
                       "The Lamppost (Props/) carries its OWN warm night light — drop it and it lights the ground " +
                       "beneath it at night automatically (scrub the clock to night to see it).");
         }
@@ -219,6 +229,83 @@ namespace HiddenHarbours.Art.Editor
                 return true;
             }
             finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>
+        /// Builds the WILDFLOWER prefabs — one per sheet under <c>Art/Foliage/Flowers/</c>, so the owner drags
+        /// <c>WildRoseClump</c> into a scene and gets a wild rose clump that sways to the real wind. Every prefab
+        /// is the canonical decor shape: a <see cref="SpriteRenderer"/> + that tier's wind material +
+        /// a <see cref="YSortSprite"/>. Nothing else — no Animator, no per-flower component.
+        ///
+        /// <para><b>Which cell.</b> Column 0 (the neutral drawn pose — the shader picks the pose from there) of
+        /// ROW 0. The other rows are bloom stages (Single) / variants (Patch); the Flower Paint Tool is where the
+        /// owner mixes those, since a prefab can only hold one.</para>
+        ///
+        /// <para><b>No code-scattered "flower bed" prefab, deliberately.</b> The grass needs one because a grass
+        /// tuft is a single blade — but the art director already DREW the scatter: that is exactly what the Clump
+        /// and Patch tiers are. Generating a random spray of Singles on top would be re-solving, worse, what the
+        /// art already solves. Filling a meadow is the Flower Paint Tool's job.</para>
+        ///
+        /// <para>Returns the number built; warns and skips gracefully if a material or sheet has not imported.
+        /// <c>public</c> and folder-parameterised so FlowerPrefabBuilderTests can build into a scratch folder and
+        /// assert the output shape without writing to the owner's real (untracked) Prefabs/Decor/ tree.</para>
+        /// </summary>
+        public static int BuildFlowerPrefabs(string flowerDir)
+        {
+            var stems = FlowerCatalog.SheetStems();
+            if (stems.Count == 0)
+            {
+                Debug.LogWarning($"[DecorPrefabBuilder] no flower sheets under {FlowerCatalog.FlowersRoot} — " +
+                                 "flowers skipped.");
+                return 0;
+            }
+
+            int built = 0;
+            var missingMaterials = new HashSet<FlowerCatalog.Tier>();
+            foreach (string stem in stems)
+            {
+                if (!FlowerCatalog.TrySplit(stem, out _, out FlowerCatalog.Tier tier))
+                {
+                    Debug.LogWarning($"[DecorPrefabBuilder] flower sheet '{stem}' has no Single/Clump/Patch " +
+                                     "suffix — skipped (the slicer would not have sliced it either).");
+                    continue;
+                }
+
+                var material = FlowerCatalog.MaterialFor(tier);
+                if (material == null)
+                {
+                    // Warn ONCE per tier, not once per sheet — 33 identical warnings help nobody.
+                    if (missingMaterials.Add(tier))
+                        Debug.LogWarning($"[DecorPrefabBuilder] flower material {FlowerCatalog.MaterialPathFor(tier)} " +
+                                         $"missing — every {tier} flower skipped (open Unity so it imports the " +
+                                         "flower shader + materials, then re-run).");
+                    continue;
+                }
+
+                // Row 0, column 0: the neutral pose of the first bloom stage / variant.
+                var sprite = FlowerCatalog.LoadNeutral(stem, tier, row: 0);
+                if (sprite == null)
+                {
+                    Debug.LogWarning($"[DecorPrefabBuilder] flower sheet '{stem}' has no cell '{stem}_0' — " +
+                                     "skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Slice Foliage Flower Sheets.)");
+                    continue;
+                }
+
+                var go = new GameObject(stem);
+                try
+                {
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite = sprite;
+                    sr.sharedMaterial = material;
+                    sr.sortingOrder = FlowerSortingOrder;
+                    go.transform.localScale = Vector3.one;   // honest metric size — never scale a real sprite
+                    go.AddComponent<YSortSprite>();          // auto-layer by world Y (sorts around the player)
+                    SavePrefabReplacing(go, $"{flowerDir}/{stem}.prefab");
+                    built++;
+                }
+                finally { Object.DestroyImmediate(go); }
+            }
+            return built;
         }
 
         /// <summary>
