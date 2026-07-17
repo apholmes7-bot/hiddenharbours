@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: a893b7ba6bc883a44899c2cc3dd60eda
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3689547679082727975
+    second: PuntIsoRock_0
+  - first:
+      213: -4344633840406744006
+    second: PuntIsoRock_1
+  - first:
+      213: -2517147198608015160
+    second: PuntIsoRock_2
+  - first:
+      213: 3603807982140486898
+    second: PuntIsoRock_3
+  - first:
+      213: -7931791262370847171
+    second: PuntIsoRock_4
+  - first:
+      213: -2612012633907202801
+    second: PuntIsoRock_5
+  - first:
+      213: -8803803675183373185
+    second: PuntIsoRock_6
+  - first:
+      213: 6610455791730029989
+    second: PuntIsoRock_7
+  - first:
+      213: 2167025598911825070
+    second: PuntIsoRock_8
+  - first:
+      213: 7493797918890623454
+    second: PuntIsoRock_9
+  - first:
+      213: -746797351055628973
+    second: PuntIsoRock_10
+  - first:
+      213: -1098448362160459071
+    second: PuntIsoRock_11
+  - first:
+      213: 582536908257980970
+    second: PuntIsoRock_12
+  - first:
+      213: -4877116195540183806
+    second: PuntIsoRock_13
+  - first:
+      213: -2649147028247550435
+    second: PuntIsoRock_14
+  - first:
+      213: -9023795793001964509
+    second: PuntIsoRock_15
+  - first:
+      213: -6917083323665605331
+    second: PuntIsoRock_16
+  - first:
+      213: -4203731508277831236
+    second: PuntIsoRock_17
+  - first:
+      213: 2850562235746876975
+    second: PuntIsoRock_18
+  - first:
+      213: 2657916456771354888
+    second: PuntIsoRock_19
+  - first:
+      213: 1493097469492922510
+    second: PuntIsoRock_20
+  - first:
+      213: -8007605279902065245
+    second: PuntIsoRock_21
+  - first:
+      213: 8220859655969619549
+    second: PuntIsoRock_22
+  - first:
+      213: -8115953098123543816
+    second: PuntIsoRock_23
+  - first:
+      213: -2921062219803774166
+    second: PuntIsoRock_24
+  - first:
+      213: 6495811201874571430
+    second: PuntIsoRock_25
+  - first:
+      213: 1725191168666644490
+    second: PuntIsoRock_26
+  - first:
+      213: 3607582542816729695
+    second: PuntIsoRock_27
+  - first:
+      213: 3184519876059097819
+    second: PuntIsoRock_28
+  - first:
+      213: 6802855728955441452
+    second: PuntIsoRock_29
+  - first:
+      213: -5502025359605555621
+    second: PuntIsoRock_30
+  - first:
+      213: 7218066380954379289
+    second: PuntIsoRock_31
+  - first:
+      213: -6792816728704512900
+    second: PuntIsoRock_32
+  - first:
+      213: 9103718858652807274
+    second: PuntIsoRock_33
+  - first:
+      213: 2787100798307538771
+    second: PuntIsoRock_34
+  - first:
+      213: -2189916435626647051
+    second: PuntIsoRock_35
+  - first:
+      213: -4147585632363766043
+    second: PuntIsoRock_36
+  - first:
+      213: 6885521899017275664
+    second: PuntIsoRock_37
+  - first:
+      213: 5306722157399474131
+    second: PuntIsoRock_38
+  - first:
+      213: -6381771018047726560
+    second: PuntIsoRock_39
+  - first:
+      213: -977033650165620753
+    second: PuntIsoRock_40
+  - first:
+      213: 3618016879646932296
+    second: PuntIsoRock_41
+  - first:
+      213: -5445496802079135664
+    second: PuntIsoRock_42
+  - first:
+      213: -664195090582836458
+    second: PuntIsoRock_43
+  - first:
+      213: -5778981886510464166
+    second: PuntIsoRock_44
+  - first:
+      213: -5051326486253407300
+    second: PuntIsoRock_45
+  - first:
+      213: 4635704108803794897
+    second: PuntIsoRock_46
+  - first:
+      213: 2020394991281772305
+    second: PuntIsoRock_47
+  - first:
+      213: -5724784458512135427
+    second: PuntIsoRock_48
+  - first:
+      213: -8668125798195897381
+    second: PuntIsoRock_49
+  - first:
+      213: -7341005673614759317
+    second: PuntIsoRock_50
+  - first:
+      213: -2275560299936644666
+    second: PuntIsoRock_51
+  - first:
+      213: 3978222543719576114
+    second: PuntIsoRock_52
+  - first:
+      213: -3680368543641104107
+    second: PuntIsoRock_53
+  - first:
+      213: 2809895278610130155
+    second: PuntIsoRock_54
+  - first:
+      213: 2894225630705285196
+    second: PuntIsoRock_55
+  - first:
+      213: -5126337099052522655
+    second: PuntIsoRock_56
+  - first:
+      213: 8877018204592792756
+    second: PuntIsoRock_57
+  - first:
+      213: 4169106157084803359
+    second: PuntIsoRock_58
+  - first:
+      213: -5576647770242729765
+    second: PuntIsoRock_59
+  - first:
+      213: -5302869619177258649
+    second: PuntIsoRock_60
+  - first:
+      213: -6666472537203979297
+    second: PuntIsoRock_61
+  - first:
+      213: -7345770007265814932
+    second: PuntIsoRock_62
+  - first:
+      213: 8987319582075208588
+    second: PuntIsoRock_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PuntIsoRock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40906e50acc8f9e44ac2700b1e518c35
+      internalID: 3689547679082727975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_1
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f28fa4d8ef62b44cacdf86be18b9177
+      internalID: -4344633840406744006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_2
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afb7693ca16c3eb48bd1067b44eb0430
+      internalID: -2517147198608015160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_3
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8961b36585e560746b4ca3b750ebff57
+      internalID: 3603807982140486898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_4
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63e7ccb210f60d14a881ea62d8625297
+      internalID: -7931791262370847171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_5
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1fa9b8645f30ce41999d8f19ec977e0
+      internalID: -2612012633907202801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_6
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ea37472a23bf9c4486f727f066ace8b
+      internalID: -8803803675183373185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_7
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 1176
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3a87dc8d38d87543a3ae641cd36f9c5
+      internalID: 6610455791730029989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4eb081884d9562741ad4875785f26eca
+      internalID: 2167025598911825070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_9
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 579bce62dfedd4048b875bcd31db65af
+      internalID: 7493797918890623454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_10
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d84b022e7d5dff49827b034819c83e6
+      internalID: -746797351055628973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_11
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e36346599a6bca946b620cefd4e42b32
+      internalID: -1098448362160459071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_12
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef8e94af804833c49854f0b73e51eb72
+      internalID: 582536908257980970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_13
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b50536f8e7f4a4d40b72c538d500966c
+      internalID: -4877116195540183806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_14
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1dcb527d52731747aa1a06d0262e25d
+      internalID: -2649147028247550435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_15
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 1008
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6344ce057d9d977489374819604c7493
+      internalID: -9023795793001964509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 294b406a68f4ddf4f830ed236f95649d
+      internalID: -6917083323665605331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_17
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56202462f6da57942a499347ef96a105
+      internalID: -4203731508277831236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_18
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc4da3737508f45419205525d6f1a867
+      internalID: 2850562235746876975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_19
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a89a7e16f82fba4b97b726b68ab8064
+      internalID: 2657916456771354888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_20
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15610192ee11c2e46b7b498b08a15958
+      internalID: 1493097469492922510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_21
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65308dbe1163c884cbf30c004a238fe8
+      internalID: -8007605279902065245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_22
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fa7df95c38e40c4f97a7bbc4bac2552
+      internalID: 8220859655969619549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_23
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 840
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96956e85ddde58a49abdff4a8112cd67
+      internalID: -8115953098123543816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31c91905072fa0a4d8897dd83314cf39
+      internalID: -2921062219803774166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_25
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b81fd94d47f97c4c8843b26dd3b78ed
+      internalID: 6495811201874571430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_26
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 386b0ba5111356f4394db421b6a95e2d
+      internalID: 1725191168666644490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_27
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dda7ab0627094644a88fe794f407f7b
+      internalID: 3607582542816729695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_28
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e7ab313227347e459e05dff75f10b1d
+      internalID: 3184519876059097819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_29
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 972515053d0229241acb7ef478b550c8
+      internalID: 6802855728955441452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_30
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc30b64c1b81eb8498756bf3acc107e7
+      internalID: -5502025359605555621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_31
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 672
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b4d9dda41ba6a840b660b9fe61e6342
+      internalID: 7218066380954379289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31d247ddeb005214db9dfb89d94859d8
+      internalID: -6792816728704512900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_33
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90acf426d409a154f9947854bea2b15d
+      internalID: 9103718858652807274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_34
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5756ca7d712020e4f8d9194a16ecdf9a
+      internalID: 2787100798307538771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_35
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4aed5e5548560f488f4807c75219f4f
+      internalID: -2189916435626647051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_36
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89ae046c7eb74354bb2ac08782d5a332
+      internalID: -4147585632363766043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_37
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b544d287e04db24e8886ae7008a482d
+      internalID: 6885521899017275664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_38
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d3b48b5782a3ed4780d2b82e9775274
+      internalID: 5306722157399474131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_39
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 504
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3b8b1aa80dfd1d42ba571b41b9e48dd
+      internalID: -6381771018047726560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b54692ca0b2bfc74288a59e9bf5d503b
+      internalID: -977033650165620753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_41
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ea2e4de6b1451d4d8a39cd0c469964a
+      internalID: 3618016879646932296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_42
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dc19c94d8c838b489af4b87cab0edb1
+      internalID: -5445496802079135664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_43
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c5b7a7f583394447ab71def7721db20
+      internalID: -664195090582836458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_44
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0fc7e9444cc7da4a9da129edbcb3430
+      internalID: -5778981886510464166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_45
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60764f0d4b08e3b438cf7ae262c12335
+      internalID: -5051326486253407300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_46
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd3e85f36fe91b44098d9f78137fca15
+      internalID: 4635704108803794897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_47
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 336
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 131d0bbce481dbd4992c1740902f90f8
+      internalID: 2020394991281772305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e65482b36a1da042887ffac2fa89bfd
+      internalID: -5724784458512135427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_49
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15d9cd251a14d8847b6d7020a4750511
+      internalID: -8668125798195897381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_50
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e76aa180d3527fc4d9a44e58b6a5d778
+      internalID: -7341005673614759317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_51
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ff0b70fb5c55d644b241b1f7ebd9481
+      internalID: -2275560299936644666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_52
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de81c6eb456d83a468dd5e2eed89cbd8
+      internalID: 3978222543719576114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_53
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 548e262268d7d154793f1fb1e41a6c91
+      internalID: -3680368543641104107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_54
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f98bc1556d36aa741b174e4ee46e874f
+      internalID: 2809895278610130155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_55
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 168
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1d14b24e855ed84da68e1468b68e456
+      internalID: 2894225630705285196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 436f6a779f783c648a9c76ccc392d6fa
+      internalID: -5126337099052522655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_57
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b2fe5d4eb4608a40a008c53eb6772d6
+      internalID: 8877018204592792756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_58
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c0b322301e04f84f8df640175e7d7b6
+      internalID: 4169106157084803359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_59
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5914b24a14fa19d49a8825385a222f4f
+      internalID: -5576647770242729765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_60
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6715555562cff494bbf578138d1d857d
+      internalID: -5302869619177258649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_61
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3354106d5d7ee640b06c789557e7c38
+      internalID: -6666472537203979297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_62
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65801fca12b0cbf41bdb3f7a2ba8826a
+      internalID: -7345770007265814932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntIsoRock_63
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 0
+        width: 184
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af4c2a57a75110d4e8fa424e8e25f04b
+      internalID: 8987319582075208588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f0e6c02699109b545bacd1b1ca49f84c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PuntIsoRock_0: 3689547679082727975
+      PuntIsoRock_1: -4344633840406744006
+      PuntIsoRock_10: -746797351055628973
+      PuntIsoRock_11: -1098448362160459071
+      PuntIsoRock_12: 582536908257980970
+      PuntIsoRock_13: -4877116195540183806
+      PuntIsoRock_14: -2649147028247550435
+      PuntIsoRock_15: -9023795793001964509
+      PuntIsoRock_16: -6917083323665605331
+      PuntIsoRock_17: -4203731508277831236
+      PuntIsoRock_18: 2850562235746876975
+      PuntIsoRock_19: 2657916456771354888
+      PuntIsoRock_2: -2517147198608015160
+      PuntIsoRock_20: 1493097469492922510
+      PuntIsoRock_21: -8007605279902065245
+      PuntIsoRock_22: 8220859655969619549
+      PuntIsoRock_23: -8115953098123543816
+      PuntIsoRock_24: -2921062219803774166
+      PuntIsoRock_25: 6495811201874571430
+      PuntIsoRock_26: 1725191168666644490
+      PuntIsoRock_27: 3607582542816729695
+      PuntIsoRock_28: 3184519876059097819
+      PuntIsoRock_29: 6802855728955441452
+      PuntIsoRock_3: 3603807982140486898
+      PuntIsoRock_30: -5502025359605555621
+      PuntIsoRock_31: 7218066380954379289
+      PuntIsoRock_32: -6792816728704512900
+      PuntIsoRock_33: 9103718858652807274
+      PuntIsoRock_34: 2787100798307538771
+      PuntIsoRock_35: -2189916435626647051
+      PuntIsoRock_36: -4147585632363766043
+      PuntIsoRock_37: 6885521899017275664
+      PuntIsoRock_38: 5306722157399474131
+      PuntIsoRock_39: -6381771018047726560
+      PuntIsoRock_4: -7931791262370847171
+      PuntIsoRock_40: -977033650165620753
+      PuntIsoRock_41: 3618016879646932296
+      PuntIsoRock_42: -5445496802079135664
+      PuntIsoRock_43: -664195090582836458
+      PuntIsoRock_44: -5778981886510464166
+      PuntIsoRock_45: -5051326486253407300
+      PuntIsoRock_46: 4635704108803794897
+      PuntIsoRock_47: 2020394991281772305
+      PuntIsoRock_48: -5724784458512135427
+      PuntIsoRock_49: -8668125798195897381
+      PuntIsoRock_5: -2612012633907202801
+      PuntIsoRock_50: -7341005673614759317
+      PuntIsoRock_51: -2275560299936644666
+      PuntIsoRock_52: 3978222543719576114
+      PuntIsoRock_53: -3680368543641104107
+      PuntIsoRock_54: 2809895278610130155
+      PuntIsoRock_55: 2894225630705285196
+      PuntIsoRock_56: -5126337099052522655
+      PuntIsoRock_57: 8877018204592792756
+      PuntIsoRock_58: 4169106157084803359
+      PuntIsoRock_59: -5576647770242729765
+      PuntIsoRock_6: -8803803675183373185
+      PuntIsoRock_60: -5302869619177258649
+      PuntIsoRock_61: -6666472537203979297
+      PuntIsoRock_62: -7345770007265814932
+      PuntIsoRock_63: 8987319582075208588
+      PuntIsoRock_7: 6610455791730029989
+      PuntIsoRock_8: 2167025598911825070
+      PuntIsoRock_9: 7493797918890623454
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

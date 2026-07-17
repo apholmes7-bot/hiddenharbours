@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: 22496f7eb062efb4a9ec12a85d8af0d9
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7493880269076365343
+    second: PuntMotorUpper-Upgraded_0
+  - first:
+      213: 5625846578852493951
+    second: PuntMotorUpper-Upgraded_1
+  - first:
+      213: -1400018563090869097
+    second: PuntMotorUpper-Upgraded_2
+  - first:
+      213: 3775499009385087745
+    second: PuntMotorUpper-Upgraded_3
+  - first:
+      213: 6693609860299669646
+    second: PuntMotorUpper-Upgraded_4
+  - first:
+      213: 6729204168874341773
+    second: PuntMotorUpper-Upgraded_5
+  - first:
+      213: 5940537627733598803
+    second: PuntMotorUpper-Upgraded_6
+  - first:
+      213: -3752810593575315559
+    second: PuntMotorUpper-Upgraded_7
+  - first:
+      213: 441696580531165362
+    second: PuntMotorUpper-Upgraded_8
+  - first:
+      213: 5120717192864248104
+    second: PuntMotorUpper-Upgraded_9
+  - first:
+      213: -6858714028152954443
+    second: PuntMotorUpper-Upgraded_10
+  - first:
+      213: 5785714011939959908
+    second: PuntMotorUpper-Upgraded_11
+  - first:
+      213: -8979288423307142579
+    second: PuntMotorUpper-Upgraded_12
+  - first:
+      213: -8834967112521701327
+    second: PuntMotorUpper-Upgraded_13
+  - first:
+      213: -7793920058552590702
+    second: PuntMotorUpper-Upgraded_14
+  - first:
+      213: -4539799727056345737
+    second: PuntMotorUpper-Upgraded_15
+  - first:
+      213: -3247686922869740032
+    second: PuntMotorUpper-Upgraded_16
+  - first:
+      213: -1169744622481734534
+    second: PuntMotorUpper-Upgraded_17
+  - first:
+      213: 2460350865717602366
+    second: PuntMotorUpper-Upgraded_18
+  - first:
+      213: -745164394837314866
+    second: PuntMotorUpper-Upgraded_19
+  - first:
+      213: 8654246276730311946
+    second: PuntMotorUpper-Upgraded_20
+  - first:
+      213: -418229001220726958
+    second: PuntMotorUpper-Upgraded_21
+  - first:
+      213: 2815458311950096169
+    second: PuntMotorUpper-Upgraded_22
+  - first:
+      213: -2087620080799074396
+    second: PuntMotorUpper-Upgraded_23
+  - first:
+      213: 4747752683158923888
+    second: PuntMotorUpper-Upgraded_24
+  - first:
+      213: -8259978362676254833
+    second: PuntMotorUpper-Upgraded_25
+  - first:
+      213: -2174926980926944079
+    second: PuntMotorUpper-Upgraded_26
+  - first:
+      213: 205811011819648809
+    second: PuntMotorUpper-Upgraded_27
+  - first:
+      213: -6364843523223106598
+    second: PuntMotorUpper-Upgraded_28
+  - first:
+      213: 2693157160235051970
+    second: PuntMotorUpper-Upgraded_29
+  - first:
+      213: 7753759595736855605
+    second: PuntMotorUpper-Upgraded_30
+  - first:
+      213: 6290982031102904670
+    second: PuntMotorUpper-Upgraded_31
+  - first:
+      213: 5030531789811443930
+    second: PuntMotorUpper-Upgraded_32
+  - first:
+      213: -3384651305669412631
+    second: PuntMotorUpper-Upgraded_33
+  - first:
+      213: 4023818829714885927
+    second: PuntMotorUpper-Upgraded_34
+  - first:
+      213: 5409879752705390345
+    second: PuntMotorUpper-Upgraded_35
+  - first:
+      213: -3036678832938684405
+    second: PuntMotorUpper-Upgraded_36
+  - first:
+      213: -119621175768840046
+    second: PuntMotorUpper-Upgraded_37
+  - first:
+      213: 878394231718904598
+    second: PuntMotorUpper-Upgraded_38
+  - first:
+      213: 6237576188000130636
+    second: PuntMotorUpper-Upgraded_39
+  - first:
+      213: 8445530826940581834
+    second: PuntMotorUpper-Upgraded_40
+  - first:
+      213: 4824936300371549219
+    second: PuntMotorUpper-Upgraded_41
+  - first:
+      213: 4900455614134663715
+    second: PuntMotorUpper-Upgraded_42
+  - first:
+      213: -4191541735568634865
+    second: PuntMotorUpper-Upgraded_43
+  - first:
+      213: -2237882508381808248
+    second: PuntMotorUpper-Upgraded_44
+  - first:
+      213: -3397162464983591033
+    second: PuntMotorUpper-Upgraded_45
+  - first:
+      213: 228448105957300519
+    second: PuntMotorUpper-Upgraded_46
+  - first:
+      213: -2159799674844272661
+    second: PuntMotorUpper-Upgraded_47
+  - first:
+      213: -2633791901075017937
+    second: PuntMotorUpper-Upgraded_48
+  - first:
+      213: 696205884143636464
+    second: PuntMotorUpper-Upgraded_49
+  - first:
+      213: 3872853230099545889
+    second: PuntMotorUpper-Upgraded_50
+  - first:
+      213: -459879342036190293
+    second: PuntMotorUpper-Upgraded_51
+  - first:
+      213: -2663556414886487576
+    second: PuntMotorUpper-Upgraded_52
+  - first:
+      213: 6885186657943488876
+    second: PuntMotorUpper-Upgraded_53
+  - first:
+      213: -2208359280170769650
+    second: PuntMotorUpper-Upgraded_54
+  - first:
+      213: 1533683218030693052
+    second: PuntMotorUpper-Upgraded_55
+  - first:
+      213: -1984824117087123654
+    second: PuntMotorUpper-Upgraded_56
+  - first:
+      213: 2447905633675051053
+    second: PuntMotorUpper-Upgraded_57
+  - first:
+      213: 6558460442027188805
+    second: PuntMotorUpper-Upgraded_58
+  - first:
+      213: 2687720648341274070
+    second: PuntMotorUpper-Upgraded_59
+  - first:
+      213: 8287309547591017814
+    second: PuntMotorUpper-Upgraded_60
+  - first:
+      213: -4790271716825498496
+    second: PuntMotorUpper-Upgraded_61
+  - first:
+      213: 8027142595105527842
+    second: PuntMotorUpper-Upgraded_62
+  - first:
+      213: 1178205506263447399
+    second: PuntMotorUpper-Upgraded_63
+  - first:
+      213: -3189626323584093701
+    second: PuntMotorUpper-Upgraded_64
+  - first:
+      213: 4008360752816722868
+    second: PuntMotorUpper-Upgraded_65
+  - first:
+      213: -3077053563912757564
+    second: PuntMotorUpper-Upgraded_66
+  - first:
+      213: -3488877406371186373
+    second: PuntMotorUpper-Upgraded_67
+  - first:
+      213: -647143791106430812
+    second: PuntMotorUpper-Upgraded_68
+  - first:
+      213: 6714542702980423862
+    second: PuntMotorUpper-Upgraded_69
+  - first:
+      213: 6255105307739611990
+    second: PuntMotorUpper-Upgraded_70
+  - first:
+      213: -4138009713780832909
+    second: PuntMotorUpper-Upgraded_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb218d8065ea9a04f970884adb290515
+      internalID: -7493880269076365343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_1
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 553309f6aa3a0f1458019735ea2fe1b4
+      internalID: 5625846578852493951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_2
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1072acfb9c259004f94d9943df72f380
+      internalID: -1400018563090869097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_3
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1774ada9412e2f84b92ee0e5c2c0de04
+      internalID: 3775499009385087745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_4
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb9ee6cb025fbb04da5dc80da71f94bc
+      internalID: 6693609860299669646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_5
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3965e42bec91cd74eb2d9ac2e890774c
+      internalID: 6729204168874341773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_6
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 279ef53b67926964db566203be0b93f8
+      internalID: 5940537627733598803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_7
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0577dd92eaf31d64aa43f41bf69f3b60
+      internalID: -3752810593575315559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_8
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 1176
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e7c8f989869c63448c866391e3fdca5
+      internalID: 441696580531165362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5482f86407a82424bb04914e3c48fb6e
+      internalID: 5120717192864248104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_10
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8cd528f62973ab4a8f4d8d09e0b6a6a
+      internalID: -6858714028152954443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_11
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60f68f96f5255504e8641848595696f8
+      internalID: 5785714011939959908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_12
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d3460028490dc04cbcdcb8c86e8311a
+      internalID: -8979288423307142579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_13
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d31f6b31c3e492848a468595016a8b81
+      internalID: -8834967112521701327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_14
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d9b66243e7bcaa459744a5bb2f334c2
+      internalID: -7793920058552590702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_15
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 165bcd9dcb1c24b49a8578df4479612f
+      internalID: -4539799727056345737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_16
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c47ab1846b51cf345ae560d25d790b7a
+      internalID: -3247686922869740032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_17
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 1008
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ee6032a94afe744da82582306cc24a8
+      internalID: -1169744622481734534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bcc8fbfeaaba474083b4a4cceb25583
+      internalID: 2460350865717602366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_19
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd90a71478372794db5e5e0da8a0eedd
+      internalID: -745164394837314866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_20
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09f13b81e21e5f345972062f3a9b026a
+      internalID: 8654246276730311946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_21
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9ba8a3f58effa74d95c36ca0ab3776c
+      internalID: -418229001220726958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_22
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9af08a39f75740b4fa00c610634921b0
+      internalID: 2815458311950096169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_23
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9a184e7eefa4584ab06e3802c7f1b4d
+      internalID: -2087620080799074396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_24
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 244cb8a5214721a4dbce19ae51b4ee58
+      internalID: 4747752683158923888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_25
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48ed370007d517e4589d7b24dabd736b
+      internalID: -8259978362676254833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_26
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 840
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9c3ba288a3e50549b3061c61b85c87b
+      internalID: -2174926980926944079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 002ec397d38385245a08b4494a4439e4
+      internalID: 205811011819648809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_28
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c9c32f9853ea73429b04ead3ffb529e
+      internalID: -6364843523223106598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_29
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 292b153125cf9e34b8433783c9453f27
+      internalID: 2693157160235051970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_30
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e075f818ae88aae44bd2eda4ccc95c9a
+      internalID: 7753759595736855605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_31
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe073f71b353c24681bed5101103abd
+      internalID: 6290982031102904670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_32
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2337fa05dd6e784191f19b1059fe035
+      internalID: 5030531789811443930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_33
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8afcf50af0aaeb743a562891f8c09d3c
+      internalID: -3384651305669412631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_34
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5e4667c4386b294fb6371012c16b25d
+      internalID: 4023818829714885927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_35
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 672
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b961a6cc2b1d9874cb301bb5a30ae93e
+      internalID: 5409879752705390345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbf050dc75978bb44874798b6ff7a851
+      internalID: -3036678832938684405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_37
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 543d9495138c46d459f17d4bc998cd24
+      internalID: -119621175768840046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_38
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d17761c8143e6754db5250a574459f3d
+      internalID: 878394231718904598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_39
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87d52d612b8b86d44ba9a504bb79badc
+      internalID: 6237576188000130636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_40
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df15368663373fe4496690ad405024f1
+      internalID: 8445530826940581834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_41
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ddd132c69bc29a44b3d595a3dbd5f35
+      internalID: 4824936300371549219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_42
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24a805beafb36f54bba3297ce8b97933
+      internalID: 4900455614134663715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_43
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b6cc7377a6cf234bbf21e4871f9faa4
+      internalID: -4191541735568634865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_44
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 504
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a83b7e4086dd9f43ba3307bd0d201bd
+      internalID: -2237882508381808248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_45
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96aaf7ad99eded348b5293f26ecda981
+      internalID: -3397162464983591033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_46
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e2c2973f9a5e1743beb4916d70f865a
+      internalID: 228448105957300519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_47
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e0d9d6192be01c4eaa78230fa540c1b
+      internalID: -2159799674844272661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_48
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5efeb9a5d543c4d4a9c46987aa51f1e7
+      internalID: -2633791901075017937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_49
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1beb82860f6fa514ca449f86916016fa
+      internalID: 696205884143636464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_50
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2ed090839d7e3242be532345f41e016
+      internalID: 3872853230099545889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_51
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78d3e9e00e7c43a4bb906d05de2e1d8c
+      internalID: -459879342036190293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_52
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1323b8b1b4d01945a3cc0c6fc3c6669
+      internalID: -2663556414886487576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_53
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 336
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 825bdf8bf0c084541a9f6b6376022ce2
+      internalID: 6885186657943488876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_54
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f44d5d887506d62419a310f193b8f004
+      internalID: -2208359280170769650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_55
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc8e6fa840cf76340b90490a408914e9
+      internalID: 1533683218030693052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_56
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bf740e57ac2efd4d9ba23a541a8ce52
+      internalID: -1984824117087123654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_57
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0a5ef62ede222744b2902486d71bd51
+      internalID: 2447905633675051053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_58
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 420ff30f5d3cf4e46aea466edb8db03e
+      internalID: 6558460442027188805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_59
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f81bd7f2b1c2a5447af068bc2fa0ba87
+      internalID: 2687720648341274070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_60
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9255d055c9b85714180ee094b35ec700
+      internalID: 8287309547591017814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_61
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9dd05dac7c118a042bc26569b38447ff
+      internalID: -4790271716825498496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_62
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 168
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09ea71dd8da6ebc45b097040a469bf4d
+      internalID: 8027142595105527842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_63
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c4fa5d2eeefc8645aa15576e8d0ba00
+      internalID: 1178205506263447399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_64
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38df076fef092e54a9d6e8b701fa4b58
+      internalID: -3189626323584093701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_65
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89f2a00e52e68304a98e1cf24aea754c
+      internalID: 4008360752816722868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_66
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 707d8faa8d6f88b4883b1eed8e1d9305
+      internalID: -3077053563912757564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_67
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5510bf1aed4a234784ac7409ee1103c
+      internalID: -3488877406371186373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_68
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6f4cd992b86aac4bafbb365ae8b4b5d
+      internalID: -647143791106430812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_69
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84910190be7e3ff4a9fc7165c2cc7648
+      internalID: 6714542702980423862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_70
+      rect:
+        serializedVersion: 2
+        x: 1484
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7931708aa1dbf9945ac11e7d793eaee8
+      internalID: 6255105307739611990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PuntMotorUpper-Upgraded_71
+      rect:
+        serializedVersion: 2
+        x: 1696
+        y: 0
+        width: 212
+        height: 168
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44047618}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3028875fce4de5499fa71cab81555fd
+      internalID: -4138009713780832909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 95797c053ebed1444b00ce4ece5077a6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PuntMotorUpper-Upgraded_0: -7493880269076365343
+      PuntMotorUpper-Upgraded_1: 5625846578852493951
+      PuntMotorUpper-Upgraded_10: -6858714028152954443
+      PuntMotorUpper-Upgraded_11: 5785714011939959908
+      PuntMotorUpper-Upgraded_12: -8979288423307142579
+      PuntMotorUpper-Upgraded_13: -8834967112521701327
+      PuntMotorUpper-Upgraded_14: -7793920058552590702
+      PuntMotorUpper-Upgraded_15: -4539799727056345737
+      PuntMotorUpper-Upgraded_16: -3247686922869740032
+      PuntMotorUpper-Upgraded_17: -1169744622481734534
+      PuntMotorUpper-Upgraded_18: 2460350865717602366
+      PuntMotorUpper-Upgraded_19: -745164394837314866
+      PuntMotorUpper-Upgraded_2: -1400018563090869097
+      PuntMotorUpper-Upgraded_20: 8654246276730311946
+      PuntMotorUpper-Upgraded_21: -418229001220726958
+      PuntMotorUpper-Upgraded_22: 2815458311950096169
+      PuntMotorUpper-Upgraded_23: -2087620080799074396
+      PuntMotorUpper-Upgraded_24: 4747752683158923888
+      PuntMotorUpper-Upgraded_25: -8259978362676254833
+      PuntMotorUpper-Upgraded_26: -2174926980926944079
+      PuntMotorUpper-Upgraded_27: 205811011819648809
+      PuntMotorUpper-Upgraded_28: -6364843523223106598
+      PuntMotorUpper-Upgraded_29: 2693157160235051970
+      PuntMotorUpper-Upgraded_3: 3775499009385087745
+      PuntMotorUpper-Upgraded_30: 7753759595736855605
+      PuntMotorUpper-Upgraded_31: 6290982031102904670
+      PuntMotorUpper-Upgraded_32: 5030531789811443930
+      PuntMotorUpper-Upgraded_33: -3384651305669412631
+      PuntMotorUpper-Upgraded_34: 4023818829714885927
+      PuntMotorUpper-Upgraded_35: 5409879752705390345
+      PuntMotorUpper-Upgraded_36: -3036678832938684405
+      PuntMotorUpper-Upgraded_37: -119621175768840046
+      PuntMotorUpper-Upgraded_38: 878394231718904598
+      PuntMotorUpper-Upgraded_39: 6237576188000130636
+      PuntMotorUpper-Upgraded_4: 6693609860299669646
+      PuntMotorUpper-Upgraded_40: 8445530826940581834
+      PuntMotorUpper-Upgraded_41: 4824936300371549219
+      PuntMotorUpper-Upgraded_42: 4900455614134663715
+      PuntMotorUpper-Upgraded_43: -4191541735568634865
+      PuntMotorUpper-Upgraded_44: -2237882508381808248
+      PuntMotorUpper-Upgraded_45: -3397162464983591033
+      PuntMotorUpper-Upgraded_46: 228448105957300519
+      PuntMotorUpper-Upgraded_47: -2159799674844272661
+      PuntMotorUpper-Upgraded_48: -2633791901075017937
+      PuntMotorUpper-Upgraded_49: 696205884143636464
+      PuntMotorUpper-Upgraded_5: 6729204168874341773
+      PuntMotorUpper-Upgraded_50: 3872853230099545889
+      PuntMotorUpper-Upgraded_51: -459879342036190293
+      PuntMotorUpper-Upgraded_52: -2663556414886487576
+      PuntMotorUpper-Upgraded_53: 6885186657943488876
+      PuntMotorUpper-Upgraded_54: -2208359280170769650
+      PuntMotorUpper-Upgraded_55: 1533683218030693052
+      PuntMotorUpper-Upgraded_56: -1984824117087123654
+      PuntMotorUpper-Upgraded_57: 2447905633675051053
+      PuntMotorUpper-Upgraded_58: 6558460442027188805
+      PuntMotorUpper-Upgraded_59: 2687720648341274070
+      PuntMotorUpper-Upgraded_6: 5940537627733598803
+      PuntMotorUpper-Upgraded_60: 8287309547591017814
+      PuntMotorUpper-Upgraded_61: -4790271716825498496
+      PuntMotorUpper-Upgraded_62: 8027142595105527842
+      PuntMotorUpper-Upgraded_63: 1178205506263447399
+      PuntMotorUpper-Upgraded_64: -3189626323584093701
+      PuntMotorUpper-Upgraded_65: 4008360752816722868
+      PuntMotorUpper-Upgraded_66: -3077053563912757564
+      PuntMotorUpper-Upgraded_67: -3488877406371186373
+      PuntMotorUpper-Upgraded_68: -647143791106430812
+      PuntMotorUpper-Upgraded_69: 6714542702980423862
+      PuntMotorUpper-Upgraded_7: -3752810593575315559
+      PuntMotorUpper-Upgraded_70: 6255105307739611990
+      PuntMotorUpper-Upgraded_71: -4138009713780832909
+      PuntMotorUpper-Upgraded_8: 441696580531165362
+      PuntMotorUpper-Upgraded_9: 5120717192864248104
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
