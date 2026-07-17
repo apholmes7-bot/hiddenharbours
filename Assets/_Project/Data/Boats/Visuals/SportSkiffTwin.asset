@@ -240,6 +240,7 @@ MonoBehaviour:
   - {fileID: -8762707194831853274, guid: 11384df1d2e3de54f9a652e743ab1458, type: 3}
   - {fileID: 5670469749217393110, guid: 11384df1d2e3de54f9a652e743ab1458, type: 3}
   MotorColumnCount: 9
+  MotorMaxSteerDegrees: 30
   MotorVariant: 1
   MotorFit: 1
   MotorRockRollDegrees: 3.8

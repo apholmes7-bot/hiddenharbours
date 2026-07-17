@@ -3,16 +3,29 @@ using UnityEngine;
 namespace HiddenHarbours.Boats
 {
     /// <summary>
-    /// The skiff's REMOTE-STEER OUTBOARD: turns the helm (wheel/rudder) state into a column of the baked motor
-    /// sheet, decides the per-heading draw order of its two layers against the hull, and places the twin
-    /// engines' clamp offsets for the sport skiff.
+    /// ANY BOAT'S OUTBOARD: turns the helm state into a column of the baked motor sheet, decides the
+    /// per-heading draw order of its two layers against the hull, and places the twin engines' clamp offsets.
     ///
-    /// <para><b>The sheets (art README).</b> <c>SkiffMotorUpper-*</c>/<c>SkiffMotorLower-*</c> are 9 cols × 8
-    /// heading rows (index = <c>heading×9 + col</c>, rows N..NW clockwise — the same order as the hull sheets).
-    /// <b>There is no tiller</b>: steering is remote from the console wheel and the whole engine swivels on its
-    /// clamp, so the column is a direct read of the helm — col 0 = −30° (full port), col 4 = dead ahead, col 8
-    /// = +30° (full starboard), 7.5° steps. The rig's own mapping is <c>angle(f) = −30 + 60·f/8</c>, which
-    /// <see cref="SteerDegreesForColumn"/> reproduces (generalised over the column count).</para>
+    /// <para><b>Not the skiffs' alone — which is why this is no longer <c>SkiffMotorMath</c>.</b> It was born
+    /// serving the two 7 m skiffs, but the ~5.2 m punt's TILLER outboard indexes the same 9-column
+    /// heading×steer grid and obeys the same draw-order rule, so it drives that too. The old name was the
+    /// exact misnomer #208 cleared out of the skinner (<c>ApplyDirectionalFishingBoatVisual</c> →
+    /// <c>ApplyHullSkin</c>): a name that pins a general mechanism to the first hull that needed it.</para>
+    ///
+    /// <para><b>The sheets (art READMEs).</b> <c>SkiffMotor{Upper,Lower}-*</c> and
+    /// <c>PuntMotor{Upper,Lower}-*</c> are each 9 cols × 8 heading rows (index = <c>heading×9 + col</c>, rows
+    /// N..NW clockwise — the same order as the hull sheets). The column is a direct read of the helm: col 0 =
+    /// full port, col 4 = dead ahead, col 8 = full starboard, evenly spaced. The rigs' own mapping is
+    /// <c>angle(f) = −max + 2·max·f/8</c>, which <see cref="SteerDegreesForColumn"/> reproduces — generalised
+    /// over BOTH the column count and the authority.</para>
+    ///
+    /// <para><b>Steer authority is PER HULL and is passed in, never assumed.</b> The skiffs bake ±30°
+    /// (7.5° steps); the punt bakes ±32° (8° steps). It rides <c>BoatVisualDef.MotorMaxSteerDegrees</c>;
+    /// <see cref="MaxSteerDegrees"/> below survives only as the skiffs' value — the default for callers with
+    /// no hull data. <b>How the engine steers differs too, and the ART already carries it</b>: the skiffs
+    /// swivel whole on their clamp off a remote console wheel, while the punt's tiller swings across the
+    /// transom under the operator's hand. That is a difference in what is DRAWN, not in the column
+    /// arithmetic — so it lives in the sheets and costs this class nothing.</para>
     ///
     /// <para><b>Draw order (art README, verbatim).</b> "UPPER always composites OVER the hull. LOWER goes UNDER
     /// the hull for the stern-away headings SE, S, SW (indices 3,4,5), and over it everywhere else." So:
@@ -20,7 +33,7 @@ namespace HiddenHarbours.Boats
     /// <c>MOTOR.behind = [3,4,5]</c>. <see cref="LowerGoesUnderHull"/> is that decision, and it must be
     /// re-evaluated <b>every heading change</b> — see <see cref="SortingOrder"/>.</para>
     ///
-    /// <para><b>Twin fit (sport only).</b> The bake is orthographic, so a lateral clamp shift is an EXACT
+    /// <para><b>Twin fit (the sport skiff only — the punt is single-engine, by the art).</b> The bake is orthographic, so a lateral clamp shift is an EXACT
     /// per-heading screen offset — the same single-engine sheet blitted twice. The rig's
     /// <c>mountOffset(dir,mx,elev)</c> works in image pixels (y-DOWN) at S = 32 px/m:
     /// <c>dx = mx·cos(θ)·S, dy = −mx·sin(θ)·sin(elev)·S</c>. Our sheets import at PPU 32, so the px→unit divide
@@ -38,17 +51,25 @@ namespace HiddenHarbours.Boats
     /// <para><b>Rules.</b> Pure, static, allocation-free, deterministic — the same discipline (and EditMode
     /// coverage) as <see cref="DoryOarMath"/> / <see cref="WakeGrading"/>: every entry point defensively clamps
     /// and never allocates. Visual-only: it READS helm state and never feeds the sim (rule 5); every rate,
-    /// deadzone and amplitude is an owner tunable on <see cref="SkiffMotorLayer"/> (rule 6). The RAISED/TILT
+    /// deadzone and amplitude is an owner tunable on <see cref="OutboardMotorLayer"/> (rule 6). The RAISED/TILT
     /// pose (tilt 0..40) is not on the sheets and is deliberately absent here.</para>
     /// </summary>
-    public static class SkiffMotorMath
+    public static class OutboardMotorMath
     {
         /// <summary>Steer columns per heading row in a motor sheet: col 0 = full port … col 4 = dead ahead …
         /// col 8 = full starboard. Art fact (the rig's <c>MOTOR.steerFrames</c>), not a tunable.</summary>
         public const int SteerColumns = 9;
 
-        /// <summary>Steer authority at the sheet's extremes, in degrees either side of dead ahead (the rig's
-        /// <c>MOTOR.maxSteer</c>). The 9 columns therefore step 7.5° apart.</summary>
+        /// <summary>
+        /// The SKIFFS' steer authority at the sheet's extremes, in degrees either side of dead ahead (their
+        /// rig's <c>MOTOR.maxSteer</c>): ±30° across 9 columns, so 7.5° steps.
+        ///
+        /// <para><b>This is not every outboard's authority — do not read it as one.</b> The punt's tiller rig
+        /// bakes ±32° (8° steps) across the same 9 columns. Authority is an ART FACT OF THE SHEET, so it
+        /// rides <c>BoatVisualDef.MotorMaxSteerDegrees</c> per hull and is passed into every entry point here.
+        /// This const remains only as the default for a caller with no hull data (a test rig, a decor boat) —
+        /// pinning the punt to it would draw her engine 2° shy of the hard-over her sheet actually holds.</para>
+        /// </summary>
         public const float MaxSteerDegrees = 30f;
 
         /// <summary>Heading rows in a motor sheet (N..NW clockwise) — must match the hull's facing count.</summary>

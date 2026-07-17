@@ -18,7 +18,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// the engine is actually running. (1) Terminal speed is the fixed point of BoatController's force
     /// assembly PLUS the rigidbody's own <c>linearDamping</c> — and that damping is applied by Unity's
     /// integrator, not by any code we could call. Algebra predicts it; only a real physics step proves the
-    /// prediction. (2) <see cref="SkiffMotorLayer"/> draws in <c>LateUpdate</c>, so its swivel and its
+    /// prediction. (2) <see cref="OutboardMotorLayer"/> draws in <c>LateUpdate</c>, so its swivel and its
     /// unmanned-helm centring simply never happen outside play mode.</para>
     ///
     /// <para>The hulls are the REAL committed assets (loaded off disk in the editor), so these tests fail
@@ -58,6 +58,21 @@ namespace HiddenHarbours.Tests.PlayMode
             return asset;
 #else
             Assert.Ignore("Needs the AssetDatabase: these assert the REAL committed hulls, not a mirror.");
+            return null;
+#endif
+        }
+
+        /// <summary>
+        /// A hull that may legitimately not be on disk. Only <c>Punt.asset</c> qualifies: it is
+        /// BUILDER-GENERATED AND NEVER COMMITTED, so it exists only in a checkout where someone has run the
+        /// cove builder. Returns null rather than failing, so a clean clone skips rather than going red on a
+        /// missing generated asset — see PilotableFleetContentTests.OptionalHull for the full note.
+        /// </summary>
+        private BoatHullDef LoadOptionalHull(string file)
+        {
+#if UNITY_EDITOR
+            return AssetDatabase.LoadAssetAtPath<BoatHullDef>($"{DataBoats}/{file}.asset");
+#else
             return null;
 #endif
         }
@@ -110,15 +125,15 @@ namespace HiddenHarbours.Tests.PlayMode
         /// owner halved it — and green for a reason that no longer matches the product. Read it, derive the wait
         /// from it, and a re-tune re-times the test for free.
         /// </summary>
-        private static float SteerColumnsPerSecond(SkiffMotorLayer motor)
+        private static float SteerColumnsPerSecond(OutboardMotorLayer motor)
         {
 #if UNITY_EDITOR
             var field = new SerializedObject(motor).FindProperty("_steerColumnsPerSecond");
             Assert.IsNotNull(field,
-                "SkiffMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
+                "OutboardMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
                 "that cadence on purpose — re-point this read; do not paper over it with a magic sleep.");
             Assert.Greater(field.floatValue, 0f,
-                "a zero/negative cadence snaps the engine instantly (SkiffMotorMath.StepTowardColumn), which " +
+                "a zero/negative cadence snaps the engine instantly (OutboardMotorMath.StepTowardColumn), which " +
                 "would make the swivel this test exists to prove unobservable");
             return field.floatValue;
 #else
@@ -197,7 +212,7 @@ namespace HiddenHarbours.Tests.PlayMode
             const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
             const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
 
-            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "FishingSkiff" })
+            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "FishingSkiff", "PuntUpgraded" })
             {
                 var hull = LoadHull(file);
                 var (go, boat, rb) = NewBoat(hull, Vector3.zero);
@@ -238,6 +253,67 @@ namespace HiddenHarbours.Tests.PlayMode
                 "felt in the pickup, not just at the top end");
         }
 
+        [UnityTest]
+        public IEnumerator ThePunt_StillSettlesWhereSheAlwaysHas()
+        {
+            // The regression guard on "we gave her a picture and nothing else". She is a REAL purchasable M1
+            // boat (PuntOffer, ₲1800) whose feel the owner already knows, so #211 left EnginePower, the drags
+            // and the mass strictly alone — and the 5.2 m length change touches the WAKE, never the physics
+            // (BoatController reads mass and drag; LengthMeters only reaches WakeGrading).
+            var hull = LoadOptionalHull("Punt");
+            if (hull == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
+
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+            yield return RunToTerminal(boat, rb);
+
+            Assert.AreEqual(2.32f, rb.linearVelocity.magnitude, 0.15f,
+                "the punt settles at ≈2.3 m/s, exactly as she did before she had a skin. If this moved, " +
+                "someone retuned a boat the owner has already bought and learned.");
+        }
+
+        [UnityTest]
+        public IEnumerator TheUpgradedPunt_IsAWorkboatWithABetterEngine_NotASportsCar()
+        {
+            // 825 EnginePower was MEASURED here, not solved for. A naive EnginePower/ForwardDrag ratio would
+            // have said 5.89 m/s; the rigidbody's own linearDamping — which the ratio drops — is half her
+            // resistance, and the truth is 2.89.
+            var hull = LoadHull("PuntUpgraded");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+            float upgraded = rb.linearVelocity.magnitude;
+
+            Assert.AreEqual(2.89f, upgraded, 0.15f,
+                "the upgraded punt's target is ≈2.9 m/s — the owner asked for 20–30% over the basic punt");
+            Assert.Less(upgraded, 4.64f,
+                "…and she must stay under the sport skiff: a bigger outboard on a workboat is not a sports car");
+        }
+
+        [UnityTest]
+        public IEnumerator ThePuntsUpgrade_IsWorthBetween20And30Percent_Measured()
+        {
+            // The design contract, measured end to end on real physics rather than restated from the assets.
+            // Both punts run the identical harness, so the ratio is decided by the boats and by nothing else.
+            var basicHull = LoadOptionalHull("Punt");
+            if (basicHull == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
+
+            var (basicGo, basicBoat, basicRb) = NewBoat(basicHull, Vector3.zero);
+            yield return RunToTerminal(basicBoat, basicRb);
+            float basic = basicRb.linearVelocity.magnitude;
+            Object.Destroy(basicGo);
+            yield return null;
+
+            var (_, upBoat, upRb) = NewBoat(LoadHull("PuntUpgraded"), Vector3.zero);
+            yield return RunToTerminal(upBoat, upRb);
+            float upgraded = upRb.linearVelocity.magnitude;
+
+            float gain = upgraded / basic - 1f;
+            Assert.GreaterOrEqual(gain, 0.20f,
+                $"measured {basic:0.00} → {upgraded:0.00} m/s = {gain:P0}: under the 20% the owner asked for");
+            Assert.LessOrEqual(gain, 0.30f,
+                $"measured {basic:0.00} → {upgraded:0.00} m/s = {gain:P0}: over the 30% the owner asked for");
+        }
+
         // ---- (2) the picker, in place, on a live boat ---------------------------------------------
 
         private (DevBoatPicker picker, BoatController boat, ShipHold hold, SpriteRenderer sr, GameObject go)
@@ -256,13 +332,18 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator Picker_CyclesTheWholeFleet_OnALiveBoat_WithoutMovingIt()
         {
-            // The affordance end to end, on the real assets and a real physics body: five hulls, in place.
+            // The affordance end to end, on the real assets and a real physics body: every committed hull, in
+            // place.
             // EditMode covers the swap's LOGIC; this covers it surviving actual Awake/LateUpdate lifecycles
             // — where the skin's components really get added, destroyed and re-added under a running boat.
+            // The builder's real cycle order, minus the basic punt: Punt.asset is builder-generated and never
+            // committed, so a clean clone has no such file. Her rung is proven in EditMode
+            // (DevBoatPickerTests) against an in-memory mirror; what THIS test exists for is the swap
+            // surviving real Awake/LateUpdate lifecycles, which her sister hull exercises identically.
             var roster = new[]
             {
-                LoadHull("Dory"), LoadHull("FishingSkiff"), LoadHull("ConsoleSkiff"),
-                LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
+                LoadHull("Dory"), LoadHull("FishingSkiff"), LoadHull("PuntUpgraded"),
+                LoadHull("ConsoleSkiff"), LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
             };
             var (picker, boat, hold, _, go) = NewPickedBoat(roster);
             var start = go.transform.position;
@@ -289,7 +370,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreSame(roster[0], boat.Hull, "a full lap wraps back to the dory");
             Assert.AreEqual(start, go.transform.position,
-                "…and the boat never moved: same spot, same water, five hulls");
+                "…and the boat never moved: same spot, same water, every hull");
         }
 
         [UnityTest]
@@ -302,23 +383,23 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "precondition: the dory has her oars");
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(), "precondition: …and no engine");
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "precondition: …and no engine");
 
             picker.Next();
             yield return null;
 
             Assert.IsNull(go.GetComponent<DoryOarLayer>(),
                 "the dory's oars must not row a skiff — and they'd z-fight the engine leg if they stayed");
-            var motor = go.GetComponent<SkiffMotorLayer>();
+            var motor = go.GetComponent<OutboardMotorLayer>();
             Assert.IsNotNull(motor, "the twin's outboards are bolted on");
             Assert.IsTrue(motor.IsWired);
-            Assert.AreEqual(SkiffMotorLayer.MotorFit.Twin, motor.Fit);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Twin, motor.Fit);
 
             picker.Next();   // wrap back to the dory
             yield return null;
 
             Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "…and back: the oars return");
-            Assert.IsNull(go.GetComponent<SkiffMotorLayer>(), "the engine comes off the rowboat");
+            Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "the engine comes off the rowboat");
         }
 
         [UnityTest]
@@ -339,6 +420,44 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- (3) the outboard, drawn from a live helm ---------------------------------------------
 
         [UnityTest]
+        public IEnumerator ThePuntsOutboard_SwivelsAtHerOwnAuthority_AndCentresWhenTheHelmIsDropped()
+        {
+            // The punt's engine through a real LateUpdate — the same contract as the skiff's below, but on
+            // HER sheets and HER ±32°, so the authority really does survive the trip from the asset.
+            var hull = LoadHull("PuntUpgraded");
+            var (go, boat, _) = NewBoat(hull, Vector3.zero);
+            var sr = go.AddComponent<SpriteRenderer>();
+            var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
+            Assert.IsNotNull(rig.Motor, "precondition: the punt wears her tiller outboard");
+            Assert.AreEqual(32f, rig.Motor.MaxSteerDegrees, 0.001f,
+                "…at the authority her own sheets bake, not the skiffs' 30");
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, rig.Motor.Fit, "…and only one of them");
+
+            int centre = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns);
+            int hardPort = 0;
+
+            // A DURATION, never a frame count — budgeted from the layer's own cadence (see SpinUntil).
+            float cadence = SteerColumnsPerSecond(rig.Motor);
+            float budget = (Mathf.Abs(centre - hardPort) / cadence) * 4f;
+
+            yield return null;
+            Assert.AreEqual(centre, rig.Motor.SteerColumn, "she wakes dead ahead");
+
+            boat.SetControl(1f, -1f);                    // hard a-port
+            yield return SpinUntil(() => rig.Motor.SteerColumn == hardPort, budget);
+            Assert.AreEqual(hardPort, rig.Motor.SteerColumn,
+                "the tiller goes hard over to port off the helm alone");
+
+            boat.enabled = false;                        // the player steps off, mid-turn
+            yield return SpinUntil(() => rig.Motor.SteerColumn == centre, budget);
+
+            // Note the helm is STILL hard-over: Stop() clears _steer, disabling does not. So she can only
+            // come back by the layer refusing to read an unmanned helm — the #205 gate.
+            Assert.AreEqual(centre, rig.Motor.SteerColumn,
+                "a dropped helm centres the punt's engine too — she must never sit frozen hard-over (#205)");
+        }
+
+        [UnityTest]
         public IEnumerator Outboard_SwivelsFromTheLiveHelm_AndCentresWhenTheHelmIsDropped()
         {
             // The PULL, end to end, through a real LateUpdate — the thing an EditMode test structurally
@@ -349,11 +468,11 @@ namespace HiddenHarbours.Tests.PlayMode
             var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
             Assert.IsNotNull(rig.Motor, "precondition: the sport skiff wears her outboard");
 
-            int centre = SkiffMotorMath.CenterColumn(SkiffMotorMath.SteerColumns);
+            int centre = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns);
             // Hard a-starboard is the sheet's LAST column, derived through the same public mapping the layer
             // uses rather than spelled "8" — the sheets' column count is an art fact that may yet grow.
-            int hardStarboard = SkiffMotorMath.ColumnForSteerDegrees(
-                SkiffMotorMath.MaxSteerDegrees, SkiffMotorMath.SteerColumns, SkiffMotorMath.MaxSteerDegrees);
+            int hardStarboard = OutboardMotorMath.ColumnForSteerDegrees(
+                OutboardMotorMath.MaxSteerDegrees, OutboardMotorMath.SteerColumns, OutboardMotorMath.MaxSteerDegrees);
 
             // The swivel is rate-limited, so the wait must be a DURATION, never a frame count. Budget the full
             // centre→hard-over travel at the layer's own cadence, times a slack factor so this is decided by the
