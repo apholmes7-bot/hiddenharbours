@@ -69,6 +69,21 @@ namespace HiddenHarbours.Art.Editor
         // shifts the boat (README: "so a heading- or frame-swap never shifts the boat").
         private static readonly Vector2 DoryWaterline = new Vector2(80f / 160f, 68f / 156f);
 
+        // The skiff-fleet boat origin (amidships, keel bottom, centreline), derived exactly as
+        // DoryWaterline above. The kit README fixes the anchor at (122,120) from a 244×216 HULL cell's
+        // TOP-LEFT and at (136,120) from a 272×216 MOTOR cell's TOP-LEFT — two different cell widths
+        // pinning the SAME world point (the motor cell is wider on purpose so hard-over and raised poses
+        // never clip). Flipping to Unity's bottom-left origin, y = (216−120) = 96 for both:
+        //     hull  → (122/244, 96/216) = (0.5, 0.4444…)
+        //     motor → (136/272, 96/216) = (0.5, 0.4444…)
+        // Both normalize to the SAME pivot — that identity IS the mechanism that lands the wider motor
+        // cell on the transom, so ONE const serves every sheet in the fleet (a second motor-only const
+        // would be the same numbers). Verified pixel-exact (zero diff over all 8 headings, both hulls,
+        // both paint builds) by re-compositing the kit's _preview-*.png reference sheets from these
+        // slices at this pivot. README: "Composite every layer by pinning its pivot to one screen point.
+        // Do NOT align by the top-left corner."
+        private static readonly Vector2 SkiffOrigin = new Vector2(122f / 244f, 96f / 216f);
+
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
         // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
         // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
@@ -111,6 +126,32 @@ namespace HiddenHarbours.Art.Editor
             //   on the hull at identical localPosition (art README: all layers pinned to pivot (80,88)).
             new SheetSpec(Root + "Boats/DoryOarPort.png", 10, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
             new SheetSpec(Root + "Boats/DoryOarStar.png", 10, 8, 160, 156, SpriteAlignment.Custom, DoryWaterline),
+
+            // ---- Skiff fleet HULLS: two 7 m centre-console skiffs off one keel (console workboat +
+            //      sport glass sister). Same envelope/transom/pivot, so the outboard drops onto either.
+            //   ConsoleIso/SportSkiffIso: 8 cols × 1 row → 8 static hull headings; index = heading
+            //     (0 N, 1 NE, 2 E, 3 SE, 4 S, 5 SW, 6 W, 7 NW — same CW order as the dory).
+            //   ConsoleIsoRock/SportSkiffIsoRock: 8 cols (wave frame 0..7) × 8 rows (heading) → 64 each;
+            //     index = heading×8 + frame (row-major from top-left, per BuildRects), i.e.
+            //     heading = index/8, frame = index%8. README: play ~7 fps to idle on the water.
+            new SheetSpec(Root + "Boats/ConsoleIso.png",         8, 1, 244, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/SportSkiffIso.png",      8, 1, 244, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/ConsoleIsoRock.png",     8, 8, 244, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/SportSkiffIsoRock.png",  8, 8, 244, 216, SpriteAlignment.Custom, SkiffOrigin),
+
+            // ---- Skiff fleet OUTBOARD: one remote-steer engine, two paint builds (Work → console,
+            //      Sport → sport skiff), each shipping in two layers (Upper = bracket + cowl,
+            //      Lower = leg + plate + skeg + prop). Wider 272×216 cell, SAME SkiffOrigin pivot.
+            //   9 cols (steer) × 8 rows (heading) → 72 each; index = heading×9 + steerCol (row-major
+            //     from top-left, per BuildRects), i.e. heading = index/9, steerCol = index%9.
+            //   steerCol: 0 = −30° (full port) … 4 = dead ahead … 8 = +30° (full starboard), 7.5° steps.
+            //   Draw order per heading (README, verified against the previews): UPPER always over the
+            //     hull; LOWER goes UNDER the hull for the stern-away headings SE/S/SW (3,4,5) and over
+            //     it everywhere else. There is NO tiller — the whole engine swivels on its clamp.
+            new SheetSpec(Root + "Boats/SkiffMotorUpper-Work.png",  9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/SkiffMotorLower-Work.png",  9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/SkiffMotorUpper-Sport.png", 9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
+            new SheetSpec(Root + "Boats/SkiffMotorLower-Sport.png", 9, 8, 272, 216, SpriteAlignment.Custom, SkiffOrigin),
         };
 
         // ---- entry points -------------------------------------------------------------------------
