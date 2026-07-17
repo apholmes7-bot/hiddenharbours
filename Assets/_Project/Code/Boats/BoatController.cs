@@ -272,14 +272,23 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
-        /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
-        /// A small public setter so the swapper doesn't reach into the private serialized field.
+        /// Swap the active hull (the player buys up the ladder — VS-16, driven by OwnedFleet; or the dev
+        /// boat picker cycles hulls at the helm). Re-derives the rigidbody mass from the new displacement so
+        /// feel tracks the bigger boat — WITHOUT it a swap is cosmetic, and a 1200 kg console would still
+        /// shove around like a 400 kg dory. A small public setter so the swapper doesn't reach into the
+        /// private serialized field.
+        ///
+        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop"/> does and for the same reason:
+        /// <see cref="Awake"/> may not have cached <c>_rb</c> yet (EditMode, or a swap wired up before the
+        /// first tick). Going through the cache alone would silently drop the mass write in those cases —
+        /// no throw, no warning, just a boat that weighs whatever the last one did.</para>
         /// </summary>
         public void SetHull(BoatHullDef hull)
         {
             _hull = hull;
-            if (_rb != null && _hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+            if (_hull == null) return;
+            var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
+            if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
 
         private void FixedUpdate()

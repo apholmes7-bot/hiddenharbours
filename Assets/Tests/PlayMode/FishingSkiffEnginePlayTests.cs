@@ -67,15 +67,19 @@ namespace HiddenHarbours.Tests.PlayMode
             var asset = AssetDatabase.LoadAssetAtPath<BoatHullDef>(FishingSkiffPath);
             if (asset != null) return asset;   // the real, authored Engine hull
 #endif
+            // Mirrors the committed FishingSkiff.asset (GreyboxBuilder.ApplyFishingSkiffStats). Keep in step
+            // with it: this hull was un-orphaned and re-sized from its art (a 128 px cell at PPU 32 = 4.0 m;
+            // it used to claim 4.5 — longer than its own picture).
             var h = ScriptableObject.CreateInstance<BoatHullDef>();
-            h.Id = "boat.fishing_skiff"; h.DisplayName = "Fishing Skiff";
+            h.Id = "boat.fishing_skiff"; h.DisplayName = "The Fishing Skiff";
             h.Propulsion = PropulsionType.Engine;
-            h.LengthMeters = 4.5f; h.DraughtMeters = 0.3f; h.MassKg = 400f;
+            h.LengthMeters = 4.0f; h.DraughtMeters = 0.35f; h.MassKg = 450f;
             h.HoldUnits = 6; h.CrewSlots = 1;
-            h.EnginePower = 500f; h.RudderAuthority = 600f;
+            h.EnginePower = 550f; h.RudderAuthority = 400f;
             h.OarPower = 300f; h.OarLateralOffset = 0.6f; h.OarBraceDrag = 400f;
-            h.ForwardDrag = 120f; h.LateralDrag = 320f; h.WindExposure = 0.6f;
-            h.MaxSafeSeaState = SeaState.Lively; h.CameraWorldHeightMeters = 14f;
+            h.ForwardDrag = 130f; h.LateralDrag = 340f; h.WindExposure = 0.6f;
+            h.MaxSafeSeaState = SeaState.Lively; h.CameraWorldHeightMeters = 13.5f;
+            h.SeakeepingMassFactor = 1.1f; h.SeakeepingLiveliness = 0.95f; h.SeakeepingDamping = 0.05f;
             _spawned.Add(h);
             return h;
         }
