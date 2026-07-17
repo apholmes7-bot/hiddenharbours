@@ -115,10 +115,17 @@ the PNGs import `spriteMode: Multiple`):
 - **The BOW SPRAY** (`Art/VFX/BowSpray/*`) — art is authored **impact-churn-at-the-BOTTOM, fan spreading
   up** (same pixel test). Pinned at the cutwater (`BowSprayGrading.BowAnchor`, the stern anchor's mirror),
   fan ahead of the bow, with its **own speed-forward config** (`BowSprayGradeConfig`): weights ≈
-  0.20 size / 0.15 weight / **0.65 speed**, and a speed onset at ~⅔ of the dory's real rowed top speed
-  (≈2.5 m/s from `OarPower/ForwardDrag`) ramping to full only **beyond** it — so the dory (the slowest
-  boat in the game, per the owner) shows at most a gradual subtle wisp at a hard row, and the prominent
-  sheet belongs to the faster hulls. `SprayFlip`/`SprayPivotY` mirror the plume's escape hatch. Both
+  0.20 size / 0.15 weight / **0.65 speed**, and a speed onset (1.7 m/s) just under the dory's real rowed top
+  speed — **2.0 m/s, MEASURED** on real physics (`PilotableFleetPlayTests`) — ramping to full only far
+  **beyond** it, so the dory (the slowest boat in the game per the owner, and now actually the slowest)
+  shows at most a gradual subtle wisp at a flat-out row, and the prominent sheet belongs to the faster hulls.
+  **Do not re-derive that top speed from the stats.** This line used to read "≈2.5 m/s from
+  `OarPower/ForwardDrag`", and that ratio is wrong twice over: **both oars pull** (`BoatController.OarThrust`
+  sums them — a flat-out row is 600 N, not 300), and the rigidbody's own `linearDamping` — ~40–50% of the
+  dory's resistance — appears in no stat on the asset. She really did **2.95 m/s**, so she had been crossing
+  well into a spray she was never meant to throw. Slowing her (`ForwardDrag` 120 → 215) is what fixed that;
+  the onset stays at 1.7 deliberately, because it gates **every** hull and lowering it would retune the
+  skiffs' spray too. `SprayFlip`/`SprayPivotY` mirror the plume's escape hatch. Both
   sprites are one renderer per boat, built once, tier-swapped + continuously scaled + onset-faded,
   hidden at rest/aground — zero per-tick allocation, visual-only.
 

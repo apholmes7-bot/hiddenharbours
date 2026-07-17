@@ -244,7 +244,14 @@ namespace HiddenHarbours.Art
         {
             if (_light == null) _light = GetComponent<SceneLight>();
             if (_light != null) _light.enabled = _beamOn;
-            if (!_beamOn) PublishWaterLight(0f, Vector3.zero, Vector2.up);
+
+            if (!_beamOn) { PublishWaterLight(0f, Vector3.zero, Vector2.up); return; }
+
+            // Relighting: publish on the VERY NEXT Update, not whenever the throttle happens to come round.
+            // The water globals refresh at PublishHz (20 Hz), and that timer is mid-cycle when the switch is
+            // thrown — so without this the land quad lights instantly while the sea stays dark for up to 50 ms
+            // behind it. Small, but it is the difference between one beam and two lights that disagree.
+            _publishTimer = 0f;
         }
 
         private void Awake()

@@ -11,10 +11,16 @@ namespace HiddenHarbours.Boats
     /// <list type="bullet">
     /// <item><description><b>Heavier speed weight</b> (default 0.65 vs the wake's 0.40) — the bow throws
     /// spray because it hits water fast, far more than because the hull is big.</description></item>
-    /// <item><description><b>Higher speed onset</b> — the ramp starts at ~⅔ of the dory's real rowed top
-    /// speed (OarPower 300 N / ForwardDrag 120 → ~2.5 m/s terminal), so rowing hard <i>just</i> starts a
-    /// subtle occasional spray, and the full sheet is reserved for speeds the dory cannot reach (the future
-    /// faster hulls, e.g. the skiff's engine ~4.2 m/s).</description></item>
+    /// <item><description><b>Higher speed onset</b> — the ramp starts just BELOW the dory's real rowed top
+    /// speed (<b>2.0 m/s, MEASURED</b> on real physics in <c>PilotableFleetPlayTests</c>), so rowing hard
+    /// <i>just</i> starts a subtle occasional spray, and the full sheet is reserved for speeds the dory cannot
+    /// reach (the faster hulls: the fishing skiff 2.4, the console 3.8, the sport skiffs 4.6 / 5.6 m/s).
+    /// <para><b>Do not re-derive that top speed from the stats.</b> An <c>OarPower/ForwardDrag</c> ratio is
+    /// wrong twice over — BOTH oars pull (<see cref="BoatController.OarThrust"/> sums them), and the
+    /// rigidbody's own <c>linearDamping</c> is ~40–50% of the dory's resistance and appears in no stat. The
+    /// old note here read "300/120 ≈ 2.5 m/s" and was wrong on both counts: she really did <b>2.95</b>, which
+    /// is how a boat the owner calls the slowest in the game ended up throwing spray she was never meant to
+    /// throw. She is now tuned (ForwardDrag 215) and MEASURED at 2.0. Measure; never restate.</para></description></item>
     /// </list>
     ///
     /// <para><b>No magic numbers (CLAUDE.md rule 6).</b> Every reference range, blend weight, threshold and
@@ -49,9 +55,10 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// The spray's speed-onset ramp, 0..1: 0 at/below <paramref name="c"/>.SpraySpeedOnset, saturating 1
-        /// over the next SpraySpeedOnsetRange (m/s). This is THE dory-gentleness lever: the onset sits at ~⅔
-        /// of the dory's top speed and the ramp tops out beyond it, so the slowest boat in the game only ever
-        /// sees the bottom of this ramp. Monotonic non-decreasing in speed. Pure + static.
+        /// over the next SpraySpeedOnsetRange (m/s). This is THE dory-gentleness lever: the onset (1.7 m/s) sits
+        /// just under the dory's MEASURED 2.0 m/s top speed and the ramp tops out far beyond it, so the slowest
+        /// boat in the game only ever sees the very bottom of this ramp — ~15% opacity flat-out, nothing at
+        /// cruise. Monotonic non-decreasing in speed. Pure + static.
         /// </summary>
         public static float SpeedOnset(float speed, in BowSprayGradeConfig c)
             => WakeGrading.Ramp01(speed, c.SpraySpeedOnset, c.SpraySpeedOnsetRange);
@@ -81,9 +88,9 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// Every tunable that grades the bow spray — in one serialized struct so the selection stays free of
     /// magic numbers (CLAUDE.md rule 6). <see cref="BoatWakeEmitter"/> serializes an owner-editable instance.
-    /// Defaults are deliberately SPEED-FORWARD and gentle on the dory: at its rowed cruise (~2 m/s) the spray
-    /// is a barely-there wisp, at a hard row (~2.5 m/s, the dory's terminal speed) it is subtle and partial,
-    /// and the full prominent sheet only appears at speeds the dory cannot reach.
+    /// Defaults are deliberately SPEED-FORWARD and gentle on the dory: below 1.7 m/s she shows no spray at all,
+    /// and at a flat-out row (2.0 m/s — her MEASURED terminal speed, see <see cref="BowSprayGrading"/>) it is a
+    /// barely-there wisp; the full prominent sheet only appears at speeds the dory cannot reach.
     /// </summary>
     [System.Serializable]
     public struct BowSprayGradeConfig
@@ -105,8 +112,9 @@ namespace HiddenHarbours.Boats
         [Tooltip("Boat speed (m/s) mapped to 0 for the magnitude blend. Kept at the spray's own onset speed — " +
                  "below it, speed contributes nothing (spray is a speed phenomenon).")]
         public float SpeedRefMin;
-        [Tooltip("Boat speed (m/s) mapped to 1 — a fast hull driven hard. Set beyond the dory's reach (its " +
-                 "rowed terminal is ~2.5 m/s) so the top of the spray scale belongs to the faster boats to come.")]
+        [Tooltip("Boat speed (m/s) mapped to 1 — a fast hull driven hard. Set far beyond the dory's reach (her " +
+                 "rowed terminal MEASURES 2.0 m/s) so the top of the spray scale belongs to the fast hulls — the " +
+                 "sport skiffs settle at 4.6 and 5.6 m/s.")]
         public float SpeedRefMax;
 
         [Header("Blend weights (normalized internally — SPEED-FORWARD by design)")]
@@ -147,8 +155,12 @@ namespace HiddenHarbours.Boats
         public bool SprayFlip;
 
         [Header("Speed onset (the dory-gentleness lever)")]
-        [Tooltip("Boat speed (m/s) at which spray BEGINS. Default ~⅔ of the dory's rowed top speed (~2.5 m/s " +
-                 "from OarPower/ForwardDrag), so only a hard row starts a subtle spray — cruising shows none.")]
+        [Tooltip("Boat speed (m/s) at which spray BEGINS, for EVERY hull — not just the dory. Default 1.7 sits " +
+                 "just under her MEASURED 2.0 m/s rowed top speed, so only a flat-out row starts a subtle wisp " +
+                 "and cruising shows none. (This number was originally chosen as '⅔ of the dory's 2.5' — but " +
+                 "2.5 was a bad derivation and she really did 2.95, so she had been crossing well into a spray " +
+                 "she was never meant to throw. Slowing her to 2.0 is what fixed that; 1.7 was left alone " +
+                 "deliberately, because it gates the skiffs too and lowering it would retune their spray.)")]
         public float SpraySpeedOnset;
         [Tooltip("Speed range (m/s) over which the spray ramps to full opacity. Default reaches full only " +
                  "beyond the dory's top speed — the prominent sheet belongs to the faster hulls to come.")]
@@ -164,13 +176,13 @@ namespace HiddenHarbours.Boats
             MassRefMin   = 300f,
             MassRefMax   = 8000f,
             SpeedRefMin  = 1.7f,     // = the onset: below it speed contributes nothing
-            SpeedRefMax  = 6f,       // full speed credit belongs to hulls far faster than the dory
+            SpeedRefMax  = 6f,       // full speed credit belongs to hulls far faster than the dory (the twin: 5.6)
 
             WeightSize   = 0.20f,    // speed-forward: size and weight together weigh half of speed
             WeightMass   = 0.15f,
             WeightSpeed  = 0.65f,
 
-            Threshold1   = 0.30f,    // the dory tops out at ~0.13 flat-out → always the Small spray
+            Threshold1   = 0.30f,    // the dory tops out well under this flat-out → always the Small spray
             Threshold2   = 0.55f,
             Threshold3   = 0.78f,
 
@@ -180,8 +192,8 @@ namespace HiddenHarbours.Boats
             SprayStartAlpha      = 0.85f,
             SprayPivotY          = 0f,     // impact churn at the image BOTTOM (pixel-verified)
             SprayFlip            = false,
-            SpraySpeedOnset      = 1.7f,   // ~⅔ of the dory's ~2.5 m/s rowed terminal speed
-            SpraySpeedOnsetRange = 2.0f,   // full sheet at 3.7 m/s — beyond the dory's reach
+            SpraySpeedOnset      = 1.7f,   // just under the dory's MEASURED 2.0 m/s rowed terminal (~15% flat-out)
+            SpraySpeedOnsetRange = 2.0f,   // full sheet at 3.7 m/s — far beyond the dory's reach
         };
     }
 }

@@ -12,7 +12,8 @@
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
         "HiddenHarbours.Environment",
-        "HiddenHarbours.Art"
+        "HiddenHarbours.Art",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "precompiledReferences": ["nunit.framework.dll"],
