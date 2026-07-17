@@ -280,6 +280,29 @@ namespace HiddenHarbours.App.Editor
             punt     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             clam     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
 
+            // THE PILOTABLE FLEET (the owner's ask): every boat he can put himself in from the helm, in
+            // cycle order — the iso dory he starts in, the 8-direction fishing boat, and the two 7 m skiffs
+            // with the twin-outboard sport as its own entry. St Peters is the only builder that spawns the
+            // player's boat, so it is the only one that hands over a roster (Greywick spawns none).
+            //
+            // Nulls are FILTERED, not tolerated: a missing asset would otherwise be a dead rung he cycles
+            // into. The picker is NOT the fleet — none of these is for sale, and OwnedFleet's purchase
+            // registry (dory + punt) is untouched.
+            var pickerRoster = new[]
+            {
+                dory,
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/FishingSkiff.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiff.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
+            }.Where(h => h != null).ToArray();
+
+            if (pickerRoster.Length < 5)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/5 hulls — " +
+                                 "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
+                                 "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
+                                 "(which authors the hull assets), then re-run this builder.");
+
             // The opening cast as DATA (CLAUDE.md rule 2): Aunt Ginny (teaches the buy-and-repair loop) and
             // Ned's letter (the remembered presence — no inherited dory). Each NpcDef carries its name, its
             // DialogueDef, the verb, and the completion flag, so the builder only PLACES them — the words
@@ -298,6 +321,7 @@ namespace HiddenHarbours.App.Editor
                 Config           = config,
                 StartDory        = dory,
                 PuntHull         = punt,
+                DevPickerRoster  = pickerRoster,   // F at the helm cycles the hull in place (dev affordance)
                 RegionFish       = clam != null ? new[] { clam } : null,
                 Square           = waterSprite,
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water

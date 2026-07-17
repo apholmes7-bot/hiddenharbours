@@ -26,12 +26,16 @@ namespace HiddenHarbours.Boats
     /// anything short of a full block falls back to the block below it, ending at the plain
     /// <see cref="BoatHullDef.Sprite"/> rotating hull.</para>
     ///
-    /// <para><b>Extending this (read before adding a layer).</b> A new overlay — e.g. the coming MOTOR
-    /// layer (upper/lower sheets, 9 steer columns × 8 headings, two paint builds, a twin-engine option)
-    /// — binds by adding its own append-only block of fields here and installing it from
-    /// <see cref="BoatHullSkinner.Apply"/>, which hands back a <see cref="BoatHullSkinner.Rig"/> carrying
-    /// the visual child, the hull renderer and the <see cref="DirectionalBoatSprite"/> to layer onto. Do
-    /// NOT add art paths to a builder — bind sheets here.</para>
+    /// <para><b>Extending this (read before adding a layer).</b> A new overlay binds by adding its own
+    /// append-only block of fields here and installing it from <see cref="BoatHullSkinner.Apply"/>, which
+    /// hands back a <see cref="BoatHullSkinner.Rig"/> carrying the visual child, the hull renderer and the
+    /// <see cref="DirectionalBoatSprite"/> to layer onto. Do NOT add art paths to a builder — bind sheets
+    /// here. The MOTOR block below is that append, done: upper/lower sheets, 9 steer columns × 8 headings,
+    /// two paint builds and a twin-engine fit, and it needed no change to the skinner's shape.</para>
+    ///
+    /// <para><b>Overlays can collide — check before adding one.</b> The oar and motor blocks are mutually
+    /// exclusive (<see cref="HasConflictingOverlays"/>) because their sorting bands overlap. A third overlay
+    /// must either take a band above them or declare its own exclusion; it must not quietly share one.</para>
     ///
     /// Create via Assets &gt; Create &gt; Hidden Harbours &gt; Boat Visual, save in Data/Boats/Visuals.
     /// </summary>
@@ -81,6 +85,45 @@ namespace HiddenHarbours.Boats
         [Tooltip("Oar columns per heading row (the DoryOar* sheets ship 10).")]
         [Min(1)] public int OarColumnCount = 10;
 
+        [Header("Outboard motor (OPTIONAL — the skiffs' remote-steer engine)")]
+        [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
+                 "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
+                 "alongside MotorUpper, SkiffMotorLayer swivels the engine from the boat's REAL helm. Empty " +
+                 "= this hull has no engine drawn (the dory and the fishing boat).")]
+        public Sprite[] MotorLower = System.Array.Empty<Sprite>();
+
+        [Tooltip("Motor UPPER sheet (clamp bracket + cowl) — same layout as MotorLower.")]
+        public Sprite[] MotorUpper = System.Array.Empty<Sprite>();
+
+        [Tooltip("Steer columns per heading row (the shipped SkiffMotor* sheets have 9).")]
+        [Min(1)] public int MotorColumnCount = SkiffMotorMath.SteerColumns;
+
+        [Tooltip("Which paint build of the outboard this hull carries — Work (graphite cowl, the console " +
+                 "workboat) or Sport (white cowl + teal flash, the sport skiff). Identity only: the sheets " +
+                 "above are what actually get drawn.")]
+        public SkiffMotorLayer.MotorVariant MotorVariant = SkiffMotorLayer.MotorVariant.Work;
+
+        [Tooltip("How many engines hang on the transom: Single (one, on the centreline) or Twin (two at " +
+                 "±0.34 m, steering together off the one wheel — the SAME sheets blitted twice). Twin is the " +
+                 "sport skiff's upgrade; it needs no extra art.")]
+        public SkiffMotorLayer.MotorFit MotorFit = SkiffMotorLayer.MotorFit.Single;
+
+        [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
+        [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
+                 "stiffer), Sport 3.8 (light glass hull, livelier); the dory reference is 5. This poses the " +
+                 "LEVEL-baked engine onto the hull's rock — it is NOT the hull's own rock, which is baked " +
+                 "into its frames. Do not double-rock.")]
+        public float MotorRockRollDegrees = 3.4f;
+
+        [Tooltip("Screen-vertical METRES at the peak of the PITCH. The art rigs give pitchA in DEGREES " +
+                 "(console 1.9, sport 2.2, dory 3.0) and the dory reads its 3.0 as 0.02 m of vertical " +
+                 "travel in the ¾ view — so the same conversion puts the console at 0.0127 and the sport " +
+                 "at 0.0147. Keep small; this is a screen offset, not a rotation.")]
+        public float MotorRockPitchOffsetMeters = 0.0127f;
+
+        [Tooltip("Baked HEAVE amplitude in pixels (the rigs' heaveA). Console 1.3, Sport 1.5.")]
+        public float MotorRockHeavePixels = 1.3f;
+
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
 
         /// <summary>How many hull headings this skin is drawn for (the compass size). 0 = no compass.</summary>
@@ -114,6 +157,34 @@ namespace HiddenHarbours.Boats
                    IsComplete(OarStar) && OarStar.Length == expected;
         }
 
+        /// <summary>
+        /// True when BOTH motor sheets give their full heading×column grid — the gate
+        /// <see cref="BoatHullSkinner"/> hangs the outboard behind. Both-or-neither: a leg with no cowl (or
+        /// a cowl with no leg) is a broken engine, and a partial sheet would index a stale cell. Requires a
+        /// full compass, since the motor picks the hull's heading row.
+        /// </summary>
+        public bool HasMotor()
+        {
+            if (!HasFullCompass() || MotorColumnCount <= 0) return false;
+            int expected = HeadingCount * MotorColumnCount;
+            return IsComplete(MotorLower) && MotorLower.Length == expected &&
+                   IsComplete(MotorUpper) && MotorUpper.Length == expected;
+        }
+
+        /// <summary>
+        /// <b>Oars and an outboard are mutually exclusive</b>, and this is the assertion that says so out
+        /// loud. The two overlays' sorting bands OVERLAP by construction: the oars take hull+1 (port) and
+        /// hull+2 (starboard), while the motor's lower layer takes hull+1/+2 whenever it draws OVER the hull
+        /// (<see cref="SkiffMotorMath.SortingOrder"/>). A hull wearing both would have its port oar and its
+        /// engine leg fighting for the same order — a z-flicker that changes with heading.
+        ///
+        /// <para>Re-basing a band would be the fix if a hull ever genuinely needed both (an auxiliary
+        /// outboard on a rowing hull). Nothing does: rowing hulls row, powered hulls have engines. So this
+        /// stays a checked invariant (the content validator asserts it across every authored visual) rather
+        /// than a band rebase bought on speculation.</para>
+        /// </summary>
+        public bool HasConflictingOverlays() => HasOarSheets() && HasMotor();
+
         private static bool IsComplete(Sprite[] set)
         {
             if (set == null || set.Length == 0) return false;
@@ -140,6 +211,8 @@ namespace HiddenHarbours.Boats
             def.RockGrid = System.Array.Empty<Sprite>();
             def.OarPort = System.Array.Empty<Sprite>();
             def.OarStar = System.Array.Empty<Sprite>();
+            def.MotorLower = System.Array.Empty<Sprite>();
+            def.MotorUpper = System.Array.Empty<Sprite>();
             return def;
         }
     }

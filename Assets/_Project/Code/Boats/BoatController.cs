@@ -85,6 +85,18 @@ namespace HiddenHarbours.Boats
         public bool IsAground { get; private set; }
         public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
 
+        /// <summary>
+        /// Helm state (-1 hard a-port .. 0 amidships .. +1 hard a-starboard) — the rudder input the Engine
+        /// branch steers on, as set by <see cref="SetControl"/>. Symmetric with <see cref="LeftOar"/>/
+        /// <see cref="RightOar"/>: the drive state a presentation layer must read to draw the boat honestly.
+        ///
+        /// <para>The outboard overlay (<c>SkiffMotorLayer</c>) PULLS this rather than being pushed a copy of
+        /// it every frame. Pull is self-sourcing — the picture cannot fall out of step because some driving
+        /// system forgot to write it, which is exactly the dropped-state blind spot #205 fixed for the oars.
+        /// Read-only: presentation never writes back into the sim (rule 5).</para>
+        /// </summary>
+        public float Steer => _steer;
+
         /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float LeftOar => _leftOar;
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
@@ -260,14 +272,23 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Swap the active hull (e.g. when the player buys up the ladder — VS-16, driven by OwnedFleet).
-        /// Re-derives the rigidbody mass from the new displacement so feel tracks the bigger boat.
-        /// A small public setter so the swapper doesn't reach into the private serialized field.
+        /// Swap the active hull (the player buys up the ladder — VS-16, driven by OwnedFleet; or the dev
+        /// boat picker cycles hulls at the helm). Re-derives the rigidbody mass from the new displacement so
+        /// feel tracks the bigger boat — WITHOUT it a swap is cosmetic, and a 1200 kg console would still
+        /// shove around like a 400 kg dory. A small public setter so the swapper doesn't reach into the
+        /// private serialized field.
+        ///
+        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop"/> does and for the same reason:
+        /// <see cref="Awake"/> may not have cached <c>_rb</c> yet (EditMode, or a swap wired up before the
+        /// first tick). Going through the cache alone would silently drop the mass write in those cases —
+        /// no throw, no warning, just a boat that weighs whatever the last one did.</para>
         /// </summary>
         public void SetHull(BoatHullDef hull)
         {
             _hull = hull;
-            if (_rb != null && _hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
+            if (_hull == null) return;
+            var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
+            if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
 
         private void FixedUpdate()

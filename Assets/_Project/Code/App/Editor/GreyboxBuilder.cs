@@ -511,6 +511,14 @@ namespace HiddenHarbours.App.Editor
             // Tier-1 "Punt / Skiff" (design/boats-and-navigation.md §1.1) — the first boat you BUY (VS-16).
             LoadOrCreate<BoatHullDef>(DataBoats + "/Punt.asset", ApplyPuntStats);
 
+            // THE PILOTABLE FLEET. These are hulls the owner can put himself in via the dev boat picker —
+            // NOT a shipwright ladder: nothing offers them for sale and OwnedFleet's purchase registry does
+            // not know they exist. That is deliberate (rule 8): the M2 fleet roster and its economy are a
+            // later phase, and this is a dev affordance for feeling the hulls in the same wave.
+            LoadOrCreate<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset", ApplyConsoleSkiffStats);
+            LoadOrCreate<BoatHullDef>(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats);
+            LoadOrCreate<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats);
+
             // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
             LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
             {
@@ -558,6 +566,21 @@ namespace HiddenHarbours.App.Editor
                 punt.Sprite = LoadArtSprite(ArtPunt);
                 EditorUtility.SetDirty(punt);
             }
+
+            // --- THE PILOTABLE FLEET: stats + the skin each hull wears ---------------------------------
+            // Re-applied on every run (LoadOrCreate only inits on CREATE), so re-running the builder is how
+            // a stat tweak in C# reaches the asset — the same contract Dory/Punt have always had.
+            //
+            // A hull's LOOK is its Visual ref (rule 2): the skiffs' compass + rock grid + outboard all ride
+            // one BoatVisualDef, so the picker's re-skin is a data lookup, not a branch in code. A null ref
+            // here (visuals not yet built) is NOT fatal — the hull just wears its plain rotating Sprite,
+            // which for these is nothing. Hence the warning: it is the difference between "the owner sees
+            // his skiff" and "the owner sees an invisible boat", and it is the single most likely thing to
+            // be wrong after a fresh pull.
+            ApplyFleetHull(DataBoats + "/ConsoleSkiff.asset", ApplyConsoleSkiffStats, "ConsoleSkiff");
+            ApplyFleetHull(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats, "SportSkiffSingle");
+            ApplyFleetHull(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats, "SportSkiffTwin");
+            ApplyFleetHull(DataBoats + "/FishingSkiff.asset", ApplyFishingSkiffStats, "FishingBoat");
 
             return new DataRefs
             {
@@ -639,6 +662,46 @@ namespace HiddenHarbours.App.Editor
             });
         }
 
+        // =====================================================================================
+        //  THE HULL LADDER — stats, and where they come from
+        // =====================================================================================
+        //
+        // TERMINAL SPEED IS DERIVED, NOT GUESSED. BoatController assembles thrust and drag like this:
+        //
+        //   thrust  = EnginePower · ForceFeelScale                    (ForceFeelScale = 0.01)
+        //   hull    = v · ForwardDrag · ForceFeelScale                (drag along the hull, vs the water)
+        //   damping = v · mass · Rigidbody2D.linearDamping            (mass = MassKg/100, damping = 0.2)
+        //
+        // At terminal, thrust == hull + damping, so:
+        //
+        //   v = (EnginePower · 0.01) / (ForwardDrag · 0.01 + (MassKg/100) · 0.2)
+        //
+        // The rigidbody's own linearDamping is the term a naive EnginePower/ForwardDrag ratio DROPS, and it
+        // is not small — on the console it is well over half the total resistance. Ignore it and every hull
+        // comes out fast. SkiffTerminalSpeedPlayTests measures each committed hull on real physics and holds
+        // these numbers to the design targets, so this comment can't quietly rot.
+        //
+        //   Dory (rowed, both oars)  600·0.01 / (120·0.01 + 4·0.2)    = 3.00 m/s
+        //   Punt                     650·0.01 / (140·0.01 + 7·0.2)    = 2.32 m/s
+        //   Fishing skiff            550·0.01 / (130·0.01 + 4.5·0.2)  = 2.50 m/s
+        //   Console skiff           1600·0.01 / (170·0.01 + 12·0.2)   = 3.90 m/s   (target 3.8–4.0)
+        //   Sport skiff            1600·0.01 / (155·0.01 + 9.5·0.2)   = 4.64 m/s   (target 4.6)
+        //   Sport skiff, twin      2000·0.01 / (155·0.01 + 10·0.2)    = 5.63 m/s   (target 5.6)
+        //
+        // These land inside BowSprayGrading's SpeedRef 1.7→6 frame, which the dory alone could never
+        // exercise: the twin nearly maxes the spray sheet, which is what that art was drawn for.
+        //
+        // A NOTE ON THE TWIN, because the number looks wrong: two identical outboards do NOT get 2×
+        // EnginePower. Drag here is LINEAR in v, so doubling thrust would exactly double terminal speed —
+        // 9 m/s, past the spray sheet and past anything the owner asked for. Real hulls don't do that
+        // (drag goes as v²). EnginePower is a design-unit tunable calibrated to a designed terminal speed,
+        // not a Newton count, so the second engine is worth +25% (1600 → 2000). If the force model ever
+        // goes quadratic, these are the numbers to re-derive.
+        //
+        // RudderAuthority scales with MASS, because AddTorque fights the rigidbody's inertia: the Punt's
+        // 600 on m=7 is the tuned reference, so each hull takes roughly 600·(m/7) to answer the helm the
+        // same way. Without that, the console (m=12) would feel like a barge on the same number.
+
         // Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place so the
         // values live on the asset, never duplicated in C#. Seaworthiness "4 — Popple" maps to SeaState.Lively.
         static void ApplyPuntStats(BoatHullDef h)
@@ -652,6 +715,124 @@ namespace HiddenHarbours.App.Editor
             h.MaxSafeSeaState = SeaState.Lively;
             h.CameraWorldHeightMeters = 17f;   // a bigger boat → the camera pulls back a touch on the upgrade
             ApplyDeckTray(h);                  // still a small boat → the fish tray (blue totes are M2 hulls)
+        }
+
+        /// <summary>
+        /// Refresh one pilotable hull on disk: re-apply its stats, then point its <c>Visual</c> at the
+        /// BoatVisualDef of the given name (the asset <see cref="BoatVisualLibraryBuilder"/> writes). Art
+        /// PATHS stay in that builder — this only binds the DEF, so "how the boat looks" remains data.
+        /// A missing hull asset is skipped silently (it is created on the next run); a missing VISUAL warns
+        /// loudly, because it is the one failure the owner would see as an invisible boat.
+        /// </summary>
+        static void ApplyFleetHull(string hullPath, System.Action<BoatHullDef> applyStats, string visualName)
+        {
+            var h = AssetDatabase.LoadAssetAtPath<BoatHullDef>(hullPath);
+            if (h == null) return;
+
+            applyStats(h);
+
+            string visualPath = DataBoats + "/Visuals/" + visualName + ".asset";
+            var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(visualPath);
+            if (visual != null) h.Visual = visual;
+            else
+                Debug.LogWarning($"[GreyboxBuilder] {hullPath}: no BoatVisualDef at {visualPath}, so " +
+                                 $"{h.Id} has NO PICTURE (its fallback Sprite is empty — it would sail " +
+                                 "invisible). Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs, then " +
+                                 "re-run this builder.");
+
+            EditorUtility.SetDirty(h);
+        }
+
+        /// <summary>
+        /// THE CONSOLE SKIFF (<c>boat.console_skiff</c>) — 7 m of workboat. The heavy, stiff, unglamorous
+        /// one: it carries the most, shrugs off the most sea, and gets there last. 1200 kg and a
+        /// SeakeepingLiveliness of 0.5 are what make it feel planted next to its glass sister.
+        /// </summary>
+        static void ApplyConsoleSkiffStats(BoatHullDef h)
+        {
+            h.Id = "boat.console_skiff"; h.DisplayName = "The Console Skiff";
+            h.Propulsion = PropulsionType.Engine;
+            h.LengthMeters = 7.0f;              // art fact: the 244 px hull cell at PPU 32, less its padding
+            h.DraughtMeters = 0.55f; h.MassKg = 1200f;
+            h.HoldUnits = 20; h.CrewSlots = 2;  // the workboat's whole point: it brings the catch home
+            h.EnginePower = 1600f;              // → 3.90 m/s (see the ladder note above)
+            h.RudderAuthority = 1000f;          // ≈ 600·(12/7): heavy hull, proportionate helm
+            h.ForwardDrag = 170f; h.LateralDrag = 450f;   // Lat/Fwd 2.65 — tracks stiff, skids little
+            h.WindExposure = 0.45f;             // heavy and low: the wind gets less of a grip than on the punt
+            h.MaxSafeSeaState = SeaState.Rough; // far more seaworthy than the dory (Lively)
+            h.SeakeepingMassFactor = 2.2f; h.SeakeepingLiveliness = 0.5f; h.SeakeepingDamping = 0.5f;
+            h.CameraWorldHeightMeters = 18.5f;  // the 14@4.5 → 17@6 ladder, carried to 7 m
+            // NO DeckContainer, deliberately: the FishTray is drawn screen-upright and does not sit in an
+            // iso hull at most headings. The owner's standing decision is no code workarounds — the
+            // 8-direction deck props are coming from his art director. Leave this null until they land.
+        }
+
+        /// <summary>
+        /// THE SPORT SKIFF (<c>boat.sport_skiff</c>) — the console's glass sister on the same 7 m hull.
+        /// Lighter, slipperier, livelier in a sea, and a good deal faster; a small hold, because she is
+        /// built to run rather than to carry.
+        /// </summary>
+        static void ApplySportSkiffStats(BoatHullDef h)
+        {
+            h.Id = "boat.sport_skiff"; h.DisplayName = "The Sport Skiff";
+            h.Propulsion = PropulsionType.Engine;
+            h.LengthMeters = 7.0f; h.DraughtMeters = 0.5f; h.MassKg = 950f;
+            h.HoldUnits = 8; h.CrewSlots = 2;
+            h.EnginePower = 1600f;              // the SAME outboard as the console → 4.64 m/s on a lighter hull
+            h.RudderAuthority = 850f;           // ≈ 600·(9.5/7)
+            h.ForwardDrag = 155f; h.LateralDrag = 400f;   // Lat/Fwd 2.58 — a shade looser in a turn
+            h.WindExposure = 0.5f;              // lighter, so the same breeze moves her more
+            h.MaxSafeSeaState = SeaState.Rough;
+            h.SeakeepingMassFactor = 1.8f; h.SeakeepingLiveliness = 0.75f; h.SeakeepingDamping = 0.3f;
+            h.CameraWorldHeightMeters = 19f;    // same hull as the console, +0.5 m of look-ahead for the speed
+        }
+
+        /// <summary>
+        /// THE SPORT SKIFF, TWIN (<c>boat.sport_skiff_twin</c>) — the sport hull with a second outboard on
+        /// the transom. Same boat, same character: 50 kg heavier, a bit more thrust, and the fastest thing
+        /// the owner can currently point at the horizon.
+        /// </summary>
+        static void ApplySportSkiffTwinStats(BoatHullDef h)
+        {
+            ApplySportSkiffStats(h);            // the SAME hull — only the engines differ
+            h.Id = "boat.sport_skiff_twin"; h.DisplayName = "The Sport Skiff (Twin)";
+            h.DraughtMeters = 0.55f;            // she sits a little deeper by the stern
+            h.MassKg = 1000f;                   // the second engine
+            h.EnginePower = 2000f;              // → 5.63 m/s (NOT 2×; see the ladder note above)
+            h.RudderAuthority = 900f;           // ≈ 600·(10/7)
+            h.SeakeepingMassFactor = 1.9f; h.SeakeepingLiveliness = 0.7f; h.SeakeepingDamping = 0.35f;
+            h.CameraWorldHeightMeters = 19.5f;
+        }
+
+        /// <summary>
+        /// THE FISHING SKIFF (<c>boat.fishing_skiff</c>) — the 8-direction fishing boat. This hull id has
+        /// existed, ORPHANED, since #97's engine-helm experiment was reverted: nothing pointed at it and its
+        /// stats were a copy of the dory's with the propulsion flipped. Rather than mint a sixth id for art
+        /// that already has one, it is un-orphaned here — pointed at the new <c>visual.fishing_boat</c>
+        /// compass and given stats of its own. The id is append-only and stable; a new id would have
+        /// stranded this one forever and broken the PlayMode tests already keyed to it.
+        ///
+        /// <para>Sized from the ART, not from a guess: the <c>FishingBoat_*</c> files are 128×128 cells at
+        /// PPU 32, so the drawn hull cannot exceed 4.0 m. (The old asset claimed 4.5 m — longer than its own
+        /// picture.) That makes her the smallest powered boat on the ladder: a dory with an outboard on it,
+        /// which is exactly what the art shows. She also predates the Seakeeping* fields, so they are
+        /// authored here for the first time.</para>
+        /// </summary>
+        static void ApplyFishingSkiffStats(BoatHullDef h)
+        {
+            h.Id = "boat.fishing_skiff"; h.DisplayName = "The Fishing Skiff";
+            h.Propulsion = PropulsionType.Engine;
+            h.LengthMeters = 4.0f;              // art fact: the 128 px cell at PPU 32 is a hard ceiling
+            h.DraughtMeters = 0.35f; h.MassKg = 450f;
+            h.HoldUnits = 6; h.CrewSlots = 1;
+            h.EnginePower = 550f;               // → 2.50 m/s: the slowest powered hull, quicker than the punt
+            h.RudderAuthority = 400f;           // ≈ 600·(4.5/7)
+            h.ForwardDrag = 130f; h.LateralDrag = 340f;
+            h.WindExposure = 0.6f;              // small and light, like the dory
+            h.MaxSafeSeaState = SeaState.Lively;   // a small open boat — no more seaworthy than the dory
+            h.SeakeepingMassFactor = 1.1f; h.SeakeepingLiveliness = 0.95f; h.SeakeepingDamping = 0.05f;
+            h.CameraWorldHeightMeters = 13.5f;  // the ladder, read back below the dory's 14 @ 4.5 m
+            ApplyDeckTray(h);                   // she keeps her tray (the content validator requires it)
         }
 
         // The deck-container ladder (owner canon): every small hull the builders generate carries the
