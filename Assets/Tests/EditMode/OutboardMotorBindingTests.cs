@@ -74,6 +74,29 @@ namespace HiddenHarbours.Tests.EditMode
             return v;
         }
 
+        /// <summary>The PUNT's visual at her real sheet shape — same 8×8 hull/rock and same 9 steer columns
+        /// as a skiff, but her own paint build, her own rock lean, and her own ±32 degrees of authority.</summary>
+        private BoatVisualDef MakePuntVisual(OutboardMotorLayer.MotorVariant variant
+                                                 = OutboardMotorLayer.MotorVariant.Basic)
+        {
+            var v = ScriptableObject.CreateInstance<BoatVisualDef>();
+            v.Id = "visual.test_punt";
+            v.Facings = MakeSprites("PuntHull", 8);
+            v.RockFrameCount = 8;
+            v.RockGrid = MakeSprites("PuntRock", 64);
+            v.MotorColumnCount = OutboardMotorMath.SteerColumns;
+            v.MotorMaxSteerDegrees = 32f;                              // her rig, NOT the skiffs' 30
+            v.MotorVariant = variant;
+            v.MotorFit = OutboardMotorLayer.MotorFit.Single;           // she never hangs a twin
+            v.MotorLower = MakeSprites("PuntLower", 72);
+            v.MotorUpper = MakeSprites("PuntUpper", 72);
+            v.MotorRockRollDegrees = 4.2f;
+            v.MotorRockPitchOffsetMeters = 0.016f;
+            v.MotorRockHeavePixels = 1.5f;
+            _spawned.Add(v);
+            return v;
+        }
+
         private BoatHullDef MakeHull(string id, BoatVisualDef visual)
         {
             var h = ScriptableObject.CreateInstance<BoatHullDef>();
@@ -360,6 +383,77 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the rock coupling ---------------------------------------------------------------
+
+        // ---- the steer authority ------------------------------------------------------------
+
+        [Test]
+        public void SteerAuthority_ComesFromTheVisual_SoTheSkiffsAndThePuntCanDiffer()
+        {
+            // The skiffs bake ±30 across their 9 columns, the punt ±32 across hers. It was a bare serialized
+            // 30 on the layer with no field behind it, so a hull could not say what its own art holds.
+            var skiffRig = MakeBoat(MakeHull("boat.sport_skiff", MakeSkiffVisual()));
+            var skiffMotor = BoatHullSkinner.ApplyHull(skiffRig.go, skiffRig.sr, skiffRig.boat.Hull, skiffRig.boat).Motor;
+            Assert.IsNotNull(skiffMotor);
+            Assert.AreEqual(30f, skiffMotor.MaxSteerDegrees, 0.001f,
+                "the skiffs keep ±30 — the punt's arrival must not have moved them");
+
+            var puntRig = MakeBoat(MakeHull("boat.punt", MakePuntVisual()));
+            var puntMotor = BoatHullSkinner.ApplyHull(puntRig.go, puntRig.sr, puntRig.boat.Hull, puntRig.boat).Motor;
+            Assert.IsNotNull(puntMotor);
+            Assert.AreEqual(32f, puntMotor.MaxSteerDegrees, 0.001f,
+                "the punt's ±32 must survive the trip from her BoatVisualDef to the layer that draws her — " +
+                "a hard-coded 30 here would report her engine 2° shy of the hard-over her sheet holds");
+        }
+
+        [Test]
+        public void ANonPositiveAuthority_KeepsTheDefault_RatherThanFreezingTheEngineDeadAhead()
+        {
+            // Mirrors ConfigureRock's contract. A half-authored visual (0 left in the field) must degrade to
+            // the skiffs' ±30, NOT to an authority of 0 — which ColumnForSteerDegrees reads as "this engine
+            // can never leave dead ahead", i.e. a silently frozen motor.
+            var v = MakePuntVisual();
+            v.MotorMaxSteerDegrees = 0f;
+
+            var rig = MakeBoat(MakeHull("boat.half_authored", v));
+            var motor = BoatHullSkinner.ApplyHull(rig.go, rig.sr, rig.boat.Hull, rig.boat).Motor;
+
+            Assert.IsNotNull(motor);
+            Assert.AreEqual(OutboardMotorMath.MaxSteerDegrees, motor.MaxSteerDegrees, 0.001f,
+                "0 degrades to the serialized default, not to a motor that cannot steer");
+        }
+
+        [Test]
+        public void ThePunt_WearsHerOwnEngine_AndNeverASecondOne()
+        {
+            var rig = MakeBoat(MakeHull("boat.punt", MakePuntVisual(OutboardMotorLayer.MotorVariant.Upgraded)));
+            var motor = BoatHullSkinner.ApplyHull(rig.go, rig.sr, rig.boat.Hull, rig.boat).Motor;
+
+            Assert.IsNotNull(motor, "the punt's outboard is bolted on");
+            Assert.IsTrue(motor.IsWired);
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, motor.Fit,
+                "the punt is single-engine: her kit ships no twin, and faking one is not on");
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Upgraded, motor.Variant,
+                "the wired rig must say which paint build it is wearing");
+
+            var visual = rig.go.transform.Find(BoatHullSkinner.VisualChildName);
+            Assert.IsNotNull(visual.Find(BoatHullSkinner.LowerMotorAChildName), "her one engine's leg");
+            Assert.IsNotNull(visual.Find(BoatHullSkinner.UpperMotorAChildName), "…and its cowl");
+            Assert.IsNull(visual.Find(BoatHullSkinner.LowerMotorBChildName),
+                "there is no second engine on a punt's transom");
+            Assert.IsNull(visual.Find(BoatHullSkinner.UpperMotorBChildName));
+        }
+
+        [Test]
+        public void ThePunt_Rows_Nothing_SoHerOverlaysNeverConflict()
+        {
+            // She is powered, not rowed. If her visual ever grew oar sheets they would z-fight the engine leg
+            // (hull+1/+2 on both), and the skinner would silently drop the MOTOR — an engine-less punt.
+            var v = MakePuntVisual();
+            Assert.IsTrue(v.HasMotor(), "precondition: she has an engine");
+            Assert.IsFalse(v.HasOarSheets(), "…and no oars");
+            Assert.IsFalse(v.HasConflictingOverlays(),
+                "so nothing is dropped: the punt is authored as powered, not both");
+        }
 
         [Test]
         public void RockAmplitudes_ComeFromTheVisual_SoTwoHullsCanLeanDifferently()

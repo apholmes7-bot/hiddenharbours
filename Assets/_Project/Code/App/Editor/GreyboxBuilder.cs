@@ -518,6 +518,9 @@ namespace HiddenHarbours.App.Editor
             LoadOrCreate<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset", ApplyConsoleSkiffStats);
             LoadOrCreate<BoatHullDef>(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats);
             LoadOrCreate<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats);
+            // The punt's upgraded engine — a picker rung, NOT a purchase (no ShipwrightOffer: see the note
+            // on ApplyPuntUpgradedStats).
+            LoadOrCreate<BoatHullDef>(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats);
 
             // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
             LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
@@ -559,10 +562,12 @@ namespace HiddenHarbours.App.Editor
                 ApplyDeckTray(dory);   // small boat → the fish tray (the deck-container ladder, data)
                 EditorUtility.SetDirty(dory);
             }
+            // The Punt keeps her old flat top-down Sprite as the FALLBACK picture — the one the skinner
+            // brings back if her Visual is ever missing. Her stats + her iso skin are applied with the rest
+            // of the fleet below (ApplyFleetHull), so there is ONE path that binds a hull to a BoatVisualDef.
             var punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             if (punt != null)
             {
-                ApplyPuntStats(punt);
                 punt.Sprite = LoadArtSprite(ArtPunt);
                 EditorUtility.SetDirty(punt);
             }
@@ -581,6 +586,11 @@ namespace HiddenHarbours.App.Editor
             ApplyFleetHull(DataBoats + "/SportSkiff.asset", ApplySportSkiffStats, "SportSkiffSingle");
             ApplyFleetHull(DataBoats + "/SportSkiffTwin.asset", ApplySportSkiffTwinStats, "SportSkiffTwin");
             ApplyFleetHull(DataBoats + "/FishingSkiff.asset", ApplyFishingSkiffStats, "FishingBoat");
+            // The Punt goes through the SAME path, though she is not a picker-only hull: she is a real,
+            // purchasable M1 boat (PuntOffer, ₲1800) who simply never had a skin. Her iso kit landed in #210
+            // and this is what makes her wear it. Her upgraded-engine sister rides the same 5.2 m hull.
+            ApplyFleetHull(DataBoats + "/Punt.asset", ApplyPuntStats, "PuntIsoBasic");
+            ApplyFleetHull(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats, "PuntIsoUpgraded");
 
             return new DataRefs
             {
@@ -702,19 +712,71 @@ namespace HiddenHarbours.App.Editor
         // 600 on m=7 is the tuned reference, so each hull takes roughly 600·(m/7) to answer the helm the
         // same way. Without that, the console (m=12) would feel like a barge on the same number.
 
-        // Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place so the
-        // values live on the asset, never duplicated in C#. Seaworthiness "4 — Popple" maps to SeaState.Lively.
+        /// <summary>
+        /// Tier-1 Punt stats (design/boats-and-navigation.md §1.1) + greybox-tuned propulsion. One place so
+        /// the values live on the asset, never duplicated in C#. Seaworthiness "4 — Popple" maps to
+        /// SeaState.Lively.
+        ///
+        /// <para><b>Her FEEL is deliberately untouched.</b> Unlike the pilotable-fleet hulls, the Punt is a
+        /// real M1 boat the owner buys for ₲1800 and already knows how she handles, so EnginePower, the
+        /// drags, the mass and the hold are left exactly as they were. What #211 changed is only what was
+        /// WRONG: she had no picture, and she claimed a length her own art never drew.</para>
+        ///
+        /// <para><b>5.2 m, not 6 (this is not cosmetic).</b> The art director draws her at ~5.2 m and the
+        /// slicer cuts her at that scale; the asset said 6. LengthMeters is not decoration — WakeGrading
+        /// anchors the stern plume at LengthMeters·0.5, so at 6 she threw her wake ~40 cm astern of a transom
+        /// that isn't there, and the length also feeds the wake/spray size term. Authored against the DRAWN
+        /// hull. It very slightly reduces her wake grade: correct-to-art, and visible.</para>
+        ///
+        /// <para><b>Seakeeping, authored for the first time.</b> She predates those fields and has been
+        /// sitting on the raw defaults (1 / 1 / 0 — the dory's reference read). Placed on the ladder by mass
+        /// between the fishing skiff (450 kg → 1.1 / 0.95 / 0.05) and the sport skiff (950 kg → 1.8 / 0.75 /
+        /// 0.3). The ART agrees independently, which is the check that matters: her rig's rollA is 4.2 against
+        /// the dory's 5.0 and the sport's 3.8, so she must cork about LESS than the dory and MORE than the
+        /// sport — and 0.85 sits exactly there.</para>
+        /// </summary>
         static void ApplyPuntStats(BoatHullDef h)
         {
             h.Id = "boat.punt"; h.DisplayName = "The Punt";
             h.Propulsion = PropulsionType.Engine;   // buying the Punt swaps hand-rowing for an engine helm (P4)
-            h.LengthMeters = 6.0f; h.DraughtMeters = 0.5f; h.MassKg = 700f;
+            h.LengthMeters = 5.2f;                  // ART FACT: the drawn hull. Was 6 — see the note above.
+            h.DraughtMeters = 0.5f; h.MassKg = 700f;
             h.HoldUnits = 14; h.CrewSlots = 1;
-            h.EnginePower = 650f; h.RudderAuthority = 600f;
+            h.EnginePower = 650f; h.RudderAuthority = 600f;   // her tuned feel — DO NOT retune, she is bought
             h.ForwardDrag = 140f; h.LateralDrag = 360f; h.WindExposure = 0.5f;
             h.MaxSafeSeaState = SeaState.Lively;
+            h.SeakeepingMassFactor = 1.45f; h.SeakeepingLiveliness = 0.85f; h.SeakeepingDamping = 0.15f;
             h.CameraWorldHeightMeters = 17f;   // a bigger boat → the camera pulls back a touch on the upgrade
             ApplyDeckTray(h);                  // still a small boat → the fish tray (blue totes are M2 hulls)
+        }
+
+        /// <summary>
+        /// THE PUNT, UPGRADED (<c>boat.punt_upgraded</c>) — the SAME 5.2 m tiller hull, wearing the kit's
+        /// upgraded engine (domed cowl, gloss pan, red wrap stripe). Everything about the boat is the punt's;
+        /// only the engine is bigger.
+        ///
+        /// <para><b>825 was MEASURED, not computed.</b> EnginePower is a design-unit tunable calibrated to a
+        /// designed terminal speed, not a Newton count — the naive EnginePower/ForwardDrag ratio drops the
+        /// rigidbody's own linearDamping, which here is HALF her resistance. Run to terminal on real physics
+        /// (PilotableFleetPlayTests): basic 2.32 m/s → upgraded 2.89 m/s, +25%. She stays a workboat, well
+        /// under the sport skiff's 4.64.</para>
+        ///
+        /// <para><b>No ShipwrightOffer, on purpose.</b> The owner called this "an upgrade"; a PURCHASABLE
+        /// engine upgrade is real economy work (P4) he has not asked for, and building it here would be scope
+        /// creep (rule 8). For now she is simply another rung on the dev picker's F cycle. Note this is a
+        /// second HULL id rather than an upgrade slot on the punt — the M2 way to model this is an engine slot
+        /// on one hull, and when that lands, this id is what gets retired (append-only: it can be orphaned,
+        /// never reused for something else).</para>
+        /// </summary>
+        static void ApplyPuntUpgradedStats(BoatHullDef h)
+        {
+            ApplyPuntStats(h);                  // the SAME boat — only the engine differs
+            h.Id = "boat.punt_upgraded"; h.DisplayName = "The Punt (Upgraded)";
+            h.DraughtMeters = 0.55f;            // the heavier engine sits her down by the stern
+            h.MassKg = 725f;                    // the upgraded block: ~15% more cowl, and the weight with it
+            h.EnginePower = 825f;               // → 2.89 m/s measured (basic 2.32): +25%, still a workboat
+            h.RudderAuthority = 620f;           // ≈ 600·(7.25/7): the helm keeps pace with the mass
+            h.SeakeepingMassFactor = 1.5f;      // marginally more inertia against the sea
         }
 
         /// <summary>

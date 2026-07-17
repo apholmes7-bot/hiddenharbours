@@ -57,8 +57,30 @@ namespace HiddenHarbours.Tests.EditMode
             return v;
         }
 
-        /// <summary>The five hulls the picker cycles, in cycle order.</summary>
-        static string[] FleetFiles => new[] { "Dory", "FishingSkiff", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin" };
+        /// <summary>
+        /// The COMMITTED hulls the picker cycles, in cycle order.
+        ///
+        /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The picker's real roster is
+        /// seven — the basic punt sits between FishingSkiff and PuntUpgraded — but <c>Data/Boats/Punt.asset</c>
+        /// is BUILDER-GENERATED AND HAS NEVER BEEN COMMITTED: it exists only in a checkout where someone has
+        /// run the cove builder. Listing her here would fail on a clean clone for a reason with nothing to do
+        /// with the code under test. Every existing test in this repo mirrors the punt in memory for the same
+        /// reason. What CAN be asserted about her from disk lives behind <see cref="OptionalHull"/>.</para>
+        /// </summary>
+        static string[] FleetFiles => new[]
+        {
+            "Dory", "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin",
+        };
+
+        /// <summary>
+        /// A hull that may legitimately not be on disk (the basic Punt — see <see cref="FleetFiles"/>).
+        /// Returns null rather than failing, so a clean clone skips instead of going red on a missing
+        /// generated asset. Everything reached through this is ALSO covered by an in-memory mirror elsewhere,
+        /// so a skip never leaves a BEHAVIOUR unguarded — it only skips "is the owner's local asset in step
+        /// with the C# that writes it", which is meaningless without the asset.
+        /// </summary>
+        static BoatHullDef OptionalHull(string file)
+            => AssetDatabase.LoadAssetAtPath<BoatHullDef>($"{DataBoats}/{file}.asset");
 
         // ---- the fleet exists, and is wired ---------------------------------------------------
 
@@ -312,6 +334,205 @@ namespace HiddenHarbours.Tests.EditMode
                 "FishingBoat_*.png files is missing or was renamed");
             Assert.IsFalse(fishing.HasRockGrid(), "it ships no rock grid — static facings + the legacy rock");
             Assert.IsFalse(fishing.HasMotor(), "and no motor sheets are baked for it");
+        }
+
+        // ---- the punt: her skin, her two engines ----------------------------------------------
+
+        [Test]
+        public void BothPuntSkins_WearHerTillerOutboard_InTheRightPaint()
+        {
+            var basic = Visual("PuntIsoBasic");
+            Assert.IsTrue(basic.HasMotor(),
+                "the punt's outboard is unwired — she would sail with no engine drawn. Re-run Build Boat " +
+                "Visual Defs.");
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Basic, basic.MotorVariant,
+                "the starter engine: weathered grey/black");
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, basic.MotorFit,
+                "the punt is single-engine — her kit ships NO twin at all");
+
+            var upgraded = Visual("PuntIsoUpgraded");
+            Assert.IsTrue(upgraded.HasMotor());
+            Assert.AreEqual(OutboardMotorLayer.MotorVariant.Upgraded, upgraded.MotorVariant,
+                "the upgrade: domed cowl, gloss pan, red wrap stripe");
+            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, upgraded.MotorFit);
+
+            Assert.IsFalse(basic.HasOarSheets(), "she is powered, not rowed");
+            Assert.IsFalse(upgraded.HasOarSheets());
+        }
+
+        [Test]
+        public void ThePuntSteers32Degrees_AndTheSkiffsStillSteer30()
+        {
+            // The reason MotorMaxSteerDegrees had to become data. Her rig bakes angle(f) = -32 + 64*f/8 (8°
+            // steps) where the skiffs bake -30 + 60*f/8 (7.5°) — across the SAME 9 columns, which is exactly
+            // why a shared column count is not a shared authority.
+            foreach (var name in new[] { "PuntIsoBasic", "PuntIsoUpgraded" })
+            {
+                var v = Visual(name);
+                Assert.AreEqual(32f, v.MotorMaxSteerDegrees, 0.001f, $"{name}: the punt's sheets bake ±32°");
+                Assert.AreEqual(OutboardMotorMath.SteerColumns, v.MotorColumnCount,
+                    $"{name}: still 9 steer columns — it is the ARC that differs, not the column count");
+            }
+
+            foreach (var name in new[] { "ConsoleSkiff", "SportSkiffSingle", "SportSkiffTwin" })
+                Assert.AreEqual(30f, Visual(name).MotorMaxSteerDegrees, 0.001f,
+                    $"{name}: the skiffs keep ±30 — authoring the punt must not have moved them");
+        }
+
+        [Test]
+        public void TheUpgradedPuntSkin_IsTheSameBoat_WearingDifferentSheets()
+        {
+            // The art README: "Both builds share the SAME cell, pivot, steer cols and grip JSON — the sheets
+            // are drop-in swaps." So the upgrade must differ in the MOTOR sheets and in nothing else. If the
+            // hull or the rock ever diverge, someone has re-baked art that nobody needed.
+            var basic = Visual("PuntIsoBasic");
+            var upgraded = Visual("PuntIsoUpgraded");
+
+            CollectionAssert.AreEqual(basic.Facings, upgraded.Facings, "the SAME hull…");
+            CollectionAssert.AreEqual(basic.RockGrid, upgraded.RockGrid, "…rocking the same way…");
+            Assert.AreEqual(basic.MotorMaxSteerDegrees, upgraded.MotorMaxSteerDegrees, 0.001f,
+                "…through the same steer arc…");
+            Assert.AreEqual(basic.MotorRockRollDegrees, upgraded.MotorRockRollDegrees, 0.001f,
+                "…and leaning her engine identically");
+
+            CollectionAssert.AreNotEqual(basic.MotorLower, upgraded.MotorLower,
+                "…but the ENGINE really is a different paint build, or the upgrade is invisible");
+            CollectionAssert.AreNotEqual(basic.MotorUpper, upgraded.MotorUpper);
+        }
+
+        [Test]
+        public void ThePuntSkins_CarryHerRockGrid_AndHerOwnMotorLean()
+        {
+            foreach (var name in new[] { "PuntIsoBasic", "PuntIsoUpgraded" })
+            {
+                var v = Visual(name);
+                Assert.IsTrue(v.HasRockGrid(),
+                    $"{name}: no rock grid — she would sit dead still on a moving sea");
+                Assert.AreEqual(8, v.RockFrameCount, $"{name}: her rock sheet ships 8 frames");
+                Assert.AreEqual(64, v.RockGrid.Length, $"{name}: 8 headings × 8 frames");
+
+                // Read off her rig — and DERIVED for the pitch: the rigs give degrees, the field wants
+                // screen-vertical metres, and the dory pins the rate at 0.02 m / 3.0° = 0.006667 m/deg. Her
+                // 2.4° through that rate is 0.016 — NOT the console's 0.0127 copied across.
+                Assert.AreEqual(4.2f, v.MotorRockRollDegrees, 0.001f, $"{name}: her rig's rollA");
+                Assert.AreEqual(1.5f, v.MotorRockHeavePixels, 0.001f, $"{name}: her rig's heaveA");
+                Assert.AreEqual(2.4f * (0.02f / 3.0f), v.MotorRockPitchOffsetMeters, 0.0005f,
+                    $"{name}: pitch is her OWN 2.4° through the dory's metres-per-degree rate");
+            }
+
+            // The rock ladder must read like the boats do: beamier than the dory (so stiffer than her), but a
+            // smaller, livelier hull than either 7 m skiff.
+            float punt = Visual("PuntIsoBasic").MotorRockRollDegrees;
+            Assert.Less(punt, 5f, "beamier than the dory → a stiffer roll than the dory's 5°");
+            Assert.Greater(punt, Visual("SportSkiffSingle").MotorRockRollDegrees,
+                "…but livelier than the 7 m sport skiff");
+            Assert.Greater(punt, Visual("ConsoleSkiff").MotorRockRollDegrees,
+                "…and far livelier than the heavy console");
+        }
+
+        [Test]
+        public void TheUpgradedPunt_IsThePuntHull_WithAStrongerEngine()
+        {
+            var upgraded = Hull("PuntUpgraded");
+            Assert.AreEqual("boat.punt_upgraded", upgraded.Id, "ids are stable and append-only");
+            Assert.AreEqual(PropulsionType.Engine, upgraded.Propulsion);
+            Assert.AreEqual(5.2f, upgraded.LengthMeters, 0.001f, "the SAME drawn hull as the punt");
+
+            // Her speed is the design contract: ~20–30% over the basic punt, and still a workboat.
+            float v = TerminalSpeed(upgraded);
+            Assert.AreEqual(2.89f, v, 0.1f,
+                "the upgraded punt's target is ≈2.9 m/s — MEASURED to terminal on real physics, never taken " +
+                "from an EnginePower/ForwardDrag ratio (that drops the rigidbody's own linearDamping, which " +
+                "is half her resistance)");
+            Assert.Less(v, TerminalSpeed(Hull("SportSkiff")),
+                "she is a workboat with a better engine, not a sports car — she stays under the sport " +
+                "skiff's 4.64 m/s");
+            Assert.Greater(v, 1.7f,
+                "…but over BowSprayGrading's 1.7 m/s floor, or she would never throw spray");
+
+            // …and she must be the punt in every way that is not the engine.
+            var basic = OptionalHull("Punt");
+            if (basic == null)
+                Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed — run the cove " +
+                              "builder to assert the pair against each other.");
+
+            Assert.AreEqual(basic.LengthMeters, upgraded.LengthMeters, 0.001f, "the same hull…");
+            Assert.AreEqual(basic.ForwardDrag, upgraded.ForwardDrag, 0.001f, "…the same slipperiness…");
+            Assert.AreEqual(basic.LateralDrag, upgraded.LateralDrag, 0.001f, "…the same tracking…");
+            Assert.AreEqual(basic.HoldUnits, upgraded.HoldUnits, "…and the same hold: only the engine differs");
+            Assert.Greater(upgraded.MassKg, basic.MassKg, "…carrying a heavier block");
+            Assert.Greater(upgraded.EnginePower, basic.EnginePower, "…which pushes harder");
+
+            float gain = TerminalSpeed(upgraded) / TerminalSpeed(basic) - 1f;
+            Assert.GreaterOrEqual(gain, 0.20f, $"the upgrade is worth {gain:P0} — under the 20% asked for");
+            Assert.LessOrEqual(gain, 0.30f, $"the upgrade is worth {gain:P0} — over the 30% asked for");
+        }
+
+        [Test]
+        public void ThePunt_IsAuthoredAtTheLengthSheIsDrawn()
+        {
+            var punt = OptionalHull("Punt");
+            if (punt == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
+
+            // NOT cosmetic. WakeGrading.SternAnchor puts the plume at LengthMeters*0.5, so the 6 this used to
+            // say threw her wake ~40 cm astern of a transom that was never drawn there — and LengthMeters
+            // also feeds the wake/spray size term. The art director draws her at ~5.2 m and the slicer cuts
+            // her at that scale; the asset now agrees with the picture.
+            Assert.AreEqual(5.2f, punt.LengthMeters, 0.001f,
+                "the punt is DRAWN at ~5.2 m — authoring 6 lied to the wake");
+            Assert.Greater(punt.LengthMeters, Hull("Dory").LengthMeters,
+                "…still longer than the dory (she is the upgrade from her)");
+            Assert.Less(punt.LengthMeters, Hull("ConsoleSkiff").LengthMeters,
+                "…and well short of the 7 m skiffs");
+        }
+
+        [Test]
+        public void ThePunt_KeepsHerTunedFeel_AndFinallyHasAPicture()
+        {
+            var punt = OptionalHull("Punt");
+            if (punt == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
+
+            // She is NOT a dev hull: she is the first boat the owner BUYS (PuntOffer, ₲1800) and he already
+            // knows how she handles. Giving her a picture must not have retuned her. These are the values she
+            // has carried since VS-16 — if a later change wants to move them, that is a FEEL decision for the
+            // owner to take, not a side effect of a skin.
+            Assert.AreEqual("boat.punt", punt.Id);
+            Assert.AreEqual(650f, punt.EnginePower, 0.001f, "her thrust is untouched");
+            Assert.AreEqual(140f, punt.ForwardDrag, 0.001f);
+            Assert.AreEqual(360f, punt.LateralDrag, 0.001f);
+            Assert.AreEqual(700f, punt.MassKg, 0.001f);
+            Assert.AreEqual(14, punt.HoldUnits);
+            Assert.AreEqual(2.32f, TerminalSpeed(punt), 0.05f, "…so she still settles at ≈2.3 m/s");
+
+            Assert.IsNotNull(punt.Visual, "…but she finally HAS a picture");
+            Assert.IsTrue(punt.Visual.HasFullCompass(), "…a full 8-way one");
+            Assert.IsTrue(punt.Visual.HasMotor(), "…with her outboard drawn on it");
+        }
+
+        [Test]
+        public void ThePunt_SeakeepsBetweenTheFishingSkiffAndTheSport_AndTheArtAgrees()
+        {
+            var punt = OptionalHull("Punt");
+            if (punt == null) Assert.Ignore("Data/Boats/Punt.asset is builder-generated and not committed.");
+
+            // She predates the Seakeeping* fields and had been sitting on the raw defaults (1/1/0). Placed by
+            // mass between the fishing skiff (450 kg) and the sport (950 kg). The check that matters is that
+            // the ART agrees independently: her rig's rollA is 4.2 against the dory's 5.0 and the sport's
+            // 3.8, so she must cork about LESS than the dory and MORE than the sport — and she lands there.
+            var fishing = Hull("FishingSkiff");
+            var sport = Hull("SportSkiff");
+
+            Assert.Less(punt.SeakeepingLiveliness, fishing.SeakeepingLiveliness,
+                "heavier than the little fishing skiff → she corks about less");
+            Assert.Greater(punt.SeakeepingLiveliness, sport.SeakeepingLiveliness,
+                "…but lighter than the 7 m sport → livelier than her");
+            Assert.Greater(punt.SeakeepingMassFactor, fishing.SeakeepingMassFactor);
+            Assert.Less(punt.SeakeepingMassFactor, sport.SeakeepingMassFactor);
+            Assert.Greater(punt.SeakeepingDamping, fishing.SeakeepingDamping);
+            Assert.Less(punt.SeakeepingDamping, sport.SeakeepingDamping);
+
+            Assert.AreNotEqual(1f, punt.SeakeepingLiveliness,
+                "the raw default (1/1/0) means UNAUTHORED — she is a real boat and must sit on the ladder");
         }
 
         [Test]

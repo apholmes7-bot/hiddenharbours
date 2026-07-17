@@ -281,24 +281,32 @@ namespace HiddenHarbours.App.Editor
             clam     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
 
             // THE PILOTABLE FLEET (the owner's ask): every boat he can put himself in from the helm, in
-            // cycle order — the iso dory he starts in, the 8-direction fishing boat, and the two 7 m skiffs
-            // with the twin-outboard sport as its own entry. St Peters is the only builder that spawns the
-            // player's boat, so it is the only one that hands over a roster (Greywick spawns none).
+            // cycle order — the iso dory he starts in, the 8-direction fishing boat, the punt on each of her
+            // two engines, and the two 7 m skiffs with the twin-outboard sport as its own entry. Roughly the
+            // speed ladder, so walking F walks UP it. St Peters is the only builder that spawns the player's
+            // boat, so it is the only one that hands over a roster (Greywick spawns none).
             //
             // Nulls are FILTERED, not tolerated: a missing asset would otherwise be a dead rung he cycles
-            // into. The picker is NOT the fleet — none of these is for sale, and OwnedFleet's purchase
-            // registry (dory + punt) is untouched.
+            // into. The picker is NOT the fleet: being on it sells nothing.
+            //
+            // The punts are the one nuance. boat.punt is NOT a dev-only hull — she is a REAL purchasable M1
+            // boat (PuntOffer, ₲1800) and lives in OwnedFleet's registry; she rides the picker so her new iso
+            // skin can be felt against the others, not because the picker owns her. Her upgraded engine
+            // (boat.punt_upgraded) is a picker rung ONLY: deliberately no ShipwrightOffer, because a
+            // purchasable engine upgrade is real economy work nobody has asked for (rule 8).
             var pickerRoster = new[]
             {
                 dory,
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/FishingSkiff.asset"),
+                punt,
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/PuntUpgraded.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiff.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
             }.Where(h => h != null).ToArray();
 
-            if (pickerRoster.Length < 5)
-                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/5 hulls — " +
+            if (pickerRoster.Length < 7)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/7 hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");

@@ -256,6 +256,7 @@ MonoBehaviour:
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 1
+  MotorMaxSteerDegrees: 30
   MotorVariant: 0
   MotorFit: 0
   MotorRockRollDegrees: 3.4

@@ -5,15 +5,20 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// The skiff outboard's pure math: the remote-steer column mapping, the per-heading draw order, and the
-    /// twin fit's exact clamp offsets. Everything here is a pure function — the same discipline (and the same
+    /// Any outboard's pure math: the helm→column mapping, the per-heading draw order, and the twin fit's
+    /// exact clamp offsets. Everything here is a pure function — the same discipline (and the same
     /// clamp-don't-throw contract) as <c>DoryOarMathTests</c>.
+    ///
+    /// <para>Two KITS are exercised, not one, because they genuinely differ: the skiffs bake ±30° across
+    /// 9 columns (7.5° steps) and the punt bakes ±32° (8° steps). The authority is an argument here, never a
+    /// const read — see <see cref="TheAuthorityIsGeneral_NotTheSkiffsNumberInDisguise"/>.</para>
     /// </summary>
     public class OutboardMotorMathTests
     {
-        private const int Cols = OutboardMotorMath.SteerColumns;      // 9
+        private const int Cols = OutboardMotorMath.SteerColumns;      // 9 — shared by both kits
         private const int Headings = OutboardMotorMath.HeadingCount;  // 8
-        private const float Max = OutboardMotorMath.MaxSteerDegrees;  // 30
+        private const float Max = OutboardMotorMath.MaxSteerDegrees;  // 30 — the SKIFFS' authority
+        private const float PuntMax = 32f;                            // the punt's rig: angle(f) = -32 + 64*f/8
 
         // ---- the sheet's own mapping: angle(f) = -30 + 60*f/8 -------------------------------
 
@@ -45,6 +50,83 @@ namespace HiddenHarbours.Tests.EditMode
                            - OutboardMotorMath.SteerDegreesForColumn(f - 1, Cols, Max);
                 Assert.AreEqual(7.5f, step, 1e-4f, $"step into col {f}");
             }
+        }
+
+        // ---- the PUNT's sheet: the same 9 columns, a WIDER arc -----------------------------
+        //
+        // Her rig is angle(f) = -32 + 64*f/8, so she reaches 2 degrees further either side than the skiffs
+        // across the very same column count. This is an ART FACT of her sheets, and it is exactly why the
+        // authority had to become data (BoatVisualDef.MotorMaxSteerDegrees) instead of staying a const 30.
+
+        [Test]
+        public void SteerDegreesForColumn_MatchesThePuntRigsAngleFunction()
+        {
+            for (int f = 0; f < Cols; f++)
+            {
+                float expected = -32f + (64f * f) / 8f;   // the punt rig's angle(f), verbatim
+                Assert.AreEqual(expected, OutboardMotorMath.SteerDegreesForColumn(f, Cols, PuntMax), 1e-4f,
+                                $"punt col {f}");
+            }
+        }
+
+        [Test]
+        public void ThePuntsSteps_Are8Degrees_WhereTheSkiffsAre7Point5()
+        {
+            for (int f = 1; f < Cols; f++)
+            {
+                float puntStep = OutboardMotorMath.SteerDegreesForColumn(f, Cols, PuntMax)
+                               - OutboardMotorMath.SteerDegreesForColumn(f - 1, Cols, PuntMax);
+                Assert.AreEqual(8f, puntStep, 1e-4f, $"punt step into col {f}");
+            }
+
+            Assert.AreEqual(-32f, OutboardMotorMath.SteerDegreesForColumn(0, Cols, PuntMax), 1e-4f,
+                            "the punt's col 0 is FULL PORT at -32, not the skiffs' -30");
+            Assert.AreEqual(0f, OutboardMotorMath.SteerDegreesForColumn(4, Cols, PuntMax), 1e-4f,
+                            "…and col 4 is still dead ahead: the arc widens about the centre, it does not shift");
+            Assert.AreEqual(32f, OutboardMotorMath.SteerDegreesForColumn(8, Cols, PuntMax), 1e-4f);
+        }
+
+        [Test]
+        public void TheAuthorityIsGeneral_NotTheSkiffsNumberInDisguise()
+        {
+            // The guard against someone "simplifying" the maxSteerDegrees argument back into the const. If
+            // any entry point quietly read OutboardMotorMath.MaxSteerDegrees instead of its parameter, the
+            // punt's answers would collapse onto the skiffs' and this fails.
+            Assert.AreNotEqual(OutboardMotorMath.SteerDegreesForColumn(0, Cols, Max),
+                               OutboardMotorMath.SteerDegreesForColumn(0, Cols, PuntMax),
+                               "the two kits' full-port angles must not be the same number");
+            Assert.AreEqual(30f, Max, 1e-4f, "the const stays the SKIFFS' value — it is not a global truth");
+
+            // Round-trips under the punt's authority, not the skiffs'.
+            for (int f = 0; f < Cols; f++)
+            {
+                float deg = OutboardMotorMath.SteerDegreesForColumn(f, Cols, PuntMax);
+                Assert.AreEqual(f, OutboardMotorMath.ColumnForSteerDegrees(deg, Cols, PuntMax), $"punt col {f}");
+            }
+
+            // And a real ±32 hard-over is NOT clamped away as if the sheet only held ±30.
+            Assert.AreEqual(8, OutboardMotorMath.ColumnForSteerDegrees(32f, Cols, PuntMax),
+                            "the punt's sheet really does hold a 32-degree hard-over");
+            Assert.AreEqual(0, OutboardMotorMath.ColumnForSteerDegrees(-32f, Cols, PuntMax));
+        }
+
+        [Test]
+        public void HelmToColumn_IsScaleInvariant_SoTheAuthorityIsDescriptiveToday()
+        {
+            // WORTH KNOWING, and pinned here so nobody is misled by the plumbing: the helm is a NORMALISED
+            // -1..+1 stick, and TargetColumnForHelm maps it as ColumnForSteerDegrees(helm*max, cols, max) —
+            // where t = (helm*max + max)/(2*max) = (helm+1)/2. The authority CANCELS. So wiring the punt to
+            // 32 draws exactly the columns 30 would have: today the number is descriptive (it makes
+            // SteerDegreesForColumn tell the truth about what the art holds), not a change in pixels.
+            //
+            // It stops being descriptive the moment anything feeds REAL degrees in — a rudder angle rather
+            // than a stick — which is precisely the call ColumnForSteerDegrees exists for and which the test
+            // above covers. Authoring it per hull is therefore right on rule 6 AND correct in advance; it is
+            // simply not a visible change, and this test says so rather than letting a reader assume it is.
+            foreach (float helm in new[] { -1f, -0.5f, -0.125f, 0.25f, 0.5f, 1f })
+                Assert.AreEqual(OutboardMotorMath.TargetColumnForHelm(helm, 0.05f, Cols, Max),
+                                OutboardMotorMath.TargetColumnForHelm(helm, 0.05f, Cols, PuntMax),
+                                $"helm {helm}: a normalised stick picks the same column under either authority");
         }
 
         [Test]

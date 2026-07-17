@@ -165,6 +165,48 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheStPetersCycle_IsSevenRungs_AndWrapsOnTheSeventh()
+        {
+            // St Peters' real roster shape, in its real order: dory → fishing boat → punt → punt (upgraded)
+            // → console → sport → sport twin → wrap. Mirrored in memory rather than loaded off disk, because
+            // Data/Boats/Punt.asset is builder-generated and has never been committed (a clean clone has no
+            // such file) — so this asserts the CYCLE, which is the picker's job, and leaves the assets to the
+            // content tests. The COUNT is the point: the two punts took it from 5 to 7, and an off-by-one
+            // here is a rung the owner cycles into and finds empty.
+            var roster = new[]
+            {
+                MakeHull("boat.dory", MakeVisual("visual.dory_iso"), 6, 14f, 400f),
+                MakeHull("boat.fishing_skiff", MakeVisual("visual.fishing_boat"), 6, 13.5f, 450f),
+                MakeHull("boat.punt", MakeVisual("visual.punt_iso_basic"), 14, 17f, 700f),
+                MakeHull("boat.punt_upgraded", MakeVisual("visual.punt_iso_upgraded"), 14, 17f, 725f),
+                MakeHull("boat.console_skiff", MakeVisual("visual.console_skiff"), 20, 18.5f, 1200f),
+                MakeHull("boat.sport_skiff", MakeVisual("visual.sport_skiff_single"), 8, 19f, 950f),
+                MakeHull("boat.sport_skiff_twin", MakeVisual("visual.sport_skiff_twin"), 8, 19.5f, 1000f),
+            };
+            var (picker, boat, hold, sr, go) = MakeRig(roster, roster[0]);
+
+            Assert.AreEqual(7, picker.RosterCount, "the punt and her upgrade take the cycle from 5 to 7");
+            Assert.AreSame(roster[0], picker.Current, "…starting on the dory the boat is already wearing");
+
+            // A full lap: every rung lands on the RIGHT boat, and all four things move together at each one.
+            for (int step = 1; step <= roster.Length; step++)
+            {
+                picker.Next();
+                var expected = roster[step % roster.Length];
+                Assert.AreSame(expected, picker.Current, $"step {step} of the cycle");
+                AssertShowing(expected, boat, hold, sr, go);
+            }
+
+            Assert.AreSame(roster[0], boat.Hull, "the seventh press wraps back to the dory");
+
+            // …and the two punts really are distinct rungs, not one hull shown twice — the mistake this
+            // shape invites, since they share a hull, a length and a hold and differ only in the engine.
+            Assert.AreNotSame(roster[2], roster[3]);
+            Assert.AreNotEqual(roster[2].Id, roster[3].Id,
+                "boat.punt and boat.punt_upgraded are separate ids — the cycle must stop at both");
+        }
+
+        [Test]
         public void EveryStepOfTheCycle_MovesFeelHoldCameraAndPictureTogether()
         {
             // THE #208 GUARD. Each of these hulls differs in hold, camera AND picture, and one of them is

@@ -7,13 +7,20 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// <b>DEV-ONLY: cycle the piloted hull IN PLACE, at the helm.</b> Press <c>F</c> while driving and the
     /// boat re-skins under you — same spot, same heading, same wave — so two hulls can be felt back-to-back
-    /// in the same water, in seconds. Dory → fishing boat → console skiff → sport single → sport twin → wrap.
+    /// in the same water, in seconds. Dory → fishing boat → punt → punt (upgraded) → console skiff → sport
+    /// single → sport twin → wrap: roughly the speed ladder, so walking the key walks up it.
     ///
-    /// <para><b>What this is NOT.</b> It is not the fleet: nothing is bought, nothing is owned, no
-    /// <c>ShipwrightOffer</c> exists for these hulls and <see cref="OwnedFleet"/>'s purchase registry does
-    /// not list them. The M2 boat ladder and its economy are a later phase (rule 8) and this deliberately
-    /// does not build a scrap of them. It is a workbench: a way to answer "how does she feel?" before
+    /// <para><b>What this is NOT.</b> It is not the fleet. Being on this roster sells nothing, owns nothing
+    /// and costs nothing: the M2 boat ladder and its economy are a later phase (rule 8) and this deliberately
+    /// does not build a scrap of them. It is a workbench — a way to answer "how does she feel?" before
     /// anyone designs what she costs.</para>
+    ///
+    /// <para><b>…which does not mean nothing on it is real.</b> Most rungs are dev-only, but
+    /// <c>boat.punt</c> is a genuine purchasable M1 boat (<c>PuntOffer</c>, ₲1800) that
+    /// <see cref="OwnedFleet"/>'s purchase registry knows about — she rides the picker so her new iso skin
+    /// can be felt beside the others, not because the picker owns her. So do not reason "it is on the picker,
+    /// therefore it is disposable": check for an offer. (Her upgraded engine, <c>boat.punt_upgraded</c>, IS
+    /// picker-only — no offer exists for it, on purpose.)</para>
     ///
     /// <para><b>Why it swaps FOUR things.</b> A hull is feel (<see cref="BoatController.SetHull"/>) AND hold
     /// (<see cref="ShipHold.SetHull"/>) AND camera (the Core <see cref="ActiveBoatChanged"/> signal) AND
