@@ -72,23 +72,29 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// Every float the shader declares must be PRESENT in the committed .mat. A missing one reads back 0 —
-        /// and a silent 0 for, say, _Cols would divide the sheet into one column and freeze every flower on one
-        /// pose. This is the #212 class of bug, generalised.
+        /// Every float the shader declares must be written into the COMMITTED .mat FILE.
+        ///
+        /// <para><b>This test reads the file off disk on purpose, and that is the whole point of it.</b> The
+        /// obvious implementation — walk <c>SerializedObject(mat).m_SavedProperties.m_Floats</c> — is VACUOUS:
+        /// Unity repopulates any property the file omits with the SHADER's default at import time, so the
+        /// in-memory material always looks complete and the test can never fail. (Verified by sabotage: deleting
+        /// _RootedBend from Flower_Patch.mat left the in-memory version passing.) The file is the only witness to
+        /// what was actually committed.</para>
+        ///
+        /// <para><b>Why it matters.</b> An omitted property silently takes the shader's default, which is the
+        /// value for the OTHER tiers. _RootedBend defaults to 1 (hinge); a Patch that forgets to write its 0
+        /// becomes a bottom-hinged flap — the exact bug this whole tier split exists to avoid, shipped silently.</para>
         /// </summary>
         [Test]
-        public void EveryTiersMaterial_WritesEveryShaderFloat_NoneLeftToDeserialiseAsZero()
+        public void EveryTiersCommittedMatFile_WritesEveryShaderFloat_NoneLeftToTakeTheShaderDefault()
         {
             foreach (var tier in Tiers)
             {
                 var mat = FlowerCatalog.MaterialFor(tier);
                 Assert.IsNotNull(mat);
 
-                var so = new SerializedObject(mat);
-                var floats = so.FindProperty("m_SavedProperties.m_Floats");
-                var written = new HashSet<string>();
-                for (int i = 0; i < floats.arraySize; i++)
-                    written.Add(floats.GetArrayElementAtIndex(i).FindPropertyRelative("first").stringValue);
+                string path = FlowerCatalog.MaterialPathFor(tier);
+                string text = System.IO.File.ReadAllText(path);
 
                 var missing = new List<string>();
                 int count = mat.shader.GetPropertyCount();
@@ -98,13 +104,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     if (type != UnityEngine.Rendering.ShaderPropertyType.Float &&
                         type != UnityEngine.Rendering.ShaderPropertyType.Range) continue;
                     string name = mat.shader.GetPropertyName(i);
-                    if (!written.Contains(name)) missing.Add(name);
+                    if (!text.Contains($"- {name}:")) missing.Add(name);
                 }
 
                 Assert.IsEmpty(missing,
-                    $"{FlowerCatalog.MaterialPathFor(tier)} does not write these shader floats, so they " +
-                    $"deserialise to ZERO on a fresh checkout: {string.Join(", ", missing)}. Write them into " +
-                    "the committed .mat.");
+                    $"The committed file {path} does not write these shader floats, so a fresh checkout silently " +
+                    $"takes the shader's default for them: {string.Join(", ", missing)}. Write them into the .mat.");
             }
         }
 
