@@ -1,0 +1,2002 @@
+fileFormatVersion: 2
+guid: 11384df1d2e3de54f9a652e743ab1458
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9018480788370428471
+    second: SkiffMotorUpper-Sport_0
+  - first:
+      213: 2249729857183620636
+    second: SkiffMotorUpper-Sport_1
+  - first:
+      213: -3881669781939455122
+    second: SkiffMotorUpper-Sport_2
+  - first:
+      213: -8420899249158573506
+    second: SkiffMotorUpper-Sport_3
+  - first:
+      213: -8358909073546557706
+    second: SkiffMotorUpper-Sport_4
+  - first:
+      213: -7057625211672205399
+    second: SkiffMotorUpper-Sport_5
+  - first:
+      213: 7422125995560387718
+    second: SkiffMotorUpper-Sport_6
+  - first:
+      213: -6653540112177128685
+    second: SkiffMotorUpper-Sport_7
+  - first:
+      213: 2233044064969490452
+    second: SkiffMotorUpper-Sport_8
+  - first:
+      213: -3357331598724013511
+    second: SkiffMotorUpper-Sport_9
+  - first:
+      213: 6853438984941618692
+    second: SkiffMotorUpper-Sport_10
+  - first:
+      213: -3196658541182202413
+    second: SkiffMotorUpper-Sport_11
+  - first:
+      213: 1617484521700923253
+    second: SkiffMotorUpper-Sport_12
+  - first:
+      213: 6862068566245631184
+    second: SkiffMotorUpper-Sport_13
+  - first:
+      213: 3482836847030101534
+    second: SkiffMotorUpper-Sport_14
+  - first:
+      213: -4130576691846416757
+    second: SkiffMotorUpper-Sport_15
+  - first:
+      213: -6289143678750128005
+    second: SkiffMotorUpper-Sport_16
+  - first:
+      213: -4929336740946105149
+    second: SkiffMotorUpper-Sport_17
+  - first:
+      213: 1797809506438990907
+    second: SkiffMotorUpper-Sport_18
+  - first:
+      213: 5283296432509395795
+    second: SkiffMotorUpper-Sport_19
+  - first:
+      213: -2779539627831093434
+    second: SkiffMotorUpper-Sport_20
+  - first:
+      213: -1883476583504323589
+    second: SkiffMotorUpper-Sport_21
+  - first:
+      213: -7946529446085834518
+    second: SkiffMotorUpper-Sport_22
+  - first:
+      213: 5746082063613252973
+    second: SkiffMotorUpper-Sport_23
+  - first:
+      213: 591704106748589515
+    second: SkiffMotorUpper-Sport_24
+  - first:
+      213: -86604972593781136
+    second: SkiffMotorUpper-Sport_25
+  - first:
+      213: -3830558494924155361
+    second: SkiffMotorUpper-Sport_26
+  - first:
+      213: 4355014545503760617
+    second: SkiffMotorUpper-Sport_27
+  - first:
+      213: 1950254087725211209
+    second: SkiffMotorUpper-Sport_28
+  - first:
+      213: -4655912844407053862
+    second: SkiffMotorUpper-Sport_29
+  - first:
+      213: -4911301706527175173
+    second: SkiffMotorUpper-Sport_30
+  - first:
+      213: -6762338091406124161
+    second: SkiffMotorUpper-Sport_31
+  - first:
+      213: -6010826664465422712
+    second: SkiffMotorUpper-Sport_32
+  - first:
+      213: -197034895841412552
+    second: SkiffMotorUpper-Sport_33
+  - first:
+      213: 2267063233186072352
+    second: SkiffMotorUpper-Sport_34
+  - first:
+      213: -6306055663677254069
+    second: SkiffMotorUpper-Sport_35
+  - first:
+      213: 4635014043125463371
+    second: SkiffMotorUpper-Sport_36
+  - first:
+      213: 7378587696218249811
+    second: SkiffMotorUpper-Sport_37
+  - first:
+      213: 2925205319765446111
+    second: SkiffMotorUpper-Sport_38
+  - first:
+      213: 1012679190170023562
+    second: SkiffMotorUpper-Sport_39
+  - first:
+      213: 6673577293431365923
+    second: SkiffMotorUpper-Sport_40
+  - first:
+      213: 4176572001366016532
+    second: SkiffMotorUpper-Sport_41
+  - first:
+      213: -6196148204861853393
+    second: SkiffMotorUpper-Sport_42
+  - first:
+      213: 1806517385312962058
+    second: SkiffMotorUpper-Sport_43
+  - first:
+      213: -4325982728903574083
+    second: SkiffMotorUpper-Sport_44
+  - first:
+      213: -8035303849017045438
+    second: SkiffMotorUpper-Sport_45
+  - first:
+      213: -4718279785075927963
+    second: SkiffMotorUpper-Sport_46
+  - first:
+      213: 4596972610882928852
+    second: SkiffMotorUpper-Sport_47
+  - first:
+      213: 7399101416155777865
+    second: SkiffMotorUpper-Sport_48
+  - first:
+      213: 1969605129154513784
+    second: SkiffMotorUpper-Sport_49
+  - first:
+      213: 5650040749561379936
+    second: SkiffMotorUpper-Sport_50
+  - first:
+      213: 434233391961421266
+    second: SkiffMotorUpper-Sport_51
+  - first:
+      213: -8569263241246410215
+    second: SkiffMotorUpper-Sport_52
+  - first:
+      213: 8873293079390544343
+    second: SkiffMotorUpper-Sport_53
+  - first:
+      213: 1004669170830608080
+    second: SkiffMotorUpper-Sport_54
+  - first:
+      213: -2266347125215849598
+    second: SkiffMotorUpper-Sport_55
+  - first:
+      213: 1985781367956099619
+    second: SkiffMotorUpper-Sport_56
+  - first:
+      213: 2576037841936102027
+    second: SkiffMotorUpper-Sport_57
+  - first:
+      213: 4380810081219102307
+    second: SkiffMotorUpper-Sport_58
+  - first:
+      213: -1375850757324932793
+    second: SkiffMotorUpper-Sport_59
+  - first:
+      213: -1336849261919765903
+    second: SkiffMotorUpper-Sport_60
+  - first:
+      213: 8216897909580243880
+    second: SkiffMotorUpper-Sport_61
+  - first:
+      213: 3803402759401649489
+    second: SkiffMotorUpper-Sport_62
+  - first:
+      213: -7516104297851710236
+    second: SkiffMotorUpper-Sport_63
+  - first:
+      213: 966867168274705373
+    second: SkiffMotorUpper-Sport_64
+  - first:
+      213: -4660961116060537475
+    second: SkiffMotorUpper-Sport_65
+  - first:
+      213: 5196367603552875037
+    second: SkiffMotorUpper-Sport_66
+  - first:
+      213: -3073651462055887825
+    second: SkiffMotorUpper-Sport_67
+  - first:
+      213: 6893306928815841435
+    second: SkiffMotorUpper-Sport_68
+  - first:
+      213: 4684967013673824038
+    second: SkiffMotorUpper-Sport_69
+  - first:
+      213: -8762707194831853274
+    second: SkiffMotorUpper-Sport_70
+  - first:
+      213: 5670469749217393110
+    second: SkiffMotorUpper-Sport_71
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47c771f1f836cdc44ba5b3625eed9184
+      internalID: -9018480788370428471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_1
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69d41ae3e4f64a847ab98a333c38f222
+      internalID: 2249729857183620636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_2
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0829cdb7bcf7b834684a5acb36e4e613
+      internalID: -3881669781939455122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_3
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e550d6d5b757c14ab411612dfcb7047
+      internalID: -8420899249158573506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_4
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60084cb8a50328d4aa849b4dc91d77ae
+      internalID: -8358909073546557706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_5
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3c1e2cb13cec9943ab49ce9c7f9d98c
+      internalID: -7057625211672205399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_6
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd75e6c51ffdc034b99708581f046d82
+      internalID: 7422125995560387718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_7
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b71c95ab7371df944aaa6660397b864f
+      internalID: -6653540112177128685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_8
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1512
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d77a5c0c0f1f5ac48ad3950fb16e7b59
+      internalID: 2233044064969490452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a05252a68f49a440b0f5adc4761d9dd
+      internalID: -3357331598724013511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_10
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be6e46d2d09fea449847f8c8bdd252f9
+      internalID: 6853438984941618692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_11
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27737216bd2d3a045ba2ca306bd8870c
+      internalID: -3196658541182202413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_12
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24b663a98dbaaab42ac14e7ea36b649e
+      internalID: 1617484521700923253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_13
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46fa6ffd044b84648a51e3461a0b7abb
+      internalID: 6862068566245631184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_14
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2d2f64c94f5d464db3540e848706016
+      internalID: 3482836847030101534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_15
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ad55f8e9330e3941855aae6d7a73a8c
+      internalID: -4130576691846416757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_16
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a8490f376fc4194483912f59c972519
+      internalID: -6289143678750128005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_17
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1296
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: caa447b7417a5954cad9f81f3d6885a0
+      internalID: -4929336740946105149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54257b4c15bb44c4e94ca7b1e5b6172f
+      internalID: 1797809506438990907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_19
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e4a62925ae952b43ba7721a2dadf434
+      internalID: 5283296432509395795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_20
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3195070d2cf8c5241af7506a518eff0d
+      internalID: -2779539627831093434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_21
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9f2f49b358822145804d7f09960c2ae
+      internalID: -1883476583504323589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_22
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3cc102de6651714e894fa07ae2f601f
+      internalID: -7946529446085834518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_23
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 444c0adc33425e144b844356a8a88c92
+      internalID: 5746082063613252973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_24
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b01c6d97e00cf4428539155ac323406
+      internalID: 591704106748589515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_25
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77a718e12f483ca42b825aafd7f0b2eb
+      internalID: -86604972593781136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_26
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 1080
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52ebc91ea4cd5264197756a4b8ecc6bc
+      internalID: -3830558494924155361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 367d57bafd70c2d4fa2db7e0feebf8ec
+      internalID: 4355014545503760617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_28
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8158422554851304aaf9c186ff406a15
+      internalID: 1950254087725211209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_29
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59f8450dec1f0a7478dda2cdbbd211bf
+      internalID: -4655912844407053862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_30
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94e5bae8169f15740acad6773fd5e0ae
+      internalID: -4911301706527175173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_31
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb87e990499ccbf4fb86d1898b649bf7
+      internalID: -6762338091406124161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_32
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 529281a5743a8e04da82156f96f4ea9e
+      internalID: -6010826664465422712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_33
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9896fc0f05d9bbc42ad940d056b04870
+      internalID: -197034895841412552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_34
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08f0771b2749c0e428280bfedddffd5f
+      internalID: 2267063233186072352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_35
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 864
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9482de2304076704ca91d309818f09d3
+      internalID: -6306055663677254069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3e95a3ea8e76274ab97e73f0c925546
+      internalID: 4635014043125463371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_37
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3775b7ff03886340ab8498a64c03fab
+      internalID: 7378587696218249811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_38
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 616a86ad39e699f43a4935d244ac4668
+      internalID: 2925205319765446111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_39
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f86b9e7e2d76869458ec6051501c0faa
+      internalID: 1012679190170023562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_40
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4b0b125fc483fe47861c03fa7d1eca9
+      internalID: 6673577293431365923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_41
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0412f60f4dd4fe4dacd20cbf56110a6
+      internalID: 4176572001366016532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_42
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ba46d63c52be9341aec796342ebf713
+      internalID: -6196148204861853393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_43
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4959b596b2ee66d4c9cafe3943188b71
+      internalID: 1806517385312962058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_44
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 648
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83c04e1003be9554abc41888258d07d7
+      internalID: -4325982728903574083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_45
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdec14837f7d462499e7b6eb38ec37d6
+      internalID: -8035303849017045438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_46
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eef59749c8f76d9429f1e9a3b6ac98c3
+      internalID: -4718279785075927963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_47
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8e2d050c19cd2b488b0bf903575fec6
+      internalID: 4596972610882928852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_48
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0998c488b3308544aaa76272b5052464
+      internalID: 7399101416155777865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_49
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5e1b5217e40d964eb4af05425fdd252
+      internalID: 1969605129154513784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_50
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfa9faeb5bb9cbe43be95e6100bbf8c3
+      internalID: 5650040749561379936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_51
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7d96953b343ba44e86e68fd652063ad
+      internalID: 434233391961421266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_52
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a13f2d8d87f81b64d98ff11a2f9e5e37
+      internalID: -8569263241246410215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_53
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 432
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10512bb617f5d3b4b85148f33adce457
+      internalID: 8873293079390544343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_54
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9268a8d2bad6c264c902e8739e2c6dd4
+      internalID: 1004669170830608080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_55
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5a0ff919b97c5c4a82e57805a48f3e3
+      internalID: -2266347125215849598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_56
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a47bbe19ca57e4342beaa483921d0085
+      internalID: 1985781367956099619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_57
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd6e5ae53e4216d41b39fe3ba4769c6b
+      internalID: 2576037841936102027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_58
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08a7f4543d3f1614f935ff3343de9f1e
+      internalID: 4380810081219102307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_59
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eeddf0ac0f708a46acc02b017b2a6e7
+      internalID: -1375850757324932793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_60
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ba9fcd0fb1b6b741bd72853fac82bac
+      internalID: -1336849261919765903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_61
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50bc412cc65258544a0dc24427f9ce41
+      internalID: 8216897909580243880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_62
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 216
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eab978a3f2a0c3f4d99376c216d7e1a4
+      internalID: 3803402759401649489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_63
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4278ede75940aa499ac1aa664dc09a1
+      internalID: -7516104297851710236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_64
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efb17b1c0fc89e1459e86360954a62ba
+      internalID: 966867168274705373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_65
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b5a334555f335949b549c99819d61bf
+      internalID: -4660961116060537475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_66
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33902fb55a8691d42ae68259eeda23e2
+      internalID: 5196367603552875037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_67
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad9cfedc2099d1c49aae85267c6d87f5
+      internalID: -3073651462055887825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_68
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32f3d106b19a2f14ebb51898b941d9a9
+      internalID: 6893306928815841435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_69
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 241afc24a5302f5498eff4caaf8da2c3
+      internalID: 4684967013673824038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_70
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a78e267934c319a43aeb5fbff85db0ab
+      internalID: -8762707194831853274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkiffMotorUpper-Sport_71
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 0
+        width: 272
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a87dd27df3bf03244a9cbd1c3db9cbe0
+      internalID: 5670469749217393110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 718acf0ddeba71b47ad688c3053cb81d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SkiffMotorUpper-Sport_0: -9018480788370428471
+      SkiffMotorUpper-Sport_1: 2249729857183620636
+      SkiffMotorUpper-Sport_10: 6853438984941618692
+      SkiffMotorUpper-Sport_11: -3196658541182202413
+      SkiffMotorUpper-Sport_12: 1617484521700923253
+      SkiffMotorUpper-Sport_13: 6862068566245631184
+      SkiffMotorUpper-Sport_14: 3482836847030101534
+      SkiffMotorUpper-Sport_15: -4130576691846416757
+      SkiffMotorUpper-Sport_16: -6289143678750128005
+      SkiffMotorUpper-Sport_17: -4929336740946105149
+      SkiffMotorUpper-Sport_18: 1797809506438990907
+      SkiffMotorUpper-Sport_19: 5283296432509395795
+      SkiffMotorUpper-Sport_2: -3881669781939455122
+      SkiffMotorUpper-Sport_20: -2779539627831093434
+      SkiffMotorUpper-Sport_21: -1883476583504323589
+      SkiffMotorUpper-Sport_22: -7946529446085834518
+      SkiffMotorUpper-Sport_23: 5746082063613252973
+      SkiffMotorUpper-Sport_24: 591704106748589515
+      SkiffMotorUpper-Sport_25: -86604972593781136
+      SkiffMotorUpper-Sport_26: -3830558494924155361
+      SkiffMotorUpper-Sport_27: 4355014545503760617
+      SkiffMotorUpper-Sport_28: 1950254087725211209
+      SkiffMotorUpper-Sport_29: -4655912844407053862
+      SkiffMotorUpper-Sport_3: -8420899249158573506
+      SkiffMotorUpper-Sport_30: -4911301706527175173
+      SkiffMotorUpper-Sport_31: -6762338091406124161
+      SkiffMotorUpper-Sport_32: -6010826664465422712
+      SkiffMotorUpper-Sport_33: -197034895841412552
+      SkiffMotorUpper-Sport_34: 2267063233186072352
+      SkiffMotorUpper-Sport_35: -6306055663677254069
+      SkiffMotorUpper-Sport_36: 4635014043125463371
+      SkiffMotorUpper-Sport_37: 7378587696218249811
+      SkiffMotorUpper-Sport_38: 2925205319765446111
+      SkiffMotorUpper-Sport_39: 1012679190170023562
+      SkiffMotorUpper-Sport_4: -8358909073546557706
+      SkiffMotorUpper-Sport_40: 6673577293431365923
+      SkiffMotorUpper-Sport_41: 4176572001366016532
+      SkiffMotorUpper-Sport_42: -6196148204861853393
+      SkiffMotorUpper-Sport_43: 1806517385312962058
+      SkiffMotorUpper-Sport_44: -4325982728903574083
+      SkiffMotorUpper-Sport_45: -8035303849017045438
+      SkiffMotorUpper-Sport_46: -4718279785075927963
+      SkiffMotorUpper-Sport_47: 4596972610882928852
+      SkiffMotorUpper-Sport_48: 7399101416155777865
+      SkiffMotorUpper-Sport_49: 1969605129154513784
+      SkiffMotorUpper-Sport_5: -7057625211672205399
+      SkiffMotorUpper-Sport_50: 5650040749561379936
+      SkiffMotorUpper-Sport_51: 434233391961421266
+      SkiffMotorUpper-Sport_52: -8569263241246410215
+      SkiffMotorUpper-Sport_53: 8873293079390544343
+      SkiffMotorUpper-Sport_54: 1004669170830608080
+      SkiffMotorUpper-Sport_55: -2266347125215849598
+      SkiffMotorUpper-Sport_56: 1985781367956099619
+      SkiffMotorUpper-Sport_57: 2576037841936102027
+      SkiffMotorUpper-Sport_58: 4380810081219102307
+      SkiffMotorUpper-Sport_59: -1375850757324932793
+      SkiffMotorUpper-Sport_6: 7422125995560387718
+      SkiffMotorUpper-Sport_60: -1336849261919765903
+      SkiffMotorUpper-Sport_61: 8216897909580243880
+      SkiffMotorUpper-Sport_62: 3803402759401649489
+      SkiffMotorUpper-Sport_63: -7516104297851710236
+      SkiffMotorUpper-Sport_64: 966867168274705373
+      SkiffMotorUpper-Sport_65: -4660961116060537475
+      SkiffMotorUpper-Sport_66: 5196367603552875037
+      SkiffMotorUpper-Sport_67: -3073651462055887825
+      SkiffMotorUpper-Sport_68: 6893306928815841435
+      SkiffMotorUpper-Sport_69: 4684967013673824038
+      SkiffMotorUpper-Sport_7: -6653540112177128685
+      SkiffMotorUpper-Sport_70: -8762707194831853274
+      SkiffMotorUpper-Sport_71: 5670469749217393110
+      SkiffMotorUpper-Sport_8: 2233044064969490452
+      SkiffMotorUpper-Sport_9: -3357331598724013511
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

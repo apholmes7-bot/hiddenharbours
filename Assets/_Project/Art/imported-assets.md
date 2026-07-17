@@ -348,3 +348,56 @@ text-only when an icon isn't registered.
 - **Flagged (NOT done — needs another lane):** a glanceable **HUD hold-fullness** read needs a Core
   seam to read the active boat's `IHold` (no `GameServices` hold accessor exists) — a *lead-architect*
   seam, not built here. The `ui.hold` icon is registered and waiting.
+
+---
+
+## Skiff fleet — two 7 m centre-console skiffs + the shared remote-steer outboard (IMPORT-ONLY)
+
+Two hulls off one keel — the **console skiff** (the workboat: wood sole, painted liner, gabled teal
+canopy; single-engine only) and its **sport** glass sister (gelcoat white, twin teal stripes, stainless
+rails + pulpit, domed bimini, raked bow; single **or** twin engine). Both share the same ~7.0 m
+envelope, transom, pivot and mount anchors, so the outboard layers drop onto either one unchanged.
+Sliced by `Editor/SpriteSheetSlicer.cs` (manifest-driven, pivot asserted per-sprite by `VerifyAll`).
+
+| Sheet | File | px (W×H) | Grid | Cell | Index math |
+|---|---|---|---|---|---|
+| Console hull | `Boats/ConsoleIso.png` | 1952×216 | 8×1 | 244×216 | `index = heading` |
+| Sport hull | `Boats/SportSkiffIso.png` | 1952×216 | 8×1 | 244×216 | `index = heading` |
+| Console rock loop | `Boats/ConsoleIsoRock.png` | 1952×1728 | 8 cols × 8 rows | 244×216 | `index = heading×8 + frame` |
+| Sport rock loop | `Boats/SportSkiffIsoRock.png` | 1952×1728 | 8 cols × 8 rows | 244×216 | `index = heading×8 + frame` |
+| Outboard upper (work) | `Boats/SkiffMotorUpper-Work.png` | 2448×1728 | 9 cols × 8 rows | 272×216 | `index = heading×9 + steerCol` |
+| Outboard lower (work) | `Boats/SkiffMotorLower-Work.png` | 2448×1728 | 9 cols × 8 rows | 272×216 | `index = heading×9 + steerCol` |
+| Outboard upper (sport) | `Boats/SkiffMotorUpper-Sport.png` | 2448×1728 | 9 cols × 8 rows | 272×216 | `index = heading×9 + steerCol` |
+| Outboard lower (sport) | `Boats/SkiffMotorLower-Sport.png` | 2448×1728 | 9 cols × 8 rows | 272×216 | `index = heading×9 + steerCol` |
+
+- **Headings** (every row, every sheet — same CW order as the dory): `0 N · 1 NE · 2 E · 3 SE · 4 S ·
+  5 SW · 6 W · 7 NW`. Rock cols = an 8-frame wave loop (roll+pitch+heave), ~7 fps to idle on the water;
+  the sport rocks livelier (light glass hull), the console is stiffer.
+- **Steer cols:** `0 = −30°` (full port) … `4 = dead ahead` … `8 = +30°` (full starboard), 7.5° steps.
+  There is **no tiller** — steering is remote from the console wheel and the whole engine swivels on its
+  clamp; tie the steer column to the wheel/rudder state and step at ~8 fps.
+- **THE PIVOT (the load-bearing bit).** Every slice on every sheet shares one normalized pivot
+  **(0.5, 0.4444…)** = the boat origin (amidships, keel bottom, centreline). The kit README fixes the
+  anchor from each cell's **top-left**: hull `(122,120)` of 244×216, motor `(136,120)` of 272×216 — the
+  motor cell is wider *on purpose* so hard-over/raised poses never clip. Flipped to Unity's bottom-left
+  origin (`y = 216−120 = 96`), `122/244` and `136/272` **both** normalize to 0.5 — that identity is what
+  pins the wider motor cell onto the transom. Composite by pinning pivots to one point, never by corner.
+- **DRAW ORDER (per heading):** UPPER always composites **over** the hull. LOWER goes **under** the hull
+  for the stern-away headings **SE/S/SW (3,4,5)** and over it everywhere else. So: `lower → hull → upper`
+  for SE/S/SW; `hull → lower → upper` otherwise. Verified pixel-exact against the kit previews.
+- **TWIN FIT (sport only):** reuse the *same* sport motor sheets — no extra art. Both engines steer off
+  the one wheel; the bake is orthographic so a lateral clamp shift is an exact per-heading screen offset
+  (`MOTOR.mountOffset(dir, mx)` for `mx ∈ [−0.34, +0.34]`). Draw the FAR engine first within each layer.
+- **Not on the sheets:** the raised/tilt pose (prop clear, parked/beaching) — bake on demand from the rig.
+- **Source rigs** (parametric, re-bakeable, JS/no-deps) + the art director's README live in
+  [`docs/art/skiff-fleet-rigs/`](../../../docs/art/skiff-fleet-rigs/) — deliberately **not** under
+  `Assets/` (Unity would try to treat `.js` as legacy script). They expose `render(dir, …)`, `rock(i)`,
+  `motorMount(dir)`, `helmSeat(dir)` and `tubMounts(dir)` anchors if a pose ever needs re-baking.
+- **Import note:** these are the first sheets to exceed Unity's default **2048** `maxTextureSize` — at
+  2448 px wide the motor sheets imported *downscaled*, which silently poisons a grid slice (rects get
+  refit + alpha-trimmed and the pivot is thrown away). `SpriteSheetSlicer` now raises the cap to the next
+  power of two before slicing any oversized sheet.
+
+**WIRE-IN (NOT done here — import + slice only):** no `BoatHullDef`, prefab, scene or spawner references
+these yet. Wiring the fleet (hull defs, the rock loop, the steer column, twin-fit offsets) is
+*gameplay-systems*' job; this lane provides the locked, correctly-pivoted, stable-GUID slices.

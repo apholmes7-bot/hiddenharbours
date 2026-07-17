@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 0f6d02a69d31d224ead9d858b3db5050
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 100614660822812201
+    second: SportSkiffIsoRock_0
+  - first:
+      213: 2494150537985054440
+    second: SportSkiffIsoRock_1
+  - first:
+      213: -7239283747502975938
+    second: SportSkiffIsoRock_2
+  - first:
+      213: -8699577525777594298
+    second: SportSkiffIsoRock_3
+  - first:
+      213: -1427111271322617570
+    second: SportSkiffIsoRock_4
+  - first:
+      213: 6841031088868425400
+    second: SportSkiffIsoRock_5
+  - first:
+      213: 2656793382796401296
+    second: SportSkiffIsoRock_6
+  - first:
+      213: -191006562548008333
+    second: SportSkiffIsoRock_7
+  - first:
+      213: 1645609635897073525
+    second: SportSkiffIsoRock_8
+  - first:
+      213: -2097445541255311655
+    second: SportSkiffIsoRock_9
+  - first:
+      213: -5606320853934379406
+    second: SportSkiffIsoRock_10
+  - first:
+      213: -8333171204826287309
+    second: SportSkiffIsoRock_11
+  - first:
+      213: 6251678254572152555
+    second: SportSkiffIsoRock_12
+  - first:
+      213: 8327771308748941203
+    second: SportSkiffIsoRock_13
+  - first:
+      213: 7180342188072163680
+    second: SportSkiffIsoRock_14
+  - first:
+      213: 1303634980467887030
+    second: SportSkiffIsoRock_15
+  - first:
+      213: -2360455925350642977
+    second: SportSkiffIsoRock_16
+  - first:
+      213: -1032954347031022618
+    second: SportSkiffIsoRock_17
+  - first:
+      213: -2999746036294955298
+    second: SportSkiffIsoRock_18
+  - first:
+      213: -2605509520838524227
+    second: SportSkiffIsoRock_19
+  - first:
+      213: 4995587643819706817
+    second: SportSkiffIsoRock_20
+  - first:
+      213: 5647437821818622265
+    second: SportSkiffIsoRock_21
+  - first:
+      213: -3533862060734836404
+    second: SportSkiffIsoRock_22
+  - first:
+      213: -5047288479915271345
+    second: SportSkiffIsoRock_23
+  - first:
+      213: 2041968307507215698
+    second: SportSkiffIsoRock_24
+  - first:
+      213: 1013086392874326224
+    second: SportSkiffIsoRock_25
+  - first:
+      213: -6642564722900558974
+    second: SportSkiffIsoRock_26
+  - first:
+      213: 8538641686799071603
+    second: SportSkiffIsoRock_27
+  - first:
+      213: -7835552277006167151
+    second: SportSkiffIsoRock_28
+  - first:
+      213: 7631431635694645991
+    second: SportSkiffIsoRock_29
+  - first:
+      213: -5830482387392091243
+    second: SportSkiffIsoRock_30
+  - first:
+      213: 3699674444564604434
+    second: SportSkiffIsoRock_31
+  - first:
+      213: 8685522961310838615
+    second: SportSkiffIsoRock_32
+  - first:
+      213: 7552689678182460574
+    second: SportSkiffIsoRock_33
+  - first:
+      213: 6025867539158245809
+    second: SportSkiffIsoRock_34
+  - first:
+      213: 4643453293666192113
+    second: SportSkiffIsoRock_35
+  - first:
+      213: 4596366298243701547
+    second: SportSkiffIsoRock_36
+  - first:
+      213: -5219575251123743075
+    second: SportSkiffIsoRock_37
+  - first:
+      213: -2921475424433193459
+    second: SportSkiffIsoRock_38
+  - first:
+      213: 3571341469180742568
+    second: SportSkiffIsoRock_39
+  - first:
+      213: -6966054380499789884
+    second: SportSkiffIsoRock_40
+  - first:
+      213: -2547363380021203749
+    second: SportSkiffIsoRock_41
+  - first:
+      213: -8215820521642632655
+    second: SportSkiffIsoRock_42
+  - first:
+      213: 6209005151642999478
+    second: SportSkiffIsoRock_43
+  - first:
+      213: -8462438595200426254
+    second: SportSkiffIsoRock_44
+  - first:
+      213: 322499268159010566
+    second: SportSkiffIsoRock_45
+  - first:
+      213: -6704212377954874022
+    second: SportSkiffIsoRock_46
+  - first:
+      213: 108499262335880735
+    second: SportSkiffIsoRock_47
+  - first:
+      213: 1635885615728288691
+    second: SportSkiffIsoRock_48
+  - first:
+      213: 7014863661606871680
+    second: SportSkiffIsoRock_49
+  - first:
+      213: 3350052877501072902
+    second: SportSkiffIsoRock_50
+  - first:
+      213: -9197931041170585441
+    second: SportSkiffIsoRock_51
+  - first:
+      213: -4009773085050604198
+    second: SportSkiffIsoRock_52
+  - first:
+      213: -7561229113249865994
+    second: SportSkiffIsoRock_53
+  - first:
+      213: 5327865437256175325
+    second: SportSkiffIsoRock_54
+  - first:
+      213: -3617182132134020279
+    second: SportSkiffIsoRock_55
+  - first:
+      213: -6305032685781564573
+    second: SportSkiffIsoRock_56
+  - first:
+      213: -5662690602770655086
+    second: SportSkiffIsoRock_57
+  - first:
+      213: 5431396248934915159
+    second: SportSkiffIsoRock_58
+  - first:
+      213: 4829921208945594708
+    second: SportSkiffIsoRock_59
+  - first:
+      213: -1006128395682812790
+    second: SportSkiffIsoRock_60
+  - first:
+      213: -1655532543628613729
+    second: SportSkiffIsoRock_61
+  - first:
+      213: 7347449828995964176
+    second: SportSkiffIsoRock_62
+  - first:
+      213: 8578271327182965145
+    second: SportSkiffIsoRock_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a96460ca8d1936c428988e1d5b433d89
+      internalID: 100614660822812201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ea99c33b67404c4bb27325d4841e78a
+      internalID: 2494150537985054440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bf4b8e2a6482204cab04d00f4fe20d7
+      internalID: -7239283747502975938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_3
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1089882b0d9420846a9145b12166a39b
+      internalID: -8699577525777594298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_4
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94620008ded57df4ba436aeb296060b8
+      internalID: -1427111271322617570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_5
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 957467f72c58bc44b86054c403e10929
+      internalID: 6841031088868425400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_6
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dc7212e41dd00e4cafac57ff38e5efb
+      internalID: 2656793382796401296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_7
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1512
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32c626a3fe72c7349920801aaed2a854
+      internalID: -191006562548008333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72bb4956218ad4d499a8e36df2cb2449
+      internalID: 1645609635897073525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_9
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0f9f32de211d684080c1895c81db916
+      internalID: -2097445541255311655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_10
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e94be9c7f14d094987ecae74d36db49
+      internalID: -5606320853934379406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_11
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b685820f1b389f4f8ec22abeb2c18f9
+      internalID: -8333171204826287309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_12
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fa5f35563af5664380dbe1e5afafc11
+      internalID: 6251678254572152555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_13
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f57368a55e133b64491a362b5384c9f5
+      internalID: 8327771308748941203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_14
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 163c2df712758254089964fb5277f61f
+      internalID: 7180342188072163680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_15
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1296
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcce4e0e4db1f8b4e9f2523155b95839
+      internalID: 1303634980467887030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83614d34963edab43908fbb16d6c657b
+      internalID: -2360455925350642977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_17
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10a8ca8fb60b05a44b44b727e5bc8818
+      internalID: -1032954347031022618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_18
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b27e5abef146bbb46806fd191cbbfab7
+      internalID: -2999746036294955298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_19
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16e97b9acf950584898633a92cd136ca
+      internalID: -2605509520838524227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_20
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85ab2e245921d6e46b76f16ed0374f7d
+      internalID: 4995587643819706817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_21
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ee0e93de96c7614ebaaee3833aeab69
+      internalID: 5647437821818622265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_22
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1952e1fddfebcc6418393b43c038910a
+      internalID: -3533862060734836404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_23
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 1080
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 365b23049c75205418a43fc8a6e1b9c3
+      internalID: -5047288479915271345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26a5ac39ae436594f8440fda66f20a01
+      internalID: 2041968307507215698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_25
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5c8dbdd811822a4d9a4cdebfc8a6bc7
+      internalID: 1013086392874326224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_26
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ef4ae668e2e24849bcebb7383b5a7a5
+      internalID: -6642564722900558974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_27
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64492b3bd6ad7fc44b630b33be8f0fb2
+      internalID: 8538641686799071603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_28
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 685580b846f65224394bdc2ef13c849c
+      internalID: -7835552277006167151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_29
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75e0e2cff093dc44c853b629715d1717
+      internalID: 7631431635694645991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_30
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d7339ce7995f474084f789dda75cbc6
+      internalID: -5830482387392091243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_31
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 864
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c38c094c542236340aead1b9b6a022e3
+      internalID: 3699674444564604434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5da1cb1cc30c11140b074fe59a6824d6
+      internalID: 8685522961310838615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_33
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8dd3c234ad966d4c9021ec68ea4d55d
+      internalID: 7552689678182460574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_34
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 123b8cf75b54a0a43a82b6ad64bd0849
+      internalID: 6025867539158245809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_35
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35fea0b9518043540915d81e3c24bd32
+      internalID: 4643453293666192113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_36
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17ff428dbe06ffe46b18d6f28354290a
+      internalID: 4596366298243701547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_37
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eafc5059f84db924487e6e805dda3bd5
+      internalID: -5219575251123743075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_38
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69c42556e6235534a935a7b8712650a9
+      internalID: -2921475424433193459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_39
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 648
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70618a75df6842b4ca4dc167e43bd1d1
+      internalID: 3571341469180742568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bcf9c39a28f9734e91817ed5238c907
+      internalID: -6966054380499789884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_41
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 092dd039f1e91844996e6de87121fa62
+      internalID: -2547363380021203749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_42
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f52f6d13517a8514e827f556a31eaf90
+      internalID: -8215820521642632655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_43
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c81d8e0dc492154c893f024ddef1327
+      internalID: 6209005151642999478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_44
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef4aafceed605e148b605271dcfcdf99
+      internalID: -8462438595200426254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_45
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6131f24100f97c45a07166fc8ef6d35
+      internalID: 322499268159010566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_46
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 399a005cd8b142a458a43bf68b3c45d2
+      internalID: -6704212377954874022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_47
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 432
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8631901d99938d4a8a5e0c47adfe31f
+      internalID: 108499262335880735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 356201f95e4d66d49b6b967b873bd505
+      internalID: 1635885615728288691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_49
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6dbc258bc6572c4687a91b6b2ad4bfb
+      internalID: 7014863661606871680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_50
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dc62723b753f284f98d2aadbed3d385
+      internalID: 3350052877501072902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_51
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bee931a28b9fbfc4081522d6337d454e
+      internalID: -9197931041170585441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_52
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a374fc42ffd4b34c82f49db084c115d
+      internalID: -4009773085050604198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_53
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e77936334a9ee4447b367fe021b47489
+      internalID: -7561229113249865994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_54
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8330f638ffdc9e54dadd2d5d73496e18
+      internalID: 5327865437256175325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_55
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 216
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f66d832baa5b6274593842ab071568ac
+      internalID: -3617182132134020279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60cf23fdef4c7b143985f02b042568f3
+      internalID: -6305032685781564573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_57
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd5d2b1ec7f605a40ae026582f2a3d33
+      internalID: -5662690602770655086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_58
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2496e0e4e5edde44aabbe5a508100c6a
+      internalID: 5431396248934915159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_59
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59061973a328afb4e8ffbecb14bea823
+      internalID: 4829921208945594708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_60
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37518fcc4f1fe7b4781fcfeab3e1b39b
+      internalID: -1006128395682812790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_61
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09a8cb77a0937e240bc5bf63b5601678
+      internalID: -1655532543628613729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_62
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc7c6e8efc4fdbd4b86cd316265d065b
+      internalID: 7347449828995964176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SportSkiffIsoRock_63
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 0
+        width: 244
+        height: 216
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d54135619657378419194855251338f3
+      internalID: 8578271327182965145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 34bf55ba424e2784eaf973ee3445a2b8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SportSkiffIsoRock_0: 100614660822812201
+      SportSkiffIsoRock_1: 2494150537985054440
+      SportSkiffIsoRock_10: -5606320853934379406
+      SportSkiffIsoRock_11: -8333171204826287309
+      SportSkiffIsoRock_12: 6251678254572152555
+      SportSkiffIsoRock_13: 8327771308748941203
+      SportSkiffIsoRock_14: 7180342188072163680
+      SportSkiffIsoRock_15: 1303634980467887030
+      SportSkiffIsoRock_16: -2360455925350642977
+      SportSkiffIsoRock_17: -1032954347031022618
+      SportSkiffIsoRock_18: -2999746036294955298
+      SportSkiffIsoRock_19: -2605509520838524227
+      SportSkiffIsoRock_2: -7239283747502975938
+      SportSkiffIsoRock_20: 4995587643819706817
+      SportSkiffIsoRock_21: 5647437821818622265
+      SportSkiffIsoRock_22: -3533862060734836404
+      SportSkiffIsoRock_23: -5047288479915271345
+      SportSkiffIsoRock_24: 2041968307507215698
+      SportSkiffIsoRock_25: 1013086392874326224
+      SportSkiffIsoRock_26: -6642564722900558974
+      SportSkiffIsoRock_27: 8538641686799071603
+      SportSkiffIsoRock_28: -7835552277006167151
+      SportSkiffIsoRock_29: 7631431635694645991
+      SportSkiffIsoRock_3: -8699577525777594298
+      SportSkiffIsoRock_30: -5830482387392091243
+      SportSkiffIsoRock_31: 3699674444564604434
+      SportSkiffIsoRock_32: 8685522961310838615
+      SportSkiffIsoRock_33: 7552689678182460574
+      SportSkiffIsoRock_34: 6025867539158245809
+      SportSkiffIsoRock_35: 4643453293666192113
+      SportSkiffIsoRock_36: 4596366298243701547
+      SportSkiffIsoRock_37: -5219575251123743075
+      SportSkiffIsoRock_38: -2921475424433193459
+      SportSkiffIsoRock_39: 3571341469180742568
+      SportSkiffIsoRock_4: -1427111271322617570
+      SportSkiffIsoRock_40: -6966054380499789884
+      SportSkiffIsoRock_41: -2547363380021203749
+      SportSkiffIsoRock_42: -8215820521642632655
+      SportSkiffIsoRock_43: 6209005151642999478
+      SportSkiffIsoRock_44: -8462438595200426254
+      SportSkiffIsoRock_45: 322499268159010566
+      SportSkiffIsoRock_46: -6704212377954874022
+      SportSkiffIsoRock_47: 108499262335880735
+      SportSkiffIsoRock_48: 1635885615728288691
+      SportSkiffIsoRock_49: 7014863661606871680
+      SportSkiffIsoRock_5: 6841031088868425400
+      SportSkiffIsoRock_50: 3350052877501072902
+      SportSkiffIsoRock_51: -9197931041170585441
+      SportSkiffIsoRock_52: -4009773085050604198
+      SportSkiffIsoRock_53: -7561229113249865994
+      SportSkiffIsoRock_54: 5327865437256175325
+      SportSkiffIsoRock_55: -3617182132134020279
+      SportSkiffIsoRock_56: -6305032685781564573
+      SportSkiffIsoRock_57: -5662690602770655086
+      SportSkiffIsoRock_58: 5431396248934915159
+      SportSkiffIsoRock_59: 4829921208945594708
+      SportSkiffIsoRock_6: 2656793382796401296
+      SportSkiffIsoRock_60: -1006128395682812790
+      SportSkiffIsoRock_61: -1655532543628613729
+      SportSkiffIsoRock_62: 7347449828995964176
+      SportSkiffIsoRock_63: 8578271327182965145
+      SportSkiffIsoRock_7: -191006562548008333
+      SportSkiffIsoRock_8: 1645609635897073525
+      SportSkiffIsoRock_9: -2097445541255311655
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
