@@ -85,7 +85,7 @@ namespace HiddenHarbours.Boats
         [Tooltip("Oar columns per heading row (the DoryOar* sheets ship 10).")]
         [Min(1)] public int OarColumnCount = 10;
 
-        [Header("Outboard motor (OPTIONAL — the skiffs' remote-steer engine)")]
+        [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
                  "alongside MotorUpper, OutboardMotorLayer swivels the engine from the boat's REAL helm. Empty " +
@@ -95,33 +95,43 @@ namespace HiddenHarbours.Boats
         [Tooltip("Motor UPPER sheet (clamp bracket + cowl) — same layout as MotorLower.")]
         public Sprite[] MotorUpper = System.Array.Empty<Sprite>();
 
-        [Tooltip("Steer columns per heading row (the shipped SkiffMotor* sheets have 9).")]
+        [Tooltip("Steer columns per heading row (every shipped motor sheet — skiff and punt alike — has 9).")]
         [Min(1)] public int MotorColumnCount = OutboardMotorMath.SteerColumns;
 
+        [Tooltip("Steer authority at the sheet's extremes, in DEGREES either side of dead ahead. An ART FACT " +
+                 "of the sheets bound above — NOT a feel knob (it never touches how the boat handles, only " +
+                 "how far the drawn engine swings). The skiffs bake ±30 across their 9 columns = 7.5° steps; " +
+                 "the punt bakes ±32 = 8° steps. Sensible range 5–45; 0 falls back to the layer's default.")]
+        [Min(0f)] public float MotorMaxSteerDegrees = OutboardMotorMath.MaxSteerDegrees;
+
         [Tooltip("Which paint build of the outboard this hull carries — Work (graphite cowl, the console " +
-                 "workboat) or Sport (white cowl + teal flash, the sport skiff). Identity only: the sheets " +
-                 "above are what actually get drawn.")]
+                 "workboat), Sport (white cowl + teal flash, the sport skiff), or the punt's tiller engine as " +
+                 "Basic (weathered grey/black starter) / Upgraded (domed cowl, gloss pan, red wrap stripe). " +
+                 "Identity only: the sheets above are what actually get drawn.")]
         public OutboardMotorLayer.MotorVariant MotorVariant = OutboardMotorLayer.MotorVariant.Work;
 
-        [Tooltip("How many engines hang on the transom: Single (one, on the centreline) or Twin (two at " +
-                 "±0.34 m, steering together off the one wheel — the SAME sheets blitted twice). Twin is the " +
-                 "sport skiff's upgrade; it needs no extra art.")]
+        [Tooltip("How many engines hang on the transom: Single (one, on the centreline — the console workboat " +
+                 "and the punt) or Twin (two at ±0.34 m, steering together off the one wheel — the SAME " +
+                 "sheets blitted twice). Twin is the sport skiff's upgrade and needs no extra art; no other " +
+                 "kit ships one.")]
         public OutboardMotorLayer.MotorFit MotorFit = OutboardMotorLayer.MotorFit.Single;
 
         [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
         [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
-                 "stiffer), Sport 3.8 (light glass hull, livelier); the dory reference is 5. This poses the " +
-                 "LEVEL-baked engine onto the hull's rock — it is NOT the hull's own rock, which is baked " +
-                 "into its frames. Do not double-rock.")]
+                 "stiffer), Sport 3.8 (light glass hull, livelier), Punt 4.2 (beamier than the dory, so a " +
+                 "stiffer roll than her); the dory reference is 5. This poses the LEVEL-baked engine onto the " +
+                 "hull's rock — it is NOT the hull's own rock, which is baked into its frames. Do not " +
+                 "double-rock.")]
         public float MotorRockRollDegrees = 3.4f;
 
         [Tooltip("Screen-vertical METRES at the peak of the PITCH. The art rigs give pitchA in DEGREES " +
-                 "(console 1.9, sport 2.2, dory 3.0) and the dory reads its 3.0 as 0.02 m of vertical " +
-                 "travel in the ¾ view — so the same conversion puts the console at 0.0127 and the sport " +
-                 "at 0.0147. Keep small; this is a screen offset, not a rotation.")]
+                 "(console 1.9, sport 2.2, punt 2.4, dory 3.0) and the dory reads its 3.0 as 0.02 m of " +
+                 "vertical travel in the ¾ view — 0.00667 m per degree. The same conversion puts the console " +
+                 "at 0.0127, the sport at 0.0147 and the punt at 0.016. Keep small; this is a screen offset, " +
+                 "not a rotation.")]
         public float MotorRockPitchOffsetMeters = 0.0127f;
 
-        [Tooltip("Baked HEAVE amplitude in pixels (the rigs' heaveA). Console 1.3, Sport 1.5.")]
+        [Tooltip("Baked HEAVE amplitude in pixels (the rigs' heaveA). Console 1.3, Sport 1.5, Punt 1.5.")]
         public float MotorRockHeavePixels = 1.3f;
 
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------

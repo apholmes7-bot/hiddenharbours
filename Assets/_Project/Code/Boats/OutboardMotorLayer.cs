@@ -70,30 +70,44 @@ namespace HiddenHarbours.Boats
     [DisallowMultipleComponent]
     public class OutboardMotorLayer : MonoBehaviour
     {
-        /// <summary>Which paint build of the outboard is wired — the two the art ships off one recipe. Identity
-        /// only: the builder passes the matching sheets, so nothing switches at runtime. It exists so a wired
-        /// rig is self-describing (and a mismatch is visible) rather than anonymous.</summary>
+        /// <summary>
+        /// Which paint build of the outboard is wired — the ones the art ships. Identity only: the builder
+        /// passes the matching sheets, so nothing switches at runtime. It exists so a wired rig is
+        /// self-describing (and a mismatch is visible) rather than anonymous.
+        ///
+        /// <para><b>Append-only, like every id in this project (CLAUDE.md §5).</b> These serialize BY VALUE
+        /// onto every authored <see cref="BoatVisualDef"/>, so renumbering <see cref="Work"/> or
+        /// <see cref="Sport"/> would silently repaint the skiffs' engines. Add builds at the END; never
+        /// reorder.</para>
+        /// </summary>
         public enum MotorVariant
         {
             /// <summary>Graphite cowl, brushed badge — the console skiff (the workboat).</summary>
             Work = 0,
             /// <summary>White cowl, teal side flash, stainless prop — the sport skiff.</summary>
             Sport = 1,
+            /// <summary>Weathered grey/black, paint scuffs, pan rust — the punt's STARTER tiller engine.</summary>
+            Basic = 2,
+            /// <summary>~15% larger domed cowl, gloss-black pan, white top, red wrap stripe + side flashes,
+            /// brighter prop — the punt's UPGRADED tiller engine. A drop-in swap: same cell, pivot, steer
+            /// columns and grip geometry as <see cref="Basic"/>, so the upgrade is two PNGs and nothing else.</summary>
+            Upgraded = 3,
         }
 
-        /// <summary>How many engines hang on the transom.</summary>
+        /// <summary>How many engines hang on the transom. Append-only (see <see cref="MotorVariant"/>).</summary>
         public enum MotorFit
         {
-            /// <summary>One engine on the centreline. The console workboat's only fit.</summary>
+            /// <summary>One engine on the centreline — the console workboat's and the punt's only fit.</summary>
             Single = 0,
-            /// <summary>Two engines at ±<see cref="_twinMountMetres"/>, steering together. <b>Sport only.</b></summary>
+            /// <summary>Two engines at ±<see cref="_twinMountMetres"/>, steering together. <b>The sport skiff
+            /// only</b>: no other kit ships a twin.</summary>
             Twin = 1,
         }
 
         [Header("Identity")]
-        [Tooltip("Which paint build is wired (Work → console skiff, Sport → sport skiff). Identity only — the builder passes the matching sheets.")]
+        [Tooltip("Which paint build is wired (Work → console skiff, Sport → sport skiff, Basic/Upgraded → the punt's two engines). Identity only — the builder passes the matching sheets.")]
         [SerializeField] private MotorVariant _variant = MotorVariant.Work;
-        [Tooltip("Single (console workboat) or Twin (sport skiff upgrade — the SAME sheets blitted twice, both steering off the one wheel).")]
+        [Tooltip("Single (the console workboat, the punt) or Twin (the sport skiff's upgrade — the SAME sheets blitted twice, both steering off the one wheel).")]
         [SerializeField] private MotorFit _fit = MotorFit.Single;
 
         [Header("Sheets (heading×column; the builder wires these — index = heading·columns + col)")]
@@ -131,7 +145,11 @@ namespace HiddenHarbours.Boats
         [SerializeField] private float _steerColumnsPerSecond = 8f;
         [Tooltip("|helm| at or below which the wheel reads as CENTRED, so a resting stick never trickles the engine off dead ahead.")]
         [SerializeField] private float _helmDeadzone = 0.05f;
-        [Tooltip("Steer authority at the sheet's extremes, in degrees either side of dead ahead. The shipped sheets bake ±30° across 9 columns (7.5° steps) — changing this re-maps the helm across those SAME columns, it does not re-bake the art.")]
+        [Tooltip("Steer authority at the sheet's extremes, in degrees either side of dead ahead — an ART FACT " +
+                 "of whichever sheets are wired, so the hull's BoatVisualDef supplies it (skiffs ±30° across " +
+                 "9 columns = 7.5° steps; the punt ±32° = 8° steps). Changing this re-maps the helm across " +
+                 "those SAME columns; it does not re-bake the art. The default is the skiffs' value, for a " +
+                 "caller with no hull data.")]
         [SerializeField] private float _maxSteerDegrees = OutboardMotorMath.MaxSteerDegrees;
 
         [Header("Twin fit (sport skiff — the same sheets blitted twice)")]
@@ -210,7 +228,14 @@ namespace HiddenHarbours.Boats
         /// non-dev owner needn't touch the Inspector). The sheets must be the FULL ordered heading×column grids
         /// (index = heading·columns + steer col); anything else leaves <see cref="IsWired"/> false and the
         /// component inert. Pass <paramref name="lowerB"/>/<paramref name="upperB"/> only for a
-        /// <see cref="MotorFit.Twin"/> fit (sport skiff); Single ignores them.
+        /// <see cref="MotorFit.Twin"/> fit (the sport skiff); Single ignores them.
+        ///
+        /// <para><paramref name="maxSteerDegrees"/> travels WITH the sheets because it describes them: the
+        /// columns are drawn at fixed angles, and the number is what says which. It was a bare serialized 30
+        /// until the punt arrived baking ±32 — a hard-coded authority would have drawn her engine 2° shy of
+        /// the hard-over her own art holds, on every heading, forever. Non-positive = keep the serialized
+        /// default, so a half-authored visual degrades to the skiffs' ±30 rather than to an engine that can
+        /// no longer leave dead ahead.</para>
         /// </summary>
         public void Configure(Sprite[] lowerFrames, Sprite[] upperFrames,
                               SpriteRenderer lowerA, SpriteRenderer upperA,
@@ -218,7 +243,8 @@ namespace HiddenHarbours.Boats
                               BoatController boat, DirectionalBoatSprite directionalSprite,
                               SpriteRenderer hullRenderer,
                               MotorVariant variant, MotorFit fit,
-                              int headingCount, int columnsPerHeading)
+                              int headingCount, int columnsPerHeading,
+                              float maxSteerDegrees = OutboardMotorMath.MaxSteerDegrees)
         {
             _lowerFrames = lowerFrames;
             _upperFrames = upperFrames;
@@ -233,8 +259,14 @@ namespace HiddenHarbours.Boats
             _fit = fit;
             _headingCount = Mathf.Max(1, headingCount);
             _columnsPerHeading = Mathf.Max(1, columnsPerHeading);
+            if (maxSteerDegrees > 0f) _maxSteerDegrees = maxSteerDegrees;
             _baseCached = false;
         }
+
+        /// <summary>Steer authority at the wired sheet's extremes, in degrees either side of dead ahead
+        /// (diagnostics / tests). ±30 on the skiffs, ±32 on the punt — an art fact of the sheets, supplied by
+        /// the hull's <see cref="BoatVisualDef"/>.</summary>
+        public float MaxSteerDegrees => _maxSteerDegrees;
 
         /// <summary>
         /// Wire the ROCK COUPLING from the hull's own data (the skinner's path) — the amplitudes that pose

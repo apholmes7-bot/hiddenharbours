@@ -353,7 +353,7 @@ namespace HiddenHarbours.Boats
             if (layer == null) layer = root.AddComponent<OutboardMotorLayer>();
             layer.Configure(def.MotorLower, def.MotorUpper, lowerA, upperA, lowerB, upperB,
                             boat, directional, hullVisual, def.MotorVariant, def.MotorFit,
-                            def.HeadingCount, def.MotorColumnCount);
+                            def.HeadingCount, def.MotorColumnCount, def.MotorMaxSteerDegrees);
             layer.ConfigureRock(def.MotorRockRollDegrees, def.MotorRockPitchOffsetMeters,
                                 def.MotorRockHeavePixels, def.RockFrameCount);
             return layer;

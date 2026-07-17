@@ -51,6 +51,7 @@ namespace HiddenHarbours.App.Editor
             public int RockFrames;
             public int OarColumns;
             public int MotorColumns;
+            public float MotorMaxSteerDegrees;   // sheet's baked authority: skiffs ±30, punt ±32 (0 = leave default)
             public OutboardMotorLayer.MotorVariant MotorVariant;
             public OutboardMotorLayer.MotorFit MotorFit;
             public float MotorRockRollDegrees;
@@ -63,10 +64,28 @@ namespace HiddenHarbours.App.Editor
         // pose the LEVEL-baked engine cells onto the hull's rock, which is already baked into the hull's own
         // frames. Get them wrong and the engine slides on the transom; DOUBLE them onto the hull's rock and
         // the boat shakes itself apart. The dory's reference read is roll 5° / pitch 3° / heave 1.6 px, and
-        // the dory converts its 3° of pitch to 0.02 m of screen-vertical travel in the ¾ view — the same
-        // ratio puts the console's 1.9° at 0.0127 m and the sport's 2.2° at 0.0147 m.
+        // the dory converts its 3° of pitch to 0.02 m of screen-vertical travel in the ¾ view.
+        //
+        // THE PITCH CONVERSION, since it is the one number that is derived rather than read: the rigs give
+        // pitchA in DEGREES but this field is screen-vertical METRES, and the dory pins the exchange rate at
+        //     0.02 m / 3.0° = 0.006667 m per degree.
+        // Every hull takes its own rig's pitchA through that same rate — never another hull's answer:
+        //     console 1.9° → 0.0127    sport 2.2° → 0.0147    punt 2.4° → 0.0160
+        //
+        //   hull      rollA  pitchA  heaveA   (rig)          character
+        //   dory       5.0    3.0     1.6     the reference: light, narrow, corks about
+        //   punt       4.2    2.4     1.5     beamier than the dory → a stiffer roll than her
+        //   sport      3.8    2.2     1.5     light glass hull, livelier
+        //   console    3.4    1.9     1.3     heaviest hull, stiffest
         const float ConsoleRockRoll = 3.4f, ConsoleRockPitch = 0.0127f, ConsoleRockHeave = 1.3f;  // heavier hull, stiffer
         const float SportRockRoll   = 3.8f, SportRockPitch   = 0.0147f, SportRockHeave   = 1.5f;  // light glass hull, livelier
+        const float PuntRockRoll    = 4.2f, PuntRockPitch    = 0.0160f, PuntRockHeave    = 1.5f;  // beamier boat, stiffer roll than the dory
+
+        // Steer authority baked into each kit's motor sheets, in degrees either side of dead ahead. NOT a
+        // feel knob — it says what the 9 columns are DRAWN at, and the punt is genuinely different from the
+        // skiffs: her rig is angle(f) = −32 + 64·f/8 (8° steps) where theirs is −30 + 60·f/8 (7.5° steps).
+        const float SkiffMaxSteer = 30f;
+        const float PuntMaxSteer  = 32f;
 
         // The 8 compass points in the project's canonical order: element 0 = North, then CLOCKWISE. The
         // FishingBoat art ships as one file per heading rather than a sheet, so the ORDER lives here — and
@@ -111,7 +130,7 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Work.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Work.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = SkiffMaxSteer,
                 MotorVariant = OutboardMotorLayer.MotorVariant.Work,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = ConsoleRockRoll,
@@ -129,7 +148,7 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Sport.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = SkiffMaxSteer,
                 MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
                 MotorFit = OutboardMotorLayer.MotorFit.Single,
                 MotorRockRollDegrees = SportRockRoll,
@@ -150,12 +169,63 @@ namespace HiddenHarbours.App.Editor
                 MotorLowerPath = $"{ArtBoats}/SkiffMotorLower-Sport.png",
                 MotorUpperPath = $"{ArtBoats}/SkiffMotorUpper-Sport.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10,
-                MotorColumns = OutboardMotorMath.SteerColumns,
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = SkiffMaxSteer,
                 MotorVariant = OutboardMotorLayer.MotorVariant.Sport,
                 MotorFit = OutboardMotorLayer.MotorFit.Twin,
                 MotorRockRollDegrees = SportRockRoll,
                 MotorRockPitchOffsetMeters = SportRockPitch,
                 MotorRockHeavePixels = SportRockHeave,
+                SortingOrder = 1,
+            },
+
+            // THE PUNT, BASIC — the ~5.2 m TILLER punt on her starter engine (#210's kit). 8 headings + a
+            // 64-frame rock grid, and a SINGLE weathered grey/black outboard on the centreline (72-cell
+            // sheets, 9 steer columns). NO console, NO wheel, NO twin: she is tiller-steered and the art
+            // ships no second engine.
+            //
+            // Two things here are NOT the skiffs' and must not be "tidied" into them:
+            //   (1) ±32° of steer, in 8° steps (theirs is ±30 / 7.5°) — her rig bakes the columns wider;
+            //   (2) her own cell + pivot (184×168 hull, 212×168 motor, origin y = 0.4405 vs the skiffs'
+            //       0.4444). That lives in the slicer, and PuntSheetSliceTests guards the distinction.
+            //
+            // Her tiller-grip JSON (PuntMotorGrips.json) is committed but deliberately UNWIRED — it seats an
+            // operator's aft hand, and no punt operator sprite exists yet. Do not fake one.
+            new Sheet
+            {
+                AssetName = "PuntIsoBasic", Id = "visual.punt_iso_basic",
+                HullPath = $"{ArtBoats}/PuntIso.png",
+                RockPath = $"{ArtBoats}/PuntIsoRock.png",
+                MotorLowerPath = $"{ArtBoats}/PuntMotorLower-Basic.png",
+                MotorUpperPath = $"{ArtBoats}/PuntMotorUpper-Basic.png",
+                HeadingCount = 8, RockFrames = 8, OarColumns = 10,
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = PuntMaxSteer,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Basic,
+                MotorFit = OutboardMotorLayer.MotorFit.Single,
+                MotorRockRollDegrees = PuntRockRoll,
+                MotorRockPitchOffsetMeters = PuntRockPitch,
+                MotorRockHeavePixels = PuntRockHeave,
+                SortingOrder = 1,
+            },
+
+            // THE PUNT, UPGRADED — the SAME hull and the SAME rock, wearing the upgraded engine: ~15% larger
+            // domed cowl, gloss-black pan, white top, red wrap stripe, brighter prop. The art README is
+            // explicit that the two builds "share the SAME cell, pivot, steer cols and grip JSON — the sheets
+            // are drop-in swaps", so the upgrade costs exactly two PNG paths and one MotorVariant. Everything
+            // else on this entry is byte-for-byte the basic's, and a test asserts that rather than trusting it.
+            new Sheet
+            {
+                AssetName = "PuntIsoUpgraded", Id = "visual.punt_iso_upgraded",
+                HullPath = $"{ArtBoats}/PuntIso.png",
+                RockPath = $"{ArtBoats}/PuntIsoRock.png",
+                MotorLowerPath = $"{ArtBoats}/PuntMotorLower-Upgraded.png",
+                MotorUpperPath = $"{ArtBoats}/PuntMotorUpper-Upgraded.png",
+                HeadingCount = 8, RockFrames = 8, OarColumns = 10,
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = PuntMaxSteer,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Upgraded,
+                MotorFit = OutboardMotorLayer.MotorFit.Single,
+                MotorRockRollDegrees = PuntRockRoll,
+                MotorRockPitchOffsetMeters = PuntRockPitch,
+                MotorRockHeavePixels = PuntRockHeave,
                 SortingOrder = 1,
             },
         };
@@ -195,6 +265,10 @@ namespace HiddenHarbours.App.Editor
             def.RockFrameCount = Mathf.Max(1, sheet.RockFrames);
             def.OarColumnCount = Mathf.Max(1, sheet.OarColumns);
             def.MotorColumnCount = Mathf.Max(1, sheet.MotorColumns);
+            // Non-positive = leave the asset's existing authority alone, mirroring the rock amplitudes below:
+            // a hull with no motor (the dory) has nothing to describe, and silently writing 0 would tell the
+            // layer this sheet's engine cannot leave dead ahead.
+            if (sheet.MotorMaxSteerDegrees > 0f) def.MotorMaxSteerDegrees = sheet.MotorMaxSteerDegrees;
             def.MotorVariant = sheet.MotorVariant;
             def.MotorFit = sheet.MotorFit;
             if (sheet.MotorRockRollDegrees > 0f) def.MotorRockRollDegrees = sheet.MotorRockRollDegrees;
@@ -237,7 +311,7 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log($"[BoatVisualLibraryBuilder] {sheet.AssetName}: {def.HeadingCount} facings, rock grid " +
                       $"{(def.HasRockGrid() ? "WIRED" : "none")}, oars {(def.HasOarSheets() ? "WIRED" : "none")}, " +
-                      $"motor {(def.HasMotor() ? $"WIRED ({def.MotorVariant}, {def.MotorFit})" : "none")}.");
+                      $"motor {(def.HasMotor() ? $"WIRED ({def.MotorVariant}, {def.MotorFit}, ±{def.MotorMaxSteerDegrees:0.#}° steer)" : "none")}.");
             return true;
         }
 
