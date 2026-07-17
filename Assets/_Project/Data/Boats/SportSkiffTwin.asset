@@ -10,30 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
-  m_Name: FishingSkiff
+  m_Name: SportSkiffTwin
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
-  Id: boat.fishing_skiff
-  DisplayName: The Fishing Skiff
-  Visual: {fileID: 11400000, guid: 75988ec8a21b23e489b28d921f33bd35, type: 2}
+  Id: boat.sport_skiff_twin
+  DisplayName: The Sport Skiff (Twin)
+  Visual: {fileID: 11400000, guid: 3e2fcb1fa2cd11e44b1aba4c4e987ad3, type: 2}
   Sprite: {fileID: 0}
-  LengthMeters: 4
-  DraughtMeters: 0.35
-  MassKg: 450
-  HoldUnits: 6
-  CrewSlots: 1
+  LengthMeters: 7
+  DraughtMeters: 0.55
+  MassKg: 1000
+  HoldUnits: 8
+  CrewSlots: 2
   Propulsion: 1
-  EnginePower: 550
-  RudderAuthority: 400
+  EnginePower: 2000
+  RudderAuthority: 900
   OarPower: 300
   OarLateralOffset: 0.6
   OarBraceDrag: 400
-  ForwardDrag: 130
-  LateralDrag: 340
-  WindExposure: 0.6
-  MaxSafeSeaState: 4
-  SeakeepingMassFactor: 1.1
-  SeakeepingLiveliness: 0.95
-  SeakeepingDamping: 0.05
-  CameraWorldHeightMeters: 13.5
-  DeckContainer: {fileID: 11400000, guid: f7df1f31d5e24f2ea7d873c9c16dcb54, type: 2}
+  ForwardDrag: 155
+  LateralDrag: 400
+  WindExposure: 0.5
+  MaxSafeSeaState: 5
+  SeakeepingMassFactor: 1.9
+  SeakeepingLiveliness: 0.7
+  SeakeepingDamping: 0.35
+  CameraWorldHeightMeters: 19.5
+  DeckContainer: {fileID: 0}
   DeckContainerOffset: {x: 0.35, y: -0.9}

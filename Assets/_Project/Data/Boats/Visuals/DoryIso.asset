@@ -253,3 +253,11 @@ MonoBehaviour:
   - {fileID: 5912096091688918295, guid: 42ab595f190dfc54bbe9ab02297d8c44, type: 3}
   - {fileID: 1707885623860978299, guid: 42ab595f190dfc54bbe9ab02297d8c44, type: 3}
   OarColumnCount: 10
+  MotorLower: []
+  MotorUpper: []
+  MotorColumnCount: 1
+  MotorVariant: 0
+  MotorFit: 0
+  MotorRockRollDegrees: 3.4
+  MotorRockPitchOffsetMeters: 0.0127
+  MotorRockHeavePixels: 1.3

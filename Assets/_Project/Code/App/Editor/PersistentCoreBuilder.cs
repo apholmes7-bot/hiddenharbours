@@ -80,6 +80,10 @@ namespace HiddenHarbours.App.Editor
             public GameConfig Config;
             public BoatHullDef StartDory;         // the start hull on the persistent Dory (hand-rowed greybox dory)
             public BoatHullDef PuntHull;          // tier-1 swap hull for the fleet registry (null-safe)
+            // DEV BOAT PICKER (null/empty = no picker spawned): every hull F cycles through at the helm, in
+            // order. Deliberately SEPARATE from the fleet registry above — this is a workbench for feeling
+            // hulls, not a roster of boats you own, and it must not grow into the M2 ladder (rule 8).
+            public BoatHullDef[] DevPickerRoster;
             public FishSpeciesDef[] RegionFish;   // the fishing controller's region species (null-safe)
             public Sprite Square;                 // the 1×1 fallback square sprite the scene already made
             public Color CameraBackground;        // scene's clear colour (matches the region's water mood)
@@ -249,6 +253,27 @@ namespace HiddenHarbours.App.Editor
             // Added AFTER the directional skin so the visual child exists for the bounce to find.
             if (doryGo.GetComponent<BoatSpotlight>() == null)
                 doryGo.AddComponent<BoatSpotlight>();
+
+            // --- THE DEV BOAT PICKER (owner affordance): F at the helm re-skins the boat IN PLACE ---------
+            // The owner asked to see all his boats available to pilot when he builds St Peters. This is the
+            // shape he chose: not moored boats to walk to, not shipwright offers to buy — a key at the helm
+            // that swaps the hull under him, so he can A/B two boats in the SAME wave, in the same spot,
+            // seconds apart. That comparison is the whole point, and it's one no amount of mooring gets you.
+            //
+            // Scoped as a DEV affordance on purpose: it builds none of the M2 fleet roster/economy the canon
+            // defers (rule 8). The roster is DATA (a BoatHullDef[]) and rides the persistent boat, so the
+            // picked hull survives a region hop like every other piece of boat state.
+            if (p.DevPickerRoster != null && p.DevPickerRoster.Length > 0)
+            {
+                var picker = doryGo.AddComponent<DevBoatPicker>();
+                SetRefArray(picker, "_roster", p.DevPickerRoster.Cast<Object>().ToArray());
+                SetRef(picker, "_boat", boat);
+                SetRef(picker, "_hold", hold);
+                SetRef(picker, "_hullRenderer", sr);
+                // NOT disabled at start (unlike DevBoatInput, which the ControlSwitcher owns): the picker
+                // gates itself on the CONTROLLER actually driving, so it's inert ashore without the
+                // switcher needing to learn it exists. One less thing to forget to re-enable.
+            }
 
             // Active-boat heading seam (VS-19): the HUD pulls heading/COG through Core; HasActiveBoat tracks
             // the controller's enabled flag (moored/on-foot → false).
