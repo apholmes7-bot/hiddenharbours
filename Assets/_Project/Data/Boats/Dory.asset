@@ -27,7 +27,7 @@ MonoBehaviour:
   OarPower: 300
   OarLateralOffset: 0.6
   OarBraceDrag: 400
-  ForwardDrag: 120
+  ForwardDrag: 215
   LateralDrag: 320
   WindExposure: 0.6
   MaxSafeSeaState: 4
