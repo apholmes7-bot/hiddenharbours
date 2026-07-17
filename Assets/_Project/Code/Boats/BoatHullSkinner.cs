@@ -46,6 +46,16 @@ namespace HiddenHarbours.Boats
         /// <summary>Names of the two oar overlay children, layered over the hull picture.</summary>
         public const string StarOarChildName = "OarStar";
 
+        /// <summary>Engine A's lower layer (leg + plate + skeg + prop). A = the PORT engine of a twin fit,
+        /// or the only centreline engine of a single fit.</summary>
+        public const string LowerMotorAChildName = "MotorLowerA";
+        /// <summary>Engine A's upper layer (clamp bracket + cowl).</summary>
+        public const string UpperMotorAChildName = "MotorUpperA";
+        /// <summary>Engine B's lower layer — the STARBOARD engine. Twin fit only.</summary>
+        public const string LowerMotorBChildName = "MotorLowerB";
+        /// <summary>Engine B's upper layer. Twin fit only.</summary>
+        public const string UpperMotorBChildName = "MotorUpperB";
+
         /// <summary>Optional knobs a caller varies. Defaults are the player boat's rig, exactly.</summary>
         public struct Options
         {
@@ -91,6 +101,8 @@ namespace HiddenHarbours.Boats
             public BoatWaveMotion Wave;
             /// <summary>The oar overlay, when this visual binds oar sheets and a controller was supplied.</summary>
             public DoryOarLayer Oars;
+            /// <summary>The outboard overlay, when this visual binds a complete pair of motor sheets.</summary>
+            public SkiffMotorLayer Motor;
         }
 
         /// <summary>
@@ -197,10 +209,33 @@ namespace HiddenHarbours.Boats
                 ? WireOars(root, child, sr, visual, boat, directional)
                 : RemoveOars(root, child);
 
+            // (6) The outboard: the skiffs' remote-steer engine, swivelled from the boat's REAL helm. Same
+            // shape as the oars — a complete pair of sheets, or nothing. Note this needs no controller to
+            // INSTALL (an unmanned skiff still draws its engine, dead ahead); the layer's own manned-helm
+            // gate handles the driving. Mutually exclusive with the oars: their sorting bands overlap, so a
+            // visual binding both would z-fight — we drop the MOTOR and shout, because the oars are the
+            // older, load-bearing rig and a rowboat that grew an engine is the authoring mistake.
+            SkiffMotorLayer motor;
+            if (visual.HasMotor() && visual.HasConflictingOverlays())
+            {
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' binds BOTH oar sheets and motor " +
+                               "sheets. Their sorting bands overlap (oars hull+1/+2 vs the motor's lower " +
+                               "layer hull+1/+2 when it draws over the hull), so the engine leg and the " +
+                               "port oar would fight for the same order. The MOTOR is dropped. Author the " +
+                               "hull as rowed OR powered, not both.");
+                motor = RemoveMotor(root, child);
+            }
+            else
+            {
+                motor = visual.HasMotor()
+                    ? WireMotor(root, child, sr, visual, boat, directional)
+                    : RemoveMotor(root, child);
+            }
+
             return new Rig
             {
                 Skinned = true, Visual = child, Renderer = sr,
-                Directional = directional, Wave = wave, Oars = oars,
+                Directional = directional, Wave = wave, Oars = oars, Motor = motor,
             };
         }
 
@@ -223,6 +258,11 @@ namespace HiddenHarbours.Boats
             var oars = root.GetComponent<DoryOarLayer>();
             if (oars != null) DestroyComponent(oars);
 
+            var motor = root.GetComponent<SkiffMotorLayer>();
+            if (motor != null) DestroyComponent(motor);
+
+            // Destroying the visual child takes every overlay's renderer with it, so the layers above only
+            // need their COMPONENTS stripped off the root — they'd otherwise idle pointing at dead renderers.
             var child = root.transform.Find(VisualChildName);
             if (child != null) DestroyObject(child.gameObject);
         }
@@ -280,6 +320,85 @@ namespace HiddenHarbours.Boats
                 if (star != null) DestroyObject(star.gameObject);
             }
             return null;
+        }
+
+        // ---- the outboard ------------------------------------------------------------------------
+
+        // The four (or two) motor renderers are CHILDREN of the hull's visual child, exactly like the oars
+        // and for exactly the same two reasons: they inherit the hull's snap / counter-rotation treatment
+        // for free (DirectionalBoatSprite stomps that child's world rotation to screen-identity every
+        // LateUpdate, so a sibling would have to re-derive it), and the motor cell shares the hull's pivot
+        // (motor 272×216 pivot (136,120) vs hull 244×216 pivot (122,120) — both normalise to the same
+        // origin), so localPosition zero registers pixel-perfect. Pin by PIVOT, never by corners.
+        //
+        // Sorting is NOT set here: SkiffMotorLayer re-decides each renderer's order every frame, because
+        // the lower layer's band FLIPS under the hull across the stern-away headings (SE/S/SW). Handing it
+        // a static order would be a lie that only shows up when the owner turns the boat.
+        private static SkiffMotorLayer WireMotor(GameObject root, Transform visual, SpriteRenderer hullVisual,
+                                                 BoatVisualDef def, BoatController boat,
+                                                 DirectionalBoatSprite directional)
+        {
+            bool twin = def.MotorFit == SkiffMotorLayer.MotorFit.Twin;
+            int center = SkiffMotorMath.CenterColumn(def.MotorColumnCount);   // wake dead ahead, never hard-over
+
+            var lowerA = MakeMotorRenderer(visual, LowerMotorAChildName, hullVisual, def.MotorLower[center]);
+            var upperA = MakeMotorRenderer(visual, UpperMotorAChildName, hullVisual, def.MotorUpper[center]);
+            var lowerB = twin ? MakeMotorRenderer(visual, LowerMotorBChildName, hullVisual, def.MotorLower[center]) : null;
+            var upperB = twin ? MakeMotorRenderer(visual, UpperMotorBChildName, hullVisual, def.MotorUpper[center]) : null;
+
+            // A Single fit must not keep a previous TWIN hull's second engine hanging off the transom.
+            if (!twin) RemoveMotorEngineB(visual);
+
+            var layer = root.GetComponent<SkiffMotorLayer>();
+            if (layer == null) layer = root.AddComponent<SkiffMotorLayer>();
+            layer.Configure(def.MotorLower, def.MotorUpper, lowerA, upperA, lowerB, upperB,
+                            boat, directional, hullVisual, def.MotorVariant, def.MotorFit,
+                            def.HeadingCount, def.MotorColumnCount);
+            layer.ConfigureRock(def.MotorRockRollDegrees, def.MotorRockPitchOffsetMeters,
+                                def.MotorRockHeavePixels, def.RockFrameCount);
+            return layer;
+        }
+
+        private static SpriteRenderer MakeMotorRenderer(Transform visual, string name, SpriteRenderer hullVisual,
+                                                        Sprite first)
+        {
+            var existing = visual.Find(name);
+            var go = existing != null ? existing.gameObject : new GameObject(name);
+            if (existing == null) go.transform.SetParent(visual, false);
+            go.SetActive(true);
+            go.transform.localPosition = Vector3.zero;    // shared pivot ⇒ pixel-perfect registration
+
+            var r = go.GetComponent<SpriteRenderer>();
+            if (r == null) r = go.AddComponent<SpriteRenderer>();
+            r.sprite = first;
+            r.sortingLayerID = hullVisual.sortingLayerID; // same layer as the hull — the layer drives the order
+            return r;
+        }
+
+        // A hull whose visual binds no motor must not keep the previous hull's engine bolted to its transom.
+        private static SkiffMotorLayer RemoveMotor(GameObject root, Transform visual)
+        {
+            var layer = root.GetComponent<SkiffMotorLayer>();
+            if (layer != null) DestroyComponent(layer);
+            if (visual != null)
+            {
+                DestroyChild(visual, LowerMotorAChildName);
+                DestroyChild(visual, UpperMotorAChildName);
+                RemoveMotorEngineB(visual);
+            }
+            return null;
+        }
+
+        private static void RemoveMotorEngineB(Transform visual)
+        {
+            DestroyChild(visual, LowerMotorBChildName);
+            DestroyChild(visual, UpperMotorBChildName);
+        }
+
+        private static void DestroyChild(Transform parent, string name)
+        {
+            var t = parent.Find(name);
+            if (t != null) DestroyObject(t.gameObject);
         }
 
         // ---- teardown ----------------------------------------------------------------------------

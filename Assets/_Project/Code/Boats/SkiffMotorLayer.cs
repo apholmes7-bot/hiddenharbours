@@ -149,16 +149,18 @@ namespace HiddenHarbours.Boats
         private Vector3 _upperBBaseLocalPosition;
 
         /// <summary>
-        /// The helm the engine swivels to: −1 = full port, 0 = dead ahead, +1 = full starboard.
+        /// The helm the engine swivels to, PULLED off the boat: −1 = full port, 0 = dead ahead, +1 = full
+        /// starboard. An unmanned helm (<see cref="IsHelmManned"/>) reads dead ahead.
         ///
-        /// <para><b>Why this is written from outside</b> rather than read off the boat: <see cref="BoatController"/>
-        /// exposes <c>LeftOar</c>/<c>RightOar</c> but keeps its rudder state (<c>_steer</c>, set via
-        /// <c>SetControl</c>) private, so there is no getter to source. This mirrors the established seam
-        /// <see cref="DirectionalBoatSprite.RockFrame"/> uses — a settable property the driving system writes each
-        /// frame — and keeps the layer a pure consumer either way. It is IGNORED while the helm is unmanned
-        /// (<see cref="IsHelmManned"/>), so a stale value can never leave an empty skiff hard-over.</para>
+        /// <para><b>Pull, not push.</b> This layer was born pushing — a settable <c>Helm</c> property some
+        /// driving system had to write every frame — only because <see cref="BoatController"/> kept its rudder
+        /// state private while exposing <c>LeftOar</c>/<c>RightOar</c>. It now exposes
+        /// <see cref="BoatController.Steer"/> symmetrically, so the layer sources the wheel itself. A pushed
+        /// copy is only ever as good as the last system that remembered to write it — the dropped-state blind
+        /// spot #205 fixed for the oars; a pull cannot go stale. Read-only: the layer never writes the sim
+        /// (rule 5).</para>
         /// </summary>
-        public float Helm { get; set; }
+        public float Helm => IsHelmManned ? _boat.Steer : 0f;
 
         /// <summary>True when a controller is wired AND actually driving. The gate on <see cref="Helm"/>: a
         /// player who disembarks mid-turn, a moored boat, or a skiff waiting while the deck is worked must all
@@ -218,6 +220,26 @@ namespace HiddenHarbours.Boats
             _baseCached = false;
         }
 
+        /// <summary>
+        /// Wire the ROCK COUPLING from the hull's own data (the skinner's path) — the amplitudes that pose
+        /// this LEVEL-baked engine onto the hull's baked rock. They are per-hull ART FACTS (the console is a
+        /// heavier, stiffer boat than the sport), which is why they arrive from the
+        /// <see cref="BoatVisualDef"/> rather than living as consts here: two hulls share this one component
+        /// and must lean differently.
+        ///
+        /// <para>Split from <see cref="Configure"/> deliberately — a caller with no per-hull rock data (a
+        /// test rig, a decor boat) gets the serialized defaults, which are the console's. Non-positive
+        /// values are ignored rather than zeroing the coupling, so a half-authored asset degrades to the
+        /// default lean instead of a dead-level engine on a rocking hull.</para>
+        /// </summary>
+        public void ConfigureRock(float rollDegrees, float pitchOffsetMeters, float heavePixels, int rockFrameCount)
+        {
+            if (rollDegrees > 0f) _rockRollDegrees = rollDegrees;
+            if (pitchOffsetMeters > 0f) _rockPitchOffsetMeters = pitchOffsetMeters;
+            if (heavePixels > 0f) _rockHeavePixels = heavePixels;
+            if (rockFrameCount > 0) _rockFrameCount = rockFrameCount;
+        }
+
         private void OnEnable()
         {
             // Wake dead ahead and level — never on a stale hard-over, never a frozen lean.
@@ -244,8 +266,8 @@ namespace HiddenHarbours.Boats
             // NOBODY AT THE HELM = NOBODY STEERING. Gating on the controller rather than trusting the helm to
             // have been cleared is right by construction — and it is exactly the blind spot #205 fixed for the
             // oars: a player who disembarks mid-turn would otherwise leave the engine pinned hard-over on an
-            // empty skiff. An unmanned helm reads centred, so the motor comes back to dead ahead.
-            float helm = IsHelmManned ? Helm : 0f;
+            // empty skiff. Helm already folds that gate in, reading dead ahead when nobody is driving.
+            float helm = Helm;
 
             float dt = Time.deltaTime;
             int target = SkiffMotorMath.TargetColumnForHelm(helm, _helmDeadzone, _columnsPerHeading, _maxSteerDegrees);

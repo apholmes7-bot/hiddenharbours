@@ -85,6 +85,18 @@ namespace HiddenHarbours.Boats
         public bool IsAground { get; private set; }
         public Vector2 Velocity => _rb != null ? _rb.linearVelocity : Vector2.zero;
 
+        /// <summary>
+        /// Helm state (-1 hard a-port .. 0 amidships .. +1 hard a-starboard) — the rudder input the Engine
+        /// branch steers on, as set by <see cref="SetControl"/>. Symmetric with <see cref="LeftOar"/>/
+        /// <see cref="RightOar"/>: the drive state a presentation layer must read to draw the boat honestly.
+        ///
+        /// <para>The outboard overlay (<c>SkiffMotorLayer</c>) PULLS this rather than being pushed a copy of
+        /// it every frame. Pull is self-sourcing — the picture cannot fall out of step because some driving
+        /// system forgot to write it, which is exactly the dropped-state blind spot #205 fixed for the oars.
+        /// Read-only: presentation never writes back into the sim (rule 5).</para>
+        /// </summary>
+        public float Steer => _steer;
+
         /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float LeftOar => _leftOar;
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
