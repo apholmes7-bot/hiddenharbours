@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -23,6 +24,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// invisible to every other test. Hence this guard: it renders two sprites at KNOWN, DIFFERENT world X
     /// through a probe shader and reads the origin back off the frame. Sabotage it by changing the shader to
     /// output a constant and this test fails.</para>
+    ///
+    /// <para><b>Why it SKIPS on CI, and why that is the right trade.</b> This is the only test in the suite that
+    /// actually RENDERS. CI's Unity runs with <c>Renderer: Null Device</c> (no graphics device at all), where
+    /// <c>Camera.Render()</c> does not fail a test — it takes the whole editor down with a native crash inside
+    /// the render pipeline (<c>RenderTexture.Create failed</c> → <c>CameraScripting::Render</c> → exit code 1 →
+    /// NO editmode-results.xml is produced at all). A native crash cannot be caught, so the ONLY fix is to check
+    /// for the device and never allocate. It follows that <b>a green CI run does NOT mean this was verified —
+    /// it means it was skipped.</b> That is acceptable because the artefact it guards (a torn or lockstep
+    /// meadow) is a thing you can only SEE on a machine with a GPU, which is exactly where this test does run
+    /// and does bite. Do NOT "fix" the skip by weakening the assertions so they run headless: a probe that does
+    /// not render proves nothing at all.</para>
     /// </summary>
     public class SpriteObjectMatrixGuardTests
     {
@@ -38,9 +50,29 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // the probe was isolated onto its own layer). Layer 31 is unused by the game; nothing else is on it.
         private const int ProbeLayer = 31;
 
+        /// <summary>
+        /// Bail out BEFORE allocating a camera or a <see cref="RenderTexture"/> when there is no graphics device.
+        /// This must be the first statement in the test: on a Null Device the crash happens inside the render
+        /// pipeline's native code, which no try/catch and no NUnit assertion can intercept — by the time anything
+        /// has been allocated it is already too late to fail gracefully.
+        /// </summary>
+        private static void RequireAGraphicsDevice()
+        {
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
+            {
+                Assert.Ignore(
+                    "SKIPPED, NOT VERIFIED — this run has no graphics device (Renderer: Null Device), so the " +
+                    "per-object-matrix guard could not render and proved nothing. This is expected on CI and " +
+                    "means a green CI run carries NO evidence about the flower shader's per-instance sway phase. " +
+                    "Run the EditMode suite on a machine with a GPU to actually exercise this guard.");
+            }
+        }
+
         [Test]
         public void SpriteRenderer_KeepsItsPerObjectMatrix_SoFlowersCanPhasePerInstance()
         {
+            RequireAGraphicsDevice();
+
             var shader = Shader.Find(ProbeShader);
             Assert.IsNotNull(shader, $"The probe shader '{ProbeShader}' is missing. Without it this guard proves " +
                                      "NOTHING about the flower shader's per-instance phase — treat it as a failure.");
