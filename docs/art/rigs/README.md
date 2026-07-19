@@ -16,13 +16,25 @@ silently reverts them. Anything the engine needs that the rig doesn't provide be
 
 ## ⚠️ THE AZIMUTH SPLIT — read this before baking anything
 
-The rigs do **not** share one facing convention. Verified by inspecting the `th = ±dir*Math.PI/4` term in
-every file (2026-07-19):
+The rigs do **not** share one facing convention.
 
-**CLOCKWISE-CORRECT (2)** — the art director fixed these at source:
+> ⚠️ **CORRECTION (2026-07-19, from the first real bake).** An earlier version of this file said the split
+> was determined by inspecting the sign of the `th = ±dir*Math.PI/4` term. **That method is NOT reliable and
+> must not be used.** `puntIsoRig` and `lobsterBoatIsoRig` both carry a **positive** sign and both render
+> **counter-clockwise** — handedness comes from the iso camera basis, not from that sign alone. The sign
+> merely *correlated* with the answer on the rigs that had been pixel-checked.
+>
+> **Only measurement is authoritative.** The groups below are trustworthy where the art was measured
+> (characters via face-skin centroid; punt/dory/Cape Islander via PCA bearing + bow-taper; punt again via a
+> byte-identical golden-master bake). **Every other rig here is UNVERIFIED** — the baker must measure it at
+> bake time, not read this list. Treat the list as a prior, never as a fact.
+
+**CLOCKWISE-CORRECT (2)** — the art director fixed these at source; character sheets pixel-verified:
 `characterIsoRig.js` · `rodIsoRig.js`
 
-**COUNTER-CLOCKWISE (19)** — cell `i` depicts heading **−45°·i** while labelled `+45°·i`:
+**COUNTER-CLOCKWISE (19)** — cell `i` depicts heading **−45°·i** while labelled `+45°·i`.
+Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `capeIslanderIsoRig`,
+`lobsterBoatIsoRig`. The rest are inferred and must be measured before use:
 `bucketRig` · `capeIslanderIsoRig` · `coastalPacketIsoRig` · `consoleIsoRig` · `doryIsoRig` · `fishTubRig`
 · `houseIsoRig` · `interiorIsoRig` · `interiorPropRig` · `lobsterBoatIsoRig` · `puntIsoRig` · `shovelIsoRig`
 · `sideDraggerIsoRig` · `skiffMotorRig` · `sportSkiffIsoRig` · `sternTrawlerIsoRig` ·
