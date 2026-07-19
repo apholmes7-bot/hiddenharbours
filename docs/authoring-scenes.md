@@ -25,7 +25,7 @@ That single command runs three steps (you can also run them one at a time from t
 |---|---|
 | **Build Terrain Tiles** | The paintable ground tiles + an auto-shaping shoreline, under `Assets/_Project/Art/Tilesets/Tiles/`. |
 | **Build Tile Palette** | A palette called **HiddenHarboursTerrain** you pick tiles from, under `Assets/_Project/Art/Tilesets/Palettes/`. |
-| **Build Decor Prefabs** | Drag-in trees, buildings, props and grass, under `Assets/_Project/Prefabs/Decor/`. |
+| **Build Decor Prefabs** | Drag-in trees, buildings, props, grass and wildflowers, under `Assets/_Project/Prefabs/Decor/`. |
 
 ---
 
@@ -93,19 +93,20 @@ neighbouring cell — the rule re-evaluates as you go.
 
 ---
 
-## 4. Drag in decor (trees, buildings, props, grass)
+## 4. Drag in decor (trees, buildings, props, grass, flowers)
 
 Decor is placed as **prefabs** — pre-made objects you drag in like stamps. No tilemap needed.
 
 1. In the **Project** window (bottom panel), open `Assets/_Project/Prefabs/Decor/`. You'll find
-   four folders: **Trees/**, **Buildings/**, **Props/**, **Grass/**.
+   five folders: **Trees/**, **Buildings/**, **Props/**, **Grass/**, **Flowers/**.
 2. Click a folder and you'll see thumbnails (Tree01…Tree40, Cottage, ShipwrightShed, Barrel, Crate,
-   WharfPost, GrassClump, GrassTuft, etc.).
+   WharfPost, GrassClump, GrassTuft, WildRoseClump, LupinBlueSingle, etc.).
 3. **Drag a prefab straight from the Project window into the Scene view** and drop it where you want
    it. It appears at the correct size and the right "footing":
    - **Trees** plant at the trunk base — drop a tree where you want its trunk to stand.
    - **Buildings and props** centre on the drop point.
    - **Grass** plants at its base too (drop it where you want the grass to grow).
+   - **Flowers** plant at their base (a **Patch** centres on the drop point, since it lies flat).
 4. To move something after dropping it: click it in the Scene view and drag, or use the **Move tool**
    (press **W**). To rotate/scale, use **E** / **R** — though for pixel art it's usually best to
    leave scale at 1.
@@ -153,6 +154,59 @@ Three things make the grass feel alive, all automatic — nothing to wire:
 
 You won't see the *sway* in the **edit** view (it's a Play-mode effect) — press **Play** to watch it
 (the layering, though, is correct in edit mode as well).
+
+### Wildflowers (the PEI wildflowers)
+
+Eight wildflowers — **blue flag, buttercup, fireweed, goldenrod, lady slipper, oxeye daisy, Queen
+Anne's lace, wild rose** — plus **lupins in four colours** (blue, pink, purple, white). Each comes in
+three **sizes**:
+
+- **Single** — one slim stem. Bends from its root; the springiest thing out there.
+- **Clump** — a bushy tuft of stems. Bends from its root, but stiffer and calmer.
+- **Patch** — flat ground cover seen from above. It **shimmers where it lies** rather than bending
+  (see *"Why patches don't bend"* below).
+
+> **One quirk to know about the lupins.** They're the only flower that comes in colours, and the four
+> colours **share a single patch** — the artist drew only one. So lupin *Singles* and *Clumps* are
+> per-colour, but every lupin *Patch* looks the same. The Flower Paint Tool tells you this when you
+> pick one; nothing is broken.
+
+There are two ways to lay flowers down:
+
+**A) Paint them (best for meadows).** Open **Hidden Harbours ▸ Tools ▸ Flower Paint Tool** and drag
+in the Scene view — the same gesture as the Grass Paint Tool. Knobs:
+- **Mode** (Paint / Erase) and **Brush radius (m)** — the circle you see in the Scene view.
+- **Mix every species** — tick it for a wild mixed meadow, or untick and pick one **Species** from
+  the dropdown.
+- **Size** — Single / Clump / Patch (above). The line under the dropdown reminds you how each moves.
+- **Bloom stages to mix** — Singles are drawn at three stages (**Full bloom / Opening / Bud**);
+  toggle which ones to scatter. Patches have two **variants**. (Clumps have just the one.)
+- **Density** (flowers per m²) + **Flow** (how fast a drag builds up) — dragging back over an area
+  won't pile flowers up past the density.
+- **Variety** — **Size** + **Randomize size**, **Brightness variety**, **Warm/cool variety**, and
+  **Mirror some of them**. The variety is worked out from **where each flower stands**, so painting
+  over the same ground gives you the same flowers back — nudge the knobs freely.
+- **Clear ALL painted flowers**. Everything is one Undo step per stroke. Painted flowers go under one
+  **`PaintedFlowers`** object in the scene.
+
+**B) Drag-in stamps (Decor ▸ Flowers/).** One prefab per flower — `WildRoseClump`, `LupinBlueSingle`,
+`OxeyeDaisyPatch` and so on. Drag one in to place a single flower exactly where you want it.
+
+Flowers get the same three things the grass gets, all automatic — nothing to wire: **wind sway**,
+**footstep bend** (they give as you brush past), and **auto-layering** by position.
+
+> **They aren't animations — they're alive.** The artist drew each flower in **four sway poses**.
+> Rather than play those back on a fixed loop, the game **steps through them to the real wind**: dead
+> calm and they barely stir, a gale and they hurry — the same gust that ripples the water and leans
+> the trees. Press **Play** to see it.
+
+> **Why patches don't bend.** A patch is flat ground cover you're looking down at. Hinging it at its
+> bottom edge would look like a broken flap, so patches **drift and shimmer** in place instead — and
+> the artist drew them that way too. **This is the one thing worth your eye:** if you want the wind to
+> actually shove the patches around, open `Assets/_Project/Art/Materials/Flower_Patch.mat` and raise
+> **Sway amount at full wind**. Every flower knob lives on those three materials
+> (`Flower_Single` / `Flower_Clump` / `Flower_Patch`) — change one and every flower of that size
+> follows, live, while you're in Play.
 
 ---
 
@@ -313,7 +367,10 @@ the right tool.)
 | Get a surface to paint on | **Hidden Harbours ▸ Art ▸ Add Paintable Tilemap** |
 | Pick & paint terrain tiles | **Window ▸ 2D ▸ Tile Palette** → choose **HiddenHarboursTerrain** |
 | Shape the coast (height + look together) | **Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)** — see **§4b** |
-| Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props,Grass}/` into the Scene view |
+| Place decor | Drag a prefab from `Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props,Grass,Flowers}/` into the Scene view |
+| Paint grass | **Hidden Harbours ▸ Tools ▸ Grass Paint Tool** — see **§4** |
+| Paint wildflowers | **Hidden Harbours ▸ Tools ▸ Flower Paint Tool** — see **§4** |
+| Change how the flowers sway | Open `Assets/_Project/Art/Materials/Flower_Single.mat` (or `_Clump` / `_Patch`) and tune it live in Play |
 | Fix wrong overlap | Select the object → Inspector → **Sprite Renderer ▸ Order in Layer** |
 | Save | **File ▸ Save** (Ctrl+S) |
 | Save my painted cove into the project | Follow **§7** (branch → commit baked scene → paint → commit art → PR) |
