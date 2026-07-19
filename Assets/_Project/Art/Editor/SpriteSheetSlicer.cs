@@ -125,6 +125,13 @@ namespace HiddenHarbours.Art.Editor
         // the rig or the README from his art director, check this const first.
         private static readonly Vector2 CapeIslanderOrigin = new Vector2(228f / 456f, 157f / 420f);
 
+        // The lobster boat needed none of the calibration agony above: she is baked in-engine, so
+        // her pivot is READ FROM THE RIG (LobsterBoatIso.pivot = 228,258 measured from the TOP-left)
+        // and converted once — (228/456, (420−258)/420). Exact, not inferred from drawn length.
+        // That is the quiet win of ADR 0021: the metadata survives the export instead of being
+        // re-measured by eye afterwards.
+        private static readonly Vector2 LobsterBoatOrigin = new Vector2(228f / 456f, 162f / 420f);
+
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
         // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
         // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
@@ -244,6 +251,33 @@ namespace HiddenHarbours.Art.Editor
             // asserts in CapeIslanderSheetSliceTests catch it.
             new SheetSpec(Root + "Boats/CapeIslanderIso.png",     8, 1, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
             new SheetSpec(Root + "Boats/CapeIslanderIsoRock.png", 8, 8, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
+
+            // ---- Lobster boat: the ~12.0 m Tier 3 hull, and the FIRST sheet in this repo baked
+            //      IN-ENGINE from the art director's rig rather than hand-exported from a browser
+            //      (ADR 0021 / RigBaker). Inboard diesel like the Cape Islander: no motor sheet and
+            //      no oars, so hull + rock is her whole skin. Same 456×420 cell as the Cape
+            //      Islander, so the importer settings and the 4096 cap lift carry over unchanged.
+            //
+            // ⚠ SHE IS 32 FACINGS, NOT 8 — the owner's decision, and the reason the baker exists.
+            //   Cells are 8 COLS × N ROWS, row-major from top-left (BuildRects order), flat
+            //   index = heading×rockFrames + frame:
+            //     LobsterBoatIso      32 cells = 8 × 4 rows → 3648×1680, index = heading
+            //     LobsterBoatIsoRock0 64 cells = 8 × 8 rows → 3648×3360, headings  0–15 × 4 frames
+            //     LobsterBoatIsoRock1 64 cells = 8 × 8 rows → 3648×3360, headings 16–31 × 4 frames
+            //
+            //   Large hulls get 4 rock frames, small hulls 8 (ADR 0021 §2): a 12 m boat genuinely
+            //   rocks less than a 5 m punt, so this is art direction and not only a memory budget.
+            //   TWO PAGES because 32×4 = 128 cells on one sheet would stand 6720 px tall — over the
+            //   4096 cap, and a downscale is SILENT (the sprite COUNT still matches; only the
+            //   cell-size/pivot asserts catch it).
+            //
+            // ⚠ Her facings are GENUINELY CLOCKWISE, unlike every hand-exported kit above. The
+            //   baker measured the rig's counter-clockwise convention from rendered pixels and
+            //   applied the correction at bake time, so she wants
+            //   FacingsAreCounterClockwise = FALSE. Do not "fix" her to match her neighbours.
+            new SheetSpec(Root + "Boats/LobsterBoatIso.png",      8, 4, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
+            new SheetSpec(Root + "Boats/LobsterBoatIsoRock0.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
+            new SheetSpec(Root + "Boats/LobsterBoatIsoRock1.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
         };
 
         // ---- entry points -------------------------------------------------------------------------
