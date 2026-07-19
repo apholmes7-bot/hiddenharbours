@@ -47,6 +47,36 @@ pixel-perfect camera zoom tiers**.
    tanker pulls back so it fits and its scale *reads*), each an integer/pixel-snapped step so nothing
    shimmers. This formalises bible §3.7 into named tiers rather than a free-floating ortho size.
 
+### Amendment (2026-07-19, Arc D phase 1) — the bake moved in-engine, and the layout changed with it
+
+[ADR 0021](0021-in-engine-js-rig-baking.md) supersedes the *mechanism* of point 1 without changing its
+intent. Hulls are still baked orthographic ¾ renders on a sheet; they are simply baked by **Unity
+running the art director's parametric `.js` rig** instead of hand-exported from a browser. Three of
+this ADR's conventions change as a result, established by the first shipped implementation
+(`Assets/_Project/Code/Tools/Editor/RigBaking/`):
+
+- **32 facings, not 8.** The owner's decision. Rock frames are traded by hull size — small hulls
+  32 × 8, large hulls 32 × 4 — because a 12 m boat genuinely rocks less than a 5 m punt.
+- **Multi-page sheets, 8 columns × N rows.** A single row of 32 facings is 14,592 px, and even one
+  page of 32 × 4 would stand 6720 px tall — both past the 4096 cap. So: one page per rock-frame
+  group, 8 columns wide, row-major from top-left, flat index = `heading × rockFrames + frame`.
+  ⚠️ Exceeding the cap downscales **silently** — the sprite COUNT still matches, so only a cell-size
+  or pivot assert catches it.
+- **`FacingsAreCounterClockwise` is FALSE for anything baked in-engine.** The baker measures each
+  rig's convention from rendered pixels and chooses the `dir` argument per cell — emitting
+  `render((N−k) % N)` for a counter-clockwise rig — so the sheet on disk is genuinely clockwise. The
+  flag survives only for legacy hand-exported sheets until they are re-baked, then retires.
+  ⚠️ The convention is **per rig and machine-measured**. A blanket correction is wrong:
+  `characterIsoRig` and `rodIsoRig` are already clockwise-correct and would be re-mirrored.
+
+Proven by golden master: baking the punt at 8 facings reproduces the shipped `PuntIso.png`
+byte-for-byte (100.00% of pixels, mean channel delta 0.000) under exactly that permutation.
+
+**Still open:** tight per-facing cropping (a measured 61–66% memory saving, to be expressed as the
+per-sprite pivot so no Boats-lane consumer has to change) is deferred; and the punt/skiff
+`MOTOR.behind` integer facing table must generalise to a continuous arc before any 32-direction
+*motor* bake ships.
+
 ## Why — weighted to *this* game
 
 - **¾ + asymmetric upper hulls** ⇒ rigid sprite-spin breaks the form and the light (above). A relit
