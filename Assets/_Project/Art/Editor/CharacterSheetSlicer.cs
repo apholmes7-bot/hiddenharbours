@@ -241,7 +241,15 @@ namespace HiddenHarbours.Art.Editor
             ISpriteEditorDataProvider dp = factory.GetSpriteEditorDataProviderFromObject(importer);
             dp.InitSpriteEditorDataProvider();
 
-            SpriteRect[] rects = BuildRects(stem, cols, cell);
+            // ⚠️ Re-use the spriteID any already-sliced name carries. GUID.Generate() on every run made
+            // a re-bake rewrite every spriteID in every .meta — churning all nine already-merged sheets
+            // for no reason, and defeating the stable name→fileID mapping this tool sets below. Slicing
+            // is idempotent now: re-running over unchanged art produces a byte-identical .meta.
+            var existingIds = dp.GetSpriteRects()
+                                .GroupBy(r => r.name)
+                                .ToDictionary(g => g.Key, g => g.First().spriteID);
+
+            SpriteRect[] rects = BuildRects(stem, cols, cell, existingIds);
             dp.SetSpriteRects(rects);
 
             // Keep name→fileID stable across future reimports (mirrors the package's own slicer) so any
@@ -266,8 +274,13 @@ namespace HiddenHarbours.Art.Editor
         /// <para>Names are <c>&lt;stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c> — row INDEX, never a compass
         /// name. See the class remarks: the rows are baked counter-clockwise but the README labels them
         /// clockwise, so any compass name written here would be wrong for six of the eight rows.</para>
+        ///
+        /// <para><paramref name="existingIds"/> maps an already-sliced slice name to the spriteID it
+        /// already carries; those are re-used so a re-bake of unchanged art is a no-op on the
+        /// <c>.meta</c>. Only genuinely new names get a fresh GUID.</para>
         /// </summary>
-        public static SpriteRect[] BuildRects(string stem, int cols, Vector2Int cell)
+        public static SpriteRect[] BuildRects(string stem, int cols, Vector2Int cell,
+                                              IReadOnlyDictionary<string, GUID> existingIds = null)
         {
             Vector2 pivot = GroundPivotFor(cell);
             var rects = new SpriteRect[DirectionRows * cols];
@@ -277,10 +290,13 @@ namespace HiddenHarbours.Art.Editor
                 {
                     float x = c * cell.x;
                     float y = (DirectionRows - 1 - r) * cell.y; // top row → top of the bottom-origin sheet
+                    string name = $"{stem}_d{r}_f{c}";
                     rects[r * cols + c] = new SpriteRect
                     {
-                        name = $"{stem}_d{r}_f{c}",
-                        spriteID = GUID.Generate(),
+                        name = name,
+                        spriteID = existingIds != null && existingIds.TryGetValue(name, out var id)
+                                   ? id
+                                   : GUID.Generate(),
                         rect = new Rect(x, y, cell.x, cell.y),
                         alignment = SpriteAlignment.Custom,
                         pivot = pivot,
