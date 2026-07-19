@@ -36,6 +36,13 @@ namespace HiddenHarbours.Player
         [Tooltip("Walk speed on foot (m/s).")]
         [SerializeField] private float _moveSpeed = 3f;
 
+        [Tooltip("Sprint speed on foot (m/s) while Shift is held — the fisher's hurry. This must stay " +
+                 "comfortably ABOVE the character skin's RunSpeedThreshold (CharacterVisualDef, 4.5 m/s on " +
+                 "FisherIso) or the run sheet can never play: the sprite driver picks idle/walk/run purely " +
+                 "from MEASURED speed, so sprint is expressed as speed and nothing else. Raise this to run " +
+                 "sooner and harder; drop it below the skin's threshold and the fisher merely walks faster.")]
+        [SerializeField, Min(0f)] private float _sprintSpeed = 5.5f;
+
         [Tooltip("Enforce the falling-tide walkability gate (St Peters): the fisher may only step onto " +
                  "ground exposed by the tide; a move into the water gently stops at the wading edge. " +
                  "Off-by-default so non-tidal land scenes (no terrain wired) need no change; the St " +
@@ -81,6 +88,7 @@ namespace HiddenHarbours.Player
         private bool _isoSkinOwnsSprite;
         private Facing _facing = Facing.Down;
         private Vector2 _moveInput;
+        private bool _sprintHeld;
         private float _animTimer;
         private int _animStep;
 
@@ -100,6 +108,37 @@ namespace HiddenHarbours.Player
         /// <summary>Desired top-down velocity for a move input (diagonals clamped so they're not faster).</summary>
         public static Vector2 VelocityFor(Vector2 moveInput, float speed)
             => Vector2.ClampMagnitude(moveInput, 1f) * Mathf.Max(0f, speed);
+
+        /// <summary>
+        /// The speed the fisher should move at this tick (m/s) — the ONE signal that expresses sprinting.
+        ///
+        /// <para>There is deliberately no "is running" flag anywhere: <see cref="Core.IsoCharacterSprite"/>
+        /// already chooses idle/walk/run from the speed it MEASURES off the transform, so raising the speed
+        /// past the skin's <c>RunSpeedThreshold</c> is the whole feature. One speed signal, one selector —
+        /// a second path for choosing the run sheet could only ever drift out of step with the first.</para>
+        ///
+        /// <para><b>Sprinting is a dry-and-wading privilege, never a swimming one (P5).</b> Past the wade
+        /// band the fisher is swimming for the shore, and a swimmer who could sprint would make the water
+        /// toothless — so beyond <paramref name="wadeDepth"/> the sprint is simply refused and the walk speed
+        /// stands. Within the wade band sprint IS allowed, but it is still handed to
+        /// <see cref="ApplyWaterEdge"/> afterwards, so the owner's wade slow-factor multiplies it DOWN like
+        /// any other speed (5.5 m/s × a 0.6 wade factor = 3.3 m/s — below the run threshold, so the fisher
+        /// visibly drops back to a walk as the water takes her legs, for free and with no extra code).</para>
+        /// </summary>
+        /// <param name="sprintHeld">Is the sprint control held this tick?</param>
+        /// <param name="walkSpeed">The ordinary walk speed (m/s).</param>
+        /// <param name="sprintSpeed">The sprint speed (m/s).</param>
+        /// <param name="depthAtFeet">Water depth at the fisher's feet (m); ≤ 0 is dry. Pass
+        /// <see cref="float.NegativeInfinity"/> where no tide/terrain is wired — dry land, sprint allowed.</param>
+        /// <param name="wadeDepth">Deepest walkable-wade water (m); deeper than this is swimming.</param>
+        public static float SpeedFor(bool sprintHeld, float walkSpeed, float sprintSpeed,
+                                     float depthAtFeet, float wadeDepth)
+        {
+            if (!sprintHeld) return walkSpeed;
+            if (depthAtFeet > wadeDepth) return walkSpeed;   // swimming — you don't sprint out of the sea
+            // Never let a mis-set sprint tunable make the fisher SLOWER than her own walk.
+            return Mathf.Max(walkSpeed, sprintSpeed);
+        }
 
         /// <summary>Facing from the move direction; keeps the current facing when input is ~zero.</summary>
         public static Facing FacingFor(Vector2 moveInput, Facing current)
@@ -275,6 +314,7 @@ namespace HiddenHarbours.Player
         private void Update()
         {
             _moveInput = ReadInput();
+            _sprintHeld = ReadSprint();
             _facing = FacingFor(_moveInput, _facing);
 
             int column;
@@ -305,7 +345,14 @@ namespace HiddenHarbours.Player
         private void FixedUpdate()
         {
             if (_rb == null) return;
-            Vector2 desired = VelocityFor(_moveInput, _moveSpeed);
+
+            // Depth at the feet, read ONCE per tick and shared by the sprint gate and the water state (the
+            // probe is the same reading; calling it twice would only invite the two to disagree). Where no
+            // tide gate is wired there is no water to be in, so the sprint gate sees "dry".
+            float depthAtFeet = _tideGatedWalk ? TidalWalkability.DepthNow(_rb.position) : float.NegativeInfinity;
+
+            float speed = SpeedFor(_sprintHeld, _moveSpeed, _sprintSpeed, depthAtFeet, _wadeDepth);
+            Vector2 desired = VelocityFor(_moveInput, speed);
 
             // The owner's three-band wade model (St Peters, P1/P5): full speed on dry ground, slowed as you
             // wade, a crawl in the slow-swim escape band, and a soft wall at boat-only depth — but NEVER a
@@ -316,7 +363,7 @@ namespace HiddenHarbours.Player
             {
                 desired = ApplyWaterEdge(desired, _rb.position, TidalWalkability.DepthNow, _wadeProbeDistance,
                                          _wadeDepth, _swimLimit, _wadeSlowFactor, _swimSlowFactor);
-                UpdateWaterState(TidalWalkability.DepthNow(_rb.position));
+                UpdateWaterState(depthAtFeet);
             }
 
             _rb.linearVelocity = desired;
@@ -353,6 +400,26 @@ namespace HiddenHarbours.Player
             if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) m.x += 1f;
             if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) m.x -= 1f;
             return m;
+        }
+
+        /// <summary>
+        /// Is the sprint control held? Either Shift, polled the same way every other key here is (new Input
+        /// System device polling — the greybox pattern this controller and DevBoatInput/DevFishingInput all
+        /// share; a real InputService replaces the lot later).
+        ///
+        /// <para>Shift alone does nothing: sprint is only ever a MULTIPLIER on a move that is already
+        /// happening, because the speed it sets is handed to <see cref="VelocityFor"/> along with the move
+        /// input, and a zero input is still zero however fast you meant it.</para>
+        ///
+        /// <para><b>Gamepad sprint is deliberately deferred</b>, not forgotten — on-foot movement itself is
+        /// keyboard-only today, so a pad sprint would bind to a walk that no pad can start. It belongs with a
+        /// proper pad pass over the on-foot controller, not bolted on here.</para>
+        /// </summary>
+        private static bool ReadSprint()
+        {
+            var kb = Keyboard.current;
+            if (kb == null) return false;
+            return kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed;
         }
 
         private void ApplyFrame(Facing facing, int column)
