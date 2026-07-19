@@ -357,7 +357,15 @@
     return { x:p.sx, y:p.sy };
   }
 
+  // pilot foot-contact on the floor just forward of the stern bench (works the tiller) — rides the wave
+  const PILOT = { x:0, y:-1.25 };
+  function pilotStand(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const st=station((PILOT.y+L/2)/L), B=camBasis(opts), p=projVert(PILOT.x, PILOT.y, st.kz+FLOOR, B);
+    return { x:p.sx, y:p.sy };
+  }
+
   root.PuntIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, TRIM, GOLD, WOOD, IRON, MOTO, RED, KEY,
-    render, ROCK, rock:rockMotion, MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, TUBS, tubMounts };
+    render, ROCK, rock:rockMotion, MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, TUBS, tubMounts, PILOT, pilotStand };
 })(typeof globalThis!=='undefined'?globalThis:window);

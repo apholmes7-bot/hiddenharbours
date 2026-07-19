@@ -326,7 +326,15 @@
     return TUBS.map(m=>{ const p=projVert(m.x,m.y,m.z,B); return {x:p.sx, y:p.sy}; });
   }
 
+  // pilot foot-contact on the sole, standing at the wheel just aft of the console — rides the wave
+  const PILOT = { x:0, y:-0.55 };
+  function pilotStand(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), p=projVert(PILOT.x, PILOT.y, DECK, B);
+    return { x:p.sx, y:p.sy };
+  }
+
   root.ConsoleIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, TRIM, GOLD, CANV, GLAS, WOOD, IRON, MOTO, KEY,
-    render, ROCK, rock:rockMotion, motorMount, MOUNT, helmSeat, HELM, TUBS, tubMounts };
+    render, ROCK, rock:rockMotion, motorMount, MOUNT, helmSeat, HELM, TUBS, tubMounts, PILOT, pilotStand };
 })(typeof globalThis!=='undefined'?globalThis:window);
