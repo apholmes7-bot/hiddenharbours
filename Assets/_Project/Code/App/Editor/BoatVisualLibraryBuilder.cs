@@ -288,6 +288,32 @@ namespace HiddenHarbours.App.Editor
                 ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
+
+            // THE CAPE ISLANDER — the ~12.9 m inshore working boat, and the first hull in this library with
+            // NEITHER oars NOR an outboard: she is inboard-diesel, so her kit ships a hull sheet and a rock
+            // grid and nothing else. That is not a gap to be filled in later — there is no engine drawn on
+            // her because there is no engine to draw, and adding one would be inventing art.
+            //
+            // Her ArtBakeElevationDegrees still matters, and matters MORE than on the small boats: her wake
+            // anchors at LengthMeters·0.5 = 6.45 m astern, so a wrong elevation would throw the plume metres
+            // out rather than centimetres.
+            //
+            // FacingsAreCounterClockwise = true, like every other iso kit — and MEASURED for this artwork
+            // rather than assumed from the others. CapeIslanderFacingTests reads her pixels: the un-
+            // foreshortened principal axis, disambiguated bow-from-stern by the raised forefoot, walks
+            // 0/320/278/226/180/134/82/37 across the 8 cells. That is 4.1° from the CCW sequence and 86.1°
+            // from the CW labelling — the same method reproduces the dory/punt/console to 1.5–2.9°, so the
+            // margin is not marginal. See the block comment on IsoSheetsAreCounterClockwise above.
+            new Sheet
+            {
+                AssetName = "CapeIslanderIso", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise,
+                Id = "visual.cape_islander_iso",
+                HullPath = $"{ArtBoats}/CapeIslanderIso.png",
+                RockPath = $"{ArtBoats}/CapeIslanderIsoRock.png",
+                HeadingCount = 8, RockFrames = 8, OarColumns = 10,
+                ArtBakeElevationDegrees = IsoBakeElevation,
+                SortingOrder = 1,
+            },
         };
 
         /// <summary>The 8 per-heading files of a compass-as-separate-files skin, N..NW clockwise.</summary>

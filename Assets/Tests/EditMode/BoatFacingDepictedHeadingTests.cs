@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
@@ -66,6 +67,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Bearing of (port oar − starboard oar) relative to the bow: the port beam.</summary>
         const float PortBeamBearingOffset = -90f;
 
+        /// <summary>
+        /// Measurement-noise budget for the hull-silhouette bearing, in degrees. Sized from the WORST cell
+        /// across the three calibration kits (2.8 / 3.1 / 5.9) and the Cape Islander (8.0), with headroom —
+        /// NOT from what happens to pass. It is a noise budget and nothing more: the thing this test
+        /// discriminates, a mirrored bake, is 90° out at the diagonals and 180° at E/W, which
+        /// <see cref="TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError"/> asserts outright.
+        /// </summary>
+        const float HullAxisToleranceDegrees = 12f;
+
         // ---- the iso kits: baked CCW, every cell measured ------------------------------------
 
         [TestCase("ConsoleSkiff", "SkiffMotorLower-Work.png", OutboardMotorMath.SteerColumns)]
@@ -99,6 +109,120 @@ namespace HiddenHarbours.Tests.EditMode
 
             AssertEveryHeadingIsDepicted(visual, beam, PortBeamBearingOffset, "DoryIso port-minus-starboard oar",
                                          subtractMean: false);   // a difference already has the common offset out
+        }
+
+        /// <summary>
+        /// THE CAPE ISLANDER — the hull that neither feature above can measure.
+        ///
+        /// <para>She has no outboard (inboard diesel — her kit draws no engine) and no oars, so there is no
+        /// transom marker and no port-beam difference. All that is left is the HULL SILHOUETTE, which is what
+        /// the FishingBoat test falls back on — and that test is explicit that a principal axis is a LINE, so
+        /// it pins the heading modulo 180 and cannot tell bow from stern. Modulo 180 is not good enough here:
+        /// this kit's whole question is which of two 180°-apart conventions it was baked in, and a mod-180
+        /// test answers that question for the DIAGONALS but is exactly blind on the CARDINALS.</para>
+        ///
+        /// <para>So this adds the missing term rather than accepting the blindness. Two changes to the
+        /// FishingBoat measurement:</para>
+        /// <list type="number">
+        ///   <item><b>Un-foreshorten before fitting.</b> The rig squashes screen-Y by sin(40°); a principal
+        ///         axis fitted in raw screen pixels is therefore pulled toward the horizontal and reads the
+        ///         diagonals several degrees off. Dividing screen-Y by sin(40°) first puts the silhouette back
+        ///         into plan view, where the keel line really is the heading.</item>
+        ///   <item><b>A BOW-TAPER term for the sign.</b> A boat is pointed at the bow and blunt at the
+        ///         transom, so the silhouette's perpendicular spread is narrower at the bow end of the major
+        ///         axis. That picks which of the two ends is the bow, which is the 180° the axis alone cannot
+        ///         give.</item>
+        /// </list>
+        ///
+        /// <para><b>The method is validated before it is trusted</b> — on the three kits whose convention is
+        /// already established from their own OFFSET-FREE features above (dory via her oars, console and punt
+        /// via their outboards). It reproduces their CCW sequence with a WORST-CELL error of 2.8°, 3.1° and
+        /// 5.9°. Only then is it pointed at the Cape Islander, where it reads 0/323/278/226/180/134/82/37
+        /// across the 8 cells — worst cell 8.0° from CCW.</para>
+        ///
+        /// <para><b>Why 12° is a tight tolerance here and not a loose one.</b> The question this test answers
+        /// is which of two conventions the art was baked in, and those two are 90° apart at the diagonals and
+        /// 180° apart at E/W. So the gap between "a few degrees of measurement noise" and "the wrong
+        /// convention" is not close: the residuals above are 3–8°, the alternative is 86.1° in the mean and
+        /// 95° at worst. <see cref="TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError"/> asserts
+        /// that separation directly, so the tolerance is never the only thing standing between this fixture
+        /// and a mirrored boat. The residual itself is real and explainable — it is symmetric about the
+        /// cardinals (+8/+8 against −8/−8 on the Cape Islander), the signature of a heavy wheelhouse pulling
+        /// the covariance axis off the keel line, not of a mislabelled cell.</para>
+        ///
+        /// <para><b>This asserts the ART, then the code that reads it</b>, in that order — the same discipline
+        /// as the FishingBoat test, and for the same reason: if the flag were checked first it would mask the
+        /// measurement and this file would be back to asserting configuration against itself.</para>
+        /// </summary>
+        [TestCase("DoryIso", "DoryIso.png")]           // calibration: established CCW, worst cell 2.8°
+        [TestCase("PuntIsoBasic", "PuntIso.png")]      // calibration: established CCW, worst cell 3.1°
+        [TestCase("ConsoleSkiff", "ConsoleIso.png")]   // calibration: established CCW, worst cell 5.9°
+        [TestCase("CapeIslanderIso", "CapeIslanderIso.png")]
+        public void IsoHull_CellChosenForHeading_ActuallyDepictsThatHeading_BowAndAll(
+            string visualName, string hullSheet)
+        {
+            var visual = LoadVisual(visualName);
+            float[] depicted = HullBearingsPerCell($"{ArtBoats}/{hullSheet}");
+
+            for (int i = 0; i < Headings; i++)
+            {
+                float heading = i * Step;
+                int cell = DirectionalBoatSprite.HeadingToFacingIndex(
+                    heading, Headings, visual.ZeroHeadingDegrees, visual.FacingsAreCounterClockwise);
+
+                // A FULL-CIRCLE comparison, not modulo 180: the bow-taper term above is what earns this, and
+                // it is the only reason this assertion can catch a stern-first bake on the cardinals.
+                float delta = Mathf.Abs(Mathf.DeltaAngle(depicted[cell], heading));
+                Assert.LessOrEqual(delta, HullAxisToleranceDegrees,
+                    $"{visualName}: heading {heading}° draws cell {cell}, whose HULL measures {depicted[cell]:0.0}° " +
+                    $"— off by {delta:0.0}°. A few degrees is cabin mass pulling the axis; 45° or more is the " +
+                    $"convention. visual '{visual.Id}' has FacingsAreCounterClockwise=" +
+                    $"{visual.FacingsAreCounterClockwise}.");
+            }
+
+            Assert.IsTrue(visual.FacingsAreCounterClockwise,
+                $"{visualName} is an iso rig bake: the rigs rotate the model counter-clockwise and label the " +
+                "cells clockwise, so this flag must stay true. The pixel assertions above are what prove it — " +
+                "this line only states the conclusion.");
+        }
+
+        /// <summary>
+        /// <b>The separation, asserted — so the tolerance above is never the load-bearing number.</b>
+        ///
+        /// <para>A tolerance test can only ever say "close enough". This says the alternative is nowhere
+        /// near: it measures the Cape Islander's cells against the CW labelling her art does NOT use, and
+        /// requires that mismatch to be enormous. It comes out ~86° in the mean and 95° at worst, against a
+        /// worst-cell residual of 8° for CCW — better than a factor of ten. That gap is the actual evidence
+        /// the flag is right, and it is what makes the 12° budget a comfortable one rather than a fitted one.
+        /// If a future re-export ever narrows this gap, the honest response is to find a better feature to
+        /// measure, not to widen the tolerance.</para>
+        /// </summary>
+        [Test]
+        public void TheWrongConvention_WouldBeOffByMoreThanAnyMeasurementError()
+        {
+            var visual = LoadVisual("CapeIslanderIso");
+            float[] depicted = HullBearingsPerCell($"{ArtBoats}/CapeIslanderIso.png");
+
+            float worstUnderTheWrongConvention = 0f;
+            for (int i = 0; i < Headings; i++)
+            {
+                float heading = i * Step;
+                // The SAME index math, run through the convention her art is NOT baked in.
+                int cell = DirectionalBoatSprite.HeadingToFacingIndex(
+                    heading, Headings, visual.ZeroHeadingDegrees, facingsAreCounterClockwise: false);
+                worstUnderTheWrongConvention =
+                    Mathf.Max(worstUnderTheWrongConvention, Mathf.Abs(Mathf.DeltaAngle(depicted[cell], heading)));
+            }
+
+            Assert.Greater(worstUnderTheWrongConvention, 45f,
+                $"reading the Cape Islander clockwise is only {worstUnderTheWrongConvention:0.0}° wrong at its " +
+                "worst cell. It should be ~95°. If these two conventions have become hard to tell apart, the " +
+                "measurement has lost its power and needs a better feature — do NOT widen " +
+                nameof(HullAxisToleranceDegrees) + " to make this go away.");
+
+            Assert.Greater(worstUnderTheWrongConvention, HullAxisToleranceDegrees * 4f,
+                "the wrong convention must be wrong by far more than the measurement noise budget, or the " +
+                "budget is doing work it cannot do");
         }
 
         // ---- the OTHER lineage: the hand-drawn compass, CW and correct -----------------------
@@ -241,6 +365,101 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Object.DestroyImmediate(tex);
             return result;
+        }
+
+        /// <summary>
+        /// The bearing each of the 8 cells of a one-row hull sheet actually DEPICTS — full circle, bow and
+        /// all. See <see cref="IsoHull_CellChosenForHeading_ActuallyDepictsThatHeading_BowAndAll"/> for why
+        /// this exists alongside <see cref="PrincipalAxisBearing"/> and what the extra terms buy.
+        /// </summary>
+        static float[] HullBearingsPerCell(string sheetPath)
+        {
+            Texture2D tex = LoadTexture(sheetPath);
+            int cw = tex.width / Headings, ch = tex.height;
+            var pixels = tex.GetPixels32();
+
+            // The rig squashes screen-Y by sin(elev) and leaves screen-X alone, so dividing Y back out
+            // restores the plan view the heading actually lives in. Skip it and every diagonal reads
+            // several degrees toward E/W.
+            float se = Mathf.Sin(RigElevationDegrees * Mathf.Deg2Rad);
+
+            var result = new float[Headings];
+            for (int cell = 0; cell < Headings; cell++)
+            {
+                var xs = new List<double>();
+                var ys = new List<double>();
+                for (int y = 0; y < ch; y++)
+                    for (int x = 0; x < cw; x++)
+                        if (pixels[y * tex.width + cell * cw + x].a > 32)
+                        {
+                            xs.Add(x);
+                            ys.Add(y / se);   // texture origin is bottom-left, so +y is already up
+                        }
+                Assert.Greater(xs.Count, 0, $"{sheetPath}: cell {cell} is fully transparent");
+
+                double mx = Mean(xs), my = Mean(ys), xx = 0, yy = 0, xy = 0;
+                for (int i = 0; i < xs.Count; i++)
+                {
+                    double dx = xs[i] - mx, dy = ys[i] - my;
+                    xx += dx * dx; yy += dy * dy; xy += dx * dy;
+                }
+
+                // Major axis of the covariance ellipse — the keel line, as a LINE.
+                double ang = 0.5 * System.Math.Atan2(2 * xy, xx - yy);
+                double ax = System.Math.Cos(ang), ay = System.Math.Sin(ang);
+
+                // ...and the bow-taper term that turns that line into an arrow. Project onto the axis,
+                // then compare the perpendicular spread of the far 12% at each end: the bow is POINTED and
+                // the transom BLUNT, so the narrower end is the bow.
+                var proj = new List<double>(xs.Count);
+                var perp = new List<double>(xs.Count);
+                for (int i = 0; i < xs.Count; i++)
+                {
+                    double dx = xs[i] - mx, dy = ys[i] - my;
+                    proj.Add(dx * ax + dy * ay);
+                    perp.Add(-dx * ay + dy * ax);
+                }
+                double lo = Percentile(proj, 0.12), hi = Percentile(proj, 0.88);
+                double widthAtPlus = SpreadWhere(perp, proj, hi, above: true);
+                double widthAtMinus = SpreadWhere(perp, proj, lo, above: false);
+                if (widthAtPlus > widthAtMinus) { ax = -ax; ay = -ay; }   // +axis end is the blunt one
+
+                // Into the project's compass convention (0 = +Y/North, clockwise).
+                float bearing = Mathf.Atan2((float)ax, (float)ay) * Mathf.Rad2Deg;
+                result[cell] = (bearing % 360f + 360f) % 360f;
+            }
+
+            Object.DestroyImmediate(tex);
+            return result;
+        }
+
+        static double Mean(List<double> v)
+        {
+            double s = 0;
+            for (int i = 0; i < v.Count; i++) s += v[i];
+            return s / v.Count;
+        }
+
+        static double Percentile(List<double> v, double p)
+        {
+            var sorted = new List<double>(v);
+            sorted.Sort();
+            return sorted[Mathf.Clamp((int)(p * (sorted.Count - 1)), 0, sorted.Count - 1)];
+        }
+
+        /// <summary>Standard deviation of <paramref name="perp"/> over the samples whose projection is
+        /// beyond <paramref name="cut"/> — i.e. the silhouette's width at one end of the keel line.</summary>
+        static double SpreadWhere(List<double> perp, List<double> proj, double cut, bool above)
+        {
+            double s = 0, s2 = 0; int n = 0;
+            for (int i = 0; i < proj.Count; i++)
+            {
+                if (above ? proj[i] < cut : proj[i] > cut) continue;
+                s += perp[i]; s2 += perp[i] * perp[i]; n++;
+            }
+            if (n == 0) return 0;
+            double mean = s / n;
+            return System.Math.Sqrt(System.Math.Max(0, s2 / n - mean * mean));
         }
 
         /// <summary>

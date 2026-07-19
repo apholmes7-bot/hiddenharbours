@@ -290,6 +290,96 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator CapeIslander_MakesSteadyWay_LikeThirteenMetresOfWorkingBoat()
+        {
+            var hull = LoadHull("CapeIslander");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            Assert.AreEqual(4.10f, rb.linearVelocity.magnitude, 0.12f,
+                "the Cape Islander's target is ≈4.1 m/s — above the console workboat's 3.90, below the sport " +
+                "skiff's 4.64. She is a big diesel boat that makes steady way, not a fast one. If this drifts, " +
+                "EnginePower/ForwardDrag/MassKg on CapeIslander.asset moved.");
+        }
+
+        [UnityTest]
+        public IEnumerator CapeIslander_IsTheHullThatProvesTheDampingTerm()
+        {
+            // The whole reason she is worth a test of her own. At 6000 kg the rigidbody's linearDamping is
+            // 12.0 of her 15.0 total resistance — EIGHTY PERCENT, against 59% on the console and less on the
+            // dory. The naive ratio this project has been bitten by twice, EnginePower/ForwardDrag, would put
+            // her at 6300/300 = 21 m/s. Measuring how far WRONG that ratio is on the heaviest hull is what
+            // makes the trap unforgettable, so it is asserted rather than merely described in a comment.
+            var hull = LoadHull("CapeIslander");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            float measured = rb.linearVelocity.magnitude;
+            float naive = hull.EnginePower / hull.ForwardDrag;
+            Assert.Greater(naive / measured, 4f,
+                $"the naive EnginePower/ForwardDrag ratio predicts {naive:0.0} m/s against a measured " +
+                $"{measured:0.00}. If that factor ever falls near 1, the force model changed and every " +
+                "derivation in GreyboxBuilder's hull-ladder note needs re-deriving.");
+
+            // ...and she is still the heaviest thing afloat, which is the other half of her character.
+            foreach (var other in new[] { "ConsoleSkiff", "SportSkiffTwin", "Dory" })
+                Assert.Greater(hull.MassKg, LoadHull(other).MassKg * 2f,
+                    $"the Cape Islander must dwarf the {other} — momentum is the point of her");
+        }
+
+        /// <summary>
+        /// The Cape Islander against <see cref="TheMeasuredLadder_MatchesTheDerivation"/>'s algebra — run
+        /// HERE, with her own tolerance, rather than inside that loop. She is deliberately excluded from it,
+        /// and the reason is a property of the HARNESS, not of her stats.
+        ///
+        /// <para><see cref="RunToTerminal"/> stops when one fixed step adds less than 0.0005 m/s. That is an
+        /// ABSOLUTE threshold on a quantity that decays with the hull's own time constant τ = mass/resistance,
+        /// so it always stops a little SHORT of true terminal, by
+        /// <c>gap = 0.0005·τ/fixedDeltaTime = 0.025·τ</c>. That formula is not a guess — it reproduces every
+        /// measured value on the committed ladder to the centimetre: dory 1.69→1.66, punt 2.32→2.26, fishing
+        /// skiff 2.50→2.45, console 3.90→3.83, sport 4.64→4.57, twin 5.63→5.56.</para>
+        ///
+        /// <para>Every one of those hulls has τ between 1.4 and 2.9, so their gap is 0.03–0.07 and the shared
+        /// ±0.1 comparison holds with room. The Cape Islander's τ is 4.0 — the largest in the fleet by half
+        /// again, because she is the heaviest by five times — so her gap is 0.100, landing EXACTLY on that
+        /// tolerance. Leaving her in the loop would have been a coin-flip in CI, and widening the shared
+        /// tolerance would have quietly loosened the guard for all seven other hulls. So she is measured
+        /// against the derivation MINUS the harness's own known bias, which is a tighter statement about her
+        /// than the loop makes about them.</para>
+        ///
+        /// <para><b>The harness bias is worth fixing properly</b> (a relative settle threshold would pull
+        /// every hull onto its predicted number instead of systematically under it) — but that would move
+        /// seven committed measurements at once, which is not this PR's to do.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator CapeIslander_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor()
+        {
+            const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
+            const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
+            const float settleEpsilon = 0.0005f;  // RunToTerminal's stop threshold, per fixed step
+
+            var hull = LoadHull("CapeIslander");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            float mass = hull.MassKg / 100f;
+            float resistance = hull.ForwardDrag * forceFeelScale + mass * linearDamping;
+            float predicted = hull.EnginePower * forceFeelScale / resistance;
+
+            // The harness's own shortfall, derived rather than fitted: τ = mass/resistance.
+            float tau = mass / resistance;
+            float harnessGap = settleEpsilon * tau / Time.fixedDeltaTime;
+
+            Assert.AreEqual(predicted - harnessGap, rb.linearVelocity.magnitude, 0.03f,
+                $"measured {rb.linearVelocity.magnitude:0.000} against the derivation's {predicted:0.000} less " +
+                $"the harness's {harnessGap:0.000} (τ = {tau:0.00} s). If this fails by roughly the gap, " +
+                "RunToTerminal's settle rule changed; if it fails by more, the force model did.");
+        }
+
+        [UnityTest]
         public IEnumerator TheMeasuredLadder_MatchesTheDerivation()
         {
             // The guard on the ALGEBRA itself. GreyboxBuilder's hull-ladder note derives every stat on the
