@@ -74,6 +74,32 @@ to render. Results are in the spike harness
 - **The output is correct.** Renders were dumped to disk and eyeballed: the punt broadside and the
   console skiff plan view come out pixel-identical in character to the shipped sheets — correct
   palette ramps, dither, keyline, pivots.
+- **Speed — and the finding that shaped this ADR.** The Unity **editor runs Mono** (`Mono 6.13.0`,
+  confirmed in the batch-mode log), and Mono costs Jint roughly **6.5×** against desktop CoreCLR.
+  Measuring on CoreCLR alone would have been badly misleading, so the load-bearing numbers are the
+  Unity ones:
+
+  | Rig (cell) | Jint / Unity **Mono** | Jint / .NET 10 | V8 (ClearScript) |
+  |---|---|---|---|
+  | Punt hull (184×168) — 1 facing | **1051 ms** | 162 ms | 2.8 ms |
+  | Console skiff (244×216) — 1 facing | **1942 ms** | 293 ms | 4.4 ms |
+  | Sport skiff (244×216) — 1 facing | **~1600 ms** | 296 ms | 4.2 ms |
+  | Punt — 8 facings | **9.0 s** | 1.5 s | 0.02 s |
+  | Console skiff — 8 facings | **17.5 s** | 2.7 s | 0.07 s |
+  | Punt — 64 cells (8 dir × 8 rock) | **~72 s** | 12.3 s | 0.26 s |
+  | Console skiff — 64 cells | **~140 s** | 21.9 s | 0.42 s |
+
+  The V8 column was **also re-measured inside the Unity editor** (ClearScript 7.5.1, same Mono host):
+  4.5 ms/facing for the punt, 5.1 ms for the console skiff, 0.27–0.45 s for a 64-cell sheet — i.e.
+  V8's advantage survives the Mono host that costs Jint 6.5×, because the work happens in native V8.
+
+  Engine install (parse + execute the rig) is negligible everywhere: 37–81 ms under Mono.
+
+  Read plainly: **Jint is fast enough to BAKE and too slow to PREVIEW.** A one-shot sheet bake at
+  9–18 s, or a full rock sheet at 1–2.5 minutes, is a progress-bar operation an artist will accept.
+  A **1–2 second refresh per facing is sluggish** for the "nudge it and look" loop the owner asked
+  for — you cannot drag an elevation slider against that. V8 renders the same facing in **3–4 ms**,
+  which is a live preview with room to spare.
 
 ## Decision
 
@@ -82,18 +108,47 @@ bake the art director's rig `.js` files by executing them unmodified. The rig so
 source of truth for the artwork; sheets and the Def metadata that describes them become BUILD OUTPUT
 of an editor tool, not hand-carried assets.**
 
-### (1) Why Jint, and not V8
+### (1) Jint first — because BAKING is the requirement, and Jint bakes
 
-Jint is fast enough, and it is the only option that stays a *pure managed* dependency:
+Jint is the only option that stays a *pure managed* dependency, and the measurements say it clears
+the bar that actually matters:
 
 - **Two DLLs, ~2.7 MB, no native binaries** (`Jint.dll` + `Acornima.dll`, both netstandard2.0). It
   drops into an editor-only plugin folder and resolves in Unity with no interop, no per-platform
-  payload, and nothing for a build machine to install.
-- **No platform coupling.** ClearScript/V8 would pull a native `win-x64` (and later `osx-arm64`, …)
-  binary per editor host — tens of MB each, committed to the repo or restored by an out-of-band step,
-  and a fresh licence/attribution surface. It buys speed we do not need for a bake.
-- The measured numbers (below) put a full 8-facing bake in **seconds**, which is the only bar an
-  editor bake has to clear.
+  payload, no LFS, and nothing for a build machine to install. Verified: it loads and runs in the
+  6000.5.0f1 editor under Mono.
+- **A bake is a background job, not a keystroke.** 9–18 s for an 8-facing sheet is acceptable, and
+  it parallelises: the facings are independent and Jint engines are cheap, so one `Engine` per
+  thread gives a measured **3.9× speedup** (8 facings, 8 threads). That puts a realistic in-editor
+  bake at **~4–5 s for a sheet and ~35 s for a full 64-cell rock sheet** on the owner's machine.
+  (Legal in the editor: the rig is pure C# with no Unity API calls; only the `Texture2D` write
+  returns to the main thread.)
+- **V8 was measured, not assumed — including inside Unity.** ClearScript 7.5.1 loads and runs in the
+  6000.5.0f1 Mono editor and renders a facing in **4.5–5.1 ms** (full 64-cell sheet in 0.27–0.45 s).
+  It is genuinely ~350× faster. Its cost:
+  - **~41 MB of payload per editor platform** — `ClearScriptV8.<rid>.dll` (29 MB) +
+    `ClearScript.V8.ICUData.dll` (11 MB) + two managed shims. `*.dll` is already an LFS pattern in
+    `.gitattributes`, so this lands in LFS.
+  - **It is at least TWO platforms, not one.** The owner authors on Windows, but **CI runs Unity on
+    `ubuntu-latest`** (`.github/workflows/ci.yml`). An editor assembly referencing ClearScript fails
+    to load without the matching native RID, so a V8 integration means shipping `win-x64` **and**
+    `linux-x64` (**~80 MB**), plus `osx-arm64` the day anyone authors on a Mac — and it makes every
+    future editor-host change a build-breaking event. Jint has none of this: one managed DLL pair
+    runs everywhere Unity does.
+  - A fresh licence/attribution surface (ClearScript is MIT; the bundled V8/ICU carry their own
+    Chromium BSD-3 and Unicode terms).
+
+**Where Jint does NOT clear the bar: live preview.** A single facing costs **1–2 s** under Mono, and
+parallelism cannot help one cell. That is fine for "nudge, wait a beat, look" and is *not* fine for
+dragging an elevation slider. The rigs expose no quality/scale knob to render a cheaper preview
+(`PX`/`S` are module-level constants, not options), so there is no way to buy preview speed inside
+Jint without editing their source — which this ADR forbids.
+
+**So the decision is scoped, not absolute:** build on Jint behind a one-interface host seam
+(`IRigScriptHost`), and ship the phase-1 workflow as **bake with a static preview of the last bake**.
+If the owner uses it and the tweak loop feels sluggish, swapping in V8 is a contained change — the
+seam exists precisely so this is a configuration decision and not a rewrite. The trigger is explicit:
+**if live scrubbing becomes a requirement, V8 is the answer and its cost is accepted then.**
 
 ### (2) Editor-only, fenced twice
 
@@ -171,11 +226,14 @@ baker runs off the main loop's critical path and reports progress.
   this project: **there is no Node on the authoring machine** (checked, including Unity's bundled
   tools), and it would make the art pipeline depend on a browser install, a package manager, and an
   out-of-process handshake for every bake. A tool the owner cannot run is not a tool.
-- **ClearScript / V8 embedded.** Materially faster per facing, and unnecessary: a bake measured in
-  seconds does not need it. The cost is native binaries per editor platform committed to the repo (or
-  a restore step), platform coupling, and a bigger licence/attribution surface — all to speed up an
-  operation that already fits inside a keypress. **Kept as an escape hatch**: if a future rig is an
-  order of magnitude heavier, the engine sits behind one host seam and can be swapped.
+- **ClearScript / V8 embedded.** ~350× faster, verified working in the Unity editor — and rejected
+  *for phase 1* on distribution cost, not on merit: ~41 MB of native payload **per editor platform**,
+  and because CI runs Unity on Linux it is ~80 MB across two RIDs minimum, in LFS, with a new
+  build-breaking coupling every time an editor host changes. That is a permanent tax on every clone
+  to accelerate an operation that already fits inside a progress bar. **Kept as a measured escape
+  hatch** behind the `IRigScriptHost` seam: if live scrubbing becomes the requirement, or a future
+  rig (a house, a building) is an order of magnitude heavier than a boat, the numbers to justify the
+  swap are already in this ADR.
 - **Keep hand-exporting from the browser (status quo).** Does not scale to the incoming rigs, keeps
   the owner out of the loop, and structurally discards the facing order and the anchors — the two
   things that have cost this project the most rework.

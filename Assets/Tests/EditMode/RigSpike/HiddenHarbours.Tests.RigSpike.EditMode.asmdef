@@ -1,0 +1,24 @@
+{
+    "name": "HiddenHarbours.Tests.RigSpike.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.RigSpike",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Jint.dll",
+        "Acornima.dll",
+        "ClearScript.Core.dll",
+        "ClearScript.V8.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
+        "HH_JS_RIG_SPIKE"
+    ],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
