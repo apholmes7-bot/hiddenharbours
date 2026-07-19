@@ -79,7 +79,7 @@ namespace HiddenHarbours.Tests.RigBaking
             double fx = host.EvaluateNumber($"{g}.tubMounts(2,{{}})[1].x");
             double fy = host.EvaluateNumber($"{g}.tubMounts(2,{{}})[1].y");
 
-            Assert.AreNotEqual(0.0, Math.Abs(fx - ax) + Math.Abs(fy - ay), 1e-6,
+            Assert.Greater(Math.Abs(fx - ax) + Math.Abs(fy - ay), 1e-6,
                 "The two tub anchors projected to the same point — the probe has nothing to measure.");
 
             double analytic = RigAzimuthProbe.AnalyticBearingFromCollinearAnchors((ax, ay), (fx, fy));
