@@ -1,0 +1,2210 @@
+fileFormatVersion: 2
+guid: 6dd4739e4a7080c49acf59b9e813757b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3640754058677727533
+    second: Fisher_cast_short_0
+  - first:
+      213: -5933191836140039421
+    second: Fisher_cast_short_1
+  - first:
+      213: 8165861481672015551
+    second: Fisher_cast_short_2
+  - first:
+      213: -2080679722702118636
+    second: Fisher_cast_short_3
+  - first:
+      213: 563629446779695119
+    second: Fisher_cast_short_4
+  - first:
+      213: -1409118948869458679
+    second: Fisher_cast_short_5
+  - first:
+      213: 1853637959011094923
+    second: Fisher_cast_short_6
+  - first:
+      213: 1655126238489316504
+    second: Fisher_cast_short_7
+  - first:
+      213: -4210766584055306400
+    second: Fisher_cast_short_8
+  - first:
+      213: -4637062800396898114
+    second: Fisher_cast_short_9
+  - first:
+      213: -7209626939977375376
+    second: Fisher_cast_short_10
+  - first:
+      213: 6795936980301632516
+    second: Fisher_cast_short_11
+  - first:
+      213: 7135965832036875115
+    second: Fisher_cast_short_12
+  - first:
+      213: -994695778687894565
+    second: Fisher_cast_short_13
+  - first:
+      213: 2492047847355047153
+    second: Fisher_cast_short_14
+  - first:
+      213: -3221249830178172038
+    second: Fisher_cast_short_15
+  - first:
+      213: 8983452429923818805
+    second: Fisher_cast_short_16
+  - first:
+      213: -8253388183938577390
+    second: Fisher_cast_short_17
+  - first:
+      213: -3755623474337835666
+    second: Fisher_cast_short_18
+  - first:
+      213: -3315096335086369766
+    second: Fisher_cast_short_19
+  - first:
+      213: 6302350696730057023
+    second: Fisher_cast_short_20
+  - first:
+      213: -6240696802857241257
+    second: Fisher_cast_short_21
+  - first:
+      213: -8674930161095922328
+    second: Fisher_cast_short_22
+  - first:
+      213: -6934393307350216246
+    second: Fisher_cast_short_23
+  - first:
+      213: 7431609893923903527
+    second: Fisher_cast_short_24
+  - first:
+      213: -6661411961504175898
+    second: Fisher_cast_short_25
+  - first:
+      213: 8956620295309754394
+    second: Fisher_cast_short_26
+  - first:
+      213: 8225174393243821829
+    second: Fisher_cast_short_27
+  - first:
+      213: 8281395531941177454
+    second: Fisher_cast_short_28
+  - first:
+      213: 7935447798456208419
+    second: Fisher_cast_short_29
+  - first:
+      213: -622073250195430448
+    second: Fisher_cast_short_30
+  - first:
+      213: 5248383624467814444
+    second: Fisher_cast_short_31
+  - first:
+      213: -6349266617400508363
+    second: Fisher_cast_short_32
+  - first:
+      213: 8083576614737429366
+    second: Fisher_cast_short_33
+  - first:
+      213: 3232530286998482575
+    second: Fisher_cast_short_34
+  - first:
+      213: 8252537686493039191
+    second: Fisher_cast_short_35
+  - first:
+      213: 5456179725629555540
+    second: Fisher_cast_short_36
+  - first:
+      213: 3838693711361631591
+    second: Fisher_cast_short_37
+  - first:
+      213: 5686160962049340973
+    second: Fisher_cast_short_38
+  - first:
+      213: 7218640032031549937
+    second: Fisher_cast_short_39
+  - first:
+      213: 133747872557539329
+    second: Fisher_cast_short_40
+  - first:
+      213: -4067635111999920497
+    second: Fisher_cast_short_41
+  - first:
+      213: -2909954950410454188
+    second: Fisher_cast_short_42
+  - first:
+      213: -5866084374184900660
+    second: Fisher_cast_short_43
+  - first:
+      213: 550152654108564946
+    second: Fisher_cast_short_44
+  - first:
+      213: 1149575516945006534
+    second: Fisher_cast_short_45
+  - first:
+      213: 5029972435950408217
+    second: Fisher_cast_short_46
+  - first:
+      213: 4401039368089284727
+    second: Fisher_cast_short_47
+  - first:
+      213: -8634688342374782079
+    second: Fisher_cast_short_48
+  - first:
+      213: -3865934606032940980
+    second: Fisher_cast_short_49
+  - first:
+      213: 7627150820805665643
+    second: Fisher_cast_short_50
+  - first:
+      213: 2478003243798145842
+    second: Fisher_cast_short_51
+  - first:
+      213: -1661820414070764726
+    second: Fisher_cast_short_52
+  - first:
+      213: 7867909645168823278
+    second: Fisher_cast_short_53
+  - first:
+      213: 8546525626429001642
+    second: Fisher_cast_short_54
+  - first:
+      213: 2332563895558886885
+    second: Fisher_cast_short_55
+  - first:
+      213: 8144977152336970507
+    second: Fisher_cast_short_56
+  - first:
+      213: -319550082706266122
+    second: Fisher_cast_short_57
+  - first:
+      213: -3657497920973729041
+    second: Fisher_cast_short_58
+  - first:
+      213: 3690924396189232320
+    second: Fisher_cast_short_59
+  - first:
+      213: 5688214075535722764
+    second: Fisher_cast_short_60
+  - first:
+      213: -4727394115483879111
+    second: Fisher_cast_short_61
+  - first:
+      213: -6706099831224513776
+    second: Fisher_cast_short_62
+  - first:
+      213: -303926757026596709
+    second: Fisher_cast_short_63
+  - first:
+      213: 8807395140630305662
+    second: Fisher_cast_short_64
+  - first:
+      213: 3457654428205821513
+    second: Fisher_cast_short_65
+  - first:
+      213: 9016172296337613973
+    second: Fisher_cast_short_66
+  - first:
+      213: -7651846227412495455
+    second: Fisher_cast_short_67
+  - first:
+      213: 2821013360372108938
+    second: Fisher_cast_short_68
+  - first:
+      213: -5558406241954252997
+    second: Fisher_cast_short_69
+  - first:
+      213: -6268148123651732155
+    second: Fisher_cast_short_70
+  - first:
+      213: -2901324894356222158
+    second: Fisher_cast_short_71
+  - first:
+      213: -8028098818743675769
+    second: Fisher_cast_short_72
+  - first:
+      213: 7776324866920279113
+    second: Fisher_cast_short_73
+  - first:
+      213: -4725535432581667175
+    second: Fisher_cast_short_74
+  - first:
+      213: 4441819045638791198
+    second: Fisher_cast_short_75
+  - first:
+      213: 6998826731412003488
+    second: Fisher_cast_short_76
+  - first:
+      213: -4210337545109184336
+    second: Fisher_cast_short_77
+  - first:
+      213: -8687609893337650545
+    second: Fisher_cast_short_78
+  - first:
+      213: -3563778155889291247
+    second: Fisher_cast_short_79
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb0793916acd36a46bda376b4b476672
+      internalID: 1802056783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0fdcff7a0b4d03419e4282ae60c34ed
+      internalID: 1432424651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3919a7ccc83a7374aafd6917f4cf4fef
+      internalID: 2138181342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abc86ab65951e5e4ea173fd0ceddb7e3
+      internalID: -1151060739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eef854b53c483254bb09c296367f38db
+      internalID: 509213569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b349e6eaa0c39c740be5d76e40ef9d91
+      internalID: -1076667575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 677ed399fd68ab14fb3945ca670c6152
+      internalID: 718891804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4567140a9c5eadd48b074fd3afbdba3f
+      internalID: -1231555929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f26c6e5680e6d6e428ed866b4db1c1c1
+      internalID: 1799379549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d0_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 896
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1aa1bf53c7d165c4e9531f4a3bbe0994
+      internalID: -2035081836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f1f52afd2ee75d4495fe497357ffe9e
+      internalID: 1758550014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93ea6cc666639654fadc9e7d8960f938
+      internalID: -2131243024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af069c1af65d67f4aa4f761fed366931
+      internalID: 1683857065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d27757108856dd44fab416bb027615cb
+      internalID: 145701594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4edb97ecd1c709459151fd8080de9f6
+      internalID: 2127143054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf25f1425942e46479f9d239fc32d8e9
+      internalID: 1125606654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e0576d317b29c944b475a970e96aab6
+      internalID: 1243862709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fca943b40c54a844ab8455f86b1f7c11
+      internalID: 1995553551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e2adc9dfbdc19344b4d2224394d8a4b
+      internalID: -746265191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d1_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 768
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff4f831549b574441afcfce0d27e38c9
+      internalID: -1574893313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e81805c0c7def84f92787a40fd16494
+      internalID: 1886368707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc6c61236e37a1d47b67f6e1513c43b6
+      internalID: -1778418575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 348745b074812a948817447e5fb1c9fa
+      internalID: 1107936637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a38bc18db50542e44a94b3a7b5db1aae
+      internalID: 1866152230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9820c3586edbb247a828fd82c8d8436
+      internalID: 658099322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1a69f40e8a36a042a77930cf63cc0f5
+      internalID: -555309735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26902e9d0db57bf4695bee265076b9d0
+      internalID: 1202109217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08b2e0ecf1893464da531143377e6150
+      internalID: -1705196203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d029fd71b2ad77f4ba3f0c59bb3b97ae
+      internalID: -1303456314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d2_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 640
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f09046c3ba07c046b883f6c8f7d5442
+      internalID: 587420144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25c2d3858efc61d4594a0fe7379a19f3
+      internalID: 2003449840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bdddbba2ec73a140a6aca396a34892b
+      internalID: 257555607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f483031cc5870b741b99231d2deb7d3f
+      internalID: 570797864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59bcaba675e7eae4cb782e06c9bbcd0f
+      internalID: 1728872214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dfd3d2fff92e464783e78a21b4d2c75
+      internalID: 1988121619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bfb2e1fa3236fd4eb77e3903a70bc7f
+      internalID: -782328619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a6b0f38290dab74b839d8d01e39efa2
+      internalID: -214972000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3bb11e3337a69143bf14cc92213fd13
+      internalID: -966360011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d57a9671f51c5b54d9d9620a838ab113
+      internalID: -201275729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d3_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 512
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bcec3908e2df9042973ab78a24b2c7c
+      internalID: -1275034411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05927f82956ac57438d8cd8b92094195
+      internalID: -1880750313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 476e20fdc370a5d4aaa31595270023e5
+      internalID: 288886104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91e10dbda169c594ca1b7b36a570da26
+      internalID: -1194102359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a200a799a97ea3c4b815ebffea2565ba
+      internalID: -1119810663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e30f0925faa58e34ea7ba6d36c3bfb46
+      internalID: 601404249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f705fc70379053a44862239a8f6dcea9
+      internalID: -1730814516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6dc04e0e12838843b3739675eedc00d
+      internalID: -1243632185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba2ef128e421f724ab7341459cf7e66e
+      internalID: -1835090270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b161866bb1d1ca348a6e049b6a300df8
+      internalID: 1335822858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d4_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 384
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 367a314615096fd428e2e4102162fd29
+      internalID: 5770686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccef7f37b01d1b54489e040590b21371
+      internalID: 873134890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eadb01c4a35e35a4fb89975372989384
+      internalID: 2020788928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0b3fbbcb9de3da4f9d585546874f2c2
+      internalID: 737613784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e2d3970c1d7d2c49a92be415d28db5f
+      internalID: 1611614117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10898c97f82c9324bb19c19fff140147
+      internalID: 1499328850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce6b15ad13c615b4a8e7b78f44393548
+      internalID: -1209232189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 134eec98295c2b7419c731b9cd796fe5
+      internalID: 1965701590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dab9dd8d6d982a49be1d9fd668c8f73
+      internalID: -1006453200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9de7f72bef901f45a10ff2642702c3f
+      internalID: -544406723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d5_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 256
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36676271b22168e4ea9e4a58bae3d6f2
+      internalID: 677931841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bb3609cbc7d58445bb5d9b56dc946f3
+      internalID: 1969559458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9723c4445ca39347b8debb724faf157
+      internalID: 1741135073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 943b068879dda4240b558dea95607b63
+      internalID: -1965187749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5afbc8e87798c343b58901342ce89a4
+      internalID: -277550008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 939b7d974f1e71c489521d15d9eeffc9
+      internalID: -1338380644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8b1ca286d666444f91fea6d5c1ac294
+      internalID: 1162769593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c9faf893b6540f45ab9715778573b79
+      internalID: 801844791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1052d753c0a9d14ab4a09d7a6fc43e7
+      internalID: 1884579025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c5e6ebd7e1cea34a909b74481601000
+      internalID: -1675648438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d6_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 128
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 759dd2dfc7e6aca4da9cac29d0720bff
+      internalID: -837677373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd84bcf303c06cc48be81d524ca86584
+      internalID: 1726613293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ea5e1ed2bc57a74bb547ad83cf151a4
+      internalID: 943162691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2e738efcd66006448ae26ba9b6d8541
+      internalID: -2015170264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5ab07d474269bf498fcfc41db950e6f
+      internalID: -2017648621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf132f4484413ad41a19c80b92fd6340
+      internalID: 1116639672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d8d20937ec681e48bf8da98c94b3416
+      internalID: 1811740242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eabb7c0d5eb737f48ae38dd830cec844
+      internalID: -494186448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad7398d4885997a4aa101fccaaf34ccd
+      internalID: -1057908046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e3f02350564a5747b188b9e9c2e6987
+      internalID: -281179858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_cast_short_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af8d6e555fc6706449bae9df93a80c35
+      internalID: 46099962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 97abd58506b75af419960dfbe3a725b0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fisher_cast_short_d0_f0: 1802056783
+      Fisher_cast_short_d0_f1: 1432424651
+      Fisher_cast_short_d0_f2: 2138181342
+      Fisher_cast_short_d0_f3: -1151060739
+      Fisher_cast_short_d0_f4: 509213569
+      Fisher_cast_short_d0_f5: -1076667575
+      Fisher_cast_short_d0_f6: 718891804
+      Fisher_cast_short_d0_f7: -1231555929
+      Fisher_cast_short_d0_f8: 1799379549
+      Fisher_cast_short_d0_f9: -2035081836
+      Fisher_cast_short_d1_f0: 1758550014
+      Fisher_cast_short_d1_f1: -2131243024
+      Fisher_cast_short_d1_f2: 1683857065
+      Fisher_cast_short_d1_f3: 145701594
+      Fisher_cast_short_d1_f4: 2127143054
+      Fisher_cast_short_d1_f5: 1125606654
+      Fisher_cast_short_d1_f6: 1243862709
+      Fisher_cast_short_d1_f7: 1995553551
+      Fisher_cast_short_d1_f8: -746265191
+      Fisher_cast_short_d1_f9: -1574893313
+      Fisher_cast_short_d2_f0: 1886368707
+      Fisher_cast_short_d2_f1: -1778418575
+      Fisher_cast_short_d2_f2: 1107936637
+      Fisher_cast_short_d2_f3: 1866152230
+      Fisher_cast_short_d2_f4: 658099322
+      Fisher_cast_short_d2_f5: -555309735
+      Fisher_cast_short_d2_f6: 1202109217
+      Fisher_cast_short_d2_f7: -1705196203
+      Fisher_cast_short_d2_f8: -1303456314
+      Fisher_cast_short_d2_f9: 587420144
+      Fisher_cast_short_d3_f0: 2003449840
+      Fisher_cast_short_d3_f1: 257555607
+      Fisher_cast_short_d3_f2: 570797864
+      Fisher_cast_short_d3_f3: 1728872214
+      Fisher_cast_short_d3_f4: 1988121619
+      Fisher_cast_short_d3_f5: -782328619
+      Fisher_cast_short_d3_f6: -214972000
+      Fisher_cast_short_d3_f7: -966360011
+      Fisher_cast_short_d3_f8: -201275729
+      Fisher_cast_short_d3_f9: -1275034411
+      Fisher_cast_short_d4_f0: -1880750313
+      Fisher_cast_short_d4_f1: 288886104
+      Fisher_cast_short_d4_f2: -1194102359
+      Fisher_cast_short_d4_f3: -1119810663
+      Fisher_cast_short_d4_f4: 601404249
+      Fisher_cast_short_d4_f5: -1730814516
+      Fisher_cast_short_d4_f6: -1243632185
+      Fisher_cast_short_d4_f7: -1835090270
+      Fisher_cast_short_d4_f8: 1335822858
+      Fisher_cast_short_d4_f9: 5770686
+      Fisher_cast_short_d5_f0: 873134890
+      Fisher_cast_short_d5_f1: 2020788928
+      Fisher_cast_short_d5_f2: 737613784
+      Fisher_cast_short_d5_f3: 1611614117
+      Fisher_cast_short_d5_f4: 1499328850
+      Fisher_cast_short_d5_f5: -1209232189
+      Fisher_cast_short_d5_f6: 1965701590
+      Fisher_cast_short_d5_f7: -1006453200
+      Fisher_cast_short_d5_f8: -544406723
+      Fisher_cast_short_d5_f9: 677931841
+      Fisher_cast_short_d6_f0: 1969559458
+      Fisher_cast_short_d6_f1: 1741135073
+      Fisher_cast_short_d6_f2: -1965187749
+      Fisher_cast_short_d6_f3: -277550008
+      Fisher_cast_short_d6_f4: -1338380644
+      Fisher_cast_short_d6_f5: 1162769593
+      Fisher_cast_short_d6_f6: 801844791
+      Fisher_cast_short_d6_f7: 1884579025
+      Fisher_cast_short_d6_f8: -1675648438
+      Fisher_cast_short_d6_f9: -837677373
+      Fisher_cast_short_d7_f0: 1726613293
+      Fisher_cast_short_d7_f1: 943162691
+      Fisher_cast_short_d7_f2: -2015170264
+      Fisher_cast_short_d7_f3: -2017648621
+      Fisher_cast_short_d7_f4: 1116639672
+      Fisher_cast_short_d7_f5: 1811740242
+      Fisher_cast_short_d7_f6: -494186448
+      Fisher_cast_short_d7_f7: -1057908046
+      Fisher_cast_short_d7_f8: -281179858
+      Fisher_cast_short_d7_f9: 46099962
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
