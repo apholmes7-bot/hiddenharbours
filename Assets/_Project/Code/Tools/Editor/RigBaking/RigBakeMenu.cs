@@ -46,8 +46,16 @@ namespace HiddenHarbours.Tools.RigBaking
                      })
                 AssetDatabase.ImportAsset(p, ImportAssetOptions.ForceUpdate);
 
-            Debug.Log("[rig-baker] Now run  Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets  " +
-                      "to cut the sheets into sprites.");
+            // Slice in the same operation rather than leaving it as a step the owner has to
+            // remember. This matters more than convenience: a freshly written sheet auto-imports at
+            // the DEFAULT 2048 cap, so a 3648-wide page lands DOWNSCALED — and the downscale is
+            // silent, because the sprite COUNT still comes out right. SpriteSheetSlicer lifts the
+            // cap from its manifest, so running it here is what makes the bake correct, not merely
+            // convenient. (LobsterBoatSheetSliceTests is the assert that catches it if this is ever
+            // removed; it caught exactly this during development.)
+            Art.Editor.SpriteSheetSlicer.SliceAllMenu();
+
+            Debug.Log("[rig-baker] Baked and sliced. Nothing further to run.");
         }
 
         /// <summary>

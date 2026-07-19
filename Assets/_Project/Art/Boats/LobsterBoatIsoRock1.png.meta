@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: d6e045717c34bcf4389040dab4b35b5a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3441610466208431004
+    second: LobsterBoatIsoRock1_0
+  - first:
+      213: -3481258856598660974
+    second: LobsterBoatIsoRock1_1
+  - first:
+      213: -3854394779634523340
+    second: LobsterBoatIsoRock1_2
+  - first:
+      213: 1585737786441336151
+    second: LobsterBoatIsoRock1_3
+  - first:
+      213: -2101971574515376053
+    second: LobsterBoatIsoRock1_4
+  - first:
+      213: -8265698315435336669
+    second: LobsterBoatIsoRock1_5
+  - first:
+      213: -7079336961313929274
+    second: LobsterBoatIsoRock1_6
+  - first:
+      213: 3367810930546405495
+    second: LobsterBoatIsoRock1_7
+  - first:
+      213: -356145877200373796
+    second: LobsterBoatIsoRock1_8
+  - first:
+      213: -3354465261909932789
+    second: LobsterBoatIsoRock1_9
+  - first:
+      213: 3039932324274565466
+    second: LobsterBoatIsoRock1_10
+  - first:
+      213: -7065612676471906329
+    second: LobsterBoatIsoRock1_11
+  - first:
+      213: -7114465464759666483
+    second: LobsterBoatIsoRock1_12
+  - first:
+      213: 3784105064470515306
+    second: LobsterBoatIsoRock1_13
+  - first:
+      213: -3845203247735600800
+    second: LobsterBoatIsoRock1_14
+  - first:
+      213: -2716669921921394220
+    second: LobsterBoatIsoRock1_15
+  - first:
+      213: 617268401957579532
+    second: LobsterBoatIsoRock1_16
+  - first:
+      213: 573690136805179144
+    second: LobsterBoatIsoRock1_17
+  - first:
+      213: -6043736003318054366
+    second: LobsterBoatIsoRock1_18
+  - first:
+      213: 576844347327394658
+    second: LobsterBoatIsoRock1_19
+  - first:
+      213: -6352253592460728425
+    second: LobsterBoatIsoRock1_20
+  - first:
+      213: -3597271626107807730
+    second: LobsterBoatIsoRock1_21
+  - first:
+      213: 471408414182700866
+    second: LobsterBoatIsoRock1_22
+  - first:
+      213: 7175242690837980037
+    second: LobsterBoatIsoRock1_23
+  - first:
+      213: 8874959601071392449
+    second: LobsterBoatIsoRock1_24
+  - first:
+      213: 6581679631174669897
+    second: LobsterBoatIsoRock1_25
+  - first:
+      213: -6420141430196406511
+    second: LobsterBoatIsoRock1_26
+  - first:
+      213: 5151332253303457595
+    second: LobsterBoatIsoRock1_27
+  - first:
+      213: -4218515378532443838
+    second: LobsterBoatIsoRock1_28
+  - first:
+      213: -3983309219754628387
+    second: LobsterBoatIsoRock1_29
+  - first:
+      213: -1301369236208197199
+    second: LobsterBoatIsoRock1_30
+  - first:
+      213: 4272524896330852227
+    second: LobsterBoatIsoRock1_31
+  - first:
+      213: 1652397438116977911
+    second: LobsterBoatIsoRock1_32
+  - first:
+      213: 5767147720744191693
+    second: LobsterBoatIsoRock1_33
+  - first:
+      213: -3996625436820366560
+    second: LobsterBoatIsoRock1_34
+  - first:
+      213: -3742408038582159603
+    second: LobsterBoatIsoRock1_35
+  - first:
+      213: 1029590007586821197
+    second: LobsterBoatIsoRock1_36
+  - first:
+      213: 6773177878056440580
+    second: LobsterBoatIsoRock1_37
+  - first:
+      213: 3054790427118367735
+    second: LobsterBoatIsoRock1_38
+  - first:
+      213: -2679247253754718236
+    second: LobsterBoatIsoRock1_39
+  - first:
+      213: -2288886752860177161
+    second: LobsterBoatIsoRock1_40
+  - first:
+      213: 5552614644455602620
+    second: LobsterBoatIsoRock1_41
+  - first:
+      213: -1158332940339086069
+    second: LobsterBoatIsoRock1_42
+  - first:
+      213: -3937411490215490972
+    second: LobsterBoatIsoRock1_43
+  - first:
+      213: -7233207520139672579
+    second: LobsterBoatIsoRock1_44
+  - first:
+      213: 5216002325612581795
+    second: LobsterBoatIsoRock1_45
+  - first:
+      213: -5727944434182179472
+    second: LobsterBoatIsoRock1_46
+  - first:
+      213: 7202736204018935089
+    second: LobsterBoatIsoRock1_47
+  - first:
+      213: 7857382211603603283
+    second: LobsterBoatIsoRock1_48
+  - first:
+      213: 893144702789750810
+    second: LobsterBoatIsoRock1_49
+  - first:
+      213: 7588420408016762254
+    second: LobsterBoatIsoRock1_50
+  - first:
+      213: 5922067750517938840
+    second: LobsterBoatIsoRock1_51
+  - first:
+      213: 5354164954101094167
+    second: LobsterBoatIsoRock1_52
+  - first:
+      213: -6067378312771173851
+    second: LobsterBoatIsoRock1_53
+  - first:
+      213: -7166788495174348771
+    second: LobsterBoatIsoRock1_54
+  - first:
+      213: -193865468179855492
+    second: LobsterBoatIsoRock1_55
+  - first:
+      213: 3148363608900563741
+    second: LobsterBoatIsoRock1_56
+  - first:
+      213: 5671741472322261986
+    second: LobsterBoatIsoRock1_57
+  - first:
+      213: -5464179656736463094
+    second: LobsterBoatIsoRock1_58
+  - first:
+      213: -4270652451222459313
+    second: LobsterBoatIsoRock1_59
+  - first:
+      213: -7038397831153586852
+    second: LobsterBoatIsoRock1_60
+  - first:
+      213: 3118916232814299647
+    second: LobsterBoatIsoRock1_61
+  - first:
+      213: -3973340022822554776
+    second: LobsterBoatIsoRock1_62
+  - first:
+      213: 2259046917719011981
+    second: LobsterBoatIsoRock1_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e8dff85b1a838941bb0949447e3f8a6
+      internalID: 3441610466208431004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_1
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2618eb18544caf4f86a8774b63c52c9
+      internalID: -3481258856598660974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_2
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 232769910e99eeb4fa999889f2514b9a
+      internalID: -3854394779634523340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_3
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac057661dfe079147a37b65f5868e98d
+      internalID: 1585737786441336151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_4
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31fdc32f913732c47836b4b0772602b0
+      internalID: -2101971574515376053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_5
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73e7dfc84a63bfe4aa3adb00365179d1
+      internalID: -8265698315435336669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_6
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25515f3c089b3f04fb8b1f89cc390e82
+      internalID: -7079336961313929274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_7
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2940
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c716b08b6c3d5e2429b520e05f7cac9e
+      internalID: 3367810930546405495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab9aaa376d233a44580bbb8806a50f7c
+      internalID: -356145877200373796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_9
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02161e537598d5e4c86d497292713f75
+      internalID: -3354465261909932789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_10
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ff185bcdef9d14582540d67ab4db67
+      internalID: 3039932324274565466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_11
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 200e8e7dda3b50441958dc30b3d0c6ef
+      internalID: -7065612676471906329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_12
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3169ae379960fc4409697ba2d4cf8e95
+      internalID: -7114465464759666483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_13
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20ded95ed6f89b1418c60019061ba2f5
+      internalID: 3784105064470515306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_14
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e968fcd238173a4ebd1a3f8b990bc27
+      internalID: -3845203247735600800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_15
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2520
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2addac20280056249a95c11aebf58efb
+      internalID: -2716669921921394220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69b7867a3ee3ea04eba7550a2a8f9fca
+      internalID: 617268401957579532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_17
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5f80c77a7047c94cb992d79d1b31b1c
+      internalID: 573690136805179144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_18
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eacfd32b41639784189873e52eb2c295
+      internalID: -6043736003318054366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_19
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bd97f6994e13bb49a0857ace738be12
+      internalID: 576844347327394658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_20
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7552b72331b2bd146908cedbe12bae05
+      internalID: -6352253592460728425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_21
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 017decaf407017d4e928058a13c44f96
+      internalID: -3597271626107807730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_22
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b6c824e26865e542a516c0b62b2f893
+      internalID: 471408414182700866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_23
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 2100
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5b3039ca9676be429fb314139520c22
+      internalID: 7175242690837980037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 855ee0d2595aa604586e9e63c7e99b67
+      internalID: 8874959601071392449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_25
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac6faa21eecc67146a1ac109719f6379
+      internalID: 6581679631174669897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_26
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4729954c458d1e6459d0eee4591f815e
+      internalID: -6420141430196406511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_27
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce3e23178fb49fb4fbb7a541ac391557
+      internalID: 5151332253303457595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_28
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d491efdd5f64d384b9d6dd8be6ee901d
+      internalID: -4218515378532443838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_29
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbceefa25b7fefe4cabf75b44b3bdc6e
+      internalID: -3983309219754628387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_30
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50500b885e996af43b05492c48f06e9c
+      internalID: -1301369236208197199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_31
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 1680
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef73f91a762e9dc40a55a821da34ab5f
+      internalID: 4272524896330852227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85803261ed8eda04090031b774d64888
+      internalID: 1652397438116977911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_33
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f86e25fc34a99b049bb7d891e4bfd26c
+      internalID: 5767147720744191693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_34
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bbaf6e427211374e81056dadc8447f2
+      internalID: -3996625436820366560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_35
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f58cd9028f2fc24997bda448c83a4cf
+      internalID: -3742408038582159603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_36
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 104b06a4d58b8214a845cc22b6a3ef50
+      internalID: 1029590007586821197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_37
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 843942a2054634646bfcb88056379b9a
+      internalID: 6773177878056440580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_38
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 109e4263ca33c8842a53713e381b870e
+      internalID: 3054790427118367735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_39
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 1260
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d6dfc82060739745a114161f3d32137
+      internalID: -2679247253754718236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 287f39d880d90d44ebd9f036d0d65a5f
+      internalID: -2288886752860177161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_41
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e93e3e787c5af694794fa0dffdaa6f4f
+      internalID: 5552614644455602620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_42
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50aae7eb3d0718f459bfa580d8dc26b4
+      internalID: -1158332940339086069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_43
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3082cb80de63ec3439f4deed6b2b0fc1
+      internalID: -3937411490215490972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_44
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c22626524f165104fb58894de254af76
+      internalID: -7233207520139672579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_45
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61556e0da9e55b243a13ab43997282b1
+      internalID: 5216002325612581795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_46
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 521755200bbf04c4292443265a20e5dd
+      internalID: -5727944434182179472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_47
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 840
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a14ea814dffdf4d4883be3261000e85f
+      internalID: 7202736204018935089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bef61c5f656190045aa4030f69b5232d
+      internalID: 7857382211603603283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_49
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51eff914444f38946a5255a754213147
+      internalID: 893144702789750810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_50
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0901d01e1f2544d479525ae356f574bc
+      internalID: 7588420408016762254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_51
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6565851f51bf5d8488856b9b9fc4a46e
+      internalID: 5922067750517938840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_52
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 366c78483139dd34fa040417933cd220
+      internalID: 5354164954101094167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_53
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b77021eed8afd0b438f3b3be5d24f417
+      internalID: -6067378312771173851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_54
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c79f9f0a44d7e24390be299dc72bc11
+      internalID: -7166788495174348771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_55
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 420
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db2ac69d557814843a5cffb8bbb3bc42
+      internalID: -193865468179855492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 547d4ce860abc8745aca901c87482f83
+      internalID: 3148363608900563741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_57
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c5ef0bdb580748418e5f5ed9d00c025
+      internalID: 5671741472322261986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_58
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 787ff9469d5f6764386310fa78b04659
+      internalID: -5464179656736463094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_59
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2611b9f29c487d243b85de2d01f9ef89
+      internalID: -4270652451222459313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_60
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99759dbbc6611d84db8fc61d145f2a4b
+      internalID: -7038397831153586852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_61
+      rect:
+        serializedVersion: 2
+        x: 2280
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a47ec415683958649a2a2e28a6fc6745
+      internalID: 3118916232814299647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_62
+      rect:
+        serializedVersion: 2
+        x: 2736
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c85114a6bfe118443bc87deafcd202f7
+      internalID: -3973340022822554776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterBoatIsoRock1_63
+      rect:
+        serializedVersion: 2
+        x: 3192
+        y: 0
+        width: 456
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 358fa1687c6c41f4db7961969aba7361
+      internalID: 2259046917719011981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 73a77ba74389b3f47b050bf597bd50cc
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LobsterBoatIsoRock1_0: 3441610466208431004
+      LobsterBoatIsoRock1_1: -3481258856598660974
+      LobsterBoatIsoRock1_10: 3039932324274565466
+      LobsterBoatIsoRock1_11: -7065612676471906329
+      LobsterBoatIsoRock1_12: -7114465464759666483
+      LobsterBoatIsoRock1_13: 3784105064470515306
+      LobsterBoatIsoRock1_14: -3845203247735600800
+      LobsterBoatIsoRock1_15: -2716669921921394220
+      LobsterBoatIsoRock1_16: 617268401957579532
+      LobsterBoatIsoRock1_17: 573690136805179144
+      LobsterBoatIsoRock1_18: -6043736003318054366
+      LobsterBoatIsoRock1_19: 576844347327394658
+      LobsterBoatIsoRock1_2: -3854394779634523340
+      LobsterBoatIsoRock1_20: -6352253592460728425
+      LobsterBoatIsoRock1_21: -3597271626107807730
+      LobsterBoatIsoRock1_22: 471408414182700866
+      LobsterBoatIsoRock1_23: 7175242690837980037
+      LobsterBoatIsoRock1_24: 8874959601071392449
+      LobsterBoatIsoRock1_25: 6581679631174669897
+      LobsterBoatIsoRock1_26: -6420141430196406511
+      LobsterBoatIsoRock1_27: 5151332253303457595
+      LobsterBoatIsoRock1_28: -4218515378532443838
+      LobsterBoatIsoRock1_29: -3983309219754628387
+      LobsterBoatIsoRock1_3: 1585737786441336151
+      LobsterBoatIsoRock1_30: -1301369236208197199
+      LobsterBoatIsoRock1_31: 4272524896330852227
+      LobsterBoatIsoRock1_32: 1652397438116977911
+      LobsterBoatIsoRock1_33: 5767147720744191693
+      LobsterBoatIsoRock1_34: -3996625436820366560
+      LobsterBoatIsoRock1_35: -3742408038582159603
+      LobsterBoatIsoRock1_36: 1029590007586821197
+      LobsterBoatIsoRock1_37: 6773177878056440580
+      LobsterBoatIsoRock1_38: 3054790427118367735
+      LobsterBoatIsoRock1_39: -2679247253754718236
+      LobsterBoatIsoRock1_4: -2101971574515376053
+      LobsterBoatIsoRock1_40: -2288886752860177161
+      LobsterBoatIsoRock1_41: 5552614644455602620
+      LobsterBoatIsoRock1_42: -1158332940339086069
+      LobsterBoatIsoRock1_43: -3937411490215490972
+      LobsterBoatIsoRock1_44: -7233207520139672579
+      LobsterBoatIsoRock1_45: 5216002325612581795
+      LobsterBoatIsoRock1_46: -5727944434182179472
+      LobsterBoatIsoRock1_47: 7202736204018935089
+      LobsterBoatIsoRock1_48: 7857382211603603283
+      LobsterBoatIsoRock1_49: 893144702789750810
+      LobsterBoatIsoRock1_5: -8265698315435336669
+      LobsterBoatIsoRock1_50: 7588420408016762254
+      LobsterBoatIsoRock1_51: 5922067750517938840
+      LobsterBoatIsoRock1_52: 5354164954101094167
+      LobsterBoatIsoRock1_53: -6067378312771173851
+      LobsterBoatIsoRock1_54: -7166788495174348771
+      LobsterBoatIsoRock1_55: -193865468179855492
+      LobsterBoatIsoRock1_56: 3148363608900563741
+      LobsterBoatIsoRock1_57: 5671741472322261986
+      LobsterBoatIsoRock1_58: -5464179656736463094
+      LobsterBoatIsoRock1_59: -4270652451222459313
+      LobsterBoatIsoRock1_6: -7079336961313929274
+      LobsterBoatIsoRock1_60: -7038397831153586852
+      LobsterBoatIsoRock1_61: 3118916232814299647
+      LobsterBoatIsoRock1_62: -3973340022822554776
+      LobsterBoatIsoRock1_63: 2259046917719011981
+      LobsterBoatIsoRock1_7: 3367810930546405495
+      LobsterBoatIsoRock1_8: -356145877200373796
+      LobsterBoatIsoRock1_9: -3354465261909932789
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
