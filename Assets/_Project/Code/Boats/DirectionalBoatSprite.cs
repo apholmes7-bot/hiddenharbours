@@ -208,39 +208,19 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Pick the facing-array index for a compass heading, snapping to the NEAREST of <paramref name="count"/>
-        /// evenly-spaced facings laid out CLOCKWISE from <paramref name="zeroHeadingDeg"/> (the heading that
-        /// element 0 is drawn for). Generalised to any count so 8/16-way art drops in unchanged.
+        /// Pick the facing-array index for a compass heading — see
+        /// <see cref="HiddenHarbours.Core.IsoFacing.HeadingToFacingIndex"/>, which owns the rule (the half-up
+        /// bucket-edge convention and the counter-clockwise mirror are documented there).
         ///
-        /// Boundary rule is explicit and off-by-one-free: a heading exactly on a bucket edge rounds to the
-        /// NEXT facing clockwise (half-up), so e.g. for count=4 a heading of 45° (dead between N and E) picks
-        /// East, 135° picks South, etc. — never an ambiguous tie. The result is always in [0, count).
-        /// Pure + static + deterministic (no engine state, no allocation).
-        ///
-        /// <para><paramref name="facingsAreCounterClockwise"/> mirrors the lookup for art whose cells run the
-        /// OTHER way — cell i depicting −step·i rather than +step·i (see
-        /// <see cref="BoatVisualDef.FacingsAreCounterClockwise"/>: the iso rigs bake CCW but label CW).
-        /// Default false = the clockwise convention, unchanged. Note this only picks a different CELL; the
-        /// heading itself is never altered, which is why <see cref="SnapHeadingDegrees"/> ignores the flag.</para>
+        /// <para>The math MOVED to Core so the forthcoming 8-way ISO CHARACTER rigs — baked CCW and labelled
+        /// CW exactly like the boat kits — can share it without a feature module referencing the Boats
+        /// module's concrete classes (CLAUDE.md rule 4). This remains as a thin delegating wrapper: the
+        /// Boats-side call sites and tests read naturally against the component that uses it, and there is
+        /// still only ONE implementation. Behaviour is identical — do not reimplement it here.</para>
         /// </summary>
         public static int HeadingToFacingIndex(float headingDeg, int count, float zeroHeadingDeg,
                                                bool facingsAreCounterClockwise = false)
-        {
-            if (count <= 0) return 0;
-            float step = 360f / count;
-            // Heading measured from the zero facing, wrapped to [0, 360).
-            float rel = (headingDeg - zeroHeadingDeg) % 360f;
-            if (rel < 0f) rel += 360f;
-            // Half-up rounding (FloorToInt(x + 0.5)) so bucket edges resolve to the next facing CW,
-            // deterministically — no banker's-rounding tie at 45/135/225/315 for count=4.
-            int idx = Mathf.FloorToInt(rel / step + 0.5f);
-            // CCW art: the cell that DEPICTS +rel is the one the rig baked at −rel, i.e. count − idx.
-            // (Element 0 is its own mirror — North is North either way — hence the wrap below, not count−1−idx.)
-            if (facingsAreCounterClockwise) idx = count - idx;
-            idx %= count;             // 360°≡0° wraps the top bucket back to element 0
-            if (idx < 0) idx += count;
-            return idx;
-        }
+            => Core.IsoFacing.HeadingToFacingIndex(headingDeg, count, zeroHeadingDeg, facingsAreCounterClockwise);
 
         /// <summary>
         /// The compass heading the PICTURE is drawn for when a true heading snaps to the nearest of
