@@ -189,5 +189,84 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(OnFootWaterState.Swim, PlayerWalkController.StateForBand(DepthBand.Deep),
                 "on foot the deep band is soft-walled → it reads as Swim (get to shore), never a Deep state");
         }
+
+        // ---- sprint: the ONE speed signal that lights the run sheet ---------------------------------
+
+        const float WalkSpeed = 3f;      // the controller's walk speed
+        const float SprintSpeed = 5.5f;  // the controller's sprint speed
+        const float DryGround = float.NegativeInfinity;   // no tide/terrain wired → dry
+
+        [Test]
+        public void Sprint_NotHeld_IsPlainWalkSpeed()
+        {
+            Assert.AreEqual(WalkSpeed,
+                PlayerWalkController.SpeedFor(false, WalkSpeed, SprintSpeed, DryGround, Wade), 1e-4f);
+        }
+
+        [Test]
+        public void Sprint_OnDryGround_ExceedsTheSkinsRunThreshold()
+        {
+            float speed = PlayerWalkController.SpeedFor(true, WalkSpeed, SprintSpeed, DryGround, Wade);
+            Assert.AreEqual(SprintSpeed, speed, 1e-4f);
+
+            // The WHOLE feature in one place: the sprite driver picks the run sheet purely from MEASURED
+            // speed, so if the sprint speed doesn't clear the skin's threshold the run art stays dead.
+            // Read the threshold off the def rather than restating 4.5 — a re-tune must re-time this test.
+            var skin = ScriptableObject.CreateInstance<CharacterVisualDef>();
+            Assert.Greater(speed, skin.RunSpeedThreshold,
+                "sprint must clear CharacterVisualDef.RunSpeedThreshold or the run sheet can never play");
+            Assert.AreEqual(CharacterGait.Run,
+                IsoCharacterMath.GaitFor(speed, skin.WalkSpeedThreshold, skin.RunSpeedThreshold),
+                "…and the shared gait selector must agree — it is the only thing choosing the sheet");
+            Object.DestroyImmediate(skin);
+        }
+
+        [Test]
+        public void Sprint_SurvivesTheDiagonalClamp()
+        {
+            float speed = PlayerWalkController.SpeedFor(true, WalkSpeed, SprintSpeed, DryGround, Wade);
+            Assert.AreEqual(SprintSpeed,
+                PlayerWalkController.VelocityFor(new Vector2(1f, 1f), speed).magnitude, 1e-4f,
+                "a diagonal sprint must still be a sprint");
+        }
+
+        [Test]
+        public void Sprint_IsAllowedWhileWading_ButTheWadeFactorStillDragsItDown()
+        {
+            // Wading is a hurry you're allowed to make (P5 "flood making — head in").
+            float speed = PlayerWalkController.SpeedFor(true, WalkSpeed, SprintSpeed, Wade - 0.01f, Wade);
+            Assert.AreEqual(SprintSpeed, speed, 1e-4f, "sprint is permitted within the wade band");
+
+            // …but the owner's wade slow-factor still multiplies it DOWN afterwards — sprint must never
+            // multiply PAST the water. Deep in the wade band the result falls below the run threshold on
+            // its own, so the fisher drops back to a walk as the water takes her legs. No extra code.
+            var slowed = PlayerWalkController.ApplyWaterEdge(new Vector2(1f, 0f) * speed, Vector2.zero,
+                             _ => Wade, 1f, Wade, Swim, WadeF, SwimF);
+            Assert.Less(slowed.magnitude, speed, "the wade factor must still bite on a sprint");
+            Assert.AreEqual(SprintSpeed * WadeF, slowed.magnitude, 1e-3f);
+
+            var skin = ScriptableObject.CreateInstance<CharacterVisualDef>();
+            Assert.Less(slowed.magnitude, skin.RunSpeedThreshold,
+                "deep in the wade band a sprint reads as a walk again — the water wins");
+            Object.DestroyImmediate(skin);
+        }
+
+        [Test]
+        public void Sprint_IsRefusedWhileSwimming_YouDontSprintOutOfTheSea()
+        {
+            Assert.AreEqual(WalkSpeed,
+                PlayerWalkController.SpeedFor(true, WalkSpeed, SprintSpeed, Wade + 0.01f, Wade), 1e-4f,
+                "past the wade band the fisher is swimming — sprint is refused (P5: the sea has teeth)");
+            Assert.AreEqual(WalkSpeed,
+                PlayerWalkController.SpeedFor(true, WalkSpeed, SprintSpeed, Swim + 5f, Wade), 1e-4f,
+                "and deeper still is no different");
+        }
+
+        [Test]
+        public void Sprint_NeverSlowerThanTheWalkEvenIfMistuned()
+        {
+            Assert.AreEqual(WalkSpeed, PlayerWalkController.SpeedFor(true, WalkSpeed, 0.5f, DryGround, Wade),
+                1e-4f, "a mis-set sprint tunable must not make holding Shift a handicap");
+        }
     }
 }
