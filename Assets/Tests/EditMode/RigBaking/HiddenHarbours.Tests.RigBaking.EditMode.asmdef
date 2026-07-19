@@ -1,0 +1,21 @@
+{
+    "name": "HiddenHarbours.Tests.RigBaking.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.RigBaking",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Tools.JsEngine.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "overrideReferences": true,
+    "autoReferenced": false
+}

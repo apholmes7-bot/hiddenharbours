@@ -1,0 +1,23 @@
+{
+    "name": "HiddenHarbours.Tools.RigBaking.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.RigBaking",
+    "references": [
+        "HiddenHarbours.Art.Editor",
+        "HiddenHarbours.Tools.JsEngine.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "ClearScript.Core.dll",
+        "ClearScript.V8.dll",
+        "ClearScript.V8.ICUData.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
