@@ -105,3 +105,12 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Test-run output from headless Unity runs (agents and CI write results XML + logs here).
+# NOT part of the project: ignoring it keeps `git status` readable and, more importantly, stops
+# these ever being swept into a commit by an over-broad `git add`.
+/artifacts/
+
+# Stray hooks folder created when a `git lfs install` gets redirected to a literal `dev/null`
+# path on Windows (Git Bash makes it a real directory). Harmless duplicate of .git/hooks.
+/dev/
