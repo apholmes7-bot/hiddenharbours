@@ -1,4 +1,7 @@
+using System.Diagnostics;
+using System.Threading;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -35,6 +38,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// meadow) is a thing you can only SEE on a machine with a GPU, which is exactly where this test does run
     /// and does bite. Do NOT "fix" the skip by weakening the assertions so they run headless: a probe that does
     /// not render proves nothing at all.</para>
+    ///
+    /// <para><b>The cold-shader-cache trap (diagnosed 2026-07-19).</b> This test used to FALSE-RED on any machine
+    /// whose <c>Library/ShaderCache</c> was cold. The probe shader has <c>Fallback Off</c>, so on the very first
+    /// draw — before its variant has finished compiling — URP takes the async-compile placeholder path, which does
+    /// NOT supply a per-object matrix. The left probe then decodes as <c>0.0289</c>: EXACTLY what a genuine
+    /// regression produces, so the two were indistinguishable and the misleading lockstep-meadow message sent two
+    /// agents hunting a bug that was not there. The fixture therefore now WAITS for the variant to compile before
+    /// the measuring render (see <see cref="EnsureProbeVariantCompiled"/>) and, if it never does, fails with its
+    /// own distinct "probe shader never compiled" message instead of blaming the flowers.</para>
     /// </summary>
     public class SpriteObjectMatrixGuardTests
     {
@@ -99,6 +111,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Texture2D read = null;
             try
             {
+                // MUST happen before the measuring render — see the cold-cache paragraph in the class doc.
+                EnsureProbeVariantCompiled(cam, mat);
+
                 cam.Render();
                 read = ReadBack(rt);
 
@@ -129,6 +144,65 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Object.DestroyImmediate(rt);
                 Object.DestroyImmediate(mat);
             }
+        }
+
+        /// <summary>
+        /// Block until the probe shader's variant is actually compiled, so the measuring render cannot land on
+        /// URP's async-compile placeholder (which supplies no per-object matrix and decodes as ~0 — the exact value
+        /// a genuine regression gives). See the cold-cache paragraph in the class doc.
+        ///
+        /// <para>Two mechanisms, because neither alone is sufficient. <c>ShaderUtil.CompilePass</c> compiles the
+        /// variant implied by the material's CURRENT keyword set, which is not necessarily the one URP picks at draw
+        /// time; so after that we also RENDER and then wait for <c>anythingCompiling</c> to settle, repeating until
+        /// a render triggers no further compilation. That second loop is what actually pins the render-time variant.
+        /// These are warm-up renders into the same target — the measuring render happens after we return.</para>
+        /// </summary>
+        private static void EnsureProbeVariantCompiled(Camera cam, Material mat)
+        {
+            const double TimeoutSeconds = 120.0;
+            const int MaxWarmUpRenders = 8;
+
+            var clock = Stopwatch.StartNew();
+
+            // 1. Force the material's own variant through the compiler synchronously.
+            int passes = mat.passCount > 0 ? mat.passCount : 1;
+            for (int pass = 0; pass < passes; pass++)
+                ShaderUtil.CompilePass(mat, pass, true);
+            WaitForCompilerToSettle(clock, TimeoutSeconds);
+
+            // 2. Warm-up renders until one of them stops asking the compiler for anything new.
+            int renders = 0;
+            for (; renders < MaxWarmUpRenders; renders++)
+            {
+                cam.Render();
+                if (!ShaderUtil.anythingCompiling) break;
+                WaitForCompilerToSettle(clock, TimeoutSeconds);
+            }
+
+            if (ShaderUtil.anythingCompiling || renders >= MaxWarmUpRenders)
+            {
+                Assert.Fail(
+                    "PROBE SHADER NEVER COMPILED — this is NOT a flower-shader regression. After " +
+                    $"{renders} warm-up render(s) and {clock.Elapsed.TotalSeconds:F1}s of waiting, Unity was still " +
+                    "compiling shader variants, so the measuring render would have gone through URP's " +
+                    "async-compile placeholder path (no per-object matrix, decodes as ~0.029 — identical to the " +
+                    "real bug). The per-object-matrix guard proved NOTHING this run. Re-run the suite once the " +
+                    "shader cache is warm; if it never settles, the probe shader " +
+                    "(Assets/Tests/EditMode/Art/Shaders/SpriteObjectMatrixProbe.shader) is failing to compile at " +
+                    "all — check the console for its compiler errors. Do NOT go looking at " +
+                    "HiddenHarboursFlower.shader on the strength of this message.");
+            }
+        }
+
+        /// <summary>
+        /// Spin until <c>ShaderUtil.anythingCompiling</c> goes false (the compiler runs in its own worker
+        /// processes, so sleeping here does not starve it) or the shared budget runs out. Returning on timeout is
+        /// deliberate — the caller re-checks and owns the failure message.
+        /// </summary>
+        private static void WaitForCompilerToSettle(Stopwatch clock, double timeoutSeconds)
+        {
+            while (ShaderUtil.anythingCompiling && clock.Elapsed.TotalSeconds < timeoutSeconds)
+                Thread.Sleep(25);
         }
 
         /// <summary>
