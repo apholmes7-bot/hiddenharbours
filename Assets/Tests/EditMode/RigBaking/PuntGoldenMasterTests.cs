@@ -68,31 +68,60 @@ namespace HiddenHarbours.Tests.RigBaking
                 var a = baked.GetPixels32();
                 var b = shipped.GetPixels32();
 
-                // --- whole-sheet similarity ---------------------------------------------------
-                var whole = Compare(a, b);
-                Debug.Log($"[golden-master] whole sheet: {whole.MatchPercent:F2}% of pixels within " +
-                          $"±{ChannelTolerance}, mean channel delta {whole.MeanDelta:F2}, " +
-                          $"alpha silhouette agreement {whole.AlphaAgreePercent:F2}%");
+                // ── THE POINT OF THIS TEST ────────────────────────────────────────────────────
+                //
+                // The baked sheet must NOT match the shipped sheet cell-for-cell, and if it ever
+                // does, something has broken. The shipped PNG was hand-exported in the rig's RAW
+                // order — cell i is literally render(i) — which is why it needs
+                // BoatVisualDef.FacingsAreCounterClockwise = true to be corrected at RUNTIME. The
+                // baker instead applies the correction at BAKE time, emitting cell k as
+                // render((8−k)%8).
+                //
+                // So the two sheets should be related by exactly that permutation:
+                //
+                //     baked cell k  ==  shipped cell (8−k)%8
+                //
+                // Asserting the PAIRED comparison is what proves the whole pipeline at once: the
+                // rig executes identically under V8 as it did in the art director's browser, the
+                // pixel path is faithful, AND the counter-clockwise correction is applied in the
+                // right direction. A naive same-index comparison, by contrast, "fails" for the
+                // healthiest possible reason.
+                // ──────────────────────────────────────────────────────────────────────────────
 
-                // --- per-cell, so a single bad facing is named -------------------------------
+                double worstPaired = 100.0, bestNaive = 0.0;
                 for (int k = 0; k < Facings; k++)
                 {
-                    var cell = CompareCell(a, b, baked.width, k);
-                    Debug.Log($"[golden-master] cell {k}: {cell.MatchPercent:F2}% match, " +
-                              $"mean delta {cell.MeanDelta:F2}, alpha {cell.AlphaAgreePercent:F2}%");
+                    int shippedCell = (Facings - k) % Facings;
+                    var paired = CompareCellPair(a, b, baked.width, k, shippedCell);
+                    var naive  = CompareCellPair(a, b, baked.width, k, k);
+
+                    Debug.Log($"[golden-master] baked cell {k} vs shipped cell {shippedCell}: " +
+                              $"{paired.MatchPercent:F2}% match, mean delta {paired.MeanDelta:F3}" +
+                              $"   |   naive same-index: {naive.MatchPercent:F2}%");
+
+                    worstPaired = Math.Min(worstPaired, paired.MatchPercent);
+                    if (k != shippedCell) bestNaive = Math.Max(bestNaive, naive.MatchPercent);
                 }
 
-                // The silhouette is the load-bearing claim: same hull, same projection, same
-                // orientation per cell. Shading may drift between rig revisions; the outline
-                // should not.
-                Assert.Greater(whole.AlphaAgreePercent, 99.0,
-                    "The baked silhouette does not match the shipped sheet. Before suspecting the " +
-                    "baker, check whether the shipped PNG was baked from the OLDER puntIsoRig.js " +
-                    "(docs/art/rigs/README.md records an md5 difference).");
+                Debug.Log($"[golden-master] worst paired cell {worstPaired:F2}%, " +
+                          $"best off-axis naive cell {bestNaive:F2}%");
 
-                Assert.Greater(whole.MatchPercent, 95.0,
-                    "Pixel agreement is below 95%. See the per-cell log above: if ONE cell is bad " +
-                    "the correction is wrong; if ALL cells drift slightly the rig revision differs.");
+                Assert.Greater(worstPaired, 99.9,
+                    $"Worst paired cell is only {worstPaired:F2}%. The baked art does not reproduce " +
+                    "the shipped art under the counter-clockwise permutation.\n" +
+                    "⚠️ Before assuming the baker is broken: docs/art/rigs/README.md records that " +
+                    "the imported puntIsoRig.js differs by md5 from the older copy that used to " +
+                    "live at docs/art/punt-iso-rig/. If ALL cells drift by a similar small amount, " +
+                    "that rig revision is the explanation, not a bug. If ONE cell is wrong, the " +
+                    "correction is.");
+
+                // And the correction must actually be doing something: off-axis cells must NOT
+                // line up at the same index. (N and S sit on the mirror axis and legitimately do,
+                // which is why they are excluded from bestNaive.)
+                Assert.Less(bestNaive, 95.0,
+                    $"An off-axis cell matched the shipped sheet at its own index ({bestNaive:F2}%). " +
+                    "That means the counter-clockwise correction was NOT applied — the baker is " +
+                    "reproducing the raw, uncorrected export.");
             }
             finally
             {
@@ -132,20 +161,24 @@ namespace HiddenHarbours.Tests.RigBaking
             return new Diff(100.0 * match / n, sum / (4.0 * n), 100.0 * alphaAgree / n);
         }
 
-        static Diff CompareCell(Color32[] a, Color32[] b, int sheetW, int cell)
+        /// <summary>Compares cell <paramref name="cellA"/> of the baked sheet against cell
+        /// <paramref name="cellB"/> of the shipped sheet. The two indices differ on purpose — see
+        /// the permutation argument in the test body.</summary>
+        static Diff CompareCellPair(Color32[] a, Color32[] b, int sheetW, int cellA, int cellB)
         {
             long match = 0, alphaAgree = 0, sum = 0, n = 0;
-            int x0 = cell * CellW;
+            int ax0 = cellA * CellW, bx0 = cellB * CellW;
             for (int y = 0; y < CellH; y++)
-            for (int x = x0; x < x0 + CellW; x++)
+            for (int x = 0; x < CellW; x++)
             {
-                int i = y * sheetW + x;
-                int dr = Math.Abs(a[i].r - b[i].r), dg = Math.Abs(a[i].g - b[i].g);
-                int db = Math.Abs(a[i].b - b[i].b), da = Math.Abs(a[i].a - b[i].a);
+                int ia = y * sheetW + ax0 + x;
+                int ib = y * sheetW + bx0 + x;
+                int dr = Math.Abs(a[ia].r - b[ib].r), dg = Math.Abs(a[ia].g - b[ib].g);
+                int db = Math.Abs(a[ia].b - b[ib].b), da = Math.Abs(a[ia].a - b[ib].a);
                 sum += dr + dg + db + da;
                 if (dr <= ChannelTolerance && dg <= ChannelTolerance &&
                     db <= ChannelTolerance && da <= ChannelTolerance) match++;
-                if ((a[i].a >= 128) == (b[i].a >= 128)) alphaAgree++;
+                if ((a[ia].a >= 128) == (b[ib].a >= 128)) alphaAgree++;
                 n++;
             }
             return new Diff(100.0 * match / n, sum / (4.0 * n), 100.0 * alphaAgree / n);

@@ -146,9 +146,16 @@ namespace HiddenHarbours.Tests.RigBaking
                 Debug.Log($"[rig-baker] sabotage cell {k}: correct dir {right}, wrong dir {bad}, " +
                           $"heading error {errDeg:F0}°");
             }
-            Assert.AreEqual(7, wrong,
-                "Every cell but north must move when the convention is flipped. If some did not, " +
-                "the correction is not being applied where it is claimed to be.");
+            // SIX, not seven. North (cell 0) and south (cell 4) sit ON the mirror axis, so
+            // (8−k)%8 == k for both and they are invariant under the correction. That is not a
+            // loophole in the test — it is the fingerprint of this exact bug, and it shows up
+            // independently in the golden master, where cells 0 and 4 match the shipped sheet
+            // byte-for-byte while the diagonals are 90° out and E/W are 180° out. The known
+            // scar-tissue formula (error = −2h) predicts precisely that pattern.
+            Assert.AreEqual(6, wrong,
+                "Every cell except the two on the mirror axis (N and S) must move when the " +
+                "convention is flipped. If fewer moved, the correction is not being applied where " +
+                "it is claimed to be.");
         }
 
         /// <summary>
