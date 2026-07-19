@@ -717,7 +717,7 @@ namespace HiddenHarbours.App.Editor
         //   Console skiff           1600·0.01 / (170·0.01 + 12·0.2)   = 3.90 m/s   (target 3.8–4.0)
         //   Sport skiff            1600·0.01 / (155·0.01 + 9.5·0.2)   = 4.64 m/s   (target 4.6)
         //   Sport skiff, twin      2000·0.01 / (155·0.01 + 10·0.2)    = 5.63 m/s   (target 5.6)
-        //   Cape Islander          6300·0.01 / (300·0.01 + 60·0.2)    = 4.20 m/s   (target 4.2)
+        //   Cape Islander          6300·0.01 / (300·0.01 + 60·0.2)    = 4.20 m/s   (measures 4.10; see below)
         //
         // THE CAPE ISLANDER IS THE HULL THAT PROVES THE DAMPING TERM. At 6000 kg her mass contributes 12.0
         // of a 15.0 total — EIGHTY PERCENT of her resistance — where on the console it is 59% and on the
@@ -938,16 +938,18 @@ namespace HiddenHarbours.App.Editor
         /// stern plume at LengthMeters·0.5, so a length taken off the cell would throw her wake ~0.7 m astern
         /// of a transom that is not there. Authored against the drawn hull, per the console's precedent.</para>
         ///
-        /// <para><b>4.20 m/s, MEASURED.</b> Not solved for, not reasoned from horsepower: the numbers below
+        /// <para><b>4.10 m/s, MEASURED.</b> Not solved for, not reasoned from horsepower: the numbers below
         /// were chosen and then run to terminal on real physics in <c>PilotableFleetPlayTests</c>. The
-        /// derivation the ladder note above gives predicts 6300·0.01 / (300·0.01 + 60·0.2) = 4.20, and the
-        /// measurement agrees — which is only worth stating because the mass term DOMINATES on this hull in
+        /// derivation the ladder note above gives predicts 6300·0.01 / (300·0.01 + 60·0.2) = 4.20, and she measures
+        /// 4.10 — the 0.10 shortfall is the PlayMode harness stopping a little short of true terminal on a
+        /// hull with her time constant, quantified in CapeIslander_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor — which is only worth stating because the mass term DOMINATES on this hull in
         /// a way it does on no other. At 6000 kg the rigidbody's own linearDamping contributes 12.0 of her
         /// 15.0 total resistance (80%); on the console it is 2.4 of 4.1 (59%) and on the dory less still. A
         /// naive EnginePower/ForwardDrag ratio would have put her at 21 m/s. She is the hull that makes that
         /// trap unmissable, so the play test asserts her against the shared derivation as well as her target.
         ///
-        /// <para>She lands at 4.20: above the console workboat's 3.90, below the sport skiff's 4.64 — a big
+        /// <para>She lands at 4.10 measured: above the console workboat's measured 3.83, below the sport skiff's
+        /// 4.57 — a big
         /// diesel boat that makes steady way and is nobody's speedboat. Her ACCELERATION is where the mass
         /// reads: same force model, 5× the inertia.</para></para>
         ///
@@ -968,7 +970,7 @@ namespace HiddenHarbours.App.Editor
             h.LengthMeters = 12.9f;                 // ART FACT: the drawn hull, 412 px at PPU 32 (see above)
             h.DraughtMeters = 1.4f; h.MassKg = 6000f;
             h.HoldUnits = 60; h.CrewSlots = 3;      // she is built to carry, and to carry people who work
-            h.EnginePower = 6300f;                  // → 4.20 m/s MEASURED (see the note above)
+            h.EnginePower = 6300f;                  // → 4.10 m/s MEASURED (see the note above)
             h.RudderAuthority = 5150f;              // ≈ 600·(60/7), the ladder note's mass-scaling rule
             h.ForwardDrag = 300f; h.LateralDrag = 900f;   // Lat/Fwd 3.0 — a deep keel: she tracks, she does not skid
             h.WindExposure = 0.4f;                  // heaviest hull afloat; the wheelhouse is a sail, the mass wins
