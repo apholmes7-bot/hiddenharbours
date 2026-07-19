@@ -101,6 +101,30 @@ namespace HiddenHarbours.Art.Editor
         // screen point. Do NOT align by the top-left corner."
         private static readonly Vector2 PuntOrigin = new Vector2(92f / 184f, 74f / 168f);
 
+        // The Cape Islander's boat origin — and THE ONE NUMBER IN HER KIT THAT WAS MEASURED, NOT DECLARED.
+        // Every other iso kit shipped a README fixing its anchor in cell pixels (dory (80,88), skiffs
+        // (122,120), punt (92,94)); the Cape Islander arrived as two loose PNGs with no README and no rig,
+        // so her (228, 263) from the 456×420 cell's TOP-LEFT was recovered from the pixels. Flipped to
+        // Unity's bottom-left origin, y = (420−263) = 157 → (228/456, 157/420) = (0.5, 0.373809…).
+        //
+        // HOW IT WAS RECOVERED (two independent estimators, each calibrated against the three kits whose
+        // true anchors ARE documented, so the method is checked before it is trusted):
+        //   x — the cardinal cells' silhouettes are mirror-symmetric about the exact cell centre
+        //       (measured 227.5 = (456−1)/2, matching the dory's 79.5 and the skiffs' 121.5). x = 0.5.
+        //   y(a) — the punt rig's projection is sy = cy − (yr·sin e + z·cos e)·32, so in the BROADSIDE
+        //       cell screen-x is the along-boat coordinate at full scale with NO foreshortening, and the
+        //       extreme left/right columns are the stem and transom ON THE CENTRELINE. The mean of the
+        //       silhouette's bottom row at those two ends reproduces the documented anchor to +2/−2/−4/+1.5
+        //       px on dory/punt/console/sport; on the Cape Islander it gives 263.
+        //   y(b) — the lowest drawn pixel of the bow-away cell sits a fixed fraction of the drawn hull
+        //       length below the anchor: 0.295/0.308/0.313/0.305 across the four known kits (sd 0.008).
+        //       At her 412 px drawn length that puts the anchor at 262.3.
+        // The two agree to 0.7 px (≈0.02 m at PPU 32); 263 is the integer they bracket. Residual scatter
+        // across the calibration kits is ≈±4 px (≈0.12 m), and THAT is the honest uncertainty on this
+        // number — it is the one thing in her kit a README would settle outright. If the owner ever gets
+        // the rig or the README from his art director, check this const first.
+        private static readonly Vector2 CapeIslanderOrigin = new Vector2(228f / 456f, 157f / 420f);
+
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
         // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
         // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
@@ -200,6 +224,26 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Boats/PuntMotorLower-Basic.png",    9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
             new SheetSpec(Root + "Boats/PuntMotorUpper-Upgraded.png", 9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
             new SheetSpec(Root + "Boats/PuntMotorLower-Upgraded.png", 9, 8, 212, 168, SpriteAlignment.Custom, PuntOrigin),
+
+            // ---- Cape Islander HULL: the ~12.9 m inshore working boat — the biggest hull in the kit by a
+            //      wide margin (her cell is nearly 3× the dory's on a side, ~8× the area). Inboard diesel:
+            //      she ships NO motor sheet and NO oar sheets, so hull + rock is her whole skin.
+            //   CapeIslanderIso: 8 cols × 1 row → 8 static hull headings; index = heading
+            //     (0 N, 1 NE, 2 E, 3 SE, 4 S, 5 SW, 6 W, 7 NW — the same CW LABELLING as every iso kit,
+            //     and, like every iso kit, baked COUNTER-CLOCKWISE: see BoatVisualLibraryBuilder).
+            //   CapeIslanderIsoRock: 8 cols (wave frame 0..7) × 8 ROWS (heading) → 64; index = heading×8 +
+            //     frame (row-major from top-left, per BuildRects). NOTE THE AXIS FLIP between the two
+            //     sheets — the base sheet's COLUMNS are facings, the rock sheet's ROWS are. That is not a
+            //     quirk of this kit: the dory, punt and skiff rock sheets all do it, and row-major indexing
+            //     is exactly what turns it into the heading×8 + frame contract above.
+            //
+            // ⚠ SIZE: the rock sheet is 3648×3360 — BOTH dimensions over Unity's default 2048 cap, so it
+            // imports DOWNSCALED to 0.56× unless the cap is lifted. SliceOne lifts it automatically (to
+            // NextPowerOfTwo(3648) = 4096, which loses nothing), but the trap is worth naming here because
+            // a downscale is SILENT: the sprite COUNT still comes out 64 and only the cell-size/pivot
+            // asserts in CapeIslanderSheetSliceTests catch it.
+            new SheetSpec(Root + "Boats/CapeIslanderIso.png",     8, 1, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
+            new SheetSpec(Root + "Boats/CapeIslanderIsoRock.png", 8, 8, 456, 420, SpriteAlignment.Custom, CapeIslanderOrigin),
         };
 
         // ---- entry points -------------------------------------------------------------------------

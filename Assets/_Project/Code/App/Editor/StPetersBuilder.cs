@@ -294,6 +294,12 @@ namespace HiddenHarbours.App.Editor
             // skin can be felt against the others, not because the picker owns her. Her upgraded engine
             // (boat.punt_upgraded) is a picker rung ONLY: deliberately no ShipwrightOffer, because a
             // purchasable engine upgrade is real economy work nobody has asked for (rule 8).
+            //
+            // THE CAPE ISLANDER TAILS THE CYCLE, and she is deliberately OUT of speed order: at 4.20 m/s
+            // she is slower than both sport skiffs, but she is ~13 m and 6000 kg against their 7 m and
+            // ~1000, so she is a SIZE step rather than a speed step and the cycle ends on the biggest boat
+            // rather than burying her mid-list. Picker rung only, on the upgraded punt's precedent — a
+            // purchasable 13 m workboat is the M2 fleet roster and its economy (rule 8).
             var pickerRoster = new[]
             {
                 dory,
@@ -303,10 +309,11 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiff.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CapeIslander.asset"),
             }.Where(h => h != null).ToArray();
 
-            if (pickerRoster.Length < 7)
-                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/7 hulls — " +
+            if (pickerRoster.Length < 8)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/8 hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");

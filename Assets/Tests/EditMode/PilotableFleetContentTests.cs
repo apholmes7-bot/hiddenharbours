@@ -61,7 +61,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// The COMMITTED hulls the picker cycles, in cycle order.
         ///
         /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The picker's real roster is
-        /// seven — the basic punt sits between FishingSkiff and PuntUpgraded — but <c>Data/Boats/Punt.asset</c>
+        /// eight — the basic punt sits between FishingSkiff and PuntUpgraded — but <c>Data/Boats/Punt.asset</c>
         /// is BUILDER-GENERATED AND HAS NEVER BEEN COMMITTED: it exists only in a checkout where someone has
         /// run the cove builder. Listing her here would fail on a clean clone for a reason with nothing to do
         /// with the code under test. Every existing test in this repo mirrors the punt in memory for the same
@@ -70,6 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
         static string[] FleetFiles => new[]
         {
             "Dory", "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin",
+            "CapeIslander",
         };
 
         /// <summary>
@@ -112,6 +113,7 @@ namespace HiddenHarbours.Tests.EditMode
                 { "ConsoleSkiff", "boat.console_skiff" },
                 { "SportSkiff", "boat.sport_skiff" },
                 { "SportSkiffTwin", "boat.sport_skiff_twin" },
+                { "CapeIslander", "boat.cape_islander" },
             };
 
             var seen = new HashSet<string>();
@@ -551,6 +553,7 @@ namespace HiddenHarbours.Tests.EditMode
             // fold every hull-anchored effect onto the boat's own middle, so it must be present and sane in
             // the ASSETS, not merely correct in the builder that writes them.
             foreach (var name in new[] { "DoryIso", "ConsoleSkiff", "SportSkiffSingle", "SportSkiffTwin",
+                                         "CapeIslanderIso",
                                          "PuntIsoBasic", "PuntIsoUpgraded" })
                 Assert.AreEqual(40f, Visual(name).ArtBakeElevationDegrees, 0.001f,
                     $"{name}: an iso rig bake — its DEFAULT_ELEV is 40. If this reads 0, the asset predates " +

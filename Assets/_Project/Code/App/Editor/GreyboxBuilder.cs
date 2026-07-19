@@ -521,6 +521,8 @@ namespace HiddenHarbours.App.Editor
             // The punt's upgraded engine — a picker rung, NOT a purchase (no ShipwrightOffer: see the note
             // on ApplyPuntUpgradedStats).
             LoadOrCreate<BoatHullDef>(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats);
+            // The Cape Islander — likewise a picker rung ONLY (no ShipwrightOffer): see ApplyCapeIslanderStats.
+            LoadOrCreate<BoatHullDef>(DataBoats + "/CapeIslander.asset", ApplyCapeIslanderStats);
 
             // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
             LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
@@ -608,6 +610,7 @@ namespace HiddenHarbours.App.Editor
             // and this is what makes her wear it. Her upgraded-engine sister rides the same 5.2 m hull.
             ApplyFleetHull(DataBoats + "/Punt.asset", ApplyPuntStats, "PuntIsoBasic");
             ApplyFleetHull(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats, "PuntIsoUpgraded");
+            ApplyFleetHull(DataBoats + "/CapeIslander.asset", ApplyCapeIslanderStats, "CapeIslanderIso");
 
             return new DataRefs
             {
@@ -714,6 +717,13 @@ namespace HiddenHarbours.App.Editor
         //   Console skiff           1600·0.01 / (170·0.01 + 12·0.2)   = 3.90 m/s   (target 3.8–4.0)
         //   Sport skiff            1600·0.01 / (155·0.01 + 9.5·0.2)   = 4.64 m/s   (target 4.6)
         //   Sport skiff, twin      2000·0.01 / (155·0.01 + 10·0.2)    = 5.63 m/s   (target 5.6)
+        //   Cape Islander          6300·0.01 / (300·0.01 + 60·0.2)    = 4.20 m/s   (target 4.2)
+        //
+        // THE CAPE ISLANDER IS THE HULL THAT PROVES THE DAMPING TERM. At 6000 kg her mass contributes 12.0
+        // of a 15.0 total — EIGHTY PERCENT of her resistance — where on the console it is 59% and on the
+        // dory less again. A naive EnginePower/ForwardDrag ratio, the mistake this note exists to prevent,
+        // would put her at 6300/300 = 21 m/s. She is off the ladder's low-mass end by 5×, so if the force
+        // model is ever changed she is the hull that will fail first and loudest.
         //
         // These land inside BowSprayGrading's SpeedRef 1.7→6 frame, which the dory alone could never
         // exercise: the twin nearly maxes the spray sheet, which is what that art was drawn for.
@@ -912,6 +922,62 @@ namespace HiddenHarbours.App.Editor
             h.SeakeepingMassFactor = 1.1f; h.SeakeepingLiveliness = 0.95f; h.SeakeepingDamping = 0.05f;
             h.CameraWorldHeightMeters = 13.5f;  // the ladder, read back below the dory's 14 @ 4.5 m
             ApplyDeckTray(h);                   // she keeps her tray (the content validator requires it)
+        }
+
+        /// <summary>
+        /// THE CAPE ISLANDER (<c>boat.cape_islander</c>) — ~12.9 m of inshore working boat, and by a long
+        /// way the biggest hull the owner can currently put himself in: she is 5× the console skiff's mass
+        /// and nearly twice her length. The point of her is MOMENTUM. She is not the fastest boat afloat and
+        /// is not meant to be; she is the one that takes a while to get going and then does not stop.
+        ///
+        /// <para><b>12.9 m, from the ART, not from the cell.</b> Her hull cell is 456 px = 14.25 m at PPU 32,
+        /// but the cell is not the boat: the DRAWN hull measures 412 px across the broadside cell, where the
+        /// rig's projection puts screen-x on the along-boat axis at full scale with no foreshortening — so
+        /// 412/32 = 12.88 m is the hull, and the remaining 44 px is padding. This matters for the same reason
+        /// it mattered on the punt (whose asset claimed 6 m against a 5.2 m picture): WakeGrading anchors the
+        /// stern plume at LengthMeters·0.5, so a length taken off the cell would throw her wake ~0.7 m astern
+        /// of a transom that is not there. Authored against the drawn hull, per the console's precedent.</para>
+        ///
+        /// <para><b>4.20 m/s, MEASURED.</b> Not solved for, not reasoned from horsepower: the numbers below
+        /// were chosen and then run to terminal on real physics in <c>PilotableFleetPlayTests</c>. The
+        /// derivation the ladder note above gives predicts 6300·0.01 / (300·0.01 + 60·0.2) = 4.20, and the
+        /// measurement agrees — which is only worth stating because the mass term DOMINATES on this hull in
+        /// a way it does on no other. At 6000 kg the rigidbody's own linearDamping contributes 12.0 of her
+        /// 15.0 total resistance (80%); on the console it is 2.4 of 4.1 (59%) and on the dory less still. A
+        /// naive EnginePower/ForwardDrag ratio would have put her at 21 m/s. She is the hull that makes that
+        /// trap unmissable, so the play test asserts her against the shared derivation as well as her target.
+        ///
+        /// <para>She lands at 4.20: above the console workboat's 3.90, below the sport skiff's 4.64 — a big
+        /// diesel boat that makes steady way and is nobody's speedboat. Her ACCELERATION is where the mass
+        /// reads: same force model, 5× the inertia.</para></para>
+        ///
+        /// <para><b>No ShipwrightOffer, on purpose</b> — the same call the upgraded punt made, for the same
+        /// reason (rule 8). A purchasable 13 m workboat is the M2 fleet roster and its economy, which nobody
+        /// has asked for yet. She is a rung on the dev picker's F cycle so the owner can FEEL her against the
+        /// others in the same wave, and nothing more: OwnedFleet's purchase registry does not know she exists.</para>
+        ///
+        /// <para><b>No DeckContainer</b>, following the console skiff: the FishTray is drawn screen-upright
+        /// and does not sit in an iso hull at most headings. The owner's standing decision is no code
+        /// workarounds — the 8-direction deck props are coming from his art director. And a fish tray on a
+        /// 13 m boat would be the wrong prop anyway.</para>
+        /// </summary>
+        static void ApplyCapeIslanderStats(BoatHullDef h)
+        {
+            h.Id = "boat.cape_islander"; h.DisplayName = "The Cape Islander";
+            h.Propulsion = PropulsionType.Engine;   // INBOARD diesel — which is why her kit draws no outboard
+            h.LengthMeters = 12.9f;                 // ART FACT: the drawn hull, 412 px at PPU 32 (see above)
+            h.DraughtMeters = 1.4f; h.MassKg = 6000f;
+            h.HoldUnits = 60; h.CrewSlots = 3;      // she is built to carry, and to carry people who work
+            h.EnginePower = 6300f;                  // → 4.20 m/s MEASURED (see the note above)
+            h.RudderAuthority = 5150f;              // ≈ 600·(60/7), the ladder note's mass-scaling rule
+            h.ForwardDrag = 300f; h.LateralDrag = 900f;   // Lat/Fwd 3.0 — a deep keel: she tracks, she does not skid
+            h.WindExposure = 0.4f;                  // heaviest hull afloat; the wheelhouse is a sail, the mass wins
+            h.MaxSafeSeaState = SeaState.Gale;      // one rung above the skiffs' Rough — a proper working boat
+            // Only the RATIO liveliness/massFactor reaches the sim (SeakeepingForcesMath.ResponseFrom), and
+            // hers is 0.38/3.2 = 0.119 — the steadiest hull on the ladder by a factor of two (console 0.227,
+            // sport 0.417, dory 1.0). The sea has to work much harder to move her, which is the whole feel.
+            h.SeakeepingMassFactor = 3.2f; h.SeakeepingLiveliness = 0.38f; h.SeakeepingDamping = 0.65f;
+            h.CameraWorldHeightMeters = 24f;        // the 14@4.5 → 17@5.2 → 18.5@7 ladder, carried out to 12.9 m
         }
 
         // The deck-container ladder (owner canon): every small hull the builders generate carries the

@@ -290,6 +290,46 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator CapeIslander_MakesSteadyWay_LikeThirteenMetresOfWorkingBoat()
+        {
+            var hull = LoadHull("CapeIslander");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            Assert.AreEqual(4.20f, rb.linearVelocity.magnitude, 0.15f,
+                "the Cape Islander's target is ≈4.2 m/s — above the console workboat's 3.90, below the sport " +
+                "skiff's 4.64. She is a big diesel boat that makes steady way, not a fast one. If this drifts, " +
+                "EnginePower/ForwardDrag/MassKg on CapeIslander.asset moved.");
+        }
+
+        [UnityTest]
+        public IEnumerator CapeIslander_IsTheHullThatProvesTheDampingTerm()
+        {
+            // The whole reason she is worth a test of her own. At 6000 kg the rigidbody's linearDamping is
+            // 12.0 of her 15.0 total resistance — EIGHTY PERCENT, against 59% on the console and less on the
+            // dory. The naive ratio this project has been bitten by twice, EnginePower/ForwardDrag, would put
+            // her at 6300/300 = 21 m/s. Measuring how far WRONG that ratio is on the heaviest hull is what
+            // makes the trap unforgettable, so it is asserted rather than merely described in a comment.
+            var hull = LoadHull("CapeIslander");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            float measured = rb.linearVelocity.magnitude;
+            float naive = hull.EnginePower / hull.ForwardDrag;
+            Assert.Greater(naive / measured, 4f,
+                $"the naive EnginePower/ForwardDrag ratio predicts {naive:0.0} m/s against a measured " +
+                $"{measured:0.00}. If that factor ever falls near 1, the force model changed and every " +
+                "derivation in GreyboxBuilder's hull-ladder note needs re-deriving.");
+
+            // ...and she is still the heaviest thing afloat, which is the other half of her character.
+            foreach (var other in new[] { "ConsoleSkiff", "SportSkiffTwin", "Dory" })
+                Assert.Greater(hull.MassKg, LoadHull(other).MassKg * 2f,
+                    $"the Cape Islander must dwarf the {other} — momentum is the point of her");
+        }
+
+        [UnityTest]
         public IEnumerator TheMeasuredLadder_MatchesTheDerivation()
         {
             // The guard on the ALGEBRA itself. GreyboxBuilder's hull-ladder note derives every stat on the
@@ -299,7 +339,8 @@ namespace HiddenHarbours.Tests.PlayMode
             const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
             const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
 
-            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "FishingSkiff", "PuntUpgraded" })
+            foreach (var file in new[] { "ConsoleSkiff", "SportSkiff", "SportSkiffTwin", "FishingSkiff",
+                                         "PuntUpgraded", "CapeIslander" })
             {
                 var hull = LoadHull(file);
                 var (go, boat, rb) = NewBoat(hull, Vector3.zero);

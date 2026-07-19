@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc921807982d63243a7382a3fa1922d2, type: 3}
+  m_Name: CapeIslanderIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
+  Id: visual.cape_islander_iso
+  Facings:
+  - {fileID: 7059747339026985028, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: 2295441931385811504, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: -3509028460333309039, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: -4436357248845102954, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: -8215327769862564980, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: 3128681930102617177, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: 9013391265209372199, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  - {fileID: -6748239460282798783, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
+  ZeroHeadingDegrees: 0
+  FacingsAreCounterClockwise: 1
+  ArtBakeElevationDegrees: 40
+  SortingOrder: 1
+  RockGrid:
+  - {fileID: 3925847365066026950, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 12174428012226044, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4941568293657954731, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6984674538969625720, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 7368584909680143864, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -384515341279044955, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -7555147384195406067, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 1274489867948593631, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 1051535597904268088, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 2076466758242381131, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -1537632219852975096, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -936544691199678343, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3468514615753770849, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 1391182251268311866, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -2370152147792111882, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -1663391227478381011, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -5560594513325497816, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -5051105057161549262, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4106704670777097153, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4032621319594664461, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 5333710737753057601, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -8095136695766089023, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6709859421608346745, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 8353698058799594016, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3468875189400725752, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4726685407086227909, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6825675273491695402, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6192847121553258751, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -7881254897022547119, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -395103670371988492, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6540589730374260588, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 2033561114872112950, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 5861573206683034398, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3798458588545596426, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4478003359527011947, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 7892278345207147551, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6097657372771606650, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 1045569750232087048, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4062323616912744753, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -2493578353103671477, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -6148722552146862164, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3821145780866096266, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 1491412383513705579, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3216625005396030408, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -2421928196142334361, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -188034091042558778, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 7969247700446786595, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -5903843257704315918, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -1392077973426777320, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -9086780992407925678, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 4399888305957481614, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 808748375523965934, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 3148174372083897039, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -8507352297592257634, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 3314247978660670780, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 8713706895302570543, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -8325811970575244234, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -7152065322649339640, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 931886824009299549, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 6932520634061352345, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -123986289672882203, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: 3763421276828778732, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -3162661278281563499, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  - {fileID: -833491550082522451, guid: 2c9741da26c6d4b4b87cdda3450423b7, type: 3}
+  RockFrameCount: 8
+  OarPort: []
+  OarStar: []
+  OarColumnCount: 10
+  MotorLower: []
+  MotorUpper: []
+  MotorColumnCount: 1
+  MotorMaxSteerDegrees: 30
+  MotorVariant: 0
+  MotorFit: 0
+  MotorRockRollDegrees: 3.4
+  MotorRockPitchDegrees: 1.9
+  MotorRockHeavePixels: 1.3
+  MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
