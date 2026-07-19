@@ -1,8 +1,16 @@
 # ADR 0021 — Bake the art director's rigs IN-ENGINE: embed V8 in the Unity EDITOR, run his `.js` source unmodified, and go to 32 directions
 
 - **Status:** **Accepted — owner signed off 2026-07-19** on (a) vendoring the V8 engine as an
-  editor-only dependency and (b) committing to **32-direction boat movement**. Docs + an inert
-  measurement harness; this ADR ships no tool. The baker itself (Arc D) is separate work, not yet
+  editor-only dependency and (b) committing to **32-direction boat movement**.
+  ⚠️ **The sign-off was RE-CONFIRMED after the licence position changed.** His first approval was given
+  while the understood story was Jint's "permissive, attribution-only BSD". The V8 native bundle's
+  **LGPL-2.1 glibc component** (see *Licences* below) surfaced *afterwards*, was put to him explicitly,
+  and he confirmed knowingly. This is **informed acceptance, not a premise carried over from the
+  earlier, cleaner picture** — which matters because Hidden Harbours is headed for commercial release.
+  ⚠️ **The licence basis depends on the editor-only fencing in §(3).** If that fencing is ever weakened
+  so the binaries could reach a player build, the LGPL basis weakens with it and this ADR MUST be
+  revisited before shipping. Treat the two machine-checked fences as load-bearing, not hygiene.
+  Docs + an inert measurement harness; this ADR ships no tool. The baker itself (Arc D) is separate work, not yet
   built. Records the decision that rig sheets stop being hand-exported from a browser and become an
   **editor operation**: place a rig in a scene, tweak it, press BAKE.
 - **Date:** 2026-07-19
