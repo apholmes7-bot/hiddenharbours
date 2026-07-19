@@ -14,14 +14,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// re-export that drifts the grid, a re-slice that loses the ground pivot, or an importer setting
     /// that downscales the sheet all land as silently wrong sprites.
     ///
-    /// <para><b>⚠️ TWO CELL SIZES.</b> The locomotion sheets are <b>64 × 88</b>. The rod sheets are
-    /// <b>128 × 128</b> — the same figure on a canvas padded +32 px each side and +40 px on top for the
-    /// rod arc and the flying lure. The ground line does not move, so the pivot rule is the same on
-    /// both: <b>8 px above the cell bottom, on the centreline</b> → (0.5, 8/88 ≈ 0.0909) for locomotion
-    /// and (0.5, 8/128 = 0.0625) for the rod sheets. Inverting it buries the character ~72 px
-    /// (locomotion) or ~112 px (rod) in the ground. The pivot assert below is stated in PIXELS so both
-    /// cell sizes are checked by the same rule, and it is deliberately duplicated as a literal here
-    /// rather than imported from the slicer.</para>
+    /// <para><b>ONE CELL SIZE NOW: 64 × 88 for all twelve body sheets.</b> There used to be two — the
+    /// rod poses were <b>128 × 128</b>, the same figure on a canvas padded for the rod arc and the flying
+    /// lure. The art director has since split the rod out into its own overlay sheet, so the bodies are
+    /// uniformly the plain character cell (the rod overlays arrive in their own PR and bring the second
+    /// size back). The pivot rule is unchanged and independent of cell size: <b>8 px above the cell
+    /// bottom, on the centreline</b> → (0.5, 8/88 ≈ 0.0909). Inverting it buries the character ~72 px in
+    /// the ground. The pivot assert below is stated in PIXELS so the same rule checks any cell size, and
+    /// it is deliberately duplicated as a literal here rather than imported from the slicer.</para>
     ///
     /// <para><b>Expectations come from the ART, not from the slicer.</b> Frame counts, row counts and
     /// total sprite counts are all derived from the actual PNG dimensions read off disk
@@ -32,11 +32,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// px is a whole number of both 64 px and 128 px cells), so it is restated here independently as
     /// the contract under test.</para>
     ///
-    /// <para>Row order is asserted only as a <i>count</i> of 8. These rows are baked COUNTER-CLOCKWISE
-    /// while the README labels them clockwise (true order N · NW · W · SW · S · SE · E · NE — row i
-    /// depicts heading −45°·i), so the slices are named by row INDEX and no compass mapping is encoded
-    /// anywhere in this PR. See <c>CharacterSheetSlicer</c>'s remarks — including the note that the rod
-    /// poses carry a rig <c>yaw:16</c>, which skews face-centroid checks on those three sheets.</para>
+    /// <para>Row order is asserted only as a <i>count</i> of 8 — which way the rows RUN is measured from
+    /// the pixels in <c>CharacterIsoFacingTests</c>, not here. (They now run clockwise as labelled: the
+    /// rig was fixed at source and the bodies re-baked.) Slices stay named by row INDEX regardless: a
+    /// slice name states geometry, not compass semantics, which is what kept the re-bake a data change
+    /// instead of an asset-database migration. See <c>CharacterSheetSlicer</c>'s remarks.</para>
     /// </summary>
     public class CharacterIsoSheetSliceTests
     {
@@ -62,10 +62,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "Skipper_walk", new Vector2Int(64, 88) },
             { "Skipper_run",  new Vector2Int(64, 88) },
 
-            // Rod poses — 128 × 128.
-            { "Fisher_hold",       new Vector2Int(128, 128) },
-            { "Fisher_cast_short", new Vector2Int(128, 128) },
-            { "Fisher_cast_long",  new Vector2Int(128, 128) },
+            // Rod poses — 64 × 88 too, since the rod moved out to its own overlay sheet. These three were
+            // 128 × 128 while the rod was baked INTO the body; the frame counts (6/10/10) did not change,
+            // only the canvas. The rod overlays arrive in their own PR at their own, larger cell.
+            { "Fisher_hold",       new Vector2Int(64, 88) },
+            { "Fisher_cast_short", new Vector2Int(64, 88) },
+            { "Fisher_cast_long",  new Vector2Int(64, 88) },
         };
 
         /// <summary>The README's / drop's stated frame counts, checked against the PNG widths.</summary>
@@ -262,20 +264,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void RodSheets_AreTheBiggerCanvas_NotTheLocomotionCell()
+        public void EveryBodySheet_IsNowTheSamePlainCharacterCell_704PxTall()
         {
-            // The whole point of this PR, asserted against the pixels: the rod sheets are 1024 px tall,
-            // which is 8 × 128 and NOT 8 × 88 (= 704). Reading them on the locomotion grid would yield a
-            // wrong 20/12 frames and a wrong row height, so pin the dimension itself.
-            foreach (var stem in new[] { "Fisher_hold", "Fisher_cast_short", "Fisher_cast_long" })
+            // The shape half of this PR, asserted against the pixels. Fisher_hold / cast_short / cast_long
+            // used to be 1024 px tall (8 × 128) because the rod was baked into the body; the rod moved out
+            // to its own overlay, so every body sheet is now 8 rows × 88 px = 704. Pin the dimension
+            // itself: reading a 704 px sheet on the old 128 px grid gives 5.5 rows and fails, but reading
+            // a 1024 px sheet on the 88 px grid would ALSO fail — so this catches a half-applied art drop
+            // in either direction.
+            foreach (var stem in AllSheets())
             {
                 var tex = LoadSheet(stem);
-                Assert.AreEqual(1024, tex.height,
-                                $"{stem}: rod sheets must be 8 rows × 128 px = 1024 px tall");
-                Assert.AreNotEqual(0, tex.height % 88,
-                                   $"{stem}: 1024 must NOT be a whole number of 88 px rows");
-                Assert.AreEqual(0, tex.width % 128,
-                                $"{stem}: {tex.width} px wide is not a whole number of 128 px cells");
+                Assert.AreEqual(704, tex.height,
+                                $"{stem}: every iso character BODY sheet must be 8 rows × 88 px = 704 px " +
+                                "tall. If this is 1024, the old rod-baked-in art is still on disk.");
+                Assert.AreEqual(0, tex.width % 64,
+                                $"{stem}: {tex.width} px wide is not a whole number of 64 px cells");
             }
         }
 

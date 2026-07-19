@@ -23,44 +23,43 @@ namespace HiddenHarbours.Art.Editor
     /// hard-coded per file, so a re-export with a different frame count still slices correctly (and a
     /// width that is not a whole number of cells fails loudly).</para>
     ///
-    /// <para><b>⚠️ The cell size is NOT one constant — it is per-sheet.</b> The locomotion sheets
-    /// (idle/walk/run) are <b>64 × 88</b>. The rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>,
-    /// <c>Fisher_cast_long</c>) are <b>128 × 128</b> — the same character on a bigger canvas, padded
-    /// +32 px each side and +40 px on top to give the rod arc and the flying lure headroom. The figure
-    /// and the <b>ground line do not move</b>: measured across all 208 rod cells, the boots bottom out
-    /// at y = 117–121 and the boot centre sits on the cell centreline, exactly as on the 64 × 88 sheets.
-    /// Cell size cannot be derived from the pixels alone (both widths divide 1280 evenly), so it is
-    /// declared per sheet in <see cref="CellOverrides"/> and validated hard against the art.</para>
+    /// <para><b>All twelve body sheets are now the SAME cell: 64 × 88.</b> They used to disagree —
+    /// the rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>, <c>Fisher_cast_long</c>) were
+    /// 128 × 128, because the rod and the flying lure were baked INTO the body and needed the headroom.
+    /// The art director has since split the rod out into its own overlay sheet, so the body sheets are
+    /// uniformly the plain character cell. <see cref="CellOverrides"/> is deliberately kept — and is
+    /// simply empty of body sheets today — because the incoming <c>Rod_*</c> overlay sheets need a
+    /// bigger canvas again: the per-sheet capability is the point, not the entries.</para>
     ///
-    /// <para><b>Pivot = ground contact, and it is ONE rule for both cell sizes:
+    /// <para><b>Pivot = ground contact, one rule for any cell size:
     /// <c>(cellW/2, cellH − 8)</c> in TOP-LEFT canvas coordinates — i.e. always 8 px above the cell
     /// bottom, on the centreline.</b> Unity normalizes pivots from the <b>BOTTOM-LEFT</b>, so the Unity
-    /// pivot is <c>(0.5, 8/cellH)</c>: <c>(0.5, 8/88 ≈ 0.0909)</c> for the locomotion sheets and
-    /// <c>(0.5, 8/128 = 0.0625)</c> for the rod sheets. ⚠️ Getting this inverted plants the character
-    /// ~72 px (locomotion) or ~112 px (rod) into the ground; <c>CharacterIsoSheetSliceTests</c> asserts
-    /// it in pixels for both.</para>
+    /// pivot is <c>(0.5, 8/cellH)</c> = <c>(0.5, 8/88 ≈ 0.0909)</c> on every body sheet.
+    /// ⚠️ Getting this inverted plants the character ~72 px into the ground;
+    /// <c>CharacterIsoSheetSliceTests</c> asserts it in PIXELS, so the one rule still holds for any
+    /// future cell size.</para>
     ///
-    /// <para>⚠️⚠️ <b>THE DIRECTION ORDER IN THE README IS MISLABELLED — DO NOT "FIX" IT HERE.</b>
-    /// The README claims the rows run <c>N NE E SE S SW W NW</c> (clockwise). They do not. The rig
-    /// bakes <b>COUNTER-CLOCKWISE</b> and labels clockwise — exactly like every iso BOAT kit in this
-    /// project (see the iso-art-baked-counter-clockwise finding behind PR #212). The <b>true</b> row
-    /// order is <c>N · NW · W · SW · S · SE · E · NE</c>: row <c>i</c> depicts heading <c>−45°·i</c>.
-    /// Proven two independent ways — (a) the rig's own projection math (<c>th = dir*PI/4</c> with a CCW
-    /// rotation matrix, camera on the −y side, face decals at +y), and (b) face-skin pixel counts per
-    /// row (row 0 ≈ 0 face pixels → facing away = N; row 4 peaks → facing the viewer = S).
-    /// The rod sheets confirm the same order: per-row face-skin counts are
-    /// hold <c>[15,18,42,47,90,57,27,19]</c>, cast_long <c>[12,17,37,43,75,52,22,16]</c>,
-    /// cast_short <c>[13,18,39,43,77,56,23,16]</c> — minimum at row 0, peak at row 4.
-    /// ⚠️ Note the rows 2–3 vs 6–7 asymmetry: the rig gives the hold/cast poses a built-in
-    /// <c>yaw:16</c>, so face-CENTROID tests are skewed on these three sheets. Use face-pixel
-    /// <i>counts</i> for the N/S determination, not centroids.</para>
+    /// <para>✅ <b>THE COUNTER-CLOCKWISE BAKE IS FIXED AT SOURCE — these rows now run CLOCKWISE.</b>
+    /// The rig used to rotate the model counter-clockwise while LABELLING the rows clockwise, so row
+    /// <c>i</c> depicted heading <c>−45°·i</c> and the row called 'E' was really a fisher facing WEST —
+    /// the same defect as the iso BOAT kits (PR #212). The art director corrected the rig itself
+    /// (<c>th = −dir·45°</c>) and re-baked all twelve body sheets, so the true order is now the
+    /// labelled one: <c>N · NE · E · SE · S · SW · W · NW</c>, row <c>i</c> depicts <c>+45°·i</c>.
+    /// Measured, not believed: per-row face-skin centroids on the re-baked art put rows 1–3 on the
+    /// screen RIGHT and rows 5–7 on the screen LEFT. Rows 0/4 (N/S) are their own mirrors and cannot
+    /// discriminate — which is exactly why the original defect hid for so long.
+    /// <c>CharacterVisualDef.FacingsAreCounterClockwise</c> is therefore <b>false</b> for these kits.</para>
     ///
-    /// <para>Because of that, slices are named by <b>ROW INDEX</b> — <c>&lt;Stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c>
-    /// — and <b>never</b> by a compass name. Baking a compass label into a sprite name would hard-code
-    /// the lie into the asset database, where the boat kits already taught us it is expensive to undo.
-    /// A forthcoming <c>CharacterVisualDef</c> will carry a <c>FacingsAreCounterClockwise</c> flag
-    /// (mirroring <c>BoatVisualDef</c>, PR #212) and the heading→cell math lives in
-    /// <c>HiddenHarbours.Core.IsoFacing</c> — this tool depends on neither.</para>
+    /// <para>⚠️ <b>The BOAT sheets were NOT re-baked and are still counter-clockwise</b> —
+    /// <c>BoatVisualLibraryBuilder.IsoSheetsAreCounterClockwise</c> stays <c>true</c>. The flag is
+    /// per-artwork DATA precisely so two art lineages can genuinely disagree; do not "unify" them.</para>
+    ///
+    /// <para>Slices are still named by <b>ROW INDEX</b> — <c>&lt;Stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c> —
+    /// and <b>never</b> by a compass name, even now that a compass label would finally be truthful. A
+    /// slice name states GEOMETRY (which cell of the grid), not SEMANTICS (which way it looks), and that
+    /// is precisely what let this re-bake land as a one-line data change rather than an asset-database
+    /// migration. The heading→cell math lives in <c>HiddenHarbours.Core.IsoFacing</c> — this tool
+    /// depends on neither it nor the flag.</para>
     ///
     /// <para>Import + slicing ONLY. This tool builds no presenter, no Def asset, no prefab, and touches
     /// nothing outside <see cref="IsoCharactersRoot"/>.</para>
@@ -93,18 +92,20 @@ namespace HiddenHarbours.Art.Editor
         /// Per-sheet cell size, by file stem. Anything not listed uses the default
         /// <see cref="CellW"/> × <see cref="CellH"/> locomotion cell.
         ///
-        /// <para>This is a declaration, not a guess: 1280 px is a whole number of both 64 px and 128 px
-        /// cells, so the grid genuinely cannot be recovered from the pixels. Declaring it here — and
-        /// validating it in <see cref="SliceOne"/> — is how a wrong grid becomes a loud failure instead
-        /// of 160 plausible-looking wrong sprites.</para>
+        /// <para>A declaration, not a guess: a sheet width is usually a whole number of several
+        /// plausible cell widths, so the grid genuinely cannot be recovered from the pixels. Declaring
+        /// it here — and validating it in <see cref="SliceOne"/> — is how a wrong grid becomes a loud
+        /// failure instead of a few hundred plausible-looking wrong sprites.</para>
+        ///
+        /// <para><b>Empty today, and deliberately still here.</b> It used to carry the three 128 × 128
+        /// rod poses; the art director split the rod out of the body, so all twelve BODY sheets are now
+        /// the plain 64 × 88 cell. The incoming <c>Rod_*</c> overlay sheets are the bigger canvas again
+        /// and will register here — deleting the mechanism would only mean rebuilding it next PR.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, Vector2Int> CellOverrides =
             new Dictionary<string, Vector2Int>
             {
-                // Rod poses: same figure, +32 px each side and +40 px on top for the rod arc / lure.
-                { "Fisher_hold",       new Vector2Int(128, 128) },
-                { "Fisher_cast_short", new Vector2Int(128, 128) },
-                { "Fisher_cast_long",  new Vector2Int(128, 128) },
+                // (Rod overlay sheets land here when they import — see the note above.)
             };
 
         /// <summary>The authored cell size for a sheet stem.</summary>
