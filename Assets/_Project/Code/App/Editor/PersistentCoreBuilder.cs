@@ -47,6 +47,19 @@ namespace HiddenHarbours.App.Editor
         const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png"; // on-foot player (sliced 3×4)
         const string ArtPlayerHaul = "Assets/_Project/Art/Characters/PlayerHaul.png"; // deck-haul sheet (sliced 3×4; frames 0..7 used)
 
+        // THE ON-FOOT PLAYER'S 8-DIRECTION ISO SKIN — an ASSET path, not an art path. Everything about the
+        // sheets (counts, frame rates, which way the rows run) lives in the def; CharacterVisualLibraryBuilder
+        // is the only thing that knows where the PNGs are.
+        const string IsoFisherVisual = "Assets/_Project/Data/Characters/FisherIso.asset";
+
+        // Heading (deg, 0 = N, CW) the fisher faces at boot: 180 = South = looking toward the camera.
+        const float FacingCameraHeadingDegrees = 180f;
+
+        // The iso cell in metres (88 px at PPU 32) and the neck-deep cap as a fraction of it. Both are
+        // measurements of the ART, read off the Fisher sheets — see the wade block below for the derivation.
+        const float IsoCellHeightMeters = 88f / 32f;    // 2.75
+        const float IsoNeckDeepFraction = 0.47f;        // just under the top of the head at uv.y 0.545
+
         // The owner's PlayerHaul sheet spec: the first HaulFrameCount slices are the animation — 0..5 the
         // hand-over-hand pull cycle, 6 STRAIN, 7 EASE. The sheet keeps the historical 12-cell shape (like
         // FisherSheet); the tail cells are unused alternates the animator never reads.
@@ -315,10 +328,56 @@ namespace HiddenHarbours.App.Editor
             foot.radius = 0.35f; foot.offset = new Vector2(0f, -0.7f);
             var walk = playerGo.AddComponent<PlayerWalkController>();
             SetBool(walk, "_tideGatedWalk", p.TideGatedWalk);
+            // The OLD flat 3×4 FisherSheet is still wired as the FALLBACK picture. It is what draws the
+            // fisher if the iso skin below is missing or incomplete (a fresh clone before the def is built,
+            // a re-sliced sheet that stales the refs), so the player is never invisible. When the iso skin IS
+            // complete the walk controller yields the renderer to it entirely — see PlayerWalkController's
+            // _isoSkinOwnsSprite.
             var fisherFrames = LoadSheetFrames(ArtFisher);
             SetRefArray(walk, "_frames", fisherFrames.Cast<Object>().ToArray());
             if (fisherFrames.Length > 0 && fisherFrames[0] != null)
                 playerSr.sprite = fisherFrames[0];
+
+            // --- THE 8-DIRECTION ISO SKIN (what the owner actually sees walking the coast) -----------------
+            // Idle / walk / run, one drawn cell per compass direction, picked by the character's own motion.
+            // Everything about the art — how many directions, which heading row 0 depicts, which way round
+            // the rows run, the frame counts, the frame rates and the gait thresholds — is DATA on the def
+            // (rule 2/6); nothing about the sheets is known here. Missing def → the component is inert and
+            // the FisherSheet fallback above still draws (null-safe greybox rule).
+            var isoVisual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.CharacterVisualDef>(IsoFisherVisual);
+            var isoSkin = playerGo.AddComponent<HiddenHarbours.Core.IsoCharacterSprite>();
+            SetRef(isoSkin, "_visual", isoVisual);
+            if (isoVisual != null && isoVisual.HasAnyArt())
+            {
+                // Face SOUTH at boot — looking toward the camera, the friendliest way to meet the fisher —
+                // and seed the renderer with that cell so the scene view shows the iso art before Play.
+                SetFloat(isoSkin, "_initialHeadingDegrees", FacingCameraHeadingDegrees);
+                var firstCell = isoVisual.SpriteFor(HiddenHarbours.Core.CharacterGait.Idle,
+                                                    isoVisual.FacingRowFor(FacingCameraHeadingDegrees), 0);
+                if (firstCell != null) playerSr.sprite = firstCell;
+            }
+            else
+            {
+                Debug.LogWarning($"[PersistentCoreBuilder] No complete iso character skin at " +
+                                 $"'{IsoFisherVisual}' — the fisher falls back to the old 4-direction " +
+                                 "FisherSheet. Run Hidden Harbours ▸ Art ▸ Build Character Visual Defs " +
+                                 "(and Slice Iso Character Sheets first if the sheets were re-imported).");
+            }
+
+            // --- WADE SUBMERSION, RE-CALIBRATED FOR THE TALLER ISO CELL -----------------------------------
+            // PlayerSubmergeVisual clips the waterline on the SPRITE's uv.y, so its two tunables describe the
+            // CELL, not the character — and the cell just changed shape. The old flat sheet was 32×64 px
+            // (2.0 m at PPU 32) with the fisher filling it; the iso cell is 64×88 px (2.75 m) with the fisher
+            // occupying only its lower half (measured across all three Fisher sheets: opaque pixels span rows
+            // 40..87 of 88, i.e. uv.y 0.01 at the feet to 0.545 at the top of the hat). Left at the old 1.8 m
+            // /0.85 the waterline would have run off the top of the head. Both are serialized tunables, so
+            // the owner can still taste-tune them in the inspector without a code change.
+            if (isoVisual != null && isoVisual.HasAnyArt())
+            {
+                var submerge = playerGo.AddComponent<HiddenHarbours.Art.PlayerSubmergeVisual>();
+                SetFloat(submerge, "_bodyHeightMeters", IsoCellHeightMeters);
+                SetFloat(submerge, "_maxSubmerge", IsoNeckDeepFraction);
+            }
 
             // The on-foot CLAM HOLD + STARTING GEAR (St Peters opening). Without these the dig chain is dead:
             // ClamDig writes a dug clam into an IHold (the bucket) and gates on owning gear.shovel — so the
@@ -532,6 +591,15 @@ namespace HiddenHarbours.App.Editor
             if (prop != null && prop.propertyType == SerializedPropertyType.Boolean)
             { prop.boolValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
             else Debug.LogWarning($"[PersistentCoreBuilder] {c.GetType().Name} has no bool field '{field}'.");
+        }
+
+        static void SetFloat(Component c, string field, float value)
+        {
+            var so = new SerializedObject(c);
+            var prop = so.FindProperty(field);
+            if (prop != null && prop.propertyType == SerializedPropertyType.Float)
+            { prop.floatValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
+            else Debug.LogWarning($"[PersistentCoreBuilder] {c.GetType().Name} has no float field '{field}'.");
         }
 
         static void SetTideProfile(Component env, float mean, float amp, float phase)

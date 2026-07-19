@@ -117,6 +117,12 @@ namespace HiddenHarbours.Player
         [SerializeField] private bool _artRopeSideIsLeft = true;
 
         private SpriteRenderer _renderer;
+        // The on-foot 8-direction iso skin, when one is installed. While a haul is live the haul sheet owns
+        // the renderer, so the iso driver is explicitly SUSPENDED for the duration and Released on hand-back
+        // — an announced hand-off rather than two components overwriting each other's sprite every frame.
+        // Cached once (this component has no Update loop, but GetComponent per snapshot is still waste).
+        private HiddenHarbours.Core.IsoCharacterSprite _isoSkin;
+        private bool _isoSkinResolved;
         private bool _active;             // a haul owns the renderer right now
         private Sprite _restoreSprite;    // the walk sprite to hand back when the haul ends
         private bool _restoreFlipX;
@@ -151,10 +157,13 @@ namespace HiddenHarbours.Player
 
             if (!_active)
             {
-                // Take the renderer over: remember the walk sprite so the haul ends exactly where it began.
+                // Take the renderer over: remember the walk sprite so the haul ends exactly where it began,
+                // and tell the iso skin (if any) to stand down so it stops writing frames underneath us.
                 _restoreSprite = _renderer.sprite;
                 _restoreFlipX = _renderer.flipX;
                 _active = true;
+                ResolveIsoSkin();
+                if (_isoSkin != null) _isoSkin.Suspend();
             }
 
             // Face the buoy: the rope side of the sheet points at the pot being worked.
@@ -178,10 +187,21 @@ namespace HiddenHarbours.Player
             _hasLastLine = false;
             if (!_active) return;
             _active = false;
+            // Hand the renderer back to the iso skin FIRST (it re-asserts its own cell next frame), then
+            // restore the sprite we found, so a character with no iso skin still ends exactly where it began.
+            if (_isoSkin != null) _isoSkin.Release();
             if (_renderer == null) return;
             _renderer.sprite = _restoreSprite;
             _renderer.flipX = _restoreFlipX;
             _restoreSprite = null;
+        }
+
+        /// <summary>Find the iso skin once, lazily — this component may be added before it is.</summary>
+        private void ResolveIsoSkin()
+        {
+            if (_isoSkinResolved) return;
+            _isoSkinResolved = true;
+            _isoSkin = GetComponent<HiddenHarbours.Core.IsoCharacterSprite>();
         }
 
         /// <summary>Wire the animator in one call (tests / editor builder): the sliced haul frames, and

@@ -73,6 +73,12 @@ namespace HiddenHarbours.Player
 
         private Rigidbody2D _rb;
         private SpriteRenderer _renderer;
+        // Set once at Awake: an 8-direction iso skin (IsoCharacterSprite) is installed and complete, so THAT
+        // component owns SpriteRenderer.sprite and this controller must not write a frame or a flipX — two
+        // drivers writing the same renderer is a fight, not a fallback. The 4-way facing/animation logic
+        // below is left intact and still runs (it is pure, tested, and the fallback path when no iso skin is
+        // wired), it just stops being drawn. Cached as a bool so there is no per-frame GetComponent (rule 7).
+        private bool _isoSkinOwnsSprite;
         private Facing _facing = Facing.Down;
         private Vector2 _moveInput;
         private float _animTimer;
@@ -245,6 +251,10 @@ namespace HiddenHarbours.Player
         {
             _rb = GetComponent<Rigidbody2D>();
             _renderer = GetComponent<SpriteRenderer>();
+            // Hand the picture over to the 8-direction iso skin when one is installed (see the field's note).
+            // HasArt reads only serialized data, so this is safe whichever component's Awake runs first.
+            var isoSkin = GetComponent<HiddenHarbours.Core.IsoCharacterSprite>();
+            _isoSkinOwnsSprite = isoSkin != null && isoSkin.HasArt;
             _rb.gravityScale = 0f;
             _rb.freezeRotation = true;
             _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; // don't tunnel the shore edge
@@ -347,6 +357,9 @@ namespace HiddenHarbours.Player
 
         private void ApplyFrame(Facing facing, int column)
         {
+            // The iso skin owns the renderer when one is wired — write nothing at all, not even the flip
+            // (a stale flipX would invert every westward iso facing, which are all separately DRAWN).
+            if (_isoSkinOwnsSprite) return;
             if (_renderer == null || _frames == null) return;
             // Mirror the Side row for Right so the fourth facing is a guaranteed match of the drawn side.
             // (Set the flip even when the frame is missing so a half-wired sheet still faces correctly.)
