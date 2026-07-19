@@ -61,13 +61,13 @@ namespace HiddenHarbours.Core
         public float ZeroHeadingDegrees = 0f;
 
         [Tooltip("Tick ONLY for art whose direction rows run COUNTER-CLOCKWISE — i.e. row i depicts heading " +
-                 "−45°·i, not +45°·i. The 3D rigs that bake the iso character kits rotate the model CCW but " +
-                 "LABEL the rows clockwise (N, NE, E...), so their sheets are mirrored: the row called 'E' is " +
-                 "really a fisher facing West. This flag is the un-mirror, and it lives HERE — per artwork — " +
-                 "for the same reason BoatVisualDef.FacingsAreCounterClockwise does: two art lineages can " +
-                 "genuinely disagree, and a blanket fix in code would repair one and break the other. " +
-                 "⚠️ IF THE ART DIRECTOR RE-BAKES THE RIG THE RIGHT WAY ROUND, THIS FLAG MUST FLIP TO FALSE — " +
-                 "doing both re-mirrors it. Default false so no future asset silently flips.")]
+                 "−45°·i, not +45°·i. ✅ The shipped CHARACTER kits are false: the rig that bakes them used " +
+                 "to rotate the model CCW while LABELLING the rows clockwise (so the row called 'E' was " +
+                 "really a fisher facing West), but that rig has been corrected at source and all twelve " +
+                 "body sheets re-baked, so their rows now mean what they say. ⚠️ The iso BOAT kits were NOT " +
+                 "re-baked and are still true — which is exactly why this is per-artwork DATA and not one " +
+                 "global const: two art lineages genuinely disagree, and a blanket fix in code would repair " +
+                 "one and break the other. Ticking this on already-correct art re-mirrors it.")]
         public bool FacingsAreCounterClockwise = false;
 
         [Header("Idle sheet (direction × frame, row-major)")]

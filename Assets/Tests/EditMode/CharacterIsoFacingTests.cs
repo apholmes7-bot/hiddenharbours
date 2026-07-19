@@ -27,8 +27,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// eastern half. This is the assertion that catches a mirrored bake, because a mirror is exactly a
     /// left/right swap and leaves the N/S rows untouched.</description></item>
     /// </list>
-    /// The art measures out as N · NW · W · SW · S · SE · E · NE (row i depicts −45°·i): a COUNTER-CLOCKWISE
-    /// bake labelled clockwise. <c>CharacterVisualDef.FacingsAreCounterClockwise</c> is the un-mirror.</para>
+    /// ✅ The art now measures out as N · NE · E · SE · S · SW · W · NW (row i depicts +45°·i) — a CLOCKWISE
+    /// bake, matching its labels. It did NOT used to: the rig baked counter-clockwise and
+    /// <c>CharacterVisualDef.FacingsAreCounterClockwise</c> was the un-mirror. The art director fixed the rig
+    /// at source and re-baked all twelve body sheets, so that flag is now <b>false</b> — and these tests are
+    /// what proved it, going red on the new art while the flag still said true.</para>
     ///
     /// <para><b>The PNG is decoded here, in pure C#</b>, rather than read through <c>Texture2D.GetPixels</c>.
     /// Two reasons: the sheets import with <c>isReadable: 0</c> so the imported texture has no CPU pixels to
@@ -181,8 +184,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// ⚠️ THE SABOTAGE TEST. Every EASTERLY heading must land on a row whose face is drawn toward the
         /// screen's RIGHT, and every WESTERLY one on a row facing LEFT. Flipping
-        /// <c>FacingsAreCounterClockwise</c> to false turns all six of these red (and only these — N and S
-        /// are their own mirrors, which is exactly why the boat bug hid for so long).
+        /// <c>FacingsAreCounterClockwise</c> back to true turns all six of these red (and only these — N and
+        /// S are their own mirrors, which is exactly why the boat bug hid for so long). That asymmetry is
+        /// the whole reason this test is written against PIXELS: six red and two green is the signature of a
+        /// mirrored bake, and nothing that asserts a constant against a constant can see it.
         /// </summary>
         [TestCase(45f, +1, "NE")]
         [TestCase(90f, +1, "E")]
@@ -205,13 +210,41 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheFisherSkin_DeclaresTheCounterClockwiseBake()
+        public void TheFisherSkin_DeclaresTheClockwiseBake_MatchingTheReBakedArt()
         {
             var def = Visual();
-            Assert.IsTrue(def.FacingsAreCounterClockwise,
-                "The shipped Fisher rig bakes its rows counter-clockwise while labelling them clockwise " +
-                "(true order N · NW · W · SW · S · SE · E · NE). If the art has been RE-BAKED the right " +
-                "way round, flip this in the builder — and expect the pixel tests above to agree.");
+            Assert.IsFalse(def.FacingsAreCounterClockwise,
+                "The Fisher rig was FIXED at source (th = −dir·45°) and all twelve body sheets re-baked, so " +
+                "the rows now run clockwise exactly as labelled (N · NE · E · SE · S · SW · W · NW) and no " +
+                "un-mirror is wanted. Leaving this true on the corrected art double-flips it — a fresh 180° " +
+                "error at E/W. ⚠️ The BOAT kits were NOT re-baked: BoatVisualDef keeps its flag true. This " +
+                "is per-artwork data; the two lineages are allowed to disagree.");
+        }
+
+        /// <summary>
+        /// The flag is not the evidence — the PIXELS are. This re-derives the bake direction from the art
+        /// alone and asserts the def agrees, so the two can never drift apart again without a red test.
+        /// </summary>
+        [Test]
+        public void TheDeclaredBakeDirection_MatchesWhatTheArtActuallyShows()
+        {
+            var rows = Rows();
+
+            // Row 2 and row 6 are the two rows a mirror actually swaps and the two the compass labels call
+            // E and W. If the art is CLOCKWISE-as-labelled, row 2 (E) looks screen-RIGHT and row 6 (W)
+            // looks screen-LEFT. If it is counter-clockwise, they are the other way round.
+            bool artIsClockwise = rows[2].FaceOffset > 0f && rows[6].FaceOffset < 0f;
+            bool artIsCounterClockwise = rows[2].FaceOffset < 0f && rows[6].FaceOffset > 0f;
+
+            Assert.IsTrue(artIsClockwise ^ artIsCounterClockwise,
+                $"rows 2 and 6 must look to OPPOSITE sides for this to be a valid read " +
+                $"(offsets {rows[2].FaceOffset:0.00} and {rows[6].FaceOffset:0.00})");
+
+            Assert.AreEqual(artIsCounterClockwise, Visual().FacingsAreCounterClockwise,
+                $"The art measures as {(artIsCounterClockwise ? "COUNTER-CLOCKWISE" : "CLOCKWISE")} " +
+                $"(row 2 face offset {rows[2].FaceOffset:0.00}, row 6 {rows[6].FaceOffset:0.00}) but the " +
+                "def declares the opposite. The sheets and the flag MUST change together in one commit — " +
+                "either alone leaves every character mirrored.");
         }
 
         // ---- the def is complete + shaped like the art ---------------------------------------------

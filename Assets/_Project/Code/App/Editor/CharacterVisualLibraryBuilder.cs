@@ -28,23 +28,30 @@ namespace HiddenHarbours.App.Editor
         const string VisualsFolder = "Assets/_Project/Data/Characters";
         const string ArtIso = "Assets/_Project/Art/Characters/Iso";
 
-        // THE CHARACTER SHEETS ARE BAKED COUNTER-CLOCKWISE — the same defect, from the same rig recipe, that
-        // mirrored every iso BOAT kit (see BoatVisualLibraryBuilder's note and PR #212). The rig rotates the
-        // model CCW and then labels the rows clockwise, so row i actually DEPICTS heading −45°·i: the row
-        // called 'E' is a fisher facing WEST. Drawn-minus-true = −2·heading — 0° at N/S (which is why it
-        // hides), 90° at the diagonals, a full 180° at E/W.
+        // ✅ THE CHARACTER SHEETS ARE NOW BAKED CLOCKWISE — the rig itself was fixed, so this is false.
         //
-        // Verified twice, independently, against the ART rather than against the rig's labels:
-        //   (a) the rig's own projection math, and
-        //   (b) face-skin pixels measured per row of Fisher_idle.png — row 0 has almost none (facing away =
-        //       North), row 4 peaks (facing the viewer = South), and rows 1–3 carry their face on the screen
-        //       LEFT while rows 5–7 mirror it to the screen RIGHT. True order: N · NW · W · SW · S · SE · E · NE.
-        // CharacterIsoFacingTests re-measures exactly that at test time, so this constant is checked against
-        // the pixels rather than believed.
+        // They USED to be counter-clockwise: the same defect, from the same rig recipe, that mirrored every
+        // iso BOAT kit (PR #212). The rig rotated the model CCW and then labelled the rows clockwise, so row
+        // i actually DEPICTED heading −45°·i — the row called 'E' was a fisher facing WEST. Drawn-minus-true
+        // = −2·heading: 0° at N/S (which is why it hid), 90° at the diagonals, a full 180° at E/W. This
+        // constant was the un-mirror.
         //
-        // ⚠️ IF THE ART DIRECTOR RE-BAKES THE RIG THE RIGHT WAY ROUND, FLIP THIS TO false — the un-mirror and
-        // a corrected bake would otherwise cancel into a fresh 180° error at E/W.
-        const bool IsoCharacterSheetsAreCounterClockwise = true;   // an art fact, not a feel knob
+        // The art director has since corrected the RIG (th = −dir·45°) and re-baked all twelve body sheets,
+        // so row i now depicts +45°·i exactly as labelled and no un-mirror is wanted. Applying both the
+        // corrected bake AND the un-mirror would cancel into a fresh 180° error at E/W — which is precisely
+        // why the flag flip and the new art must land in ONE commit.
+        //
+        // Verified against the ART, not the rig's labels: face-skin centroids measured per row of the
+        // re-baked Fisher_idle.png put rows 1–3 on the screen RIGHT and rows 5–7 on the screen LEFT (the
+        // exact row-order reversal of the old art). Rows 0/4 (N/S) are their own mirrors and cannot
+        // discriminate. CharacterIsoFacingTests re-measures exactly that at test time, so this constant is
+        // checked against the pixels rather than believed — it went RED the moment the new art landed while
+        // this still said true.
+        //
+        // ⚠️ THE BOAT RIGS WERE NOT FIXED. BoatVisualLibraryBuilder.IsoSheetsAreCounterClockwise STAYS true.
+        // This flag is per-artwork DATA precisely so the two art lineages can disagree; that design is now
+        // load-bearing. Do not "unify" them.
+        const bool IsoCharacterSheetsAreCounterClockwise = false;   // an art fact, not a feel knob
 
         // The bake's shape, stated once. Frame counts are per sheet (below) because they genuinely differ.
         const int Directions = 8;
@@ -150,7 +157,7 @@ namespace HiddenHarbours.App.Editor
                       $"{(def.HasGait(CharacterGait.Idle) ? "WIRED" : "none")}, walk " +
                       $"{(def.HasGait(CharacterGait.Walk) ? "WIRED" : "none")}, run " +
                       $"{(def.HasGait(CharacterGait.Run) ? "WIRED" : "none")}" +
-                      $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : "")}.");
+                      $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
         }
 

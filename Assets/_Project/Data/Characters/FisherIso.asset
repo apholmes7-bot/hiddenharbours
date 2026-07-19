@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: visual.fisher_iso
   FacingCount: 8
   ZeroHeadingDegrees: 0
-  FacingsAreCounterClockwise: 1
+  FacingsAreCounterClockwise: 0
   IdleSheet:
   - {fileID: 453495023, guid: eb7037bcdb8f7b24b833a4e7a1207238, type: 3}
   - {fileID: -2092458495, guid: eb7037bcdb8f7b24b833a4e7a1207238, type: 3}
