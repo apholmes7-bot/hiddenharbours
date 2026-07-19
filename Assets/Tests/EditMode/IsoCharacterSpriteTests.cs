@@ -103,7 +103,13 @@ namespace HiddenHarbours.Tests.EditMode
 
             def.WalkSheet[17] = null;      // one hole
             Assert.IsFalse(def.HasGait(CharacterGait.Walk), "a hole would index a stale cell mid-stride");
-            Assert.AreEqual(CharacterGait.Idle, def.PlayableGait(CharacterGait.Walk), "falls down the ladder");
+            Assert.AreEqual(CharacterGait.Idle, def.PlayableGait(CharacterGait.Walk),
+                            "no walk art → stand rather than show a stale cell");
+            Assert.AreEqual(CharacterGait.Run, def.PlayableGait(CharacterGait.Run),
+                            "the run sheet is still whole, so a run still runs");
+
+            // Break the run sheet too and the ladder falls all the way down.
+            def.RunSheet[5] = null;
             Assert.AreEqual(CharacterGait.Idle, def.PlayableGait(CharacterGait.Run), "run → walk → idle");
         }
 
