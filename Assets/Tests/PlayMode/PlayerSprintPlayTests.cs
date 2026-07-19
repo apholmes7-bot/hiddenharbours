@@ -2,29 +2,37 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// HOLD SHIFT AND THE FISHER RUNS — end to end, on a real keyboard and real physics.
+    /// HOLD SHIFT AND THE FISHER RUNS — the join, in a real frame loop.
     ///
-    /// <para><b>Why this can't be an EditMode test.</b> The feature is a CHAIN, and every link of it only
-    /// exists once the engine is running: a key press → <c>Update</c> → the sprint speed → <c>FixedUpdate</c>
-    /// writing <c>Rigidbody2D.linearVelocity</c> → Unity's integrator actually moving the transform →
-    /// <see cref="IsoCharacterSprite"/> MEASURING that motion in <c>LateUpdate</c> and choosing a sheet. The
-    /// pure seam (<see cref="PlayerWalkController.SpeedFor"/>) is unit-tested next door; what is proved HERE
-    /// is that the speed the controller picks is the speed the presenter measures — the join nothing else
-    /// covers, and the exact join that was broken (a flat 3 m/s could never reach a 4.5 m/s run threshold,
-    /// so the run sheet was dead art).</para>
+    /// <para><b>What was broken.</b> <see cref="PlayerWalkController"/> moved at a flat 3 m/s while
+    /// <see cref="IsoCharacterSprite"/> breaks into a run at the skin's 4.5 m/s threshold, so the run sheet
+    /// was art that could never play. Sprint is expressed as SPEED and nothing else — there is deliberately
+    /// no "is running" flag to assert on — so the only honest evidence is the gait the presenter
+    /// INDEPENDENTLY arrives at from the motion it measures. That is what these tests assert.</para>
     ///
-    /// <para><b>There is deliberately no "is running" flag to assert on.</b> Sprint is expressed as SPEED
-    /// and nothing else; the presenter's ordinary speed→gait ladder does the rest. So this test asserts on
-    /// the gait the presenter independently arrived at, which is the only honest evidence that the two
-    /// halves agree.</para>
+    /// <para><b>Why this can't be an EditMode test.</b> The presenter reads motion off its own transform in
+    /// <c>LateUpdate</c> and smooths it: until something actually moves for a real stretch of time, no gait
+    /// is ever chosen. The speeds are not restated here either — they are read off the REAL controller's
+    /// serialized fields, so re-tuning <c>_sprintSpeed</c> re-times these tests and dropping it under the
+    /// run threshold turns them red (which is exactly the sabotage that proves they mean something).</para>
+    ///
+    /// <para><b>⚠️ What these tests do NOT cover: the literal key scan.</b> Headless batch mode has no
+    /// focused view, so the Input System resets every device's state each frame
+    /// (<c>ResetAndDisableNonBackgroundDevices</c>) — a virtual keyboard press CAN be injected, but it is
+    /// wiped before the next <c>Update</c> reads it, and <c>IgnoreFocus</c> does not save it (measured, not
+    /// assumed). So a HELD key is not reachable in this harness. What is left uncovered is exactly one
+    /// branchless line — <c>kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed</c>; everything it feeds
+    /// is covered here and in <c>PlayerWalkTests</c>. Verify the key itself by hand (hold Shift, watch her
+    /// run) or in a focused editor Play session.</para>
     ///
     /// <para>⚠️ Frame count is NOT time here. Headless, 60 <c>yield return null</c>s can pass in ~45 ms, so
     /// these spin on a CONDITION with a real-seconds budget (the <c>PilotableFleetPlayTests</c> pattern).</para>
@@ -33,23 +41,22 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         const int Directions = 8, IdleFrames = 6, WalkFrames = 8, RunFrames = 6;
 
-        // How long a gait change may take to settle: the presenter smooths the measured speed, and the
-        // rigidbody needs a physics step or two. Generous — it is a deadline, not a sleep; the spins
-        // return the instant the condition is met.
+        // How long a gait change may take to settle: the presenter smooths the measured speed. Generous —
+        // it is a deadline, not a sleep; every spin returns the instant its condition is met.
         const float SettleBudget = 3f;
 
         GameObject _go;
         Rigidbody2D _rb;
         IsoCharacterSprite _iso;
         CharacterVisualDef _def;
-        Keyboard _keyboard;
+        PlayerWalkController _walk;
 
         [SetUp]
         public void SetUp()
         {
-            // A synthetic skin rather than the committed FisherIso asset: this test is about the CONTROLLER
-            // clearing the threshold, and it must not go red because a concurrent art PR is editing that
-            // asset. The thresholds mirror the shipped def's (walk 0.35, run 4.5).
+            // A synthetic skin rather than the committed FisherIso asset: these tests are about the
+            // CONTROLLER clearing the threshold, and must not go red because an art PR is editing that
+            // asset. The thresholds mirror the shipped def's.
             _def = ScriptableObject.CreateInstance<CharacterVisualDef>();
             _def.FacingCount = Directions;
             _def.IdleFrameCount = IdleFrames; _def.WalkFrameCount = WalkFrames; _def.RunFrameCount = RunFrames;
@@ -60,21 +67,20 @@ namespace HiddenHarbours.Tests.PlayMode
             _go = new GameObject("Fisher");
             _go.AddComponent<SpriteRenderer>();
             _rb = _go.AddComponent<Rigidbody2D>();
+            _rb.gravityScale = 0f;
             _iso = _go.AddComponent<IsoCharacterSprite>();
             _iso.Configure(_def);
-            // The REAL controller with its REAL serialized defaults — the walk speed and the sprint speed
-            // are read from the component, never restated here, so re-tuning either re-times this test.
-            _go.AddComponent<PlayerWalkController>();
-
-            // A virtual keyboard, so the test presses the same keys the player does rather than reaching
-            // past the input read. Batch-mode has no real keyboard; this becomes Keyboard.current.
-            _keyboard = InputSystem.AddDevice<Keyboard>();
+            // The REAL controller, for its REAL serialized speeds (see Tunable) — but DISABLED. Left
+            // running it would drive the rigidbody itself, and with no keys held headless (see the class
+            // note) that means writing zero velocity every physics step: the fisher would stand rooted to
+            // the spot and every gait would read Idle. The tests move her at the speeds it declares.
+            _walk = _go.AddComponent<PlayerWalkController>();
+            _walk.enabled = false;
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_keyboard != null) InputSystem.RemoveDevice(_keyboard);
             if (_go != null) Object.DestroyImmediate(_go);
             if (_def != null) Object.DestroyImmediate(_def);
         }
@@ -88,11 +94,31 @@ namespace HiddenHarbours.Tests.PlayMode
             return set;
         }
 
-        /// <summary>Hold exactly these keys (a full keyboard state — anything absent is released).</summary>
-        void Hold(params Key[] keys)
+        /// <summary>
+        /// Read an owner tunable off the REAL component rather than restating it here. A test that
+        /// re-declared 5.5 would still be green the day the owner re-tuned it — and green for a reason that
+        /// no longer matches the product. Read it, and a re-tune re-times the test for free.
+        /// </summary>
+        float Tunable(string field)
         {
-            InputSystem.QueueStateEvent(_keyboard, new KeyboardState(keys));
-            InputSystem.Update();
+#if UNITY_EDITOR
+            var prop = new SerializedObject(_walk).FindProperty(field);
+            Assert.IsNotNull(prop,
+                $"PlayerWalkController.{field} was renamed or removed. These tests DERIVE the speeds from " +
+                "the real serialized tunables on purpose — re-point this read; do not hard-code a number.");
+            return prop.floatValue;
+#else
+            Assert.Ignore("needs the editor to read serialized tunables");
+            return 0f;
+#endif
+        }
+
+        /// <summary>Move the fisher at a speed for a real-seconds stretch, through real frames.</summary>
+        IEnumerator TravelAt(float speed, float seconds)
+        {
+            _rb.linearVelocity = new Vector2(0f, -speed);   // heading south; the gait is what's under test
+            float deadline = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < deadline) yield return null;
         }
 
         /// <summary>Spin until <paramref name="done"/> or the real-seconds budget runs out.</summary>
@@ -103,53 +129,68 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator HoldingShift_PushesTheFisherPastTheRunThreshold_AndTheRunSheetPlays()
+        public IEnumerator TheSprintSpeed_ActuallyLightsTheRunSheet()
         {
-            // Walk first: W alone. This is the regression the fix must not undo — the ordinary walk must
-            // still read as a WALK, or we'd have "fixed" the run sheet by making everything a run.
-            Hold(Key.W);
-            yield return SpinUntil(() => _iso.Gait == CharacterGait.Walk, SettleBudget);
-            Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "W alone is a walk");
-            Assert.Less(_rb.linearVelocity.magnitude, _def.RunSpeedThreshold,
-                "the plain walk must stay UNDER the run threshold — that is what makes sprint mean something");
+            float sprint = PlayerWalkController.SpeedFor(true, Tunable("_moveSpeed"), Tunable("_sprintSpeed"),
+                                                         float.NegativeInfinity, Tunable("_wadeDepth"));
+            Assert.Greater(sprint, _def.RunSpeedThreshold,
+                "the controller's sprint speed must clear the skin's run threshold — this is the whole fix");
 
-            // Now the feature: Shift + W.
-            Hold(Key.W, Key.LeftShift);
-            yield return SpinUntil(() => _iso.Gait == CharacterGait.Run, SettleBudget);
+            yield return TravelAt(sprint, 0.5f);
 
-            Assert.Greater(_rb.linearVelocity.magnitude, _def.RunSpeedThreshold,
-                "holding Shift must raise the ACTUAL movement speed past the skin's run threshold — that is " +
-                "the entire mechanism; the presenter only ever sees speed");
             Assert.AreEqual(CharacterGait.Run, _iso.Gait,
-                "…and the presenter, choosing on measured speed alone, must therefore select the RUN sheet");
+                "travelling at the controller's sprint speed, the presenter must select the RUN sheet — it " +
+                "chooses on measured speed alone, so this is the only thing that can make the run art play");
         }
 
         [UnityTest]
-        public IEnumerator ReleasingShift_DropsHerBackToAWalk_WithoutStopping()
+        public IEnumerator TheWalkSpeed_StillReadsAsAWalk()
         {
-            Hold(Key.W, Key.LeftShift);
-            yield return SpinUntil(() => _iso.Gait == CharacterGait.Run, SettleBudget);
+            // The regression guard: don't 'fix' the run sheet by making everything a run.
+            float walk = PlayerWalkController.SpeedFor(false, Tunable("_moveSpeed"), Tunable("_sprintSpeed"),
+                                                       float.NegativeInfinity, Tunable("_wadeDepth"));
+            yield return TravelAt(walk, 0.5f);
+
+            Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "the ordinary walk must stay a walk");
+            Assert.Less(walk, _def.RunSpeedThreshold, "…and stay under the run threshold, which is why " +
+                                                      "sprint means something");
+        }
+
+        [UnityTest]
+        public IEnumerator ReleasingTheSprint_DropsHerBackToAWalk_WithoutStopping()
+        {
+            float walk = Tunable("_moveSpeed");
+            float sprint = PlayerWalkController.SpeedFor(true, walk, Tunable("_sprintSpeed"),
+                                                         float.NegativeInfinity, Tunable("_wadeDepth"));
+
+            yield return TravelAt(sprint, 0.5f);
             Assert.AreEqual(CharacterGait.Run, _iso.Gait, "running before we let go");
 
-            // Let go of Shift but KEEP walking — the interesting release, because it must fall back to the
-            // walk cycle rather than to idle.
-            Hold(Key.W);
+            // Let the sprint go but KEEP walking — it must fall back to the walk cycle, not to idle.
+            _rb.linearVelocity = new Vector2(0f, -walk);
             yield return SpinUntil(() => _iso.Gait == CharacterGait.Walk, SettleBudget);
 
-            Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "releasing Shift falls back to the walk sheet");
-            Assert.Greater(_rb.linearVelocity.magnitude, _def.WalkSpeedThreshold,
-                "…and she is still walking, not stopped — only the sprint was released");
-            Assert.Less(_rb.linearVelocity.magnitude, _def.RunSpeedThreshold, "back under the run threshold");
+            Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "releasing the sprint falls back to the walk sheet");
+            Assert.AreNotEqual(CharacterGait.Idle, _iso.Gait, "she is still walking, not stopped");
         }
 
         [UnityTest]
-        public IEnumerator ShiftAlone_DoesNothing_SprintIsAMultiplierOnAMoveYouAreAlreadyMaking()
+        public IEnumerator SprintingIntoTheWadeBand_ReadsAsAWalkAgain_TheWaterWins()
         {
-            Hold(Key.LeftShift);
-            yield return SpinUntil(() => _iso.Gait == CharacterGait.Idle, SettleBudget);
+            // Sprint is allowed while wading, but ApplyWaterEdge's slow-factor multiplies it DOWN — and at
+            // the deep edge of the wade band that lands back under the run threshold all by itself. No
+            // special case anywhere: the fisher visibly drops to a walk as the water takes her legs.
+            float wadeDepth = Tunable("_wadeDepth");
+            float sprint = PlayerWalkController.SpeedFor(true, Tunable("_moveSpeed"), Tunable("_sprintSpeed"),
+                                                         wadeDepth, wadeDepth);
+            var slowed = PlayerWalkController.ApplyWaterEdge(new Vector2(0f, -sprint), Vector2.zero,
+                             _ => wadeDepth, 1f, wadeDepth, Tunable("_swimLimit"),
+                             Tunable("_wadeSlowFactor"), Tunable("_swimSlowFactor"));
 
-            Assert.AreEqual(Vector2.zero, _rb.linearVelocity, "Shift is not a move key");
-            Assert.AreEqual(CharacterGait.Idle, _iso.Gait, "a fisher standing still with Shift held is idle");
+            yield return TravelAt(slowed.magnitude, 0.5f);
+
+            Assert.AreEqual(CharacterGait.Walk, _iso.Gait,
+                "a sprint through deep wade water reads as a walk — the wade factor must still bite");
         }
     }
 }
