@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -10,24 +11,34 @@ namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
     /// Grid-slicer for the 8-direction ISO CHARACTER sheets under
-    /// <c>Assets/_Project/Art/Characters/Iso/</c> (Fisher, Ginny, Skipper — idle/walk/run).
-    /// Mirrors <see cref="FoliageSheetSlicer"/>: <see cref="ArtImportPipeline"/> stamps the pixel-art
-    /// import lock (PPU 32, Point, Uncompressed, Clamp, alphaIsTransparency) on first import and this
-    /// tool adds the Multiple-mode grid + the per-slice ground-contact pivot that the postprocessor
-    /// deliberately does not do.
+    /// <c>Assets/_Project/Art/Characters/Iso/</c> (Fisher, Ginny, Skipper — idle/walk/run, plus the
+    /// Fisher's rod hold/cast poses). Mirrors <see cref="FoliageSheetSlicer"/>:
+    /// <see cref="ArtImportPipeline"/> stamps the pixel-art import lock (PPU 32, Point, Uncompressed,
+    /// Clamp, alphaIsTransparency) on first import and this tool adds the Multiple-mode grid + the
+    /// per-slice ground-contact pivot that the postprocessor deliberately does not do.
     ///
-    /// <para><b>Sheet contract</b> (art director's README, re-verified against the pixels):
-    /// cell <b>64 × 88</b>; <b>8 rows = directions</b> (row 0 at the TOP of the canvas), <b>N columns =
-    /// animation frames</b>; cell (r,c) at source <c>sx = c*64, sy = r*88</c> from the top-left.
-    /// Frame counts are <b>idle 6 · walk 8 · run 6</b>, but this tool <i>derives</i> the column count
-    /// from the texture width rather than hard-coding it per file, so a re-export with a different
-    /// frame count still slices correctly (and a width that is not a multiple of 64 fails loudly).</para>
+    /// <para><b>Sheet contract.</b> Always <b>8 rows = directions</b> (row 0 at the TOP of the canvas)
+    /// and <b>N columns = animation frames</b>; cell (r,c) at source <c>sx = c*cellW, sy = r*cellH</c>
+    /// from the top-left. The frame count is always <i>derived</i> from the texture width rather than
+    /// hard-coded per file, so a re-export with a different frame count still slices correctly (and a
+    /// width that is not a whole number of cells fails loudly).</para>
     ///
-    /// <para><b>Pivot = ground contact.</b> The README states <c>(32, 80)</c> in TOP-LEFT canvas
-    /// coordinates. Unity normalizes pivots from the <b>BOTTOM-LEFT</b>, so the correct Unity pivot is
-    /// <c>(32/64, (88-80)/88) = (0.5, 8/88 ≈ 0.0909)</c> — confirmed by measuring the feet bottom
-    /// landing at y ≈ 80–83 from the top. ⚠️ Getting this inverted plants every character ~72 px
-    /// (≈ 2.25 m at PPU 32) into the ground; <c>CharacterIsoSheetSliceTests</c> asserts it in pixels.</para>
+    /// <para><b>⚠️ The cell size is NOT one constant — it is per-sheet.</b> The locomotion sheets
+    /// (idle/walk/run) are <b>64 × 88</b>. The rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>,
+    /// <c>Fisher_cast_long</c>) are <b>128 × 128</b> — the same character on a bigger canvas, padded
+    /// +32 px each side and +40 px on top to give the rod arc and the flying lure headroom. The figure
+    /// and the <b>ground line do not move</b>: measured across all 208 rod cells, the boots bottom out
+    /// at y = 117–121 and the boot centre sits on the cell centreline, exactly as on the 64 × 88 sheets.
+    /// Cell size cannot be derived from the pixels alone (both widths divide 1280 evenly), so it is
+    /// declared per sheet in <see cref="CellOverrides"/> and validated hard against the art.</para>
+    ///
+    /// <para><b>Pivot = ground contact, and it is ONE rule for both cell sizes:
+    /// <c>(cellW/2, cellH − 8)</c> in TOP-LEFT canvas coordinates — i.e. always 8 px above the cell
+    /// bottom, on the centreline.</b> Unity normalizes pivots from the <b>BOTTOM-LEFT</b>, so the Unity
+    /// pivot is <c>(0.5, 8/cellH)</c>: <c>(0.5, 8/88 ≈ 0.0909)</c> for the locomotion sheets and
+    /// <c>(0.5, 8/128 = 0.0625)</c> for the rod sheets. ⚠️ Getting this inverted plants the character
+    /// ~72 px (locomotion) or ~112 px (rod) into the ground; <c>CharacterIsoSheetSliceTests</c> asserts
+    /// it in pixels for both.</para>
     ///
     /// <para>⚠️⚠️ <b>THE DIRECTION ORDER IN THE README IS MISLABELLED — DO NOT "FIX" IT HERE.</b>
     /// The README claims the rows run <c>N NE E SE S SW W NW</c> (clockwise). They do not. The rig
@@ -36,15 +47,20 @@ namespace HiddenHarbours.Art.Editor
     /// order is <c>N · NW · W · SW · S · SE · E · NE</c>: row <c>i</c> depicts heading <c>−45°·i</c>.
     /// Proven two independent ways — (a) the rig's own projection math (<c>th = dir*PI/4</c> with a CCW
     /// rotation matrix, camera on the −y side, face decals at +y), and (b) face-skin pixel counts per
-    /// row (row 0 = 0 face pixels → facing away = N; row 4 = 60 → facing the viewer = S; rows 1–3 face
-    /// screen-LEFT and rows 5–7 face screen-RIGHT in near-perfect mirror pairs).</para>
+    /// row (row 0 ≈ 0 face pixels → facing away = N; row 4 peaks → facing the viewer = S).
+    /// The rod sheets confirm the same order: per-row face-skin counts are
+    /// hold <c>[15,18,42,47,90,57,27,19]</c>, cast_long <c>[12,17,37,43,75,52,22,16]</c>,
+    /// cast_short <c>[13,18,39,43,77,56,23,16]</c> — minimum at row 0, peak at row 4.
+    /// ⚠️ Note the rows 2–3 vs 6–7 asymmetry: the rig gives the hold/cast poses a built-in
+    /// <c>yaw:16</c>, so face-CENTROID tests are skewed on these three sheets. Use face-pixel
+    /// <i>counts</i> for the N/S determination, not centroids.</para>
     ///
     /// <para>Because of that, slices are named by <b>ROW INDEX</b> — <c>&lt;Stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c>
     /// — and <b>never</b> by a compass name. Baking a compass label into a sprite name would hard-code
     /// the lie into the asset database, where the boat kits already taught us it is expensive to undo.
     /// A forthcoming <c>CharacterVisualDef</c> will carry a <c>FacingsAreCounterClockwise</c> flag
-    /// (mirroring <c>BoatVisualDef</c>, PR #212) and the heading→cell math is being promoted to
-    /// <c>HiddenHarbours.Core.IsoFacing</c> — neither exists yet; this tool depends on neither.</para>
+    /// (mirroring <c>BoatVisualDef</c>, PR #212) and the heading→cell math lives in
+    /// <c>HiddenHarbours.Core.IsoFacing</c> — this tool depends on neither.</para>
     ///
     /// <para>Import + slicing ONLY. This tool builds no presenter, no Def asset, no prefab, and touches
     /// nothing outside <see cref="IsoCharactersRoot"/>.</para>
@@ -54,11 +70,18 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>The only folder this tool slices. We never touch textures outside it.</summary>
         public const string IsoCharactersRoot = "Assets/_Project/Art/Characters/Iso/";
 
-        /// <summary>Cell width in source pixels.</summary>
+        /// <summary>Default cell width in source pixels — the locomotion (idle/walk/run) sheets.</summary>
         public const int CellW = 64;
 
-        /// <summary>Cell height in source pixels.</summary>
+        /// <summary>Default cell height in source pixels — the locomotion (idle/walk/run) sheets.</summary>
         public const int CellH = 88;
+
+        /// <summary>
+        /// Ground contact sits this many pixels above the cell bottom, on <b>every</b> sheet regardless
+        /// of cell size. This single constant is what keeps the 64 × 88 and 128 × 128 sheets planted on
+        /// the same ground line.
+        /// </summary>
+        public const int GroundInsetPx = 8;
 
         /// <summary>
         /// Rows are directions, and there are always eight of them. (Which row is which compass heading
@@ -66,8 +89,34 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         public const int DirectionRows = 8;
 
-        /// <summary>Ground-contact pivot, normalized bottom-left. README (32,80) top-left → (0.5, 8/88).</summary>
-        public static readonly Vector2 GroundPivot = new Vector2(32f / CellW, (CellH - 80f) / CellH);
+        /// <summary>
+        /// Per-sheet cell size, by file stem. Anything not listed uses the default
+        /// <see cref="CellW"/> × <see cref="CellH"/> locomotion cell.
+        ///
+        /// <para>This is a declaration, not a guess: 1280 px is a whole number of both 64 px and 128 px
+        /// cells, so the grid genuinely cannot be recovered from the pixels. Declaring it here — and
+        /// validating it in <see cref="SliceOne"/> — is how a wrong grid becomes a loud failure instead
+        /// of 160 plausible-looking wrong sprites.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, Vector2Int> CellOverrides =
+            new Dictionary<string, Vector2Int>
+            {
+                // Rod poses: same figure, +32 px each side and +40 px on top for the rod arc / lure.
+                { "Fisher_hold",       new Vector2Int(128, 128) },
+                { "Fisher_cast_short", new Vector2Int(128, 128) },
+                { "Fisher_cast_long",  new Vector2Int(128, 128) },
+            };
+
+        /// <summary>The authored cell size for a sheet stem.</summary>
+        public static Vector2Int CellSizeFor(string stem) =>
+            CellOverrides.TryGetValue(stem, out var cell) ? cell : new Vector2Int(CellW, CellH);
+
+        /// <summary>
+        /// Ground-contact pivot for a given cell size, normalized bottom-left:
+        /// <c>(0.5, GroundInsetPx / cellH)</c>. One rule, both cell sizes.
+        /// </summary>
+        public static Vector2 GroundPivotFor(Vector2Int cell) =>
+            new Vector2(0.5f, GroundInsetPx / (float)cell.y);
 
         // ---- entry points -------------------------------------------------------------------------
 
@@ -148,6 +197,7 @@ namespace HiddenHarbours.Art.Editor
         private static SliceResult SliceOne(string path)
         {
             string stem = Path.GetFileNameWithoutExtension(path);
+            Vector2Int cell = CellSizeFor(stem);
 
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null)
@@ -165,22 +215,24 @@ namespace HiddenHarbours.Art.Editor
 
             // Derive the frame count from the ART, never from a per-file constant. A re-export with a
             // different frame count still slices; a width that isn't a whole number of cells is a broken
-            // export and must fail loudly rather than slice garbage.
-            if (tex.width % CellW != 0 || tex.width < CellW)
+            // export (or a wrong CellOverrides entry) and must fail loudly rather than slice garbage.
+            if (tex.width % cell.x != 0 || tex.width < cell.x)
             {
                 Debug.LogError($"[CharacterSheetSlicer] '{path}' is {tex.width} px wide — not a whole " +
-                               $"number of {CellW} px cells. Not slicing.");
+                               $"number of {cell.x} px cells. Not slicing.");
                 return SliceResult.Failed;
             }
-            if (tex.height != DirectionRows * CellH)
+            if (tex.height != DirectionRows * cell.y)
             {
                 Debug.LogError($"[CharacterSheetSlicer] '{path}' is {tex.height} px tall but an iso " +
-                               $"character sheet must be {DirectionRows} direction rows × {CellH} px = " +
-                               $"{DirectionRows * CellH}. Not slicing — fix the export.");
+                               $"character sheet must be {DirectionRows} direction rows × {cell.y} px = " +
+                               $"{DirectionRows * cell.y}. Not slicing — fix the export (or the " +
+                               $"CellOverrides entry for '{stem}').");
                 return SliceResult.Failed;
             }
 
-            int cols = tex.width / CellW;
+            int cols = tex.width / cell.x;
+            Vector2 pivot = GroundPivotFor(cell);
 
             importer.spriteImportMode = SpriteImportMode.Multiple;
 
@@ -189,7 +241,7 @@ namespace HiddenHarbours.Art.Editor
             ISpriteEditorDataProvider dp = factory.GetSpriteEditorDataProviderFromObject(importer);
             dp.InitSpriteEditorDataProvider();
 
-            SpriteRect[] rects = BuildRects(stem, cols);
+            SpriteRect[] rects = BuildRects(stem, cols, cell);
             dp.SetSpriteRects(rects);
 
             // Keep name→fileID stable across future reimports (mirrors the package's own slicer) so any
@@ -201,36 +253,37 @@ namespace HiddenHarbours.Art.Editor
             importer.SaveAndReimport();
 
             Debug.Log($"[CharacterSheetSlicer] Sliced '{stem}' → {rects.Length} sprites " +
-                      $"({DirectionRows} direction rows × {cols} frames of {CellW}×{CellH}, " +
-                      $"ground pivot {GroundPivot}).");
+                      $"({DirectionRows} direction rows × {cols} frames of {cell.x}×{cell.y}, " +
+                      $"ground pivot {pivot}).");
             return SliceResult.Sliced;
         }
 
         /// <summary>
         /// Build the grid of <see cref="SpriteRect"/>s. Rows are directions, columns are frames.
         /// Unity's sprite rects are BOTTOM-origin while the sheet's row 0 is the TOP row, so
-        /// <c>y = (DirectionRows-1-r) * CellH</c>.
+        /// <c>y = (DirectionRows-1-r) * cell.y</c>.
         ///
         /// <para>Names are <c>&lt;stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c> — row INDEX, never a compass
         /// name. See the class remarks: the rows are baked counter-clockwise but the README labels them
         /// clockwise, so any compass name written here would be wrong for six of the eight rows.</para>
         /// </summary>
-        public static SpriteRect[] BuildRects(string stem, int cols)
+        public static SpriteRect[] BuildRects(string stem, int cols, Vector2Int cell)
         {
+            Vector2 pivot = GroundPivotFor(cell);
             var rects = new SpriteRect[DirectionRows * cols];
             for (int r = 0; r < DirectionRows; r++)
             {
                 for (int c = 0; c < cols; c++)
                 {
-                    float x = c * CellW;
-                    float y = (DirectionRows - 1 - r) * CellH; // top row → top of the bottom-origin sheet
+                    float x = c * cell.x;
+                    float y = (DirectionRows - 1 - r) * cell.y; // top row → top of the bottom-origin sheet
                     rects[r * cols + c] = new SpriteRect
                     {
                         name = $"{stem}_d{r}_f{c}",
                         spriteID = GUID.Generate(),
-                        rect = new Rect(x, y, CellW, CellH),
+                        rect = new Rect(x, y, cell.x, cell.y),
                         alignment = SpriteAlignment.Custom,
-                        pivot = GroundPivot,
+                        pivot = pivot,
                         border = Vector4.zero,
                     };
                 }
