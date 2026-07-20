@@ -379,6 +379,116 @@ namespace HiddenHarbours.Tests.PlayMode
                 "RunToTerminal's settle rule changed; if it fails by more, the force model did.");
         }
 
+        /// <summary>
+        /// THE LOBSTER BOAT — the top rung of the F cycle, and now the heaviest hull afloat in this project.
+        ///
+        /// <para>The owner's brief was "comparable to or slightly quicker than the Cape Islander, with more
+        /// mass and momentum", and that is what is asserted: a shade faster on the clock, meaningfully
+        /// heavier in the hand. Her target is MEASURED, not solved for — the number in this assertion was
+        /// read off this very test after her stats were chosen, exactly as the Cape Islander's was.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator LobsterBoat_MakesSteadyWay_ALittleQuickerThanTheCapeIslander()
+        {
+            var hull = LoadHull("LobsterBoat");
+            Assert.AreEqual(PropulsionType.Engine, hull.Propulsion,
+                "precondition: she is INBOARD diesel — if she ever takes oars, this harness drives the wrong " +
+                "helm and every assertion below is meaningless");
+
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+            yield return RunToTerminal(boat, rb);
+
+            Assert.AreEqual(LobsterBoatMeasuredTerminal, rb.linearVelocity.magnitude, 0.12f,
+                $"the lobster boat's measured terminal is ≈{LobsterBoatMeasuredTerminal:0.00} m/s — just above " +
+                "the Cape Islander's 4.10 and still below the sport skiff's 4.57. If this drifts, " +
+                "EnginePower/ForwardDrag/MassKg on LobsterBoat.asset moved.");
+        }
+
+        /// <summary>
+        /// Her half of the owner's brief that a speed number cannot express: she is the SLOWER-FEELING boat
+        /// despite being the quicker one. Terminal speed and momentum are different axes, and on this ladder
+        /// they now point opposite ways at the top — which is the whole reason she is worth a rung of her own
+        /// rather than being "the Cape Islander but a bit faster".
+        /// </summary>
+        [UnityTest]
+        public IEnumerator LobsterBoat_IsQuickerThanTheCapeIslander_ButHeavierWithIt()
+        {
+            var lobster = LoadHull("LobsterBoat");
+            var cape = LoadHull("CapeIslander");
+
+            Assert.Greater(lobster.MassKg, cape.MassKg,
+                "'more mass and momentum' is the owner's brief — she must outweigh the Cape Islander");
+
+            float lobsterSpeed = 0f, capeSpeed = 0f;
+            yield return DriveToTerminal(lobster, v => lobsterSpeed = v);
+            yield return DriveToTerminal(cape, v => capeSpeed = v);
+
+            Assert.Greater(lobsterSpeed, capeSpeed,
+                $"she measures {lobsterSpeed:0.00} m/s against the Cape's {capeSpeed:0.00}. 'Comparable to or " +
+                "slightly quicker' — if she has fallen behind, her EnginePower or the Cape's moved.");
+            Assert.Less(lobsterSpeed - capeSpeed, 0.6f,
+                $"...but only SLIGHTLY quicker: {lobsterSpeed - capeSpeed:0.00} m/s clear of the Cape is too " +
+                "much daylight for two big diesel workboats. She is not a speedboat and must not become one.");
+
+            // She must not have quietly become the fastest thing afloat either — the sport skiffs are light
+            // planing hulls and stay ahead of every workboat on this ladder.
+            float twin = 0f;
+            yield return DriveToTerminal(LoadHull("SportSkiffTwin"), v => twin = v);
+            Assert.Less(lobsterSpeed, twin,
+                $"the twin-outboard sport skiff ({twin:0.00} m/s) must stay the fastest hull afloat — a 6800 kg " +
+                "trap boat out-running her would invert the whole ladder.");
+        }
+
+        /// <summary>
+        /// Her against the shared derivation — run HERE with her own tolerance, on exactly the Cape
+        /// Islander's precedent and for exactly the same reason. See
+        /// <see cref="CapeIslander_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor"/> for the full
+        /// account of the harness bias; the short version is that <see cref="RunToTerminal"/> stops on an
+        /// ABSOLUTE per-step threshold applied to a quantity that decays with the hull's own time constant,
+        /// so it always lands short of true terminal by <c>0.025·τ</c>.
+        ///
+        /// <para>She has the LARGEST τ on the ladder — (6800/100)/16.8 = 4.05 s, edging past the Cape's 4.0 —
+        /// so her gap is the biggest too, and she is excluded from
+        /// <see cref="TheMeasuredLadder_MatchesTheDerivation"/>'s shared ±0.1 for the same reason the Cape is.
+        /// <b>The shared tolerance is deliberately NOT widened to fit her</b>: that would quietly loosen the
+        /// guard on seven lighter hulls to accommodate a known, quantified property of the harness. A
+        /// follow-up to fix the settle rule properly (a RELATIVE threshold would pull every hull onto its
+        /// predicted number) would move all those committed measurements at once, and is not this PR's.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator LobsterBoat_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor()
+        {
+            const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
+            const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
+            const float settleEpsilon = 0.0005f;  // RunToTerminal's stop threshold, per fixed step
+
+            var hull = LoadHull("LobsterBoat");
+            var (_, boat, rb) = NewBoat(hull, Vector3.zero);
+
+            yield return RunToTerminal(boat, rb);
+
+            float mass = hull.MassKg / 100f;
+            float resistance = hull.ForwardDrag * forceFeelScale + mass * linearDamping;
+            float predicted = hull.EnginePower * forceFeelScale / resistance;
+
+            float tau = mass / resistance;
+            float harnessGap = settleEpsilon * tau / Time.fixedDeltaTime;
+
+            Assert.AreEqual(predicted - harnessGap, rb.linearVelocity.magnitude, 0.03f,
+                $"measured {rb.linearVelocity.magnitude:0.000} against the derivation's {predicted:0.000} less " +
+                $"the harness's {harnessGap:0.000} (τ = {tau:0.00} s — the largest on the ladder). If this fails " +
+                "by roughly the gap, RunToTerminal's settle rule changed; if it fails by more, the force model " +
+                "did.");
+
+            // The damping trap, restated on the hull where it bites hardest of all. At 6800 kg the
+            // rigidbody's own linearDamping is 13.6 of her 16.8 total resistance — 81%, past even the Cape's
+            // 80% — so the naive EnginePower/ForwardDrag ratio predicts 22.8 m/s against a measured ~4.2.
+            float naive = hull.EnginePower / hull.ForwardDrag;
+            Assert.Greater(naive / rb.linearVelocity.magnitude, 4f,
+                $"the naive EnginePower/ForwardDrag ratio predicts {naive:0.0} m/s against a measured " +
+                $"{rb.linearVelocity.magnitude:0.00}. EnginePower is a DESIGN unit, not Newtons.");
+        }
+
         [UnityTest]
         public IEnumerator TheMeasuredLadder_MatchesTheDerivation()
         {
