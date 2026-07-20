@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "HiddenHarbours.Core",
         "HiddenHarbours.Art",
-        "HiddenHarbours.Art.Editor"
+        "HiddenHarbours.Art.Editor",
+        "Unity.2D.Sprite.Editor"
     ],
     "includePlatforms": ["Editor"],
     "precompiledReferences": ["nunit.framework.dll"],
