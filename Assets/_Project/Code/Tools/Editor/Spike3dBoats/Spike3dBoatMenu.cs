@@ -36,6 +36,7 @@ namespace HiddenHarbours.Tools.Spike3dBoats
                 log.AppendLine($"mesh: {ren.Vertices} verts, {ren.Triangles} tris");
                 MemoryReport(rig, ren, log);
 
+                CalibrateDepth(host, rig, ren, log);
                 AbComparison(host, rig, ren, log);
                 RotationSweep(rig, ren, log);
                 InScene(rig, ren, log);
@@ -46,6 +47,60 @@ namespace HiddenHarbours.Tools.Spike3dBoats
             }
             File.WriteAllText(Path.Combine(OutDir, "spike-log.txt"), log.ToString());
             Debug.Log("[3D SPIKE]\n" + log);
+        }
+
+        /// <summary>
+        /// Unity's depth convention for a hand-rolled CommandBuffer with explicit matrices depends
+        /// on reversed-Z, and guessing it cost a render pass showing the hull's BOTTOM through the
+        /// deck. So measure it: whichever (ZTest, clear) pair agrees with the rig's own z-buffer is
+        /// by definition the right one. Cheap, and it can never silently rot.
+        /// </summary>
+        static void CalibrateDepth(IRigScriptHost host, RigMeshData rig, Spike3dBoatRenderer ren,
+                                   StringBuilder log)
+        {
+            double dir = RigBaker.DirForCell(8, 32, AzimuthConvention.CounterClockwise);
+            var truth = ToPixels(host.EvaluateBytes(
+                $"LobsterBoatIso.render({dir.ToString("R", CultureInfo.InvariantCulture)})"), rig.W, rig.H);
+            (int z, float c) best = (4, 1f); double bestScore = double.MaxValue;
+            log.AppendLine("\n-- depth-convention probe --");
+            foreach (var cand in new[] { (z: 4, c: 1f), (z: 7, c: 0f) })
+            {
+                ren.ZTestOp = cand.z; ren.ClearDepth = cand.c;
+                var mine = ren.RenderCell(dir, out _);
+                long err = 0; int n = 0;
+                for (int i = 0; i < truth.Length; i++)
+                {
+                    if (truth[i].a == 0 && mine[i].a == 0) continue;
+                    n++;
+                    err += Mathf.Abs(truth[i].r - mine[i].r) + Mathf.Abs(truth[i].g - mine[i].g)
+                         + Mathf.Abs(truth[i].b - mine[i].b) + (truth[i].a == mine[i].a ? 0 : 255);
+                }
+                double score = err / (double)Mathf.Max(1, n);
+                log.AppendLine($"  ZTest={(cand.z == 4 ? "LEqual" : "GEqual")} clear={cand.c} -> mean err {score:0.00}");
+                if (score < bestScore) { bestScore = score; best = cand; }
+            }
+            ren.ZTestOp = best.z; ren.ClearDepth = best.c;
+            log.AppendLine($"  chose ZTest={(best.z == 4 ? "LEqual" : "GEqual")} clear={best.c}");
+
+            // --- dither phase. The residual after depth is a pure Bayer stipple, i.e. the 4×4
+            // ordered-dither grid is offset relative to the rig's. Probe all 32 alignments.
+            log.AppendLine("-- dither-phase probe --");
+            Vector4 bestPhase = Vector4.zero; double bestD = double.MaxValue;
+            for (int swap = 0; swap < 2; swap++)
+                for (int dy = 0; dy < 4; dy++)
+                    for (int dx = 0; dx < 4; dx++)
+                    {
+                        ren.DitherPhase = new Vector4(dx, dy, swap, 0);
+                        var mine = ren.RenderCell(dir, out _);
+                        int d = 0;
+                        for (int i = 0; i < truth.Length; i++)
+                            if (truth[i].r != mine[i].r || truth[i].g != mine[i].g ||
+                                truth[i].b != mine[i].b || truth[i].a != mine[i].a) d++;
+                        if (d < bestD) { bestD = d; bestPhase = ren.DitherPhase; }
+                    }
+            ren.DitherPhase = bestPhase;
+            log.AppendLine($"  chose offset ({bestPhase.x},{bestPhase.y}) swap={bestPhase.z} " +
+                           $"-> {bestD} differing px");
         }
 
         // ---------------------------------------------------------------- 1. A/B vs baked sprite
@@ -112,37 +167,39 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         // ------------------------------------------------------------------ 3. in-scene consistency
         static void InScene(RigMeshData rig, Spike3dBoatRenderer ren, StringBuilder log)
         {
-            const int W = 960, H = 560, PX = 32;
+            const int W = 1000, H = 700;
             var canvas = new Color32[W * H];
             string art = Path.Combine(RigCatalog.RepoRoot, "Assets/_Project/Art");
 
-            Tile(canvas, W, H, Load(art + "/Tilesets/Water/WaterDeep.png") ?? Load(art + "/Tilesets/Sand.png"),
-                 0, 0, W, H, new Color32(28, 58, 74, 255));
-            Tile(canvas, W, H, Load(art + "/Tilesets/Grass.png"), 0, 0, W, 150, new Color32(58, 82, 52, 255));
-            Tile(canvas, W, H, Load(art + "/Tilesets/Sand.png"), 0, 150, W, 40, new Color32(160, 148, 116, 255));
-            Tile(canvas, W, H, Load(art + "/Tilesets/ShoreEdge.png"), 0, 182, W, 32, default);
-            Tile(canvas, W, H, Load(art + "/Tilesets/WharfDeck.png"), 600, 150, 260, 96, default);
+            Tile(canvas, W, H, Load(art + "/Tilesets/Water/SeaTile.png"), 0, 0, W, H,
+                 new Color32(28, 58, 74, 255));
+            Tile(canvas, W, H, Load(art + "/Tilesets/Grass.png"), 0, 0, W, 128, new Color32(58, 82, 52, 255));
+            Tile(canvas, W, H, Load(art + "/Tilesets/Sand.png"), 0, 128, W, 64, new Color32(160, 148, 116, 255));
+            Tile(canvas, W, H, Load(art + "/Tilesets/ShoreEdge.png"), 0, 176, W, 32, default);
+            Tile(canvas, W, H, Load(art + "/Tilesets/WharfDeck.png"), 660, 120, 320, 128, default);
 
             // sprite props, painter-ordered back to front
-            Blit(canvas, W, H, Load(art + "/Sprites/Buildings/LighthouseIso.png"), 40, -240);
-            Blit(canvas, W, H, Load(art + "/Sprites/Buildings/CottageIso.png"), 300, -100);
+            Blit(canvas, W, H, Load(art + "/Sprites/Buildings/LighthouseIso.png"), 40, -260);
+            Blit(canvas, W, H, Load(art + "/Sprites/Buildings/CottageIso.png"), 330, -128);
             Blit(canvas, W, H, Load(art + "/Sprites/Shore/RockCluster.png"), 170, 150);
-            Blit(canvas, W, H, Load(art + "/Sprites/GrassTuft.png"), 250, 130);
-            Blit(canvas, W, H, Load(art + "/Sprites/WharfPost.png"), 620, 214);
-            Blit(canvas, W, H, Load(art + "/Sprites/WharfPost.png"), 810, 214);
+            Blit(canvas, W, H, Load(art + "/Sprites/GrassTuft.png"), 250, 110);
+            Blit(canvas, W, H, Load(art + "/Sprites/WharfPost.png"), 690, 232);
+            Blit(canvas, W, H, Load(art + "/Sprites/WharfPost.png"), 930, 232);
 
             // THE COMPARISON: the baked sprite hull and the real-time 3D hull, side by side, in the
-            // same frame, at the same heading, among the same sprite art.
+            // same frame, at the same heading, among the same sprite art. One of these two is a
+            // 117 MB sheet lookup and the other is 1,384 triangles. Which is which is the finding.
             var sheet = Load(art + "/Boats/LobsterBoatIso.png");
             const int cell = 20;
             if (sheet != null)
-                BlitCell(canvas, W, H, sheet, cell % 8, cell / 8, rig.W, rig.H, 40, 250);
+                BlitCell(canvas, W, H, sheet, cell % 8, cell / 8, rig.W, rig.H, 10, 250);
             var hull3d = ren.RenderCell(RigBaker.DirForCell(cell, 32, AzimuthConvention.CounterClockwise), out _);
-            BlitRaw(canvas, W, H, hull3d, rig.W, rig.H, 470, 250);
+            BlitRaw(canvas, W, H, hull3d, rig.W, rig.H, 520, 250);
 
-            // sorting probe: a buoy that should read as IN FRONT of the 3D hull, and one BEHIND it
-            Blit(canvas, W, H, Load(art + "/Sprites/LobsterBuoy.png"), 690, 470);
-            Blit(canvas, W, H, Load(art + "/Sprites/LobsterBuoy.png"), 700, 330);
+            // sorting probe: a buoy drawn AFTER the hulls (so it reads in front) and one drawn
+            // before would read behind. Whole-object painter order is all a sprite pipeline has.
+            Blit(canvas, W, H, Load(art + "/Sprites/LobsterBuoy.png"), 905, 560);
+            Blit(canvas, W, H, Load(art + "/Sprites/LobsterBuoy.png"), 400, 560);
 
             WritePng(Path.Combine(OutDir, "3-in-scene.png"), canvas, W, H, 2);
             log.AppendLine("\n-- 3-in-scene.png: left = baked sprite hull, right = real-time 3D hull, " +

@@ -8,7 +8,7 @@
 // is what makes the shading read as pixel art rather than as lit 3D.
 Shader "Hidden/HH/Spike3dBoats/IsoFacet"
 {
-    Properties { _RampTex ("Ramps", 2D) = "white" {} }
+    Properties { _RampTex ("Ramps", 2D) = "white" {} _ZTest ("ZTest", Float) = 4 }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
@@ -16,7 +16,7 @@ Shader "Hidden/HH/Spike3dBoats/IsoFacet"
         {
             Cull Off            // the rig z-buffers everything; it never backface-culls
             ZWrite On
-            ZTest LEqual
+            ZTest [_ZTest]
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -28,6 +28,7 @@ Shader "Hidden/HH/Spike3dBoats/IsoFacet"
             float  _Gain, _Bias;
             float4 _Bayer[4];           // BAYER[x&3][y&3], values already (v+0.5)/16
             float4 _RampMeta[16];       // per material: x = ramp length, y = index offset
+            float4 _DitherPhase;        // xy = pixel offset, z = swap x/y in the Bayer lookup
 
             struct appdata {
                 float4 vertex : POSITION;
@@ -64,8 +65,13 @@ Shader "Hidden/HH/Spike3dBoats/IsoFacet"
 
             frag_out frag (v2f i)
             {
-                uint2 p = uint2(i.pos.xy);           // integer PIXEL coords, from the top-left
-                float bay = _Bayer[p.x & 3][p.y & 3];
+                // Integer PIXEL coords. The rig indexes BAYER[x&3][y&3] against ITS pixel grid, so
+                // the phase depends on where the render target's origin ended up — probed, not
+                // assumed (_DitherPhase; see CalibrateDither).
+                uint2 p = uint2(i.pos.xy) + uint2(_DitherPhase.xy);
+                uint bx = (_DitherPhase.z > 0.5) ? (p.y & 3) : (p.x & 3);
+                uint by = (_DitherPhase.z > 0.5) ? (p.x & 3) : (p.y & 3);
+                float bay = _Bayer[bx][by];
 
                 int m    = (int)round(i.mat);
                 int len  = (int)_RampMeta[m].x;

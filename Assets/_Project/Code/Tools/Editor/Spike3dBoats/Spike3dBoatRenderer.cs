@@ -118,8 +118,17 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         }
 
         /// <summary>Renders one cell at native resolution and returns straight RGBA32 bytes.</summary>
+        /// <summary>Unity's depth convention for a hand-built CommandBuffer + explicit matrices is
+        /// not something to assume — see the note where this is set. 4 = LEqual, 7 = GEqual.</summary>
+        public int ZTestOp = 4;
+        public float ClearDepth = 1f;
+        public Vector4 DitherPhase = Vector4.zero;   // xy = pixel offset, z = swap x/y
+
         public Color32[] RenderCell(double dir, out double gpuMs)
         {
+            _mat.SetFloat("_ZTest", ZTestOp);
+            _mat.SetVector("_DitherPhase", DitherPhase);
+
             int W = _rig.W, H = _rig.H, PX = _rig.PxPerMetre;
 
             var colRT = new RenderTexture(W, H, 24, RenderTextureFormat.ARGB32,
@@ -145,9 +154,13 @@ namespace HiddenHarbours.Tools.Spike3dBoats
             var cb = new CommandBuffer { name = "SpikeHull" };
             cb.SetRenderTarget(new RenderTargetIdentifier[] { colRT.colorBuffer, depRT.colorBuffer },
                                colRT.depthBuffer);
-            cb.ClearRenderTarget(true, true, new Color(0, 0, 0, 0), 1f);
+            cb.ClearRenderTarget(true, true, new Color(0, 0, 0, 0), ClearDepth);
+            // renderIntoTexture MUST be false here. Passing true applies D3D's RT Y-flip, which then
+            // double-counts against the bottom-left→top-left flip in the readback below and lands
+            // the hull upside down (seen: deck under the keel, aerials pointing at the seabed).
+            // It would ALSO mis-align the Bayer dither, since SV_Position.y must be the rig's y.
             cb.SetViewProjectionMatrices(cam.worldToCameraMatrix,
-                GL.GetGPUProjectionMatrix(cam.projectionMatrix, true));
+                GL.GetGPUProjectionMatrix(cam.projectionMatrix, false));
             cb.DrawMesh(_mesh, ObjectMatrix(dir, Vector3.zero), _mat, 0, 0);
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
