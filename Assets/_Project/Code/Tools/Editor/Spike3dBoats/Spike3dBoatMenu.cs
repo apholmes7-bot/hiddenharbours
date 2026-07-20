@@ -164,12 +164,18 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         /// deck. So measure it: whichever (ZTest, clear) pair agrees with the rig's own z-buffer is
         /// by definition the right one. Cheap, and it can never silently rot.
         /// </summary>
+        /// <summary>Same probe, for the dragger battery in <see cref="Spike3dDragger"/>.</summary>
+        internal static void CalibrateDepthPublic(IRigScriptHost host, RigMeshData rig,
+                                                  Spike3dBoatRenderer ren, StringBuilder log,
+                                                  string global) =>
+            CalibrateDepth(host, rig, ren, log, global);
+
         static void CalibrateDepth(IRigScriptHost host, RigMeshData rig, Spike3dBoatRenderer ren,
-                                   StringBuilder log)
+                                   StringBuilder log, string global = "LobsterBoatIso")
         {
             double dir = RigBaker.DirForCell(8, 32, AzimuthConvention.CounterClockwise);
             var truth = ToPixels(host.EvaluateBytes(
-                $"LobsterBoatIso.render({dir.ToString("R", CultureInfo.InvariantCulture)})"), rig.W, rig.H);
+                $"{global}.render({dir.ToString("R", CultureInfo.InvariantCulture)})"), rig.W, rig.H);
             (int z, float c) best = (4, 1f); double bestScore = double.MaxValue;
             log.AppendLine("\n-- depth-convention probe --");
             foreach (var cand in new[] { (z: 4, c: 1f), (z: 7, c: 0f) })

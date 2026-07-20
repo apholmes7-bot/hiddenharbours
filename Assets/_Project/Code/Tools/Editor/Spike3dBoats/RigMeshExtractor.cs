@@ -57,15 +57,29 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         public static RigMeshData Extract(IRigScriptHost host, string rigKey)
         {
             var entry = RigCatalog.Get(rigKey);
-            string src = RigCatalog.ReadSource(entry);
-            string g = entry.GlobalName;
+            return ExtractFrom(host, entry.ScriptPath, entry.GlobalName);
+        }
+
+        /// <summary>
+        /// Same, for a rig not yet in <see cref="RigCatalog"/>. The side dragger is not, and adding
+        /// her would mean editing a tools-editor-owned file from a spike branch for no gain — in
+        /// production she is one catalog entry, exactly as the lobster boat is.
+        /// </summary>
+        public static RigMeshData ExtractFrom(IRigScriptHost host, string scriptPath, string globalName)
+        {
+            string full = Path.Combine(RigCatalog.RepoRoot, scriptPath);
+            if (!File.Exists(full))
+                throw new FileNotFoundException($"Rig source missing at {full}.", full);
+            // Read unmodified except for the one widening below; the file on disk is never written.
+            string src = File.ReadAllText(full);
+            string g = globalName;
 
             // --- the spike-only widening. Loud, single-site, and asserted. -------------------
             string needle = $"root.{g} = {{";
             int at = src.IndexOf(needle, StringComparison.Ordinal);
             if (at < 0)
                 throw new InvalidOperationException(
-                    $"Could not find `{needle}` in {entry.ScriptPath}. This spike assumes the rig " +
+                    $"Could not find `{needle}` in {scriptPath}. This spike assumes the rig " +
                     "ends with a single object literal assigned to root.<Global>. If the rig " +
                     "changed shape, this hack must be re-aimed — or better, retired in favour of " +
                     "the art director exporting F.");
