@@ -84,7 +84,9 @@ namespace HiddenHarbours.Tools.Spike3dBoats
                 const float SpeedMps = 4.24f;                 // her measured cruise
                 float pxPerFrame = SpeedMps * rig.PxPerMetre / Fps;
                 const int Cell = 8, PivotY = 258;
-                const int StartX = 120;
+                // Start far enough in that the 456-wide cell never hangs off the left edge — a
+                // clipped hull silently poisons any hull-relative frame-to-frame comparison.
+                const int StartX = 240;
                 double dirT = RigBaker.DirForCell(Cell, 32, AzimuthConvention.CounterClockwise);
                 log.AppendLine($"\n-- translation: {SpeedMps} m/s @ {rig.PxPerMetre} PPU / {Fps} fps " +
                                $"= {pxPerFrame:0.000} px per frame, {NF} frames --");
@@ -104,10 +106,13 @@ namespace HiddenHarbours.Tools.Spike3dBoats
                     WritePng(FramePath("dither_before", f),
                              ren.RenderAt(dirT, CW, CH, new Vector2(px, PivotY), out _), CW, CH, 1, true);
 
-                    // THE FIX: shift the Bayer lookup by the hull's own snapped screen origin, so
-                    // the dither is indexed in the HULL's frame and travels with it — which is what
-                    // a baked sprite gets for free.
-                    ren.DitherPhase = new Vector4(Mod4(calib.x - px), Mod4(calib.y - PivotY), calib.z, 0);
+                    // THE FIX: index the Bayer lookup in the hull's own CELL coordinates — screen
+                    // pixel minus the hull's snapped screen origin, plus the rig's pivot. The pivot
+                    // term matters: locking to the hull alone kills the crawl but leaves an
+                    // arbitrary phase, so the mesh would not be bit-identical to a baked sprite of
+                    // the same hull. With the pivot in, mesh and sprite hulls can share a scene.
+                    ren.DitherPhase = new Vector4(Mod4(calib.x + rig.PivotX - px),
+                                                  Mod4(calib.y + rig.PivotY - PivotY), calib.z, 0);
                     WritePng(FramePath("dither_after", f),
                              ren.RenderAt(dirT, CW, CH, new Vector2(px, PivotY), out _), CW, CH, 1, true);
 
