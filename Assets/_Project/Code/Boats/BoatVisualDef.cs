@@ -46,6 +46,16 @@ namespace HiddenHarbours.Boats
         [Tooltip("Stable id, append-only (CLAUDE.md §5): type.snake_case, e.g. visual.dory_iso.")]
         public string Id = "visual.dory_iso";
 
+        [Tooltip("HOW this hull is rendered (ADR 0022). Sprite = the pre-drawn facing compass below, which " +
+                 "is every hull that exists today. Mesh = a real-time 3D hull extracted from the same rig — " +
+                 "NOT IMPLEMENTED YET; phase 1 defines the seam only, and the skinner still builds the " +
+                 "sprite path whatever this says. Leave it on Sprite.\n\n" +
+                 "DO NOT DELETE THE '= BoatHullVariant.Sprite' INITIALISER. Every asset already committed " +
+                 "predates this field, and the initialiser is what keeps them on Sprite when Unity finds no " +
+                 "Variant key in their YAML. (Sprite is ALSO the enum's zero value, as a second line of " +
+                 "defence — see BoatHullVariant.)")]
+        public BoatHullVariant Variant = BoatHullVariant.Sprite;
+
         [Header("Hull compass (REQUIRED — element 0 = North, then CLOCKWISE)")]
         [Tooltip("The pre-drawn hull facings in CLOCKWISE order from the zero heading: for the 8-way set " +
                  "N, NE, E, SE, S, SW, W, NW. The snap math is generalised to ANY count, so a 16-way set " +
