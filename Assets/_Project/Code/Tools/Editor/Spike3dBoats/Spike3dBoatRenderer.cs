@@ -124,12 +124,21 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         public float ClearDepth = 1f;
         public Vector4 DitherPhase = Vector4.zero;   // xy = pixel offset, z = swap x/y
 
-        public Color32[] RenderCell(double dir, out double gpuMs)
+        public Color32[] RenderCell(double dir, out double gpuMs) =>
+            RenderAt(dir, _rig.W, _rig.H, new Vector2(_rig.PivotX, _rig.PivotY), out gpuMs);
+
+        /// <summary>
+        /// Renders the hull onto an arbitrary canvas with the boat origin landing on
+        /// <paramref name="pivotPx"/> (pixels from the canvas top-left). Moving the CAMERA rather
+        /// than the hull is what makes "the boat sits on a whole pixel" exactly expressible — pass
+        /// an integer pivot and the hull is pixel-snapped by construction, as a 2D sprite would be.
+        /// </summary>
+        public Color32[] RenderAt(double dir, int W, int H, Vector2 pivotPx, out double gpuMs)
         {
             _mat.SetFloat("_ZTest", ZTestOp);
             _mat.SetVector("_DitherPhase", DitherPhase);
 
-            int W = _rig.W, H = _rig.H, PX = _rig.PxPerMetre;
+            int PX = _rig.PxPerMetre;
 
             var colRT = new RenderTexture(W, H, 24, RenderTextureFormat.ARGB32,
                                           RenderTextureReadWrite.Linear) { filterMode = FilterMode.Point };
@@ -140,8 +149,8 @@ namespace HiddenHarbours.Tools.Spike3dBoats
             // Camera: plain orthographic, straight down −Z, 32 px per world unit — i.e. the game's
             // own 2D camera. Centre it so the rig pivot (cx,cy from the cell's top-left) lands right.
             float halfH = H / (2f * PX);
-            float ox = (_rig.PivotX - W / 2f) / PX;
-            float oy = (H / 2f - _rig.PivotY) / PX;
+            float ox = (pivotPx.x - W / 2f) / PX;
+            float oy = (H / 2f - pivotPx.y) / PX;
             var camGo = new GameObject("SpikeCam") { hideFlags = HideFlags.HideAndDontSave };
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;

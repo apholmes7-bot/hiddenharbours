@@ -49,6 +49,110 @@ namespace HiddenHarbours.Tools.Spike3dBoats
             Debug.Log("[3D SPIKE]\n" + log);
         }
 
+        // ==================================================================================
+        // MOTION TESTS. The stills said "3D matches the sprite exactly". These ask the harder
+        // question: does it still read as the same game when it MOVES? Two named risks:
+        //   1. dither crawl   — the rig's Bayer dither is indexed by SCREEN pixel, so a naive
+        //                       implementation leaves the stipple pinned to the display while the
+        //                       hull slides underneath it. A baked sprite carries its dither in the
+        //                       texture, so the stipple rides along. Fix + A/B, don't just assert.
+        //   2. shade popping  — flat facets quantised to a 5–7 entry ramp mean a big panel jumps a
+        //                       whole shade step. At 32 discrete facings you read that as an
+        //                       expected snap; rotating continuously it may read as flicker.
+        // Risk 2 is the one that could INVERT the case for 3D, so it is rendered against the
+        // 32-facing sprite doing the same turn, at the same speed, in the same frame.
+        // ==================================================================================
+        [MenuItem("Hidden Harbours/Spikes/3D Boats — motion tests")]
+        public static void RunMotion()
+        {
+            Directory.CreateDirectory(OutDir);
+            var log = new StringBuilder();
+            try
+            {
+                using var host = new V8RigScriptHost();
+                var rig = RigMeshExtractor.Extract(host, RigKey);
+                using var ren = new Spike3dBoatRenderer(rig, rig.DefaultElev);
+                CalibrateDepth(host, rig, ren, log);
+                Vector4 calib = ren.DitherPhase;
+                string art = Path.Combine(RigCatalog.RepoRoot, "Assets/_Project/Art");
+                var sheet = Load(art + "/Boats/LobsterBoatIso.png");
+
+                // ---------- A. translation, for the dither-crawl A/B ----------
+                // Broadside (cell 8, heading 090° = due East = screen right): the largest area of
+                // flat white topside in the kit, which is exactly where a swimming stipple shows.
+                const int CW = 800, CH = 420, Fps = 30, NF = 60;
+                const float SpeedMps = 4.24f;                 // her measured cruise
+                float pxPerFrame = SpeedMps * rig.PxPerMetre / Fps;
+                const int Cell = 8, PivotY = 258;
+                const int StartX = 120;
+                double dirT = RigBaker.DirForCell(Cell, 32, AzimuthConvention.CounterClockwise);
+                log.AppendLine($"\n-- translation: {SpeedMps} m/s @ {rig.PxPerMetre} PPU / {Fps} fps " +
+                               $"= {pxPerFrame:0.000} px per frame, {NF} frames --");
+
+                var track = new StringBuilder("frame,pivotX\n");
+                foreach (string d in new[] { "dither_before", "dither_after", "dither_sprite" })
+                    Directory.CreateDirectory(Path.Combine(OutDir, "frames", d));
+
+                for (int f = 0; f < NF; f++)
+                {
+                    // Whole-pixel hull motion, exactly as a pixel-perfect 2D game moves a sprite.
+                    // This ISOLATES dither crawl: the geometry steps cleanly, so anything that
+                    // shimmers is the stipple and nothing else.
+                    int px = StartX + Mathf.RoundToInt(f * pxPerFrame);
+
+                    ren.DitherPhase = calib;                                   // screen-pinned (naive)
+                    WritePng(FramePath("dither_before", f),
+                             ren.RenderAt(dirT, CW, CH, new Vector2(px, PivotY), out _), CW, CH, 1, true);
+
+                    // THE FIX: shift the Bayer lookup by the hull's own snapped screen origin, so
+                    // the dither is indexed in the HULL's frame and travels with it — which is what
+                    // a baked sprite gets for free.
+                    ren.DitherPhase = new Vector4(Mod4(calib.x - px), Mod4(calib.y - PivotY), calib.z, 0);
+                    WritePng(FramePath("dither_after", f),
+                             ren.RenderAt(dirT, CW, CH, new Vector2(px, PivotY), out _), CW, CH, 1, true);
+
+                    var canvas = new Color32[CW * CH];                          // baked-sprite control
+                    if (sheet != null)
+                        BlitCell(canvas, CW, CH, sheet, Cell % 8, Cell / 8, rig.W, rig.H,
+                                 px - Mathf.RoundToInt(rig.PivotX), PivotY - Mathf.RoundToInt(rig.PivotY));
+                    WritePng(FramePath("dither_sprite", f), canvas, CW, CH, 1, true);
+                    track.Append($"{f},{px}\n");
+                }
+                File.WriteAllText(Path.Combine(OutDir, "frames", "track.csv"), track.ToString());
+
+                // ---------- B. rotation: continuous mesh vs 32-facing sprite ----------
+                const int RF = 120;                       // 3° per frame, 4 s at 30 fps
+                foreach (string d in new[] { "rot_mesh", "rot_sprite" })
+                    Directory.CreateDirectory(Path.Combine(OutDir, "frames", d));
+                ren.DitherPhase = calib;                  // hull is stationary here; phase is moot
+                log.AppendLine($"-- rotation: 360° over {RF} frames = {360.0 / RF:0.0}°/frame, " +
+                               "mesh continuous vs sprite snapping between 32 cells (11.25° each) --");
+
+                for (int f = 0; f < RF; f++)
+                {
+                    double heading = f * 360.0 / RF;
+                    // Cell k depicts heading 360k/32; the rig's dir runs the other way (8 dir units
+                    // = 360°), which is the CCW correction the baker applies at bake time.
+                    WritePng(FramePath("rot_mesh", f),
+                             ren.RenderCell(8.0 - heading / 45.0, out _), rig.W, rig.H, 1, true);
+
+                    int k = Mathf.RoundToInt((float)(heading / 11.25)) % 32;
+                    var canvas = new Color32[rig.W * rig.H];
+                    if (sheet != null)
+                        BlitCell(canvas, rig.W, rig.H, sheet, k % 8, k / 8, rig.W, rig.H, 0, 0);
+                    WritePng(FramePath("rot_sprite", f), canvas, rig.W, rig.H, 1, true);
+                }
+                log.AppendLine("frames written; assemble with make-gifs.py");
+            }
+            catch (Exception e) { log.AppendLine("FAILED: " + e); }
+            File.WriteAllText(Path.Combine(OutDir, "motion-log.txt"), log.ToString());
+            Debug.Log("[3D SPIKE MOTION]\n" + log);
+        }
+
+        static float Mod4(float v) => ((v % 4f) + 4f) % 4f;
+        static string FramePath(string set, int f) =>
+            Path.Combine(OutDir, "frames", set, f.ToString("D4") + ".png");
+
         /// <summary>
         /// Unity's depth convention for a hand-rolled CommandBuffer with explicit matrices depends
         /// on reversed-Z, and guessing it cost a render pass showing the hull's BOTTOM through the
@@ -327,7 +431,7 @@ namespace HiddenHarbours.Tools.Spike3dBoats
         }
 
         /// <summary>Writes top-left-origin pixels as a PNG, optionally nearest-neighbour upscaled.</summary>
-        static void WritePng(string path, Color32[] px, int w, int h, int scale)
+        static void WritePng(string path, Color32[] px, int w, int h, int scale, bool quiet = false)
         {
             var tex = new Texture2D(w * scale, h * scale, TextureFormat.RGBA32, false, true);
             var o = new Color32[w * scale * h * scale];
@@ -338,7 +442,7 @@ namespace HiddenHarbours.Tools.Spike3dBoats
             tex.Apply();
             File.WriteAllBytes(path, tex.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(tex);
-            Debug.Log($"[3D SPIKE] wrote {path} ({w * scale}x{h * scale})");
+            if (!quiet) Debug.Log($"[3D SPIKE] wrote {path} ({w * scale}x{h * scale})");
         }
     }
 }
