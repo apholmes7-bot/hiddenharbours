@@ -70,7 +70,30 @@ namespace HiddenHarbours.Tests.EditMode
         static string[] FleetFiles => new[]
         {
             "Dory", "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin",
-            "CapeIslander",
+            "CapeIslander", "LobsterBoat",
+        };
+
+        /// <summary>
+        /// How many facings each hull's artwork is actually drawn for — <b>an ART FACT PER HULL, which is why
+        /// this is a table and not a constant.</b>
+        ///
+        /// <para>This used to be a bare <c>Assert.AreEqual(8, …)</c> asserting "the project's compass is
+        /// 8-way". That was true of every kit until the lobster boat, whose in-engine bake (ADR 0021) emits
+        /// 32 facings at 11.25° steps — the whole point of the baker being that a 12 m hull no longer has to
+        /// snap between 45° steps. The RUNTIME never needed telling:
+        /// <see cref="BoatVisualDef.HeadingCount"/> reads <c>Facings.Length</c> and
+        /// <c>IsoFacing.HeadingToFacingIndex</c> is general in the count. This assertion was the only place
+        /// in the project with an 8 baked into it, so it is the only place that had to change.</para>
+        ///
+        /// <para>Kept as an explicit per-hull expectation rather than dropped, because the count is exactly
+        /// the kind of thing a stale re-slice silently quarters: a hull falling from 32 facings to 8 still
+        /// renders, still passes every other check in this file, and just quietly turns coarse.</para>
+        /// </summary>
+        static readonly Dictionary<string, int> ExpectedFacings = new Dictionary<string, int>
+        {
+            { "Dory", 8 }, { "FishingSkiff", 8 }, { "PuntUpgraded", 8 }, { "ConsoleSkiff", 8 },
+            { "SportSkiff", 8 }, { "SportSkiffTwin", 8 }, { "CapeIslander", 8 },
+            { "LobsterBoat", 32 },   // baked in-engine, 11.25° steps — see LobsterBoatFacingTests
         };
 
         /// <summary>
@@ -94,10 +117,14 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsNotNull(h.Visual,
                     $"{file}: no Visual — this hull has no directional skin, and its fallback Sprite is " +
                     "empty, so it would sail INVISIBLE. Re-run Build Boat Visual Defs, then the cove builder.");
+                int expectedFacings = ExpectedFacings[file];
                 Assert.IsTrue(h.Visual.HasFullCompass(),
-                    $"{file}: its Visual '{h.Visual.Id}' has {h.Visual.HeadingCount}/8 facings — a re-slice " +
-                    "has gone stale. Re-run Build Boat Visual Defs.");
-                Assert.AreEqual(8, h.Visual.HeadingCount, $"{file}: the project's compass is 8-way");
+                    $"{file}: its Visual '{h.Visual.Id}' has {h.Visual.HeadingCount}/{expectedFacings} " +
+                    "facings — a re-slice has gone stale. Re-run Build Boat Visual Defs.");
+                Assert.AreEqual(expectedFacings, h.Visual.HeadingCount,
+                    $"{file}: this hull's artwork is drawn for {expectedFacings} facings (see " +
+                    nameof(ExpectedFacings) + "). The compass size is a per-artwork fact, not a project " +
+                    "constant — the lobster boat is 32-way and everything else is 8-way.");
                 Assert.AreEqual(0f, h.Visual.ZeroHeadingDegrees, 0.0001f,
                     $"{file}: facing element 0 is NORTH — the project's bearing convention");
             }
@@ -114,6 +141,7 @@ namespace HiddenHarbours.Tests.EditMode
                 { "SportSkiff", "boat.sport_skiff" },
                 { "SportSkiffTwin", "boat.sport_skiff_twin" },
                 { "CapeIslander", "boat.cape_islander" },
+                { "LobsterBoat", "boat.lobster_boat" },
             };
 
             var seen = new HashSet<string>();
@@ -553,7 +581,7 @@ namespace HiddenHarbours.Tests.EditMode
             // fold every hull-anchored effect onto the boat's own middle, so it must be present and sane in
             // the ASSETS, not merely correct in the builder that writes them.
             foreach (var name in new[] { "DoryIso", "ConsoleSkiff", "SportSkiffSingle", "SportSkiffTwin",
-                                         "CapeIslanderIso",
+                                         "CapeIslanderIso", "LobsterBoatIso",
                                          "PuntIsoBasic", "PuntIsoUpgraded" })
                 Assert.AreEqual(40f, Visual(name).ArtBakeElevationDegrees, 0.001f,
                     $"{name}: an iso rig bake — its DEFAULT_ELEV is 40. If this reads 0, the asset predates " +

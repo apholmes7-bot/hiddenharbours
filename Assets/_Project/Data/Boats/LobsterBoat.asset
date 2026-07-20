@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: LobsterBoat
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.lobster_boat
+  DisplayName: The Lobster Boat
+  Visual: {fileID: 11400000, guid: 221d09b55b32c9041989511c8fa77c00, type: 2}
+  Sprite: {fileID: 0}
+  LengthMeters: 12
+  DraughtMeters: 1.3
+  MassKg: 6800
+  HoldUnits: 70
+  CrewSlots: 3
+  Propulsion: 1
+  EnginePower: 7300
+  RudderAuthority: 5830
+  OarPower: 300
+  OarLateralOffset: 0.6
+  OarBraceDrag: 400
+  ForwardDrag: 320
+  LateralDrag: 960
+  WindExposure: 0.42
+  MaxSafeSeaState: 6
+  SeakeepingMassFactor: 3.3
+  SeakeepingLiveliness: 0.44
+  SeakeepingDamping: 0.65
+  CameraWorldHeightMeters: 23
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0.35, y: -0.9}

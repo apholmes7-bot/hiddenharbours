@@ -300,6 +300,14 @@ namespace HiddenHarbours.App.Editor
             // ~1000, so she is a SIZE step rather than a speed step and the cycle ends on the biggest boat
             // rather than burying her mid-list. Picker rung only, on the upgraded punt's precedent — a
             // purchasable 13 m workboat is the M2 fleet roster and its economy (rule 8).
+            //
+            // THE LOBSTER BOAT TAILS THE CYCLE, one rung past the Cape Islander — position 9, the last press
+            // of F before it wraps back to the dory. She belongs there on the same SIZE-step logic the Cape
+            // was placed on rather than on speed: she measures a shade quicker than the Cape but is heavier
+            // (6800 kg vs 6000) and reads bigger in the hand, so the cycle still ends on the biggest boat.
+            // She is also the smoothest TURNER on the roster at 32 facings against everyone else's 8, which
+            // is worth feeling immediately after the Cape rather than several rungs away from her.
+            // Picker rung only, on the Cape Islander's and the upgraded punt's precedent (rule 8).
             var pickerRoster = new[]
             {
                 dory,
@@ -310,10 +318,11 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiff.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CapeIslander.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/LobsterBoat.asset"),
             }.Where(h => h != null).ToArray();
 
-            if (pickerRoster.Length < 8)
-                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/8 hulls — " +
+            if (pickerRoster.Length < 9)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/9 hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");
