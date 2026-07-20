@@ -141,6 +141,18 @@ namespace HiddenHarbours.Tests.PlayMode
 #endif
         }
 
+        /// <summary>
+        /// The lobster boat's terminal speed as MEASURED by this harness — read off a real run, never solved
+        /// for. She is the top rung of the F cycle and the heaviest hull in the project.
+        ///
+        /// <para>The derivation puts her at 7300·0.01 / (320·0.01 + 68·0.2) = 4.345 m/s; the harness lands
+        /// below that by its own known 0.025·τ bias (see
+        /// <see cref="LobsterBoat_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor"/>), which on her
+        /// τ = 4.05 s is the largest shortfall on the ladder. This constant is the MEASUREMENT, not the
+        /// prediction — if the two ever have to be reconciled, fix the harness, not this number.</para>
+        /// </summary>
+        const float LobsterBoatMeasuredTerminal = 4.24f;
+
         /// <summary>Run full ahead until the hull stops accelerating, and report the speed it settles at.
         /// Bails out at <paramref name="maxSeconds"/> of sim time rather than looping forever.</summary>
         private IEnumerator RunToTerminal(BoatController boat, Rigidbody2D rb, float maxSeconds = 60f)
