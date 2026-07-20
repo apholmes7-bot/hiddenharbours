@@ -428,6 +428,24 @@ namespace HiddenHarbours.Art.Editor
             return sliced;
         }
 
+        /// <summary>
+        /// Slice ONE manifest sheet, by asset path. Returns false if the path is not in
+        /// <see cref="Sheets"/> or the slice failed. Exists so a caller (notably the idempotence
+        /// fixture) can re-slice a single sheet without paying for the whole manifest's reimports.
+        /// </summary>
+        public static bool SliceSheet(string assetPath)
+        {
+            foreach (var spec in Sheets)
+            {
+                if (!string.Equals(spec.AssetPath, assetPath, StringComparison.Ordinal)) continue;
+                bool ok = SliceOne(spec) == SliceResult.Sliced;
+                AssetDatabase.SaveAssets();
+                return ok;
+            }
+            Debug.LogError($"[SpriteSheetSlicer] '{assetPath}' is not in the sheet manifest.");
+            return false;
+        }
+
         private enum SliceResult { Sliced, Skipped, Failed }
 
         private static SliceResult SliceOne(SheetSpec spec)
@@ -486,7 +504,18 @@ namespace HiddenHarbours.Art.Editor
             ISpriteEditorDataProvider dp = factory.GetSpriteEditorDataProviderFromObject(importer);
             dp.InitSpriteEditorDataProvider();
 
-            SpriteRect[] rects = BuildRects(spec);
+            // ⚠️ Re-use the spriteID any already-sliced name carries. GUID.Generate() on every run made a
+            // re-slice rewrite every spriteID in every .meta — 43 files of pure diff noise the last time
+            // the owner ran it, 25 of them under Art/Boats, and it recurs on every rig bake now that
+            // RigBaker invokes this slicer. (Sprite references resolve by internalID, not spriteID, so
+            // this was never a broken-reference bug — only noise that buries the owner's real changes.)
+            // Same fix as CharacterSheetSlicer (PR #218): slicing is idempotent now — re-running over
+            // unchanged art produces a byte-identical .meta.
+            var existingIds = dp.GetSpriteRects()
+                                .GroupBy(r => r.name)
+                                .ToDictionary(g => g.Key, g => g.First().spriteID);
+
+            SpriteRect[] rects = BuildRects(spec, existingIds);
             dp.SetSpriteRects(rects);
 
             // Keep name→fileID stable across future reimports (mirrors the package's own slicer) so any
@@ -508,8 +537,13 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>
         /// Build the grid of <see cref="SpriteRect"/>s, row-major from the TOP-LEFT cell. Unity's rects are
         /// bottom-origin, so the top row (r=0) maps to the highest Y = (Rows-1)*CellH.
+        ///
+        /// <para><paramref name="existingIds"/> maps an already-sliced slice name to the spriteID it
+        /// already carries; those are re-used so a re-slice of unchanged art is a no-op on the
+        /// <c>.meta</c>. Only genuinely new names get a fresh GUID.</para>
         /// </summary>
-        private static SpriteRect[] BuildRects(SheetSpec spec)
+        private static SpriteRect[] BuildRects(SheetSpec spec,
+                                               IReadOnlyDictionary<string, GUID> existingIds = null)
         {
             var rects = new SpriteRect[spec.Count];
             for (int r = 0; r < spec.Rows; r++)
@@ -519,10 +553,13 @@ namespace HiddenHarbours.Art.Editor
                     int index = r * spec.Cols + c;
                     float x = c * spec.CellW;
                     float y = (spec.Rows - 1 - r) * spec.CellH; // top row → top of the (bottom-origin) sheet
+                    string name = $"{spec.Stem}_{index}";
                     rects[index] = new SpriteRect
                     {
-                        name = $"{spec.Stem}_{index}",
-                        spriteID = GUID.Generate(),
+                        name = name,
+                        spriteID = existingIds != null && existingIds.TryGetValue(name, out var id)
+                                   ? id
+                                   : GUID.Generate(),
                         rect = new Rect(x, y, spec.CellW, spec.CellH),
                         alignment = spec.Alignment,
                         pivot = spec.Pivot,
