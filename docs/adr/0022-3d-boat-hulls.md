@@ -1,9 +1,10 @@
 # ADR 0022 — Large boat hulls become real-time 3D meshes, baked from the same rigs, coexisting with sprite hulls
 
-- **Status:** **PROPOSED — awaiting owner approval.** Ships no code. Records a decision measured by the
-  `spike/3d-boats` harness (not merged) and the images at `scratchpad/3dspike/`. If accepted, the pipeline
-  work is separate and phased (§ Migration).
-- **Date:** 2026-07-19
+- **Status:** **ACCEPTED 2026-07-20** by the owner ("adr 22 the new 3d is the highest priority right now.
+  i want them in game"). Ships no code itself. Records a decision measured by the `spike/3d-boats` harness
+  (not merged) and the images at `scratchpad/3dspike/`. The pipeline work is separate and phased
+  (§ Migration); phases 1 and 2 are in flight.
+- **Date:** 2026-07-19 (proposed) · 2026-07-20 (accepted)
 - **Decision owner:** lead-architect. **art-pipeline** owns the facet shader and the look; **tools-editor**
   owns mesh extraction in the baker; **gameplay-systems** owns the hull presenter seam and heading consumers.
 - **Serves:** **P1 "The Sea Has Moods"** (continuous rocking and heading, instead of quantised frames) and
@@ -181,6 +182,14 @@ Suggested phasing, each independently verifiable:
    via a loudly-marked in-memory string widening of the exported object literal. **In production the art
    director adds one property (`F,`) per rig and that hack disappears** — that is the entire delta.
    **`docs/art/rigs/**` must never be edited on our side.**
+
+   ⚠️ **Still open, re-verified by measurement 2026-07-20.** All four boat rigs (`lobsterBoatIsoRig`,
+   `sideDraggerIsoRig`, `puntIsoRig`, `capeIslanderIsoRig`) declare `const F = [];` but their export object
+   (`root.LobsterBoatIso = { W, H, PX, DIRS:8, … }`) omits it — the art director has not yet made the change.
+   ⚠️ Grepping for `F,` **false-positives on 14 rigs**; it matches ordinary code. Only the export object
+   literal at the end of the file is evidence. Therefore `RigMeshExtractor` must **probe for an exported `F`
+   first** and fall back to the widening shim, so the shim becomes dead code the day the property lands,
+   with no edit on our side.
 5. GPU timings from the spike (47–52 ms) are dominated by dual-target `ReadPixels`, **not** by drawing;
    1,616 triangles is nothing. They are not a performance signal.
 
