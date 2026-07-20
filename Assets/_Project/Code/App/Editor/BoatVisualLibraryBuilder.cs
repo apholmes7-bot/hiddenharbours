@@ -43,6 +43,7 @@ namespace HiddenHarbours.App.Editor
             public string HullPath;       // static hull headings as ONE sliced sheet: index = heading (N..NW, CW)
             public string[] HullPaths;    // ...or one FILE PER HEADING, in the same N..NW order. Either/or.
             public string RockPath;       // rock grid: index = heading·RockFrames + frame ("" = none)
+            public string[] RockPaths;    // ...or the SAME grid split across PAGES, concatenated in order. Either/or.
             public string OarPortPath;    // port oar sheet: index = heading·OarColumns + column ("" = none)
             public string OarStarPath;    // starboard oar sheet ("" = none)
             public string MotorLowerPath; // motor lower sheet: index = heading·MotorColumns + col ("" = none)
@@ -314,6 +315,57 @@ namespace HiddenHarbours.App.Editor
                 ArtBakeElevationDegrees = IsoBakeElevation,
                 SortingOrder = 1,
             },
+
+            // ═══════════════════════════════════════════════════════════════════════════════════════
+            // THE LOBSTER BOAT — the ~12.0 m Tier 3 shellfish boat, and the FIRST artwork in this repo
+            // baked IN-ENGINE from the art director's rig (ADR 0021) rather than hand-exported.
+            //
+            // ⚠️⚠️ READ THIS BEFORE "FIXING" FacingsAreCounterClockwise BELOW. ⚠️⚠️
+            //
+            // She is the ONLY entry in this file that does NOT use IsoSheetsAreCounterClockwise, and that
+            // is CORRECT. It is not an oversight, not a copy-paste slip, and not a bug someone half-fixed.
+            //
+            //   • Every OTHER iso kit here was hand-exported from a browser rig that rotates the model
+            //     counter-clockwise while LABELLING the cells clockwise. Their sheets are mirrored, so
+            //     they carry the flag TRUE and the runtime un-mirrors them (see the big block comment on
+            //     IsoSheetsAreCounterClockwise above).
+            //
+            //   • HERS was baked by RigBaker, in-engine. The baker MEASURED the rig's azimuth convention
+            //     from rendered pixels and passed the `dir` argument to correct for it AT BAKE TIME. Her
+            //     cells therefore come off the press genuinely, truly CLOCKWISE — cell i depicts +11.25°·i,
+            //     exactly as labelled. There is nothing left to un-mirror, so the flag is FALSE.
+            //
+            // Setting this to true to "match her neighbours" would MIRROR A CORRECT SHEET and send her
+            // stern-first at E/W and 90° off at the diagonals — the precise bug that shipped five times in
+            // this project before anyone measured. LobsterBoatFacingTests reads her actual pixels and goes
+            // red the instant this flips; RigAzimuthConventionTests guards the baker's half. Do not change
+            // this line to make a different test pass. Do NOT change IsoSheetsAreCounterClockwise either —
+            // every other boat in this file still genuinely needs it true.
+            //
+            // She is also the first 32-FACING hull (11.25° steps, not 45°) and the first with a MULTI-PAGE
+            // rock grid: 4 rock frames × 32 headings = 128 cells, split as headings 0–15 on page 0 and
+            // 16–31 on page 1 (see TakeExactlyAcrossPages). Nothing downstream needed to learn either fact
+            // — HeadingCount comes off Facings.Length and IsoFacing.HeadingToFacingIndex is general in the
+            // count — which is the payoff for those two having been written as data rather than as 8.
+            //
+            // Inboard diesel like the Cape Islander, so NO oars and NO outboard: hull sheet + rock grid and
+            // nothing else. There is no engine drawn on her because there is no engine to draw.
+            // ═══════════════════════════════════════════════════════════════════════════════════════
+            new Sheet
+            {
+                AssetName = "LobsterBoatIso",
+                FacingsAreCounterClockwise = false,   // ⚠️ BAKED IN-ENGINE = TRUE CLOCKWISE. See above.
+                Id = "visual.lobster_boat_iso",
+                HullPath = $"{ArtBoats}/LobsterBoatIso.png",
+                RockPaths = new[]
+                {
+                    $"{ArtBoats}/LobsterBoatIsoRock0.png",   // headings  0–15 × 4 frames
+                    $"{ArtBoats}/LobsterBoatIsoRock1.png",   // headings 16–31 × 4 frames
+                },
+                HeadingCount = 32, RockFrames = 4, OarColumns = 10,
+                ArtBakeElevationDegrees = IsoBakeElevation,   // her rig's DEFAULT_ELEV is 40, like every other
+                SortingOrder = 1,
+            },
         };
 
         /// <summary>The 8 per-heading files of a compass-as-separate-files skin, N..NW clockwise.</summary>
@@ -375,7 +427,9 @@ namespace HiddenHarbours.App.Editor
             def.Facings = sheet.HullPaths != null && sheet.HullPaths.Length > 0
                 ? TakeOnePerFile(sheet.HullPaths, sheet.HeadingCount)
                 : TakeExactly(sheet.HullPath, sheet.HeadingCount);
-            def.RockGrid = TakeExactly(sheet.RockPath, sheet.HeadingCount * sheet.RockFrames);
+            def.RockGrid = sheet.RockPaths != null && sheet.RockPaths.Length > 0
+                ? TakeExactlyAcrossPages(sheet.RockPaths, sheet.HeadingCount * sheet.RockFrames)
+                : TakeExactly(sheet.RockPath, sheet.HeadingCount * sheet.RockFrames);
             def.OarPort = TakeExactly(sheet.OarPortPath, sheet.HeadingCount * sheet.OarColumns);
             def.OarStar = TakeExactly(sheet.OarStarPath, sheet.HeadingCount * sheet.OarColumns);
             def.MotorLower = TakeExactly(sheet.MotorLowerPath, sheet.HeadingCount * sheet.MotorColumns);
@@ -446,6 +500,37 @@ namespace HiddenHarbours.App.Editor
                                       .OrderBy(SpriteIndex).ToArray();
             return (frames.Length == expected && frames.All(s => s != null))
                 ? frames : System.Array.Empty<Sprite>();
+        }
+
+        /// <summary>
+        /// One logical grid that ships as SEVERAL sheet files, concatenated page by page in the caller's
+        /// given order — the shape the lobster boat's rock grid arrives in. Her 32 headings × 4 rock frames
+        /// is 128 cells, which will not fit one page at her 456×420 cell without blowing past the 4096
+        /// texture cap, so the baker splits it: page 0 carries headings 0–15, page 1 carries headings 16–31.
+        /// Each page is internally row-major (heading·RockFrames + frame) and the pages are in heading order,
+        /// so simple concatenation reproduces the flat index the def wants — no interleaving, no per-page
+        /// arithmetic at the call site.
+        ///
+        /// <para>All-or-nothing across the WHOLE set, like every other block: if any page is missing or
+        /// mis-sliced the combined length will not match and the entire grid is dropped, rather than binding
+        /// a half-grid whose second half would index stale cells. Order is the caller's array order and is
+        /// never inferred from filenames — <c>Rock0</c>/<c>Rock1</c> sort correctly today, but a tenth page
+        /// would sort before the second and that is not a trap worth leaving.</para>
+        /// </summary>
+        static Sprite[] TakeExactlyAcrossPages(string[] paths, int expected)
+        {
+            if (paths == null || paths.Length == 0 || expected <= 0) return System.Array.Empty<Sprite>();
+
+            var all = new System.Collections.Generic.List<Sprite>(expected);
+            foreach (string path in paths)
+            {
+                if (string.IsNullOrEmpty(path)) return System.Array.Empty<Sprite>();
+                var page = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                                        .OrderBy(SpriteIndex).ToArray();
+                if (page.Length == 0 || page.Any(s => s == null)) return System.Array.Empty<Sprite>();
+                all.AddRange(page);
+            }
+            return all.Count == expected ? all.ToArray() : System.Array.Empty<Sprite>();
         }
 
         static int SpriteIndex(Sprite s)

@@ -523,6 +523,8 @@ namespace HiddenHarbours.App.Editor
             LoadOrCreate<BoatHullDef>(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats);
             // The Cape Islander — likewise a picker rung ONLY (no ShipwrightOffer): see ApplyCapeIslanderStats.
             LoadOrCreate<BoatHullDef>(DataBoats + "/CapeIslander.asset", ApplyCapeIslanderStats);
+            // The lobster boat — likewise a picker rung ONLY (no ShipwrightOffer): see ApplyLobsterBoatStats.
+            LoadOrCreate<BoatHullDef>(DataBoats + "/LobsterBoat.asset", ApplyLobsterBoatStats);
 
             // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
             LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
@@ -611,6 +613,7 @@ namespace HiddenHarbours.App.Editor
             ApplyFleetHull(DataBoats + "/Punt.asset", ApplyPuntStats, "PuntIsoBasic");
             ApplyFleetHull(DataBoats + "/PuntUpgraded.asset", ApplyPuntUpgradedStats, "PuntIsoUpgraded");
             ApplyFleetHull(DataBoats + "/CapeIslander.asset", ApplyCapeIslanderStats, "CapeIslanderIso");
+            ApplyFleetHull(DataBoats + "/LobsterBoat.asset", ApplyLobsterBoatStats, "LobsterBoatIso");
 
             return new DataRefs
             {
@@ -980,6 +983,71 @@ namespace HiddenHarbours.App.Editor
             // sport 0.417, dory 1.0). The sea has to work much harder to move her, which is the whole feel.
             h.SeakeepingMassFactor = 3.2f; h.SeakeepingLiveliness = 0.38f; h.SeakeepingDamping = 0.65f;
             h.CameraWorldHeightMeters = 24f;        // the 14@4.5 → 17@5.2 → 18.5@7 ladder, carried out to 12.9 m
+        }
+
+        /// <summary>
+        /// THE LOBSTER BOAT — the ~12.0 m Tier 3 shellfish specialist, and the first hull whose picture was
+        /// baked in-engine (ADR 0021). A beamy modern Novi/Northumberland-Strait boat: shorter than the Cape
+        /// Islander but heavier and fuller-bodied, with the big open working cockpit the trap loop wants.
+        ///
+        /// <para><b>12.0 m, MEASURED off the drawn hull — and the measurement is not the obvious one.</b>
+        /// Her cell is 456 px = 14.25 m at PPU 32, and the drawn SILHOUETTE spans 402 px = 12.56 m. Neither
+        /// is the number. The rig pins the boat origin at the pivot (228, 258) = amidships, keel bottom,
+        /// centreline, and on the broadside cell the projection puts screen-x on the along-boat axis at full
+        /// scale with no foreshortening — so the halves can be read off directly. They are NOT equal: the
+        /// transom sits 193 px = 6.03 m aft of the origin, while the bow reaches 208 px = 6.50 m forward,
+        /// because her stemhead is carried forward of the forefoot on a 0.50 m rake. The W cell mirrors it
+        /// (192/209 px), so the asymmetry is the boat and not a slicing error.
+        ///
+        /// <para>What consumes this is <c>WakeGrading</c>, which anchors the stern plume at
+        /// <c>LengthMeters·0.5</c> ASTERN — so the half that matters is the AFT one, 6.03 m, giving 12.06 m.
+        /// Authoring the 12.56 m silhouette instead would push her wake 0.28 m past a transom that is not
+        /// there, spending a bow overhang on a stern anchor. 12.0 it is: within a pixel of the measurement,
+        /// and the same 12.0 the rig declares as her LOA. Same trap as the punt (6 m asset against a 5.2 m
+        /// picture) and the Cape Islander (44 px of cell padding), caught the same way.</para></para>
+        ///
+        /// <para><b>Her speed is MEASURED, not derived</b> — see
+        /// <c>PilotableFleetPlayTests.LobsterBoat_MakesSteadyWay_ALittleQuickerThanTheCapeIslander</c>. The
+        /// working model says 7300·0.01 / (320·0.01 + 68·0.2) = 4.35 m/s, and the harness reads a touch under
+        /// that for the reason the Cape Islander's fixture quantifies (it stops 0.025·τ short of true
+        /// terminal, and τ = (MassKg/100)/resistance = 4.05 s here). She is the heaviest hull afloat in this
+        /// project at 6800 kg, and as on the Cape the MASS term dominates: the rigidbody's own linearDamping
+        /// contributes 13.6 of her 16.8 total resistance (81%). A naive EnginePower/ForwardDrag ratio would
+        /// have put her at 22.8 m/s. Never derive a speed on this ladder; run it.</para>
+        ///
+        /// <para>She lands just above the Cape Islander — the owner's brief was "comparable to or slightly
+        /// quicker, with more mass and momentum". Slightly quicker on the clock, noticeably heavier in the
+        /// hand: she takes longer to gather way and longer to lose it.</para>
+        ///
+        /// <para><b>No ShipwrightOffer, on purpose</b> — the upgraded punt's and the Cape Islander's
+        /// precedent, for the same reason (rule 8). She is a rung on the dev picker's F cycle so the owner
+        /// can FEEL her against the others in the same wave, and nothing more: she is not purchasable, has
+        /// no offer, and <c>OwnedFleet</c>'s purchase registry does not know she exists. A purchasable
+        /// 12 m trap boat is the M2 fleet roster and its economy, which nobody has asked for yet.</para>
+        ///
+        /// <para><b>No DeckContainer</b>, following the Cape Islander and the console skiff: the FishTray is
+        /// drawn screen-upright and does not sit in an iso hull at most headings — and at 32 facings it
+        /// would be wrong at 28 of them rather than 6. The owner's standing decision is no code workarounds;
+        /// the 8-direction deck props are coming from his art director.</para>
+        /// </summary>
+        static void ApplyLobsterBoatStats(BoatHullDef h)
+        {
+            h.Id = "boat.lobster_boat"; h.DisplayName = "The Lobster Boat";
+            h.Propulsion = PropulsionType.Engine;   // INBOARD diesel — which is why her kit draws no outboard
+            h.LengthMeters = 12.0f;                 // ART FACT: the drawn hull's AFT half ×2 (see above)
+            h.DraughtMeters = 1.3f;                 // semi-displacement: beamier than the Cape, but shallower
+            h.MassKg = 6800f;                       // the heaviest hull in the project — beamy and full-bodied
+            h.HoldUnits = 70; h.CrewSlots = 3;      // the shellfish specialist: a bigger working cockpit
+            h.EnginePower = 7300f;                  // → measured, see the note above
+            h.RudderAuthority = 5830f;              // ≈ 600·(68/7), the ladder's mass-scaling rule
+            h.ForwardDrag = 320f; h.LateralDrag = 960f;   // Lat/Fwd 3.0 — she tracks like the Cape, no skid
+            h.WindExposure = 0.42f;                 // extended hardtop + radar arch catch a little more than the Cape
+            h.MaxSafeSeaState = SeaState.Gale;      // a proper working boat, same rung as the Cape Islander
+            // Only the RATIO reaches the sim (SeakeepingForcesMath.ResponseFrom): 0.44/3.3 = 0.133, just
+            // above the Cape's 0.119 and well below the console's 0.227. Her rig's own ROCK block calls her
+            // "livelier than the Cape but still weighty" — beam makes a stiffer, snappier roll than length.
+            h.SeakeepingMassFactor = 3.3f; h.SeakeepingLiveliness = 0.44f; h.SeakeepingDamping = 0.65f;
+            h.CameraWorldHeightMeters = 23f;        // the 14@4.5 → 17@5.2 → 18.5@7 → 24@12.9 ladder, at 12.0 m
         }
 
         // The deck-container ladder (owner canon): every small hull the builders generate carries the
