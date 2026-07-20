@@ -1,0 +1,25 @@
+{
+    "name": "HiddenHarbours.Tools.Spike3dBoats.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.Spike3dBoats",
+    "references": [
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Tools.JsEngine.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "ClearScript.Core.dll",
+        "ClearScript.V8.dll",
+        "ClearScript.V8.ICUData.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "HH_3D_BOAT_SPIKE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
