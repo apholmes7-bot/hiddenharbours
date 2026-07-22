@@ -166,10 +166,21 @@ spike-pattern): draws the land layer flat and the displaced sea over it with the
 contract, renders **boundary masks** (water = red, land = green) and measures the rendered
 water/land boundary against the analytic contour per screen column, 12 frames over a dominant
 period, all four shores × three tides. Pass bar: |deviation| ≤ 1 px (sub-pixel rasterization only).
-The **seam-off control** (the naive port) is rendered alongside and must tear visibly — proving the
-measurement is sensitive, and giving the owner the A/B (`ab_beach_*_seamOn_vs_off.png`). The
-open-sea render with the seam enabled is **pixel-identical** (diff count 0) to the un-seamed render
-at the event moment. Numbers: `Evidence~/proof-log.txt`.
+
+**Measured (RTX 4060, D3D12, calibrated depth convention GEqual/clear-0 — trap (1) live again):**
+
+| configuration | max tear | max gap |
+|---|---:|---:|
+| beach / flats / steep north shores × tides −0.6 / 0 / +0.75 | **0 px** | **0 px** |
+| south shore × the same three tides | −1 px | 1 px |
+| **seam-OFF control** (beach, tide 0 — the naive port) | **31 px** | **50 px** |
+
+The control tears by a metre-and-a-half of screen at the crest and bares a similar strip at the
+trough — proving the measurement is sensitive — and gives the owner the visual A/B
+(`ab_beach_crest/trough_seamOn_vs_off.png`). The open-sea render with the seam enabled is
+**pixel-identical to the un-seamed render at the event moment: 0 differing pixels of 518,400**, and
+the event measures h = 1.044 m (99.7 % of envelope) at t = 1513.5 s — the spike's number
+reproduced. Full log: `Evidence~/proof-log.txt`.
 
 ## Two harness traps (spike-measured; binding on all future off-screen tooling)
 
