@@ -226,11 +226,17 @@ namespace HiddenHarbours.Tools.Spike3dWater
             mat.SetVector("_WindDir", new Vector4(windDir.x, windDir.y, 0f, 0f));
             mat.SetFloat("_Roughness", Mathf.Clamp01(wind.magnitude / 12f));
 
-            var rt = NewColorRT(w, h, depthBits: 24);
+            // NO depth attachment: the production water pass declares no ZTest (ShaderLab default
+            // LEqual) and ZWrite Off — against this raw command buffer's calibrated reversed-Z
+            // clear (depth 0) the default LEqual rejects EVERY fragment (run 2 measured: flat
+            // background). In URP's real frame Unity translates the comparison; a hand-built
+            // buffer gets no such translation. Without a depth surface the test is moot — honest
+            // here, because the water quad is the only draw.
+            var rt = NewColorRT(w, h, depthBits: 0);
             var camGo = MakeCamera(view.center, w, h, out Camera cam);
             var cb = new CommandBuffer { name = "SpikeWaterA" };
-            cb.SetRenderTarget(rt.colorBuffer, rt.depthBuffer);
-            cb.ClearRenderTarget(true, true, Background, ClearDepth);
+            cb.SetRenderTarget(rt.colorBuffer);
+            cb.ClearRenderTarget(false, true, Background, 1f);
             cb.SetViewProjectionMatrices(cam.worldToCameraMatrix,
                 GL.GetGPUProjectionMatrix(cam.projectionMatrix, false));
             // Drive _Time so the production shader's scrolled/evolving layers live at the scenario's
