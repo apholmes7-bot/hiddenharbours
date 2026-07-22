@@ -110,6 +110,20 @@ namespace HiddenHarbours.Boats
             _rb.angularDamping = 2.5f;
             // Don't tunnel the thin shore-edge / dock colliders when nudging up to the dock.
             _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            // INTERPOLATE (ADR 0022 phase 5, the second half of the owner's "stuttery" rocking).
+            // Physics steps at the fixed rate; the hull is DRAWN every render frame. Uninterpolated,
+            // this body's transform is a 50 Hz staircase read by a 60 Hz renderer — some frames the
+            // boat does not move, others it moves twice. A baked sprite hull hid that (it snaps to 8
+            // or 32 facings and to 8 rock frames anyway); a mesh hull draws the staircase, because
+            // drawing exactly what the transform says is the whole point of it. Measured on the wave
+            // rider's own harness: the 50 Hz staircase TRIPLES the applied roll's frame-to-frame
+            // acceleration ratio (1.57 → 4.59) even once the phase source is smooth, and on the old
+            // phase it drove reconstruction sign-reversals from 1.7% of frames to 15.5%.
+            // Set here, beside the other physics-policy normalisation, so every ALREADY-BUILT scene
+            // self-heals on load — the owner does not have to re-run a builder to stop the stutter.
+            // Visual-only: interpolation moves the rendered transform, never the simulated body, so
+            // helm feel, colliders, mooring and the deck-walk clamp are untouched.
+            _rb.interpolation = RigidbodyInterpolation2D.Interpolate;
             if (_hull != null) _rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
 
             // Seakeeping policy: prefer the shared GameConfig (no magic numbers, rule 6); the serialized

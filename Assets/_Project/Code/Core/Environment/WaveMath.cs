@@ -435,6 +435,43 @@ namespace HiddenHarbours.Core
             return new WaveSample(height, new Vector2(slopeX, slopeY), crestFactor);
         }
 
+        /// <summary>
+        /// The phase θ (degrees in [0, 360)) of ONE train at a position and time — <b>crest at 90°,
+        /// trough at 270°</b>: the convention <see cref="Sample"/>'s own profile is built on
+        /// (<c>height = A·(2·((sin θ + 1)/2)^p − 1)</c> peaks at θ = 90°), and the one
+        /// <c>DoryRockMath.PhaseDegrees</c> reconstructs toward.
+        ///
+        /// <para><b>Why this exists (ADR 0022 phase 5).</b> Recovering the phase from a SAMPLED
+        /// surface — <c>atan2(height, (slope·d)/k)</c> — is only valid for a single PURE SINE train.
+        /// Fed the real field (up to four superposed trains, crest-sharpened p &gt; 1) it is not a
+        /// phase at all: measured over a 10 s sail it advances 6.4× faster at some moments than
+        /// others and REVERSES direction on 1.7% of frames. A sprite hull hides that behind its
+        /// 8-frame quantiser; a mesh hull poses it continuously, and the owner saw the difference as
+        /// <i>"the rocking was a little stuttery"</i>. Computing the phase FORWARD from the train
+        /// instead is exact, strictly monotone, and free.</para>
+        ///
+        /// <para><b>Cannot drift from <see cref="Sample"/>:</b> this is character-for-character the
+        /// same phase expression (<c>θ = k·(d·pos − c·t) + φ</c>, accumulated in double and wrapped
+        /// before the float drop) — an EditMode test asserts the two agree against
+        /// <see cref="Sample"/>'s own height. Pure, allocation-free and deterministic like everything
+        /// else here (rule 5); a silent (zero-amplitude) train still has a defined phase.</para>
+        /// </summary>
+        /// <param name="train">The train to read — typically <c>trains[0]</c>, the dominant swell.</param>
+        /// <param name="worldPos">World-space position (the same frame <see cref="Sample"/> uses).</param>
+        /// <param name="timeSeconds">Game time. Pass 0 for trains that came from
+        /// <c>WaveFieldAnimator</c>, which bakes accumulated travel into
+        /// <see cref="WaveTrain.PhaseOffset"/> — exactly as its <c>Sample</c> sugar does.</param>
+        public static float TrainPhaseDegrees(in WaveTrain train, Vector2 worldPos, double timeSeconds)
+        {
+            float waveNumber = (2f * Mathf.PI) / train.Wavelength;
+            double travel = (double)train.Direction.x * worldPos.x
+                          + (double)train.Direction.y * worldPos.y
+                          - (double)train.PhaseSpeed * timeSeconds;
+            double phase = waveNumber * travel + train.PhaseOffset;
+            phase -= Math.Floor(phase / TwoPi) * TwoPi;
+            return (float)(phase * (180.0 / Math.PI));
+        }
+
         // ---- deterministic helpers (no RNG anywhere — rule 5) -----------------------------------
 
         /// <summary>Deterministic phase offset in [0, 2π) for a train slot: the WeatherModel-style
