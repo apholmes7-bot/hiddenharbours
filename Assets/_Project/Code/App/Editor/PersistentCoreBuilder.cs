@@ -194,6 +194,11 @@ namespace HiddenHarbours.App.Editor
 
             var rb = doryGo.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0f;
+            // Interpolated, so the DRAWN boat is not a fixed-step staircase sampled by a per-frame
+            // renderer (ADR 0022 phase 5 — the second half of the owner's "stuttery" rocking).
+            // BoatController.Awake sets this too, which is what heals scenes built BEFORE this line;
+            // setting it here means a newly built scene is already right on disk.
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
             var boat = doryGo.AddComponent<BoatController>();
             var hullCol = doryGo.GetComponent<CapsuleCollider2D>() ?? doryGo.AddComponent<CapsuleCollider2D>();
             hullCol.direction = CapsuleDirection2D.Vertical;

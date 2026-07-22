@@ -183,6 +183,22 @@ namespace HiddenHarbours.Core
         /// evaluator on both sides of the HLSL twin.</summary>
         public WaveSample Sample(Vector2 worldPos) => WaveMath.Sample(worldPos, 0.0, in _current);
 
+        /// <summary>
+        /// The DOMINANT train's own phase at a world position (degrees; crest 90°, trough 270°) —
+        /// <see cref="WaveMath.TrainPhaseDegrees"/> against <c>Current[0]</c> at time 0, the same
+        /// "the accumulated travel already rides in PhaseOffset" sugar as <see cref="Sample"/>.
+        ///
+        /// <para><b>The smooth rock channel (ADR 0022 phase 5).</b> This class already guarantees the
+        /// phase moves CONTINUOUSLY however the weather drifts — that is its entire reason to exist —
+        /// so reading it forward yields a rock angle that advances at a dead-constant rate. Deriving
+        /// a phase from the sampled SURFACE instead throws that guarantee away; see
+        /// <see cref="WaveMath.TrainPhaseDegrees"/> for what that cost in measured stutter. Returns 0
+        /// on an empty field (before the first <see cref="Tick"/>, or dead glass) — callers gate calm
+        /// on <see cref="WaveTrains.TotalAmplitude"/>, exactly as they already do.</para>
+        /// </summary>
+        public float DominantPhaseDegrees(Vector2 worldPos) =>
+            _current.Count > 0 ? WaveMath.TrainPhaseDegrees(_current[0], worldPos, 0.0) : 0f;
+
         // ---- shared fps-independent smoothing (used here and by the motion consumers) ------------
 
         /// <summary>Blend factor of an fps-independent exponential ease: <c>1 − e^(−dt/τ)</c>. Two
