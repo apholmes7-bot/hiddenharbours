@@ -23,3 +23,10 @@ MonoBehaviour:
   WindVariability: 5
   WeatherChangeHours: 6
   BaseFogBias: 0.15
+  RodFight:
+    TensionRisePerSec: 0.55
+    TensionFallPerSec: 0.7
+    LandingFillPerSec: 0.35
+    RunTensionPressure: 0.35
+    CounterSteerRelief: 0.45
+    SurfaceThreshold01: 0.5
