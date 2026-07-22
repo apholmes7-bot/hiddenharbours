@@ -1,0 +1,11 @@
+{
+    "name": "HiddenHarbours.Tools.Spike3dWater.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.Spike3dWater",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Art"
+    ],
+    "includePlatforms": ["Editor"],
+    "allowUnsafeCode": false,
+    "autoReferenced": false
+}
