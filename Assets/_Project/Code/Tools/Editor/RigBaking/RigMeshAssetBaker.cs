@@ -81,6 +81,90 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// <b>The hull that motivated the ADR (phase 5): the side dragger.</b> 25 m of riveted steel
+        /// whose sheet set would have been <b>433.1 MiB</b> at 32 facings × 4 rock frames — against
+        /// 143.9 KB of mesh, a ratio of ~3,082×.
+        ///
+        /// <para><b>She is MESH-ONLY, and that changes what this does.</b> The lobster already had a
+        /// <see cref="HiddenHarbours.Boats.BoatVisualDef"/> built from her sheet, so her bake only had
+        /// to WIRE it. The dragger has no sheet and needs none, so there is no other producer: for a
+        /// hull with no baked art, the "visual" IS the mesh plus the two art facts (bake elevation and
+        /// zero heading) that come straight out of this bake. So this creates it.</para>
+        ///
+        /// <para><b>What it deliberately does NOT create:</b> her <c>BoatHullDef</c> — mass, thrust,
+        /// hold, seakeeping. Those are gameplay numbers the owner tunes, and an art baker has no
+        /// business authoring them (they live in their own committed asset, one entity per file,
+        /// rule 2). Re-running this can therefore never stomp a tuning pass.</para>
+        /// </summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", priority = 221)]
+        public static void BakeSideDragger()
+        {
+            var def = Bake("docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso",
+                           $"{HullMeshFolder}/SideDraggerIsoHullMesh.asset",
+                           "hullmesh.side_dragger_iso");
+            EnsureMeshOnlyVisual("Assets/_Project/Data/Boats/Visuals/SideDraggerIso.asset",
+                                 "visual.side_dragger_iso", def);
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", validate = true)]
+        static bool BakeSideDraggerValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the dragger's bake.</summary>
+        public static void BakeSideDraggerCli()
+        {
+            try
+            {
+                BakeSideDragger();
+                Debug.Log("[rig-mesh] CLI bake OK.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>
+        /// Create or refresh the <see cref="HiddenHarbours.Boats.BoatVisualDef"/> for a hull that has
+        /// NO baked sheet — the mesh is the whole picture. Refreshed in place (same guid) so a
+        /// <c>BoatHullDef</c> pointing at it never breaks, and <b>field-scoped</b>: it writes only the
+        /// facts this bake actually knows, so the owner's <c>SortingOrder</c> (or anything else he
+        /// touches in the Inspector) survives a re-bake.
+        ///
+        /// <para><c>Facings</c> is left EMPTY on purpose — that is what makes
+        /// <see cref="HiddenHarbours.Boats.BoatVisualDef.HasFullCompass"/> false, which is the honest
+        /// answer for a hull with no sheet. The consequences are all correct: the V key reports "this
+        /// hull has only one look" instead of offering a sprite half of an A/B that does not exist,
+        /// and sprite-only overlays (oars, outboard) refuse to bind rather than draw wrongly.</para>
+        /// </summary>
+        static void EnsureMeshOnlyVisual(string assetPath, string id, HullMeshDef mesh)
+        {
+            var visual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>(assetPath);
+            bool created = visual == null;
+            if (created)
+            {
+                EnsureFolder(System.IO.Path.GetDirectoryName(assetPath).Replace('\\', '/'));
+                visual = ScriptableObject.CreateInstance<HiddenHarbours.Boats.BoatVisualDef>();
+                visual.Id = id;
+                AssetDatabase.CreateAsset(visual, assetPath);
+            }
+
+            visual.HullMesh = mesh;
+            visual.Variant = HiddenHarbours.Boats.BoatHullVariant.Mesh;
+            // The bake's own art facts, so the anchors and the wake foreshorten against the same
+            // camera the mesh is projected through. Zero heading is 0 for every boat rig (element 0
+            // is the North-facing view) — stated as data rather than assumed at the call site.
+            visual.ArtBakeElevationDegrees = mesh.ElevationDeg;
+            visual.ZeroHeadingDegrees = 0f;
+
+            EditorUtility.SetDirty(visual);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ImportAsset(assetPath);
+            Debug.Log($"[rig-mesh] {(created ? "Created" : "Refreshed")} {assetPath}: {visual.Id} is " +
+                      $"MESH-ONLY (no sheet, no compass) → {mesh.Id}, elevation {mesh.ElevationDeg}°.");
+        }
+
+        /// <summary>
         /// Extract + build + measure + write one rig's hull-mesh asset. Returns the (created or
         /// refreshed) def.
         /// </summary>
