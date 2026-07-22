@@ -34,7 +34,8 @@ areas freely; editing someone else's area needs a heads-up + their review on the
 | `Assets/_Project/Audio/**` | audio | LFS-tracked |
 | `Assets/_Project/Code/**/Editor/`, `Tools.Editor` | tools-editor | authoring aids, validators |
 | `Assets/Tests/**` | qa-test (+ each role adds tests for its code) | EditMode/PlayMode |
-| `docs/**` | the role that owns the system (canon = lead-architect) | update docs in the same PR as the change |
+| `docs/art/rigs/**` | **art-director** | rig JS + gameplay sidecars; the ONE exception to the docs rule below — no other role edits here |
+| `docs/**` (except `art/rigs/`) | the role that owns the system (canon = lead-architect) | update docs in the same PR as the change |
 
 **The two structural guarantees that make parallel work safe:**
 1. **Scene per region** → two world agents on two regions never touch the same `.unity` file.

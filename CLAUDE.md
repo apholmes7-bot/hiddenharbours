@@ -75,6 +75,7 @@ ownership map, branching, and Definition of Done: **`agents/coordination.md`**.
 | `world-content` | regions, scenes, tilemaps, NPCs & routines, quests, dialogue |
 | `economy-sim` | market, business, staff/automation, production, logistics, economy state |
 | `ui-ux` | HUD, menus, market/management UI, mobile input mapping |
+| `art-director` | rig sources (`docs/art/rigs/**`): boat/character rig JS, gameplay sidecars, export contract |
 | `art-pipeline` | sprites, tilesets, animation, palette, import settings, water/lighting |
 | `audio` | music, SFX, ambient, adaptive audio |
 | `qa-test` | test framework, content validation, playtest, acceptance, CI |
