@@ -1,0 +1,45 @@
+{
+  "rig": "doryIsoRig.js",
+  "derivedFromRigSha256": "30796fe431f7ed84ea371042f5ee1ad0a3a68f11075e99c6cdd968cb131e232e",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 4.5,
+    "tier": "T0 Banks dory (player start)"
+  },
+  "DECK": [
+    {
+      "id": "bilge_floor",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [0.14, -2.25, 0.2], [0.185, -1.8, 0.136], [0.213, -1.35, 0.096], [0.225, -0.9, 0.072],
+          [0.223, -0.45, 0.06], [0.215, 0.0, 0.06], [0.2, 0.45, 0.068], [0.168, 0.9, 0.094],
+          [0.123, 1.35, 0.146], [0.068, 1.8, 0.224], [0.004, 2.25, 0.32], [-0.004, 2.25, 0.32],
+          [-0.068, 1.8, 0.224], [-0.123, 1.35, 0.146], [-0.168, 0.9, 0.094], [-0.2, 0.45, 0.068],
+          [-0.215, 0.0, 0.06], [-0.223, -0.45, 0.06], [-0.225, -0.9, 0.072], [-0.213, -1.35, 0.096],
+          [-0.185, -1.8, 0.136], [-0.14, -2.25, 0.2]
+        ],
+      "_derivation": "interior floor, floorPt (doryIsoRig.js:61): x=\u00b1(wb-TH*0.6)*0.94, z=kz+FLOOR, FLOOR=0.06; sampled u=0..1 (keel line rises toward both ends, so the floor is polygon3d)",
+      "_note": "thwarts (bench seats) cross the floor at u=0.34 and u=0.60 (y=-0.72, +0.45), z=kz+SEAT=kz+0.30 (doryIsoRig.js:94-100) \u2014 step-over obstructions, not holes"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "painter",
+      "pos": [0, 2.25, 0.86],
+      "provenance": "doryIsoRig.js offsets table row 8 (stem head): y=station(1).y, z=station(1).kz+station(1).dep \u2014 NOT a modelled fitting",
+      "_confirm": "no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head \u2014 owner to confirm"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 open boat, no side decks (gunwale cap only)",
+    "oarlock thole pins at u=0.31 both gunwales (lines 101-106) \u2014 oar gear, not tie-offs"
+  ]
+}

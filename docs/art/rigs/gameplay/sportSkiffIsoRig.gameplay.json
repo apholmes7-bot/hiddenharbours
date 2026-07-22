@@ -1,0 +1,51 @@
+{
+  "rig": "sportSkiffIsoRig.js",
+  "derivedFromRigSha256": "38e794a587c6411ed84c107ca5636ac37f60508b54b364ecba07a66c1b9fe5f4",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 7.0,
+    "tier": "T2 sport centre-console skiff"
+  },
+  "DECK": [
+    {
+      "id": "cockpit_sole",
+      "winding": "ccw_from_above",
+      "z": 0.28,
+      "polygon": [
+          [0.725, -3.5], [0.823, -2.8], [0.888, -2.1], [0.925, -1.4],
+          [0.935, -0.7], [0.915, 0.0], [0.841, 0.7], [0.666, 1.4],
+          [0.43, 2.1], [-0.43, 2.1], [-0.666, 1.4], [-0.841, 0.7],
+          [-0.915, 0.0], [-0.935, -0.7], [-0.925, -1.4], [-0.888, -2.1],
+          [-0.823, -2.8], [-0.725, -3.5]
+        ],
+      "_derivation": "sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.28 (sportSkiffIsoRig.js:130-136); sampled u=0 (transom) to u=0.80 (foredeck bulkhead, sportSkiffIsoRig.js:134)"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "cleat",
+      "pos": [0, 3.16, 1.049],
+      "provenance": "sportSkiffIsoRig.js:158 \u2014 boxF([0, 3.16, fz(0.94)+0.045], ...); pos = box centre; fz(u)=kz+dep-DROP with DROP=0.07 (sportSkiffIsoRig.js:147) \u2014 VERIFIED, NOT 0.05"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 open skiff, no side decks",
+    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, sportSkiffIsoRig.js:146-157) not ruled walkable; cockpit-only per coordinator ruling"
+  ],
+  "_notes": [
+    "cockpit obstructions (not holes): centre console x\u00b10.34, y -0.25..0.55 (lines 181-197); leaning post at y=-0.86 (198-209); aft bench x\u00b10.70 at y=-3.10 (210-212); T-top legs at x\u00b10.40, y=-0.88/+0.48 (213-220); stern grab rails on the quarters (174-180)",
+    "the local DROP=0.045 at line 222 is the BIMINI canvas skirt depth (canvas detail), NOT the foredeck drop \u2014 the foredeck uses DROP=0.07 (line 147)",
+    "the sport stem rake (rakeAt, lines 64-65) only affects u>0.85 and does not move the cockpit sole"
+  ],
+  "_confirm_items": [
+    "the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling"
+  ]
+}

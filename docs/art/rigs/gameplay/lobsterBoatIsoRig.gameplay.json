@@ -1,0 +1,85 @@
+{
+  "rig": "lobsterBoatIsoRig.js",
+  "derivedFromRigSha256": "fd3ab95c98b1105103d6554ef78b4a6445001d6c9a9b15ace1e395146772e5fc",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 12.0,
+    "tier": "T3 lobster boat 'Knuckles & Claws'"
+  },
+  "DECK": [
+    {
+      "id": "cockpit_sole",
+      "winding": "ccw_from_above",
+      "z": 0.5,
+      "polygon": [
+          [1.494, -6.0], [1.615, -5.064], [1.707, -4.129], [1.747, -3.193],
+          [1.742, -2.257], [1.716, -1.321], [1.651, -0.386], [1.53, 0.55],
+          [-1.53, 0.55], [-1.651, -0.386], [-1.716, -1.321], [-1.742, -2.257],
+          [-1.747, -3.193], [-1.707, -4.129], [-1.615, -5.064], [-1.494, -6.0]
+        ],
+      "_derivation": "half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.50 (lobsterBoatIsoRig.js:33,86,181-194); sampled u=0 (transom, y=-6.0) to u=(HYaft+L/2)/L=0.546 (wheelhouse aft wall, y=0.55, line 148)",
+      "_confirm": "forward extent: sole geometry continues to u=SOLE_U=0.80 beneath/alongside the wheelhouse (line 181), but only a <0.35 m sliver is clear of the tapered house wall (HXat, line 155) \u2014 cockpit DECK is cut at the house aft wall; the walk-around forward is the WASHBOARD strips. Owner to confirm."
+    },
+    {
+      "id": "foredeck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [1.224, 3.85, 2.124], [1.091, 4.277, 2.225], [0.958, 4.702, 2.326], [0.749, 5.121, 2.429],
+          [0.482, 5.532, 2.532], [0.216, 5.932, 2.636], [0.02, 6.318, 2.74], [-0.02, 6.318, 2.74],
+          [-0.216, 5.932, 2.636], [-0.482, 5.532, 2.532], [-0.749, 5.121, 2.429], [-0.958, 4.702, 2.326],
+          [-1.091, 4.277, 2.225], [-1.224, 3.85, 2.124]
+        ],
+      "_derivation": "raised foredeck, u=SOLE_U..FCAP=0.80..0.985: x=\u00b1fw(u)=\u00b1max(0.02,ws-0.30), y=fy(u)=station.y+bowRake(u,1), z=fz(u)=kz+dep-DROP, DROP=0.05 (lobsterBoatIsoRig.js:228-235; bowRake line 80). Owner-ruled BOARDABLE, reached via the washboards to the bow samson post."
+    }
+  ],
+  "WASHBOARD": [
+    {
+      "side": "port",
+      "width_m": 0.44,
+      "outer_edge": [
+          [-1.75, -6.0, 1.17], [-1.958, -4.8, 1.13], [-2.082, -3.6, 1.15], [-2.146, -2.4, 1.214],
+          [-2.166, -1.2, 1.31], [-2.15, 0.0, 1.43], [-2.022, 1.2, 1.606], [-1.81, 2.4, 1.854],
+          [-1.474, 3.6, 2.154]
+        ],
+      "_derivation": "side decks u=0..SOLE_U=0.80 at z=kz+dep-0.02; outer edge x=-(ws-TH), inboard width WB=0.44 m (lobsterBoatIsoRig.js:206-220, WB line 208)",
+      "_note": "alongside the wheelhouse (y>HYaft-0.05=0.50) the inner edge narrows to min(ws-TH-0.10, HXat(y)) \u2014 the strip pinches to ~0.10 m at the house wall before meeting the foredeck (innerX, line 209)"
+    },
+    {
+      "side": "starboard",
+      "mirror": "port across x=0"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "samson_post",
+      "pos": [0, 5.619, 2.645],
+      "provenance": "lobsterBoatIsoRig.js:243-244 \u2014 boxF([0, fy(0.93), fz(0.93)+0.09], [0.035,0.05,0.09]); pos = box centre"
+    },
+    {
+      "id": "stern_port",
+      "type": "cleat",
+      "pos": [-1.58, -5.72, 1.22],
+      "provenance": "lobsterBoatIsoRig.js:247 \u2014 x=\u00b1(station(0).ws-0.22), y=-5.72, z=station(0).kz+station(0).dep+0.03; pos = box centre"
+    },
+    {
+      "id": "stern_star",
+      "type": "cleat",
+      "pos": [1.58, -5.72, 1.22],
+      "provenance": "lobsterBoatIsoRig.js:247 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "hauling block + roller (line 320-322) \u2014 hauling gear, not a tie-off"
+  ],
+  "_notes": [
+    "cockpit obstructions (not modelled as polygon holes): flush deck hatches (line 196-205) are walk-over; hardtop posts land on the washboard caps at y=-1.43 (line 290-293)"
+  ]
+}
