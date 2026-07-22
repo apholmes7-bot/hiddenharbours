@@ -42,6 +42,13 @@ namespace HiddenHarbours.Boats
         /// (its <c>Direction</c> and <c>k = 2π/λ</c>) so the slope's cosine part is recovered on the
         /// swell's own axis. Crest (height max, slope 0) → 90°; trough (height min) → 270°; rising
         /// zero-crossing → 0°; falling → 180°. A flat sample (height and slope both ~0) returns 0.
+        ///
+        /// <para><b>⚠ No longer the production phase source (ADR 0022 phase 5).</b> This inversion is
+        /// exact only for a single pure-sine train; fed the shipped four-train crest-sharpened field
+        /// it reverses and dwells (see <c>BoatWaveMotion.DriveRockFrame</c>'s history note), so both
+        /// hull paths now read the dominant train's phase FORWARD
+        /// (<c>WaveFieldAnimator.DominantPhaseDegrees</c>). Kept as the measured baseline the sabotage
+        /// tests (<c>MeshRockSmoothnessTests</c>, <c>SpriteRockFrameCycleTests</c>) prove broken.</para>
         /// </summary>
         public static float PhaseDegrees(float height, Vector2 slope, Vector2 swellDir, float waveNumber)
         {

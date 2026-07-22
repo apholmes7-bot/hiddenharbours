@@ -13,8 +13,8 @@ namespace HiddenHarbours.Boats
     ///
     /// <para><b>Two output paths.</b> When the wired <see cref="DirectionalBoatSprite"/> carries a
     /// wave-coupled ROCK GRID (the iso dory), the visible rock is <b>drawn by swapping rock frames</b>:
-    /// this component reconstructs the wave phase under the hull (<see cref="DoryRockMath"/>) and picks
-    /// the frame — crest → 2, trough → 6 — so the hand-drawn roll/pitch/heave tracks the swell in
+    /// this component reads the dominant swell's phase forward out of the animator and rounds it to a
+    /// frame (<see cref="DoryRockMath"/>) — crest → 2, trough → 6 — so the hand-drawn roll/pitch/heave tracks the swell in
     /// lockstep (owner: <i>"I want the rock animation to correspond to the waves"</i>). The frames OWN
     /// the rock, so the transform roll/pitch/bob below is <b>not applied</b> (no double-rock) and the
     /// tilt hook is held at 0. With no rock grid the legacy TRANSFORM rock (next paragraph) drives the
@@ -258,13 +258,13 @@ namespace HiddenHarbours.Boats
             }
 
             // THE WAVE-COUPLED SPRITE ROCK (the iso dory): when the wired DirectionalBoatSprite carries a
-            // rock grid, the visible rock is DRAWN by frame — select the frame from the wave phase under
-            // the hull and STOP applying the transform rock below (the frames own the roll/pitch/heave;
-            // applying both would double-rock). This keeps the wave SAMPLING above (the input) and only
-            // changes the OUTPUT from a transform to a frame index.
+            // rock grid, the visible rock is DRAWN by frame — select the frame from the dominant swell's
+            // phase under the hull and STOP applying the transform rock below (the frames own the
+            // roll/pitch/heave; applying both would double-rock). The animator was ticked above; the
+            // hull path reads its phase forward rather than the sampled surface.
             if (DrivingRockFrames)
             {
-                DriveRockFrame(wave);
+                DriveRockFrame();
                 return;
             }
 
@@ -296,32 +296,30 @@ namespace HiddenHarbours.Boats
         /// same wave, same swell, no steps). The transform is left at its base pose — the hull owns
         /// the rock, so no roll/pitch/bob is applied (no double-rock), and the roll hook is held at 0.
         ///
-        /// <para><b>⚠ The two paths take that phase from DIFFERENT PLACES, deliberately (ADR 0022
-        /// phase 5 — the owner's "the rocking was a little stuttery").</b></para>
-        /// <list type="bullet">
-        ///   <item><b>Continuous (mesh):</b> the dominant train's OWN phase, read forward out of the
-        ///   animator (<see cref="WaveFieldAnimator.DominantPhaseDegrees"/>). Strictly monotone and
-        ///   constant-rate by construction, because making the phase continuous is exactly what the
-        ///   animator is for.</item>
-        ///   <item><b>Quantised (sprite):</b> the phase RECONSTRUCTED from the sampled surface
-        ///   (<see cref="DoryRockMath.PhaseDegrees"/>), unchanged.</item>
-        /// </list>
-        /// <para>The reconstruction is an <c>atan2</c> that is only exact for a single PURE SINE
+        /// <para><b>Both paths take that phase from the SAME PLACE: the dominant train's OWN phase,
+        /// read forward out of the animator</b> (<see cref="WaveFieldAnimator.DominantPhaseDegrees"/> —
+        /// strictly monotone and constant-rate by construction, because making the phase continuous
+        /// is exactly what the animator is for). The mesh poses it directly; the sprite rounds it to
+        /// the sheet's frames through <see cref="DoryRockMath.AdvanceFrame"/>, whose quantisation
+        /// (frame count, calibration, hysteresis) is untouched.</para>
+        /// <para><b>History (ADR 0022 phase 5 — the owner's "the rocking was a little stuttery").</b>
+        /// Both paths once RECONSTRUCTED the phase from the sampled surface
+        /// (<see cref="DoryRockMath.PhaseDegrees"/>).
+        /// The reconstruction is an <c>atan2</c> that is only exact for a single PURE SINE
         /// train, and the shipped field is four superposed trains with crest sharpening p = 2.2.
         /// Measured over a 10 s sail it is not monotone at all: it advances 6.4× faster at some
         /// moments than others, reverses on 1.7% of frames, and carries 13.9× the frame-to-frame
         /// ACCELERATION of a clean sinusoid (21.80 vs π/2) — acceleration being what the eye reads as
         /// a pop, the same metric ADR 0022 judged the spike on. An 8-frame quantiser plus 8° of
-        /// hysteresis absorbs almost all of that, which is why a sprite hull never showed it and a
-        /// mesh hull did the moment it posed the number directly. Forward-reading drops the applied
-        /// roll's acceleration ratio to 1.54 — a clean sinusoid measures 1.57.</para>
-        /// <para><b>Why the sprite path was left on the reconstruction:</b> moving it would change
-        /// the shipped dory's rock, which is a feel the owner has already signed off on — an
-        /// owner-visible change, not a defect fix, and so not this PR's to make (rule 8). The numbers
-        /// are in the PR so he can call it. Both paths still ride the same field and the same
-        /// dominant swell, so the ADR's "mesh and sprite rock on the same sea" holds.</para>
+        /// hysteresis absorbs MOST of that — but not all: pushed through the 8-frame rounding the
+        /// reconstruction dwells and even steps the frame BACKWARDS instead of cycling
+        /// (<c>SpriteRockFrameCycleTests</c> measures it — the dory sitting on one or two rock frames
+        /// the owner reported). #243 moved the mesh to the forward read; on the owner's 2026-07-22
+        /// ruling the sprite path followed. Only the phase SOURCE changed — both hulls still ride the
+        /// same field and the same dominant swell, so the ADR's "mesh and sprite rock on the same
+        /// sea" holds.</para>
         /// </summary>
-        private void DriveRockFrame(in WaveSample wave)
+        private void DriveRockFrame()
         {
             var hull = Hull;
 
@@ -349,9 +347,9 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
-            WaveTrain dominant = field[0];
-            float waveNumber = (2f * Mathf.PI) / Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength);
-            float phaseDeg = DoryRockMath.PhaseDegrees(wave.Height, wave.Slope, dominant.Direction, waveNumber);
+            // Quantised: the SAME forward phase as the mesh path (the owner's 2026-07-22 ruling —
+            // see the doc above), rounded to the sheet's frames exactly as before.
+            float phaseDeg = _animator.DominantPhaseDegrees((Vector2)transform.position);
 
             _currentRockFrame = DoryRockMath.AdvanceFrame(
                 _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);

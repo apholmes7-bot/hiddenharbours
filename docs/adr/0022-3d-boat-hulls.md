@@ -165,7 +165,9 @@ Suggested phasing, each independently verifiable:
    (`IHullMeshRenderer` / `HullMeshPresentation.Service`, implemented by Art's `IsoFacetHullRenderer`) —
    `MeshHullPresenter`+`MeshHullDriver` are the second `IBoatHullPresenter`, with CONTINUOUS heading
    (`HullMeshMath.HeadingToDirUnits`) and CONTINUOUS wave rock (the same reconstructed phase that picks a
-   sprite hull's frame, unquantised). The consumers were repointed to the presenter seam as planned. The
+   sprite hull's frame, unquantised — superseded in phase 5: the reconstruction stuttered, #243 moved the
+   mesh to the animator's forward-read dominant phase, and on the owner's 2026-07-22 ruling the sprite
+   quantiser now reads that same forward phase too, its frame rounding unchanged). The consumers were repointed to the presenter seam as planned. The
    lobster's `BoatVisualDef` is the Mesh variant with her 32-facing compass kept wired — the dev A/B
    toggle (V at the helm) flips her between the two representations in place. Acceptance: her in-scene
    mesh render vs her own baked sheet at matching headings, cluster metric, flipped-azimuth sabotage
