@@ -1,0 +1,45 @@
+{
+  "rig": "puntIsoRig.js",
+  "derivedFromRigSha256": "04ff6795ea322b37553d88d0452c3d3c5203efeaadf69c7f3f56241b27c2c895",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 5.2,
+    "tier": "T1 motor punt"
+  },
+  "DECK": [
+    {
+      "id": "bilge_floor",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [0.413, -2.6, 0.14], [0.458, -2.08, 0.092], [0.486, -1.56, 0.068], [0.501, -1.04, 0.06],
+          [0.505, -0.52, 0.06], [0.497, 0.0, 0.06], [0.467, 0.52, 0.068], [0.409, 1.04, 0.094],
+          [0.315, 1.56, 0.138], [0.181, 2.08, 0.204], [0.008, 2.6, 0.3], [-0.008, 2.6, 0.3],
+          [-0.181, 2.08, 0.204], [-0.315, 1.56, 0.138], [-0.409, 1.04, 0.094], [-0.467, 0.52, 0.068],
+          [-0.497, 0.0, 0.06], [-0.505, -0.52, 0.06], [-0.501, -1.04, 0.06], [-0.486, -1.56, 0.068],
+          [-0.458, -2.08, 0.092], [-0.413, -2.6, 0.14]
+        ],
+      "_derivation": "interior floor, floorPt (puntIsoRig.js:71): x=\u00b1(wb-TH*0.6)*0.94, z=kz+FLOOR, FLOOR=0.06; sampled u=0..1 (keel line rises toward both ends, so the floor is polygon3d)",
+      "_note": "thwarts (bench seats) cross the floor at u=0.15, 0.48, 0.74 (stern/mid/fwd benches), z=kz+SEAT=kz+0.30 (puntIsoRig.js:110-117) \u2014 step-over obstructions, not holes"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "painter",
+      "pos": [0, 2.6, 0.8],
+      "provenance": "puntIsoRig.js offsets table row 8 (stem head): y=station(1).y, z=station(1).kz+station(1).dep \u2014 NOT a modelled fitting",
+      "_confirm": "no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head \u2014 owner to confirm"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 open boat, no side decks (gunwale cap only)",
+    "outboard motor pad on the transom top centre (lines 105-109) \u2014 engine mount, not a tie-off"
+  ]
+}

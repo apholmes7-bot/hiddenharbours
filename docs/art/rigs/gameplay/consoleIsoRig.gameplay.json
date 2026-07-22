@@ -1,0 +1,49 @@
+{
+  "rig": "consoleIsoRig.js",
+  "derivedFromRigSha256": "bfcacae5b41fb49f20382221916ce0c7ab4604ed8c2131b76d9a672e7afbcfd7",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 7.0,
+    "tier": "T2 centre-console skiff (workboat)"
+  },
+  "DECK": [
+    {
+      "id": "cockpit_sole",
+      "winding": "ccw_from_above",
+      "z": 0.28,
+      "polygon": [
+          [0.725, -3.5], [0.823, -2.8], [0.888, -2.1], [0.925, -1.4],
+          [0.935, -0.7], [0.915, 0.0], [0.844, 0.7], [0.712, 1.4],
+          [0.511, 2.1], [-0.511, 2.1], [-0.712, 1.4], [-0.844, 0.7],
+          [-0.915, 0.0], [-0.935, -0.7], [-0.925, -1.4], [-0.888, -2.1],
+          [-0.823, -2.8], [-0.725, -3.5]
+        ],
+      "_derivation": "sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.28 (consoleIsoRig.js:137-143); sampled u=0 (transom) to u=0.80 (foredeck bulkhead, consoleIsoRig.js:141)"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "cleat",
+      "pos": [0, 3.1, 0.989],
+      "provenance": "consoleIsoRig.js:164 \u2014 boxF([0, 3.1, fz(0.94)+0.045], ...); pos = box centre; fz(u)=kz+dep-DROP with DROP=0.07 (consoleIsoRig.js:154) \u2014 VERIFIED, NOT 0.05"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 open skiff, no side decks",
+    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, consoleIsoRig.js:153-163) not ruled walkable; cockpit-only per coordinator ruling"
+  ],
+  "_notes": [
+    "cockpit obstructions (not holes): centre console x\u00b10.34, y -0.25..0.55 (lines 165-181); helm seat at y=-0.86 (183-185); aft bench x\u00b10.70 at y=-3.10 (187-188); canopy legs at x\u00b10.44, y=-0.88/+0.50 (190-193)"
+  ],
+  "_confirm_items": [
+    "the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling"
+  ]
+}

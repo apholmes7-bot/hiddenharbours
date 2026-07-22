@@ -1,0 +1,114 @@
+{
+  "rig": "sideDraggerIsoRig.js",
+  "derivedFromRigSha256": "163f0cdf2896413708c2760335136b0f8962fdf3e2ce2be5abff1e2c197617d2",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 25.0,
+    "tier": "T4 side dragger (offshore side trawler)"
+  },
+  "DECK": [
+    {
+      "id": "aft_deck",
+      "winding": "ccw_from_above",
+      "z": 2.05,
+      "polygon": [
+          [1.89, -12.1], [1.993, -11.725], [2.096, -11.35], [2.198, -10.975],
+          [2.3, -10.6], [-2.3, -10.6], [-2.198, -10.975], [-2.096, -11.35],
+          [-1.993, -11.725], [-1.89, -12.1]
+        ],
+      "_derivation": "main deck z=DECK=2.05, half-width dw(u)=(lerp(wb,ws,dfrac)-TH)*0.97 (sideDraggerIsoRig.js:173-179); u=U0=0.016 (y=-12.1) to the deckhouse aft wall HYa=-10.6 (line 143)",
+      "_note": "stern capstan at [0,-12.0] (line 216-217) is a step-around obstruction"
+    },
+    {
+      "id": "house_alley_port",
+      "winding": "ccw_from_above",
+      "z": 2.05,
+      "polygon": [
+          [-2.35, -9.48], [-2.35, -4.6], [-3.137, -4.6], [-3.067, -5.82],
+          [-2.939, -7.04], [-2.777, -8.26], [-2.6, -9.48]
+        ],
+      "_derivation": "strip between the deckhouse wall x=-HXl=-2.35 (line 143) and the deck edge -dw(u); clipped to y -9.48..-4.6 where the strip is >= 0.25 m wide \u2014 aft of that the house wall meets the narrowing hull (dw(u) < HXl+0.25)"
+    },
+    {
+      "id": "house_alley_star",
+      "winding": "ccw_from_above",
+      "z": 2.05,
+      "polygon": [
+          [2.6, -9.48], [2.777, -8.26], [2.939, -7.04], [3.067, -5.82],
+          [3.137, -4.6], [2.35, -4.6], [2.35, -9.48]
+        ],
+      "_derivation": "mirror strip, x +2.35..+dw(u), y -9.48..-4.6"
+    },
+    {
+      "id": "working_deck",
+      "winding": "ccw_from_above",
+      "z": 2.05,
+      "polygon": [
+          [3.137, -4.6], [3.222, -3.088], [3.223, -1.575], [3.224, -0.062],
+          [3.166, 1.45], [3.103, 2.963], [2.902, 4.475], [2.678, 5.988],
+          [2.229, 7.5], [-2.229, 7.5], [-2.678, 5.988], [-2.902, 4.475],
+          [-3.103, 2.963], [-3.166, 1.45], [-3.224, -0.062], [-3.223, -1.575],
+          [-3.222, -3.088], [-3.137, -4.6]
+        ],
+      "_derivation": "open working deck from the house front HYf=-4.6 to the foc'sle break at u=SOLE_U=0.80 (y=7.5), full width dw(u) (lines 173-179)",
+      "_note": "obstructions (not holes): trawl winch x\u00b11.70 at y=-3.6 (line 311-313), fish hatches at y 4.9/1.7/-0.9 (line 181-185), foremast at y=3.3 (line 284-288), net pile + gallows along the starboard bulwark (lines 297-319)"
+    },
+    {
+      "id": "focsle_deck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [2.46, 7.915, 3.292], [2.263, 8.795, 3.46], [2.065, 9.671, 3.627], [1.678, 10.537, 3.826],
+          [1.145, 11.388, 4.048], [0.612, 12.218, 4.27], [0.079, 13.021, 4.492], [-0.079, 13.021, 4.492],
+          [-0.612, 12.218, 4.27], [-1.145, 11.388, 4.048], [-1.678, 10.537, 3.826], [-2.065, 9.671, 3.627],
+          [-2.263, 8.795, 3.46], [-2.46, 7.915, 3.292]
+        ],
+      "_derivation": "raised whaleback foc'sle u=0.80..0.985: x=\u00b1(ws-0.32), y=station.y+bowRake(u,1), z=kz+dep-0.10 (sideDraggerIsoRig.js:186-201; bowRake line 80)"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "samson_post",
+      "pos": [0, 12.161, 4.414],
+      "provenance": "sideDraggerIsoRig.js:206 \u2014 boxF([0, fy(0.952), fz(0.952)+0.16], [0.05,0.06,0.16]); pos = box centre"
+    },
+    {
+      "id": "bow_port",
+      "type": "bollard",
+      "pos": [-0.85, 8.6, 3.885],
+      "provenance": "sideDraggerIsoRig.js:207 \u2014 boxF([\u00b10.85, 8.6, zf+0.10]) with zf=fz(0.884)+0.02 (line 203); pos = box centre"
+    },
+    {
+      "id": "bow_star",
+      "type": "bollard",
+      "pos": [0.85, 8.6, 3.885],
+      "provenance": "sideDraggerIsoRig.js:207 (starboard of the same pair)"
+    },
+    {
+      "id": "quarter_port",
+      "type": "bollard",
+      "pos": [-1.75, -11.8, 2.15],
+      "provenance": "sideDraggerIsoRig.js:218 \u2014 boxF([\u00b11.75, -11.8, DECK+0.10]); pos = box centre"
+    },
+    {
+      "id": "quarter_star",
+      "type": "bollard",
+      "pos": [1.75, -11.8, 2.15],
+      "provenance": "sideDraggerIsoRig.js:218 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 steel bulwarks with a covering-board cap (line 167-170); the deck runs full beam, no walkable washboard strips",
+    "trawl gallows, winch, capstan, otter boards \u2014 working gear, not tie-offs"
+  ],
+  "_confirm_items": [
+    "deck polygons ignore movable working gear (winch/hatches/net/gallows listed per-polygon in _note) \u2014 whether M2-37 deck-walking wants these as authored holes or game-side colliders is not yet ruled"
+  ]
+}

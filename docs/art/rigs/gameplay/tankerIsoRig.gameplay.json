@@ -1,0 +1,174 @@
+{
+  "rig": "tankerIsoRig.js",
+  "derivedFromRigSha256": "f1745a485e288f16bf9684bfe26532eaf3bf73d6038161b9271c12c29e868060",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 16,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 110.0,
+    "tier": "T7 LPG tanker (final hull)"
+  },
+  "DECK": [
+    {
+      "id": "poop_aft",
+      "winding": "ccw_from_above",
+      "z": 11.6,
+      "polygon": [
+          [6.362, -53.68], [6.575, -51.987], [6.788, -50.293], [7.001, -48.6],
+          [-7.001, -48.6], [-6.788, -50.293], [-6.575, -51.987], [-6.362, -53.68]
+        ],
+      "_derivation": "poop deck z=POOP=11.6 (tankerIsoRig.js:38,222), half-width dw(u,POOP)=(lerp(wb,ws,zfrac^flareExp)-TH)*0.975 (line 213); u=0.012 (y=-53.68) to the house aft wall HA=-48.6 (line 171)",
+      "_note": "mooring winches x\u00b11.85..\u00b13.35 at y=-51.6 (lines 473-474) obstruct the centre"
+    },
+    {
+      "id": "poop_alley_port",
+      "winding": "ccw_from_above",
+      "z": 11.6,
+      "polygon": [
+          [-7.8, -36.923], [-7.8, -26.62], [-8.32, -26.62], [-8.269, -29.196],
+          [-8.196, -31.771], [-8.123, -34.347], [-8.05, -36.923]
+        ],
+      "_derivation": "strip between the house wall x=-HX=-7.8 (line 171) and the poop deck edge -dw(u,POOP); clipped to y -36.923..-26.62 where the strip is >= 0.25 m wide \u2014 aft of that the house wall stands wider than the narrowing stern",
+      "_confirm": "aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (aft door + side doors at y -29.3..-28.5). Owner to confirm deck-walking accepts that."
+    },
+    {
+      "id": "poop_alley_star",
+      "winding": "ccw_from_above",
+      "z": 11.6,
+      "polygon": [
+          [8.05, -36.923], [8.123, -34.347], [8.196, -31.771], [8.269, -29.196],
+          [8.32, -26.62], [7.8, -26.62], [7.8, -36.923]
+        ],
+      "_derivation": "mirror strip, x +7.8..+dw(u,POOP), y -36.923..-26.62"
+    },
+    {
+      "id": "aft_working_area",
+      "winding": "ccw_from_above",
+      "z": 8.6,
+      "polygon": [
+          [8.276, -26.62], [8.284, -24.165], [8.293, -21.71], [8.302, -19.255],
+          [8.312, -16.8], [-8.312, -16.8], [-8.302, -19.255], [-8.293, -21.71],
+          [-8.284, -24.165], [-8.276, -26.62]
+        ],
+      "_derivation": "weather deck z=DECK=8.6 (line 221), full width dw(u,DECK), from the poop break/house front (u=0.258, y=-26.62) to the aft tank end y=-16.8 (TANKS line 177)",
+      "_note": "obstructions: transverse manifold + drip tray x\u00b13.3 at y=-20 with overhead pipes z 9.7..10.6 spanning the beam (lines 289-297), hose-crane pedestal [4.8,-22.6] (line 306), vent masts x\u00b12.2 at y=-22.6 (line 302)"
+    },
+    {
+      "id": "tank_lane_port",
+      "winding": "ccw_from_above",
+      "z": 8.6,
+      "polygon": [
+          [-6.3, -16.8], [-6.3, 24.8], [-8.013, 24.8], [-8.178, 19.6],
+          [-8.305, 14.4], [-8.322, 9.2], [-8.324, 4.0], [-8.326, -1.2],
+          [-8.326, -6.4], [-8.326, -11.6], [-8.312, -16.8]
+        ],
+      "_derivation": "side lane between the tank-cover envelope x=-RX=-6.3 (line 176) and the deck edge -dw(u,DECK), y=-16.8..24.8 (both tanks + the midship gap)",
+      "_note": "side pipe runs at x=-5.85/-5.15, z\u22489.1..9.35 (lines 283-288) sit INBOARD of the lane under the tank flank"
+    },
+    {
+      "id": "tank_lane_star",
+      "winding": "ccw_from_above",
+      "z": 8.6,
+      "polygon": [
+          [8.312, -16.8], [8.326, -11.6], [8.326, -6.4], [8.326, -1.2],
+          [8.324, 4.0], [8.322, 9.2], [8.305, 14.4], [8.178, 19.6],
+          [8.013, 24.8], [6.3, 24.8], [6.3, -16.8]
+        ],
+      "_derivation": "mirror lane, x +6.3..+dw(u,DECK)",
+      "_note": "compressor cabin x\u00b13.4, y 2.2..5.8 (line 277) blocks the centre of the midship gap \u2014 the lanes are the through-route"
+    },
+    {
+      "id": "fore_deck",
+      "winding": "ccw_from_above",
+      "z": 8.6,
+      "polygon": [
+          [8.013, 24.8], [7.915, 27.35], [7.432, 29.9], [6.835, 32.45],
+          [-6.835, 32.45], [-7.432, 29.9], [-7.915, 27.35], [-8.013, 24.8]
+        ],
+      "_derivation": "full-width weather deck between the forward tank end y=24.8 and the foc'sle break at u=0.795 (y=32.45)",
+      "_note": "vent masts x\u00b11.5 at y=30.8 (line 300) + catwalk stanchions at y=27.6/29.9 (line 267)"
+    },
+    {
+      "id": "catwalk",
+      "winding": "ccw_from_above",
+      "z": 13.875,
+      "polygon": [
+          [0.78, -21.3], [0.78, 30.3], [-0.78, 30.3], [-0.78, -21.3]
+        ],
+      "_derivation": "elevated centre catwalk over the tank crowns: boxF([0,(Y0+Y1)/2,ZW],[0.78,(Y1-Y0)/2,0.055]) with Y0=-21.3, Y1=30.3, ZW=13.82 (tankerIsoRig.js:264-275); z = slab top = ZW+0.055; handrails at x=\u00b10.72 both sides",
+      "_confirm": "authored walkable \u2014 it is the fore-aft crew route over the tanks, but no ladder/stair geometry is modelled at its ends; owner to confirm deck-walking treats the end stanchions as access points"
+    },
+    {
+      "id": "focsle_deck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [7.692, 33.25, 11.004], [7.414, 36.455, 11.57], [7.136, 39.663, 12.137], [6.852, 42.863, 12.702],
+          [5.373, 46.04, 13.162], [3.894, 49.181, 13.621], [2.415, 52.273, 14.081], [0.936, 55.301, 14.54],
+          [-0.936, 55.301, 14.54], [-2.415, 52.273, 14.081], [-3.894, 49.181, 13.621], [-5.373, 46.04, 13.162],
+          [-6.852, 42.863, 12.702], [-7.136, 39.663, 12.137], [-7.414, 36.455, 11.57], [-7.692, 33.25, 11.004]
+        ],
+      "_derivation": "raised foc'sle u=0.795..0.982: x=\u00b1fw(u)=\u00b1(ws-0.34), y=station.y+bowRake(u,1), z=sheerZ(u)-0.35 (tankerIsoRig.js:223-229; bowRake line 85, note the tanker's 0.25+0.75\u00b7frac rake weighting differs from the 0.30+0.70 of the rest of the fleet)"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "bitt",
+      "pos": [0, 51.2, 13.31],
+      "provenance": "tankerIsoRig.js:458 \u2014 boxF([0, 51.2, zf2+0.16]) with zf2=fz(0.9)+0.02 (line 452); pos = box centre"
+    },
+    {
+      "id": "bow_port",
+      "type": "bollard",
+      "pos": [-1.7, 43.8, 13.29],
+      "provenance": "tankerIsoRig.js:456 \u2014 boxF([\u00b11.7, 43.8, zf2+0.14]); pos = box centre"
+    },
+    {
+      "id": "bow_star",
+      "type": "bollard",
+      "pos": [1.7, 43.8, 13.29],
+      "provenance": "tankerIsoRig.js:456 (starboard of the same pair)"
+    },
+    {
+      "id": "quarter_port",
+      "type": "bollard",
+      "pos": [-4.0, -49.8, 11.73],
+      "provenance": "tankerIsoRig.js:476 \u2014 boxF([\u00b14.0, -49.8, POOP+0.13]); pos = box centre"
+    },
+    {
+      "id": "quarter_star",
+      "type": "bollard",
+      "pos": [4.0, -49.8, 11.73],
+      "provenance": "tankerIsoRig.js:476 (starboard of the same pair)"
+    },
+    {
+      "id": "stern_port",
+      "type": "bollard",
+      "pos": [-6.1, -53.5, 11.74],
+      "provenance": "tankerIsoRig.js:475 \u2014 boxF([\u00b16.1, -53.5, POOP+0.14]); pos = box centre"
+    },
+    {
+      "id": "stern_star",
+      "type": "bollard",
+      "pos": [6.1, -53.5, 11.74],
+      "provenance": "tankerIsoRig.js:475 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 full-beam steel weather deck inside bulwarks, no washboard strips",
+    "windlass drums + mooring winches \u2014 machinery, not tie-offs",
+    "tank-cover crowns + dome hatches \u2014 not crew-walkable (the catwalk is the route over them)"
+  ],
+  "_confirm_items": [
+    "no midship breast bollards are modelled along the tank deck \u2014 a 110 m ship would have them at the manifold; flagging the absence for the owner (art change vs accepted)",
+    "tank_lane inner edge held at the tank envelope x=\u00b1RX=\u00b16.3 \u2014 the true clearance past the tank flank overhang is judged passable at deck level"
+  ],
+  "_notes": [
+    "this rig bakes at 16 px/m (half the fleet standard, tankerIsoRig.js:27) \u2014 frame.scale_px_per_m reflects that; units are still metres"
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "rig": "sternTrawlerIsoRig.js",
+  "derivedFromRigSha256": "3b0dfa023a22b3e071f39a2524cc2344f1d4df342b21fe3075752a8349fc0a37",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 38.0,
+    "tier": "T5 stern trawler"
+  },
+  "DECK": [
+    {
+      "id": "ramp_strip_port",
+      "winding": "ccw_from_above",
+      "z": 3.5,
+      "polygon": [
+          [-1.7, -18.392], [-1.7, -13.6], [-3.754, -13.6], [-3.617, -14.798],
+          [-3.423, -15.996], [-3.227, -17.194], [-3.029, -18.392]
+        ],
+      "_derivation": "deck strip beside the stern-ramp slot: inner wall x=-RW=-1.70, outer -dw(u), u=U0=0.016 to U_RAMP=(RYT+L/2)/L=0.142 (ramp head y=-13.6)"
+    },
+    {
+      "id": "ramp_strip_star",
+      "winding": "ccw_from_above",
+      "z": 3.5,
+      "polygon": [
+          [3.029, -18.392], [3.227, -17.194], [3.423, -15.996], [3.617, -14.798],
+          [3.754, -13.6], [1.7, -13.6], [1.7, -18.392]
+        ],
+      "_derivation": "mirror strip, x +1.70..+dw(u)"
+    },
+    {
+      "id": "trawl_deck",
+      "winding": "ccw_from_above",
+      "z": 3.5,
+      "polygon": [
+          [3.754, -13.6], [3.894, -11.713], [4.033, -9.825], [4.095, -7.938],
+          [4.142, -6.05], [4.174, -4.162], [4.172, -2.275], [4.17, -0.387],
+          [4.128, 1.5], [-4.128, 1.5], [-4.17, -0.387], [-4.172, -2.275],
+          [-4.174, -4.162], [-4.142, -6.05], [-4.095, -7.938], [-4.033, -9.825],
+          [-3.894, -11.713], [-3.754, -13.6]
+        ],
+      "_derivation": "full-width working deck z=DECK=3.5, half-width dw(u), from the ramp head (u=0.142) to the deckhouse aft wall HYa=1.5 (u=0.539)",
+      "_note": "obstructions (not holes): split trawl winches x\u00b10.85..\u00b12.85 at y=0.5, fish hatches at y=-3.2/-6.4, net drum x\u00b12.35 at y=-11.3, gantry legs at y=-14.4 (portal gantry legs at x\u00b13.00, line 258)"
+    },
+    {
+      "id": "house_alley_port",
+      "winding": "ccw_from_above",
+      "z": 3.5,
+      "polygon": [
+          [-3.45, 1.5], [-3.45, 7.714], [-3.7, 7.714], [-3.843, 6.471],
+          [-3.984, 5.229], [-4.058, 3.986], [-4.094, 2.743], [-4.128, 1.5]
+        ],
+      "_derivation": "strip between the deckhouse wall x=-HXl=-3.45 and the deck edge -dw(u); clipped to y 1.5..7.714 where the strip is >= 0.25 m wide \u2014 it pinches closed toward the house front as the hull narrows",
+      "_confirm": "the side alleys pinch shut before the foc'sle break: there is NO deck-level route from the trawl deck to the foc'sle \u2014 crew pass through the house (side door at y 1.95..2.65). Owner to confirm deck-walking accepts that or the rig grows a passage."
+    },
+    {
+      "id": "house_alley_star",
+      "winding": "ccw_from_above",
+      "z": 3.5,
+      "polygon": [
+          [4.128, 1.5], [4.094, 2.743], [4.058, 3.986], [3.984, 5.229],
+          [3.843, 6.471], [3.7, 7.714], [3.45, 7.714], [3.45, 1.5]
+        ],
+      "_derivation": "mirror strip, x +3.45..+dw(u), y 1.5..7.714"
+    },
+    {
+      "id": "focsle_deck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [3.64, 10.066, 5.02], [3.333, 11.711, 5.323], [3.027, 13.364, 5.627], [2.72, 15.008, 5.93],
+          [1.923, 16.626, 6.258], [1.052, 18.204, 6.589], [0.181, 19.724, 6.92], [-0.181, 19.724, 6.92],
+          [-1.052, 18.204, 6.589], [-1.923, 16.626, 6.258], [-2.72, 15.008, 5.93], [-3.027, 13.364, 5.627],
+          [-3.333, 11.711, 5.323], [-3.64, 10.066, 5.02]
+        ],
+      "_derivation": "raised whaleback foc'sle u=SOLE_U..FCAP=0.755..0.985: x=\u00b1(ws-0.32), y=station.y+bowRake(u,1), z=kz+dep-0.10"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "samson_post",
+      "pos": [0, 18.419, 6.815],
+      "provenance": "sternTrawlerIsoRig.js:358 \u2014 boxF([0, fy(0.952), fz(0.952)+0.18]); pos = box centre"
+    },
+    {
+      "id": "bow_port",
+      "type": "bollard",
+      "pos": [-1.1, 12.6, 6.055],
+      "provenance": "sternTrawlerIsoRig.js:359 \u2014 boxF([\u00b11.1, 12.6, zf+0.12]) with zf=fz(0.868)+0.02; pos = box centre"
+    },
+    {
+      "id": "bow_star",
+      "type": "bollard",
+      "pos": [1.1, 12.6, 6.055],
+      "provenance": "sternTrawlerIsoRig.js:359 (starboard of the same pair)"
+    },
+    {
+      "id": "quarter_port",
+      "type": "bollard",
+      "pos": [-2.6, -18.0, 3.61],
+      "provenance": "sternTrawlerIsoRig.js:222 \u2014 boxF([\u00b12.6, -18.0, DECK+0.11]); pos = box centre"
+    },
+    {
+      "id": "quarter_star",
+      "type": "bollard",
+      "pos": [2.6, -18.0, 3.61],
+      "provenance": "sternTrawlerIsoRig.js:222 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 steel bulwarks/rails, full-beam deck, no washboard strips",
+    "STERN RAMP floor (sloped wet steel, y -19.0..-13.6 between x \u00b11.70, z 1.75 rising to 3.48) \u2014 not authored as walkable DECK",
+    "trawl winches, net drum, gantry blocks \u2014 working gear, not tie-offs"
+  ],
+  "_confirm_items": [
+    "ramp floor excluded from DECK \u2014 deckhands do walk it in harbour; owner to rule if it should be walkable",
+    "deck polygons ignore movable working gear (see _note) \u2014 holes vs game-side colliders not yet ruled"
+  ]
+}

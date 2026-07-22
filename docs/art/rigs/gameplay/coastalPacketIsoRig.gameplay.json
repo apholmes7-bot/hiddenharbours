@@ -1,0 +1,139 @@
+{
+  "rig": "coastalPacketIsoRig.js",
+  "derivedFromRigSha256": "723b916ad80574a2edb1390b8b11608a5ec79cd1297355b88d4eeaa6955b3ceb",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 60.0,
+    "tier": "T6 coastal packet (first merchant hull)"
+  },
+  "DECK": [
+    {
+      "id": "aft_deck",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [3.435, -29.28], [3.481, -28.94], [3.528, -28.6], [-3.528, -28.6],
+          [-3.481, -28.94], [-3.435, -29.28]
+        ],
+      "_derivation": "main deck z=DECK=5.0, half-width dw(u)=(lerp(wb,ws,dfrac^flareExp)-TH)*0.97 (coastalPacketIsoRig.js:171-178); u=U0=0.012 (y=-29.28) to the house aft wall H1A=-28.6 (line 137)",
+      "_note": "mooring winch at [0,-29.35] (line 188) obstructs the centre"
+    },
+    {
+      "id": "house_alley_port",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [-4.2, -20.623], [-4.2, -17.8], [-4.598, -17.8], [-4.561, -18.506],
+          [-4.524, -19.211], [-4.487, -19.917], [-4.45, -20.623]
+        ],
+      "_derivation": "strip between the house wall x=-H1X=-4.20 and the deck edge -dw(u); clipped to y -20.623..-17.8 where the strip is >= 0.25 m wide \u2014 aft of that the house wall stands wider than the narrowing stern deck",
+      "_confirm": "aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (side door at y -19.4..-18.7). Owner to confirm deck-walking accepts that."
+    },
+    {
+      "id": "house_alley_star",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [4.45, -20.623], [4.487, -19.917], [4.524, -19.211], [4.561, -18.506],
+          [4.598, -17.8], [4.2, -17.8], [4.2, -20.623]
+        ],
+      "_derivation": "mirror strip, x +4.20..+dw(u), y -20.623..-17.8"
+    },
+    {
+      "id": "midship_gap",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [4.598, -17.8], [4.659, -16.65], [4.719, -15.5], [-4.719, -15.5],
+          [-4.659, -16.65], [-4.598, -17.8]
+        ],
+      "_derivation": "full-width deck between the house front H1F=-17.8 and the hold coaming aft end CY0=-15.5 (line 142)",
+      "_note": "deck-crane pedestal at [1.2,-16.6] (line 324) obstructs starboard of centre"
+    },
+    {
+      "id": "hold_walkway_port",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [-3.55, -15.5], [-3.55, 18.5], [-4.053, 18.5], [-4.715, 14.25],
+          [-4.866, 10.0], [-4.939, 5.75], [-4.941, 1.5], [-4.941, -2.75],
+          [-4.941, -7.0], [-4.843, -11.25], [-4.719, -15.5]
+        ],
+      "_derivation": "walkway between the hold coaming x=-CXW=-3.55 and the deck edge -dw(u), y CY0..CY1 = -15.5..18.5; open white rails along the sheer (lines 201-219)"
+    },
+    {
+      "id": "hold_walkway_star",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [4.719, -15.5], [4.843, -11.25], [4.941, -7.0], [4.941, -2.75],
+          [4.941, 1.5], [4.939, 5.75], [4.866, 10.0], [4.715, 14.25],
+          [4.053, 18.5], [3.55, 18.5], [3.55, -15.5]
+        ],
+      "_derivation": "mirror walkway, x +3.55..+dw(u)"
+    },
+    {
+      "id": "fore_gap",
+      "winding": "ccw_from_above",
+      "z": 5.0,
+      "polygon": [
+          [4.053, 18.5], [3.946, 19.0], [3.834, 19.5], [-3.834, 19.5],
+          [-3.946, 19.0], [-4.053, 18.5]
+        ],
+      "_derivation": "full-width deck between the hold forward end CY1=18.5 and the foc'sle break at u=SOLE_U=0.825 (y=19.5)",
+      "_note": "foremast + mast step at y=19.3 (lines 330-340) obstruct the centre"
+    },
+    {
+      "id": "focsle_deck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [4.2, 20.395, 5.58], [4.029, 22.159, 5.74], [3.774, 23.913, 5.917], [2.925, 25.65, 6.216],
+          [2.076, 27.363, 6.515], [1.227, 29.047, 6.813], [0.378, 30.693, 7.112], [-0.378, 30.693, 7.112],
+          [-1.227, 29.047, 6.813], [-2.076, 27.363, 6.515], [-2.925, 25.65, 6.216], [-3.774, 23.913, 5.917],
+          [-4.029, 22.159, 5.74], [-4.2, 20.395, 5.58]
+        ],
+      "_derivation": "raised whaleback foc'sle u=0.825..0.985: x=\u00b1(ws-0.32), y=station.y+bowRake(u,1), z=kz+dep-0.12 (coastalPacketIsoRig.js:342-356; bowRake line 79)"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_port",
+      "type": "bollard",
+      "pos": [-1.0, 26.8, 6.076],
+      "provenance": "coastalPacketIsoRig.js:361 \u2014 boxF([\u00b11.0, 26.8, zf+0.12]) with zf=fz(0.88)+0.02 (line 358); pos = box centre"
+    },
+    {
+      "id": "bow_star",
+      "type": "bollard",
+      "pos": [1.0, 26.8, 6.076],
+      "provenance": "coastalPacketIsoRig.js:361 (starboard of the same pair)"
+    },
+    {
+      "id": "quarter_port",
+      "type": "bollard",
+      "pos": [-3.0, -29.3, 5.11],
+      "provenance": "coastalPacketIsoRig.js:187 \u2014 boxF([\u00b13.0, -29.3, DECK+0.11]); pos = box centre"
+    },
+    {
+      "id": "quarter_star",
+      "type": "bollard",
+      "pos": [3.0, -29.3, 5.11],
+      "provenance": "coastalPacketIsoRig.js:187 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "WASHBOARD \u2014 merchant hull, full-beam steel deck inside open rails, no washboard strips",
+    "mooring winch (line 188) + anchor windlass (line 359-360) \u2014 machinery, not tie-offs",
+    "cargo-hold hatch covers (mint, z 6.23..6.36) \u2014 not crew-walkable in this data; loading overlays own them"
+  ],
+  "_confirm_items": [
+    "no midship bollards are modelled along the long hold walkways \u2014 a 60 m coaster would have breast lines; flagging the absence for the owner (art change vs accepted)"
+  ]
+}

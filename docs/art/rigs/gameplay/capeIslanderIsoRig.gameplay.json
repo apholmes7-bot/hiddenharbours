@@ -1,0 +1,85 @@
+{
+  "rig": "capeIslanderIsoRig.js",
+  "derivedFromRigSha256": "b4c8006e4274c981904bd9ea3d1f9cc60d29f8d20ab07a573370c5dbb9d1cf61",
+  "generated": "2026-07-22",
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "hull": {
+    "loa_m": 12.8,
+    "tier": "T2 Cape Islander hub workboat"
+  },
+  "DECK": [
+    {
+      "id": "cockpit_sole",
+      "winding": "ccw_from_above",
+      "z": 0.72,
+      "polygon": [
+          [1.186, -6.4], [1.404, -5.216], [1.546, -4.032], [1.626, -2.848],
+          [1.657, -1.664], [1.629, -0.48], [1.543, 0.704], [1.387, 1.888],
+          [1.13, 3.072], [-1.13, 3.072], [-1.387, 1.888], [-1.543, 0.704],
+          [-1.629, -0.48], [-1.657, -1.664], [-1.626, -2.848], [-1.546, -4.032],
+          [-1.404, -5.216], [-1.186, -6.4]
+        ],
+      "_derivation": "wood sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.72 (capeIslanderIsoRig.js:31,77,168-175); sampled u=0 (transom, y=-6.4) to u=SOLE_U=0.74 (foredeck bulkhead, y=3.072)",
+      "_confirm": "forward extent: the sole runs full width to u=0.74, PAST the wheelhouse (HX=1.32, y 0.5..2.9, line 137) \u2014 the walkable route to the whaleback is the ~0.3 m sole strips alongside the house (the modelled washboards stop at the house front). Owner to confirm the strips count as walkable."
+    },
+    {
+      "id": "foredeck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+          [1.574, 3.072, 2.074], [1.428, 3.595, 2.226], [1.259, 4.117, 2.392], [1.091, 4.64, 2.559],
+          [0.814, 5.163, 2.769], [0.49, 5.685, 2.997], [0.165, 6.208, 3.226], [-0.165, 6.208, 3.226],
+          [-0.49, 5.685, 2.997], [-0.814, 5.163, 2.769], [-1.091, 4.64, 2.559], [-1.259, 4.117, 2.392],
+          [-1.428, 3.595, 2.226], [-1.574, 3.072, 2.074]
+        ],
+      "_derivation": "whaleback foredeck, u=SOLE_U..FCAP=0.74..0.985: x=\u00b1fw(u)=\u00b1(ws-TH)*0.92, y=station.y (no bow rake in this rig), z=fz(u)=kz+dep-DROP, DROP=0.05 \u2014 VERIFIED at capeIslanderIsoRig.js:198 (previously a _confirm; now closed). Owner-ruled BOARDABLE."
+    }
+  ],
+  "WASHBOARD": [
+    {
+      "side": "port",
+      "width_m": 0.42,
+      "outer_edge": [
+          [-1.5, -6.4, 1.37], [-1.69, -5.421, 1.358], [-1.846, -4.443, 1.361], [-1.944, -3.464, 1.392],
+          [-2.006, -2.486, 1.436], [-2.05, -1.507, 1.487], [-2.05, -0.529, 1.56], [-2.022, 0.45, 1.656]
+        ],
+      "_derivation": "side decks at z=kz+dep-0.02, outer edge x=-(ws-TH), inboard width WB=0.42 m (capeIslanderIsoRig.js:176-190, WB line 178); strips run u=0 to y=HY0-0.05=0.45 (u=0.535) \u2014 they STOP at the wheelhouse front (line 182)",
+      "_confirm": "the rig's washboards end at the house front, but the boarding ruling expects the foredeck reached 'via the washboards'. Either the rig grows washboards alongside the house (art change) or deck-walking uses the cockpit-sole strips \u2014 owner to rule."
+    },
+    {
+      "side": "starboard",
+      "mirror": "port across x=0"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_1",
+      "type": "bow_bitt",
+      "pos": [0, 5.55, 3.164],
+      "provenance": "capeIslanderIsoRig.js:208 \u2014 boxF([0, 5.55, fz(0.965)+0.05], [0.05,0.13,0.05]); pos = box centre; fz per line 199 (DROP=0.05)"
+    },
+    {
+      "id": "stern_port",
+      "type": "cleat",
+      "pos": [-1.33, -6.05, 1.42],
+      "provenance": "capeIslanderIsoRig.js:213 \u2014 x=\u00b1(station(0).ws-0.22), y=-6.05, z=station(0).kz+station(0).dep+0.03; pos = box centre"
+    },
+    {
+      "id": "stern_star",
+      "type": "cleat",
+      "pos": [1.33, -6.05, 1.42],
+      "provenance": "capeIslanderIsoRig.js:213 (starboard of the same pair)"
+    }
+  ],
+  "_excluded": [
+    "hauling block + roller (line 251-253) \u2014 hauling gear, not a tie-off"
+  ],
+  "_notes": [
+    "cockpit obstructions (not modelled as polygon holes): engine box amidships x\u00b10.62, y -1.97..-0.53, to z 1.15 (line 210-211); exhaust stack at [0.86, 0.34] (line 244)"
+  ]
+}
