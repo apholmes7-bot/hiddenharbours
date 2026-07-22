@@ -65,7 +65,7 @@ namespace HiddenHarbours.Art
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public sealed class IsoFacetHullRenderer : MonoBehaviour
+    public sealed class IsoFacetHullRenderer : MonoBehaviour, HiddenHarbours.Core.IHullMeshRenderer
     {
         [Tooltip("Heading in RIG dir units (1 unit = 45°, CCW, fractional allowed).")]
         [SerializeField] private float _headingDirUnits;
@@ -82,6 +82,7 @@ namespace HiddenHarbours.Art
         private Transform _meshChild;
         private MeshRenderer _meshRenderer;
         private MeshRenderer _overlayRenderer;
+        private SortingGroup _sortingGroup;
         private MaterialPropertyBlock _props;
         private int _hullId;
         private bool _poseDirty = true;
@@ -120,6 +121,26 @@ namespace HiddenHarbours.Art
         /// <summary>The overlay quad's renderer — set sorting layer/order here (it is the only
         /// child that draws in-scene, and the thing that must sort against sprites).</summary>
         public MeshRenderer OverlayRenderer => _overlayRenderer;
+
+        /// <summary>
+        /// Where this hull sorts against sprites (the Core <see cref="HiddenHarbours.Core.IHullMeshRenderer"/>
+        /// seam). Writes BOTH the SortingGroup (which is what actually competes with SpriteRenderers —
+        /// mesh renderers only sort against sprites through the "sort as 2D" group workaround) and the
+        /// overlay renderer itself (its in-group order; also what a group-less configuration would use).
+        /// </summary>
+        public void SetSorting(int sortingLayerId, int sortingOrder)
+        {
+            if (_sortingGroup != null)
+            {
+                _sortingGroup.sortingLayerID = sortingLayerId;
+                _sortingGroup.sortingOrder = sortingOrder;
+            }
+            if (_overlayRenderer != null)
+            {
+                _overlayRenderer.sortingLayerID = sortingLayerId;
+                _overlayRenderer.sortingOrder = sortingOrder;
+            }
+        }
 
         /// <summary>
         /// Build all GPU-side state from an extracted hull. Call once (idempotent: re-configuring
@@ -260,8 +281,9 @@ namespace HiddenHarbours.Art
 
             // Mesh renderers do not sort against sprites on their own (they fall back to world z)
             // — the documented workaround is a SortingGroup ("sort as 2D"), same as the water.
-            if (GetComponent<SortingGroup>() == null)
-                gameObject.AddComponent<SortingGroup>();
+            _sortingGroup = GetComponent<SortingGroup>();
+            if (_sortingGroup == null)
+                _sortingGroup = gameObject.AddComponent<SortingGroup>();
         }
 
         private void OnEnable()

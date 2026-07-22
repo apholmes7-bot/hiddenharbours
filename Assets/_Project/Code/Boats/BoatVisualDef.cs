@@ -46,15 +46,23 @@ namespace HiddenHarbours.Boats
         [Tooltip("Stable id, append-only (CLAUDE.md §5): type.snake_case, e.g. visual.dory_iso.")]
         public string Id = "visual.dory_iso";
 
-        [Tooltip("HOW this hull is rendered (ADR 0022). Sprite = the pre-drawn facing compass below, which " +
-                 "is every hull that exists today. Mesh = a real-time 3D hull extracted from the same rig — " +
-                 "NOT IMPLEMENTED YET; phase 1 defines the seam only, and the skinner still builds the " +
-                 "sprite path whatever this says. Leave it on Sprite.\n\n" +
-                 "DO NOT DELETE THE '= BoatHullVariant.Sprite' INITIALISER. Every asset already committed " +
-                 "predates this field, and the initialiser is what keeps them on Sprite when Unity finds no " +
-                 "Variant key in their YAML. (Sprite is ALSO the enum's zero value, as a second line of " +
-                 "defence — see BoatHullVariant.)")]
+        [Tooltip("HOW this hull is rendered (ADR 0022). Sprite = the pre-drawn facing compass below. " +
+                 "Mesh = a real-time 3D hull extracted from the same rig (phase 4): continuous rotation " +
+                 "and rock, drawn by the facet URP pass — requires HullMesh below to be a usable baked " +
+                 "def, and falls back to the sprite compass (loudly) when it is not, or when the mesh " +
+                 "presentation service is absent (edit-time builders).\n\n" +
+                 "DO NOT DELETE THE '= BoatHullVariant.Sprite' INITIALISER. Every asset committed before " +
+                 "this field existed relies on it to stay on Sprite when Unity finds no Variant key in " +
+                 "their YAML. (Sprite is ALSO the enum's zero value, as a second line of defence — see " +
+                 "BoatHullVariant.)")]
         public BoatHullVariant Variant = BoatHullVariant.Sprite;
+
+        [Tooltip("The baked mesh-hull def (ADR 0022 phase 4) this visual draws when Variant = Mesh: the " +
+                 "rig-extracted mesh, palette ramps, lighting and the measured pose facts, produced by " +
+                 "Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake and committed like every other builder output. " +
+                 "Ignored while Variant = Sprite. A hull may carry BOTH a full sprite compass and a mesh " +
+                 "def — the lobster boat does, which is what makes the dev A/B comparison possible.")]
+        public HiddenHarbours.Core.HullMeshDef HullMesh = null;
 
         [Header("Hull compass (REQUIRED — element 0 = North, then CLOCKWISE)")]
         [Tooltip("The pre-drawn hull facings in CLOCKWISE order from the zero heading: for the 8-way set " +
@@ -195,6 +203,14 @@ namespace HiddenHarbours.Boats
         public bool HasRockGrid() =>
             HasFullCompass() && RockFrameCount > 0 &&
             IsComplete(RockGrid) && RockGrid.Length == HeadingCount * RockFrameCount;
+
+        /// <summary>
+        /// True when this visual carries a USABLE baked mesh-hull def (ADR 0022 phase 4) — the gate
+        /// the skinner's mesh branch sits behind, whatever <see cref="Variant"/> says. All-or-nothing
+        /// like every other block: an incomplete def never half-ships, the sprite compass (or the
+        /// plain hull) stands instead.
+        /// </summary>
+        public bool HasHullMesh() => HullMesh != null && HullMesh.IsUsable();
 
         /// <summary>
         /// True when BOTH oar sheets give their full heading×column set. Both-or-neither: one oar drawn

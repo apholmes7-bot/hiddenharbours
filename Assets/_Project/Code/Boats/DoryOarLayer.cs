@@ -71,8 +71,16 @@ namespace HiddenHarbours.Boats
         [SerializeField] private SpriteRenderer _starRenderer;
         [Tooltip("The boat whose REAL per-oar state (LeftOar = port, RightOar = starboard) drives the strokes. Read only while the controller is enabled — a dropped helm ships the oars. Null = the component idles.")]
         [SerializeField] private BoatController _boat;
-        [Tooltip("The hull's directional sprite: the source of the DRAWN heading (so the oars pick the hull's row) and of the baked rock frame the oars ride. Null = the heading falls back to this transform's bow and no rock coupling.")]
+        [Tooltip("Legacy wiring: the hull's directional sprite. Kept for scene-serialised rigs the skinner " +
+                 "has not reconfigured; at runtime the layer reads the hull through IBoatHullPresenter " +
+                 "(ADR 0022 phase 4) and this is only a fallback to wrap. Null + no presenter = the heading " +
+                 "falls back to this transform's bow and no rock coupling.")]
         [SerializeField] private DirectionalBoatSprite _directionalSprite;
+
+        // The hull as the seam describes it (ADR 0022 phase 4) — the DRAWN heading, the per-artwork
+        // mirror, and the rock frame all come through here. Set by Configure; a scene-serialised layer
+        // lazily wraps its legacy _directionalSprite field instead.
+        private IBoatHullPresenter _presenter;
 
         [Header("Stroke feel (tunable)")]
         [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull (the art README's tempo is ~9).")]
@@ -132,7 +140,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Configure(Sprite[] portFrames, Sprite[] starFrames,
                               SpriteRenderer portRenderer, SpriteRenderer starRenderer,
-                              BoatController boat, DirectionalBoatSprite directionalSprite,
+                              BoatController boat, IBoatHullPresenter hull,
                               int headingCount, int columnsPerHeading)
         {
             _portFrames = portFrames;
@@ -140,11 +148,20 @@ namespace HiddenHarbours.Boats
             _portRenderer = portRenderer;
             _starRenderer = starRenderer;
             _boat = boat;
-            _directionalSprite = directionalSprite;
+            _presenter = hull;
+            // Persist the concrete compass when the presenter wraps one: the builders configure this
+            // at EDIT time and a POCO presenter does not survive scene serialization — without this a
+            // reloaded scene would row with NO ccw mirror (the mirrored-oars class of bug).
+            _directionalSprite = (hull as SpriteHullPresenter)?.Directional;
             _headingCount = Mathf.Max(1, headingCount);
             _columnsPerHeading = Mathf.Max(1, columnsPerHeading);
             _baseCached = false;
         }
+
+        /// <summary>The hull presenter this layer reads — the configured one, or a lazy wrap of the
+        /// legacy serialized <see cref="DirectionalBoatSprite"/> (scene-serialised rigs). May be null.</summary>
+        private IBoatHullPresenter Hull =>
+            _presenter ??= (_directionalSprite != null ? new SpriteHullPresenter(_directionalSprite) : null);
 
         private void OnEnable()
         {
@@ -219,10 +236,11 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private int HeadingRow()
         {
-            float heading = _directionalSprite != null
-                ? _directionalSprite.DrawnHeadingDegrees()
+            var hull = Hull;
+            float heading = hull != null
+                ? hull.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
-            bool ccw = _directionalSprite != null && _directionalSprite.FacingsAreCounterClockwise;
+            bool ccw = hull != null && hull.FacingsAreCounterClockwise;
             return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees, ccw);
         }
 
@@ -244,8 +262,9 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void ApplyRockPose()
         {
-            int rockFrame = _directionalSprite != null && _directionalSprite.HasRockGrid
-                ? _directionalSprite.RockFrame
+            var hull = Hull;
+            int rockFrame = hull != null && hull.HasRockGrid
+                ? hull.RockFrame
                 : DoryOarMath.LevelRockFrame;
 
             DoryOarMath.OarRockPose pose = DoryOarMath.RockPose(

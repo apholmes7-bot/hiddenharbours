@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "HiddenHarbours.Tools.RigBaking.Editor",
         "HiddenHarbours.Tools.JsEngine.Editor",
-        "HiddenHarbours.Art"
+        "HiddenHarbours.Art",
+        "HiddenHarbours.Core"
     ],
     "includePlatforms": [
         "Editor"

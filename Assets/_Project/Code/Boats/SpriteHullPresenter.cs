@@ -40,6 +40,15 @@ namespace HiddenHarbours.Boats
         /// <inheritdoc/>
         public BoatHullVariant Variant => BoatHullVariant.Sprite;
 
+        /// <summary>
+        /// The concrete compass component behind this presenter — exposed for ONE reason: consumers
+        /// with serialized legacy fields (BoatWaveMotion, the overlay layers) are configured at EDIT
+        /// time by the scene builders, and a POCO presenter does not survive serialization. They
+        /// persist this component instead and re-wrap it on reload. Do not use it to bypass the seam
+        /// at runtime.
+        /// </summary>
+        public DirectionalBoatSprite Directional => _directional;
+
         /// <inheritdoc/>
         public float DrawnHeadingDegrees() => _directional != null ? _directional.DrawnHeadingDegrees() : 0f;
 
@@ -67,6 +76,17 @@ namespace HiddenHarbours.Boats
             // −1 (the level pose) is the documented "no rock" value, so it is also the dead presenter's answer.
             get => _directional != null ? _directional.RockFrame : MountedRockPoseMath.LevelRockFrame;
             set { if (_directional != null) _directional.RockFrame = value; }
+        }
+
+        /// <inheritdoc/>
+        // A sprite hull's rock IS the baked frame grid — there is nothing continuous to pose.
+        public bool SupportsContinuousRock => false;
+
+        /// <inheritdoc/>
+        public void SetRockPhaseDegrees(float phaseDegrees)
+        {
+            // Deliberately a no-op, not an exception: the contract says a sprite presenter's rock
+            // arrives as RockFrame, and a caller probing the capability reads SupportsContinuousRock.
         }
 
         /// <inheritdoc/>

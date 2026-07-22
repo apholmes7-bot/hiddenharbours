@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Boats
@@ -78,6 +79,16 @@ namespace HiddenHarbours.Boats
             /// <summary>Skip the oar overlays even when the visual binds them. Default (false) draws them
             /// whenever <see cref="BoatVisualDef.HasOarSheets"/> and a controller are both present.</summary>
             public bool SkipOars;
+
+            /// <summary>
+            /// Force a rendering variant regardless of what <see cref="BoatVisualDef.Variant"/> says —
+            /// the dev A/B toggle's channel (ADR 0022 phase 4: the lobster boat is the one hull with
+            /// BOTH representations, and comparing them live is the point). Null (default) = the
+            /// asset's own variant. Forcing <see cref="BoatHullVariant.Mesh"/> on a hull with no
+            /// usable mesh def falls back to the sprite path exactly like an asset-declared mesh
+            /// would. Never persisted — assets are not mutated at runtime.
+            /// </summary>
+            public BoatHullVariant? VariantOverride;
         }
 
         /// <summary>
@@ -140,8 +151,11 @@ namespace HiddenHarbours.Boats
         {
             if (root == null || hull == null) return default;
 
+            // A hull is skinnable when it has EITHER a full sprite compass OR a presentable mesh
+            // (ADR 0022 phase 4) — the lobster boat has both, which is what the A/B toggle compares.
             var visual = hull.Visual;
-            if (visual == null || !visual.HasFullCompass())
+            bool skinnable = visual != null && (visual.HasFullCompass() || ShouldPresentMesh(visual, options));
+            if (!skinnable)
             {
                 // No skin for this hull → the plain rotating hull picture, exactly as before skins existed.
                 RemoveSkin(root);
@@ -168,20 +182,24 @@ namespace HiddenHarbours.Boats
         public static Rig Apply(GameObject root, BoatVisualDef visual, BoatController boat,
                                 Options options = default)
         {
-            if (root == null || visual == null || !visual.HasFullCompass()) return default;
+            if (root == null || visual == null) return default;
+
+            // THE VARIANT BRANCH (ADR 0022 phase 4). Mesh when the data says so AND the mesh is
+            // actually presentable here (usable def + a registered presentation service); otherwise
+            // the sprite compass, which stays the default for every other hull — and the fallback
+            // for a mesh hull in a context with no mesh path (edit-time scene builders).
+            if (ShouldPresentMesh(visual, options))
+                return ApplyMesh(root, visual, boat, options);
+
+            if (!visual.HasFullCompass()) return default;
 
             // (1) The visual CHILD: screen-aligned, carries the hull picture. Reused if a skin is already
             // worn, so a re-skin swaps the art instead of stacking a second rig.
-            string childName = string.IsNullOrEmpty(options.ChildName) ? VisualChildName : options.ChildName;
-            var child = root.transform.Find(childName);
-            if (child == null)
-            {
-                var go = new GameObject(childName);
-                go.transform.SetParent(root.transform, false);
-                child = go.transform;
-            }
-            child.gameObject.SetActive(true);
-            child.localPosition = Vector3.zero;
+            var child = GetOrMakeVisualChild(root, options);
+
+            // A child coming back from the MESH path (the A/B toggle's other direction) still hosts
+            // the facet renderer + driver; strip them or two hulls draw at once.
+            RemoveMeshPresentation(root, child);
 
             var sr = child.GetComponent<SpriteRenderer>();
             if (sr == null) sr = child.gameObject.AddComponent<SpriteRenderer>();
@@ -213,23 +231,34 @@ namespace HiddenHarbours.Boats
             if (visual.HasRockGrid()) directional.ConfigureRock(visual.RockGrid, visual.RockFrameCount);
             else directional.ConfigureRock(null, 1);
 
-            // (4) The hull rides the shared wave field (ADR 0018 B2) — VISUAL only: roll/pitch/bob go to
-            // the CHILD, and the roll routes through DirectionalBoatSprite.VisualTiltDegrees because that
-            // component stomps the child's world rotation every LateUpdate (a direct write is eaten).
+            // (4) The presenter seam (ADR 0022) — built BEFORE the overlays now that they read
+            // through it (the phase-4 repointing). A description of the rig being built, not a
+            // second rig. The ONLY anchor the runtime has a real value for today is the motor mount
+            // (BoatVisualDef.MotorMountLocalMeters, transcribed from the rig's MOUNT), so it is the
+            // only one defined — an anchor with no authored point must MISS, not silently return the
+            // origin.
+            var anchors = new SpriteHullAnchors(directional, child);
+            if (visual.HasMotor()) anchors.Define(BoatAnchorId.MotorMount, visual.MotorMountLocalMeters);
+            var presenter = new SpriteHullPresenter(directional, anchors);
+            WriteHost(root, presenter);
+
+            // (5) The hull rides the shared wave field (ADR 0018 B2) — VISUAL only: roll/pitch/bob go to
+            // the CHILD, and the roll routes through the presenter's VisualTiltDegrees because the
+            // compass component stomps the child's world rotation every LateUpdate (a direct write is eaten).
             BoatWaveMotion wave = null;
             if (!options.SkipWaveMotion)
             {
                 wave = root.GetComponent<BoatWaveMotion>();
                 if (wave == null) wave = root.AddComponent<BoatWaveMotion>();
-                wave.Configure(child, directional);
+                wave.Configure(child, presenter);
             }
 
-            // (5) The oars: baked per-side overlays, animated from the boat's REAL per-oar state.
+            // (6) The oars: baked per-side overlays, animated from the boat's REAL per-oar state.
             var oars = (!options.SkipOars && boat != null && visual.HasOarSheets())
-                ? WireOars(root, child, sr, visual, boat, directional)
+                ? WireOars(root, child, sr, visual, boat, presenter)
                 : RemoveOars(root, child);
 
-            // (6) The outboard: the skiffs' remote-steer engine, swivelled from the boat's REAL helm. Same
+            // (7) The outboard: the skiffs' remote-steer engine, swivelled from the boat's REAL helm. Same
             // shape as the oars — a complete pair of sheets, or nothing. Note this needs no controller to
             // INSTALL (an unmanned skiff still draws its engine, dead ahead); the layer's own manned-helm
             // gate handles the driving. Mutually exclusive with the oars: their sorting bands overlap, so a
@@ -248,24 +277,155 @@ namespace HiddenHarbours.Boats
             else
             {
                 motor = visual.HasMotor()
-                    ? WireMotor(root, child, sr, visual, boat, directional)
+                    ? WireMotor(root, child, sr, visual, boat, presenter)
                     : RemoveMotor(root, child);
             }
-
-            // (7) The presenter seam (ADR 0022 phase 1) — a description of the rig we just built, not a
-            // second rig. Constructed unconditionally because a sprite hull is a legitimate presenter;
-            // read by nothing yet. The ONLY anchor the runtime has a real value for today is the motor
-            // mount (BoatVisualDef.MotorMountLocalMeters, transcribed from the rig's MOUNT), so it is the
-            // only one defined — an anchor with no authored point must MISS, not silently return the origin.
-            var anchors = new SpriteHullAnchors(directional, child);
-            if (visual.HasMotor()) anchors.Define(BoatAnchorId.MotorMount, visual.MotorMountLocalMeters);
 
             return new Rig
             {
                 Skinned = true, Visual = child, Renderer = sr,
                 Directional = directional, Wave = wave, Oars = oars, Motor = motor,
-                Presenter = new SpriteHullPresenter(directional, anchors),
+                Presenter = presenter,
             };
+        }
+
+        // ---- the mesh path (ADR 0022 phase 4) ----------------------------------------------------
+
+        /// <summary>
+        /// True when <paramref name="visual"/> should be presented as a real-time mesh HERE AND NOW:
+        /// the data asks for it (asset variant, or the dev A/B override), the baked def is usable,
+        /// and a presentation service is registered (Art self-registers at runtime; edit-time
+        /// builders have none, so built scenes always serialise the sprite rig and the mesh is
+        /// chosen live per run).
+        /// </summary>
+        public static bool ShouldPresentMesh(BoatVisualDef visual, Options options = default)
+        {
+            if (visual == null) return false;
+            var variant = options.VariantOverride ?? visual.Variant;
+            if (variant != BoatHullVariant.Mesh) return false;
+            if (!visual.HasHullMesh())
+            {
+                // Asked for a mesh it cannot draw — say so once per apply, then let the sprite stand.
+                Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' wants the MESH variant but its " +
+                                 "HullMesh def is missing or unusable. Falling back to the sprite compass. " +
+                                 "Re-run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake for this rig.");
+                return false;
+            }
+            return HullMeshPresentation.Service != null;
+        }
+
+        /// <summary>
+        /// Install the MESH rig (ADR 0022 phase 4): the same screen-aligned visual child, hosting the
+        /// facet renderer (installed through the Core seam — Boats never sees a URP type) instead of a
+        /// SpriteRenderer, driven by <see cref="MeshHullDriver"/> on the ROOT. Continuous heading,
+        /// continuous wave rock; sorts against sprites whole-object at the visual's own SortingOrder,
+        /// exactly as the baked sprite would. Sprite-only overlays (oars, outboard) cannot ride a mesh
+        /// hull — their sheets are baked per facing cell — so a visual binding them here is refused
+        /// loudly rather than drawn wrongly.
+        /// </summary>
+        private static Rig ApplyMesh(GameObject root, BoatVisualDef visual, BoatController boat,
+                                     Options options)
+        {
+            var child = GetOrMakeVisualChild(root, options);
+
+            // Tear the SPRITE rig off this child/root (the A/B toggle's other direction): the compass
+            // component, the hull picture, and any overlay the previous hull wore.
+            var directional = root.GetComponent<DirectionalBoatSprite>();
+            if (directional != null) DestroyComponent(directional);
+            var srOld = child.GetComponent<SpriteRenderer>();
+            if (srOld != null) DestroyComponent(srOld);
+            RemoveOars(root, child);
+            RemoveMotor(root, child);
+
+            if (visual.HasOarSheets() || visual.HasMotor())
+                Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor sheets but is " +
+                                 "presented as a MESH hull — sprite overlays are baked per facing cell and " +
+                                 "cannot ride a continuously-rotating mesh. They are skipped. (No shipped " +
+                                 "mesh hull binds any; if one ever does, that overlay needs its own mesh.)");
+
+            // The facet renderer, through the Core seam. Install is idempotent (a re-skin reconfigures).
+            var renderer = HullMeshPresentation.Service.Install(child.gameObject, visual.HullMesh);
+            if (renderer == null)
+            {
+                // The service refused (unusable def caught late). Fall back to the sprite path if the
+                // compass exists; otherwise stand down to the plain hull. Never leave an invisible boat.
+                RemoveMeshPresentation(root, child);
+                if (visual.HasFullCompass())
+                {
+                    var fallback = options;
+                    fallback.VariantOverride = BoatHullVariant.Sprite;
+                    return Apply(root, visual, boat, fallback);
+                }
+                return default;
+            }
+            renderer.SetSorting(SortingLayer.NameToID("Default"), visual.SortingOrder);
+
+            // The driver on the ROOT (heading is a fact about the root), posing the renderer each
+            // LateUpdate from the true heading + the wave phase, through the def's measured facts.
+            var driver = root.GetComponent<MeshHullDriver>();
+            if (driver == null) driver = root.AddComponent<MeshHullDriver>();
+            driver.Configure(child, renderer, visual.HullMesh, visual.ZeroHeadingDegrees);
+
+            var meshAnchors = new MeshHullAnchors(driver);
+            if (visual.HasMotor()) meshAnchors.Define(BoatAnchorId.MotorMount, visual.MotorMountLocalMeters);
+            var presenter = new MeshHullPresenter(driver, meshAnchors);
+            WriteHost(root, presenter);
+
+            // The hull rides the SAME shared wave field as every sprite hull — the presenter's
+            // continuous-rock capability just stops the phase being quantised to frames.
+            BoatWaveMotion wave = null;
+            if (!options.SkipWaveMotion)
+            {
+                wave = root.GetComponent<BoatWaveMotion>();
+                if (wave == null) wave = root.AddComponent<BoatWaveMotion>();
+                wave.Configure(child, presenter);
+            }
+
+            return new Rig
+            {
+                Skinned = true, Visual = child,
+                Renderer = null,        // no SpriteRenderer on the mesh path — callers null-check (they did already)
+                Directional = null,     // ...and no compass component: the presenter IS the description
+                Wave = wave, Oars = null, Motor = null,
+                Presenter = presenter,
+            };
+        }
+
+        /// <summary>Strip the mesh presentation off a boat (renderer via the Art service, driver on the
+        /// root). Safe when none is present, and safe with no service registered.</summary>
+        private static void RemoveMeshPresentation(GameObject root, Transform child)
+        {
+            if (child != null) HullMeshPresentation.Service?.Remove(child.gameObject);
+            var driver = root != null ? root.GetComponent<MeshHullDriver>() : null;
+            if (driver != null) DestroyComponent(driver);
+        }
+
+        /// <summary>The screen-aligned visual child both paths share (created or reused — a re-skin is
+        /// a swap, not a pile). Same child, same load-bearing default name (BoatSpotlight finds it BY
+        /// NAME), whichever path dresses it.</summary>
+        private static Transform GetOrMakeVisualChild(GameObject root, Options options)
+        {
+            string childName = string.IsNullOrEmpty(options.ChildName) ? VisualChildName : options.ChildName;
+            var child = root.transform.Find(childName);
+            if (child == null)
+            {
+                var go = new GameObject(childName);
+                go.transform.SetParent(root.transform, false);
+                child = go.transform;
+            }
+            child.gameObject.SetActive(true);
+            child.localPosition = Vector3.zero;
+            return child;
+        }
+
+        /// <summary>Publish the presenter on the root's <see cref="BoatHullPresenterHost"/> so consumers
+        /// that bind by GameObject (deck walk, deck containers, the wake) resolve the seam instead of a
+        /// concrete component.</summary>
+        private static void WriteHost(GameObject root, IBoatHullPresenter presenter)
+        {
+            var host = root.GetComponent<BoatHullPresenterHost>();
+            if (host == null) host = root.AddComponent<BoatHullPresenterHost>();
+            host.Presenter = presenter;
         }
 
         /// <summary>
@@ -279,10 +439,17 @@ namespace HiddenHarbours.Boats
             var directional = root.GetComponent<DirectionalBoatSprite>();
             if (directional != null) DestroyComponent(directional);
 
+            // The mesh path's components (ADR 0022 phase 4): the driver on the root, the facet
+            // renderer on the visual child (removed through the Art service), and the published
+            // presenter. Safe no-ops on a boat that never wore a mesh.
+            RemoveMeshPresentation(root, root.transform.Find(VisualChildName));
+            var host = root.GetComponent<BoatHullPresenterHost>();
+            if (host != null) host.Presenter = null;
+
             // BoatWaveMotion idles harmlessly with a null visual, but re-point it anyway so it can never
             // drive a destroyed transform.
             var wave = root.GetComponent<BoatWaveMotion>();
-            if (wave != null) wave.Configure(null, null);
+            if (wave != null) wave.Configure(null, (IBoatHullPresenter)null);
 
             var oars = root.GetComponent<DoryOarLayer>();
             if (oars != null) DestroyComponent(oars);
@@ -305,7 +472,7 @@ namespace HiddenHarbours.Boats
         // hull's own sorting layer, so the oars always draw ON the hull and never against each other.
         private static DoryOarLayer WireOars(GameObject root, Transform visual, SpriteRenderer hullVisual,
                                              BoatVisualDef def, BoatController boat,
-                                             DirectionalBoatSprite directional)
+                                             IBoatHullPresenter hull)
         {
             var portSr = MakeOarRenderer(visual, PortOarChildName, hullVisual,
                                          def.OarPort[DoryOarMath.RestingColumn], hullVisual.sortingOrder + 1);
@@ -314,7 +481,7 @@ namespace HiddenHarbours.Boats
 
             var layer = root.GetComponent<DoryOarLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarLayer>();
-            layer.Configure(def.OarPort, def.OarStar, portSr, starSr, boat, directional,
+            layer.Configure(def.OarPort, def.OarStar, portSr, starSr, boat, hull,
                             def.HeadingCount, def.OarColumnCount);
             return layer;
         }
@@ -365,7 +532,7 @@ namespace HiddenHarbours.Boats
         // a static order would be a lie that only shows up when the owner turns the boat.
         private static OutboardMotorLayer WireMotor(GameObject root, Transform visual, SpriteRenderer hullVisual,
                                                  BoatVisualDef def, BoatController boat,
-                                                 DirectionalBoatSprite directional)
+                                                 IBoatHullPresenter hull)
         {
             bool twin = def.MotorFit == OutboardMotorLayer.MotorFit.Twin;
             int center = OutboardMotorMath.CenterColumn(def.MotorColumnCount);   // wake dead ahead, never hard-over
@@ -381,7 +548,7 @@ namespace HiddenHarbours.Boats
             var layer = root.GetComponent<OutboardMotorLayer>();
             if (layer == null) layer = root.AddComponent<OutboardMotorLayer>();
             layer.Configure(def.MotorLower, def.MotorUpper, lowerA, upperA, lowerB, upperB,
-                            boat, directional, hullVisual, def.MotorVariant, def.MotorFit,
+                            boat, hull, hullVisual, def.MotorVariant, def.MotorFit,
                             def.HeadingCount, def.MotorColumnCount, def.MotorMaxSteerDegrees);
             layer.ConfigureRock(def.MotorRockRollDegrees, def.MotorRockPitchDegrees,
                                 def.MotorRockHeavePixels, def.RockFrameCount,

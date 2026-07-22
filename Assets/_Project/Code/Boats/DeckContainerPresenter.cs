@@ -49,7 +49,7 @@ namespace HiddenHarbours.Boats
         private const int GreyboxStateCount = 4;
 
         private ShipHold _hold;                       // same-module sibling on the physics root
-        private DirectionalBoatSprite _directional;   // the drawn-facing read (null = smooth hull)
+        private IBoatHullPresenter _hull;             // the drawn-facing read via the seam (null = smooth hull)
         private SpriteRenderer _renderer;             // the tray child (created once, reused)
         private BoatHullDef _lastHull;                // ref-compare guard so a hull swap re-reads the Def
 
@@ -94,9 +94,9 @@ namespace HiddenHarbours.Boats
         private void Awake()
         {
             _hold = GetComponent<ShipHold>();
-            // The drawn-facing read lives on the physics root (driving a child renderer) — resolve like
+            // The drawn-facing read goes through the presenter seam (ADR 0022 phase 4), resolved like
             // the deck-walk clamp does; a boat without one rides its true heading (smooth hull).
-            _directional = GetComponentInChildren<DirectionalBoatSprite>(true);
+            _hull = BoatHullPresenterHost.Resolve(gameObject);
         }
 
         private void OnEnable()
@@ -132,9 +132,13 @@ namespace HiddenHarbours.Boats
             if (_renderer == null || !_renderer.enabled) return;
 
             // Ride the physics root, sit on the PICTURED deck: the deck-frame anchor rotated by the
-            // drawn (snapped) heading, the sprite held screen-upright — the deck-walk convention.
-            float heading = _directional != null
-                ? _directional.DrawnHeadingDegrees()
+            // drawn heading (snapped for a sprite compass, continuous for a mesh hull), the sprite
+            // held screen-upright — the deck-walk convention. Read through the live host so a hull
+            // swapped under us (the dev picker) is never read through a stale presenter.
+            var host = GetComponent<BoatHullPresenterHost>();
+            var presenter = (host != null && host.Presenter != null) ? host.Presenter : _hull;
+            float heading = presenter != null
+                ? presenter.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
             _renderer.transform.position =
                 (Vector2)transform.position + DeckOffsetToWorld(_lastHull.DeckContainerOffset, heading);

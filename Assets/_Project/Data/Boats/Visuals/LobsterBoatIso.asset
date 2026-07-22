@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: LobsterBoatIso
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.lobster_boat_iso
+  Variant: 1
+  HullMesh: {fileID: 11400000, guid: a5bfaec1d9b545f4f9df0d533fc0a8eb, type: 2}
   Facings:
   - {fileID: -7585114392989753056, guid: f0231cd40ac7bc444abb7ebe1e60a762, type: 3}
   - {fileID: 7687643634202391289, guid: f0231cd40ac7bc444abb7ebe1e60a762, type: 3}

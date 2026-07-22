@@ -56,6 +56,12 @@ namespace HiddenHarbours.Boats
                  "T trap-drop, G grant, H haul, Y auto-yaw, Esc close).")]
         [SerializeField] private Key _nextHullKey = Key.F;
 
+        [Tooltip("DEV A/B (ADR 0022 phase 4): flip the CURRENT hull between its real-time MESH and its " +
+                 "baked SPRITE presentation, in place, same water — only works on a hull that carries " +
+                 "both (the lobster boat). V for Variant; free of every other binding (see above; L is " +
+                 "the spotlight). The comparison is the point: same heading, same wave, two render paths.")]
+        [SerializeField] private Key _variantToggleKey = Key.V;
+
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The boat whose hull is swapped. Also the gate: F only works while this is actually driving.")]
         [SerializeField] private BoatController _boat;
@@ -67,8 +73,16 @@ namespace HiddenHarbours.Boats
 
         private int _index;
 
+        // The A/B override for the hull currently worn (null = the asset's own Variant). Reset on every
+        // roster hop, so F always shows a boat as her data says and V is an explicit, per-hull act.
+        private BoatHullVariant? _variantOverride;
+
         /// <summary>The hull currently shown, or null before the first swap / on an empty roster.</summary>
         public BoatHullDef Current => Valid(_index) ? _roster[_index] : null;
+
+        /// <summary>The presentation override currently forced by <see cref="ToggleHullVariant"/> —
+        /// null when the hull is shown as its data says (diagnostics / tests).</summary>
+        public BoatHullVariant? VariantOverride => _variantOverride;
 
         /// <summary>How many hulls the picker will cycle through (nulls included — see <see cref="Next"/>).</summary>
         public int RosterCount => _roster != null ? _roster.Length : 0;
@@ -111,6 +125,37 @@ namespace HiddenHarbours.Boats
             var kb = Keyboard.current;
             if (kb == null || !IsAtHelm) return;
             if (kb[_nextHullKey].wasPressedThisFrame) Next();
+            if (kb[_variantToggleKey].wasPressedThisFrame) ToggleHullVariant();
+        }
+
+        /// <summary>
+        /// Flip the CURRENT hull between mesh and sprite presentation in place (ADR 0022 phase 4's
+        /// owner comparison). Only meaningful on a hull whose visual carries BOTH a full sprite
+        /// compass and a usable mesh def — anything else gets a toast and no change. Public so tests
+        /// can drive the flip without the input loop.
+        /// </summary>
+        public void ToggleHullVariant()
+        {
+            var hull = _boat != null ? _boat.Hull : null;
+            var visual = hull != null ? hull.Visual : null;
+            if (visual == null || !visual.HasFullCompass() || !visual.HasHullMesh())
+            {
+                EventBus.Publish(new DevNotice("This hull has only one look — nothing to A/B."));
+                return;
+            }
+
+            var effective = _variantOverride ?? visual.Variant;
+            _variantOverride = effective == BoatHullVariant.Mesh
+                ? BoatHullVariant.Sprite
+                : BoatHullVariant.Mesh;
+
+            // Picture only: feel, hold and camera are untouched — the whole point is the SAME boat,
+            // same spot, same wave, drawn the other way.
+            BoatHullSkinner.ApplyHull(gameObject, _hullRenderer, hull, _boat,
+                                      new BoatHullSkinner.Options { VariantOverride = _variantOverride });
+            EventBus.Publish(new DevNotice($"Hull presentation → {_variantOverride}"));
+            Debug.Log($"[DevBoatPicker] {hull.Id} presentation → {_variantOverride} " +
+                      $"(asset says {visual.Variant}). Press {_variantToggleKey} to flip back.");
         }
 
         /// <summary>
@@ -142,6 +187,8 @@ namespace HiddenHarbours.Boats
         public void Show(BoatHullDef hull)
         {
             if (hull == null) return;
+
+            _variantOverride = null;   // a roster hop always shows the hull as her DATA says (V re-forces)
 
             if (_boat != null) _boat.SetHull(hull);   // FEEL: mass, thrust, drag, propulsion branch
             if (_hold != null) _hold.SetHull(hull);   // HOLD: capacity follows the boat

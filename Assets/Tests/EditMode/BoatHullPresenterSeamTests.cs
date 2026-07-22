@@ -53,11 +53,16 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, (int)BoatHullVariant.Mesh, "Mesh is wire value 1 — append-only");
         }
 
+        /// <summary>The one hull ALLOWED (and required) to be the mesh variant: the lobster boat,
+        /// ADR 0022 phase 4's end-to-end hull. Everything else must still deserialise to Sprite.</summary>
+        private const string MeshVariantException = "visual.lobster_boat_iso";
+
         [Test]
-        public void Variant_EveryCommittedBoatVisualAssetLoadsAsSprite()
+        public void Variant_CommittedAssets_AreSprite_ExceptTheLobster()
         {
-            // The test with the teeth: not the enum's algebra, but the actual .asset files on disk. None of
-            // them has the field, so all of them must come back Sprite.
+            // The test with the teeth: not the enum's algebra, but the actual .asset files on disk.
+            // Every pre-phase-4 asset has no Variant key and must come back Sprite; the lobster is
+            // phase 4's deliberate flip — and if SHE reads Mesh, she must also be drawable as one.
             var all = AssetDatabase.FindAssets($"t:{nameof(BoatVisualDef)}", new[] { DataBoats })
                                    .Select(AssetDatabase.GUIDToAssetPath)
                                    .Select(AssetDatabase.LoadAssetAtPath<BoatVisualDef>)
@@ -65,10 +70,25 @@ namespace HiddenHarbours.Tests.EditMode
                                    .ToList();
 
             Assert.IsNotEmpty(all, "no BoatVisualDefs found — the search path is wrong, so this test is vacuous");
+            bool sawTheLobster = false;
             foreach (var v in all)
+            {
+                if (v.Id == MeshVariantException)
+                {
+                    sawTheLobster = true;
+                    Assert.AreEqual(BoatHullVariant.Mesh, v.Variant,
+                        "the lobster boat is phase 4's mesh hull — if this reverted, the owner's " +
+                        "'i want them in game' mandate quietly un-shipped");
+                    Assert.IsTrue(v.HasHullMesh(),
+                        "a committed Mesh variant MUST carry a usable HullMesh def, or the skinner " +
+                        "falls back to sprite forever and the variant is a lie");
+                    continue;
+                }
                 Assert.AreEqual(BoatHullVariant.Sprite, v.Variant,
-                    $"'{v.Id}' ({AssetDatabase.GetAssetPath(v)}) must still be a Sprite hull — phase 1 " +
-                    "ships no mesh renderer, so a Mesh here would be an unrenderable boat");
+                    $"'{v.Id}' ({AssetDatabase.GetAssetPath(v)}) must still be a Sprite hull — only the " +
+                    "lobster has a baked mesh def; a Mesh here would fall back with a warning every apply");
+            }
+            Assert.IsTrue(sawTheLobster, "the lobster visual is missing from Data/Boats — vacuous exception");
         }
 
         [Test]
