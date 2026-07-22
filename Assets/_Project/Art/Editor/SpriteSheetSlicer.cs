@@ -133,8 +133,11 @@ namespace HiddenHarbours.Art.Editor
         private static readonly Vector2 LobsterBoatOrigin = new Vector2(228f / 456f, 162f / 420f);
 
         // The art director's README, as data. Cell sizes are verbatim from Art/imported-assets.md.
-        // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced
-        // in an earlier PR; re-slicing here would rewrite its .meta (new sprite GUIDs) and break refs.
+        // NOTE: CatchSparkle (VFX/CatchSparkle.png) is intentionally absent — it already shipped sliced in
+        // an earlier PR under its own grid, and this manifest does not carry that grid. Re-slicing it here
+        // would re-cut the RECTS, which is the thing that genuinely breaks refs (a changed slice set
+        // changes the sprites' internalIDs). Note the older reason recorded here — "new sprite GUIDs" —
+        // was wrong on both counts: refs never resolved by spriteID, and slicing no longer regenerates it.
         private static readonly SheetSpec[] Sheets =
         {
             // ---- Shoreline finds: 2 cols (variant a/b) × 2 rows (wet/dry) → 4 each, centre pivot ----
@@ -428,6 +431,25 @@ namespace HiddenHarbours.Art.Editor
             return sliced;
         }
 
+        /// <summary>Every sheet path in the manifest, in declaration order.</summary>
+        public static IEnumerable<string> ManifestPaths => Sheets.Select(s => s.AssetPath);
+
+        /// <summary>
+        /// Slice ONE manifest sheet by asset path. Same work as <see cref="SliceAll"/> does per sheet —
+        /// this exists so a caller (notably the idempotence test) can exercise the slicer without
+        /// re-importing the 3648×3360 hull sheets. Returns false if the path is not in the manifest, is
+        /// not on disk, or fails its dimension guard.
+        /// </summary>
+        public static bool SliceSheet(string assetPath)
+        {
+            foreach (var spec in Sheets)
+                if (spec.AssetPath == assetPath)
+                    return SliceOne(spec) == SliceResult.Sliced;
+
+            Debug.LogError($"[SpriteSheetSlicer] '{assetPath}' is not in the manifest — nothing to slice.");
+            return false;
+        }
+
         private enum SliceResult { Sliced, Skipped, Failed }
 
         private static SliceResult SliceOne(SheetSpec spec)
@@ -486,7 +508,19 @@ namespace HiddenHarbours.Art.Editor
             ISpriteEditorDataProvider dp = factory.GetSpriteEditorDataProviderFromObject(importer);
             dp.InitSpriteEditorDataProvider();
 
-            SpriteRect[] rects = BuildRects(spec);
+            // ⚠️ Re-use the spriteID any already-sliced name carries. GUID.Generate() on every run made a
+            // re-slice rewrite every spriteID in every .meta — and since RigBakeMenu now slices the WHOLE
+            // manifest at the end of each bake, baking one boat churned ~20 unrelated sheets. Nothing in
+            // this repo references a sprite BY spriteID (refs serialize the texture guid + the sprite's
+            // internalID/fileID, which the nameFileIdTable below holds stable across the name), so the
+            // churn was noise rather than breakage — but it buried real diffs and it is exactly the kind
+            // of noise that hides a genuine slice change. Same fix, same reason, as CharacterSheetSlicer.
+            // Slicing is idempotent now: re-running over unchanged art produces a byte-identical .meta.
+            var existingIds = dp.GetSpriteRects()
+                                .GroupBy(r => r.name)
+                                .ToDictionary(g => g.Key, g => g.First().spriteID);
+
+            SpriteRect[] rects = BuildRects(spec, existingIds);
             dp.SetSpriteRects(rects);
 
             // Keep name→fileID stable across future reimports (mirrors the package's own slicer) so any
@@ -508,8 +542,13 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>
         /// Build the grid of <see cref="SpriteRect"/>s, row-major from the TOP-LEFT cell. Unity's rects are
         /// bottom-origin, so the top row (r=0) maps to the highest Y = (Rows-1)*CellH.
+        ///
+        /// <para><paramref name="existingIds"/> maps an already-sliced slice name to the spriteID it
+        /// already carries; those are re-used so a re-slice of unchanged art is a no-op on the
+        /// <c>.meta</c>. Only genuinely new names get a fresh GUID.</para>
         /// </summary>
-        private static SpriteRect[] BuildRects(SheetSpec spec)
+        private static SpriteRect[] BuildRects(SheetSpec spec,
+                                               IReadOnlyDictionary<string, GUID> existingIds = null)
         {
             var rects = new SpriteRect[spec.Count];
             for (int r = 0; r < spec.Rows; r++)
@@ -519,10 +558,13 @@ namespace HiddenHarbours.Art.Editor
                     int index = r * spec.Cols + c;
                     float x = c * spec.CellW;
                     float y = (spec.Rows - 1 - r) * spec.CellH; // top row → top of the (bottom-origin) sheet
+                    string name = $"{spec.Stem}_{index}";
                     rects[index] = new SpriteRect
                     {
-                        name = $"{spec.Stem}_{index}",
-                        spriteID = GUID.Generate(),
+                        name = name,
+                        spriteID = existingIds != null && existingIds.TryGetValue(name, out var id)
+                                   ? id
+                                   : GUID.Generate(),
                         rect = new Rect(x, y, spec.CellW, spec.CellH),
                         alignment = spec.Alignment,
                         pivot = spec.Pivot,
