@@ -1,0 +1,32 @@
+device: NVIDIA GeForce RTX 4060 (Direct3D12)
+depth convention: ZTest=GEqual clearDepth=0
+palette from Water.mat: deep=RGBA(0.020, 0.080, 0.260, 1.000) mid=RGBA(0.080, 0.260, 0.500, 1.000) shallow=RGBA(0.160, 0.500, 0.720, 1.000) foam=RGBA(0.920, 0.970, 1.000, 1.000) light=(-0.60, 0.80)
+hull def: hullmesh.lobster_boat_iso elev=40 ppm=32 ccw=True
+
+scenario: wind=(-5.40, -9.33) (10.78 m/s) seaState=0.75 -> 4 trains, totalAmp=1.047 m, sharpening=2.2
+  train0: dir=(-0.501,-0.865) lambda=22.17 m amp=0.543 m c=5.88 m/s
+  train1: dir=(0.034,-0.999) lambda=12.19 m amp=0.244 m c=4.36 m/s
+  train2: dir=(-0.975,-0.224) lambda=8.42 m amp=0.163 m c=3.63 m/s
+  train3: dir=(-0.327,-0.945) lambda=4.88 m amp=0.098 m c=2.76 m/s
+shader cache warmed (production water + spike + facet each rendered once)
+
+big wave: t=1513.5 s at (-6.5,2.1) h=1.045 m (100 % of envelope); rms in-view frame max over the window = 0.834 m (the big one is x1.25 the typical tallest)
+
+-- A/B stills at the big-wave moment --
+A production: 2.40 ms  big wave at px (272,204)
+B displaced x1.0: 2.27 ms, 43433 grid verts
+B displaced x1.5: 5.02 ms, 45746 grid verts
+B displaced x2.0: 6.46 ms, 47802 grid verts
+B displaced x3.0: 7.03 ms, 52171 grid verts
+
+-- approach sequence: 40 frames, dt=0.35 s, t=1502.3..1516.0 --
+frames + filmstrips written
+
+-- waterline-on-hull probe (rig-true iso frame, shared z-buffer) --
+probe: 12 frames over one dominant period, avg submit 5.73 ms; fixed variant = waterline climbs the hull; riding variant = hull heaves with the field
+
+-- perf ballpark (960x540, CommandBuffer submit+flush ms, 5 reps each; crude CPU-side timing, see verdict caveats) --
+grid 0.5000 m (16 px): 2795 verts, 5k tris approx, best 1.71 ms, avg 3.43 ms
+grid 0.2500 m (8 px): 10965 verts, 21k tris approx, best 2.75 ms, avg 4.21 ms
+grid 0.1250 m (4 px): 43433 verts, 86k tris approx, best 2.22 ms, avg 3.86 ms
+grid 0.0625 m (2 px): 172881 verts, 345k tris approx, best 2.91 ms, avg 3.10 ms
