@@ -19,8 +19,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>This drives the REAL chain — <see cref="BoatWaveMotion"/> →
     /// <see cref="SpriteHullPresenter"/> → <see cref="DirectionalBoatSprite"/> — against a scripted
     /// clock and sea, records the rock frame the sprite was actually handed on every one of 600
-    /// frames, and asserts the frame index advances monotonically-with-wrap (every change is +1 mod
-    /// frameCount, never backwards, never a skip), visits every frame, completes cycles at the
+    /// frames, and asserts the frame index advances monotonically-with-wrap (every change is one
+    /// frame in one consistent direction, never a reversal, never a skip), visits every frame,
+    /// completes cycles at the
     /// dominant train's own rate, and never dwells longer than the swell period allows. The frame
     /// QUANTISATION itself (count, calibration, hysteresis via
     /// <see cref="DoryRockMath.AdvanceFrame"/>) is deliberately untouched by the fix — only WHICH
@@ -132,21 +133,26 @@ namespace HiddenHarbours.Tests.EditMode
 
         struct Cycling
         {
-            public int ForwardSteps, BadSteps, DistinctFrames, MaxDwellTicks, LevelTicks;
+            public int UnitSteps, Reversals, SkippedSteps, DistinctFrames, MaxDwellTicks, LevelTicks;
             public override string ToString() =>
-                $"forward steps {ForwardSteps}, bad steps {BadSteps}, distinct frames {DistinctFrames}/{FrameCount}, " +
-                $"max dwell {MaxDwellTicks} ticks, level(-1) {LevelTicks} ticks";
+                $"unit steps {UnitSteps}, reversals {Reversals}, skips {SkippedSteps}, " +
+                $"distinct frames {DistinctFrames}/{FrameCount}, max dwell {MaxDwellTicks} ticks, " +
+                $"level(-1) {LevelTicks} ticks";
         }
 
-        /// <summary>Walk the recorded frame series: a healthy rock only ever holds (delta 0) or
-        /// advances one frame with wrap (delta +1 mod count); anything else — a backward step or a
-        /// skip — is a "bad step". Also counts full forward steps (the cycling rate), the distinct
-        /// frames visited, the longest dwell on one frame, and any −1 (level/calm) ticks.</summary>
+        /// <summary>Walk the recorded frame series: a healthy rock only ever HOLDS its frame or steps
+        /// exactly ONE frame with wrap, always in the SAME direction — monotone with wrap. (At a fixed
+        /// point a travelling train's local phase <c>k·x − ωt</c> DECREASES with time, so the index
+        /// runs downward, …2→1→0→7→…; the measurement pins consistency, not a sign convention.)
+        /// A step against the established direction is a REVERSAL — the hull rocking backwards — and a
+        /// delta of more than one frame is a SKIP. Also counts unit steps (the cycling rate), the
+        /// distinct frames visited, the longest dwell on one frame, and any −1 (level/calm) ticks.</summary>
         static Cycling Measure(int[] frames)
         {
             var m = new Cycling { DistinctFrames = 0, MaxDwellTicks = 1 };
             var seen = new bool[FrameCount];
             int dwell = 1;
+            int direction = 0;                        // 0 = not yet established; then +1 or −1
             for (int f = 0; f < frames.Length; f++)
             {
                 if (frames[f] < 0) { m.LevelTicks++; continue; }
@@ -158,13 +164,15 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     dwell++;
                     m.MaxDwellTicks = Mathf.Max(m.MaxDwellTicks, dwell);
+                    continue;
                 }
-                else
-                {
-                    dwell = 1;
-                    if (delta == 1) m.ForwardSteps++;
-                    else m.BadSteps++;
-                }
+
+                dwell = 1;
+                int step = delta == 1 ? 1 : delta == FrameCount - 1 ? -1 : 0;
+                if (step == 0) { m.SkippedSteps++; continue; }
+                if (direction == 0) direction = step;
+                if (step == direction) m.UnitSteps++;
+                else m.Reversals++;
             }
             for (int i = 0; i < FrameCount; i++) if (seen[i]) m.DistinctFrames++;
             return m;
@@ -193,15 +201,17 @@ namespace HiddenHarbours.Tests.EditMode
 
                 Assert.AreEqual(0, m.LevelTicks,
                     $"seaState {SeaState} is well above the calm threshold — the hull must rock, not sit level. ({m})");
-                Assert.AreEqual(0, m.BadSteps,
-                    $"the rock frame stepped BACKWARDS or SKIPPED — a travelling swell's phase is " +
-                    $"monotone, so the frame index must only hold or advance by one (with wrap). ({m})");
+                Assert.AreEqual(0, m.Reversals,
+                    $"the rock frame stepped AGAINST the swell — a travelling swell's phase is " +
+                    $"monotone, so the frame index must only hold or step one frame the same way (with wrap). ({m})");
+                Assert.AreEqual(0, m.SkippedSteps,
+                    $"the rock frame JUMPED more than one frame in a tick — the phase is not sweeping. ({m})");
                 Assert.AreEqual(FrameCount, m.DistinctFrames,
                     $"the rock must visit ALL {FrameCount} frames — dwelling on a subset is exactly " +
                     $"the defect the owner saw. ({m})");
-                Assert.GreaterOrEqual(m.ForwardSteps, expectedSteps - 2,
+                Assert.GreaterOrEqual(m.UnitSteps, expectedSteps - 2,
                     $"the rock cycles SLOWER than the swell — it is dwelling. ({m})");
-                Assert.LessOrEqual(m.ForwardSteps, expectedSteps + 2,
+                Assert.LessOrEqual(m.UnitSteps, expectedSteps + 2,
                     $"the rock cycles FASTER than the swell — the phase is not the dominant train's. ({m})");
                 // Steady-state dwell on one frame is period/frameCount; double it for the hysteresis
                 // lag on either edge of a bucket. The old path dwelt for whole seconds.
@@ -266,9 +276,9 @@ namespace HiddenHarbours.Tests.EditMode
             int maxDwell = Mathf.CeilToInt(period / FrameCount / Dt) * 2;
             Debug.Log($"[sprite-rock][SABOTAGE] the OLD reconstructed phase: {m} (expected ~{expectedSteps} steps, dwell bound {maxDwell})");
 
-            Assert.IsTrue(m.BadSteps > 0
+            Assert.IsTrue(m.Reversals > 0 || m.SkippedSteps > 0
                           || m.DistinctFrames < FrameCount
-                          || m.ForwardSteps < expectedSteps - 2 || m.ForwardSteps > expectedSteps + 2
+                          || m.UnitSteps < expectedSteps - 2 || m.UnitSteps > expectedSteps + 2
                           || m.MaxDwellTicks > maxDwell,
                 "SABOTAGE NOT DETECTED — the old surface-reconstructed phase passed the frame-cycling " +
                 $"bounds. The measurement cannot see the dwell/reversal the owner reported. ({m})");
