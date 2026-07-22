@@ -87,6 +87,68 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0f, renderer.HeavePixels, 1e-3f);
         }
 
+        /// <summary>
+        /// <b>The side dragger sails as a MESH-ONLY hull (ADR 0022 phase 5).</b> The hull that
+        /// motivated the ADR — 25 m, 433.1 MiB of sheets replaced by 143.9 KB of mesh — and the first
+        /// hull in the game with no baked sheet at all. That is what makes this worth a live test:
+        /// the skinner falls back to the sprite path for any hull it cannot present as a mesh, and
+        /// for her that fallback draws <b>nothing</b> (no compass, no fallback sprite). So "she
+        /// appears" and "she appears as a mesh" are the same assertion here — unlike the lobster,
+        /// who would merely have looked older.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SideDragger_SailsAsAMeshOnlyHull()
+        {
+#if !UNITY_EDITOR
+            Assert.Ignore("Needs the AssetDatabase: this asserts the REAL committed dragger.");
+            yield break;
+#else
+            var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
+                "Assets/_Project/Data/Boats/Visuals/SideDraggerIso.asset");
+            Assert.IsNotNull(visual, "missing the committed SideDraggerIso visual def — bake her first");
+            var hull = AssetDatabase.LoadAssetAtPath<BoatHullDef>(
+                "Assets/_Project/Data/Boats/SideDragger.asset");
+            Assert.IsNotNull(hull, "missing the committed SideDragger hull def");
+            Assert.AreSame(visual, hull.Visual, "her hull def must point at her visual def");
+
+            Assert.AreEqual(BoatHullVariant.Mesh, visual.Variant, "she is the Mesh variant in data");
+            Assert.IsTrue(visual.HasHullMesh(), "her committed HullMeshDef must be usable");
+            Assert.IsFalse(visual.HasFullCompass(),
+                "she is MESH-ONLY — a compass here would mean somebody baked her a sheet, which is " +
+                "the 433.1 MiB this ADR exists to avoid");
+
+            _root = new GameObject("SideDragger");
+            var rig = BoatHullSkinner.Apply(_root, visual, boat: null);
+
+            Assert.IsTrue(rig.Skinned,
+                "she must skin — with no sheet there is no sprite fallback, so an unskinned dragger " +
+                "is an INVISIBLE boat, not a degraded one");
+            Assert.AreEqual(BoatHullVariant.Mesh, rig.Presenter.Variant);
+            var renderer = rig.Visual.GetComponent<IsoFacetHullRenderer>();
+            Assert.IsNotNull(renderer, "the facet renderer rides her visual child");
+            Assert.IsTrue(renderer.IsConfigured, "configured from her committed HullMeshDef");
+
+            // Continuous heading at angles no facing grid could ever have drawn — the point of the
+            // whole ADR, on the hull whose sheet set was never affordable in the first place.
+            var def = visual.HullMesh;
+            foreach (float heading in new[] { 0f, 17.3f, 101.25f, 222.2f, 359f })
+            {
+                _root.transform.rotation = Quaternion.Euler(0f, 0f, -heading);
+                yield return null;   // one real LateUpdate
+
+                float expected = HullMeshMath.HeadingToDirUnits(heading, visual.ZeroHeadingDegrees,
+                                                                def.AzimuthCounterClockwise);
+                Assert.AreEqual(expected, renderer.HeadingDirUnits, 1e-3f,
+                    $"continuous heading at {heading}° on the 25 m hull");
+            }
+
+            // Calm sea (no environment service in this scene) ⇒ level, no phantom rock.
+            yield return null;
+            Assert.AreEqual(0f, renderer.RollDegrees, 1e-3f, "glass calm = level");
+            Assert.AreEqual(0f, renderer.HeavePixels, 1e-3f);
+#endif
+        }
+
         [UnityTest]
         public IEnumerator VariantToggle_FlipsHerBetweenMeshAndSprite_InPlace()
         {

@@ -170,7 +170,31 @@ Suggested phasing, each independently verifiable:
    toggle (V at the helm) flips her between the two representations in place. Acceptance: her in-scene
    mesh render vs her own baked sheet at matching headings, cluster metric, flipped-azimuth sabotage
    proven caught.
-5. Side dragger, the hull that motivated this. ← next
+5. Side dragger, the hull that motivated this. ✅ (`feat/side-dragger-mesh`) — and the first hull that is
+   **mesh-only**: no baked sheet, none wanted, so nothing about her is a memory trade-off any more. Baked by
+   the same generic `RigMeshAssetBaker.Bake`, which needed no changes: **792 faces → 1,616 tris / 3,200 verts,
+   12 materials, 143.9 KB**, against the 433.1 MiB of sheets tabled above (~3,082×). Because she has no sheet
+   there is no `BoatVisualDef` for the bake to *wire*, so it CREATES a mesh-only one (`Facings` empty, which
+   is what makes `HasFullCompass()` correctly false: the V-key A/B reports "only one look", and sprite-only
+   overlays refuse to bind). Her azimuth was MEASURED CounterClockwise and her `ROCK` read off her own rig —
+   (2.0°, 1.1°, 1.0 px), a deliberately slower, stiffer roll than the 12 m lobster's (2.8, 1.6, 1.2), and
+   guarded by a test precisely because copying the lobster's def would have looked plausible.
+
+   **Acceptance had to change shape**: with no sheet to compare against, the truth is phase 2's CPU reference
+   rasterizer — the art director's own renderer — instead of a baked cell. Four checks, two of which need no
+   GPU and therefore run on CI: the committed bake still matches a fresh rig extraction (exact, cluster 0);
+   the committed azimuth flag still matches a fresh `RigAzimuthProbe` measurement; the GPU reproduces the
+   oracle across cardinal and fractional headings driven through the production compass→dir mapping (worst
+   cluster 505 cardinal / 254 fractional, worst cell 3.312% — inside the 2.47–4.81% band tabled above); and
+   the flipped-azimuth sabotage is caught by a factor of ~278 (cluster 180,660). Her floors were re-measured,
+   not inherited: they land at roughly DOUBLE the lobster's, because a 25 m hull runs longer straight edges
+   and larger flat panels, so its single-ramp-step dither boundaries run longer.
+
+   ⚠️ Open question 4 is still open: the extractor's shim fired for **all five** of `F, MATS, GAIN, BIAS, LN`
+   on her rig too. `docs/art/rigs/**` was not touched.
+6. The rest of the fleet. The owner's verdict on the lobster A/B (2026-07-22) was **"much better as a mesh —
+   all boats will need to be a mesh"**, and phase 5 is the proof the path scales to a second hull without the
+   baker, the shader or the seam changing. ← next
 
 ## Alternatives considered
 

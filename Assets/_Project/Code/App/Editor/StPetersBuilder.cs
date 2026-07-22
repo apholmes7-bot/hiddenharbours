@@ -308,6 +308,19 @@ namespace HiddenHarbours.App.Editor
             // She is also the smoothest TURNER on the roster at 32 facings against everyone else's 8, which
             // is worth feeling immediately after the Cape rather than several rungs away from her.
             // Picker rung only, on the Cape Islander's and the upgraded punt's precedent (rule 8).
+            //
+            // THE SIDE DRAGGER NOW TAILS THE CYCLE — position 10, the last press of F before it wraps
+            // back to the dory (ADR 0022 phase 5). She takes the tail on exactly the SIZE-step logic
+            // the Cape and the lobster were placed on, and she is not a marginal step: 25 m and
+            // 90 tonnes against the lobster's 12 m and 6.8, the first offshore hull in the game. She
+            // is also the second REAL-TIME MESH hull and the one that motivated ADR 0022 at all —
+            // her sheet set would have been 433.1 MiB; her mesh is 143.9 KB. Feeling her immediately
+            // after the lobster is the comparison worth having, since the lobster is the only other
+            // hull drawn the same way.
+            //
+            // ⚠️ She is MESH-ONLY: no sheet, so no sprite half and no V-key A/B (the toggle correctly
+            // reports "this hull has only one look"). She also has no fallback Sprite — if the mesh
+            // path is ever unavailable at runtime she draws nothing rather than draws wrongly.
             var pickerRoster = new[]
             {
                 dory,
@@ -319,10 +332,11 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CapeIslander.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/LobsterBoat.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SideDragger.asset"),
             }.Where(h => h != null).ToArray();
 
-            if (pickerRoster.Length < 9)
-                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/9 hulls — " +
+            if (pickerRoster.Length < 10)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/10 hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");

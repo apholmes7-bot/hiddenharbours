@@ -53,16 +53,25 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, (int)BoatHullVariant.Mesh, "Mesh is wire value 1 — append-only");
         }
 
-        /// <summary>The one hull ALLOWED (and required) to be the mesh variant: the lobster boat,
-        /// ADR 0022 phase 4's end-to-end hull. Everything else must still deserialise to Sprite.</summary>
-        private const string MeshVariantException = "visual.lobster_boat_iso";
+        /// <summary>
+        /// The hulls ALLOWED (and required) to be the mesh variant — the ADR 0022 rollout, in order:
+        /// the lobster boat (phase 4's end-to-end hull) and the side dragger (phase 5, the 25 m hull
+        /// that motivated the ADR). <b>This list is the gate, and it is meant to be edited slowly:</b>
+        /// every hull added here must arrive with a committed, usable <c>HullMeshDef</c> and its own
+        /// measured acceptance. Everything else must still deserialise to Sprite.
+        /// </summary>
+        private static readonly string[] MeshVariantHulls =
+        {
+            "visual.lobster_boat_iso",
+            "visual.side_dragger_iso",
+        };
 
         [Test]
-        public void Variant_CommittedAssets_AreSprite_ExceptTheLobster()
+        public void Variant_CommittedAssets_AreSprite_ExceptTheMeshRollout()
         {
             // The test with the teeth: not the enum's algebra, but the actual .asset files on disk.
-            // Every pre-phase-4 asset has no Variant key and must come back Sprite; the lobster is
-            // phase 4's deliberate flip — and if SHE reads Mesh, she must also be drawable as one.
+            // Every pre-phase-4 asset has no Variant key and must come back Sprite; the rollout hulls
+            // are the deliberate flips — and if one reads Mesh, it must also be drawable as one.
             var all = AssetDatabase.FindAssets($"t:{nameof(BoatVisualDef)}", new[] { DataBoats })
                                    .Select(AssetDatabase.GUIDToAssetPath)
                                    .Select(AssetDatabase.LoadAssetAtPath<BoatVisualDef>)
@@ -70,25 +79,30 @@ namespace HiddenHarbours.Tests.EditMode
                                    .ToList();
 
             Assert.IsNotEmpty(all, "no BoatVisualDefs found — the search path is wrong, so this test is vacuous");
-            bool sawTheLobster = false;
+            var seen = new System.Collections.Generic.HashSet<string>();
             foreach (var v in all)
             {
-                if (v.Id == MeshVariantException)
+                if (System.Array.IndexOf(MeshVariantHulls, v.Id) >= 0)
                 {
-                    sawTheLobster = true;
+                    seen.Add(v.Id);
                     Assert.AreEqual(BoatHullVariant.Mesh, v.Variant,
-                        "the lobster boat is phase 4's mesh hull — if this reverted, the owner's " +
-                        "'i want them in game' mandate quietly un-shipped");
+                        $"'{v.Id}' is one of ADR 0022's mesh hulls — if this reverted, the owner's " +
+                        "'all boats will need to be a mesh' mandate quietly un-shipped");
                     Assert.IsTrue(v.HasHullMesh(),
-                        "a committed Mesh variant MUST carry a usable HullMesh def, or the skinner " +
-                        "falls back to sprite forever and the variant is a lie");
+                        $"'{v.Id}' is a committed Mesh variant and MUST carry a usable HullMesh def, " +
+                        "or the skinner falls back to sprite forever and the variant is a lie");
                     continue;
                 }
                 Assert.AreEqual(BoatHullVariant.Sprite, v.Variant,
                     $"'{v.Id}' ({AssetDatabase.GetAssetPath(v)}) must still be a Sprite hull — only the " +
-                    "lobster has a baked mesh def; a Mesh here would fall back with a warning every apply");
+                    "hulls on the mesh rollout list have a baked mesh def; a Mesh here would fall back " +
+                    "with a warning every apply. If this hull HAS been baked, add her id to " +
+                    $"{nameof(MeshVariantHulls)} deliberately, with her acceptance.");
             }
-            Assert.IsTrue(sawTheLobster, "the lobster visual is missing from Data/Boats — vacuous exception");
+
+            CollectionAssert.AreEquivalent(MeshVariantHulls, seen,
+                "a hull on the mesh rollout list is missing from Data/Boats — its exception above is " +
+                "vacuous, and something that was shipped as a mesh has gone.");
         }
 
         [Test]
