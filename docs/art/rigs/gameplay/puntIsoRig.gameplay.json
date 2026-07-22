@@ -35,7 +35,7 @@
       "type": "painter",
       "pos": [0, 2.6, 0.8],
       "provenance": "puntIsoRig.js offsets table row 8 (stem head): y=station(1).y, z=station(1).kz+station(1).dep \u2014 NOT a modelled fitting",
-      "_confirm": "no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head \u2014 owner to confirm"
+      "_ruled": "was _confirm: no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head. RULED: ACCEPTED AS AUTHORED (owner, 2026-07-22) \u2014 the data-only painter point stands, NO visible ring/fitting is added to the art ('option 1 is fine for now'); a visible fitting may be revisited later."
     }
   ],
   "_excluded": [

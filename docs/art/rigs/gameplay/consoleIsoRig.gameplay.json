@@ -38,12 +38,12 @@
   ],
   "_excluded": [
     "WASHBOARD \u2014 open skiff, no side decks",
-    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, consoleIsoRig.js:153-163) not ruled walkable; cockpit-only per coordinator ruling"
+    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, consoleIsoRig.js:153-163) stays excluded; cockpit-only, owner-ruled 2026-07-22"
   ],
   "_notes": [
     "cockpit obstructions (not holes): centre console x\u00b10.34, y -0.25..0.55 (lines 165-181); helm seat at y=-0.86 (183-185); aft bench x\u00b10.70 at y=-3.10 (187-188); canopy legs at x\u00b10.44, y=-0.88/+0.50 (190-193)"
   ],
-  "_confirm_items": [
-    "the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling"
+  "_ruled_items": [
+    "was _confirm: the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the foredeck stays excluded; mooring is the toss-a-line cast verb, the character never needs to stand at the bow cleat."
   ]
 }

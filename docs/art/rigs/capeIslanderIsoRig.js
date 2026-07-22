@@ -173,16 +173,16 @@
       const u0=SOLE_U*i/DSEG, u1=SOLE_U*(i+1)/DSEG;
       face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],[dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'wood',-0.35);
     }
-    // washboards (dark-brown side decks) along the cockpit sheer, aft of the house.
-    // Winding forced up-facing per side so both read the same dark-brown wood (matches the covering board).
+    // washboards (dark-brown side decks) along the FULL sheer, transom -> foredeck bulkhead (owner
+    // 2026-07-22: "capes washboards go all the way to foredeck"). Winding forced up-facing per side (matches the covering board).
     const WB=0.42;
     for(const side of [-1,1]){
       for(let i=0;i<DSEG;i++){
         const u0=SOLE_U*i/DSEG, u1=SOLE_U*(i+1)/DSEG;
-        if(station(u0).y > HY0-0.05) continue;   // stop at the house front
+        const xin=(st)=>side*(st.y>HY0-0.05 ? Math.max(st.ws-TH-WB, HX+0.02) : st.ws-TH-WB);   // clamp clear of the house wall
         const sa=station(u0), sb=station(u1);
-        const xo0=side*(sa.ws-TH), xi0=side*(sa.ws-TH-WB), z0=sa.kz+sa.dep-0.02;
-        const xo1=side*(sb.ws-TH), xi1=side*(sb.ws-TH-WB), z1=sb.kz+sb.dep-0.02;
+        const xo0=side*(sa.ws-TH), xi0=xin(sa), z0=sa.kz+sa.dep-0.02;
+        const xo1=side*(sb.ws-TH), xi1=xin(sb), z1=sb.kz+sb.dep-0.02;
         const q = side>0 ? [[xi0,sa.y,z0],[xo0,sa.y,z0],[xo1,sb.y,z1],[xi1,sb.y,z1]]
                          : [[xo0,sa.y,z0],[xi0,sa.y,z0],[xi1,sb.y,z1],[xo1,sb.y,z1]];
         face(q,'wood',-3.6);
