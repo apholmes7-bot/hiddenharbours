@@ -95,3 +95,29 @@ build on data that already exists.
 | **Now (rides ADR 0022)** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. |
 | **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. |
 | **Owner's call** | M2-39 is a strong candidate to pull forward earlier (it improves the existing bucket/rod/trap interactions on its own). Raise, don't sneak. |
+
+## 5. What these symbols do NOT do — occlusion (owner follow-up, 2026-07-21)
+
+**Q: will `DECK`/`WASHBOARD`/`CLEATS` be enough for the character to be hidden behind portions of the
+boat that should block the sprite from the camera?**
+
+**No — and nothing extra is needed from the art director either.** Those three symbols are gameplay
+geometry (where you can stand, where ropes tie); they carry no depth. Occlusion comes from the mesh
+itself: ADR 0022 hulls render with a real z-buffer under the projection trick, so a character sprite
+drawn as a **depth-tested, alpha-tested billboard** at its deck position is hidden per-pixel by any
+hull part nearer the camera (wheelhouse, rail, gunwale) — free, with no masks and no sorting hacks.
+This is one of the quiet wins of meshes over baked sprites.
+
+Requirements this places on the pipeline (fed to the phase 3 agent 2026-07-21):
+- The hull pass's **depth buffer must stay available** for later depth-tested sprite passes
+  (injection-point choice in the URP render feature must not discard it).
+- The reversed-Z conventions (ZTest GEqual, depth clear 0) apply to the future character pass too.
+
+Open edges, for when M2-37 is pulled:
+- **Hulls that stay sprites** (dory, punt, skiffs) have no z-buffer. They are small open boats where
+  full-body occlusion barely arises; if it ever matters, the rig baker can additionally bake a
+  **per-facing depth map** (it runs the real geometry), enabling the same per-pixel test for sprite
+  hulls. Option, not scheduled.
+- **Full occlusion can hide the player entirely** (inside a wheelhouse). If that ever feels bad, the
+  standard cozy fix is a subtle stencil **silhouette** through the hull — cheap to add, owner's call
+  on whether hidden-is-hidden or faint-outline.
