@@ -39,4 +39,39 @@ namespace HiddenHarbours.Fishing
         HardWinter  = 1 << 3,
         AllYear     = EarlySpring | HighSummer | TheTurn | HardWinter
     }
+
+    /// <summary>
+    /// A lure / artificial-attractant tag — Rod Fishing v2's gear-side "what's tied on", DISTINCT from
+    /// bait (design/rod-fishing-v2-brainstorm.md §6.2). Bait is a consumable the fish eats; a lure is the
+    /// presentation the rod <i>works</i>. Adding a new gear/bait/<b>lure</b> tag is the one catch input that
+    /// touches code and is <b>review-gated</b> (fish-and-content.md §6.1) — so it is authored here in the
+    /// Fishing enum set (lead-architect-reviewed), never invented by a content asset.
+    ///
+    /// <para><b>Flags</b>, mirroring <see cref="Gear"/>: a species can be drawn by several lure types (a
+    /// favored-lure mask) while the live catch context carries the ONE lure currently tied on and
+    /// AND-tests it against that mask — exactly how <see cref="Gear"/> is a mask on the species yet a single
+    /// selected value in <see cref="CatchContext"/>.</para>
+    ///
+    /// <para><b>Append-only.</b> Add members only at the END; never renumber a bit (assets/masks serialize
+    /// the integer).</para>
+    ///
+    /// <para><b>WIRING SEAM — deliberately NOT wired in this contract PR (non-breaking, deferred).</b> This
+    /// change defines the vocabulary only; it does not touch <see cref="CatchResolver"/> / the
+    /// <see cref="CatchContext"/> struct and does not re-balance any roll (a resolver change owned by
+    /// gameplay-systems / economy-sim). When wired, the intended seam is: an optional <c>LureTag Lure</c> on
+    /// the catch context (default <see cref="None"/>, added via an additive constructor overload so no caller
+    /// breaks) + an optional <c>FavoredLures</c> mask on <see cref="FishSpeciesDef"/>, applied as a soft
+    /// WEIGHT (like bait's "Preferred" mode), never a hard filter. Until then a species' catchability is
+    /// unchanged.</para>
+    /// </summary>
+    [System.Flags]
+    public enum LureTag
+    {
+        None     = 0,
+        Spoon    = 1 << 0, // wobbling metal spoon — flash & vibration on the retrieve
+        Plug     = 1 << 1, // swimming plug / crankbait — a diving hard body
+        SoftBait = 1 << 2, // soft-plastic body — slow, lifelike, for finicky fish
+        Feather  = 1 << 3, // feathered / fly dressing — light surface & pelagic work
+        Spinner  = 1 << 4  // spinning blade — flash that draws a reaction strike
+    }
 }

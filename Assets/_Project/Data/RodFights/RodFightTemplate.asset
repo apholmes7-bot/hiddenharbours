@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361a844bdcab4002aa668eac60875c57, type: 3}
+  m_Name: RodFightTemplate
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.RodFightDef
+  Id: rodfight.template
+  DisplayName: Rod Fight (template)
+  Strength: 0.5
+  MovementPattern: 0
+  StaminaCadence:
+    RunSeconds: 2
+    SlackSeconds: 1.4
+    Jitter01: 0.3
+  Tell: 0
+  tensionRisePerSec: 0.75
+  tensionFallPerSec: 0.6
+  landingFillPerSec: 0.3
+  runTensionPressure: 0.35
+  counterSteerRelief: 0.4
+  surfaceThreshold01: 0.5

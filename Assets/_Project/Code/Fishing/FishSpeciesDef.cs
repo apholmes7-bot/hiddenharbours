@@ -34,6 +34,13 @@ namespace HiddenHarbours.Fishing
         public float StartHour = 0f;
         public float EndHour = 24f;
 
+        [Header("Rod fight (Rod Fishing v2 — opt-in, append-only)")]
+        [Tooltip("The v2 fight personality this species opts into (RodFightDef, data not code — design/" +
+                 "rod-fishing-v2-brainstorm.md §5). Leave EMPTY and the species keeps the simple/legacy " +
+                 "tension fight (FishFight / FishingPhase.Fighting) exactly as today — the same opt-in " +
+                 "shape as TrapDef→DeckWorkDef. Authored per species by content agents (Wave 3).")]
+        public RodFightDef RodFight;
+
         [Header("Catch")]
         public float MinWeightKg = 1f;
         public float MaxWeightKg = 8f;

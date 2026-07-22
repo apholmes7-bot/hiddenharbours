@@ -44,7 +44,7 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
-| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
+| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
 | **TimeService** | The 24h clock, day/week/season/year, time scale, sleep/wait. `gameTime` is a `double` (in-game seconds). | The master clock everything derives from. |
 | **EnvironmentService** | Computes **tide, wind, weather, sea state, visibility** from `(worldSeed, gameTime, region)`. Emits an `EnvironmentSample` per region per tick. | **Deterministic** → not saved, recomputed. (`design/time-tides-weather.md`) |
 | **RegionService** | Additive load/unload of region scenes, the `MapGraph`, travel/transit, fog-of-war reveal state. | Reveal state is saved; geometry is authored. |
@@ -119,6 +119,32 @@ text-only read (icon is reinforcement, never the only channel — accessibility 
 also carry their own `FishSpeciesDef.Sprite` (assigned) — the library is the single Core-readable place
 that *also* gathers the gear/licence/boat/coin/hold icons the UI lane doesn't own a sprite field for.
 Presentation metadata: unsaved, no determinism concern.
+
+### 4.4 Fishing-state contract (UI/audio read the rod through Core) — Rod Fishing v2, Wave 1
+
+**`Core.FishingPhase` + `Core.FishingState` + `Core.FishingStateChanged`** — the Fishing module
+publishes a read-only snapshot of the live rod interaction on the EventBus each phase transition and
+fight tick; UI (the transient rod gauge, later VS-14's HUD) and audio consume it through Core only,
+never referencing Fishing. The contract's rules:
+
+- **`FishingPhase` is append-only.** VS-13's members are frozen at ints 0–7 (`Idle, Waiting, Bite,
+  Fighting, Tending, Landed, Snapped, NoBite`); Rod Fishing v2 appended 8–12 (`WindBack, Cast,
+  Sinking, FightDeep, FightSurface` — design/rod-fishing-v2-brainstorm.md §2–3). Never renumber.
+  `Fighting` remains the **legacy single-phase fight** for species without a `RodFightDef` (the
+  TrapDef→DeckWorkDef opt-in pattern); v2 species fight `FightDeep → FightSurface`. Consumers group
+  "any fight" via `FishingState.IsFightPhase`, not by re-listing phases.
+- **`FishingState` grows additively.** The VS-13 fields (`Phase, Tension01, Landing01, FishId,
+  DisplayName, Category, WeightKg`) keep their exact semantics. v2 added three diegetic reads —
+  `Depth01` (held position in the water column, §2.3), `SlackWindowOpen` (the PULL-now tell, §3),
+  `RodBend01` (rod-curvature presentation read, distinct from the `Tension01` danger axis) — via a
+  new full constructor; the original 7-arg constructor remains and defaults them neutral.
+- **Species fight personality is data**: `Fishing.RodFightDef` (Data/RodFights, ids `rodfight.*`,
+  append-only) carries the tuning the pure `RodFightMath` (Wave 2) consumes. The fishing fight is
+  real-time and RNG-injected — **not** part of the `(worldSeed, gameTime)` determinism contract,
+  and never saved.
+
+Guarded by `Assets/Tests/EditMode/FishingV2ContractTests.cs` (frozen ints, additive-struct,
+Def invariants).
 
 ## 5. Boat & entity architecture (composition)
 
