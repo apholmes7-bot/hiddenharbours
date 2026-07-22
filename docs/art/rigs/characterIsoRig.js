@@ -16,17 +16,40 @@
      height: 0.92..1.08   weight: 0.88..1.15
    ANIMS: idle (6f, weight-shift + breathe + blink), walk (8f), run (6f) — one gait function,
    amplitudes per anim, so motion stays consistent across all 8 directions by construction.
+   DECK-BALANCE ANIMS (v2 rock-balance, append-only): balance (8f, deck-rocking idle — a gentle
+   hip-list weight-shift with the arms drifting out + blink) + stagger (10f, the wave-HIT brace:
+   a damped lurch that catches & recovers — the physical payoff of the wave-readability work).
    TOOL ANIMS (rod kit rodIsoRig.js, shovel kit shovelIsoRig.js): hold (6f fishing stance),
    dig (10f raise/thrust/pry/toss, spoil FX launches ~f8) + cast (10f windup/snap/settle;
    opts.power 'short'|'long' scales the swing). tool(dir,opts) -> {grip px, wrist 3D, pitch, yaw,
    bend} = the rod mount, per frame; projectLocal(dir,p,elev) -> cell px for runtime line FX.
+   FISHING v2 states (append-only — complete the cast->hold->..->land loop): bite (6f, snappy
+   nibble tell on the stance), strike (6f, set-the-hook jerk), reel (12f, the fight pump-&-wind
+   loop — the state the player watches longest), land (12f, lift the catch clear; the free hand
+   reaches out to the fish at the finish). The cast is phase-addressable for v2's flick-cast:
+   CAST_W1 / CAST_S1 name the wind-back / release boundaries, and castBack (6f) / castRelease (8f)
+   play those sub-ranges of the SAME cast curve — splitting it later is not a rewrite and cast
+   itself is untouched. Fish, line & bobber stay RUNTIME FX (never baked); tool()/anchors() mount them.
    Anchors baked from day one (the motor-mount pattern): anchors(dir,opts) -> {handL,handR,
    head,hip} cell px for rod / held-item / hat overlay layers.
    CARRY MODIFIER (bucket kit bucketRig.js): opts.carry 'buckets'|'tray' overrides the arm
    targets of idle/walk/run (hands hang at the sides / both hands forward on the tray rim);
    carry(dir,opts) -> hand px + pendulum swing (rad) + behind flags = the bucket mount.
-   Exposes globalThis.CharacterIso = { W,H,PX,DIRS,pivot,order,ANIMS,BUILDS,SKINS,HAIRS,
-   OUTFITS,EYES,SHIRT,BOOT,HAIRSTYLES,KEY,defaultElev, render(dir,opts), anchors(dir,opts) }. */
+   AFLOAT MODIFIER: opts.carry 'helm' (both hands forward-low on a wheel/tiller, braced,
+   feet apart) | 'oars' (hands forward, leaned into the pull) — the piloting stances, same
+   override mechanism as carry. DECK ROCK: opts.roll / opts.pitch (deg) / opts.heave (px)
+   tilt & bob the WHOLE rig on the boat's wave — feed a hull rig's rock(i) straight in and
+   the fisher rides the same swell as the deck (the outboard-motor layer pattern). All of
+   render / anchors / tool / carry honour it, so held items never shear off the hands.
+   COUNTER-LEAN HOOK (earn-it-then-automate): counter(rollDeg,pitchDeg,gain) -> the skeleton
+   {list,lean} (deg) that NULLS a given deck tilt — feet planted, torso stays level. Pass
+   opts.counter (0..1) to render/anchors/tool alongside roll/pitch and the fisher balances
+   AGAINST the swell instead of riding it rigidly (default 0 = the old rigid ride, unchanged).
+   Pure & deterministic — the shared wave field / deck-walking spike drives this later.
+   Exposes globalThis.CharacterIso = { W,H,PX,DIRS,pivot,order,ANIMS,GROUPS,BUILDS,SKINS,HAIRS,
+   OUTFITS,EYES,SHIRT,SHIRTS,BOOT,HAIRSTYLES,KEY,CAST_W1,CAST_S1,defaultElev, render(dir,opts),
+   anchors(dir,opts), tool(dir,opts), carry(dir,opts), counter(rollDeg,pitchDeg,gain),
+   projectLocal(dir,p,elev) }. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 64, H = 88, cx = 32, cy = 80;
@@ -70,7 +93,15 @@
     ginny:   { skin:'fair', hair:'ginger',hairStyle:'bob',  eyes:'amber', outfit:'rust', shirt:'moss',  height:0.97, weight:0.94 },
   };
   const ANIMS = { idle:{frames:6, ms:170}, walk:{frames:8, ms:110}, run:{frames:6, ms:80},
-                  hold:{frames:6, ms:170}, cast:{frames:10, ms:70}, dig:{frames:10, ms:90} };
+                  hold:{frames:6, ms:170}, cast:{frames:10, ms:70}, dig:{frames:10, ms:90},
+                  // v2 rock-balance + fight cycle (append-only; every cell above is unchanged)
+                  balance:{frames:8, ms:150}, stagger:{frames:10, ms:90},
+                  bite:{frames:6, ms:150}, strike:{frames:6, ms:80},
+                  reel:{frames:12, ms:90}, land:{frames:12, ms:100},
+                  castBack:{frames:6, ms:90}, castRelease:{frames:8, ms:70} };
+  const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'],
+                   fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'] };
+  const CAST_W1 = 0.34, CAST_S1 = 0.50;   // cast phase boundaries (wind-back / release), shared by the phase states
 
   function rampOf(map, key, fb){ return Array.isArray(key) ? key : (map[key] || map[fb]); }
   function makeMats(b){
@@ -95,6 +126,7 @@
   const TX=(dx,dy,dz)=>(p)=>[p[0]+dx,p[1]+dy,p[2]+dz];
   const rotZ=(a)=>{ const c=Math.cos(a), s=Math.sin(a); return (p)=>[p[0]*c-p[1]*s, p[0]*s+p[1]*c, p[2]]; };
   const pitchX=(a,z0)=>{ const c=Math.cos(a), s=Math.sin(a); return (p)=>[p[0], p[1]*c+(p[2]-z0)*s, z0-p[1]*s+(p[2]-z0)*c]; };
+  const rollY=(a,z0)=>{ const c=Math.cos(a), s=Math.sin(a); return (p)=>[p[0]*c+(p[2]-z0)*s, p[1], z0-p[0]*s+(p[2]-z0)*c]; };  // side-bend about the fore-aft axis, pivot z0 (rock-balance / counter-lean)
   const chain=(...fs)=>(p)=>{ for(let i=fs.length-1;i>=0;i--) p=fs[i](p); return p; };
   const v_sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]], v_add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
   const v_mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s], v_norm=(a)=>{ const m=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/m,a[1]/m,a[2]/m]; };
@@ -160,8 +192,49 @@
                   wrZ:lerp(0.435,0.56,t)+0.10*toss, lean:lerp(4,6,t)-6*toss, twist:lerp(6,3,t)-22*toss,
                   dip:lerp(0.065,0.010,t), bend:0 });
     }
+    // ---- v2 fishing states + cast phase aliases (append-only; cast/hold/dig above unchanged) ----
+    if(anim==='castBack')    return toolCurve('cast', u*CAST_W1, power);               // wind-back sub-range
+    if(anim==='castRelease') return toolCurve('cast', CAST_W1 + u*(1-CAST_W1), power);  // release: snap + settle
+    if(anim==='bite'){        // snappy nibble tell on the hold stance — two sharp tip-taps per loop
+      const tug=Math.pow(Math.max(0,Math.sin(2*Math.PI*u*2)),6);
+      return { pitch:54-5*tug, yaw:16, wrY:0.150+0.010*tug, wrZ:0.60-0.015*tug, wlY:0.085, wlZ:0.50,
+               lean:0, twist:6-2*tug, dip:0.006*tug, bend:0.06+0.22*tug };
+    }
+    if(anim==='strike'){      // set the hook — small load down, then a hard snap up & back, settle bent
+      if(u<0.28){ const t=sm(u/0.28);
+        return { pitch:54-8*t, yaw:16, wrY:0.150+0.020*t, wrZ:0.60-0.05*t, wlY:0.085, wlZ:0.50,
+                 lean:3*t, twist:6+4*t, dip:0.020*t, bend:0.10+0.10*t }; }
+      if(u<0.55){ const t=Math.pow((u-0.28)/0.27,1.6);
+        return { pitch:lerp(46,104,t), yaw:16, wrY:lerp(0.170,0.020,t), wrZ:lerp(0.55,0.92,t),
+                 wlY:lerp(0.085,0.020,t), wlZ:lerp(0.50,0.66,t), lean:lerp(3,-9,t), twist:lerp(10,-8,t),
+                 dip:0.020*(1-t), bend:lerp(0.20,0.55,t) }; }
+      const t=sm((u-0.55)/0.45);
+      return { pitch:lerp(104,66,t), yaw:16, wrY:lerp(0.020,0.150,t), wrZ:lerp(0.92,0.62,t),
+               wlY:lerp(0.020,0.09,t), wlZ:lerp(0.66,0.52,t), lean:lerp(-9,-4,t), twist:lerp(-8,4,t),
+               dip:0, bend:lerp(0.55,0.34,t) };
+    }
+    if(anim==='reel'){        // the fight: rod pumps up/down, off hand cranks the reel, leaned into the load
+      const pump=Math.sin(2*Math.PI*u), crank=2*Math.PI*u*2;
+      return { pitch:64+16*pump, yaw:16, wrY:0.150-0.03*pump, wrZ:0.60+0.10*Math.max(0,pump),
+               wlY:0.085+0.028*Math.cos(crank), wlZ:0.50+0.028*Math.sin(crank),
+               lean:-6-3*Math.max(0,pump), twist:6+5*pump, dip:0.012*(0.5-0.5*Math.cos(2*Math.PI*u)),
+               bend:0.42+0.16*Math.max(0,pump) };
+    }
+    if(anim==='land'){        // lift the catch clear — load, big haul up & back, present (free hand reaches out)
+      if(u<0.22){ const t=sm(u/0.22);
+        return { pitch:lerp(64,52,t), yaw:16, wrY:lerp(0.150,0.190,t), wrZ:lerp(0.60,0.50,t),
+                 wlY:0.085, wlZ:0.50, lean:lerp(-5,4,t), twist:4, dip:0.020*t, bend:lerp(0.42,0.48,t) }; }
+      if(u<0.60){ const t=Math.pow((u-0.22)/0.38,0.9);
+        return { pitch:lerp(52,112,t), yaw:16, wrY:lerp(0.190,0.020,t), wrZ:lerp(0.50,0.86,t),
+                 wlY:lerp(0.085,0.020,t), wlZ:lerp(0.50,0.70,t), lean:lerp(4,-8,t), twist:lerp(4,-6,t),
+                 dip:0.020*(1-t), bend:lerp(0.48,0.22,t) }; }
+      const t=sm((u-0.60)/0.40);
+      return { pitch:lerp(112,86,t), yaw:16, wrY:lerp(0.020,0.120,t), wrZ:lerp(0.86,0.66,t),
+               wlY:lerp(0.020,0.270,t), wlZ:lerp(0.70,0.60,t), lean:lerp(-8,-2,t), twist:lerp(-6,2,t),
+               dip:0, bend:lerp(0.22,0.12,t) };
+    }
     const PB=long?150:128, PF=long?-6:10, LB=long?-8:-5, LF=long?12:7, SB=long?0.78:0.55;
-    const w1=0.34, s1=0.50;
+    const w1=CAST_W1, s1=CAST_S1;
     if(u<w1){ const t=sm(u/w1);   // windup: rod back over the shoulder, lean back, twist away
       return { pitch:lerp(56,PB,t), yaw:16, wrY:lerp(0.150,-0.075,t), wrZ:lerp(0.60,0.94,t),
                wlY:lerp(0.085,0.02,t), wlZ:lerp(0.50,0.60,t), lean:lerp(0,LB,t), twist:lerp(6,-11,t), dip:0, bend:0.10*t };
@@ -181,30 +254,52 @@
     let stride=0, lift=0, bob=0, lean=0, arm=0, yaw=0, handZ=0.63;
     if(anim==='walk'){ stride=0.16; lift=0.09; bob=0.030; lean=4*DEG;  arm=0.13; yaw=8*DEG;  handZ=0.65; }
     if(anim==='run') { stride=0.24; lift=0.16; bob=0.055; lean=11*DEG; arm=0.18; yaw=12*DEG; handZ=0.78; }
-    const tc = (anim==='hold'||anim==='cast'||anim==='dig') ? toolCurve(anim,u,power) : null;
+    const TOOLS = { hold:1, cast:1, dig:1, bite:1, strike:1, reel:1, land:1, castBack:1, castRelease:1 };
+    const tc = TOOLS[anim] ? toolCurve(anim,u,power) : null;
     const carry = (!tc && (arguments.length>4)) ? arguments[4] : null;
+    const rock = arguments[5] || null;                   // {roll,pitch,heave,counter} from opts — counter-lean hook
+    const bal = anim==='balance', stag = anim==='stagger';
     const tw=Math.sin(2*Math.PI*u);
-    const idle = anim==='idle', calm = idle || anim==='hold';
+    const idle = anim==='idle', calm = idle || anim==='hold' || bal || anim==='bite';
     if(tc) lean = tc.lean*DEG;
     if(carry==='tray') lean = -5*DEG;                    // counterweight lean-back under the tray
     if(carry==='buckets') lean = lean*0.5;               // loaded shoulders damp the gait lean
+    if(carry==='helm') lean = 6*DEG;                     // braced forward over the wheel / tiller
+    if(carry==='oars') lean = 10*DEG;                    // leaned into the pull at the oars
+    const senv = stag ? Math.exp(-2.4*u) : 0;            // stagger: damped decay of the wave-hit
+    if(stag) lean += (6*DEG)*senv*Math.sin(2*Math.PI*1.2*u);   // fore-aft lurch on the hit
+    // rock-balance side-to-side hip-list (deck-rocking idle / brace) + counter-lean hook
+    let list = 0;
+    if(bal)  list = (10*DEG)*Math.sin(2*Math.PI*u);
+    if(stag) list = (20*DEG)*senv*Math.sin(2*Math.PI*1.3*u);
+    if(rock && rock.counter){ const c=counterLean(rock.roll||0, rock.pitch||0, rock.counter);
+      list += c.list*DEG; lean += c.lean*DEG; }
     const breathe = calm ? 0.018*Math.sin(2*Math.PI*u) : 0;
     const swayX = tc ? (calm?0.012*tw:0) : (idle ? 0.012*tw : 0.010*tw);
-    const dip = tc ? tc.dip : (idle ? 0 : bob*(0.5+0.5*Math.cos(4*Math.PI*u)));
+    let dip;
+    if(tc) dip = tc.dip;
+    else if(idle) dip = 0;
+    else if(bal)  dip = 0.010*(0.5+0.5*Math.cos(4*Math.PI*u));    // gentle knee bob
+    else if(stag) dip = 0.060*senv*(u<0.5?1:0.6);                 // drop on the hit, recover
+    else dip = bob*(0.5+0.5*Math.cos(4*Math.PI*u));
     const hipZ = 0.575*hS - dip;   // chunky ~3.7-head build (reference boards): short legs, long torso, big head
     const yawS = tc ? tc.twist*DEG : yaw*tw, yawH = tc ? tc.twist*0.45*DEG : -0.6*yaw*tw;
     const leanP = pitchX(lean, hipZ);
-    const P = { anim,u,hS,wS, hipZ, swayX, lean, breathe, yawS, yawH, leanP };
+    const listR = list ? rollY(list, hipZ) : null;               // torso/shoulder side-bend about the hip
+    const headListR = list ? rollY(list*0.35, hipZ) : null;      // head stays more level (the balance read)
+    const P = { anim,u,hS,wS, hipZ, swayX, lean, breathe, yawS, yawH, leanP, list, listR, headListR };
     // legs — feet pinned to the treadmill loop; 2-bone IK, knee forward
     P.legs = {};
     const thigh=0.28*hS, shin=0.25*hS;
     for(const [side, ph] of [['L',0],['R',0.5]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      const hip0 = rotZ(yawH)([sgn*0.07*wS, 0, 0]); hip0[0]+=swayX*0.5; hip0[2]=hipZ;
+      const braceX = (carry==='helm'||carry==='oars'||bal||stag) ? 1.55 : 1;   // feet planted wide against the roll
+      const hip0 = rotZ(yawH)([sgn*0.07*wS*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[2]=hipZ;
       let yF, zF;
       if(tc){ yF = sgn<0 ? (tc.dig?0.105:0.075) : (tc.dig?-0.085:-0.055); zF = 0.06*hS; }   // staggered stance, left forward (wider for dig)
       else if(idle){ yF = sgn*0.012; zF = 0.06*hS; }
+      else if(bal||stag){ yF = sgn*0.02 + (stag?0.05*senv*Math.sin(2*Math.PI*1.3*u):0); zF = 0.06*hS; }   // planted wide; stagger shuffles on the hit
       else { yF = stride*Math.cos(2*Math.PI*p2); zF = 0.06*hS + lift*Math.max(0,-Math.sin(2*Math.PI*p2)); }
       const [ky,kz]=ik2(hip0[1],hip0[2], yF, zF, thigh, shin, +1);
       P.legs[side]={ hip:hip0, knee:[hip0[0]*0.97,ky,kz], ankle:[hip0[0]*0.94, yF, zF] };
@@ -215,19 +310,23 @@
     for(const [side, ph] of [['L',0.5],['R',0]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      const sh = P.leanP(rotZ(yawS)([sgn*sw, 0, shZ])); sh[0]+=swayX*0.5;
+      let sh = P.leanP(rotZ(yawS)([sgn*sw, 0, shZ])); sh[0]+=swayX*0.5;
+      if(listR) sh = listR(sh);                          // shoulders ride the torso list
       let ty, tz, tx=sh[0]+sgn*0.012;
       if(tc){ ty = side==='R' ? tc.wrY : tc.wlY; tz = (side==='R' ? tc.wrZ : tc.wlZ)*hS + breathe*0.5; }
       else if(carry==='buckets'){ tx = sh[0]+sgn*0.048; ty = 0.012 + 0.30*arm*Math.cos(2*Math.PI*p2); tz = 0.60*hS + breathe*0.5; }
       else if(carry==='tray'){ tx = sgn*0.24; ty = 0.150 + (idle ? 0.006*Math.sin(2*Math.PI*u) : 0.012*Math.cos(4*Math.PI*u)); tz = 0.615*hS + breathe*0.5; }
+      else if(carry==='helm'){ tx = sh[0]+sgn*0.005; ty = 0.150 + (idle?0.006*Math.sin(2*Math.PI*u):0.012*Math.cos(4*Math.PI*u)); tz = 0.72*hS + breathe*0.5; }   // both hands on the wheel/tiller
+      else if(carry==='oars'){ tx = sh[0]+sgn*0.055; ty = 0.120 + (idle?0.014*Math.sin(2*Math.PI*u):0.02*Math.cos(4*Math.PI*u)); tz = 0.575*hS + breathe*0.5; }   // hands out on the oar looms
+      else if(bal||stag){ const out=0.05+Math.abs(list)*0.9; tx = sh[0]+sgn*out; ty = 0.03 - list*sgn*0.35; tz = (0.585 - (stag?0.03*senv:0))*hS + breathe*0.5; }   // arms drift out to balance / catch
       else if(idle){ ty = 0.015 + 0.008*Math.sin(2*Math.PI*u+(sgn>0?0.6:0)); tz = 0.63*hS+breathe*0.5; }
       else { ty = sh[1] + arm*Math.cos(2*Math.PI*p2); tz = handZ*hS; }
       const [ey,ez]=ik2(sh[1],sh[2], ty, tz, upA, foA, -1);
       P.arms[side]={ sh, elbow:[sh[0]+sgn*0.01,ey,ez], wrist:[tx,ty,tz] };
     }
-    P.neckB = P.leanP([swayX*0.5, 0, 1.05*hS]);
+    P.neckB = (listR||ID)(P.leanP([swayX*0.5, 0, 1.05*hS]));
     const headLean = pitchX(lean*0.55, hipZ);
-    P.headC = headLean([swayX*0.5, 0.005, 1.24*hS + breathe]);
+    P.headC = (headListR||ID)(headLean([swayX*0.5, 0.005, 1.24*hS + breathe]));
     P.eyesClosed = calm && u>0.60 && u<0.78;   // baked blink
     P.tool = tc ? { pitch:tc.pitch*DEG, yaw:tc.yaw*DEG, bend:tc.bend } : null;
     return P;
@@ -237,7 +336,8 @@
   function facesOf(P, b){
     const wS=P.wS, hS=P.hS, F=[];
     const add=(fs)=>{ for(const f of fs) F.push(f); };
-    const torsoXf = chain(TX(P.swayX*0.5,0,0), P.leanP, rotZ(P.yawS*0.6));
+    const listX = P.listR || ID;                         // rock-balance / counter-lean side-bend (ID when unused)
+    const torsoXf = chain(TX(P.swayX*0.5,0,0), listX, P.leanP, rotZ(P.yawS*0.6));
     // legs + boots
     for(const side of ['L','R']){
       const g=P.legs[side];
@@ -312,11 +412,17 @@
     // (was +dir*PI/4 = CCW, which mirrored every cell left<->right, swapping E<->W.)
     const dir=opts.dir||0, th=-dir*Math.PI/4;
     const e=(opts.elev!=null?opts.elev:DEFAULT_ELEV)*DEG;
-    return { ct:Math.cos(th), stt:Math.sin(th), se:Math.sin(e), ce:Math.cos(e) };
+    // deck rock: roll about the body's fore-aft axis, pitch about the beam — the hull recipe,
+    // so a boat rig's rock(i) roll/pitch/heave drives the fisher on the very same wave.
+    const roll=(opts.roll||0)*DEG, pitch=(opts.pitch||0)*DEG;
+    return { ct:Math.cos(th), stt:Math.sin(th), se:Math.sin(e), ce:Math.cos(e),
+      cr:Math.cos(roll), sr:Math.sin(roll), cq:Math.cos(pitch), sq:Math.sin(pitch), heave:(opts.heave||0) };
   }
   function projVert(x,y,z,B){
-    const xr=x*B.ct - y*B.stt, yr=x*B.stt + y*B.ct, zr=z;
-    return { xr,yr,zr, sx:cx+xr*S, sy:cy-(yr*B.se+zr*B.ce)*S, d:(yr*B.ce-zr*B.se) };
+    const x1=x*B.cr+z*B.sr, z1=-x*B.sr+z*B.cr;        // roll about fore-aft (Y), pivot at the feet
+    const y2=y*B.cq - z1*B.sq, z2=y*B.sq + z1*B.cq;    // pitch about beam (X)
+    const xr=x1*B.ct - y2*B.stt, yr=x1*B.stt + y2*B.ct, zr=z2;
+    return { xr,yr,zr, sx:cx+xr*S, sy:cy-(yr*B.se+zr*B.ce)*S - (B.heave||0), d:(yr*B.ce-zr*B.se) };
   }
   function _paint(faces, opts, MATS, RINDEX){
     const B=camBasis(opts);
@@ -388,6 +494,12 @@
     return rgba;
   }
 
+  // counter-lean hook: the skeleton {list,lean} (deg) that nulls a deck tilt (feet planted, torso level).
+  // Pure & deterministic; pass opts.counter (0..1) to render/anchors/tool to apply it. Default off = unchanged.
+  function counterLean(rollDeg, pitchDeg, gain){
+    const k = (gain==null?1:gain);
+    return { list:-(rollDeg||0)*k, lean:-(pitchDeg||0)*k*0.9 };
+  }
   function resolveOpts(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
     const b = Object.assign({}, BUILDS.fisher, opts.build||{});
@@ -395,18 +507,18 @@
     const A = ANIMS[anim]||ANIMS.idle;
     const u = opts.u!=null ? opts.u : (((opts.frame||0)%A.frames+A.frames)%A.frames)/A.frames;
     const power = opts.power==='long' ? 'long' : 'short';
-    const carry = (opts.carry==='buckets'||opts.carry==='tray') ? opts.carry : null;
+    const carry = (['buckets','tray','helm','oars'].indexOf(opts.carry)>=0) ? opts.carry : null;
     return { o:Object.assign({},opts,{dir}), b, anim, u, power, carry };
   }
   function render(dir, opts){
     const {o,b,anim,u,power,carry}=resolveOpts(dir,opts);
     const {MATS,RINDEX}=makeMats(b);
-    return _toRGBA(_paint(facesOf(pose(anim,u,b,power,carry), b), o, MATS, RINDEX));
+    return _toRGBA(_paint(facesOf(pose(anim,u,b,power,carry,o), b), o, MATS, RINDEX));
   }
   // hand / head / hip anchors in cell px — the motor-mount pattern, for rod & held-item layers
   function anchors(dir, opts){
     const {o,b,anim,u,power,carry}=resolveOpts(dir,opts);
-    const P=pose(anim,u,b,power,carry), B=camBasis(o);
+    const P=pose(anim,u,b,power,carry,o), B=camBasis(o);
     const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
     return { handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
              head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17]), hip:pt([P.swayX*0.5,0,P.hipZ]) };
@@ -415,7 +527,7 @@
   // wrist = the 3D character-local wrist point (bobber launch origin for runtime FX).
   function tool(dir, opts){
     const {o,b,anim,u,power}=resolveOpts(dir,opts);
-    const P=pose(anim,u,b,power);
+    const P=pose(anim,u,b,power,null,o);
     if(!P.tool) return null;
     const B=camBasis(o), w=P.arms.R.wrist;
     const v=projVert(w[0]+0.005, w[1]+0.010, w[2]+0.012, B);
@@ -427,7 +539,7 @@
   // tray: mid = near-rim-centre pin between the two hands; swing = small carry bob.
   function carry(dir, opts){
     const {o,b,anim,u,power,carry:c}=resolveOpts(dir,Object.assign({carry:'buckets'},opts));
-    const P=pose(anim,u,b,power,c), B=camBasis(o);
+    const P=pose(anim,u,b,power,c,o), B=camBasis(o);
     const pj=(p)=>projVert(p[0],p[1],p[2],B);
     const wl=P.arms.L.wrist, wr=P.arms.R.wrist, vl=pj(wl), vr=pj(wr);
     const A=(anim==='run'?15:anim==='walk'?9:1.6)*DEG, lag=0.9;
@@ -451,5 +563,6 @@
   root.CharacterIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'],
     ANIMS, BUILDS, SKINS, HAIRS, OUTFITS, EYES, SHIRT, SHIRTS, BOOT, HAIRSTYLES, KEY,
-    render, anchors, tool, carry, projectLocal };
+    GROUPS, CAST_W1, CAST_S1,
+    render, anchors, tool, carry, counter:counterLean, projectLocal };
 })(typeof globalThis!=='undefined'?globalThis:window);
