@@ -34,8 +34,10 @@ namespace HiddenHarbours.Tools.Spike3dWater
         private readonly Material _calibNear;
         private readonly Material _calibFar;
         private readonly Material _waterMat;          // in-memory copy of the owner's Water.mat
-        private Material _facetMat;                   // production facet material, built from the def
+        private readonly Material _waterMatDefault;   // fresh material at shader defaults (control)
+        private Material _facetMat;                   // the facet pass (spike ZTest-parameterized copy)
         private Texture2D _rampTex, _darkRampTex;
+        private Texture2D _deepTex;                   // 1x1 black: uniform-deep height source
 
         public HullMeshDef HullDef { get; private set; }
         public float ZTestOp { get; private set; } = 4f;   // 4 = LEqual, 7 = GEqual (calibrated)
@@ -59,9 +61,28 @@ namespace HiddenHarbours.Tools.Spike3dWater
             if (ownersWater == null)
                 throw new InvalidOperationException("Owner Water.mat not found at " + WaterMatPath);
             _waterMat = new Material(ownersWater) { hideFlags = HideFlags.HideAndDontSave };
-            // Open deep sea for the A/B: no baked height map (uniform-deep fallback), tide at datum.
-            _waterMat.DisableKeyword("_USE_HEIGHTTEX");
-            _waterMat.SetFloat("_WaterLevel", 0f);
+            _waterMatDefault = new Material(ownersWater.shader) { hideFlags = HideFlags.HideAndDontSave };
+
+            // Open deep sea for the A/B. The owner's mat carries the BAKED St Peters height map with
+            // _USE_HEIGHTTEX on — over this spike's abstract viewport that reads as LAND and clip()s
+            // every pixel (run 1's flat image was pure background). Belt and braces: disable the
+            // keyword AND replace the height source with a 1x1 black texture (r=0 -> _HeightMin =
+            // uniform deep) so EITHER path yields open water.
+            _deepTex = new Texture2D(1, 1, TextureFormat.RGBA32, false, true)
+            { hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Point };
+            _deepTex.SetPixel(0, 0, new Color(0f, 0f, 0f, 1f));
+            _deepTex.Apply(false, true);
+            foreach (Material m in new[] { _waterMat, _waterMatDefault })
+            {
+                m.DisableKeyword("_USE_HEIGHTTEX");
+                m.SetFloat("_UseHeightTex", 0f);
+                m.SetTexture("_HeightTex", _deepTex);
+                m.SetFloat("_HeightMin", -4f);
+                m.SetFloat("_HeightMax", 6f);
+                m.SetVector("_HeightWorldMin", new Vector4(-500f, -500f, 0f, 0f));
+                m.SetVector("_HeightWorldSize", new Vector4(1000f, 1000f, 0f, 0f));
+                m.SetFloat("_WaterLevel", 0f);
+            }
 
             PaletteDeep = ReadColor(ownersWater, "_PaletteDeep", new Color(0.05f, 0.135f, 0.205f));
             PaletteMid = ReadColor(ownersWater, "_PaletteMid", new Color(0.14f, 0.30f, 0.38f));
@@ -76,6 +97,9 @@ namespace HiddenHarbours.Tools.Spike3dWater
             _spikeMat.SetColor("_ColShallow", PaletteShallow);
             _spikeMat.SetColor("_ColFoam", PaletteFoam);
             _spikeMat.SetVector("_SunDir2D", new Vector4(LightDir2D.x, LightDir2D.y, 0f, 0f));
+            _spikeMat.SetFloat("_Bands", 7f);
+            _spikeMat.SetFloat("_FaceShade", 0.45f);
+            _spikeMat.SetFloat("_DitherWin", 0.4f);
 
             LoadHull();
         }
@@ -116,9 +140,12 @@ namespace HiddenHarbours.Tools.Spike3dWater
             _rampTex.Apply(false, true);
             _darkRampTex.Apply(false, true);
 
-            var facetShader = Shader.Find("HiddenHarbours/IsoFacet");
+            // The spike's ZTest-parameterized VERBATIM copy of the production facet pass (see
+            // FacetProbe.shader header: the hardcoded LEqual is dead against this raw command
+            // buffer's calibrated depth convention — measured in run 1, the hull was invisible).
+            var facetShader = Shader.Find("Hidden/HH/Spike3dWater/FacetProbe");
             if (facetShader == null)
-                throw new InvalidOperationException("Production HiddenHarbours/IsoFacet shader not found.");
+                throw new InvalidOperationException("FacetProbe.shader did not compile/import.");
             _facetMat = new Material(facetShader) { hideFlags = HideFlags.HideAndDontSave };
             _facetMat.SetTexture("_RampTex", _rampTex);
             _facetMat.SetTexture("_DarkRampTex", _darkRampTex);
@@ -190,12 +217,14 @@ namespace HiddenHarbours.Tools.Spike3dWater
         // A: the production water (the control)
         // =========================================================================================
         public Color32[] RenderProduction(Rect view, int w, int h, float seaState, Vector2 wind,
-                                          out double gpuMs)
+                                          double timeSeconds, out double gpuMs,
+                                          bool useDefaultMaterial = false)
         {
-            _waterMat.SetFloat("_Chop", seaState);
+            Material mat = useDefaultMaterial ? _waterMatDefault : _waterMat;
+            mat.SetFloat("_Chop", seaState);
             Vector2 windDir = wind.sqrMagnitude > 1e-8f ? wind.normalized : Vector2.up;
-            _waterMat.SetVector("_WindDir", new Vector4(windDir.x, windDir.y, 0f, 0f));
-            _waterMat.SetFloat("_Roughness", Mathf.Clamp01(wind.magnitude / 12f));
+            mat.SetVector("_WindDir", new Vector4(windDir.x, windDir.y, 0f, 0f));
+            mat.SetFloat("_Roughness", Mathf.Clamp01(wind.magnitude / 12f));
 
             var rt = NewColorRT(w, h, depthBits: 24);
             var camGo = MakeCamera(view.center, w, h, out Camera cam);
@@ -204,8 +233,12 @@ namespace HiddenHarbours.Tools.Spike3dWater
             cb.ClearRenderTarget(true, true, Background, ClearDepth);
             cb.SetViewProjectionMatrices(cam.worldToCameraMatrix,
                 GL.GetGPUProjectionMatrix(cam.projectionMatrix, false));
+            // Drive _Time so the production shader's scrolled/evolving layers live at the scenario's
+            // GAME time (batch edit mode would otherwise freeze them at an arbitrary editor time).
+            float ft = (float)(timeSeconds % 20000.0);
+            cb.SetGlobalVector("_Time", new Vector4(ft / 20f, ft, ft * 2f, ft * 3f));
             cb.DrawMesh(Quad(view.xMin, view.yMin, view.xMax, view.yMax, z: 0f),
-                        Matrix4x4.identity, _waterMat, 0, 0);
+                        Matrix4x4.identity, mat, 0, 0);
 
             var sw = System.Diagnostics.Stopwatch.StartNew();
             Graphics.ExecuteCommandBuffer(cb);
@@ -259,6 +292,9 @@ namespace HiddenHarbours.Tools.Spike3dWater
         // =========================================================================================
         // C: the waterline-on-hull probe (displaced water depth-tested against the mesh hull)
         // =========================================================================================
+        /// <param name="draftMeters">Rig-frame keel sink; pass draft − waveHeightAtHull to make the
+        /// hull RIDE the swell (the see==feel composition), or a constant draft to hold it fixed
+        /// so the waterline visibly climbs and falls on the planking.</param>
         public Color32[] RenderProbe(Rect view, int w, int h, Vector2 hullPos, float hullDirUnits,
                                      float draftMeters, float heightScale, float gridCell,
                                      float totalAmplitude, out double gpuMs)
@@ -277,6 +313,7 @@ namespace HiddenHarbours.Tools.Spike3dWater
                             * IsoFacetMath.RigToWorld(hullDirUnits, HullDef.ElevationDeg)
                             * Matrix4x4.Translate(new Vector3(0f, 0f, -draftMeters));
             _facetMat.SetVector("_HullOrigin", new Vector4(hullPos.x, hullPos.y, 0f, 0f));
+            _facetMat.SetFloat("_ZTestOp", ZTestOp);
 
             // The production facet pass writes a 4-target MRT; bind all four, keep one depth.
             var facetRT = NewColorRT(w, h, depthBits: 24);
@@ -480,9 +517,11 @@ namespace HiddenHarbours.Tools.Spike3dWater
             Object.DestroyImmediate(_calibNear);
             Object.DestroyImmediate(_calibFar);
             Object.DestroyImmediate(_waterMat);
+            Object.DestroyImmediate(_waterMatDefault);
             Object.DestroyImmediate(_facetMat);
             Object.DestroyImmediate(_rampTex);
             Object.DestroyImmediate(_darkRampTex);
+            Object.DestroyImmediate(_deepTex);
         }
     }
 }

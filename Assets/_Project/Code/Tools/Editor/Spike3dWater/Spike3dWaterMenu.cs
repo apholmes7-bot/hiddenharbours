@@ -88,7 +88,7 @@ namespace HiddenHarbours.Tools.Spike3dWater
         {
             PublishGlobals(in trains, 0.0);
             var small = new Rect(-2f, -1f, 4f, 2f);
-            ren.RenderProduction(small, 64, 32, SpikeWaveScenario.SeaState, SpikeWaveScenario.Wind, out _);
+            ren.RenderProduction(small, 64, 32, SpikeWaveScenario.SeaState, SpikeWaveScenario.Wind, 0.0, out _);
             ren.RenderDisplaced(small, 64, 32, 1f, Vector2.one, Vector2.zero, 0.25f,
                                 trains.TotalAmplitude, out _, out _);
             ren.RenderProbe(small, 64, 32, Vector2.zero, 2f, 0.5f, 1f, 0.25f,
@@ -133,12 +133,18 @@ namespace HiddenHarbours.Tools.Spike3dWater
             log.AppendLine("\n-- A/B stills at the big-wave moment --");
 
             Color32[] a = ren.RenderProduction(View, W, H, SpikeWaveScenario.SeaState,
-                                               SpikeWaveScenario.Wind, out double msA);
+                                               SpikeWaveScenario.Wind, bigT, out double msA);
             SpikeWaterRenderer.WritePng(Path.Combine(OutDir, "still_A_production.png"), a, W, H);
             (int ax, int ay) = ToPixel(View, bigPos, 0f);
             SpikeWaterRenderer.WritePng(Path.Combine(OutDir, "still_A_production_annotated.png"),
                 SpikeWaterRenderer.Annotate(a, W, H, ax, ay), W, H);
             log.AppendLine($"A production: {msA:0.00} ms  big wave at px ({ax},{ay})");
+
+            // Control: the water shader at its own DEFAULTS (no owner-painted textures) — separates
+            // "the owner's tuned look" from "the shader's procedural look" in the A-side reading.
+            Color32[] a2 = ren.RenderProduction(View, W, H, SpikeWaveScenario.SeaState,
+                                                SpikeWaveScenario.Wind, bigT, out _, useDefaultMaterial: true);
+            SpikeWaterRenderer.WritePng(Path.Combine(OutDir, "still_A_production_defaults.png"), a2, W, H);
 
             float bigH = SpikeWaveScenario.Sample(in trains, bigPos, bigT).Height;
             foreach (float s in new[] { 1f, 1.5f, 2f, 3f })
@@ -176,7 +182,7 @@ namespace HiddenHarbours.Tools.Spike3dWater
                 double t = tStart + f * Dt;
                 PublishGlobals(in trains, t);
                 Color32[] a = ren.RenderProduction(View, W, H, SpikeWaveScenario.SeaState,
-                                                   SpikeWaveScenario.Wind, out _);
+                                                   SpikeWaveScenario.Wind, t, out _);
                 Color32[] b1 = ren.RenderDisplaced(View, W, H, 1f, Vector2.one, View.center,
                                                    GridCell, totalAmp, out _, out _);
                 Color32[] b2 = ren.RenderDisplaced(View, W, H, 2f, Vector2.one, View.center,
@@ -212,22 +218,36 @@ namespace HiddenHarbours.Tools.Spike3dWater
             log.AppendLine("\n-- waterline-on-hull probe (rig-true iso frame, shared z-buffer) --");
             double period = 22.17 / 5.88;   // dominant train, logged above; framing only
             const int NF = 12;
-            Directory.CreateDirectory(Path.Combine(OutDir, "frames/probe"));
+            Directory.CreateDirectory(Path.Combine(OutDir, "frames/probe_fixed"));
+            Directory.CreateDirectory(Path.Combine(OutDir, "frames/probe_riding"));
             double msSum = 0;
             for (int f = 0; f < NF; f++)
             {
                 double t = bigT + f * (period / NF);
                 PublishGlobals(in trains, t);
+
+                // (1) hull FIXED: the waterline visibly climbs and falls on the planking.
                 Color32[] p = ren.RenderProbe(view, PW, PH, hullPos, dirUnits, draft, 1f,
                                               0.0625f, totalAmp, out double ms);
                 msSum += ms;
-                SpikeWaterRenderer.WritePng(Path.Combine(OutDir, $"frames/probe/f{f:00}.png"), p, PW, PH);
+                SpikeWaterRenderer.WritePng(Path.Combine(OutDir, $"frames/probe_fixed/f{f:00}.png"), p, PW, PH);
                 if (f == 0)
                     SpikeWaterRenderer.WritePng(Path.Combine(OutDir, "probe_waterline_on_hull.png"),
                                                 p, PW, PH, 2);
+
+                // (2) hull RIDING the swell (rig-z lifted by the wave height under the pivot — the
+                // 3D composition of the existing see==feel heave): the waterline stays near the
+                // planking mark while boat AND sea move together.
+                float hHull = SpikeWaveScenario.Sample(in trains, hullPos, t).Height;
+                Color32[] p2 = ren.RenderProbe(view, PW, PH, hullPos, dirUnits, draft - hHull, 1f,
+                                               0.0625f, totalAmp, out _);
+                SpikeWaterRenderer.WritePng(Path.Combine(OutDir, $"frames/probe_riding/f{f:00}.png"), p2, PW, PH);
+                if (f == 0)
+                    SpikeWaterRenderer.WritePng(Path.Combine(OutDir, "probe_riding_hull.png"),
+                                                p2, PW, PH, 2);
             }
             log.AppendLine($"probe: {NF} frames over one dominant period, avg submit {msSum / NF:0.00} ms; " +
-                           "hull fixed, water climbs/falls on the hull by depth test");
+                           "fixed variant = waterline climbs the hull; riding variant = hull heaves with the field");
         }
 
         static void Perf(SpikeWaterRenderer ren, in WaveTrains trains, double bigT,

@@ -34,9 +34,10 @@ Shader "Hidden/HH/Spike3dWater/IsoWater"
         _Bands      ("Value bands", Float)    = 6
         _FaceShade  ("Face shading strength", Float) = 0.35
         _SunDir2D   ("Implied light dir xy", Vector) = (-0.6, 0.8, 0, 0)
-        _CapThreshold ("Whitecap crest threshold", Float) = 0.55
-        _CapSolid   ("Whitecap solid core margin", Float) = 0.2
+        _CapThreshold ("Whitecap crest threshold", Float) = 0.62
+        _CapSolid   ("Whitecap solid core margin", Float) = 0.3
         _CapDither  ("Whitecap dither band width", Float) = 0.25
+        _DitherWin  ("Band edge dither window", Float) = 0.4
         _PPU        ("Pixels per unit", Float) = 32
         _HeightScale ("Height exaggeration", Float) = 1
         _IsoScreen  ("Screen factors se ce", Vector) = (1, 1, 0, 0)
@@ -79,7 +80,7 @@ Shader "Hidden/HH/Spike3dWater/IsoWater"
                 float4 _ColDeep, _ColMid, _ColShallow, _ColFoam;
                 float  _Bands, _FaceShade;
                 float4 _SunDir2D;
-                float  _CapThreshold, _CapSolid, _CapDither;
+                float  _CapThreshold, _CapSolid, _CapDither, _DitherWin;
                 float  _PPU, _HeightScale;
                 float4 _IsoScreen, _IsoDepth, _RefXY;
                 float  _ZTestOp;
@@ -182,11 +183,16 @@ Shader "Hidden/HH/Spike3dWater/IsoWater"
                 float face = dot(-slope, sun);
                 float v = saturate(tN + face * _FaceShade);
 
-                // Posterize into _Bands discrete steps, Bayer-dithered at the band boundary.
+                // Posterize into _Bands discrete steps. Dither ONLY inside a window around the
+                // band boundary (the rig's language: solid bands with dithered EDGES) — full-range
+                // dither visually reconstructs the smooth gradient and the bands vanish (measured
+                // in run 1 of this spike).
                 float bands = max(_Bands, 2.0);
                 float x = v * (bands - 1.0);
                 float fb = floor(x);
-                float q = (fb + ((x - fb) > bay ? 1.0 : 0.0)) / (bands - 1.0);
+                float win = clamp(_DitherWin, 1e-3, 1.0);
+                float e = saturate(((x - fb) - (0.5 - 0.5 * win)) / win);
+                float q = (fb + (e > bay ? 1.0 : 0.0)) / (bands - 1.0);
 
                 float3 col = q < 0.5
                     ? lerp(_ColDeep.rgb, _ColMid.rgb, q * 2.0)
@@ -225,7 +231,7 @@ Shader "Hidden/HH/Spike3dWater/IsoWater"
                 float4 _ColDeep, _ColMid, _ColShallow, _ColFoam;
                 float  _Bands, _FaceShade;
                 float4 _SunDir2D;
-                float  _CapThreshold, _CapSolid, _CapDither;
+                float  _CapThreshold, _CapSolid, _CapDither, _DitherWin;
                 float  _PPU, _HeightScale;
                 float4 _IsoScreen, _IsoDepth, _RefXY;
                 float  _ZTestOp;
