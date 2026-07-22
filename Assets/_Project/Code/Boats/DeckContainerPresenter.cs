@@ -136,9 +136,9 @@ namespace HiddenHarbours.Boats
             // held screen-upright — the deck-walk convention. Read through the live host so a hull
             // swapped under us (the dev picker) is never read through a stale presenter.
             var host = GetComponent<BoatHullPresenterHost>();
-            var hull = (host != null && host.Presenter != null) ? host.Presenter : _hull;
-            float heading = hull != null
-                ? hull.DrawnHeadingDegrees()
+            var presenter = (host != null && host.Presenter != null) ? host.Presenter : _hull;
+            float heading = presenter != null
+                ? presenter.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
             _renderer.transform.position =
                 (Vector2)transform.position + DeckOffsetToWorld(_lastHull.DeckContainerOffset, heading);

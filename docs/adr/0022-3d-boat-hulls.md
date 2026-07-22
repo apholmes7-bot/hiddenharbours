@@ -154,12 +154,23 @@ same `RigCatalog`, the same convention probe). In a 3D-hull world **the baker is
   indefinitely; only hulls where memory or stepping actually hurts need to move.
 
 Suggested phasing, each independently verifiable:
-1. `IBoatHullPresenter` seam with the existing sprite path behind it — **no behaviour change**, all tests green.
+1. `IBoatHullPresenter` seam with the existing sprite path behind it — **no behaviour change**, all tests green. ✅ (#234)
 2. Mesh extraction in the baker (`RigMeshExtractor`), gated, with a golden-master style check against the
-   rig's own render.
-3. The facet shader as a real URP pass + the keyline as a fullscreen shader.
+   rig's own render. ✅ (#233)
+3. The facet shader as a real URP pass + the keyline as a fullscreen shader. ✅ (#239)
 4. First mesh hull end-to-end (lobster boat — she already has both a mesh and a baked sheet to compare).
-5. Side dragger, the hull that motivated this.
+   ✅ (`feat/lobster-mesh-hull`): the baked format is `HullMeshDef` in Core (mesh sub-asset + ramps/light/
+   dither + two MEASURED pose facts: the rig's azimuth convention via `RigAzimuthProbe`, and its `ROCK`
+   amplitudes), produced by `RigMeshAssetBaker` and committed. Boats poses it through the Core seam
+   (`IHullMeshRenderer` / `HullMeshPresentation.Service`, implemented by Art's `IsoFacetHullRenderer`) —
+   `MeshHullPresenter`+`MeshHullDriver` are the second `IBoatHullPresenter`, with CONTINUOUS heading
+   (`HullMeshMath.HeadingToDirUnits`) and CONTINUOUS wave rock (the same reconstructed phase that picks a
+   sprite hull's frame, unquantised). The consumers were repointed to the presenter seam as planned. The
+   lobster's `BoatVisualDef` is the Mesh variant with her 32-facing compass kept wired — the dev A/B
+   toggle (V at the helm) flips her between the two representations in place. Acceptance: her in-scene
+   mesh render vs her own baked sheet at matching headings, cluster metric, flipped-azimuth sabotage
+   proven caught.
+5. Side dragger, the hull that motivated this. ← next
 
 ## Alternatives considered
 
