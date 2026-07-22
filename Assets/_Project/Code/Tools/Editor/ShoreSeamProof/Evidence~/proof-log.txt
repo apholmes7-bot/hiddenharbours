@@ -1,0 +1,26 @@
+device: NVIDIA GeForce RTX 4060 (Direct3D12)
+depth convention: ZTest=GEqual clearDepth=0
+scenario: wind=(-5.40, -9.33) seaState=0.75 -> 4 trains, envelope=1.047 m, sharpening=2.2
+event: t=1513.5 s at (-6.5,2.1) h=1.044 m (99.7 % of envelope)
+exaggeration under proof: x1.5 (the spike sweet spot)
+shader cache warmed
+
+-- seam ON: rendered water/land boundary vs the analytic waterline contour (tear = water past the contour toward land; gap = water edge short of the contour). PASS bar: |dev| <= 1 px (sub-pixel rasterization) --
+  beach_north  grad=+0.15 tide=-0.60 band=0.471 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  beach_north  grad=+0.15 tide=+0.00 band=0.471 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  beach_north  grad=+0.15 tide=+0.75 band=0.471 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  flats_north  grad=+0.05 tide=-0.60 band=0.157 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  flats_north  grad=+0.05 tide=+0.00 band=0.157 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  flats_north  grad=+0.05 tide=+0.75 band=0.157 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  steep_north  grad=+0.50 tide=-0.60 band=1.571 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  steep_north  grad=+0.50 tide=+0.00 band=1.571 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  steep_north  grad=+0.50 tide=+0.75 band=1.571 m : maxTear=  0 px, maxGap=  0 px over 12 frames -> PASS
+  beach_south  grad=-0.15 tide=-0.60 band=0.471 m : maxTear= -1 px, maxGap=  1 px over 12 frames -> PASS
+  beach_south  grad=-0.15 tide=+0.00 band=0.471 m : maxTear= -1 px, maxGap=  1 px over 12 frames -> PASS
+  beach_south  grad=-0.15 tide=+0.75 band=0.471 m : maxTear= -1 px, maxGap=  1 px over 12 frames -> PASS
+
+-- seam OFF control (beach_north, tide 0): maxTear=31 px (t=1510.76), maxGap=50 px (t=1512.47) — the coast tears without the seam --
+
+-- open sea (uniform deep, the envelope-event moment, x1.5): seam ON vs seam OFF differing pixels = 0 of 518400 -> PASS (bit-invisible offshore)
+
+RESULT: PASS

@@ -1809,3 +1809,44 @@ the §14 weather blend ease them per mood — look props only, disjoint from the
 `_SwellReadStrength 0.35` / `_SwellReadBands 0`); the owner's tuned values are otherwise byte-identical. The
 shipped `Water.mat` + every `WaterPresets/` variant stay force-compiled by `WaterShaderCompileGuardTests`
 (no `+` in any `[Header]`, no `[unroll]` over a runtime bound — the magenta class stays guarded).
+
+## 21. The shore seam — displacement dies at the walkable waterline (ADR 0023, displaced-water arc step 1)
+
+The displaced-water arc (owner greenlit 2026-07-22; decision + full derivation in
+`docs/adr/0023-displaced-water-surface.md`) will lift the water as a real mesh surface — the same
+deterministic field, vertically displaced through the ADR 0022 off-screen pattern. Before any surface ships,
+the arc's step 1 solves and proves its one hard problem: **displacement must reach exactly zero at the
+walkable waterline or the coast tears** (water drawn over dry sand at a crest; a bared strip at a trough).
+
+**The mechanism — `Core.ShoreFadeMath` (pure, additive):**
+
+```
+fade = smoothstep(0, band, depth)        depth = WaterLevelAt(t) − ElevationAt(pos)
+lift = waveHeight × exaggeration × fade  (ShoreFadeMath.DisplacedHeight — EVERY consumer reads this)
+```
+
+The fade's zero set is the depth-0 iso-contour of the painted seabed **itself** — the same
+`WaterLevelAt − ElevationAt` read the water shader, walkability and boat-cross already share (the one
+height map gains its **fourth consumer**). As the tide moves the waterline, the seam moves with it; there is
+no second contour to drift. The falloff band is **derived, not tuned** (rule 6):
+`band = 2 × envelope × exaggeration × shoreGradient` (`RecommendedBandMeters` — overlap bound 1.125,
+in-band fold bound 1.5, coefficient 2 holds both with margin), giving a steepness-independent ground
+footprint of `2 × envelope × exaggeration` ≈ 3.1 m of shallows at the reference sea × 1.5.
+
+**Proof shipped with step 1** (the numbers live in ADR 0023 and
+`Assets/_Project/Code/Tools/Editor/ShoreSeamProof/Evidence~/proof-log.txt`):
+
+- `ShoreFadeMathTests` (headless, CI-safe): displacement exactly 0 on the contour at three tides; shore
+  transects over four profiles × three tides never cross the waterline and never fold — including the
+  100%-envelope event (t = 1513.5 s, pinned as a regression guard) parked adversarially at mid-band; past
+  the band the seam is bit-invisible.
+- The `ShoreSeamProof` editor harness (GPU, evidence committed): rendered water/land boundary vs the
+  analytic contour = **0 px** deviation on every north shore at every tide (±1 px south, sub-pixel
+  rasterization); the seam-OFF control tears 31 px / gaps 50 px; open-sea render at the event moment is
+  pixel-identical with the seam active (0 of 518,400).
+
+**Contracts binding on the later phases** (the production surface, hull heave, glitter/whitecap retunes —
+ADR 0023 §Phases): one sea (displace the existing field only), ONE shared exaggeration constant read through
+`DisplacedHeight` by surface and hulls alike, the style law (solid bands, dithered edges, world-locked
+cells, owner palette anchors), and the HLSL twin discipline — the production vertex shader's fade must be a
+line-for-line twin of `Fade01`, changed only in lockstep.
