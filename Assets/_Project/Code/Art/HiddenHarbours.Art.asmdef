@@ -3,7 +3,10 @@
     "rootNamespace": "HiddenHarbours.Art",
     "references": [
         "HiddenHarbours.Core",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "allowUnsafeCode": false,
     "autoReferenced": true

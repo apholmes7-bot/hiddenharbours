@@ -174,9 +174,29 @@ Suggested phasing, each independently verifiable:
 
 ## Open questions / not yet proven
 
-1. **URP integration.** The in-scene comparison is a CPU composite at native resolution, not a real URP pass.
-   This is the largest remaining unknown, and it is integration work rather than a look question.
-2. **The keyline** ran as a CPU pass for exactness; production wants a fullscreen shader.
+1. **URP integration.** ✅ **CLOSED by phase 3** (`feat/facet-shader-urp`). What the unknown turned out to be:
+   URP 17.5's 2D renderer supports RenderGraph render features through its own injection system
+   (`ScriptableRenderPass2D` / `RenderPassEvent2D`, per-sorting-layer-batch) — the facet pass runs at
+   `BeforeRenderingSprites` on the lowest sorting layer (the plain `BeforeRendering` event records **before**
+   camera matrices are set up and cannot draw geometry). Two structural discoveries reshaped the plan:
+   **(a)** the hull cannot draw directly in the 2D transparent pass — it needs a z-buffer, but sprites z-test
+   (`ZTest LEqual`, `ZWrite Off`) against the *shared* depth buffer, so a depth-writing mesh punches holes in
+   every later sprite above it. The facet pass therefore draws off-screen into a 4-target MRT with a **private**
+   depth buffer, and a cell-sized **overlay quad** re-composes the hull (keyline included) in-scene, sorting
+   whole-object through the SortingGroup exactly as a baked sprite would. **(b)** the spike's screen-space
+   `_DitherPhase` calibration is unnecessary in production: deriving the dither index **from world position in
+   the hull-cell frame** (`(worldXY − hullOrigin)·PPU + pivot`) is the same number by construction, y-flip-proof,
+   and hull-locked with no probe. Acceptance: GPU vs the phase-2 CPU oracle, connected-cluster metric, with
+   convention-flip sabotage (light sign, dither phase, heading mirror) proven caught.
+2. **The keyline** ✅ **CLOSED by phase 3**: a fullscreen resolve shader (darken far side of >0.30 m true-depth
+   discontinuities via a precomputed RINDEX-faithful darkened-ramp LUT, flood the 1 px keyline with the
+   neighbour's key colour and hull id), written into a persistent screen texture the overlay quads sample.
+   Phase 3 also honours the owner's deck-walking decision (2026-07-21): a second renderer list (LightMode
+   `HHHullDeck`) draws **between** the facet pass and the resolve against the **same private z-buffer**, so a
+   future character-on-deck billboard is per-pixel occluded by nearer hull geometry — probed in-repo
+   (`IsoFacetUrpPassTests.DeckRenderers_AreDepthTestedAgainstTheHull_PerPixel`). Note for phase 4: that path
+   uses plain `ZTest LEqual` — the render-graph camera path handles reversed-Z; the spike's `GEqual`/clear-0
+   convention belonged to its hand-built command buffer only.
 3. **Waterline clipping** (above) — designed, untested.
 4. ⚠️ **Geometry access.** The rigs' face list `F` is **closure-private and not exported**. The spike reads it
    via a loudly-marked in-memory string widening of the exported object literal. **In production the art

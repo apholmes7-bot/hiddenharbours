@@ -3,6 +3,7 @@
     "rootNamespace": "HiddenHarbours.Art.Editor",
     "references": [
         "HiddenHarbours.Art",
+        "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Universal.2D.Runtime",
         "Unity.2D.Tilemap.Extras",
         "Unity.2D.Tilemap.Editor",
