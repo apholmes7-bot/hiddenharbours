@@ -575,6 +575,43 @@ on a swap at all (see the swap gap below).
   visual child, the hull renderer and the `DirectionalBoatSprite` to layer onto. Bind sheets to the def —
   never add art paths to a builder.
 
+### 9.1b The hull-presenter seam (ADR 0022 phase 1 — a seam, not a renderer)
+
+ADR 0022 proposes rendering **large** hulls as real-time 3D meshes while small hulls stay sprites, the two
+coexisting behind one interface. Phase 1 lands **only that interface**, with today's sprite path behind it
+and **no behaviour change** — so the decision can still go either way without this having cost anything.
+
+- **`IBoatHullPresenter`** is the description of a drawn hull that everything layering onto it needs:
+  `DrawnHeadingDegrees()`, `FacingCellIndex`/`FacingCount`, `FacingsAreCounterClockwise`,
+  `BakeElevationDegrees`, `HasRockGrid`/`RockFrame`, `VisualTiltDegrees`, `Visual`, `Anchors`. It was
+  designed from what the six existing consumers (`OutboardMotorLayer`, `DoryOarLayer`, `BoatWakeEmitter`,
+  `DeckContainerPresenter`, `DeckWalkController`, `BoatRotationTestRig`) actually read off
+  `DirectionalBoatSprite` — not from what a mesh might want. A mesh hull reports `FacingCount` **0** (the
+  documented "unquantised" signal the snap math already understands) and `FacingsAreCounterClockwise`
+  false; the flag itself is **retained**, because sprite sheets still need it (boats true, characters
+  false).
+- **`SpriteHullPresenter`** is a POCO adapter over the shipped `DirectionalBoatSprite`. It **decides
+  nothing** — every member forwards. If a getter ever grows a rule of its own, the seam has stopped being
+  a seam, and `BoatHullPresenterSeamTests` goes red.
+- **`BoatVisualDef.Variant`** (`BoatHullVariant.Sprite`/`Mesh`) is the discriminator. `Sprite` is both the
+  field's **initialiser** and the enum's **zero value** — two independent guards, because the initialiser
+  is what actually protects the already-committed assets (measured) and the zero value covers every path
+  where no initialiser runs. Variants are append-only; the value persists as an `int`.
+- **The anchor contract** (`IBoatHullAnchors.TryGetPoints`) answers "where is this point on the hull I am
+  drawing, right now?", in screen-metre offsets from the cell pivot — the frame `MountedRockPoseMath`
+  already returns and every overlay already consumes. Caller owns the list; the callee only appends (rule
+  7). A sprite hull projects a boat-local rig point for the drawn **cell** (cell space, not compass space
+  — they differ for CCW art, and confusing them is the mirrored-art class of bug); a mesh hull will push
+  the same point through its live object transform.
+- ⚠️ **The baked `Art/Boats/*Anchors.json` files are not read at runtime.** The rig baker writes them and
+  nothing loads them — the runtime's only real anchor today is `BoatVisualDef.MotorMountLocalMeters`,
+  hand-transcribed from the rig. The contract is shaped so a JSON-table-backed implementation is a legal
+  drop-in, but shipping one would be *new* behaviour and is not phase 1.
+- **Nothing consumes the seam yet, deliberately.** `BoatHullSkinner.Rig.Presenter` is the one production
+  wiring point; the overlays keep their concrete `DirectionalBoatSprite` field until there is a second
+  implementation to justify the churn (ADR 0022 phase 4). The invariants in §9.1a are unchanged — a
+  presenter is **not** a licence to move a heading consumer off the physics root.
+
 ### 9.2 Physics tuning
 
 - **Mass/inertia** from `Hull` (`mass ∝ length³` scaled to feel; clamp so the dory isn't *too* twitchy and the tanker isn't unmovably slow). Tune `dragSide/dragFwd` ratio (~6–12×) for the "tracks forward, skids reluctantly" feel.

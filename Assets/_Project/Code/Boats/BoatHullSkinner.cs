@@ -103,6 +103,20 @@ namespace HiddenHarbours.Boats
             public DoryOarLayer Oars;
             /// <summary>The outboard overlay, when this visual binds a complete pair of motor sheets.</summary>
             public OutboardMotorLayer Motor;
+
+            /// <summary>
+            /// <b>The hull-presenter seam (ADR 0022 phase 1).</b> The same rig, described through
+            /// <see cref="IBoatHullPresenter"/> instead of as a concrete <see cref="DirectionalBoatSprite"/>
+            /// — so that when <c>MeshHullPresenter</c> lands, this field is the ONLY thing that has to start
+            /// returning something else.
+            ///
+            /// <para><b>Nothing reads it yet, on purpose.</b> Phase 1's contract is that behaviour does not
+            /// change, so the overlays keep their concrete <see cref="Directional"/> reference and are
+            /// untouched. This field exists so the seam has one real production wiring point (and so the
+            /// tests exercise the thing the game actually builds, not a fixture). Null when the hull is
+            /// unskinned, exactly like <see cref="Directional"/>.</para>
+            /// </summary>
+            public IBoatHullPresenter Presenter;
         }
 
         /// <summary>
@@ -238,10 +252,19 @@ namespace HiddenHarbours.Boats
                     : RemoveMotor(root, child);
             }
 
+            // (7) The presenter seam (ADR 0022 phase 1) — a description of the rig we just built, not a
+            // second rig. Constructed unconditionally because a sprite hull is a legitimate presenter;
+            // read by nothing yet. The ONLY anchor the runtime has a real value for today is the motor
+            // mount (BoatVisualDef.MotorMountLocalMeters, transcribed from the rig's MOUNT), so it is the
+            // only one defined — an anchor with no authored point must MISS, not silently return the origin.
+            var anchors = new SpriteHullAnchors(directional, child);
+            if (visual.HasMotor()) anchors.Define(BoatAnchorId.MotorMount, visual.MotorMountLocalMeters);
+
             return new Rig
             {
                 Skinned = true, Visual = child, Renderer = sr,
                 Directional = directional, Wave = wave, Oars = oars, Motor = motor,
+                Presenter = new SpriteHullPresenter(directional, anchors),
             };
         }
 

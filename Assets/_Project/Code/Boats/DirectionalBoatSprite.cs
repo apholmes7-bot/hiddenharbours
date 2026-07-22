@@ -177,6 +177,40 @@ namespace HiddenHarbours.Boats
         public bool FacingsAreCounterClockwise => _facingsAreCounterClockwise;
 
         /// <summary>
+        /// How many facing cells this skin is drawn for (0 = no compass, so the picture rotates with the
+        /// hull). Read-only view of the configured array — added for <see cref="SpriteHullPresenter"/>
+        /// (ADR 0022 phase 1); computes nothing and changes nothing.
+        /// </summary>
+        public int FacingCount => _facings != null ? _facings.Length : 0;
+
+        /// <summary>
+        /// The compass heading (degrees, 0 = North, CW) that cell 0 is drawn for. Read-only view of the
+        /// configured value. See <see cref="BoatVisualDef.ZeroHeadingDegrees"/>.
+        /// </summary>
+        public float ZeroHeadingDegrees => _zeroHeadingDegrees;
+
+        /// <summary>
+        /// The facing CELL currently drawn, in [0, <see cref="FacingCount"/>) — mirrored for
+        /// counter-clockwise art, because that is the cell the overlay sheets must index too.
+        ///
+        /// <para>Derived from the live transform rather than cached, so it is correct BEFORE the first
+        /// <c>LateUpdate</c> and does not depend on this component having run — the same reason
+        /// <see cref="DrawnHeadingDegrees"/> recomputes. In
+        /// <see cref="RotationMode.SmoothRotateSingle"/>, or with no compass, it is 0: nothing is being
+        /// selected by heading.</para>
+        /// </summary>
+        public int CurrentFacingIndex
+        {
+            get
+            {
+                int count = FacingCount;
+                if (count == 0 || _mode != RotationMode.SnapDirectional) return 0;
+                return HeadingToFacingIndex(HeadingDegreesFromBow(transform.up), count,
+                                            _zeroHeadingDegrees, _facingsAreCounterClockwise);
+            }
+        }
+
+        /// <summary>
         /// Wire the wave-coupled rock grid from code (the builders' path). <paramref name="rockGrid"/> is
         /// the heading×frame sheet laid out row-major (element <c>heading·frameCount + frame</c>);
         /// <paramref name="rockFrameCount"/> is the frames per heading (8 for the DoryIsoRock sheet).
