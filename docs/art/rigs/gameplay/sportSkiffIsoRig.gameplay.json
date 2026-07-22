@@ -38,14 +38,14 @@
   ],
   "_excluded": [
     "WASHBOARD \u2014 open skiff, no side decks",
-    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, sportSkiffIsoRig.js:146-157) not ruled walkable; cockpit-only per coordinator ruling"
+    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, sportSkiffIsoRig.js:146-157) stays excluded; cockpit-only, owner-ruled 2026-07-22"
   ],
   "_notes": [
     "cockpit obstructions (not holes): centre console x\u00b10.34, y -0.25..0.55 (lines 181-197); leaning post at y=-0.86 (198-209); aft bench x\u00b10.70 at y=-3.10 (210-212); T-top legs at x\u00b10.40, y=-0.88/+0.48 (213-220); stern grab rails on the quarters (174-180)",
     "the local DROP=0.045 at line 222 is the BIMINI canvas skirt depth (canvas detail), NOT the foredeck drop \u2014 the foredeck uses DROP=0.07 (line 147)",
     "the sport stem rake (rakeAt, lines 64-65) only affects u>0.85 and does not move the cockpit sole"
   ],
-  "_confirm_items": [
-    "the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling"
+  "_ruled_items": [
+    "was _confirm: the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the foredeck stays excluded; mooring is the toss-a-line cast verb, the character never needs to stand at the bow cleat."
   ]
 }

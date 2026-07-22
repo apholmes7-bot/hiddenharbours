@@ -34,7 +34,7 @@
           [-4.524, -19.211], [-4.487, -19.917], [-4.45, -20.623]
         ],
       "_derivation": "strip between the house wall x=-H1X=-4.20 and the deck edge -dw(u); clipped to y -20.623..-17.8 where the strip is >= 0.25 m wide \u2014 aft of that the house wall stands wider than the narrowing stern deck",
-      "_confirm": "aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (side door at y -19.4..-18.7). Owner to confirm deck-walking accepts that."
+      "_ruled": "was _confirm: aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (side door at y -19.4..-18.7). RULED: ACCEPTED (owner, 2026-07-22) \u2014 no deck-level aft route past the house; the through-house route stands."
     },
     {
       "id": "house_alley_star",
@@ -133,7 +133,7 @@
     "mooring winch (line 188) + anchor windlass (line 359-360) \u2014 machinery, not tie-offs",
     "cargo-hold hatch covers (mint, z 6.23..6.36) \u2014 not crew-walkable in this data; loading overlays own them"
   ],
-  "_confirm_items": [
-    "no midship bollards are modelled along the long hold walkways \u2014 a 60 m coaster would have breast lines; flagging the absence for the owner (art change vs accepted)"
+  "_ruled_items": [
+    "was _confirm: no midship bollards are modelled along the long hold walkways \u2014 a 60 m coaster would have breast lines; flagging the absence for the owner (art change vs accepted). RULED: ABSENCE ACCEPTED FOR NOW (owner, 2026-07-22) \u2014 the midship-bollard art addition is BANKED, not ordered; revisit if breast lines matter to M2 mooring."
   ]
 }

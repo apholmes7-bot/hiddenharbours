@@ -25,7 +25,7 @@
           [-1.747, -3.193], [-1.707, -4.129], [-1.615, -5.064], [-1.494, -6.0]
         ],
       "_derivation": "half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.50 (lobsterBoatIsoRig.js:33,86,181-194); sampled u=0 (transom, y=-6.0) to u=(HYaft+L/2)/L=0.546 (wheelhouse aft wall, y=0.55, line 148)",
-      "_confirm": "forward extent: sole geometry continues to u=SOLE_U=0.80 beneath/alongside the wheelhouse (line 181), but only a <0.35 m sliver is clear of the tapered house wall (HXat, line 155) \u2014 cockpit DECK is cut at the house aft wall; the walk-around forward is the WASHBOARD strips. Owner to confirm."
+      "_ruled": "was _confirm: forward extent: sole geometry continues to u=SOLE_U=0.80 beneath/alongside the wheelhouse (line 181), but only a <0.35 m sliver is clear of the tapered house wall (HXat, line 155) \u2014 cockpit DECK is cut at the house aft wall; the walk-around forward is the WASHBOARD strips. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the cut at the wheelhouse aft wall stands; the washboards are the route forward."
     },
     {
       "id": "foredeck",

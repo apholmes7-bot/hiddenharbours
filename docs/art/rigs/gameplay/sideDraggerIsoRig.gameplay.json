@@ -108,7 +108,7 @@
     "WASHBOARD \u2014 steel bulwarks with a covering-board cap (line 167-170); the deck runs full beam, no walkable washboard strips",
     "trawl gallows, winch, capstan, otter boards \u2014 working gear, not tie-offs"
   ],
-  "_confirm_items": [
-    "deck polygons ignore movable working gear (winch/hatches/net/gallows listed per-polygon in _note) \u2014 whether M2-37 deck-walking wants these as authored holes or game-side colliders is not yet ruled"
+  "_ruled_items": [
+    "was _confirm: deck polygons ignore movable working gear (winch/hatches/net/gallows listed per-polygon in _note) \u2014 whether M2-37 deck-walking wants these as authored holes or game-side colliders is not yet ruled. RULED: GAME-SIDE COLLIDERS (owner, 2026-07-22) \u2014 the obstruction _note entries stay as data and are the collider source for M2-37..39; no authored holes."
   ]
 }

@@ -34,7 +34,7 @@
           [-8.196, -31.771], [-8.123, -34.347], [-8.05, -36.923]
         ],
       "_derivation": "strip between the house wall x=-HX=-7.8 (line 171) and the poop deck edge -dw(u,POOP); clipped to y -36.923..-26.62 where the strip is >= 0.25 m wide \u2014 aft of that the house wall stands wider than the narrowing stern",
-      "_confirm": "aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (aft door + side doors at y -29.3..-28.5). Owner to confirm deck-walking accepts that."
+      "_ruled": "was _confirm: aft of the clip there is no deck-level route past the house to the aft mooring deck \u2014 crew pass through the house (aft door + side doors at y -29.3..-28.5). RULED: ACCEPTED (owner, 2026-07-22) \u2014 no deck-level aft route past the house; the through-house route stands."
     },
     {
       "id": "poop_alley_star",
@@ -101,7 +101,7 @@
           [0.78, -21.3], [0.78, 30.3], [-0.78, 30.3], [-0.78, -21.3]
         ],
       "_derivation": "elevated centre catwalk over the tank crowns: boxF([0,(Y0+Y1)/2,ZW],[0.78,(Y1-Y0)/2,0.055]) with Y0=-21.3, Y1=30.3, ZW=13.82 (tankerIsoRig.js:264-275); z = slab top = ZW+0.055; handrails at x=\u00b10.72 both sides",
-      "_confirm": "authored walkable \u2014 it is the fore-aft crew route over the tanks, but no ladder/stair geometry is modelled at its ends; owner to confirm deck-walking treats the end stanchions as access points"
+      "_ruled": "was _confirm: authored walkable \u2014 it is the fore-aft crew route over the tanks, but no ladder/stair geometry is modelled at its ends; owner to confirm deck-walking treats the end stanchions as access points. RULED: ACCEPTED WALKABLE (owner, 2026-07-22) \u2014 the end stanchions serve as access points for now; end-ladder geometry is BANKED as a future art note, not ordered."
     },
     {
       "id": "focsle_deck",
@@ -164,9 +164,9 @@
     "windlass drums + mooring winches \u2014 machinery, not tie-offs",
     "tank-cover crowns + dome hatches \u2014 not crew-walkable (the catwalk is the route over them)"
   ],
-  "_confirm_items": [
-    "no midship breast bollards are modelled along the tank deck \u2014 a 110 m ship would have them at the manifold; flagging the absence for the owner (art change vs accepted)",
-    "tank_lane inner edge held at the tank envelope x=\u00b1RX=\u00b16.3 \u2014 the true clearance past the tank flank overhang is judged passable at deck level"
+  "_ruled_items": [
+    "was _confirm: no midship breast bollards are modelled along the tank deck \u2014 a 110 m ship would have them at the manifold; flagging the absence for the owner (art change vs accepted). RULED: ABSENCE ACCEPTED FOR NOW (owner, 2026-07-22) \u2014 the manifold breast-bollard art addition is BANKED, not ordered; revisit if breast lines matter to M2 mooring.",
+    "was _confirm: tank_lane inner edge held at the tank envelope x=\u00b1RX=\u00b16.3 \u2014 the true clearance past the tank flank overhang is judged passable at deck level. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the lanes stand as authored."
   ],
   "_notes": [
     "this rig bakes at 16 px/m (half the fleet standard, tankerIsoRig.js:27) \u2014 frame.scale_px_per_m reflects that; units are still metres"

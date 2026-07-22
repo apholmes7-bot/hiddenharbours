@@ -52,11 +52,16 @@ error). Never invent a section to fill a gap.
   rig constants (`station()`, `dfrac`, `dw`, `WB`, `DROP`, …) it was computed from.
 - `_confirm` — the value stands, but it rests on a design judgment not yet ruled; one line
   of context so the owner can rule from the PR page.
+- `_ruled` / `_ruled_items` — a former `_confirm` the owner has ruled on. The annotation keeps
+  the original judgment text verbatim ("was _confirm: …") and appends the ruling, `(owner,
+  <date>)`, and one line of rationale. The judgment record is never deleted — provenance is
+  the point. (`_confirm_items` arrays become `_ruled_items` the same way.)
 - `_excluded` — deliberate omissions, recorded so reviewers see decisions, not silent gaps.
 - `_notes` — non-normative context (obstruction footprints on the deck polygons, etc.).
   Deck polygons do **not** carry holes for deck furniture; obstructions are listed per
-  polygon in `_note`/`_notes` and their game-side treatment (authored holes vs colliders)
-  is an open `_confirm` item.
+  polygon in `_note`/`_notes` and their game-side treatment is **ruled** (owner, 2026-07-22):
+  **game-side colliders**, sourced from these obstruction notes, for M2-37..39 — never
+  authored holes.
 
 ## Derivation discipline
 
@@ -77,11 +82,11 @@ stay known:
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
-| dory | 4.5 m | bilge floor (3d) | — open boat | bow painter (`_confirm`) |
-| punt | 5.2 m | bilge floor (3d) | — open boat | bow painter (`_confirm`) |
+| dory | 4.5 m | bilge floor (3d) | — open boat | bow painter (data-only, ruled) |
+| punt | 5.2 m | bilge floor (3d) | — open boat | bow painter (data-only, ruled) |
 | console | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | sportSkiff | 7.0 m | cockpit sole | — open skiff | bow cleat |
-| capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (stop at house) | bow bitt + 2 stern |
+| capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
 | lobsterBoat | 12.0 m | cockpit + foredeck (3d) | both sides, 0.44 m (full length) | bow samson + 2 stern |
 | sideDragger | 25 m | aft deck, house alleys, working deck, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
 | sternTrawler | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
@@ -89,5 +94,9 @@ stay known:
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
 | tanker | 110 m | poop, alleys, tank lanes, fore deck, catwalk, foc'sle (3d) | — bulwarks | centre bitt + 2 bow + 2 quarter + 2 stern bollards |
 
-Foredeck boardability on lobsterBoat/capeIslander is owner-ruled (boardable). All open
-`_confirm` items live inside the sidecars themselves — search `_confirm`.
+Foredeck boardability on lobsterBoat/capeIslander is owner-ruled (boardable). **All ten
+`_confirm` items from the original drop were ruled by the owner on 2026-07-22** and are
+recorded in place as `_ruled`/`_ruled_items` — no open `_confirm` remains. The one rig
+change ordered by those rulings (cape washboards run to the foredeck) is applied and the
+cape sidecar re-derived. Two art additions were **banked, not ordered**: packet/tanker
+midship breast bollards, and tanker catwalk end-ladders.

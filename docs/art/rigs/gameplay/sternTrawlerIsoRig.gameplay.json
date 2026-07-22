@@ -57,7 +57,7 @@
           [-3.984, 5.229], [-4.058, 3.986], [-4.094, 2.743], [-4.128, 1.5]
         ],
       "_derivation": "strip between the deckhouse wall x=-HXl=-3.45 and the deck edge -dw(u); clipped to y 1.5..7.714 where the strip is >= 0.25 m wide \u2014 it pinches closed toward the house front as the hull narrows",
-      "_confirm": "the side alleys pinch shut before the foc'sle break: there is NO deck-level route from the trawl deck to the foc'sle \u2014 crew pass through the house (side door at y 1.95..2.65). Owner to confirm deck-walking accepts that or the rig grows a passage."
+      "_ruled": "was _confirm: the side alleys pinch shut before the foc'sle break: there is NO deck-level route from the trawl deck to the foc'sle \u2014 crew pass through the house (side door at y 1.95..2.65). RULED: ACCEPTED (owner, 2026-07-22) \u2014 the pinch stands; the through-house route is the way forward, no rig passage is grown."
     },
     {
       "id": "house_alley_star",
@@ -118,8 +118,8 @@
     "STERN RAMP floor (sloped wet steel, y -19.0..-13.6 between x \u00b11.70, z 1.75 rising to 3.48) \u2014 not authored as walkable DECK",
     "trawl winches, net drum, gantry blocks \u2014 working gear, not tie-offs"
   ],
-  "_confirm_items": [
-    "ramp floor excluded from DECK \u2014 deckhands do walk it in harbour; owner to rule if it should be walkable",
-    "deck polygons ignore movable working gear (see _note) \u2014 holes vs game-side colliders not yet ruled"
+  "_ruled_items": [
+    "was _confirm: ramp floor excluded from DECK \u2014 deckhands do walk it in harbour; owner to rule if it should be walkable. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the ramp floor stays excluded from walkable DECK.",
+    "was _confirm: deck polygons ignore movable working gear (see _note) \u2014 holes vs game-side colliders not yet ruled. RULED: GAME-SIDE COLLIDERS (owner, 2026-07-22) \u2014 the obstruction _note entries stay as data and are the collider source for M2-37..39; no authored holes."
   ]
 }
