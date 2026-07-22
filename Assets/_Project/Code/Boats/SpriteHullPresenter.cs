@@ -40,6 +40,15 @@ namespace HiddenHarbours.Boats
         /// <inheritdoc/>
         public BoatHullVariant Variant => BoatHullVariant.Sprite;
 
+        /// <summary>
+        /// The concrete compass component behind this presenter — exposed for ONE reason: consumers
+        /// with serialized legacy fields (BoatWaveMotion, the overlay layers) are configured at EDIT
+        /// time by the scene builders, and a POCO presenter does not survive serialization. They
+        /// persist this component instead and re-wrap it on reload. Do not use it to bypass the seam
+        /// at runtime.
+        /// </summary>
+        public DirectionalBoatSprite Directional => _directional;
+
         /// <inheritdoc/>
         public float DrawnHeadingDegrees() => _directional != null ? _directional.DrawnHeadingDegrees() : 0f;
 

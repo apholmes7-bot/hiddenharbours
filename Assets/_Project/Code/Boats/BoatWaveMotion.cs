@@ -172,7 +172,12 @@ namespace HiddenHarbours.Boats
             RestoreVisual();          // if re-wired live, leave the old visual clean
             _visual = visual;
             _presenter = hull;
-            _directionalSprite = null;   // the presenter owns the channel now; never double-drive
+            // A POCO presenter does not survive scene serialization, and the builders call this at
+            // EDIT time — persist the concrete compass (when the presenter wraps one) so a reloaded
+            // scene lazily re-wraps it instead of waking with no hull channel and losing the
+            // frame-driven rock. A mesh presenter serialises nothing: its rig is runtime-installed
+            // by the skinner every time.
+            _directionalSprite = (hull as SpriteHullPresenter)?.Directional;
             _baseCached = false;
         }
 

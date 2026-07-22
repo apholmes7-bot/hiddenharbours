@@ -266,6 +266,9 @@ namespace HiddenHarbours.Boats
             _upperB = upperB;
             _boat = boat;
             _presenter = hull;
+            // Persist the concrete compass when the presenter wraps one — edit-time-built scenes must
+            // reload with their hull channel intact (see DoryOarLayer.Configure; same reasoning).
+            _directionalSprite = (hull as SpriteHullPresenter)?.Directional;
             _hullRenderer = hullRenderer;
             _variant = variant;
             _fit = fit;

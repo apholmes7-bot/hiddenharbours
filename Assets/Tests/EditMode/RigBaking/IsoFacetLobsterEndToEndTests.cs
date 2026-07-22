@@ -28,11 +28,21 @@ namespace HiddenHarbours.Tests.RigBaking
     /// all land as pixels, not as green ticks.</para>
     ///
     /// <para><b>Noise floor.</b> Same metric and reasoning as IsoFacetUrpPassTests: connected
-    /// cluster size, floors measured then pinned. Cardinal headings run long axis-aligned hull edges
-    /// (hardware fill vs the rig's slack fill) and sit near that fixture's measured 253 → floor 300;
-    /// fractional (non-cardinal) headings break the same disagreement into short runs (measured
-    /// 17–22 there) → floor 80, kept a factor above the measurement and THREE ORDERS below the
-    /// mirrored-heading sabotage (57,356). CI has no GPU: every test gates on
+    /// cluster size, floors MEASURED (D3D11, 2026-07-22), then pinned:
+    /// <code>
+    ///   cell  0 (0°,      cardinal)   2.58%  cluster 114
+    ///   cell  8 (90°,     cardinal)   3.04%  cluster 253   ← beam-on, longest straight edges
+    ///   cell 16 (180°,    cardinal)   2.38%  cluster 116
+    ///   cell 24 (270°,    cardinal)   3.04%  cluster 253
+    ///   cell  3 (33.75°,  fractional) 2.55%  cluster  51
+    ///   cell 13 (146.25°, fractional) 2.59%  cluster  50
+    ///   cell 22 (247.5°,  fractional) 2.71%  cluster 112   ← the 22.5° multiple still runs straightish edges
+    ///   cell 29 (326.25°, fractional) 2.53%  cluster  51
+    /// </code>
+    /// All of it is the ADR's facet-/dither-boundary single-step class (percentages inside the
+    /// spike's 1.3–4.4% band). Cardinal floor 300 (shared with the phase-3 fixture); fractional
+    /// floor 150, a third above its worst measurement and TWO-TO-THREE ORDERS below the
+    /// flipped-azimuth sabotage (measured 44,822 at East). CI has no GPU: every test gates on
     /// <see cref="RequireAGraphicsDevice"/> and skips loudly.</para>
     /// </summary>
     public class IsoFacetLobsterEndToEndTests
@@ -43,8 +53,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>Cardinal floor — long axis-aligned edges, the measured worst class (see doc).</summary>
         const int MaxCardinalNoiseCluster = 300;
-        /// <summary>Fractional-heading floor (see doc — measured 17–22, sabotage 57k).</summary>
-        const int MaxFractionalNoiseCluster = 80;
+        /// <summary>Fractional-heading floor (see doc — measured 50–112, sabotage 44,822).</summary>
+        const int MaxFractionalNoiseCluster = 150;
         /// <summary>Whole-cell backstop, comparability with ADR 0022's 1.3–4.4% band.</summary>
         const double MaxPercent = 5.0;
 

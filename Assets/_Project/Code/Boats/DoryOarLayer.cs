@@ -149,6 +149,10 @@ namespace HiddenHarbours.Boats
             _starRenderer = starRenderer;
             _boat = boat;
             _presenter = hull;
+            // Persist the concrete compass when the presenter wraps one: the builders configure this
+            // at EDIT time and a POCO presenter does not survive scene serialization — without this a
+            // reloaded scene would row with NO ccw mirror (the mirrored-oars class of bug).
+            _directionalSprite = (hull as SpriteHullPresenter)?.Directional;
             _headingCount = Mathf.Max(1, headingCount);
             _columnsPerHeading = Mathf.Max(1, columnsPerHeading);
             _baseCached = false;

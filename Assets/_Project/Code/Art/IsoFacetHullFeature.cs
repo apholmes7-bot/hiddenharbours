@@ -75,6 +75,12 @@ namespace HiddenHarbours.Art
         {
             if (IsoFacetHullRegistry.Count == 0)
                 return;   // the zero-cost guarantee — scenes without mesh hulls pay nothing
+            // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
+            // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
+            // legitimately keep a live mesh hull while other fixtures own cameras. Never enqueue
+            // there: a null device has no pixels to be right or wrong about.
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                return;
             if (renderingData.cameraData.cameraType == CameraType.Preview ||
                 renderingData.cameraData.cameraType == CameraType.Reflection)
                 return;
