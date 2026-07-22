@@ -87,9 +87,29 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// The wave-driven rock frame to present; <b>−1 = the calm/level pose</b>.
         /// <see cref="BoatWaveMotion"/> writes it each LateUpdate from the wave phase under the hull.
-        /// Ignored when <see cref="HasRockGrid"/> is false.
+        /// Ignored when <see cref="HasRockGrid"/> is false. A presenter with
+        /// <see cref="SupportsContinuousRock"/> treats −1 as "level" too; its canonical rock input is
+        /// <see cref="SetRockPhaseDegrees"/>.
         /// </summary>
         int RockFrame { get; set; }
+
+        /// <summary>
+        /// True when this presenter can pose rock CONTINUOUSLY from a wave phase instead of snapping
+        /// to baked frames — mesh hulls (rock is a transform and costs no memory, ADR 0022). False
+        /// for sprite hulls, whose rock IS the baked frame grid. When true,
+        /// <see cref="BoatWaveMotion"/> writes <see cref="SetRockPhaseDegrees"/> instead of
+        /// quantising to <see cref="RockFrame"/>.
+        /// </summary>
+        bool SupportsContinuousRock { get; }
+
+        /// <summary>
+        /// Pose the hull's rock from a reconstructed wave phase (degrees; crest = 90°, trough = 270°
+        /// — <see cref="DoryRockMath.PhaseDegrees"/>' convention, the same number that picks a sprite
+        /// hull's frame). Only meaningful when <see cref="SupportsContinuousRock"/>; a sprite
+        /// presenter ignores it (its rock arrives as <see cref="RockFrame"/>). Writing
+        /// <see cref="RockFrame"/> = −1 afterwards levels the hull.
+        /// </summary>
+        void SetRockPhaseDegrees(float phaseDegrees);
 
         /// <summary>
         /// Additive visual tilt (degrees, +CCW about z) composed AFTER the presenter's own rotation policy.

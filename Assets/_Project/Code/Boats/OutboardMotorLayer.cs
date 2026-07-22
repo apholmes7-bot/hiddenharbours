@@ -136,8 +136,15 @@ namespace HiddenHarbours.Boats
         [SerializeField] private SpriteRenderer _upperB;
         [Tooltip("The boat whose helm swivels the engine. Read only while the controller is enabled — a dropped helm centres the motor. Null = the helm reads centred.")]
         [SerializeField] private BoatController _boat;
-        [Tooltip("The hull's directional sprite: the source of the DRAWN heading (so the motor picks the hull's row) and of the baked rock frame the motor rides. Null = the heading falls back to this transform's bow and no rock coupling.")]
+        [Tooltip("Legacy wiring: the hull's directional sprite. Kept for scene-serialised rigs the skinner " +
+                 "has not reconfigured; at runtime the layer reads the hull through IBoatHullPresenter " +
+                 "(ADR 0022 phase 4) and this is only a fallback to wrap. Null + no presenter = the heading " +
+                 "falls back to this transform's bow and no rock coupling.")]
         [SerializeField] private DirectionalBoatSprite _directionalSprite;
+
+        // The hull as the seam describes it (ADR 0022 phase 4). Set by Configure; a scene-serialised
+        // layer lazily wraps its legacy _directionalSprite field instead.
+        private IBoatHullPresenter _presenter;
         [Tooltip("The hull's own renderer — the motor sorts against its sortingOrder, on its sorting layer. Null = the fallback order below is used and the layer is left alone.")]
         [SerializeField] private SpriteRenderer _hullRenderer;
         [Tooltip("Sorting order to sort against when no hull renderer is wired (the hull visual ships at 1).")]
@@ -245,7 +252,7 @@ namespace HiddenHarbours.Boats
         public void Configure(Sprite[] lowerFrames, Sprite[] upperFrames,
                               SpriteRenderer lowerA, SpriteRenderer upperA,
                               SpriteRenderer lowerB, SpriteRenderer upperB,
-                              BoatController boat, DirectionalBoatSprite directionalSprite,
+                              BoatController boat, IBoatHullPresenter hull,
                               SpriteRenderer hullRenderer,
                               MotorVariant variant, MotorFit fit,
                               int headingCount, int columnsPerHeading,
@@ -258,7 +265,7 @@ namespace HiddenHarbours.Boats
             _lowerB = lowerB;
             _upperB = upperB;
             _boat = boat;
-            _directionalSprite = directionalSprite;
+            _presenter = hull;
             _hullRenderer = hullRenderer;
             _variant = variant;
             _fit = fit;
@@ -374,20 +381,29 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private int HeadingRow()
         {
-            float heading = _directionalSprite != null
-                ? _directionalSprite.DrawnHeadingDegrees()
+            var hull = Hull;
+            float heading = hull != null
+                ? hull.DrawnHeadingDegrees()
                 : DirectionalBoatSprite.HeadingDegreesFromBow(transform.up);
-            bool ccw = _directionalSprite != null && _directionalSprite.FacingsAreCounterClockwise;
+            bool ccw = hull != null && hull.FacingsAreCounterClockwise;
             return DirectionalBoatSprite.HeadingToFacingIndex(heading, _headingCount, _zeroHeadingDegrees, ccw);
         }
+
+        /// <summary>The hull presenter this layer reads — the configured one, or a lazy wrap of the
+        /// legacy serialized <see cref="DirectionalBoatSprite"/> (scene-serialised rigs). May be null.</summary>
+        private IBoatHullPresenter Hull =>
+            _presenter ??= (_directionalSprite != null ? new SpriteHullPresenter(_directionalSprite) : null);
 
         /// <summary>The hull's currently-drawn rock frame — the wave the engine must ride. −1 (level) when the
         /// hull is drawing its static facing or has no rock grid at all, so a calm hull never gets a moving
         /// engine.</summary>
         private int RockFrame()
-            => _directionalSprite != null && _directionalSprite.HasRockGrid
-                ? _directionalSprite.RockFrame
+        {
+            var hull = Hull;
+            return hull != null && hull.HasRockGrid
+                ? hull.RockFrame
                 : OutboardMotorMath.LevelRockFrame;
+        }
 
         /// <summary>
         /// The pose that rides ONE level-baked engine on the hull's currently-drawn rock frame — derived by

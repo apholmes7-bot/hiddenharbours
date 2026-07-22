@@ -506,9 +506,11 @@ namespace HiddenHarbours.Boats
             private readonly SpriteRenderer _sprayRenderer;
             private float _emitCarry;
             private float _lineEmitCarry;
-            // The boat's own compass — the source of its artwork's bake elevation. Resolved lazily (a boat can
-            // be skinned after its wake rig was built) and cached once found.
-            private DirectionalBoatSprite _directional;
+            // The boat's hull presenter — the source of its artwork's bake elevation, read through the
+            // seam (ADR 0022 phase 4) so a mesh hull answers the same question a sprite compass does.
+            // Resolved lazily (a boat can be skinned after its wake rig was built); the HOST is preferred
+            // live each tick because a hull swap (the dev picker, the A/B toggle) replaces the presenter.
+            private IBoatHullPresenter _hullFallback;
 
             /// <summary>The elevation that means "a plan view": no foreshortening, today's placement. What a
             /// boat with no directional skin reads.</summary>
@@ -656,8 +658,22 @@ namespace HiddenHarbours.Boats
             /// </summary>
             private float BakeElevationDegrees()
             {
-                if (_directional == null && Boat != null) _directional = Boat.GetComponent<DirectionalBoatSprite>();
-                return _directional != null ? _directional.BakeElevationDegrees : PlanViewElevationDegrees;
+                if (Boat == null) return PlanViewElevationDegrees;
+
+                // The live presenter first (no allocation: the host component holds it) — the skinner
+                // republishes it on every hull apply, so a swap to a mesh hull (whose compass component
+                // is destroyed) keeps answering with the new artwork's elevation instead of decaying to
+                // the plan view.
+                var host = Boat.GetComponent<BoatHullPresenterHost>();
+                if (host != null && host.Presenter != null) return host.Presenter.BakeElevationDegrees;
+
+                // Legacy fallback (a rig the skinner has not touched): wrap the compass once and keep it.
+                if (_hullFallback == null)
+                {
+                    var directional = Boat.GetComponent<DirectionalBoatSprite>();
+                    if (directional != null) _hullFallback = new SpriteHullPresenter(directional);
+                }
+                return _hullFallback != null ? _hullFallback.BakeElevationDegrees : PlanViewElevationDegrees;
             }
 
             /// <summary>A per-tick copy of a foam <see cref="WakeConfig"/> with its FOOTPRINT (foam size + Kelvin

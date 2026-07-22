@@ -70,6 +70,17 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        // A sprite hull's rock IS the baked frame grid — there is nothing continuous to pose.
+        public bool SupportsContinuousRock => false;
+
+        /// <inheritdoc/>
+        public void SetRockPhaseDegrees(float phaseDegrees)
+        {
+            // Deliberately a no-op, not an exception: the contract says a sprite presenter's rock
+            // arrives as RockFrame, and a caller probing the capability reads SupportsContinuousRock.
+        }
+
+        /// <inheritdoc/>
         public float VisualTiltDegrees
         {
             get => _directional != null ? _directional.VisualTiltDegrees : 0f;

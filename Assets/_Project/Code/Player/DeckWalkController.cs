@@ -48,7 +48,7 @@ namespace HiddenHarbours.Player
         [SerializeField] private Vector2 _deckHalfExtents = new Vector2(0.7f, 1.6f);
 
         private Transform _boatRoot;
-        private DirectionalBoatSprite _directional;   // the drawn-facing read (resolved at Bind; null = smooth hull)
+        private IBoatHullPresenter _hull;   // the drawn-facing read (resolved at Bind; null = smooth hull)
 
         /// <summary>The boat physics root the deck belongs to (set by the switcher on boarding).</summary>
         public Transform BoatRoot => _boatRoot;
@@ -126,23 +126,38 @@ namespace HiddenHarbours.Player
         // ---- lifecycle ----------------------------------------------------------------------
 
         /// <summary>Bind the deck to a boat's PHYSICS ROOT (the switcher calls this on boarding). Resolves
-        /// the boat's <see cref="DirectionalBoatSprite"/> (it lives on the root, driving a child renderer)
-        /// so the clamp can follow the DRAWN facing; a boat without one clamps to its true heading (its
+        /// the hull through the presenter seam (<see cref="BoatHullPresenterHost.Resolve"/> — ADR 0022
+        /// phase 4) so the clamp follows the DRAWN facing whichever path draws it: quantised for a sprite
+        /// compass, continuous for a mesh hull. A boat with neither clamps to its true heading (its
         /// picture rotates with the hull).</summary>
         public void Bind(Transform boatRoot)
         {
             _boatRoot = boatRoot;
-            _directional = boatRoot != null ? boatRoot.GetComponentInChildren<DirectionalBoatSprite>(true) : null;
+            _hull = boatRoot != null ? BoatHullPresenterHost.Resolve(boatRoot.gameObject) : null;
         }
 
         /// <summary>The compass heading of the hull picture on screen — the frame the deck rectangle lives
-        /// in. Snap-directional boats give the quantized facing; anything else the true physics heading.</summary>
+        /// in. Snap-directional boats give the quantized facing; a mesh hull (or no skin at all) the true
+        /// physics heading.</summary>
         private float DrawnHeadingDegrees()
         {
-            if (_directional != null) return _directional.DrawnHeadingDegrees();
+            var hull = LiveHull();
+            if (hull != null) return hull.DrawnHeadingDegrees();
             return _boatRoot != null
                 ? DirectionalBoatSprite.HeadingDegreesFromBow(_boatRoot.up)
                 : 0f;
+        }
+
+        /// <summary>
+        /// The presenter to read THIS frame: the host's current one when the skinner has published one
+        /// (so a hull swapped under the player's feet — the dev picker does exactly that — is never read
+        /// through a stale presenter), else the one resolved at Bind. No allocation on the hot path.
+        /// </summary>
+        private IBoatHullPresenter LiveHull()
+        {
+            if (_boatRoot == null) return _hull;
+            var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
+            return (host != null && host.Presenter != null) ? host.Presenter : _hull;
         }
 
         /// <summary>Snap the player onto the deck at a boat-relative WORLD-axis spot (clamped onto the

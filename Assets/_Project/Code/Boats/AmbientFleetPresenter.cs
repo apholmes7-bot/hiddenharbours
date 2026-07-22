@@ -272,7 +272,7 @@ namespace HiddenHarbours.Boats
                     sr.sprite = hull;
 
                     var wave = fisher.Root.AddComponent<BoatWaveMotion>();
-                    wave.Configure(visualGo.transform, null);
+                    wave.Configure(visualGo.transform, (IBoatHullPresenter)null);
                 }
 
                 fisher.Heading = Vector2.up;

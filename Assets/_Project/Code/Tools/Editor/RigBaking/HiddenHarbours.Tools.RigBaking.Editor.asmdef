@@ -3,7 +3,9 @@
     "rootNamespace": "HiddenHarbours.Tools.RigBaking",
     "references": [
         "HiddenHarbours.Art.Editor",
-        "HiddenHarbours.Tools.JsEngine.Editor"
+        "HiddenHarbours.Tools.JsEngine.Editor",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Boats"
     ],
     "includePlatforms": [
         "Editor"

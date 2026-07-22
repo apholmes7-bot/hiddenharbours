@@ -126,8 +126,17 @@ namespace HiddenHarbours.Boats
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The child VISUAL transform the motion is applied to (e.g. the FishingBoatVisual sprite child). NEVER the physics root — this is visual-only; the body and colliders must not move. Null = the component idles.")]
         [SerializeField] private Transform _visual;
-        [Tooltip("Optional: the DirectionalBoatSprite driving the same visual. It force-resets the visual's rotation every LateUpdate, so the roll MUST route through its VisualTiltDegrees hook. If null, the roll is written to the visual's localRotation directly.")]
+        [Tooltip("Legacy wiring: the DirectionalBoatSprite driving the same visual. Kept for scene-serialised " +
+                 "rigs; at runtime this component reads/writes the hull through IBoatHullPresenter (ADR 0022 " +
+                 "phase 4) and this field is only a fallback to wrap. It force-resets the visual's rotation " +
+                 "every LateUpdate, so the roll MUST route through the presenter's VisualTiltDegrees hook. If " +
+                 "neither is present, the roll is written to the visual's localRotation directly.")]
         [SerializeField] private DirectionalBoatSprite _directionalSprite;
+
+        // The hull as the seam describes it (ADR 0022 phase 4): the rock-grid gate, the RockFrame /
+        // continuous-phase channel and the tilt hook all go through here. Set by Configure; a
+        // scene-serialised component lazily wraps its legacy _directionalSprite field instead.
+        private IBoatHullPresenter _presenter;
 
         [Header("Wave field (parity: keep identical to the shader bridge until GameConfig unifies them — see class doc)")]
         [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
@@ -156,15 +165,27 @@ namespace HiddenHarbours.Boats
             set => _masterStrength = Mathf.Max(0f, value);
         }
 
-        /// <summary>Configure the wiring from code (the builders' path — mirrors
-        /// <see cref="DirectionalBoatSprite.Configure"/> so a non-dev owner needn't touch the Inspector).</summary>
-        public void Configure(Transform visual, DirectionalBoatSprite directionalSprite)
+        /// <summary>Configure the wiring from code — the skinner's path (ADR 0022 phase 4): the hull
+        /// arrives as the PRESENTER seam, so a sprite compass and a mesh hull are the same call.</summary>
+        public void Configure(Transform visual, IBoatHullPresenter hull)
         {
             RestoreVisual();          // if re-wired live, leave the old visual clean
             _visual = visual;
-            _directionalSprite = directionalSprite;
+            _presenter = hull;
+            _directionalSprite = null;   // the presenter owns the channel now; never double-drive
             _baseCached = false;
         }
+
+        /// <summary>Legacy overload (pre-seam callers and tests): wraps the concrete component.</summary>
+        public void Configure(Transform visual, DirectionalBoatSprite directionalSprite)
+            => Configure(visual, directionalSprite != null
+                ? new SpriteHullPresenter(directionalSprite)
+                : (IBoatHullPresenter)null);
+
+        /// <summary>The hull presenter this component drives — the configured one, or a lazy wrap of the
+        /// legacy serialized <see cref="DirectionalBoatSprite"/> (scene-serialised rigs). May be null.</summary>
+        private IBoatHullPresenter Hull =>
+            _presenter ??= (_directionalSprite != null ? new SpriteHullPresenter(_directionalSprite) : null);
 
         private void OnEnable()
         {
@@ -247,45 +268,62 @@ namespace HiddenHarbours.Boats
             Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob));
         }
 
-        /// <summary>True when the visible rock is drawn by SWAPPING rock frames on the wired
-        /// <see cref="DirectionalBoatSprite"/> (the iso dory) rather than transforming the visual — the
-        /// gate between the frame path and the legacy transform-rock path.</summary>
-        private bool DrivingRockFrames =>
-            _driveRockFrames && _directionalSprite != null && _directionalSprite.HasRockGrid;
+        /// <summary>True when the visible rock is drawn BY THE HULL ITSELF — swapping rock frames on a
+        /// sprite hull with a grid, or posing the mesh continuously — rather than transforming the
+        /// visual. The gate between the hull-owned rock and the legacy transform-rock path.</summary>
+        private bool DrivingRockFrames
+        {
+            get { var hull = Hull; return _driveRockFrames && hull != null && hull.HasRockGrid; }
+        }
 
         /// <summary>
-        /// Select the rock frame from the wave under the hull and write it to the
-        /// <see cref="DirectionalBoatSprite"/>. Calm (or no live field) holds the static/level hull
-        /// (frame −1); otherwise the phase is reconstructed against the DOMINANT train (so crest → 2,
-        /// trough → 6) and rounded to a frame with hysteresis. The transform is left at its base pose —
-        /// the drawn frames own the rock, so no roll/pitch/bob is applied (no double-rock), and the
-        /// roll hook is held at 0.
+        /// Drive the hull's own rock from the wave under it. Calm (or no live field) holds the
+        /// static/level hull (frame −1); otherwise the phase is reconstructed against the DOMINANT
+        /// train (crest → 90°, trough → 270°) and handed to the hull — QUANTISED to the nearest frame
+        /// (with hysteresis) for a sprite hull's baked grid, or CONTINUOUSLY for a presenter that
+        /// supports it (the mesh path, ADR 0022 phase 4: same wave, same phase, no steps). The
+        /// transform is left at its base pose — the hull owns the rock, so no roll/pitch/bob is
+        /// applied (no double-rock), and the roll hook is held at 0.
         /// </summary>
         private void DriveRockFrame(in WaveSample wave)
         {
-            // The frames own the rock: keep the additive roll hook and the transform pose neutral.
-            _directionalSprite.VisualTiltDegrees = 0f;
+            var hull = Hull;
+
+            // The hull owns the rock: keep the additive roll hook and the transform pose neutral.
+            hull.VisualTiltDegrees = 0f;
             RestoreVisual();
 
             WaveTrains field = _animator.Current;
             if (field.Count <= 0 || field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold))
             {
                 _currentRockFrame = -1;           // glass / near-calm → static level hull, no phantom rock
-                SetRockFrame(-1);
+                hull.RockFrame = -1;
                 return;
             }
 
             WaveTrain dominant = field[0];
             float waveNumber = (2f * Mathf.PI) / Mathf.Max(WaveTrain.MinWavelengthMeters, dominant.Wavelength);
             float phaseDeg = DoryRockMath.PhaseDegrees(wave.Height, wave.Slope, dominant.Direction, waveNumber);
+
+            if (hull.SupportsContinuousRock)
+            {
+                // Continuous: the exact reconstructed phase, no frame rounding and no hysteresis —
+                // hysteresis exists to stop frame FLIP-FLOP, and there are no frames to flip between.
+                // The calibration nudge still applies: it is the art's crest alignment, shared.
+                hull.SetRockPhaseDegrees(phaseDeg + _crestFrameCalibrationDegrees);
+                _currentRockFrame = -1;
+                return;
+            }
+
             _currentRockFrame = DoryRockMath.AdvanceFrame(
                 _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);
-            SetRockFrame(_currentRockFrame);
+            hull.RockFrame = _currentRockFrame;
         }
 
         private void SetRockFrame(int frame)
         {
-            if (_directionalSprite != null) _directionalSprite.RockFrame = frame;
+            var hull = Hull;
+            if (hull != null) hull.RockFrame = frame;
         }
 
         /// <summary>Map the smoothed decomposition onto the visual: roll → additive z-rotation (through
@@ -300,9 +338,10 @@ namespace HiddenHarbours.Boats
             float squash = Mathf.Min(Mathf.Abs(motion.Pitch) * Mathf.Max(0f, _pitchSquashPerSlope),
                                      Mathf.Max(0f, _maxPitchSquash));
 
-            if (_directionalSprite != null)
+            var hull = Hull;
+            if (hull != null)
             {
-                _directionalSprite.VisualTiltDegrees = rollDegrees;   // composed after its rotation reset
+                hull.VisualTiltDegrees = rollDegrees;   // composed after the hull's rotation reset
             }
             else
             {
@@ -321,13 +360,14 @@ namespace HiddenHarbours.Boats
         /// <summary>Put the visual back exactly as built (and zero the tilt hook). Idempotent.</summary>
         private void RestoreVisual()
         {
-            if (_directionalSprite != null) _directionalSprite.VisualTiltDegrees = 0f;
+            var hull = Hull;
+            if (hull != null) hull.VisualTiltDegrees = 0f;
             if (!_applied) return;
             _applied = false;
             if (_visual == null || !_baseCached) return;
             _visual.localPosition = _baseLocalPosition;
             _visual.localScale = _baseLocalScale;
-            if (_directionalSprite == null) _visual.localRotation = Quaternion.identity;
+            if (hull == null) _visual.localRotation = Quaternion.identity;
         }
     }
 }
