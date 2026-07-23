@@ -1907,10 +1907,11 @@ readability verdict instrument). The wiring, for anyone touching it:
   place. OFF is a contract: nothing registers, the feature records nothing, the flat water renders
   exactly as today.
 
-Still ahead in the arc (ADR 0023 §Phases): hull waterline + shared heave (phase 3) and the
-screen-anchored-layer reviews (phase 4). The envelope-relative band/whitecap retune (step 2)
-shipped — §23 below; the GameConfig exposure (step 3) shipped — the paragraphs above and §23's
-threshold table.
+Still ahead in the arc (ADR 0023 §Phases): the shared-heave switch (phase 3 step 2 — boats'
+visual heave onto `DisplacedHeight`) and the screen-anchored-layer reviews (phase 4). The
+envelope-relative band/whitecap retune (step 2) shipped — §23 below; the GameConfig exposure
+(step 3) shipped — the paragraphs above and §23's threshold table; the hull waterline (phase 3
+step 1) shipped — §24 below.
 
 
 ## 23. Envelope-relative salience — the big wave wears the solid foam core (ADR 0023, arc step 2·2)
@@ -1977,3 +1978,78 @@ construction (and the config push, being per-tick on the MPB, rides OVER whateve
 the material — the config wins wherever it is wired). The three knob keys are deliberately NOT in
 `WaterSurface.MoodFloatNames`: they are owner policy, not weather mood — adding them there would
 double-drive the push.
+
+
+## 24. The waterline on the hull — one calibrated iso z-buffer (ADR 0023, phase 3 step 1)
+
+The owner's explicit ask ("water changes height on the hull"), the spike's probe productionised:
+with the displaced sea ON, the surface truthfully covers and uncovers a mesh hull's lower planking
+as swell passes — the waterline climbs the planking (~1 m per dominant period in the reference
+sea, spike-measured). Two mechanisms, both riding ONLY while a `DisplacedWaterSurface` is active;
+displaced OFF renders byte-identically to before this step (pinned in pixels by
+`HullWaterlineAcceptanceTests`).
+
+**The calibrated cross-object z convention.** The shared private depth buffer (`_HHHullZ`) now has
+ONE meaning for every object in it:
+
+```
+z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − heightAboveStillWater · sin(elev)
+```
+
+- **The water already computes exactly this per vertex** (`vertDisplaced`:
+  `ws.z += (ground.y − _HeightWorldMin.y)·_WaterIsoDepth.x − lift·_WaterIsoDepth.y`) — the water
+  is the REFERENCE side of the convention and is unchanged by this step.
+- **A hull joins it as ONE per-hull constant translation.** `DisplacedWaterSurface` publishes the
+  frame (`DisplacedWaterRegistry.WaterIsoDepthFrame`: `_HeightWorldMin.y`, `_WaterIsoDepth.xy`,
+  the sea plane's world z — read from the SAME live material the shader samples, each throttled
+  tick); `IsoFacetHullRenderer.ApplyPose` translates the FacetMesh child to
+  `DisplacedWaterMath.HullDepthBias(rootY, heaveMetres, frame)` =
+  `baseZ + (rootY − refY)·cos − heave·sin`. Constant per hull, so every intra-hull depth relation
+  — the rig's own `ry·cos − rz·sin` self-occlusion (the golden-master truth), the deck-pass
+  contract, the keyline's depth-difference darkening (the resolve is id-gated and reads only
+  differences between solid pixels) — is preserved exactly. Never correct the hull per vertex: the
+  rig's intra-hull convention IS the golden master, and re-scaling its ground term would change
+  facet self-occlusion.
+- **Why the compare is truthful at the contact line:** hull planking and the water lapping against
+  it share a ground anchor, so the ground terms cancel and the z-test reduces to
+  `heightAboveStillWater vs surfaceLift` — water covers exactly the planking below the lifted
+  surface. The residual is the baked-iso ground-term mismatch away from the contact line (rig
+  ground metres vs world metres, `ry·cos(1−sin)` ≈ 0.27 m of depth per rig-metre of `ry`): a small
+  static offset of the resting waterline toward the hull's near rail, NOT a motion error — the
+  climb itself moves at `(cos+sin)/(cos²+sin)` ≈ 1.15 rig-metres per metre of lift at the fleet's
+  40°, effectively 1:1.
+- **Deck corollary (phase-4 note):** while the sea is displaced, a deck occupant that wants to
+  interleave with ITS hull must ride the hull's frame (parent under the hull renderer or apply the
+  same registry frame) — a raw world-z≈0 deck renderer sits far NEARER than a calibrated hull.
+
+**The waterline composition — draw order IS the waterline.** The water pass now records BEFORE the
+facet/deck passes (`IsoFacetHullFeature`). Hull fragments below the lifted surface fail the shared
+z-test and never enter the facet MRT; the resolved hull texture holds only the EMERGENT hull, so
+the hull overlay (sorted above the sea, as boats always were) composes planking only where it is
+truly above water, and the WaterOverlay (at the flat sprite's slot, under every boat) shows the
+sea where the submerged planking used to be. Water pixels behind a hull stay in the water target
+and are simply covered in-scene by the hull overlay's sort. The keyline resolve is untouched: it
+floods the emergent silhouette, so **the hull outline follows the waterline and reads OVER the
+water** — the sprite fleet's ink-over-water convention at the flat waterline, kept.
+
+**Heave source honesty (step 2's work, flagged not fudged):** a mesh hull's visual heave today is
+the rock-frame heave (`HullMeshDef.RockHeavePixels`, ~1 px ≈ 0.04 m) — it does NOT ride the
+metre-scale displaced lift. So in this step the hull sits essentially still while the surface
+moves, and the waterline does nearly ALL the moving (the spike's fixed-hull probe, which is what
+proved ~1 m of climb). Step 2 switches boats' visual heave to
+`ShoreFadeMath.DisplacedHeight(h, depth, band, GameConfig.WaveExaggeration)` — the boat then rides
+up with the crest and the waterline settles into the smaller relative motion (the spike's riding
+probe). Until then a big crest can briefly put green water over a fixed hull's rail; that is the
+known intermediate state, not a defect.
+
+**Proof** (`HullWaterlineAcceptanceTests`, the IsoFacetUrpPassTests pattern — production path via
+`Camera.Render()`, Null-Device-gated for CI): a CI-safe headless pin that `HullDepthBias` is the
+water's vertex depth and reduces to heights at the contact line; the GPU acceptance rendering the
+lobster hull beam-on in the reference sea at its deterministic highest/lowest surface instants —
+the waterline row climbs the planking (bar 12 px, expected ~40+), the crest submerges real
+planking while the upper hull stays byte-identical, and turning the sea OFF restores today's
+render with 0 differing pixels; and the sabotage — flip the sign of the water's `_WaterIsoDepth`
+height term (a lifted crest steps farther instead of nearer) and the climb metric collapses.
+Harness traps honoured: fresh material (never Water.mat's baked height map), `_USE_HEIGHTTEX` off
+AND a black height texture, plain `LEqual` through the render-graph camera path (no hand-rolled
+reversed-Z), shader warm-up before measuring.

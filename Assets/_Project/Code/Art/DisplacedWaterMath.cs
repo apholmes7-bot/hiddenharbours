@@ -94,5 +94,28 @@ namespace HiddenHarbours.Art
         public static float VertexLift(float waveHeightMeters, float stillDepthMeters,
                                        float bandMeters, float exaggeration)
             => ShoreFadeMath.DisplacedHeight(waveHeightMeters, stillDepthMeters, bandMeters, exaggeration);
+
+        /// <summary>
+        /// The per-hull z translation that places a mesh hull's PIVOT into the calibrated
+        /// iso-depth convention of the shared private z-buffer (ADR 0023 phase 3, step 1) —
+        /// the C# reference of the water's own vertex-stage depth
+        /// (<c>ws.z += (ground.y − _HeightWorldMin.y)·cosElev − lift·sinElev</c> in
+        /// HHWaterDisplaced, applied to the hull's ground anchor and heave):
+        ///
+        /// <code>z = BaseZ + (hullWorldY − ReferenceY) · CosElev − heaveMeters · SinElev</code>
+        ///
+        /// Applied as ONE constant translation of the whole hull frame (never per vertex), so the
+        /// rig's intra-hull depth convention (<c>ry·cos − rz·sin</c>, the golden-master truth) is
+        /// bit-preserved; only the hull-vs-water comparison changes. At the contact line the
+        /// ground terms of hull and adjacent water cancel and the z-test reduces to
+        /// <c>heightAboveStillWater vs surfaceLift</c> — water truthfully covers exactly the
+        /// planking below the lifted surface, and a rising surface climbs the planking
+        /// ≈(cos+sin)/(cos²+sin) ≈ 1.15 rig-metres per metre of lift at the fleet's 40°.
+        /// </summary>
+        public static float HullDepthBias(float hullWorldY, float heaveMeters,
+                                          in WaterIsoDepthFrame frame)
+            => frame.BaseZ
+               + (hullWorldY - frame.ReferenceY) * frame.CosElev
+               - heaveMeters * frame.SinElev;
     }
 }

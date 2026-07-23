@@ -119,6 +119,8 @@ namespace HiddenHarbours.Art
         private static readonly int IdWaveExaggeration = Shader.PropertyToID("_WaveExaggeration");
         private static readonly int IdShoreFadeBand    = Shader.PropertyToID("_ShoreFadeBand");
         private static readonly int IdWaveFieldParams  = Shader.PropertyToID("_WaveFieldParams");
+        private static readonly int IdWaterIsoDepth    = Shader.PropertyToID("_WaterIsoDepth");
+        private static readonly int IdHeightWorldMin   = Shader.PropertyToID("_HeightWorldMin");
 
         private Renderer _flatRenderer;
         private MaterialPropertyBlock _mpb;
@@ -302,6 +304,28 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdShoreFadeBand, band);
             for (int i = 0; i < _chunkRenderers.Count; i++)
                 _chunkRenderers[i].SetPropertyBlock(_mpb);
+
+            PublishIsoDepthFrame();
+        }
+
+        /// <summary>
+        /// Publish the calibrated iso-depth frame the mesh hulls translate into while the
+        /// displaced sea is live (ADR 0023 phase 3 — the waterline's cross-object z convention).
+        /// Every value is read from the SAME source the water shader itself samples — the copied
+        /// property block first (production pushes <c>_HeightWorldMin</c> there), the live
+        /// material else — so hull and water cannot disagree by construction. Re-published each
+        /// throttled tick; cleared by the registry when this surface unregisters.
+        /// </summary>
+        private void PublishIsoDepthFrame()
+        {
+            if (_displacedMaterial == null) return;
+            Vector4 iso = _displacedMaterial.GetVector(IdWaterIsoDepth);
+            Vector4 heightMin = _mpb.HasVector(IdHeightWorldMin)
+                ? _mpb.GetVector(IdHeightWorldMin)
+                : _displacedMaterial.GetVector(IdHeightWorldMin);
+            // The chunk vertices rest at this transform's world z (local z 0 under the mesh root).
+            var frame = new WaterIsoDepthFrame(heightMin.y, iso.x, iso.y, transform.position.z);
+            DisplacedWaterRegistry.PublishIsoDepthFrame(this, in frame);
         }
 
         // ---- construction ----------------------------------------------------------------------

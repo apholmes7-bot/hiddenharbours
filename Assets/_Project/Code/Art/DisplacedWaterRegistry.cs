@@ -18,6 +18,50 @@ namespace HiddenHarbours.Art
     /// placeholder — the <see cref="IsoFacetHullRegistry"/> pattern verbatim.</item>
     /// </list>
     /// </summary>
+    /// <summary>
+    /// The CALIBRATED iso-depth convention of the shared private z-buffer (ADR 0023 phase 3,
+    /// step 1) — the one frame in which hull planking and the displaced sea z-test truthfully
+    /// per pixel:
+    ///
+    /// <code>z(point) = BaseZ + (groundAnchorY − ReferenceY) · CosElev − heightAboveStillWater · SinElev</code>
+    ///
+    /// The WATER already computes exactly this per vertex (the HHWaterDisplaced vertex stage:
+    /// groundAnchorY = the undisplaced vertex world y, height = the seam-faded lift, ReferenceY =
+    /// <c>_HeightWorldMin.y</c>, Cos/SinElev = <c>_WaterIsoDepth</c>). A HULL joins it as ONE
+    /// per-hull constant z translation (groundAnchorY = the boat root's world y, height = heave
+    /// metres) applied by <see cref="IsoFacetHullRenderer"/> — constant, so every intra-hull
+    /// depth relation (the rig's own <c>ry·cos − rz·sin</c> self-occlusion, the deck contract,
+    /// the keyline's depth-difference darkening) is bit-preserved; only the hull-vs-water
+    /// comparison gains meaning. At the contact line the ground terms of hull and adjacent water
+    /// agree, so the compare reduces to heights: water covers exactly the planking below the
+    /// lifted surface — the waterline.
+    ///
+    /// Published by the active <see cref="DisplacedWaterSurface"/> from ITS live material (the
+    /// same uniforms the water shader reads — the two sides cannot disagree by construction) and
+    /// cleared when that surface unregisters: no displaced water, no frame, no hull offset, and
+    /// the water-off render stays byte-identical to today (the A/B contract).
+    /// </summary>
+    public readonly struct WaterIsoDepthFrame
+    {
+        /// <summary>The shared ground-y reference (<c>_HeightWorldMin.y</c> — one constant for
+        /// the whole sea, so chunked meshes and every hull share one continuous depth ramp).</summary>
+        public readonly float ReferenceY;
+        /// <summary>cos(iso elevation) — <c>_WaterIsoDepth.x</c> (0.766 at the fleet's 40°).</summary>
+        public readonly float CosElev;
+        /// <summary>sin(iso elevation) — <c>_WaterIsoDepth.y</c> (0.643 at the fleet's 40°).</summary>
+        public readonly float SinElev;
+        /// <summary>World z of the undisplaced water plane (the chunk meshes' resting z).</summary>
+        public readonly float BaseZ;
+
+        public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ)
+        {
+            ReferenceY = referenceY;
+            CosElev = cosElev;
+            SinElev = sinElev;
+            BaseZ = baseZ;
+        }
+    }
+
     public static class DisplacedWaterRegistry
     {
         /// <summary>
@@ -31,9 +75,33 @@ namespace HiddenHarbours.Art
 
         static readonly List<DisplacedWaterSurface> s_Live = new List<DisplacedWaterSurface>();
         static Texture2D s_ClearFallback;
+        static DisplacedWaterSurface s_FrameOwner;
+        static WaterIsoDepthFrame s_Frame;
 
         /// <summary>How many displaced surfaces are live and toggled on. The feature's cheap gate.</summary>
         public static int Count => s_Live.Count;
+
+        /// <summary>
+        /// The live calibrated iso-depth frame (ADR 0023 phase 3) — true only while an active
+        /// displaced surface has published one. Read by <see cref="IsoFacetHullRenderer"/> every
+        /// pose push; false ⇒ hulls apply NO z offset and render exactly as before phase 3
+        /// (the displaced-OFF byte-identity contract).
+        /// </summary>
+        public static bool TryGetIsoDepthFrame(out WaterIsoDepthFrame frame)
+        {
+            frame = s_Frame;
+            return s_FrameOwner != null;
+        }
+
+        /// <summary>Publish the calibrated frame (the active surface, each throttled uniform
+        /// tick — values read from the SAME live material the water shader samples). One sea per
+        /// region: with multiple registered surfaces the last publisher wins.</summary>
+        internal static void PublishIsoDepthFrame(DisplacedWaterSurface owner, in WaterIsoDepthFrame frame)
+        {
+            if (owner == null) return;
+            s_FrameOwner = owner;
+            s_Frame = frame;
+        }
 
         internal static void Register(DisplacedWaterSurface surface)
         {
@@ -45,6 +113,12 @@ namespace HiddenHarbours.Art
         internal static void Unregister(DisplacedWaterSurface surface)
         {
             s_Live.Remove(surface);
+            // The frame dies with its publisher: no active displaced sea ⇒ no hull offset.
+            if (ReferenceEquals(s_FrameOwner, surface))
+            {
+                s_FrameOwner = null;
+                s_Frame = default;
+            }
         }
 
         /// <summary>
