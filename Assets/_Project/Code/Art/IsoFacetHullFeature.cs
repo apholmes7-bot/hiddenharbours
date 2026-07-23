@@ -48,6 +48,20 @@ namespace HiddenHarbours.Art
     /// keyline flood of the empty neighbours it floods into. The keyline resolve is therefore
     /// byte-identical with or without water.</para>
     ///
+    /// <para><b>The waterline on the hull (ADR 0023 phase 3, step 1).</b> When the displaced
+    /// surface is active the WATER records FIRST and the hulls z-test against it: a hull fragment
+    /// below the lifted surface fails the shared depth test, never enters the facet MRT, and the
+    /// sea (composed under every boat by the WaterOverlay's sorting slot) shows where the lower
+    /// planking used to be — the waterline climbing the planking as swell passes. This only
+    /// compares truthfully because both sides share ONE calibrated iso-depth convention,
+    /// <c>z = waterPlaneZ + (groundY − _HeightWorldMin.y)·cos(elev) − heightAboveStillWater·sin(elev)</c>:
+    /// the water's vertex stage computes it per vertex (HHWaterDisplaced), and
+    /// <see cref="IsoFacetHullRenderer"/> translates each hull's whole frame onto it per frame via
+    /// <see cref="DisplacedWaterRegistry.TryGetIsoDepthFrame"/> — a per-hull CONSTANT z offset, so
+    /// every intra-hull depth relation (facet self-occlusion, the deck contract, the keyline's
+    /// depth-difference darkening) is preserved exactly. With no displaced surface there is no
+    /// frame and no offset: the water-off recording is byte-identical to before phase 3.</para>
+    ///
     /// <para><b>Deck occupants — the depth buffer is a CONTRACT, not an implementation detail
     /// (owner decision, 2026-07-21).</b> The facet pass's private z-buffer stays attached for a
     /// second renderer list drawn between facet and resolve: any renderer whose shader has a
@@ -62,7 +76,13 @@ namespace HiddenHarbours.Art
     /// reversed-Z automatically. The spike's hand-built command buffer needed explicit
     /// <c>ZTest GEqual</c> + depth-clear-0; that convention does NOT carry over here (proved by
     /// the deck-occlusion probe in IsoFacetUrpPassTests, which fails loudly both ways if the
-    /// z-direction is wrong).</para>
+    /// z-direction is wrong). ⚠️ Phase-3 corollary: while a displaced surface is active every
+    /// hull's frame is translated into the calibrated iso-depth convention (see the waterline
+    /// paragraph below), so a deck occupant that wants to interleave with ITS hull must ride the
+    /// hull's frame (parent under the hull renderer, or apply the same
+    /// <see cref="DisplacedWaterRegistry.TryGetIsoDepthFrame"/> offset) — a raw world-z≈0 deck
+    /// renderer would sit far NEARER than a calibrated hull and win everywhere while the sea is
+    /// displaced.</para>
     /// </summary>
     public sealed class IsoFacetHullFeature : ScriptableRendererFeature
     {
@@ -216,6 +236,65 @@ namespace HiddenHarbours.Art
                     msaaSamples = MSAASamples.None,
                 });
 
+                // ---- the displaced water surface (ADR 0023 phase 2) ----------------------
+                // Its OWN colour target + the SHARED private depth buffer. Deliberately NOT the
+                // hull MRT: the facet buffers' alpha channel is the hull-id contract (the overlay
+                // and keyline resolve key on it), while the water's alpha is its translucency —
+                // and water pixels inside the facet targets would starve the keyline flood of the
+                // empty neighbours it floods into (hull outlines would vanish over water). The
+                // keyline resolve therefore stays byte-identical; the water simply shares the
+                // z-buffer.
+                //
+                // ⚠️ ORDER IS THE WATERLINE (ADR 0023 phase 3): the water records BEFORE the
+                // hulls, so a hull fragment BELOW the lifted surface loses the shared z-test and
+                // never enters the facet MRT. The hull overlay then composes only the EMERGENT
+                // hull, the keyline resolve floods the emergent silhouette (the outline rides the
+                // waterline, over the water — the sprite fleet's ink-over-water convention), and
+                // the water overlay (sorted at the flat sprite's slot, under every boat) shows
+                // the sea where planking used to be. Water pixels the hull is nearer than stay in
+                // the water target and are covered in-scene by the hull overlay's sort. Hulls can
+                // only lose this z-test when they are CALIBRATED into the water's iso-depth
+                // convention — see WaterIsoDepthFrame; with no displaced
+                // surface active there is no water pass, no frame, and the recording below is
+                // byte-identical to the water-off path.
+                if (DrawWater)
+                {
+                    RTHandle waterTarget = GetWaterTarget(cameraData.camera.GetEntityId(), w, h);
+                    var waterImport = new ImportResourceParams
+                    {
+                        clearOnFirstUse = true,
+                        clearColor = Color.clear,
+                        discardOnLastUse = false,
+                    };
+                    TextureHandle waterTex = renderGraph.ImportTexture(waterTarget, waterImport);
+
+                    using (var builder = renderGraph.AddRasterRenderPass<WaterPassData>(
+                               "HH Displaced Water", out WaterPassData passData, profilingSampler))
+                    {
+                        var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
+                        var drawing = new DrawingSettings(s_WaterTag, sorting) { perObjectData = PerObjectData.None };
+                        // Membership is the EXPLICIT rendering-layer bit, not the shader tag alone:
+                        // the flat Sea sprite (and any preset-derived material) carries the same
+                        // shader, and must never ride into the off-screen pass by accident.
+                        var filtering = new FilteringSettings(RenderQueueRange.all, -1,
+                                                              DisplacedWaterRegistry.RenderingLayer);
+                        passData.Renderers = renderGraph.CreateRendererList(
+                            new RendererListParams(renderingData.cullResults, drawing, filtering));
+
+                        builder.UseRendererList(passData.Renderers);
+                        builder.SetRenderAttachment(waterTex, 0);
+                        builder.SetRenderAttachmentDepth(depthBuf);
+                        // The consumer is the in-scene WaterOverlay quad, whose read the graph
+                        // cannot see — never cull, and publish the result.
+                        builder.AllowPassCulling(false);
+                        builder.SetGlobalTextureAfterPass(waterTex, IsoFacetShaderIds.WaterScreenTex);
+                        builder.SetRenderFunc((WaterPassData data, RasterGraphContext ctx) =>
+                        {
+                            ctx.cmd.DrawRendererList(data.Renderers);
+                        });
+                    }
+                }
+
                 // ---- transient MRT for the facet draw ------------------------------------
                 TextureHandle facet = default, dark = default, key = default, depthVal = default;
                 if (drawHulls)
@@ -263,52 +342,6 @@ namespace HiddenHarbours.Art
                         ctx.cmd.DrawRendererList(data.Renderers);
                         ctx.cmd.DrawRendererList(data.DeckRenderers);
                     });
-                }
-
-                // ---- the displaced water surface (ADR 0023 phase 2) ----------------------
-                // Its OWN colour target + the SHARED private depth buffer. Deliberately NOT the
-                // hull MRT: the facet buffers' alpha channel is the hull-id contract (the overlay
-                // and keyline resolve key on it), while the water's alpha is its translucency —
-                // and water pixels inside the facet targets would starve the keyline flood of the
-                // empty neighbours it floods into (hull outlines would vanish over water). The
-                // keyline resolve therefore stays byte-identical; the water simply shares the
-                // z-buffer, which is the part phase 3's waterline-on-the-hull needs.
-                if (DrawWater)
-                {
-                    RTHandle waterTarget = GetWaterTarget(cameraData.camera.GetEntityId(), w, h);
-                    var waterImport = new ImportResourceParams
-                    {
-                        clearOnFirstUse = true,
-                        clearColor = Color.clear,
-                        discardOnLastUse = false,
-                    };
-                    TextureHandle waterTex = renderGraph.ImportTexture(waterTarget, waterImport);
-
-                    using (var builder = renderGraph.AddRasterRenderPass<WaterPassData>(
-                               "HH Displaced Water", out WaterPassData passData, profilingSampler))
-                    {
-                        var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
-                        var drawing = new DrawingSettings(s_WaterTag, sorting) { perObjectData = PerObjectData.None };
-                        // Membership is the EXPLICIT rendering-layer bit, not the shader tag alone:
-                        // the flat Sea sprite (and any preset-derived material) carries the same
-                        // shader, and must never ride into the off-screen pass by accident.
-                        var filtering = new FilteringSettings(RenderQueueRange.all, -1,
-                                                              DisplacedWaterRegistry.RenderingLayer);
-                        passData.Renderers = renderGraph.CreateRendererList(
-                            new RendererListParams(renderingData.cullResults, drawing, filtering));
-
-                        builder.UseRendererList(passData.Renderers);
-                        builder.SetRenderAttachment(waterTex, 0);
-                        builder.SetRenderAttachmentDepth(depthBuf);
-                        // The consumer is the in-scene WaterOverlay quad, whose read the graph
-                        // cannot see — never cull, and publish the result.
-                        builder.AllowPassCulling(false);
-                        builder.SetGlobalTextureAfterPass(waterTex, IsoFacetShaderIds.WaterScreenTex);
-                        builder.SetRenderFunc((WaterPassData data, RasterGraphContext ctx) =>
-                        {
-                            ctx.cmd.DrawRendererList(data.Renderers);
-                        });
-                    }
                 }
 
                 if (!drawHulls) return;   // water-only frames need no keyline resolve

@@ -322,9 +322,30 @@ namespace HiddenHarbours.Art
                 _meshChild.localRotation = IsoFacetMath.HullRotation(
                     _headingDirUnits, _setup.ElevationDeg, _rollDegrees, _pitchDegrees);
                 _meshChild.localScale = IsoFacetMath.HullScale;
-                _meshChild.localPosition = IsoFacetMath.HeaveOffset(_heavePixels, _setup.PxPerMetre);
                 _poseDirty = false;
             }
+
+            // Position every push, not only when the pose dirties: the calibrated-frame z below
+            // tracks the ROOT's world y, which changes as the boat sails without touching the
+            // pose fields.
+            Vector3 offset = IsoFacetMath.HeaveOffset(_heavePixels, _setup.PxPerMetre);
+            // ADR 0023 phase 3 (the waterline): while a displaced sea is live, translate the
+            // whole hull frame into the shared private z-buffer's calibrated iso-depth convention
+            // (z = baseZ + (groundY − refY)·cosElev − heaveMetres·sinElev — the water's own
+            // vertex-stage depth, applied to this hull's ground anchor and heave), so planking
+            // below the lifted surface truthfully loses the z-test to the water drawn before it.
+            // ONE constant per hull: intra-hull depth relations (facet self-occlusion, the deck
+            // contract, keyline darkening) are bit-preserved. No displaced sea ⇒ no frame ⇒
+            // z stays 0 and the render is byte-identical to before phase 3 (the A/B contract).
+            if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame isoFrame))
+            {
+                Vector3 root = transform.position;
+                float heaveMeters = _heavePixels / (float)_setup.PxPerMetre;
+                offset.z = DisplacedWaterMath.HullDepthBias(root.y, heaveMeters, in isoFrame)
+                           - root.z;
+            }
+            if (_meshChild.localPosition != offset)
+                _meshChild.localPosition = offset;
 
             _props ??= new MaterialPropertyBlock();
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
