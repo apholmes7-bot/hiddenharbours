@@ -162,6 +162,8 @@ namespace HiddenHarbours.Fishing
 
         private static string StatusText(FishingState s) => s.Phase switch
         {
+            FishingPhase.WindBack => "Winding back…",
+            FishingPhase.Cast     => "The line flies…",
             FishingPhase.Waiting  => "Line out…",
             FishingPhase.Bite     => "A bite! Hook it!",
             FishingPhase.Fighting => s.DisplayName != null ? "Fighting " + s.DisplayName + "…" : "Fighting…",

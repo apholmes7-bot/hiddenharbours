@@ -90,10 +90,10 @@ namespace HiddenHarbours.Tests.EditMode
             return c;
         }
 
-        // Cast → bite → fight, then forgiving-pulse until the result resolves.
+        // Flick-cast → bite → fight, then forgiving-pulse until the result resolves.
         private static void RunToResult(FishingController c)
         {
-            c.Tick(0.05f, true);   // cast
+            FlickGestures.CastLine(c);   // the gesture cast (press-to-cast is retired)
             float t = 0f;
             while (c.Phase != FishingPhase.Fighting && c.Phase != FishingPhase.Tending && t < 30f)
             { c.Tick(0.05f, false); t += 0.05f; }

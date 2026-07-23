@@ -178,23 +178,26 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(haul.IsHauling);
             Assert.IsFalse(dev.FishingLive, "a live haul owns Space — the handline is suppressed");
 
-            // A Space press during the haul must NOT cast a line (the owner's bug).
-            dev.TickFishing(0.05f, rawHeld: true);
+            // A whole fishing GESTURE during the haul must NOT cast a line (the owner's bug): every held
+            // tick is swallowed while the haul owns the key, so the flick never even winds back.
+            FlickGestures.Flick(dev, fishing);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
-                "pressing the pull key mid-haul must never cast a handline");
+                "gesturing mid-haul must never cast a handline");
 
             // The haul ends WITH the key still held (the hold-haul reality). The carried-over hold must NOT
             // flip into a cast — the release latch swallows it until a genuine release-then-press.
+            dev.TickFishing(0.05f, rawHeld: true);   // re-held through the end of the haul → the latch arms
             haul.CancelHaul();
             Assert.IsFalse(haul.IsHauling);
             Assert.IsTrue(dev.FishingLive, "haul over → the handline gate is open again");
-            dev.TickFishing(0.05f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "a key still held from the haul must NOT auto-cast");
+            dev.TickFishing(0.05f, true, new Vector2(1f, -1f), true);
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
+                "a key still held from the haul must NOT start a wind-back — even with a live pointer");
 
-            // Release, then a fresh press — now it casts (nothing was permanently broken).
+            // Release, then a fresh gesture — now it casts (nothing was permanently broken).
             dev.TickFishing(0.05f, rawHeld: false);
-            dev.TickFishing(0.05f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "a genuine release-then-press casts again");
+            FlickGestures.CastLine(dev, fishing);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "a genuine release-then-flick casts again");
         }
 
         // ---- (a′) the resurrected bug: a HOLD-haul that ends with the key down must not auto-cast --------
@@ -220,18 +223,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(haul.IsHauling, "the hold surfaced the pot — the haul ended");
 
             // The pot's aboard but Space is STILL held. The instant the haul ended the cast gate reopened —
-            // the exact frame FishingController would see a false→true rising edge and fling a line. The
-            // latch must prevent it: a still-held key casts NOTHING.
-            dev.TickFishing(0.1f, rawHeld: true);
+            // the exact frame FishingController would see a false→true rising edge and start a wind-back.
+            // The latch must prevent it: a still-held key starts NOTHING, even with a live pointer.
+            dev.TickFishing(0.1f, true, new Vector2(1f, -1f), true);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
                 "holding through the end of a haul must NEVER auto-cast a handline (the resurrected bug)");
-            dev.TickFishing(0.1f, rawHeld: true);
+            dev.TickFishing(0.1f, true, new Vector2(1f, -1f), true);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "…still no cast while the key stays held");
 
-            // Release, then press — a genuine fresh cast.
+            // Release, then a fresh flick — a genuine fresh cast.
             dev.TickFishing(0.1f, rawHeld: false);
-            dev.TickFishing(0.1f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-press casts a fresh line");
+            FlickGestures.CastLine(dev, fishing);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-flick casts a fresh line");
         }
 
         // ---- (b) handline is a DECK action — gated off the deck ------------------------------------
@@ -244,22 +247,22 @@ namespace HiddenHarbours.Tests.EditMode
             var hold = new FakeHold();
             var (dev, fishing, _) = BuildRig(svc, rail.transform, hold);
 
-            // Fresh → un-decked. A Space press ashore must not cast.
+            // Fresh → un-decked. A full flick gesture ashore must not cast.
             Assert.IsFalse(dev.FishingLive, "fresh component is un-decked → the handline is dead");
-            dev.TickFishing(0.05f, rawHeld: true);
+            FlickGestures.Flick(dev, fishing);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "no casting off the deck");
 
             // At the helm you're steering — still no cast.
             dev.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
             Assert.IsFalse(dev.FishingLive, "at the helm the handline is dead");
-            dev.TickFishing(0.05f, rawHeld: true);
+            FlickGestures.Flick(dev, fishing);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "no casting at the helm");
 
-            // On deck → the handline is live and a press casts.
+            // On deck → the handline is live and the flick casts.
             dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
             Assert.IsTrue(dev.FishingLive, "ON DECK → the handline is live");
-            dev.TickFishing(0.05f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "on deck, a press casts");
+            FlickGestures.CastLine(dev, fishing);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "on deck, the flick casts");
         }
 
         [Test]
@@ -274,11 +277,38 @@ namespace HiddenHarbours.Tests.EditMode
 
             InteractionGate.IsBlocked = true;
             Assert.IsFalse(dev.FishingLive, "a modal dialogue owns the keys while up");
-            dev.TickFishing(0.05f, rawHeld: true);
+            FlickGestures.Flick(dev, fishing);
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "no casting under a modal dialogue");
 
             InteractionGate.IsBlocked = false;
             Assert.IsTrue(dev.FishingLive, "released with the dialogue");
+        }
+
+        // ---- (b′) the flick-cast wrinkle: a gate closing MID-WIND-BACK aborts, never flings ---------
+
+        [Test]
+        public void GateClosingMidWindBack_AbortsTheGesture_InsteadOfFlingingIt()
+        {
+            var svc = MakeServiceWithPotAt(new Vector2(1f, 1f));
+            var rail = NewGo("Rail"); rail.transform.position = new Vector2(1f, 1f);
+            var hold = new FakeHold();
+            var (dev, fishing, haul) = BuildRig(svc, rail.transform, hold);
+
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            // Start winding back (a live gesture, nothing in the water yet)…
+            Vector2 a = fishing.transform.position;
+            dev.TickFishing(0.02f, true, a + new Vector2(0f, -0.5f), true);
+            dev.TickFishing(0.02f, true, a + new Vector2(0f, -1.5f), true);
+            Assert.AreEqual(FishingPhase.WindBack, fishing.Phase, "the wind-back is live");
+
+            // …then a haul takes the key. The forced release must ABORT the wind-back (back to Idle),
+            // not evaluate the half-made gesture into a flung cast.
+            Assert.IsTrue(haul.TryStartHaul());
+            dev.TickFishing(0.02f, true, a + new Vector2(0f, -1.5f), true);
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
+                "a gate closing mid-wind-back stands the fisher back up — nothing flies, nothing lost");
         }
 
         // ---- (c) no stranded cast: a closed gate eases an in-flight cast, never freezes it ----------
@@ -293,7 +323,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
             haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
-            dev.TickFishing(0.05f, rawHeld: true);                 // cast a line
+            FlickGestures.CastLine(dev, fishing);                  // flick a line out
             Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "a line is out");
 
             // Now start a haul mid-cast: the handline must not freeze in Waiting — the gate closes but the

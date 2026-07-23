@@ -443,10 +443,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FishingPhase.Idle, fishing.Phase,
                 "a key still held from the deck work must NOT auto-cast (the resurrected #184 bug, third verse)");
 
-            // (c) a genuine release-then-press casts.
+            // (c) a genuine release-then-flick casts (the press-to-cast is retired — the flick gesture
+            // is the one cast path now).
             dev.TickFishing(0.05f, rawHeld: false);
-            dev.TickFishing(0.05f, rawHeld: true);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-press casts a fresh line");
+            FlickGestures.CastLine(dev, fishing);
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-flick casts a fresh line");
         }
 
         // ---- (5) the cozy auto-resolve over the live controller -------------------------------------
