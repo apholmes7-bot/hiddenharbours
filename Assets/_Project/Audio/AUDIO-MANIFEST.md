@@ -54,6 +54,39 @@ idles when moored and revs underway.
 | `_catchSting` | `SFX/catch_sting.wav`       | no  | SFX | bright sting on `FishCaught` | `CatchSting` |
 | `_homeWarmth` | `SFX/home_warmth.wav`       | no  | SFX | "made it home" warmth on `CatchSold` / coming ashore | `HomeWarmth` |
 
+## Rod-fight sound layer (Rod Fishing v2 — `FishingAudio`)
+
+A second self-installing player, **`FishingAudio`** (`Code/Audio/FishingAudio.cs`), voices the whole
+rod-fishing arc **diegetically** (design `rod-fishing-v2-brainstorm.md` §2–3, §7 — the rod is the
+instrument, no HUD). It consumes ONLY the Core `FishingStateChanged` snapshot (rule 4) and all its
+decisions are the pure, EditMode-tested `FishingAudioLogic`. As above, every clip has a procedural
+placeholder until real SFX slot into the serialized fields — same swap flow, no code changes.
+
+**How the owner tunes it (no code):** select the `[FishingAudio]` object at runtime (or a slotted
+prefab later) — every layer has a tooltip'd 0..1 level (`_fishingVolume` master, `_creakLevel`,
+`_payoutLevel`, `_strainLevel`, `_reelLevel`, `_thrashLevel`, `_cueLevel`).
+
+| Director field | Real asset (place here) | Loop? | Role / trigger | Placeholder |
+|---|---|---|---|---|
+| `_rodCreakLoop` | `SFX/rod_creak.wav` | yes | wind-back draw (`WindBack`) — deepens as the rod loads (`RodBend01`) | `ProceduralAudio.RodCreak` |
+| `_castWhoosh` | `SFX/cast_whoosh.wav` | no | the flick released (enter `Cast`) — whip + line whistle | `CastWhoosh` |
+| `_splashDown` | `SFX/splash_down.wav` | no | the line lands (exit `Cast`) — pairs with the art lane's `SplashBurst` | `SplashDown` |
+| `_payoutTickLoop` | `SFX/payout_tick.wav` | yes | the depth drop (`Sinking`) — its **pitch slows** as `Depth01` → 1 (the no-gauge depth read, §2.3) | `PayoutTick` |
+| `_bottomSettle` | `SFX/bottom_settle.wav` | no | the slack **bottom tell** opens pre-bite — "you felt bottom" | `BottomSettle` |
+| `_bobberPlop` | `SFX/bobber_plop.wav` | no | the **cast-path** bite tell (`Bite` with `Depth01 = 0`) | `BobberPlop` |
+| `_rodKnock` | `SFX/rod_knock.wav` | no | the **depth-path** bite tell (`Bite` with `Depth01 > 0`) — the deep rod-tip knock, in the rod, not the UI | `RodKnock` |
+| `_strainGroanLoop` | `SFX/strain_groan.wav` | yes | the continuous line-strain groan — gain rides `Tension01^1.6` (the "ease off!" voice), pitch tightens with tension; services the **legacy `Fighting`** phase too | `StrainGroan` |
+| `_reelClickLoop` | `SFX/reel_clicks.wav` | yes | reel clicks **only while gaining** (`Landing01` rising) | `ReelClicks` |
+| `_slackRelease` | `SFX/slack_release.wav` | no | the mid-fight slack window opens — the diegetic "PULL now" (§3) | `SlackRelease` |
+| `_surfaceThrashLoop` | `SFX/surface_thrash.wav` | yes | she's up (`FightSurface`) — swells with `RodBend01` + her dart speed, **pans on her offset** | `SurfaceThrash` |
+| `_snapSting` | `SFX/snap_sting.wav` | no | threw the hook (`Snapped`) — a **cozy** sting, never a punishment sound (§7) | `SnapSting` |
+| `_landedFlourish` | `SFX/landed_flourish.wav` | no | landed (`Landed`) — warm flourish + the wet slap on the boards; layers under the `AudioDirector`'s musical `_catchSting` (diegetic vs reward) | `LandedFlourish` |
+
+> **Flags:** (a) `FishingAudio` keeps its own master level rather than reaching into the
+> `AudioDirector`'s private bus fields — folding both players onto shared buses (an AudioMixer) is a
+> small in-lane follow-up. (b) Fishing cues do not yet duck the ambient beds; wire that when the
+> shared bus lands.
+
 ## Missing Core signals (flagged for a follow-up — NOT added this round)
 The Audio lane subscribes to **existing** Core signals only (`FishCaught`, `CatchSold`,
 `ControlModeChanged`, `ActiveBoatChanged`) and polls the deterministic `IEnvironmentService` /
