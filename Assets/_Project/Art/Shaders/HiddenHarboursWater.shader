@@ -527,6 +527,14 @@ Shader "HiddenHarbours/Water"
         _BoatLightBrighten   ("Beam brighten (multiply-lift of the water inside the cone)", Range(0,8)) = 2.5
         _BoatLightTintAmount ("Beam warm tint (faint additive warmth inside the cone)", Range(0,2)) = 0.25
         _BoatLightGain       ("Beam cone weight gain (shapes the cone weight before the lift)", Range(0,4)) = 0.5
+        [Header(DISPLACED SURFACE (ADR 0023   the sea as real geometry))]
+        // Read by the HHWater pass's vertex stage only — the flat Universal2D pass ignores them.
+        // Exaggeration and band are PUSHED per tick by DisplacedWaterSurface (band is DERIVED via
+        // ShoreFadeMath.RecommendedBandMeters — rule 6: never a free magic number), so the defaults
+        // here matter to harnesses and bare materials only. GameConfig exposure is arc step 3.
+        _WaveExaggeration ("Displacement exaggeration (1 = sim true, 1.5 = ADR 0023 default)", Float) = 1.5
+        _ShoreFadeBand    ("Shore fade band (m of depth, derived and pushed)", Float) = 0.5
+        _WaterIsoDepth    ("Iso depth factors (cos elev, sin elev)", Vector) = (0.766, 0.643, 0, 0)
     }
 
     SubShader
@@ -536,30 +544,13 @@ Shader "HiddenHarbours/Water"
         Cull Off
         ZWrite Off
 
-        Pass
-        {
-            // Unlit transparent: the 2D renderer draws this; we light it ourselves (one implied sun, ADR 0006).
-            Tags { "LightMode" = "Universal2D" }
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // multi_compile (not shader_feature) so the height-map branch is ALWAYS compiled — WaterSurface
-            // toggles _USE_HEIGHTTEX at runtime after baking, and a shader_feature variant absent from the
-            // build would silently fall back to the off (uniform-deep) path.
-            #pragma multi_compile_local _ _USE_HEIGHTTEX
-            // Painted-texture branches: shader_feature (not multi_compile) — these toggles are baked into
-            // the MATERIAL by the owner in the Inspector (NOT flipped by a runtime script, unlike
-            // _USE_HEIGHTTEX), so only the combinations a shipped material actually uses need to compile.
-            // shader_feature keeps the variant count minimal AND preserves the material's chosen keywords;
-            // every branch is still syntax-checked by the importer. One _local keyword per slot.
-            #pragma shader_feature_local _ _USE_SURFACETEX
-            #pragma shader_feature_local _ _USE_FOAMTEX
-            #pragma shader_feature_local _ _USE_CAUSTICTEX
-            #pragma shader_feature_local _ _USE_SPARKLETEX
-            #pragma shader_feature_local _ _USE_DEPTHRAMP
-            #pragma shader_feature_local _ _USE_WHITECAPTEX
-            #pragma multi_compile_instancing
-
+        // ==== THE SHARED WATER PROGRAM ========================================================
+        // Every declaration, helper and the FULL fragment stage live in this SubShader-scope
+        // HLSLINCLUDE, so both passes compile the SAME code: the flat in-scene pass
+        // (Universal2D) and the ADR 0023 displaced off-screen pass (HHWater) are one program
+        // with two vertex stages. The ONE-SEA rule made structural — the displaced surface
+        // cannot drift from the flat water, because it IS the flat water's fragment.
+        HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             struct Attributes
@@ -858,6 +849,10 @@ Shader "HiddenHarbours/Water"
                 float  _BoatLightBrighten;
                 float  _BoatLightTintAmount;
                 float  _BoatLightGain;
+                // ---- displaced surface (ADR 0023; read by the HHWater pass's vertex stage) ----
+                float  _WaveExaggeration;
+                float  _ShoreFadeBand;
+                float4 _WaterIsoDepth;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1037,6 +1032,39 @@ Shader "HiddenHarbours/Water"
                 return _HeightMin;   // no height map => everywhere deep (uniform tint, no false shoreline)
             #endif
             }
+
+            // The VERTEX-STAGE twin of SeabedElevation (ADR 0023): identical math, sampled with
+            // SAMPLE_TEXTURE2D_LOD (level 0) because the vertex stage has no derivatives for the
+            // implicit-LOD sampler and would not compile with it. _HeightTex is imported without
+            // mips, so LOD 0 IS the texture and the two reads return byte-identical elevations —
+            // the displaced surface's seam and the fragment's clip() read the SAME seabed by
+            // construction (one height map; ADR 0009/0010/0014's P1 integrity rule).
+            float SeabedElevationLod(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                float r = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, uv, 0).r;
+                return lerp(_HeightMin, _HeightMax, r);
+            #else
+                return _HeightMin;   // no height map => everywhere deep (matches SeabedElevation)
+            #endif
+            }
+
+            // The HLSL TWIN of HiddenHarbours.Core.ShoreFadeMath.Fade01 (ADR 0023) — the SHORE SEAM:
+            // exactly 0 at and beyond the walkable waterline (depth <= 0), smoothstep up through the
+            // falloff band, exactly 1 at and past it. LINE-FOR-LINE with the C# (1e-4 mirrors
+            // ShoreFadeMath.MinBandMeters): any change there changes this in the SAME commit — the
+            // WaveMath twin discipline. ShoreFadeMathTests pins the C# side; the ShoreSeamProof
+            // editor harness carries this same twin and measured 0 px of coast tear with it.
+            // Zero at the depth-0 contour is what keeps the displaced surface from ever
+            // contradicting the clip() waterline in frag() — the P1 integrity law of the arc.
+            float ShoreFade01(float depth, float band)
+            {
+                if (depth <= 0.0) return 0.0;
+                float t = saturate(depth / max(band, 1e-4));
+                return t * t * (3.0 - 2.0 * t);
+            }
+
 
             // ---- SHOREWARD direction: which way is LAND? (from the seabed height gradient) -------------------
             // Real ocean swell is generated far offshore and rolls SHOREWARD regardless of the local wind; foam
@@ -2798,6 +2826,126 @@ Shader "HiddenHarbours/Water"
                     : lightContent;
 
                 return col;
+            }
+        ENDHLSL
+
+        Pass
+        {
+            // Unlit transparent: the 2D renderer draws this; we light it ourselves (one implied sun, ADR 0006).
+            Tags { "LightMode" = "Universal2D" }
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            // multi_compile (not shader_feature) so the height-map branch is ALWAYS compiled — WaterSurface
+            // toggles _USE_HEIGHTTEX at runtime after baking, and a shader_feature variant absent from the
+            // build would silently fall back to the off (uniform-deep) path.
+            #pragma multi_compile_local _ _USE_HEIGHTTEX
+            // Painted-texture branches: shader_feature (not multi_compile) — these toggles are baked into
+            // the MATERIAL by the owner in the Inspector (NOT flipped by a runtime script, unlike
+            // _USE_HEIGHTTEX), so only the combinations a shipped material actually uses need to compile.
+            // shader_feature keeps the variant count minimal AND preserves the material's chosen keywords;
+            // every branch is still syntax-checked by the importer. One _local keyword per slot.
+            #pragma shader_feature_local _ _USE_SURFACETEX
+            #pragma shader_feature_local _ _USE_FOAMTEX
+            #pragma shader_feature_local _ _USE_CAUSTICTEX
+            #pragma shader_feature_local _ _USE_SPARKLETEX
+            #pragma shader_feature_local _ _USE_DEPTHRAMP
+            #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma multi_compile_instancing
+            ENDHLSL
+        }
+
+        // ==== PASS 2: THE DISPLACED SURFACE (ADR 0023 phase 2 — off-screen only) ==============
+        // The sea as a real displaced mesh, drawn ONLY by IsoFacetHullFeature's HHWater renderer
+        // list into the ADR 0022 off-screen recording: its own colour target (_HHWaterScreenTex;
+        // alpha = the water's own translucency) sharing the facet pass's PRIVATE depth buffer —
+        // never the scene depth buffer (a depth-writing mesh there punches holes in every later
+        // sprite that z-tests; the ADR 0022 lesson, verbatim). The in-scene face of this pass is
+        // the WaterOverlay quad (HiddenHarboursWaterOverlay.shader), which re-composes these
+        // pixels through a SortingGroup exactly where the flat sprite sorts. The 2D renderer
+        // never draws this pass (unknown LightMode) and the flat pass never draws off-screen —
+        // the A/B toggle (DisplacedWaterSurface) shows exactly one of the two.
+        // ZTest LEqual / clear-1 semantics on purpose: this is the STANDARD camera-matrices
+        // RenderGraph path, where URP handles reversed-Z. The GEqual / clear-0 convention
+        // belongs to raw hand-built command-buffer harnesses ONLY (ADR 0023's calibrated trap).
+        Pass
+        {
+            Name "HHWaterDisplaced"
+            Tags { "LightMode" = "HHWater" }
+            Blend Off
+            ZWrite On
+            ZTest LEqual
+            Cull Off
+
+            HLSLPROGRAM
+            #pragma vertex vertDisplaced
+            #pragma fragment frag
+            // multi_compile (not shader_feature) so the height-map branch is ALWAYS compiled — WaterSurface
+            // toggles _USE_HEIGHTTEX at runtime after baking, and a shader_feature variant absent from the
+            // build would silently fall back to the off (uniform-deep) path.
+            #pragma multi_compile_local _ _USE_HEIGHTTEX
+            // Painted-texture branches: shader_feature (not multi_compile) — these toggles are baked into
+            // the MATERIAL by the owner in the Inspector (NOT flipped by a runtime script, unlike
+            // _USE_HEIGHTTEX), so only the combinations a shipped material actually uses need to compile.
+            // shader_feature keeps the variant count minimal AND preserves the material's chosen keywords;
+            // every branch is still syntax-checked by the importer. One _local keyword per slot.
+            #pragma shader_feature_local _ _USE_SURFACETEX
+            #pragma shader_feature_local _ _USE_FOAMTEX
+            #pragma shader_feature_local _ _USE_CAUSTICTEX
+            #pragma shader_feature_local _ _USE_SPARKLETEX
+            #pragma shader_feature_local _ _USE_DEPTHRAMP
+            #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma multi_compile_instancing
+
+            // ==== THE DISPLACED VERTEX STAGE (ADR 0023) ===============================================
+            // Each vertex lifts by
+            //     lift = height * _WaveExaggeration * ShoreFade01(stillDepth, _ShoreFadeBand)
+            // — Core ShoreFadeMath.DisplacedHeight, verbatim (the twin). The height comes from the
+            // SAME WaveFieldSample the fragment paints with (the ONE-SEA rule: one deterministic
+            // field, two sampling densities — the vertex grid instead of the pixel grid), at the
+            // SAME visual frequency scale, so the geometry's crests sit under the painted crests.
+            // The still depth is the SAME painted-seabed read the fragment's clip() gates on.
+            //
+            // THE SEAM (P1 integrity): the fade is EXACTLY 0 at and beyond the walkable waterline,
+            // so displacement dies before it can contradict the clip() contour — which still reads
+            // the UNDISPLACED ground position (worldXY carries the ground coords, not the lifted
+            // ones). The walkable waterline and the clip contour stay byte-identical to the flat
+            // pass's, at every tide, by construction.
+            //
+            // View z: a lifted crest also steps NEARER in the private z-buffer and the ground y
+            // recedes at the iso elevation's cosine (_WaterIsoDepth = (cos elev, sin elev), the
+            // spike's convention) — so if the screen mapping ever overlaps (it is provably monotone
+            // at x1.5 for the reference sea, ADR 0023 §(2)), the nearer surface wins. Calibrating
+            // hull-vs-water z (the waterline climbing the planking) is phase 3's work; within the
+            // water itself this ordering is already correct. The y reference is the height map's
+            // world-rect min (_HeightWorldMin) — ONE constant for the whole sea, so chunked meshes
+            // share a continuous depth ramp with no seams at chunk borders.
+            Varyings vertDisplaced(Attributes IN)
+            {
+                Varyings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+                VertexPositionInputs pos = GetVertexPositionInputs(IN.positionOS);
+                float3 ws = pos.positionWS;
+                float2 ground = ws.xy;                       // the UNDISPLACED ground position
+
+                float vHeight;
+                float2 vSlope;
+                float vCrest;
+                float vPrimCos;
+                float vFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
+                WaveFieldSample(ground, vFreqScale, vHeight, vSlope, vCrest, vPrimCos);
+
+                float stillDepth = _WaterLevel - SeabedElevationLod(ground);
+                float lift = vHeight * _WaveExaggeration * ShoreFade01(stillDepth, _ShoreFadeBand);
+
+                ws.y += lift;
+                ws.z += (ground.y - _HeightWorldMin.y) * _WaterIsoDepth.x - lift * _WaterIsoDepth.y;
+
+                OUT.positionCS = TransformWorldToHClip(ws);
+                OUT.uv = IN.uv;
+                OUT.worldXY = ground;   // frag paints AND clips at the ground position — the lift
+                return OUT;             // moves pixels, never the waterline contour.
             }
             ENDHLSL
         }

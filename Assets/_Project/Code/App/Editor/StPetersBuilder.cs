@@ -68,6 +68,7 @@ namespace HiddenHarbours.App.Editor
         const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
+        const string ArtWaterOverlayMat = "Assets/_Project/Art/Materials/WaterOverlay.mat"; // the displaced surface's in-scene face (ADR 0023)
         // Weather-driven water palette anchor presets (ADR 0017) — the moods the deterministic weather blends
         // between on the Sea's WaterSurface (calm <-> storm by sea-state, pulled toward fog by low visibility).
         // The BASE / calm anchor is deliberately NOT a preset here: it is left UNWIRED so WaterSurface uses the
@@ -264,6 +265,17 @@ namespace HiddenHarbours.App.Editor
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+
+                // (ADR 0023 phase 2) THE DISPLACED SURFACE A/B: hang the DisplacedWaterSurface
+                // beside WaterSurface, covering the SAME 160×120 m rect. Defaults OFF — the flat
+                // water renders exactly as today until the owner presses the dev key (O) in Play,
+                // which flips the sea to the vertically displaced mesh (same sim, same material,
+                // same waterline — the readability verdict instrument). All tunables live on the
+                // component (exaggeration ×1.5, derived fade band, 8 px grid); GameConfig exposure
+                // is arc step 3.
+                var displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
+                displaced.Configure(new Vector2(0f, 0f), new Vector2(160f, 120f),
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat));
             }
             else
             {

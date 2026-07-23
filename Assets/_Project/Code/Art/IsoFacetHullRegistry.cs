@@ -71,6 +71,9 @@ namespace HiddenHarbours.Art
     public static class IsoFacetShaderIds
     {
         public static readonly int HullScreenTex = Shader.PropertyToID("_HHHullScreenTex");
+        /// <summary>The displaced water surface's resolved screen texture (ADR 0023 phase 2) —
+        /// written by the feature's water pass, sampled by the in-scene WaterOverlay quad.</summary>
+        public static readonly int WaterScreenTex = Shader.PropertyToID("_HHWaterScreenTex");
         public static readonly int FacetTex = Shader.PropertyToID("_HHFacetTex");
         public static readonly int DarkTex = Shader.PropertyToID("_HHDarkTex");
         public static readonly int KeyTex = Shader.PropertyToID("_HHKeyTex");

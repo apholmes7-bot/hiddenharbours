@@ -1850,3 +1850,56 @@ ADR 0023 §Phases): one sea (displace the existing field only), ONE shared exagg
 `DisplacedHeight` by surface and hulls alike, the style law (solid bands, dithered edges, world-locked
 cells, owner palette anchors), and the HLSL twin discipline — the production vertex shader's fade must be a
 line-for-line twin of `Fade01`, changed only in lockstep.
+
+
+## 22. The displaced surface in production — the water joins the off-screen pass (ADR 0023, arc step 2·1)
+
+Step 1 of phase 2 puts the displaced surface IN the game, behind a dev A/B toggle (the owner's
+readability verdict instrument). The wiring, for anyone touching it:
+
+- **Two passes, one program.** `HiddenHarboursWater.shader` now holds its whole program in a
+  SubShader-scope `HLSLINCLUDE`; the flat `Universal2D` pass and the new off-screen
+  `HHWaterDisplaced` pass (LightMode `HHWater`) share every declaration, helper and the FULL
+  fragment — the displaced sea cannot drift from the flat sea because it IS the flat sea's
+  fragment on lifted geometry. The A side of the A/B is byte-identical to today: same pass, same
+  vertex, same pragmas.
+- **The vertex twin.** `vertDisplaced` lifts each vertex by
+  `height × _WaveExaggeration × ShoreFade01(stillDepth, _ShoreFadeBand)` — the same
+  `WaveFieldSample` the fragment paints with (one field, two sampling densities, same visual
+  frequency scale), the same painted-seabed depth read (`SeabedElevationLod` — the LOD-0 vertex
+  twin of `SeabedElevation`; the height map has no mips, so the reads are byte-identical), and the
+  line-for-line HLSL twin of `Core.ShoreFadeMath.Fade01` (§21). The fragment receives the
+  UNDISPLACED ground position, so `clip()`, bands, foam and every layer are painted at the ground
+  coordinate and ride the lift — the walkable waterline and clip contour are untouched by
+  construction.
+- **The ADR 0022 route, with one refinement.** The displaced mesh joins `IsoFacetHullFeature`'s
+  off-screen recording and shares the facet passes' PRIVATE depth buffer (never the scene depth —
+  a depth-writing mesh there punches holes in every later sprite). It writes its OWN colour target
+  (`_HHWaterScreenTex`, ARGBHalf so the night light content's pre-compensated >1 values survive;
+  alpha = the water's own translucency), NOT a fifth MRT attachment: the facet buffers' alpha is
+  the hull-id contract, and water pixels inside them would starve the keyline flood of the empty
+  neighbours it floods into. The keyline resolve is byte-identical with or without water; the
+  shared z-buffer is the part phase 3's waterline-on-the-hull needs. Membership in the off-screen
+  renderer list is an EXPLICIT rendering-layer bit (`DisplacedWaterRegistry.RenderingLayer`), so
+  the flat Sea sprite and the owner's preset materials — which carry the same shader — can never
+  ride into the pass by accident.
+- **The in-scene face** is `WaterOverlay` (`HiddenHarboursWaterOverlay.shader` + the committed
+  `WaterOverlay.mat`): a quad sampling `_HHWaterScreenTex` at its own SV_Position, sorted through
+  a SortingGroup at the flat sprite's exact layer/order — boats, characters and props stack
+  against the displaced sea exactly as against the flat one.
+- **Plumbing** (`DisplacedWaterSurface`, beside `WaterSurface` on the Sea): chunked vertex grid
+  (default one vertex per 8 px — the ADR perf envelope; chunk math pinned by
+  `DisplacedWaterMathTests`), the flat renderer's MaterialPropertyBlock copied each throttled tick
+  (one sea, two representations), the displaced material a runtime instance of the LIVE Water.mat
+  with the `Universal2D` pass disabled, and the fade band DERIVED each tick:
+  `band = coefficient × live envelope × exaggeration × shoreGradient`
+  (`DisplacedWaterMath.BandMeters`, pinned bit-equal to `ShoreFadeMath.RecommendedBandMeters`).
+  Exaggeration (×1.5) and coefficient (2) are inspector parameters for now; GameConfig exposure is
+  arc step 3.
+- **The A/B**: `O` at runtime (rebindable, the DevBoatPicker pattern) flips flat ↔ displaced in
+  place. OFF is a contract: nothing registers, the feature records nothing, the flat water renders
+  exactly as today.
+
+Still ahead in the arc (ADR 0023 §Phases): the envelope-relative band/whitecap retune on the
+displaced fragment (step 2), GameConfig exposure (step 3), hull waterline + shared heave
+(phase 3), and the screen-anchored-layer reviews (phase 4).
