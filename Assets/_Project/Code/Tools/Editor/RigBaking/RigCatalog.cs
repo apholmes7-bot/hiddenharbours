@@ -59,6 +59,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // The reason Phase 1 exists: Tier 3, ~12.0 m LOA, and no baked art anywhere.
                 ["lobsterBoat"] = new RigEntry($"{RigFolder}/lobsterBoatIsoRig.js", "LobsterBoatIso",
                                                AzimuthConvention.CounterClockwise),
+
+                // The first non-boat host: fixed CLOCKWISE at source by the art director
+                // (th = −dir·45°), unlike every boat. It exposes no ROCK block — characters RIDE a
+                // deck's rock via opts.roll/pitch/heave rather than owning one — so Install reports
+                // rockFrames 0 and the turntable path does not apply. Baked by CharacterRigBaker
+                // (8 direction rows × ANIMS-declared frames), never by the boat turntable.
+                ["character"] = new RigEntry($"{RigFolder}/characterIsoRig.js", "CharacterIso",
+                                             AzimuthConvention.Clockwise),
             };
 
         public static string RepoRoot =>
@@ -96,13 +104,20 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"Rig '{entry.ScriptPath}' ran but did not install globalThis.{g}. " +
                     "Either the global name in the catalog is wrong or the rig changed shape.");
 
+            // ROCK is a HULL contract: boats own their rock cycle and export its frame count.
+            // Character rigs have no ROCK at all — they ride a deck's rock through
+            // opts.roll/pitch/heave instead — so its absence is a legitimate rig shape, not an
+            // error. Report 0 rather than throwing; the boat turntable never runs on such a rig
+            // (RigBakeMenu's recipes name boat keys only) and CharacterRigBaker never reads it.
+            bool hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
+
             return new RigGeometry(
                 width:      (int)host.EvaluateNumber($"{g}.W"),
                 height:     (int)host.EvaluateNumber($"{g}.H"),
                 pivotX:     host.EvaluateNumber($"{g}.pivot.x"),
                 pivotY:     host.EvaluateNumber($"{g}.pivot.y"),
                 nativeDirs: (int)host.EvaluateNumber($"{g}.DIRS"),
-                rockFrames: (int)host.EvaluateNumber($"{g}.ROCK.frames"),
+                rockFrames: hasRock ? (int)host.EvaluateNumber($"{g}.ROCK.frames") : 0,
                 defaultElevation: host.EvaluateNumber($"{g}.defaultElev"));
         }
     }

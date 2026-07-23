@@ -242,8 +242,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// here. Flipping it twice, or not at all, produces a sheet that looks plausible and is
         /// vertically mirrored — check this first if a bake comes out upside-down.
         /// </summary>
-        static void Blit(byte[] src, int cw, int ch, Color32[] dst, int pw, int ph,
-                         int col, int rowFromTop)
+        internal static void Blit(byte[] src, int cw, int ch, Color32[] dst, int pw, int ph,
+                                  int col, int rowFromTop)
         {
             int x0 = col * cw;
             int yTop = rowFromTop * ch;
