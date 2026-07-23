@@ -20,6 +20,8 @@ MonoBehaviour:
   Sprite: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
   RegionIds:
   - region.coddle_cove
+  - region.st_peters
+  - region.port_greywick
   AllowedGear: 3
   Seasons: 15
   MinTide: -10

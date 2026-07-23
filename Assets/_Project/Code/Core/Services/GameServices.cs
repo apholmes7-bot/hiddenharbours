@@ -52,6 +52,19 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static ITidalTerrain TidalTerrain { get; set; }
 
+        /// <summary>
+        /// The stable id of the region the player is CURRENTLY in (e.g. <c>"region.st_peters"</c>) —
+        /// the travel-aware read gameplay resolves per-region content against (which fish bite HERE,
+        /// now). The <b>App</b> travel rig is the writer (the active region's anchor reports itself;
+        /// a region hop re-points it); <b>gameplay</b> reads it at act-time (a cast, a dig) WITHOUT
+        /// referencing the App module — the same Core-mediated indirection as
+        /// <see cref="TidalTerrain"/> (rule 4). OPTIONAL and NOT part of <see cref="Ready"/>: null/empty
+        /// before any region reports (EditMode, a test rig, pre-boot) — consumers then fall back to
+        /// their own authored region id, so nothing breaks where travel isn't wired.
+        /// FLAG lead-architect: new Core contract (this fix's travel-aware region seam).
+        /// </summary>
+        public static string CurrentRegionId { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -64,6 +77,7 @@ namespace HiddenHarbours.Core
             ActiveBoat = null;
             Save = null;
             TidalTerrain = null;
+            CurrentRegionId = null;
         }
     }
 }

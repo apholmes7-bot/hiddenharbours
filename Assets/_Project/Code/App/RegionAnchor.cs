@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.App
 {
@@ -36,8 +37,23 @@ namespace HiddenHarbours.App
         private static readonly List<RegionAnchor> _live = new();
         public static IReadOnlyList<RegionAnchor> Live => _live;
 
-        private void OnEnable() { if (!_live.Contains(this)) _live.Add(this); }
-        private void OnDisable() => _live.Remove(this);
+        // The anchor also REPORTS its region as the current one (GameServices.CurrentRegionId — the
+        // travel-aware region seam gameplay resolves catches against). Region scenes are TOGGLED by the
+        // RegionTravelCoordinator (previous roots deactivated BEFORE the next activate), so exactly one
+        // anchor is enabled at a time and OnEnable/OnDisable order makes the handoff clean; at BOOT the
+        // start scene's own anchor enables and seeds the id with no travel event needed. OnDisable only
+        // clears the id if it still owns it, so the next region's report is never stomped.
+        private void OnEnable()
+        {
+            if (!_live.Contains(this)) _live.Add(this);
+            if (!string.IsNullOrEmpty(_regionId)) GameServices.CurrentRegionId = _regionId;
+        }
+
+        private void OnDisable()
+        {
+            _live.Remove(this);
+            if (GameServices.CurrentRegionId == _regionId) GameServices.CurrentRegionId = null;
+        }
 
         /// <summary>The first live anchor whose GameObject lives in <paramref name="scene"/>, or null.</summary>
         public static RegionAnchor ForScene(Scene scene)

@@ -19,14 +19,17 @@ namespace HiddenHarbours.Fishing
     /// and feed the same <c>(held, pointerWorld, pointerValid)</c> triple; the controller and the maths
     /// need no change (they only ever see samples).</para>
     ///
-    /// <para><b>Build 5 gating (why this component is no longer dumb).</b> Handline fishing is a DECK
-    /// action like the trap loop — you cast from the boat, not while walking the shore or steering at the
-    /// helm. So the cast is gated to <see cref="ControlMode.OnDeck"/> exactly the way
-    /// <see cref="DevTrapInput"/>/<see cref="TrapHaulController"/> gate their keys (subscribe to
-    /// <see cref="ControlModeChanged"/>, live only on deck and not under a modal <see cref="InteractionGate"/>).
+    /// <para><b>The mode gate (Build 5, re-cut for DOCK-FIRST rod fishing).</b> Rod/handline fishing is
+    /// live wherever the player can actually work a rod: <see cref="ControlMode.OnFoot"/> (the dock, the
+    /// shore, wading the flats — Rod Fishing v2 is DOCK-FIRST, the owner's locked decision) and
+    /// <see cref="ControlMode.OnDeck"/> (the boat's deck, exactly as Build 5 shipped). It stays DEAD at
+    /// the helm (<see cref="ControlMode.Aboard"/> — you're steering, and Space is the oar brace there)
+    /// and under a modal <see cref="InteractionGate"/>, the same <see cref="ControlModeChanged"/>
+    /// subscription discipline as <see cref="DevTrapInput"/>/<see cref="TrapHaulController"/>.
     /// AND — because Space is ALSO the trap-haul pull key on the same GameObject — the cast stands down while
     /// a <see cref="TrapHaulController"/> haul is live, so pressing Space during a haul pulls the rope and
-    /// never also casts a line (the owner's blocking bug: Space double-bound cast + pull).</para>
+    /// never also casts a line (the owner's blocking bug: Space double-bound cast + pull). On foot there is
+    /// no key clash: the dig/interact verbs ride E, and the helm's Space brace is gated Aboard.</para>
     ///
     /// <para><b>The haul is now a HOLD — the release latch (Build 6, the resurrected bug).</b> The trap haul
     /// was redesigned from a tap into a <b>hold</b> (hold Space with the swell), so the player is very likely
@@ -51,9 +54,9 @@ namespace HiddenHarbours.Fishing
         private FishingController _fishing;
         private TrapHaulController _haul;   // sibling on the same Dory GO; may be null on a fishing-only rig
         private PotDeckWorkController _deckWork;   // Build-7 deck-work sibling; may be null / appear late
-        // Handline fishing is a DECK action (owner's Build-5 split): the cast lives only while standing ON
-        // DECK — never at the helm (you're steering) and never on foot (ControlModeChanged, via Core).
-        private bool _onDeck;
+        // Where the player's control lives (ControlModeChanged, via Core). The rod is live ON FOOT (the
+        // dock/shore — dock-first, the owner's call) and ON DECK; dead at the helm (you're steering).
+        private ControlMode _mode;
         // The hold-haul release latch (Build 6): true once a live haul has been seen, until the pull key is
         // released. While set, a still-held key is swallowed so the haul's carried-over hold can never flip
         // into a fresh cast the instant the haul ends. Only a live haul arms it (not the deck/modal gates).
@@ -79,21 +82,25 @@ namespace HiddenHarbours.Fishing
 
         private void OnEnable()
         {
-            // Fresh components start un-decked; every transition (and the region-arrival re-assert)
-            // republishes the mode, which keeps this correct across scene hops.
-            _onDeck = false;
+            // Fresh components boot ON FOOT — the game starts ashore (the ControlSwitcher's own default)
+            // and the walking player must be able to fish from the very first frame (the owner's dock-first
+            // playtest bug: standing on the dock, "clicking or space did not take out my rod"). Every
+            // transition (and the region-arrival re-assert) republishes the mode, which keeps this correct
+            // across boarding, the helm and scene hops.
+            _mode = ControlMode.OnFoot;
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
         }
 
         private void OnDisable() => EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
 
-        /// <summary>Public so tests can drive the deck gate through the same path the bus uses.</summary>
-        public void OnControlModeChanged(ControlModeChanged e) => _onDeck = e.Mode == ControlMode.OnDeck;
+        /// <summary>Public so tests can drive the mode gate through the same path the bus uses.</summary>
+        public void OnControlModeChanged(ControlModeChanged e) => _mode = e.Mode;
 
-        /// <summary>True while the handline cast is worked — ON DECK, not under a modal dialogue, and not
-        /// while a trap haul OR a deck pot being worked (Build 7) owns the Space key. Public + input-free
-        /// so the gate itself is EditMode-testable.</summary>
-        public bool FishingLive => _onDeck && !InteractionGate.IsBlocked
+        /// <summary>True while the rod/handline cast is worked — ON FOOT (dock/shore) or ON DECK, not at
+        /// the helm, not under a modal dialogue, and not while a trap haul OR a deck pot being worked
+        /// (Build 7) owns the Space key. Public + input-free so the gate itself is EditMode-testable.</summary>
+        public bool FishingLive => (_mode == ControlMode.OnFoot || _mode == ControlMode.OnDeck)
+                                   && !InteractionGate.IsBlocked
                                    && !(Haul != null && Haul.IsHauling)
                                    && !(DeckWork != null && DeckWork.HasPotAboard);
 

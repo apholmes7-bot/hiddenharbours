@@ -14,7 +14,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// TrapHaulController + DevFishingInput all on the Dory):
     ///
     ///   (a) while a haul is live, the handline cast STANDS DOWN — Space belongs to the pull, no line casts;
-    ///   (b) handline fishing is a DECK action now — no cast at the helm or on foot (the Build-5 model);
+    ///   (b) the mode gate (re-cut for DOCK-FIRST rod fishing): the rod is live ON FOOT (dock/shore) and
+    ///       ON DECK, and dead at the helm (you're steering — Space is the oar brace there);
     ///   (c) a closed gate never STRANDS an in-flight cast — the tick keeps running with held=false so it
     ///       eases to its cozy resolution instead of freezing mid-cast.
     ///
@@ -237,32 +238,42 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "release-then-flick casts a fresh line");
         }
 
-        // ---- (b) handline is a DECK action — gated off the deck ------------------------------------
+        // ---- (b) the mode gate: rod live ON FOOT (dock-first) and ON DECK, dead at the helm --------
 
         [Test]
-        public void Cast_IsGated_OffTheDeck()
+        public void Cast_IsLive_OnFootAndOnDeck_AndGatedAtTheHelm()
         {
             var svc = MakeServiceWithPotAt(new Vector2(50f, 50f));   // pot far away → no haul in reach
             var rail = NewGo("Rail");
             var hold = new FakeHold();
             var (dev, fishing, _) = BuildRig(svc, rail.transform, hold);
 
-            // Fresh → un-decked. A full flick gesture ashore must not cast.
-            Assert.IsFalse(dev.FishingLive, "fresh component is un-decked → the handline is dead");
-            FlickGestures.Flick(dev, fishing);
-            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "no casting off the deck");
-
-            // At the helm you're steering — still no cast.
-            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
-            Assert.IsFalse(dev.FishingLive, "at the helm the handline is dead");
-            FlickGestures.Flick(dev, fishing);
-            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "no casting at the helm");
-
-            // On deck → the handline is live and the flick casts.
-            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
-            Assert.IsTrue(dev.FishingLive, "ON DECK → the handline is live");
+            // Fresh components boot ON FOOT — dock/shore fishing is live from the first frame (the
+            // owner's dock-first bug: standing on the dock, Space/click must take out the rod).
+            Assert.IsTrue(dev.FishingLive, "fresh component boots on foot → the rod is live");
             FlickGestures.CastLine(dev, fishing);
-            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "on deck, the flick casts");
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "on foot (the dock), the flick casts");
+
+            // A SECOND fresh rig walks the other modes (the first one has a line out — a live FSM would
+            // muddy the helm assertions).
+            var rail2 = NewGo("Rail2");
+            var (dev2, fishing2, _) = BuildRig(svc, rail2.transform, new FakeHold());
+
+            // At the helm you're steering (Space is the oar brace) — the rod is dead.
+            dev2.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            Assert.IsFalse(dev2.FishingLive, "at the helm the rod is dead");
+            FlickGestures.Flick(dev2, fishing2);
+            Assert.AreEqual(FishingPhase.Idle, fishing2.Phase, "no casting at the helm");
+
+            // On deck → live, exactly as Build 5 shipped.
+            dev2.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            Assert.IsTrue(dev2.FishingLive, "ON DECK → the rod is live");
+            FlickGestures.CastLine(dev2, fishing2);
+            Assert.AreEqual(FishingPhase.Waiting, fishing2.Phase, "on deck, the flick casts");
+
+            // And stepping back ASHORE stays live (the disembark → keep fishing loop).
+            dev2.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
+            Assert.IsTrue(dev2.FishingLive, "back on foot → still live");
         }
 
         [Test]
