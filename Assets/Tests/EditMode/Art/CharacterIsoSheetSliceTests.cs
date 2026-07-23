@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
@@ -71,7 +70,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             // Fight/balance cycle (rod fishing v2 wave 1, spec in PR #251) — baked in-engine by
             // Hidden Harbours ▸ Art ▸ Bake Character Fight Sheets, plain character cell like the rest.
-            // These stems are also in AwaitingOwnerBake below until their PNGs are committed.
+            // Owner-baked and committed 2026-07-22; held to every assertion like the rest of the set.
             { "Fisher_bite",        new Vector2Int(64, 88) },
             { "Fisher_strike",      new Vector2Int(64, 88) },
             { "Fisher_reel",        new Vector2Int(64, 88) },
@@ -82,21 +81,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "Fisher_stagger",     new Vector2Int(64, 88) },
         };
 
-        /// <summary>
-        /// Guarded stems whose sheets are SPECIFIED but not yet on disk: the fight cycle bakes on
-        /// the owner's machine (the in-engine baker needs an open editor; CI has none and this
-        /// machine was contested at authoring time). Until a stem's PNG is committed it is excluded
-        /// from every assertion — the moment the PNG lands it is held to all of them, with no code
-        /// change. The rig-side half of the contract is NOT waiting: CharacterRigBakeTests proves
-        /// the rig's frame counts against ExpectedFrames' numbers on every CI run.
-        /// ⚠️ DELETE each stem from this set in the commit that lands its PNG — once shipped, a
-        /// deleted sheet must fail the closed-set guard, not quietly read as "pending" again.
-        /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>
-        {
-            "Fisher_bite", "Fisher_strike", "Fisher_reel", "Fisher_land",
-            "Fisher_castBack", "Fisher_castRelease", "Fisher_balance", "Fisher_stagger",
-        };
+        // The AwaitingOwnerBake guard set that let CI stay green while the fight-cycle sheets waited
+        // on the owner's in-editor bake was deleted when those 8 PNGs landed (its own ⚠️ instruction):
+        // from that commit on, a missing sheet must FAIL the closed-set guard, never read as pending.
 
         /// <summary>The README's / drop's stated frame counts, checked against the PNG widths.</summary>
         private static readonly Dictionary<string, int> ExpectedFrames = new Dictionary<string, int>
@@ -115,13 +102,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "Fisher_balance", 8 },  { "Fisher_stagger", 10 },
         };
 
-        /// <summary>A guarded stem is asserted when its sheet exists, or is still awaiting the
-        /// owner's bake. Anything else — present-but-unguarded or missing-and-shipped — fails.</summary>
-        private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
-
-        private static IEnumerable<string> AllSheets() =>
-            Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
-                  .OrderBy(s => s).ToArray();
+        private static IEnumerable<string> AllSheets() => Sheets.Keys.OrderBy(s => s).ToArray();
 
         private static Vector2Int Cell(string stem) => Sheets[stem];
 
@@ -295,7 +276,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // The one place the stated frame counts are checked — against the PNGs, so a re-export that
             // quietly changed an animation's length is caught rather than absorbed.
-            foreach (var kv in ExpectedFrames.Where(kv => !AwaitingOwnerBake.Contains(kv.Key) || OnDisk(kv.Key)))
+            foreach (var kv in ExpectedFrames)
             {
                 var tex = LoadSheet(kv.Key);
                 int cols = tex.width / Cell(kv.Key).x;
