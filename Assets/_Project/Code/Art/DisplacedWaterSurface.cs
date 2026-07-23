@@ -40,8 +40,9 @@ namespace HiddenHarbours.Art
     /// default ×1.5) and the DERIVED shore-fade band
     /// (<see cref="DisplacedWaterMath.BandMeters"/> = coefficient × live envelope × exaggeration ×
     /// shore gradient — rule 6: derived, not free; the live envelope is read from the
-    /// <c>_WaveFieldParams</c> global the WaveFieldBridge publishes). Both are inspector
-    /// parameters for now; GameConfig exposure is arc step 3.</para>
+    /// <c>_WaveFieldParams</c> global the WaveFieldBridge publishes). Both are OWNER DATA (arc
+    /// step 3): the wired <see cref="GameConfig"/>'s <c>DisplacedWater</c> block is the live
+    /// source, re-read every tick; the serialized fields are the unwired fallback.</para>
     ///
     /// <para><b>Seam discipline (rule 4/5).</b> Reads sim state only through the published shader
     /// globals and the flat renderer's block; drives no simulation; saves nothing. Presentation
@@ -78,14 +79,26 @@ namespace HiddenHarbours.Art
                  "lift (envelope × exaggeration ≈ 1.6 m at the reference sea).")]
         [Min(0f)] [SerializeField] private float _overlayPadMeters = 4f;
 
-        [Header("Seam + exaggeration (ADR 0023; GameConfig exposure = arc step 3)")]
+        [Header("GameConfig (ADR 0023 arc step 3 — the owner's tuning surface)")]
+        [Tooltip("The shared GameConfig (Data/Config/GameConfig.asset; the builders wire this). " +
+                 "When wired, its Displaced Water block is the LIVE source for the exaggeration and " +
+                 "the band coefficient — read every throttled tick, so tuning the config asset in " +
+                 "Play moves the sea within a second, no code (rule 6). Left null (EditMode tests, " +
+                 "hand scenes) the serialized fallbacks below apply; they mirror the config defaults.")]
+        [SerializeField] private GameConfig _config;
+
+        [Header("Seam + exaggeration (fallbacks — GameConfig.DisplacedWater overrides when wired)")]
         [Tooltip("The SHARED displacement exaggeration (ADR 0023 §(2)): ×1.5 is the readability " +
                  "sweet spot (×1 = sim-true, ×3 breaks the iso framing). Phase 3 hands this SAME " +
-                 "value to hull heave — never retune one consumer alone (the overlay-pose lesson).")]
+                 "value to hull heave — never retune one consumer alone (the overlay-pose lesson). " +
+                 "FALLBACK: with a GameConfig wired above, GameConfig.DisplacedWater.WaveExaggeration " +
+                 "is the live source and this field is ignored.")]
         [Min(0f)] [SerializeField] private float _exaggeration = 1.5f;
         [Tooltip("Safety coefficient of the DERIVED shore-fade band (band = coeff × envelope × " +
                  "exaggeration × gradient). 2 covers both analytic tear hazards with margin " +
-                 "(ShoreFadeMath.RecommendedBandCoefficient — the proven Core value).")]
+                 "(ShoreFadeMath.RecommendedBandCoefficient — the proven Core value). FALLBACK: with " +
+                 "a GameConfig wired above, GameConfig.DisplacedWater.ShoreBandCoefficient is the " +
+                 "live source and this field is ignored.")]
         [Min(0f)] [SerializeField] private float _bandCoefficient = ShoreFadeMath.RecommendedBandCoefficient;
         [Tooltip("Largest seabed gradient |∇elevation| (m per m) within the shallow band on this " +
                  "coast — how steeply the shore shelves. St Peters' steepest shelf ≈ 0.5. " +
@@ -129,8 +142,17 @@ namespace HiddenHarbours.Art
         /// <summary>Defaults pinned by the tests against the ADR (grid 8 px, exaggeration ×1.5,
         /// coefficient = the Core constant).</summary>
         public int GridPixels => _gridPixels;
-        public float Exaggeration => _exaggeration;
-        public float BandCoefficient => _bandCoefficient;
+
+        /// <summary>
+        /// The EFFECTIVE shared exaggeration (ADR 0023 §(2)) — the value <see cref="SyncUniforms"/>
+        /// pushes: the wired GameConfig's <c>DisplacedWater.WaveExaggeration</c> (the owner's live
+        /// tuning surface, arc step 3), or the serialized fallback when no config is wired. Phase 3's
+        /// hull heave reads the SAME config accessor (<see cref="GameConfig.WaveExaggeration"/>).
+        /// </summary>
+        public float Exaggeration => _config != null ? _config.DisplacedWater.WaveExaggeration : _exaggeration;
+
+        /// <summary>The EFFECTIVE band coefficient — config-sourced like <see cref="Exaggeration"/>.</summary>
+        public float BandCoefficient => _config != null ? _config.DisplacedWater.ShoreBandCoefficient : _bandCoefficient;
 
         /// <summary>
         /// Wire the surface in one call — the builder's path (mirrors WaterSurface's Configure
@@ -142,6 +164,18 @@ namespace HiddenHarbours.Art
             _meshWorldCenter = meshWorldCenter;
             _meshWorldSize = meshWorldSize;
             _overlayMaterial = overlayMaterial;
+        }
+
+        /// <summary>
+        /// The arc-step-3 builder path: <see cref="Configure(Vector2, Vector2, Material)"/> plus the
+        /// shared <see cref="GameConfig"/> whose <c>DisplacedWater</c> block becomes the LIVE source
+        /// for exaggeration + band coefficient (Core type — rule 4's sanctioned direction).
+        /// </summary>
+        public void Configure(Vector2 meshWorldCenter, Vector2 meshWorldSize, Material overlayMaterial,
+                              GameConfig config)
+        {
+            Configure(meshWorldCenter, meshWorldSize, overlayMaterial);
+            _config = config;
         }
 
         private void Awake()
@@ -256,11 +290,15 @@ namespace HiddenHarbours.Art
             // The DERIVED band (rule 6): coefficient × LIVE envelope × exaggeration × gradient.
             // Envelope comes from the same _WaveFieldParams global the shader itself reads
             // (WaveFieldBridge publishes it; 0 in edit mode/no-field scenes → band 0, and with no
-            // trains the height is 0 too, so the surface is simply flat).
+            // trains the height is 0 too, so the surface is simply flat). Exaggeration + coefficient
+            // resolve through the properties — the wired GameConfig's DisplacedWater block (the
+            // owner's live tuning surface, arc step 3) or the serialized fallbacks — re-read EVERY
+            // tick, so an in-Play config edit reaches the sea within one refresh.
+            float exaggeration = Exaggeration;
             float envelope = Shader.GetGlobalVector(IdWaveFieldParams).z;
-            float band = DisplacedWaterMath.BandMeters(envelope, _exaggeration, _maxShoreGradient,
-                                                       _bandCoefficient);
-            _mpb.SetFloat(IdWaveExaggeration, _exaggeration);
+            float band = DisplacedWaterMath.BandMeters(envelope, exaggeration, _maxShoreGradient,
+                                                       BandCoefficient);
+            _mpb.SetFloat(IdWaveExaggeration, exaggeration);
             _mpb.SetFloat(IdShoreFadeBand, band);
             for (int i = 0; i < _chunkRenderers.Count; i++)
                 _chunkRenderers[i].SetPropertyBlock(_mpb);

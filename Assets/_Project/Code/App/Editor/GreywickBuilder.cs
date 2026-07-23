@@ -246,6 +246,9 @@ namespace HiddenHarbours.App.Editor
                 var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
                 ConfigureWaterSurface(surface, GreywickSeaCenter, GreywickSeaSize,
                                       GreywickHeightResolution, GreywickHeightMin, GreywickHeightMax);
+                // (ADR 0023 arc step 3) The owner's GameConfig salience knobs — pushed each tick, so
+                // Greywick's harbour marks the big wave with the SAME tuning as St Peters (one asset).
+                SetRef(surface, "_config", config);
                 // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
                 // (the live Water.mat is the calm baseline); null anchors no-op safely.
                 ConfigureWeatherPalette(

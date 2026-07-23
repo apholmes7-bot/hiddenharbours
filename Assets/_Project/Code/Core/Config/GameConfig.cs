@@ -94,6 +94,16 @@ namespace HiddenHarbours.Core
                  "cast — reel in and go again, no penalty. Every feel dial lives here.")]
         public FlickCastSettings FlickCast = FlickCastSettings.Default;
 
+        [Header("Displaced water (ADR 0023 — the sea's readable drama)")]
+        [Tooltip("Owner tuning for the displaced water surface (ADR 0023, phase 2): how much taller " +
+                 "the sea DRAWS than it simulates, how wide the tear-safe calm band along every shore " +
+                 "is, and how strongly the rare big wave is marked by foam and shade. All read LIVE " +
+                 "each water tick (~8 Hz), so tuning this asset in Play moves the sea within a " +
+                 "second. WaveExaggeration is THE one shared constant every water-riding visual " +
+                 "reads (surface lift now; hull heave, buoys and wake in phase 3) — tune it here " +
+                 "and boat and sea stay on the same water, never retuned apart.")]
+        public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -107,6 +117,16 @@ namespace HiddenHarbours.Core
         };
 
         // Convenience
+        /// <summary>
+        /// THE shared displacement exaggeration (ADR 0023 §(2)) — the accessor every water-riding
+        /// consumer reads: the displaced surface's vertex lift today; phase 3's hull heave and every
+        /// buoy/wake/oar anchor that turns wave metres into screen metres. Always read it from here
+        /// (through <see cref="ShoreFadeMath.DisplacedHeight"/>), never cache a copy — the
+        /// overlay-pose lesson made structural: a boat's heave must ride exactly the sea it is
+        /// drawn on, including while the owner is tuning this value in Play.
+        /// </summary>
+        public float WaveExaggeration => DisplacedWater.WaveExaggeration;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
@@ -259,6 +279,79 @@ namespace HiddenHarbours.Core
             MinCastMetres = 1.5f,
             MaxCastDistanceMetres = 12f,
             LineFlightMetresPerSec = 18f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable knobs of the DISPLACED water surface (<see cref="GameConfig.DisplacedWater"/> —
+    /// ADR 0023 phase 2 step 3), named and serializable so the sea's drama is dialled on the config asset
+    /// with no code (rule 6). Lives in Core beside the config it rides on — the same Core-policy /
+    /// feature-consumer split as <see cref="SeakeepingSettings"/> and <see cref="RodFightSettings"/>:
+    /// Core cannot reference the Art module (rule 4), so the tunables live here and the Art-side
+    /// consumers (<c>WaterSurface</c> / <c>DisplacedWaterSurface</c>) read them each throttled tick.
+    ///
+    /// <para><b>Lockstep (the twin discipline).</b> <see cref="Default"/> must equal the water shader's
+    /// property defaults AND the Art-side twin constants (<c>WhitecapSalienceMath.Default*</c>) —
+    /// config, shader and twin can never disagree silently. <c>DisplacedWaterConfigTests</c> pins all
+    /// three sides; change any one only with the others, in the same commit.</para>
+    ///
+    /// <para><b>What is deliberately NOT here.</b> The four remaining salience properties
+    /// (<c>_CapSolidMargin</c> / <c>_CapDitherBand</c> / <c>_EnvelopeBands</c> /
+    /// <c>_EnvelopeBandDitherWin</c>) are STYLE constants of the band/dither language — they stay
+    /// material-level on <c>Water.mat</c>. The per-coast shore gradient stays on each scene's
+    /// <c>DisplacedWaterSurface</c> (it is terrain data, not world policy).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct DisplacedWaterSettings
+    {
+        [Tooltip("The SHARED displacement exaggeration (ADR 0023 §(2)): how much taller the sea DRAWS " +
+                 "than it simulates. 1 = sim-true (already readable); the sweet spot is 1.5–2, and " +
+                 "×1.5 (the default) is also provably shear-free at the coast; ×3 BREAKS the ¾-iso " +
+                 "framing — crests visually detach from their troughs (spike-measured), so stay well " +
+                 "under it. This ONE value drives the surface's lift AND (phase 3) hull heave, buoys " +
+                 "and wake — everything rises on the same sea, never retuned apart.")]
+        [Min(0f)] public float WaveExaggeration;
+
+        [Tooltip("Safety coefficient of the DERIVED shore-fade band (band = coefficient × wave " +
+                 "envelope × exaggeration × shore steepness). 2 (the default) is the proven tear-safe " +
+                 "value. RAISING it widens the calm shallow band hugging every shore (safe, just " +
+                 "calmer coasts); LOWERING it below ~1.5 risks the coast visibly TEARING — water " +
+                 "drawn over dry sand at a crest. 1.5 is exactly marginal, so stay at 2 or above.")]
+        [Min(0f)] public float ShoreBandCoefficient;
+
+        [Tooltip("Master strength of the envelope whitecap salience (0..1): how strongly SOLID foam " +
+                 "cores are reserved for the rare near-envelope wave. 1 (the default) = the full " +
+                 "retune — everyday chop wears thin milky streaks and only the big one wears a solid " +
+                 "core. 0 = the legacy look exactly: every crest capped with equal salience (the big " +
+                 "wave hides in the speckle again).")]
+        [Range(0f, 1f)] public float CapSalienceStrength;
+
+        [Tooltip("Crest height — as a fraction of the sea's wave envelope (0..1) — where whitecap " +
+                 "solid cores BEGIN. 0.62 (the default, spike-tuned) reserves cores for near-envelope " +
+                 "waves: LOWER it and more everyday waves earn a solid core; RAISE it and cores get " +
+                 "rarer still. Envelope-relative, so a bigger SEA does not fake a bigger WAVE.")]
+        [Range(0f, 1f)] public float CapEnvelopeThreshold;
+
+        [Tooltip("Strength of the envelope VALUE BANDS (0..1): the posterized light/dark stepping " +
+                 "that marks tall water by SHADE before its foam (only a near-envelope crest can " +
+                 "reach the top band). 0.35 is the default production blend; 0 = no envelope shading " +
+                 "(the pre-retune look).")]
+        [Range(0f, 1f)] public float EnvelopeBandStrength;
+
+        /// <summary>
+        /// The ADR-cited defaults: ×1.5 exaggeration (the readability sweet spot, shear-free at the
+        /// coast), the proven tear-safe band coefficient (<see cref="ShoreFadeMath.RecommendedBandCoefficient"/>),
+        /// full envelope salience with the spike-tuned 0.62 threshold, and the production 0.35 band
+        /// blend. Pinned equal to the shader property defaults and the Art twin constants by
+        /// <c>DisplacedWaterConfigTests</c>.
+        /// </summary>
+        public static DisplacedWaterSettings Default => new DisplacedWaterSettings
+        {
+            WaveExaggeration = 1.5f,
+            ShoreBandCoefficient = ShoreFadeMath.RecommendedBandCoefficient,
+            CapSalienceStrength = 1f,
+            CapEnvelopeThreshold = 0.62f,
+            EnvelopeBandStrength = 0.35f,
         };
     }
 
