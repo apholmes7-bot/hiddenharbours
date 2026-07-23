@@ -102,6 +102,30 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void FishingState_Wave2Constructor_DefaultsTheFishOffsetNeutral()
+        {
+            // Wave 3 grew the struct again (the line's far end — fish offset). The Wave-2 10-arg
+            // constructor is preserved and defaults the pair to (0,0), so no Wave-1/2 publisher can
+            // accidentally signal a moving line.
+            var s = new FishingState(FishingPhase.Fighting, 0.4f, 0.6f,
+                                     "fish.atlantic_cod", "Atlantic Cod", FishCategory.InshoreGroundfish, 3f,
+                                     depth01: 0.2f, slackWindowOpen: false, rodBend01: 0.1f);
+            Assert.AreEqual(0f, s.FishOffsetX, "legacy publishers carry no fish offset");
+            Assert.AreEqual(0f, s.FishOffsetY, "legacy publishers carry no fish offset");
+        }
+
+        [Test]
+        public void FishingState_Wave3Constructor_CarriesTheFishOffset()
+        {
+            var s = new FishingState(FishingPhase.FightSurface, 0.2f, 0.7f,
+                                     "fish.mackerel", "Mackerel", FishCategory.Pelagic, 0.8f,
+                                     depth01: 0f, slackWindowOpen: true, rodBend01: 0.4f,
+                                     fishOffsetX: 1.5f, fishOffsetY: -2.25f);
+            Assert.AreEqual(1.5f, s.FishOffsetX);
+            Assert.AreEqual(-2.25f, s.FishOffsetY);
+        }
+
+        [Test]
         public void FishingState_Idle_IsInactive_AndNeutral()
         {
             var idle = FishingState.Idle;
@@ -140,6 +164,13 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(def.runTensionPressure, def.tensionFallPerSec,
                 $"{label}: runTensionPressure must stay below tensionFallPerSec — easing must ALWAYS " +
                 "recover tension, even mid-run (a run is a tell, never an unavoidable snap)");
+            // Wave 3: the fight runs the STRENGTH-SCALED pressure (RodFightStrength — the Def's
+            // "Strength scales the run pressure" tooltip made true), so the maintain-recovers invariant
+            // must hold at the EFFECTIVE value, not just the raw field.
+            Assert.Less(RodFightStrength.EffectiveRunPressure(def.runTensionPressure, def.Strength),
+                def.tensionFallPerSec,
+                $"{label}: the Strength-scaled run pressure must STILL stay below tensionFallPerSec — " +
+                "author strong fish with headroom (eff = runTensionPressure × 2·Strength)");
             Assert.GreaterOrEqual(def.surfaceThreshold01, 0f, $"{label}: surfaceThreshold01 below 0");
             Assert.LessOrEqual(def.surfaceThreshold01, 1f, $"{label}: surfaceThreshold01 above 1");
             Assert.GreaterOrEqual(def.Strength, 0f, $"{label}: Strength below 0");

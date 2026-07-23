@@ -84,10 +84,25 @@ namespace HiddenHarbours.Core
         /// *danger*. 0 in the legacy fight (the VS-13 gauge reads <see cref="Tension01"/> only).</summary>
         public readonly float RodBend01;
 
-        /// <summary>Full v2 constructor — sets every field, including the three diegetic reads.</summary>
+        /// <summary>World-metre X offset, relative to the angler, of the FAR END of the line — where the
+        /// line leaves the rod's reach: the water entry point while the fish is deep and unseen
+        /// (<see cref="FishingPhase.FightDeep"/> — the line runs straight down from here), and the visible
+        /// FISH once she's up (<see cref="FishingPhase.FightSurface"/> — the entry point moves around the
+        /// screen with her darts, design §3). Presentation composes <c>angler + (FishOffsetX, FishOffsetY)</c>
+        /// to anchor the line/fish; audio can pan on it. (0,0) outside the v2 fight (Wave-3 growth,
+        /// additive — the legacy fight and every pre-fight phase publish neutral).</summary>
+        public readonly float FishOffsetX;
+
+        /// <summary>World-metre Y offset of the line's far end, relative to the angler — see
+        /// <see cref="FishOffsetX"/>.</summary>
+        public readonly float FishOffsetY;
+
+        /// <summary>Full v2 constructor — sets every field, including the diegetic reads and the Wave-3
+        /// line-far-end offset.</summary>
         public FishingState(FishingPhase phase, float tension01, float landing01,
                             string fishId, string displayName, FishCategory category, float weightKg,
-                            float depth01, bool slackWindowOpen, float rodBend01)
+                            float depth01, bool slackWindowOpen, float rodBend01,
+                            float fishOffsetX, float fishOffsetY)
         {
             Phase = phase;
             Tension01 = tension01;
@@ -99,6 +114,18 @@ namespace HiddenHarbours.Core
             Depth01 = depth01;
             SlackWindowOpen = slackWindowOpen;
             RodBend01 = rodBend01;
+            FishOffsetX = fishOffsetX;
+            FishOffsetY = fishOffsetY;
+        }
+
+        /// <summary>Wave-2 constructor (preserved) — the Wave-3 fish offset defaults to neutral (0,0), so
+        /// every Wave-1/2 caller compiles and behaves unchanged.</summary>
+        public FishingState(FishingPhase phase, float tension01, float landing01,
+                            string fishId, string displayName, FishCategory category, float weightKg,
+                            float depth01, bool slackWindowOpen, float rodBend01)
+            : this(phase, tension01, landing01, fishId, displayName, category, weightKg,
+                   depth01, slackWindowOpen, rodBend01, fishOffsetX: 0f, fishOffsetY: 0f)
+        {
         }
 
         /// <summary>Legacy VS-13 constructor (preserved) — the three v2 reads default to neutral

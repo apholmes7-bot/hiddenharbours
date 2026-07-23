@@ -47,6 +47,11 @@ namespace HiddenHarbours.App.Editor
         const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png"; // on-foot player (sliced 3×4)
         const string ArtPlayerHaul = "Assets/_Project/Art/Characters/PlayerHaul.png"; // deck-haul sheet (sliced 3×4; frames 0..7 used)
 
+        // The Rod Fishing v2 FIGHT sheets (8 dir × N frames, sliced d/f — the character rig kit, PR #244).
+        // Wired onto PlayerFishingAnimator below; a sheet that hasn't imported/sliced yet simply leaves
+        // that pose inert (null-safe greybox rule), so this builder is safe to run before/after the art.
+        const string ArtFisherIsoFolder = "Assets/_Project/Art/Characters/Iso";
+
         // THE ON-FOOT PLAYER'S 8-DIRECTION ISO SKIN — an ASSET path, not an art path. Everything about the
         // sheets (counts, frame rates, which way the rows run) lives in the def; CharacterVisualLibraryBuilder
         // is the only thing that knows where the PNGs are.
@@ -418,6 +423,18 @@ namespace HiddenHarbours.App.Editor
                                  "inert/partial until the sheet imports with its 3×4 slicing. Re-run the " +
                                  "start builder after import.");
 
+            // THE ROD-FIGHT ANIMATION (Rod Fishing v2 wave 3): while a rod interaction is live the fisher
+            // plays the baked fight sheets — the two-tap BITE tell, the STRIKE as the hook sets, the REEL
+            // cycle through the deep→surface fight (and the legacy fight), the LAND beat — all read off
+            // the Core FishingStateChanged snapshots (rule 4: no Fishing reference), facing the published
+            // fish offset. Sheets are 8-dir × N frames in d/f slice order; a sheet that gave no clean
+            // 8-row set wires empty and that pose stays inert (null-safe greybox rule).
+            var fightAnim = playerGo.AddComponent<PlayerFishingAnimator>();
+            SetRefArray(fightAnim, "_biteFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_bite.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_strikeFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_strike.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_reelFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_reel.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_landFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_land.png").Cast<Object>().ToArray());
+
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
             var cameraFollow = camGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
@@ -639,6 +656,43 @@ namespace HiddenHarbours.App.Editor
         {
             int u = spriteName.LastIndexOf('_');
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
+        }
+
+        // An 8-direction iso sheet's sprites in direction·framesPerDir + frame order, recovered from the
+        // _d<dir>_f<frame> sub-sprite names (the CharacterVisualLibraryBuilder convention — a trailing-
+        // number sort would collate every direction's frame 0 together). All-or-nothing: a missing/dupe
+        // cell or a count that isn't a clean 8 rows returns EMPTY, so the consumer stays inert rather
+        // than half-bound (the visual-def builder's gate).
+        static Sprite[] LoadIsoDirFrames(string path)
+        {
+            const int directions = 8;
+            var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+            if (sprites.Length == 0 || sprites.Length % directions != 0) return System.Array.Empty<Sprite>();
+
+            int perDir = sprites.Length / directions;
+            var ordered = new Sprite[sprites.Length];
+            var seen = new System.Collections.Generic.HashSet<int>();
+            foreach (var s in sprites)
+            {
+                if (s == null || !TryParseIsoCell(s.name, out int dir, out int frame)) return System.Array.Empty<Sprite>();
+                if (dir < 0 || dir >= directions || frame < 0 || frame >= perDir) return System.Array.Empty<Sprite>();
+                int idx = dir * perDir + frame;
+                if (!seen.Add(idx)) return System.Array.Empty<Sprite>();
+                ordered[idx] = s;
+            }
+            return seen.Count == sprites.Length ? ordered : System.Array.Empty<Sprite>();
+        }
+
+        static bool TryParseIsoCell(string spriteName, out int dir, out int frame)
+        {
+            dir = frame = -1;
+            if (string.IsNullOrEmpty(spriteName)) return false;
+            int f = spriteName.LastIndexOf("_f", System.StringComparison.Ordinal);
+            if (f < 0) return false;
+            int d = spriteName.LastIndexOf("_d", f, System.StringComparison.Ordinal);
+            if (d < 0) return false;
+            return int.TryParse(spriteName.Substring(d + 2, f - d - 2), out dir)
+                && int.TryParse(spriteName.Substring(f + 2), out frame);
         }
 
         // One oar of the row rig (mirrors the cove builder): an oarlock PIVOT at the gunwale with Oar.png
