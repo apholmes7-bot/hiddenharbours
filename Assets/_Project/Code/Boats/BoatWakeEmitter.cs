@@ -40,7 +40,14 @@ namespace HiddenHarbours.Boats
     /// <c>speed·tan(Kelvin angle)</c> so the V EMERGES in world space and curves through turns. The
     /// boat-attached plume/spray sprites are alive (a bounded deterministic churn pulse; the rigid plume
     /// fades with turn rate, handing hard turns to the trail), and the bow throws pooled DROPLETS off the
-    /// cutwater that she drives past. While the displaced sea is active (ADR 0023), every wake element rides
+    /// cutwater that she drives past.
+    /// <b>The rendered READ (owner playtest 2026-07-23, same day):</b> the trail reads as a wake in three
+    /// zones — a dense BUBBLING CHURN BAND right behind the transom (big, overlapping, short-lived foam
+    /// puffs that boil while young — "bubble close to the boat, be foamy close to the boat"), a fading
+    /// centre lane, and the LONG PATTERN: shoulder streaks BAKED along the emergent arm's analytic
+    /// direction (never their decaying velocity — that read as horizontal dashes) at a length that
+    /// GUARANTEES neighbour overlap (<see cref="WakeTrailMath.ArmStreakLength"/>), so the arms fuse into
+    /// long coherent lines. While the displaced sea is active (ADR 0023), every wake element rides
     /// <c>ShoreFadeMath.DisplacedHeight</c> of the shared swell under its OWN position, with the
     /// exaggeration + band read live from the Core <see cref="DisplacedSea"/> seam — never a config copy;
     /// displaced OFF, everything sits on the flat plane exactly as before (the A/B contract).</para>
@@ -463,12 +470,14 @@ namespace HiddenHarbours.Boats
             }
 
             /// <summary>
-            /// The render ROTATION (degrees) that orients a streak sprite ALONG its local crest / feather-wave
-            /// direction. The crest peels off the hull down the V arm, so early in a streak's life (while it still
-            /// carries its shed momentum) its own velocity vector points down that arm — orient the sprite to it.
-            /// The sprite's long axis is +X at 0°, so the returned angle is simply <c>atan2(vel.y, vel.x)</c>. If
-            /// the velocity has collapsed (a spent streak that now only drifts with the current) we fall back to
-            /// <paramref name="fallbackDeg"/> so the orientation never snaps to a garbage angle. Pure + static.
+            /// The render ROTATION (degrees) of a velocity direction (sprite long axis = +X, so
+            /// <c>atan2(vel.y, vel.x)</c>); a degenerate velocity falls back to <paramref name="fallbackDeg"/>
+            /// so the angle is never garbage. <b>History (owner playtest 2026-07-23):</b> the renderer used to
+            /// call this per frame on the LIVE velocity — for a deposited shoulder (mostly-lateral spread +
+            /// astern drift, decaying into the current) that painted the trail as rows of screen-horizontal
+            /// dashes. Orientation is now BAKED at emit (<see cref="WakeParticleSystem.Particle.OrientDeg"/>;
+            /// trail deposits bake the analytic arm direction via <see cref="WakeTrailMath.ArmOrientDeg"/>)
+            /// and this stays as the pure emit-time fallback contract. Pure + static.
             /// </summary>
             public static float CrestAngleDeg(Vector2 vel, float fallbackDeg = 0f)
             {
@@ -495,11 +504,31 @@ namespace HiddenHarbours.Boats
 
         // ==== procedural foam sprite (avoids the spriteMode-Multiple BoatWake.png load gotcha) =============
 
+        /// <summary>Alpha levels of the code-built wake sprites. The KTC style law: PIXEL foam — banded +
+        /// dithered coverage, never a smooth airbrush gradient.</summary>
+        private const int FoamAlphaBands = 4;
+
+        // 2×2 ordered-dither (Bayer) thresholds, as band fractions, indexed (x&1) + (y&1)*2 — the classic
+        // pixel-art dither that breaks each band edge into a checker instead of a smooth ramp.
+        private static readonly float[] BayerThresholds = { 0.2f, 0.6f, 0.8f, 0.4f };
+
         /// <summary>
-        /// Build a small, soft, round foam puff sprite in code — point-filtered and snapped to a power-of-two
-        /// pixel grid so it stays crisp pixel-art over the water. Generating it avoids depending on the
-        /// multiple-sprite-mode BoatWake.png (which <c>LoadAssetAtPath&lt;Sprite&gt;</c> can't return) and keeps
-        /// the whole effect self-contained: one shared sprite + one material for every puff (batched, rule 7).
+        /// Quantize a 0..1 coverage into <see cref="FoamAlphaBands"/> hard alpha bands with a 2×2 ordered
+        /// dither at the band edges — the KTC pixel-foam look (banded/dithered, no airbrush blobs).
+        /// </summary>
+        private static byte BandDitherAlpha(float a, int x, int y)
+        {
+            float bayer = BayerThresholds[(x & 1) + (y & 1) * 2];
+            int band = Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(a) * FoamAlphaBands + bayer), 0, FoamAlphaBands);
+            return (byte)Mathf.RoundToInt(band * (255f / FoamAlphaBands));
+        }
+
+        /// <summary>
+        /// Build a small, round foam puff sprite in code — point-filtered, alpha BANDED + DITHERED (the KTC
+        /// pixel-foam law) so it reads as crisp pixel foam over the water, not an airbrush blob. Generating
+        /// it avoids depending on the multiple-sprite-mode BoatWake.png (which
+        /// <c>LoadAssetAtPath&lt;Sprite&gt;</c> can't return) and keeps the whole effect self-contained: one
+        /// shared sprite + one material for every puff (batched, rule 7).
         /// </summary>
         private static Sprite BuildFoamSprite()
         {
@@ -519,11 +548,10 @@ namespace HiddenHarbours.Boats
             {
                 float dx = (x - c) / r, dy = (y - c) / r;
                 float d = Mathf.Sqrt(dx * dx + dy * dy);     // 0 centre .. 1 edge
-                // Soft round falloff: opaque core, feathered rim, transparent outside.
+                // Round falloff: solid core out to a dithered banded rim (KTC pixel foam, not airbrush).
                 float a = Mathf.Clamp01(1f - d);
                 a = a * a;                                    // tighten the core
-                byte alpha = (byte)Mathf.RoundToInt(Mathf.Clamp01(a) * 255f);
-                px[y * size + x] = new Color32(255, 255, 255, alpha);
+                px[y * size + x] = new Color32(255, 255, 255, BandDitherAlpha(a, x, y));
             }
             tex.SetPixels32(px);
             tex.Apply(false, false);
@@ -573,8 +601,8 @@ namespace HiddenHarbours.Boats
                 float across = Mathf.Clamp01(1f - Mathf.Abs(dy)); // 1 centre-line → 0 top/bottom edge
                 float a = along * across;
                 a *= a;                                            // tighten toward a crisp line
-                byte alpha = (byte)Mathf.RoundToInt(Mathf.Clamp01(a) * 255f);
-                px[y * w + x] = new Color32(255, 255, 255, alpha);
+                // Banded + dithered ends (KTC pixel foam) — the streak stays a crisp line, its taper steps.
+                px[y * w + x] = new Color32(255, 255, 255, BandDitherAlpha(a, x, y));
             }
             tex.SetPixels32(px);
             tex.Apply(false, false);
@@ -781,12 +809,12 @@ namespace HiddenHarbours.Boats
 
                 // --- STEP + RENDER every stream (advect with the current, dissipate, ride the displaced sea) ---
                 _sys.Step(current, fcfg.VelocityDecay, dt);
-                RenderFoam(roughness, time, fcfg, foamColor, in lift);
+                RenderFoam(roughness, time, fcfg, foamColor, in trail, in lift);
 
                 if (_lineSys != null)
                 {
                     _lineSys.Step(current, arm2.VelocityDecay, dt);
-                    RenderLines(roughness, time, lineCfg, arm2, lineColor, in lift);
+                    RenderLines(roughness, time, lineCfg, arm2, lineColor, in trail, in lift);
                 }
 
                 if (_dropletSys != null)
@@ -861,30 +889,51 @@ namespace HiddenHarbours.Boats
                 float foamBirth = Mathf.Clamp01(WakeGrading.Ramp01(speed, fcfg.SpeedThreshold,
                                                                    Mathf.Max(0.2f, fcfg.SpeedThreshold)));
 
+                int churnPuffs = WakeTrailMath.ChurnPuffCount(in trail);
+                float churnHalf = WakeTrailMath.ChurnHalfWidth(hullLength, in trail);
+
                 for (int i = 0; i < deposits; i++)
                 {
                     float t = WakeTrailMath.DepositT(i, deposits);
                     Vector2 basePos = WakeTrailMath.PointOnTrack(prev, stern, t);
 
                     // Two shoulder wavelets — the emergent V arms (crest-line pool: thin oriented streaks).
+                    // Orientation is BAKED along the analytic arm locus (ArmOrientDeg), never the decaying
+                    // velocity — cause 1 of the "horizontal dashes" playtest read (2026-07-23).
                     if (_lineSys != null)
                     {
                         for (int side = -1; side <= 1; side += 2)
                         {
                             Vector2 p = WakeTrailMath.ShoulderPoint(basePos, trackDir, side, halfWidth);
                             Vector2 v = WakeTrailMath.ShoulderVelocity(trackDir, side, spread, speed, in trail);
-                            _lineSys.EmitAt(p, v, in armCfg, lifeScale, sizeScale, lineBirth);
+                            float orient = WakeTrailMath.ArmOrientDeg(trackDir, side, trail.KelvinHalfAngleDeg);
+                            _lineSys.EmitAt(p, v, in armCfg, lifeScale, sizeScale, lineBirth, orient);
                         }
                     }
 
-                    // The centre churn (foam pool) for a deterministic fraction of deposits — the white wash
-                    // down the middle of the trail.
+                    // The centre lane (foam pool) for a deterministic fraction of deposits — the long white
+                    // wash down the middle of the trail, fading astern.
                     float dice = WakeParticleSystem.Hash01(_depositCounter * 0x9E3779B1u + 0x2Fu);
                     _depositCounter++;
                     if (dice < Mathf.Clamp01(trail.CenterChurnFraction))
                     {
                         Vector2 v = -trackDir * (speed * Mathf.Clamp01(trail.AsternDriftFraction));
                         _sys.EmitAt(basePos, v, in fcfg, lifeScale, sizeScale, foamBirth);
+                    }
+
+                    // The NEAR-STERN CHURN BAND ("bubble close to the boat, be foamy close to the boat"):
+                    // big overlapping puffs jittered across the churn strip. Deliberately SHORT-lived —
+                    // they die before the boat gets far, so the dense bubbling white band exists only
+                    // right behind the transom and hands the read to the long pattern. Count hard-clamped
+                    // per deposit (rule 7); lateral dice deterministic (rule 5).
+                    for (int cpuff = 0; cpuff < churnPuffs; cpuff++)
+                    {
+                        float lat = WakeParticleSystem.Hash01(_depositCounter * 0x165667B1u + 0x51u) * 2f - 1f;
+                        _depositCounter++;
+                        Vector2 p = WakeTrailMath.ChurnPoint(basePos, trackDir, lat, churnHalf);
+                        Vector2 v = -trackDir * (speed * Mathf.Clamp01(trail.AsternDriftFraction));
+                        _sys.EmitAt(p, v, in fcfg, Mathf.Max(0.01f, trail.ChurnLifetimeScale),
+                                    Mathf.Max(0.01f, trail.ChurnSizeScale) * sizeScale, foamBirth);
                     }
                 }
             }
@@ -1083,7 +1132,8 @@ namespace HiddenHarbours.Boats
                 if (!_sprayRenderer.gameObject.activeSelf) _sprayRenderer.gameObject.SetActive(true);
             }
 
-            private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor, in SeaLift lift)
+            private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor,
+                                    in WakeTrailConfig trail, in SeaLift lift)
             {
                 var pool = _sys.Pool;
                 for (int i = 0; i < pool.Length; i++)
@@ -1101,6 +1151,17 @@ namespace HiddenHarbours.Boats
                     // with even after the boat stops (template-emitted puffs carry 1, unchanged).
                     float alpha = WakeParticleSystem.LifeFade(life, cfg) * p.BirthStrength;
                     float sizeM = WakeParticleSystem.LifeSpread(p.BaseSize, life, cfg);
+                    // The BUBBLING read ("bubble close to the boat"): fresh foam boils — size + alpha pulse
+                    // at full amount at birth, easing to calm by end of life so only the near-stern churn
+                    // band visibly bubbles. Render-only, bounded, deterministic (rule 5); gated on the
+                    // trail so Enabled=false restores the legacy stamp byte-identically (the A/B contract).
+                    if (trail.Enabled)
+                    {
+                        sizeM *= WakeTrailMath.AgedPulse(time, p.Seed, trail.FoamPulseHz,
+                                                         trail.FoamPulseAmount, life);
+                        alpha *= WakeTrailMath.AgedPulse(time, p.Seed + 0.53f, trail.FoamPulseHz,
+                                                         trail.FoamPulseAmount * 0.6f, life);
+                    }
                     Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, cfg);
                     // Ride the displaced sea at the FOAM'S OWN position — laid foam heaves with the swell
                     // passing under it (display-only; the integrated position is untouched).
@@ -1153,8 +1214,18 @@ namespace HiddenHarbours.Boats
             }
 
             private void RenderLines(float roughness, float time,
-                                     in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor, in SeaLift lift)
+                                     in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor,
+                                     in WakeTrailConfig trail, in SeaLift lift)
             {
+                // The trail's arm streaks all share ONE rendered length — the OVERLAP LAW: at least
+                // ArmOverlapFactor × the along-arm deposit spacing, so consecutive streaks fuse into a
+                // continuous arm by construction (cause 2 of the dotted playtest read). Constant for life:
+                // the alpha fade dissolves the arm; shrinking the streaks re-opened the gaps.
+                float trailLengthM = trail.Enabled
+                    ? WakeTrailMath.ArmStreakLength(trail.DepositSpacingMeters, trail.KelvinHalfAngleDeg,
+                                                    trail.ArmOverlapFactor)
+                    : 0f;
+
                 var pool = _lineSys.Pool;
                 for (int i = 0; i < pool.Length; i++)
                 {
@@ -1176,15 +1247,17 @@ namespace HiddenHarbours.Boats
                     Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, arm);
                     float ride = lift.LiftAt(p.Pos);
 
-                    // Orient along the crest (feather-wave) direction — the streak's own velocity while it carries
-                    // its shed momentum; the sprite's long axis is +X, so we stretch X to the streak length and Y
-                    // to a thin cross-width. Both are WORLD-space targets, converted to local scale by dividing by
-                    // the sprite's native world size so the length/width are exact regardless of the sprite dims.
-                    // The particle's BaseSize carries the cross-width seed (the foam's FoamSize idiom).
-                    // Length reads the streak's own birth strength too — laid long at speed, it stays long.
-                    float lengthM = WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
+                    // Orient along the BAKED arm direction (p.OrientDeg, laid at emit down the emergent V's
+                    // analytic locus — world-locked, so it never drifts as the velocity decays into the
+                    // current; the velocity-following orientation was cause 1 of the "horizontal dashes"
+                    // playtest read). The sprite's long axis is +X: stretch X to the streak length and Y to
+                    // a thin cross-width, both WORLD-space targets converted to local scale by the sprite's
+                    // native world size. The particle's BaseSize carries the cross-width seed.
+                    float lengthM = trail.Enabled
+                        ? trailLengthM
+                        : WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
                     float widthM = Mathf.Max(0.001f, p.BaseSize * lineCfg.LineWidthScale);
-                    float angleDeg = WakeLineGeometry.CrestAngleDeg(p.Vel);
+                    float angleDeg = p.OrientDeg;
 
                     var t = sr.transform;
                     t.position = new Vector3(renderPos.x, renderPos.y + ride, 0f);

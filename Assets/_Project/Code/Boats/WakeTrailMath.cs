@@ -142,6 +142,102 @@ namespace HiddenHarbours.Boats
         public static float Graded(float atMagnitude0, float atMagnitude1, float magnitude01)
             => Mathf.Lerp(atMagnitude0, atMagnitude1, Mathf.Clamp01(magnitude01));
 
+        // ==== THE RENDERED READ (owner playtest 2026-07-23: "it looks like small horizontal lines") ========
+        //
+        // The deposition above was right; the RENDER of it read wrong, three ways at once:
+        //   1. Shoulder streaks were oriented along their VELOCITY — which for a deposit is mostly-lateral
+        //      spread + astern drift, and which decays toward the current. On most headings that painted the
+        //      trail as rows of screen-horizontal dashes, not V arms.
+        //   2. Streak length (≤1.1 m, shrinking with age) vs 0.55 m deposit spacing left visible gaps — a
+        //      dotted line, not a wake.
+        //   3. Nothing dense lived right behind the transom — no "bubble/foam close to the boat".
+        // The three functions below fix each cause with geometry the tests can pin headless.
+
+        /// <summary>
+        /// The unit direction of the EMERGENT V ARM a shoulder deposit belongs to — what its streak sprite
+        /// must be oriented ALONG (never its decaying velocity). Deposits are laid on the track and spread
+        /// outward at <c>speed·tan(θ)</c> while the boat runs on at <c>speed</c>, so at any snapshot the
+        /// locus of one shoulder's deposits is a straight line <b>astern + outward, exactly θ off the
+        /// dead-astern line</b>: <c>normalize(−trackDir + lateral(side)·tan θ)</c>. Orienting each streak
+        /// along this locus makes the overlapping streaks fuse into one long coherent arm (the owner's
+        /// "long wake pattern"); orienting along velocity (the old read) painted near-perpendicular dashes.
+        /// Degenerate track directions fall back to −Y (an astern guess), never NaN. Pure + static.
+        /// </summary>
+        public static Vector2 ArmDir(Vector2 trackDir, int side, float kelvinHalfAngleDeg)
+        {
+            Vector2 t = trackDir.sqrMagnitude > 1e-8f ? trackDir.normalized : Vector2.up;
+            float tan = Mathf.Tan(Mathf.Clamp(kelvinHalfAngleDeg, 0f, 80f) * Mathf.Deg2Rad);
+            Vector2 d = -t + Lateral(t, side) * tan;
+            return d.sqrMagnitude > 1e-8f ? d.normalized : -t;
+        }
+
+        /// <summary>The render rotation (deg, sprite long axis = +X) of <see cref="ArmDir"/> — baked into the
+        /// particle at deposit time so the arm stays world-locked as the velocity decays. Pure + static.</summary>
+        public static float ArmOrientDeg(Vector2 trackDir, int side, float kelvinHalfAngleDeg)
+        {
+            Vector2 d = ArmDir(trackDir, side, kelvinHalfAngleDeg);
+            return Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
+        }
+
+        /// <summary>
+        /// The rendered LENGTH (m) of a trail arm streak — the OVERLAP LAW that makes the arm continuous by
+        /// construction. Consecutive shoulder deposits sit <c>spacing/cos θ</c> apart ALONG the arm locus
+        /// (spacing metres apart along the track, plus the lateral spread the age gap adds), so a streak at
+        /// least <paramref name="overlapFactor"/> (clamped ≥ 1) times that distance is GUARANTEED to overlap
+        /// its neighbours — no gaps, whatever the tuning. Trail streaks keep this full length for life (the
+        /// alpha fade dissolves them); shrinking with age was cause 2 of the dotted read. Pure + static.
+        /// </summary>
+        public static float ArmStreakLength(float spacingMeters, float kelvinHalfAngleDeg, float overlapFactor)
+        {
+            float spacing = Mathf.Max(1e-3f, spacingMeters);
+            float cos = Mathf.Cos(Mathf.Clamp(kelvinHalfAngleDeg, 0f, 80f) * Mathf.Deg2Rad);
+            float alongArm = spacing / Mathf.Max(0.2f, cos);
+            return alongArm * Mathf.Max(1f, overlapFactor);
+        }
+
+        /// <summary>Hard ceiling on churn puffs one deposit may lay — the explicit per-deposit pool budget
+        /// (rule 7): one deposit is ≤ 2 shoulder streaks + (1 centre + this) foam puffs.</summary>
+        public const int MaxChurnPuffsPerDeposit = 4;
+
+        /// <summary>The clamped churn-puff count per deposit (0..<see cref="MaxChurnPuffsPerDeposit"/>) —
+        /// mis-tuned configs can never flood the foam pool. Pure + static.</summary>
+        public static int ChurnPuffCount(in WakeTrailConfig c)
+            => Mathf.Clamp(c.ChurnPuffsPerDeposit, 0, MaxChurnPuffsPerDeposit);
+
+        /// <summary>
+        /// The WORST-CASE particles one tick can emit into the pools under a config — the explicit per-boat
+        /// budget (rule 7): <c>MaxDepositsPerTick · (2 shoulder streaks + 1 centre puff + churn puffs)</c>.
+        /// The emitter's pools (96 foam + 48 lines by default) must comfortably exceed this. Pure + static.
+        /// </summary>
+        public static int MaxParticlesPerTick(in WakeTrailConfig c)
+            => Mathf.Max(0, c.MaxDepositsPerTick) * (2 + 1 + ChurnPuffCount(in c));
+
+        /// <summary>
+        /// The half-width (m) of the near-stern CHURN BAND — the lateral strip right behind the transom the
+        /// bubbling foam is laid across, as a tunable fraction of hull length (the beam stand-in, the
+        /// <see cref="ShoulderHalfWidth"/> idiom). Always ≥ 0. Pure + static.
+        /// </summary>
+        public static float ChurnHalfWidth(float hullLengthMeters, in WakeTrailConfig c)
+            => Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ChurnHalfWidthFraction);
+
+        /// <summary>
+        /// Where a churn puff lands: the track point pushed laterally by <paramref name="lat01"/> (−1..1,
+        /// the deterministic per-puff dice) of the churn half-width — a dense, jittered white band across
+        /// the trail centre, not a single file of dots. Pure + static.
+        /// </summary>
+        public static Vector2 ChurnPoint(Vector2 trackPoint, Vector2 trackDir, float lat01, float halfWidthMeters)
+            => trackPoint + Lateral(trackDir, +1) * (Mathf.Clamp(lat01, -1f, 1f) * Mathf.Max(0f, halfWidthMeters));
+
+        /// <summary>
+        /// The BUBBLING pulse of a foam puff, weighted by age: full <paramref name="amount"/> at birth
+        /// (the churn right off the transom visibly boils) easing to exactly 1 (calm) by end of life, so
+        /// the near-stern band bubbles and the far trail lies quiet — the owner's "bubble close to the
+        /// boat" as a render-only, bounded, deterministic multiplier (<see cref="ChurnPulse"/> under an
+        /// age-scaled amount; rule 5). Pure + static.
+        /// </summary>
+        public static float AgedPulse(float time, float seed, float hz, float amount, float life01)
+            => ChurnPulse(time, seed, hz, Mathf.Max(0f, amount) * (1f - Mathf.Clamp01(life01)));
+
         // ==== the LIVE plume (the boat-attached churn is allowed to be attached — but must be alive) ========
 
         /// <summary>
@@ -282,8 +378,36 @@ namespace HiddenHarbours.Boats
         [Tooltip("Deposit birth-size multiplier at magnitude 1.")]
         public float SizeScaleAtMagnitude1;
         [Tooltip("Fraction (0..1) of deposits that also lay a CENTRE churn puff between the shoulders (the " +
-                 "prop/oar wash down the middle of the trail).")]
+                 "prop/oar wash down the middle of the trail). High = a continuous fading centre lane.")]
         public float CenterChurnFraction;
+
+        [Header("The long pattern (arm streaks fuse into coherent V arms — owner playtest 2026-07-23)")]
+        [Tooltip("Rendered arm-streak length as a multiple of the deposit spacing measured ALONG the arm " +
+                 "(spacing/cos(Kelvin angle)). ≥1 guarantees consecutive streaks OVERLAP — the arm reads as " +
+                 "one long line, never a dotted row. Clamped to ≥1 in the math.")]
+        public float ArmOverlapFactor;
+
+        [Header("The near-stern CHURN BAND (\"bubble close to the boat, be foamy close to the boat\")")]
+        [Tooltip("Big overlapping foam puffs laid PER DEPOSIT across the churn band right behind the " +
+                 "transom. They die young, so the dense white band lives only near the boat and hands the " +
+                 "read to the long pattern. Hard-clamped 0..4 per deposit (pool safety).")]
+        public int ChurnPuffsPerDeposit;
+        [Tooltip("Churn-puff lifetime as a fraction of the foam config's Lifetime. SHORT (<1) on purpose — " +
+                 "the bubbling band's length astern is speed·(this·Lifetime): it clings to the transom and " +
+                 "fades with distance, exactly the owner's near-zone.")]
+        public float ChurnLifetimeScale;
+        [Tooltip("Churn-puff birth size as a multiple of the foam config's FoamSize (also graded by the " +
+                 "wake magnitude). BIG (>1) so the puffs overlap into solid white coverage, not dots.")]
+        public float ChurnSizeScale;
+        [Tooltip("Half-width of the churn band as a fraction of hull LengthMeters (the beam stand-in) — " +
+                 "the lateral strip behind the transom the bubbling foam is jittered across.")]
+        public float ChurnHalfWidthFraction;
+        [Tooltip("Bubbling frequency (Hz) of laid foam — each puff's size/alpha boils at this rate while " +
+                 "young, easing to calm with age (render-only, deterministic).")]
+        public float FoamPulseHz;
+        [Tooltip("± bubbling amount of a FRESH foam puff (0 = calm). Ages to 0 by end of life, so only the " +
+                 "near-stern band churns.")]
+        public float FoamPulseAmount;
 
         [Header("The live plume (the boat-attached churn sprite — allowed to be attached, must be alive)")]
         [Tooltip("Churn-pulse frequency (Hz) of the authored plume sprite — the boil at the transom.")]
@@ -304,7 +428,9 @@ namespace HiddenHarbours.Boats
             Enabled                    = true,
             DepositSpacingMeters       = 0.55f,
             DepositAsternOffset        = 0.15f,
-            MaxDepositsPerTick         = 6,      // ≤ 3 particles per deposit → ≤ 18 of the 96+48 pool slots per tick
+            // ≤ (2 streaks + 1 centre + 2 churn) per deposit → MaxParticlesPerTick = 30 (18 foam + 12
+            // lines) of the 96-foam + 48-line pools per tick — the explicit budget (rule 7).
+            MaxDepositsPerTick         = 6,
             TeleportResetMeters        = 20f,
 
             KelvinHalfAngleDeg         = 19f,    // the physical Kelvin angle — the emergent V opens at this
@@ -318,7 +444,15 @@ namespace HiddenHarbours.Boats
             LifetimeScaleAtMagnitude1  = 2.4f,   // …and a big hull driven hard leaves a long scar
             SizeScaleAtMagnitude0      = 0.85f,
             SizeScaleAtMagnitude1      = 1.6f,
-            CenterChurnFraction        = 0.65f,
+            CenterChurnFraction        = 0.85f,  // a near-continuous fading centre lane, not sporadic dots
+
+            ArmOverlapFactor           = 1.7f,   // streaks ≈ 1.0 m vs 0.58 m along-arm spacing → solid arms
+            ChurnPuffsPerDeposit       = 2,      // 2 big puffs / 0.55 m = dense white coverage at the transom
+            ChurnLifetimeScale         = 0.4f,   // ×2.2 s foam life → ~0.9 s: the band clings to the boat
+            ChurnSizeScale             = 1.9f,   // ×0.35 m foam → ~0.67 m puffs, overlapping at the spacing
+            ChurnHalfWidthFraction     = 0.10f,  // dory 4.5 m → a 0.45 m half-width churn strip
+            FoamPulseHz                = 2.8f,   // a lively boil, faster than the plume's 1.7 Hz wash
+            FoamPulseAmount            = 0.22f,  // fresh foam visibly bubbles; calm by end of life
 
             PlumePulseHz               = 1.7f,
             PlumePulseScaleAmount      = 0.05f,

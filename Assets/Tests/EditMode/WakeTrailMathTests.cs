@@ -274,6 +274,152 @@ namespace HiddenHarbours.Tests.EditMode
                             1e-3f, "degenerate bow falls back to a unit direction, never NaN");
         }
 
+        // ==== The rendered READ (owner playtest 2026-07-23: "small horizontal lines" → a real wake) ======
+
+        [Test]
+        public void ArmDir_IsExactlyTheKelvinAngleOffDeadAstern_AndMirrorsPerSide()
+        {
+            // A straight northward run: the emergent arm's locus must sit θ off the dead-astern line —
+            // deposits fall astern at `speed` and spread laterally at `speed·tanθ`, so the locus direction
+            // is normalize(−track + lateral·tanθ). The streak sprites are baked ALONG this (cause 1 fix).
+            Vector2 track = Vector2.up;
+            float theta = 19f;
+
+            Vector2 port = WakeTrailMath.ArmDir(track, -1, theta);
+            Vector2 stbd = WakeTrailMath.ArmDir(track, +1, theta);
+
+            Assert.AreEqual(1f, port.magnitude, 1e-4f, "unit direction");
+            Assert.AreEqual(Mathf.Cos(theta * Mathf.Deg2Rad), Vector2.Dot(port, -track), 1e-4f,
+                "the arm lies EXACTLY the Kelvin half-angle off dead-astern (the analytic locus)");
+            Assert.AreEqual(Mathf.Cos(theta * Mathf.Deg2Rad), Vector2.Dot(stbd, -track), 1e-4f);
+            Assert.AreEqual(-stbd.x, port.x, 1e-5f, "the two arms mirror across the track");
+            Assert.AreEqual(stbd.y, port.y, 1e-5f);
+            Assert.Less(port.y, 0f, "both arms run ASTERN of a northward track");
+
+            // The renderer-facing degrees agree with the vector (sprite long axis = +X).
+            float deg = WakeTrailMath.ArmOrientDeg(track, +1, theta);
+            Vector2 fromDeg = new Vector2(Mathf.Cos(deg * Mathf.Deg2Rad), Mathf.Sin(deg * Mathf.Deg2Rad));
+            Assert.AreEqual(stbd.x, fromDeg.x, 1e-4f);
+            Assert.AreEqual(stbd.y, fromDeg.y, 1e-4f);
+
+            // Degenerates never NaN.
+            Vector2 degen = WakeTrailMath.ArmDir(Vector2.zero, +1, theta);
+            Assert.AreEqual(1f, degen.magnitude, 1e-4f, "degenerate track still yields a unit direction");
+        }
+
+        [Test]
+        public void ArmStreakLength_GuaranteesNeighbourOverlap_TheContinuityLaw()
+        {
+            // Cause 2 fix — the overlap law: consecutive shoulder deposits sit spacing/cosθ apart ALONG the
+            // arm, and the rendered streak is that distance × overlap (clamped ≥ 1), so neighbouring streaks
+            // ALWAYS overlap — the arm is continuous by construction, never a dotted row.
+            float spacing = 0.55f;
+            float theta = 19f;
+            float len = WakeTrailMath.ArmStreakLength(spacing, theta, 1.7f);
+            Assert.AreEqual(spacing / Mathf.Cos(theta * Mathf.Deg2Rad) * 1.7f, len, 1e-4f,
+                "length = along-arm spacing × overlap factor");
+            Assert.GreaterOrEqual(len, spacing * 1.7f, "≥ the track spacing × factor (cosθ ≤ 1)");
+
+            for (float th = 0f; th <= 45f; th += 5f)
+            {
+                float l = WakeTrailMath.ArmStreakLength(spacing, th, 1.0f);
+                Assert.GreaterOrEqual(l + 1e-5f, spacing / Mathf.Cos(th * Mathf.Deg2Rad),
+                    "at any Kelvin angle a streak at least spans the along-arm gap to its neighbour");
+            }
+
+            Assert.GreaterOrEqual(WakeTrailMath.ArmStreakLength(spacing, theta, 0.2f) + 1e-5f,
+                                  spacing / Mathf.Cos(theta * Mathf.Deg2Rad),
+                "a mis-tuned overlap < 1 is clamped — continuity survives any tuning");
+            Assert.DoesNotThrow(() => WakeTrailMath.ArmStreakLength(0f, 89f, 1f), "degenerate inputs are safe");
+        }
+
+        [Test]
+        public void ChurnBand_IsDense_ShortLived_AndPoolBounded_TheNearSternRead()
+        {
+            // Cause 3 fix — "bubble close to the boat, be foamy close to the boat": the churn puffs are the
+            // near-stern band. Density: with defaults the near band lays ≥ 3× the foam-per-metre of the far
+            // centre lane. Short-lived: the band's astern reach is speed·(scale·Lifetime) — it clings to
+            // the transom because the scale is well under 1. Bounded: the per-deposit count is hard-clamped.
+            WakeTrailConfig c = Cfg();
+
+            float nearFoamPerMeter = (WakeTrailMath.ChurnPuffCount(in c) + Mathf.Clamp01(c.CenterChurnFraction))
+                                     / c.DepositSpacingMeters;
+            float farFoamPerMeter = Mathf.Clamp01(c.CenterChurnFraction) / c.DepositSpacingMeters;
+            Assert.GreaterOrEqual(nearFoamPerMeter, farFoamPerMeter * 3f,
+                "the churn band right behind the transom is at least 3× as foam-dense as the far lane");
+
+            Assert.Less(c.ChurnLifetimeScale, 1f, "churn dies young — the band exists only near the boat");
+            Assert.Greater(c.ChurnSizeScale, 1f, "churn puffs are BIGGER than lane foam — solid coverage, not dots");
+
+            // The hard clamp survives any config sabotage (rule 7).
+            c.ChurnPuffsPerDeposit = 9999;
+            Assert.AreEqual(WakeTrailMath.MaxChurnPuffsPerDeposit, WakeTrailMath.ChurnPuffCount(in c));
+            c.ChurnPuffsPerDeposit = -5;
+            Assert.AreEqual(0, WakeTrailMath.ChurnPuffCount(in c));
+
+            // Geometry: churn puffs land inside the band, symmetric dice reaching both rails.
+            Vector2 basePos = new Vector2(3f, 7f);
+            Vector2 track = Vector2.right;
+            WakeTrailConfig cw = Cfg();          // default ChurnHalfWidthFraction = 0.10
+            float half = WakeTrailMath.ChurnHalfWidth(4.5f, in cw);
+            Assert.AreEqual(0.45f, half, 1e-5f, "dory 4.5 m at 0.10 fraction → a 0.45 m half-width strip");
+            Vector2 rail = WakeTrailMath.ChurnPoint(basePos, track, 1f, half);
+            Assert.AreEqual(half, (rail - basePos).magnitude, 1e-5f, "full dice lands on the band rail");
+            Assert.AreEqual(0f, Vector2.Dot(rail - basePos, track), 1e-5f, "jitter is LATERAL to the track");
+            Vector2 centre = WakeTrailMath.ChurnPoint(basePos, track, 0f, half);
+            Assert.AreEqual(basePos.x, centre.x, 1e-5f, "dice 0 lands on the track");
+            Assert.AreEqual(0f, WakeTrailMath.ChurnHalfWidth(-3f, in cw), "negative hull length is guarded");
+        }
+
+        [Test]
+        public void MaxParticlesPerTick_IsTheExplicitBudget_WellUnderThePools()
+        {
+            WakeTrailConfig c = Cfg();
+            int budget = WakeTrailMath.MaxParticlesPerTick(in c);
+            Assert.AreEqual(c.MaxDepositsPerTick * (2 + 1 + WakeTrailMath.ChurnPuffCount(in c)), budget,
+                "budget = deposits × (2 shoulder streaks + 1 centre + churn puffs)");
+            Assert.LessOrEqual(budget, 48,
+                "the default per-tick worst case stays well inside the 96-foam + 48-line pools (rule 7)");
+            c.MaxDepositsPerTick = -3;
+            Assert.AreEqual(0, WakeTrailMath.MaxParticlesPerTick(in c), "a negative cap is guarded to 0");
+        }
+
+        [Test]
+        public void AgedPulse_BubblesAtBirth_CalmsWithAge_BoundedAndDeterministic()
+        {
+            // The bubbling read: fresh foam boils at the full amount, and by end of life the pulse is
+            // EXACTLY 1 — the far trail lies quiet while the near-stern band churns.
+            for (float t = 0f; t < 6f; t += 0.17f)
+            {
+                float fresh = WakeTrailMath.AgedPulse(t, 0.3f, 2.8f, 0.22f, 0f);
+                Assert.GreaterOrEqual(fresh, 1f - 0.22f - 1e-4f, "bounded below at full amount");
+                Assert.LessOrEqual(fresh, 1f + 0.22f + 1e-4f, "bounded above at full amount");
+                Assert.AreEqual(1f, WakeTrailMath.AgedPulse(t, 0.3f, 2.8f, 0.22f, 1f), 1e-6f,
+                    "end of life is EXACTLY calm — the far trail never shimmers");
+            }
+            Assert.AreEqual(WakeTrailMath.AgedPulse(2.2f, 0.3f, 2.8f, 0.22f, 0.4f),
+                            WakeTrailMath.AgedPulse(2.2f, 0.3f, 2.8f, 0.22f, 0.4f),
+                            "same inputs, same pulse — deterministic (rule 5)");
+        }
+
+        [Test]
+        public void EmitAt_BakesTheOrientation_AndDerivesFromVelocityWhenUnspecified()
+        {
+            var sys = new WakeParticleSystem(4);
+            WakeConfig cfg = WakeConfig.Default;
+
+            // Explicit orientation (the trail's arm direction) is baked verbatim.
+            sys.EmitAt(Vector2.zero, new Vector2(5f, 0f), in cfg, 1f, 1f, 1f, orientDeg: 123.5f);
+            Assert.AreEqual(123.5f, sys.Pool[0].OrientDeg, 1e-5f,
+                "the laid orientation is BAKED — world-locked, never re-read from the decaying velocity");
+
+            // Unspecified → derived from the emit velocity (the legacy template contract).
+            sys.EmitAt(Vector2.zero, new Vector2(0f, 3f), in cfg, 1f, 1f, 1f);
+            Assert.AreEqual(90f, sys.Pool[1].OrientDeg, 1e-3f, "NaN default derives from the emit velocity");
+            Assert.AreEqual(0f, WakeParticleSystem.OrientFromVelocity(Vector2.zero), 1e-6f,
+                "a degenerate velocity orients to 0, never NaN");
+        }
+
         // ==== Pool bound at the SYSTEM level =============================================================
 
         [Test]

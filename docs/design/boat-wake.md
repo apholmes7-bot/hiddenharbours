@@ -189,14 +189,53 @@ the inactive context returns 0 everywhere and the wake sits on the flat plane ex
 A/B contract). The resting draft is deliberately **not** applied: foam rides the water surface, and the
 draft exists to sink the *hull* to its waterline — the surface (and everything on it) doesn't move.
 
+**The rendered read (owner playtest 2026-07-23, same day).** The first deposition build read as *"small
+horizontal lines … it should bubble close to the boat, be foamy close to the boat, and then the wake
+should be a long wake pattern."* The deposition was right; the **render** of it was wrong, three ways at
+once, and each fix is pure math the tests pin headless:
+
+1. **Orientation (the "horizontal dashes").** Shoulder streaks were rotated along their **live
+   velocity** — for a deposit that is mostly-lateral spread + astern drift, decaying into the current,
+   which painted near-perpendicular dashes on most headings. Now the orientation is **baked at emit**
+   (`Particle.OrientDeg`) along the emergent arm's **analytic locus**: deposits fall astern at `speed`
+   and spread at `speed·tanθ`, so one shoulder's deposits lie on a line **exactly θ off dead-astern** —
+   `WakeTrailMath.ArmDir = normalize(−track + lateral·tanθ)`. World-locked for the streak's whole life;
+   overlapping streaks fuse into one long coherent arm.
+2. **Continuity (the "dotted rows").** Streak length (≤1.1 m, shrinking with age) vs 0.55 m spacing left
+   gaps. Now the **overlap law** (`WakeTrailMath.ArmStreakLength = spacing/cosθ · overlapFactor`, factor
+   clamped ≥ 1) guarantees a streak at least spans the along-arm gap to its neighbour — **continuous by
+   construction at any tuning** — and trail streaks keep full length for life (the alpha fade dissolves
+   the arm; shrinking re-opened the gaps).
+3. **The near-stern churn band ("bubble/foamy close to the boat").** Each deposit now also lays
+   `ChurnPuffsPerDeposit` (default 2, hard-clamped ≤ 4) **big overlapping foam puffs** (`ChurnSizeScale`
+   1.9×) jittered across a hull-fraction strip (`ChurnHalfWidthFraction` 0.10) behind the transom,
+   deliberately **short-lived** (`ChurnLifetimeScale` 0.4× → ~0.9 s): they die before the boat gets far,
+   so the dense white band **clings to the transom and fades with distance** — its astern reach is
+   `speed · churnLifetime`, speed-proportional for free. All laid foam **bubbles while young**:
+   `AgedPulse` boils size + alpha at the full amount at birth and is *exactly* calm by end of life
+   (render-only, bounded, deterministic), so the near band churns and the far trail lies quiet. The
+   centre-lane fraction rises to 0.85 for a continuous fading middle lane. The code-built foam/crest
+   sprites are alpha-**banded + 2×2 Bayer-dithered** (the KTC pixel-foam law — no airbrush falloff).
+
+The read is therefore three zones: **bubbling white churn at the transom → a fading centre lane → two
+long continuous arms** peeling out at the Kelvin angle, all still laid in world space (curving through
+turns, persisting astern, graded by hull size + weight + speed). The per-tick emission budget is
+explicit — `WakeTrailMath.MaxParticlesPerTick = MaxDepositsPerTick · (2 streaks + 1 centre + churn)` =
+30 with defaults, well inside the 96-foam + 48-line pools — and `WakeTrailConfig.Enabled = false` still
+restores the legacy boat-locked stamp exactly (the pulse and the trail length law are gated on it).
+
 **Tunables** — `WakeTrailConfig` (deposition spacing/astern nudge/per-tick cap/teleport reset, Kelvin
 half-angle + spread clamps + astern drift, shoulder half-width fraction + magnitude boost, graded
-lifetime/size scales, centre-churn fraction, plume pulse Hz/scale/alpha amounts, plume turn-fade
-onset/range) and `BowWaveConfig` (droplet rate/cap/fan/speed-scale/lifetime/size/decay, spray pulse
-Hz/scale/alpha), both serialized on `BoatWakeEmitter` beside the existing configs. Tests:
+lifetime/size scales, centre-churn fraction, **arm overlap factor, churn puffs-per-deposit /
+lifetime-scale / size-scale / band half-width fraction, foam pulse Hz/amount**, plume pulse
+Hz/scale/alpha amounts, plume turn-fade onset/range) and `BowWaveConfig` (droplet
+rate/cap/fan/speed-scale/lifetime/size/decay, spray pulse Hz/scale/alpha), both serialized on
+`BoatWakeEmitter` beside the existing configs. Tests:
 `Assets/Tests/EditMode/WakeTrailMathTests.cs` (spacing/carry conservation, the hard pool clamps at both
 the math and the system level, track/shoulder geometry, the emergent-V spread law, grading monotonicity,
-turn fade, pulse bounds/determinism, droplet fan/rate gating).
+turn fade, pulse bounds/determinism, droplet fan/rate gating, **the arm-locus orientation, the overlap
+law, the churn-band density/lifetime/clamps, the explicit per-tick budget, the aged bubbling pulse, and
+the baked-orientation emit contract**).
 
 ## Future work (not built)
 The procedurally-generated round foam puff is a **greybox** placeholder. The authored V sprite
