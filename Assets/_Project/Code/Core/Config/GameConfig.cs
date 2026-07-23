@@ -76,6 +76,16 @@ namespace HiddenHarbours.Core
                  "on day rollover, not per frame.")]
         [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
 
+        [Header("Rod fight (Rod Fishing v2 — the deep→surface fight, cove defaults)")]
+        [Tooltip("Fight-wide DEFAULT tuning for the v2 rod fight (pull-on-slack / maintain-on-run + " +
+                 "counter-steer + the deep→surface arc). These are the forgiving cove baselines the owner " +
+                 "dials; a species' RodFightDef overrides them per fish later. Two guard-rails keep the cove " +
+                 "cozy and are test-enforced: TensionRisePerSec > LandingFillPerSec (a blind sustained pull " +
+                 "SNAPS before it lands — skill is a pulse, not a pin) and RunTensionPressure < " +
+                 "TensionFallPerSec (MAINTAIN always bleeds tension, even mid-run — a run is a 'back off' " +
+                 "tell, never an unavoidable snap).")]
+        public RodFightSettings RodFight = RodFightSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -93,6 +103,69 @@ namespace HiddenHarbours.Core
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
         public float SecondsPerYear => SecondsPerSeason * 4f;
+    }
+
+    /// <summary>
+    /// The fight-wide default tuning for the v2 rod fight (<see cref="GameConfig.RodFight"/>), named and
+    /// owner-tunable (rule 6). Lives in Core beside the config it rides on — the same Core-policy /
+    /// feature-consumer split as <see cref="SeakeepingSettings"/> (Core) vs its Boats-side math: Core cannot
+    /// reference the Fishing module (rule 4), so the tunables live here and the pure math that consumes them
+    /// (<c>RodFightMath</c>, Fishing-side) takes them as floats. Per-species overrides arrive later as a
+    /// <c>RodFightDef</c> (lead-architect's contract) carrying these same six fields.
+    ///
+    /// All rates are in normalised gauge-units (0..1) per second; the caller integrates and clamps.
+    /// <see cref="Default"/> is the forgiving-cove reference tuning and satisfies both guard-rails
+    /// (<c>RodFightMath.PullAloneSnapsBeforeLanding</c> / <c>MaintainOutbleedsTheRun</c>), which the
+    /// EditMode tests assert against the shipped asset.
+    /// </summary>
+    [System.Serializable]
+    public struct RodFightSettings
+    {
+        [Tooltip("Tension gained per second while PULLING (reeling), 0..1-gauge/s. The snap pressure of a " +
+                 "held reel. Guard-rail: must exceed LandingFillPerSec, so a blind sustained pull always " +
+                 "snaps before it lands (skill is a pulse, not a pin).")]
+        [Min(0f)] public float TensionRisePerSec;
+
+        [Tooltip("Tension bled per second while MAINTAINING (holding steady, not reeling), 0..1-gauge/s. " +
+                 "The recovery of backing off. Guard-rail: must exceed RunTensionPressure, so a MAINTAIN " +
+                 "nets tension DOWN even through her hardest run.")]
+        [Min(0f)] public float TensionFallPerSec;
+
+        [Tooltip("Landing gained per second by a clean PULL in a full slack window, 0..1-gauge/s. The pace " +
+                 "of a well-fought fight; the same rate scales the Surface counter-steer's tiring gain. " +
+                 "Keep below TensionRisePerSec (the snap-before-land guard-rail).")]
+        [Min(0f)] public float LandingFillPerSec;
+
+        [Tooltip("EXTRA tension per second her run adds at full effort (fishEffort01 = 1), applied whether " +
+                 "pulling or maintaining — she is fighting too. Keep below TensionFallPerSec so a run is a " +
+                 "'back off' tell, never an unavoidable snap.")]
+        [Min(0f)] public float RunTensionPressure;
+
+        [Tooltip("Tension bled per second by a FULL counter-steer against a full dart (Surface phase only); " +
+                 "the same magnitude is the penalty for steering INTO her. Bigger = the steer axis matters " +
+                 "more once she surfaces.")]
+        [Min(0f)] public float CounterSteerRelief;
+
+        [Tooltip("Landing fraction (0..1) at which she breaks the surface: the fight crosses Deep (timing " +
+                 "only, fish unseen, steer ignored) → Surface (timing + steer). Lower = the steer game " +
+                 "starts sooner.")]
+        [Range(0f, 1f)] public float SurfaceThreshold01;
+
+        /// <summary>
+        /// The forgiving-cove reference tuning: a pull loads clearly faster than it lands (0.55 &gt; 0.35 —
+        /// the blind hold snaps first), a maintain bleeds twice her run's pressure (0.70 &gt; 0.35 — backing
+        /// off always recovers), a moderate counter-steer axis, and the surface break at half-landed so both
+        /// halves of the arc get play.
+        /// </summary>
+        public static RodFightSettings Default => new RodFightSettings
+        {
+            TensionRisePerSec = 0.55f,
+            TensionFallPerSec = 0.70f,
+            LandingFillPerSec = 0.35f,
+            RunTensionPressure = 0.35f,
+            CounterSteerRelief = 0.45f,
+            SurfaceThreshold01 = 0.5f,
+        };
     }
 
     /// <summary>
