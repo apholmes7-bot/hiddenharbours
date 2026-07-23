@@ -1900,6 +1900,63 @@ readability verdict instrument). The wiring, for anyone touching it:
   place. OFF is a contract: nothing registers, the feature records nothing, the flat water renders
   exactly as today.
 
-Still ahead in the arc (ADR 0023 §Phases): the envelope-relative band/whitecap retune on the
-displaced fragment (step 2), GameConfig exposure (step 3), hull waterline + shared heave
-(phase 3), and the screen-anchored-layer reviews (phase 4).
+Still ahead in the arc (ADR 0023 §Phases): GameConfig exposure (step 3), hull waterline + shared
+heave (phase 3), and the screen-anchored-layer reviews (phase 4). The envelope-relative
+band/whitecap retune (step 2) shipped — §23 below.
+
+
+## 23. Envelope-relative salience — the big wave wears the solid foam core (ADR 0023, arc step 2·2)
+
+Step 2 of phase 2 retunes the SHARED fragment (both passes inherit it — flat and displaced are one
+program, §22) so the rare big wave is *marked*, by foam **and** by shade. The flat water's caps used
+to mark every local crest with equal salience — the spike's control image showed the 100%-envelope
+event (t = 1513.5 s, h = 1.045 m of a 1.047 m envelope) sitting invisible in uniform speckle. Now
+salience keys on **height relative to the field's envelope** (`height / _WaveFieldParams.z`, the
+crest factor the shared wave field already publishes — ADR 0023 §(4)):
+
+- **Whitecap solid cores are RESERVED for near-envelope crests.** In the trains-live cap path the
+  dense breaking core (`solidPart`) is gated by `CapEnvelopeGate(waveCrest, …)`: zero at and below
+  the envelope threshold, a Bayer-dithered binary fringe just above it, hard 1 past the solid
+  margin. Ordinary chop keeps only the thin milky residual streaks (which were already
+  envelope-keyed through `crestF`). Result: the everyday tallest crest of the reference sea
+  (crestF ≈ 0.61) wears no core; the envelope event (crestF ≈ 0.996) wears a solid one on every
+  dither cell — both pinned by `WhitecapSalienceMathTests`.
+- **Envelope value bands** (a new pre-grade layer after the swell face shading): the
+  envelope-relative height (`vN = h/A × 0.5 + 0.5`) is posterized into SOLID value steps shaded
+  from the owner's palette anchors (`_PaletteDeep/Mid/Shallow` — ADR 0015 keeps applying), and
+  blended over the composited base at `_EnvelopeBandStrength`. Because the axis is
+  envelope-relative, the TOP band is reachable only by a near-envelope crest — the big wave is
+  marked by shade even before its foam. Gated by trains-live, the glass gate (`envelope × 40`) and
+  the shared modelled-swell calm gate (`_SwellReadSeaStateLo/Hi`) — glass stays glass, calm stays
+  serene, and the bands melt with the swell they mark.
+- **The style law, mechanised (ADR 0023 §(3)):** `BandValue01` dithers ONLY inside a window around
+  each rounding boundary — outside it the step is hard (solid bands, dithered edges; full-range
+  Bayer reconstructs the smooth gradient — the spike's measured airbrush trap). The dither reads
+  `BayerWorld` — the rigs' 4×4 matrix indexed by the PPU-quantised WORLD cell, zero crawl by
+  construction.
+- **Near shore the caps die with the SEAM** (ADR 0023 §Whitecap salience): `capOpacity` is faded by
+  `ShoreFade01(depth, _ShoreFadeBand)` — the same twin, the same band the displaced vertex stage
+  reads (pushed derived per tick on the displaced pass; the material default 0.5 m gives the flat
+  pass a thin graceful band, and a zeroed band degrades to "no fade", never a divide). The dying
+  displaced edge cannot wear open-sea caps; shore foam/swash stays the separate dressing layer,
+  untouched.
+
+**Thresholds and where they live** (rule 6 — named material properties on Water.mat, spike-tuned
+defaults from `spike/3d-water` VERDICT.md / IsoWaterSpike.shader / SpikeWaterRenderer; GameConfig
+plumbing is arc step 3):
+
+| property | default | provenance |
+|---|---:|---|
+| `_CapSalienceStrength` | 1.0 | master; 0 = the legacy even salience, exactly |
+| `_CapEnvelopeThreshold` | 0.62 | spike `_CapThreshold` |
+| `_CapSolidMargin` | 0.3 | spike `_CapSolid` |
+| `_CapDitherBand` | 0.25 | spike `_CapDither` |
+| `_EnvelopeBandStrength` | 0.35 | production blend (spike rendered full-replacement) |
+| `_EnvelopeBands` | 7 | spike run value (`SpikeWaterRenderer`) |
+| `_EnvelopeBandDitherWin` | 0.4 | spike `_DitherWin` |
+
+The C# twin is `HiddenHarbours.Art.WhitecapSalienceMath` (`CapEnvelopeGate` / `BandValue01` /
+`BayerThreshold` / `CapShoreSalience`) — line-for-line with the HLSL, changed only in lockstep;
+`WhitecapSalienceMathTests` pins the twin to the reference sea's numbers AND scrapes the shader
+source so a drifted property default fails red. The owner's presets predate these properties, so a
+preset apply leaves them at the material/shader defaults — sane by construction.
