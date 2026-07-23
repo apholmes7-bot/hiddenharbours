@@ -67,6 +67,30 @@ namespace HiddenHarbours.Tools.RigBaking
                 // (8 direction rows × ANIMS-declared frames), never by the boat turntable.
                 ["character"] = new RigEntry($"{RigFolder}/characterIsoRig.js", "CharacterIso",
                                              AzimuthConvention.Clockwise),
+
+                // ---- the fishing kit (drop of 2026-07-22, PR #258) — Rod Fishing v2 wave 3 ------
+
+                // Parametric fish loft: one skeleton, a SPECIES data table. CLAIMED clockwise
+                // (th = −dir·45°, same term as the character) but the kit is UNVERIFIED — the
+                // README's correction note is explicit that the sign term is not proof, so
+                // FishingRigAzimuthProbe measures the head side from pixels before any bake.
+                // Declares no DIRS global (Install reports 0); the 8 headings are the ADR-0006
+                // recipe, supplied by FishingKitBaker.
+                ["fish"] = new RigEntry($"{RigFolder}/fishIsoRig.js", "FishIso",
+                                        AzimuthConvention.Clockwise),
+
+                // One of the two rigs the art director fixed CLOCKWISE at source (README's
+                // pixel-verified group). Still measured at bake time like everything else —
+                // FishingRigAzimuthProbe reads which side the blank extends at the E/W rows.
+                ["rod"] = new RigEntry($"{RigFolder}/rodIsoRig.js", "RodIso",
+                                       AzimuthConvention.Clockwise),
+
+                // NOT DIRECTIONAL: a 16×22 state sprite (float/nibble/strike/fly) with no azimuth
+                // term at all — render(state, frame), no dir argument. The declared convention
+                // below is a placeholder that nothing reads and nothing probes; the bobber bake
+                // path never consults it and never calls DirForCell.
+                ["bobber"] = new RigEntry($"{RigFolder}/bobberRig.js", "RodBobber",
+                                          AzimuthConvention.Clockwise),
             };
 
         public static string RepoRoot =>
@@ -111,14 +135,22 @@ namespace HiddenHarbours.Tools.RigBaking
             // (RigBakeMenu's recipes name boat keys only) and CharacterRigBaker never reads it.
             bool hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
 
+            // DIRS is likewise a rig-shape fact, not a universal: the fishing kit's rigs
+            // (FishIso, RodIso, RodBobber) declare no DIRS global. 0 = "the rig does not say" —
+            // a directional baker then supplies its recipe's facing count (8 per ADR-0006) and a
+            // non-directional one (the bobber) never asks. Same for defaultElev: the bobber is a
+            // hand-plotted sprite with no camera at all.
+            bool hasDirs = host.EvaluateBool($"typeof {g}.DIRS === 'number'");
+            bool hasElev = host.EvaluateBool($"typeof {g}.defaultElev === 'number'");
+
             return new RigGeometry(
                 width:      (int)host.EvaluateNumber($"{g}.W"),
                 height:     (int)host.EvaluateNumber($"{g}.H"),
                 pivotX:     host.EvaluateNumber($"{g}.pivot.x"),
                 pivotY:     host.EvaluateNumber($"{g}.pivot.y"),
-                nativeDirs: (int)host.EvaluateNumber($"{g}.DIRS"),
+                nativeDirs: hasDirs ? (int)host.EvaluateNumber($"{g}.DIRS") : 0,
                 rockFrames: hasRock ? (int)host.EvaluateNumber($"{g}.ROCK.frames") : 0,
-                defaultElevation: host.EvaluateNumber($"{g}.defaultElev"));
+                defaultElevation: hasElev ? host.EvaluateNumber($"{g}.defaultElev") : 0);
         }
     }
 
