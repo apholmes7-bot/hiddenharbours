@@ -206,6 +206,7 @@ namespace HiddenHarbours.Boats
         {
             SetRockFrame(-1);         // disabled → static level hull, never a frozen rock frame
             _currentRockFrame = -1;
+            Hull?.SetDisplacedHeaveMeters(0f);   // never a frozen ride either (draft is the driver's own gate)
             RestoreVisual();
         }
 
@@ -230,6 +231,7 @@ namespace HiddenHarbours.Boats
             if (_masterStrength <= 0f)
             {
                 if (DrivingRockFrames) SetRockFrame(-1);   // off → static/level hull, not a frozen frame
+                Hull?.SetDisplacedHeaveMeters(0f);         // off = no ride either (the whole read is off)
                 RestoreVisual();      // 0 = off, and the visual sits exactly where it was built
                 return;
             }
@@ -257,6 +259,16 @@ namespace HiddenHarbours.Boats
                 wave = WaveSample.Flat;   // no sim, no sea — dead still, never stale
             }
 
+            // THE SHARED HEAVE (ADR 0023 phase 3 step 2): while the displaced sea is active, every
+            // hull's vertical ride is the SAME displaced height rule the surface lifts with — the
+            // one wave sample already in hand, through ShoreFadeMath.DisplacedHeight with the
+            // surface's own published exaggeration + shore-fade band (the Core seam; never a
+            // per-consumer copy — the overlay-pose lesson). Depth is the game's one depth rule
+            // (BoatCrossing.DepthAt: water level − painted ground; open water = +∞ ⇒ fade 1), so a
+            // boat nosing into the shallows settles exactly as the water under it does. Displaced
+            // OFF ⇒ ride 0 and rideActive false: every path below is byte-identical to before.
+            float rideMeters = DisplacedRideMeters(wave.Height, time, out bool rideActive);
+
             // THE WAVE-COUPLED SPRITE ROCK (the iso dory): when the wired DirectionalBoatSprite carries a
             // rock grid, the visible rock is DRAWN by frame — select the frame from the dominant swell's
             // phase under the hull and STOP applying the transform rock below (the frames own the
@@ -264,7 +276,7 @@ namespace HiddenHarbours.Boats
             // hull path reads its phase forward rather than the sampled surface.
             if (DrivingRockFrames)
             {
-                DriveRockFrame();
+                DriveRockFrame(rideMeters);
                 return;
             }
 
@@ -277,7 +289,24 @@ namespace HiddenHarbours.Boats
             _smoothedRoll = WaveFieldAnimator.Smooth(_smoothedRoll, motion.Roll, dt, _motionSmoothingSeconds);
             _smoothedBob = WaveFieldAnimator.Smooth(_smoothedBob, motion.Bob, dt, _motionSmoothingSeconds);
 
-            Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob));
+            Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob),
+                  rideMeters, rideActive);
+        }
+
+        /// <summary>
+        /// The displaced-sea ride under this hull (metres of screen lift): 0 with the displaced
+        /// sea OFF (<paramref name="active"/> false — the A/B contract), else the ONE shared rule
+        /// every displaced-water consumer draws with, on the same wave sample the rock already
+        /// reads (the ONE-SEA rule — never a second sim).
+        /// </summary>
+        private float DisplacedRideMeters(float waveHeightMeters, double totalSeconds, out bool active)
+        {
+            active = DisplacedSea.TryGet(out DisplacedSeaState sea);
+            if (!active) return 0f;
+            float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment,
+                                               totalSeconds, (Vector2)transform.position);
+            return ShoreFadeMath.DisplacedHeight(waveHeightMeters, depth,
+                                                 sea.ShoreFadeBandMeters, sea.Exaggeration);
         }
 
         /// <summary>True when the visible rock is drawn BY THE HULL ITSELF — swapping rock frames on a
@@ -293,8 +322,10 @@ namespace HiddenHarbours.Boats
         /// static/level hull (frame −1); otherwise a phase (crest → 90°, trough → 270°) is handed to
         /// the hull — QUANTISED to the nearest frame (with hysteresis) for a sprite hull's baked
         /// grid, or CONTINUOUSLY for a presenter that supports it (the mesh path, ADR 0022 phase 4:
-        /// same wave, same swell, no steps). The transform is left at its base pose — the hull owns
-        /// the rock, so no roll/pitch/bob is applied (no double-rock), and the roll hook is held at 0.
+        /// same wave, same swell, no steps). The hull owns the rock, so no roll/pitch/bob is applied
+        /// to the transform (no double-rock) and the roll hook is held at 0; the only transform
+        /// write is the sprite hull's displaced-sea RIDE (ADR 0023 phase 3 step 2 — zero with the
+        /// displaced sea off, so the flat-water pose stays at base exactly as before).
         ///
         /// <para><b>Both paths take that phase from the SAME PLACE: the dominant train's OWN phase,
         /// read forward out of the animator</b> (<see cref="WaveFieldAnimator.DominantPhaseDegrees"/> —
@@ -319,13 +350,30 @@ namespace HiddenHarbours.Boats
         /// same field and the same dominant swell, so the ADR's "mesh and sprite rock on the same
         /// sea" holds.</para>
         /// </summary>
-        private void DriveRockFrame()
+        private void DriveRockFrame(float rideMeters)
         {
             var hull = Hull;
 
-            // The hull owns the rock: keep the additive roll hook and the transform pose neutral.
+            // The hull owns the rock: keep the additive roll hook neutral.
             hull.VisualTiltDegrees = 0f;
-            RestoreVisual();
+
+            // The shared displaced ride (ADR 0023 phase 3 step 2; 0 with the sea off). A
+            // continuous-rock hull (the mesh) takes it through the presenter seam — the driver
+            // folds it into the heave-pixels channel, so the screen lift and the calibrated
+            // waterline z move together — and its transform stays at base (routing it through the
+            // transform TOO would double-ride). A sprite hull has no waterline clipping: its ride
+            // is a plain screen-vertical lift of the visual, applied here, so the fleet never
+            // splits into two seas.
+            if (hull.SupportsContinuousRock)
+            {
+                hull.SetDisplacedHeaveMeters(rideMeters);
+                RestoreVisual();
+            }
+            else
+            {
+                hull.SetDisplacedHeaveMeters(0f);
+                ApplyRide(rideMeters);
+            }
 
             WaveTrains field = _animator.Current;
             if (field.Count <= 0 || field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold))
@@ -365,12 +413,18 @@ namespace HiddenHarbours.Boats
         /// <summary>Map the smoothed decomposition onto the visual: roll → additive z-rotation (through
         /// the DirectionalBoatSprite hook when present — it stomps rotation every LateUpdate); pitch+bob →
         /// a screen-vertical (world +Y) offset so the lift always reads UP on screen regardless of the
-        /// body's physics yaw; |pitch| → a subtle y-squash. Everything clamped to its cap.</summary>
-        private void Apply(in BoatWaveMotionSample motion)
+        /// body's physics yaw; |pitch| → a subtle y-squash. Everything clamped to its cap — EXCEPT the
+        /// displaced-sea ride: with <paramref name="rideActive"/> the bob term IS <paramref name="rideMeters"/>
+        /// (the shared displaced height — the same rule the surface lifts with, so it must not be
+        /// re-capped or re-scaled per consumer; it is bounded by envelope × exaggeration by construction).
+        /// Roll, pitch and squash keep today's read on both sides of the A/B.</summary>
+        private void Apply(in BoatWaveMotionSample motion, float rideMeters, bool rideActive)
         {
             float rollDegrees = Mathf.Clamp(motion.Roll * _rollDegreesPerSlope, -_maxRollDegrees, _maxRollDegrees);
             float pitchOffset = Mathf.Clamp(motion.Pitch * _pitchOffsetPerSlope, -_maxPitchOffset, _maxPitchOffset);
-            float bob = Mathf.Clamp(motion.Bob * _bobPerHeightMeter, -_maxBob, _maxBob);
+            float bob = rideActive
+                ? rideMeters
+                : Mathf.Clamp(motion.Bob * _bobPerHeightMeter, -_maxBob, _maxBob);
             float squash = Mathf.Min(Mathf.Abs(motion.Pitch) * Mathf.Max(0f, _pitchSquashPerSlope),
                                      Mathf.Max(0f, _maxPitchSquash));
 
@@ -390,6 +444,23 @@ namespace HiddenHarbours.Boats
             _visual.localPosition = _baseLocalPosition;
             _visual.position += new Vector3(0f, bob + pitchOffset, 0f);
             _visual.localScale = new Vector3(_baseLocalScale.x, _baseLocalScale.y * (1f - squash), _baseLocalScale.z);
+            _applied = true;
+        }
+
+        /// <summary>The sprite-hull displaced ride alone (the rock-grid path — the frames own
+        /// roll/pitch/heave, so ONLY the metre-scale ride touches the transform): base pose plus a
+        /// screen-vertical (world +Y) lift, exactly like <see cref="Apply"/>'s offset. 0 restores
+        /// the visual, so the displaced-OFF frame is byte-identical to before this step.</summary>
+        private void ApplyRide(float rideMeters)
+        {
+            if (rideMeters == 0f)
+            {
+                RestoreVisual();
+                return;
+            }
+            _visual.localPosition = _baseLocalPosition;
+            _visual.position += new Vector3(0f, rideMeters, 0f);
+            _visual.localScale = _baseLocalScale;
             _applied = true;
         }
 

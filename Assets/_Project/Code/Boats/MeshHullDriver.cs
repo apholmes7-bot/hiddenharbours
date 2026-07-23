@@ -39,10 +39,13 @@ namespace HiddenHarbours.Boats
         private bool _azimuthCounterClockwise;
         private float _elevationDegrees = 90f;
         private float _rockRollDegrees, _rockPitchDegrees, _rockHeavePixels;
+        private int _pxPerMetre = 32;
+        private float _restingDraftMeters;
 
         private bool _rockLevel = true;
         private float _rockPhaseDegrees;
         private int _rockFrame = MountedRockPoseMath.LevelRockFrame;
+        private float _displacedHeaveMeters;
 
         /// <summary>The visual child the renderer draws under (kept screen-identity). Null = idle.</summary>
         public Transform Visual => _visual;
@@ -83,6 +86,20 @@ namespace HiddenHarbours.Boats
             _rockPhaseDegrees = phaseDegrees;
         }
 
+        /// <summary>The resting draft (metres) of the def being presented — the design-waterline
+        /// sink applied while the displaced sea is active (<see cref="HullMeshDef.RestingDraftMeters"/>).</summary>
+        public float RestingDraftMeters => _restingDraftMeters;
+
+        /// <summary>
+        /// The metre-scale displaced-sea ride under this hull (ADR 0023 phase 3 step 2 — the
+        /// shared heave), written by <see cref="BoatWaveMotion"/> each tick through the presenter
+        /// seam (<see cref="IBoatHullPresenter.SetDisplacedHeaveMeters"/>). Composed into the
+        /// renderer's heave-pixels channel by <see cref="Drive"/> ONLY while
+        /// <see cref="DisplacedSea.IsActive"/> — so the screen lift and the calibrated waterline z
+        /// ride together, and the flat-water pose stays byte-identical (the A/B contract).
+        /// </summary>
+        public void SetDisplacedHeaveMeters(float heaveMeters) => _displacedHeaveMeters = heaveMeters;
+
         /// <summary>The rig dir units currently being presented — the live turntable angle the
         /// anchors project through. Derived from the transform, so it is correct before the first
         /// LateUpdate, same as <see cref="DirectionalBoatSprite.CurrentFacingIndex"/>.</summary>
@@ -111,10 +128,13 @@ namespace HiddenHarbours.Boats
                 _rockRollDegrees = def.RockRollDegrees;
                 _rockPitchDegrees = def.RockPitchDegrees;
                 _rockHeavePixels = def.RockHeavePixels;
+                _pxPerMetre = Mathf.Max(1, def.PxPerMetre);
+                _restingDraftMeters = Mathf.Max(0f, def.RestingDraftMeters);
             }
             _rockLevel = true;
             _rockFrame = MountedRockPoseMath.LevelRockFrame;
             VisualTiltDegrees = 0f;
+            _displacedHeaveMeters = 0f;
         }
 
         private void LateUpdate() => Drive();
@@ -139,6 +159,19 @@ namespace HiddenHarbours.Boats
             if (!_rockLevel)
                 HullMeshMath.RockPose(_rockPhaseDegrees, _rockRollDegrees, _rockPitchDegrees,
                                       _rockHeavePixels, out roll, out pitch, out heave);
+
+            // (4) The SHARED HEAVE (ADR 0023 phase 3 step 2): while the displaced sea is live,
+            // the hull rides it — the metre-scale displaced lift BoatWaveMotion sampled under the
+            // hull this frame, minus the resting draft that sinks the keel-origin rig to its
+            // design waterline. Composed into the SAME heave-pixels channel as the rig's own rock
+            // heave, so the renderer's screen lift AND its calibrated iso z (HullDepthBias's
+            // heave term) move together by construction — the waterline stays truthful for free.
+            // Displaced OFF ⇒ the term is exactly 0 and this line is byte-inert (the A/B
+            // contract extends to boats). The gate is the Core seam, not the stored ride, so a
+            // becalmed or motion-less hull still sits AT its waterline while the sea is on.
+            if (DisplacedSea.IsActive)
+                heave += (_displacedHeaveMeters - _restingDraftMeters) * _pxPerMetre;
+
             _renderer.RollDegrees = roll + VisualTiltDegrees;
             _renderer.PitchDegrees = pitch;
             _renderer.HeavePixels = heave;

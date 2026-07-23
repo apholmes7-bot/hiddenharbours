@@ -118,6 +118,20 @@ namespace HiddenHarbours.Boats
         /// </summary>
         float VisualTiltDegrees { get; set; }
 
+        /// <summary>
+        /// The metre-scale vertical RIDE of the displaced sea under this hull (ADR 0023 phase 3
+        /// step 2 — the shared heave): <c>ShoreFadeMath.DisplacedHeight</c> of the wave height at
+        /// the hull, written by <see cref="BoatWaveMotion"/> every tick while the displaced sea is
+        /// active, 0 otherwise. Only meaningful for a presenter with
+        /// <see cref="SupportsContinuousRock"/>: the MESH path routes it through the renderer's
+        /// heave-pixels channel, so the screen lift and the calibrated waterline z
+        /// (<c>DisplacedWaterMath.HullDepthBias</c>) ride together by construction — the waterline
+        /// stays truthful for free. A SPRITE presenter ignores it (deliberately, like
+        /// <see cref="SetRockPhaseDegrees"/>): sprite hulls have no waterline clipping, so their
+        /// ride is a plain visual-transform lift that <see cref="BoatWaveMotion"/> applies itself.
+        /// </summary>
+        void SetDisplacedHeaveMeters(float heaveMeters);
+
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }
 

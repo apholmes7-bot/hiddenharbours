@@ -91,6 +91,21 @@ namespace HiddenHarbours.Core
         [Tooltip("The rig's ROCK.heaveA — peak heave (rig PIXELS; world metres = px / PxPerMetre).")]
         public float RockHeavePixels;
 
+        [Header("Flotation (GAME-SIDE — the baker never writes this field, so it survives re-bakes)")]
+        [Tooltip("Resting draft in METRES: how deep this hull's design waterline sits above the rig " +
+                 "origin. Every boat rig's pivot is the KEEL BOTTOM ('amidships, keel bottom, " +
+                 "centreline'), so 0 leaves a resting hull keel-ON-the-surface — troughs open air " +
+                 "under the whole boat and only a crest ever wets the planking. A real draft sinks " +
+                 "the hull to a believable waterline and widens the moving waterline band (ADR 0023 " +
+                 "phase 3 step 2). Applied ONLY while the displaced sea is active — with the flat " +
+                 "water the render stays byte-identical to before phase 3 (the A/B contract). " +
+                 "Reference: the 3d-water spike framed the lobster boat at 0.5 m " +
+                 "(spike/3d-water Spike3dWaterMenu.cs, 'sunk half a metre of draft'). Set BY HAND; " +
+                 "the natural long-term home is the rig's gameplay sidecar (a WATERLINE symbol in " +
+                 "the export contract) — migrate this field there when the art-director's export " +
+                 "grows one, and have the baker write it.")]
+        [Min(0f)] public float RestingDraftMeters = 0f;
+
         /// <summary>
         /// True when this def can actually be drawn: a mesh, at least one non-empty ramp (≤ the
         /// shader's 16), a full 4×4 dither matrix and sane cell geometry. The skinner gates the mesh

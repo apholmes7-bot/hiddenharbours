@@ -1907,11 +1907,12 @@ readability verdict instrument). The wiring, for anyone touching it:
   place. OFF is a contract: nothing registers, the feature records nothing, the flat water renders
   exactly as today.
 
-Still ahead in the arc (ADR 0023 §Phases): the shared-heave switch (phase 3 step 2 — boats'
-visual heave onto `DisplacedHeight`) and the screen-anchored-layer reviews (phase 4). The
-envelope-relative band/whitecap retune (step 2) shipped — §23 below; the GameConfig exposure
-(step 3) shipped — the paragraphs above and §23's threshold table; the hull waterline (phase 3
-step 1) shipped — §24 below.
+Still ahead in the arc (ADR 0023 §Phases): the screen-anchored-layer reviews (phase 4 — moon
+glitter, rain rings, drift lines, flotsam riding the surface). The envelope-relative
+band/whitecap retune (step 2) shipped — §23 below; the GameConfig exposure (step 3) shipped —
+the paragraphs above and §23's threshold table; the hull waterline (phase 3 step 1) shipped —
+§24 below; the shared heave + resting draft (phase 3 step 2) shipped — §24's heave-honesty
+paragraph.
 
 
 ## 23. Envelope-relative salience — the big wave wears the solid foam core (ADR 0023, arc step 2·2)
@@ -2032,19 +2033,43 @@ and are simply covered in-scene by the hull overlay's sort. The keyline resolve 
 floods the emergent silhouette, so **the hull outline follows the waterline and reads OVER the
 water** — the sprite fleet's ink-over-water convention at the flat waterline, kept.
 
-**Heave source honesty (step 2's work, flagged not fudged):** a mesh hull's visual heave today is
-the rock-frame heave (`HullMeshDef.RockHeavePixels`, ~1 px ≈ 0.04 m) — it does NOT ride the
-metre-scale displaced lift. And the rigs' own origin convention places **rig z = 0 at the KEEL
-BOTTOM** ("pivot = boat origin (amidships, keel bottom, centreline)" — the lobster rig), so a
-boat at rest sits keel-on-the-surface with **zero draft**: at a trough the sea opens air under
-the whole hull, and at a crest only the bottom band of planking submerges. Step 2 switches
-boats' visual heave to `ShoreFadeMath.DisplacedHeight(h, depth, band, GameConfig.WaveExaggeration)`
-(the boat rides up with the crest and the waterline settles into the smaller relative motion —
-the spike's riding probe), and is ALSO the right place to decide a resting draft/flotation offset
-(gameplay-systems' call): sinking the hull to a design waterline would both look right at rest
-and widen the moving waterline band toward the spike's fixed-mid-draft ~1 m figure. Until then a
-big crest floods a fixed hull's cockpit sole and far rail (truthful occlusion of its LOW
-surfaces); that is the known intermediate state, not a defect.
+**Heave honesty (phase 3 step 2 — SHIPPED): boats ride the sea they are drawn on.** While the
+displaced sea is active, every hull's vertical ride is the same displaced-height rule the surface
+lifts with: `ShoreFadeMath.DisplacedHeight(h, stillDepth, band, exaggeration)`, where `h` is the
+one wave sample `BoatWaveMotion` already rocks on (the ONE-SEA rule), `stillDepth` is the game's
+one depth rule (`BoatCrossing.DepthAt` — open water reads +∞ ⇒ fade 1), and
+exaggeration + band are the ACTIVE surface's own per-tick effective values, published through the
+Core seam `DisplacedSea` (`Core/Environment/DisplacedSea.cs`) — never a per-consumer config read,
+so boat and sea cannot disagree even mid-tune (the surface re-reads `GameConfig.DisplacedWater`
+and re-publishes every ~8 Hz tick). Delivery differs by hull kind, agreement doesn't:
+
+- **Mesh hulls** take the ride through the presenter seam
+  (`IBoatHullPresenter.SetDisplacedHeaveMeters` → `MeshHullDriver`), which folds
+  `(ride − restingDraft)` into the renderer's heave-pixels channel — so the screen lift and the
+  calibrated waterline z (`HullDepthBias`'s heave term, above) move together by construction and
+  the waterline stays truthful for free. **The resting draft** sinks the keel-origin rig
+  (rig z = 0 is the KEEL BOTTOM) to a design waterline: per-hull data,
+  `HullMeshDef.RestingDraftMeters` — a GAME-SIDE field the baker never writes (it survives
+  re-bakes; the natural long-term home is a waterline symbol in the rig's gameplay sidecar —
+  migrate when the export contract grows one). Lobster boat 0.5 m (the spike's own probe framing:
+  `spike/3d-water` `Spike3dWaterMenu.cs`, "sunk half a metre of draft"); side dragger 1.1 m (the
+  same ≈0.38 visual-to-gameplay-draught ratio applied to her 2.9 m `DraughtMeters`). The draft
+  applies only while the displaced sea is active.
+- **Sprite hulls** (the dory's rock-grid path and the legacy transform path alike) ride the same
+  displaced height as a plain screen-vertical lift of the visual — no waterline clipping to keep
+  honest, just the same sea under the whole fleet. The legacy path's bob cap deliberately does
+  NOT apply to the ride (never re-scale one consumer alone).
+- **The A/B contract extends to boats:** displaced OFF clears the seam — no ride, no draft, and
+  every hull's pose is byte-identical to the pre-phase-3 flat-water render
+  (`SharedHeaveTests` / `SharedHeavePlayTests` pin the whole law).
+
+**Open for the owner — seakeeping FORCES (see==feel vs feel-the-swell):** physics still reads
+the UNFADED sim height (`GameConfig.Seakeeping` untouched by this step). With the displaced sea
+on, what you SEE is exaggerated ×1.5 and shore-faded; what the hull FEELS is the sim-true,
+unfaded swell — so near a beach the boat visibly settles while the sea still pushes it a little.
+The ADR flags this deliberately undecided. Recommendation on file (the step-2 PR): keep forces
+on the sim height — P1's integrity rule is that the sim is the truth and the exaggeration is a
+readability lens; scaling forces by a presentation knob would let a visual tune change handling.
 
 **Proof** (`HullWaterlineAcceptanceTests`, the IsoFacetUrpPassTests pattern — production path via
 `Camera.Render()`, Null-Device-gated for CI; measured RTX 4060 / D3D12 2026-07-23 and pinned): a
