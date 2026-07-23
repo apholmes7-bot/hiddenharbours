@@ -470,3 +470,48 @@ upper-left key.
 these yet, and `PuntMotorGrips.json` is unread. Wiring the punt (hull def, the rock loop, the tiller steer
 column, the grip-seated operator) is *gameplay-systems*' job; this lane provides the locked,
 correctly-pivoted, stable-GUID slices.
+
+---
+
+## Batch — Drift Weed kit (owner drop 2026-07-23)
+
+The seaweed/flotsam **surface-drift decor** kit: four parametric species baked as variant-column ×
+3-ramp-row sheets, plus the gameplay sidecar. Same 32 px = 1 m / no-AA standard (import lock
+auto-applies); ¾ iso from the south with vertical foreshorten **0.72 baked into the shapes**;
+1 px keyline `#1b2a22` (the decor keyline — matches the flowers/grass set). **NO heading** — these
+are flat water-surface clumps, not turntable bakes.
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Sprites/Shore/Drift/Bladderwrack.png` | 192×108 | 4 cols × 3 rows of **48×36** | 12 | living · golden · bleached |
+| `Sprites/Shore/Drift/SugarKelp.png` | 192×108 | 3 × 3 of **64×36** | 9 | ″ |
+| `Sprites/Shore/Drift/Eelgrass.png` | 128×72 | 4 × 3 of **32×24** | 12 | ″ |
+| `Sprites/Shore/Drift/TornMat.png` | 192×144 | 3 × 3 of **64×48** | 9 | ″ |
+
+- **Columns = variants** (each its own seed-locked bake — no mirroring); **rows = ramps**: the SAME
+  structure recoloured (living / golden / bleached; every ramp carries a `wet` sky-glint step).
+  Slice names are `<Stem>_<index>`, row-major from the top-left (`index = rampRow×cols + variant`).
+- **THE PIVOT (the load-bearing bit): per-VARIANT, not per-sheet.** Every slice pivots on its
+  variant's **buoy** — the buoyancy centre from `Sprites/Shore/Drift/DriftWeed.json`, "register the
+  sprite to the water surface here". The buoys genuinely differ column to column, so these sheets are
+  sliced by their own `DriftWeedSheetSlicer` (sidecar-driven Custom pivots; menu *Hidden Harbours ▸
+  Art ▸ Slice Drift Weed Sheets*), not by a `SpriteSheetSlicer` manifest entry. The 3 ramp rows of a
+  column share one pivot (structure is seed-stable down a column) — `DriftWeedSheetSliceTests` holds
+  the grid, the counts, and every buoy pivot to the kit contract restated as literals.
+- **`Sprites/Shore/Drift/DriftWeed.json`** — the gameplay sidecar: per-cell `buoy` (px) + `snags`
+  (2–3 outer tips ≥60° apart, px + metres) + `dragTail` (the trailing end, px + metres); metre frame
+  `mx=(x−buoy.x)/32`, `my=(y−buoy.y)/(32·0.72)`. Owner's four `_confirm` judgments RULED 2026-07-23
+  and recorded in place as `_ruled` (kept text — provenance): dragTail stays as baked · all four
+  species ship golden rows · snag radius defaults **0.1 m** · no stranded set (the `Shore/Seaweed*`
+  rockweed tiers own the wrack line). **Nothing consumes it yet** — committed as data for the future
+  drift feature, exactly as `PuntMotorGrips.json` was.
+- **Source rig:** [`docs/art/rigs/driftWeedRig.js`](../../../docs/art/rigs/README.md) → `DriftWeed`,
+  landed byte-identical (sha256 = the sidecar's `derivedFromRigSha256`; the slice tests verify the
+  tripwire). Parametric generators — any species can be re-baked at new seeds/params forever.
+- **Import note:** the largest sheet is 192×144 — nowhere near the 2048 cap, so the downscale trap
+  cannot fire here; the tests assert native res + pivots anyway (the Cape Islander discipline).
+
+**WIRE-IN (NOT done here — import + slice only):** no prefab, spawner, scene or shader references
+these yet. The runtime drift feature (drift/bob off the shared wave field, snag on buoys/rocks/rope,
+clumping, ramp-row weathering) is the banked emitter-lane build (`seaweed-flotsam` vision, owner ask
+2026-07-08); this lane provides the locked, correctly-pivoted, stable-GUID slices + the sidecar data.

@@ -49,9 +49,10 @@ Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `cap
 · `sideDraggerIsoRig` · `skiffMotorRig` · `sportSkiffIsoRig` · `sternTrawlerIsoRig` ·
 `sternTrawlerMk2IsoRig` · `tankerIsoRig` · `wharfBuildingRig`
 
-**No azimuth term (18 + 4)** — kits, props and creatures that aren't 8-way directional; they need no
+**No azimuth term (18 + 4 + 1)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
-`crustaceanRig` · `shellfishRig` · `catchKit` to this group.
+`crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`
+(flat water-surface clumps — the kit bakes NO heading by design).
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
@@ -166,3 +167,95 @@ pose sub-ranges) for engine-side integration without running the JS rigs. See `g
 
 The kit's demo pages (Fishing Rods.dc.html · Rod Bobber.dc.html · Fish Iso.dc.html ·
 Catch Handling.dc.html) live in the art director's design workspace, **not** in this repo.
+
+---
+
+## The drift weed kit (imported 2026-07-23)
+
+One drop for the seaweed/flotsam surface-drift decor: the parametric rig source, four baked variant
+sheets, and the gameplay sidecar. Follows the fishing-kit pattern (parametric JS rig → bake → ramps +
+sidecar) but is **NOT a turntable rig**: these are flat water-surface clumps seen in the ¾ iso view
+(camera from the south, elev 40°), with **NO heading**. 32 px = 1 m, vertical foreshorten **0.72**
+baked into the shapes. KTC pixel conventions: no AA, binary alpha, upper-left key light, banded colour
+with ordered-dither band edges, 1 px keyline `#1b2a22` (the decor keyline — matches the flowers/grass
+set). Silhouette first — reads at gameplay zoom.
+
+### driftWeedRig.js → `DriftWeed`
+The single rig source (plain browser script, one global, no dependencies). Landed **byte-identical**
+to the drop — sha256 `bcada722…b0110c`, the exact hash the sidecar's `derivedFromRigSha256` tripwire
+pins (`DriftWeedSheetSliceTests` verifies it, CRLF-normalized, on every run).
+
+- `render(species, opts, rampKey)` → `{ w, h, rgba, anchors, params }` — `opts` is
+  `{variant: 0..n-1}` for a shipped seed-locked cell, or raw `{seed, sizeM, fronds, sprawl, bladders}`
+  for a live custom build.
+- `SPECIES` — cell sizes, per-species param reads, the shipped variant seeds. `RAMPS` — per-species
+  ramp sets. `PPU` 32 · `Q` 0.72 · `KEYLINE` `'#1b2a22'`.
+
+### The species (each a parametric GENERATOR, not fixed drawings)
+- **Bladderwrack** (*Fucus vesiculosus*) — knobbly forking fronds, paired air bladders on the outer
+  half. The signature one. **48×36** cells, **4** variants (seeds 4101–4104).
+- **Sugar Kelp** (*Saccharina latissima*) — one long torn ribbon: puckered blade, ruffled asymmetric
+  edges, dark stipe stub, split torn tail. **64×36**, **3** variants (4201–4203).
+- **Eelgrass** (*Zostera marina*) — fine tuft of thin blades combed downstream. **32×24**, **4**
+  variants (4301–4304; `bladders` ignored).
+- **Torn Mat** — mixed ragged raft: wrack bodies, a kelp scrap, loose strands over the edge, holed
+  through. **64×48**, **3** variants (4401–4403).
+
+Params are one uniform space, interpreted per species: `sizeM` clump span 0.4–2 m · `fronds`
+blades/pieces/tail-strips · `sprawl` raggedness 0–1 · `bladders` bladder/pucker/fleck density 0–1.
+Each shipped variant is its own seed-locked baked cell — **no mirroring assumptions**.
+
+### The baked sheets — `Assets/_Project/Art/Sprites/Shore/Drift/*.png`
+One sheet per species: variant columns × **3 ramp rows** (living / golden / bleached, top to bottom).
+Structure is seed-stable — every row is the SAME build recoloured. Sliced by
+`DriftWeedSheetSlicer` (menu: *Hidden Harbours ▸ Art ▸ Slice Drift Weed Sheets*) with each column's
+**buoy as a per-variant Custom pivot** — the sidecar's "register the sprite to the water surface
+here" — which is why these sheets are not `SpriteSheetSlicer` manifest entries (that table is one
+pivot per sheet).
+
+### Colour — ramps only (owner palette guard-rail)
+- **living** — per-species olive/brown-green/grass-green derived from KTC master hexes (rockweed
+  FLOAT ramp, dune `#7f8a54`, iris stem `#3f7a52`, ochre `#7d6a3a`/`#968049` — nothing invented;
+  provenance per ramp in the sidecar).
+- **golden** — sun-golden kelp set, shared; wet step = fleet gold `#e0b13a` verbatim.
+- **bleached** — storm-bleached pale set, shared; wet step = bone `#e9e6df` verbatim.
+
+Every ramp carries a **wet-surface glint step** (`ramp.wet`) — sky-glint specular on the upper-left rim.
+
+### The gameplay sidecar — `Assets/_Project/Art/Sprites/Shore/Drift/DriftWeed.json`
+Per shipped cell:
+- **buoy** — buoyancy centre (area centroid). THE PIVOT. px, cell-local (origin top-left, +y down).
+- **snags** — 2–3 outer-frond tips ≥60° apart (catching on buoys/rocks/rope). px + metres from buoy.
+- **dragTail** — the end that trails when drifting (kelp: the torn blade tip; else the farthest tip
+  from the buoy). px + metres.
+
+Metre frame: `mx=(x−buoy.x)/32`, `my=(y−buoy.y)/(32·0.72)` (+y toward camera/south).
+`derivedFromRigSha256` is the drift tripwire — re-bake if the rig source changes. Anchor provenance
+recorded per variant.
+
+### Owner rulings (2026-07-23) — the kit's four `_confirm` judgments, RULED
+Recorded in place in the sidecar as `_ruled` (the PR #247 append-only style — original judgment text
+kept):
+- **TornMat.dragTail** — KEEP THE BAKED TIP: the longest-scrap tip stands; no runtime down-drift picking.
+- **golden_rows** — ALL FOUR species ship their golden rows (runtime may weight kelp toward golden).
+- **snag_radius** — **0.1 m** is the engine default catch radius (tunable data in the runtime feature).
+- **stranded_set** — exclusion CONFIRMED: the existing `Shore/Seaweed*` rockweed tiers own the wrack
+  line; no stranded recolour set.
+
+### What is NOT in this kit (by design)
+No animation frames (drift, bob, clumping, sway are runtime, driven by the shared wave field — the
+wake work landed the reusable pieces: pooled deposit-anywhere emitters + the ride-the-displaced-sea
+read), no heading bakes, no mirrored cells.
+
+### The wiring cheat-sheet (for the future runtime drift feature — NOT built in the import PR)
+1. **SPAWN** — pick species/variant cell; draw registered at the buoy on the water surface.
+2. **DRIFT** — translate the buoy along the current; yaw slowly so dragTail trails down-drift; bob
+   from the shared wave field read at the buoy.
+3. **SNAG** — test snag points (ruled 0.1 m radius) against buoys/rocks/rope; a caught snag becomes
+   the pivot, the clump weathervanes about it.
+4. **CLUMP** — rafts: near buoys attract; snag-to-snag contact links clumps loosely.
+5. **WEATHER** — swap ramp ROW, not structure: living day-to-day, golden sun-struck kelp, bleached
+   after storms.
+
+The kit's demo page (Seaweed Drift Kit.dc.html) lives in the art director's design workspace, **not**
+in this repo.
