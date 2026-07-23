@@ -123,6 +123,44 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// SEE==FEEL (ADR 0023 phase 3 — owner ruling 2026-07-23, verbatim "Yes seas push should
+        /// match"): the factor that makes the seakeeping FORCE read the sea the player SEES while
+        /// the displaced surface is active — the surface's own published exaggeration × its shore
+        /// fade at the depth under the hull (<see cref="ShoreFadeMath.Fade01"/>, the very factor
+        /// the surface's vertex stage and the visual ride (<c>BoatWaveMotion</c>) multiply by).
+        ///
+        /// <para><b>Why scaling the resolved force IS reading the displaced height.</b>
+        /// <see cref="Resolve"/> is LINEAR in the wave sample's amplitude: force and torque are
+        /// both proportional to the sampled <see cref="WaveSample.Slope"/>, and the field's slope
+        /// scales 1:1 with its height (∇(s·h) = s·∇h for the pointwise displaced factor s =
+        /// exaggeration × fade). Multiplying the resolved force by this factor is therefore exactly
+        /// resolving against the displaced field — the same wave sample × exaggeration × Fade01 —
+        /// with no second field sample. (The fade's own spatial gradient is deliberately ignored,
+        /// exactly as every visual consumer ignores it: the seam treats the fade as a pointwise
+        /// factor, never a wave of its own.) Pinned by <c>SeeEqualsFeelForcesTests</c>.</para>
+        ///
+        /// <para><b>Contracts.</b> Displaced OFF (<paramref name="displacedActive"/> false) returns
+        /// exactly 1 — the raw-sim force path is byte-identical to before (the A/B contract extends
+        /// to physics). Open water (depth +∞, no seabed map) reads the full exaggeration; at/beyond
+        /// the waterline (depth ≤ 0) and on a NaN depth it reads 0 (the fail-safe convention of
+        /// <see cref="Exposure01"/>); a negative published exaggeration clamps to 0. Pure, static,
+        /// allocation-free — the state is the ACTIVE surface's published truth (the Core
+        /// <c>DisplacedSea</c> seam), never a per-consumer config read (the overlay-pose lesson).</para>
+        /// </summary>
+        /// <param name="displacedActive"><c>DisplacedSea.TryGet</c>'s result — false is the OFF contract.</param>
+        /// <param name="waterDepthMeters">Local still-water depth under the hull (the same
+        /// <c>BoatCrossing.DepthAt</c> read the exposure uses).</param>
+        /// <param name="displaced">The active surface's published state (exaggeration + band).</param>
+        public static float DisplacedForceScale(bool displacedActive, float waterDepthMeters,
+                                                in DisplacedSeaState displaced)
+        {
+            if (!displacedActive) return 1f;
+            if (float.IsNaN(waterDepthMeters)) return 0f;   // fail safe to no-force, like Exposure01
+            return Mathf.Max(0f, displaced.Exaggeration)
+                 * ShoreFadeMath.Fade01(waterDepthMeters, displaced.ShoreFadeBandMeters);
+        }
+
+        /// <summary>
         /// The per-hull response resolved from a hull's seakeeping data. Response falls with the hull's
         /// seakeeping mass factor (heavier = shrugs) and rises with its liveliness; damping is taken
         /// straight from the hull. Pure so a test can build a "dory" and a "trader" from plain numbers.
