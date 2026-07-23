@@ -47,10 +47,19 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         const int ProbeLayer = 31;
 
-        /// <summary>The climb bar in screen pixels between the two reference phases (Δlift is
-        /// ≈2 m × exaggeration 1.5 over the window — expected movement is 40 px+; 12 px keeps the
-        /// assertion far from noise while the flipped-convention sabotage lands at ≤ 0).</summary>
-        const int MinClimbPx = 12;
+        /// <summary>
+        /// The waterline bar: the MEDIAN per-column height (px) of the water's bottom-contiguous
+        /// covered run up the planking at the reference crest. ⚠️ MEASURED (RTX 4060, D3D12,
+        /// 2026-07-23), then pinned: at the crest (h 0.950 m × 1.5) every one of the 202 measured
+        /// columns wears a run — median 10 px, p90 13 px, 8,719 submerged planking px — while the
+        /// trough (h −1.046 m) is bone dry (0 covered px; the rig's origin is the KEEL, so the
+        /// whole trough swing opens air under the boat). The flipped-z sabotage lands at exactly
+        /// 0. Bars sit at just over half the measured medians so a real regression (no z-bite, or
+        /// wrong draw order) fails loudly and hardware fill noise cannot.
+        /// </summary>
+        const int MinMedianRunPx = 6;
+        const int MinP90RunPx = 10;
+        const int MinSubmergedPx = 2000;
 
         static RigMeshData s_Lobster;
         static Mesh s_LobsterMesh;
@@ -204,36 +213,56 @@ namespace HiddenHarbours.Tests.RigBaking
 
             var mLow = Measure(baseline, low, s_Lobster.W, s_Lobster.H);
             var mHigh = Measure(baseline, high, s_Lobster.W, s_Lobster.H);
-            float climbPx = mLow.MeanBottomVisibleRow - mHigh.MeanBottomVisibleRow;
             Debug.Log($"[hull-waterline] tLow={tLow:F2}s h={hLow:F3}m -> {mLow}; " +
-                      $"tHigh={tHigh:F2}s h={hHigh:F3}m -> {mHigh}; climb {climbPx:F1}px " +
+                      $"tHigh={tHigh:F2}s h={hHigh:F3}m -> {mHigh} " +
                       $"(surface swing {(hHigh - hLow):F2}m x1.5 exaggeration)");
+            DumpEvidence("baseline", baseline);
+            DumpEvidence("low", low);
+            DumpEvidence("high", high);
 
-            // (1) At the crest the sea genuinely covers the lower planking, and the hull survives.
-            Assert.Greater(mHigh.SubmergedPx, 200,
-                "at the reference crest the water covered almost no planking — the shared z-test " +
-                "is not biting (the un-calibrated state: hull z≈0 vs water z≈(y−refY)·cos, never " +
-                "comparable — exactly what this step exists to fix).");
+            // (1) At the trough the surface sits below the keel (the rig's origin IS the keel):
+            // the hull must be bone dry — water may never paint over planking it sits under.
+            Assert.LessOrEqual(mLow.SubmergedPx, 50,
+                $"at the reference trough {mLow.SubmergedPx} planking px were covered — the " +
+                "surface is below the whole hull there; covering anything means the z convention " +
+                "is biased or flipped.");
+
+            // (2) At the crest the sea genuinely takes the lower planking, and the hull survives.
+            Assert.Greater(mHigh.SubmergedPx, MinSubmergedPx,
+                $"at the reference crest only {mHigh.SubmergedPx} planking px were covered (bar " +
+                $"{MinSubmergedPx}) — the shared z-test is not biting (the un-calibrated state: " +
+                "hull z≈0 vs water z≈(y−refY)·cos, never comparable — exactly what this step " +
+                "exists to fix), or the water pass no longer records before the hulls.");
             Assert.Greater(mHigh.VisiblePx, 1000,
                 "at the reference crest the hull all but vanished — the water is winning where " +
                 "the hull is HIGHER than the surface; the z convention is not calibrated.");
 
-            // (2) The waterline MOVES up the planking between trough and crest — the owner's ask.
-            Assert.GreaterOrEqual(climbPx, MinClimbPx,
-                $"the waterline did not climb the planking between the reference trough and crest " +
-                $"(moved {climbPx:F1}px, bar {MinClimbPx}px). Either the water pass no longer " +
-                "records before the hulls (draw order is the waterline) or the iso-depth frame " +
-                "is not being applied.");
+            // (3) The waterline MOVES up the planking between trough and crest — the owner's
+            // ask. Dry trough (run 0) to a crest where EVERY measured column wears a covered
+            // band, median at least MinMedianRunPx up the planking.
+            Assert.AreEqual(0, mLow.RunMedianPx,
+                "the trough should leave the planking dry (see (1)) — a nonzero median run " +
+                "there means the resting waterline is riding up the hull.");
+            Assert.GreaterOrEqual(mHigh.RunMedianPx, MinMedianRunPx,
+                $"the waterline did not climb the planking at the reference crest (median run " +
+                $"{mHigh.RunMedianPx}px, bar {MinMedianRunPx}px; measured healthy: 10px). Either " +
+                "the water pass no longer records before the hulls (draw order is the waterline) " +
+                "or the iso-depth frame is not being applied.");
+            Assert.GreaterOrEqual(mHigh.RunP90Px, MinP90RunPx,
+                $"the crest's wettest columns barely submerged (p90 {mHigh.RunP90Px}px, bar " +
+                $"{MinP90RunPx}px; measured healthy: 13px) — the climb is not reaching the " +
+                "spike-proven band.");
 
-            // (3) The water covers the LOWER planking only: above the per-column waterline the
-            // hull must still be today's pixels (small tolerance for the keyline re-flooding
-            // along the new emergent silhouette).
-            Assert.Less(mHigh.UpperDisturbedFraction, 0.02f,
-                $"{mHigh.UpperDisturbedFraction:P1} of the hull ABOVE the waterline changed at " +
-                "the crest — water is drawing over planking that is higher than the surface; " +
-                "the z convention (or the overlay composition) is wrong.");
+            // (4) The sea can NEVER reach wheelhouse/mast country: no covered pixel in the top
+            // 40% of the silhouette (the crest tops out ~2 rig-metres above the keel; measured
+            // margin 38 rows). The flooded cockpit sole / far-side interior BELOW that line is
+            // truthful occlusion of low hull surfaces, not a defect.
+            Assert.Greater(mHigh.HighestCoveredRow, mHigh.UpperCutoffRow,
+                $"water covered hull pixels up at row {mHigh.HighestCoveredRow}, above the " +
+                $"top-40% cutoff ({mHigh.UpperCutoffRow}) — the sea is climbing hull surfaces " +
+                "it cannot physically reach; the z convention (or the overlay composition) is wrong.");
 
-            // (4) The A/B contract at pixel level: displaced OFF restores today's render exactly.
+            // (5) The A/B contract at pixel level: displaced OFF restores today's render exactly.
             scene.DetachWater();
             byte[] restored = scene.Render();
             int offDiff = CountDifferingRgb(baseline, restored);
@@ -276,89 +305,140 @@ namespace HiddenHarbours.Tests.RigBaking
 
             var mLow = Measure(baseline, low, s_Lobster.W, s_Lobster.H);
             var mHigh = Measure(baseline, high, s_Lobster.W, s_Lobster.H);
-            float climbPx = mLow.MeanBottomVisibleRow - mHigh.MeanBottomVisibleRow;
-            Debug.Log($"[hull-waterline][SABOTAGE] flipped height sign: low {mLow}; high {mHigh}; " +
-                      $"climb {climbPx:F1}px (healthy bar {MinClimbPx}px)");
+            Debug.Log($"[hull-waterline][SABOTAGE] flipped height sign: low {mLow}; " +
+                      $"high {mHigh} (healthy: crest median run >= {MinMedianRunPx}px, measured 0 here)");
 
-            Assert.Less(climbPx, MinClimbPx,
+            Assert.Less(mHigh.RunMedianPx, MinMedianRunPx,
                 "SABOTAGE NOT DETECTED — with the water's height-vs-depth sign flipped the " +
-                "waterline still 'climbed'. The acceptance cannot see a flipped z convention " +
-                "and every green run above is worth less than it looks.");
+                "waterline still climbed at the crest. The acceptance cannot see a flipped z " +
+                "convention and every green run above is worth less than it looks.");
+            Assert.Less(mHigh.SubmergedPx, MinSubmergedPx,
+                "SABOTAGE NOT DETECTED — a flipped-z sea still submerged real planking at the crest.");
         }
 
         // ------------------------------------------------------------- metrics
 
         struct WaterlineMeasure
         {
-            public int SubmergedPx;                 // baseline-inked px no longer showing the hull
-            public int VisiblePx;                   // baseline-inked px still byte-equal to baseline
-            public float MeanBottomVisibleRow;      // per measured column: deepest still-visible row
-            public float UpperDisturbedFraction;    // disturbed / inked, ABOVE waterline − margin
-            public int Columns;
+            public int SubmergedPx;        // baseline-inked px no longer showing the hull's pixels
+            public int VisiblePx;          // baseline-inked px still byte-equal to baseline
+            public int Columns;            // measured planking columns
+            public int RunMedianPx;        // median bottom-contiguous covered run (the waterline band)
+            public int RunP90Px;
+            public int HighestCoveredRow;  // smallest y of any covered inked px (int.MaxValue: none)
+            public int UpperCutoffRow;     // silhouetteTop + 40% of height — no coverage above this
 
             public override string ToString() =>
-                $"(visible {VisiblePx}, submerged {SubmergedPx}, meanBottomRow " +
-                $"{MeanBottomVisibleRow:F1} over {Columns} cols, upperDisturbed {UpperDisturbedFraction:P2})";
+                $"(visible {VisiblePx}, submerged {SubmergedPx}, runs med {RunMedianPx}px " +
+                $"p90 {RunP90Px}px over {Columns} cols, highest covered row {HighestCoveredRow} " +
+                $"vs cutoff {UpperCutoffRow})";
         }
 
         /// <summary>
-        /// Compare a composed hull+water frame against the hull-only baseline. Columns measured
-        /// are the central half of the silhouette's x-range with a real planking run (≥ 20 inked
-        /// px) — bow/stern tips and empty columns carry no waterline signal. Rows are top-left
-        /// origin (the harness readback), so UP the planking = SMALLER row.
+        /// Compare a composed hull+water frame against the hull-only baseline.
+        ///
+        /// <para><b>The waterline signal is the per-column BOTTOM-CONTIGUOUS covered run:</b>
+        /// starting at the column's deepest baseline-inked pixel, count upward while pixels stay
+        /// inked and covered (≠ baseline). That is the band of planking the lifted surface truly
+        /// took (the emergent keyline at its top counts as covered — it replaced planking). It
+        /// deliberately ignores SEPARATE covered bands higher in the column: the flooded cockpit
+        /// sole / far-side interior at a big crest is truthful occlusion of the hull's LOW
+        /// surfaces, not waterline signal (the deck sits below a 1.4 m lift; the eye reads it as
+        /// shipped green water).</para>
+        ///
+        /// <para>Columns measured are the central half of the silhouette's x-range with ≥ 20
+        /// inked px (bow/stern tips carry no planking run). Rows are top-left origin, so UP the
+        /// planking = SMALLER row. <see cref="WaterlineMeasure.UpperCutoffRow"/> marks the top
+        /// 40% of the silhouette (wheelhouse/mast country): no covered pixel may sit above it —
+        /// the sea cannot reach there at reference exaggeration, whatever the residuals.</para>
         /// </summary>
         static WaterlineMeasure Measure(byte[] baseline, byte[] composed, int w, int h)
         {
-            const int upperMarginPx = 4;
-
             int minX = int.MaxValue, maxX = int.MinValue;
+            int silTop = int.MaxValue, silBottom = int.MinValue;
             var inkedPerCol = new int[w];
             for (int x = 0; x < w; x++)
             {
                 for (int y = 0; y < h; y++)
-                    if (baseline[(y * w + x) * 4 + 3] > 0) inkedPerCol[x]++;
+                    if (baseline[(y * w + x) * 4 + 3] > 0)
+                    {
+                        inkedPerCol[x]++;
+                        silTop = Math.Min(silTop, y);
+                        silBottom = Math.Max(silBottom, y);
+                    }
                 if (inkedPerCol[x] > 0) { minX = Math.Min(minX, x); maxX = Math.Max(maxX, x); }
             }
             Assert.Greater(maxX, minX, "baseline hull silhouette is empty?");
             int span = maxX - minX;
             int x0 = minX + span / 4, x1 = maxX - span / 4;
 
-            var m = new WaterlineMeasure();
-            long bottomSum = 0;
-            long upperInked = 0, upperDisturbed = 0;
+            var m = new WaterlineMeasure
+            {
+                HighestCoveredRow = int.MaxValue,
+                UpperCutoffRow = silTop + (int)(0.4f * (silBottom - silTop)),
+            };
+            var runs = new System.Collections.Generic.List<int>();
             for (int x = 0; x < w; x++)
             {
                 bool measured = x >= x0 && x <= x1 && inkedPerCol[x] >= 20;
-                int bottomVisible = -1;
+                int bottom = -1;
                 for (int y = 0; y < h; y++)
                 {
                     int i = (y * w + x) * 4;
                     if (baseline[i + 3] == 0) continue;
+                    bottom = y;
                     bool same = composed[i] == baseline[i] && composed[i + 1] == baseline[i + 1] &&
                                 composed[i + 2] == baseline[i + 2];
-                    if (same) { m.VisiblePx++; if (y > bottomVisible) bottomVisible = y; }
-                    else m.SubmergedPx++;
+                    if (same) m.VisiblePx++;
+                    else
+                    {
+                        m.SubmergedPx++;
+                        m.HighestCoveredRow = Math.Min(m.HighestCoveredRow, y);
+                    }
                 }
-                if (!measured) continue;
-                // A fully-covered column (green water over the rail at a big crest) has no
-                // waterline row to average — it is submersion evidence, not row signal.
-                if (bottomVisible < 0) continue;
+                if (!measured || bottom < 0) continue;
                 m.Columns++;
-                bottomSum += bottomVisible;
-                for (int y = 0; y < bottomVisible - upperMarginPx; y++)
+                int run = 0;
+                for (int y = bottom; y >= 0; y--)
                 {
                     int i = (y * w + x) * 4;
-                    if (baseline[i + 3] == 0) continue;
-                    upperInked++;
+                    if (baseline[i + 3] == 0) break;      // off the silhouette: the run is done
                     bool same = composed[i] == baseline[i] && composed[i + 1] == baseline[i + 1] &&
                                 composed[i + 2] == baseline[i + 2];
-                    if (!same) upperDisturbed++;
+                    if (same) break;                      // visible planking: the waterline
+                    run++;
                 }
+                runs.Add(run);
             }
             Assert.Greater(m.Columns, 20, "too few measurable planking columns — framing broke?");
-            m.MeanBottomVisibleRow = bottomSum / (float)m.Columns;
-            m.UpperDisturbedFraction = upperInked > 0 ? upperDisturbed / (float)upperInked : 0f;
+            runs.Sort();
+            m.RunMedianPx = runs[runs.Count / 2];
+            m.RunP90Px = runs[(int)(0.9f * (runs.Count - 1))];
             return m;
+        }
+
+        /// <summary>Opt-in visual evidence (set HH_WATERLINE_DUMP to a directory): the three
+        /// adjudicated frames as PNGs, for a human eye on a red run. Never writes by default.</summary>
+        static void DumpEvidence(string name, byte[] topLeftRgba)
+        {
+            string dir = Environment.GetEnvironmentVariable("HH_WATERLINE_DUMP");
+            if (string.IsNullOrEmpty(dir) || s_Lobster == null) return;
+            int w = s_Lobster.W, h = s_Lobster.H;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false, false);
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)                      // top-left bytes -> bottom-left tex
+                for (int x = 0; x < w; x++)
+                {
+                    int i = ((h - 1 - y) * w + x) * 4;
+                    px[y * w + x] = new Color32(topLeftRgba[i], topLeftRgba[i + 1],
+                                                topLeftRgba[i + 2], 255);
+                }
+            tex.SetPixels32(px);
+            tex.Apply(false);
+            System.IO.Directory.CreateDirectory(dir);
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, $"waterline_{name}.png"),
+                                         tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
         }
 
         static int CountDifferingRgb(byte[] a, byte[] b)

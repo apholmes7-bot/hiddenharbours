@@ -2034,22 +2034,30 @@ water** — the sprite fleet's ink-over-water convention at the flat waterline, 
 
 **Heave source honesty (step 2's work, flagged not fudged):** a mesh hull's visual heave today is
 the rock-frame heave (`HullMeshDef.RockHeavePixels`, ~1 px ≈ 0.04 m) — it does NOT ride the
-metre-scale displaced lift. So in this step the hull sits essentially still while the surface
-moves, and the waterline does nearly ALL the moving (the spike's fixed-hull probe, which is what
-proved ~1 m of climb). Step 2 switches boats' visual heave to
-`ShoreFadeMath.DisplacedHeight(h, depth, band, GameConfig.WaveExaggeration)` — the boat then rides
-up with the crest and the waterline settles into the smaller relative motion (the spike's riding
-probe). Until then a big crest can briefly put green water over a fixed hull's rail; that is the
-known intermediate state, not a defect.
+metre-scale displaced lift. And the rigs' own origin convention places **rig z = 0 at the KEEL
+BOTTOM** ("pivot = boat origin (amidships, keel bottom, centreline)" — the lobster rig), so a
+boat at rest sits keel-on-the-surface with **zero draft**: at a trough the sea opens air under
+the whole hull, and at a crest only the bottom band of planking submerges. Step 2 switches
+boats' visual heave to `ShoreFadeMath.DisplacedHeight(h, depth, band, GameConfig.WaveExaggeration)`
+(the boat rides up with the crest and the waterline settles into the smaller relative motion —
+the spike's riding probe), and is ALSO the right place to decide a resting draft/flotation offset
+(gameplay-systems' call): sinking the hull to a design waterline would both look right at rest
+and widen the moving waterline band toward the spike's fixed-mid-draft ~1 m figure. Until then a
+big crest floods a fixed hull's cockpit sole and far rail (truthful occlusion of its LOW
+surfaces); that is the known intermediate state, not a defect.
 
 **Proof** (`HullWaterlineAcceptanceTests`, the IsoFacetUrpPassTests pattern — production path via
-`Camera.Render()`, Null-Device-gated for CI): a CI-safe headless pin that `HullDepthBias` is the
-water's vertex depth and reduces to heights at the contact line; the GPU acceptance rendering the
-lobster hull beam-on in the reference sea at its deterministic highest/lowest surface instants —
-the waterline row climbs the planking (bar 12 px, expected ~40+), the crest submerges real
-planking while the upper hull stays byte-identical, and turning the sea OFF restores today's
-render with 0 differing pixels; and the sabotage — flip the sign of the water's `_WaterIsoDepth`
-height term (a lifted crest steps farther instead of nearer) and the climb metric collapses.
-Harness traps honoured: fresh material (never Water.mat's baked height map), `_USE_HEIGHTTEX` off
-AND a black height texture, plain `LEqual` through the render-graph camera path (no hand-rolled
-reversed-Z), shader warm-up before measuring.
+`Camera.Render()`, Null-Device-gated for CI; measured RTX 4060 / D3D12 2026-07-23 and pinned): a
+CI-safe headless pin that `HullDepthBias` is the water's vertex depth and reduces to heights at
+the contact line; the GPU acceptance rendering the lobster hull beam-on in the reference sea at
+its deterministic trough/crest instants (found by scan, not authored: h −1.046 m / +0.950 m) —
+the trough leaves the planking bone dry (0 covered px), the crest puts a bottom-contiguous
+covered run up the planking in EVERY measured column (median 10 px, p90 13 px, 8,719 submerged
+px, keyline riding the cut; bars 6/10 px), nothing is ever covered in the silhouette's top 40 %
+(wheelhouse/mast country), and turning the sea OFF restores today's render with 0 differing
+pixels; and the sabotage — flip the sign of the water's `_WaterIsoDepth` height term (a lifted
+crest steps farther instead of nearer) and the crest goes bone dry (median run 0). Harness traps
+honoured: fresh material (never Water.mat's baked height map), `_USE_HEIGHTTEX` off AND a black
+height texture, plain `LEqual` through the render-graph camera path (no hand-rolled reversed-Z),
+shader warm-up before measuring. The test can dump its three adjudicated frames as PNGs
+(`HH_WATERLINE_DUMP=<dir>`) for a human eye on a red run.

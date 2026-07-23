@@ -254,7 +254,7 @@ namespace HiddenHarbours.Art
                 // the sea where planking used to be. Water pixels the hull is nearer than stay in
                 // the water target and are covered in-scene by the hull overlay's sort. Hulls can
                 // only lose this z-test when they are CALIBRATED into the water's iso-depth
-                // convention — see DisplacedWaterRegistry.IsoDepthFrame; with no displaced
+                // convention — see WaterIsoDepthFrame; with no displaced
                 // surface active there is no water pass, no frame, and the recording below is
                 // byte-identical to the water-off path.
                 if (DrawWater)
