@@ -436,10 +436,10 @@ namespace HiddenHarbours.Fishing
         // weight — CatchResolver.EffectiveWeight). Everything here is deliberately self-contained so the
         // parallel flick-cast wave (WindBack/Cast) rebases past it trivially.
 
+        // The owner's DepthDrop tunables ride the SAME serialized GameConfig field the flick-cast uses
+        // (declared with the cast fields above) — one config, both settings blocks (rebase dedupe).
+
         [Header("Depth drop (Rod Fishing v2 — the weighted-rig branch)")]
-        [Tooltip("The GameConfig carrying the owner's DepthDrop tunables (sink speed per kg, line length, " +
-                 "the sweet window, zone thresholds, catch weighting). Null = the built-in defaults.")]
-        [SerializeField] private GameConfig _config;
         [Tooltip("The rig/lure weight tied on (kg) — HEAVIER FALLS FASTER, so this is the count-the-fall " +
                  "tactical choice (§2.3, owner decision #4). A Handline at/above the config's " +
                  "WeightedHandlineMinKg fishes the depth branch; below it, the cast/bobber branch. " +
