@@ -70,6 +70,129 @@ namespace HiddenHarbours.Audio
             return chord * 0.12f * env;
         });
 
+        // ---- rod-fishing v2 fight set (played by FishingAudio; design §2–3) ------------------
+
+        /// <summary>The wind-back rod creak — slow fibrous working of loaded wood (loop; the
+        /// director deepens its gain as the rod loads).</summary>
+        public static AudioClip RodCreak() => Build("ph_rod_creak", 1.2f, true, (t, n) =>
+        {
+            float work  = 0.55f + 0.45f * Mathf.Sin(t * 2f * Mathf.PI * (2f / 1.2f));  // 2 slow works per loop
+            float fibre = Mathf.Sin(t * 2f * Mathf.PI * 130f + 2.5f * Mathf.Sin(t * 2f * Mathf.PI * 9f));
+            return (fibre * 0.5f + Noise(n) * 0.35f) * 0.2f * work;
+        });
+
+        /// <summary>The flick released — rod whip whoosh with a rising line whistle riding it.</summary>
+        public static AudioClip CastWhoosh() => Build("ph_cast_whoosh", 0.6f, false, (t, n) =>
+        {
+            float env = Mathf.Sin(Mathf.PI * Mathf.Clamp01(t / 0.45f));
+            float whoosh = Noise(n) * env * env * 0.3f;
+            // Linear chirp 900→2200 Hz over the clip: phase = 2π(f0·t + (Δf/2T)·t²).
+            float whistle = Mathf.Sin(2f * Mathf.PI * (900f * t + (1300f / (2f * 0.6f)) * t * t)) * 0.07f * env;
+            return whoosh + whistle;
+        });
+
+        /// <summary>Splash-down as the cast line lands (the sound of the art lane's SplashBurst).</summary>
+        public static AudioClip SplashDown() => Build("ph_splash_down", 0.5f, false, (t, n) =>
+        {
+            float body = Noise(n) * Mathf.Exp(-t * 9f) * 0.32f;
+            float plop = Mathf.Sin(2f * Mathf.PI * (320f * t - 480f * t * t)) * Mathf.Exp(-t * 12f) * 0.25f;
+            return body + plop;
+        });
+
+        /// <summary>The cast-path bite tell — the bobber's little pitch-dropping blub.</summary>
+        public static AudioClip BobberPlop() => Build("ph_bobber_plop", 0.3f, false, (t, n) =>
+        {
+            float blub = Mathf.Sin(2f * Mathf.PI * (620f * t - 1700f * t * t)) * Mathf.Exp(-t * 18f);
+            float drop = Noise(n) * Mathf.Exp(-t * 60f) * 0.15f;
+            return blub * 0.35f + drop;
+        });
+
+        /// <summary>The depth-path bite tell — two damped low knocks that feel IN the rod, not the UI.</summary>
+        public static AudioClip RodKnock() => Build("ph_rod_knock", 0.35f, false, (t, n) =>
+        {
+            float Knock(float u) => u < 0f ? 0f
+                : (Mathf.Sin(2f * Mathf.PI * 82f * u) * 0.8f + Mathf.Sin(2f * Mathf.PI * 250f * u) * 0.3f)
+                  * Mathf.Exp(-u * 30f);
+            return (Knock(t) + Knock(t - 0.13f) * 0.85f) * 0.5f;
+        });
+
+        /// <summary>The sinking reel pay-out — a soft tick train (~12/s at pitch 1; the director
+        /// slows its pitch as the rig nears bottom, §2.3).</summary>
+        public static AudioClip PayoutTick() => Build("ph_payout_tick", 0.5f, true, (t, n) =>
+        {
+            float phase = Mathf.Repeat(t, 1f / 12f);
+            return Noise(n) * Mathf.Exp(-phase * 220f) * 0.35f;
+        });
+
+        /// <summary>The "you felt bottom" note — a soft low thub as the rig settles slack on the floor.</summary>
+        public static AudioClip BottomSettle() => Build("ph_bottom_settle", 0.45f, false, (t, n) =>
+        {
+            float thub = Mathf.Sin(2f * Mathf.PI * 70f * t) * Mathf.Exp(-t * 18f) * 0.5f;
+            float note = Mathf.Sin(2f * Mathf.PI * (330f * t - 110f * t * t)) * Mathf.Exp(-t * 7f) * 0.12f;
+            return thub + note;
+        });
+
+        /// <summary>The line-strain groan (loop) — the continuous "ease off!" voice; the director
+        /// scales gain and tightens pitch with Tension01.</summary>
+        public static AudioClip StrainGroan() => Build("ph_strain_groan", 1.5f, true, (t, n) =>
+        {
+            float vib = 1f + 0.04f * Mathf.Sin(t * 2f * Mathf.PI * 4.5f);
+            float body = Mathf.Sin(t * 2f * Mathf.PI * 62f * vib)
+                       + Mathf.Sin(t * 2f * Mathf.PI * 124f * vib) * 0.4f;
+            float grit  = Noise(n) * 0.18f;
+            float surge = 0.7f + 0.3f * Mathf.Sin(t * 2f * Mathf.PI * (2f / 1.5f)); // 2 surges per loop
+            return (body + grit) * 0.2f * surge;
+        });
+
+        /// <summary>Reel clicks while gaining line (loop) — a brighter ratchet (~14 clicks/s).</summary>
+        public static AudioClip ReelClicks() => Build("ph_reel_clicks", 0.42f, true, (t, n) =>
+        {
+            float phase = Mathf.Repeat(t, 1f / 14f);
+            float ping = Mathf.Sin(phase * 2f * Mathf.PI * 1800f) * 0.5f + Noise(n) * 0.5f;
+            return ping * Mathf.Exp(-phase * 300f) * 0.45f;
+        });
+
+        /// <summary>The mid-fight slack window opening — a soft downward twang: the line just went
+        /// loose (the diegetic "PULL now").</summary>
+        public static AudioClip SlackRelease() => Build("ph_slack_release", 0.35f, false, (t, n) =>
+        {
+            float twang = Mathf.Sin(2f * Mathf.PI * (540f * t - 700f * t * t)) * Mathf.Exp(-t * 10f) * 0.3f;
+            float air = Noise(n) * Mathf.Exp(-t * 24f) * 0.18f;
+            return twang + air;
+        });
+
+        /// <summary>The surface thrash churn (loop) — splashy bursts; the director swells it with
+        /// how hard she's darting and pans it on her offset.</summary>
+        public static AudioClip SurfaceThrash() => Build("ph_surface_thrash", 1f, true, (t, n) =>
+        {
+            float churn = Mathf.Pow(0.5f + 0.5f * Mathf.Sin(t * 2f * Mathf.PI * 3f), 2.2f);
+            float slap  = Mathf.Pow(0.5f + 0.5f * Mathf.Sin(t * 2f * Mathf.PI * 1f + 1.3f), 6f);
+            return Noise(n) * (0.12f + 0.5f * churn + 0.6f * slap) * 0.45f;
+        });
+
+        /// <summary>She threw the hook — a COZY sting (soft string ping + a little sag), never a
+        /// punishment sound (§7: a lost fish is a shrug).</summary>
+        public static AudioClip SnapSting() => Build("ph_snap_sting", 0.55f, false, (t, n) =>
+        {
+            float ping = Mathf.Sin(2f * Mathf.PI * 1180f * t) * Mathf.Exp(-t * 22f) * 0.28f;
+            float sag = Mathf.Sin(2f * Mathf.PI * (400f * t - 125f * t * t)) * Mathf.Exp(-t * 8f) * 0.15f;
+            float poff = Noise(n) * Mathf.Exp(-t * 40f) * 0.15f;
+            return ping + sag + poff;
+        });
+
+        /// <summary>Landed — a warm little two-note flourish and the wet slap on the boards.</summary>
+        public static AudioClip LandedFlourish() => Build("ph_landed_flourish", 0.9f, false, (t, n) =>
+        {
+            float a = Mathf.Sin(2f * Mathf.PI * 392f * t) * Mathf.Exp(-t * 4f);            // G4
+            float ub = t - 0.16f;
+            float b = ub > 0f ? Mathf.Sin(2f * Mathf.PI * 523.25f * ub) * Mathf.Exp(-ub * 4f) : 0f; // C5
+            float us = t - 0.45f;
+            float slap = us > 0f
+                ? Noise(n) * Mathf.Exp(-us * 30f) * 0.24f + Mathf.Sin(2f * Mathf.PI * 95f * us) * Mathf.Exp(-us * 20f) * 0.2f
+                : 0f;
+            return (a + b) * 0.16f + slap;
+        });
+
         // ---- helpers ------------------------------------------------------------------------
 
         private static AudioClip Build(string name, float seconds, bool loop, Func<float, int, float> sample)
