@@ -36,6 +36,10 @@ The rigs do **not** share one facing convention.
 Both carry `th = -dir*Math.PI/4` and the kit's contract declares 8 headings at 45° **CW** (fleet order
 N NE E SE S SW W NW). Per the correction above, the sign term is *not* proof — the baker must verify
 each with `CharacterRigAzimuthProbe` (which refuses on mismatch) before trusting the labels.
+(`fishIsoRig` was measured CW by `FishingRigAzimuthProbe` in the #265 bake; `fishToteRig` and the
+CCW-inferred `bucketRig` are measured at bake time by `StorageRigAzimuthProbe` — the tote by where
+its leaning lid lands at the E/W rows, the bucket by the fish tray's diagonal chirality — and the
+storage bake refuses on a catalog mismatch like every sibling.)
 
 **COUNTER-CLOCKWISE (19)** — cell `i` depicts heading **−45°·i** while labelled `+45°·i`.
 Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `capeIslanderIsoRig`,

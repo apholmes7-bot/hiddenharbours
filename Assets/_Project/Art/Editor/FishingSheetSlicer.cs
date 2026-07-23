@@ -177,20 +177,32 @@ namespace HiddenHarbours.Art.Editor
                                $"({string.Join(", ", Kits.Keys)}) — refusing to guess a grid.");
                 return SliceResult.Failed;
             }
-            KitSpec kit = kitOrNull.Value;
+
+            return SliceSheet(path, kitOrNull.Value) ? SliceResult.Sliced : SliceResult.Failed;
+        }
+
+        /// <summary>
+        /// Slice one sheet with a known kit spec — the shared engine behind this tool and its
+        /// storage-kit sibling (<see cref="CatchStorageSheetSlicer"/>), extracted so the
+        /// validation and idempotency rules exist exactly once. Returns false (after logging)
+        /// on any refusal.
+        /// </summary>
+        public static bool SliceSheet(string path, KitSpec kit)
+        {
+            string stem = Path.GetFileNameWithoutExtension(path);
 
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null)
             {
                 Debug.LogError($"[FishingSheetSlicer] '{path}' has no TextureImporter — skipping.");
-                return SliceResult.Failed;
+                return false;
             }
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             if (tex == null)
             {
                 Debug.LogError($"[FishingSheetSlicer] '{path}' failed to load as Texture2D — skipping.");
-                return SliceResult.Failed;
+                return false;
             }
 
             // Frame count derives from the ART; a width that isn't a whole number of cells is a
@@ -199,14 +211,14 @@ namespace HiddenHarbours.Art.Editor
             {
                 Debug.LogError($"[FishingSheetSlicer] '{path}' is {tex.width} px wide — not a whole " +
                                $"number of {kit.Cell.x} px cells. Not slicing.");
-                return SliceResult.Failed;
+                return false;
             }
             if (tex.height != kit.Rows * kit.Cell.y)
             {
                 Debug.LogError($"[FishingSheetSlicer] '{path}' is {tex.height} px tall but this kit's " +
                                $"sheets are {kit.Rows} row(s) × {kit.Cell.y} px = {kit.Rows * kit.Cell.y}. " +
                                "Not slicing — fix the export (or the kit entry).");
-                return SliceResult.Failed;
+                return false;
             }
 
             int cols = tex.width / kit.Cell.x;
@@ -237,7 +249,7 @@ namespace HiddenHarbours.Art.Editor
             Debug.Log($"[FishingSheetSlicer] Sliced '{stem}' → {rects.Length} sprites " +
                       $"({kit.Rows} row(s) × {cols} frames of {kit.Cell.x}×{kit.Cell.y}, " +
                       $"pivot {kit.NormalizedPivot}).");
-            return SliceResult.Sliced;
+            return true;
         }
 
         /// <summary>
