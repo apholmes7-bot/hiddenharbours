@@ -34,8 +34,19 @@ namespace HiddenHarbours.Art
     /// resolved texture is ready for the first overlay quad. This was probed against URP 17.5's
     /// <c>Renderer2DRendergraph</c> source, not assumed.</para>
     ///
-    /// <para><b>Cost when idle: zero.</b> No live <see cref="IsoFacetHullRenderer"/> ⇒
-    /// <see cref="AddRenderPasses"/> enqueues nothing.</para>
+    /// <para><b>Cost when idle: zero.</b> No live <see cref="IsoFacetHullRenderer"/> and no
+    /// active <see cref="DisplacedWaterSurface"/> ⇒ <see cref="AddRenderPasses"/> enqueues
+    /// nothing.</para>
+    ///
+    /// <para><b>The displaced water surface (ADR 0023 phase 2)</b> joins this recording as a third
+    /// renderer list (LightMode <c>HHWater</c>, filtered to
+    /// <see cref="DisplacedWaterRegistry.RenderingLayer"/>): its OWN colour target
+    /// (<c>_HHWaterScreenTex</c>, ARGBHalf, alpha = the water's translucency) drawn against the
+    /// SAME private depth buffer as the hulls — the shared z-buffer ADR 0023 §(5)/(6) requires for
+    /// the phase-3 waterline-on-the-hull. Deliberately NOT a fifth MRT attachment: the facet
+    /// buffers' alpha is the hull-id contract, and water pixels inside them would starve the
+    /// keyline flood of the empty neighbours it floods into. The keyline resolve is therefore
+    /// byte-identical with or without water.</para>
     ///
     /// <para><b>Deck occupants — the depth buffer is a CONTRACT, not an implementation detail
     /// (owner decision, 2026-07-21).</b> The facet pass's private z-buffer stays attached for a
@@ -73,8 +84,13 @@ namespace HiddenHarbours.Art
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if (IsoFacetHullRegistry.Count == 0)
-                return;   // the zero-cost guarantee — scenes without mesh hulls pay nothing
+            bool hulls = IsoFacetHullRegistry.Count > 0;
+            // ADR 0023 phase 2: the displaced water surface joins this feature's off-screen
+            // recording (its own colour target + the SAME private depth buffer). Active only when
+            // a DisplacedWaterSurface is toggled on — the A/B's OFF side records nothing extra.
+            bool water = DisplacedWaterRegistry.Count > 0;
+            if (!hulls && !water)
+                return;   // the zero-cost guarantee — scenes without mesh hulls or displaced water pay nothing
             // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
             // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
             // legitimately keep a live mesh hull while other fixtures own cameras. Never enqueue
@@ -85,7 +101,7 @@ namespace HiddenHarbours.Art
                 renderingData.cameraData.cameraType == CameraType.Reflection)
                 return;
 
-            if (_resolveMaterial == null)
+            if (hulls && _resolveMaterial == null)
             {
                 var shader = _resolveShader != null
                     ? _resolveShader
@@ -100,6 +116,8 @@ namespace HiddenHarbours.Art
 
             _pass.renderPassSortingLayerID = LowestSortingLayerId();
             _pass.ResolveMaterial = _resolveMaterial;
+            _pass.DrawHulls = hulls;
+            _pass.DrawWater = water;
             renderer.EnqueuePass(_pass);
         }
 
@@ -132,13 +150,26 @@ namespace HiddenHarbours.Art
         {
             private static readonly ShaderTagId s_FacetTag = new ShaderTagId("HHHullFacet");
             private static readonly ShaderTagId s_DeckTag = new ShaderTagId("HHHullDeck");
+            // ADR 0023 phase 2: the displaced water surface's off-screen pass (the water shader's
+            // "HHWaterDisplaced" pass). Drawn against the SAME private depth buffer as the hulls.
+            private static readonly ShaderTagId s_WaterTag = new ShaderTagId("HHWater");
 
             public Material ResolveMaterial;
+            /// <summary>Record the hull MRT + keyline resolve this frame (any live mesh hull)?</summary>
+            public bool DrawHulls;
+            /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
+            public bool DrawWater;
 
             // One persistent resolve target per camera: game view, scene view and any inset view
             // differ in size, and thrashing a single handle between sizes would reallocate every
             // frame. Bounded by the number of live cameras; released in Dispose.
             private readonly Dictionary<EntityId, RTHandle> _resolveTargets = new Dictionary<EntityId, RTHandle>();
+            // The displaced water's persistent per-camera target (same lifetime rules). HDR half
+            // float on purpose: the water fragment's night light content is PRE-COMPENSATED far
+            // above 1 for the day/night multiply overlay and must survive the round trip through
+            // this texture (an 8-bit sRGB target would clamp it and the moon/beam would dim on
+            // displaced water only). Alpha carries the water's own translucency.
+            private readonly Dictionary<EntityId, RTHandle> _waterTargets = new Dictionary<EntityId, RTHandle>();
 
             public HullPass()
             {
@@ -149,6 +180,11 @@ namespace HiddenHarbours.Art
             {
                 public RendererListHandle Renderers;
                 public RendererListHandle DeckRenderers;
+            }
+
+            private class WaterPassData
+            {
+                public RendererListHandle Renderers;
             }
 
             private class ResolvePassData
@@ -164,22 +200,13 @@ namespace HiddenHarbours.Art
                 var renderingData = frameData.Get<UniversalRenderingData>();
                 var desc = cameraData.cameraTargetDescriptor;
                 int w = desc.width, h = desc.height;
-                if (w <= 0 || h <= 0 || ResolveMaterial == null) return;
+                if (w <= 0 || h <= 0) return;
+                bool drawHulls = DrawHulls && ResolveMaterial != null;
+                if (!drawHulls && !DrawWater) return;
 
-                // ---- transient MRT for the facet draw ------------------------------------
-                TextureHandle facet = MakeColorTarget(renderGraph, w, h, "_HHFacetTex");
-                TextureHandle dark = MakeColorTarget(renderGraph, w, h, "_HHDarkTex");
-                TextureHandle key = MakeColorTarget(renderGraph, w, h, "_HHKeyTex");
-                TextureHandle depthVal = renderGraph.CreateTexture(new TextureDesc(w, h)
-                {
-                    name = "_HHDepthTex",
-                    format = GraphicsFormat.R32_SFloat,
-                    clearBuffer = true,
-                    clearColor = Color.clear,
-                    filterMode = FilterMode.Point,
-                    wrapMode = TextureWrapMode.Clamp,
-                    msaaSamples = MSAASamples.None,
-                });
+                // ---- the PRIVATE depth buffer (shared by hulls, deck occupants AND the displaced
+                // water — ADR 0023 §(6): one z-buffer in the iso frame is what makes the phase-3
+                // waterline-on-the-hull free) --------------------------------------------------
                 TextureHandle depthBuf = renderGraph.CreateTexture(new TextureDesc(w, h)
                 {
                     name = "_HHHullZ",
@@ -189,6 +216,26 @@ namespace HiddenHarbours.Art
                     msaaSamples = MSAASamples.None,
                 });
 
+                // ---- transient MRT for the facet draw ------------------------------------
+                TextureHandle facet = default, dark = default, key = default, depthVal = default;
+                if (drawHulls)
+                {
+                    facet = MakeColorTarget(renderGraph, w, h, "_HHFacetTex");
+                    dark = MakeColorTarget(renderGraph, w, h, "_HHDarkTex");
+                    key = MakeColorTarget(renderGraph, w, h, "_HHKeyTex");
+                    depthVal = renderGraph.CreateTexture(new TextureDesc(w, h)
+                    {
+                        name = "_HHDepthTex",
+                        format = GraphicsFormat.R32_SFloat,
+                        clearBuffer = true,
+                        clearColor = Color.clear,
+                        filterMode = FilterMode.Point,
+                        wrapMode = TextureWrapMode.Clamp,
+                        msaaSamples = MSAASamples.None,
+                    });
+                }
+
+                if (drawHulls)
                 using (var builder = renderGraph.AddRasterRenderPass<FacetPassData>(
                            "HH Hull Facets", out FacetPassData passData, profilingSampler))
                 {
@@ -217,6 +264,54 @@ namespace HiddenHarbours.Art
                         ctx.cmd.DrawRendererList(data.DeckRenderers);
                     });
                 }
+
+                // ---- the displaced water surface (ADR 0023 phase 2) ----------------------
+                // Its OWN colour target + the SHARED private depth buffer. Deliberately NOT the
+                // hull MRT: the facet buffers' alpha channel is the hull-id contract (the overlay
+                // and keyline resolve key on it), while the water's alpha is its translucency —
+                // and water pixels inside the facet targets would starve the keyline flood of the
+                // empty neighbours it floods into (hull outlines would vanish over water). The
+                // keyline resolve therefore stays byte-identical; the water simply shares the
+                // z-buffer, which is the part phase 3's waterline-on-the-hull needs.
+                if (DrawWater)
+                {
+                    RTHandle waterTarget = GetWaterTarget(cameraData.camera.GetEntityId(), w, h);
+                    var waterImport = new ImportResourceParams
+                    {
+                        clearOnFirstUse = true,
+                        clearColor = Color.clear,
+                        discardOnLastUse = false,
+                    };
+                    TextureHandle waterTex = renderGraph.ImportTexture(waterTarget, waterImport);
+
+                    using (var builder = renderGraph.AddRasterRenderPass<WaterPassData>(
+                               "HH Displaced Water", out WaterPassData passData, profilingSampler))
+                    {
+                        var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
+                        var drawing = new DrawingSettings(s_WaterTag, sorting) { perObjectData = PerObjectData.None };
+                        // Membership is the EXPLICIT rendering-layer bit, not the shader tag alone:
+                        // the flat Sea sprite (and any preset-derived material) carries the same
+                        // shader, and must never ride into the off-screen pass by accident.
+                        var filtering = new FilteringSettings(RenderQueueRange.all, -1,
+                                                              DisplacedWaterRegistry.RenderingLayer);
+                        passData.Renderers = renderGraph.CreateRendererList(
+                            new RendererListParams(renderingData.cullResults, drawing, filtering));
+
+                        builder.UseRendererList(passData.Renderers);
+                        builder.SetRenderAttachment(waterTex, 0);
+                        builder.SetRenderAttachmentDepth(depthBuf);
+                        // The consumer is the in-scene WaterOverlay quad, whose read the graph
+                        // cannot see — never cull, and publish the result.
+                        builder.AllowPassCulling(false);
+                        builder.SetGlobalTextureAfterPass(waterTex, IsoFacetShaderIds.WaterScreenTex);
+                        builder.SetRenderFunc((WaterPassData data, RasterGraphContext ctx) =>
+                        {
+                            ctx.cmd.DrawRendererList(data.Renderers);
+                        });
+                    }
+                }
+
+                if (!drawHulls) return;   // water-only frames need no keyline resolve
 
                 // ---- persistent resolve target, imported ---------------------------------
                 RTHandle target = GetResolveTarget(cameraData.camera.GetEntityId(), w, h);
@@ -284,11 +379,30 @@ namespace HiddenHarbours.Art
                 return handle;
             }
 
+            private RTHandle GetWaterTarget(EntityId cameraId, int w, int h)
+            {
+                _waterTargets.TryGetValue(cameraId, out RTHandle handle);
+                // ARGBHalf (not ARGB32): the water fragment's pre-compensated night light content
+                // exceeds 1 and must survive to the overlay's in-scene composite (see the field doc).
+                var desc = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGBHalf, 0)
+                {
+                    sRGB = false,
+                    msaaSamples = 1,
+                };
+                RenderingUtils.ReAllocateHandleIfNeeded(ref handle, desc,
+                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHWaterScreenTex");
+                _waterTargets[cameraId] = handle;
+                return handle;
+            }
+
             public void Dispose()
             {
                 foreach (var kv in _resolveTargets)
                     kv.Value?.Release();
                 _resolveTargets.Clear();
+                foreach (var kv in _waterTargets)
+                    kv.Value?.Release();
+                _waterTargets.Clear();
             }
         }
     }
