@@ -86,6 +86,14 @@ namespace HiddenHarbours.Core
                  "tell, never an unavoidable snap).")]
         public RodFightSettings RodFight = RodFightSettings.Default;
 
+        [Header("Flick-cast (Rod Fishing v2 — the gesture cast)")]
+        [Tooltip("The mouse-gesture cast that replaced the old press-to-cast: HOLD to start, drag the " +
+                 "mouse BEHIND the character to wind the rod back, sweep it forward past them, and RELEASE " +
+                 "to let the spool loose. Where you flicked = direction; how fast/far you swept = power " +
+                 "(capped by the rod); WHEN you released = quality. A mistimed or weak cast is just a SHORT " +
+                 "cast — reel in and go again, no penalty. Every feel dial lives here.")]
+        public FlickCastSettings FlickCast = FlickCastSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -165,6 +173,92 @@ namespace HiddenHarbours.Core
             RunTensionPressure = 0.35f,
             CounterSteerRelief = 0.45f,
             SurfaceThreshold01 = 0.5f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable feel of the <b>flick-cast</b> (<see cref="GameConfig.FlickCast"/> — Rod Fishing v2,
+    /// design/rod-fishing-v2-brainstorm.md §2.2), named and serializable so the whole gesture is dialled in
+    /// the Inspector with no code (rule 6). Lives in Core beside the config it rides on, the same
+    /// Core-policy / feature-consumer split as <see cref="RodFightSettings"/>: the pure maths that consumes
+    /// it (<c>FlickCastMath</c>, Fishing-side) is fed this struct plus the cast cap.
+    ///
+    /// <para><b>The per-gear seam.</b> <see cref="MaxCastDistanceMetres"/> is the CAP a full-power,
+    /// well-timed flick reaches. It is a GameConfig field for now; later, better rods/tackle extend it
+    /// (P4), so the maths takes the cap as its own explicit parameter — a GearDef's own cap slots in
+    /// without touching this struct.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FlickCastSettings
+    {
+        [Tooltip("How far BEHIND the character (m, along the flick) the mouse must have wound back for the " +
+                 "gesture to count as a cast at all. Below this the rod was never loaded — nothing flies, " +
+                 "you just stand back up (no penalty). Smaller = more forgiving wind-up.")]
+        [Min(0f)] public float MinWindBackMetres;
+
+        [Tooltip("Shortest forward sweep (m, wind-back point to release) that still casts. Anything shorter " +
+                 "is a twitch, not a flick — nothing flies. Keep small; this only rejects accidents.")]
+        [Min(0f)] public float MinFlickLengthMetres;
+
+        [Tooltip("Sweep LENGTH (m) that counts as full power. A longer drag past this adds nothing — " +
+                 "smaller = big casts come easier from small gestures.")]
+        [Min(0f)] public float FullPowerFlickMetres;
+
+        [Tooltip("Sweep SPEED (m/s at the fastest part of the forward sweep) that counts as full power. " +
+                 "Smaller = a lazy flick still throws far; larger = only a real snap of the wrist maxes out.")]
+        [Min(0f)] public float FullPowerFlickSpeed;
+
+        [Tooltip("How power blends sweep length vs sweep speed (0 = all length, 1 = all speed, 0.5 = even). " +
+                 "Speed-heavy rewards the wrist-snap; length-heavy rewards the big wind-up.")]
+        [Range(0f, 1f)] public float SpeedWeight01;
+
+        [Tooltip("The SWEET RELEASE point: how far PAST the character (m, toward the water) the mouse " +
+                 "should be when you release for a clean cast. Release around here = full quality.")]
+        [Min(0f)] public float SweetReleaseMetres;
+
+        [Tooltip("Half-width (m) of the full-quality band around the sweet release point. Wider = the " +
+                 "timing beat is more forgiving.")]
+        [Min(0f)] public float SweetWindowMetres;
+
+        [Tooltip("How far (m) beyond the sweet band the release quality fades to zero. Releasing way too " +
+                 "early (still behind you) or way too late piles the line at your feet — a short cast, " +
+                 "never a fail.")]
+        [Min(0f)] public float QualityFalloffMetres;
+
+        [Tooltip("Fraction of the powered distance a completely MIS-timed release still flies (0..1). " +
+                 "This is the 'piled-up line' short cast — keep it above 0 so a botched cast still plops " +
+                 "in the water near you (cozy fail).")]
+        [Range(0f, 1f)] public float PiledCastFraction01;
+
+        [Tooltip("Shortest distance (m) any successful cast lands from the character. The floor under a " +
+                 "weak/botched flick, so the bobber is always at least in the water, not on your boots.")]
+        [Min(0f)] public float MinCastMetres;
+
+        [Tooltip("The CAP (m): the farthest a full-power, perfectly-timed flick can reach with the starter " +
+                 "rod. Better rods/tackle extend this later (per-gear data — the P4 upgrade you feel).")]
+        [Min(0f)] public float MaxCastDistanceMetres;
+
+        [Tooltip("How fast the cast line flies out (m/s) once released — pacing for the line-in-flight " +
+                 "beat between the flick and the splash-down. Feel only; distance is decided at release.")]
+        [Min(0.01f)] public float LineFlightMetresPerSec;
+
+        /// <summary>The forgiving-cove reference tuning: a comfortable ~1.5 m wind-back, full power from a
+        /// ~4 m or brisk sweep, a generous ±0.8 m sweet band ~1 m past the character, a mistimed cast still
+        /// flying a quarter of its power, and the starter rod capped at 12 m.</summary>
+        public static FlickCastSettings Default => new FlickCastSettings
+        {
+            MinWindBackMetres = 0.6f,
+            MinFlickLengthMetres = 0.4f,
+            FullPowerFlickMetres = 4f,
+            FullPowerFlickSpeed = 12f,
+            SpeedWeight01 = 0.5f,
+            SweetReleaseMetres = 1.0f,
+            SweetWindowMetres = 0.8f,
+            QualityFalloffMetres = 2.0f,
+            PiledCastFraction01 = 0.25f,
+            MinCastMetres = 1.5f,
+            MaxCastDistanceMetres = 12f,
+            LineFlightMetresPerSec = 18f,
         };
     }
 

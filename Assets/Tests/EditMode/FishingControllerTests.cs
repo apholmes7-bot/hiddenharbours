@@ -82,10 +82,11 @@ namespace HiddenHarbours.Tests.EditMode
             return c;
         }
 
-        // Press to cast, then release and advance until the fight (or tend) begins (auto-hook handles the bite).
+        // Flick-cast a line (the press-to-cast is retired — FlickGestures performs the real gesture),
+        // then advance until the fight (or tend) begins (auto-hook handles the bite).
         private void AdvanceIntoFight(FishingController c, float maxSeconds = 30f)
         {
-            c.Tick(0.05f, true); // rising edge → cast
+            FlickGestures.CastLine(c); // wind back → sweep → release → flight → Waiting
             float t = 0f;
             while (c.Phase != FishingPhase.Fighting && c.Phase != FishingPhase.Tending && t < maxSeconds)
             {
@@ -171,7 +172,8 @@ namespace HiddenHarbours.Tests.EditMode
             var elsewhere = MakeFish("fish.elsewhere", FishCategory.InshoreGroundfish, 1f, 6f, "region.elsewhere");
             var c = MakeController(hold, new[] { elsewhere }, seed: 1);
 
-            c.Tick(0.05f, true); // cast
+            FlickGestures.CastLine(c); // flick a line out
+            Assert.AreEqual(FishingPhase.Waiting, c.Phase, "the flick flew and the line is in the water");
             float t = 0f;
             while (c.Phase == FishingPhase.Waiting && t < 30f) { c.Tick(0.05f, false); t += 0.05f; }
 
@@ -187,9 +189,33 @@ namespace HiddenHarbours.Tests.EditMode
             var cod = MakeFish("fish.cod", FishCategory.InshoreGroundfish, 1f, 6f);
             var c = MakeController(hold, new[] { cod }, seed: 1);
 
-            c.Tick(0.05f, true); // attempt to cast
-
+            // The press edge (with a live pointer) is refused before the wind-back even starts…
+            c.Tick(0.05f, true, new Vector2(0f, -1f), true);
             Assert.AreEqual(FishingPhase.Idle, c.Phase, "a full hold should refuse the cast (stays idle)");
+            c.Tick(0.05f, false); // release, so the next gesture is a genuine fresh press
+
+            // …and a whole determined gesture gets nowhere either.
+            FlickGestures.CastLine(c);
+            Assert.AreEqual(FishingPhase.Idle, c.Phase, "a full gesture against a full hold still never casts");
+        }
+
+        [Test]
+        public void GestureWithoutWindBack_DoesNotCast_AndCostsNothing()
+        {
+            // The flick-cast's cozy refusal: a press + forward-only drag (the rod never wound back)
+            // resolves to NO cast — straight back to Idle, recast at will, no penalty.
+            var hold = new FakeHold();
+            var cod = MakeFish("fish.cod", FishCategory.InshoreGroundfish, 1f, 6f);
+            var c = MakeController(hold, new[] { cod }, seed: 1);
+
+            c.Tick(0.02f, true,  new Vector2(0f, 0.1f), true);   // press basically AT the character
+            Assert.AreEqual(FishingPhase.WindBack, c.Phase, "the press starts the wind-back");
+            c.Tick(0.02f, true,  new Vector2(0f, 0.8f), true);   // …but only ever sweeps forward
+            c.Tick(0.02f, true,  new Vector2(0f, 1.5f), true);
+            c.Tick(0.02f, false, new Vector2(0f, 1.5f), true);   // release: the rod never loaded
+
+            Assert.AreEqual(FishingPhase.Idle, c.Phase, "no wind-back → nothing flies, back to Idle");
+            Assert.AreEqual(0, hold.UsedUnits, "…and it cost nothing");
         }
     }
 }

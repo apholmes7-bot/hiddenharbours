@@ -5,11 +5,21 @@ using HiddenHarbours.Economy;   // CatchLicensePolicy + LicenseDef: the catch-si
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// The cozy one-thumb fishing interaction (VS-13; design/ux-and-mobile-controls.md §3.3).
-    /// A single hold/release action drives the whole thing through a small state machine:
+    /// The fishing interaction (VS-13 core loop + the Rod Fishing v2 FLICK-CAST, design/
+    /// rod-fishing-v2-brainstorm.md §2.2). A hold/drag/release gesture opens the loop, then the small
+    /// state machine runs it home:
     ///
-    ///   Idle ──press──▶ Waiting ──(bite delay)──▶ Bite ──press/auto-hook──▶ Fighting/Tending
-    ///        ◀── result (Landed / Snapped / NoBite, brief) ◀──────────────┘
+    ///   Idle ──press──▶ WindBack ──release──▶ Cast ──(flight)──▶ Waiting ──(bite delay)──▶ Bite
+    ///        ◀── result (Landed / Snapped / NoBite, brief) ◀── Fighting/Tending ◀──press/auto-hook──┘
+    ///
+    /// <para><b>The flick-cast (replaces the old press-to-cast / the two discrete casts).</b> Holding the
+    /// action starts the WIND-BACK: the pointer is sampled while the player drags the mouse behind the
+    /// character (the rod rig follows it — the baked Fisher_castBack sheet animates off the WindBack
+    /// phase). Releasing evaluates the whole gesture through the pure <see cref="FlickCastMath"/>:
+    /// direction = the flick vector, power = sweep speed + length (capped per rod — the cap is
+    /// <see cref="GameConfig.FlickCast"/> data today, per-gear later), quality = release timing. A good
+    /// flick flies the line (Cast phase) out to <see cref="LastCast"/>.LandingPoint; a bad one is just a
+    /// SHORT cast, and a gesture that never wound back simply doesn't fly — reel in, recast, no penalty.</para>
     ///
     /// The WHICH-fish decision is the existing <see cref="CatchResolver"/>, run at bite-time — the
     /// mini-game is only how an already-resolved catch is delivered (we don't re-implement catch logic).
@@ -20,8 +30,8 @@ namespace HiddenHarbours.Fishing
     /// transient rod gauge (and, later, ui-ux's formal HUD — VS-14) can render it WITHOUT referencing
     /// this module. The fight maths live in the testable <see cref="FishFight"/> POCO.
     ///
-    /// Input is fed each frame by DevFishingInput now (Space), the InputService later — this component
-    /// owns no input; it just advances on <see cref="Tick"/>.
+    /// Input is fed each frame by DevFishingInput now (Space/mouse + pointer), the InputService later —
+    /// this component owns no input; it just advances on <see cref="Tick"/>.
     /// </summary>
     public class FishingController : MonoBehaviour
     {
@@ -39,6 +49,10 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private GameObject _holdProvider;
         [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
         [SerializeField] private int _rngSeed = 0;
+        [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
+                 "numbers, rule 6). Left unset, the code falls back to FlickCastSettings.Default, so a " +
+                 "test/greybox rig without a config still casts.")]
+        [SerializeField] private GameConfig _config;
 
         [Header("Interaction tuning (forgiving — no magic numbers)")]
         [Tooltip("Shortest wait for a bite after casting (real seconds).")]
@@ -62,10 +76,28 @@ namespace HiddenHarbours.Fishing
         private float _pendingWeight;
         private FishingState _state = FishingState.Idle;
 
+        // ---- flick-cast gesture state (see the class doc; the maths is FlickCastMath) --------
+        // A preallocated RING of gesture samples — no per-frame GC in the input path (rule 7). The
+        // capacity is a performance bound, not a feel dial (≈4 s of gesture at 60 Hz; a stationary
+        // pointer keeps re-recording its position, so the wind-back apex is never aged out of a live
+        // gesture by holding still).
+        private const int GestureCapacity = 256;
+        private readonly FlickSample[] _gestureRing = new FlickSample[GestureCapacity];
+        private readonly FlickSample[] _gestureScratch = new FlickSample[GestureCapacity]; // linearized for Evaluate
+        private int _gestureHead;      // next write slot in the ring
+        private int _gestureCount;     // how many valid entries the ring holds (≤ capacity)
+        private float _gestureClock;   // seconds since the wind-back began (integrated from injected dt)
+        private FlickCastResult _lastCast;
+
         /// <summary>Read-only snapshot of the live interaction (for tests / direct readers).</summary>
         public FishingState State => _state;
         public FishingPhase Phase => _phase;
         public Gear Gear { get => _gear; set => _gear = value; }
+
+        /// <summary>The resolved result of the most recent successful flick (direction, power, quality,
+        /// landing point). Valid from the Cast phase on; presentation (line/bobber art) reads the landing
+        /// point here — it is deliberately NOT added to the Core FishingState struct.</summary>
+        public FlickCastResult LastCast => _lastCast;
 
         private void Awake()
         {
@@ -77,12 +109,22 @@ namespace HiddenHarbours.Fishing
 
         private void Update() { /* input-driven: DevFishingInput (or the InputService) calls Tick. */ }
 
+        /// <summary>Legacy two-arg tick (no pointer). The flick-cast needs a pointer to aim, so a press
+        /// here can never START a cast — but every in-flight phase (waiting/bite/fight/result) still
+        /// advances normally, which is exactly what the gate-forced <c>held=false</c> path relies on.</summary>
+        public void Tick(float dt, bool actionHeld) => Tick(dt, actionHeld, default, pointerValid: false);
+
         /// <summary>
         /// Advance the interaction by <paramref name="dt"/> seconds. <paramref name="actionHeld"/> is the
-        /// single fishing action's held state (Space down / Action button held). Casting and the hook beat
-        /// fire on the press edge; the fight reads the continuous hold as reel-vs-ease.
+        /// single fishing action's held state (Space/mouse-button down). The flick-cast reads the edges:
+        /// a press with a valid pointer starts the WIND-BACK, the held drag is sampled, and the RELEASE
+        /// evaluates the gesture and (if it flew) casts. The hook beat fires on the press edge; the fight
+        /// reads the continuous hold as reel-vs-ease.
         /// </summary>
-        public void Tick(float dt, bool actionHeld)
+        /// <param name="pointerWorld">The pointer in world space (the mouse under the camera).</param>
+        /// <param name="pointerValid">False when no pointer is available this tick (no mouse/camera) —
+        /// the gesture then can't start, and a wind-back in progress simply records nothing.</param>
+        public void Tick(float dt, bool actionHeld, Vector2 pointerWorld, bool pointerValid)
         {
             bool pressed = actionHeld && !_actionWasHeld;
             _actionWasHeld = actionHeld;
@@ -90,7 +132,20 @@ namespace HiddenHarbours.Fishing
             switch (_phase)
             {
                 case FishingPhase.Idle:
-                    if (pressed) BeginCast();
+                    if (pressed && pointerValid) BeginWindBack(pointerWorld);
+                    break;
+
+                case FishingPhase.WindBack:
+                    if (!actionHeld) ReleaseFlick();
+                    else RecordGestureSample(dt, pointerWorld, pointerValid);
+                    break;
+
+                case FishingPhase.Cast:
+                    // The line is in flight. Touchdown hands off to the waiting/bite flow at the landing
+                    // point. (Depth-drop seam: a weighted rig's Sinking phase slots in HERE, between
+                    // touchdown and Waiting — the sink/column game is its own build, not this one.)
+                    _phaseTimer -= dt;
+                    if (_phaseTimer <= 0f) BeginWaiting();
                     break;
 
                 case FishingPhase.Waiting:
@@ -140,11 +195,28 @@ namespace HiddenHarbours.Fishing
             _phase = FishingPhase.Idle;
             _state = FishingState.Idle;
             _actionWasHeld = false;
+            _gestureHead = 0;
+            _gestureCount = 0;
+            _gestureClock = 0f;
+            _lastCast = FlickCastResult.NoCast;
+        }
+
+        /// <summary>Wire the controller including the shared GameConfig (the owner's FlickCast tuning).
+        /// Null falls back to <see cref="FlickCastSettings.Default"/>.</summary>
+        public void Configure(IHold hold, FishSpeciesDef[] regionFish, string regionId, Gear gear, int seed,
+                              LicenseDef[] licenses, GameConfig config)
+        {
+            Configure(hold, regionFish, regionId, gear, seed, licenses);
+            _config = config;
         }
 
         // ---- phase transitions --------------------------------------------------------------
 
-        private void BeginCast()
+        #region The flick-cast (WindBack → Cast → touchdown; the maths is FlickCastMath)
+
+        /// <summary>The press edge: start winding the rod back and sampling the drag. The hold-full
+        /// refusal lives here (same UX as the retired press-to-cast: a full hold never starts a cast).</summary>
+        private void BeginWindBack(Vector2 pointerWorld)
         {
             EnsureHold();
             if (_hold == null) { Debug.LogWarning("[Fishing] No hold to land into.", this); return; }
@@ -156,9 +228,75 @@ namespace HiddenHarbours.Fishing
 
             _pendingFish = null;
             _pendingWeight = 0f;
+            _gestureHead = 0;
+            _gestureCount = 0;
+            _gestureClock = 0f;
+            RecordGestureSample(0f, pointerWorld, pointerValid: true);
+            Emit(FishingPhase.WindBack, 0f, 0f);   // the rod rig / Fisher_castBack sheet animates off this
+        }
+
+        /// <summary>One tick of the held drag: advance the gesture clock and record the pointer into the
+        /// ring (overwrite-oldest — see the capacity note on the field). An invalid pointer records
+        /// nothing but keeps time, so a hiccup mid-gesture degrades, never corrupts.</summary>
+        private void RecordGestureSample(float dt, Vector2 pointerWorld, bool pointerValid)
+        {
+            _gestureClock += dt;
+            if (!pointerValid) return;
+            _gestureRing[_gestureHead] = new FlickSample(pointerWorld, _gestureClock);
+            _gestureHead = (_gestureHead + 1) % GestureCapacity;
+            if (_gestureCount < GestureCapacity) _gestureCount++;
+        }
+
+        /// <summary>The release edge: linearize the ring and resolve the whole gesture through the pure
+        /// <see cref="FlickCastMath"/>. A gesture that never became a cast (no wind-back / a twitch) is
+        /// the cozy nothing — back to Idle, recast at will. A cast flies the line (Cast phase) for
+        /// distance/flight-speed seconds, then touches down into the waiting flow.</summary>
+        private void ReleaseFlick()
+        {
+            int start = _gestureCount < GestureCapacity ? 0 : _gestureHead; // oldest entry in the ring
+            for (int i = 0; i < _gestureCount; i++)
+                _gestureScratch[i] = _gestureRing[(start + i) % GestureCapacity];
+
+            FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
+            // The per-gear cap seam: today the cap is the GameConfig field; a rod/tackle GearDef's own
+            // cap slots in here later (P4 upgrades extend the reach) without touching the maths.
+            float cap = s.MaxCastDistanceMetres;
+
+            FlickCastResult cast = FlickCastMath.Evaluate(
+                _gestureScratch, _gestureCount, transform.position, in s, cap);
+            _gestureCount = 0;
+
+            if (!cast.IsCast)
+            {
+                Debug.Log("[Fishing] The rod never loaded up — no cast. Wind back and flick again.");
+                ToIdle();
+                return;
+            }
+
+            _lastCast = cast;
+            _phaseTimer = cast.DistanceMetres / Mathf.Max(0.01f, s.LineFlightMetresPerSec);
+            Emit(FishingPhase.Cast, 0f, 0f);
+        }
+
+        /// <summary>Touchdown: the line is in the water at <see cref="LastCast"/>.LandingPoint — start
+        /// the (unchanged) wait-for-a-bite flow.</summary>
+        private void BeginWaiting()
+        {
             _phaseTimer = RandomBiteDelay();
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
+
+        /// <summary>Abort an un-flown wind-back (the input gate closed — a modal opened, a haul took the
+        /// key). Cozy: nothing was in the water yet, so nothing is lost — straight back to Idle. Any
+        /// LATER phase is untouched (an in-flight cast/bite/fight still eases to its own resolution).</summary>
+        public void CancelCastGesture()
+        {
+            if (_phase != FishingPhase.WindBack) return;
+            _gestureCount = 0;
+            ToIdle();
+        }
+
+        #endregion
 
         private void OnBite()
         {

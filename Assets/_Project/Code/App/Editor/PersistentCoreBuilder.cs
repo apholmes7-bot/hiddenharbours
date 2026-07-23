@@ -236,6 +236,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(boat, "_hull", p.StartDory);
             SetRef(hold, "_hull", p.StartDory);
             SetRef(fishing, "_holdProvider", doryGo);
+            SetRef(fishing, "_config", p.Config);   // the owner's flick-cast tuning (GameConfig.FlickCast)
             if (p.RegionFish != null && p.RegionFish.Length > 0)
                 SetRefArray(fishing, "_regionFish", p.RegionFish.Cast<Object>().ToArray());
 

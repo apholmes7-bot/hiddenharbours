@@ -5,10 +5,19 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// PLACEHOLDER one-thumb fishing input for the greybox: Space is the single fishing action.
-    /// Press it to cast; after a bite, HOLD to reel and RELEASE to ease — pulse to land the fish before
-    /// the line snaps. Feeds the held state to <see cref="FishingController.Tick"/> every frame. Replace
-    /// with the real touch/Action button via the InputService later (ui-ux, the Haul(hold/release) intent).
+    /// PLACEHOLDER fishing input for the greybox: Space OR the left mouse button is the single fishing
+    /// action, and the MOUSE aims the flick-cast (Rod Fishing v2 §2.2 — mouse-first, the owner's call).
+    /// HOLD to start the wind-back, drag the mouse behind the character, sweep it forward past them and
+    /// RELEASE to let the spool loose; after a bite, HOLD to reel and RELEASE to ease — pulse to land the
+    /// fish before the line snaps. Feeds the held state + the pointer (world space, under the main
+    /// camera) to <see cref="FishingController.Tick"/> every frame. Replace with the real Action binding
+    /// via the InputService later (ui-ux, the Haul(hold/release) intent).
+    ///
+    /// <para><b>GAMEPAD SEAM (deliberately not built).</b> The pad fallback maps the RIGHT STICK to the
+    /// gesture: stick pulled back = wind-back, snapped forward = the sweep, trigger release = the spool.
+    /// When it lands it slots in HERE — synthesize a pointer offset around the character from the stick
+    /// and feed the same <c>(held, pointerWorld, pointerValid)</c> triple; the controller and the maths
+    /// need no change (they only ever see samples).</para>
     ///
     /// <para><b>Build 5 gating (why this component is no longer dumb).</b> Handline fishing is a DECK
     /// action like the trap loop — you cast from the boat, not while walking the shore or steering at the
@@ -88,19 +97,45 @@ namespace HiddenHarbours.Fishing
                                    && !(Haul != null && Haul.IsHauling)
                                    && !(DeckWork != null && DeckWork.HasPotAboard);
 
+        // The camera that maps the mouse into the world (cached; Camera.main is a tag lookup).
+        private Camera _cam;
+
         private void Update()
         {
-            bool rawHeld = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
-            TickFishing(Time.deltaTime, rawHeld);
+            bool keyHeld = Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
+            bool mouseHeld = Mouse.current != null && Mouse.current.leftButton.isPressed;
+            bool pointerValid = TryPointerWorld(out Vector2 pointerWorld);
+            TickFishing(Time.deltaTime, keyHeld || mouseHeld, pointerWorld, pointerValid);
         }
 
+        /// <summary>The mouse in world space under the main camera, or false when either is missing
+        /// (headless / no camera yet) — the flick then simply can't start, nothing throws.</summary>
+        private bool TryPointerWorld(out Vector2 world)
+        {
+            world = default;
+            var mouse = Mouse.current;
+            if (mouse == null) return false;
+            if (_cam == null || !_cam.isActiveAndEnabled) _cam = Camera.main;
+            if (_cam == null) return false;
+            Vector2 screen = mouse.position.ReadValue();
+            Vector3 w = _cam.ScreenToWorldPoint(new Vector3(screen.x, screen.y, -_cam.transform.position.z));
+            world = new Vector2(w.x, w.y);
+            return true;
+        }
+
+        /// <summary>Pointer-less tick (legacy/test path): the gate + latch behave identically, but with no
+        /// pointer a fresh wind-back can never start — in-flight phases still advance.</summary>
+        public void TickFishing(float dt, bool rawHeld) => TickFishing(dt, rawHeld, default, false);
+
         /// <summary>Advance the handline FSM by <paramref name="dt"/>, applying the deck/haul gate AND the
-        /// hold-haul release latch to the raw Space state. When the gate is closed the fishing tick still runs
+        /// hold-haul release latch to the raw action state. When the gate is closed the fishing tick still runs
         /// but with <c>held=false</c> — it can never start a fresh cast (needs a rising edge) yet lets any
-        /// cast/fight in flight ease to its cozy resolution rather than strand. The latch (see the class doc)
-        /// additionally swallows a key still held from a just-ended HAUL until it is released, so the haul's
-        /// carried-over hold never flips into a cast. Public so a test can drive it without real key input.</summary>
-        public void TickFishing(float dt, bool rawHeld)
+        /// cast/fight in flight ease to its cozy resolution rather than strand; an UN-FLOWN wind-back is the
+        /// one exception and is aborted outright (<see cref="FishingController.CancelCastGesture"/>) — the
+        /// forced release must not fling a half-made gesture. The latch (see the class doc) additionally
+        /// swallows a key still held from a just-ended HAUL until it is released, so the haul's carried-over
+        /// hold never flips into a cast. Public so a test can drive it without real key input.</summary>
+        public void TickFishing(float dt, bool rawHeld, Vector2 pointerWorld, bool pointerValid)
         {
             // Arm the release latch for as long as a haul is (or has just been) live — any haul tick sets it,
             // so however the haul ends the still-held pull key is caught before it can become a cast. Build 7:
@@ -109,16 +144,25 @@ namespace HiddenHarbours.Fishing
             if ((Haul != null && Haul.IsHauling) || (DeckWork != null && DeckWork.HasPotAboard))
                 _requireReleaseBeforeCast = true;
 
+            // Whenever this tick will NOT deliver the raw hold (the gate is closed, or the latch is about
+            // to swallow it), a wind-back in progress is ABORTED rather than force-released: the controller
+            // reads held=false as "the player let go" and would EVALUATE the half-made gesture into a flung
+            // cast. Nothing was in the water yet, so the cozy outcome is simply "you stood back up". Later
+            // phases are untouched (CancelCastGesture is a WindBack-only no-op) and keep easing under
+            // held=false — the established no-stranded-cast behaviour.
+            bool live = FishingLive;
+            if (!live || (_requireReleaseBeforeCast && rawHeld)) Fishing.CancelCastGesture();
+
             // Once armed, require a genuine RELEASE before the key counts as a press again. A still-held key
             // is swallowed (held=false); seeing it up re-arms the cast.
             if (_requireReleaseBeforeCast)
             {
-                if (rawHeld) { Fishing.Tick(dt, false); return; }
+                if (rawHeld) { Fishing.Tick(dt, false, pointerWorld, pointerValid); return; }
                 _requireReleaseBeforeCast = false;
             }
 
-            bool held = FishingLive && rawHeld;
-            Fishing.Tick(dt, held);
+            bool held = live && rawHeld;
+            Fishing.Tick(dt, held, pointerWorld, pointerValid);
         }
     }
 }
