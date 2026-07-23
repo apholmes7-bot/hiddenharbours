@@ -1,0 +1,14 @@
+{
+  "rig": "docs/art/rigs/bobberRig.js",
+  "global": "RodBobber",
+  "cell": { "w": 16, "h": 22 },
+  "pivotTopLeft": { "x": 8, "y": 12 },
+  "directional": false,
+  "_note": "The pivot is THE WATERLINE POINT — blit the cell at the surface and the baked underwater tint does the dipping. lineAttach is the stem-top pixel as an offset FROM THE PIVOT: dy = -6 + (the pose's px-below-waterline, 0 while airborne) — the same formula the rig's renderer uses for its top row, read from its own POSE table. ms per state comes from STATES.",
+  "states": {
+    "float": { "frames": 4, "ms": 240, "lineAttach": [{ "dx": 0, "dy": -6 }, { "dx": 0, "dy": -6 }, { "dx": 0, "dy": -6 }, { "dx": 0, "dy": -6 }] },
+    "nibble": { "frames": 4, "ms": 100, "lineAttach": [{ "dx": 0, "dy": -5 }, { "dx": 0, "dy": -4 }, { "dx": 0, "dy": -5 }, { "dx": 0, "dy": -6 }] },
+    "strike": { "frames": 4, "ms": 110, "lineAttach": [{ "dx": 0, "dy": -4 }, { "dx": 0, "dy": -1 }, { "dx": 0, "dy": -3 }, { "dx": 0, "dy": 0 }] },
+    "fly": { "frames": 2, "ms": 120, "lineAttach": [{ "dx": 0, "dy": -6 }, { "dx": 0, "dy": -6 }] }
+  }
+}

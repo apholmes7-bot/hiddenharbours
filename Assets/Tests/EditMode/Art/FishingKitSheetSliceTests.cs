@@ -106,18 +106,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// Guarded stems whose sheets are SPECIFIED but not yet on disk: the whole kit bakes on
-        /// the owner's machine (the in-engine baker needs an open editor; CI has none and this
-        /// machine was contested at authoring time — same situation, same guard as the fight-cycle
-        /// sheets of PR #252). Until a stem's PNG is committed it is excluded from every assertion
-        /// — the moment the PNG lands it is held to all of them, with no code change. The rig-side
-        /// half of the contract is NOT waiting: <c>FishingKitBakeTests</c> proves the rigs' frame
-        /// counts, pivots and azimuth conventions against these same numbers on every CI run.
-        /// ⚠️ DELETE each stem from this set in the commit that lands its PNG — once shipped, a
-        /// deleted sheet must fail the closed-set guard, never quietly read as "pending" again.
+        /// Guarded stems whose sheets are SPECIFIED but not yet on disk (the owner-bake guard
+        /// pattern of PR #252/#260). The whole kit was owner-baked and committed 2026-07-23, so the
+        /// set is now EMPTY per its own rule — every stem is held to every assertion, and a missing
+        /// sheet FAILS the closed-set guard rather than quietly reading as "pending". Add a stem
+        /// here ONLY when a future kit extension specs a sheet ahead of its bake.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake =
-            new HashSet<string>(Sheets.Keys);   // the entire kit, until the owner's first bake
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
 
         private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
 
