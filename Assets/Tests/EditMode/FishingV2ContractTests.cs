@@ -239,19 +239,51 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ShippedFishSpecies_AllStillOnTheLegacyFight()
+        public void ShippedFishSpecies_RodFightReferences_AreValidAuthoredDefs()
         {
-            // Wave 1 defines the contract only — the roster is Wave 3. If a RodFight reference appears
-            // on a shipped species before the v2 fight logic exists, that's a sequencing error.
+            // Wave 3: the roster is live. (This replaces Wave 1's "no species may opt in yet"
+            // sequencing guard — the fight logic it waited for has landed.) A species is free to stay
+            // legacy (null), but every reference it DOES carry must be a well-formed, invariant-
+            // satisfying authored Def — a broken reference would silently drop the fish to the legacy
+            // fight in play while promising a personality in data.
             foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { "Assets/_Project/Data" }))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 var fish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(path);
-                if (fish == null) continue;
-                Assert.IsNull(fish.RodFight,
-                    $"{path}: opted into the v2 fight before Wave 2's fight logic landed — the roster " +
-                    "is Wave 3 (remove the RodFight reference, or land RodFightMath first)");
+                if (fish == null || fish.RodFight == null) continue;
+                StringAssert.StartsWith("rodfight.", fish.RodFight.Id,
+                    $"{path}: references a Def with a malformed id");
+                AssertForgivingInvariants(fish.RodFight, $"{path} → {fish.RodFight.Id}");
             }
+        }
+
+        [Test]
+        public void StarterRoster_WearsTheAuthoredPersonalities()
+        {
+            // The owner's Wave-3 roster (design §5 made data): cod bulldogs, haddock circles,
+            // mackerel darts. Pollock's personality (rodfight.pollock, Thrasher) is authored and
+            // data-ready but its SPECIES asset is economy-sim's to add — so it is asserted as a Def
+            // only, unreferenced until that lane ships the fish.
+            var wired = new (string path, string fightId, RodFightMovement move)[]
+            {
+                ("Assets/_Project/Data/Fish/AtlanticCod.asset", "rodfight.atlantic_cod", RodFightMovement.Bulldog),
+                ("Assets/_Project/Data/Fish/Haddock.asset", "rodfight.haddock", RodFightMovement.Circler),
+                ("Assets/_Project/Data/Fish/Mackerel.asset", "rodfight.mackerel", RodFightMovement.Darter),
+            };
+            foreach ((string path, string fightId, RodFightMovement move) in wired)
+            {
+                var fish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(path);
+                Assert.IsNotNull(fish, $"{path}: the starter species must exist");
+                Assert.IsNotNull(fish.RodFight, $"{path}: the starter species must opt into its personality");
+                Assert.AreEqual(fightId, fish.RodFight.Id, $"{path}: wired to the wrong personality");
+                Assert.AreEqual(move, fish.RodFight.MovementPattern, $"{fightId}: the authored pattern");
+            }
+
+            var pollock = AssetDatabase.LoadAssetAtPath<RodFightDef>(
+                "Assets/_Project/Data/RodFights/PollockFight.asset");
+            Assert.IsNotNull(pollock, "rodfight.pollock ships data-ready for economy-sim's Pollock species");
+            Assert.AreEqual("rodfight.pollock", pollock.Id);
+            Assert.AreEqual(RodFightMovement.Thrasher, pollock.MovementPattern);
         }
 
         // ---- LureTag: a well-formed flags vocabulary (defined, not yet wired — §6.2) --------
