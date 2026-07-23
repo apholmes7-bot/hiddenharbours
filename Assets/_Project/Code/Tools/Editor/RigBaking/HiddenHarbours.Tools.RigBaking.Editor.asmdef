@@ -2,6 +2,7 @@
     "name": "HiddenHarbours.Tools.RigBaking.Editor",
     "rootNamespace": "HiddenHarbours.Tools.RigBaking",
     "references": [
+        "HiddenHarbours.Art",
         "HiddenHarbours.Art.Editor",
         "HiddenHarbours.Tools.JsEngine.Editor",
         "HiddenHarbours.Core",

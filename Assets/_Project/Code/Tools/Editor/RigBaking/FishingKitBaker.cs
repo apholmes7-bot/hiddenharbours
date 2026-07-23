@@ -575,7 +575,7 @@ namespace HiddenHarbours.Tools.RigBaking
         // shared plumbing
         // =====================================================================================
 
-        static void RefuseOnMismatch(string what, AzimuthConvention declared,
+        internal static void RefuseOnMismatch(string what, AzimuthConvention declared,
                                      AzimuthConvention measured, string report)
         {
             if (declared == measured) return;
@@ -591,7 +591,7 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>One sheet: <paramref name="renderCell"/>(rowFromTop, frameCol) → RGBA cell.</summary>
-        static FishingSheetBake WriteSheet(string outputFolder, string name, int rows, int frames,
+        internal static FishingSheetBake WriteSheet(string outputFolder, string name, int rows, int frames,
                                            in RigGeometry geo, Func<int, int, byte[]> renderCell,
                                            FishingBakeResult result)
         {
@@ -632,7 +632,7 @@ namespace HiddenHarbours.Tools.RigBaking
             };
         }
 
-        static byte[] Render(IRigScriptHost host, string expr, in RigGeometry geo,
+        internal static byte[] Render(IRigScriptHost host, string expr, in RigGeometry geo,
                              Stopwatch renderClock, FishingBakeResult result)
         {
             renderClock.Start();
@@ -646,7 +646,7 @@ namespace HiddenHarbours.Tools.RigBaking
             return rgba;
         }
 
-        static string WriteJson(string outputFolder, string fileName, string json)
+        internal static string WriteJson(string outputFolder, string fileName, string json)
         {
             string assetPath = $"{outputFolder}/{fileName}";
             File.WriteAllText(Path.Combine(RigCatalog.RepoRoot, assetPath), json);
@@ -665,7 +665,7 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append("  \"facingsAreCounterClockwise\": false,\n");
         }
 
-        static IReadOnlyList<string> ReadStringArray(IRigScriptHost host, string arrayExpr)
+        internal static IReadOnlyList<string> ReadStringArray(IRigScriptHost host, string arrayExpr)
         {
             // The rigs' order arrays are plain identifier strings — parse the same defensive way
             // CharacterRigAzimuthProbe parses ramps.
@@ -694,8 +694,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>Single-quoted JS string literal (names are plain identifiers, but escape
         /// defensively — a quote in a name must not become an injection).</summary>
-        static string Js(string s) => "'" + s.Replace("\\", "\\\\").Replace("'", "\\'") + "'";
+        internal static string Js(string s) => "'" + s.Replace("\\", "\\\\").Replace("'", "\\'") + "'";
 
-        static string Num(double d) => d.ToString("R", CultureInfo.InvariantCulture);
+        internal static string Num(double d) => d.ToString("R", CultureInfo.InvariantCulture);
     }
 }
