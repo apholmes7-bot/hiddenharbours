@@ -64,6 +64,15 @@ namespace HiddenHarbours.Fishing
         [Tooltip("How long a Landed/Snapped/NoBite result is shown before returning to Idle (real seconds).")]
         [SerializeField] private float _resultDisplay = 1.5f;
 
+        [Header("Rod fight v2 (the deep→surface arc — presentation dials, rule 6)")]
+        [Tooltip("How far (world m) a surfaced fish roams around the line's entry point — the size of " +
+                 "her on-screen dart choreography (RodFightMotionMath). Feel/readability, not balance: " +
+                 "the steer reads DIRECTION, so the radius never changes difficulty.")]
+        [Min(0f)] [SerializeField] private float _fishRoamRadiusM = 2.5f;
+        [Tooltip("Pointer closer than this (world m) to the character reads as NO steer (neutral) — a " +
+                 "resting mouse is never a hidden penalty. A dead-band, not a feel dial.")]
+        [Min(0f)] [SerializeField] private float _steerDeadzoneM = 0.3f;
+
         private IHold _hold;
         private System.Random _rng;
 
@@ -75,6 +84,12 @@ namespace HiddenHarbours.Fishing
         private FishSpeciesDef _pendingFish;
         private float _pendingWeight;
         private FishingState _state = FishingState.Idle;
+
+        // ---- rod fight v2 state (the deep→surface arc; the sim is RodFightSim) ---------------
+        private RodFightSim _rodFight;          // non-null only while a v2 fight runs
+        private float _lastSteerAlignment;      // this tick's steer read, for the RodBend01 publish
+        private Vector2 _fightAnchorWorld;      // where the line entered the water (world) — the surface anchor
+        private bool _hasFightAnchor;
 
         // ---- flick-cast gesture state (see the class doc; the maths is FlickCastMath) --------
         // A preallocated RING of gesture samples — no per-frame GC in the input path (rule 7). The
@@ -177,6 +192,11 @@ namespace HiddenHarbours.Fishing
                     else Emit(_phase, _fight.Tension01, _fight.Landing01);
                     break;
 
+                case FishingPhase.FightDeep:
+                case FishingPhase.FightSurface:
+                    TickRodFight(dt, actionHeld, pointerWorld, pointerValid);   // the v2 arc (design §3)
+                    break;
+
                 case FishingPhase.Landed:
                 case FishingPhase.Snapped:
                 case FishingPhase.NoBite:
@@ -210,6 +230,8 @@ namespace HiddenHarbours.Fishing
             _gestureCount = 0;
             _gestureClock = 0f;
             _lastCast = FlickCastResult.NoCast;
+            _fight = null;
+            EndRodFight();
             ResetDepthGame();
         }
 
@@ -340,21 +362,64 @@ namespace HiddenHarbours.Fishing
             Emit(FishingPhase.Bite, 0f, 0f);
         }
 
+        /// <summary>The strike: the hook is set and the fight begins. A species that OPTED INTO a
+        /// <see cref="RodFightDef"/> (design §5 — the TrapDef→DeckWorkDef shape) fights the v2
+        /// deep→surface arc (<see cref="RodFightSim"/>: FightDeep, timing only → FightSurface, steer
+        /// live); every species WITHOUT a Def keeps the legacy single-phase tension fight EXACTLY as
+        /// shipped — that branch is untouched. Hand-gathered categories always tend (a clam never
+        /// snaps a line), whatever a stray Def says.</summary>
         private void BeginFight()
         {
+            bool tend = FishFightTuning.IsHandGathered(_pendingFish.Category);
+            if (_pendingFish.RodFight != null && !tend)
+            {
+                _rodFight = new RodFightSim(_pendingFish.RodFight, _rng);
+                _lastSteerAlignment = 0f;
+                // The surface anchor — where the line entered the water: the cast's landing point on
+                // the cast path, the rig's drop spot (the angler) on the depth path. The fish's
+                // published offset is measured from the ANGLER each tick, so a walking angler reads a
+                // moving line angle for free (design §4.2 arrives later; the anchor is already world-fixed).
+                _fightAnchorWorld = !_depthGame && _lastCast.IsCast
+                    ? _lastCast.LandingPoint
+                    : (Vector2)transform.position;
+                _hasFightAnchor = true;
+                Emit(FishingPhase.FightDeep, 0f, 0f);   // she's down deep — pure timing first (§3)
+                return;
+            }
+
             var tuning = FishFightTuning.For(
                 _pendingFish.Category, _pendingWeight, _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg);
             _fight = new FishFight(in tuning, _rng);
 
-            bool tend = FishFightTuning.IsHandGathered(_pendingFish.Category);
             Emit(tend ? FishingPhase.Tending : FishingPhase.Fighting, 0f, 0f);
+        }
+
+        /// <summary>One tick of the v2 deep→surface fight: read the steer (Surface only — Deep has
+        /// nothing to see, so the alignment stays neutral by construction), advance the sim (which
+        /// integrates <see cref="RodFightMath"/>'s rates), and publish through the SAME cozy results the
+        /// legacy fight uses — a snap is "threw the hook", catch + bait time, never gear (§7). The
+        /// published phase follows the sim's landing progress, so the FightDeep→FightSurface crossing
+        /// emits the moment she breaks the surface.</summary>
+        private void TickRodFight(float dt, bool actionHeld, Vector2 pointerWorld, bool pointerValid)
+        {
+            _lastSteerAlignment = 0f;
+            if (_rodFight.Phase == RodFightPhase.Surface && pointerValid)
+                _lastSteerAlignment = RodFightMotionMath.SteerAlignment(
+                    pointerWorld - (Vector2)transform.position, _rodFight.DartDir, _steerDeadzoneM);
+
+            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment);
+
+            if (_rodFight.Result == FishFightResult.Landed) OnLanded();
+            else if (_rodFight.Result == FishFightResult.Snapped) OnSnapped();
+            else Emit(RodFightPhases.ToFishingPhase(_rodFight.Phase), _rodFight.Tension01, _rodFight.Landing01);
         }
 
         private void OnLanded()
         {
             FishSpeciesDef fish = _pendingFish;
-            float tension = _fight != null ? _fight.Tension01 : 0f;
+            float tension = _fight != null ? _fight.Tension01 : (_rodFight != null ? _rodFight.Tension01 : 0f);
             _fight = null;
+            EndRodFight();
 
             // --- Licence gate (St Peters, P5 cozy): some species may only be LANDED with the right
             // licence (the rod takes cod only once you hold the cod licence). The mapping species→licence
@@ -390,8 +455,9 @@ namespace HiddenHarbours.Fishing
 
         private void OnSnapped()
         {
-            float landing = _fight != null ? _fight.Landing01 : 0f;
+            float landing = _fight != null ? _fight.Landing01 : (_rodFight != null ? _rodFight.Landing01 : 0f);
             _fight = null;
+            EndRodFight();
             _phaseTimer = _resultDisplay;
             Debug.Log("[Fishing] The line ran slack — it threw the hook. (No harm done.)");
             Emit(FishingPhase.Snapped, 1f, landing);
@@ -402,8 +468,17 @@ namespace HiddenHarbours.Fishing
             _pendingFish = null;
             _pendingWeight = 0f;
             _fight = null;
+            EndRodFight();
             ResetDepthGame();
             Emit(FishingPhase.Idle, 0f, 0f);
+        }
+
+        /// <summary>Drop the v2 fight state (fight resolved or interaction reset) — idempotent.</summary>
+        private void EndRodFight()
+        {
+            _rodFight = null;
+            _lastSteerAlignment = 0f;
+            _hasFightAnchor = false;
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -414,10 +489,44 @@ namespace HiddenHarbours.Fishing
             string id = _pendingFish != null ? _pendingFish.Id : null;
             string name = _pendingFish != null ? _pendingFish.DisplayName : null;
             FishCategory cat = _pendingFish != null ? _pendingFish.Category : FishCategory.InshoreGroundfish;
+            Vector2 fishOffset = FightOffset(phase);
             _state = new FishingState(phase, tension, landing, id, name, cat, _pendingWeight,
-                                      depth01: DepthRead01(phase), slackWindowOpen: BottomSlackOpen(phase),
-                                      rodBend01: 0f);
+                                      depth01: DepthRead01(phase),
+                                      slackWindowOpen: BottomSlackOpen(phase) || FightSlackOpen(phase),
+                                      rodBend01: FightRodBend01(phase),
+                                      fishOffsetX: fishOffset.x, fishOffsetY: fishOffset.y);
             EventBus.Publish(new FishingStateChanged(_state));
+        }
+
+        // ---- the v2 fight's published reads (all neutral outside a live v2 fight) --------------
+
+        /// <summary>The fish-slack "PULL now" tell (design §3): open while the hooked fish is between
+        /// runs. Only the v2 fight phases carry it — pre-bite the field means the BOTTOM tell
+        /// (<see cref="BottomSlackOpen"/>), and the legacy fight never signals it (contract).</summary>
+        private bool FightSlackOpen(FishingPhase phase)
+            => _rodFight != null && _rodFight.Effort01 <= 0f
+               && (phase == FishingPhase.FightDeep || phase == FishingPhase.FightSurface);
+
+        /// <summary>The diegetic rod-bend read (<see cref="RodFightMath.RodBend01"/>) — how loaded the
+        /// rod DRAWS, published so the Art lane bends the rod and sags the line without knowing the
+        /// maths. 0 outside the v2 fight (the legacy gauge reads Tension01 only, unchanged).</summary>
+        private float FightRodBend01(FishingPhase phase)
+        {
+            if (_rodFight == null ||
+                (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return 0f;
+            return RodFightMath.RodBend01(_rodFight.Effort01, _lastSteerAlignment, _rodFight.Phase);
+        }
+
+        /// <summary>The line's far end relative to the ANGLER (Core FishingState.FishOffsetX/Y): the
+        /// world-fixed entry anchor while she's deep (the line runs straight down there), the anchor
+        /// plus her dart choreography once she's up. Measured from the live transform each publish, so
+        /// an angler repositioning on the deck reads a changing line angle for free. (0,0) outside the
+        /// v2 fight.</summary>
+        private Vector2 FightOffset(FishingPhase phase)
+        {
+            if (_rodFight == null || !_hasFightAnchor ||
+                (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return Vector2.zero;
+            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM) - (Vector2)transform.position;
         }
 
         private void EnsureHold()
