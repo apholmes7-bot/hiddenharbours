@@ -194,6 +194,7 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            DisplacedSea.Clear(this);
             if (_registered)
             {
                 DisplacedWaterRegistry.Unregister(this);
@@ -256,6 +257,9 @@ namespace HiddenHarbours.Art
 
         private void Deactivate()
         {
+            // The OFF contract, boats included: no state ⇒ no ride, no resting draft — the flat
+            // water AND the fleet render exactly as before ADR 0023 phase 3.
+            DisplacedSea.Clear(this);
             if (_registered)
             {
                 DisplacedWaterRegistry.Unregister(this);
@@ -304,6 +308,12 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdShoreFadeBand, band);
             for (int i = 0; i < _chunkRenderers.Count; i++)
                 _chunkRenderers[i].SetPropertyBlock(_mpb);
+
+            // ADR 0023 phase 3 step 2 — the SHARED HEAVE: publish the EXACT values pushed to the
+            // vertex stage above through the Core seam, so boat heave rides the same exaggeration
+            // and the same shore fade as the surface it is drawn on (re-published every tick — a
+            // live config edit reaches the boats within one refresh, never a stale copy).
+            DisplacedSea.Publish(this, new DisplacedSeaState(exaggeration, band));
 
             PublishIsoDepthFrame();
         }
@@ -511,6 +521,7 @@ namespace HiddenHarbours.Art
                 if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
             }
 
+            DisplacedSea.Clear(this);
             if (_registered)
             {
                 DisplacedWaterRegistry.Unregister(this);

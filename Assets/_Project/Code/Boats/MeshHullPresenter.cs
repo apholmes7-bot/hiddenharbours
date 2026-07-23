@@ -94,6 +94,12 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetDisplacedHeaveMeters(float heaveMeters)
+        {
+            if (_driver != null) _driver.SetDisplacedHeaveMeters(heaveMeters);
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;
 
         /// <inheritdoc/>

@@ -370,3 +370,4 @@ MonoBehaviour:
   RockRollDegrees: 2.8
   RockPitchDegrees: 1.6
   RockHeavePixels: 1.2
+  RestingDraftMeters: 0.5

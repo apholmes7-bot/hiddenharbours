@@ -97,6 +97,14 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetDisplacedHeaveMeters(float heaveMeters)
+        {
+            // Deliberately a no-op, exactly like SetRockPhaseDegrees: a sprite hull has no
+            // waterline clipping, so its displaced-sea ride is a plain visual-transform lift
+            // that BoatWaveMotion applies itself (the contract on the interface member).
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;
 
         /// <inheritdoc/>

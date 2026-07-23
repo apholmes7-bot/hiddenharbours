@@ -202,6 +202,7 @@ MonoBehaviour:
   RockRollDegrees: 2
   RockPitchDegrees: 1.1
   RockHeavePixels: 1
+  RestingDraftMeters: 1.1
 --- !u!43 &3494189248910243859
 Mesh:
   m_ObjectHideFlags: 0
