@@ -149,8 +149,13 @@ namespace HiddenHarbours.Fishing
                     break;
 
                 case FishingPhase.Waiting:
+                    if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
                     _phaseTimer -= dt;
                     if (_phaseTimer <= 0f) OnBite();
+                    break;
+
+                case FishingPhase.Sinking:
+                    TickSinking(dt, pressed);                        // the depth drop (§2.3)
                     break;
 
                 case FishingPhase.Bite:
@@ -199,6 +204,7 @@ namespace HiddenHarbours.Fishing
             _gestureCount = 0;
             _gestureClock = 0f;
             _lastCast = FlickCastResult.NoCast;
+            ResetDepthGame();
         }
 
         /// <summary>Wire the controller including the shared GameConfig (the owner's FlickCast tuning).
@@ -228,6 +234,16 @@ namespace HiddenHarbours.Fishing
 
             _pendingFish = null;
             _pendingWeight = 0f;
+
+            // Gear decides the branch (v2 §2.1): a weighted rig DROPS and reads the column — no cast,
+            // no gesture, no bobber (rebase resolution: the depth branch moved here from the retired
+            // press-to-cast entry — the press itself starts the drop). Cast gear winds back as below.
+            if (DepthDropMath.IsWeightedRig(_gear, _rigWeightKg, DepthSettings.WeightedHandlineMinKg))
+            {
+                BeginDrop();
+                return;
+            }
+
             _gestureHead = 0;
             _gestureCount = 0;
             _gestureClock = 0f;
@@ -279,7 +295,8 @@ namespace HiddenHarbours.Fishing
         }
 
         /// <summary>Touchdown: the line is in the water at <see cref="LastCast"/>.LandingPoint — start
-        /// the (unchanged) wait-for-a-bite flow.</summary>
+        /// the (unchanged) wait-for-a-bite flow. (The weighted-rig depth branch never reaches here —
+        /// it forks to <see cref="BeginDrop"/> at the press, in <see cref="BeginWindBack"/>.)</summary>
         private void BeginWaiting()
         {
             _phaseTimer = RandomBiteDelay();
@@ -302,7 +319,7 @@ namespace HiddenHarbours.Fishing
         {
             // Resolve WHICH fish at bite-time via the existing resolver (we don't rewrite catch logic).
             CatchContext ctx = BuildContext();
-            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, _rng);
+            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, _rng);
             if (fish == null)
             {
                 _phaseTimer = _resultDisplay;
@@ -379,6 +396,7 @@ namespace HiddenHarbours.Fishing
             _pendingFish = null;
             _pendingWeight = 0f;
             _fight = null;
+            ResetDepthGame();
             Emit(FishingPhase.Idle, 0f, 0f);
         }
 
@@ -390,7 +408,9 @@ namespace HiddenHarbours.Fishing
             string id = _pendingFish != null ? _pendingFish.Id : null;
             string name = _pendingFish != null ? _pendingFish.DisplayName : null;
             FishCategory cat = _pendingFish != null ? _pendingFish.Category : FishCategory.InshoreGroundfish;
-            _state = new FishingState(phase, tension, landing, id, name, cat, _pendingWeight);
+            _state = new FishingState(phase, tension, landing, id, name, cat, _pendingWeight,
+                                      depth01: DepthRead01(phase), slackWindowOpen: BottomSlackOpen(phase),
+                                      rodBend01: 0f);
             EventBus.Publish(new FishingStateChanged(_state));
         }
 
@@ -407,6 +427,141 @@ namespace HiddenHarbours.Fishing
             return lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
         }
 
+        #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
+        // The weighted-rig branch: no cast — the rig DROPS (Sinking), the player counts the fall
+        // (heavier = faster), clicks to re-engage the reel and hold a band (→ Waiting at that depth), or
+        // lets it bottom out (line goes slack — Depth01 = 1 + SlackWindowOpen, the "you felt the floor"
+        // tell the Art lane's RodLineMath.SlackOvershoot pops on) and then HOLDS to reel up slightly into
+        // the off-floor sweet spot. The held depth feeds the catch roll through BuildContext (a soft
+        // weight — CatchResolver.EffectiveWeight). Everything here is deliberately self-contained so the
+        // parallel flick-cast wave (WindBack/Cast) rebases past it trivially.
+
+        [Header("Depth drop (Rod Fishing v2 — the weighted-rig branch)")]
+        [Tooltip("The GameConfig carrying the owner's DepthDrop tunables (sink speed per kg, line length, " +
+                 "the sweet window, zone thresholds, catch weighting). Null = the built-in defaults.")]
+        [SerializeField] private GameConfig _config;
+        [Tooltip("The rig/lure weight tied on (kg) — HEAVIER FALLS FASTER, so this is the count-the-fall " +
+                 "tactical choice (§2.3, owner decision #4). A Handline at/above the config's " +
+                 "WeightedHandlineMinKg fishes the depth branch; below it, the cast/bobber branch. " +
+                 "Jig/Longline gear always fish the depth branch. Gear/tackle UI drives this later.")]
+        [Min(0f)] [SerializeField] private float _rigWeightKg = 0.05f;
+        [Tooltip("Dev/test override for the bathymetric water column here (m). < 0 = read the real " +
+                 "bathymetry (TidalTerrain + water level — the TidalWalkability composition).")]
+        [SerializeField] private float _waterColumnOverrideM = -1f;
+
+        // Live depth-game state. NOT saved — the drop is a live interaction, re-run from input.
+        private bool _depthGame;    // this cast is the weighted-rig branch
+        private float _depthM;      // how deep the rig is (m)
+        private float _floorM;      // floor of the reachable band (m) — min(bathymetry, line)
+        private bool _bottomed;     // resting on the floor (the slack tell)
+
+        /// <summary>The rig depth read, 0 surface .. 1 floor — what <c>FishingState.Depth01</c> publishes.</summary>
+        public float Depth01 => _depthGame ? DepthDropMath.Depth01(_depthM, _floorM) : 0f;
+
+        private DepthDropSettings DepthSettings => _config != null ? _config.DepthDrop : DepthDropSettings.Default;
+
+        /// <summary>Wire the depth game without the scene lifecycle (tests / dev): the rig weight, a fixed
+        /// water column (PositiveInfinity = uncapped open water), and optionally the config. Call after
+        /// <see cref="Configure(IHold, FishSpeciesDef[], string, Gear, int)"/>.</summary>
+        public void ConfigureDepthDrop(float rigWeightKg, float waterColumnMeters = float.PositiveInfinity,
+                                       GameConfig config = null)
+        {
+            _rigWeightKg = rigWeightKg;
+            _waterColumnOverrideM = waterColumnMeters;   // +Infinity = uncapped; FloorMeters clamps to the line
+            if (config != null) _config = config;
+        }
+
+        /// <summary>Start the drop: freeze this spot's reachable band, spool loose, publish Sinking.</summary>
+        private void BeginDrop()
+        {
+            _depthGame = true;
+            _depthM = 0f;
+            _bottomed = false;
+            _floorM = DepthDropMath.FloorMeters(WaterColumnMeters(), DepthSettings.MaxLineMeters);
+            Emit(FishingPhase.Sinking, 0f, 0f);
+        }
+
+        /// <summary>The Sinking tick: integrate the fall (weight → speed, DepthDropMath.SinkSpeedMps), then
+        /// either a CLICK re-engages the reel (hold this band → Waiting), or the floor arrives and the line
+        /// goes slack (→ Waiting, bottomed). Publishes every tick so Depth01 is a continuous read.</summary>
+        private void TickSinking(float dt, bool pressed)
+        {
+            DepthDropSettings s = DepthSettings;
+            float speed = DepthDropMath.SinkSpeedMps(_rigWeightKg, s.SinkSpeedPerKgMps,
+                                                     s.MinSinkSpeedMps, s.MaxSinkSpeedMps);
+            _depthM = DepthDropMath.FallStep(_depthM, speed, dt, _floorM);
+
+            if (pressed) { EngageReel(); return; }                       // click → hold this band (§2.3 step 2)
+            if (DepthDropMath.IsBottomed(_depthM, _floorM)) { OnBottomedOut(); return; }
+            Emit(FishingPhase.Sinking, 0f, 0f);
+        }
+
+        /// <summary>The Waiting-with-a-held-depth tick: HOLD reels the rig UP a little (the lift off the
+        /// floor into the sweet window — §2.3 step 4). The reel is engaged, so releasing just holds the
+        /// band; the bite timer runs in the caller as ever.</summary>
+        private void TickDepthHold(float dt, bool actionHeld)
+        {
+            if (!actionHeld) return;
+            _depthM = DepthDropMath.ReelStep(_depthM, DepthSettings.ReelUpMps, dt);
+            _bottomed = DepthDropMath.IsBottomed(_depthM, _floorM);
+            Emit(FishingPhase.Waiting, 0f, 0f);
+        }
+
+        /// <summary>Click during the fall: the reel re-engages and the rig holds this band — Waiting, at
+        /// the held Depth01, bite timer running against the depth-weighted pool.</summary>
+        private void EngageReel()
+        {
+            _bottomed = DepthDropMath.IsBottomed(_depthM, _floorM);
+            _phaseTimer = RandomBiteDelay();
+            Emit(FishingPhase.Waiting, 0f, 0f);
+        }
+
+        /// <summary>The rig hit the floor of the reachable band: the line goes SLACK — Depth01 = 1 and
+        /// SlackWindowOpen turns on in one publish (the transition the Art lane pops its overshoot from).
+        /// The reel winds on; the bait sits on the mud until the player lifts it.</summary>
+        private void OnBottomedOut()
+        {
+            _bottomed = true;
+            _phaseTimer = RandomBiteDelay();
+            Emit(FishingPhase.Waiting, 0f, 0f);
+        }
+
+        private void ResetDepthGame()
+        {
+            _depthGame = false;
+            _depthM = 0f;
+            _floorM = 0f;
+            _bottomed = false;
+        }
+
+        /// <summary>The bathymetric water column here (m) — the TidalWalkability composition (water level −
+        /// ground elevation) over the Core seams, never the World/Player concretes (rule 4). Either service
+        /// absent → no authored bathymetry → an uncapped column (the band is line-length-capped only, the
+        /// same "service absent → gate off" posture). The dev/test override wins when set.</summary>
+        private float WaterColumnMeters()
+        {
+            if (_waterColumnOverrideM >= 0f) return _waterColumnOverrideM;
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            IEnvironmentService env = GameServices.Environment;
+            if (terrain == null || env == null) return float.PositiveInfinity;
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            return TidalExposure.WaterDepth(env.WaterLevelAt(now), terrain.ElevationAt(transform.position));
+        }
+
+        /// <summary>What <c>FishingState.Depth01</c> should carry for a publish: the live rig depth during
+        /// the depth game (including through bite/fight — the rig IS at that depth), 0 on the legacy path
+        /// and once the interaction resolves back to Idle.</summary>
+        private float DepthRead01(FishingPhase phase)
+            => _depthGame && phase != FishingPhase.Idle ? DepthDropMath.Depth01(_depthM, _floorM) : 0f;
+
+        /// <summary>What <c>FishingState.SlackWindowOpen</c> should carry for a publish: the BOTTOM slack
+        /// tell — true only while the bottomed rig rests on the floor pre-bite (Sinking/Waiting). Fight
+        /// phases own the field's fish-slack meaning in the fight waves; results/idle never signal it.</summary>
+        private bool BottomSlackOpen(FishingPhase phase)
+            => _depthGame && _bottomed && (phase == FishingPhase.Sinking || phase == FishingPhase.Waiting);
+
+        #endregion
+
         private CatchContext BuildContext()
         {
             IGameClock clock = GameServices.Clock;
@@ -414,7 +569,8 @@ namespace HiddenHarbours.Fishing
             float tide = env != null ? env.Sample().TideHeight : 0f;
             float hour = clock != null ? clock.HourOfDay : 12f;
             Season season = clock != null ? clock.Season : Season.HighSummer;
-            return new CatchContext(_regionId, tide, hour, season, _gear);
+            return new CatchContext(_regionId, tide, hour, season, _gear,
+                                    _depthGame ? _depthM : CatchContext.NoDepth, _floorM);
         }
     }
 }

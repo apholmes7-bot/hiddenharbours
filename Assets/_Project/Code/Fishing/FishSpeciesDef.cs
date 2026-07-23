@@ -34,6 +34,18 @@ namespace HiddenHarbours.Fishing
         public float StartHour = 0f;
         public float EndHour = 24f;
 
+        [Header("Depth (Rod Fishing v2 — a WEIGHT on the roll, never a wall)")]
+        [Tooltip("The depth zones this species lives in (canon depthBand, fish-and-content §3.1). When the " +
+                 "player HOLDS a weighted rig in one of these zones the species is weighted UP in the catch " +
+                 "roll; outside them it's damped — never zeroed. Leave None = depth-neutral (bites the same " +
+                 "at any held depth), exactly as every species behaved before this field existed.")]
+        public FishDepthBand DepthBands = FishDepthBand.None;
+
+        [Tooltip("Behaviour flags (canon behaviorFlags). Bottom = a floor-dweller: weighted UP while the rig " +
+                 "is held just off the floor (bottom out, then reel up slightly — the bottom-fishing sweet " +
+                 "spot). Other canon flags are appended to the enum as later systems wire them.")]
+        public FishFlags BehaviorFlags = FishFlags.None;
+
         [Header("Rod fight (Rod Fishing v2 — opt-in, append-only)")]
         [Tooltip("The v2 fight personality this species opts into (RodFightDef, data not code — design/" +
                  "rod-fishing-v2-brainstorm.md §5). Leave EMPTY and the species keeps the simple/legacy " +
@@ -61,6 +73,10 @@ namespace HiddenHarbours.Fishing
         }
 
         public bool GearAllowed(Gear gear) => (AllowedGear & gear) != 0;
+
+        /// <summary>True when this species carries the <see cref="FishFlags.Bottom"/> flag — the
+        /// depth-weighting's "boost it just off the floor" read (design §2.3).</summary>
+        public bool IsBottomFish => (BehaviorFlags & FishFlags.Bottom) != 0;
 
         public bool TideAllowed(float tide) => tide >= MinTide && tide <= MaxTide;
 
