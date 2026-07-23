@@ -1,0 +1,23 @@
+{
+    "name": "HiddenHarbours.SpikeDeckCharacterMesh.Editor",
+    "rootNamespace": "HiddenHarbours.SpikeDeckCharacterMesh.Editor",
+    "references": [
+        "HiddenHarbours.SpikeDeckCharacterMesh",
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Tools.JsEngine.Editor",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Art",
+        "HiddenHarbours.Boats"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
