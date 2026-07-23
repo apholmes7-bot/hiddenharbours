@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361a844bdcab4002aa668eac60875c57, type: 3}
+  m_Name: PollockFight
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.RodFightDef
+  Id: rodfight.pollock
+  DisplayName: Pollock — Thrasher
+  Strength: 0.55
+  MovementPattern: 3
+  StaminaCadence:
+    RunSeconds: 1.6
+    SlackSeconds: 1.1
+    Jitter01: 0.4
+  Tell: 1
+  tensionRisePerSec: 0.62
+  tensionFallPerSec: 0.72
+  landingFillPerSec: 0.3
+  runTensionPressure: 0.38
+  counterSteerRelief: 0.5
+  surfaceThreshold01: 0.45

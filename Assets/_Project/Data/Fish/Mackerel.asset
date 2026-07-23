@@ -31,3 +31,4 @@ MonoBehaviour:
   BaseValue: 10
   SupplyElasticity: 0.35
   SpawnWeight: 0.8
+  RodFight: {fileID: 11400000, guid: 663a4f3a8c194527bacbdadec20961b0, type: 2}
