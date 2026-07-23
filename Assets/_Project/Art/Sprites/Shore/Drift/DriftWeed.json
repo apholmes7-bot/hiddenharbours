@@ -1,0 +1,1022 @@
+{
+ "kit": "drift-weed",
+ "generated": "2026-07-23",
+ "scale_px_per_m": 32,
+ "y_foreshorten": 0.72,
+ "conventions": "KTC pixel: no AA, binary alpha, upper-left key light, banded colour with ordered-dither band edges, 1px keyline #1b2a22 (decor keyline). Flat water-surface clumps, 3/4 iso from the south — NO heading; sizes pre-foreshortened (screen dy * 0.72 = plane metres * 32). No animation frames: drift/bob/clump/sway are runtime off the shared wave field.",
+ "derivedFromRigSha256": "bcada722e4b0be37ee9389e3462a69ce18d59c11193095f10adc453934b0110c",
+ "frame": {
+  "px": "cell-local, origin top-left, +x right, +y down-screen",
+  "m": "water-plane metres relative to buoy: mx=(x-buoy.x)/32, my=(y-buoy.y)/(32*0.72) (+y toward camera/south)",
+  "pivot": "buoy (buoyancy centre) — register the sprite to the water surface here"
+ },
+ "ramp_rows": [
+  "living",
+  "golden",
+  "bleached"
+ ],
+ "ramp_row_note": "Same seed-stable structure recoloured per row; every ramp carries a wet-surface glint step (ramp.wet).",
+ "species": {
+  "Bladderwrack": {
+   "name": "Bladderwrack",
+   "latin": "Fucus vesiculosus",
+   "note": "Knobbly forking fronds, paired air bladders on the outer half",
+   "sheet": "Bladderwrack.png",
+   "cellW": 48,
+   "cellH": 36,
+   "cols": 4,
+   "rows": 3,
+   "param_reads": {
+    "fronds": "main fronds",
+    "bladders": "air-bladder density"
+   },
+   "ramps": {
+    "living": {
+     "out": "#1b2a22",
+     "dp": "#242f1c",
+     "sh": "#2e3b22",
+     "mid": "#3b4b2b",
+     "hi": "#586b38",
+     "wet": "#8b9b7b",
+     "ac": "#7d6a3a",
+     "acHi": "#968049",
+     "_prov": "dp..hi + ac/acHi verbatim seaweedRig FLOAT ramp; wet = mix(hi, sky #c9d6cc, .45)"
+    },
+    "golden": {
+     "out": "#1b2a22",
+     "dp": "#4a3517",
+     "sh": "#63481e",
+     "mid": "#7f5f26",
+     "hi": "#a37f30",
+     "wet": "#e0b13a",
+     "ac": "#33250f",
+     "acHi": "#4a3517",
+     "_prov": "wet = fleet gold cove #e0b13a (v); band steps darkened from it"
+    },
+    "bleached": {
+     "out": "#1b2a22",
+     "dp": "#5a5c4a",
+     "sh": "#74765f",
+     "mid": "#8f9077",
+     "hi": "#aeab90",
+     "wet": "#e9e6df",
+     "ac": "#9a8a68",
+     "acHi": "#b39a63",
+     "_prov": "wet = bone/white #e9e6df (v); acHi = flowers SEED #b39a63 (v)"
+    }
+   },
+   "variants": [
+    {
+     "cell": 0,
+     "seed": 4101,
+     "params": {
+      "sizeM": 0.9,
+      "fronds": 6,
+      "sprawl": 0.45,
+      "bladders": 0.65
+     },
+     "buoy": {
+      "px": [
+       24,
+       18
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        31,
+        11
+       ],
+       "m": [
+        0.219,
+        -0.304
+       ]
+      },
+      {
+       "px": [
+        20,
+        26
+       ],
+       "m": [
+        -0.125,
+        0.347
+       ]
+      },
+      {
+       "px": [
+        34,
+        22
+       ],
+       "m": [
+        0.313,
+        0.174
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       24,
+       8
+      ],
+      "m": [
+       0,
+       -0.434
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 1,
+     "seed": 4102,
+     "params": {
+      "sizeM": 1.25,
+      "fronds": 8,
+      "sprawl": 0.6,
+      "bladders": 0.5
+     },
+     "buoy": {
+      "px": [
+       24,
+       19
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        34,
+        10
+       ],
+       "m": [
+        0.313,
+        -0.391
+       ]
+      },
+      {
+       "px": [
+        9,
+        23
+       ],
+       "m": [
+        -0.469,
+        0.174
+       ]
+      },
+      {
+       "px": [
+        13,
+        11
+       ],
+       "m": [
+        -0.344,
+        -0.347
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       41,
+       22
+      ],
+      "m": [
+       0.531,
+       0.13
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 2,
+     "seed": 4103,
+     "params": {
+      "sizeM": 0.6,
+      "fronds": 5,
+      "sprawl": 0.35,
+      "bladders": 0.85
+     },
+     "buoy": {
+      "px": [
+       23,
+       18
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        25,
+        24
+       ],
+       "m": [
+        0.063,
+        0.26
+       ]
+      },
+      {
+       "px": [
+        31,
+        17
+       ],
+       "m": [
+        0.25,
+        -0.043
+       ]
+      },
+      {
+       "px": [
+        19,
+        14
+       ],
+       "m": [
+        -0.125,
+        -0.174
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       31,
+       14
+      ],
+      "m": [
+       0.25,
+       -0.174
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 3,
+     "seed": 4104,
+     "params": {
+      "sizeM": 1.05,
+      "fronds": 7,
+      "sprawl": 0.8,
+      "bladders": 0.6
+     },
+     "buoy": {
+      "px": [
+       23,
+       18
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        30,
+        27
+       ],
+       "m": [
+        0.219,
+        0.391
+       ]
+      },
+      {
+       "px": [
+        10,
+        14
+       ],
+       "m": [
+        -0.406,
+        -0.174
+       ]
+      },
+      {
+       "px": [
+        36,
+        17
+       ],
+       "m": [
+        0.406,
+        -0.043
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       18,
+       7
+      ],
+      "m": [
+       -0.156,
+       -0.477
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    }
+   ]
+  },
+  "SugarKelp": {
+   "name": "Sugar Kelp",
+   "latin": "Saccharina latissima",
+   "note": "One long torn ribbon — puckered blade, ruffled edge, dark stipe stub",
+   "sheet": "SugarKelp.png",
+   "cellW": 64,
+   "cellH": 36,
+   "cols": 3,
+   "rows": 3,
+   "param_reads": {
+    "fronds": "torn tail strips",
+    "bladders": "blade pucker density"
+   },
+   "ramps": {
+    "living": {
+     "out": "#1b2a22",
+     "dp": "#33281a",
+     "sh": "#4a3a1f",
+     "mid": "#614e28",
+     "hi": "#7f6a35",
+     "wet": "#b39a63",
+     "ac": "#3a2e15",
+     "acHi": "#4a3a1f",
+     "_prov": "wet = flowers SEED #b39a63 (v); band steps darkened from ochre #7d6a3a line"
+    },
+    "golden": {
+     "out": "#1b2a22",
+     "dp": "#4a3517",
+     "sh": "#63481e",
+     "mid": "#7f5f26",
+     "hi": "#a37f30",
+     "wet": "#e0b13a",
+     "ac": "#33250f",
+     "acHi": "#4a3517",
+     "_prov": "wet = fleet gold cove #e0b13a (v); band steps darkened from it"
+    },
+    "bleached": {
+     "out": "#1b2a22",
+     "dp": "#5a5c4a",
+     "sh": "#74765f",
+     "mid": "#8f9077",
+     "hi": "#aeab90",
+     "wet": "#e9e6df",
+     "ac": "#9a8a68",
+     "acHi": "#b39a63",
+     "_prov": "wet = bone/white #e9e6df (v); acHi = flowers SEED #b39a63 (v)"
+    }
+   },
+   "variants": [
+    {
+     "cell": 0,
+     "seed": 4201,
+     "params": {
+      "sizeM": 1.6,
+      "fronds": 2,
+      "sprawl": 0.45,
+      "bladders": 0.55
+     },
+     "buoy": {
+      "px": [
+       30,
+       18
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        9,
+        19
+       ],
+       "m": [
+        -0.656,
+        0.043
+       ]
+      },
+      {
+       "px": [
+        26,
+        25
+       ],
+       "m": [
+        -0.125,
+        0.304
+       ]
+      },
+      {
+       "px": [
+        30,
+        13
+       ],
+       "m": [
+        0,
+        -0.217
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       56,
+       16
+      ],
+      "m": [
+       0.813,
+       -0.087
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=torn blade tip (exact)"
+    },
+    {
+     "cell": 1,
+     "seed": 4202,
+     "params": {
+      "sizeM": 2,
+      "fronds": 3,
+      "sprawl": 0.65,
+      "bladders": 0.45
+     },
+     "buoy": {
+      "px": [
+       29,
+       19
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        3,
+        16
+       ],
+       "m": [
+        -0.813,
+        -0.13
+       ]
+      },
+      {
+       "px": [
+        37,
+        27
+       ],
+       "m": [
+        0.25,
+        0.347
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       62,
+       19
+      ],
+      "m": [
+       1.031,
+       0
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=torn blade tip (exact)"
+    },
+    {
+     "cell": 2,
+     "seed": 4203,
+     "params": {
+      "sizeM": 1.1,
+      "fronds": 1,
+      "sprawl": 0.5,
+      "bladders": 0.7
+     },
+     "buoy": {
+      "px": [
+       31,
+       17
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        16,
+        17
+       ],
+       "m": [
+        -0.469,
+        0
+       ]
+      },
+      {
+       "px": [
+        27,
+        11
+       ],
+       "m": [
+        -0.125,
+        -0.26
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       48,
+       21
+      ],
+      "m": [
+       0.531,
+       0.174
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=torn blade tip (exact)"
+    }
+   ]
+  },
+  "Eelgrass": {
+   "name": "Eelgrass",
+   "latin": "Zostera marina",
+   "note": "Fine tuft of thin blades, combed downstream by the drift",
+   "sheet": "Eelgrass.png",
+   "cellW": 32,
+   "cellH": 24,
+   "cols": 4,
+   "rows": 3,
+   "param_reads": {
+    "fronds": "blades",
+    "bladders": "(none — ignored)"
+   },
+   "ramps": {
+    "living": {
+     "out": "#1b2a22",
+     "dp": "#1d3527",
+     "sh": "#2b4f38",
+     "mid": "#3f7a52",
+     "hi": "#5f9a68",
+     "wet": "#8fb391",
+     "ac": "#24402c",
+     "acHi": "#2b4f38",
+     "_prov": "mid = blue-flag stem #3f7a52 (v); steps light()/dark() of it"
+    },
+    "golden": {
+     "out": "#1b2a22",
+     "dp": "#4a3517",
+     "sh": "#63481e",
+     "mid": "#7f5f26",
+     "hi": "#a37f30",
+     "wet": "#e0b13a",
+     "ac": "#33250f",
+     "acHi": "#4a3517",
+     "_prov": "wet = fleet gold cove #e0b13a (v); band steps darkened from it"
+    },
+    "bleached": {
+     "out": "#1b2a22",
+     "dp": "#5a5c4a",
+     "sh": "#74765f",
+     "mid": "#8f9077",
+     "hi": "#aeab90",
+     "wet": "#e9e6df",
+     "ac": "#9a8a68",
+     "acHi": "#b39a63",
+     "_prov": "wet = bone/white #e9e6df (v); acHi = flowers SEED #b39a63 (v)"
+    }
+   },
+   "variants": [
+    {
+     "cell": 0,
+     "seed": 4301,
+     "params": {
+      "sizeM": 0.7,
+      "fronds": 9,
+      "sprawl": 0.5,
+      "bladders": 0
+     },
+     "buoy": {
+      "px": [
+       17,
+       13
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        8,
+        13
+       ],
+       "m": [
+        -0.281,
+        0
+       ]
+      },
+      {
+       "px": [
+        18,
+        17
+       ],
+       "m": [
+        0.031,
+        0.174
+       ]
+      },
+      {
+       "px": [
+        22,
+        13
+       ],
+       "m": [
+        0.156,
+        0
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       18,
+       6
+      ],
+      "m": [
+       0.031,
+       -0.304
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 1,
+     "seed": 4302,
+     "params": {
+      "sizeM": 0.9,
+      "fronds": 12,
+      "sprawl": 0.7,
+      "bladders": 0
+     },
+     "buoy": {
+      "px": [
+       17,
+       12
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        19,
+        2
+       ],
+       "m": [
+        0.063,
+        -0.434
+       ]
+      },
+      {
+       "px": [
+        21,
+        20
+       ],
+       "m": [
+        0.125,
+        0.347
+       ]
+      },
+      {
+       "px": [
+        27,
+        13
+       ],
+       "m": [
+        0.313,
+        0.043
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       24,
+       3
+      ],
+      "m": [
+       0.219,
+       -0.391
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 2,
+     "seed": 4303,
+     "params": {
+      "sizeM": 0.45,
+      "fronds": 6,
+      "sprawl": 0.4,
+      "bladders": 0
+     },
+     "buoy": {
+      "px": [
+       16,
+       13
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        21,
+        11
+       ],
+       "m": [
+        0.156,
+        -0.087
+       ]
+      },
+      {
+       "px": [
+        16,
+        9
+       ],
+       "m": [
+        0,
+        -0.174
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       10,
+       13
+      ],
+      "m": [
+       -0.188,
+       0
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 3,
+     "seed": 4304,
+     "params": {
+      "sizeM": 0.8,
+      "fronds": 10,
+      "sprawl": 0.9,
+      "bladders": 0
+     },
+     "buoy": {
+      "px": [
+       17,
+       13
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        26,
+        10
+       ],
+       "m": [
+        0.281,
+        -0.13
+       ]
+      },
+      {
+       "px": [
+        16,
+        6
+       ],
+       "m": [
+        -0.031,
+        -0.304
+       ]
+      },
+      {
+       "px": [
+        8,
+        13
+       ],
+       "m": [
+        -0.281,
+        0
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       20,
+       20
+      ],
+      "m": [
+       0.094,
+       0.304
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    }
+   ]
+  },
+  "TornMat": {
+   "name": "Torn Mat",
+   "latin": "mixed wrack raft",
+   "note": "Ragged mixed raft — wrack bits, a kelp scrap, loose strands, holed through",
+   "sheet": "TornMat.png",
+   "cellW": 64,
+   "cellH": 48,
+   "cols": 3,
+   "rows": 3,
+   "param_reads": {
+    "fronds": "loose pieces",
+    "bladders": "bladder flecks"
+   },
+   "ramps": {
+    "living": {
+     "out": "#1b2a22",
+     "dp": "#262c18",
+     "sh": "#333a1f",
+     "mid": "#454a28",
+     "hi": "#5f6533",
+     "wet": "#7f8a54",
+     "ac": "#7d6a3a",
+     "acHi": "#968049",
+     "_prov": "wet = DUNE #7f8a54 (v); ac/acHi verbatim seaweedRig ochre"
+    },
+    "golden": {
+     "out": "#1b2a22",
+     "dp": "#4a3517",
+     "sh": "#63481e",
+     "mid": "#7f5f26",
+     "hi": "#a37f30",
+     "wet": "#e0b13a",
+     "ac": "#33250f",
+     "acHi": "#4a3517",
+     "_prov": "wet = fleet gold cove #e0b13a (v); band steps darkened from it"
+    },
+    "bleached": {
+     "out": "#1b2a22",
+     "dp": "#5a5c4a",
+     "sh": "#74765f",
+     "mid": "#8f9077",
+     "hi": "#aeab90",
+     "wet": "#e9e6df",
+     "ac": "#9a8a68",
+     "acHi": "#b39a63",
+     "_prov": "wet = bone/white #e9e6df (v); acHi = flowers SEED #b39a63 (v)"
+    }
+   },
+   "variants": [
+    {
+     "cell": 0,
+     "seed": 4401,
+     "params": {
+      "sizeM": 1.4,
+      "fronds": 5,
+      "sprawl": 0.6,
+      "bladders": 0.55
+     },
+     "buoy": {
+      "px": [
+       35,
+       26
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        30,
+        38
+       ],
+       "m": [
+        -0.156,
+        0.521
+       ]
+      },
+      {
+       "px": [
+        24,
+        25
+       ],
+       "m": [
+        -0.344,
+        -0.043
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       39,
+       11
+      ],
+      "m": [
+       0.125,
+       -0.651
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 1,
+     "seed": 4402,
+     "params": {
+      "sizeM": 2,
+      "fronds": 7,
+      "sprawl": 0.75,
+      "bladders": 0.45
+     },
+     "buoy": {
+      "px": [
+       32,
+       23
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        40,
+        7
+       ],
+       "m": [
+        0.25,
+        -0.694
+       ]
+      },
+      {
+       "px": [
+        52,
+        23
+       ],
+       "m": [
+        0.625,
+        0
+       ]
+      },
+      {
+       "px": [
+        34,
+        29
+       ],
+       "m": [
+        0.063,
+        0.26
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       36,
+       4
+      ],
+      "m": [
+       0.125,
+       -0.825
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    },
+    {
+     "cell": 2,
+     "seed": 4403,
+     "params": {
+      "sizeM": 1.15,
+      "fronds": 4,
+      "sprawl": 0.5,
+      "bladders": 0.65
+     },
+     "buoy": {
+      "px": [
+       33,
+       23
+      ]
+     },
+     "snags": [
+      {
+       "px": [
+        21,
+        16
+       ],
+       "m": [
+        -0.375,
+        -0.304
+       ]
+      },
+      {
+       "px": [
+        44,
+        19
+       ],
+       "m": [
+        0.344,
+        -0.174
+       ]
+      },
+      {
+       "px": [
+        39,
+        30
+       ],
+       "m": [
+        0.188,
+        0.304
+       ]
+      }
+     ],
+     "dragTail": {
+      "px": [
+       16,
+       28
+      ],
+      "m": [
+       -0.531,
+       0.217
+      ]
+     },
+     "provenance": "computed from built structure: buoy=area centroid; snags=outer tips >=60 deg apart about buoy; dragTail=farthest tip from buoy"
+    }
+   ]
+  }
+ },
+ "_ruled": {
+  "TornMat.dragTail": "was _confirm: a mat has no clear trailing end; the longest protruding scrap tip was baked — confirm, or rule that runtime picks the down-drift snag instead. RULED: KEEP THE BAKED TIP (owner, 2026-07-23) — the longest-scrap tip stands as dragTail; no runtime down-drift picking.",
+  "golden_rows": "was _confirm: brief reads sun-golden as the kelp signature set; the golden row is baked for all four species anyway (same structure, zero extra art) — rule which rows ship. RULED: ALL FOUR SPECIES SHIP THEIR GOLDEN ROWS (owner, 2026-07-23) — every species keeps the row; runtime may weight kelp toward golden.",
+  "snag_radius": "was _confirm: snag points are exact frond-tip px; no catch radius is defined anywhere in the kit contracts — 0.1 m proposed as the engine default, confirm. RULED: 0.1 m IS THE ENGINE DEFAULT (owner, 2026-07-23) — recorded as the ruled default catch radius; it becomes tunable data in the runtime drift feature.",
+  "stranded_set": "was _confirm: beach/stranded recolour deliberately excluded (existing Shore/Seaweed* rockweed tiers already dress the wrack line) — confirm. RULED: EXCLUSION CONFIRMED (owner, 2026-07-23) — the existing Shore/Seaweed* rockweed tiers own the wrack line; no stranded recolour set ships."
+ },
+ "_excluded": [
+  "sway/bob animation frames (runtime, shared wave field — per brief)",
+  "heading bakes (surface clumps have no heading)",
+  "mirrored cells (each variant baked as its own cell)"
+ ]
+}
