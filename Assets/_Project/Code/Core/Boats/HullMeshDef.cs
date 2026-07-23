@@ -106,6 +106,19 @@ namespace HiddenHarbours.Core
                  "grows one, and have the baker write it.")]
         [Min(0f)] public float RestingDraftMeters = 0f;
 
+        [Tooltip("The WATERTIGHT clamp (owner playtest 2026-07-23: 'water enters hull on the mesh " +
+                 "models'): height above the KEEL (rig z = 0, metres) of the lowest OPEN interior " +
+                 "surface — cockpit sole / hold floor / working deck. While the displaced sea is " +
+                 "active the renderer bounds the calibrated waterline so the local water on the " +
+                 "hull can never climb past this line: the waterline still rides the EXTERIOR " +
+                 "planking, but never boards the boat. 0 = clamp off (the pre-fix render, " +
+                 "byte-identical). GAME-SIDE like RestingDraftMeters — the baker never writes it, " +
+                 "so it survives re-bakes. Start from the rig source's deck constant (the rig's " +
+                 "DECK), then SHAVE it down until the storm acceptance shows zero boarded water — " +
+                 "the shave absorbs the baked-iso beam residual (~0.17 height-metres per rig-metre " +
+                 "of half-beam; docs/design/water-rendering.md §24). Lower = drier = safer.")]
+        [Min(0f)] public float WatertightDeckHeightMeters = 0f;
+
         /// <summary>
         /// True when this def can actually be drawn: a mesh, at least one non-empty ramp (≤ the
         /// shader's 16), a full 4×4 dither matrix and sane cell geometry. The skinner gates the mesh

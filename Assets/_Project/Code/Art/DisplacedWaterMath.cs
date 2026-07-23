@@ -117,5 +117,87 @@ namespace HiddenHarbours.Art
             => frame.BaseZ
                + (hullWorldY - frame.ReferenceY) * frame.CosElev
                - heaveMeters * frame.SinElev;
+
+        // ==== The WATERTIGHT clamp (owner playtest 2026-07-23: "water enters hull on the mesh
+        // models") ====================================================================================
+        //
+        // The calibrated z-test covers ANY hull point whose height above still water is below the
+        // lift of the surface point sharing its pixel — including the LOW interior surfaces a real
+        // boat keeps dry (cockpit sole, hold floor, inner bulwarks): in a storm the differential
+        // between the hull's single-point ride and the local surface (wave slope across the hull,
+        // plus the baked-iso beam residual) exceeds the interior's freeboard and the boat reads as
+        // flooding. The fix stays inside the #263 discipline (per-hull CONSTANT transforms, never a
+        // per-vertex touch of the rig's own convention): the heave term of the hull's z bias — and
+        // ONLY the z bias; the visual ride stays the honest shared heave — is clamped so the
+        // highest surface the hull can currently meet sits at most WatertightDeckHeightMeters
+        // above its keel. Water still climbs the exterior planking with every wave; it can never
+        // climb past the line where it would board the boat.
+
+        /// <summary>Ring samples per radius when bounding the surface over a hull's footprint —
+        /// 8 (the 45° compass), on two radii plus the centre: 17 field evaluations, enough to
+        /// catch a crest anywhere on a hull-sized footprint against wave trains that are
+        /// metres-scale or longer (the storm acceptance adjudicates the residue in pixels).</summary>
+        public const int FootprintRingSamples = 8;
+
+        /// <summary>The hull footprint radius the clamp scans: half the rig cell's width in world
+        /// metres. The cell is authored to contain the whole hull at every heading with margin, so
+        /// this bounds the planking's true reach (slightly conservative — a farther crest can only
+        /// raise the bound, i.e. dry the hull, never flood it).</summary>
+        public static float FootprintRadiusMeters(int cellW, int pxPerMetre)
+            => 0.5f * cellW / Mathf.Max(1, pxPerMetre);
+
+        static readonly Vector2[] s_RingDirs =
+        {
+            new Vector2(1f, 0f), new Vector2(0.70710678f, 0.70710678f),
+            new Vector2(0f, 1f), new Vector2(-0.70710678f, 0.70710678f),
+            new Vector2(-1f, 0f), new Vector2(-0.70710678f, -0.70710678f),
+            new Vector2(0f, -1f), new Vector2(0.70710678f, -0.70710678f),
+        };
+
+        /// <summary>
+        /// The highest DISPLACED surface lift (metres) a hull at <paramref name="centerWorld"/>
+        /// can currently meet: max of the shader-twin field height over the centre and two
+        /// concentric 8-point rings (<paramref name="radiusMeters"/> and half of it), times the
+        /// active surface's effective exaggeration (<see cref="WaterIsoDepthFrame.Exaggeration"/>).
+        /// Evaluates <see cref="WaveFieldBridge.ShaderTwinSample"/> over the PUBLISHED globals —
+        /// the exact field the water shader lifts its vertices with, so the clamp and the drawn
+        /// sea cannot disagree (the ONE-SEA rule). Shore fade is deliberately taken as 1: an
+        /// offshore upper bound — near the coast the true lift is smaller, so the clamp only ever
+        /// over-dries, never floods. Allocation-free (rule 7).
+        /// </summary>
+        public static float MaxSurfaceLiftMeters(Vector2 centerWorld, float radiusMeters,
+                                                 in Vector4 train0, in Vector4 train1,
+                                                 in Vector4 train2, in Vector4 train3,
+                                                 in Vector4 phases, in Vector4 fieldParams,
+                                                 float exaggeration)
+        {
+            float max = WaveFieldBridge.ShaderTwinSample(
+                centerWorld, train0, train1, train2, train3, phases, fieldParams).Height;
+            for (int ring = 0; ring < 2; ring++)
+            {
+                float r = ring == 0 ? 0.5f * radiusMeters : radiusMeters;
+                for (int i = 0; i < FootprintRingSamples; i++)
+                {
+                    Vector2 p = centerWorld + s_RingDirs[i] * r;
+                    float h = WaveFieldBridge.ShaderTwinSample(
+                        p, train0, train1, train2, train3, phases, fieldParams).Height;
+                    if (h > max) max = h;
+                }
+            }
+            return max * Mathf.Max(0f, exaggeration);
+        }
+
+        /// <summary>
+        /// The clamped heave (metres) the hull's Z BIAS rides (never the visual — the screen lift
+        /// stays the honest shared heave): at least the true heave, raised so that
+        /// <c>maxLift − zHeave ≤ deckHeight</c> — the surface can wet the planking up to the
+        /// deck/sole line and no further. <paramref name="deckHeightMeters"/> ≤ 0 disables the
+        /// clamp entirely (the pre-fix render, byte-identical — the safety of an unset def).
+        /// </summary>
+        public static float WatertightZHeaveMeters(float heaveMeters, float maxLiftMeters,
+                                                   float deckHeightMeters)
+            => deckHeightMeters > 0f
+               ? Mathf.Max(heaveMeters, maxLiftMeters - deckHeightMeters)
+               : heaveMeters;
     }
 }
