@@ -93,7 +93,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void LightHandline_KeepsTheLegacyBobberPath()
+        public void LightHandline_KeepsTheCastPath_NotTheDepthBranch()
         {
             var go = new GameObject("CastFisher");
             _spawned.Add(go);
@@ -102,8 +102,16 @@ namespace HiddenHarbours.Tests.EditMode
                         "region.coddle_cove", Gear.Handline, 999);
             c.ConfigureDepthDrop(S.WeightedHandlineMinKg * 0.5f, 40f);   // light rig — below the threshold
 
+            // A pointerless press must NOT start the depth branch for light gear (and, being the flick
+            // world, it can't start a gesture either — the rod just stays down).
             c.Tick(Dt, true);
-            Assert.AreEqual(FishingPhase.Waiting, c.Phase, "a light handline casts exactly as before");
+            Assert.AreEqual(FishingPhase.Idle, c.Phase,
+                "a light handline never drops — and a gesture needs a pointer");
+            c.Tick(Dt, false);   // release, back to a clean edge
+
+            // The flick world's way into the water: the shared gesture driver (PR #256).
+            FlickGestures.CastLine(c);
+            Assert.AreEqual(FishingPhase.Waiting, c.Phase, "a light handline casts (the bobber path)");
             Assert.AreEqual(0f, c.State.Depth01, "no depth game on the cast path");
             Assert.IsFalse(c.State.SlackWindowOpen);
         }

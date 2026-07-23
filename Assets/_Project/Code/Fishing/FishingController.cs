@@ -132,7 +132,13 @@ namespace HiddenHarbours.Fishing
             switch (_phase)
             {
                 case FishingPhase.Idle:
-                    if (pressed && pointerValid) BeginWindBack(pointerWorld);
+                    // A weighted rig needs NO pointer — the press drops the rig straight down (§2.1:
+                    // "no cast — drop and read the column"); only the cast GESTURE needs the mouse.
+                    // BeginWindBack runs the hold checks first, then forks to BeginDrop before it
+                    // touches the pointer, so the pointer gate applies only to the gesture path.
+                    if (pressed && (pointerValid ||
+                        DepthDropMath.IsWeightedRig(_gear, _rigWeightKg, DepthSettings.WeightedHandlineMinKg)))
+                        BeginWindBack(pointerWorld);
                     break;
 
                 case FishingPhase.WindBack:
