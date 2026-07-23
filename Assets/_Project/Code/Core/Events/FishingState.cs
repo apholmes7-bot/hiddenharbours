@@ -72,6 +72,9 @@ namespace HiddenHarbours.Core
         /// <summary>True while the fish is slack — the "PULL now" tell (§3): reeling here gains
         /// <see cref="Landing01"/> safely, whereas reeling into a run climbs <see cref="Tension01"/>
         /// toward a snap. The diegetic replacement for a HUD prompt (audio cue / line-goes-slack).
+        /// Pre-bite (<see cref="FishingPhase.Sinking"/>/<see cref="FishingPhase.Waiting"/>) it carries the
+        /// depth drop's BOTTOM tell instead (§2.3): the weighted rig is resting on the floor and the line
+        /// has gone slack — the false→true transition is what presentation pops its slack-overshoot from.
         /// Always false in the legacy fight.</summary>
         public readonly bool SlackWindowOpen;
 

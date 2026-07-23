@@ -64,6 +64,56 @@ namespace HiddenHarbours.Fishing
     /// WEIGHT (like bait's "Preferred" mode), never a hard filter. Until then a species' catchability is
     /// unchanged.</para>
     /// </summary>
+    /// <summary>
+    /// The fishing depth zones a species lives in — the canon <c>depthBand</c> flags of
+    /// fish-and-content.md §3.1 (<c>Tidepool, Shallows, Inshore, Midwater, Deep, Abyssal</c>), wired as
+    /// Rod Fishing v2's <b>species-targeting depth weight</b> (brainstorm §2.3/§6.1): the player HOLDS the
+    /// weighted rig at a column depth, that depth maps to one of these zones
+    /// (<c>DepthDropMath.ZoneForDepth</c>, thresholds in <c>GameConfig.DepthDrop</c>), and a species whose
+    /// mask includes the zone is weighted UP in the catch roll (outside it, damped — never zeroed: a soft
+    /// WEIGHT alongside bait/season/weather/time, not a filter).
+    ///
+    /// <para><b>Named <c>FishDepthBand</c>, not the canon's bare <c>DepthBand</c>,</b> because Core already
+    /// owns that name for the on-foot wading read (<see cref="HiddenHarbours.Core.DepthBand"/> —
+    /// Dry/Wade/Swim/Deep), and files in this module use both namespaces. Same concept family, different
+    /// axis: that one is where the PLAYER stands, this one is where the FISH lives.</para>
+    ///
+    /// <para><b>Flags, append-only</b> (the <see cref="Gear"/>/<see cref="LureTag"/> discipline): a species
+    /// may span several zones; never renumber a bit. <see cref="None"/> = not yet authored → the species is
+    /// depth-NEUTRAL (weight ×1 at every depth), so every existing asset behaves exactly as before this
+    /// field existed.</para>
+    /// </summary>
+    [System.Flags]
+    public enum FishDepthBand
+    {
+        None     = 0,
+        Tidepool = 1 << 0, // the shore scraps — barely-covered rock and pool
+        Shallows = 1 << 1, // just off the beach
+        Inshore  = 1 << 2, // the working cove water
+        Midwater = 1 << 3, // the open column — stop the drop mid-fall to fish it
+        Deep     = 1 << 4, // over the drop-off
+        Abyssal  = 1 << 5  // the far, black water
+    }
+
+    /// <summary>
+    /// Species behaviour flags — the canon <c>behaviorFlags</c> vocabulary of fish-and-content.md §3.1.
+    /// Only <see cref="Bottom"/> is consumed today (Rod Fishing v2's bottom-fishing weight: a Bottom
+    /// species is boosted while the rig is held just off the floor — brainstorm §2.3); the rest of the
+    /// canon list (<c>Legendary, FightsHard, FogOnly, …</c>) is APPENDED here as later systems wire it,
+    /// never invented by a content asset (the review-gated tag rule, fish-and-content.md §6.1).
+    ///
+    /// <para><b>Flags, append-only:</b> never renumber a bit (assets serialize the integer).</para>
+    /// </summary>
+    [System.Flags]
+    public enum FishFlags
+    {
+        None   = 0,
+        /// <summary>A floor-dweller (cod, halibut, monkfish): weighted UP when the rig is held inside the
+        /// off-floor sweet window (<c>GameConfig.DepthDrop.BottomSweetWindowMeters</c>). Sitting ON the
+        /// floor doesn't count — the bottom-out-then-lift is the skill beat.</summary>
+        Bottom = 1 << 0
+    }
+
     [System.Flags]
     public enum LureTag
     {

@@ -104,6 +104,15 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        [Header("Depth drop (Rod Fishing v2 — the weighted rig's fall + the slack bottom tell)")]
+        [Tooltip("The depth-fishing game's tunables (drop a weighted rig, count the fall, feel the floor): " +
+                 "how fast a rig sinks per kilogram (heavier = faster — the whole 'count the fall' read), " +
+                 "how much line the reel carries, the just-off-the-floor sweet window, the fishing depth " +
+                 "zones in metres, and how strongly the held depth weights the catch toward the species " +
+                 "that live there. Dial these to make depth feel readable; they never make a fish " +
+                 "impossible — depth is a WEIGHT on the catch roll, not a wall.")]
+        public DepthDropSettings DepthDrop = DepthDropSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -352,6 +361,115 @@ namespace HiddenHarbours.Core
             CapSalienceStrength = 1f,
             CapEnvelopeThreshold = 0.62f,
             EnvelopeBandStrength = 0.35f,
+        };
+    }
+
+    /// <summary>
+    /// Tunables for the <b>depth drop</b> — Rod Fishing v2's weighted-rig fall, the slack "bottom" tell,
+    /// and the depth-targeted catch weighting (<c>docs/design/rod-fishing-v2-brainstorm.md</c> §2.1/§2.3/§6;
+    /// <see cref="GameConfig.DepthDrop"/>). Lives in Core beside the config it rides on, exactly like
+    /// <see cref="RodFightSettings"/>: Core cannot reference the Fishing module (rule 4), so the tunables
+    /// live here as plain numbers and the pure Fishing-side maths that consumes them
+    /// (<c>DepthDropMath</c>) takes them as parameters.
+    ///
+    /// <para><b>The read is diegetic (owner's call, decision #4):</b> there is no depth gauge. The player
+    /// COUNTS THE FALL — a heavier rig sinks faster — and FEELS the floor when the line goes slack. Every
+    /// field here shapes that read or the catch weighting behind it; none of them draws a number on
+    /// screen.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct DepthDropSettings
+    {
+        // ---- the fall (the count-the-fall depth read) --------------------------------------------
+
+        [Tooltip("Extra sink speed per kilogram of rig weight (m/s per kg). THE tactical knob: a heavy jig " +
+                 "reaches the deep band quickly, a light rig sinks slowly and fishes the mid-column longer. " +
+                 "Bigger = weight matters more.")]
+        [Min(0f)] public float SinkSpeedPerKgMps;
+
+        [Tooltip("Slowest a rig ever sinks (m/s) — even a bare hook goes down eventually. Keeps a featherweight " +
+                 "rig from hanging forever.")]
+        [Min(0f)] public float MinSinkSpeedMps;
+
+        [Tooltip("Fastest a rig ever sinks (m/s) — the heaviest lead still falls like a lure, not a brick. " +
+                 "Caps how much the count-the-fall read can be shortcut.")]
+        [Min(0f)] public float MaxSinkSpeedMps;
+
+        // ---- the reachable band ------------------------------------------------------------------
+
+        [Tooltip("How much line the reel carries (m) — the deepest the rig can EVER go, even over deeper " +
+                 "water. The floor of the reachable band is the shallower of this and the seabed. Gear " +
+                 "upgrades can extend it later.")]
+        [Min(0f)] public float MaxLineMeters;
+
+        [Tooltip("The bottom-fishing SWEET SPOT: how far above the floor (m) still counts as 'just off the " +
+                 "bottom'. Bottom out, then reel up within this window to target bottom fish. Sitting ON the " +
+                 "floor (line slack) is outside the window — the lift is the skill beat.")]
+        [Min(0f)] public float BottomSweetWindowMeters;
+
+        [Tooltip("How fast holding the action reels the rig UP (m/s) while waiting — the 'reel up slightly' " +
+                 "move that lifts a bottomed rig into the sweet window.")]
+        [Min(0f)] public float ReelUpMps;
+
+        [Tooltip("A handline rigged with at least this much weight (kg) fishes the DEPTH branch (drop and " +
+                 "read the column) instead of the cast/bobber branch. Jigging and longline gear always fish " +
+                 "the depth branch; nets/traps never do.")]
+        [Min(0f)] public float WeightedHandlineMinKg;
+
+        // ---- the fishing depth zones (metres — where each kind of fish lives) ---------------------
+
+        [Tooltip("Held depths down to this (m) read as TIDEPOOL water — the shore scraps.")]
+        [Min(0f)] public float TidepoolMaxMeters;
+
+        [Tooltip("Held depths down to this (m) read as the SHALLOWS.")]
+        [Min(0f)] public float ShallowsMaxMeters;
+
+        [Tooltip("Held depths down to this (m) read as INSHORE water.")]
+        [Min(0f)] public float InshoreMaxMeters;
+
+        [Tooltip("Held depths down to this (m) read as MIDWATER — stop the drop mid-column to fish it.")]
+        [Min(0f)] public float MidwaterMaxMeters;
+
+        [Tooltip("Held depths down to this (m) read as DEEP water; anything deeper is ABYSSAL.")]
+        [Min(0f)] public float DeepMaxMeters;
+
+        // ---- the catch weighting (depth as the species-targeting tactic) --------------------------
+
+        [Tooltip("Catch-weight multiplier for a species whose preferred depth zones INCLUDE the zone you're " +
+                 "holding in (≥ 1). Bigger = choosing the right depth pays off more.")]
+        [Min(1f)] public float InBandAffinity;
+
+        [Tooltip("Catch-weight multiplier for a species you're holding OUTSIDE its preferred zones (0..1). " +
+                 "Kept above zero on purpose: depth is a weight, never a wall — the wrong depth makes a fish " +
+                 "unlikely, not impossible.")]
+        [Range(0.01f, 1f)] public float OffBandAffinity;
+
+        [Tooltip("EXTRA catch-weight multiplier for a BOTTOM species while the rig is held just off the floor " +
+                 "(inside the sweet window). The payoff for bottoming out and lifting slightly (≥ 1).")]
+        [Min(1f)] public float BottomWindowAffinity;
+
+        /// <summary>
+        /// The forgiving-cove reference tuning: a 0.2 kg rig sinks ~0.9 m/s (a countable ~11 s to 10 m), a
+        /// 1 kg jig ~2.5 m/s (the heavy shortcut), 60 m of line, a 1 m off-floor sweet window, and a
+        /// clear-but-gentle ×2 zone / ×2.5 bottom-window weighting over a ×0.5 off-zone damp.
+        /// </summary>
+        public static DepthDropSettings Default => new DepthDropSettings
+        {
+            SinkSpeedPerKgMps = 2.0f,
+            MinSinkSpeedMps = 0.5f,
+            MaxSinkSpeedMps = 3.5f,
+            MaxLineMeters = 60f,
+            BottomSweetWindowMeters = 1.0f,
+            ReelUpMps = 1.5f,
+            WeightedHandlineMinKg = 0.2f,
+            TidepoolMaxMeters = 0.6f,
+            ShallowsMaxMeters = 3f,
+            InshoreMaxMeters = 10f,
+            MidwaterMaxMeters = 30f,
+            DeepMaxMeters = 90f,
+            InBandAffinity = 2.0f,
+            OffBandAffinity = 0.5f,
+            BottomWindowAffinity = 2.5f,
         };
     }
 

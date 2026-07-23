@@ -94,6 +94,17 @@ stay known:
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
 | tanker | 110 m | poop, alleys, tank lanes, fore deck, catwalk, foc'sle (3d) | — bulwarks | centre bitt + 2 bow + 2 quarter + 2 stern bollards |
 
+## Other handoff sidecars
+
+`FisherRodMount.json` (fishing rig kit, 2026-07-22) — a second *kind* of sidecar: frame-by-frame rod
+mount data (grip px per dir/frame in the character's 64×88 body cell, `behindDirs` = [7,0,1] for the
+rod-under-body facings, pose sub-ranges for hold/cast/reel) so the engine can pin the rod overlay
+without running the JS rigs. Units are **cell pixels**, not metres — it describes bake cells, not hull
+geometry, so the coordinate-frame section above does not apply to it. It carries
+`derivedFromRigSha256` as a map over its two source rigs (`characterIsoRig.js`, `rodIsoRig.js`);
+the same staleness rule applies — hash mismatch means the rig moved and the mount table must be
+re-exported before anything trusts it.
+
 Foredeck boardability on lobsterBoat/capeIslander is owner-ruled (boardable). **All ten
 `_confirm` items from the original drop were ruled by the owner on 2026-07-22** and are
 recorded in place as `_ruled`/`_ruled_items` — no open `_confirm` remains. The one rig
