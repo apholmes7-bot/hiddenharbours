@@ -1,0 +1,2626 @@
+fileFormatVersion: 2
+guid: 278498723b74f0348aa4011217c6e528
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8124469746102624798
+    second: Fisher_reel_0
+  - first:
+      213: -8298453081367164553
+    second: Fisher_reel_1
+  - first:
+      213: 4499240183082326346
+    second: Fisher_reel_2
+  - first:
+      213: -1221596877200350684
+    second: Fisher_reel_3
+  - first:
+      213: -1612831338799436445
+    second: Fisher_reel_4
+  - first:
+      213: -409575087621594421
+    second: Fisher_reel_5
+  - first:
+      213: 2833198934655399223
+    second: Fisher_reel_6
+  - first:
+      213: -5707837287916514508
+    second: Fisher_reel_7
+  - first:
+      213: -6898037926448731627
+    second: Fisher_reel_8
+  - first:
+      213: 9168785764360071496
+    second: Fisher_reel_9
+  - first:
+      213: 4465850441596672914
+    second: Fisher_reel_10
+  - first:
+      213: -6102618255147244251
+    second: Fisher_reel_11
+  - first:
+      213: 8828475219333948919
+    second: Fisher_reel_12
+  - first:
+      213: 4933121746098637265
+    second: Fisher_reel_13
+  - first:
+      213: 8797338043059332311
+    second: Fisher_reel_14
+  - first:
+      213: 1169390359553421624
+    second: Fisher_reel_15
+  - first:
+      213: -8566485678454750103
+    second: Fisher_reel_16
+  - first:
+      213: 24109545572397446
+    second: Fisher_reel_17
+  - first:
+      213: 6823974811628741332
+    second: Fisher_reel_18
+  - first:
+      213: 7690705665854888347
+    second: Fisher_reel_19
+  - first:
+      213: -3318986623391579149
+    second: Fisher_reel_20
+  - first:
+      213: 2397508357945108172
+    second: Fisher_reel_21
+  - first:
+      213: -659966492466276066
+    second: Fisher_reel_22
+  - first:
+      213: -6996786911070843712
+    second: Fisher_reel_23
+  - first:
+      213: 5957094388231856820
+    second: Fisher_reel_24
+  - first:
+      213: -3643865709758899500
+    second: Fisher_reel_25
+  - first:
+      213: 3738851812462473597
+    second: Fisher_reel_26
+  - first:
+      213: -2867449775307542430
+    second: Fisher_reel_27
+  - first:
+      213: -4178998317850861831
+    second: Fisher_reel_28
+  - first:
+      213: 5482541689389180082
+    second: Fisher_reel_29
+  - first:
+      213: 8029676138388393399
+    second: Fisher_reel_30
+  - first:
+      213: -8629533433190066381
+    second: Fisher_reel_31
+  - first:
+      213: -6285985222271914471
+    second: Fisher_reel_32
+  - first:
+      213: -3113118451156127099
+    second: Fisher_reel_33
+  - first:
+      213: -2243474855793913876
+    second: Fisher_reel_34
+  - first:
+      213: 1827795816958250246
+    second: Fisher_reel_35
+  - first:
+      213: 2674103927695027149
+    second: Fisher_reel_36
+  - first:
+      213: -1203907793537552606
+    second: Fisher_reel_37
+  - first:
+      213: -6831246869457725595
+    second: Fisher_reel_38
+  - first:
+      213: -5529925996624297664
+    second: Fisher_reel_39
+  - first:
+      213: -2761090227472180161
+    second: Fisher_reel_40
+  - first:
+      213: -690255314674624540
+    second: Fisher_reel_41
+  - first:
+      213: -3378310894904093418
+    second: Fisher_reel_42
+  - first:
+      213: 6489774188233567904
+    second: Fisher_reel_43
+  - first:
+      213: -7623552402087399255
+    second: Fisher_reel_44
+  - first:
+      213: -930298791311103136
+    second: Fisher_reel_45
+  - first:
+      213: -5758508446747268002
+    second: Fisher_reel_46
+  - first:
+      213: -3220412809784455808
+    second: Fisher_reel_47
+  - first:
+      213: -7292628276202558813
+    second: Fisher_reel_48
+  - first:
+      213: 6178445044925963214
+    second: Fisher_reel_49
+  - first:
+      213: -4988303792227376562
+    second: Fisher_reel_50
+  - first:
+      213: 491816797862026784
+    second: Fisher_reel_51
+  - first:
+      213: -9041734362307136379
+    second: Fisher_reel_52
+  - first:
+      213: 7431026458247845487
+    second: Fisher_reel_53
+  - first:
+      213: 902188889751444173
+    second: Fisher_reel_54
+  - first:
+      213: 3727600303472862926
+    second: Fisher_reel_55
+  - first:
+      213: -8008815866205087456
+    second: Fisher_reel_56
+  - first:
+      213: 3878544846387313785
+    second: Fisher_reel_57
+  - first:
+      213: -123832080778438637
+    second: Fisher_reel_58
+  - first:
+      213: -5056119518535281240
+    second: Fisher_reel_59
+  - first:
+      213: -7705036408075410390
+    second: Fisher_reel_60
+  - first:
+      213: 85142583990427773
+    second: Fisher_reel_61
+  - first:
+      213: -8441726405190407492
+    second: Fisher_reel_62
+  - first:
+      213: -5854196519558095820
+    second: Fisher_reel_63
+  - first:
+      213: 2168632844172299047
+    second: Fisher_reel_64
+  - first:
+      213: -1003700177207225050
+    second: Fisher_reel_65
+  - first:
+      213: 718716712362211741
+    second: Fisher_reel_66
+  - first:
+      213: -7513403165890387586
+    second: Fisher_reel_67
+  - first:
+      213: 5946258382400784866
+    second: Fisher_reel_68
+  - first:
+      213: -1991215089305710810
+    second: Fisher_reel_69
+  - first:
+      213: -7916332827417269976
+    second: Fisher_reel_70
+  - first:
+      213: 7909183671504381257
+    second: Fisher_reel_71
+  - first:
+      213: 3162518811810434071
+    second: Fisher_reel_72
+  - first:
+      213: -4716385087430803609
+    second: Fisher_reel_73
+  - first:
+      213: 7002796051657743039
+    second: Fisher_reel_74
+  - first:
+      213: -716415288616356504
+    second: Fisher_reel_75
+  - first:
+      213: -645795015528140616
+    second: Fisher_reel_76
+  - first:
+      213: 1838110018606475577
+    second: Fisher_reel_77
+  - first:
+      213: -6513910093884121159
+    second: Fisher_reel_78
+  - first:
+      213: 1868011510243211890
+    second: Fisher_reel_79
+  - first:
+      213: 5971183776014000943
+    second: Fisher_reel_80
+  - first:
+      213: -5467591073035744902
+    second: Fisher_reel_81
+  - first:
+      213: -2421954104349509156
+    second: Fisher_reel_82
+  - first:
+      213: -1401935876700560951
+    second: Fisher_reel_83
+  - first:
+      213: 3596689123754988069
+    second: Fisher_reel_84
+  - first:
+      213: 3906498337148973789
+    second: Fisher_reel_85
+  - first:
+      213: -4627806369794226909
+    second: Fisher_reel_86
+  - first:
+      213: -6370156014803598858
+    second: Fisher_reel_87
+  - first:
+      213: 307962195286823640
+    second: Fisher_reel_88
+  - first:
+      213: -7385409799416413432
+    second: Fisher_reel_89
+  - first:
+      213: 2449728746570612212
+    second: Fisher_reel_90
+  - first:
+      213: 3177173959151167434
+    second: Fisher_reel_91
+  - first:
+      213: 6796512661025114800
+    second: Fisher_reel_92
+  - first:
+      213: -3529211336872562975
+    second: Fisher_reel_93
+  - first:
+      213: -35084662171428456
+    second: Fisher_reel_94
+  - first:
+      213: -8248884594626102377
+    second: Fisher_reel_95
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ea05ae5ad2ea2f478db7c91b3309bd5
+      internalID: 631072448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a66c0833d9312841b6e774690670565
+      internalID: -442099220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4a16978aaee34c458c360cd627d58c0
+      internalID: -1215193447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59b91000f0c772d47a3e3305a6fb3dad
+      internalID: 997795143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34e51e868c4710c478edec49b0c0b21b
+      internalID: -870212065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00fac4cf44f5a93419fed954bf033423
+      internalID: -2105014822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d3df19eddc7da849945324300ac4f24
+      internalID: -947505599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e234522a4687ba4dbdde835800af81f
+      internalID: 720828894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23ad799bc4a5b524ab890ad7c3a5b7bb
+      internalID: -1333933800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 086ac95efe502434084b24ff006ce58f
+      internalID: -21941305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02287ca6500b78242bed430153a8d4f5
+      internalID: 2073225858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d0_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 616
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5cacf1197d82d94ab380c8eff9365b0
+      internalID: 1267739310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dfd9eed6ef14e8438bb937f3d28a64a
+      internalID: -1704912427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3cb3b7af1fd1f84bab2a02e0d08c37e
+      internalID: -2084502020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 304e36e77e4d9c54c890aa1f9b4f3010
+      internalID: -1907749147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 037c66f6205c7fd49a231a6cce7aa5a6
+      internalID: -1320668053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d552cfcc2bd1bfc478f9066ed94fc6df
+      internalID: 1148525813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2b39c1a94bf7e14688829f5230199e7
+      internalID: -291483591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0782d4fa06932a04586d819a22e44be1
+      internalID: 1011762867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6198918351eba54e8e0d7dcdfbf111d
+      internalID: -53456962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7f0ca007dd5e064dbd4dcdd1b5d9b49
+      internalID: 375577437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37925512bb351544d8a7fdf2d6c74431
+      internalID: -201276848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f44600c4631fe384cb8ac1fea95f0a99
+      internalID: -2007290189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d1_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 528
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f13c3416127305e478e3694aeccc5c09
+      internalID: -1754920985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42911857ed43a724cb3a54eb83ee36b0
+      internalID: 5769758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34afd6fff71e6ba4dbc7f38619702175
+      internalID: 1412201808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b7e0bd304ee7e448a4bedb5d2c49d0a
+      internalID: 1243137365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 150ed1306b0be884b8adbfde22788eb8
+      internalID: -641100810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb7175500bed1034cbbdf52e88a51f68
+      internalID: 2002844594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56ff7d52b14665d49a839db355602e5a
+      internalID: -132278070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07bf9517f01c9aa4d98edb142379f2e8
+      internalID: -1447541276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d51ee351fafd5ae40ab391a925c53a1a
+      internalID: 274561396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0c49dfc2b209c844b2720686dfd327f
+      internalID: 506110367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e65dd70192e10443b7fc47435642914
+      internalID: 1742456864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83fe55eb38f6fb445b74b75cfd8d6a6d
+      internalID: -1246209155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d2_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 440
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f1d0869f2ea1194bad6d15c2e0d3c89
+      internalID: -557529504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2690927d662c7a04abd2e7f836a2ee99
+      internalID: -1700860611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 996933007770ac946b0ec1c4c7649f8f
+      internalID: 1515623536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20397e514d84d434ea873d0415f7b19d
+      internalID: 695940265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da039c06a8add034ea8e50b9e1c45723
+      internalID: -1719773269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8a3160912d0fb5488cced3961f37464
+      internalID: 208987228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41a9fdfd44c48854da18f43d04fd3659
+      internalID: 1652103113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 881333a9cb12e28468f91a4c6aecf9cb
+      internalID: -1890268804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a3f5b02f2712624787cdbdb7bc4085b
+      internalID: -2146615216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a881b9df43e18804ea12d80982817e64
+      internalID: -1058985224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6c72af21ecda8d4b9c6b97954ce2f11
+      internalID: -1383155051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f263bb34c1573c4298b5640686436ec
+      internalID: 1030519669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d3_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 352
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d070260322cad64faa578f055f26123
+      internalID: 2075894906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b123ec41907efd47994b64a2c2117d5
+      internalID: 25977749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bdd9d0fdcdca914d96076e2dce29374
+      internalID: -745695858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 841bee2cdc0b01a4fbcf8a4e612cb370
+      internalID: 136417424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11f24a4d7382a6c4a9a2b4b0a4cd2ae2
+      internalID: -786395182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cade025f477459d4695b2757cd44ed32
+      internalID: -1110577798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85228354acb85214b87aaf5917fe48fa
+      internalID: 1369026940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3422d82ffae83a44fb274405ef70a933
+      internalID: 1714308181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a983192b9659f4641a6852a5700da792
+      internalID: -297171007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 419887a4214406c4da04b29878ea4c7b
+      internalID: -1439829744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50dea6e4cb425e04295888b1d6e5b7e7
+      internalID: -1059648990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e98aa7945d82ea346acc0654dbabb79b
+      internalID: 2039488096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d4_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 264
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a66c3027f660511418754f17192a559b
+      internalID: -543783655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 161dff76dbae4a74890fcf52be94f0db
+      internalID: -1223778685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01d314fa54f044f4d8b1bcb7c83f8c89
+      internalID: -2025948064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab38af4a03f59ef41ba6d371fc2c57fe
+      internalID: 737219232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68860513e6c722f42a186b1127a164fb
+      internalID: -1063719448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 668ed507fbe2f9f4093ebc6fa9981cd8
+      internalID: 2099179507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 228dceb7c86fb6d4ba1575e0c652bd93
+      internalID: -219487747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0e9170807a717946b43def7edd278a3
+      internalID: -1210270241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cbb107075872c546908ee76350c6706
+      internalID: -560270929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b3def13f7c01ed4a9cd36509e72feaa
+      internalID: 470888326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1f7c9c101997e2468d3fda82b5513c5
+      internalID: -689016080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25832ff2d8cbe854b88238f10154d1b8
+      internalID: 719124384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d5_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 176
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cffb1bb655c0e0e4ca4b5938a87f3d28
+      internalID: -936018721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91c852e4250232641a66761aa0fcc59d
+      internalID: -673136888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afd818744aedf2543a14874f73a69e3e
+      internalID: 91653166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7b341d5a5ccdf54e806ea9b2b8c9dc7
+      internalID: -1533481758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f349afc2ee203f4dbd7db583480c0f5
+      internalID: -1156580386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69ce333f6e5fd7d489f6c96e2b3875e3
+      internalID: 1137335602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eaa61620bb9d64544939da8cb34e2ff4
+      internalID: 326710082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4303f505279bc34883e812de6f2aa32
+      internalID: -1212405767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 590847e53b6e6b84193c65f6e9caec06
+      internalID: -1099860815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eaf9294db5068d447a7baafd6bd63827
+      internalID: -358239488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 540998efb632dbf4790d68cd20d7d2d0
+      internalID: 307817203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9589af7f87d5f1c409096c494c9c07f4
+      internalID: -875025167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d6_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 88
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0435ca154b3c8e4eaba2745db2e10ab
+      internalID: -1508966516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef5a6915a0f1ff445919dec4e07e6ef0
+      internalID: 165462747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a313ee35b29ae447941b2fb36dddaed
+      internalID: -301276149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 742bad20450133b4d91daf1e04f07c36
+      internalID: 797092550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15c3aad529242fb40bfd4251c1e615e2
+      internalID: 1160098763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd9db59d20336f34eb2e7dab320ba588
+      internalID: -209814037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8984922338c255e46b5828b83e0e600b
+      internalID: 578987606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5cbe43d02e51d94db869964d8095b2c
+      internalID: -842626757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a4283af0ed1c744392075b4b14b3c11
+      internalID: -508390457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40fa429b97b58104694be53600b998b2
+      internalID: 718841715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f518a5e7167c3e24f8e06acece7f449e
+      internalID: -736845267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56896f900aa84bd42a1c74db21715af8
+      internalID: -1527774735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_reel_d7_f11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0.09090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66f4ca3c297efa746a8390634765bc34
+      internalID: 1373921366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 523cf9bc07ef2964e93444fadd0654e5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fisher_reel_d0_f0: 631072448
+      Fisher_reel_d0_f1: -442099220
+      Fisher_reel_d0_f10: 2073225858
+      Fisher_reel_d0_f11: 1267739310
+      Fisher_reel_d0_f2: -1215193447
+      Fisher_reel_d0_f3: 997795143
+      Fisher_reel_d0_f4: -870212065
+      Fisher_reel_d0_f5: -2105014822
+      Fisher_reel_d0_f6: -947505599
+      Fisher_reel_d0_f7: 720828894
+      Fisher_reel_d0_f8: -1333933800
+      Fisher_reel_d0_f9: -21941305
+      Fisher_reel_d1_f0: -1704912427
+      Fisher_reel_d1_f1: -2084502020
+      Fisher_reel_d1_f10: -2007290189
+      Fisher_reel_d1_f11: -1754920985
+      Fisher_reel_d1_f2: -1907749147
+      Fisher_reel_d1_f3: -1320668053
+      Fisher_reel_d1_f4: 1148525813
+      Fisher_reel_d1_f5: -291483591
+      Fisher_reel_d1_f6: 1011762867
+      Fisher_reel_d1_f7: -53456962
+      Fisher_reel_d1_f8: 375577437
+      Fisher_reel_d1_f9: -201276848
+      Fisher_reel_d2_f0: 5769758
+      Fisher_reel_d2_f1: 1412201808
+      Fisher_reel_d2_f10: -1246209155
+      Fisher_reel_d2_f11: -557529504
+      Fisher_reel_d2_f2: 1243137365
+      Fisher_reel_d2_f3: -641100810
+      Fisher_reel_d2_f4: 2002844594
+      Fisher_reel_d2_f5: -132278070
+      Fisher_reel_d2_f6: -1447541276
+      Fisher_reel_d2_f7: 274561396
+      Fisher_reel_d2_f8: 506110367
+      Fisher_reel_d2_f9: 1742456864
+      Fisher_reel_d3_f0: -1700860611
+      Fisher_reel_d3_f1: 1515623536
+      Fisher_reel_d3_f10: 1030519669
+      Fisher_reel_d3_f11: 2075894906
+      Fisher_reel_d3_f2: 695940265
+      Fisher_reel_d3_f3: -1719773269
+      Fisher_reel_d3_f4: 208987228
+      Fisher_reel_d3_f5: 1652103113
+      Fisher_reel_d3_f6: -1890268804
+      Fisher_reel_d3_f7: -2146615216
+      Fisher_reel_d3_f8: -1058985224
+      Fisher_reel_d3_f9: -1383155051
+      Fisher_reel_d4_f0: 25977749
+      Fisher_reel_d4_f1: -745695858
+      Fisher_reel_d4_f10: 2039488096
+      Fisher_reel_d4_f11: -543783655
+      Fisher_reel_d4_f2: 136417424
+      Fisher_reel_d4_f3: -786395182
+      Fisher_reel_d4_f4: -1110577798
+      Fisher_reel_d4_f5: 1369026940
+      Fisher_reel_d4_f6: 1714308181
+      Fisher_reel_d4_f7: -297171007
+      Fisher_reel_d4_f8: -1439829744
+      Fisher_reel_d4_f9: -1059648990
+      Fisher_reel_d5_f0: -1223778685
+      Fisher_reel_d5_f1: -2025948064
+      Fisher_reel_d5_f10: 719124384
+      Fisher_reel_d5_f11: -936018721
+      Fisher_reel_d5_f2: 737219232
+      Fisher_reel_d5_f3: -1063719448
+      Fisher_reel_d5_f4: 2099179507
+      Fisher_reel_d5_f5: -219487747
+      Fisher_reel_d5_f6: -1210270241
+      Fisher_reel_d5_f7: -560270929
+      Fisher_reel_d5_f8: 470888326
+      Fisher_reel_d5_f9: -689016080
+      Fisher_reel_d6_f0: -673136888
+      Fisher_reel_d6_f1: 91653166
+      Fisher_reel_d6_f10: -875025167
+      Fisher_reel_d6_f11: -1508966516
+      Fisher_reel_d6_f2: -1533481758
+      Fisher_reel_d6_f3: -1156580386
+      Fisher_reel_d6_f4: 1137335602
+      Fisher_reel_d6_f5: 326710082
+      Fisher_reel_d6_f6: -1212405767
+      Fisher_reel_d6_f7: -1099860815
+      Fisher_reel_d6_f8: -358239488
+      Fisher_reel_d6_f9: 307817203
+      Fisher_reel_d7_f0: 165462747
+      Fisher_reel_d7_f1: -301276149
+      Fisher_reel_d7_f10: -1527774735
+      Fisher_reel_d7_f11: 1373921366
+      Fisher_reel_d7_f2: 797092550
+      Fisher_reel_d7_f3: 1160098763
+      Fisher_reel_d7_f4: -209814037
+      Fisher_reel_d7_f5: 578987606
+      Fisher_reel_d7_f6: -842626757
+      Fisher_reel_d7_f7: -508390457
+      Fisher_reel_d7_f8: 718841715
+      Fisher_reel_d7_f9: -736845267
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
