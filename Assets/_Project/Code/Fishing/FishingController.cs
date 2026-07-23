@@ -47,6 +47,12 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private LicenseDef[] _licenses;
         [Tooltip("A GameObject carrying an IHold (the boat's ShipHold).")]
         [SerializeField] private GameObject _holdProvider;
+        [Tooltip("The ANGLER — the pawn actually holding the rod (the on-foot Player). Every spatial read " +
+                 "(the cast's aim anchor, the fight's steer origin, the bathymetry under a dropped rig) " +
+                 "measures from HERE, so fishing follows the walking player onto the dock/shore AND around " +
+                 "the deck, wherever this component itself is mounted. Left empty it falls back to this " +
+                 "component's own transform — every existing rig/test behaves exactly as before.")]
+        [SerializeField] private Transform _angler;
         [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
@@ -113,6 +119,21 @@ namespace HiddenHarbours.Fishing
         /// landing point). Valid from the Cast phase on; presentation (line/bobber art) reads the landing
         /// point here — it is deliberately NOT added to the Core FishingState struct.</summary>
         public FlickCastResult LastCast => _lastCast;
+
+        /// <summary>The pawn holding the rod (see the serialized field) — settable so a dev/bootstrap rig
+        /// can wire it in code the way the scene builders wire it serialized.</summary>
+        public Transform Angler { get => _angler; set => _angler = value; }
+
+        /// <summary>Where the angler stands (world m): the wired pawn, else this component's own
+        /// transform (the pre-seam behaviour — tests and legacy rigs unchanged).</summary>
+        private Vector2 AnglerPosition => _angler != null ? (Vector2)_angler.position : (Vector2)transform.position;
+
+        /// <summary>The region catches resolve against: the TRAVEL-AWARE current region
+        /// (<see cref="GameServices.CurrentRegionId"/> — written by the active region's anchor) when one
+        /// is reported, else the serialized/authored fallback. Fixes "sail to Greywick, fish, and the
+        /// roll still asks Coddle Cove's pool" — the region follows the player now.</summary>
+        private string EffectiveRegionId
+            => string.IsNullOrEmpty(GameServices.CurrentRegionId) ? _regionId : GameServices.CurrentRegionId;
 
         private void Awake()
         {
@@ -307,12 +328,25 @@ namespace HiddenHarbours.Fishing
             float cap = s.MaxCastDistanceMetres;
 
             FlickCastResult cast = FlickCastMath.Evaluate(
-                _gestureScratch, _gestureCount, transform.position, in s, cap);
+                _gestureScratch, _gestureCount, AnglerPosition, in s, cap);
             _gestureCount = 0;
 
             if (!cast.IsCast)
             {
                 Debug.Log("[Fishing] The rod never loaded up — no cast. Wind back and flick again.");
+                ToIdle();
+                return;
+            }
+
+            // A cast must land IN WATER (dock/shore fishing: on foot the flick can point inland). The
+            // cozy clamp: land at the farthest wet point along the arc; a fully-dry arc is "no water
+            // that way" — a short-cast reset, no penalty, no stuck state. Skipped when no bathymetry is
+            // authored (services absent → open water, the established gate-off posture).
+            cast = ClampCastToWater(in cast);
+            if (!cast.IsCast)
+            {
+                Debug.Log("[Fishing] No water that way — the line falls at your feet. Face the sea and flick again.");
+                EventBus.Publish(new DevNotice("No water that way — face the sea and cast again."));
                 ToIdle();
                 return;
             }
@@ -339,6 +373,39 @@ namespace HiddenHarbours.Fishing
             if (_phase != FishingPhase.WindBack) return;
             _gestureCount = 0;
             ToIdle();
+        }
+
+        // The water probe fed to CastWaterMath — allocated once (rule 7), not per cast.
+        private CastWaterMath.WaterAt _waterProbe;
+
+        /// <summary>Apply the land-in-water rule to a resolved cast (see <see cref="CastWaterMath"/>).
+        /// No authored bathymetry (terrain/env service absent) → open water, the cast stands as flicked.
+        /// Wet landing → unchanged. Dry landing → clamped to the farthest wet point of the arc (same
+        /// direction/power/quality, shorter line); a fully-dry arc → <see cref="FlickCastResult.NoCast"/>
+        /// (the caller resets cozily).</summary>
+        private FlickCastResult ClampCastToWater(in FlickCastResult cast)
+        {
+            if (GameServices.TidalTerrain == null || GameServices.Environment == null) return cast;
+            _waterProbe ??= IsWaterAt;
+            if (_waterProbe(cast.LandingPoint)) return cast;
+
+            Vector2 anchor = AnglerPosition;
+            if (!CastWaterMath.TryClampToWater(anchor, cast.Direction, cast.DistanceMetres,
+                                               CastWaterMath.DefaultProbeSamples, _waterProbe, out float wetM))
+                return FlickCastResult.NoCast;
+
+            return new FlickCastResult(true, cast.Direction, cast.Power01, cast.Quality01,
+                                       wetM, anchor + cast.Direction * wetM);
+        }
+
+        /// <summary>Is this world point water right now? The one bathymetry truth — the TidalWalkability
+        /// composition (deterministic water level − authored ground elevation &gt; 0), read over the Core
+        /// seams only (rule 4). Callers guard the services null-check.</summary>
+        private bool IsWaterAt(Vector2 worldPoint)
+        {
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            return TidalExposure.WaterDepth(GameServices.Environment.WaterLevelAt(now),
+                                            GameServices.TidalTerrain.ElevationAt(worldPoint)) > 0f;
         }
 
         #endregion
@@ -381,7 +448,7 @@ namespace HiddenHarbours.Fishing
                 // moving line angle for free (design §4.2 arrives later; the anchor is already world-fixed).
                 _fightAnchorWorld = !_depthGame && _lastCast.IsCast
                     ? _lastCast.LandingPoint
-                    : (Vector2)transform.position;
+                    : AnglerPosition;
                 _hasFightAnchor = true;
                 Emit(FishingPhase.FightDeep, 0f, 0f);   // she's down deep — pure timing first (§3)
                 return;
@@ -405,7 +472,7 @@ namespace HiddenHarbours.Fishing
             _lastSteerAlignment = 0f;
             if (_rodFight.Phase == RodFightPhase.Surface && pointerValid)
                 _lastSteerAlignment = RodFightMotionMath.SteerAlignment(
-                    pointerWorld - (Vector2)transform.position, _rodFight.DartDir, _steerDeadzoneM);
+                    pointerWorld - AnglerPosition, _rodFight.DartDir, _steerDeadzoneM);
 
             _rodFight.Tick(dt, actionHeld, _lastSteerAlignment);
 
@@ -526,7 +593,7 @@ namespace HiddenHarbours.Fishing
         {
             if (_rodFight == null || !_hasFightAnchor ||
                 (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return Vector2.zero;
-            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM) - (Vector2)transform.position;
+            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM) - AnglerPosition;
         }
 
         private void EnsureHold()
@@ -586,13 +653,26 @@ namespace HiddenHarbours.Fishing
             if (config != null) _config = config;
         }
 
-        /// <summary>Start the drop: freeze this spot's reachable band, spool loose, publish Sinking.</summary>
+        /// <summary>Start the drop: freeze this spot's reachable band, spool loose, publish Sinking.
+        /// A DRY spot (an on-foot angler standing on planks/land — the bathymetry under the rig reads no
+        /// water column) refuses cozily and stays Idle: a weighted rig straight down lands on the boards,
+        /// not in the sea. No penalty, no stuck state — step to the water (or wade in) and drop there.
+        /// Over any actual water the shallows behave as ever: a short column just bottoms out fast (the
+        /// slack tell reads quickly in the shallows — correct, not a bug).</summary>
         private void BeginDrop()
         {
+            float columnM = WaterColumnMeters();
+            if (columnM <= 0f)
+            {
+                Debug.Log("[Fishing] No water under the rig here — it would just sit on the boards. Drop it over the side.");
+                EventBus.Publish(new DevNotice("No water under you here — drop the rig over the water."));
+                return;   // stay Idle; nothing entered the water
+            }
+
             _depthGame = true;
             _depthM = 0f;
             _bottomed = false;
-            _floorM = DepthDropMath.FloorMeters(WaterColumnMeters(), DepthSettings.MaxLineMeters);
+            _floorM = DepthDropMath.FloorMeters(columnM, DepthSettings.MaxLineMeters);
             Emit(FishingPhase.Sinking, 0f, 0f);
         }
 
@@ -660,7 +740,7 @@ namespace HiddenHarbours.Fishing
             IEnvironmentService env = GameServices.Environment;
             if (terrain == null || env == null) return float.PositiveInfinity;
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            return TidalExposure.WaterDepth(env.WaterLevelAt(now), terrain.ElevationAt(transform.position));
+            return TidalExposure.WaterDepth(env.WaterLevelAt(now), terrain.ElevationAt(AnglerPosition));
         }
 
         /// <summary>What <c>FishingState.Depth01</c> should carry for a publish: the live rig depth during
@@ -684,7 +764,7 @@ namespace HiddenHarbours.Fishing
             float tide = env != null ? env.Sample().TideHeight : 0f;
             float hour = clock != null ? clock.HourOfDay : 12f;
             Season season = clock != null ? clock.Season : Season.HighSummer;
-            return new CatchContext(_regionId, tide, hour, season, _gear,
+            return new CatchContext(EffectiveRegionId, tide, hour, season, _gear,
                                     _depthGame ? _depthM : CatchContext.NoDepth, _floorM);
         }
     }

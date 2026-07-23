@@ -188,6 +188,14 @@ namespace HiddenHarbours.App.Editor
             var dory   = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             var punt   = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             var clam   = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
+            // The rod-catchable pool (dock/shore fishing — the owner's "fish from the St Peters shore"):
+            // the persistent FishingController's species list rides the CORE across region hops, so it
+            // carries every rod species; the per-region gate is each species' own RegionIds, filtered by
+            // the travel-aware region at cast time (CatchResolver.Matches — data, not code).
+            // (Named *Fish — the bait locals below already own the plain names, e.g. the mackerel BAIT.)
+            var codFish      = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset");
+            var haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
+            var mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
 
             // --- SCENE ----------------------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -296,6 +304,9 @@ namespace HiddenHarbours.App.Editor
             dory     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             punt     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
             clam     = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/SoftShellClam.asset");
+            codFish      = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset");
+            haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
+            mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
 
             // THE PILOTABLE FLEET (the owner's ask): every boat he can put himself in from the helm, in
             // cycle order — the iso dory he starts in, the 8-direction fishing boat, the punt on each of her
@@ -377,7 +388,11 @@ namespace HiddenHarbours.App.Editor
                 StartDory        = dory,
                 PuntHull         = punt,
                 DevPickerRoster  = pickerRoster,   // F at the helm cycles the hull in place (dev affordance)
-                RegionFish       = clam != null ? new[] { clam } : null,
+                // The clam (the flats' dig) + the rod-catchable trio: the persistent controller carries
+                // ALL rod species; each cast filters by the species' RegionIds against the travel-aware
+                // current region, so the same pool serves St Peters' shore, the cove and Greywick.
+                RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish }
+                                       .Where(f => f != null).ToArray(),
                 Square           = waterSprite,
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water
                 PlayerStartPos   = StartSpawnPos,

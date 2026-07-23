@@ -423,6 +423,12 @@ namespace HiddenHarbours.App.Editor
                                  "inert/partial until the sheet imports with its 3×4 slicing. Re-run the " +
                                  "start builder after import.");
 
+            // THE ANGLER SEAM (dock-first rod fishing): the FishingController rides the Dory GameObject
+            // (same GO as the trap-haul/deck-work Space arbitration — that stays), but the ANGLER is the
+            // walking PLAYER: casts aim from, fights steer around, and dropped rigs read the bathymetry
+            // under the fisher wherever they stand — the dock, the shore, the flats, or the deck.
+            SetRef(fishing, "_angler", playerGo.transform);
+
             // THE ROD-FIGHT ANIMATION (Rod Fishing v2 wave 3): while a rod interaction is live the fisher
             // plays the baked fight sheets — the two-tap BITE tell, the STRIKE as the hook sets, the REEL
             // cycle through the deep→surface fight (and the legacy fight), the LAND beat — all read off

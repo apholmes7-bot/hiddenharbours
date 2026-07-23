@@ -7,6 +7,10 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using HiddenHarbours.World;
+using HiddenHarbours.Environment;        // GameClock/EnvironmentService (the dev-bootstrap core)
+using HiddenHarbours.Player;             // PlayerWalkController/ClamBucket/PlayerWallet/DevToast (dev core)
+using HiddenHarbours.Fishing;            // FishingController/DevFishingInput/RodGaugeView (dev core)
+using HiddenHarbours.UI;                 // HudController (dev core — mirrors the persistent core's HUD)
 using HiddenHarbours.Art.Editor;        // VS-23 locked Pixel-Perfect camera convention
 using UnityEngine.Rendering.Universal;   // PixelPerfectCamera
 
@@ -59,6 +63,14 @@ namespace HiddenHarbours.App.Editor
         const string Scenes      = "Assets/_Project/Scenes";
         const string SceneName   = "Greywick";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
+
+        // Dev-bootstrap core art/data (mirrors PersistentCoreBuilder's player + gauge wiring).
+        const string DataFish        = "Assets/_Project/Data/Fish";
+        const string ArtFisher       = "Assets/_Project/Art/Characters/FisherSheet.png";
+        const string IsoFisherVisual = "Assets/_Project/Data/Characters/FisherIso.asset";
+        const string ArtTensionGauge   = "Assets/_Project/Art/UI/TensionGauge.png";
+        const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
+        const string ArtFishSilhouette = "Assets/_Project/Art/UI/FishOnSilhouette.png";
 
         // VS-22 arrival/dock geometry — single source of truth shared with GreywickDockTests. The persistent
         // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
@@ -424,6 +436,15 @@ namespace HiddenHarbours.App.Editor
             var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
 
+            // --- DEV BOOTSTRAP (owner iteration: press Play IN GREYWICK and walk/fish immediately) ------
+            // Greywick is a region scene: the real player arrives with the persistent core from St Peters,
+            // so playing this scene directly used to give "no character loads" (the owner's report). The
+            // fix: bake a minimal, self-contained DEV CORE — services + follow camera + a walkable,
+            // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
+            // that activates it ONLY when the scene is played directly in the editor and destroys it
+            // (never awakened — no service stomp, no duplicate player) when the real core travels in.
+            BuildDevBootstrap(config, cam, DisembarkPos);
+
             // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
             // A sparse-to-moderate scatter of cold-coast trees on the WEST quay land only — the far-west
             // back edge behind the houses and a few in the gaps between/around the buildings — to soften
@@ -460,6 +481,138 @@ namespace HiddenHarbours.App.Editor
                 "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Greywick Scene', then re-test.",
                 "Fair winds");
         }
+
+        // ---- dev bootstrap (press Play in Greywick → a playable, fishing-capable character) ----------
+
+        /// <summary>
+        /// Bake the INACTIVE dev core + the active <see cref="DevRegionBootstrap"/> that arbitrates it
+        /// (see the call site). The core is a deliberately minimal mirror of the persistent rig — the
+        /// services (GameClock/EnvironmentService/PlayerWallet/GameRoot + HUD), a pixel-perfect follow
+        /// camera, and the on-foot player with the ROD RIG mounted directly on them (FishingController +
+        /// DevFishingInput; hold = the player's ClamBucket, angler = self) — no boat, no travel rig, no
+        /// persistence: it exists to FEEL the on-foot fishing loop in this region, nothing more.
+        /// Null-safe on art/data (the greybox rule): missing sheets/defs leave pieces inert, never break
+        /// the build.
+        /// </summary>
+        static void BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn)
+        {
+            var devCore = new GameObject("DevCore");
+
+            // Services root (mirrors PersistentCoreBuilder's GameRoot block; GameRoot wires GameServices
+            // on activation). Greywick's own authored tide (RegionDef PortGreywick: mean 0, amp 0.8,
+            // phase 2 h) so the dev session's harbour swings on this region's curve.
+            var root = new GameObject("GameRoot");
+            root.transform.SetParent(devCore.transform, false);
+            var clock  = root.AddComponent<GameClock>();
+            var env    = root.AddComponent<EnvironmentService>();
+            var wallet = root.AddComponent<PlayerWallet>();
+            var gameRoot = root.AddComponent<GameRoot>();
+            SetRef(clock, "_config", config);
+            SetRef(env, "_config", config);
+            SetTideProfile(env, 0f, 0.8f, 2f);
+            SetRef(gameRoot, "_clock", clock);
+            SetRef(gameRoot, "_environment", env);
+            SetRef(gameRoot, "_wallet", wallet);
+            var hud = root.AddComponent<HudController>();
+            SetRef(hud, "_config", config);
+
+            // Follow camera (the review camera is silenced when this core seeds; MainCamera tag so
+            // Camera.main — the fishing pointer's mapping — resolves to the live one).
+            var devCamGo = new GameObject("DevCamera");
+            devCamGo.transform.SetParent(devCore.transform, false);
+            devCamGo.tag = "MainCamera";
+            var devCam = devCamGo.AddComponent<Camera>();
+            devCam.orthographic = true;
+            devCam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
+            devCam.clearFlags = CameraClearFlags.SolidColor;
+            devCam.backgroundColor = new Color(0.05f, 0.10f, 0.15f);
+            devCamGo.transform.position = new Vector3(devSpawn.x, devSpawn.y, -10f);
+            devCamGo.AddComponent<AudioListener>();
+            ArtCameraSetup.ConfigurePixelPerfect(devCamGo);
+            var devPpc = devCamGo.GetComponent<PixelPerfectCamera>();
+            if (devPpc != null)
+            {
+                CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters,
+                                                               out int refW, out int refH);
+                devPpc.refResolutionX = refW;
+                devPpc.refResolutionY = refH;
+                EditorUtility.SetDirty(devPpc);
+            }
+
+            // The on-foot player at the dev spawn (the wharf planks), with the rod rig mounted on THEM:
+            // the FishingController's angler defaults to its own transform here, the hold is the player's
+            // hand-held ClamBucket, and DevFishingInput is live on foot (the dock-first mode gate).
+            var playerGo = new GameObject("Player");
+            playerGo.transform.SetParent(devCore.transform, false);
+            playerGo.transform.position = devSpawn;
+            var playerSr = playerGo.AddComponent<SpriteRenderer>();
+            playerSr.sortingOrder = 10;
+            var prb = playerGo.AddComponent<Rigidbody2D>();
+            prb.gravityScale = 0f; prb.freezeRotation = true;
+            prb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            var foot = playerGo.AddComponent<CircleCollider2D>();
+            foot.radius = 0.35f; foot.offset = new Vector2(0f, -0.7f);
+            var walk = playerGo.AddComponent<PlayerWalkController>();
+            var fisherFrames = LoadSheetFrames(ArtFisher);
+            SetRefArray(walk, "_frames", fisherFrames.Cast<Object>().ToArray());
+            if (fisherFrames.Length > 0 && fisherFrames[0] != null) playerSr.sprite = fisherFrames[0];
+            var isoVisual = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>(IsoFisherVisual);
+            var isoSkin = playerGo.AddComponent<IsoCharacterSprite>();
+            SetRef(isoSkin, "_visual", isoVisual);
+            playerGo.AddComponent<ClamBucket>();   // the hand-held IHold the rod rig lands into
+
+            var fishing = playerGo.AddComponent<FishingController>();
+            playerGo.AddComponent<DevFishingInput>();
+            SetRef(fishing, "_holdProvider", playerGo);   // the bucket above (IHold on the same GO)
+            SetRef(fishing, "_config", config);
+            SetString(fishing, "_regionId", "region.port_greywick");
+            var rodFish = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
+            }.Where(f => f != null).Cast<Object>().ToArray();
+            if (rodFish.Length > 0) SetRefArray(fishing, "_regionFish", rodFish);
+            else Debug.LogWarning("[GreywickBuilder] No rod species assets found under " + DataFish +
+                                  " — the dev bootstrap will cast into an empty pool (NoBite).");
+
+            var cameraFollow = devCamGo.AddComponent<CameraFollow>();
+            cameraFollow.Target = playerGo.transform;
+            SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
+
+            // The transient rod gauge + the dev toast channel (cast/bite/no-water feedback on screen).
+            var gaugeGo = new GameObject("FishingGauge");
+            gaugeGo.transform.SetParent(devCore.transform, false);
+            var gauge = gaugeGo.AddComponent<RodGaugeView>();
+            SetRef(gauge, "_gaugeSprite", LoadSpriteAny(ArtTensionGauge));
+            SetRef(gauge, "_lineHookSprite", LoadSpriteAny(ArtLineHook));
+            SetRef(gauge, "_fishSprite", LoadSpriteAny(ArtFishSilhouette));
+            var toastGo = new GameObject("DevToast");
+            toastGo.transform.SetParent(devCore.transform, false);
+            toastGo.AddComponent<DevToast>();
+
+            // Baked INACTIVE — the bootstrap below is the only thing that may ever activate it.
+            devCore.SetActive(false);
+
+            var bootstrapGo = new GameObject("DevRegionBootstrap");
+            var bootstrap = bootstrapGo.AddComponent<DevRegionBootstrap>();
+            bootstrap.Configure(devCore, sceneReviewCamera);
+        }
+
+        static void SetTideProfile(Component env, float mean, float amp, float phase)
+        {
+            var so = new SerializedObject(env);
+            var tp = so.FindProperty("_activeTideProfile");
+            if (tp == null) return;
+            tp.FindPropertyRelative("MeanLevel").floatValue = mean;
+            tp.FindPropertyRelative("Amplitude").floatValue = amp;
+            tp.FindPropertyRelative("PhaseHours").floatValue = phase;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static Sprite[] LoadSheetFrames(string path)
+            => AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                            .OrderBy(s => SpriteIndex(s.name)).ToArray();
 
         // ---- converged water model — shared config (single source of truth with the EditMode test) ----
 
