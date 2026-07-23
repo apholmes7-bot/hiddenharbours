@@ -68,6 +68,34 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "Fisher_hold",       new Vector2Int(64, 88) },
             { "Fisher_cast_short", new Vector2Int(64, 88) },
             { "Fisher_cast_long",  new Vector2Int(64, 88) },
+
+            // Fight/balance cycle (rod fishing v2 wave 1, spec in PR #251) — baked in-engine by
+            // Hidden Harbours ▸ Art ▸ Bake Character Fight Sheets, plain character cell like the rest.
+            // These stems are also in AwaitingOwnerBake below until their PNGs are committed.
+            { "Fisher_bite",        new Vector2Int(64, 88) },
+            { "Fisher_strike",      new Vector2Int(64, 88) },
+            { "Fisher_reel",        new Vector2Int(64, 88) },
+            { "Fisher_land",        new Vector2Int(64, 88) },
+            { "Fisher_castBack",    new Vector2Int(64, 88) },
+            { "Fisher_castRelease", new Vector2Int(64, 88) },
+            { "Fisher_balance",     new Vector2Int(64, 88) },
+            { "Fisher_stagger",     new Vector2Int(64, 88) },
+        };
+
+        /// <summary>
+        /// Guarded stems whose sheets are SPECIFIED but not yet on disk: the fight cycle bakes on
+        /// the owner's machine (the in-engine baker needs an open editor; CI has none and this
+        /// machine was contested at authoring time). Until a stem's PNG is committed it is excluded
+        /// from every assertion — the moment the PNG lands it is held to all of them, with no code
+        /// change. The rig-side half of the contract is NOT waiting: CharacterRigBakeTests proves
+        /// the rig's frame counts against ExpectedFrames' numbers on every CI run.
+        /// ⚠️ DELETE each stem from this set in the commit that lands its PNG — once shipped, a
+        /// deleted sheet must fail the closed-set guard, not quietly read as "pending" again.
+        /// </summary>
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>
+        {
+            "Fisher_bite", "Fisher_strike", "Fisher_reel", "Fisher_land",
+            "Fisher_castBack", "Fisher_castRelease", "Fisher_balance", "Fisher_stagger",
         };
 
         /// <summary>The README's / drop's stated frame counts, checked against the PNG widths.</summary>
@@ -77,9 +105,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "Ginny_idle", 6 },   { "Ginny_walk", 8 },   { "Ginny_run", 6 },
             { "Skipper_idle", 6 }, { "Skipper_walk", 8 }, { "Skipper_run", 6 },
             { "Fisher_hold", 6 },  { "Fisher_cast_short", 10 }, { "Fisher_cast_long", 10 },
+
+            // Fight/balance cycle — the counts the rig's ANIMS table declares (cross-checked
+            // against the rig on every run by CharacterRigBakeTests, and against these PNGs here
+            // once they land).
+            { "Fisher_bite", 6 },     { "Fisher_strike", 6 },
+            { "Fisher_reel", 12 },    { "Fisher_land", 12 },
+            { "Fisher_castBack", 6 }, { "Fisher_castRelease", 8 },
+            { "Fisher_balance", 8 },  { "Fisher_stagger", 10 },
         };
 
-        private static IEnumerable<string> AllSheets() => Sheets.Keys.OrderBy(s => s).ToArray();
+        /// <summary>A guarded stem is asserted when its sheet exists, or is still awaiting the
+        /// owner's bake. Anything else — present-but-unguarded or missing-and-shipped — fails.</summary>
+        private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
+
+        private static IEnumerable<string> AllSheets() =>
+            Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
+                  .OrderBy(s => s).ToArray();
 
         private static Vector2Int Cell(string stem) => Sheets[stem];
 
@@ -253,7 +295,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // The one place the stated frame counts are checked — against the PNGs, so a re-export that
             // quietly changed an animation's length is caught rather than absorbed.
-            foreach (var kv in ExpectedFrames)
+            foreach (var kv in ExpectedFrames.Where(kv => !AwaitingOwnerBake.Contains(kv.Key) || OnDisk(kv.Key)))
             {
                 var tex = LoadSheet(kv.Key);
                 int cols = tex.width / Cell(kv.Key).x;
@@ -286,12 +328,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void EveryIsoCharacterPngInTheFolder_IsCoveredByThisTest()
         {
-            // A thirteenth sheet dropped into the folder must not slip past the guard unnoticed.
+            // A new sheet dropped into the folder must not slip past the guard unnoticed. The
+            // expected set is every guarded stem except those still awaiting the owner's bake — so
+            // an UNGUARDED png on disk still fails (it is not in Sheets at all), and a guarded,
+            // already-shipped sheet going missing still fails; only a spec'd-but-not-yet-baked
+            // fight sheet is tolerated as absent.
             var onDisk = Directory.GetFiles(Iso, "*.png")
                                   .Select(Path.GetFileNameWithoutExtension)
                                   .OrderBy(s => s)
                                   .ToArray();
-            CollectionAssert.AreEquivalent(Sheets.Keys.OrderBy(s => s).ToArray(), onDisk,
+            CollectionAssert.AreEquivalent(AllSheets().ToArray(), onDisk,
                                            "Iso character sheets on disk differ from the guarded set");
         }
     }
