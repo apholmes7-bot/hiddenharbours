@@ -444,6 +444,20 @@ namespace HiddenHarbours.Boats
         /// shared feel-scale, and a light hull-specific damping settles the wave-driven motion between
         /// crests. A disabled policy / glass / full shelter / null hull all short-circuit to no force, so
         /// today's handling is preserved exactly.
+        ///
+        /// <para><b>SEE==FEEL (ADR 0023 phase 3 — owner ruling 2026-07-23, "Yes seas push should
+        /// match").</b> While the displaced sea is active, the push reads the SAME displaced
+        /// (exaggerated + shore-faded) height the player sees the hull ride — the resolved force ×
+        /// <see cref="SeakeepingForcesMath.DisplacedForceScale"/> with the surface's OWN published
+        /// exaggeration + band (the Core <see cref="DisplacedSea"/> seam, never a per-consumer config
+        /// read). Offshore the sea shoves ×exaggeration harder; inside the shore-fade band the boat
+        /// FEELS the calm it can see (and the between-crests damping stands down with the force, since
+        /// the visible sea is no longer working the boat there). Displaced OFF ⇒ scale exactly 1 ⇒
+        /// this whole path is byte-identical to before — the A/B contract extends to physics. While
+        /// the dev A/B toggle exists this makes handling depend on a presentation toggle — deliberate,
+        /// the owner's explicit call; once the displaced sea ships as the default the distinction
+        /// collapses. The scale is recomputed every tick from published config+envelope state (rule 5
+        /// — nothing saved, no hidden randomness).</para>
         /// </summary>
         private void ApplySeakeeping(Vector2 fwd, EnvironmentSample env)
         {
@@ -465,10 +479,18 @@ namespace HiddenHarbours.Boats
             SeakeepingResponse response = ResponseFor(_hull);
             SeakeepingForce sea = SeakeepingForcesMath.Resolve(
                 in wave, fwd, exposure, env.SeaState01, in response, in _seakeeping);
-            if (sea.Force == Vector2.zero && sea.Torque == 0f) return;
 
-            _rb.AddForce(sea.Force * ForceFeelScale, ForceMode2D.Force);
-            _rb.AddTorque(sea.Torque * ForceFeelScale);
+            // SEE==FEEL (ADR 0023 — owner ruling 2026-07-23): displaced sea active ⇒ the push is the
+            // displaced push (× the surface's published exaggeration × its shore fade at this depth,
+            // the same depth read as the exposure above); inactive ⇒ scale exactly 1, byte-identical.
+            bool displacedActive = DisplacedSea.TryGet(out DisplacedSeaState displaced);
+            float displacedScale = SeakeepingForcesMath.DisplacedForceScale(displacedActive, depth, in displaced);
+            Vector2 seaForce = sea.Force * displacedScale;
+            float seaTorque = sea.Torque * displacedScale;
+            if (seaForce == Vector2.zero && seaTorque == 0f) return;
+
+            _rb.AddForce(seaForce * ForceFeelScale, ForceMode2D.Force);
+            _rb.AddTorque(seaTorque * ForceFeelScale);
 
             // Light hull-specific damping: a steadier hull settles faster between crests, so it wanders off
             // course less in a beam sea. Only while the sea is actually working the boat (scaled by the same

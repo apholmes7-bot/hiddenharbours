@@ -2063,13 +2063,25 @@ and re-publishes every ~8 Hz tick). Delivery differs by hull kind, agreement doe
   every hull's pose is byte-identical to the pre-phase-3 flat-water render
   (`SharedHeaveTests` / `SharedHeavePlayTests` pin the whole law).
 
-**Open for the owner — seakeeping FORCES (see==feel vs feel-the-swell):** physics still reads
-the UNFADED sim height (`GameConfig.Seakeeping` untouched by this step). With the displaced sea
-on, what you SEE is exaggerated ×1.5 and shore-faded; what the hull FEELS is the sim-true,
-unfaded swell — so near a beach the boat visibly settles while the sea still pushes it a little.
-The ADR flags this deliberately undecided. Recommendation on file (the step-2 PR): keep forces
-on the sim height — P1's integrity rule is that the sim is the truth and the exaggeration is a
-readability lens; scaling forces by a presentation knob would let a visual tune change handling.
+**RULED and shipped — seakeeping FORCES read the displaced height (SEE==FEEL).** The owner
+closed the ADR's open question on 2026-07-23, verbatim: **"Yes seas push should match"** —
+overriding the keep-sim-true recommendation previously on file (his call, deliberate). While the
+displaced sea is active, every height-scaled seakeeping force term (the wave push + the wave yaw
+torque, both linear in the field's amplitude via its slope) is multiplied by
+`SeakeepingForcesMath.DisplacedForceScale` = the surface's **published** exaggeration ×
+`ShoreFadeMath.Fade01(depth, band)` — the same wave sample, the same factor the vertex stage and
+the visual ride use, read from the Core `DisplacedSea` seam (never a per-consumer config read).
+Boats now *feel* calm water inside the shore-fade band and *feel* the ×exaggeration drama
+offshore — the sea's push matches what the player sees, and `GameConfig.WaveExaggeration`
+deliberately becomes a handling dial as well as a readability one. Displaced OFF the scale is
+exactly 1: forces read the raw sim height byte-identically — the A/B contract extends to
+physics. Design consequence accepted with the ruling: while the dev A/B toggle exists, handling
+depends on a presentation toggle; once the displaced sea ships as the default that distinction
+collapses. Laws pinned by `SeeEqualsFeelForcesTests` (EditMode: OFF byte-identity, open-water
+×exaggeration, shore-fade parity, linearity in the published exaggeration, and the
+output-scaling ≡ displaced-field-read equivalence) and `SeeEqualsFeelForcesPlayTests` (PlayMode:
+an adrift hull's push stills at published exaggeration 0, hardens at 2, and returns exactly when
+the seam clears — deterministic scripted clock).
 
 **Proof** (`HullWaterlineAcceptanceTests`, the IsoFacetUrpPassTests pattern — production path via
 `Camera.Render()`, Null-Device-gated for CI; measured RTX 4060 / D3D12 2026-07-23 and pinned): a
