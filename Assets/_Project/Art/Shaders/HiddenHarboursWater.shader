@@ -535,6 +535,29 @@ Shader "HiddenHarbours/Water"
         _WaveExaggeration ("Displacement exaggeration (1 = sim true, 1.5 = ADR 0023 default)", Float) = 1.5
         _ShoreFadeBand    ("Shore fade band (m of depth, derived and pushed)", Float) = 0.5
         _WaterIsoDepth    ("Iso depth factors (cos elev, sin elev)", Vector) = (0.766, 0.643, 0, 0)
+
+        [Header(ENVELOPE SALIENCE (ADR 0023 step 2   the big wave wears the foam and the shade))]
+        // The whitecap-salience retune + the envelope-relative value bands (ADR 0023 §(3)-(4) and
+        // §"Whitecap salience retune") — shared by BOTH passes (flat and displaced; one fragment).
+        // Yesterday's caps marked EVERY crest with equal salience, which is exactly what hid the
+        // big one (the spike's control image: the 100%-envelope event sits in uniform speckle).
+        // Now cap CORE SOLIDITY keys on the crest factor — height relative to the field's envelope
+        // (_WaveFieldParams.z), not absolute height: ordinary chop wears thin dithered/milky
+        // streaks; only near-envelope crests wear the solid foam core. The VALUE BANDS mark the
+        // same axis by shade (posterized to the owner's palette anchors, Bayer-dithered at band
+        // EDGES only on world-locked PPU cells — the style law). Defaults are the SPIKE-TUNED
+        // values (spike/3d-water VERDICT.md: cap threshold 0.62, solid margin 0.3, dither fringe
+        // 0.25, bands 7, edge window 0.4), pinned by WhitecapSalienceMathTests against the C#
+        // twin (WhitecapSalienceMath). GameConfig plumbing is arc step 3 — material-level here.
+        // Every term is col.rgb-only dressing — never depth/clip()/_WaterLevel/the height read/
+        // the sim (P1 integrity, CLAUDE.md rule 5). Both masters at 0 = today's look EXACTLY.
+        _CapSalienceStrength   ("Cap envelope salience (0 = legacy even salience)", Range(0,1)) = 1.0
+        _CapEnvelopeThreshold  ("Cap envelope threshold (crest factor where cores begin)", Range(0,1)) = 0.62
+        _CapSolidMargin        ("Cap solid core margin (above threshold = fully solid)", Range(0,1)) = 0.3
+        _CapDitherBand         ("Cap dither fringe width (crest factor above threshold)", Range(0.01,1)) = 0.25
+        _EnvelopeBandStrength  ("Envelope band strength (0 = off / today)", Range(0,1)) = 0.35
+        _EnvelopeBands         ("Envelope value bands (solid steps)", Float) = 7
+        _EnvelopeBandDitherWin ("Envelope band edge dither window (0..1 of a band)", Range(0,1)) = 0.4
     }
 
     SubShader
@@ -853,6 +876,14 @@ Shader "HiddenHarbours/Water"
                 float  _WaveExaggeration;
                 float  _ShoreFadeBand;
                 float4 _WaterIsoDepth;
+                // ---- envelope salience (ADR 0023 phase 2 step 2; spike-tuned — see Properties) ----
+                float  _CapSalienceStrength;
+                float  _CapEnvelopeThreshold;
+                float  _CapSolidMargin;
+                float  _CapDitherBand;
+                float  _EnvelopeBandStrength;
+                float  _EnvelopeBands;
+                float  _EnvelopeBandDitherWin;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -860,6 +891,58 @@ Shader "HiddenHarbours/Water"
             {
                 float ppu = max(_PixelsPerUnit, 1.0);
                 return floor(p * ppu) / ppu;
+            }
+
+            // ---- world-locked ordered dither (the rigs' own 4x4 Bayer; ADR 0023 §(3) style law) -------------
+            // Thresholds are (v + 0.5)/16 exactly as the boat rigs and the facet pass hold them, indexed by
+            // the PPU-quantised WORLD cell — world-derived dither cannot crawl under camera translation
+            // (the ADR 0022 facet discipline; zero crawl by construction). Used ONLY inside a window around
+            // a band/threshold EDGE: full-range Bayer dissolves the quantised bands back into a smooth
+            // gradient and the surface reads as airbrushed 3D, not this game (spike run-1, measured).
+            static const float BAYER4[4][4] =
+            {
+                {  0.5/16.0,  8.5/16.0,  2.5/16.0, 10.5/16.0 },
+                { 12.5/16.0,  4.5/16.0, 14.5/16.0,  6.5/16.0 },
+                {  3.5/16.0, 11.5/16.0,  1.5/16.0,  9.5/16.0 },
+                { 15.5/16.0,  7.5/16.0, 13.5/16.0,  5.5/16.0 },
+            };
+            float BayerWorld(float2 worldXY)
+            {
+                int2 cell = int2(floor(worldXY * max(_PixelsPerUnit, 1.0)));
+                return BAYER4[cell.x & 3][cell.y & 3];   // int & wraps negatives (two's complement)
+            }
+
+            // ==== ENVELOPE SALIENCE (ADR 0023 §(4) + §"Whitecap salience retune" — phase 2 step 2) ==========
+            // The C# twin is HiddenHarbours.Art.WhitecapSalienceMath — LINE-FOR-LINE; change one, change both
+            // in the same commit (the WaveMath twin discipline). WhitecapSalienceMathTests pins the twin to
+            // the spike-tuned defaults and to the reference sea's 100%-envelope event (t = 1513.5 s).
+
+            // The SOLID-CORE gate: 0 below the envelope threshold (ordinary chop earns NO solid core), a
+            // Bayer-dithered fringe across `ditherBand` just above it (dither at the EDGE only — the style
+            // law), hard 1 past `solidMargin` (near-envelope crests wear the solid foam core). The caller
+            // feeds `crestFactor` = the field's sharpened height/envelope (WaveFieldSample's crestF), so the
+            // gate is envelope-relative by construction — a bigger SEA does not fake a bigger WAVE.
+            float CapEnvelopeGate(float crestFactor, float threshold, float solidMargin,
+                                  float ditherBand, float bayer)
+            {
+                float sig = crestFactor - threshold;
+                if (sig <= 0.0) return 0.0;
+                if (sig >= solidMargin) return 1.0;
+                return (sig / max(ditherBand, 1e-4)) > bayer ? 1.0 : 0.0;
+            }
+
+            // Posterize a 0..1 value into `bandCount` SOLID steps, Bayer-dithering ONLY inside `ditherWin`
+            // (a 0..1 fraction of a band) around each rounding boundary — outside the window the step is
+            // hard (solid bands, dithered edges; the spike's exact formula). v = 1 lands the TOP band on
+            // every dither cell, so only a near-envelope crest can reach the top shade.
+            float BandValue01(float v01, float bandCount, float ditherWin, float bayer)
+            {
+                float bands = max(bandCount, 2.0);
+                float x = saturate(v01) * (bands - 1.0);
+                float fb = floor(x);
+                float win = clamp(ditherWin, 1e-3, 1.0);
+                float e = saturate(((x - fb) - (0.5 - 0.5 * win)) / win);
+                return (fb + (e > bayer ? 1.0 : 0.0)) / (bands - 1.0);
             }
 
             // ---- cheap value noise (hash-lattice, smooth interpolation). Deterministic, no textures. ----
@@ -2433,6 +2516,39 @@ Shader "HiddenHarbours/Water"
                     col.rgb += faceSigned * saturate(_SwellFaceShade) * swellReadGate * 0.15;
                 }
 
+                // ---- ENVELOPE VALUE BANDS (ADR 0023 §(4) — the big wave is marked by SHADE as well as foam)
+                // The displaced-water arc's named shading component: posterize the field's ENVELOPE-RELATIVE
+                // height (waveHeight / _WaveFieldParams.z — the same normalizer the crest factor uses) into
+                // SOLID value steps shaded from the owner's palette anchors (_PaletteDeep/Mid/Shallow — the
+                // ADR 0015 anchors, so the bands wear his colours and the guard-rail below still bounds
+                // them), Bayer-dithered ONLY at the band edges on world-locked PPU cells (the style law
+                // §(3): full-range dither = airbrush, forbidden — spike-measured). Because the value axis is
+                // envelope-relative, the TOP band is reachable only by a near-envelope crest — the rare big
+                // wave is marked by shade even before its foam core (the spike's still-frame keystone; bands
+                // 7 and window 0.4 are the spike's tuned values). SHARED fragment: the flat pass gains the
+                // banded read, the displaced pass shades its own lifted geometry with the same bands.
+                // Gates: trains only (no envelope without the field), the glass gate (dead-flat sea shows no
+                // bands — the swellSigned constant, reused) and the shared modelled-swell CALM gate (the
+                // bands melt away with the swell they mark; one modelled swell, one gate). col.rgb ONLY —
+                // never depth/clip()/the deep tint/_WaterLevel/the height read/the sim (P1 integrity,
+                // CLAUDE.md rule 5). _EnvelopeBandStrength = 0 is an EXACT passthrough (today's look).
+                float bay = BayerWorld(worldXY);   // ONE world-locked dither read; the caps below reuse it
+                if (_EnvelopeBandStrength > 0.001 && trainsLive && swellReadGate > 0.001)
+                {
+                    float bandLive = saturate(_WaveFieldParams.z * 40.0);   // the glass gate (~0.025 m engages)
+                    if (bandLive > 0.001)
+                    {
+                        // 0 = full trough .. 0.5 = mean level .. 1 = the full envelope crest.
+                        float vN = saturate(waveHeight / max(_WaveFieldParams.z, 1e-5) * 0.5 + 0.5);
+                        float q = BandValue01(vN, _EnvelopeBands, _EnvelopeBandDitherWin, bay);
+                        float3 bandShade = q < 0.5
+                            ? lerp(_PaletteDeep.rgb, _PaletteMid.rgb, q * 2.0)
+                            : lerp(_PaletteMid.rgb, _PaletteShallow.rgb, (q - 0.5) * 2.0);
+                        col.rgb = lerp(col.rgb, bandShade,
+                                       saturate(_EnvelopeBandStrength) * swellReadGate * bandLive);
+                    }
+                }
+
                 // ---- layer 5 caustics (shallows only; under the foam/spec so it reads as the seabed) ----------
                 // Optional _CausticShallowBias pushes the caustic band a little DEEPER off the very edge (m),
                 // so the day-dapple doesn't fight the see-through band where lowered alpha would fade it. 0 =
@@ -2704,7 +2820,19 @@ Shader "HiddenHarbours/Water"
                                                     _WaveFieldParams.z);
                         // BREAK: bright and crisp on the crest tip — the solid core's tight edge over the
                         // pixelized field reads as pixel-art foam edges, not soft alpha fog.
-                        float solidPart = capCoreT * breakCore * capPeak;
+                        // ==== ENVELOPE SALIENCE (ADR 0023 phase 2 step 2 — retire the uniform speckle) ====
+                        // Yesterday every local crest tip earned the same dense core, which is exactly what
+                        // hid the big one (the spike's control image). The SOLID core is now RESERVED for
+                        // near-envelope crests: waveCrest (the sharpened crest factor — already
+                        // height/envelope) gates it at the spike-tuned threshold (0.62) — hard past the
+                        // solid margin, Bayer-dithered across the fringe (edges only, the style law), zero
+                        // below. Ordinary chop keeps only the thin milky residual streaks (milkyPart below,
+                        // itself already envelope-keyed through crestF). _CapSalienceStrength 0 restores the
+                        // legacy even salience EXACTLY.
+                        float envGate = CapEnvelopeGate(waveCrest, _CapEnvelopeThreshold, _CapSolidMargin,
+                                                        _CapDitherBand, bay);
+                        float solidPart = capCoreT * breakCore * capPeak
+                                          * lerp(1.0, envGate, saturate(_CapSalienceStrength));
                         // RESIDUAL: milky, trailing BEHIND the crest, streaked downwind by the aniso coord.
                         float milkyPart = capMilkyT * residualLife * lerp(0.45, capPeak, capDens);
                         capOpacity = saturate(max(solidPart, milkyPart)) * crestGate * waveGate * saturate(dt);
@@ -2733,7 +2861,18 @@ Shader "HiddenHarbours/Water"
                     }
                     // FOAM CLUMPING: gather the coverage into the rafts/windrows (both paths; see the gate
                     // above). The saturate bounds the x1.25 in-patch lift so the lerp below never overshoots.
-                    capOpacity = saturate(capOpacity * clumpGate);
+                    // ---- the SEAM fades the caps (ADR 0023 §"Whitecap salience retune") -------------------
+                    // Near shore the displaced surface dies at the walkable waterline (ShoreFade01 — the
+                    // seam twin, design doc §21); its dying edge must not wear open-sea caps. The cap
+                    // opacity fades with the SAME curve over the SAME band the displaced vertex stage reads
+                    // (_ShoreFadeBand: pushed DERIVED per tick on the displaced pass; the material default
+                    // 0.5 m gives the flat pass a thin graceful band, and ShoreFade01's own floor degrades a
+                    // zeroed band to "no fade", never a divide). Shore foam/swash above is the separate
+                    // production dressing layer — untouched. Scaled by the master so _CapSalienceStrength 0
+                    // remains an EXACT legacy passthrough. Depth is READ-ONLY here (P1, rule 5).
+                    float capShoreFade = lerp(1.0, ShoreFade01(depth, _ShoreFadeBand),
+                                              saturate(_CapSalienceStrength));
+                    capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
 
