@@ -245,6 +245,10 @@ namespace HiddenHarbours.App.Editor
                 // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
                 // available if the crest still facets, but 192 is the ADR's recommended start.
                 ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
+                // (ADR 0023 arc step 3) The owner's GameConfig: WaterSurface pushes its DisplacedWater
+                // salience knobs (cap salience / envelope threshold / band strength) each tick — the
+                // one asset where the owner tunes how loudly the big wave is marked, no code (rule 6).
+                SetRef(surface, "_config", config);
 
                 // (ADR 0017) WEATHER-DRIVEN PALETTE: enable the weather mood on the Sea + assign the storm/fog/
                 // calm anchor preset moods, so this scene's sea EASES through the preset library as the
@@ -270,12 +274,13 @@ namespace HiddenHarbours.App.Editor
                 // beside WaterSurface, covering the SAME 160×120 m rect. Defaults OFF — the flat
                 // water renders exactly as today until the owner presses the dev key (O) in Play,
                 // which flips the sea to the vertically displaced mesh (same sim, same material,
-                // same waterline — the readability verdict instrument). All tunables live on the
-                // component (exaggeration ×1.5, derived fade band, 8 px grid); GameConfig exposure
-                // is arc step 3.
+                // same waterline — the readability verdict instrument). Exaggeration + the shore-band
+                // coefficient are OWNER DATA (arc step 3): the wired GameConfig's DisplacedWater
+                // block is the live source, re-read every tick; grid density + the per-coast shore
+                // gradient stay on the component (scene data, not world policy).
                 var displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
                 displaced.Configure(new Vector2(0f, 0f), new Vector2(160f, 120f),
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat));
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat), config);
             }
             else
             {

@@ -1894,15 +1894,23 @@ readability verdict instrument). The wiring, for anyone touching it:
   with the `Universal2D` pass disabled, and the fade band DERIVED each tick:
   `band = coefficient × live envelope × exaggeration × shoreGradient`
   (`DisplacedWaterMath.BandMeters`, pinned bit-equal to `ShoreFadeMath.RecommendedBandMeters`).
-  Exaggeration (×1.5) and coefficient (2) are inspector parameters for now; GameConfig exposure is
-  arc step 3.
+  Exaggeration (×1.5) and coefficient (2) are **owner data** (arc step 3, shipped):
+  `GameConfig.DisplacedWater` on `Assets/_Project/Data/Config/GameConfig.asset` is the live source
+  — the component re-reads it every tick, so tuning the asset in Play moves the sea within a
+  second; the component's serialized fields are the unwired fallback and mirror the config
+  defaults. Phase 3's hull heave reads the SAME value through `GameConfig.WaveExaggeration` (the
+  shared-constant accessor — never a per-consumer copy). `DisplacedWaterConfigTests` pins
+  config == shader defaults == twin constants, so a wired config is a visual no-op until the owner
+  actually tunes it. The per-coast shore gradient stays on the component (scene data, not world
+  policy).
 - **The A/B**: `O` at runtime (rebindable, the DevBoatPicker pattern) flips flat ↔ displaced in
   place. OFF is a contract: nothing registers, the feature records nothing, the flat water renders
   exactly as today.
 
-Still ahead in the arc (ADR 0023 §Phases): GameConfig exposure (step 3), hull waterline + shared
-heave (phase 3), and the screen-anchored-layer reviews (phase 4). The envelope-relative
-band/whitecap retune (step 2) shipped — §23 below.
+Still ahead in the arc (ADR 0023 §Phases): hull waterline + shared heave (phase 3) and the
+screen-anchored-layer reviews (phase 4). The envelope-relative band/whitecap retune (step 2)
+shipped — §23 below; the GameConfig exposure (step 3) shipped — the paragraphs above and §23's
+threshold table.
 
 
 ## 23. Envelope-relative salience — the big wave wears the solid foam core (ADR 0023, arc step 2·2)
@@ -1942,21 +1950,30 @@ crest factor the shared wave field already publishes — ADR 0023 §(4)):
   untouched.
 
 **Thresholds and where they live** (rule 6 — named material properties on Water.mat, spike-tuned
-defaults from `spike/3d-water` VERDICT.md / IsoWaterSpike.shader / SpikeWaterRenderer; GameConfig
-plumbing is arc step 3):
+defaults from `spike/3d-water` VERDICT.md / IsoWaterSpike.shader / SpikeWaterRenderer; the three
+OWNER knobs moved to GameConfig with arc step 3 — `GameConfig.DisplacedWater` on
+`Assets/_Project/Data/Config/GameConfig.asset`, pushed by `WaterSurface` onto the flat renderer's
+MPB each tick, which the displaced pass copies, so one push covers both passes; the four style
+constants stay material-level):
 
-| property | default | provenance |
-|---|---:|---|
-| `_CapSalienceStrength` | 1.0 | master; 0 = the legacy even salience, exactly |
-| `_CapEnvelopeThreshold` | 0.62 | spike `_CapThreshold` |
-| `_CapSolidMargin` | 0.3 | spike `_CapSolid` |
-| `_CapDitherBand` | 0.25 | spike `_CapDither` |
-| `_EnvelopeBandStrength` | 0.35 | production blend (spike rendered full-replacement) |
-| `_EnvelopeBands` | 7 | spike run value (`SpikeWaterRenderer`) |
-| `_EnvelopeBandDitherWin` | 0.4 | spike `_DitherWin` |
+| property | default | owner source (step 3) | provenance |
+|---|---:|---|---|
+| `_CapSalienceStrength` | 1.0 | `GameConfig.DisplacedWater.CapSalienceStrength` | master; 0 = the legacy even salience, exactly |
+| `_CapEnvelopeThreshold` | 0.62 | `GameConfig.DisplacedWater.CapEnvelopeThreshold` | spike `_CapThreshold` |
+| `_CapSolidMargin` | 0.3 | material (style constant) | spike `_CapSolid` |
+| `_CapDitherBand` | 0.25 | material (style constant) | spike `_CapDither` |
+| `_EnvelopeBandStrength` | 0.35 | `GameConfig.DisplacedWater.EnvelopeBandStrength` | production blend (spike rendered full-replacement) |
+| `_EnvelopeBands` | 7 | material (style constant) | spike run value (`SpikeWaterRenderer`) |
+| `_EnvelopeBandDitherWin` | 0.4 | material (style constant) | spike `_DitherWin` |
 
 The C# twin is `HiddenHarbours.Art.WhitecapSalienceMath` (`CapEnvelopeGate` / `BandValue01` /
 `BayerThreshold` / `CapShoreSalience`) — line-for-line with the HLSL, changed only in lockstep;
 `WhitecapSalienceMathTests` pins the twin to the reference sea's numbers AND scrapes the shader
-source so a drifted property default fails red. The owner's presets predate these properties, so a
-preset apply leaves them at the material/shader defaults — sane by construction.
+source so a drifted property default fails red, and `DisplacedWaterConfigTests` closes the
+triangle: the `DisplacedWaterSettings.Default` config values must equal the same shader defaults
+and twin constants, so config, shader and twin can never disagree silently. The owner's presets
+predate these properties, so a preset apply leaves them at the material/shader defaults — sane by
+construction (and the config push, being per-tick on the MPB, rides OVER whatever a preset left on
+the material — the config wins wherever it is wired). The three knob keys are deliberately NOT in
+`WaterSurface.MoodFloatNames`: they are owner policy, not weather mood — adding them there would
+double-drive the push.

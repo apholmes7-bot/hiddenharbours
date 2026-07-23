@@ -85,6 +85,16 @@ namespace HiddenHarbours.Art
             Smooth = 1,
         }
 
+        [Header("GameConfig (ADR 0023 arc step 3 — the owner's salience knobs)")]
+        [Tooltip("The shared GameConfig (Data/Config/GameConfig.asset; the builders wire this). When " +
+                 "wired, its Displaced Water salience knobs — Cap Salience Strength / Cap Envelope " +
+                 "Threshold / Envelope Band Strength — are pushed onto the water each tick, " +
+                 "overriding the material defaults, so the owner tunes how loudly the big wave is " +
+                 "marked on ONE asset with no code (rule 6). BOTH passes receive them: the displaced " +
+                 "surface copies this renderer's property block each tick. Left null, the " +
+                 "material/shader defaults apply (identical values by the lockstep pin).")]
+        [SerializeField] private GameConfig _config;
+
         [Header("Sim → surface mapping (tunable; no magic numbers — rule 6)")]
         [Tooltip("Current speed (m/s) that maps to full surface scroll. The tidal set is scaled into 0..1 flow " +
                  "against this, then onto the material's base Flow.")]
@@ -263,6 +273,10 @@ namespace HiddenHarbours.Art
         private static readonly int IdHeightMax  = Shader.PropertyToID("_HeightMax");
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
+        // (ADR 0023 arc step 3) the owner's GameConfig salience knobs — pushed from _config when wired.
+        private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
+        private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
+        private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
 
         // ==== Weather-palette MOOD property key set (ADR 0017) ============================================
         // The MOOD/COLOUR properties the weather blend lerps from the anchor presets and pushes via the MPB.
@@ -439,6 +453,9 @@ namespace HiddenHarbours.Art
                 {
                     _renderer.GetPropertyBlock(_mpb);
                     _mpb.SetFloat(IdWaterLevel, _previewTideLevel);
+                    // The owner's salience knobs show in the Scene view too, so edit-mode design
+                    // reads the same sea Play will (a no-op while no config is wired).
+                    PushSalienceKnobs(_mpb);
                     _renderer.SetPropertyBlock(_mpb);
                 }
                 return;
@@ -499,6 +516,11 @@ namespace HiddenHarbours.Art
                 _rainVisOnset, _rainVisFull, _rainSeaOnset);
             _mpb.SetFloat(IdRainIntensity, rainIntensity);
 
+            // (ADR 0023 arc step 3) The owner's GameConfig salience knobs, re-read EVERY tick so an
+            // in-Play config edit reaches the sea within one refresh. Pushed on the flat renderer's
+            // block, which the displaced surface COPIES each tick — one push covers both passes.
+            PushSalienceKnobs(_mpb);
+
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
             // by the eased weather weights and override them on the SAME MPB — composing with the physics props
             // just pushed (disjoint key sets, no double-drive). Reads the SAME deterministic EnvironmentSample
@@ -507,6 +529,26 @@ namespace HiddenHarbours.Art
             ApplyWeatherPalette(s, _mpb);
 
             _renderer.SetPropertyBlock(_mpb);
+        }
+
+        /// <summary>
+        /// (ADR 0023 arc step 3) Push the owner's three GameConfig salience knobs onto the block —
+        /// <c>_CapSalienceStrength</c> / <c>_CapEnvelopeThreshold</c> / <c>_EnvelopeBandStrength</c>
+        /// from <see cref="GameConfig.DisplacedWater"/>. A no-op with no config wired (the
+        /// material/shader defaults then apply — identical values by the lockstep pin, so wiring the
+        /// config changes nothing until the owner actually tunes it). These keys are DELIBERATELY
+        /// absent from <see cref="MoodFloatNames"/>: they are owner policy, not weather mood — adding
+        /// them there would double-drive this push. The remaining salience properties
+        /// (solid margin / dither band / band count / dither window) are style constants and stay
+        /// material-level (see <c>DisplacedWaterSettings</c>).
+        /// </summary>
+        private void PushSalienceKnobs(MaterialPropertyBlock mpb)
+        {
+            if (_config == null) return;
+            DisplacedWaterSettings dw = _config.DisplacedWater;
+            mpb.SetFloat(IdCapSalienceStrength, dw.CapSalienceStrength);
+            mpb.SetFloat(IdCapEnvelopeThreshold, dw.CapEnvelopeThreshold);
+            mpb.SetFloat(IdEnvelopeBandStrength, dw.EnvelopeBandStrength);
         }
 
         // ==== Weather-driven palette (ADR 0017) ===========================================================

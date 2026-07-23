@@ -359,6 +359,9 @@ namespace HiddenHarbours.App.Editor
                 var surface = seaGo.AddComponent<HiddenHarbours.Art.WaterSurface>();
                 ConfigureWaterSurface(surface, CoveSeaCenter, CoveSeaSize,
                                       CoveHeightResolution, CoveHeightMin, CoveHeightMax);
+                // (ADR 0023 arc step 3) The owner's GameConfig salience knobs — pushed each tick, so
+                // the cove marks the big wave with the SAME tuning as St Peters (one asset, no code).
+                SetRef(surface, "_config", data.Config);
                 // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
                 // (the live Water.mat is the calm baseline), storm/fog/calm anchors ease with the
                 // deterministic weather. Null-safe if a preset hasn't imported yet.
