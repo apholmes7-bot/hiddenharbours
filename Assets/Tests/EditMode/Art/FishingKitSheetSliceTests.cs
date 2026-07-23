@@ -337,7 +337,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
                            .OrderBy(s => s)
                            .ToArray()
                 : new string[0];
-            CollectionAssert.AreEquivalent(AllSheets().ToArray(), onDisk,
+            // NOTE: compare against the raw filtered stems, NOT AllSheets() — that helper yields the
+            // @awaiting-owner-bake sentinel (a TestCaseSource can't be empty), which is not a file.
+            string[] expected = Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
+                                     .OrderBy(s => s).ToArray();
+            CollectionAssert.AreEquivalent(expected, onDisk,
                                            "Fishing kit sheets on disk differ from the guarded set");
         }
     }
