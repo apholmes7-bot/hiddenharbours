@@ -66,9 +66,11 @@ namespace HiddenHarbours.Fishing
     /// "threw the hook": it costs the catch + bait time, never damage or lost gear. Real danger stays in the
     /// weather/tide/grounding lane. This class only models the <i>act</i> of the fight.</para>
     ///
-    /// <para><b>Built on the stable dock first (owner's locked call).</b> No boat/deck motion is modelled yet.
-    /// The rates are a SUM of independent terms, so a later position/angle term (the weathervaning deck,
-    /// brainstorm §4) slots in additively — see the seam in <see cref="TensionRatePerSec"/> — without a rewrite.</para>
+    /// <para><b>Built on the stable dock first (owner's locked call) — and the deck term now rides the
+    /// reserved seam (Wave 4).</b> The rates are a SUM of independent terms; the position/angle term of the
+    /// weathervaning deck (brainstorm §4.2, the "light real factor") arrives as the additive
+    /// <c>deckAnglePressurePerSec</c> parameter — computed by <see cref="DeckAngleMath"/>, exactly 0 off a
+    /// deck (or with the owner's <c>DeckAngleFactor</c> at 0), so the dock model is bit-for-bit unchanged.</para>
     /// </summary>
     public static class RodFightMath
     {
@@ -125,6 +127,27 @@ namespace HiddenHarbours.Fishing
         public static float TensionRatePerSec(bool reeling, float fishEffort01, float steerAlignment,
             RodFightPhase phase, float tensionRisePerSec, float tensionFallPerSec,
             float runTensionPressure, float counterSteerRelief)
+            => TensionRatePerSec(reeling, fishEffort01, steerAlignment, phase, tensionRisePerSec,
+                                 tensionFallPerSec, runTensionPressure, counterSteerRelief,
+                                 deckAnglePressurePerSec: 0f);
+
+        /// <summary>
+        /// The full tension rate including the <b>deck-angle term</b> (Rod Fishing v2 Wave 4 — the seam
+        /// the dock-first model reserved, now filled): <paramref name="deckAnglePressurePerSec"/> is the
+        /// slow extra pressure of a line running ACROSS the hull from a bad deck stance
+        /// (<see cref="DeckAngleMath.TensionPerSec"/> — already factor × stance, so it arrives here as a
+        /// plain ≥ 0 rate). It is ADDITIVE and one-sided: it only ever loads the line (walking the rail
+        /// relieves it back to 0 — never a bonus), it never touches landing, and at 0 this overload is
+        /// bit-for-bit the dock model above (the dock-parity contract, test-pinned). Off a deck the
+        /// caller passes 0 by construction (no published stance). Pure, deterministic, NaN-safe.
+        /// </summary>
+        /// <param name="deckAnglePressurePerSec">Extra tension per second from the deck stance (≥ 0;
+        /// negative/NaN reads 0). Keep the owner's factor below <c>tensionFallPerSec −
+        /// runTensionPressure</c> so a MAINTAIN still bleeds at the worst stance mid-run
+        /// (<see cref="MaintainOutbleedsTheRunAtTheWorstStance"/>).</param>
+        public static float TensionRatePerSec(bool reeling, float fishEffort01, float steerAlignment,
+            RodFightPhase phase, float tensionRisePerSec, float tensionFallPerSec,
+            float runTensionPressure, float counterSteerRelief, float deckAnglePressurePerSec)
         {
             float effort = Mathf.Clamp01(Safe(fishEffort01));
 
@@ -142,10 +165,11 @@ namespace HiddenHarbours.Fishing
             if (phase == RodFightPhase.Surface)
                 steer = Mathf.Max(0f, Safe(counterSteerRelief)) * Mathf.Clamp(Safe(steerAlignment), -1f, 1f) * effort;
 
-            // Seam for a later, dock-motion-free extension (brainstorm §4 — the weathervaning deck adds a
-            // position/angle term here; it stays additive, so no rewrite):
-            //   + BoatMotionTensionPerSec(...);
-            return timing + run + steer;
+            // The deck-angle term (brainstorm §4.2, the owner's "light real factor" — the seam this sum
+            // reserved): a line across the hull adds slow pressure; a clean stance adds exactly nothing.
+            float deck = Mathf.Max(0f, Safe(deckAnglePressurePerSec));
+
+            return timing + run + steer + deck;
         }
 
         /// <summary>
@@ -257,6 +281,19 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static bool MaintainOutbleedsTheRun(float runTensionPressure, float tensionFallPerSec)
             => Safe(runTensionPressure) < Safe(tensionFallPerSec);
+
+        /// <summary>
+        /// Invariant 2, extended onto the deck (Rod Fishing v2 Wave 4) — MAINTAIN still nets tension
+        /// DOWNWARD at the WORST deck stance mid-run. True iff <paramref name="runTensionPressure"/> +
+        /// <paramref name="deckAngleFactor"/> (the deck term's ceiling — the pressure at a line fully
+        /// across the hull) stays below <paramref name="tensionFallPerSec"/>: even standing at the wrong
+        /// rail through her hardest run, backing off recovers — the bad angle is a slow "walk the rail"
+        /// nudge, never an unavoidable snap (the owner's cozy rule; the tuning guard the shipped
+        /// <c>GameConfig.RodFight.DeckAngleFactor</c> default is test-pinned against).
+        /// </summary>
+        public static bool MaintainOutbleedsTheRunAtTheWorstStance(
+            float runTensionPressure, float deckAngleFactor, float tensionFallPerSec)
+            => Safe(runTensionPressure) + Mathf.Max(0f, Safe(deckAngleFactor)) < Safe(tensionFallPerSec);
 
         // ---- guards -----------------------------------------------------------------------------
 

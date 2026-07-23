@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using HiddenHarbours.Boats;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Player
 {
@@ -174,11 +175,23 @@ namespace HiddenHarbours.Player
         {
             if (_boatRoot == null) return;
             Vector2 boatPos = _boatRoot.position;
+            float drawnHeading = DrawnHeadingDegrees();
             Vector2 relative = (Vector2)transform.position - boatPos;
             relative = StepOnDeck(relative, ReadInput(), _moveSpeed, Time.deltaTime,
-                                  DrawnHeadingDegrees(), _deckCenter, _deckHalfExtents);
+                                  drawnHeading, _deckCenter, _deckHalfExtents);
             transform.position = boatPos + relative;
+
+            // Publish the LIVE deck frame through Core (DeckStance — Rod Fishing v2 §4): hull position,
+            // the drawn facing, and the walkable rectangle, re-published every tick so the drifting,
+            // weathervaning hull reaches consumers (the deck-angle fight term) at the same frame the
+            // player is clamped to. Publisher-owned: cleared the moment deck-walking ends (OnDisable).
+            DeckStance.Publish(this, new DeckStanceState(boatPos, drawnHeading, _deckCenter, _deckHalfExtents));
         }
+
+        /// <summary>Deck-walking ended (helm taken / stepped ashore / teardown) — the player no longer
+        /// stands on a deck, so the published stance goes with them (a dock cast must read NO stance:
+        /// the deck-angle term's off-contract).</summary>
+        private void OnDisable() => DeckStance.Clear(this);
 
         private void LateUpdate()
         {

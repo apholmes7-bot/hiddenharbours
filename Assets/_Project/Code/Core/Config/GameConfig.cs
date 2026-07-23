@@ -188,11 +188,24 @@ namespace HiddenHarbours.Core
                  "starts sooner.")]
         [Range(0f, 1f)] public float SurfaceThreshold01;
 
+        [Tooltip("DECK FISHING — the 'light real factor' (rod v2 §4.2): EXTRA tension per second " +
+                 "(0..1-gauge/s) at the WORST deck stance, i.e. the line running fully ACROSS the hull " +
+                 "(the fish off the far rail / astern of the wrong side while the unmanned boat " +
+                 "weathervanes under you). It fades linearly to 0 as you walk the rail toward a clean " +
+                 "line, and is exactly 0 anywhere off a boat — dock and shore fishing never feel it. " +
+                 "0 = OFF: deck fights read exactly like the dock (set 0 to feel dock-parity first). " +
+                 "Guard-rail: keep below TensionFallPerSec − RunTensionPressure so backing off still " +
+                 "recovers even at the worst stance mid-run (cozy — a bad angle is a 'walk the rail' " +
+                 "nudge, never an unavoidable snap; test-enforced on the default).")]
+        [Min(0f)] public float DeckAngleFactor;
+
         /// <summary>
         /// The forgiving-cove reference tuning: a pull loads clearly faster than it lands (0.55 &gt; 0.35 —
         /// the blind hold snaps first), a maintain bleeds twice her run's pressure (0.70 &gt; 0.35 — backing
-        /// off always recovers), a moderate counter-steer axis, and the surface break at half-landed so both
-        /// halves of the arc get play.
+        /// off always recovers), a moderate counter-steer axis, the surface break at half-landed so both
+        /// halves of the arc get play, and a gentle deck-angle factor (0.15) that keeps the on-deck
+        /// guard-rail comfortably true (0.35 + 0.15 &lt; 0.70 — a maintain still bleeds at the worst
+        /// stance mid-run; set it to 0 for exact dock-parity).
         /// </summary>
         public static RodFightSettings Default => new RodFightSettings
         {
@@ -202,6 +215,7 @@ namespace HiddenHarbours.Core
             RunTensionPressure = 0.35f,
             CounterSteerRelief = 0.45f,
             SurfaceThreshold01 = 0.5f,
+            DeckAngleFactor = 0.15f,
         };
     }
 

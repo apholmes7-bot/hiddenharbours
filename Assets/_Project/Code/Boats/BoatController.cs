@@ -305,9 +305,33 @@ namespace HiddenHarbours.Boats
             if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
 
-        private void FixedUpdate()
+        private void FixedUpdate() => StepPhysics();
+
+        /// <summary>
+        /// One physics tick of the sea working an <b>unmanned</b> hull — the "leave the helm to haul /
+        /// fish" drift (boats-and-navigation.md §3 beat 3; Rod Fishing v2 §4.1): while the player walks
+        /// the deck the helm is unattended, this component stays DISABLED (<c>enabled</c> is the
+        /// "helm is manned" read the oar/motor/probe layers rely on — that contract is untouched), and
+        /// the mode owner (the Player lane's <c>ControlSwitcher</c>) calls this from its own FixedUpdate
+        /// instead. It runs the exact same force pass the manned helm runs — hull drag against the
+        /// current (she SETS with the tide), wind shove, the seakeeping push + yaw (the weathervane the
+        /// deck angler fights against), grounding/shallows — just with the controls at rest
+        /// (<see cref="Stop"/> zeroed them when the helm was left), so propulsion contributes nothing.
+        /// One force model, never a parallel drift copy. No-op while enabled (FixedUpdate already runs
+        /// the pass — never double-integrate) and before a hull is wired.
+        /// </summary>
+        public void TickUnmannedDrift()
+        {
+            if (enabled) return;   // manned — the normal FixedUpdate owns the pass this tick
+            StepPhysics();
+        }
+
+        private void StepPhysics()
         {
             if (_hull == null) return;
+            // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
+            // through the disabled component in rigs where Awake hasn't cached it yet.
+            if (_rb == null && (_rb = GetComponent<Rigidbody2D>()) == null) return;
 
             EnvironmentSample env = GameServices.Environment != null
                 ? GameServices.Environment.Sample()

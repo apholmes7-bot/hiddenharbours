@@ -674,6 +674,19 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
     inextensible clamp; the hold/root/board state machine; disembark-only-on-land; board-from-anywhere;
     force determinism). The greybox rope is a placeholder; the FEEL is the point — the pretty rope is a
     later art pass.
+- **Leave-the-helm drift is LIVE on deck (Rod Fishing v2 Wave 4).** While the player walks the deck
+  (`ControlMode.OnDeck` — hauling, working pots, **fishing off the deck**) the helm is unattended, and the
+  sea keeps working the hull exactly as §3's "leave the helm, work the rail" beat promises: the Player
+  lane's `ControlSwitcher` ticks `BoatController.TickUnmannedDrift()` each physics step, which runs the
+  **same** force pass as the manned helm (hull drag against the current, wind shove, the seakeeping push +
+  yaw — the slow weathervane a deck angler repositions against) with the controls at rest. The controller
+  component itself stays **disabled** on deck — `enabled == "helm is manned"` remains the read the
+  oar/motor/probe presentation layers key off — so the drift is an explicit unmanned tick, never a second
+  force model. (Previously the deck mode suppressed the pass entirely: controller off + mooring stowed
+  left the hull frozen in glass while you fished.) The deck-walk also publishes the live **`DeckStance`**
+  frame through Core (hull position, drawn facing, the walkable rectangle) each tick; the Fishing lane's
+  deck-angle fight term reads it (rod-fishing-v2 §4.2, owner-tunable via `GameConfig.RodFight.DeckAngleFactor`,
+  0 = off/dock-parity).
 - **Control survives a region hop.** The persistent rig (player/boat/switcher) is `DontDestroyOnLoad`
   and carries the control **mode** across an additive region toggle, but nothing re-enabled the active
   boat's controller + input to match it on arrival — so a re-activated region (especially a **return**

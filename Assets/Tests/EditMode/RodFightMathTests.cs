@@ -308,8 +308,85 @@ namespace HiddenHarbours.Tests.EditMode
                 "the shipped default rise must exceed its fill (invariant 1)");
             Assert.IsTrue(RodFightMath.MaintainOutbleedsTheRun(d.RunTensionPressure, d.TensionFallPerSec),
                 "the shipped default run pressure must stay below its fall (invariant 2)");
+            Assert.IsTrue(RodFightMath.MaintainOutbleedsTheRunAtTheWorstStance(
+                    d.RunTensionPressure, d.DeckAngleFactor, d.TensionFallPerSec),
+                "the shipped deck-angle factor must leave a maintain net-negative even at the worst deck " +
+                "stance mid-run (the Wave-4 on-deck guard-rail — a bad angle is a nudge, never a snap)");
             Assert.That(d.SurfaceThreshold01, Is.InRange(0f, 1f), "the surface threshold is a 0..1 fraction");
             ScriptableObject.DestroyImmediate(cfg);
+        }
+
+        // ---- the deck-angle term (Wave 4 — the reserved seam, design §4.2) -----------------------
+
+        static float TensionOnDeck(bool reeling, float effort, float steer, RodFightPhase phase, float deckPressure)
+            => RodFightMath.TensionRatePerSec(reeling, effort, steer, phase, Rise, Fall, RunP, Relief, deckPressure);
+
+        [Test]
+        public void DeckAnglePressure_AtZero_IsBitForBitTheDockModel()
+        {
+            // The dock-parity contract: passing 0 through the 9-arg overload must equal the 8-arg dock
+            // model EXACTLY (no epsilon) — every phase, action and steer, so the dock path can route
+            // through the grown seam without a bit of drift.
+            foreach (var phase in new[] { RodFightPhase.Deep, RodFightPhase.Surface })
+            foreach (bool reeling in new[] { true, false })
+            foreach (float effort in new[] { 0f, 0.4f, 1f })
+            foreach (float steer in new[] { -1f, 0f, 1f })
+                Assert.AreEqual(
+                    Tension(reeling, effort, steer, phase),
+                    TensionOnDeck(reeling, effort, steer, phase, 0f),
+                    $"deck pressure 0 must be the dock model exactly ({phase}, reel {reeling}, e {effort}, s {steer})");
+        }
+
+        [Test]
+        public void DeckAnglePressure_AddsToTension_Linearly_InEveryPhaseAndAction()
+        {
+            // The term is a plain additive rate — independent of phase, action, effort and steer (the
+            // stance is the boat's geometry, not the fish's) — and LandingRatePerSec has no deck input
+            // at all (API shape): a bad stance can never pay the angler line, only load it.
+            const float pressure = 0.15f;
+            foreach (var phase in new[] { RodFightPhase.Deep, RodFightPhase.Surface })
+            foreach (bool reeling in new[] { true, false })
+            foreach (float effort in new[] { 0f, 1f })
+                Assert.AreEqual(Tension(reeling, effort, 0f, phase) + pressure,
+                    TensionOnDeck(reeling, effort, 0f, phase, pressure), 1e-6f,
+                    $"the deck term adds linearly ({phase}, reel {reeling}, e {effort})");
+        }
+
+        [Test]
+        public void DeckAnglePressure_NegativeOrNaN_ReadsAsZero()
+        {
+            float dock = Tension(false, 1f, 0f, RodFightPhase.Deep);
+            Assert.AreEqual(dock, TensionOnDeck(false, 1f, 0f, RodFightPhase.Deep, -0.4f), 1e-6f,
+                "a negative stance pressure is clamped to 0 — the deck never PAYS tension off");
+            Assert.AreEqual(dock, TensionOnDeck(false, 1f, 0f, RodFightPhase.Deep, float.NaN), 1e-6f,
+                "NaN reads as the safe 0 (rule 5)");
+        }
+
+        [Test]
+        public void Invariant2_HoldsOnDeck_AtTheWorstStance_WithShippedDefaults()
+        {
+            // The on-deck extension of invariant 2, integrated: at the worst stance (a line fully across
+            // the hull) through her hardest run, MAINTAIN must still net tension DOWN with the shipped
+            // defaults — cozy: the bad angle nudges you to walk the rail, it never forces a snap.
+            float worst = RodFightSettings.Default.DeckAngleFactor;   // pressure ceiling: factor × across(1)
+            Assert.IsTrue(RodFightMath.MaintainOutbleedsTheRunAtTheWorstStance(RunP, worst, Fall));
+            Assert.Less(TensionOnDeck(false, 1f, 0f, RodFightPhase.Deep, worst), 0f,
+                "deep maintain must bleed at the worst stance mid-run");
+            Assert.Less(TensionOnDeck(false, 1f, 0f, RodFightPhase.Surface, worst), 0f,
+                "surface maintain (neutral steer) must bleed at the worst stance mid-run");
+
+            // And invariant 1 only gets SAFER on deck: the term adds tension, never landing, so a blind
+            // pull still snaps before it lands — sooner, if anything.
+            float tension = 0f, landing = 0f;
+            int snapTick = -1;
+            for (int i = 0; i < 100000 && landing < 1f; i++)
+            {
+                tension = Mathf.Clamp01(tension + TensionOnDeck(true, 0f, 0f, RodFightPhase.Deep, worst) * 0.02f);
+                landing = Mathf.Clamp01(landing + Landing(true, 0f, 0f, RodFightPhase.Deep) * 0.02f);
+                if (tension >= 1f) { snapTick = i; break; }
+            }
+            Assert.GreaterOrEqual(snapTick, 0, "a blind pull on deck must still SNAP before it lands");
+            Assert.Less(landing, 1f, "…before the fish lands");
         }
     }
 }
