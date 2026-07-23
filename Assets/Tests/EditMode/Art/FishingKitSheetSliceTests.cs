@@ -121,9 +121,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         private static bool OnDisk(string stem) => File.Exists(Iso + stem + ".png");
 
-        private static IEnumerable<string> AllSheets() =>
-            Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
-                  .OrderBy(s => s).ToArray();
+        /// <summary>Sentinel yielded when EVERY stem is still awaiting the owner's bake: NUnit fails a
+        /// [TestCaseSource] outright when its source is empty ("No arguments were provided"), so the
+        /// pre-bake state must yield SOMETHING — each per-sheet test Assert.Ignores it (reads as
+        /// Skipped, honestly, instead of a fake red or a fake green).</summary>
+        private const string NothingBakedYet = "@awaiting-owner-bake";
+
+        private static IEnumerable<string> AllSheets()
+        {
+            string[] present = Sheets.Keys.Where(s => !AwaitingOwnerBake.Contains(s) || OnDisk(s))
+                                     .OrderBy(s => s).ToArray();
+            return present.Length > 0 ? present : new[] { NothingBakedYet };
+        }
+
+        /// <summary>The per-sheet tests' first line: skip the pre-bake sentinel.</summary>
+        private static void SkipIfNothingBaked(string stem)
+        {
+            if (stem == NothingBakedYet)
+                Assert.Ignore("Every fishing-kit sheet is awaiting the owner's bake (Hidden Harbours ▸ " +
+                              "Art ▸ Bake Fishing Kit) — nothing to assert yet.");
+        }
 
         private static Kit KitOf(string stem) => Sheets[stem];
 
@@ -153,6 +170,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void Sheet_IsSlicedMultipleMode_IntoItsKitsRowsOfTheArtsOwnFrameCount(string stem)
         {
+            SkipIfNothingBaked(stem);
             var importer = AssetImporter.GetAtPath(Iso + stem + ".png") as TextureImporter;
             Assert.IsNotNull(importer, $"{stem}: no TextureImporter — is the .meta committed?");
             Assert.AreEqual(SpriteImportMode.Multiple, importer.spriteImportMode,
@@ -175,6 +193,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void Sheet_ImportsAtNativeRes_NotDownscaled(string stem)
         {
+            SkipIfNothingBaked(stem);
             // The widest sheet here is 1344 px (Rod_*_reel) — under the 2048 default cap — so this
             // should never bite. Assert it anyway: a downscaled sheet cannot carry a source-pixel
             // grid while the sprite COUNT still matches, so only this and the pivot tests would
@@ -193,6 +212,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void EverySlice_IsOneCell_AndPivotsOnItsKitsAnchorPoint(string stem)
         {
+            SkipIfNothingBaked(stem);
             // ⚠️ Pixels, not normalized. A flipped pivot reads as a plausible number and silently
             // floats the fish 12 px off its waterline / hangs the rod 32 px off its grip.
             Kit kit = KitOf(stem);
@@ -214,6 +234,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void EverySlice_NormalizedPivot_IsTheKitsRule(string stem)
         {
+            SkipIfNothingBaked(stem);
             // The same rule in NORMALIZED terms — the number actually stored in the .meta:
             // fish (0.5, 26/64), bobber (0.5, 10/22), rod (0.5, 40/112). Three numbers, one
             // inversion rule — this catches a "generalisation" that quietly reused one kit's
@@ -235,6 +256,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void Slices_TileTheSheet_WithNoGapsAndNoOverlap(string stem)
         {
+            SkipIfNothingBaked(stem);
             var tex = LoadSheet(stem);
             Kit kit = KitOf(stem);
             int cols = tex.width / kit.Cell.x;
@@ -257,6 +279,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [TestCaseSource(nameof(AllSheets))]
         public void Slices_AreNamedByRowIndex_NotByCompassName(string stem)
         {
+            SkipIfNothingBaked(stem);
             var tex = LoadSheet(stem);
             Kit kit = KitOf(stem);
             int cols = tex.width / kit.Cell.x;
