@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 96fe71ac52bd0634b8457a31878a7d12
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4873335614941282991
+    second: Rod_cane_bite_0
+  - first:
+      213: -3134082324707988636
+    second: Rod_cane_bite_1
+  - first:
+      213: -3601212263458967402
+    second: Rod_cane_bite_2
+  - first:
+      213: 3216378329287183778
+    second: Rod_cane_bite_3
+  - first:
+      213: -2771883358531591389
+    second: Rod_cane_bite_4
+  - first:
+      213: 7690973496718922074
+    second: Rod_cane_bite_5
+  - first:
+      213: 1336303304119042851
+    second: Rod_cane_bite_6
+  - first:
+      213: 6020180917792809442
+    second: Rod_cane_bite_7
+  - first:
+      213: 1680203335602328268
+    second: Rod_cane_bite_8
+  - first:
+      213: -9106936611047345938
+    second: Rod_cane_bite_9
+  - first:
+      213: 334720402947180590
+    second: Rod_cane_bite_10
+  - first:
+      213: 146206613656739820
+    second: Rod_cane_bite_11
+  - first:
+      213: -4690317652368494571
+    second: Rod_cane_bite_12
+  - first:
+      213: 825580944753122479
+    second: Rod_cane_bite_13
+  - first:
+      213: 4594639880712809856
+    second: Rod_cane_bite_14
+  - first:
+      213: 4557220660994027177
+    second: Rod_cane_bite_15
+  - first:
+      213: -2526630010257204033
+    second: Rod_cane_bite_16
+  - first:
+      213: 3945601221366687409
+    second: Rod_cane_bite_17
+  - first:
+      213: 9042900567010848997
+    second: Rod_cane_bite_18
+  - first:
+      213: 4424840785569498145
+    second: Rod_cane_bite_19
+  - first:
+      213: -3526218630631353628
+    second: Rod_cane_bite_20
+  - first:
+      213: -7236536260224473869
+    second: Rod_cane_bite_21
+  - first:
+      213: -7727912675962279183
+    second: Rod_cane_bite_22
+  - first:
+      213: 2142315730234451805
+    second: Rod_cane_bite_23
+  - first:
+      213: 7199280695394884127
+    second: Rod_cane_bite_24
+  - first:
+      213: 7144266878798878755
+    second: Rod_cane_bite_25
+  - first:
+      213: 5909618780109984420
+    second: Rod_cane_bite_26
+  - first:
+      213: 1476672516563360987
+    second: Rod_cane_bite_27
+  - first:
+      213: 1618987350381241626
+    second: Rod_cane_bite_28
+  - first:
+      213: -6513875413177694465
+    second: Rod_cane_bite_29
+  - first:
+      213: 2617318275439047367
+    second: Rod_cane_bite_30
+  - first:
+      213: -637531544715054017
+    second: Rod_cane_bite_31
+  - first:
+      213: -2465369054321069453
+    second: Rod_cane_bite_32
+  - first:
+      213: 4342116994231627866
+    second: Rod_cane_bite_33
+  - first:
+      213: -599316864432948595
+    second: Rod_cane_bite_34
+  - first:
+      213: -5555608151407050201
+    second: Rod_cane_bite_35
+  - first:
+      213: -6655617819419797065
+    second: Rod_cane_bite_36
+  - first:
+      213: 4635905555582218884
+    second: Rod_cane_bite_37
+  - first:
+      213: 6331670536874024067
+    second: Rod_cane_bite_38
+  - first:
+      213: -6649918695173464212
+    second: Rod_cane_bite_39
+  - first:
+      213: -4414622709446114815
+    second: Rod_cane_bite_40
+  - first:
+      213: -4435243441786148795
+    second: Rod_cane_bite_41
+  - first:
+      213: 8487469846355868919
+    second: Rod_cane_bite_42
+  - first:
+      213: -5329877767026322394
+    second: Rod_cane_bite_43
+  - first:
+      213: 717108964677388071
+    second: Rod_cane_bite_44
+  - first:
+      213: 7998342418936156138
+    second: Rod_cane_bite_45
+  - first:
+      213: 5036280852297273052
+    second: Rod_cane_bite_46
+  - first:
+      213: -129577031014654370
+    second: Rod_cane_bite_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f8cd43b6db35064585d3683214aa4ab
+      internalID: -80264389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c3be37c2625f4b4caa21aec855c6339
+      internalID: 1903042258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8320bf2a9122c434b86c69076284e56c
+      internalID: -1520737752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfdeea166dd19464fb90aeb05530e141
+      internalID: -417509924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ce898e19a555142902130e04963783
+      internalID: -595512654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8babf19562347ec4da1a05ee7bfa9216
+      internalID: -573419656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4efc9b5595e93d49ad8801ea6e829f7
+      internalID: -1598337658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bd8515adffc5094c97509deb84b5002
+      internalID: 55955761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 883271e80f13c0e4bb147e6a9e8bd2bf
+      internalID: 1930624974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6693f0745eee892488fb0d55f260b233
+      internalID: 495959092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8876f5f053a5919419228f00b0246494
+      internalID: -473037053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80d9f0f02278c8348988c1934ebec9a4
+      internalID: 1162302582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dd59af4e0f8c5d46870fda87b147948
+      internalID: -901001929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8e3230f2e0fac84e895ca9fd38bc466
+      internalID: -160497877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5d2b94a6cee6744fa20ea71c412cace
+      internalID: 974113571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36c575683c9ba76429d8d8ebf1603917
+      internalID: 1865661105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ccb88b3618247844bdb0cba4b2fd765
+      internalID: 1753903259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8ab5952e0bc8544b84ab00d816f79ef
+      internalID: 1064725171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f64035d61ded48f4ca8b15111bb88db4
+      internalID: 1052593695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 693624c02e908cb47a423db61e43043d
+      internalID: 849320590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93ec59059a7ba4840b01132c81b5c1d9
+      internalID: -1623821852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df9c9749fa6a2964fbc71ab3911cc604
+      internalID: 1528400468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93905886be2ed29469f03bf62477361e
+      internalID: -1487724702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4114e92fa329ae945a8ae300e4034d87
+      internalID: 995119465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8da7babb90103b44d9f4987182362865
+      internalID: -116491896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a225096be6bb37a4490d33dca4dfefc2
+      internalID: 1323843042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c6a91f0ea69db54990967de1fecf74a
+      internalID: 431278275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0a594b52b11dcf40b920ffd654208c3
+      internalID: -1241485245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c53bd440cafd62141b663f672eb6891d
+      internalID: 1804647839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be865da89e4f9704d94cd5025503efbc
+      internalID: 1296334818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e157b255677cbd5489f0e5d1eb248d56
+      internalID: 839076150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5582603884889b443b98b8518c3ea3d7
+      internalID: 293442998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3be8f00b8d62c3041aedc8ba0b02a1f5
+      internalID: -1076933366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a1f906d0bd91054eb432f1b3df51e45
+      internalID: 1093376110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecca64d7d80c08a4fa4c35a8876cca76
+      internalID: -2100602584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ebb1cbe2cc520d4ba1a5354d7e93a9e
+      internalID: -990497120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19d75df063f7f9844880c9b7354399d4
+      internalID: 2039939644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b61cd7adde4f23040a4a38e5248387dd
+      internalID: -2121717456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 208d6df5f6b17244b918f88b12f90d3c
+      internalID: 732590531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33295c8624dbdfb4a8c42b53a02d2543
+      internalID: -143057387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a8c5450cf72ddc4382f4af908a4177d
+      internalID: -1130871493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cca91bc31c656544adb3be99f470e71
+      internalID: -2087842652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b70f17a1d12db44a8cc15a2d93437b7
+      internalID: -510770007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 701cf02bc71267d46b66f26309a51845
+      internalID: -1796145159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6c9438b4e2699e4c826274ab5e4919d
+      internalID: -1642996481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28b72adb21c01344caee3f8547248d41
+      internalID: -1690832128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab90ac30bf57f1b4cb6c308f14689f79
+      internalID: 1952679924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_bite_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cf9809da2843d54f89fc533a662711c
+      internalID: 1302631712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e10451df2f5a5a64a91e88e12d0142b3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rod_cane_bite_d0_f0: -80264389
+      Rod_cane_bite_d0_f1: 1903042258
+      Rod_cane_bite_d0_f2: -1520737752
+      Rod_cane_bite_d0_f3: -417509924
+      Rod_cane_bite_d0_f4: -595512654
+      Rod_cane_bite_d0_f5: -573419656
+      Rod_cane_bite_d1_f0: -1598337658
+      Rod_cane_bite_d1_f1: 55955761
+      Rod_cane_bite_d1_f2: 1930624974
+      Rod_cane_bite_d1_f3: 495959092
+      Rod_cane_bite_d1_f4: -473037053
+      Rod_cane_bite_d1_f5: 1162302582
+      Rod_cane_bite_d2_f0: -901001929
+      Rod_cane_bite_d2_f1: -160497877
+      Rod_cane_bite_d2_f2: 974113571
+      Rod_cane_bite_d2_f3: 1865661105
+      Rod_cane_bite_d2_f4: 1753903259
+      Rod_cane_bite_d2_f5: 1064725171
+      Rod_cane_bite_d3_f0: 1052593695
+      Rod_cane_bite_d3_f1: 849320590
+      Rod_cane_bite_d3_f2: -1623821852
+      Rod_cane_bite_d3_f3: 1528400468
+      Rod_cane_bite_d3_f4: -1487724702
+      Rod_cane_bite_d3_f5: 995119465
+      Rod_cane_bite_d4_f0: -116491896
+      Rod_cane_bite_d4_f1: 1323843042
+      Rod_cane_bite_d4_f2: 431278275
+      Rod_cane_bite_d4_f3: -1241485245
+      Rod_cane_bite_d4_f4: 1804647839
+      Rod_cane_bite_d4_f5: 1296334818
+      Rod_cane_bite_d5_f0: 839076150
+      Rod_cane_bite_d5_f1: 293442998
+      Rod_cane_bite_d5_f2: -1076933366
+      Rod_cane_bite_d5_f3: 1093376110
+      Rod_cane_bite_d5_f4: -2100602584
+      Rod_cane_bite_d5_f5: -990497120
+      Rod_cane_bite_d6_f0: 2039939644
+      Rod_cane_bite_d6_f1: -2121717456
+      Rod_cane_bite_d6_f2: 732590531
+      Rod_cane_bite_d6_f3: -143057387
+      Rod_cane_bite_d6_f4: -1130871493
+      Rod_cane_bite_d6_f5: -2087842652
+      Rod_cane_bite_d7_f0: -510770007
+      Rod_cane_bite_d7_f1: -1796145159
+      Rod_cane_bite_d7_f2: -1642996481
+      Rod_cane_bite_d7_f3: -1690832128
+      Rod_cane_bite_d7_f4: 1952679924
+      Rod_cane_bite_d7_f5: 1302631712
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

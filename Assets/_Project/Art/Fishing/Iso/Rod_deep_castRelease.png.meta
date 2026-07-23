@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 200ea68eadeb64c43af3e7a956fdd84e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8147895660555544633
+    second: Rod_deep_castRelease_0
+  - first:
+      213: 182332083895334663
+    second: Rod_deep_castRelease_1
+  - first:
+      213: -4340399926332992467
+    second: Rod_deep_castRelease_2
+  - first:
+      213: -8467320807842027081
+    second: Rod_deep_castRelease_3
+  - first:
+      213: 4206061473148793993
+    second: Rod_deep_castRelease_4
+  - first:
+      213: 2954626069413411308
+    second: Rod_deep_castRelease_5
+  - first:
+      213: -5621460224704850407
+    second: Rod_deep_castRelease_6
+  - first:
+      213: 646274169895116101
+    second: Rod_deep_castRelease_7
+  - first:
+      213: 4283953578159988790
+    second: Rod_deep_castRelease_8
+  - first:
+      213: 7724211700074771329
+    second: Rod_deep_castRelease_9
+  - first:
+      213: -525112807027897988
+    second: Rod_deep_castRelease_10
+  - first:
+      213: 5246932787915776549
+    second: Rod_deep_castRelease_11
+  - first:
+      213: 7082135388060950741
+    second: Rod_deep_castRelease_12
+  - first:
+      213: -9104265099360751551
+    second: Rod_deep_castRelease_13
+  - first:
+      213: -8440929080385143344
+    second: Rod_deep_castRelease_14
+  - first:
+      213: 5251666217709176699
+    second: Rod_deep_castRelease_15
+  - first:
+      213: 8977893486398978917
+    second: Rod_deep_castRelease_16
+  - first:
+      213: -6852495503302100280
+    second: Rod_deep_castRelease_17
+  - first:
+      213: -3059132029757798754
+    second: Rod_deep_castRelease_18
+  - first:
+      213: -8931786058782590160
+    second: Rod_deep_castRelease_19
+  - first:
+      213: -5938414718848833272
+    second: Rod_deep_castRelease_20
+  - first:
+      213: 384094039765766050
+    second: Rod_deep_castRelease_21
+  - first:
+      213: -5235823909207169204
+    second: Rod_deep_castRelease_22
+  - first:
+      213: -8890155986349588013
+    second: Rod_deep_castRelease_23
+  - first:
+      213: 8666861861159545817
+    second: Rod_deep_castRelease_24
+  - first:
+      213: -3216955277204921521
+    second: Rod_deep_castRelease_25
+  - first:
+      213: 2705682466605077433
+    second: Rod_deep_castRelease_26
+  - first:
+      213: 1289955122368803588
+    second: Rod_deep_castRelease_27
+  - first:
+      213: -4224482459804016405
+    second: Rod_deep_castRelease_28
+  - first:
+      213: 2758671549012416399
+    second: Rod_deep_castRelease_29
+  - first:
+      213: -845608279041531121
+    second: Rod_deep_castRelease_30
+  - first:
+      213: -6764089198318444345
+    second: Rod_deep_castRelease_31
+  - first:
+      213: 8314922388281627607
+    second: Rod_deep_castRelease_32
+  - first:
+      213: -5606669080351942094
+    second: Rod_deep_castRelease_33
+  - first:
+      213: -4425275768709356933
+    second: Rod_deep_castRelease_34
+  - first:
+      213: -1299734621350421415
+    second: Rod_deep_castRelease_35
+  - first:
+      213: 2389111359268697927
+    second: Rod_deep_castRelease_36
+  - first:
+      213: 3366240067746467741
+    second: Rod_deep_castRelease_37
+  - first:
+      213: -8186394373967512327
+    second: Rod_deep_castRelease_38
+  - first:
+      213: -6047873083257837493
+    second: Rod_deep_castRelease_39
+  - first:
+      213: 2335844012798827521
+    second: Rod_deep_castRelease_40
+  - first:
+      213: 5177393343138009055
+    second: Rod_deep_castRelease_41
+  - first:
+      213: 5710154895179653412
+    second: Rod_deep_castRelease_42
+  - first:
+      213: 390838695375083661
+    second: Rod_deep_castRelease_43
+  - first:
+      213: -52775640722221738
+    second: Rod_deep_castRelease_44
+  - first:
+      213: -9080588833336819942
+    second: Rod_deep_castRelease_45
+  - first:
+      213: -5847507434717288603
+    second: Rod_deep_castRelease_46
+  - first:
+      213: -5533097772732702238
+    second: Rod_deep_castRelease_47
+  - first:
+      213: 7712557308586136728
+    second: Rod_deep_castRelease_48
+  - first:
+      213: -9147132544962355962
+    second: Rod_deep_castRelease_49
+  - first:
+      213: -4223356136706202026
+    second: Rod_deep_castRelease_50
+  - first:
+      213: -1011361434383345610
+    second: Rod_deep_castRelease_51
+  - first:
+      213: 540279640382446419
+    second: Rod_deep_castRelease_52
+  - first:
+      213: -8663554434243432152
+    second: Rod_deep_castRelease_53
+  - first:
+      213: -5861683569188408714
+    second: Rod_deep_castRelease_54
+  - first:
+      213: -8371165039413730177
+    second: Rod_deep_castRelease_55
+  - first:
+      213: -427340236946319600
+    second: Rod_deep_castRelease_56
+  - first:
+      213: 4042189737854214475
+    second: Rod_deep_castRelease_57
+  - first:
+      213: -3129816348683269403
+    second: Rod_deep_castRelease_58
+  - first:
+      213: 4100523428029752329
+    second: Rod_deep_castRelease_59
+  - first:
+      213: -5778887819383475302
+    second: Rod_deep_castRelease_60
+  - first:
+      213: -4319178078590283025
+    second: Rod_deep_castRelease_61
+  - first:
+      213: -8869581099270731414
+    second: Rod_deep_castRelease_62
+  - first:
+      213: 5492831759776078296
+    second: Rod_deep_castRelease_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f85071ba6f6900c40997bde53b27b6fa
+      internalID: -1825828322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d36226098cb268546aee89be730f136f
+      internalID: -1029781176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 989b65110e20a554982f102d7e47a57b
+      internalID: 542219103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cd00a7c5ab1b7e4ba15f818bbd9f09a
+      internalID: -1596159071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02d31730e5941744f902ab99ed04770b
+      internalID: -879539333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37e7959796f985d488ba8cf67fd719ab
+      internalID: 2027331617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b3835034adfe114297817d1368887cc
+      internalID: -1158400631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d09135844a453864a859044a7d749033
+      internalID: 1241912208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da1be2e7329d0574d8cd1810c004081a
+      internalID: -268240209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c86b78c893b1445a46e961171d323c
+      internalID: 877885061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed7b53d9d0ca25944ac6ee186b6c9247
+      internalID: -1899278887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b4f81687e375e74abea7793533b473c
+      internalID: -1205101187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d61b11da05a2b2344a7476e55ee4f06f
+      internalID: 342304840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc584df17426dc34b9538b688c0774ee
+      internalID: 1619676779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da8bd31c99706a24b97fcaaf6d1d4a70
+      internalID: -925112615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09b95157cf0646c47aecd7b268c5df2a
+      internalID: 2084238169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82a378e98a81bcd49ac198f095eb5b76
+      internalID: 1910373932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c923c5ed520287346a18f0e09557e7df
+      internalID: -2118714066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e5a6a0a30cb6ad40bb2fe2c0e0947d8
+      internalID: -1540337749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dfb3bcdcddfefa46a5dec76f7b66d79
+      internalID: 554519242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 431a1aedf9d8d594bb1ed450702ff10c
+      internalID: 747889651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdccd8532e88335408cf0e3c9bdb0a22
+      internalID: -571782969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6627d0c5b4da37d49aefdfd08a24d317
+      internalID: 1273975232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbbd0d9601c7a7149bf84c97735c9d6a
+      internalID: -1390632859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de74265ab86f07144bcebf3631f7e0f4
+      internalID: -9589819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b418265e8c9eab943b4e1953e2e05446
+      internalID: 1937624806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbe1497c64901874ba62c05751bdad3e
+      internalID: 1462512391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5602499a04ddf404eae97d3b3b018ef9
+      internalID: -1904623020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e922194ee6a37d41a2f5d101583390e
+      internalID: 1832234662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 438d96e2b1b9d464781ff58dfae2cc1e
+      internalID: -828062837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1234000a70778a84cb7668f827fa9d4a
+      internalID: 1865421172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2329476d115be0949bccfa7e89bb1212
+      internalID: 2004535606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55dead611bc2e5144a41908024e007ca
+      internalID: -596834506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac5050d00fb52e7489d3e2f14f7c178f
+      internalID: 395536798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acf3a095114ee8e499db999fc5f05cd8
+      internalID: 256513802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 958dfa3d26254684b9de11f39ce21180
+      internalID: -1500764823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18080ab4efa8dca4eab0270981015dfa
+      internalID: -611200835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f74b0dca958cfb4bb8eac242f56faac
+      internalID: -48364705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7963d68698b30d4fac2aa959bd44214
+      internalID: -971866549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88a90d320b9ed4d40ab5c84c75fabe2e
+      internalID: 1180327855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4aec3671372c5848895c79e9fde8582
+      internalID: -997469495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53df7e73c5ab21f47b052e70a5c66c2d
+      internalID: -161552132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abe8b84b4eadafd42b9dbaca6c1f3d21
+      internalID: -1738666758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f804116a5525a60449259b8515637026
+      internalID: -1865923885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48444d0fe5498644ba8120f003c17bb2
+      internalID: 1825649413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 202b66b58c8d7af46a8e6ca0faf931d4
+      internalID: -92870861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf3797de2e0b2d24dae6eac880d59a41
+      internalID: -1249118665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1e15410bf3d4f048befa5798b255ca6
+      internalID: 1258060040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01248a334e4513744b3b34190af3dafd
+      internalID: 2096037488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cb0263f400201d4ca7b695b4baef5e0
+      internalID: -1714009849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f36f277119831a440900018d10d83132
+      internalID: -17569501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25179924141e2ac4e8dde64bae8899d4
+      internalID: 723301767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 948daee523aec0e4ea7230a592c08442
+      internalID: 2023087960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df7e2287f1819854f914b24aae429d5d
+      internalID: -1163593545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8efc720740010f04eb20bd73547887ad
+      internalID: -552837825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 740fe261cd5e1ff42b51ca0031f27e3c
+      internalID: 1663681158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e06667e40901d7409941d4cc7a0a807
+      internalID: 693891360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 419a99ebb7310294a9b9b083c807dca7
+      internalID: -2102098343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c581b3ce568c4242bc1a7b2c1d7c58a
+      internalID: -109240116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cf5a6b4a633cba44a553c2f4b2fda15
+      internalID: -2019245998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 748a843d825ccb640bc00059ddc184ec
+      internalID: -370116570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4e7a8e530c2342498158e8a692e391b
+      internalID: -2125373625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67591109752933f4f87046d7bae37fb5
+      internalID: -1933229959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_castRelease_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c44dcf2172ec7b841b2f73747f9f79b5
+      internalID: -1412026431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8a40ed3d04450074691980a190afaf3c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rod_deep_castRelease_d0_f0: -1825828322
+      Rod_deep_castRelease_d0_f1: -1029781176
+      Rod_deep_castRelease_d0_f2: 542219103
+      Rod_deep_castRelease_d0_f3: -1596159071
+      Rod_deep_castRelease_d0_f4: -879539333
+      Rod_deep_castRelease_d0_f5: 2027331617
+      Rod_deep_castRelease_d0_f6: -1158400631
+      Rod_deep_castRelease_d0_f7: 1241912208
+      Rod_deep_castRelease_d1_f0: -268240209
+      Rod_deep_castRelease_d1_f1: 877885061
+      Rod_deep_castRelease_d1_f2: -1899278887
+      Rod_deep_castRelease_d1_f3: -1205101187
+      Rod_deep_castRelease_d1_f4: 342304840
+      Rod_deep_castRelease_d1_f5: 1619676779
+      Rod_deep_castRelease_d1_f6: -925112615
+      Rod_deep_castRelease_d1_f7: 2084238169
+      Rod_deep_castRelease_d2_f0: 1910373932
+      Rod_deep_castRelease_d2_f1: -2118714066
+      Rod_deep_castRelease_d2_f2: -1540337749
+      Rod_deep_castRelease_d2_f3: 554519242
+      Rod_deep_castRelease_d2_f4: 747889651
+      Rod_deep_castRelease_d2_f5: -571782969
+      Rod_deep_castRelease_d2_f6: 1273975232
+      Rod_deep_castRelease_d2_f7: -1390632859
+      Rod_deep_castRelease_d3_f0: -9589819
+      Rod_deep_castRelease_d3_f1: 1937624806
+      Rod_deep_castRelease_d3_f2: 1462512391
+      Rod_deep_castRelease_d3_f3: -1904623020
+      Rod_deep_castRelease_d3_f4: 1832234662
+      Rod_deep_castRelease_d3_f5: -828062837
+      Rod_deep_castRelease_d3_f6: 1865421172
+      Rod_deep_castRelease_d3_f7: 2004535606
+      Rod_deep_castRelease_d4_f0: -596834506
+      Rod_deep_castRelease_d4_f1: 395536798
+      Rod_deep_castRelease_d4_f2: 256513802
+      Rod_deep_castRelease_d4_f3: -1500764823
+      Rod_deep_castRelease_d4_f4: -611200835
+      Rod_deep_castRelease_d4_f5: -48364705
+      Rod_deep_castRelease_d4_f6: -971866549
+      Rod_deep_castRelease_d4_f7: 1180327855
+      Rod_deep_castRelease_d5_f0: -997469495
+      Rod_deep_castRelease_d5_f1: -161552132
+      Rod_deep_castRelease_d5_f2: -1738666758
+      Rod_deep_castRelease_d5_f3: -1865923885
+      Rod_deep_castRelease_d5_f4: 1825649413
+      Rod_deep_castRelease_d5_f5: -92870861
+      Rod_deep_castRelease_d5_f6: -1249118665
+      Rod_deep_castRelease_d5_f7: 1258060040
+      Rod_deep_castRelease_d6_f0: 2096037488
+      Rod_deep_castRelease_d6_f1: -1714009849
+      Rod_deep_castRelease_d6_f2: -17569501
+      Rod_deep_castRelease_d6_f3: 723301767
+      Rod_deep_castRelease_d6_f4: 2023087960
+      Rod_deep_castRelease_d6_f5: -1163593545
+      Rod_deep_castRelease_d6_f6: -552837825
+      Rod_deep_castRelease_d6_f7: 1663681158
+      Rod_deep_castRelease_d7_f0: 693891360
+      Rod_deep_castRelease_d7_f1: -2102098343
+      Rod_deep_castRelease_d7_f2: -109240116
+      Rod_deep_castRelease_d7_f3: -2019245998
+      Rod_deep_castRelease_d7_f4: -370116570
+      Rod_deep_castRelease_d7_f5: -2125373625
+      Rod_deep_castRelease_d7_f6: -1933229959
+      Rod_deep_castRelease_d7_f7: -1412026431
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

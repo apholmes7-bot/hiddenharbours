@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 3261533839d2dd44a8615c16022822a1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3800026556547150542
+    second: Rod_cane_castRelease_0
+  - first:
+      213: -7238877409304078831
+    second: Rod_cane_castRelease_1
+  - first:
+      213: 490041237645910412
+    second: Rod_cane_castRelease_2
+  - first:
+      213: 3863489997785913370
+    second: Rod_cane_castRelease_3
+  - first:
+      213: 108631571597446103
+    second: Rod_cane_castRelease_4
+  - first:
+      213: 4975876997530705811
+    second: Rod_cane_castRelease_5
+  - first:
+      213: -1414948584866305649
+    second: Rod_cane_castRelease_6
+  - first:
+      213: 3950434099996618877
+    second: Rod_cane_castRelease_7
+  - first:
+      213: 4844649448247783757
+    second: Rod_cane_castRelease_8
+  - first:
+      213: -7487291675492453542
+    second: Rod_cane_castRelease_9
+  - first:
+      213: 9061689723489617762
+    second: Rod_cane_castRelease_10
+  - first:
+      213: -3459926898928679046
+    second: Rod_cane_castRelease_11
+  - first:
+      213: 8333546119979364004
+    second: Rod_cane_castRelease_12
+  - first:
+      213: -8781412978235006611
+    second: Rod_cane_castRelease_13
+  - first:
+      213: 6563852508290551977
+    second: Rod_cane_castRelease_14
+  - first:
+      213: 6662001322090709506
+    second: Rod_cane_castRelease_15
+  - first:
+      213: 596154549852984044
+    second: Rod_cane_castRelease_16
+  - first:
+      213: -4167604087978564217
+    second: Rod_cane_castRelease_17
+  - first:
+      213: -1679620393528099251
+    second: Rod_cane_castRelease_18
+  - first:
+      213: -4361911682541124189
+    second: Rod_cane_castRelease_19
+  - first:
+      213: -909848293364110699
+    second: Rod_cane_castRelease_20
+  - first:
+      213: -5679046994999266432
+    second: Rod_cane_castRelease_21
+  - first:
+      213: -7104011846899413866
+    second: Rod_cane_castRelease_22
+  - first:
+      213: -929198202857876831
+    second: Rod_cane_castRelease_23
+  - first:
+      213: 1688446708018216534
+    second: Rod_cane_castRelease_24
+  - first:
+      213: -9174592674191107252
+    second: Rod_cane_castRelease_25
+  - first:
+      213: -7736006027435408753
+    second: Rod_cane_castRelease_26
+  - first:
+      213: -4042621405255708874
+    second: Rod_cane_castRelease_27
+  - first:
+      213: 6531744494086968576
+    second: Rod_cane_castRelease_28
+  - first:
+      213: 581088058996231154
+    second: Rod_cane_castRelease_29
+  - first:
+      213: 6183119941616047952
+    second: Rod_cane_castRelease_30
+  - first:
+      213: -2861507883004414143
+    second: Rod_cane_castRelease_31
+  - first:
+      213: -884627502286311858
+    second: Rod_cane_castRelease_32
+  - first:
+      213: 1585612039777214886
+    second: Rod_cane_castRelease_33
+  - first:
+      213: -8711940365423658843
+    second: Rod_cane_castRelease_34
+  - first:
+      213: 8405444054101666162
+    second: Rod_cane_castRelease_35
+  - first:
+      213: -8602015878113867481
+    second: Rod_cane_castRelease_36
+  - first:
+      213: 4786841041217890544
+    second: Rod_cane_castRelease_37
+  - first:
+      213: -4914474145015505338
+    second: Rod_cane_castRelease_38
+  - first:
+      213: 3610017829794678133
+    second: Rod_cane_castRelease_39
+  - first:
+      213: -8785942766991561187
+    second: Rod_cane_castRelease_40
+  - first:
+      213: -8594643508051257021
+    second: Rod_cane_castRelease_41
+  - first:
+      213: 6220565680645268519
+    second: Rod_cane_castRelease_42
+  - first:
+      213: -2197413122210356518
+    second: Rod_cane_castRelease_43
+  - first:
+      213: 5459575135004901265
+    second: Rod_cane_castRelease_44
+  - first:
+      213: 4179302752932779999
+    second: Rod_cane_castRelease_45
+  - first:
+      213: -1537687942713441162
+    second: Rod_cane_castRelease_46
+  - first:
+      213: -4931495835759062841
+    second: Rod_cane_castRelease_47
+  - first:
+      213: 2106189777274954702
+    second: Rod_cane_castRelease_48
+  - first:
+      213: -7903587952804406727
+    second: Rod_cane_castRelease_49
+  - first:
+      213: -1070079688281226658
+    second: Rod_cane_castRelease_50
+  - first:
+      213: -2213001461087003093
+    second: Rod_cane_castRelease_51
+  - first:
+      213: -2286549590059983003
+    second: Rod_cane_castRelease_52
+  - first:
+      213: -7551908119161644340
+    second: Rod_cane_castRelease_53
+  - first:
+      213: 6576629779490026621
+    second: Rod_cane_castRelease_54
+  - first:
+      213: -6329609298339067217
+    second: Rod_cane_castRelease_55
+  - first:
+      213: -7391980370762298467
+    second: Rod_cane_castRelease_56
+  - first:
+      213: 5353796326633925219
+    second: Rod_cane_castRelease_57
+  - first:
+      213: 8557691004010444332
+    second: Rod_cane_castRelease_58
+  - first:
+      213: -3805594242560962910
+    second: Rod_cane_castRelease_59
+  - first:
+      213: 6545420667347518341
+    second: Rod_cane_castRelease_60
+  - first:
+      213: 3038579545138161551
+    second: Rod_cane_castRelease_61
+  - first:
+      213: -4632687089929972801
+    second: Rod_cane_castRelease_62
+  - first:
+      213: 5053433386244482637
+    second: Rod_cane_castRelease_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 535d157eafab85a48831b50634c89add
+      internalID: 1213392472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fef11dd030d4c7141a314213b1442d9e
+      internalID: -1952277738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9019f46d106155841b5f64095a3f3469
+      internalID: 760550132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b7df3463ae16c940860fe5adbd53cf7
+      internalID: 1118569900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 430283916e924fa458ffbd1c29d8ad3c
+      internalID: 1563480129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a90d887ae3c28042b46045803697ef4
+      internalID: -11773046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a29121e4f6840f4e864457c6938269f
+      internalID: 1906049806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9239e4fb59bd40d4a8624e7387ae228c
+      internalID: 1938805626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6d648db2506c9847a436480c0af98d0
+      internalID: -1042334124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94c01fc1294844b47974a3739af14133
+      internalID: -3798827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3b970814587dc94996c1ecc3e7c436c
+      internalID: -243267314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43ee7001795717749947a3edc92507c0
+      internalID: 1832957098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5b7ba4063dcf4548932fb3e645fd1ed
+      internalID: 954990883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bbee6378d52be549bb8ff8d604f1106
+      internalID: -200557968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ea0cd7ce6c929749a509b2a3479641f
+      internalID: -258931615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bfea4f50e355ea40b8500282d5ba95f
+      internalID: -1299123729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f571657fde252cf419205c18789ebd99
+      internalID: -2011521844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb689d593667009439e5495b6c33feff
+      internalID: 432348972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6ceec22b22c42b4eb12ee90903d11ec
+      internalID: 606202354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e32eb5c4857dcf541abce0180ac84b62
+      internalID: 1301553979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 454239a9015e0a14f9c66ad3f89022e9
+      internalID: 395037968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 323ae918b053fff47b06da802f453453
+      internalID: 167881245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33063d34c887e4c419674a0b565ba119
+      internalID: 575946003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77fb268aece4fdf4ea36a177bf12ea6e
+      internalID: 1453249432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b5480b7ec5815943b0c32a70dcf3eac
+      internalID: 1404516429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bba1ddef7086874fb2212fe92d86afe
+      internalID: 1137332233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d51a2eeae0dcb5b4a8508e537f4c1f48
+      internalID: -318017606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d7ff00924264144ba595da7d1c5cf1f
+      internalID: 149353009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b60ee0e2faa1a144cb64c3d997599ef1
+      internalID: 360080309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1af109fdd0434e947bb0ab3b47db8418
+      internalID: 786838623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9864e69dbc2d4545af11949a89b5f6c
+      internalID: -296973479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94ce5f6fef589704eb6ed6df1d8d3f92
+      internalID: 1084726252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebbf6d41cb465cf42935f992e10e232c
+      internalID: 1766864862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b03c7c3a30b768c40af210d2a82f5c0e
+      internalID: 192088454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0be2206943298dd47accb888a525079a
+      internalID: 112296429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7f39ff472cd70647a785c73b893ce0e
+      internalID: 538701836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f75072870a382284d9bbd3f93ae6bcd3
+      internalID: -1215308671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcfe756449b88de4daa30d7e154ca100
+      internalID: 1647342005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6090106d095796f4c83e3a9dd4f1ca7d
+      internalID: 890204687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b7172d1c87bed843a591f2eed80346d
+      internalID: 140946033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b2a10ecd02a8b64499116a97d0a319c
+      internalID: -1381946028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f864997e7a5e4047bd808b4131fc530
+      internalID: 461983994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3dc7a39e12f7ef4fb8e3b989624c925
+      internalID: -522593513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 932960be4c58b3b4bbe370a7803e3b33
+      internalID: -1688885482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bb13a902e9807a43b9cacdf9cc3c845
+      internalID: -575129908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61740490c1d1c71409a8c2c6f8ce87b9
+      internalID: 909346701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19acb52579fc5e544882da3563f19a70
+      internalID: -619922248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 829ef9dd64099c5459b0daa5f192be5c
+      internalID: 1888859288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3783b37d28b219644984e39c93ce50a0
+      internalID: 1004374200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a17a99e3ea999e44b56e0fc1aba0d5b
+      internalID: 1729316188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3038ccc9ec1b98e46948610a73c1be32
+      internalID: 1044417488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b4680fae3ac9cf4bbead55a73b93cb0
+      internalID: 57835567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d882640083a65143ac94f2a34760964
+      internalID: -1421836760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0b9d86979fc6b54d9e3a5e20c69fc2f
+      internalID: 1866485665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0979d6a2ff2befe44bb0316eb0852c8f
+      internalID: 436048224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 725b272438e075e4380c1ffeb34b9791
+      internalID: -586354460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ecbc898fd0649143af610a04f8de070
+      internalID: -508104952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1885f2bca4b5d974598012e6018e4b3f
+      internalID: 1389180198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4009859058c3fe47ab2fdda4630c6b4
+      internalID: 1046098829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: feb69e534f96ab44da8ba9664f8983d1
+      internalID: -641904006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 274e7cdec8997c34ebb2458e51573e36
+      internalID: -1158908571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 990296a28563b0446a98b5f0dc71cd8e
+      internalID: -1346315618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb301aec3664c2e458c8981c1f6a31a0
+      internalID: -1546915297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_cane_castRelease_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea77d14becc32b042bd4fe441f4e44c9
+      internalID: 1139449587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f527ef167c2baaa43b3ca45a194737dc
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rod_cane_castRelease_d0_f0: 1213392472
+      Rod_cane_castRelease_d0_f1: -1952277738
+      Rod_cane_castRelease_d0_f2: 760550132
+      Rod_cane_castRelease_d0_f3: 1118569900
+      Rod_cane_castRelease_d0_f4: 1563480129
+      Rod_cane_castRelease_d0_f5: -11773046
+      Rod_cane_castRelease_d0_f6: 1906049806
+      Rod_cane_castRelease_d0_f7: 1938805626
+      Rod_cane_castRelease_d1_f0: -1042334124
+      Rod_cane_castRelease_d1_f1: -3798827
+      Rod_cane_castRelease_d1_f2: -243267314
+      Rod_cane_castRelease_d1_f3: 1832957098
+      Rod_cane_castRelease_d1_f4: 954990883
+      Rod_cane_castRelease_d1_f5: -200557968
+      Rod_cane_castRelease_d1_f6: -258931615
+      Rod_cane_castRelease_d1_f7: -1299123729
+      Rod_cane_castRelease_d2_f0: -2011521844
+      Rod_cane_castRelease_d2_f1: 432348972
+      Rod_cane_castRelease_d2_f2: 606202354
+      Rod_cane_castRelease_d2_f3: 1301553979
+      Rod_cane_castRelease_d2_f4: 395037968
+      Rod_cane_castRelease_d2_f5: 167881245
+      Rod_cane_castRelease_d2_f6: 575946003
+      Rod_cane_castRelease_d2_f7: 1453249432
+      Rod_cane_castRelease_d3_f0: 1404516429
+      Rod_cane_castRelease_d3_f1: 1137332233
+      Rod_cane_castRelease_d3_f2: -318017606
+      Rod_cane_castRelease_d3_f3: 149353009
+      Rod_cane_castRelease_d3_f4: 360080309
+      Rod_cane_castRelease_d3_f5: 786838623
+      Rod_cane_castRelease_d3_f6: -296973479
+      Rod_cane_castRelease_d3_f7: 1084726252
+      Rod_cane_castRelease_d4_f0: 1766864862
+      Rod_cane_castRelease_d4_f1: 192088454
+      Rod_cane_castRelease_d4_f2: 112296429
+      Rod_cane_castRelease_d4_f3: 538701836
+      Rod_cane_castRelease_d4_f4: -1215308671
+      Rod_cane_castRelease_d4_f5: 1647342005
+      Rod_cane_castRelease_d4_f6: 890204687
+      Rod_cane_castRelease_d4_f7: 140946033
+      Rod_cane_castRelease_d5_f0: -1381946028
+      Rod_cane_castRelease_d5_f1: 461983994
+      Rod_cane_castRelease_d5_f2: -522593513
+      Rod_cane_castRelease_d5_f3: -1688885482
+      Rod_cane_castRelease_d5_f4: -575129908
+      Rod_cane_castRelease_d5_f5: 909346701
+      Rod_cane_castRelease_d5_f6: -619922248
+      Rod_cane_castRelease_d5_f7: 1888859288
+      Rod_cane_castRelease_d6_f0: 1004374200
+      Rod_cane_castRelease_d6_f1: 1729316188
+      Rod_cane_castRelease_d6_f2: 1044417488
+      Rod_cane_castRelease_d6_f3: 57835567
+      Rod_cane_castRelease_d6_f4: -1421836760
+      Rod_cane_castRelease_d6_f5: 1866485665
+      Rod_cane_castRelease_d6_f6: 436048224
+      Rod_cane_castRelease_d6_f7: -586354460
+      Rod_cane_castRelease_d7_f0: -508104952
+      Rod_cane_castRelease_d7_f1: 1389180198
+      Rod_cane_castRelease_d7_f2: 1046098829
+      Rod_cane_castRelease_d7_f3: -641904006
+      Rod_cane_castRelease_d7_f4: -1158908571
+      Rod_cane_castRelease_d7_f5: -1346315618
+      Rod_cane_castRelease_d7_f6: -1546915297
+      Rod_cane_castRelease_d7_f7: 1139449587
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

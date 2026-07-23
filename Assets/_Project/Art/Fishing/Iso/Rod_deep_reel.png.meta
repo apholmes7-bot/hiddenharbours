@@ -1,0 +1,2626 @@
+fileFormatVersion: 2
+guid: e34e535fbd4585749890337d41a79616
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4744330873674714726
+    second: Rod_deep_reel_0
+  - first:
+      213: -1080336403111081181
+    second: Rod_deep_reel_1
+  - first:
+      213: 3674009379303567205
+    second: Rod_deep_reel_2
+  - first:
+      213: 7782500974770628806
+    second: Rod_deep_reel_3
+  - first:
+      213: -3796399392645081330
+    second: Rod_deep_reel_4
+  - first:
+      213: -5677850958536327052
+    second: Rod_deep_reel_5
+  - first:
+      213: 2725891075808394048
+    second: Rod_deep_reel_6
+  - first:
+      213: 6640685680573832416
+    second: Rod_deep_reel_7
+  - first:
+      213: -7571083973113420282
+    second: Rod_deep_reel_8
+  - first:
+      213: -6041558540451178022
+    second: Rod_deep_reel_9
+  - first:
+      213: -7094244480057275634
+    second: Rod_deep_reel_10
+  - first:
+      213: 7070522418661558857
+    second: Rod_deep_reel_11
+  - first:
+      213: -3096310625444685704
+    second: Rod_deep_reel_12
+  - first:
+      213: -3983531333030321673
+    second: Rod_deep_reel_13
+  - first:
+      213: 1861931535103342095
+    second: Rod_deep_reel_14
+  - first:
+      213: -8900234481642621001
+    second: Rod_deep_reel_15
+  - first:
+      213: 7917184743648011681
+    second: Rod_deep_reel_16
+  - first:
+      213: -258673072326809267
+    second: Rod_deep_reel_17
+  - first:
+      213: -1454817502550694695
+    second: Rod_deep_reel_18
+  - first:
+      213: -5374004181386762574
+    second: Rod_deep_reel_19
+  - first:
+      213: 7678604872921301177
+    second: Rod_deep_reel_20
+  - first:
+      213: 1810280525841104545
+    second: Rod_deep_reel_21
+  - first:
+      213: 5223021427129563349
+    second: Rod_deep_reel_22
+  - first:
+      213: -8594263434009674260
+    second: Rod_deep_reel_23
+  - first:
+      213: -4077253206810762938
+    second: Rod_deep_reel_24
+  - first:
+      213: 3718611812130329512
+    second: Rod_deep_reel_25
+  - first:
+      213: -6682650391413397193
+    second: Rod_deep_reel_26
+  - first:
+      213: -5811061216207938278
+    second: Rod_deep_reel_27
+  - first:
+      213: -6837161929665862930
+    second: Rod_deep_reel_28
+  - first:
+      213: 7937973591008834577
+    second: Rod_deep_reel_29
+  - first:
+      213: 4277265320734112772
+    second: Rod_deep_reel_30
+  - first:
+      213: 1161061827653942951
+    second: Rod_deep_reel_31
+  - first:
+      213: 8573513024160210909
+    second: Rod_deep_reel_32
+  - first:
+      213: 8813364463713174673
+    second: Rod_deep_reel_33
+  - first:
+      213: -67377238713392172
+    second: Rod_deep_reel_34
+  - first:
+      213: -8425948060464975288
+    second: Rod_deep_reel_35
+  - first:
+      213: -6177271279069779722
+    second: Rod_deep_reel_36
+  - first:
+      213: -8266739157241318833
+    second: Rod_deep_reel_37
+  - first:
+      213: -4652128487072239508
+    second: Rod_deep_reel_38
+  - first:
+      213: -264025313377237203
+    second: Rod_deep_reel_39
+  - first:
+      213: -5027628469071878039
+    second: Rod_deep_reel_40
+  - first:
+      213: -4706991419168200225
+    second: Rod_deep_reel_41
+  - first:
+      213: -8996543315938362708
+    second: Rod_deep_reel_42
+  - first:
+      213: -8099926596510470431
+    second: Rod_deep_reel_43
+  - first:
+      213: -4532006952950878371
+    second: Rod_deep_reel_44
+  - first:
+      213: -4016183012132846897
+    second: Rod_deep_reel_45
+  - first:
+      213: 8646459703016383896
+    second: Rod_deep_reel_46
+  - first:
+      213: 3076646438714845021
+    second: Rod_deep_reel_47
+  - first:
+      213: 7294728194710404200
+    second: Rod_deep_reel_48
+  - first:
+      213: 9159655428675585032
+    second: Rod_deep_reel_49
+  - first:
+      213: -5720814007534839980
+    second: Rod_deep_reel_50
+  - first:
+      213: 738479417182491048
+    second: Rod_deep_reel_51
+  - first:
+      213: -2778330132762801329
+    second: Rod_deep_reel_52
+  - first:
+      213: 4027329595369891386
+    second: Rod_deep_reel_53
+  - first:
+      213: 5644002292316017711
+    second: Rod_deep_reel_54
+  - first:
+      213: -3677916330510954918
+    second: Rod_deep_reel_55
+  - first:
+      213: 2095683209058979526
+    second: Rod_deep_reel_56
+  - first:
+      213: -6222456741924274558
+    second: Rod_deep_reel_57
+  - first:
+      213: -8293965746274643092
+    second: Rod_deep_reel_58
+  - first:
+      213: 7919871110956608111
+    second: Rod_deep_reel_59
+  - first:
+      213: -5248132103861841850
+    second: Rod_deep_reel_60
+  - first:
+      213: 499671474254135166
+    second: Rod_deep_reel_61
+  - first:
+      213: 856539540610432701
+    second: Rod_deep_reel_62
+  - first:
+      213: -3169892049527289040
+    second: Rod_deep_reel_63
+  - first:
+      213: -3011607995973294007
+    second: Rod_deep_reel_64
+  - first:
+      213: 2498929567942677573
+    second: Rod_deep_reel_65
+  - first:
+      213: -2393775551636831082
+    second: Rod_deep_reel_66
+  - first:
+      213: -2945195199202709077
+    second: Rod_deep_reel_67
+  - first:
+      213: 5287238479167466330
+    second: Rod_deep_reel_68
+  - first:
+      213: -1296220299735480766
+    second: Rod_deep_reel_69
+  - first:
+      213: -2202551311436025308
+    second: Rod_deep_reel_70
+  - first:
+      213: -530174500058099707
+    second: Rod_deep_reel_71
+  - first:
+      213: 7638371259047799811
+    second: Rod_deep_reel_72
+  - first:
+      213: 8053903880247788871
+    second: Rod_deep_reel_73
+  - first:
+      213: 530782541444934945
+    second: Rod_deep_reel_74
+  - first:
+      213: -163338640449424440
+    second: Rod_deep_reel_75
+  - first:
+      213: -3957446059298215185
+    second: Rod_deep_reel_76
+  - first:
+      213: 8384135048165502340
+    second: Rod_deep_reel_77
+  - first:
+      213: 3791440545210129783
+    second: Rod_deep_reel_78
+  - first:
+      213: -4125426577025882728
+    second: Rod_deep_reel_79
+  - first:
+      213: 2469256036024616937
+    second: Rod_deep_reel_80
+  - first:
+      213: -1359618817880379680
+    second: Rod_deep_reel_81
+  - first:
+      213: -5241109257894954915
+    second: Rod_deep_reel_82
+  - first:
+      213: -5608027334269823117
+    second: Rod_deep_reel_83
+  - first:
+      213: -8902918939806406282
+    second: Rod_deep_reel_84
+  - first:
+      213: 3579815830957927540
+    second: Rod_deep_reel_85
+  - first:
+      213: 8540586855906804537
+    second: Rod_deep_reel_86
+  - first:
+      213: 2075118266097435112
+    second: Rod_deep_reel_87
+  - first:
+      213: 5460297043085486727
+    second: Rod_deep_reel_88
+  - first:
+      213: 189903539268477789
+    second: Rod_deep_reel_89
+  - first:
+      213: 6310338290525747609
+    second: Rod_deep_reel_90
+  - first:
+      213: -3732063671460172759
+    second: Rod_deep_reel_91
+  - first:
+      213: 5650306203911787069
+    second: Rod_deep_reel_92
+  - first:
+      213: -7633816253648423396
+    second: Rod_deep_reel_93
+  - first:
+      213: -5112205131056601129
+    second: Rod_deep_reel_94
+  - first:
+      213: 7660689089163474381
+    second: Rod_deep_reel_95
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22cf3cda823138e4b87733c4d88e4cb9
+      internalID: 1434999392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed8d933952f3a6943b59b066d223fe69
+      internalID: -808659063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b8a36123b1b8d84996260f7c7d1081b
+      internalID: 758730727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e617d3ad1bd67324bbbbef8f8d3d0c10
+      internalID: 735754520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e83255f9d47e9b84bb3a5ecbc49711b8
+      internalID: 181607032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c98b4dc73e1392944a7a7c8bce3452d3
+      internalID: 1911492055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50faa8df7cd324f4e8527dffcff890a5
+      internalID: -1590769348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 846e975122877f743bf7894a4e4c81a5
+      internalID: 1975238297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e4c157f88424774889e59083b479394
+      internalID: -1658885015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fd6ca1b17e898549bc60b6f89ceea92
+      internalID: 1352603178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6014f475592ba194ebc21a75de714cdc
+      internalID: -1266903616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d0_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f92d36210caf3364b9b2d4d5e9bd5e72
+      internalID: -521243998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5eb939751a196c54ca681db9e22face0
+      internalID: -1172737774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 979844e0363b789419f2d273c2a00011
+      internalID: 2010738111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35700e5582b3314448f1366eae9dbf4d
+      internalID: 5636417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fbed0b2b89dc8e4587afd9b8f30f479
+      internalID: -896911338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cf46f272404fe9498b4f7a1398d0899
+      internalID: 1226712664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed4992f279328244383175008393804d
+      internalID: 1829466174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b636e9b295e9b9b448439041420d6ac2
+      internalID: 1312038998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0269401e68d0d346b87ba22f46784de
+      internalID: 662248323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b697f9aacb6f9bd42a819d9c5ab6e296
+      internalID: 619728692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21e0af75c2bc67b4b9b295577bc75b50
+      internalID: -550190682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d82974575f351143bd808e0f7831191
+      internalID: 1320553928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d1_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0da09664c75ee3e40853dc608e74e0be
+      internalID: -1986501468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cfcba7c96eb9124981c497df90dbc96
+      internalID: 861420626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cddeba5bc05c4ac42b8c268e19dc9b9e
+      internalID: -1683497349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9326019578020fb47ada36fe2c204968
+      internalID: -1102015109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 375fa8c6929a2b74eac705e9e90e8331
+      internalID: -1336050762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de88e9aac6e9883488d08693f23f9ca7
+      internalID: -1862704070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b99f365863f3fc4bbd0019d5dfb7e99
+      internalID: -1295588582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b72fc68feaf1ac4199720df41ff010a
+      internalID: 1694337633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee2908b289156204083aa9c57524ca85
+      internalID: -1316507287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af404267a589538429fed3ac70981d35
+      internalID: 1122559381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ecaa4cdbe95cef44b91c2dac63c3d0e
+      internalID: 891057851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50229c40b77ca6c4d963f77290907cd1
+      internalID: -71769174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d2_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00580482d43e9b847bbded5e63d2f8a8
+      internalID: 1012045680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5489a061613ca3243a55296b6c5da888
+      internalID: -1023524946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5591aacf34ce9f408120b1c764f5b14
+      internalID: 1025194513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b37ab1ff9ef9c4a4f8548a6e6b101ea9
+      internalID: 1952191467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bf907775f485c144b60ebe2831fb725
+      internalID: -780716191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29272469af4e6164bb1a563438aaa996
+      internalID: -1807552276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb917154427f82244aa9d0036e959dc1
+      internalID: 1191502757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 810cb2e2229132b4e8d4aca96155379c
+      internalID: 1930456890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74dc8b59531da36448d925a3329a930f
+      internalID: -1692171127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 216cc0c8c47e1e04f9f7cf73bcadb14d
+      internalID: -2072770698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d55e154b52bf08243a52a0bb91f3620a
+      internalID: 1240028698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8707780cf6fbd0f41b38dfaaf09695af
+      internalID: -701943043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d3_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 073a0115a113e9f4b9b7a70a6a316c2c
+      internalID: 443661507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f4bc6ac89403da4ebf3efa74e4cc81e
+      internalID: -1150933473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fcf957b75a68d049adc3a6f2dde5ba1
+      internalID: 2130948423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c579ec7cc4571640890e6ea54ba7920
+      internalID: 527021117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed4b5f0252b545e42ab03b3ae562f360
+      internalID: -1014076865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eabfc545ee128634e9d1583c8b696212
+      internalID: 707416118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b98798744369dbc45a0722e1c11fa2e8
+      internalID: 1204478174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a21811c34f64da546a710c332d62113c
+      internalID: 86059210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99f92c1798459f549adee33449b1385f
+      internalID: -529653915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d33e9a571ceb0d408e21d7e5ec0d5fc
+      internalID: 1428571950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64c241c922c086c4b85226d8e38d6d2b
+      internalID: -70333323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6a2d0dc6e2ea574aa94f6f1040de6d1
+      internalID: -529902650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d4_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0fe7b8a0cd808948b6d53c0d192be6d
+      internalID: -2091409522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b8fb1e2e2b56948868570e2c617b79
+      internalID: 218973631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac92ca06276c62f4a9c581b181295551
+      internalID: 127210234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdf680915be007b428efd975b776a970
+      internalID: -449273120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f63e56db93c7fa4eaa7262b515729e5
+      internalID: -278584707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e6f1df1aae93142b3b8083b3707351
+      internalID: -1275596393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4d538f58b4012a438a6f25a4d2ac2ff
+      internalID: 1084234300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82ca9ddad34c0724880faee5cc8dbbdc
+      internalID: -545071575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89515eec50086964bbe970a3e3550a87
+      internalID: -920040700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b51928ac4aca614996cceff0fb97a12
+      internalID: 1312834864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d116480840936414585ee9f1a4281d71
+      internalID: 374750310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d831cdaa86c38f4f8d0a2af6fb54b03
+      internalID: 1114431650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d5_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24d5c47ecc6d06d43a178f5923dd49fd
+      internalID: -1615788117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e80475be5ca1ac142bfced539db01b10
+      internalID: -1565615496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65fae80611325cc46a00d3946fc730cd
+      internalID: 1698435735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6da845fbcdbafa641a0351329ad1d309
+      internalID: 1937716054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b138c5a8f3e467c4ead10dafe30768fb
+      internalID: 1451391816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 854c99c907340314ca9ff2166543bb0a
+      internalID: 107841954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 137ab12b65d8770479838698b57a7277
+      internalID: 1293408771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41184a92e312e364abbdd112b1066c20
+      internalID: -1207495501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 188d1bdfd5e5e674d80a9085cb0d6edf
+      internalID: -272269883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67ded76b00c31a34e8b3639bc06cd13c
+      internalID: 1538553412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a087775066ef4c4a9fc33386b215e6d
+      internalID: -699461065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3562b01e8891144db1f47f1d9500a5e
+      internalID: -2137973347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d6_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd1afa54fbc05bb478e025d70fd6e1c2
+      internalID: 1132187275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc0e853ca2f3ca84298a52a33de839ac
+      internalID: 518266120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 978fb21b97372f74cb13ac35e6872f37
+      internalID: -808670402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1334eb20ee4cdd5418b8e77b37dbcd44
+      internalID: 1283518477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daebb4633fe590e45850e07ca566753f
+      internalID: -319610287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8566053964f972449a0a90b6bcff733e
+      internalID: -357936888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c64e394325b3e6489876ac8314300e2
+      internalID: 960925139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cad504e49211b644b0f1cec5d8e7844
+      internalID: -405611525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7a7ada40c25cbd42995dfcf2fd97fa0
+      internalID: -2081070652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f8
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e4ec685b0acd6d4397a034c861d43a1
+      internalID: 1101678348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f9
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25cf9ea2b0e548b4ea32761953bc9c43
+      internalID: -1575760622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f10
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ed0ae3b78cf3f44b9cd068ac511e622
+      internalID: -1454360671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_deep_reel_d7_f11
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bd3a13c2019022429c778e68ab2f5e3
+      internalID: 99143598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 85ca72ae23295d7458ba3bde8739d928
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rod_deep_reel_d0_f0: 1434999392
+      Rod_deep_reel_d0_f1: -808659063
+      Rod_deep_reel_d0_f10: -1266903616
+      Rod_deep_reel_d0_f11: -521243998
+      Rod_deep_reel_d0_f2: 758730727
+      Rod_deep_reel_d0_f3: 735754520
+      Rod_deep_reel_d0_f4: 181607032
+      Rod_deep_reel_d0_f5: 1911492055
+      Rod_deep_reel_d0_f6: -1590769348
+      Rod_deep_reel_d0_f7: 1975238297
+      Rod_deep_reel_d0_f8: -1658885015
+      Rod_deep_reel_d0_f9: 1352603178
+      Rod_deep_reel_d1_f0: -1172737774
+      Rod_deep_reel_d1_f1: 2010738111
+      Rod_deep_reel_d1_f10: 1320553928
+      Rod_deep_reel_d1_f11: -1986501468
+      Rod_deep_reel_d1_f2: 5636417
+      Rod_deep_reel_d1_f3: -896911338
+      Rod_deep_reel_d1_f4: 1226712664
+      Rod_deep_reel_d1_f5: 1829466174
+      Rod_deep_reel_d1_f6: 1312038998
+      Rod_deep_reel_d1_f7: 662248323
+      Rod_deep_reel_d1_f8: 619728692
+      Rod_deep_reel_d1_f9: -550190682
+      Rod_deep_reel_d2_f0: 861420626
+      Rod_deep_reel_d2_f1: -1683497349
+      Rod_deep_reel_d2_f10: -71769174
+      Rod_deep_reel_d2_f11: 1012045680
+      Rod_deep_reel_d2_f2: -1102015109
+      Rod_deep_reel_d2_f3: -1336050762
+      Rod_deep_reel_d2_f4: -1862704070
+      Rod_deep_reel_d2_f5: -1295588582
+      Rod_deep_reel_d2_f6: 1694337633
+      Rod_deep_reel_d2_f7: -1316507287
+      Rod_deep_reel_d2_f8: 1122559381
+      Rod_deep_reel_d2_f9: 891057851
+      Rod_deep_reel_d3_f0: -1023524946
+      Rod_deep_reel_d3_f1: 1025194513
+      Rod_deep_reel_d3_f10: -701943043
+      Rod_deep_reel_d3_f11: 443661507
+      Rod_deep_reel_d3_f2: 1952191467
+      Rod_deep_reel_d3_f3: -780716191
+      Rod_deep_reel_d3_f4: -1807552276
+      Rod_deep_reel_d3_f5: 1191502757
+      Rod_deep_reel_d3_f6: 1930456890
+      Rod_deep_reel_d3_f7: -1692171127
+      Rod_deep_reel_d3_f8: -2072770698
+      Rod_deep_reel_d3_f9: 1240028698
+      Rod_deep_reel_d4_f0: -1150933473
+      Rod_deep_reel_d4_f1: 2130948423
+      Rod_deep_reel_d4_f10: -529902650
+      Rod_deep_reel_d4_f11: -2091409522
+      Rod_deep_reel_d4_f2: 527021117
+      Rod_deep_reel_d4_f3: -1014076865
+      Rod_deep_reel_d4_f4: 707416118
+      Rod_deep_reel_d4_f5: 1204478174
+      Rod_deep_reel_d4_f6: 86059210
+      Rod_deep_reel_d4_f7: -529653915
+      Rod_deep_reel_d4_f8: 1428571950
+      Rod_deep_reel_d4_f9: -70333323
+      Rod_deep_reel_d5_f0: 218973631
+      Rod_deep_reel_d5_f1: 127210234
+      Rod_deep_reel_d5_f10: 1114431650
+      Rod_deep_reel_d5_f11: -1615788117
+      Rod_deep_reel_d5_f2: -449273120
+      Rod_deep_reel_d5_f3: -278584707
+      Rod_deep_reel_d5_f4: -1275596393
+      Rod_deep_reel_d5_f5: 1084234300
+      Rod_deep_reel_d5_f6: -545071575
+      Rod_deep_reel_d5_f7: -920040700
+      Rod_deep_reel_d5_f8: 1312834864
+      Rod_deep_reel_d5_f9: 374750310
+      Rod_deep_reel_d6_f0: -1565615496
+      Rod_deep_reel_d6_f1: 1698435735
+      Rod_deep_reel_d6_f10: -2137973347
+      Rod_deep_reel_d6_f11: 1132187275
+      Rod_deep_reel_d6_f2: 1937716054
+      Rod_deep_reel_d6_f3: 1451391816
+      Rod_deep_reel_d6_f4: 107841954
+      Rod_deep_reel_d6_f5: 1293408771
+      Rod_deep_reel_d6_f6: -1207495501
+      Rod_deep_reel_d6_f7: -272269883
+      Rod_deep_reel_d6_f8: 1538553412
+      Rod_deep_reel_d6_f9: -699461065
+      Rod_deep_reel_d7_f0: 518266120
+      Rod_deep_reel_d7_f1: -808670402
+      Rod_deep_reel_d7_f10: -1454360671
+      Rod_deep_reel_d7_f11: 99143598
+      Rod_deep_reel_d7_f2: 1283518477
+      Rod_deep_reel_d7_f3: -319610287
+      Rod_deep_reel_d7_f4: -357936888
+      Rod_deep_reel_d7_f5: 960925139
+      Rod_deep_reel_d7_f6: -405611525
+      Rod_deep_reel_d7_f7: -2081070652
+      Rod_deep_reel_d7_f8: 1101678348
+      Rod_deep_reel_d7_f9: -1575760622
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1794 @@
+fileFormatVersion: 2
+guid: 31af69b95b8ab754cb3d6206539ce502
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -457515905605925278
+    second: Rod_coast_castRelease_0
+  - first:
+      213: -9052629786306293492
+    second: Rod_coast_castRelease_1
+  - first:
+      213: -8176059204514685129
+    second: Rod_coast_castRelease_2
+  - first:
+      213: -2652203784118116514
+    second: Rod_coast_castRelease_3
+  - first:
+      213: -4966018279181441140
+    second: Rod_coast_castRelease_4
+  - first:
+      213: -2698968839062491465
+    second: Rod_coast_castRelease_5
+  - first:
+      213: 6836276660878404572
+    second: Rod_coast_castRelease_6
+  - first:
+      213: 1895807107011808795
+    second: Rod_coast_castRelease_7
+  - first:
+      213: 5344386624539059892
+    second: Rod_coast_castRelease_8
+  - first:
+      213: 2454781071686839869
+    second: Rod_coast_castRelease_9
+  - first:
+      213: 5651252132180202560
+    second: Rod_coast_castRelease_10
+  - first:
+      213: -2569509901142481345
+    second: Rod_coast_castRelease_11
+  - first:
+      213: -8136491239833775278
+    second: Rod_coast_castRelease_12
+  - first:
+      213: -8950685551473259302
+    second: Rod_coast_castRelease_13
+  - first:
+      213: -8904274323747359041
+    second: Rod_coast_castRelease_14
+  - first:
+      213: 774348494997752763
+    second: Rod_coast_castRelease_15
+  - first:
+      213: 2643028827538896527
+    second: Rod_coast_castRelease_16
+  - first:
+      213: -332388822543119718
+    second: Rod_coast_castRelease_17
+  - first:
+      213: -1991918279298405316
+    second: Rod_coast_castRelease_18
+  - first:
+      213: 4542918833937070086
+    second: Rod_coast_castRelease_19
+  - first:
+      213: 6966910720486392609
+    second: Rod_coast_castRelease_20
+  - first:
+      213: 2404802357959920727
+    second: Rod_coast_castRelease_21
+  - first:
+      213: -4416271304675408251
+    second: Rod_coast_castRelease_22
+  - first:
+      213: 2896670985628918573
+    second: Rod_coast_castRelease_23
+  - first:
+      213: 7022386922674068249
+    second: Rod_coast_castRelease_24
+  - first:
+      213: -1312141314484212619
+    second: Rod_coast_castRelease_25
+  - first:
+      213: -7129373557427226904
+    second: Rod_coast_castRelease_26
+  - first:
+      213: 7917415340696863510
+    second: Rod_coast_castRelease_27
+  - first:
+      213: -4942164355457487896
+    second: Rod_coast_castRelease_28
+  - first:
+      213: 4206470237592944400
+    second: Rod_coast_castRelease_29
+  - first:
+      213: -4911803572958229470
+    second: Rod_coast_castRelease_30
+  - first:
+      213: 5324381477212708545
+    second: Rod_coast_castRelease_31
+  - first:
+      213: 2936569324822548568
+    second: Rod_coast_castRelease_32
+  - first:
+      213: 1047822860661586367
+    second: Rod_coast_castRelease_33
+  - first:
+      213: 4087254729982875414
+    second: Rod_coast_castRelease_34
+  - first:
+      213: 8412196855259363940
+    second: Rod_coast_castRelease_35
+  - first:
+      213: -6744200661177230404
+    second: Rod_coast_castRelease_36
+  - first:
+      213: -447325022150136231
+    second: Rod_coast_castRelease_37
+  - first:
+      213: -4088912732127088451
+    second: Rod_coast_castRelease_38
+  - first:
+      213: -5721007441491484204
+    second: Rod_coast_castRelease_39
+  - first:
+      213: 278877367401528580
+    second: Rod_coast_castRelease_40
+  - first:
+      213: 833852250920023812
+    second: Rod_coast_castRelease_41
+  - first:
+      213: -7380988071737594818
+    second: Rod_coast_castRelease_42
+  - first:
+      213: 432584627199586600
+    second: Rod_coast_castRelease_43
+  - first:
+      213: -666645707230572533
+    second: Rod_coast_castRelease_44
+  - first:
+      213: 5594013213083299913
+    second: Rod_coast_castRelease_45
+  - first:
+      213: 7664412007741158032
+    second: Rod_coast_castRelease_46
+  - first:
+      213: -1718336781818679178
+    second: Rod_coast_castRelease_47
+  - first:
+      213: 2215358635036487049
+    second: Rod_coast_castRelease_48
+  - first:
+      213: -8654393047265513975
+    second: Rod_coast_castRelease_49
+  - first:
+      213: -6928956635008680536
+    second: Rod_coast_castRelease_50
+  - first:
+      213: -3380098149717633435
+    second: Rod_coast_castRelease_51
+  - first:
+      213: 6473837048882308601
+    second: Rod_coast_castRelease_52
+  - first:
+      213: 5615986291566003192
+    second: Rod_coast_castRelease_53
+  - first:
+      213: -4647132244654482693
+    second: Rod_coast_castRelease_54
+  - first:
+      213: 3667193827023066710
+    second: Rod_coast_castRelease_55
+  - first:
+      213: 3680700176694956196
+    second: Rod_coast_castRelease_56
+  - first:
+      213: -4034335178475120419
+    second: Rod_coast_castRelease_57
+  - first:
+      213: -4706909252511990820
+    second: Rod_coast_castRelease_58
+  - first:
+      213: 1814325371452516770
+    second: Rod_coast_castRelease_59
+  - first:
+      213: -6535352431767291016
+    second: Rod_coast_castRelease_60
+  - first:
+      213: 5040959589369728953
+    second: Rod_coast_castRelease_61
+  - first:
+      213: -3118192422635819592
+    second: Rod_coast_castRelease_62
+  - first:
+      213: 1730569729997484946
+    second: Rod_coast_castRelease_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14dcb8b535308c7468a65cfbef0bc36b
+      internalID: 285696894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 945250c181073be4b9e566bad1832c3a
+      internalID: 106140727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9c627c4a783044458676fb97b86b074
+      internalID: 384963367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42b964d5d0643c3438ebd95238f6c895
+      internalID: 2085789901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bcb5a2acdcd48248909f3e6d5464548
+      internalID: -1844944035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ace46c2dd2f0c074e9214241b491821e
+      internalID: -834342318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 110f5017022e2184e8113a47db453c01
+      internalID: -2129876394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d0_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 784
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15fcb8b300648494294acb40e3e8da9a
+      internalID: -759381167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c06b22e2da597438aecfbcc1a40261
+      internalID: -259907762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7701399da3a0a5245af492dac68f96b4
+      internalID: -1892962924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20404b332fadb58428a94a2206016e20
+      internalID: -662715230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61e4a7fd7d4c01943b3ea9a8af3d6d4f
+      internalID: 253713076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 125e00e8d1f81e14d94cc3f4a601cdf7
+      internalID: -524801821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cae206d6bbdb1574aa19042b2576ee19
+      internalID: 1754316399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ef2a20626ec3c447b981ed3a6f4aee4
+      internalID: 1073216223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d1_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 672
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d411d8ef69c965498d5903c9f0549ac
+      internalID: 769850519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79033bff2638265498aacfed0f80f271
+      internalID: -840644740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 140a321bbd506534bb0966df29a18750
+      internalID: 940583027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e53bfb0df52b3f4881a6c312767b8aa
+      internalID: -1351710907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a99a3e57e8d19c4bb68fc3950f9724e
+      internalID: 1967329593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 384ef96c10fd5244190421aedff76d1e
+      internalID: -47314674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4974ffc19b7f13f4abf6339b05cc780d
+      internalID: 1137526807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc70522416e15604db3af0120bdc7c79
+      internalID: 551463524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d2_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 560
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76c128d22724e22419df2ad9e375d9d3
+      internalID: -1341897750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cedf952b120c4a4f84f062d32124461
+      internalID: 768121243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96a74f8fb9422224dac53298e22a0c2d
+      internalID: -1466805455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f093eb58a878ddb41822ac54dbac3e48
+      internalID: 1304321561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7001099507de926429b531e50905d90a
+      internalID: 924137609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1885c6f19f670dd45a3b749673de0e92
+      internalID: 589649786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e4f55afe4ce5454d9e5d2a6ed000fe2
+      internalID: 372473686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5b5384c2e39ab545917d5853437d7f0
+      internalID: -1606930805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d3_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 448
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebeee1644feaa404faa4b794ed3cc86d
+      internalID: 1772377759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2b31660bf92ac846b641c998a7276f0
+      internalID: 2061535908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12641b12b08c6ef4eb8b9973360bbe87
+      internalID: 536418163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da42e1d311eff6b4080e70940525071a
+      internalID: -1414413112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64fc8edb95aa1614c8316e8b5bd996f2
+      internalID: 1596818062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1f085254fda5b46af64b8ab989539e
+      internalID: -1328231606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd7004d1afd7a9b428120e8d94e36810
+      internalID: 174210574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f40ae22e35cb52945b01807bef8a81fc
+      internalID: 526414239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d4_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 336
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce57cc5009188504ba89d18d7cba2c5d
+      internalID: 1753476268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ff43f7ba6da9d249a36b14c20a12de3
+      internalID: 667989024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 391497a9593838e429e2673ffb8ec607
+      internalID: -1078081033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d77788da1806f4a4bb42a3a097184e4b
+      internalID: -1546121442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e33a28088e47f854ab4d068ed221d1cf
+      internalID: 749200497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df003df9c0375df4ebc392ece7dd8e97
+      internalID: 1676496733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: caf2bf351aeddb44f8281c28e3106444
+      internalID: 1774125760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ee34d04d38065d4bafd73c6b1b323cd
+      internalID: 713523556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d5_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 224
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ddc17074ba1c514ba85c3abf953a573
+      internalID: -628922304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03b25881a4d68324e96227ddf07a2380
+      internalID: 823214451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aaf7ea7e18a91c94999602b88561168d
+      internalID: 1052794142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d7ad5399b71d0b41a5f6345b62042a6
+      internalID: 1049474238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 995154b5302a268488432b057c78354e
+      internalID: 936788617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0fd7d0f3a32bc24d8e002a93c98ecee
+      internalID: -1051724994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f46a6859b0a40f94c9d73ba198499b80
+      internalID: 1419928685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68cd3d9b1434ed648a773e053cbc7e78
+      internalID: 997340204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d6_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 112
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8587325490fcb9748931ad10b8341d24
+      internalID: 1146163050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd7c54aedee162e49bb580b02d2a2893
+      internalID: -1782834879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 990154155a1c6314a880f230d2256e08
+      internalID: -128147505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aae4370305020ed45a9456bdf0f6a8a6
+      internalID: -728991572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b4ffd16c88684d4983d91b6e5c4f973
+      internalID: -722811437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7e6ff7f600ced24cb049d7143ba8e15
+      internalID: 2081557271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7bbf5e117c75d64eaa4131e1a9cfcf7
+      internalID: 1176424938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f6
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75540eb8dc747eb45911bf127f2b09e5
+      internalID: 1944297288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rod_coast_castRelease_d7_f7
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 0
+        width: 112
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69e8bf2b90f88c545b91f523b87c9844
+      internalID: 1233321101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1fab4c00749737c47931642dd7cc25d9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rod_coast_castRelease_d0_f0: 285696894
+      Rod_coast_castRelease_d0_f1: 106140727
+      Rod_coast_castRelease_d0_f2: 384963367
+      Rod_coast_castRelease_d0_f3: 2085789901
+      Rod_coast_castRelease_d0_f4: -1844944035
+      Rod_coast_castRelease_d0_f5: -834342318
+      Rod_coast_castRelease_d0_f6: -2129876394
+      Rod_coast_castRelease_d0_f7: -759381167
+      Rod_coast_castRelease_d1_f0: -259907762
+      Rod_coast_castRelease_d1_f1: -1892962924
+      Rod_coast_castRelease_d1_f2: -662715230
+      Rod_coast_castRelease_d1_f3: 253713076
+      Rod_coast_castRelease_d1_f4: -524801821
+      Rod_coast_castRelease_d1_f5: 1754316399
+      Rod_coast_castRelease_d1_f6: 1073216223
+      Rod_coast_castRelease_d1_f7: 769850519
+      Rod_coast_castRelease_d2_f0: -840644740
+      Rod_coast_castRelease_d2_f1: 940583027
+      Rod_coast_castRelease_d2_f2: -1351710907
+      Rod_coast_castRelease_d2_f3: 1967329593
+      Rod_coast_castRelease_d2_f4: -47314674
+      Rod_coast_castRelease_d2_f5: 1137526807
+      Rod_coast_castRelease_d2_f6: 551463524
+      Rod_coast_castRelease_d2_f7: -1341897750
+      Rod_coast_castRelease_d3_f0: 768121243
+      Rod_coast_castRelease_d3_f1: -1466805455
+      Rod_coast_castRelease_d3_f2: 1304321561
+      Rod_coast_castRelease_d3_f3: 924137609
+      Rod_coast_castRelease_d3_f4: 589649786
+      Rod_coast_castRelease_d3_f5: 372473686
+      Rod_coast_castRelease_d3_f6: -1606930805
+      Rod_coast_castRelease_d3_f7: 1772377759
+      Rod_coast_castRelease_d4_f0: 2061535908
+      Rod_coast_castRelease_d4_f1: 536418163
+      Rod_coast_castRelease_d4_f2: -1414413112
+      Rod_coast_castRelease_d4_f3: 1596818062
+      Rod_coast_castRelease_d4_f4: -1328231606
+      Rod_coast_castRelease_d4_f5: 174210574
+      Rod_coast_castRelease_d4_f6: 526414239
+      Rod_coast_castRelease_d4_f7: 1753476268
+      Rod_coast_castRelease_d5_f0: 667989024
+      Rod_coast_castRelease_d5_f1: -1078081033
+      Rod_coast_castRelease_d5_f2: -1546121442
+      Rod_coast_castRelease_d5_f3: 749200497
+      Rod_coast_castRelease_d5_f4: 1676496733
+      Rod_coast_castRelease_d5_f5: 1774125760
+      Rod_coast_castRelease_d5_f6: 713523556
+      Rod_coast_castRelease_d5_f7: -628922304
+      Rod_coast_castRelease_d6_f0: 823214451
+      Rod_coast_castRelease_d6_f1: 1052794142
+      Rod_coast_castRelease_d6_f2: 1049474238
+      Rod_coast_castRelease_d6_f3: 936788617
+      Rod_coast_castRelease_d6_f4: -1051724994
+      Rod_coast_castRelease_d6_f5: 1419928685
+      Rod_coast_castRelease_d6_f6: 997340204
+      Rod_coast_castRelease_d6_f7: 1146163050
+      Rod_coast_castRelease_d7_f0: -1782834879
+      Rod_coast_castRelease_d7_f1: -128147505
+      Rod_coast_castRelease_d7_f2: -728991572
+      Rod_coast_castRelease_d7_f3: -722811437
+      Rod_coast_castRelease_d7_f4: 2081557271
+      Rod_coast_castRelease_d7_f5: 1176424938
+      Rod_coast_castRelease_d7_f6: 1944297288
+      Rod_coast_castRelease_d7_f7: 1233321101
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
