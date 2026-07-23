@@ -90,6 +90,15 @@ namespace HiddenHarbours.Fishing
         /// checked first, the <see cref="FishFight"/> precedent.
         /// </summary>
         public void Tick(float dt, bool reeling, float steerAlignment)
+            => Tick(dt, reeling, steerAlignment, deckAnglePressurePerSec: 0f);
+
+        /// <summary>
+        /// The full tick including the <b>deck-angle pressure</b> (Rod Fishing v2 Wave 4 — design §4.2):
+        /// the caller measures the stance (<see cref="DeckAngleMath"/> against the live deck frame) and
+        /// hands the resulting ≥ 0 rate in; the maths adds it to the tension side only. Passing 0 (the
+        /// dock, a clean rail, the owner's factor at 0) makes this bit-for-bit the three-arg tick.
+        /// </summary>
+        public void Tick(float dt, bool reeling, float steerAlignment, float deckAnglePressurePerSec)
         {
             if (IsOver || float.IsNaN(dt) || dt <= 0f) return;
 
@@ -98,7 +107,7 @@ namespace HiddenHarbours.Fishing
             float effort = _rhythm.Effort01;
 
             float tensionRate = RodFightMath.TensionRatePerSec(reeling, effort, steerAlignment, phase,
-                _rise, _fall, _effectiveRunPressure, _steerRelief);
+                _rise, _fall, _effectiveRunPressure, _steerRelief, deckAnglePressurePerSec);
             float landingRate = RodFightMath.LandingRatePerSec(reeling, effort, steerAlignment, phase,
                 _fill);
 

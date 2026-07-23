@@ -445,7 +445,8 @@ namespace HiddenHarbours.Fishing
                 // The surface anchor — where the line entered the water: the cast's landing point on
                 // the cast path, the rig's drop spot (the angler) on the depth path. The fish's
                 // published offset is measured from the ANGLER each tick, so a walking angler reads a
-                // moving line angle for free (design §4.2 arrives later; the anchor is already world-fixed).
+                // moving line angle for free — and on a deck the same live geometry feeds the
+                // deck-angle tension term (design §4.2, DeckAnglePressurePerSec).
                 _fightAnchorWorld = !_depthGame && _lastCast.IsCast
                     ? _lastCast.LandingPoint
                     : AnglerPosition;
@@ -474,7 +475,11 @@ namespace HiddenHarbours.Fishing
                 _lastSteerAlignment = RodFightMotionMath.SteerAlignment(
                     pointerWorld - AnglerPosition, _rodFight.DartDir, _steerDeadzoneM);
 
-            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment);
+            // Both spatial reads above and below measure from the angler's LIVE transform THIS tick —
+            // on a deck that transform rides the hull's physics root, so when the unmanned boat
+            // weathervanes mid-fight the steer target and the line angle drift under the player
+            // (design §4.2 decision #3, the moving platform). Nothing is cached across ticks.
+            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment, DeckAnglePressurePerSec());
 
             if (_rodFight.Result == FishFightResult.Landed) OnLanded();
             else if (_rodFight.Result == FishFightResult.Snapped) OnSnapped();
@@ -546,6 +551,36 @@ namespace HiddenHarbours.Fishing
             _rodFight = null;
             _lastSteerAlignment = 0f;
             _hasFightAnchor = false;
+        }
+
+        /// <summary>
+        /// The deck-angle tension pressure THIS tick (Rod Fishing v2 Wave 4 — design §4.2, the owner's
+        /// "light real factor"): where the angler stands on the live deck frame vs where the fish is,
+        /// graded by the pure <see cref="DeckAngleMath"/> and scaled by the owner's
+        /// <c>GameConfig.RodFight.DeckAngleFactor</c>. Exactly 0 whenever any of it doesn't apply — no
+        /// published <see cref="DeckStance"/> (the dock/shore: off a boat there IS no stance), the
+        /// factor at 0 (the owner's off-switch / dock-parity check), or no fight anchor yet — so the
+        /// dock path integrates a literal 0 and stays bit-for-bit (test-pinned). Everything is measured
+        /// fresh from the LIVE frame each tick: the weathervaning hull swings the deck rectangle AND the
+        /// angler with it, so a drifted-bad line angle appears (and walking the rail relieves it) with
+        /// no cached state. The cozy rule: a line across the hull only pressures the tension gauge —
+        /// there is no line-cutting and no snag damage, just the nudge to walk the rail.
+        /// </summary>
+        private float DeckAnglePressurePerSec()
+        {
+            if (_rodFight == null || !_hasFightAnchor) return 0f;
+            if (!DeckStance.TryGet(out DeckStanceState deck)) return 0f;
+
+            RodFightSettings fight = _config != null ? _config.RodFight : RodFightSettings.Default;
+            if (fight.DeckAngleFactor <= 0f) return 0f;
+
+            Vector2 angler = AnglerPosition;
+            Vector2 fishWorld = _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM);
+            float across = DeckAngleMath.AcrossHull01(
+                DeckAngleMath.WorldToDeckFrame(angler - deck.HullPosition, deck.DrawnHeadingDegrees),
+                DeckAngleMath.WorldToDeckFrame(fishWorld - deck.HullPosition, deck.DrawnHeadingDegrees),
+                deck.DeckCenter, deck.DeckHalfExtents);
+            return DeckAngleMath.TensionPerSec(across, fight.DeckAngleFactor);
         }
 
         // ---- helpers ------------------------------------------------------------------------

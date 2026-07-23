@@ -30,3 +30,4 @@ MonoBehaviour:
     RunTensionPressure: 0.35
     CounterSteerRelief: 0.45
     SurfaceThreshold01: 0.5
+    DeckAngleFactor: 0.15

@@ -530,6 +530,22 @@ namespace HiddenHarbours.Player
 
         private void Awake() => BuildHint();
 
+        /// <summary>
+        /// LEAVE-THE-HELM DRIFT (boats-and-navigation.md §3 "leave the helm, work the rail"; Rod
+        /// Fishing v2 §4.1 — you fish unmanned): while the player is ON DECK nobody is steering, but the
+        /// sea keeps working the hull — she sets with the current, is shoved by the wind and slewed by
+        /// the seakeeping (the weathervane the deck angler repositions against). The boat controller is
+        /// deliberately DISABLED on deck (enabled == "helm is manned" for the presentation layers), so
+        /// the mode owner ticks its unmanned force pass explicitly. This is the fix for the deck
+        /// suppressing the drift entirely (controller off + mooring stowed = a hull frozen in glass).
+        /// OnFoot keeps its mooring-rope drift (BoatMooring); Aboard keeps the manned FixedUpdate.
+        /// </summary>
+        private void FixedUpdate()
+        {
+            if (Mode == ControlMode.OnDeck && _boatController != null)
+                _boatController.TickUnmannedDrift();
+        }
+
         private void Update()
         {
             // A modal dialogue (VS-21, world-content) owns the shared Interact key while it's up —
