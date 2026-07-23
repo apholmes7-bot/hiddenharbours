@@ -1,0 +1,12 @@
+{
+    "name": "HiddenHarbours.SpikeDeckCharacterMesh",
+    "rootNamespace": "HiddenHarbours.SpikeDeckCharacterMesh",
+    "references": [
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Art",
+        "HiddenHarbours.Boats",
+        "Unity.InputSystem"
+    ],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

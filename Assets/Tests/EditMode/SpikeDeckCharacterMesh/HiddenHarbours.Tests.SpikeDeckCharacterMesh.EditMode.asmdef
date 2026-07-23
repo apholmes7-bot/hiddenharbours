@@ -1,0 +1,24 @@
+{
+    "name": "HiddenHarbours.Tests.SpikeDeckCharacterMesh.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.SpikeDeckCharacterMesh",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.SpikeDeckCharacterMesh",
+        "HiddenHarbours.SpikeDeckCharacterMesh.Editor",
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Art"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "overrideReferences": true,
+    "autoReferenced": false
+}
