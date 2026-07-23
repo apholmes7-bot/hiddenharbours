@@ -1,9 +1,19 @@
-# ADR 0024 — On-deck characters draw as facet MESHES (a pose flipbook with live heading); the baked 8-dir sheets keep locomotion everywhere else
+# ADR 0024 — FISHING characters draw as facet MESHES (a pose flipbook with live heading); the baked 8-dir sheets keep locomotion everywhere else
 
-- **Status: DRAFT** — the `spike/deck-character-mesh` verdict, written for the owner to ratify.
-  Ships no gameplay itself; the spike's demo rig and measurements are the evidence. Nothing is
-  wired into the shipping player.
-- **Date:** 2026-07-23 (spike)
+- **Status: RATIFIED, with the scope EXTENDED by the owner** — ratified by the owner 2026-07-23
+  ("commit to the rig") with the scope grown from *on-deck only* to **ALL stationary fishing
+  states, dock AND deck**. Rationale for the extension: the sprite path's bake → slice →
+  name-pattern → builder-wiring chain failed silently three times in one day of fishing-v2
+  integration (the third: committed fight sheets wiring zero frames after a rebuild); the mesh
+  path renders poses directly from the rig and retires that chain for fishing wholesale, and the
+  rod/line anchors improve from baked per-dir/per-frame JSON pins to live 3D points. One
+  character system for all fishing instead of a dock/deck seam. Locomotion stays sprites,
+  unchanged (the "explicitly does NOT change" section stands).
+  Production conditions (below) still bind; sequencing: the sprite-driven
+  `feat/rod-fight-presenter` fix lands FIRST (its line/bobber/ripple/fish work is
+  character-agnostic and is not throwaway; only the rod-overlay pin layer migrates to live
+  anchors in the production wave).
+- **Date:** 2026-07-23 (spike; ratified + extended same day)
 - **Decision owner:** lead-architect ratifies; **gameplay-systems** owns the deck-fishing consumer
   (rod v2 Wave 4), **art-pipeline** owns the facet look, **tools-editor** owns the pose baking,
   **art-director** owns the one export-contract change flagged below.
