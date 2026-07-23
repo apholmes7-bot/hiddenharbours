@@ -51,6 +51,9 @@ namespace HiddenHarbours.Boats
             public float   Lifetime;   // seconds it lives
             public float   Seed;       // per-particle phase for the wave wobble (deterministic, set at emit)
             public float   BaseSize;   // size at birth (m), before spread
+            public float   BirthStrength; // 0..1 strength BAKED at emit (speed-onset at birth) — a deposited
+                                          // trail must keep the brightness it was laid with even after the
+                                          // boat stops, instead of dimming with the boat's LIVE speed.
         }
 
         private readonly Particle[] _pool;
@@ -217,9 +220,44 @@ namespace HiddenHarbours.Boats
                     Lifetime = Mathf.Max(0.05f, cfg.Lifetime * lifeJit),
                     Seed     = seed,
                     BaseSize = Mathf.Max(0.01f, cfg.FoamSize * sizeJit),
+                    BirthStrength = 1f,
                 };
                 _emitCounter++;
             }
+        }
+
+        /// <summary>
+        /// Emit ONE particle at an explicit world position/velocity — the DEPOSITED-TRAIL emit
+        /// (<see cref="WakeTrailMath"/> computes where and how fast; this only owns the pooled slot and the
+        /// deterministic per-particle jitter, exactly as <see cref="Emit"/> does for the template streams).
+        /// <paramref name="lifetimeScale"/>/<paramref name="sizeScale"/> layer the trail's grading on top of
+        /// the config's base lifetime/size (both still jittered from the emit counter — no clone-stamp trail);
+        /// <paramref name="birthStrength"/> is BAKED into the particle so a laid deposit keeps its birth
+        /// brightness after the boat slows/stops (the trail persists — the owner's ask). Recycles the oldest
+        /// slot when the pool is full: emission can never exceed the pool (rule 7). Deterministic (rule 5),
+        /// zero allocation.
+        /// </summary>
+        public void EmitAt(Vector2 pos, Vector2 vel, in WakeConfig cfg,
+                           float lifetimeScale, float sizeScale, float birthStrength)
+        {
+            float seed    = Hash01(_emitCounter);
+            float lifeJit = 1f + (Hash01(_emitCounter * 2654435761u) - 0.5f) * 2f * cfg.LifetimeJitter;
+            float sizeJit = 1f + (Hash01(_emitCounter * 40503u + 7u) - 0.5f) * 2f * cfg.SizeJitter;
+
+            int i = _next;
+            _next = (_next + 1) % _pool.Length;
+            _pool[i] = new Particle
+            {
+                Alive    = true,
+                Pos      = pos,
+                Vel      = vel,
+                Age      = 0f,
+                Lifetime = Mathf.Max(0.05f, cfg.Lifetime * lifeJit * Mathf.Max(0.01f, lifetimeScale)),
+                Seed     = seed,
+                BaseSize = Mathf.Max(0.01f, cfg.FoamSize * sizeJit * Mathf.Max(0.01f, sizeScale)),
+                BirthStrength = Mathf.Clamp01(birthStrength),
+            };
+            _emitCounter++;
         }
 
         // ==== INTEGRATION (brief 2: travel with the current; brief 4: dissipate) ===========================

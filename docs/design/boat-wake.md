@@ -143,6 +143,61 @@ asserts the narrow apex is at the image top (wake) and the impact churn at the i
 flipped art re-export fails the suite instead of shipping a backwards wake again. PlayMode
 `WakePlumePlayTests` proves both texture sets load through the spriteMode-Multiple trap at runtime.
 
+## The deposited trail + the dynamic bow wave (owner ask 2026-07-23)
+
+> The owner, verbatim: *"the boats wakes are currently static lines, they should be dynamic small waves
+> or at least a representation that leaves a trail behind the boat, same with bow waves when they crash
+> against the bow."*
+
+**What was wrong.** Everything above emitted along a Kelvin-V *template hung off the boat's current
+pose* — fresh (brightest) puffs and crest streaks kept appearing at fixed offsets relative to the hull
+(up to `ArmLength` astern of wherever she is NOW), and the graded plume/spray sprites were rigid decals
+glued to the stern/bow. Turn hard and the whole pattern swings with you: the "static lines" read.
+
+**The fix — deposition (`WakeTrailMath`, pure + EditMode-tested).** The wake is now laid **at the
+stern's swept track, per metre of travel** (distance-based carry, so trail density is uniform along the
+track at any speed): each deposit is two **shoulder wavelets** (into the crest-line pool) plus, for a
+tunable fraction, a **centre churn puff** (into the foam pool). Deposits persist and decay **where they
+were laid** — the trail traces the boat's actual path and **curves through turns**. The Kelvin V is not
+drawn; it **emerges**: shoulder deposits spread laterally at `boatSpeed·tan(KelvinHalfAngleDeg)`, which
+is exactly the stationary V pattern behind a straight run and a curved, still-opening trail behind a
+turn. Birth strength/length are **baked at emit** (`Particle.BirthStrength`), so a trail laid at speed
+keeps reading after the boat slows or stops instead of dimming with the live speed. Pool safety is
+hard: `DepositCount` clamps per tick (`MaxDepositsPerTick`), `EmitAt` recycles the fixed pool, and a
+teleport-sized stern jump **resets** rather than striping foam across the map. The legacy boat-locked
+stamp survives behind `WakeTrailConfig.Enabled = false` as the A/B escape hatch.
+
+**The live plume + bow wave.** The boat-attached plume/spray sprites are *allowed* to be attached (the
+transom wash and the cutwater sheet really do travel with the hull) but must be **alive**: both wear a
+bounded, deterministic **churn pulse** (`ChurnPulse` — two incommensurate sine bands, per-boat phase;
+amount 0 restores the decal), and the rigid straight-V plume **fades with turn rate**
+(`TurnFade01`) — it cannot bend, so a hard turn hands the wake read to the deposited trail, which can.
+The bow additionally sheds pooled **droplets** off the cutwater (`DropletVelocity`: a forward fan at a
+fraction of boat speed, which she then drives past — the crash read), rate-gated by the **same
+dory-gentle speed-onset ramp** as the spray sheet (`BowSprayGrading.SpeedOnset`), hard-clamped per tick,
+sub-second lifetime, its own small pool (`_dropletPoolPerBoat`, default 24).
+
+**The displaced sea (ADR 0023).** While the displaced surface is active, **every** wake element — laid
+foam, shoulder wavelets, droplets, plume, spray — lifts by
+`ShoreFadeMath.DisplacedHeight(height, depth, band, exaggeration)` of the shared swell **under its own
+world position** (the emitter owns one `WaveFieldAnimator` at settings parity, the `BuoyWaveVisual`
+pattern; depth via `BoatCrossing.DepthAt`), with the exaggeration + shore band read **live from the
+Core `DisplacedSea` seam** each tick — never a config copy (the overlay-pose lesson: this very wake
+once breathed a 1.6 m gap off a cached scale). Foam laid on a swell **heaves with the wave passing
+under it**; the ride is display-only (never accumulated into the integrated position). Displaced OFF ⇒
+the inactive context returns 0 everywhere and the wake sits on the flat plane exactly as before (the
+A/B contract). The resting draft is deliberately **not** applied: foam rides the water surface, and the
+draft exists to sink the *hull* to its waterline — the surface (and everything on it) doesn't move.
+
+**Tunables** — `WakeTrailConfig` (deposition spacing/astern nudge/per-tick cap/teleport reset, Kelvin
+half-angle + spread clamps + astern drift, shoulder half-width fraction + magnitude boost, graded
+lifetime/size scales, centre-churn fraction, plume pulse Hz/scale/alpha amounts, plume turn-fade
+onset/range) and `BowWaveConfig` (droplet rate/cap/fan/speed-scale/lifetime/size/decay, spray pulse
+Hz/scale/alpha), both serialized on `BoatWakeEmitter` beside the existing configs. Tests:
+`Assets/Tests/EditMode/WakeTrailMathTests.cs` (spacing/carry conservation, the hard pool clamps at both
+the math and the system level, track/shoulder geometry, the emergent-V spread law, grading monotonicity,
+turn fade, pulse bounds/determinism, droplet fan/rate gating).
+
 ## Future work (not built)
 The procedurally-generated round foam puff is a **greybox** placeholder. The authored V sprite
 `Assets/_Project/Art/VFX/BoatWake.png` (a 64×96 point-filtered white Kelvin triangle, apex at the
