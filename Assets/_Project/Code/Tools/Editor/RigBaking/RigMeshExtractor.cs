@@ -298,11 +298,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para>⚠️ <b>OFF by default, because MEASURING it refuted the obvious conclusion.</b> The
         /// reasoning above predicts that dropping the reverse should make the mesh agree with the
         /// rig. It does not: on the dory's oar the worst connected cluster got WORSE, 49 → 60
-        /// (24 → 16 triangles, 4 faces dropped per oar). So the rig's own render is genuinely
-        /// showing the REVERSED face across part of that patch — its two fan triangulations give
-        /// marginally different interpolated depths, and the second face wins where its happens to
-        /// come out smaller. Keeping both is therefore CLOSER to the rig, and the residual has a
-        /// different cause that is still open.</para>
+        /// (24 → 16 triangles, 4 faces dropped per oar).</para>
+        ///
+        /// <para><b>Why — settled by instrumenting the rasteriser rather than by reasoning
+        /// (<see cref="RigPaintTrace"/>).</b> At every pixel where the mesh and the rig disagreed,
+        /// the rig had painted a colour one of OUR OWN two twins computed there — 1,519 such pixels
+        /// over 8 headings × 8 stroke phases, zero exceptions. So neither face is "the right one":
+        /// the rig picks between them by the last bit of a barycentric sum, and its pick matches
+        /// first-wins 50.6% of the time, last-wins 50.4%, its own <c>Float32Array</c> z-buffer 44.6%,
+        /// front-facing 51.2%, lit 51.2%. Six rules, all chance. Dropping the twin makes us
+        /// deterministic and therefore agree LESS often than a coin. The residual is not a defect and
+        /// there is nothing left open: <see cref="RigAmbiguousPixels"/> is how the acceptance handles
+        /// it, and the fixture that uses it resolves a half-degree feather error.</para>
         ///
         /// <para>Kept as a switch rather than deleted: the CPU-versus-GPU tie-break disagreement is
         /// real and independently worth knowing (it applies to any rig surface built this way,
@@ -575,33 +582,63 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// Remove every face that is the exact reverse of one already kept. Exact vertex equality is
-        /// the right test and not a fragile one: the pair comes from the SAME array in the rig
-        /// (<c>[q[3],q[2],q[1],q[0]]</c>), so the doubles are bit-identical, and anything merely
-        /// close is a different face that must survive.
+        /// For every face, the index of the face that is its EXACT REVERSE, or -1 when it has none.
+        ///
+        /// <para>Exact vertex equality is the right test and not a fragile one: the pair comes from
+        /// the SAME array in the rig (<c>[q[3],q[2],q[1],q[0]]</c>), so the doubles are bit-identical,
+        /// and anything merely close is a different face that must survive.</para>
+        ///
+        /// <para><b>Why this is worth naming rather than leaving inside the dedupe.</b> A reverse pair
+        /// is EXACTLY coplanar with an identical <c>db</c> and OPPOSITE normals, which makes it the
+        /// one place in a rig where the picture is not a function of the geometry — see
+        /// <see cref="RigAmbiguousPixels"/>, which needs to identify the pairs without removing them.
+        /// Structural identification beats a depth tolerance: once the mesh is float32 the quad is no
+        /// longer exactly planar, and the two triangulations' interpolated depths drift apart by up to
+        /// ~2e-8, which no honest fixed tolerance sits cleanly above.</para>
         /// </summary>
+        public static int[] FindReverseDuplicatePartners(RigMeshData data)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            var partner = new int[data.Faces.Count];
+            for (int i = 0; i < partner.Length; i++) partner[i] = -1;
+
+            for (int i = 0; i < data.Faces.Count; i++)
+            {
+                if (partner[i] >= 0) continue;
+                for (int j = i + 1; j < data.Faces.Count; j++)
+                {
+                    if (partner[j] >= 0) continue;
+                    if (!IsExactReverse(data.Faces[i], data.Faces[j])) continue;
+                    partner[i] = j;
+                    partner[j] = i;
+                    break;
+                }
+            }
+            return partner;
+        }
+
+        static bool IsExactReverse(RigFace f, RigFace k)
+        {
+            if (k.V.Length != f.V.Length || k.Mat != f.Mat) return false;
+            for (int i = 0; i < f.V.Length; i++)
+            {
+                Vector3d a = f.V[i], b = k.V[f.V.Length - 1 - i];
+                if (a.X != b.X || a.Y != b.Y || a.Z != b.Z) return false;
+            }
+            return true;
+        }
+
+        /// <summary>Remove the later member of every reverse-duplicate pair.</summary>
         static int DropReverseDuplicateFaces(RigMeshData data)
         {
+            int[] partner = FindReverseDuplicatePartners(data);
             var kept = new List<RigFace>(data.Faces.Count);
             int dropped = 0;
 
-            foreach (RigFace f in data.Faces)
+            for (int i = 0; i < data.Faces.Count; i++)
             {
-                bool isReverseOfKept = false;
-                foreach (RigFace k in kept)
-                {
-                    if (k.V.Length != f.V.Length || k.Mat != f.Mat) continue;
-                    bool reverse = true;
-                    for (int i = 0; i < f.V.Length && reverse; i++)
-                    {
-                        Vector3d a = f.V[i], b = k.V[f.V.Length - 1 - i];
-                        reverse = a.X == b.X && a.Y == b.Y && a.Z == b.Z;
-                    }
-                    if (reverse) { isReverseOfKept = true; break; }
-                }
-
-                if (isReverseOfKept) dropped++;
-                else kept.Add(f);
+                if (partner[i] >= 0 && partner[i] < i) { dropped++; continue; }
+                kept.Add(data.Faces[i]);
             }
 
             data.Faces.Clear();
