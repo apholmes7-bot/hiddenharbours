@@ -9,7 +9,7 @@ using HiddenHarbours.Economy;
 using HiddenHarbours.World;
 using HiddenHarbours.Environment;        // GameClock/EnvironmentService (the dev-bootstrap core)
 using HiddenHarbours.Player;             // PlayerWalkController/ClamBucket/PlayerWallet/DevToast (dev core)
-using HiddenHarbours.Fishing;            // FishingController/DevFishingInput/RodGaugeView (dev core)
+using HiddenHarbours.Fishing;            // FishingController/DevFishingInput (dev core)
 using HiddenHarbours.UI;                 // HudController (dev core — mirrors the persistent core's HUD)
 using HiddenHarbours.Art.Editor;        // VS-23 locked Pixel-Perfect camera convention
 using UnityEngine.Rendering.Universal;   // PixelPerfectCamera
@@ -68,9 +68,8 @@ namespace HiddenHarbours.App.Editor
         const string DataFish        = "Assets/_Project/Data/Fish";
         const string ArtFisher       = "Assets/_Project/Art/Characters/FisherSheet.png";
         const string IsoFisherVisual = "Assets/_Project/Data/Characters/FisherIso.asset";
-        const string ArtTensionGauge   = "Assets/_Project/Art/UI/TensionGauge.png";
-        const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
-        const string ArtFishSilhouette = "Assets/_Project/Art/UI/FishOnSilhouette.png";
+        // (The fight's UI art — TensionGauge / LineHook / FishOnSilhouette — is no longer wired anywhere:
+        // the rod fight has no HUD. Owner's ruling 2026-07-23.)
 
         // VS-22 arrival/dock geometry — single source of truth shared with GreywickDockTests. The persistent
         // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
@@ -576,17 +575,14 @@ namespace HiddenHarbours.App.Editor
             else Debug.LogWarning("[GreywickBuilder] No rod species assets found under " + DataFish +
                                   " — the dev bootstrap will cast into an empty pool (NoBite).");
 
+            devCamGo.AddComponent<FightStrainCamera>();   // the fight's camera tell (no HUD)
             var cameraFollow = devCamGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
 
-            // The transient rod gauge + the dev toast channel (cast/bite/no-water feedback on screen).
-            var gaugeGo = new GameObject("FishingGauge");
-            gaugeGo.transform.SetParent(devCore.transform, false);
-            var gauge = gaugeGo.AddComponent<RodGaugeView>();
-            SetRef(gauge, "_gaugeSprite", LoadSpriteAny(ArtTensionGauge));
-            SetRef(gauge, "_lineHookSprite", LoadSpriteAny(ArtLineHook));
-            SetRef(gauge, "_fishSprite", LoadSpriteAny(ArtFishSilhouette));
+            // The dev toast channel (cast/bite/no-water feedback on screen). No rod gauge: the fight has no
+            // UI at all now (owner's ruling 2026-07-23) — it is read off the rod, the line, the sound and
+            // the camera.
             var toastGo = new GameObject("DevToast");
             toastGo.transform.SetParent(devCore.transform, false);
             toastGo.AddComponent<DevToast>();

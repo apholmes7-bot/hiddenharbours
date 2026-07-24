@@ -44,8 +44,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// Rod Fishing v2 Wave 3 — the fight sim (<see cref="RodFightSim"/>): the integration of
     /// <see cref="RodFightMath"/>'s rates over the run rhythm and the deep→surface arc. Pins: seeded
     /// determinism, the cozy closed loop (competent hand lands, blind pin snaps), the one-way
-    /// Deep→Surface crossing, Deep's steer-blindness, and the Strength dial's direction (Wave-3
-    /// carried thread — the Def's tooltip promise).
+    /// Deep→Surface crossing, the lean counting from the hookup (owner's ruling 2026-07-23 — it used to
+    /// pin the opposite, that Deep was steer-blind), and the Strength dial's direction.
     /// </summary>
     public class RodFightSimTests
     {
@@ -112,7 +112,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(a.Tension01, b.Tension01, $"tension diverged at tick {i}");
                 Assert.AreEqual(a.Landing01, b.Landing01, $"landing diverged at tick {i}");
                 Assert.AreEqual(a.Effort01, b.Effort01, $"rhythm diverged at tick {i}");
-                Assert.AreEqual(a.FishOffset(2f), b.FishOffset(2f), $"choreography diverged at tick {i}");
+                Assert.AreEqual(a.FishOffset(2f, 0.45f), b.FishOffset(2f, 0.45f), $"choreography diverged at tick {i}");
             }
             Assert.AreEqual(a.Result, b.Result);
         }
@@ -139,22 +139,60 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void DeepPhase_IgnoresTheSteer()
+        public void DeepPhase_TheLeanCountsFromTheHookup()
         {
-            // Two identical seeded fights, steered hard OPPOSITE ways while she's still deep — the
-            // states must stay identical until the crossing (RodFightMath gates every steer term on
-            // Surface; the sim passes the phase through).
+            // Owner's ruling 2026-07-23: you lean against her ALWAYS, deep included. Two identical
+            // seeded fights leaned hard OPPOSITE ways while she is still down — the one leaning against
+            // her must be plainly better off before she ever shows herself. (The old contract asserted
+            // these two stayed identical; the deep half is no longer a steer-free waiting game.)
             var with = new RodFightSim(MakeDef(), new System.Random(55));
             var against = new RodFightSim(MakeDef(), new System.Random(55));
+            int deepTicks = 0;
             for (int i = 0; i < 4000; i++)
             {
-                if (with.Phase == RodFightPhase.Surface || with.IsOver) break;
+                if (with.Phase == RodFightPhase.Surface || with.IsOver || against.IsOver) break;
                 bool reeling = with.Effort01 <= 0f && with.Tension01 < RodFightPolicies.PulseTensionCap;
-                with.Tick(0.02f, reeling, +1f);
-                against.Tick(0.02f, reeling, -1f);
-                Assert.AreEqual(with.Tension01, against.Tension01, "Deep can't see her — steer must not matter");
-                Assert.AreEqual(with.Landing01, against.Landing01);
+                with.Tick(0.02f, reeling, +1f);      // going WITH her run
+                against.Tick(0.02f, reeling, -1f);   // leaning AGAINST it
+                deepTicks++;
             }
+
+            Assert.Greater(deepTicks, 0, "the fight must actually spend time deep for this to mean anything");
+            Assert.Less(against.Tension01, with.Tension01,
+                "leaning against her keeps the line safer than going with her — while she is still DEEP");
+        }
+
+        [Test]
+        public void DeepPhase_HerRunHasADirectionToLeanAgainst()
+        {
+            // The lean is only playable if the fight publishes which way she's going from the hookup,
+            // and if the line's entry point MOVES to show it. Both were zero while deep before.
+            var sim = new RodFightSim(MakeDef(), new System.Random(7));
+            sim.Tick(0.02f, false, 0f);
+            Assert.AreEqual(RodFightPhase.Deep, sim.Phase, "she opens the fight deep");
+            Assert.AreNotEqual(Vector2.zero, sim.DartDir, "she is running from the hookup — there IS an answer");
+
+            Vector2 first = sim.FishOffset(2.5f, 0.45f);
+            bool moved = false;
+            for (int i = 0; i < 200 && sim.Phase == RodFightPhase.Deep && !sim.IsOver; i++)
+            {
+                sim.Tick(0.02f, false, 0f);
+                if ((sim.FishOffset(2.5f, 0.45f) - first).sqrMagnitude > 1e-4f) { moved = true; break; }
+            }
+            Assert.IsTrue(moved, "the line's entry point works around while she's deep — that IS the read");
+        }
+
+        [Test]
+        public void DeepRoam_IsSmallerThanTheSurfaceRoam()
+        {
+            // A fish well down moves the surface entry point a little; a fish on top moves it a lot.
+            var deep = new RodFightSim(MakeDef(), new System.Random(21));
+            for (int i = 0; i < 60; i++) deep.Tick(0.02f, false, 0f);
+            Assert.AreEqual(RodFightPhase.Deep, deep.Phase);
+
+            float cramped = deep.FishOffset(3f, 0.4f).magnitude;
+            float full = deep.FishOffset(3f, 1f).magnitude;
+            Assert.Less(cramped, full, "the deep fraction genuinely shrinks the excursion");
         }
 
         // ---- the Strength dial (Wave-3 carried thread) --------------------------------------

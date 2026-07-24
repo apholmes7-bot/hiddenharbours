@@ -63,7 +63,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Destroy every root the builder created (each persistent piece is its own root GameObject).
             foreach (var go in new[]
                      {
-                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo, _core.GaugeGo,
+                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo,
                          _core.SwitcherGo, _core.LoaderGo,
                          _core.Coordinator != null ? _core.Coordinator.gameObject : null,
                      })
@@ -140,7 +140,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Build_TagsEveryCarriedPiecePersistent()
         {
-            foreach (var go in new[] { _core.PlayerGo, _core.DoryGo, _core.CameraGo, _core.SwitcherGo, _core.GaugeGo, _core.LoaderGo })
+            foreach (var go in new[] { _core.PlayerGo, _core.DoryGo, _core.CameraGo, _core.SwitcherGo, _core.LoaderGo })
                 Assert.IsNotNull(go.GetComponent<PersistentObject>(),
                     $"{go.name} must be tagged PersistentObject so it survives the additive region hop");
         }

@@ -7,11 +7,12 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// FLICK-CAST maths (Rod Fishing v2 §2.2) — the pure gesture resolver, EditMode-tested like
-    /// RodFightMath/TrapHaulMath. Covers: direction comes from the flick vector; power is earned by sweep
-    /// speed + length and CAPPED; release timing is the quality curve (sweet band → falloff → piled);
-    /// the cozy floor (a botched cast is a SHORT cast, never nothing); determinism (identical inputs →
-    /// bit-identical results); and the degenerate gestures (null/empty/one-point/zero-length/backwards/
-    /// NaN) that must resolve to a quiet NoCast, never a throw or a NaN.
+    /// RodFightMath/TrapHaulMath. Covers: direction comes from the flick vector; DISTANCE tracks how far
+    /// you wound back and the aim preview lands where it promised (the owner's 2026-07-23 playtest bug);
+    /// the SNAP of the sweep decides how much of that range you deliver; where you release is deliberately
+    /// no longer a factor; the cozy floor (a weak cast is a SHORT cast, never nothing); determinism
+    /// (identical inputs → bit-identical results); and the degenerate gestures (null/empty/one-point/
+    /// zero-length/backwards/NaN) that must resolve to a quiet NoCast, never a throw or a NaN.
     /// </summary>
     public class FlickCastMathTests
     {
@@ -19,8 +20,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static FlickCastSettings S => FlickCastSettings.Default;
 
-        // A clean, sweet-released flick toward +X: wind back 1.4 m, sweep 2.4 m, release 1 m past the
-        // anchor (= the default SweetReleaseMetres) at a brisk pace.
+        // A clean flick toward +X: wind back 1.4 m, then sweep 2.4 m forward at a brisk pace.
         private static FlickSample[] CleanFlick() => new[]
         {
             new FlickSample(new Vector2(-0.2f, 0f), 0.00f),
@@ -65,12 +65,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, r.Direction.magnitude, 1e-4f, "direction is a unit vector");
         }
 
-        // ---- power + the cap ------------------------------------------------------------------
+        // ---- range + the cap ------------------------------------------------------------------
 
         [Test]
-        public void Power_IsCapped_AndDistanceNeverExceedsTheCap()
+        public void Range_IsCapped_AndDistanceNeverExceedsTheCap()
         {
-            // An absurdly long, absurdly fast sweep: power saturates at 1 and distance at the cap.
+            // An absurdly deep, absurdly fast flick: the range saturates at 1 and distance at the cap.
             var g = new[]
             {
                 new FlickSample(new Vector2(-9f, 0f), 0.00f),
@@ -79,16 +79,66 @@ namespace HiddenHarbours.Tests.EditMode
             };
             var r = FlickCastMath.Evaluate(g, g.Length, Anchor, S, 12f);
             Assert.IsTrue(r.IsCast);
-            Assert.AreEqual(1f, r.Power01, 1e-4f, "power saturates at 1 however hard you throw");
+            Assert.AreEqual(1f, r.Range01, 1e-4f, "the range saturates at 1 however far you wind back");
             Assert.LessOrEqual(r.DistanceMetres, 12f + 1e-4f, "distance never exceeds the rod's cap");
-            Assert.AreEqual(12f, r.DistanceMetres, 1e-3f, "a max-power sweet release reaches the whole cap");
+            Assert.AreEqual(12f, r.DistanceMetres, 1e-3f, "a full wind-back, fully snapped, reaches the whole cap");
         }
 
         [Test]
-        public void Power_GrowsWithSweepSpeed()
+        public void Distance_TracksHowFarYouWoundBack()
         {
-            // The same path swept twice — once lazily, once briskly. Same geometry, different timestamps:
-            // the brisk one earns more power and flies farther.
+            // THE owner-reported bug, pinned (playtest 2026-07-23: "casts should have distances based on
+            // the cast"). The same brisk sweep from progressively deeper wind-backs must reach
+            // progressively farther, right across the useful range — not all pile onto one distance.
+            FlickSample[] From(float backX) => new[]
+            {
+                new FlickSample(new Vector2(-0.1f, 0f), 0.00f),
+                new FlickSample(new Vector2(backX, 0f), 0.10f),   // the wind-back apex
+                new FlickSample(new Vector2( 1.0f, 0f), 0.15f),   // one brisk sweep forward
+            };
+
+            float last = -1f;
+            foreach (float back in new[] { -1f, -2f, -3f, -4f })
+            {
+                var r = Eval(From(back));
+                Assert.IsTrue(r.IsCast, $"a {-back} m wind-back casts");
+                Assert.Greater(r.DistanceMetres, last + 0.5f,
+                    $"winding back to {back} m must reach clearly farther than the shallower draw before it");
+                last = r.DistanceMetres;
+            }
+            Assert.AreEqual(12f, last, 1e-3f, "and the full wind-back reaches the cap");
+        }
+
+        [Test]
+        public void TheAimPreview_IsWhereAFullySnappedCastLands()
+        {
+            // The wind-back preview used to promise a distance the release could not deliver. It must now
+            // BE the promise: charge · cap is exactly what a properly snapped flick from that draw lands at.
+            foreach (float back in new[] { 1f, 2f, 3.5f })
+            {
+                Vector2 pointer = new Vector2(-back, 0f);   // drawn back, so the cast will fly +X
+                float charge = FlickCastMath.WindBackCharge01(pointer, Anchor, S.FullRangeWindBackMetres);
+                Vector2 aim = FlickCastMath.WindBackAimOffset(pointer, Anchor,
+                                                              S.FullRangeWindBackMetres, 12f);
+
+                var r = Eval(new[]
+                {
+                    new FlickSample(new Vector2(-0.1f, 0f), 0.00f),
+                    new FlickSample(pointer,                0.10f),
+                    new FlickSample(new Vector2( 1.0f, 0f), 0.15f),   // fully snapped
+                });
+
+                Assert.AreEqual(charge * 12f, r.DistanceMetres, 1e-3f,
+                    $"the {back} m wind-back previewed {charge * 12f:0.00} m — the cast must land there");
+                Assert.AreEqual(aim.magnitude, r.DistanceMetres, 1e-3f, "…and the previewed SPOT is the spot");
+            }
+        }
+
+        [Test]
+        public void Snap_GrowsWithSweepSpeed()
+        {
+            // The same path swept twice — once lazily, once briskly. Same wind-back, different timestamps:
+            // the brisk one delivers more of the range it aimed at and flies farther.
             FlickSample[] Path(float step) => new[]
             {
                 new FlickSample(new Vector2(-1.2f, 0f), 0 * step),
@@ -99,7 +149,7 @@ namespace HiddenHarbours.Tests.EditMode
             var lazy  = Eval(Path(0.30f));   // ~2.7 m/s peak
             var brisk = Eval(Path(0.05f));   // ~16 m/s peak
             Assert.IsTrue(lazy.IsCast && brisk.IsCast);
-            Assert.Greater(brisk.Power01, lazy.Power01, "a faster sweep earns more power");
+            Assert.Greater(brisk.Snap01, lazy.Snap01, "a faster sweep delivers more of the aimed range");
             Assert.Greater(brisk.DistanceMetres, lazy.DistanceMetres, "…and flies farther");
         }
 
@@ -110,15 +160,15 @@ namespace HiddenHarbours.Tests.EditMode
             var small = Eval(CleanFlick(), cap: 6f);
             var big   = Eval(CleanFlick(), cap: 24f);
             Assert.IsTrue(small.IsCast && big.IsCast);
-            Assert.AreEqual(small.Power01, big.Power01, 1e-5f, "power is the gesture's, not the gear's");
+            Assert.AreEqual(small.Range01, big.Range01, 1e-5f, "the range is the gesture's, not the gear's");
             Assert.Greater(big.DistanceMetres, small.DistanceMetres, "a better rod throws the same flick farther");
             Assert.LessOrEqual(small.DistanceMetres, 6f + 1e-4f);
         }
 
-        // ---- release timing (the skill beat) --------------------------------------------------
+        // ---- where you let go (deliberately NO LONGER a factor) --------------------------------
 
-        // The same wind-back apex swept out to a varying RELEASE point: releasing at the sweet point,
-        // late-ish (3 m past), and way late (5 m past — beyond the falloff).
+        // The same wind-back apex and the same brisk sweep, carried out to a varying RELEASE point:
+        // let go just past the character, a metre or three later, or way out.
         private static FlickSample[] SweepTo(float releaseX) => new[]
         {
             new FlickSample(new Vector2(-0.2f, 0f), 0.00f),
@@ -128,35 +178,48 @@ namespace HiddenHarbours.Tests.EditMode
         };
 
         [Test]
-        public void Quality_IsFull_AtTheSweetRelease_AndFallsOffAwayFromIt()
+        public void ReleasePoint_NoLongerChangesTheCast()
         {
-            var sweet   = Eval(SweepTo(1.0f));   // released at the sweet point
-            var late    = Eval(SweepTo(3.0f));   // hung on too long
-            var wayLate = Eval(SweepTo(5.0f));   // way past the falloff
-            Assert.IsTrue(sweet.IsCast && late.IsCast && wayLate.IsCast);
+            // THE REGRESSION for the owner's playtest bug. The retired model scored the release point in
+            // world metres — full only within ~1 m of the angler, dead by ~3.8 m — so on a ~16 m-wide
+            // screen every natural flick scored zero and collapsed onto the floor, whatever it was. Where
+            // the hand happens to be at the instant the button comes up must not decide the cast.
+            var near = Eval(SweepTo(1.0f));
+            var mid  = Eval(SweepTo(3.0f));
+            var far  = Eval(SweepTo(5.0f));
+            Assert.IsTrue(near.IsCast && mid.IsCast && far.IsCast);
 
-            Assert.AreEqual(1f, sweet.Quality01, 1e-4f, "released at the sweet point = full quality");
-            Assert.Less(late.Quality01, sweet.Quality01, "off the sweet band, quality falls");
-            Assert.Less(wayLate.Quality01, late.Quality01, "…and keeps falling");
-            Assert.AreEqual(0f, wayLate.Quality01, 1e-4f, "far past the falloff the line piles (quality 0)");
-
-            // The late sweeps are LONGER (≥ power), yet they fly SHORTER — the timing beat dominates.
-            Assert.GreaterOrEqual(late.Power01, sweet.Power01);
-            Assert.Greater(sweet.DistanceMetres, late.DistanceMetres, "a mistimed release casts shorter");
-            Assert.Greater(late.DistanceMetres, wayLate.DistanceMetres);
+            Assert.AreEqual(near.DistanceMetres, mid.DistanceMetres, 1e-3f,
+                "same draw, same snap — carrying the sweep further must not shorten the cast");
+            Assert.AreEqual(near.DistanceMetres, far.DistanceMetres, 1e-3f);
+            Assert.Greater(near.DistanceMetres, S.MinCastMetres + 1e-3f,
+                "and none of them sit on the floor the old model pinned them to");
         }
 
         [Test]
-        public void CozyFail_AMistimedCastIsAShortCast_NeverNothing()
+        public void CozyFail_ALimpSweepIsAShortCast_NeverNothing()
         {
-            // Fully piled (quality 0) but still a real cast: it flies the piled fraction of its power
-            // and never lands closer than the floor — the bobber is in the water, reel in and recast.
-            var piled = Eval(SweepTo(5.0f));
-            Assert.IsTrue(piled.IsCast, "a botched cast still casts (cozy fail)");
-            Assert.AreEqual(0f, piled.Quality01, 1e-4f);
-            Assert.GreaterOrEqual(piled.DistanceMetres, S.MinCastMetres - 1e-4f,
+            // A good deep draw, then a dribbled sweep: the range was aimed but not delivered. Still a real
+            // cast — short, in the water, reel in and try again. Never nothing, never a punishment.
+            var limp = Eval(new[]
+            {
+                new FlickSample(new Vector2(-0.2f, 0f), 0.0f),
+                new FlickSample(new Vector2(-4.0f, 0f), 0.4f),   // a full-range wind-back…
+                new FlickSample(new Vector2( 0.5f, 0f), 2.0f),   // …pushed forward at ~2.8 m/s
+            });
+            var snapped = Eval(new[]
+            {
+                new FlickSample(new Vector2(-0.2f, 0f), 0.00f),
+                new FlickSample(new Vector2(-4.0f, 0f), 0.10f),
+                new FlickSample(new Vector2( 0.5f, 0f), 0.25f),   // the same draw, properly snapped
+            });
+
+            Assert.IsTrue(limp.IsCast, "a limp cast still casts (cozy fail)");
+            Assert.Less(limp.Snap01, 0.5f, "the sweep was dribbled");
+            Assert.GreaterOrEqual(limp.DistanceMetres, S.MinCastMetres - 1e-4f,
                 "no successful cast lands under the floor");
-            Assert.Less(piled.DistanceMetres, Eval(SweepTo(1.0f)).DistanceMetres, "…but it is clearly SHORT");
+            Assert.Less(limp.DistanceMetres, snapped.DistanceMetres,
+                "…but it falls clearly short of what the same wind-back would have reached");
         }
 
         [Test]
@@ -268,8 +331,8 @@ namespace HiddenHarbours.Tests.EditMode
             var b = Eval(CleanFlick());
             Assert.AreEqual(a.IsCast, b.IsCast);
             Assert.AreEqual(a.Direction, b.Direction);
-            Assert.AreEqual(a.Power01, b.Power01);
-            Assert.AreEqual(a.Quality01, b.Quality01);
+            Assert.AreEqual(a.Range01, b.Range01);
+            Assert.AreEqual(a.Snap01, b.Snap01);
             Assert.AreEqual(a.DistanceMetres, b.DistanceMetres);
             Assert.AreEqual(a.LandingPoint, b.LandingPoint);
         }
@@ -281,18 +344,23 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var s = FlickCastSettings.Default;
             Assert.Greater(s.MaxCastDistanceMetres, s.MinCastMetres, "the cap clears the floor");
-            Assert.Greater(s.PiledCastFraction01, 0f, "a piled cast still flies (cozy fail, never zero)");
-            Assert.Greater(s.QualityFalloffMetres, 0f, "quality fades, it doesn't cliff");
-            Assert.Greater(s.FullPowerFlickMetres, s.MinFlickLengthMetres, "power has room to grow");
+            Assert.Greater(s.LimpFlickFraction01, 0f, "a limp cast still flies (cozy fail, never zero)");
+            Assert.Greater(s.FullRangeWindBackMetres, s.MinWindBackMetres,
+                "the range has room to grow between 'that counts as a cast' and 'that's the full cast'");
+            Assert.Greater(s.FullSnapFlickSpeed, 0f, "the snap reference is a real speed");
             Assert.Greater(s.LineFlightMetresPerSec, 0f);
-            Assert.That(s.SpeedWeight01, Is.InRange(0f, 1f));
+
+            // The dial the owner actually feels: winding back the full amount, on a ~16 m-wide on-foot
+            // screen, must be a comfortable draw — not a mouse-off-the-monitor demand.
+            Assert.Less(s.FullRangeWindBackMetres, 8f,
+                "a full-range wind-back has to fit on screen with room to sweep forward");
         }
 
         private static void AssertFinite(in FlickCastResult r)
         {
             Assert.IsFalse(float.IsNaN(r.Direction.x) || float.IsNaN(r.Direction.y), "direction is finite");
-            Assert.IsFalse(float.IsNaN(r.Power01), "power is finite");
-            Assert.IsFalse(float.IsNaN(r.Quality01), "quality is finite");
+            Assert.IsFalse(float.IsNaN(r.Range01), "range is finite");
+            Assert.IsFalse(float.IsNaN(r.Snap01), "snap is finite");
             Assert.IsFalse(float.IsNaN(r.DistanceMetres), "distance is finite");
             Assert.IsFalse(float.IsNaN(r.LandingPoint.x) || float.IsNaN(r.LandingPoint.y), "landing is finite");
         }
