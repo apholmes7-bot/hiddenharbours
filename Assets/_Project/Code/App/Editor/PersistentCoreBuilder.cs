@@ -93,7 +93,8 @@ namespace HiddenHarbours.App.Editor
 
         // The rod-fight presenter's splash/ripple reuse (the RodLineMath-documented art sources).
         const string ArtSplashBurst    = "Assets/_Project/Art/Fishing/SplashBurst.png";
-        const string ArtSurfaceRipple  = "Assets/_Project/Art/Textures/Water/SurfaceRipple.png";
+        // (Textures/Water/SurfaceRipple.png is deliberately NOT referenced — it is a shader texture with
+        //  no Sprite sub-asset; see LoadRippleRingSprite for why the rings borrow the splash sheet.)
 
         /// <summary>Inputs a scene builder hands the core (all data refs are the RELOADED/persisted assets,
         /// so they serialize into the scene instead of saving as "None").</summary>
@@ -465,7 +466,7 @@ namespace HiddenHarbours.App.Editor
             rodPresenter.Configure(rodStates, rodBehindDirs, bobberStates, fishVisuals,
                                    handMid, handRight, landFrames,
                                    LoadSheetFrames(ArtSplashBurst),
-                                   LoadSpriteAny(ArtSurfaceRipple));
+                                   LoadRippleRingSprite());
             EditorUtility.SetDirty(rodPresenter);
             Debug.Log("[PersistentCoreBuilder] Rod-fight presenter wired: " +
                       $"rod states {CountWired(rodStates)}/{RodKitImporter.RodStateOrder.Length}, " +
@@ -683,6 +684,23 @@ namespace HiddenHarbours.App.Editor
         // ---- art loading (mirrors the cove builder's; the dory rig art is shared) ------------------
 
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
+
+        /// <summary>
+        /// The sink-ring sprite for the depth drop's count-the-fall ripples. NOT
+        /// <c>Textures/Water/SurfaceRipple.png</c>: despite what RodLineMath's remarks suggest as reuse,
+        /// that asset is a WATER-SHADER texture (textureType Default, spriteMode 0) — it has no Sprite
+        /// sub-asset at all, so loading it as a sprite silently yielded null and the rings never drew.
+        /// Retyping it to Sprite is the water lane's call on the water lane's asset, not this builder's.
+        /// So the rings borrow the SPLASH sheet's last (most dissipated) frame — the same
+        /// water-disturbance art family, already a properly imported sprite, already wired here for the
+        /// splash beats. TODO(art-pipeline): a dedicated expanding-ring sprite would read better than a
+        /// dissipated splash; small ask, swap this one loader when it exists.
+        /// </summary>
+        static Sprite LoadRippleRingSprite()
+        {
+            Sprite[] splash = LoadSheetFrames(ArtSplashBurst);
+            return splash.Length > 0 ? splash[splash.Length - 1] : null;
+        }
 
         static Sprite LoadSpriteAny(string path)
         {
