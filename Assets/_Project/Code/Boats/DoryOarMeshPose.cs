@@ -108,16 +108,14 @@ namespace HiddenHarbours.Boats
             Frame(Direction(side, pose.SweepDegrees, pose.DipDegrees),
                   out Vector3 ax1, out Vector3 r1, out Vector3 u1);
 
-            // R = M₁·M₀ᵀ, built by rows so no single (reflective) frame is ever converted alone.
-            var m = new Matrix4x4();
+            // R = M₁·M₀ᵀ, i.e. R[i][j] = ax1[i]·ax0[j] + r1[i]·r0[j] + u1[i]·u0[j]. Written with both
+            // indices explicit: the first draft folded the inner sum into three lines and silently
+            // produced the TRANSPOSE, which is the inverse rotation — the oar swung the wrong way
+            // around its lock and the acceptance fixture read 99.7% of pixels differing.
+            var m = Matrix4x4.identity;
             for (int i = 0; i < 3; i++)
-            {
-                float a0 = ax0[i], b0 = r0[i], c0 = u0[i];
-                m[i, 0] = ax1.x * a0 + r1.x * b0 + u1.x * c0;
-                m[i, 1] = ax1.y * a0 + r1.y * b0 + u1.y * c0;
-                m[i, 2] = ax1.z * a0 + r1.z * b0 + u1.z * c0;
-            }
-            m[3, 3] = 1f;
+                for (int j = 0; j < 3; j++)
+                    m[i, j] = ax1[i] * ax0[j] + r1[i] * r0[j] + u1[i] * u0[j];
             return QuaternionFromRotation(m);
         }
 
