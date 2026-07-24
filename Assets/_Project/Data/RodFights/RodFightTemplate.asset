@@ -16,6 +16,8 @@ MonoBehaviour:
   DisplayName: Rod Fight (template)
   Strength: 0.5
   MovementPattern: 0
+  RoamRadiusScale: 1.0
+  HoldsDeep01: 0.35
   StaminaCadence:
     RunSeconds: 2
     SlackSeconds: 1.4
@@ -27,3 +29,5 @@ MonoBehaviour:
   runTensionPressure: 0.35
   counterSteerRelief: 0.4
   surfaceThreshold01: 0.5
+  lineGiveBackPerSec: 0.12
+  maxGiveBack01: 0.15

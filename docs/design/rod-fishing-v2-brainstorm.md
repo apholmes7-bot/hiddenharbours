@@ -154,6 +154,29 @@ reference game has.
 >   her and you get strain and nothing else. Both forgiving-cove invariants still hold, so the
 >   reel still cannot simply be held down.
 >
+> **Second pass, 2026-07-24** — after playing the above ("it looks better, lets improve on it"):
+>
+> - **She comes in as you win.** The first pass deleted the landing bar and replaced it with
+>   nothing: the fight anchor was fixed, so a fish hooked 12 m out fought at 12 m until she
+>   simply vanished into your hands. Now the fight runs along the line from where she was hooked
+>   to alongside, and reeling walks her down it. Watching that gap close **is** the progress
+>   read. Her roam closes with her, so the choreography tightens from a wide swim into a thrash
+>   at your feet.
+> - **She can take a little back** (owner's call: "only a little"). Easing off through her run —
+>   the safe play for your line — now costs ground, unless you lean against her, which holds her
+>   completely. She can never drag you more than `maxGiveBack01` below your best moment of the
+>   fight, so ground truly won is yours. That cap makes the fight ratchet, which is what keeps it
+>   winnable: **invariant 3**, `landingFillPerSec · slackSeconds > maxGiveBack01`, is the new
+>   named guard (content-swept at the worst jitter roll, like the other two).
+> - **The species are animals.** Two new personality dials as data — `RoamRadiusScale` (how much
+>   water she works) and `HoldsDeep01` (how stubbornly she holds her ground before giving any) —
+>   retuned across the four: cod digs in and comes late, mackerel ranges wide and comes easy,
+>   haddock sweeps, pollock thrashes. `HoldsDeep01` changes the *journey* at the same progress,
+>   never who wins.
+> - **The two moments.** The hook-set and the land now land physically: a one-shot camera kick
+>   along the line as she bolts, another on the lift aboard, and a bigger one thrown backwards
+>   when the line parts. Distinct from the strain tremor, which stays a near-snap-only tell.
+>
 > The paragraphs below are kept as the record of what was designed and built first.
 
 Three owner ideas combine into one escalating fight: **pull-on-slack / maintain-on-fight**, **steer
