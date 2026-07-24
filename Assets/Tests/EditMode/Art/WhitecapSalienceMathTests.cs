@@ -256,6 +256,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Is.EqualTo(ShoreFadeMath.Fade01(band * 0.5f, band)));
         }
 
+        [Test]
+        public void BandShoreSalience_IsTheSeamCurve_ZeroAtTheWaterlineOnePastTheBand()
+        {
+            // Owner playtest 2026-07-23 ("shoreline looks a bit swirly"): the envelope value bands fade
+            // with the SAME seam the caps and the displaced vertex stage read — one curve, never a second
+            // contour. Exactly 0 at the walkable waterline (no band worms on the dying displaced edge),
+            // exactly 1 at/past the band (the open sea's bands untouched).
+            const float band = 1.57f;
+            Assert.That(WhitecapSalienceMath.BandShoreSalience(0f, band), Is.EqualTo(0f),
+                "at the waterline the bands are GONE — the dying edge wears no envelope shade");
+            Assert.That(WhitecapSalienceMath.BandShoreSalience(band, band), Is.EqualTo(1f));
+            Assert.That(WhitecapSalienceMath.BandShoreSalience(band * 4f, band), Is.EqualTo(1f),
+                "past the band the open sea keeps its full band read");
+            Assert.That(WhitecapSalienceMath.BandShoreSalience(band * 0.5f, band),
+                Is.EqualTo(ShoreFadeMath.Fade01(band * 0.5f, band)),
+                "the band fade IS the seam's own curve (never a second contour)");
+        }
+
         // ---- shader-source lockstep (the twin discipline, enforced) ---------------------------
 
         [Test]

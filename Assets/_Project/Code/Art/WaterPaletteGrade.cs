@@ -70,25 +70,51 @@ namespace HiddenHarbours.Art
         /// held at least <c>nightFloorPostOverlay / max(dayNightLuma, eps)</c> so the on-screen night water
         /// never drops below that. <c>nightFloorPostOverlay = 0</c> = let night go fully dark.</para>
         /// </summary>
+        /// <summary>
+        /// The floor pre-compensation's DAY KNEE default (<c>_PaletteFloorKnee</c>): the day/night luminance
+        /// at/above which the floor pre-compensates exactly as ADR 0015 shipped (daylight + overcast land
+        /// on-screen at ~<c>paletteFloor</c>), and below which the ON-SCREEN floor rides DOWN with the scene.
+        /// 0.45 sits just under the dimmest storm-overcast daylight tint, so no daylight look moves.
+        /// <b>Why (owner playtest 2026-07-23, "the whole sea becomes white"):</b> the un-kneed quotient
+        /// saturated toward 1 through DUSK — at a dusk tint (~0.17..0.34 luma) it clamped most of the sea's
+        /// pre-overlay values to one high floor, so the on-screen sea held DAYLIGHT-floor brightness while
+        /// the scene dimmed around it and lost its value structure to the clamp — a uniform flat bright
+        /// sheet (the dusk-storm repro frame measured 99.7% flat at the floor). <c>FloorKnee = 0</c> is the
+        /// pre-fix saturating curve EXACTLY (the legacy passthrough contract).
+        /// </summary>
+        public const float DefaultFloorDayKnee = 0.45f;
+
         /// <param name="paletteFloor">Daylight on-screen luminance floor (<c>_PaletteValueFloor</c>).</param>
         /// <param name="dayNightLuma">Luminance of the day/night multiply tint (1 day .. ~0 night).</param>
         /// <param name="nightFloorPostOverlay">On-screen luminance floor permitted at night
         /// (<c>_PaletteNightFloor</c>); 0 lets night go as dark as the overlay takes it.</param>
-        public static float ValueFloorDayNight(float paletteFloor, float dayNightLuma, float nightFloorPostOverlay)
+        /// <param name="floorDayKnee">The day knee (<c>_PaletteFloorKnee</c>, see
+        /// <see cref="DefaultFloorDayKnee"/>): dnLuma at/above it keeps the exact shipped pre-compensation;
+        /// below it the divisor holds at the knee so the on-screen floor dims with the scene. 0 = the
+        /// pre-fix saturating curve exactly.</param>
+        public static float ValueFloorDayNight(float paletteFloor, float dayNightLuma,
+                                               float nightFloorPostOverlay, float floorDayKnee)
         {
             float dn = Mathf.Max(dayNightLuma, 1e-3f);
-            // Daylight target: pre-compensate so post-overlay value lands at paletteFloor (capped at full bright).
-            float dayPre = Mathf.Min(1f, Mathf.Max(paletteFloor, 0f) / dn);
+            // Daylight target: pre-compensate so post-overlay value lands at paletteFloor (capped at full
+            // bright) — but the divisor never falls below the day knee, so past dusk the pre-overlay floor
+            // stops growing and the ON-SCREEN floor (this × dnLuma) rides down with the scene instead of
+            // holding daylight brightness (the 2026-07-23 white-out; see DefaultFloorDayKnee).
+            float kneeDn = Mathf.Max(dn, Mathf.Clamp01(floorDayKnee));
+            float dayPre = Mathf.Min(1f, Mathf.Max(paletteFloor, 0f) / kneeDn);
             // Night target: a (usually small) on-screen floor the owner can keep readable at night, also
-            // pre-compensated. At dayNightLuma ≈ 1 this <= dayPre (paletteFloor >= nightFloor by design) so it
-            // is inert in daylight; at small dayNightLuma both saturate toward 1 — but the night floor is the
-            // SMALLER target, so honouring it (a MAX) keeps night from going fully black ONLY if the owner asks.
+            // pre-compensated. Its whole job is to SURVIVE deep night, so it keeps the saturating divide
+            // (no knee): at dayNightLuma ≈ 1 this <= dayPre (paletteFloor >= nightFloor by design) so it
+            // is inert in daylight; at small dayNightLuma it rises toward 1 ONLY if the owner asks.
             float nightPre = Mathf.Min(1f, Mathf.Max(nightFloorPostOverlay, 0f) / dn);
-            // The water's pre-overlay value floor: the daylight pre-comp (which already caps at 1 → genuine
-            // dark night when nightFloor is 0). When nightFloor > 0 it raises the effective floor toward 1 a
-            // touch sooner, keeping a faint readable sea at night without un-darkening daylight.
             return Mathf.Min(1f, Mathf.Max(dayPre, nightPre));
         }
+
+        /// <summary>The pre-knee overload — the exact ADR 0015 curve (knee 0). Kept so legacy callers and
+        /// the passthrough contract stay expressible; production reads the material's knee (default
+        /// <see cref="DefaultFloorDayKnee"/>).</summary>
+        public static float ValueFloorDayNight(float paletteFloor, float dayNightLuma, float nightFloorPostOverlay)
+            => ValueFloorDayNight(paletteFloor, dayNightLuma, nightFloorPostOverlay, 0f);
 
         /// <summary>
         /// Apply the full soft palette guard-rail to a composited water colour and return the graded colour.
@@ -105,7 +131,7 @@ namespace HiddenHarbours.Art
 
             // ---- (1) VALUE clamp: day/night-aware FLOOR + CEILING (no mud, no blowout) -------------------
             float luma = Luminance(graded);
-            float floorPre = ValueFloorDayNight(p.ValueFloor, dayNightLuma, p.NightFloor);
+            float floorPre = ValueFloorDayNight(p.ValueFloor, dayNightLuma, p.NightFloor, p.FloorKnee);
             float ceil = Mathf.Max(p.ValueCeil, floorPre);   // guard: ceiling never below the floor
             float targetLuma = Mathf.Clamp(luma, floorPre, ceil);
             graded = ScaleToLuminance(graded, luma, targetLuma);
@@ -222,6 +248,10 @@ namespace HiddenHarbours.Art
         public float PullStrength;
         /// <summary>On-screen luminance floor permitted at NIGHT (<c>_PaletteNightFloor</c>); 0 = night goes fully dark.</summary>
         public float NightFloor;
+        /// <summary>The floor's DAY KNEE (<c>_PaletteFloorKnee</c>; see
+        /// <see cref="WaterPaletteGrade.DefaultFloorDayKnee"/>): dnLuma at/above it keeps the exact shipped
+        /// pre-compensation, below it the on-screen floor dims with the scene. 0 = the pre-fix curve.</summary>
+        public float FloorKnee;
 
         /// <summary>The DEEP-water anchor colour (<c>_PaletteDeep</c>).</summary>
         public Vector3 Deep;
