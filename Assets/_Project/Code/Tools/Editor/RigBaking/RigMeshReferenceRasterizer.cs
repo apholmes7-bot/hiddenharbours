@@ -167,6 +167,61 @@ namespace HiddenHarbours.Tools.RigBaking
     }
 
     /// <summary>
+    /// <b>Per-pixel instrumentation for the rasteriser.</b> Answers the question a cluster count
+    /// cannot: <i>which face covered this pixel, what shade index did it compute, and what did the
+    /// faces it beat compute?</i>
+    ///
+    /// <para>Built because a differing pixel has several possible causes that all look identical from
+    /// the outside — a face in the wrong place, a face shading differently, or the RIGHT face losing
+    /// a depth tie to a coplanar neighbour — and the only way to tell them apart is to read the
+    /// losers too. It found the dory oar's 49-pixel residual (ADR 0022 phase 7): every differing
+    /// pixel's truth colour was what the LOSING coplanar twin painted, which is a tie-break
+    /// disagreement, not geometry.</para>
+    ///
+    /// <para>Costs nothing when unused: the sampling branch only fires for pixels in
+    /// <see cref="Probe"/>, and <see cref="Winner"/> is a single int store.</para>
+    /// </summary>
+    public sealed class RigPaintTrace
+    {
+        /// <summary>One triangle's attempt at one pixel — winner or loser.</summary>
+        public readonly struct Sample
+        {
+            public readonly int Pixel, Tri, Face, Mat, RampIndex, PackedColor;
+            public readonly double Depth, DepthEff, Shade, Fidx, FaceBias, DepthBias, BayerThreshold;
+            /// <summary>The z-buffer value this attempt was tested against.</summary>
+            public readonly double ZBufferBefore;
+            /// <summary>The rotated normal's component TOWARD the camera. Positive = this face is
+            /// front-facing at this view. The discriminator between the two members of a rig's
+            /// double-sided pair, which are identical in every other channel.</summary>
+            public readonly double NormalTowardCamera;
+            public readonly bool Won;
+
+            public Sample(int pixel, int tri, int face, int mat, int rampIndex, int packedColor,
+                          double depth, double depthEff, double shade, double fidx,
+                          double faceBias, double depthBias, double bayerThreshold,
+                          double zBufferBefore, double normalTowardCamera, bool won)
+            {
+                Pixel = pixel; Tri = tri; Face = face; Mat = mat; RampIndex = rampIndex;
+                PackedColor = packedColor; Depth = depth; DepthEff = depthEff; Shade = shade;
+                Fidx = fidx; FaceBias = faceBias; DepthBias = depthBias;
+                BayerThreshold = bayerThreshold; ZBufferBefore = zBufferBefore;
+                NormalTowardCamera = normalTowardCamera; Won = won;
+            }
+        }
+
+        /// <summary>Pixel indices (<c>y*W + x</c>) to record every attempt at. Ignored when
+        /// <see cref="ProbeAll"/> is set.</summary>
+        public readonly HashSet<int> Probe = new HashSet<int>();
+
+        /// <summary>Record every attempt at every pixel. What a whole-cell audit wants, and cheaper
+        /// than seeding <see cref="Probe"/> with the entire cell.</summary>
+        public bool ProbeAll;
+        public readonly List<Sample> Samples = new List<Sample>();
+        /// <summary>Winning triangle per pixel, -1 where nothing drew. Allocated by the paint.</summary>
+        public int[] Winner;
+    }
+
+    /// <summary>
     /// A CPU re-implementation of the rigs' shared rasteriser (<c>_paint</c>) driven ENTIRELY by an
     /// extracted <see cref="RigMeshData"/> / <see cref="Mesh"/> — never by the rig's closure.
     ///
@@ -201,27 +256,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Rasterises the extracted face list directly, in double precision — this
         /// isolates EXTRACTION error from the float32 quantisation the Mesh imposes.</summary>
         public static byte[] RenderFromFaces(RigMeshData data, RigViewOptions view,
-                                             RigTrigBasis? basis = null)
+                                             RigTrigBasis? basis = null, RigPaintTrace trace = null)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var tris = new List<Tri>(data.TriangleCount);
-            foreach (var f in data.Faces)
+            for (int fi = 0; fi < data.Faces.Count; fi++)
             {
+                RigFace f = data.Faces[fi];
                 // The rig takes ONE normal per face, off v[0]/v[1]/v[2], and reuses it for every
                 // triangle of the fan. So each fan triangle must carry that triple — for every
                 // triangle except the first, it is NOT the triangle's own three corners.
                 for (int t = 1; t + 1 < f.V.Length; t++)
                     tris.Add(Tri.FromFace(f.V[0], f.V[t], f.V[t + 1],
                                           f.V[0], f.V[1], f.V[2],
-                                          f.Mat, f.B, f.Db));
+                                          f.Mat, f.B, f.Db, fi));
             }
-            return Paint(data, tris, view, basis);
+            return Paint(data, tris, view, basis, trace);
         }
 
         /// <summary>Rasterises the built <see cref="Mesh"/> — the exact buffer the facet shader will
         /// consume, float32 and all.</summary>
         public static byte[] RenderFromMesh(RigMeshData data, Mesh mesh, RigViewOptions view,
-                                           RigTrigBasis? basis = null)
+                                           RigTrigBasis? basis = null, RigPaintTrace trace = null)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (mesh == null) throw new ArgumentNullException(nameof(mesh));
@@ -237,15 +293,30 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"Mesh channels disagree: {verts.Length} verts, {norms.Length} normals, " +
                     $"{attrs.Count} attrs. The facet shader reads all three per vertex.");
 
+            // Vertex → face, from the builder's own layout: RigMeshBuilder emits each face's
+            // vertices contiguously, in face order. Only used to LABEL a trace sample; a mesh whose
+            // vertex count has drifted from the face list simply reports -1 rather than lying.
+            int[] vertexFace = null;
+            if (trace != null)
+            {
+                vertexFace = new int[verts.Length];
+                for (int i = 0; i < vertexFace.Length; i++) vertexFace[i] = -1;
+                int v = 0;
+                for (int fi = 0; fi < data.Faces.Count && v < vertexFace.Length; fi++)
+                    for (int k = 0; k < data.Faces[fi].V.Length && v < vertexFace.Length; k++, v++)
+                        vertexFace[v] = fi;
+            }
+
             var tris = new List<Tri>(idx.Length / 3);
             for (int i = 0; i < idx.Length; i += 3)
             {
                 int a = idx[i], b = idx[i + 1], c = idx[i + 2];
                 Vector4 at = attrs[a];
                 tris.Add(Tri.FromMesh(ToD(verts[a]), ToD(verts[b]), ToD(verts[c]),
-                                      ToD(norms[a]), Mathf.RoundToInt(at.x), at.y, at.z));
+                                      ToD(norms[a]), Mathf.RoundToInt(at.x), at.y, at.z,
+                                      vertexFace != null ? vertexFace[a] : -1));
             }
-            return Paint(data, tris, view, basis);
+            return Paint(data, tris, view, basis, trace);
         }
 
         static Vector3d ToD(Vector3 v) => new Vector3d(v.x, v.y, v.z);
@@ -280,26 +351,30 @@ namespace HiddenHarbours.Tools.RigBaking
             /// </summary>
             public readonly bool NormalFromRotatedVerts;
 
+            /// <summary>Index of the rig face this triangle came from, or -1 when unknown. Diagnostic
+            /// only — see <see cref="RigPaintTrace"/>.</summary>
+            public readonly int Face;
+
             Tri(in Vector3d a, in Vector3d b, in Vector3d c,
                 in Vector3d n0, in Vector3d n1, in Vector3d n2, in Vector3d n,
-                int mat, double faceBias, double depthBias, bool normalFromRotatedVerts)
+                int mat, double faceBias, double depthBias, bool normalFromRotatedVerts, int face)
             {
                 A = a; B = b; C = c;
                 N0 = n0; N1 = n1; N2 = n2; N = n;
                 Mat = mat; FaceBias = faceBias; DepthBias = depthBias;
-                NormalFromRotatedVerts = normalFromRotatedVerts;
+                NormalFromRotatedVerts = normalFromRotatedVerts; Face = face;
             }
 
             /// <summary>A fan triangle that shades from its FACE's normal, the rig's way.</summary>
             public static Tri FromFace(in Vector3d a, in Vector3d b, in Vector3d c,
                                        in Vector3d n0, in Vector3d n1, in Vector3d n2,
-                                       int mat, double faceBias, double depthBias) =>
-                new Tri(a, b, c, n0, n1, n2, default, mat, faceBias, depthBias, true);
+                                       int mat, double faceBias, double depthBias, int face = -1) =>
+                new Tri(a, b, c, n0, n1, n2, default, mat, faceBias, depthBias, true, face);
 
             /// <summary>A mesh triangle that shades from its stored flat normal, the GPU's way.</summary>
             public static Tri FromMesh(in Vector3d a, in Vector3d b, in Vector3d c, in Vector3d n,
-                                       int mat, double faceBias, double depthBias) =>
-                new Tri(a, b, c, default, default, default, n, mat, faceBias, depthBias, false);
+                                       int mat, double faceBias, double depthBias, int face = -1) =>
+                new Tri(a, b, c, default, default, default, n, mat, faceBias, depthBias, false, face);
         }
 
         /// <summary>The rotation half of the rig's <c>projVert</c>, which is what a normal gets too
@@ -333,7 +408,8 @@ namespace HiddenHarbours.Tools.RigBaking
         static double ShadeOf(in Vector3d n, in RigTrigBasis b, in Vector3d ln) =>
             n.X * ln.X + (n.Y * b.Se + n.Z * b.Ce) * ln.Y + (-n.Y * b.Ce + n.Z * b.Se) * ln.Z;
 
-        static byte[] Paint(RigMeshData data, List<Tri> tris, RigViewOptions view, RigTrigBasis? basisOverride)
+        static byte[] Paint(RigMeshData data, List<Tri> tris, RigViewOptions view,
+                            RigTrigBasis? basisOverride, RigPaintTrace trace = null)
         {
             int pw = data.W, ph = data.H;
             RigTrigBasis basis = basisOverride ?? RigTrigBasis.FromDotNet(view);
@@ -344,10 +420,17 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int i = 0; i < col.Length; i++) col[i] = Empty;
             var dep = new double[pw * ph];
 
+            if (trace != null)
+            {
+                trace.Winner = new int[pw * ph];
+                for (int i = 0; i < trace.Winner.Length; i++) trace.Winner[i] = -1;
+            }
+
             var rampTable = BuildRampTable(data);
 
-            foreach (var tri in tris)
+            for (int triIndex = 0; triIndex < tris.Count; triIndex++)
             {
+                Tri tri = tris[triIndex];
                 Vector3d n = tri.NormalFromRotatedVerts
                     ? RigMeshBuilder.ObjectNormal(Rotate(tri.N0, basis),
                                                   Rotate(tri.N1, basis),
@@ -389,14 +472,25 @@ namespace HiddenHarbours.Tools.RigBaking
                     double d = w0 * a.D + w1 * b2.D + w2 * c.D;
                     double deff = d - tri.DepthBias;
                     int i = y * pw + x;
-                    if (deff >= zbuf[i]) continue;
+                    bool won = deff < zbuf[i];
+
+                    if (trace != null && (trace.ProbeAll || trace.Probe.Contains(i)))
+                    {
+                        double thr = data.Bayer[x & 3, y & 3];
+                        int si = ShadeIndex(fidx, thr, mat.Off, ramp.Length);
+                        trace.Samples.Add(new RigPaintTrace.Sample(
+                            i, triIndex, tri.Face, tri.Mat, si, Pack(ramp[si]),
+                            d, deff, sh, fidx, tri.FaceBias, tri.DepthBias, thr, zbuf[i],
+                            -n.Y * basis.Ce + n.Z * basis.Se, won));
+                    }
+
+                    if (!won) continue;
 
                     zbuf[i] = deff;
                     dep[i] = d;
-                    double base_ = Math.Floor(fidx);
-                    int idx = (int)base_ + ((fidx - base_) > data.Bayer[x & 3, y & 3] ? 1 : 0) + mat.Off;
-                    idx = Mathf.Clamp(idx, 0, ramp.Length - 1);
+                    int idx = ShadeIndex(fidx, data.Bayer[x & 3, y & 3], mat.Off, ramp.Length);
                     col[i] = Pack(ramp[idx]);
+                    if (trace != null) trace.Winner[i] = triIndex;
                 }
             }
 
@@ -458,6 +552,20 @@ namespace HiddenHarbours.Tools.RigBaking
         static int Pack(Color32 c) => (c.r << 16) | (c.g << 8) | c.b;
 
         /// <summary>
+        /// The rig's shade-index arithmetic, verbatim: floor, one ordered-dither step, the material's
+        /// constant offset, clamped into the ramp
+        /// (<c>RAMP[clamp(base + (fr &gt; BAYER[x&amp;3][y&amp;3] ? 1 : 0), 0, 6)]</c>).
+        /// Factored out so a trace sample can be computed for a LOSING face too, which is the whole
+        /// point of the trace.
+        /// </summary>
+        static int ShadeIndex(double fidx, double bayerThreshold, int matOffset, int rampLength)
+        {
+            double base_ = Math.Floor(fidx);
+            int idx = (int)base_ + ((fidx - base_) > bayerThreshold ? 1 : 0) + matOffset;
+            return Mathf.Clamp(idx, 0, rampLength - 1);
+        }
+
+        /// <summary>
         /// Reconstructs the rig's <c>RINDEX</c>: distinct ramps in first-appearance order, mapping
         /// colour → (ramp, index) with LATER assignments winning, exactly as the rig's nested
         /// <c>forEach</c> does. Ramps are deduped by CONTENT because extraction flattens MATS and
@@ -506,7 +614,21 @@ namespace HiddenHarbours.Tools.RigBaking
         /// clustered — see <see cref="RigPixelDiff"/> for why the cluster size, not the percentage,
         /// is what a caller should assert on.
         /// </summary>
-        public static RigPixelDiff Compare(byte[] a, byte[] b, int width, int height)
+        public static RigPixelDiff Compare(byte[] a, byte[] b, int width, int height) =>
+            Compare(a, b, width, height, null);
+
+        /// <param name="ignore">Optional per-pixel mask of positions whose COLOUR the comparison must
+        /// skip — pixels where the oracle has no answer. Today that is exactly the rigs' double-sided
+        /// coplanar pairs (see <see cref="RigAmbiguousPixels"/>); it must never be used to hide a
+        /// residual whose cause has not been established, which is why the only builder for such a
+        /// mask derives it structurally rather than from a list of coordinates.
+        ///
+        /// <para>⚠️ It suppresses colour differences ONLY. A silhouette difference (opaque against
+        /// transparent) is still counted at a masked pixel, and deliberately so: the ambiguity is
+        /// about WHICH of two exactly-coplanar faces you see, never about whether anything is there.
+        /// The twins have bit-identical vertices, so coverage is not in question, and a mask that
+        /// swallowed a coverage difference could hide a moved blade.</para></param>
+        public static RigPixelDiff Compare(byte[] a, byte[] b, int width, int height, bool[] ignore)
         {
             if (a == null || b == null) throw new ArgumentNullException();
             if (a.Length != b.Length)
@@ -523,6 +645,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (!oa && !ob) continue;
                 inked++;
                 if (oa != ob) { differing++; coverageOnly++; mask[px] = true; continue; }
+                if (ignore != null && ignore[px]) continue;
                 if (a[i] != b[i] || a[i + 1] != b[i + 1] || a[i + 2] != b[i + 2])
                 { differing++; mask[px] = true; }
             }

@@ -125,6 +125,18 @@ namespace HiddenHarbours.Boats
         [Tooltip("Oar columns per heading row (the DoryOar* sheets ship 10).")]
         [Min(1)] public int OarColumnCount = 10;
 
+        [Tooltip("The baked PORT oar as a mesh fitting (ADR 0022 phase 7), for Variant = Mesh. The " +
+                 "sprite sheets above are one cell per facing and a mesh hull turns continuously, so " +
+                 "a mesh dory needs these or she rows with no oars. Produced by Hidden Harbours ▸ Art " +
+                 "▸ 3D Hulls ▸ Bake ALL hull fittings, which also wires this field. Ignored while " +
+                 "Variant = Sprite — a dory may carry both, which is what makes the A/B comparison " +
+                 "possible.")]
+        public HiddenHarbours.Core.HullPropMeshDef OarPortMesh = null;
+
+        [Tooltip("The baked STARBOARD oar as a mesh fitting — same terms as OarPortMesh. Both or " +
+                 "neither: one oar is worse than none.")]
+        public HiddenHarbours.Core.HullPropMeshDef OarStarMesh = null;
+
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
@@ -224,6 +236,19 @@ namespace HiddenHarbours.Boats
             return IsComplete(OarPort) && OarPort.Length == expected &&
                    IsComplete(OarStar) && OarStar.Length == expected;
         }
+
+        /// <summary>
+        /// True when BOTH oars are wired as USABLE mesh fittings (ADR 0022 phase 7) — the gate the
+        /// skinner's mesh branch hangs the oars behind. Both-or-neither for the same reason the sheets
+        /// are: a rowboat showing one oar reads as a bug, and a rowboat showing none is the regression
+        /// that held five hulls on the sprite compass through the whole of phase 6.
+        ///
+        /// <para>Deliberately independent of <see cref="HasFullCompass"/>: a fitting is posed by
+        /// rotation, not indexed by facing, so a mesh-only hull can wear one.</para>
+        /// </summary>
+        public bool HasOarMeshes() =>
+            OarPortMesh != null && OarPortMesh.IsUsable() &&
+            OarStarMesh != null && OarStarMesh.IsUsable();
 
         /// <summary>
         /// True when BOTH motor sheets give their full heading×column grid — the gate

@@ -44,17 +44,43 @@ namespace HiddenHarbours.Tests.EditMode
             public void SetSorting(int layerId, int order) { SortingLayerId = layerId; SortingOrder = order; }
         }
 
+        /// <summary>A fitting as the seam sees it: a local rotation and a lateral mount, nothing more
+        /// (ADR 0022 phase 7). Records what was asked of it so a test can assert the POSE rather
+        /// than the pixels.</summary>
+        private sealed class FakePropRenderer : IHullPropRenderer
+        {
+            public Quaternion LocalRotation { get; set; } = Quaternion.identity;
+            public float LateralOffsetMeters { get; set; }
+            public bool Visible { get; set; } = true;
+            public bool IsConfigured => true;
+        }
+
         private sealed class FakeService : IHullMeshPresentationService
         {
             public readonly FakeRenderer Renderer = new FakeRenderer();
             public GameObject InstalledOn; public int Installs; public int Removes;
             public bool RefuseInstall;
 
+            public readonly System.Collections.Generic.Dictionary<string, FakePropRenderer> Props =
+                new System.Collections.Generic.Dictionary<string, FakePropRenderer>();
+            public int PropAttaches, PropDetaches;
+            public bool RefuseProps;
+
             public IHullMeshRenderer Install(GameObject host, HullMeshDef def)
             {
                 if (RefuseInstall) return null;
                 Installs++; InstalledOn = host; return Renderer;
             }
+
+            public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot)
+            {
+                if (RefuseProps) return null;
+                PropAttaches++;
+                if (!Props.TryGetValue(slot, out var p)) Props[slot] = p = new FakePropRenderer();
+                return p;
+            }
+
+            public void DetachProps(GameObject host) { PropDetaches++; Props.Clear(); }
 
             public void Remove(GameObject host) { Removes++; }
         }

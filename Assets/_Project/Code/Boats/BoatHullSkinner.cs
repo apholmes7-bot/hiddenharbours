@@ -337,11 +337,16 @@ namespace HiddenHarbours.Boats
             RemoveOars(root, child);
             RemoveMotor(root, child);
 
-            if (visual.HasOarSheets() || visual.HasMotor())
-                Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor sheets but is " +
+            // ADR 0022 phase 7: a fitting the visual carries as a MESH is not "skipped", it is drawn —
+            // so only warn about the sheets a mesh really cannot wear. The oars are the first fitting
+            // to cross over; the outboards follow the same way.
+            bool oarsGoMesh = visual.HasOarMeshes();
+            if ((visual.HasOarSheets() && !oarsGoMesh) || visual.HasMotor())
+                Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor SHEETS but is " +
                                  "presented as a MESH hull — sprite overlays are baked per facing cell and " +
-                                 "cannot ride a continuously-rotating mesh. They are skipped. (No shipped " +
-                                 "mesh hull binds any; if one ever does, that overlay needs its own mesh.)");
+                                 "cannot ride a continuously-rotating mesh. They are skipped. Bake that " +
+                                 "fitting as a mesh (Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull " +
+                                 "fittings) and wire it, as the dory's oars are.");
 
             // The facet renderer, through the Core seam. Install is idempotent (a re-skin reconfigures).
             var renderer = HullMeshPresentation.Service.Install(child.gameObject, visual.HullMesh);
@@ -371,6 +376,12 @@ namespace HiddenHarbours.Boats
             var presenter = new MeshHullPresenter(driver, meshAnchors);
             WriteHost(root, presenter);
 
+            // The fittings (ADR 0022 phase 7). Attached AFTER the hull, because a fitting is parented
+            // to the hull's posed mesh child and inherits heading, rock and heave from it — which is
+            // what makes the sprite path's rock coupling, part split and draw-order rules unnecessary.
+            if (!options.SkipOars && boat != null && oarsGoMesh) WireOarMeshes(root, child, visual, boat);
+            else RemoveOarMeshes(root, child);
+
             // The hull rides the SAME shared wave field as every sprite hull — the presenter's
             // continuous-rock capability just stops the phase being quantised to frames.
             BoatWaveMotion wave = null;
@@ -391,10 +402,47 @@ namespace HiddenHarbours.Boats
             };
         }
 
+        /// <summary>
+        /// Bolt both oar meshes to an installed mesh hull and hand them to
+        /// <see cref="DoryOarMeshLayer"/>, which poses them from the same per-oar state the sprite
+        /// oars animate from. Both or neither: if either fitting is refused by the service, the layer
+        /// is removed rather than left rowing with one oar.
+        /// </summary>
+        private static void WireOarMeshes(GameObject root, Transform child, BoatVisualDef visual,
+                                          BoatController boat)
+        {
+            var service = HullMeshPresentation.Service;
+            IHullPropRenderer port = service?.AttachProp(child.gameObject, visual.OarPortMesh, PortOarChildName);
+            IHullPropRenderer star = service?.AttachProp(child.gameObject, visual.OarStarMesh, StarOarChildName);
+
+            if (port == null || star == null)
+            {
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' is a MESH hull whose oar " +
+                               "fittings could not be attached (the presentation service refused one " +
+                               "or both). Removing the pair — a dory rowing with one oar is worse " +
+                               "than the honest failure. Re-bake the fittings and check the defs load.");
+                RemoveOarMeshes(root, child);
+                return;
+            }
+
+            var layer = root.GetComponent<DoryOarMeshLayer>();
+            if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
+            layer.Configure(port, star, boat);
+        }
+
+        /// <summary>A hull that wears no oar meshes must not keep the previous hull's.</summary>
+        private static void RemoveOarMeshes(GameObject root, Transform child)
+        {
+            var layer = root != null ? root.GetComponent<DoryOarMeshLayer>() : null;
+            if (layer != null) DestroyComponent(layer);
+            if (child != null) HullMeshPresentation.Service?.DetachProps(child.gameObject);
+        }
+
         /// <summary>Strip the mesh presentation off a boat (renderer via the Art service, driver on the
         /// root). Safe when none is present, and safe with no service registered.</summary>
         private static void RemoveMeshPresentation(GameObject root, Transform child)
         {
+            RemoveOarMeshes(root, child);
             if (child != null) HullMeshPresentation.Service?.Remove(child.gameObject);
             var driver = root != null ? root.GetComponent<MeshHullDriver>() : null;
             if (driver != null) DestroyComponent(driver);

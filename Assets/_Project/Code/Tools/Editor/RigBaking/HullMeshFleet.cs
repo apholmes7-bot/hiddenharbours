@@ -131,9 +131,16 @@ namespace HiddenHarbours.Tools.RigBaking
         const string Meshes = "Assets/_Project/Data/Boats/HullMeshes";
         const string Visuals = "Assets/_Project/Data/Boats/Visuals";
 
-        /// <summary>The overlay that keeps a hull on sprites — see <see cref="FleetHull.OverlayBlockedReason"/>.</summary>
-        const string Oars = "her OARS are baked per facing cell and cannot ride a continuously-rotating " +
-                            "mesh; flipping her would mean a dory that does not row";
+        /// <summary>The overlay that keeps a hull on sprites — see <see cref="FleetHull.OverlayBlockedReason"/>.
+        ///
+        /// <para>⚠️ <b>The dory's block is LIFTED (ADR 0022 phase 7).</b> Her oars are no longer baked
+        /// per facing cell: they are <c>HullPropMeshDef</c>s of their own, posed at runtime through
+        /// <c>IHullPropRenderer</c> from the same stroke state the sprite oars animate from, and
+        /// adjudicated against the rig's own <c>renderOars</c> by <c>DoryOarPropMeshAcceptanceTests</c>
+        /// — which resolves a half-degree feather error. So the condition this block was written to
+        /// wait for has been met, and she flips. The outboards are still blocked; they are the same
+        /// job on two more rigs.</para>
+        /// </summary>
         const string Outboard = "her OUTBOARD is baked per facing cell and cannot ride a " +
                                 "continuously-rotating mesh; flipping her would lose the engine";
 
@@ -163,8 +170,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // owner's A/B (V at the helm) and it is the only way a regression in the mesh path is
             // visible by eye rather than by test.
 
+            // UNBLOCKED by phase 7: her oars became meshes, so she is the first hull whose sprite
+            // overlay crossed over rather than being dropped. The boat he starts in rows continuously.
             Sheeted("dory", "doryIsoRig.js", "DoryIso", "DoryIso", "dory_iso",
-                    "dory (T0, ~4.3 m — the boat he starts in)", Oars, "DoryIso"),
+                    "dory (T0, ~4.3 m — the boat he starts in)", null, "DoryIso"),
 
             // ONE hull, TWO visuals: basic and upgraded differ by engine, not by planking.
             Sheeted("punt", "puntIsoRig.js", "PuntIso", "PuntIso", "punt_iso",

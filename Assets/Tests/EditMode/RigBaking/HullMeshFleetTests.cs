@@ -292,9 +292,20 @@ namespace HiddenHarbours.Tests.RigBaking
                         Assert.AreEqual(BoatHullVariant.Mesh, visual.Variant,
                             $"{visual.Id} wears no sprite overlay and should be presented as a mesh — " +
                             "the owner ruled the fleet goes mesh wherever it can.");
-                        Assert.IsFalse(visual.HasOarSheets() || visual.HasMotor(),
-                            $"{visual.Id} is flipped to Mesh but binds oar/motor sheets, which the mesh " +
-                            "path silently drops. Give her an OverlayBlockedReason in HullMeshFleet.");
+                        // ⚠️ INVERTED BY PHASE 7, and the distinction is the whole phase. Binding a
+                        // sprite overlay sheet is only a defect if that overlay has no MESH to cross
+                        // over to: the sheets stay wired on purpose (they are the owner's V-key A/B,
+                        // exactly like the sprite compass this hull also keeps). What must never
+                        // happen is a flipped hull whose fitting exists ONLY as cells — that is the
+                        // dory-with-no-oars regression the block was invented to prevent.
+                        Assert.IsFalse(visual.HasOarSheets() && !visual.HasOarMeshes(),
+                            $"{visual.Id} is flipped to Mesh and binds oar SHEETS but no oar MESHES, so " +
+                            "the mesh path drops her oars and she rows with nothing. Bake the fitting " +
+                            "(Bake ALL hull fittings) or give her an OverlayBlockedReason.");
+                        Assert.IsFalse(visual.HasMotor(),
+                            $"{visual.Id} is flipped to Mesh but binds motor sheets, which the mesh " +
+                            "path silently drops — the outboards have no fitting mesh yet. Give her an " +
+                            "OverlayBlockedReason in HullMeshFleet.");
                     }
                     else
                     {

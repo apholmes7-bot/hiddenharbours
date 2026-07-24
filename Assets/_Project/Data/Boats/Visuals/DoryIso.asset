@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DoryIso
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.dory_iso
-  Variant: 0
+  Variant: 1
   HullMesh: {fileID: 11400000, guid: 3a28801b29546ea439d52cf586830271, type: 2}
   Facings:
   - {fileID: -4090857515788694173, guid: 8556d842d3fbf8d4bb8befd79470e780, type: 3}
@@ -257,6 +257,8 @@ MonoBehaviour:
   - {fileID: 5912096091688918295, guid: 42ab595f190dfc54bbe9ab02297d8c44, type: 3}
   - {fileID: 1707885623860978299, guid: 42ab595f190dfc54bbe9ab02297d8c44, type: 3}
   OarColumnCount: 10
+  OarPortMesh: {fileID: 11400000, guid: 74d5735d5d182604eb0619e2d099a326, type: 2}
+  OarStarMesh: {fileID: 11400000, guid: 7d24bfd4e93adb64e82011b3861e96df, type: 2}
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 1
