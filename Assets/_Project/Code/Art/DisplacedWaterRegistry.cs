@@ -52,13 +52,26 @@ namespace HiddenHarbours.Art
         public readonly float SinElev;
         /// <summary>World z of the undisplaced water plane (the chunk meshes' resting z).</summary>
         public readonly float BaseZ;
+        /// <summary>The EFFECTIVE displacement exaggeration of the tick that published this frame
+        /// (the surface's <c>_WaveExaggeration</c> push — the wired GameConfig value or the
+        /// serialized fallback). The watertight clamp multiplies raw wave-field heights by this to
+        /// bound the surface lift a hull can meet (shore fade deliberately excluded — an offshore
+        /// bound, conservative near the coast). 1 when published through the legacy overload.</summary>
+        public readonly float Exaggeration;
 
         public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ)
+            : this(referenceY, cosElev, sinElev, baseZ, 1f)
+        {
+        }
+
+        public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ,
+                                  float exaggeration)
         {
             ReferenceY = referenceY;
             CosElev = cosElev;
             SinElev = sinElev;
             BaseZ = baseZ;
+            Exaggeration = exaggeration;
         }
     }
 
