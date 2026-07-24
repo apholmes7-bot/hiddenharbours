@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -45,22 +46,59 @@ namespace HiddenHarbours.Tools.RigBaking
     /// </summary>
     public static class RigMeshMenu
     {
-        /// <summary>The hulls ADR 0022 measured. The side dragger is deliberately NOT in
-        /// <see cref="RigCatalog"/> — see <see cref="RigMeshExtractor.ExtractFrom"/>.</summary>
+        /// <summary>
+        /// The hulls ADR 0022 measured, sourced from <see cref="HullMeshFleet"/> so the paths cannot
+        /// drift from what the baker actually bakes. The side dragger is deliberately NOT in
+        /// <see cref="RigCatalog"/> — see <see cref="RigMeshExtractor.ExtractFrom"/>.
+        ///
+        /// <para><b>Why this stayed a SUBSET when the fleet grew to eleven.</b> Verification
+        /// rasterises 8 headings twice per hull on the CPU, at the rig's own cell size. That is
+        /// seconds for a 12 m boat and minutes for the 110 m tanker (16 px/m, but an enormous cell),
+        /// so running the whole fleet would turn an owner-facing sanity check into an editor stall he
+        /// would learn not to press. These three are the ones worth his time: the golden master, the
+        /// first mesh hull, and the largest hull with a measured baseline. Whole-fleet coverage is a
+        /// TEST's job (it can afford the minutes and nobody waits on it) — see
+        /// <c>HullMeshFleetBakeTests</c>.</para>
+        /// </summary>
         public static readonly (string label, string path, string global)[] Hulls =
-        {
-            ("lobster boat (12 m)", "docs/art/rigs/lobsterBoatIsoRig.js", "LobsterBoatIso"),
-            ("side dragger (25 m)", "docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso"),
-            ("punt (golden master)", "docs/art/rigs/puntIsoRig.js", "PuntIso"),
-        };
+            new[] { "lobsterBoat", "sideDragger", "punt" }
+                .Select(HullMeshFleet.Get)
+                .Select(h => (h.Label, h.ScriptPath, h.GlobalName))
+                .ToArray();
 
         [MenuItem(RigMeshGate.MenuRoot + "/Verify hull meshes against the rigs", priority = 210)]
-        public static void VerifyAll()
+        public static void VerifyAll() => Verify(Hulls, "ADR 0022 phase-2 verification");
+
+        /// <summary>
+        /// <b>The whole fleet against the CPU oracle</b> — headless entry (-executeMethod), because
+        /// this is the check that costs minutes and therefore belongs to a machine rather than to the
+        /// owner's editor (see <see cref="Hulls"/>).
+        ///
+        /// <para>It is the acceptance evidence for a hull with no baked sheet, and it is the ONLY
+        /// thing that adjudicates a RECONSTRUCTED material table
+        /// (<see cref="RigMeshSymbols.Reconstructions"/> — the dory's): the truth side of the compare
+        /// is the rig's own <c>render()</c>, which selects colours its own inline way, while the
+        /// candidate side goes through the reconstruction. If the reconstruction were wrong, every
+        /// lit pixel on the boat would be the wrong colour and this would read tens of percent, not
+        /// tenths.</para>
+        ///
+        /// <para>Pure CPU arithmetic through V8 and managed code — no graphics device — so unlike the
+        /// GPU acceptance fixtures this one is meaningful on CI.</para>
+        /// </summary>
+        public static void VerifyFleetCli()
         {
-            var report = new StringBuilder("[rig-mesh] ADR 0022 phase-2 verification\n");
+            var hulls = HullMeshFleet.Hulls.Select(h => (h.Label, h.ScriptPath, h.GlobalName)).ToArray();
+            if (!Verify(hulls, $"ADR 0022 phase-6 fleet verification — {hulls.Length} hulls"))
+                EditorApplication.Exit(1);
+        }
+
+        /// <summary>Returns true when every hull came in under the bar. Reports either way.</summary>
+        static bool Verify((string label, string path, string global)[] hulls, string title)
+        {
+            var report = new StringBuilder($"[rig-mesh] {title}\n");
             bool ok = true;
 
-            foreach (var (label, path, global) in Hulls)
+            foreach (var (label, path, global) in hulls)
             {
                 try
                 {
@@ -105,6 +143,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (ok) Debug.Log(report.ToString());
             else Debug.LogError(report.ToString());
+            return ok;
         }
 
         [MenuItem(RigMeshGate.MenuRoot + "/Verify hull meshes against the rigs", validate = true)]

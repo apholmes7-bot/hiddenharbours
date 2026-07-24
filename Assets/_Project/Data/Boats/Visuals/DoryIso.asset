@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: DoryIso
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.dory_iso
+  Variant: 0
+  HullMesh: {fileID: 11400000, guid: 3a28801b29546ea439d52cf586830271, type: 2}
   Facings:
   - {fileID: -4090857515788694173, guid: 8556d842d3fbf8d4bb8befd79470e780, type: 3}
   - {fileID: -3863887307827284914, guid: 8556d842d3fbf8d4bb8befd79470e780, type: 3}

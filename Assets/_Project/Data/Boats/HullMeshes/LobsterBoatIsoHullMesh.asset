@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-3982264414241739642
+--- !u!43 &-16270958163085191
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.lobster_boat_iso
   SourceRigPath: docs/art/rigs/lobsterBoatIsoRig.js
-  Mesh: {fileID: -3982264414241739642}
+  Mesh: {fileID: -16270958163085191}
   Ramps:
   - Colors:
     - serializedVersion: 2
