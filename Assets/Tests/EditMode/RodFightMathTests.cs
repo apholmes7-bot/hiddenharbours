@@ -8,8 +8,8 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// The PURE rod-fight maths (Rod Fishing v2 — the deep→surface arc, brainstorm §3/§8, rule 5): the two
-    /// signed per-second rates (tension toward the snap, landing toward aboard), the counter-steer axis (Surface
-    /// only), the deep→surface crossing, the diegetic rod/line reads, and — the load-bearing part — the two
+    /// signed per-second rates (tension toward the snap, landing toward aboard), the lean axis (live in BOTH
+    /// phases), the deep→surface crossing, the diegetic rod/line reads, and — the load-bearing part — the two
     /// forgiving-cove invariants held across the tuning range (a blind pull snaps before it lands; a maintain
     /// always bleeds). Engine-light: a pure function of the inputs, so these run headless with no scene/clock/Time.
     /// The fish's run↔slack rhythm (fishEffort01) is generated elsewhere; here it's just an input we drive.
@@ -75,11 +75,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(opp, neu, "counter-steer OPPOSITE bleeds tension harder (tires her)");
             Assert.Less(neu, into, "steering INTO her bleeds least (climbs relative to neutral)");
 
-            // Landing: a counter-steer tires her — landing creeps even while MAINTAINING.
-            float landOpp = Landing(reeling: false, effort, -1f, RodFightPhase.Surface);
-            float landNeu = Landing(reeling: false, effort, 0f, RodFightPhase.Surface);
-            Assert.Greater(landOpp, 0f, "counter-steer during a dart tires her → landing gains, even on a MAINTAIN");
-            Assert.Greater(landOpp, landNeu, "…more than doing nothing");
+            // Landing: the lean buys line only through the REEL (owner's ruling 2026-07-23 — "opposing
+            // the fish WHILE REELING"). Leaning perfectly with the reel off is recovery, not progress;
+            // this used to assert that a counter-steer crept landing up on its own, which let a patient
+            // player win the whole fight without ever touching the reel.
+            Assert.AreEqual(0f, Landing(reeling: false, effort, -1f, RodFightPhase.Surface), 1e-6f,
+                "a perfect lean with the reel off wins no line — it only takes the strain off");
+            float reelOpp = Landing(reeling: true, effort, -1f, RodFightPhase.Surface);
+            float reelNeu = Landing(reeling: true, effort, 0f, RodFightPhase.Surface);
+            Assert.Greater(reelOpp, reelNeu, "…but leaning against her makes the REEL pay far better");
         }
 
         [Test]
@@ -94,18 +98,62 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void DeepPhase_IgnoresSteerEntirely()
+        public void TheLeanCounts_InBothPhases_Identically()
         {
+            // Owner's ruling 2026-07-23: "lean against her, ALWAYS." The phase says whether she can be
+            // SEEN, not which mechanics are switched on — so every read must answer to the lean while
+            // she is deep exactly as it does once she's up. (This test replaced its own opposite:
+            // DeepPhase_IgnoresSteerEntirely, which pinned the deep half as steer-blind.)
             const float effort = 0.8f;
-            // Tension is identical for any steer in Deep.
-            Assert.AreEqual(Tension(true, effort, 0f, RodFightPhase.Deep), Tension(true, effort, -1f, RodFightPhase.Deep), 1e-6f);
-            Assert.AreEqual(Tension(true, effort, 0f, RodFightPhase.Deep), Tension(true, effort, +1f, RodFightPhase.Deep), 1e-6f);
-            // Landing too.
-            Assert.AreEqual(Landing(true, effort, 0f, RodFightPhase.Deep), Landing(true, effort, -1f, RodFightPhase.Deep), 1e-6f);
-            Assert.AreEqual(Landing(true, effort, 0f, RodFightPhase.Deep), Landing(true, effort, +1f, RodFightPhase.Deep), 1e-6f);
-            // And the diegetic reads.
-            Assert.AreEqual(RodFightMath.RodBend01(effort, -1f, RodFightPhase.Deep), RodFightMath.RodBend01(effort, +1f, RodFightPhase.Deep), 1e-6f);
-            Assert.AreEqual(RodFightMath.LineStrain01(true, effort, -1f, RodFightPhase.Deep), RodFightMath.LineStrain01(true, effort, +1f, RodFightPhase.Deep), 1e-6f);
+            foreach (float steer in new[] { -1f, -0.4f, 0f, +0.4f, +1f })
+            {
+                Assert.AreEqual(Tension(true, effort, steer, RodFightPhase.Surface),
+                                Tension(true, effort, steer, RodFightPhase.Deep), 1e-6f,
+                                $"tension: the lean ({steer}) must count the same deep as up");
+                Assert.AreEqual(Landing(true, effort, steer, RodFightPhase.Surface),
+                                Landing(true, effort, steer, RodFightPhase.Deep), 1e-6f,
+                                $"landing: the lean ({steer}) must count the same deep as up");
+                Assert.AreEqual(RodFightMath.RodBend01(effort, steer, RodFightPhase.Surface),
+                                RodFightMath.RodBend01(effort, steer, RodFightPhase.Deep), 1e-6f);
+                Assert.AreEqual(RodFightMath.LineStrain01(true, effort, steer, RodFightPhase.Surface),
+                                RodFightMath.LineStrain01(true, effort, steer, RodFightPhase.Deep), 1e-6f);
+            }
+
+            // And it genuinely bites while she's deep — not merely "the same", but the same and NONZERO.
+            Assert.Less(Tension(true, effort, -1f, RodFightPhase.Deep),
+                        Tension(true, effort, +1f, RodFightPhase.Deep),
+                        "leaning against her beats going with her, deep");
+        }
+
+        [Test]
+        public void OnlyTheReelLandsHer_TheLeanAloneNeverDoes()
+        {
+            // The owner's sentence is "the user opposing the fish WHILE REELING": a perfect lean with the
+            // reel off must win no line at all, at any effort, in either phase.
+            foreach (RodFightPhase phase in new[] { RodFightPhase.Deep, RodFightPhase.Surface })
+            foreach (float effort in new[] { 0f, 0.5f, 1f })
+            {
+                Assert.AreEqual(0f, Landing(reeling: false, effort, -1f, phase), 1e-6f,
+                    "easing off with a perfect lean is recovery, not progress — it must land nothing");
+                Assert.Greater(Landing(reeling: true, effort, -1f, phase), 0f,
+                    "…and the same lean WITH the reel does win line");
+            }
+        }
+
+        [Test]
+        public void ReelingIntoARun_PaysOnlyForTheLeanYouPutIn()
+        {
+            // Reeling against a full run: leaning fully against her pays like free slack; going with her
+            // pays nothing. That gradient is the whole fight.
+            const float full = 1f;
+            float against = Landing(true, full, -1f, RodFightPhase.Deep);
+            float neutral = Landing(true, full, 0f, RodFightPhase.Deep);
+            float with = Landing(true, full, +1f, RodFightPhase.Deep);
+
+            Assert.AreEqual(Fill, against, 1e-6f, "a full lean into a full run reels as well as free slack does");
+            Assert.AreEqual(0f, neutral, 1e-6f, "no lean, full run: the reel wins nothing but strain");
+            Assert.AreEqual(0f, with, 1e-6f, "going with her wins nothing");
+            Assert.Greater(against, with);
         }
 
         // ---- the deep→surface crossing -----------------------------------------------------------

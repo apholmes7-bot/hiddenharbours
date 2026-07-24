@@ -78,14 +78,21 @@ namespace HiddenHarbours.Player
         [Tooltip("World-metre belly at full slack — the hit-bottom sag read.")]
         [SerializeField, Min(0f)] private float _maxSagM = 0.55f;
         [SerializeField] private Color _lineColor = new Color(0.86f, 0.89f, 0.92f, 0.75f);
-        [Tooltip("The near-snap colour the line whitens TOWARD as tension climbs (late, cozy — P5).")]
+        [Tooltip("The near-snap colour the line whitens TOWARD as tension climbs.")]
         [SerializeField] private Color _strainColor = new Color(1f, 1f, 1f, 1f);
-        [Tooltip("How LATE the whitening arrives (RodLineMath.Whiten01 lateBias, ≥ 1).")]
-        [SerializeField, Min(1f)] private float _whitenLateBias = 2.2f;
-        [Tooltip("Tension at which the strain shudder starts (RodLineMath.StrainShudder01).")]
-        [SerializeField, Range(0f, 1f)] private float _shudderStart01 = 0.6f;
-        [SerializeField, Min(0f)] private float _shudderAmpM = 0.05f;
+        [Tooltip("How LATE the whitening arrives (RodLineMath.Whiten01 lateBias, ≥ 1). Lower = the line " +
+                 "starts showing strain earlier. This is the fight's strain read now that the HUD bars " +
+                 "are gone, so it arrives sooner than the old cozy 2.2.")]
+        [SerializeField, Min(1f)] private float _whitenLateBias = 1.5f;
+        [Tooltip("Tension at which the strain shudder starts (RodLineMath.StrainShudder01). Lower = the " +
+                 "'ease off!' warning starts sooner — the player's only warning is what they can see.")]
+        [SerializeField, Range(0f, 1f)] private float _shudderStart01 = 0.45f;
+        [SerializeField, Min(0f)] private float _shudderAmpM = 0.09f;
         [SerializeField, Min(0f)] private float _shudderHz = 18f;
+        [Tooltip("How far (degrees) the rod is hauled over toward the fish at FULL load — the fight's " +
+                 "main instrument with the bars gone. It pivots about the hand, so the rod stays gripped. " +
+                 "0 = off (the rod keeps whatever bend its sheet was drawn with).")]
+        [SerializeField, Range(0f, 45f)] private float _loadLeanDegrees = 14f;
         [Tooltip("How far below the rod tip the line meets the water on the straight-down (weighted) " +
                  "path — the entry point the sink ripples ring.")]
         [SerializeField, Min(0f)] private float _entryDropM = 0.35f;
@@ -131,6 +138,8 @@ namespace HiddenHarbours.Player
         private SpriteRenderer _playerSr;
 
         private SpriteRenderer _rodSr;
+        private Vector2 _rodGrip;              // where the rod is held this frame — the load bends it about here
+        private Quaternion _rodBaseRotation;   // the unloaded pose the lean is measured off
         private SpriteRenderer _bobberSr;
         private SpriteRenderer _fishSr;
         private SpriteRenderer _heldSr;
@@ -250,6 +259,7 @@ namespace HiddenHarbours.Player
             RodElements show = RodPresenterMath.ElementsFor(_s.Phase, castPath);
 
             bool rodDrawn = RenderRod(show, angler, out Vector2 tip);
+            Vector2 unloadedTip = tip;   // the sheet's own tip, before the fight's load bends it over
 
             // ---- the line's far end (and the element that lives there) ---------------------------
             Vector2 far = tip;
@@ -289,6 +299,11 @@ namespace HiddenHarbours.Player
                 && (_s.Phase == FishingPhase.Waiting || _s.Phase == FishingPhase.Sinking
                     || _s.Phase == FishingPhase.Bite || _s.Phase == FishingPhase.Fighting))
                 far = tip + Vector2.down * _entryDropM;
+
+            // THE ROD IS THE GAUGE (owner's ruling 2026-07-23 — the fight's HUD bars are gone). Now that
+            // the far end is known, haul the rod over toward whatever is pulling on it, by how hard it's
+            // loaded. Done here rather than in RenderRod because the pull direction IS the far end.
+            if (rodDrawn && _s.IsFightPhase) tip = LeanRodUnderLoad(unloadedTip, far);
 
             if ((show & RodElements.Line) != 0 && farValid) RenderLine(tip, far);
             else { _line.enabled = false; _line.positionCount = 0; }
@@ -334,13 +349,44 @@ namespace HiddenHarbours.Player
 
             Vector2 grip = angler + state.GripOffsets[idx];
             tip = grip + state.TipOffsets[idx];
+            _rodGrip = grip;
 
             _rodSr.transform.position = new Vector3(grip.x, grip.y, 0f);
+            // The sheet's own pose is the baseline every frame (local identity — exactly how the rod drew
+            // before the load lean existed); LeanRodUnderLoad then bends it off this, in WORLD terms.
+            _rodSr.transform.localRotation = Quaternion.identity;
+            _rodBaseRotation = _rodSr.transform.rotation;
+
             _rodSr.sprite = state.Frames[idx];
             _rodSr.sortingLayerID = _playerSr.sortingLayerID;
             _rodSr.sortingOrder = _playerSr.sortingOrder + (IsBehindRow(row) ? -1 : 1);
             _rodSr.enabled = true;
             return true;
+        }
+
+        /// <summary>
+        /// Haul the rod over toward whatever is pulling on it — the fight's primary instrument now that the
+        /// bars are gone. The rod pivots about the GRIP (the hand; the sheet's own pin, so the art stays in
+        /// the fisher's hands) toward the line's far end, by <see cref="_loadLeanDegrees"/> scaled by how
+        /// loaded it is. Load is the WORSE of what she's doing to the rod (<c>RodBend01</c> — her run plus
+        /// any leaning-with-her) and what the line is actually taking (<c>Tension01</c>), so the rod is bowed
+        /// over hardest exactly when the line is nearest parting — and it springs straight the instant she
+        /// gives. Returns the rotated tip so the line still leaves the rod at its tip.
+        /// </summary>
+        private Vector2 LeanRodUnderLoad(Vector2 tip, Vector2 far)
+        {
+            float load = Mathf.Clamp01(Mathf.Max(_s.RodBend01, _s.Tension01));
+            Vector2 shaft = tip - _rodGrip;
+            Vector2 pull = far - _rodGrip;
+            if (load <= 1e-3f || _loadLeanDegrees <= 0f
+                || shaft.sqrMagnitude < 1e-6f || pull.sqrMagnitude < 1e-6f) return tip;
+
+            // Lean TOWARD the pull, never past it (a rod bends to the fish, it doesn't overshoot her).
+            float toPull = Vector2.SignedAngle(shaft, pull);
+            float lean = Mathf.Clamp(toPull, -_loadLeanDegrees, _loadLeanDegrees) * load;
+            var rot = Quaternion.Euler(0f, 0f, lean);              // a WORLD-space delta off the baseline
+            _rodSr.transform.rotation = rot * _rodBaseRotation;    // composes with any parent rotation
+            return _rodGrip + (Vector2)(rot * shaft);
         }
 
         private bool IsBehindRow(int row)

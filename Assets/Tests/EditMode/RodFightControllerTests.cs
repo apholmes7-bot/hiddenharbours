@@ -208,24 +208,29 @@ namespace HiddenHarbours.Tests.EditMode
 
             bool sawBend = false, sawSlackTell = false, sawSurfaceOffsetMove = false;
             Vector2 deepOffset = default;
-            bool haveDeepOffset = false;
+            bool haveDeepOffset = false, sawDeepOffsetMove = false;
+            float deepSpread = 0f, surfaceSpread = 0f;
             foreach (FishingState s in _published)
             {
                 if (s.Phase == FishingPhase.FightDeep || s.Phase == FishingPhase.FightSurface)
                 {
                     if (s.RodBend01 > 0f) sawBend = true;
                     if (s.SlackWindowOpen) sawSlackTell = true;
+                    var here = new Vector2(s.FishOffsetX, s.FishOffsetY);
                     if (s.Phase == FishingPhase.FightDeep)
                     {
-                        // Deep: the far end is the world-fixed entry anchor (the line runs straight
-                        // down there) — every deep publish reads the same offset (the angler is still).
-                        if (!haveDeepOffset) { deepOffset = new Vector2(s.FishOffsetX, s.FishOffsetY); haveDeepOffset = true; }
-                        else Assert.AreEqual(deepOffset, new Vector2(s.FishOffsetX, s.FishOffsetY),
-                            "deep publishes anchor the line at the fixed entry point");
+                        // Deep: she is unseen, but the line's ENTRY POINT works around the anchor as she
+                        // runs — with the HUD bars gone that motion is how the player knows which way to
+                        // lean (owner's ruling 2026-07-23; this used to assert the opposite, that every
+                        // deep publish read one fixed point).
+                        if (!haveDeepOffset) { deepOffset = here; haveDeepOffset = true; }
+                        else if ((here - deepOffset).sqrMagnitude > 1e-6f) sawDeepOffsetMove = true;
+                        deepSpread = Mathf.Max(deepSpread, here.magnitude);
                     }
-                    else if (new Vector2(s.FishOffsetX, s.FishOffsetY) != deepOffset)
+                    else
                     {
-                        sawSurfaceOffsetMove = true;   // her darts move the line's far end (design §3)
+                        surfaceSpread = Mathf.Max(surfaceSpread, here.magnitude);
+                        if (here != deepOffset) sawSurfaceOffsetMove = true;   // her darts move it (design §3)
                     }
                 }
                 else
@@ -235,10 +240,15 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(0f, s.FishOffsetY, $"{s.Phase}: fish offset is a fight-only read");
                 }
             }
-            Assert.IsTrue(haveDeepOffset, "deep publishes carry the entry anchor");
+            Assert.IsTrue(haveDeepOffset, "deep publishes carry the line's far end");
             Assert.IsTrue(sawBend, "her runs must show in the published rod bend");
             Assert.IsTrue(sawSlackTell, "the fight's slack windows must publish the PULL-now tell");
             Assert.IsTrue(sawSurfaceOffsetMove, "on the surface the line's far end moves with her");
+            Assert.IsTrue(sawDeepOffsetMove,
+                "while she's DEEP the entry point must work around too — with no HUD that motion is the " +
+                "only thing telling the player which way she's running");
+            Assert.Less(deepSpread, surfaceSpread,
+                "…but a fish well down moves the surface entry LESS than one thrashing on top");
         }
 
         // ---- determinism through the whole controller ---------------------------------------

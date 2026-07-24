@@ -16,10 +16,11 @@ namespace HiddenHarbours.Fishing
     /// action starts the WIND-BACK: the pointer is sampled while the player drags the mouse behind the
     /// character (the rod rig follows it — the baked Fisher_castBack sheet animates off the WindBack
     /// phase). Releasing evaluates the whole gesture through the pure <see cref="FlickCastMath"/>:
-    /// direction = the flick vector, power = sweep speed + length (capped per rod — the cap is
-    /// <see cref="GameConfig.FlickCast"/> data today, per-gear later), quality = release timing. A good
-    /// flick flies the line (Cast phase) out to <see cref="LastCast"/>.LandingPoint; a bad one is just a
-    /// SHORT cast, and a gesture that never wound back simply doesn't fly — reel in, recast, no penalty.</para>
+    /// direction = the flick vector, RANGE = how far you wound back (capped per rod — the cap is
+    /// <see cref="GameConfig.FlickCast"/> data today, per-gear later), SNAP = how hard you swept forward,
+    /// which decides how much of that range you deliver. A good flick flies the line (Cast phase) out to
+    /// <see cref="LastCast"/>.LandingPoint; a weak one is just a SHORT cast, and a gesture that never
+    /// wound back simply doesn't fly — reel in, recast, no penalty.</para>
     ///
     /// The WHICH-fish decision is the existing <see cref="CatchResolver"/>, run at bite-time — the
     /// mini-game is only how an already-resolved catch is delivered (we don't re-implement catch logic).
@@ -78,6 +79,11 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Pointer closer than this (world m) to the character reads as NO steer (neutral) — a " +
                  "resting mouse is never a hidden penalty. A dead-band, not a feel dial.")]
         [Min(0f)] [SerializeField] private float _steerDeadzoneM = 0.3f;
+        [Tooltip("How much of the surfaced roam the line's ENTRY POINT works while she is still deep and " +
+                 "unseen (0..1 of the roam radius). This is the read you lean against before you can see " +
+                 "her: a fish well down moves the entry point a little, not a lot. 0 pins the line dead " +
+                 "still while deep — which leaves the deep half unreadable now that the bars are gone.")]
+        [Range(0f, 1f)] [SerializeField] private float _deepEntryRoamFraction = 0.45f;
 
         private IHold _hold;
         private System.Random _rng;
@@ -416,7 +422,7 @@ namespace HiddenHarbours.Fishing
                                                CastWaterMath.DefaultProbeSamples, _waterProbe, out float wetM))
                 return FlickCastResult.NoCast;
 
-            return new FlickCastResult(true, cast.Direction, cast.Power01, cast.Quality01,
+            return new FlickCastResult(true, cast.Direction, cast.Range01, cast.Snap01,
                                        wetM, anchor + cast.Direction * wetM);
         }
 
@@ -453,8 +459,8 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>The strike: the hook is set and the fight begins. A species that OPTED INTO a
         /// <see cref="RodFightDef"/> (design §5 — the TrapDef→DeckWorkDef shape) fights the v2
-        /// deep→surface arc (<see cref="RodFightSim"/>: FightDeep, timing only → FightSurface, steer
-        /// live); every species WITHOUT a Def keeps the legacy single-phase tension fight EXACTLY as
+        /// deep→surface arc (<see cref="RodFightSim"/>: FightDeep, fought unseen through the tackle →
+        /// FightSurface, fought in sight); every species WITHOUT a Def keeps the legacy fight EXACTLY as
         /// shipped — that branch is untouched. Hand-gathered categories always tend (a clam never
         /// snaps a line), whatever a stray Def says.</summary>
         private void BeginFight()
@@ -484,16 +490,19 @@ namespace HiddenHarbours.Fishing
             Emit(tend ? FishingPhase.Tending : FishingPhase.Fighting, 0f, 0f);
         }
 
-        /// <summary>One tick of the v2 deep→surface fight: read the steer (Surface only — Deep has
-        /// nothing to see, so the alignment stays neutral by construction), advance the sim (which
+        /// <summary>One tick of the v2 deep→surface fight: read the lean (live in both phases — she runs
+        /// from the hookup and the rod answers to it), advance the sim (which
         /// integrates <see cref="RodFightMath"/>'s rates), and publish through the SAME cozy results the
         /// legacy fight uses — a snap is "threw the hook", catch + bait time, never gear (§7). The
         /// published phase follows the sim's landing progress, so the FightDeep→FightSurface crossing
         /// emits the moment she breaks the surface.</summary>
         private void TickRodFight(float dt, bool actionHeld, Vector2 pointerWorld, bool pointerValid)
         {
+            // The lean, read in BOTH phases (owner's ruling 2026-07-23 — "lean against her, always"): where
+            // the pointer sits relative to the angler IS which way the rod is being leaned, and she is
+            // running from the hookup, deep or up. No pointer this tick = neutral, never a hidden penalty.
             _lastSteerAlignment = 0f;
-            if (_rodFight.Phase == RodFightPhase.Surface && pointerValid)
+            if (pointerValid)
                 _lastSteerAlignment = RodFightMotionMath.SteerAlignment(
                     pointerWorld - AnglerPosition, _rodFight.DartDir, _steerDeadzoneM);
 
@@ -597,7 +606,8 @@ namespace HiddenHarbours.Fishing
             if (fight.DeckAngleFactor <= 0f) return 0f;
 
             Vector2 angler = AnglerPosition;
-            Vector2 fishWorld = _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM);
+            Vector2 fishWorld = _fightAnchorWorld
+                              + _rodFight.FishOffset(_fishRoamRadiusM, _deepEntryRoamFraction);
             float across = DeckAngleMath.AcrossHull01(
                 DeckAngleMath.WorldToDeckFrame(angler - deck.HullPosition, deck.DrawnHeadingDegrees),
                 DeckAngleMath.WorldToDeckFrame(fishWorld - deck.HullPosition, deck.DrawnHeadingDegrees),
@@ -636,7 +646,8 @@ namespace HiddenHarbours.Fishing
             {
                 if (!_lastPointerValid) return 0f;
                 FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
-                return FlickCastMath.WindBackCharge01(_lastPointerWorld, AnglerPosition, s.FullPowerFlickMetres);
+                return FlickCastMath.WindBackCharge01(_lastPointerWorld, AnglerPosition,
+                                                      s.FullRangeWindBackMetres);
             }
             if (phase == FishingPhase.Cast && _castFlightSeconds > 1e-4f)
                 return 1f - Mathf.Clamp01(_phaseTimer / _castFlightSeconds);
@@ -656,7 +667,7 @@ namespace HiddenHarbours.Fishing
                 if (!_lastPointerValid) return Vector2.zero;
                 FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
                 return FlickCastMath.WindBackAimOffset(_lastPointerWorld, AnglerPosition,
-                                                       s.FullPowerFlickMetres, s.MaxCastDistanceMetres);
+                                                       s.FullRangeWindBackMetres, s.MaxCastDistanceMetres);
             }
 
             if (_depthGame || !_lastCast.IsCast) return Vector2.zero;
@@ -697,16 +708,18 @@ namespace HiddenHarbours.Fishing
             return RodFightMath.RodBend01(_rodFight.Effort01, _lastSteerAlignment, _rodFight.Phase);
         }
 
-        /// <summary>The line's far end relative to the ANGLER (Core FishingState.FishOffsetX/Y): the
-        /// world-fixed entry anchor while she's deep (the line runs straight down there), the anchor
-        /// plus her dart choreography once she's up. Measured from the live transform each publish, so
-        /// an angler repositioning on the deck reads a changing line angle for free. (0,0) outside the
-        /// v2 fight.</summary>
+        /// <summary>The line's far end relative to the ANGLER (Core FishingState.FishOffsetX/Y): the entry
+        /// point working around the anchor while she's deep (a smaller excursion — see
+        /// <see cref="_deepEntryRoamFraction"/>; it is what tells the player which way to lean before she's
+        /// visible), the anchor plus her full choreography once she's up. Measured from the live transform
+        /// each publish, so an angler repositioning on the deck reads a changing line angle for free.
+        /// (0,0) outside the v2 fight.</summary>
         private Vector2 FightOffset(FishingPhase phase)
         {
             if (_rodFight == null || !_hasFightAnchor ||
                 (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return Vector2.zero;
-            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM) - AnglerPosition;
+            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM, _deepEntryRoamFraction)
+                 - AnglerPosition;
         }
 
         private void EnsureHold()

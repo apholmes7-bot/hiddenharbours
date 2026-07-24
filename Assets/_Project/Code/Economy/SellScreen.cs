@@ -10,14 +10,14 @@ namespace HiddenHarbours.Economy
 {
     /// <summary>
     /// The wharf SELL SCREEN (VS-18). A self-building, code-driven overlay (no prefab, no
-    /// GreyboxBuilder — same pattern as RodGaugeView/HudController) that the wharf opens instead of
+    /// GreyboxBuilder — same pattern as HudController) that the wharf opens instead of
     /// instant-selling: pick a species from the hold, drag a quantity slider and watch the MARGINAL
     /// price + running total fall LIVE as the market self-glutts, then Confirm — or "Sell all of type"
     /// / "Sell all". The displayed total is exactly the coin paid (both come from <see cref="SellPricing"/>).
     ///
     /// <para>Lives in the Economy module (not HiddenHarbours.UI) because it reads the live
     /// <see cref="Market"/> + <see cref="MarketMath"/>; the UI assembly is deliberately Core-only.
-    /// Co-locating the view with the data it reads mirrors RodGaugeView (which lives in Fishing).
+    /// Co-locating the view with the data it reads mirrors HudController (which lives in UI).
     /// Cross-lane into economy-sim's folder — flagged in the PR. The economics are in the testable
     /// <see cref="SellService"/>; this class is just the screen.</para>
     /// </summary>

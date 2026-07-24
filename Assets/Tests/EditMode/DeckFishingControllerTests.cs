@@ -235,9 +235,12 @@ namespace HiddenHarbours.Tests.EditMode
             c.Tick(0.02f, false);
             Vector2 after = new Vector2(c.State.FishOffsetX, c.State.FishOffsetY);
 
-            // Deep phase: the far end is the world-fixed entry anchor, so the offset shifts by −(move).
-            Assert.AreEqual(before.x - 2f, after.x, 1e-4f, "the line angle must track the live angler (x)");
-            Assert.AreEqual(before.y, after.y, 1e-4f, "the line angle must track the live angler (y)");
+            // Deep phase: the far end is anchored in the WORLD, so walking the deck 2 m to starboard
+            // swings the published line angle by −2 m. The tolerance covers the fish's own drift over the
+            // single tick between the two reads — deep, the entry point now works around as she runs
+            // (owner's ruling 2026-07-23), so it is no longer pinned to the metre.
+            Assert.AreEqual(before.x - 2f, after.x, 0.25f, "the line angle must track the live angler (x)");
+            Assert.AreEqual(before.y, after.y, 0.25f, "the line angle must track the live angler (y)");
         }
 
         [Test]

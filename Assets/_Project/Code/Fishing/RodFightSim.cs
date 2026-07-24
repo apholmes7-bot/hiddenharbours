@@ -17,10 +17,10 @@ namespace HiddenHarbours.Fishing
     /// and the <see cref="RodFightStrength"/>-scaled effective run pressure, so the Def's Strength dial
     /// is applied in exactly one place.</para>
     ///
-    /// <para><b>What it doesn't.</b> No input reading (the caller passes reel/steer), no publishing
-    /// (the controller emits Core <c>FishingState</c>), no presentation. The Deep phase ignores steer by
-    /// construction — <see cref="RodFightMath"/> already gates the steer terms on
-    /// <see cref="RodFightPhase.Surface"/>, so this class simply passes the phase through.</para>
+    /// <para><b>What it doesn't.</b> No input reading (the caller passes reel/lean), no publishing
+    /// (the controller emits Core <c>FishingState</c>), no presentation. The phase is passed straight
+    /// through to <see cref="RodFightMath"/>, which no longer gates anything on it — the lean is live from
+    /// the hookup (owner's ruling 2026-07-23); the phase now says only whether she can be SEEN.</para>
     /// </summary>
     public sealed class RodFightSim
     {
@@ -32,7 +32,8 @@ namespace HiddenHarbours.Fishing
         // fight), with the Strength dial already folded into the run pressure.
         private readonly float _rise, _fall, _fill, _effectiveRunPressure, _steerRelief, _surfaceThreshold;
 
-        private float _surfaceSeconds;   // the choreography clock — starts when she breaks the surface
+        private float _fightSeconds;     // the choreography clock — runs from the HOOKUP (she fights deep too)
+        private float _surfaceSeconds;   // seconds since she broke the surface — the deep→surface roam blend
 
         public float Tension01 { get; private set; }
         public float Landing01 { get; private set; }
@@ -46,23 +47,40 @@ namespace HiddenHarbours.Fishing
         /// <summary>Her effort THIS tick: 1 = a hard run (MAINTAIN), 0 = a slack window (PULL).</summary>
         public float Effort01 => _rhythm.Effort01;
 
-        /// <summary>Seconds she has been up on the surface — the choreography clock
-        /// <see cref="RodFightMotionMath"/> reads. 0 until the crossing.</summary>
+        /// <summary>Seconds she has been up on the surface — 0 until the crossing. Drives the roam blend
+        /// from her cramped deep working to her full surface choreography.</summary>
         public float SurfaceSeconds => _surfaceSeconds;
 
-        /// <summary>The direction of her current dart (unit vector; Surface phase choreography). In the
-        /// Deep phase there is nothing to steer against — returns zero so a caller's alignment reads
-        /// neutral by construction.</summary>
-        public Vector2 DartDir => Phase == RodFightPhase.Surface
-            ? RodFightMotionMath.DartDir(_pattern, _motionSeed, _surfaceSeconds)
-            : Vector2.zero;
+        /// <summary>Seconds since the hook was set — the choreography clock
+        /// <see cref="RodFightMotionMath"/> reads. Runs through BOTH phases: she is running from the
+        /// moment she's hooked, and the player is leaning against that run from the moment it starts.</summary>
+        public float FightSeconds => _fightSeconds;
 
-        /// <summary>Where she is right now, as a world-metre offset from the surface anchor (the line's
-        /// entry point), roaming a disc of <paramref name="roamRadiusM"/>. Zero while Deep — the line
-        /// runs straight down at the anchor until she's up.</summary>
-        public Vector2 FishOffset(float roamRadiusM) => Phase == RodFightPhase.Surface
-            ? RodFightMotionMath.Offset(_pattern, _motionSeed, _surfaceSeconds, roamRadiusM)
-            : Vector2.zero;
+        /// <summary>The direction she is running RIGHT NOW (unit vector) — what the player's lean is
+        /// measured against. Live in both phases (owner's call: lean against her, always). While she's
+        /// deep this is what the rod's load and the line's entry point are telling you; once she's up you
+        /// can see it.</summary>
+        public Vector2 DartDir => RodFightMotionMath.DartDir(_pattern, _motionSeed, _fightSeconds);
+
+        /// <summary>
+        /// Where the far end of the line is right now, as a world-metre offset from the fight anchor.
+        /// While she's DEEP this is the line's ENTRY POINT working around the anchor —
+        /// <paramref name="deepRadiusFraction"/> of the full roam, because a fish forty feet down moves
+        /// the surface entry a little, not a lot; it is the honest read of which way she's pulling, and
+        /// the reason the deep half can be fought at all. Once she's up it grows to the full
+        /// <paramref name="roamRadiusM"/> choreography over <see cref="RodFightMotionMath.SurfaceRampSeconds"/>,
+        /// so the crossing swells rather than pops. One continuous curve either side — same pattern, same
+        /// seed, same clock.
+        /// </summary>
+        public Vector2 FishOffset(float roamRadiusM, float deepRadiusFraction)
+        {
+            float deep = roamRadiusM * Mathf.Clamp01(deepRadiusFraction);
+            float radius = Phase == RodFightPhase.Surface
+                ? Mathf.Lerp(deep, roamRadiusM,
+                             Mathf.Clamp01(_surfaceSeconds / RodFightMotionMath.SurfaceRampSeconds))
+                : deep;
+            return RodFightMotionMath.Offset(_pattern, _motionSeed, _fightSeconds, radius);
+        }
 
         /// <summary>Start a fight from a species' authored personality. <paramref name="rng"/> seeds
         /// both the run rhythm and the surface choreography — a seeded controller replays the whole
@@ -84,10 +102,10 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// Advance the fight by <paramref name="dt"/> seconds. <paramref name="reeling"/> is the held
-        /// action (PULL vs MAINTAIN); <paramref name="steerAlignment"/> is the rod-vs-dart alignment
-        /// (−1 opposite … +1 with, from <see cref="RodFightMotionMath.SteerAlignment"/>; ignored while
-        /// Deep by the maths itself). Resolves to Snapped at tension 1, Landed at landing 1 — snap
-        /// checked first, the <see cref="FishFight"/> precedent.
+        /// action (REEL vs EASE OFF); <paramref name="steerAlignment"/> is the rod-vs-run alignment
+        /// (−1 leaning against her … +1 going with her, from
+        /// <see cref="RodFightMotionMath.SteerAlignment"/>) and counts in both phases. Resolves to Snapped
+        /// at tension 1, Landed at landing 1 — snap checked first, the <see cref="FishFight"/> precedent.
         /// </summary>
         public void Tick(float dt, bool reeling, float steerAlignment)
             => Tick(dt, reeling, steerAlignment, deckAnglePressurePerSec: 0f);
@@ -103,6 +121,7 @@ namespace HiddenHarbours.Fishing
             if (IsOver || float.IsNaN(dt) || dt <= 0f) return;
 
             _rhythm.Tick(dt);
+            _fightSeconds += dt;            // she runs from the hookup — the lean has something to read at once
             RodFightPhase phase = Phase;
             float effort = _rhythm.Effort01;
 

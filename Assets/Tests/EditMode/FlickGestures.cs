@@ -24,7 +24,7 @@ namespace HiddenHarbours.Tests.EditMode
             c.Tick(0.02f, true,  a + new Vector2(0f, -1.5f), true);   // the wind-back apex
             c.Tick(0.02f, true,  a + new Vector2(0f, -0.5f), true);   // the forward sweep…
             c.Tick(0.02f, true,  a + new Vector2(0f,  0.3f), true);
-            c.Tick(0.02f, true,  a + new Vector2(0f,  1.0f), true);   // …to the sweet release point
+            c.Tick(0.02f, true,  a + new Vector2(0f,  1.0f), true);   // …snapped briskly through
             c.Tick(0.02f, false, a + new Vector2(0f,  1.0f), true);   // release → the line flies
         }
 

@@ -204,7 +204,14 @@ namespace HiddenHarbours.Tests.EditMode
                                    MakeFish("fish.cod", "region.coddle_cove"));
             FlickGestures.CastLine(c);
             Assert.AreEqual(FishingPhase.Waiting, c.Phase);
-            Assert.AreEqual(9.75f, c.LastCast.DistanceMetres, 0.01f, "the unclamped flick distance");
+
+            // The shared gesture winds back 1.5 m and snaps forward briskly. Distance is that draw
+            // against the full-range wind-back, delivered in full by the snap, times the rod's cap —
+            // and nothing else touches it with no bathymetry to clamp against.
+            var s = FlickCastSettings.Default;
+            float aimed = (1.5f / s.FullRangeWindBackMetres) * s.MaxCastDistanceMetres;
+            Assert.AreEqual(aimed, c.LastCast.DistanceMetres, 0.01f,
+                "the unclamped flick lands exactly where that wind-back aimed");
         }
 
         // ---- the weighted drop on a dry spot -------------------------------------------------
