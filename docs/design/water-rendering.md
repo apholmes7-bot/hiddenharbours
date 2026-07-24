@@ -287,6 +287,15 @@ cosmetic** waterline wash — "waves crashing in and out" — driven off `_Time`
   `clip()`, the deep-water tint (`dt`), and the caustic gate is **never touched** — so deep water does
   not move and **the cosmetic wash cannot move the gameplay waterline** (it's foam *dressing* on top of
   the real depth read: saves nothing, drives no sim — rule 5). Set `_SwashAmplitude = 0` to disable.
+- **SLOPE-TRUE since 2026-07-23 (the "swirly shoreline" fix).** The swash (and the ADR 0012 fringe
+  wiggle `_ShoreNoise`) offsets a DEPTH, so its **visible** contour excursion used to be
+  `amplitude ÷ the local beach slope` — the 0.3 m default painted a **±1.7 m swinging worm tongue** on
+  the gently painted 0.18 m/m bar. Both offsets are now scaled by the LOCAL painted slope
+  (`SeabedSlopeMag` — the same ±`_ShoreSampleStep` central difference `ShoreDir` reads — saturated at
+  the 1 m/m authoring reference), so **the authored amplitudes read as CONTOUR metres on any coast**:
+  `_SwashAmplitude`/`_ShoreNoise` now mean metres of visible wet-edge excursion; a steep (≥ 1 m/m)
+  edge keeps its previous look; uniform-deep materials (no height map) have no shore and are
+  untouched. Pinned in `WaterWhiteoutShoreSwirlAcceptanceTests.ShoreSwirl_CosmeticContourExcursion_IsSlopeTrue`.
 
 The swash math has a pure-C# twin in `WaterSurface.cs` (`SwashOffset` + `SwashBandGate`) so the
 oscillation, the amplitude bound, and **the band-confinement invariant** are unit-tested headless
@@ -1006,8 +1015,21 @@ night is. This is the same pre-compensation pattern the guard-rail's `PaletteVal
 - **`DN_COMP_MIN_CHANNEL = 0.02`** bounds the boost at ≤ 50× so a near-zero tint channel can't explode the
   divide; the shipped deepest-night channels all exceed it, so cancellation there is **exact** (no hue shift).
 - **Daylight is pixel-identical**: the beam is night-gated to 0 by day, the night share is 0 by day, and the
-  clouds' day share still composes pre-grade exactly where the whole layer used to sit. The two cloud shares
-  always sum to the original term, so dusk carries no discontinuity.
+  clouds' day share still composes pre-grade exactly where the whole layer used to sit.
+- **The clouds' night share is MOONLIT, not fully compensated (owner playtest 2026-07-23 — the "whole sea
+  becomes white" fix).** The exact-cancel compensation meant the night clouds read at FULL authored
+  strength over a sea the overlay had dimmed to a few percent — a milky whole-frame veil that smothered
+  every water detail from dusk on (the night factor saturates by a dusk tint of luma ~0.35). Clouds are a
+  REFLECTION of the sky, not a light source: at night they read only by moonlight. The night share's
+  weight is now `night × saturate(moonPresence × moonBrightness) × _CloudMoonlitVis` (default 0.35 —
+  faint moonlit bands under a full high moon; a moonless/new-moon night shows none; the no-MoonCycle
+  fallback keeps a bare-scene preview sane). `_CloudMoonlitVis = 1` restores the pre-fix full-strength
+  night share exactly. The moon disc/glitter/stars/beam/rain rings are genuine LIGHT content and keep
+  the compensated bucket ungated. Twin: `WaterReflection.MoonlitCloudVisibility`
+  (+ `DefaultCloudMoonlitVisibility`), pinned in `WaterReflectionTests`; the rendered-frame pin is
+  `WaterWhiteoutShoreSwirlAcceptanceTests.WhiteOut_DuskClouds_AreMoonlit_NotAVeil` (moonless dusk ⇒ no
+  veil, full moon ⇒ faint share survives, visibility-1 sabotage ⇒ the veil magnitude is visible to the
+  assert).
 - **Cycle off (edit mode / bare art scene / demo)**: the tint global is near-black (unset) → the content is
   added **raw** (there is no overlay to compensate for) — the tuning/preview look is preserved.
 - **HDR dependency**: this works because the URP asset has **HDR ON** (`UniversalRP.asset m_SupportsHDR: 1`) —
@@ -1146,6 +1168,32 @@ as the overlay takes it** (the default). When the day/night cycle is NOT running
 is near-black (the same "unset" convention the reflection/specular use) — the grade then treats it as full
 daylight (`dayNightLuma = 1`, the daylight rail) so a bare art scene / editor preview never paints a
 phantom-dark floor.
+
+**The DAY KNEE (`_PaletteFloorKnee`, default 0.45 — owner playtest 2026-07-23, the "whole sea becomes
+white" fix).** The raw quotient above SATURATES through dusk: at a dusk tint (dnLuma ~0.17–0.34) it held
+the on-screen floor at the full daylight `paletteFloor` while the whole scene dimmed around the sea, and —
+worse — the pre-overlay clamp level rose into the middle of the sea's value distribution, flattening most
+of the frame to ONE value (the dusk-storm repro measured 99.7% of on-screen pixels within ±0.05 of the
+median). The knee bounds the divisor:
+
+```
+floorPre = min(1, paletteFloor / max(dayNightLuma, _PaletteFloorKnee))
+```
+
+- **At/above the knee** (daylight incl. storm-overcast): byte-identical to the shipped curve — the
+  on-screen floor lands at `paletteFloor`, never muddy.
+- **Below the knee** (dusk → night): the pre-overlay floor stops growing (it holds at `floor/knee`), so
+  the ON-SCREEN floor rides down with the scene (`× dnLuma/knee`) and the clamp stays at the BOTTOM of the
+  value distribution — dusk keeps its crest/trough/foam structure and genuinely darkens.
+- `_PaletteFloorKnee = 0` restores the pre-fix saturating curve EXACTLY (the legacy passthrough).
+- The NIGHT floor (`_PaletteNightFloor`) keeps its saturating divide untouched — its whole job is to
+  survive deep night.
+
+Twin: `WaterPaletteGrade.ValueFloorDayNight(paletteFloor, dnLuma, nightFloor, floorDayKnee)` +
+`WaterPaletteGrade.DefaultFloorDayKnee`, pinned by `WaterPaletteGradeTests` (identity at/above the knee,
+the dusk ride-down, knee-0 legacy passthrough); the rendered-frame pin is
+`WaterWhiteoutShoreSwirlAcceptanceTests.WhiteOut_DuskStorm_KeepsValueStructure_OnScreen` (with a knee-0
+sabotage arm proving the assert sees the defect).
 
 ### 13.3 Palette presets (the palette IS a material property set)
 
@@ -1912,7 +1960,8 @@ glitter, rain rings, drift lines, flotsam riding the surface). The envelope-rela
 band/whitecap retune (step 2) shipped — §23 below; the GameConfig exposure (step 3) shipped —
 the paragraphs above and §23's threshold table; the hull waterline (phase 3 step 1) shipped —
 §24 below; the shared heave + resting draft (phase 3 step 2) shipped — §24's heave-honesty
-paragraph.
+paragraph; the watertight hull clamp (the owner's 2026-07-23 flooding defect) shipped — §24's
+watertight paragraph.
 
 
 ## 23. Envelope-relative salience — the big wave wears the solid foam core (ADR 0023, arc step 2·2)
@@ -1950,6 +1999,25 @@ crest factor the shared wave field already publishes — ADR 0023 §(4)):
   pass a thin graceful band, and a zeroed band degrades to "no fade", never a divide). The dying
   displaced edge cannot wear open-sea caps; shore foam/swash stays the separate dressing layer,
   untouched.
+- **And so do the VALUE BANDS (owner playtest 2026-07-23, "shoreline looks a bit swirly").** The
+  envelope bands originally did NOT fade with the seam, so their band-edge dither drew worm
+  contours crowding along the shore over the bright shallow ramp — envelope-relative shade marking
+  waves that visibly are not there on the dying displaced edge. The band blend weight is now
+  multiplied by `bandSeam = ShoreFade01(depth, _ShoreFadeBand)` — **the same curve, the same band
+  as `capShoreFade`** (one contour, never a second). Exactly 0 at the walkable waterline, exactly
+  1 past the band, so the open sea's marked-wave read is untouched and `_EnvelopeBandStrength = 0`
+  stays an exact passthrough. Twin: `WhitecapSalienceMath.BandShoreSalience` (pinned in
+  `WhitecapSalienceMathTests`); the rendered-frame pin (in-seam band imprint ≪ open-water imprint,
+  with a degenerate-band sabotage) is
+  `WaterWhiteoutShoreSwirlAcceptanceTests.ShoreSwirl_EnvelopeBands_FadeWithTheSeam`.
+- **The swirl's other half — slope-blind shore cosmetics — is fixed beside it (§5.6):** the beach
+  swash and the ADR 0012 fringe wiggle offset a cosmetic DEPTH, so their visible contour excursion
+  was `amplitude ÷ beach slope` — metres-wide swinging worm tongues on the gently painted bar.
+  Both offsets are now scaled by the LOCAL painted slope (`SeabedSlopeMag`, saturated at the
+  1 m/m authoring reference), making the authored amplitudes read as CONTOUR metres on any coast
+  (steep shores keep today's look; `_SwashAmplitude`/`_ShoreNoise` now mean metres of visible
+  wet-edge excursion). Pinned by
+  `WaterWhiteoutShoreSwirlAcceptanceTests.ShoreSwirl_CosmeticContourExcursion_IsSlopeTrue`.
 
 **Thresholds and where they live** (rule 6 — named material properties on Water.mat, spike-tuned
 defaults from `spike/3d-water` VERDICT.md / IsoWaterSpike.shader / SpikeWaterRenderer; the three
@@ -2018,7 +2086,82 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
   ground metres vs world metres, `ry·cos(1−sin)` ≈ 0.27 m of depth per rig-metre of `ry`): a small
   static offset of the resting waterline toward the hull's near rail, NOT a motion error — the
   climb itself moves at `(cos+sin)/(cos²+sin)` ≈ 1.15 rig-metres per metre of lift at the fleet's
-  40°, effectively 1:1.
+  40°, effectively 1:1. (In height terms the far-rail penalty is ≈ 0.17 m per rig-metre of
+  half-beam; the watertight line below absorbs it as data.)
+- **The hull is WATERTIGHT — the waterline climbs the planking but never boards the boat
+  (owner playtest 2026-07-23: "water enters hull on the mesh models").** The truthful z-test has
+  no concept of a shell: a hull's LOW interior surfaces (cockpit sole, hold floor, inner
+  bulwarks, working deck) are just geometry below a big enough lift, and in a storm the
+  differential between the hull's single-point ride and the local surface — wave slope across a
+  hull-sized footprint, plus the beam residual above — exceeded the interior's freeboard and
+  painted the sea over the boat's inside. Early phase-3 called that flooded cockpit "the known
+  intermediate state"; the owner has judged it: it is a defect, and it is now impossible by
+  construction. The fix stays inside the per-hull-constant discipline (never a per-vertex touch
+  of the rig's own convention) and is a PER-POINT law, measured into shape in pixels — the
+  lineage matters: a 1:1 differential clamp flooded the cockpit (the projections are not 1:1); a
+  blanket footprint-max bound dry-docked the dragger (distant crests that cannot touch a hull
+  still inflated it); a root-line-only per-point law re-flooded the far rail (the beam residual
+  is per-ground-line). Each cut was adjudicated by the acceptance suite before the complete law
+  below replaced it:
+
+  - **Who fights whom.** The hull's height projects at cos(elev) px/m and its ground at
+    sin(elev); the water's lift moves its pixels at 1 px/m (`ws.y += lift`); both depths obey
+    the calibrated convention above. Solving the pixel-share: a water sample at ground offset
+    `Δ` from the hull's ROOT line with lift `L` fights, on EACH hull ground line `ry`, exactly
+    the height `r(ry) = r_f − tan(elev)·ry` where `r_f = (Δ + L)/cos`, and wins iff
+    `r(ry)·(cos²+sin) < L·(cos+sin) − zHeave·sin + ry·cos·(1−sin)` — the climb rate ≈1.146
+    rig-m per metre of lift at 40°, a z-heave counterweight of only ≈0.523, and the far-rail
+    beam residual as an exact per-line term.
+  - **The clamp** (`DisplacedWaterMath.WatertightZHeaveMeters`, per pose push): scan the
+    footprint (x ±half the rig cell's width, step 2 m; y ±6 m — all the water that can share a
+    pixel with the hull — step 0.5 m, the axis that bounds the blind spot), evaluate the
+    shader-twin field (`WaveFieldBridge.ShaderTwinSample` over the SAME published `_WaveTrain*`
+    globals the water's vertex stage lifts with — the ONE-SEA rule closed at the globals —
+    times the frame's published effective exaggeration, shore fade taken as 1: an offshore
+    bound that can only over-dry, never flood). Every sample whose root-line fight lands ON OR
+    ABOVE the deck line (`r_f ≥ WatertightDeckHeightMeters`) demands protection of the WORST
+    ground line it threatens — `ry* = min(WatertightHalfBeamMeters, (r_f − deckHeight)/tan)` —
+    i.e. `zh ≥ (L·(cos+sin) − (r_f − tan·ry*)·(cos²+sin) + ry*·cos·(1−sin))/sin`; the Z-BIAS
+    heave (and ONLY the z bias — the on-screen ride stays the honest shared heave) is raised to
+    the maximum demand plus an engagement-ramped safety
+    (`WatertightDemandSafetyMeters` = 0.4 zh-m: full where protection binds hard, exactly zero
+    at the no-clamp boundary — daily seas stay bit-untouched; it buys out the discrete scan's
+    between-station residue, measured as 16–53 px single-instant leaks without it). Samples
+    fighting the open planking BELOW the deck line demand NOTHING — the exterior waterline
+    keeps every centimetre of truthful climb the interior allows, storms included.
+  - **The data.** `HullMeshDef.WatertightDeckHeightMeters` + `WatertightHalfBeamMeters` are
+    GAME-SIDE per-hull data like `RestingDraftMeters` (the baker never writes them; deck height
+    0 = clamp off, byte-identical pre-fix render): the rig sources' own constants — lobster
+    sole DECK 0.50 / half-beam 2.5 (station 2.20 committed generous: the washboards ride the
+    sheer outside the station line, and only this value answers in the capped protection
+    branch), side dragger working deck DECK 2.05 / half-beam 3.50 ("max beam 7 m"). All
+    measured green 2026-07-23.
+
+  Result: water still climbs the exterior planking with every wave, but the moment a crest would
+  put water inside the bulwarks, the calibrated frame rides up exactly enough that it cannot.
+  Per-hull looks follow the geometry honestly: the DRAGGER (real freeboard — 2.05 m deck over
+  1.1 m draft) keeps her daily-sea waterline essentially clamp-free (her reference-sea demands
+  measure ≈ 0) and wears a bounded band even in the gale; the LOBSTER — whose sole sits AT her
+  design waterline — is pinned at her marks whenever the local sea could top them, so her share
+  of the living waterline is the trough swing (the sea drops away, bares her planking, and
+  returns to her marks). A per-face interior mask in the facet shader is the known upgrade that
+  would give a sole-at-the-waterline hull an over-the-marks climb too — a shader-side follow-up,
+  deliberately out of this fix's C#-only scope. Displaced OFF there is no frame and no clamp
+  (the A/B byte-identity contract holds); a silent wave field demands nothing and the clamp is
+  inert.
+  Proof: `HullWaterlineAcceptanceTests` — the per-point law, its worst-line term and the ramped
+  safety pinned HEADLESS (CI-adjudicated) against an independent reconstruction over the packed
+  reference field, plus the OFF states (deck height 0 / silent field) bit-exact; the GPU storm
+  suite (reference wind ×2.2, sea state 1.0 — a full gale) pins BOARDED water (covered hull
+  pixels disconnected from the bottom-contiguous waterline run) at SPECK LEVEL — ≤ 64 px, a
+  1–2 px thin-rigging residue tolerance sitting 30–150× under the measured defect class
+  (1,800–9,900 px of solid interior water) — for BOTH committed hulls at the storm's most
+  dangerous instants (crests scanned at the root and four footprint offsets; a gale deliberately
+  demands DRYNESS only — interior protection may occupy the whole freeboard there); the
+  reference-sea production tests own the climb contract — the dragger's living daily band, the
+  lobster's trough swing, speck-level boarding in daily seas (lobster measures exactly 0); and
+  the unclamped control (deck height 0, the pre-fix state) must flood loudly or the metric
+  proved nothing.
 - **Deck corollary (phase-4 note):** while the sea is displaced, a deck occupant that wants to
   interleave with ITS hull must ride the hull's frame (parent under the hull renderer or apply the
   same registry frame) — a raw world-z≈0 deck renderer sits far NEARER than a calibrated hull.

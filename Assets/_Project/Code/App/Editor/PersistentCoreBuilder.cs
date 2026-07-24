@@ -28,7 +28,7 @@ namespace HiddenHarbours.App.Editor
     /// footprint collider + <see cref="PlayerWalkController"/>), the hand-rowed Dory (full controller +
     /// hold + oar rig + fishing + fleet + active-boat probe, moored/disabled at start), the follow
     /// <see cref="CameraFollow"/> framing the player on foot, the <see cref="ControlSwitcher"/>, the
-    /// transient fishing gauge, and the travel rig (<c>RegionSceneLoader</c> + <c>RegionTravelCoordinator</c>).</para>
+    /// and the travel rig (<c>RegionSceneLoader</c> + <c>RegionTravelCoordinator</c>).</para>
     ///
     /// <para>Region-specific content (the island/coast/wharf/NPCs, the region anchors, the passages, the
     /// region's own RegionDefs) is authored by EACH scene builder around this core — this only stands up the
@@ -87,9 +87,8 @@ namespace HiddenHarbours.App.Editor
         // back to is likewise gone: it was never reachable once the iso art landed, and a compass is now
         // authorable as a BoatVisualDef asset if one is ever wanted again.
 
-        const string ArtTensionGauge   = "Assets/_Project/Art/UI/TensionGauge.png";
-        const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
-        const string ArtFishSilhouette = "Assets/_Project/Art/UI/FishOnSilhouette.png";
+        // (The TensionGauge / LineHook / FishOnSilhouette UI art went with the fight's HUD bars — owner's
+        // ruling 2026-07-23: the fight has no UI. The art stays in the repo for a future non-fight screen.)
 
         // The rod-fight presenter's splash/ripple reuse (the RodLineMath-documented art sources).
         const string ArtSplashBurst    = "Assets/_Project/Art/Fishing/SplashBurst.png";
@@ -130,7 +129,6 @@ namespace HiddenHarbours.App.Editor
             public GameObject CameraGo;           // the Main Camera (CameraFollow + AudioListener + pixel-perfect)
             public GameObject PlayerGo;           // the on-foot Player (PlayerWalkController)
             public GameObject DoryGo;             // the persistent Dory (controller disabled = moored at start)
-            public GameObject GaugeGo;            // the transient fishing gauge overlay
             public PlayerWalkController Walk;
             public ClamBucket Bucket;             // the on-foot clam hold (IHold) the dig fills; sits on the Player
             public BoatController Boat;
@@ -317,12 +315,11 @@ namespace HiddenHarbours.App.Editor
             var activeBoatProbe = doryGo.AddComponent<ActiveBoatProbe>();
             SetRef(activeBoatProbe, "_boat", boat);
 
-            // --- THE TRANSIENT FISHING GAUGE (reads the fight via Core FishingStateChanged) ---------------
-            var gaugeGo = new GameObject("FishingGauge");
-            var gauge = gaugeGo.AddComponent<RodGaugeView>();
-            SetRef(gauge, "_gaugeSprite", LoadArtSprite(ArtTensionGauge));
-            SetRef(gauge, "_lineHookSprite", LoadArtSprite(ArtLineHook));
-            SetRef(gauge, "_fishSprite", LoadArtSprite(ArtFishSilhouette));
+            // --- (NO FISHING GAUGE) ------------------------------------------------------------------------
+            // The transient two-bar rod gauge is GONE (owner's ruling 2026-07-23: "i want the fight to have
+            // no ui but gameplay elements"). The fight is now read entirely off the world: the rod's bend,
+            // the line going bar-tight and shuddering, the strain in the sound, and the camera leaning in.
+            // Nothing to build here — the RodFightPresenter below and FishingAudio are the instruments.
 
             // --- THE ON-FOOT PLAYER (FisherSheet walk; footprint collider keeps it on land) ---------------
             var playerGo = new GameObject("Player");
@@ -474,13 +471,10 @@ namespace HiddenHarbours.App.Editor
                       $"fish species {(fishVisuals != null ? fishVisuals.Length : 0)}, " +
                       $"land-hand anchors {(handMid != null ? "OK" : "MISSING")}.");
 
-            // With the diegetic tells live (a rod in hand + a bobber to watch), the old VS-13 gauge's
-            // pre-fight TEXT would double-caption them ("A bite! Hook it!" under a dipping bobber) —
-            // mute just the text for those beats. The gauge itself (bars, fight/result text) stays
-            // exactly as shipped, and stays FULLY verbal when the kit didn't wire (greybox safety).
-            SetBool(gauge, "_muteDiegeticText", CountWired(rodStates) > 0 && CountWired(bobberStates) > 0);
-
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
+            // The fight's camera tell (no HUD): the view trembles only as the line nears parting.
+            camGo.AddComponent<FightStrainCamera>();
+
             var cameraFollow = camGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
             var cfSo = new SerializedObject(cameraFollow);
@@ -525,14 +519,13 @@ namespace HiddenHarbours.App.Editor
             doryGo.AddComponent<PersistentObject>();
             camGo.AddComponent<PersistentObject>();
             switcherGo.AddComponent<PersistentObject>();
-            gaugeGo.AddComponent<PersistentObject>();
             toastGo.AddComponent<PersistentObject>();
             loaderGo.AddComponent<PersistentObject>();
             coordinatorGo.AddComponent<PersistentObject>();
 
             return new Handle
             {
-                ServicesRoot = root, CameraGo = camGo, PlayerGo = playerGo, DoryGo = doryGo, GaugeGo = gaugeGo,
+                ServicesRoot = root, CameraGo = camGo, PlayerGo = playerGo, DoryGo = doryGo,
                 Walk = walk, Bucket = bucket, Boat = boat, Hold = hold, BoatInput = devBoat, Fleet = fleet,
                 Switcher = switcher, SwitcherGo = switcherGo, Camera = cameraFollow,
                 Loader = loader, LoaderGo = loaderGo, Coordinator = coordinator,

@@ -94,16 +94,89 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void Floor_AllowsTrueNight_ToGoGenuinelyDark()
         {
-            // At deep night (small dayNightLuma) with NightFloor = 0, the pre-comp floor saturates at 1, so the
-            // overlay still darkens the water to genuinely dark — the owner's dark-nights vision is preserved.
+            // At deep night (small dayNightLuma) with NightFloor = 0, the LEGACY (knee-0) pre-comp floor
+            // saturates at 1, so the overlay still darkens the water to genuinely dark — the owner's
+            // dark-nights vision is preserved. (The 3-param overload IS the knee-0 legacy curve.)
             float paletteFloor = 0.10f, nightFloor = 0f;
             float deepNight = 0.04f;   // a dark-blue night tint luminance
             float pre = WaterPaletteGrade.ValueFloorDayNight(paletteFloor, deepNight, nightFloor);
             Assert.AreEqual(1f, pre, 1e-4f,
-                "at true night the pre-comp floor saturates at 1 (water full-bright pre-overlay)");
+                "at true night the LEGACY pre-comp floor saturates at 1 (water full-bright pre-overlay)");
             float onScreen = pre * deepNight;
             Assert.LessOrEqual(onScreen, 0.06f,
                 "after the overlay multiply, true-night water is still genuinely dark (no muddy lift)");
+
+            // The production curve (the shipped knee) is DARKER still at deep night — the knee can only
+            // ever lower the day floor, never raise it.
+            float preKnee = WaterPaletteGrade.ValueFloorDayNight(
+                paletteFloor, deepNight, nightFloor, WaterPaletteGrade.DefaultFloorDayKnee);
+            Assert.LessOrEqual(preKnee, pre + 1e-4f, "the knee never raises the floor above the legacy curve");
+            Assert.LessOrEqual(preKnee * deepNight, 0.06f, "kneed deep night stays genuinely dark");
+        }
+
+        // ===== the floor's DAY KNEE (owner playtest 2026-07-23 — the dusk white-out fix) ==================
+
+        [Test]
+        public void FloorKnee_HoldsDaylightAndOvercast_ExactlyAtTheShippedCurve()
+        {
+            // At/above the knee the divisor is dn itself, so the kneed curve == the legacy curve bit-for-bit:
+            // every daylight/overcast look ships unchanged.
+            float paletteFloor = 0.08f, nightFloor = 0f;
+            foreach (float dn in new[] { 1f, 0.85f, 0.6f, WaterPaletteGrade.DefaultFloorDayKnee })
+            {
+                float legacy = WaterPaletteGrade.ValueFloorDayNight(paletteFloor, dn, nightFloor);
+                float kneed = WaterPaletteGrade.ValueFloorDayNight(
+                    paletteFloor, dn, nightFloor, WaterPaletteGrade.DefaultFloorDayKnee);
+                Assert.AreEqual(legacy, kneed, 1e-6f,
+                    $"at dnLuma={dn} (daylight/overcast) the kneed floor must equal the shipped curve exactly");
+            }
+        }
+
+        [Test]
+        public void FloorKnee_RidesTheOnScreenFloorDown_ThroughDusk()
+        {
+            // BELOW the knee the divisor holds at the knee, so the pre-overlay floor stops growing and the
+            // ON-SCREEN floor (pre × dnLuma) scales down with the scene — the dusk sea darkens WITH the
+            // world instead of holding daylight-floor brightness (the 2026-07-23 "whole sea becomes white").
+            float paletteFloor = 0.08f, nightFloor = 0f;
+            float knee = WaterPaletteGrade.DefaultFloorDayKnee;
+            float duskStorm = 0.167f;   // the dusk-storm repro tint luma
+            float dusk = 0.335f;        // the dusk-calm repro tint luma
+
+            float preConst = paletteFloor / knee;   // the pre-overlay floor holds at floor/knee below the knee
+            foreach (float dn in new[] { dusk, duskStorm, 0.08f })
+            {
+                float pre = WaterPaletteGrade.ValueFloorDayNight(paletteFloor, dn, nightFloor, knee);
+                Assert.AreEqual(preConst, pre, 1e-5f,
+                    $"below the knee the pre-overlay floor holds constant at floor/knee (dn={dn})");
+                Assert.Less(pre * dn, paletteFloor - 1e-4f,
+                    $"the ON-SCREEN floor at dn={dn} must sit BELOW the daylight floor — dusk darkens with the scene");
+            }
+            // The legacy curve is exactly what the fix retired: at the dusk-storm tint it held the on-screen
+            // floor at daylight brightness (the flattening clamp of the white-out repro).
+            float legacyPre = WaterPaletteGrade.ValueFloorDayNight(paletteFloor, duskStorm, nightFloor);
+            Assert.AreEqual(paletteFloor, legacyPre * duskStorm, 1e-3f,
+                "the legacy curve held dusk at the DAYLIGHT floor — the defect this knee exists to fix");
+        }
+
+        [Test]
+        public void FloorKnee_ZeroIsTheLegacyCurve_AndTheNightFloorKeepsItsSaturatingDivide()
+        {
+            float paletteFloor = 0.10f;
+            // Knee 0 = the pre-fix curve EXACTLY, at every dnLuma (the passthrough contract).
+            foreach (float dn in new[] { 1f, 0.6f, 0.3f, 0.1f, 0.03f })
+                Assert.AreEqual(
+                    WaterPaletteGrade.ValueFloorDayNight(paletteFloor, dn, 0f),
+                    WaterPaletteGrade.ValueFloorDayNight(paletteFloor, dn, 0f, 0f), 1e-6f,
+                    $"FloorKnee = 0 must be the exact legacy curve (dn={dn})");
+
+            // The NIGHT floor is untouched by the knee: its job is to SURVIVE deep night, so it keeps the
+            // saturating divide and still lands on-screen at the requested value.
+            float nightFloor = 0.03f, deepNight = 0.1f;
+            float pre = WaterPaletteGrade.ValueFloorDayNight(
+                paletteFloor, deepNight, nightFloor, WaterPaletteGrade.DefaultFloorDayKnee);
+            Assert.GreaterOrEqual(pre * deepNight, nightFloor - 1e-3f,
+                "a positive night floor still lands on-screen at the requested night value under the knee");
         }
 
         [Test]

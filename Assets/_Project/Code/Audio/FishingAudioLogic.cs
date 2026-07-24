@@ -106,12 +106,17 @@ namespace HiddenHarbours.Audio
 
         /// <summary>Shape of the strain groan's rise: gain = Tension01^exponent. &gt;1 keeps the
         /// groan a whisper through the safe band and lets it swell URGENTLY toward the snap — the
-        /// "ease off!" voice warns hardest exactly where it matters (§3, §7).</summary>
-        public const float StrainExponent = 1.6f;
+        /// "ease off!" voice warns hardest exactly where it matters (§3, §7).
+        /// <para>Eased 1.6 → 1.25 when the fight's HUD bars were deleted (owner's ruling 2026-07-23):
+        /// sound is now one of only three things telling the player how loaded the line is, so the
+        /// groan has to be audible through the middle of the fight, not just at the cliff edge. Still
+        /// above 1, so it stays quieter than linear in the safe band.</para></summary>
+        public const float StrainExponent = 1.25f;
 
         /// <summary>How far the groan's pitch lifts (tightens) at full tension — the line literally
-        /// sounds tighter as it nears parting.</summary>
-        public const float StrainPitchLift = 0.15f;
+        /// sounds tighter as it nears parting. Doubled with the bars' removal: pitch is the part of the
+        /// strain voice you can read WITHOUT looking away from the water.</summary>
+        public const float StrainPitchLift = 0.3f;
 
         /// <summary>The Landing01 gain rate (per second) that reads as "reeling flat out" — the reel
         /// click layer is at full voice here. Typical v2 fights gain the full bar over tens of

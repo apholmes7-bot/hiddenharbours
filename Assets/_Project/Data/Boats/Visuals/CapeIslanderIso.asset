@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CapeIslanderIso
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.cape_islander_iso
+  Variant: 1
+  HullMesh: {fileID: 11400000, guid: bd4f4d8467fc9184ca81249147950e0c, type: 2}
   Facings:
   - {fileID: 7059747339026985028, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
   - {fileID: 2295441931385811504, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}

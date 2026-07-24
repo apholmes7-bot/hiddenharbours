@@ -29,7 +29,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var go in new[]
                      {
-                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo, _core.GaugeGo,
+                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo,
                          _core.SwitcherGo, _core.LoaderGo,
                          _core.Coordinator != null ? _core.Coordinator.gameObject : null,
                      })
@@ -172,14 +172,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheBuilder_MutesTheGaugesPreFightText_OnlyBecauseTheKitWired()
+        public void TheBuilder_BuildsNoFishingHudAtAll()
         {
             BuildCore(new[] { MakeDef("fish.atlantic_cod") });
-            var gauge = _core.GaugeGo.GetComponent<RodGaugeView>();
-            Assert.IsNotNull(gauge);
-            var so = new SerializedObject(gauge);
-            Assert.IsTrue(so.FindProperty("_muteDiegeticText").boolValue,
-                "with the rod + bobber art wired, the gauge stops double-captioning the diegetic tells");
+
+            // Owner's ruling 2026-07-23: the fight has NO UI. Nothing the core builds may put a fishing
+            // canvas on screen — the rod, the line, the sound and the camera are the whole instrument.
+            // (Guarding the OUTCOME, not the deleted class: a re-added gauge under any name fails here.)
+            foreach (var canvas in Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+            {
+                string name = canvas.transform.root.name;
+                Assert.That(name, Does.Not.Contain("Gauge").IgnoreCase,
+                    $"a fishing gauge canvas is back on screen ('{name}') — the fight has no UI");
+            }
         }
     }
 }

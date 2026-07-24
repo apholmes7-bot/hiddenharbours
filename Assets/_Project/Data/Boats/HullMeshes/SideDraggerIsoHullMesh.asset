@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.side_dragger_iso
   SourceRigPath: docs/art/rigs/sideDraggerIsoRig.js
-  Mesh: {fileID: 3494189248910243859}
+  Mesh: {fileID: 4776228588128550293}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -203,7 +203,9 @@ MonoBehaviour:
   RockPitchDegrees: 1.1
   RockHeavePixels: 1
   RestingDraftMeters: 1.1
---- !u!43 &3494189248910243859
+  WatertightDeckHeightMeters: 2.05
+  WatertightHalfBeamMeters: 3.5
+--- !u!43 &4776228588128550293
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

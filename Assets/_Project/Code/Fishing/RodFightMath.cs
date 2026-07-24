@@ -6,14 +6,14 @@ namespace HiddenHarbours.Fishing
     /// crosses to <b>Surface</b> as it is won.</summary>
     public enum RodFightPhase
     {
-        /// <summary>She's down deep and unseen — the line runs straight down. <b>Timing only</b>: read her
-        /// runs through the rod-tip and PULL in the slack, MAINTAIN through a run. Steer is ignored (you
-        /// can't see her to steer against). <see cref="RodFightMath"/> ignores <c>steerAlignment</c> here.</summary>
+        /// <summary>She's down deep and <b>unseen</b> — you fight her through the tackle: the rod's load, the
+        /// sound of the line, and the entry point sliding on the water are how you read which way she's going.
+        /// The full fight is live here (lean against her while you reel); the only thing you're missing is the
+        /// sight of her.</summary>
         Deep = 0,
 
-        /// <summary>She's risen and is darting across the screen — the line's entry point moves. <b>Timing AND
-        /// steer</b>: MAINTAIN + steer OPPOSITE her dart to tire her, PULL in the slack to land. Steer is
-        /// live.</summary>
+        /// <summary>She's risen and is <b>visible</b>, darting across the water at the end of your line. Same
+        /// fight, but now you can see the answer instead of feeling for it.</summary>
         Surface = 1,
     }
 
@@ -28,22 +28,25 @@ namespace HiddenHarbours.Fishing
     /// magic numbers (rule 6). It takes floats, NOT a Def, so a species' <c>RodFightDef</c> (lead-architect's
     /// contract) or the <c>GameConfig.RodFight</c> cove defaults both feed it the same way.
     ///
-    /// <para><b>Three owner ideas combine into one escalating fight (brainstorm §3).</b>
+    /// <para><b>The fight is: OPPOSE HER WHILE YOU REEL</b> (owner's ruling, 2026-07-23 — replacing the
+    /// earlier "deep half is pure timing" arc, and replacing the two HUD bars, which are gone; the rod, the
+    /// line, the sound and the camera are the only instruments now).
     /// <list type="number">
-    ///   <item><b>Pull-on-slack / maintain-on-run.</b> The fish's run rhythm arrives as <c>fishEffort01</c>
-    ///   (1 = a hard run, 0 = a slack window — generated elsewhere, the "personality"; this math just reads the
-    ///   current value). <b>PULL (reel) during a run</b> drives <c>Tension01</c> toward the snap (you're hauling
-    ///   against a running fish). <b>MAINTAIN during a run</b> bleeds tension — a run is a "back off" tell, never
-    ///   an unavoidable snap. <b>PULL during a slack window</b> gains <c>Landing01</c> cheaply (she's not
-    ///   fighting, so line comes without loading up).</item>
-    ///   <item><b>Counter-steer (Surface only).</b> Steering the rod OPPOSITE her dart (<c>steerAlignment</c> →
-    ///   −1) tires her: tension bleeds AND landing gains. Steering INTO her run (<c>steerAlignment</c> → +1)
-    ///   climbs tension. The steer only bites while she's actually darting (it scales by <c>fishEffort01</c>) and
-    ///   only in the Surface phase (Deep can't see her).</item>
+    ///   <item><b>The lean is live from the hookup.</b> Her run has a DIRECTION at every moment of the fight
+    ///   (<c>steerAlignment</c>: −1 = leaning fully against her, +1 = going with her). Leaning against her
+    ///   bleeds tension and buys line; going with her loads the rod and buys nothing. It scales by
+    ///   <c>fishEffort01</c> — you can only lean on a fish that's actually pulling. There is no phase where
+    ///   this sits out: deep, you read her through the rod and the line's entry point instead of seeing her.</item>
+    ///   <item><b>Only the reel lands her.</b> The lean never lands a fish by itself; it decides what the reel
+    ///   is worth (<see cref="LandingRatePerSec"/>). Reel her slack and line comes free; reel against a run
+    ///   and you're paid for the part of it you're leaning against; reel WITH her and you get strain, nothing
+    ///   else. And because tension charges the whole time you're on the reel (invariant 1), the reel can never
+    ///   simply be held down — the fight is a rhythm of taking line and easing off.</item>
     ///   <item><b>Deep→Surface arc.</b> <see cref="PhaseFor"/> crosses from <see cref="RodFightPhase.Deep"/> to
-    ///   <see cref="RodFightPhase.Surface"/> once <c>Landing01</c> climbs past <c>surfaceThreshold01</c>. Deep is
-    ///   pure timing; Surface adds the steer axis. Landing never falls in this model, so the crossing is one-way
-    ///   (no hysteresis needed).</item>
+    ///   <see cref="RodFightPhase.Surface"/> once <c>Landing01</c> climbs past <c>surfaceThreshold01</c>. The
+    ///   phase is now about what you can SEE — unseen and read through the tackle, then up and visible — not
+    ///   about which mechanics are switched on. Landing never falls, so the crossing is one-way (no
+    ///   hysteresis).</item>
     /// </list></para>
     ///
     /// <para><b>Forgiving-cove invariants (kept true across the whole tuning range — the v2 twin of
@@ -104,18 +107,18 @@ namespace HiddenHarbours.Fishing
         ///   <c>runTensionPressure · fishEffort01</c>, whether you pull or maintain (she's pulling too). The
         ///   <see cref="MaintainOutbleedsTheRun"/> invariant keeps this below the ease, so MAINTAIN still nets
         ///   downward at a full run.</item>
-        ///   <item><b>Steer term (Surface only)</b> — <c>counterSteerRelief · steerAlignment · fishEffort01</c>:
-        ///   steering OPPOSITE her dart (−) bleeds tension (tires her), steering INTO her (+) climbs it, and it
-        ///   only bites while she's darting. Deep ignores <paramref name="steerAlignment"/> entirely.</item>
+        ///   <item><b>Lean term (both phases)</b> — <c>counterSteerRelief · steerAlignment · fishEffort01</c>:
+        ///   leaning OPPOSITE her run (−) bleeds tension (you're taking her weight on the rod), going WITH her
+        ///   (+) climbs it, and it only bites while she's actually pulling.</item>
         /// </list>
         /// Returns an unclamped signed rate (the caller clamps the accumulator, mirroring
         /// <see cref="TrapHaulMath.HoldLineRate"/>). Pure, deterministic, NaN-safe.
         /// </summary>
         /// <param name="reeling">PULL (true = reel) vs MAINTAIN (false = hold steady, keep her honest).</param>
         /// <param name="fishEffort01">How hard she runs THIS tick, 0 (slack window) .. 1 (a hard run).</param>
-        /// <param name="steerAlignment">Rod vs her dart: +1 = WITH her (bad), −1 = OPPOSITE (good), 0 = neutral.
-        /// Meaningful only in <see cref="RodFightPhase.Surface"/>.</param>
-        /// <param name="phase">Deep (steer ignored) or Surface (steer live).</param>
+        /// <param name="steerAlignment">Rod vs her run: +1 = WITH her (bad), −1 = OPPOSITE (good), 0 = neutral.
+        /// Live in both phases.</param>
+        /// <param name="phase">Deep (unseen) or Surface (visible) — no longer gates the lean.</param>
         /// <param name="tensionRisePerSec">Tension gained per second while PULLING (≥ 0). Must exceed
         /// <paramref name="landingFillPerSec"/> so a blind hold snaps (invariant 1).</param>
         /// <param name="tensionFallPerSec">Tension bled per second while MAINTAINING (≥ 0). Must exceed
@@ -159,11 +162,12 @@ namespace HiddenHarbours.Fishing
             // by MaintainOutbleedsTheRun so a MAINTAIN still nets downward at a full run.
             float run = Mathf.Max(0f, Safe(runTensionPressure)) * effort;
 
-            // Surface only: counter-steer against her dart bleeds tension (−), steering into her climbs it (+),
-            // scaled by how hard she's darting. Deep can't see her, so no steer.
-            float steer = 0f;
-            if (phase == RodFightPhase.Surface)
-                steer = Mathf.Max(0f, Safe(counterSteerRelief)) * Mathf.Clamp(Safe(steerAlignment), -1f, 1f) * effort;
+            // The lean, live from the hookup (owner's call 2026-07-23 — "lean against her, ALWAYS"):
+            // leaning OPPOSITE her run bleeds tension (−), leaning WITH her climbs it (+), scaled by how
+            // hard she's pulling. Deep no longer sits this out — you can't SEE her down there, but you can
+            // feel which way she's going through the rod, and the line's entry point shows it.
+            float steer = Mathf.Max(0f, Safe(counterSteerRelief))
+                        * Mathf.Clamp(Safe(steerAlignment), -1f, 1f) * effort;
 
             // The deck-angle term (brainstorm §4.2, the owner's "light real factor" — the seam this sum
             // reserved): a line across the hull adds slow pressure; a clean stance adds exactly nothing.
@@ -175,43 +179,48 @@ namespace HiddenHarbours.Fishing
         /// <summary>
         /// Signed <b>landing</b> gain per second (progress to aboard at 1). The caller does
         /// <c>Landing01 = clamp01(Landing01 + rate · dt)</c>; a full gauge lands the fish. Non-negative in this
-        /// model (landing never slips — the crossing to Surface is one-way). Two ways line is won:
+        /// model (landing never slips — the crossing to Surface is one-way).
+        ///
+        /// <para><b>You land her by REELING WHILE YOU LEAN ON HER</b> (owner's call 2026-07-23). Nothing but
+        /// the reel wins line — a lean on its own, however perfect, never lands a fish; it only takes the
+        /// strain off (that lives in <see cref="TensionRatePerSec"/>). What the lean decides is how much the
+        /// reel is WORTH:</para>
         /// <list type="bullet">
-        ///   <item><b>PULL in the slack window</b> — reeling gains <c>landingFillPerSec · (1 − fishEffort01)</c>:
-        ///   full when she's slack, nothing when she's running hard (reel into a run and you get tension, not
-        ///   line). This is the timing gate, live in both phases.</item>
-        ///   <item><b>Counter-steer tires her (Surface only)</b> — steering OPPOSITE her dart adds
-        ///   <c>landingFillPerSec · max(0, −steerAlignment) · fishEffort01</c>, so a good counter-steer during a
-        ///   run makes progress even while MAINTAINING (the RDR2 "pull against the run"). Deep ignores steer.</item>
+        ///   <item><b>Reeling her slack</b> pays <c>landingFillPerSec · (1 − fishEffort01)</c> — when she
+        ///   gives, line comes for free, whichever way you lean.</item>
+        ///   <item><b>Reeling against her run</b> pays for the part of her effort you are LEANING AGAINST:
+        ///   <c>landingFillPerSec · max(0, −steerAlignment) · fishEffort01</c>. Lean fully into a full run and
+        ///   the reel pays exactly what free slack pays — that's the gutsy line, and the tension side is
+        ///   charging the whole time you take it.</item>
+        ///   <item><b>Reeling WITH her</b> (steering into the run) pays nothing at all during a run. You are
+        ///   just feeding her line and loading the rod.</item>
         /// </list>
-        /// A blind PULL with neutral steer gets only the slack-gated term — so invariant 1 (snap before land)
-        /// holds; the counter-steer bonus is an <i>earned</i> Surface skill, never part of a blind hold. Pure,
-        /// deterministic, NaN-safe.
+        /// The sum is clamped to <c>landingFillPerSec</c>, so no combination out-earns a clean slack reel and
+        /// invariant 1 (snap before land) holds at every steer. Live in BOTH phases — the deep half is no
+        /// longer a steer-free waiting game. Pure, deterministic, NaN-safe.
         /// </summary>
-        /// <param name="reeling">PULL (true) vs MAINTAIN (false).</param>
+        /// <param name="reeling">PULL (true) vs MAINTAIN (false). False ⇒ no landing, ever.</param>
         /// <param name="fishEffort01">How hard she runs THIS tick, 0 (slack) .. 1 (hard run).</param>
-        /// <param name="steerAlignment">Rod vs her dart, −1..+1 (only the OPPOSITE side, −, tires her; Surface only).</param>
-        /// <param name="phase">Deep (steer ignored) or Surface (counter-steer tires).</param>
+        /// <param name="steerAlignment">Rod vs her run, −1..+1 (only the OPPOSITE side, −, buys line).</param>
+        /// <param name="phase">Retained for the caller's symmetry with <see cref="TensionRatePerSec"/>; the
+        /// phase no longer gates the lean (it is live from the hookup).</param>
         /// <param name="landingFillPerSec">Landing gained per second by a clean PULL in a full slack (≥ 0). Must
         /// stay below <c>tensionRisePerSec</c> (invariant 1).</param>
         public static float LandingRatePerSec(bool reeling, float fishEffort01, float steerAlignment,
             RodFightPhase phase, float landingFillPerSec)
         {
+            if (!reeling) return 0f;   // line only comes in on the REEL — the lean alone never lands her
+
             float effort = Mathf.Clamp01(Safe(fishEffort01));
             float fill = Mathf.Max(0f, Safe(landingFillPerSec));
+            float counter = Mathf.Clamp01(-Mathf.Clamp(Safe(steerAlignment), -1f, 1f)); // only the OPPOSITE side
 
-            // PULL in the slack window wins line cheaply; reeling into a run wins ~nothing (that's tension).
-            float slackGain = reeling ? fill * (1f - effort) : 0f;
-
-            // Surface only: a counter-steer against her dart tires her — landing creeps even on a MAINTAIN.
-            float tireGain = 0f;
-            if (phase == RodFightPhase.Surface)
-            {
-                float counter = Mathf.Clamp01(-Mathf.Clamp(Safe(steerAlignment), -1f, 1f)); // only the OPPOSITE side
-                tireGain = fill * counter * effort;
-            }
-
-            return slackGain + tireGain;
+            // Reeling the slack wins line for free; reeling into her run wins line only for the part of
+            // her effort you are LEANING AGAINST. Lean fully against a full run and the reel pays exactly
+            // as well as free slack does — the gutsy line — but the tension side is charging the whole
+            // time (invariant 1), so it can't be held. Reel WITH her (counter = 0) and a full run gives
+            // nothing but strain.
+            return fill * Mathf.Clamp01((1f - effort) + counter * effort);
         }
 
         // ---- the diegetic reads (no HUD bars — the rod & line are the instrument) ----------------
@@ -222,32 +231,31 @@ namespace HiddenHarbours.Fishing
         /// <summary>
         /// How <b>bent the rod / taut the line</b> reads right now, 0 (slack, straight) → 1 (bar-taut) — the
         /// always-on diegetic instrument (shown whether or not the player acts, so a run can be read coming).
-        /// The rod carries her run (<c>fishEffort01</c>); in the Surface phase, steering INTO her dart tightens
-        /// the arc further (counter-steer's easing shows in <see cref="LineStrain01"/>, not here — the rod is
-        /// still loaded by her weight). Pure, NaN-safe.
+        /// With the fight's bars gone this read IS the gauge, so it answers to the lean from the hookup: the
+        /// rod carries her run (<c>fishEffort01</c>), and leaning WITH her tightens the arc further
+        /// (the counter-lean's easing shows in <see cref="LineStrain01"/>, not here — the rod is still loaded
+        /// by her weight). Pure, NaN-safe.
         /// </summary>
         public static float RodBend01(float fishEffort01, float steerAlignment, RodFightPhase phase)
         {
             float effort = Mathf.Clamp01(Safe(fishEffort01));
-            float into = (phase == RodFightPhase.Surface)
-                ? Mathf.Clamp01(Mathf.Clamp(Safe(steerAlignment), -1f, 1f)) // only the INTO side tightens
-                : 0f;
+            float into = Mathf.Clamp01(Mathf.Clamp(Safe(steerAlignment), -1f, 1f)); // only the INTO side tightens
             return Mathf.Clamp01(effort + into * effort);
         }
 
         /// <summary>
         /// The active <b>over-strain</b> read, 0..1 — high ONLY when the player's current action is loading the
-        /// line toward a snap: PULLING into her run, or (Surface) steering INTO her dart. Zero when doing it
-        /// right — MAINTAINING through a run, or PULLING in the slack. This is the "ease off, you'll pull the
-        /// hook" tell that whitens/shudders the line and voices the strain groan, distinct from the always-on
-        /// <see cref="RodBend01"/>. A Surface counter-steer bleeds it back down. Pure, NaN-safe.
+        /// line toward a snap: PULLING into her run, or leaning WITH her. Zero when doing it right —
+        /// MAINTAINING through a run, or PULLING in the slack. This is the "ease off, you'll pull the hook"
+        /// tell that whitens/shudders the line and voices the strain groan, distinct from the always-on
+        /// <see cref="RodBend01"/>. A counter-lean bleeds it back down — in both phases now, so the deep half
+        /// of the fight answers to the lean the same way the surfaced half does. Pure, NaN-safe.
         /// </summary>
         public static float LineStrain01(bool reeling, float fishEffort01, float steerAlignment, RodFightPhase phase)
         {
             float effort = Mathf.Clamp01(Safe(fishEffort01));
-            float strain = reeling ? effort : 0f;                         // pulling into her run over-strains
-            if (phase == RodFightPhase.Surface)
-                strain += Mathf.Clamp(Safe(steerAlignment), -1f, 1f) * effort; // into (+) adds, counter (−) bleeds
+            float strain = reeling ? effort : 0f;                             // pulling into her run over-strains
+            strain += Mathf.Clamp(Safe(steerAlignment), -1f, 1f) * effort;    // into (+) adds, counter (−) bleeds
             return Mathf.Clamp01(strain);
         }
 

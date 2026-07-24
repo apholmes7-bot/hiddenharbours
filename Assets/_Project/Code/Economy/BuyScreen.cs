@@ -12,7 +12,7 @@ namespace HiddenHarbours.Economy
     /// <summary>
     /// The stall BUY SCREEN (VS-16 ui-ux side) — buying stops being a blind dev keypress. A
     /// self-building, code-driven overlay (no prefab — same pattern as <see cref="SellScreen"/>/
-    /// RodGaugeView/HudController) that a stall's buy interaction opens instead of insta-buying:
+    /// HudController) that a stall's buy interaction opens instead of insta-buying:
     /// it lists every offer the stall carries (whatever <see cref="Shipwright"/>/<see cref="GearShop"/>/
     /// <see cref="LicenseVendor"/> components sit on the stall GameObject, each wired to its Def asset —
     /// content is data, ADR 0003), shows name/price/description, disables what you can't afford or

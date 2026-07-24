@@ -305,6 +305,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0f, gate * seaStorm, 1e-6f, "a storm does not mirror — the sun glitter dies in chop");
         }
 
+        // ===== the MOONLIT night-cloud gate (owner playtest 2026-07-23 — the white-veil fix) =============
+
+        [Test]
+        public void MoonlitClouds_ReadFaintUnderAFullMoon_AndVanishOnAMoonlessNight()
+        {
+            const float vis = WaterReflection.DefaultCloudMoonlitVisibility;
+
+            // Full moon high at deep night: the clouds' night share reads — but FAINT (the dial), never the
+            // pre-fix full strength that veiled the dimmed sea white.
+            float fullMoon = WaterReflection.MoonlitCloudVisibility(1f, 1f, 1f, vis);
+            Assert.AreEqual(vis, fullMoon, 1e-5f, "a full high moon lights the night clouds at the faint dial");
+            Assert.Less(fullMoon, 1f, "the moonlit night share is FAINT — full strength was the white veil");
+
+            // New moon / moon below the horizon: no light source, no night clouds (the veil's kill switch).
+            Assert.AreEqual(0f, WaterReflection.MoonlitCloudVisibility(1f, 0f, 1f, vis), 1e-6f,
+                "a moon below the horizon lights nothing — the night clouds vanish");
+            Assert.AreEqual(0f, WaterReflection.MoonlitCloudVisibility(1f, 1f, 0f, vis), 1e-6f,
+                "a new moon lights nothing — the night clouds vanish");
+
+            // Daylight: the night share is 0 by the night factor (the day share is untouched by this gate).
+            Assert.AreEqual(0f, WaterReflection.MoonlitCloudVisibility(0f, 1f, 1f, vis), 1e-6f,
+                "by day the night share is 0 — daylight clouds are the day share's business");
+        }
+
+        [Test]
+        public void MoonlitClouds_VisibilityOneIsTheLegacyPassthrough()
+        {
+            // _CloudMoonlitVis = 1 with the no-MoonCycle fallbacks (presence = brightness = 1) restores the
+            // pre-fix night share weight EXACTLY: nightFactor × 1 — the passthrough contract of the fix.
+            foreach (float night in new[] { 0f, 0.3f, 0.7f, 1f })
+                Assert.AreEqual(night, WaterReflection.MoonlitCloudVisibility(night, 1f, 1f, 1f), 1e-6f,
+                    $"visibility 1 must be the exact pre-fix night-share weight (night={night})");
+        }
+
         [Test]
         public void SkyElement_MasterZeroTurnsAllSkyContentOff()
         {

@@ -28,7 +28,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var go in new[]
                      {
-                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo, _core.GaugeGo,
+                         _core.ServicesRoot, _core.CameraGo, _core.PlayerGo, _core.DoryGo,
                          _core.SwitcherGo, _core.LoaderGo,
                          _core.Coordinator != null ? _core.Coordinator.gameObject : null,
                      })

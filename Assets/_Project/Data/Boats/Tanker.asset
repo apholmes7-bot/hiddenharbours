@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: Tanker
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.tanker
+  DisplayName: The Gas Tanker
+  Visual: {fileID: 11400000, guid: ca8f27707fcdd3f4da25dd1a26c1a3ad, type: 2}
+  Sprite: {fileID: 0}
+  LengthMeters: 110
+  DraughtMeters: 6.5
+  MassKg: 7668000
+  HoldUnits: 34000
+  CrewSlots: 14
+  Propulsion: 1
+  EnginePower: 4217000
+  RudderAuthority: 2147000
+  OarPower: 0
+  OarLateralOffset: 0
+  OarBraceDrag: 0
+  ForwardDrag: 85200
+  LateralDrag: 290400
+  WindExposure: 0.7
+  MaxSafeSeaState: 7
+  SeakeepingMassFactor: 12
+  SeakeepingLiveliness: 0.1
+  SeakeepingDamping: 0.9
+  CameraWorldHeightMeters: 160
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0.35, y: -0.9}

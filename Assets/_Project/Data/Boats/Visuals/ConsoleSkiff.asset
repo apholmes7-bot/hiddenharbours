@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ConsoleSkiff
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.console_skiff
+  Variant: 0
+  HullMesh: {fileID: 11400000, guid: d681332addb706645ac359c491ef7de5, type: 2}
   Facings:
   - {fileID: 2151550861935500239, guid: 0a3fc06be11cf6041b8747917f5589d8, type: 3}
   - {fileID: -2801265273135910886, guid: 0a3fc06be11cf6041b8747917f5589d8, type: 3}

@@ -231,6 +231,26 @@ namespace HiddenHarbours.Art
             return (float)phase;
         }
 
+        /// <summary>
+        /// Read the six published wave-field globals back — the packed field exactly as the water
+        /// shader will sample it this frame (empty/zero when no bridge is live: the "unset"
+        /// convention, under which <see cref="ShaderTwinSample"/> returns height 0). The watertight
+        /// hull clamp (<c>DisplacedWaterMath.WatertightZHeaveMeters</c>) reads the sea through this,
+        /// so hull and water can never disagree about the field — the ONE-SEA rule, closed at the
+        /// globals. Allocation-free (rule 7).
+        /// </summary>
+        public static void ReadPublishedField(out Vector4 train0, out Vector4 train1,
+                                              out Vector4 train2, out Vector4 train3,
+                                              out Vector4 phases, out Vector4 fieldParams)
+        {
+            train0 = Shader.GetGlobalVector(IdWaveTrain0);
+            train1 = Shader.GetGlobalVector(IdWaveTrain1);
+            train2 = Shader.GetGlobalVector(IdWaveTrain2);
+            train3 = Shader.GetGlobalVector(IdWaveTrain3);
+            phases = Shader.GetGlobalVector(IdWavePhases);
+            fieldParams = Shader.GetGlobalVector(IdWaveFieldParams);
+        }
+
         // ==== The C# MIRROR of the shader twin (parity documentation, pinned by tests) ====================
 
         /// <summary>
@@ -243,7 +263,11 @@ namespace HiddenHarbours.Art
         /// θ = k·(dir·pos) + φ with the pre-wrapped published phase (float-safe — the unbounded time
         /// lives in φ, accumulated in double by the animator), and the pow bases are floored at 1e-6
         /// (HLSL's <c>pow(0, 0)</c> is NaN on some GPUs; the deviation lives where cos θ ≈ 0, so it is
-        /// invisible). Not called at runtime.
+        /// invisible). Also the RUNTIME sampler behind the watertight hull clamp
+        /// (<c>DisplacedWaterMath.WatertightZHeaveMeters</c>): the clamp must bound the lift the
+        /// SHADER draws, so it evaluates the shader's own transcription over the published globals
+        /// — never the sim-side <see cref="WaveMath.Sample"/> path directly. Pure and
+        /// allocation-free (rule 7).
         /// </summary>
         public static WaveSample ShaderTwinSample(Vector2 worldPos,
                                                   Vector4 train0, Vector4 train1, Vector4 train2,

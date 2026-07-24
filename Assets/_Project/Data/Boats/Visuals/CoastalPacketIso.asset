@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc921807982d63243a7382a3fa1922d2, type: 3}
+  m_Name: CoastalPacketIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
+  Id: visual.coastal_packet_iso
+  Variant: 1
+  HullMesh: {fileID: 11400000, guid: 65a5a974002d5cb4aa33be9c017e8860, type: 2}
+  Facings: []
+  ZeroHeadingDegrees: 0
+  FacingsAreCounterClockwise: 0
+  ArtBakeElevationDegrees: 40
+  SortingOrder: 1
+  RockGrid: []
+  RockFrameCount: 8
+  OarPort: []
+  OarStar: []
+  OarColumnCount: 10
+  MotorLower: []
+  MotorUpper: []
+  MotorColumnCount: 9
+  MotorMaxSteerDegrees: 30
+  MotorVariant: 0
+  MotorFit: 0
+  MotorRockRollDegrees: 3.4
+  MotorRockPitchDegrees: 1.9
+  MotorRockHeavePixels: 1.3
+  MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}

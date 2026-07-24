@@ -31,6 +31,14 @@ namespace HiddenHarbours.Art
         public int CellW, CellH;
         /// <summary>The rig's bake elevation (degrees above the horizon; 40 for the boat rigs).</summary>
         public float ElevationDeg;
+        /// <summary>The watertight clamp line (metres above the KEEL) — the lowest open interior
+        /// surface; the calibrated waterline may never climb past it
+        /// (<see cref="HiddenHarbours.Core.HullMeshDef.WatertightDeckHeightMeters"/>).
+        /// 0 (the default) = clamp off, the pre-fix render byte-identical.</summary>
+        public float WatertightDeckHeightMeters;
+        /// <summary>The clamp's half-beam reach (rig ground metres) — the far-rail residual's
+        /// exact term (<see cref="HiddenHarbours.Core.HullMeshDef.WatertightHalfBeamMeters"/>).</summary>
+        public float WatertightHalfBeamMeters;
     }
 
     /// <summary>
@@ -86,6 +94,9 @@ namespace HiddenHarbours.Art
         private MaterialPropertyBlock _props;
         private int _hullId;
         private bool _poseDirty = true;
+        // The watertight clamp's footprint scan radius (half the cell width in world metres) —
+        // derived once at Configure, cached (rule 7: ApplyPose runs every frame).
+        private float _footprintRadiusMeters;
 
         /// <summary>Heading in rig dir units (1 = 45° CCW). Continuous — that is the point.</summary>
         public float HeadingDirUnits
@@ -160,6 +171,8 @@ namespace HiddenHarbours.Art
 
             ReleaseOwned();
             _setup = setup;
+            _footprintRadiusMeters = DisplacedWaterMath.FootprintRadiusMeters(
+                setup.CellW, setup.PxPerMetre);
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
@@ -341,7 +354,27 @@ namespace HiddenHarbours.Art
             {
                 Vector3 root = transform.position;
                 float heaveMeters = _heavePixels / (float)_setup.PxPerMetre;
-                offset.z = DisplacedWaterMath.HullDepthBias(root.y, heaveMeters, in isoFrame)
+                // THE WATERTIGHT CLAMP (owner playtest 2026-07-23): the z-bias heave — and only
+                // the z bias; the visual ride above stays the honest shared heave — is raised
+                // exactly enough that no water sample on the hull's footprint (the same
+                // published field the water shader lifts with, exaggeration included) can win
+                // the shared z-test against any hull face above the def's deck line. Water
+                // still climbs the exterior planking with every wave; it can never climb past
+                // the line where it would board the boat. Deck height 0 (unset def) or a
+                // silent field (no bridge) leaves this byte-inert.
+                float zHeaveMeters = heaveMeters;
+                if (_setup.WatertightDeckHeightMeters > 0f)
+                {
+                    WaveFieldBridge.ReadPublishedField(out Vector4 t0, out Vector4 t1,
+                                                       out Vector4 t2, out Vector4 t3,
+                                                       out Vector4 ph, out Vector4 fp);
+                    zHeaveMeters = DisplacedWaterMath.WatertightZHeaveMeters(
+                        heaveMeters, _setup.WatertightDeckHeightMeters,
+                        _setup.WatertightHalfBeamMeters,
+                        new Vector2(root.x, root.y), _footprintRadiusMeters,
+                        in t0, in t1, in t2, in t3, in ph, in fp, in isoFrame);
+                }
+                offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            - root.z;
             }
             if (_meshChild.localPosition != offset)

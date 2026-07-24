@@ -349,6 +349,23 @@ namespace HiddenHarbours.App.Editor
             // ⚠️ She is MESH-ONLY: no sheet, so no sprite half and no V-key A/B (the toggle correctly
             // reports "this hull has only one look"). She also has no fallback Sprite — if the mesh
             // path is ever unavailable at runtime she draws nothing rather than draws wrongly.
+            //
+            // THE UPPER FLEET TAILS HER — positions 11–14 (ADR 0022 phase 6, owner's call 2026-07-23:
+            // "import + sailable dev rungs"). Four hulls that had never been in Unity at all, because
+            // a sheet set was never possible for them: the coastal packet's would have been 1.8 GiB
+            // and the tanker could not be baked at the fleet's own 32 px/m without a 3,500 px cell.
+            // They continue the same SIZE ladder the Cape, the lobster and the dragger were placed on
+            // — 38 m, 38 m, 60 m, 110 m — so walking F walks UP it and ends on the biggest thing that
+            // floats. The Mk2 sits immediately after the Mk1 deliberately: same 38 m envelope, more
+            // deck gear, and they are only worth telling apart back to back.
+            //
+            // ⚠️ THEIR NUMBERS ARE PLACEHOLDERS AND SAY SO IN THE ASSETS. Mass, thrust, drag and hold
+            // are scaled off the side dragger by hull-form law (displacement ~L³, drag ~L², authority
+            // falling with size) so they sail plausibly rather than correctly. They are picker rungs
+            // ONLY — no ShipwrightOffer, no economy, not purchasable — on exactly the precedent the
+            // Cape Islander and the upgraded punt set, because a purchasable 110 m gas carrier is the
+            // M2/M3 fleet roster and its economy (rule 8). Tuning them is M2's job and re-running any
+            // art bake can never touch them: they live in their own committed assets (rule 2).
             var pickerRoster = new[]
             {
                 dory,
@@ -361,10 +378,16 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CapeIslander.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/LobsterBoat.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SideDragger.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SternTrawler.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SternTrawlerMk2.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CoastalPacket.asset"),
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Tanker.asset"),
             }.Where(h => h != null).ToArray();
 
-            if (pickerRoster.Length < 10)
-                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/10 hulls — " +
+            const int ExpectedPickerRungs = 14;
+            if (pickerRoster.Length < ExpectedPickerRungs)
+                Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/" +
+                                 $"{ExpectedPickerRungs} hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");

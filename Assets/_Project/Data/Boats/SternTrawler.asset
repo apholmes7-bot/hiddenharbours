@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: SternTrawler
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.stern_trawler
+  DisplayName: The Stern Trawler
+  Visual: {fileID: 11400000, guid: 476400257c4d8784fbdbaf0640ea9e27, type: 2}
+  Sprite: {fileID: 0}
+  LengthMeters: 38
+  DraughtMeters: 4.2
+  MassKg: 316000
+  HoldUnits: 1400
+  CrewSlots: 8
+  Propulsion: 1
+  EnginePower: 253000
+  RudderAuthority: 164000
+  OarPower: 0
+  OarLateralOffset: 0
+  OarBraceDrag: 0
+  ForwardDrag: 10200
+  LateralDrag: 34700
+  WindExposure: 0.6
+  MaxSafeSeaState: 7
+  SeakeepingMassFactor: 7
+  SeakeepingLiveliness: 0.18
+  SeakeepingDamping: 0.8
+  CameraWorldHeightMeters: 60
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0.35, y: -0.9}

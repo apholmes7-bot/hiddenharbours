@@ -90,6 +90,18 @@ A gesture cast, suited to the mouse and the 3D fishing rig:
   clean cast; too early/late = short or piled-up line.
 - **Cozy fail** = a bad cast is just a **short cast** — reel in, recast. No penalty.
 
+> **⚠️ REVISED — owner playtest ruling, 2026-07-23** (*"casts should have distances based on the
+> cast"*). As built, distance was scaled by **where past the character you released**: full only
+> within ~1 m, dead by ~3.8 m. The on-foot screen is ~16 m wide, so every natural flick released
+> far outside that band, scored zero, and collapsed onto the minimum-cast floor — while the
+> wind-back preview promised up to the full cap. Every cast came out the same length.
+>
+> The release *position* skill beat is **removed**. Distance is now the two things the player
+> controls deliberately: **how far you wind back** sets the range you are aiming at (and it is
+> literally the same quantity the live aim preview draws, so the preview no longer lies), and
+> **how hard you snap the forward sweep** decides how much of that range you deliver. A dribbled
+> sweep falls short of your aim; a proper one reaches it. Cozy fail is unchanged.
+
 > Replaces the two discrete casts on the `feat/*` cast branches; it is not a third mode.
 
 ### 2.3 The depth drop + the slack "bottom" tell (standout mechanic)
@@ -122,6 +134,27 @@ reference game has.
 ---
 
 ## 3. The fight — a deep→surface arc
+
+> **⚠️ SUPERSEDED IN PART — owner playtest ruling, 2026-07-23.** The built fight followed the
+> phase split below and the owner rejected it on play: *"i want the fight to have no ui but
+> gameplay elements, the fight should be the user opposing the fish while reeling."* What
+> shipped instead:
+>
+> - **No HUD at all.** The two-bar rod gauge is **deleted**, not hidden. The rod's bend, the
+>   line (bar-tight, whitening, shuddering), the strain in the sound, and a camera tremor near
+>   the snap are the entire instrument. `RodGaugeView` no longer exists.
+> - **You lean against her from the hookup.** The lean is live in **both** phases — the deep
+>   half is no longer a steer-free timing game. The phase now says only whether she can be
+>   **seen**, not which mechanics are switched on. While she's deep, the line's **entry point
+>   works around** the anchor (at a fraction of the surfaced roam) — that motion is how the
+>   player reads which way to lean before she ever shows herself.
+> - **Only the reel lands her.** A perfect lean with the reel off wins no line at all; it is
+>   recovery. The lean decides what the **reel** is worth: reel her slack and line comes free;
+>   reel against a run and you're paid for the part of it you're leaning against; reel *with*
+>   her and you get strain and nothing else. Both forgiving-cove invariants still hold, so the
+>   reel still cannot simply be held down.
+>
+> The paragraphs below are kept as the record of what was designed and built first.
 
 Three owner ideas combine into one escalating fight: **pull-on-slack / maintain-on-fight**, **steer
 the rod opposite the fish**, and **you only see the line straight down at depth; it moves around

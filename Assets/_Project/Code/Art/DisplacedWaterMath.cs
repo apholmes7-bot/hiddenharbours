@@ -117,5 +117,165 @@ namespace HiddenHarbours.Art
             => frame.BaseZ
                + (hullWorldY - frame.ReferenceY) * frame.CosElev
                - heaveMeters * frame.SinElev;
+
+        // ==== The WATERTIGHT clamp (owner playtest 2026-07-23: "water enters hull on the mesh
+        // models") ====================================================================================
+        //
+        // The calibrated z-test covers ANY hull point whose height above still water is below the
+        // lift of the surface point sharing its pixel — including the LOW interior surfaces a real
+        // boat keeps dry (cockpit sole, hold floor, inner bulwarks): in a storm the differential
+        // between the hull's single-point ride and the local surface (wave slope across the hull,
+        // plus the baked-iso beam residual) exceeds the interior's freeboard and the boat reads as
+        // flooding. The fix stays inside the #263 discipline (per-hull CONSTANT transforms, never a
+        // per-vertex touch of the rig's own convention): the heave term of the hull's z bias — and
+        // ONLY the z bias; the visual ride stays the honest shared heave — is clamped so the
+        // highest surface the hull can currently meet sits at most WatertightDeckHeightMeters
+        // above its keel. Water still climbs the exterior planking with every wave; it can never
+        // climb past the line where it would board the boat.
+
+        /// <summary>The hull footprint half-width the clamp scans: half the rig cell's width in
+        /// world metres. The cell is authored to contain the whole hull at every heading with
+        /// margin, so this bounds the planking's true x-reach (slightly conservative — a farther
+        /// crest can only raise the bound, i.e. dry the hull, never flood it).</summary>
+        public static float FootprintRadiusMeters(int cellW, int pxPerMetre)
+            => 0.5f * cellW / Mathf.Max(1, pxPerMetre);
+
+        /// <summary>
+        /// The scan's y half-height (metres) — deliberately MUCH tighter than the x half-width.
+        /// The pixel-share water that can cover a hull point sits at
+        /// <c>Δy = r·cos(elev) − lift</c> from that point's ground line: at the flooding
+        /// threshold that is ≈ −0.38·r (a metre or so in front), and even the deepest useful
+        /// cover in the fleet's gale (lift ≈ 5.5 m over a low interior point) reaches only ≈ 5 m
+        /// in front — while the hull's ground lines themselves span ±(half-beam·sin(elev)) ≈
+        /// ±1.2 m. Crests farther abeam than this CANNOT paint the hull, and scanning them
+        /// (the first cut scanned a full 14 m disc on the dragger) inflates the bound and dries
+        /// the crest-at-root waterline band a big hull should keep. 6 m covers the fleet's
+        /// worst case with margin; the storm acceptance adjudicates the residue in pixels.
+        /// </summary>
+        public const float FootprintScanHalfHeightMeters = 6f;
+
+        /// <summary>Scan step (metres) along x. 2 m against the fleet's shortest meaningful
+        /// trains (λ ≥ ~10 m) bounds the worst between-station crest miss at ≈ 2% of amplitude
+        /// — inside the committed deck heights' residual shave.</summary>
+        public const float FootprintScanStepMeters = 2f;
+
+        /// <summary>Scan step (metres) along y — much DENSER than x: the fought hull height
+        /// moves at 1/cos(elev) ≈ 1.3 rig-m per metre of y offset AND the demand field peaks
+        /// sharply where a fight spans the exact half-beam, so the y gap is what bounds the
+        /// clamp's blind spot between rows (0.5 m measured the between-rows residue down to
+        /// noise; 1 m left a ~600 px far-washboard streak at an off-root storm crest).</summary>
+        public const float FootprintScanRowStepMeters = 0.5f;
+
+        /// <summary>Safety (z-heave metres) added to a BINDING demand — the budget for what a
+        /// discrete scan of a continuous demand field cannot see (between-station crests, float
+        /// edges at the exact deck plane). RAMPED with engagement — the applied safety is
+        /// <c>min(this, SafetyRampSlope·(demand − heave))</c> — so it is EXACTLY ZERO at the
+        /// no-clamp boundary (daily seas, whose demands sit at or below the honest heave, stay
+        /// bit-untouched), reaches full size by 0.1 m of engagement (a slope-1 ramp measured a
+        /// 16 px leak at a barely-binding trough instant), and costs ≈ 0.21 rig-m ≈ 5 px of
+        /// waterline band only where protection genuinely binds. Sized from the measured
+        /// residue class (16–53 px single-instant leaks at 0 safety, 2026-07-23).</summary>
+        public const float WatertightDemandSafetyMeters = 0.4f;
+
+        /// <summary>The safety ramp's slope (see <see cref="WatertightDemandSafetyMeters"/>):
+        /// full safety by engagement = safety/slope = 0.1 m.</summary>
+        public const float WatertightSafetyRampSlope = 4f;
+
+        /// <summary>
+        /// The clamped heave (metres) the hull's Z BIAS rides (never the visual — the screen
+        /// lift stays the honest shared heave): at least the true heave, raised exactly enough
+        /// that NO interior face — any hull height ≥ <paramref name="deckHeightMeters"/> above
+        /// the keel — can lose the shared z-test to the CURRENT displaced surface.
+        ///
+        /// <para><b>The per-point law (measured into shape in pixels, 2026-07-23).</b> Solve the
+        /// shared z-buffer's pixel-share fight between a hull face at rig height r on ground
+        /// line ry (screen y rises at cos(elev) per metre of height and sin(elev) per metre of
+        /// ground; depth falls at sin(elev) / rises at cos(elev)) and the displaced water
+        /// (screen y rises at 1 per metre of lift — the vertex stage's <c>ws.y += lift</c>):
+        /// a water sample at ground offset Δ from the hull's ROOT line with lift L fights, on
+        /// EACH ground line ry, exactly the height
+        /// <c>r(ry) = r_f − tan(elev)·ry</c> where <c>r_f = (Δ + L)/cos</c>, and wins iff
+        /// <c>r(ry)·(cos²+sin) &lt; L·(cos+sin) − zHeave·sin + ry·cos·(1−sin)</c> (the last
+        /// term is §24's beam residual, now EXACT instead of a data shave). Keeping every
+        /// interior face (r ≥ deckHeight, |ry| ≤ halfBeam) dry therefore demands, per sample,
+        ///
+        /// <code>
+        /// ry* = min(halfBeam, (r_f − deckHeight)/tan(elev))   // the worst far-side line fought at/above the deck
+        /// zHeave ≥ (L·(cos+sin) − (r_f − tan·ry*)·(cos²+sin) + ry*·cos·(1−sin)) / sin
+        /// </code>
+        ///
+        /// gated on <c>r_f ≥ deckHeight</c> — samples fighting only the open planking BELOW the
+        /// deck line demand NOTHING, so the exterior waterline keeps every centimetre of
+        /// truthful climb the interior allows. (The measured lineage: a 1:1 differential clamp
+        /// flooded the cockpit; a blanket footprint-max bound dry-docked the dragger; a
+        /// root-line-only per-point law re-flooded the far rail — each adjudicated by the
+        /// acceptance suite before this complete law replaced it.)</para>
+        ///
+        /// <para>The scan is an anisotropic grid: x spanning ±<paramref name="halfWidthMeters"/>
+        /// (the hull's real reach — <see cref="FootprintRadiusMeters"/>), y spanning
+        /// ±<see cref="FootprintScanHalfHeightMeters"/> (all the water that can share a pixel
+        /// with the hull — see that constant), stepped <see cref="FootprintScanStepMeters"/> in
+        /// x and <see cref="FootprintScanRowStepMeters"/> in y (denser: the fought height moves
+        /// at 1/cos per metre of Δ, so y sampling is what bounds the residue). Heights come from
+        /// <see cref="WaveFieldBridge.ShaderTwinSample"/> over the PUBLISHED globals — the exact
+        /// field the water shader lifts its vertices with (the ONE-SEA rule closed at the
+        /// globals) — times the frame's effective exaggeration; shore fade is deliberately taken
+        /// as 1 (an offshore bound: near the coast the true lift is smaller, so the clamp only
+        /// ever over-dries, never floods).</para>
+        ///
+        /// <para><paramref name="deckHeightMeters"/> ≤ 0 disables the clamp entirely (the
+        /// pre-fix render, byte-identical — the safety of an unset def). A silent field (no
+        /// bridge — every height 0) demands nothing. Allocation-free (rule 7): ≤ ~15×13 ≈ 200
+        /// four-train evaluations per hull per pose push — microseconds on the desktop
+        /// baseline.</para>
+        /// </summary>
+        public static float WatertightZHeaveMeters(float heaveMeters, float deckHeightMeters,
+                                                   float halfBeamMeters,
+                                                   Vector2 centerWorld, float halfWidthMeters,
+                                                   in Vector4 train0, in Vector4 train1,
+                                                   in Vector4 train2, in Vector4 train3,
+                                                   in Vector4 phases, in Vector4 fieldParams,
+                                                   in WaterIsoDepthFrame frame)
+        {
+            if (deckHeightMeters <= 0f) return heaveMeters;
+            float c = frame.CosElev;
+            float s = Mathf.Max(frame.SinElev, 1e-4f);
+            float cInv = 1f / Mathf.Max(c, 1e-4f);
+            float tanE = s * cInv;
+            float exaggeration = Mathf.Max(0f, frame.Exaggeration);
+            halfBeamMeters = Mathf.Max(0f, halfBeamMeters);
+
+            halfWidthMeters = Mathf.Max(0f, halfWidthMeters);
+            int nx = Mathf.Max(1, Mathf.CeilToInt(halfWidthMeters / FootprintScanStepMeters));
+            int ny = Mathf.Max(1, Mathf.CeilToInt(
+                FootprintScanHalfHeightMeters / FootprintScanRowStepMeters));
+
+            float demand = float.MinValue;
+            for (int ix = -nx; ix <= nx; ix++)
+            {
+                float x = centerWorld.x + halfWidthMeters * ix / (float)nx;
+                for (int iy = -ny; iy <= ny; iy++)
+                {
+                    float dy = FootprintScanHalfHeightMeters * iy / (float)ny;
+                    float lift = exaggeration * WaveFieldBridge.ShaderTwinSample(
+                        new Vector2(x, centerWorld.y + dy), train0, train1, train2, train3,
+                        phases, fieldParams).Height;
+                    float foughtR = (dy + lift) * cInv;
+                    if (foughtR < deckHeightMeters) continue;   // fights the open planking: allowed
+                    float ryStar = Mathf.Min(halfBeamMeters,
+                                             (foughtR - deckHeightMeters) / tanE);
+                    float protectedR = foughtR - tanE * ryStar;
+                    float need = (lift * (c + s) - protectedR * (c * c + s)
+                                  + ryStar * c * (1f - s)) / s;
+                    if (need > demand) demand = need;
+                }
+            }
+
+            // The engagement-ramped safety (see WatertightDemandSafetyMeters): zero at the
+            // no-clamp boundary (daily seas bit-untouched), full where protection binds.
+            if (demand <= heaveMeters) return heaveMeters;
+            return demand + Mathf.Min(WatertightDemandSafetyMeters,
+                                      WatertightSafetyRampSlope * (demand - heaveMeters));
+        }
     }
 }

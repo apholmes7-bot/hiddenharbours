@@ -315,7 +315,7 @@ namespace HiddenHarbours.Art
             // live config edit reaches the boats within one refresh, never a stale copy).
             DisplacedSea.Publish(this, new DisplacedSeaState(exaggeration, band));
 
-            PublishIsoDepthFrame();
+            PublishIsoDepthFrame(exaggeration);
         }
 
         /// <summary>
@@ -325,8 +325,11 @@ namespace HiddenHarbours.Art
         /// property block first (production pushes <c>_HeightWorldMin</c> there), the live
         /// material else — so hull and water cannot disagree by construction. Re-published each
         /// throttled tick; cleared by the registry when this surface unregisters.
+        /// <paramref name="exaggeration"/> is the tick's EFFECTIVE exaggeration — the exact value
+        /// pushed to the vertex stage above, never a re-read — so the watertight clamp bounds the
+        /// same lift the shader draws (the see-what-you-clamp discipline).
         /// </summary>
-        private void PublishIsoDepthFrame()
+        private void PublishIsoDepthFrame(float exaggeration)
         {
             if (_displacedMaterial == null) return;
             Vector4 iso = _displacedMaterial.GetVector(IdWaterIsoDepth);
@@ -334,7 +337,8 @@ namespace HiddenHarbours.Art
                 ? _mpb.GetVector(IdHeightWorldMin)
                 : _displacedMaterial.GetVector(IdHeightWorldMin);
             // The chunk vertices rest at this transform's world z (local z 0 under the mesh root).
-            var frame = new WaterIsoDepthFrame(heightMin.y, iso.x, iso.y, transform.position.z);
+            var frame = new WaterIsoDepthFrame(heightMin.y, iso.x, iso.y, transform.position.z,
+                                               exaggeration);
             DisplacedWaterRegistry.PublishIsoDepthFrame(this, in frame);
         }
 

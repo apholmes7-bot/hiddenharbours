@@ -114,5 +114,19 @@ namespace HiddenHarbours.Art
         public static float CapShoreSalience(float stillDepthMeters, float bandMeters, float salienceStrength)
             => Mathf.Lerp(1f, ShoreFadeMath.Fade01(stillDepthMeters, bandMeters),
                           Mathf.Clamp01(salienceStrength));
+
+        /// <summary>
+        /// The near-shore ENVELOPE-BAND fade (the twin of the shader's <c>bandSeam</c> factor — owner
+        /// playtest 2026-07-23, "shoreline looks a bit swirly"): the value bands fade with the SAME seam
+        /// curve over the SAME band the caps and the displaced vertex stage read
+        /// (<see cref="ShoreFadeMath.Fade01"/> over <c>_ShoreFadeBand</c>). The displaced surface dies at
+        /// the walkable waterline, so envelope-relative shade on the dying edge marked waves that visibly
+        /// are not there — the band-edge dither drew worm contours crowding along the shore over the
+        /// bright shallow ramp. One curve, never a second contour; exactly 0 at the waterline, exactly 1
+        /// past the band (the open sea's bands are untouched). Multiplied into the band blend weight, so
+        /// <c>_EnvelopeBandStrength</c> = 0 stays an exact passthrough.
+        /// </summary>
+        public static float BandShoreSalience(float stillDepthMeters, float bandMeters)
+            => ShoreFadeMath.Fade01(stillDepthMeters, bandMeters);
     }
 }

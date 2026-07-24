@@ -168,9 +168,9 @@ namespace HiddenHarbours.Core
                  "nets tension DOWN even through her hardest run.")]
         [Min(0f)] public float TensionFallPerSec;
 
-        [Tooltip("Landing gained per second by a clean PULL in a full slack window, 0..1-gauge/s. The pace " +
-                 "of a well-fought fight; the same rate scales the Surface counter-steer's tiring gain. " +
-                 "Keep below TensionRisePerSec (the snap-before-land guard-rail).")]
+        [Tooltip("Landing gained per second by a clean REEL of her slack, 0..1-gauge/s — and the ceiling on " +
+                 "reeling against a run you're fully leaning into. The pace of a well-fought fight. Keep " +
+                 "below TensionRisePerSec (the snap-before-land guard-rail).")]
         [Min(0f)] public float LandingFillPerSec;
 
         [Tooltip("EXTRA tension per second her run adds at full effort (fishEffort01 = 1), applied whether " +
@@ -178,14 +178,15 @@ namespace HiddenHarbours.Core
                  "'back off' tell, never an unavoidable snap.")]
         [Min(0f)] public float RunTensionPressure;
 
-        [Tooltip("Tension bled per second by a FULL counter-steer against a full dart (Surface phase only); " +
-                 "the same magnitude is the penalty for steering INTO her. Bigger = the steer axis matters " +
-                 "more once she surfaces.")]
+        [Tooltip("Tension bled per second by leaning FULLY against a full run — live from the hookup, deep " +
+                 "or surfaced; the same magnitude is the penalty for going WITH her. Bigger = the lean " +
+                 "matters more, and the fight is more about direction than timing.")]
         [Min(0f)] public float CounterSteerRelief;
 
-        [Tooltip("Landing fraction (0..1) at which she breaks the surface: the fight crosses Deep (timing " +
-                 "only, fish unseen, steer ignored) → Surface (timing + steer). Lower = the steer game " +
-                 "starts sooner.")]
+        [Tooltip("Landing fraction (0..1) at which she breaks the surface: the fight crosses Deep (she is " +
+                 "unseen — you read her through the rod and the line's entry point) → Surface (she is " +
+                 "visible at the end of your line). The fight itself is the same either side; this is how " +
+                 "long she stays down. Lower = she shows herself sooner.")]
         [Range(0f, 1f)] public float SurfaceThreshold01;
 
         [Tooltip("DECK FISHING — the 'light real factor' (rod v2 §4.2): EXTRA tension per second " +
@@ -226,8 +227,15 @@ namespace HiddenHarbours.Core
     /// Core-policy / feature-consumer split as <see cref="RodFightSettings"/>: the pure maths that consumes
     /// it (<c>FlickCastMath</c>, Fishing-side) is fed this struct plus the cast cap.
     ///
-    /// <para><b>The per-gear seam.</b> <see cref="MaxCastDistanceMetres"/> is the CAP a full-power,
-    /// well-timed flick reaches. It is a GameConfig field for now; later, better rods/tackle extend it
+    /// <para><b>Two dials decide the distance</b> (owner's ruling 2026-07-23): how far you WIND BACK sets
+    /// the range you're aiming at (<see cref="FullRangeWindBackMetres"/>), and how hard you SNAP the
+    /// forward sweep decides how much of it you deliver (<see cref="FullSnapFlickSpeed"/> /
+    /// <see cref="LimpFlickFraction01"/>). Where you release carries no penalty — the earlier model scored
+    /// release position in world metres and, on a ~16 m-wide screen, quietly collapsed every cast onto the
+    /// <see cref="MinCastMetres"/> floor.</para>
+    ///
+    /// <para><b>The per-gear seam.</b> <see cref="MaxCastDistanceMetres"/> is the CAP a full wind-back,
+    /// fully snapped, reaches. It is a GameConfig field for now; later, better rods/tackle extend it
     /// (P4), so the maths takes the cap as its own explicit parameter — a GearDef's own cap slots in
     /// without touching this struct.</para>
     /// </summary>
@@ -243,41 +251,28 @@ namespace HiddenHarbours.Core
                  "is a twitch, not a flick — nothing flies. Keep small; this only rejects accidents.")]
         [Min(0f)] public float MinFlickLengthMetres;
 
-        [Tooltip("Sweep LENGTH (m) that counts as full power. A longer drag past this adds nothing — " +
-                 "smaller = big casts come easier from small gestures.")]
-        [Min(0f)] public float FullPowerFlickMetres;
+        [Tooltip("THE RANGE DIAL. How far behind you the mouse must be drawn (m) to aim the FULL cast " +
+                 "distance. Draw back half of this and you're aiming half as far. This is exactly what the " +
+                 "aim preview shows you while you wind back. Smaller = long casts come from small " +
+                 "wind-ups; larger = you must really draw back to reach out.")]
+        [Min(0f)] public float FullRangeWindBackMetres;
 
-        [Tooltip("Sweep SPEED (m/s at the fastest part of the forward sweep) that counts as full power. " +
-                 "Smaller = a lazy flick still throws far; larger = only a real snap of the wrist maxes out.")]
-        [Min(0f)] public float FullPowerFlickSpeed;
+        [Tooltip("THE SNAP DIAL. Sweep SPEED (m/s at the fastest part of the forward flick) that delivers " +
+                 "the whole range you aimed at. Smaller = even a gentle sweep gets there; larger = only a " +
+                 "real snap of the wrist does.")]
+        [Min(0f)] public float FullSnapFlickSpeed;
 
-        [Tooltip("How power blends sweep length vs sweep speed (0 = all length, 1 = all speed, 0.5 = even). " +
-                 "Speed-heavy rewards the wrist-snap; length-heavy rewards the big wind-up.")]
-        [Range(0f, 1f)] public float SpeedWeight01;
-
-        [Tooltip("The SWEET RELEASE point: how far PAST the character (m, toward the water) the mouse " +
-                 "should be when you release for a clean cast. Release around here = full quality.")]
-        [Min(0f)] public float SweetReleaseMetres;
-
-        [Tooltip("Half-width (m) of the full-quality band around the sweet release point. Wider = the " +
-                 "timing beat is more forgiving.")]
-        [Min(0f)] public float SweetWindowMetres;
-
-        [Tooltip("How far (m) beyond the sweet band the release quality fades to zero. Releasing way too " +
-                 "early (still behind you) or way too late piles the line at your feet — a short cast, " +
-                 "never a fail.")]
-        [Min(0f)] public float QualityFalloffMetres;
-
-        [Tooltip("Fraction of the powered distance a completely MIS-timed release still flies (0..1). " +
-                 "This is the 'piled-up line' short cast — keep it above 0 so a botched cast still plops " +
-                 "in the water near you (cozy fail).")]
-        [Range(0f, 1f)] public float PiledCastFraction01;
+        [Tooltip("Fraction of the aimed range (0..1) that a completely LIMP sweep still delivers. This is " +
+                 "the dribbled cast that lands well short of where you were aiming — keep it above 0 so a " +
+                 "weak flick still puts the line in the water (cozy fail). Lower = the wrist-snap matters " +
+                 "more.")]
+        [Range(0f, 1f)] public float LimpFlickFraction01;
 
         [Tooltip("Shortest distance (m) any successful cast lands from the character. The floor under a " +
-                 "weak/botched flick, so the bobber is always at least in the water, not on your boots.")]
+                 "weak flick, so the bobber is always at least in the water, not on your boots.")]
         [Min(0f)] public float MinCastMetres;
 
-        [Tooltip("The CAP (m): the farthest a full-power, perfectly-timed flick can reach with the starter " +
+        [Tooltip("The CAP (m): the farthest a full wind-back, fully snapped, can reach with the starter " +
                  "rod. Better rods/tackle extend this later (per-gear data — the P4 upgrade you feel).")]
         [Min(0f)] public float MaxCastDistanceMetres;
 
@@ -285,20 +280,17 @@ namespace HiddenHarbours.Core
                  "beat between the flick and the splash-down. Feel only; distance is decided at release.")]
         [Min(0.01f)] public float LineFlightMetresPerSec;
 
-        /// <summary>The forgiving-cove reference tuning: a comfortable ~1.5 m wind-back, full power from a
-        /// ~4 m or brisk sweep, a generous ±0.8 m sweet band ~1 m past the character, a mistimed cast still
-        /// flying a quarter of its power, and the starter rod capped at 12 m.</summary>
+        /// <summary>The forgiving-cove reference tuning: a ~0.6 m wind-back to cast at all, the full 12 m
+        /// range from a 4 m draw-back (about a quarter of the on-foot screen — deliberate but easy), the
+        /// whole of it delivered by a brisk 12 m/s sweep, a limp sweep still throwing a quarter of what it
+        /// aimed at, and nothing shorter than 1.5 m.</summary>
         public static FlickCastSettings Default => new FlickCastSettings
         {
             MinWindBackMetres = 0.6f,
             MinFlickLengthMetres = 0.4f,
-            FullPowerFlickMetres = 4f,
-            FullPowerFlickSpeed = 12f,
-            SpeedWeight01 = 0.5f,
-            SweetReleaseMetres = 1.0f,
-            SweetWindowMetres = 0.8f,
-            QualityFalloffMetres = 2.0f,
-            PiledCastFraction01 = 0.25f,
+            FullRangeWindBackMetres = 4f,
+            FullSnapFlickSpeed = 12f,
+            LimpFlickFraction01 = 0.25f,
             MinCastMetres = 1.5f,
             MaxCastDistanceMetres = 12f,
             LineFlightMetresPerSec = 18f,

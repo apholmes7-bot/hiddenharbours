@@ -106,7 +106,8 @@ namespace HiddenHarbours.Fishing
         public float tensionFallPerSec = 0.6f;
 
         [Min(0f)]
-        [Tooltip("Landing01 gained per second while PULLING during a slack window. Analogue of LandingFillPerSec.")]
+        [Tooltip("Landing01 gained per second while REELING her slack — and the ceiling on reeling against " +
+                 "a run you are fully leaning into. Analogue of LandingFillPerSec.")]
         public float landingFillPerSec = 0.3f;
 
         [Min(0f)]
@@ -115,15 +116,16 @@ namespace HiddenHarbours.Fishing
         public float runTensionPressure = 0.35f;
 
         [Min(0f)]
-        [Tooltip("Tension relief per second earned by STEERING OPPOSITE her dart on the surface (the RDR2 " +
-                 "'pull against the run' counter). v2-only: this is how surface steering tires her without " +
-                 "parting the line.")]
+        [Tooltip("Tension relief per second earned by LEANING OPPOSITE her run — live from the hookup, " +
+                 "deep or surfaced (the 'pull against the run' counter). This is how leaning on her lets " +
+                 "you keep reeling without parting the line; going WITH her costs the same magnitude.")]
         public float counterSteerRelief = 0.4f;
 
         [Range(0f, 1f)]
         [Tooltip("Landing01 at which the fight rises from the deep phase to the surface phase " +
-                 "(FightDeep → FightSurface): below this she's unseen and it's pure pull-on-slack timing; " +
-                 "at/above, she's up and mouse-steer goes live (§3).")]
+                 "(FightDeep → FightSurface): below this she's unseen and you read her run through the rod " +
+                 "and the line's entry point; at/above, she's up where you can see her. Same fight either " +
+                 "side — this is how long she stays down (§3).")]
         public float surfaceThreshold01 = 0.5f;
     }
 }
