@@ -235,7 +235,7 @@ namespace HiddenHarbours.Art
         /// Read the six published wave-field globals back — the packed field exactly as the water
         /// shader will sample it this frame (empty/zero when no bridge is live: the "unset"
         /// convention, under which <see cref="ShaderTwinSample"/> returns height 0). The watertight
-        /// hull clamp (<c>DisplacedWaterMath.MaxSurfaceLiftMeters</c>) reads the sea through this,
+        /// hull clamp (<c>DisplacedWaterMath.WatertightZHeaveMeters</c>) reads the sea through this,
         /// so hull and water can never disagree about the field — the ONE-SEA rule, closed at the
         /// globals. Allocation-free (rule 7).
         /// </summary>
@@ -264,7 +264,7 @@ namespace HiddenHarbours.Art
         /// lives in φ, accumulated in double by the animator), and the pow bases are floored at 1e-6
         /// (HLSL's <c>pow(0, 0)</c> is NaN on some GPUs; the deviation lives where cos θ ≈ 0, so it is
         /// invisible). Also the RUNTIME sampler behind the watertight hull clamp
-        /// (<c>DisplacedWaterMath.MaxSurfaceLiftMeters</c>): the clamp must bound the lift the
+        /// (<c>DisplacedWaterMath.WatertightZHeaveMeters</c>): the clamp must bound the lift the
         /// SHADER draws, so it evaluates the shader's own transcription over the published globals
         /// — never the sim-side <see cref="WaveMath.Sample"/> path directly. Pure and
         /// allocation-free (rule 7).
