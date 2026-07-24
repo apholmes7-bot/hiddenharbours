@@ -38,6 +38,41 @@ namespace HiddenHarbours.Core
         void SetSorting(int sortingLayerId, int sortingOrder);
     }
 
+    /// <summary>
+    /// <b>One articulated fitting on a mesh hull</b> — an oar, an outboard (ADR 0022 phase 7).
+    ///
+    /// <para><b>The whole contract is a local rotation, and that is the point.</b> An oar sweeps and
+    /// dips about its oarlock; an outboard swivels and tilts about its clamp; the twin does both, at
+    /// two lateral offsets. None of that means anything to a renderer. Boats already owns the
+    /// arithmetic (<c>DoryOarMath</c>, <c>OutboardMotorMath</c>) and converts it to a rotation about
+    /// the fitting's <see cref="HullPropMeshDef.PivotLocalMeters"/>; Art applies it. So two fittings
+    /// that articulate nothing alike ride one seam, and adding a third (a rudder, a hauler) needs no
+    /// new interface — which is exactly what rule 4 is for.</para>
+    ///
+    /// <para>The fitting inherits the hull's heading, rock and heave by being parented to it — those
+    /// are deliberately NOT settable here. A fitting that could be posed independently of its hull is
+    /// a fitting that can shear off it, and the sprite path's layers did precisely that whenever a
+    /// rock frame and a steer column disagreed.</para>
+    /// </summary>
+    public interface IHullPropRenderer
+    {
+        /// <summary>Rotation about the def's pivot, in the hull's local frame. Identity = the pose the
+        /// fitting was baked at (dead ahead, untilted; the catch of the stroke).</summary>
+        Quaternion LocalRotation { get; set; }
+
+        /// <summary>Lateral clamp offset in METRES along the hull's beam — the twin outboard's ±0.34.
+        /// 0 for anything on the centreline.</summary>
+        float LateralOffsetMeters { get; set; }
+
+        /// <summary>Drawn or not, without tearing the fitting down: a shipped oar and a tilted-clear
+        /// engine are states the boat passes through constantly, and rebuilding a renderer per state
+        /// would allocate every time the owner trims his engine (rule 7).</summary>
+        bool Visible { get; set; }
+
+        /// <summary>True when a fitting setup is loaded and the renderer can draw.</summary>
+        bool IsConfigured { get; }
+    }
+
     /// <summary>Installs / removes the Art-side mesh-hull renderer on a host GameObject.</summary>
     public interface IHullMeshPresentationService
     {
@@ -47,6 +82,20 @@ namespace HiddenHarbours.Core
         /// can fall back to the sprite path rather than field an invisible boat.
         /// </summary>
         IHullMeshRenderer Install(GameObject host, HullMeshDef def);
+
+        /// <summary>
+        /// Bolt an articulated fitting onto a hull already installed on <paramref name="host"/>.
+        /// <paramref name="slot"/> names the instance ("OarPort", "MotorB"), so a re-install
+        /// re-configures in place rather than accumulating engines.
+        ///
+        /// <para>Returns null — with a logged reason — when the def is unusable or no hull is
+        /// installed. A refused fitting is the honest outcome: the caller keeps the sprite path,
+        /// where the oars at least exist.</para>
+        /// </summary>
+        IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot);
+
+        /// <summary>Remove every fitting attached to <paramref name="host"/>. Safe when none are.</summary>
+        void DetachProps(GameObject host);
 
         /// <summary>Remove a previously installed renderer (and everything it owns) from
         /// <paramref name="host"/>. Safe when none is present.</summary>

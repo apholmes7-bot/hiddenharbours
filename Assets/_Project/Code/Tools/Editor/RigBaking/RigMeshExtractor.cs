@@ -232,6 +232,50 @@ namespace HiddenHarbours.Tools.RigBaking
     /// never executes. That is the intended end state — the code below is designed to become
     /// unreachable rather than to be deleted.</para>
     /// </summary>
+    /// <summary>
+    /// How to extract an articulated FITTING (ADR 0022 phase 7) rather than a hull.
+    ///
+    /// <para><b>The one structural difference, and everything else follows from it.</b> A hull's
+    /// geometry is the rig's static <c>F</c> array, built once at load and posed afterwards by
+    /// transforms. A fitting has no such array: its faces come from a BUILDER that takes a pose
+    /// (<c>buildOar(side, {sweep,dip})</c>, <c>motorFaces({steer,tilt,variant})</c>) and returns a
+    /// freshly-generated list. So extraction must CALL something, at a pose chosen on purpose, and
+    /// the choice is part of what the baked asset means — which is why it is recorded on the def.</para>
+    ///
+    /// <para><b>Pick the canonical pose so the runtime transform is exactly rigid.</b> The runtime
+    /// poses a fitting by rotating the baked mesh about its pivot, so the baked pose must be one the
+    /// real poses are a pure rotation away from. Dead ahead and untilted for an outboard; sweep 0,
+    /// dip 0 for an oar. ⚠️ That is NOT always reachable through the rig's public pose API — the
+    /// dory's <c>oarPose('row', t)</c> traces an ellipse that never passes through (0,0), which is
+    /// precisely why the builder is called directly instead of through <c>oarFaces</c>.</para>
+    /// </summary>
+    public sealed class RigPropExtraction
+    {
+        /// <summary>JS returning the face list, evaluated against the rig's global — e.g.
+        /// <c>buildOar(1,{sweep:0,dip:0})</c>. Prefixed with <c>&lt;Global&gt;.</c> by the extractor.</summary>
+        public string FaceBuilderCall;
+
+        /// <summary>JS returning <c>[x,y,z]</c> in hull-rig metres: the point the fitting turns
+        /// about. Same prefixing.</summary>
+        public string PivotCall;
+
+        /// <summary>The object to read cell geometry (<c>W</c>/<c>H</c>/<c>pivot</c>) from, relative
+        /// to the global. Empty = the global itself, which is right for a fitting that shares its
+        /// hull's cell (the dory's oars are drawn through the same camera and pivot as her hull);
+        /// <c>"MOTOR"</c> for one that ships its own wider cell.</summary>
+        public string CellPath = "";
+
+        /// <summary>Closure-private symbols this extraction needs on top of the usual five. The
+        /// builders and the pivot function are private in every rig inspected, so they are shimmed
+        /// exactly as <c>F</c>/<c>MATS</c> are — and retire the same way, on the day they are
+        /// exported.</summary>
+        public string[] ExtraSymbols = Array.Empty<string>();
+
+        /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
+        /// not steer, tilt, or carry more than one instance.</summary>
+        public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+    }
+
     public static class RigMeshExtractor
     {
         /// <summary>Extracts from a catalogued rig, in its own throwaway host.</summary>
@@ -262,7 +306,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         /// <param name="scriptPath">Repo-relative, e.g. "docs/art/rigs/sideDraggerIsoRig.js".</param>
         /// <param name="globalName">The global the IIFE installs, e.g. "SideDraggerIso".</param>
-        public static RigMeshData ExtractFrom(IRigScriptHost host, string scriptPath, string globalName)
+        /// <param name="prop">Non-null to extract an articulated FITTING instead of the hull — its
+        /// faces come from a builder called at a canonical pose rather than from the static
+        /// <c>F</c> array. See <see cref="RigPropExtraction"/>.</param>
+        public static RigMeshData ExtractFrom(IRigScriptHost host, string scriptPath, string globalName,
+                                              RigPropExtraction prop = null)
         {
             if (host == null) throw new ArgumentNullException(nameof(host));
             string full = Path.Combine(RigCatalog.RepoRoot, scriptPath);
@@ -282,8 +330,16 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"Rig '{scriptPath}' ran but did not install globalThis.{g}. Either the global " +
                     "name is wrong or the rig changed shape.");
 
-            var missing = new List<string>();
+            // A fitting needs the shading half of the usual five but NOT `F` — its geometry comes
+            // from a builder, and demanding a static face array of a rig that has none would shim in
+            // a symbol nothing reads. It needs that builder (and its pivot) instead.
+            var required = new List<string>();
             foreach (string sym in RigMeshSymbols.Required)
+                if (prop == null || sym != "F") required.Add(sym);
+            if (prop != null) required.AddRange(prop.ExtraSymbols);
+
+            var missing = new List<string>();
+            foreach (string sym in required)
                 if (!HasSymbol(host, g, sym)) missing.Add(sym);
 
             bool bayerExported = HasSymbol(host, g, RigMeshSymbols.OptionalBayer);
@@ -304,7 +360,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"{{{string.Join(",", stillMissing)}}} is still missing after inserting it " +
                         $"into the exported literal. The rig's shape has changed and this shim must " +
                         "be re-aimed — or, far better, retired by exporting " +
-                        $"{string.Join(", ", RigMeshSymbols.Required)} from {scriptPath} directly. " +
+                        $"{string.Join(", ", required)} from {scriptPath} directly. " +
                         "⚠️ Do NOT fix this by editing docs/art/rigs/**; that is the art director's source.");
 
                 var widened_ = missing.Where(s => !RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList();
@@ -325,14 +381,21 @@ namespace HiddenHarbours.Tools.RigBaking
                           "trusted on its face."));
             }
 
+            // A fitting may ship its OWN cell — the skiff outboard's 272×216 against a 244×216 hull,
+            // because the engine swings outboard of the transom. Reading the hull's cell for it would
+            // crop the cowl on hard-over headings, so the cell source is part of the extraction.
+            string cell = prop == null || string.IsNullOrEmpty(prop.CellPath)
+                ? g
+                : $"{g}.{prop.CellPath}";
+
             var data = new RigMeshData
             {
                 RigKey = g,
                 GlobalName = g,
-                W = (int)host.EvaluateNumber($"{g}.W"),
-                H = (int)host.EvaluateNumber($"{g}.H"),
-                PivotX = host.EvaluateNumber($"{g}.pivot.x"),
-                PivotY = host.EvaluateNumber($"{g}.pivot.y"),
+                W = (int)host.EvaluateNumber($"{cell}.W"),
+                H = (int)host.EvaluateNumber($"{cell}.H"),
+                PivotX = host.EvaluateNumber($"{cell}.pivot.x"),
+                PivotY = host.EvaluateNumber($"{cell}.pivot.y"),
                 PxPerMetre = (int)host.EvaluateNumber($"{g}.PX"),
                 DefaultElev = host.EvaluateNumber($"{g}.defaultElev"),
                 Gain = host.EvaluateNumber($"{g}.GAIN"),
@@ -349,12 +412,18 @@ namespace HiddenHarbours.Tools.RigBaking
 
             ReadBayer(host, g, bayerExported, data);
             ReadMaterials(host, g, data);
-            ReadFaces(host, g, data);
+
+            string faceSource = prop == null ? $"{g}.F" : $"{g}.{prop.FaceBuilderCall}";
+            ReadFaces(host, g, faceSource, data);
 
             if (data.Faces.Count == 0)
                 throw new InvalidOperationException(
-                    $"{g}.F is present but empty. The rig builds its face list once at load " +
-                    "(`(function build(){…})`); an empty list means build() did not run.");
+                    prop == null
+                        ? $"{g}.F is present but empty. The rig builds its face list once at load " +
+                          "(`(function build(){…})`); an empty list means build() did not run."
+                        : $"{faceSource} returned no faces. The builder ran but produced nothing — " +
+                          "check the canonical pose's arguments against the rig's own signature " +
+                          "(a mistyped option name silently yields a default-posed empty list).");
 
             return data;
         }
@@ -458,7 +527,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException($"{g}.MATS is empty.");
         }
 
-        static void ReadFaces(IRigScriptHost host, string g, RigMeshData data)
+        /// <param name="faceSource">JS evaluating to the face list — <c>&lt;Global&gt;.F</c> for a
+        /// hull, a builder call at a canonical pose for a fitting.</param>
+        static void ReadFaces(IRigScriptHost host, string g, string faceSource, RigMeshData data)
         {
             // The face list comes across as ONE packed binary blob through the bulk ReadBytes path.
             // Per-property marshalling of ~1,400 faces × 4 verts would erase the engine advantage
@@ -473,7 +544,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 matOrder.Append(JsStringLiteral(m.Name)).Append(',');
 
             string packer =
-                $"globalThis.__hhRigMeshPack=(function(){{var F={g}.F;" +
+                $"globalThis.__hhRigMeshPack=(function(){{var F={faceSource};" +
                 $"var order=[{matOrder.ToString().TrimEnd(',')}];" +
                 "var ix={};order.forEach(function(n,i){ix[n]=i;});" +
                 "var n=0;for(var i=0;i<F.length;i++)n+=F[i].v.length*3;" +
@@ -501,7 +572,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 double db = BitConverter.ToDouble(blob, off); off += 8;
                 if (nv < 3)
                     throw new InvalidOperationException(
-                        $"{g}.F[{i}] has {nv} vertices. A face the rig can fan-triangulate has at least 3.");
+                        $"{faceSource}[{i}] has {nv} vertices. A face the rig can fan-triangulate has at least 3.");
                 var vs = new Vector3d[nv];
                 for (int k = 0; k < nv; k++)
                 {
