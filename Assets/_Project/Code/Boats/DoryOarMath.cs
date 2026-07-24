@@ -50,6 +50,25 @@ namespace HiddenHarbours.Boats
         /// tunable — it must match the sheet <see cref="DoryRockMath"/> selects frames from.</summary>
         public const float RockDegreesPerFrame = 45f;
 
+        // ---- stroke feel: the defaults BOTH oar layers start from -------------------------------
+        // Named here rather than written twice as literals because the sprite layer (DoryOarLayer)
+        // and the mesh layer (DoryOarMeshLayer) must row at the SAME tempo — the owner has to be able
+        // to flip the dory between the two representations and compare the LOOK, not a different
+        // stroke. They stay per-component serialized fields, so he can still tune each; these are only
+        // the shared starting points.
+
+        /// <summary>Frames/sec the 8-frame stroke cycle plays at a full-effort pull (art README: ~9).</summary>
+        public const float DefaultStrokeFramesPerSecond = 9f;
+
+        /// <summary>|oar state| at or below which the oar is idle rather than stroking.</summary>
+        public const float DefaultOarDeadzone = 0.05f;
+
+        /// <summary>How much a gentle pull slows the sweep (0 = never, 1 = fully proportional).</summary>
+        public const float DefaultEffortInfluence = 0.5f;
+
+        /// <summary>Seconds BOTH oars must be idle before they ship rather than trail.</summary>
+        public const float DefaultRestGraceSeconds = 1.2f;
+
         /// <summary>The rock-free/level pose sentinel: <see cref="DirectionalBoatSprite.RockFrame"/> is −1 when
         /// the hull draws its static facing (calm sea, or no rock grid) — the oars must then sit level too.</summary>
         public const int LevelRockFrame = -1;

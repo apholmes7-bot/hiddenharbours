@@ -169,7 +169,50 @@ namespace HiddenHarbours.Tools.RigBaking
                       $"turns about {pivot} m.");
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked fitting at {p.AssetPath} is not usable — see fields.");
+
+            WireVisuals(p, def);
             return def;
+        }
+
+        /// <summary>
+        /// Point every <see cref="HiddenHarbours.Boats.BoatVisualDef"/> that WEARS this fitting at the
+        /// freshly baked def, in the named slot.
+        ///
+        /// <para><b>Field-scoped, exactly like the hull baker's wiring.</b> It writes ONE field and
+        /// leaves everything else — sheets, sorting, variant — alone, so it composes with Build Boat
+        /// Visual Defs in either order rather than racing it. It never CREATES a visual: a fitting is
+        /// worn by a boat that already exists, and inventing one would guess at every other field.</para>
+        /// </summary>
+        static void WireVisuals(in FleetProp p, HullPropMeshDef def)
+        {
+            foreach ((string assetPath, string slot) in p.WornBy)
+            {
+                var visual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>(assetPath);
+                if (visual == null)
+                {
+                    Debug.LogWarning(
+                        $"[rig-prop] {p.Label}: no BoatVisualDef at {assetPath}, so nothing was wired " +
+                        "to wear it. The fitting is baked and committed; run Build Boat Visual Defs " +
+                        "and re-bake to hang it on the boat.");
+                    continue;
+                }
+
+                switch (slot)
+                {
+                    case "OarPort": visual.OarPortMesh = def; break;
+                    case "OarStar": visual.OarStarMesh = def; break;
+                    default:
+                        Debug.LogError(
+                            $"[rig-prop] {p.Label}: unknown fitting slot '{slot}' on {assetPath}. The " +
+                            "prop catalog names a slot the visual has no field for — add the field, or " +
+                            "fix the slot name in HullPropFleet.");
+                        continue;
+                }
+
+                EditorUtility.SetDirty(visual);
+                Debug.Log($"[rig-prop] wired {def.Id} into {assetPath} slot '{slot}'.");
+            }
+            AssetDatabase.SaveAssets();
         }
 
         static Vector3 ReadVector3(IRigScriptHost host, string expr, string what)
