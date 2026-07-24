@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -71,6 +72,17 @@ namespace HiddenHarbours.Tools.RigBaking
         /// everything and <see cref="RigMeshExtractor"/>'s widening never ran.</summary>
         public IReadOnlyList<string> ShimmedSymbols = Array.Empty<string>();
 
+        /// <summary>
+        /// The subset of <see cref="ShimmedSymbols"/> that did not merely have to be made READABLE
+        /// but had to be REBUILT, because the rig has no such symbol at all
+        /// (<see cref="RigMeshSymbols.Reconstructions"/> — today: the dory's material table).
+        ///
+        /// <para>Kept apart from <see cref="ShimmedSymbols"/> because the two are very different
+        /// claims: widening asserts nothing about the art, whereas a reconstruction is OUR reading of
+        /// what the rig's <c>_paint</c> means and has to be adjudicated in pixels.</para>
+        /// </summary>
+        public IReadOnlyList<string> ReconstructedSymbols = Array.Empty<string>();
+
         public int VertexCount
         {
             get { int n = 0; foreach (var f in Faces) n += f.V.Length; return n; }
@@ -87,7 +99,11 @@ namespace HiddenHarbours.Tools.RigBaking
             $"cell {W}×{H}, pivot ({PivotX},{PivotY}), {PxPerMetre} px/m, elev {DefaultElev}°, " +
             (ShimmedSymbols.Count == 0
                 ? "all symbols EXPORTED by the rig"
-                : $"SHIMMED: {string.Join(",", ShimmedSymbols)}");
+                : $"SHIMMED: {string.Join(",", ShimmedSymbols)}") +
+            (ReconstructedSymbols.Count == 0
+                ? ""
+                : $" ⚠️ RECONSTRUCTED (rebuilt from the rig's own values, not merely widened): " +
+                  $"{string.Join(",", ReconstructedSymbols)}");
     }
 
     /// <summary>
@@ -134,6 +150,63 @@ namespace HiddenHarbours.Tools.RigBaking
             { 3, 11, 1, 9 },
             { 15, 7, 13, 5 },
         };
+
+        /// <summary>
+        /// ⚠️ <b>Rigs that predate a convention, and the JS that RECONSTRUCTS the missing symbol from
+        /// the rig's own values.</b>
+        ///
+        /// <para>The ordinary shim widens the exported literal with <c>MATS:MATS</c> — it makes a
+        /// closure-private symbol readable. That only works if the symbol EXISTS. The dory does not
+        /// have one: she is the oldest hull rig in the repo and she predates the <c>MATS</c> table
+        /// entirely, selecting her two ramps inline instead:</para>
+        /// <code>
+        ///   if (f.mat==='iron') col = IRON[clamp(idx-2, 0, 2)];
+        ///   else                col = RAMP[clamp(idx,   0, 6)];
+        /// </code>
+        /// <para>which is the canonical <c>M.ramp[clamp(idx + M.off, 0, M.ramp.length-1)]</c> with
+        /// <c>{wood:{ramp:RAMP,off:0}, iron:{ramp:IRON,off:-2}}</c> — the clamp bounds ARE the ramp
+        /// lengths (RAMP has 7 entries, IRON has 3), so the two forms are the same function, not
+        /// approximations of each other. Every face in her list is <c>mat:'wood'</c>; the iron branch
+        /// is unreachable in her and is reconstructed anyway because <c>_paint</c> has it.</para>
+        ///
+        /// <para><b>Order is load-bearing:</b> the face packer resolves an unknown material name to
+        /// index 0, so the DEFAULT ramp must be the first key — the same fallback the punt writes
+        /// explicitly as <c>MATS[f.mat] || MATS.paint</c>.</para>
+        ///
+        /// <para><b>This is a transcription, and it is not trusted.</b> Reading a rig and declaring
+        /// what it means is exactly how this project has shipped mirrored boats five times. So the
+        /// dory's bake is adjudicated in PIXELS against her own renderer, like every other hull —
+        /// and a wrong ramp is not a subtle failure, it recolours the entire boat. The proper fix is
+        /// still the art director exporting a <c>MATS</c>; on the day she does, deleting the entry
+        /// below changes nothing.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>
+            Reconstructions = new Dictionary<string, IReadOnlyDictionary<string, string>>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["doryIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "{wood:{ramp:RAMP,off:0},iron:{ramp:IRON,off:-2}}",
+                },
+            };
+
+        /// <summary>
+        /// The JS expression the shim should bind <paramref name="symbol"/> to for this rig. Normally
+        /// the symbol's own name (a widening); a <see cref="Reconstructions"/> entry overrides it.
+        /// </summary>
+        public static string ExpressionFor(string scriptPath, string symbol)
+        {
+            string file = Path.GetFileName(scriptPath ?? string.Empty);
+            return Reconstructions.TryGetValue(file, out var bySymbol)
+                   && bySymbol.TryGetValue(symbol, out string expr)
+                ? expr
+                : symbol;
+        }
+
+        /// <summary>True when this rig/symbol pair is reconstructed rather than merely widened —
+        /// reported separately because the two are very different claims.</summary>
+        public static bool IsReconstructed(string scriptPath, string symbol) =>
+            ExpressionFor(scriptPath, symbol) != symbol;
     }
 
     /// <summary>
@@ -234,12 +307,22 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"{string.Join(", ", RigMeshSymbols.Required)} from {scriptPath} directly. " +
                         "⚠️ Do NOT fix this by editing docs/art/rigs/**; that is the art director's source.");
 
+                var widened_ = missing.Where(s => !RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList();
+                var rebuilt = missing.Where(s => RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList();
+
                 Debug.LogWarning(
                     $"[rig-mesh] {scriptPath}: shimmed {string.Join(", ", missing)} via an IN-MEMORY " +
                     "widening because the rig does not export them (ADR 0022 open question #4). The " +
                     "file on disk was not touched. Ask the art director to add " +
-                    $"`{string.Join(", ", missing)},` to the exported literal and this warning — and the " +
-                    "shim — disappear on their own.");
+                    $"`{string.Join(", ", widened_)},` to the exported literal and this warning — and the " +
+                    "shim — disappear on their own." +
+                    (rebuilt.Count == 0
+                        ? ""
+                        : $"\n⚠️ {string.Join(", ", rebuilt)} was RECONSTRUCTED, not widened: this rig " +
+                          "has no such symbol at all, so the shim rebuilt it from the rig's own values " +
+                          "(RigMeshSymbols.Reconstructions). That is a transcription of what the rig's " +
+                          "_paint does — it is adjudicated in pixels by the acceptance fixture, never " +
+                          "trusted on its face."));
             }
 
             var data = new RigMeshData
@@ -260,6 +343,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 Keyline = ParseHex(host.EvaluateString($"{g}.KEY")),
                 BayerWasExported = bayerExported,
                 ShimmedSymbols = missing,
+                ReconstructedSymbols =
+                    missing.Where(s => RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList(),
             };
 
             ReadBayer(host, g, bayerExported, data);
@@ -310,8 +395,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     "guess which of several to aim at. Export " +
                     $"{string.Join(", ", RigMeshSymbols.Required)} from the rig instead.");
 
+            // `sym:sym` for a plain widening; `sym:<expression>` for a rig that predates the
+            // convention and has to have the symbol RECONSTRUCTED from its own values. The
+            // expression is evaluated inside the rig's own closure, which is why it may name the
+            // rig's private consts (the dory's RAMP/IRON) — see RigMeshSymbols.Reconstructions.
             var insert = new StringBuilder();
-            foreach (string sym in missingSymbols) insert.Append(' ').Append(sym).Append(':').Append(sym).Append(',');
+            foreach (string sym in missingSymbols)
+                insert.Append(' ').Append(sym).Append(':')
+                      .Append(RigMeshSymbols.ExpressionFor(scriptPathForMessages, sym)).Append(',');
 
             var m = matches[0];
             return source.Insert(m.Index + m.Length, insert.ToString());

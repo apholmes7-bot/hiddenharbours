@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using HiddenHarbours.Core;
 using UnityEditor;
 using UnityEngine;
@@ -32,45 +35,136 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         const string HullMeshFolder = "Assets/_Project/Data/Boats/HullMeshes";
 
-        /// <summary>The first mesh hull end-to-end: the lobster boat (she has both a mesh and a baked
-        /// sheet to compare — ADR 0022's own phasing). Also wires her BoatVisualDef to the def and
-        /// flips it to the Mesh variant, so the bake IS the switch-on.</summary>
-        [MenuItem(RigMeshGate.MenuRoot + "/Bake Lobster Boat hull-mesh asset", priority = 220)]
-        public static void BakeLobsterBoat()
-        {
-            var def = Bake("docs/art/rigs/lobsterBoatIsoRig.js", "LobsterBoatIso",
-                           $"{HullMeshFolder}/LobsterBoatIsoHullMesh.asset",
-                           "hullmesh.lobster_boat_iso");
+        /// <summary>
+        /// <b>The whole fleet, in one pass (ADR 0022 phase 6).</b> Every hull in
+        /// <see cref="HullMeshFleet.Hulls"/>: extract, build, measure, write the def, then either
+        /// WIRE the existing sheet-built visual or CREATE a mesh-only one.
+        ///
+        /// <para>Phases 4 and 5 each hand-wrote one of these. That was the right shape while the
+        /// question was still "does this work at all"; phase 5 answered it (the dragger needed zero
+        /// changes to the baker, the shader or the seam) and the owner ruled the whole fleet goes
+        /// mesh. So the per-hull code became per-hull data and this became the entry point.</para>
+        ///
+        /// <para><b>One hull's failure does not abort the rest.</b> A bake is a long editor operation
+        /// over eleven hulls; stopping at the first exception would mean the owner learns about one
+        /// problem per run. Every hull is attempted, failures are collected, and the run ends with a
+        /// single report — errors last, because that is what he needs to read.</para>
+        /// </summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake ALL fleet hull meshes", priority = 219)]
+        public static void BakeFleet() => BakeFleetInternal(HullMeshFleet.Hulls);
 
-            // Wire the visual def: HullMesh + Variant = Mesh. Field-scoped, so a re-run of Build Boat
-            // Visual Defs (which does not know these fields) cannot undo it.
-            var visual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>(
-                "Assets/_Project/Data/Boats/Visuals/LobsterBoatIso.asset");
-            if (visual != null)
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake ALL fleet hull meshes", validate = true)]
+        static bool BakeFleetValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the whole-fleet bake.</summary>
+        public static void BakeFleetCli()
+        {
+            try
             {
-                visual.HullMesh = def;
-                visual.Variant = HiddenHarbours.Boats.BoatHullVariant.Mesh;
-                EditorUtility.SetDirty(visual);
-                AssetDatabase.SaveAssets();
-                Debug.Log($"[rig-mesh] {visual.Id}: Variant → Mesh, HullMesh → {def.Id}. Her sprite " +
-                          "compass stays wired — that is the A/B comparison (V at the helm).");
+                int failed = BakeFleetInternal(HullMeshFleet.Hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI fleet bake FAILED: {failed} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log("[rig-mesh] CLI fleet bake OK.");
             }
-            else
+            catch (Exception e)
             {
-                Debug.LogWarning("[rig-mesh] LobsterBoatIso.asset not found — the hull-mesh def was " +
-                                 "baked but no visual points at it. Run Build Boat Visual Defs first.");
+                Debug.LogError($"[rig-mesh] CLI fleet bake FAILED: {e}");
+                EditorApplication.Exit(1);
             }
         }
+
+        /// <summary>Returns the number of hulls that failed. Reports every hull either way.</summary>
+        static int BakeFleetInternal(IReadOnlyList<FleetHull> hulls)
+        {
+            var report = new StringBuilder($"[rig-mesh] fleet bake — {hulls.Count} hulls\n");
+            var failures = new List<string>();
+
+            for (int i = 0; i < hulls.Count; i++)
+            {
+                FleetHull hull = hulls[i];
+                try
+                {
+                    EditorUtility.DisplayProgressBar(
+                        "Baking fleet hull meshes", hull.Label, (i + 0.5f) / hulls.Count);
+
+                    HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath, hull.MeshId);
+                    WireVisuals(hull, def);
+
+                    long sheetBytes = (long)def.CellW * def.CellH * 4 * 32 * 4;  // 32 facings × 4 rock, RGBA32
+                    long meshBytes = new FileInfo(hull.MeshAssetPath).Length;
+                    report.Append(
+                        $"  ✓ {hull.Label}\n" +
+                        $"      {def.Mesh.vertexCount} verts / {def.Mesh.triangles.Length / 3} tris, " +
+                        $"cell {def.CellW}×{def.CellH} @ {def.PxPerMetre} px/m, elev {def.ElevationDeg}°\n" +
+                        $"      azimuth {(def.AzimuthCounterClockwise ? "CCW" : "CW")} (MEASURED), " +
+                        $"rock roll {def.RockRollDegrees}° pitch {def.RockPitchDegrees}° " +
+                        $"heave {def.RockHeavePixels}px\n" +
+                        $"      asset {meshBytes / 1024.0:F1} KB vs a {sheetBytes / 1048576.0:F1} MiB " +
+                        $"sheet set — {sheetBytes / (double)meshBytes:N0}× smaller\n");
+                }
+                catch (Exception e)
+                {
+                    failures.Add(hull.Key);
+                    report.Append($"  ✗ {hull.Label}: FAILED — {e.Message}\n");
+                }
+            }
+
+            EditorUtility.ClearProgressBar();
+            report.Append(failures.Count == 0
+                ? "\n  All hulls baked. The fleet is mesh."
+                : $"\n  ⚠️ {failures.Count} FAILED: {string.Join(", ", failures)}");
+
+            if (failures.Count == 0) Debug.Log(report.ToString());
+            else Debug.LogError(report.ToString());
+            return failures.Count;
+        }
+
+        /// <summary>The first mesh hull end-to-end: the lobster boat (she has both a mesh and a baked
+        /// sheet to compare — ADR 0022's own phasing). Kept as its own item because she is the A/B
+        /// hull and gets re-baked on her own more than any other; it is a catalog lookup now, so it
+        /// cannot drift from what the fleet bake does to her.</summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Lobster Boat hull-mesh asset", priority = 220)]
+        public static void BakeLobsterBoat() => BakeOne("lobsterBoat");
 
         [MenuItem(RigMeshGate.MenuRoot + "/Bake Lobster Boat hull-mesh asset", validate = true)]
         static bool BakeLobsterBoatValidate() => RigMeshGate.Enabled;
 
         /// <summary>Headless entry (-executeMethod) for the same bake.</summary>
-        public static void BakeLobsterBoatCli()
+        public static void BakeLobsterBoatCli() => BakeOneCli("lobsterBoat");
+
+        /// <summary>
+        /// <b>The hull that motivated the ADR (phase 5): the side dragger.</b> 25 m of riveted steel
+        /// whose sheet set would have been <b>433.1 MiB</b> at 32 facings × 4 rock frames — against
+        /// 143.9 KB of mesh, a ratio of ~3,082×. Mesh-only, so her bake CREATES her visual rather than
+        /// wiring one; see <see cref="EnsureMeshOnlyVisual"/> for why that is a different job.
+        /// </summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", priority = 221)]
+        public static void BakeSideDragger() => BakeOne("sideDragger");
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", validate = true)]
+        static bool BakeSideDraggerValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the dragger's bake.</summary>
+        public static void BakeSideDraggerCli() => BakeOneCli("sideDragger");
+
+        /// <summary>Bake one catalog hull by key, and wire whatever visuals it owns.</summary>
+        public static HullMeshDef BakeOne(string key)
+        {
+            FleetHull hull = HullMeshFleet.Get(key);
+            HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath, hull.MeshId);
+            WireVisuals(hull, def);
+            return def;
+        }
+
+        static void BakeOneCli(string key)
         {
             try
             {
-                BakeLobsterBoat();
+                BakeOne(key);
                 Debug.Log("[rig-mesh] CLI bake OK.");
             }
             catch (Exception e)
@@ -81,47 +175,47 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// <b>The hull that motivated the ADR (phase 5): the side dragger.</b> 25 m of riveted steel
-        /// whose sheet set would have been <b>433.1 MiB</b> at 32 facings × 4 rock frames — against
-        /// 143.9 KB of mesh, a ratio of ~3,082×.
-        ///
-        /// <para><b>She is MESH-ONLY, and that changes what this does.</b> The lobster already had a
-        /// <see cref="HiddenHarbours.Boats.BoatVisualDef"/> built from her sheet, so her bake only had
-        /// to WIRE it. The dragger has no sheet and needs none, so there is no other producer: for a
-        /// hull with no baked art, the "visual" IS the mesh plus the two art facts (bake elevation and
-        /// zero heading) that come straight out of this bake. So this creates it.</para>
-        ///
-        /// <para><b>What it deliberately does NOT create:</b> her <c>BoatHullDef</c> — mass, thrust,
-        /// hold, seakeeping. Those are gameplay numbers the owner tunes, and an art baker has no
-        /// business authoring them (they live in their own committed asset, one entity per file,
-        /// rule 2). Re-running this can therefore never stomp a tuning pass.</para>
+        /// Point every <c>BoatVisualDef</c> this hull dresses at the freshly baked mesh. Which of the
+        /// two paths runs is the catalog's <see cref="FleetHull.HasBakedSheet"/> — see that field for
+        /// why the difference matters to the owner rather than only to the code.
         /// </summary>
-        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", priority = 221)]
-        public static void BakeSideDragger()
+        static void WireVisuals(in FleetHull hull, HullMeshDef def)
         {
-            var def = Bake("docs/art/rigs/sideDraggerIsoRig.js", "SideDraggerIso",
-                           $"{HullMeshFolder}/SideDraggerIsoHullMesh.asset",
-                           "hullmesh.side_dragger_iso");
-            EnsureMeshOnlyVisual("Assets/_Project/Data/Boats/Visuals/SideDraggerIso.asset",
-                                 "visual.side_dragger_iso", def);
+            for (int v = 0; v < hull.VisualAssetPaths.Length; v++)
+            {
+                string path = hull.VisualAssetPaths[v];
+                if (hull.HasBakedSheet) WireSheetedVisual(path, def);
+                else EnsureMeshOnlyVisual(path, hull.VisualIds[v], def);
+            }
         }
 
-        [MenuItem(RigMeshGate.MenuRoot + "/Bake Side Dragger hull-mesh asset", validate = true)]
-        static bool BakeSideDraggerValidate() => RigMeshGate.Enabled;
-
-        /// <summary>Headless entry (-executeMethod) for the dragger's bake.</summary>
-        public static void BakeSideDraggerCli()
+        /// <summary>
+        /// Wire a visual that was BUILT FROM A SHEET: flip it to the mesh variant and point it at the
+        /// def, leaving its sprite compass fully populated.
+        ///
+        /// <para><b>Leaving the compass is the point, not an oversight.</b> It is what keeps the
+        /// owner's V-key A/B alive at the helm — the only check on the mesh path that works by eye
+        /// rather than by test — and it is what lets the sprite-only overlays (oars, outboards) keep
+        /// binding. Field-scoped for the same reason the mesh-only path is: a re-run of Build Boat
+        /// Visual Defs does not know these two fields, so it cannot undo them, and nothing the owner
+        /// changes in the Inspector is stomped by a re-bake.</para>
+        /// </summary>
+        static void WireSheetedVisual(string assetPath, HullMeshDef def)
         {
-            try
+            var visual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>(assetPath);
+            if (visual == null)
             {
-                BakeSideDragger();
-                Debug.Log("[rig-mesh] CLI bake OK.");
+                Debug.LogWarning($"[rig-mesh] {assetPath} not found — {def.Id} was baked but no visual " +
+                                 "points at it. Run Build Boat Visual Defs first, then re-bake.");
+                return;
             }
-            catch (Exception e)
-            {
-                Debug.LogError($"[rig-mesh] CLI bake FAILED: {e}");
-                EditorApplication.Exit(1);
-            }
+
+            visual.HullMesh = def;
+            visual.Variant = HiddenHarbours.Boats.BoatHullVariant.Mesh;
+            EditorUtility.SetDirty(visual);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[rig-mesh] {visual.Id}: Variant → Mesh, HullMesh → {def.Id}. Her sprite " +
+                      "compass stays wired — that is the A/B comparison (V at the helm).");
         }
 
         /// <summary>
@@ -200,6 +294,27 @@ namespace HiddenHarbours.Tools.RigBaking
             EnsureFolder(HullMeshFolder);
             var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(assetPath);
             bool created = def == null;
+
+            // ⚠️ A FILE THAT EXISTS BUT DOES NOT LOAD IS NOT A NEW ASSET — IT IS A BROKEN ONE.
+            //
+            // Treating it as new is silent data loss: the create path runs field initialisers, so
+            // every field this baker does NOT write is quietly reset — today that is
+            // RestingDraftMeters, which the hull-waterline work tunes per hull and no re-bake has any
+            // business touching. MEASURED 2026-07-23, and it is not hypothetical: a run whose
+            // Library/ carried a stale script→guid map wrote `m_Script: {fileID: 0}` into every def,
+            // after which LoadAssetAtPath<HullMeshDef> returned null for assets that were sitting
+            // right there, and the NEXT run "created" them over the top and reset the drafts to 0.
+            // Failing loudly turns a silent stomp into a stop.
+            if (created && File.Exists(assetPath))
+                throw new InvalidOperationException(
+                    $"{assetPath} exists on disk but did not load as a HullMeshDef, so this bake was " +
+                    "about to recreate it and silently reset every field the baker does not write " +
+                    "(RestingDraftMeters among them).\n" +
+                    "Usual cause: a stale or borrowed Library/ — the script→guid map is wrong, the " +
+                    "asset serialises with `m_Script: {fileID: 0}`, and it stops resolving to its " +
+                    "type. Delete Library/ and let the project reimport, then bake again. If the " +
+                    "asset really is meant to be replaced, delete it (and its .meta) deliberately.");
+
             if (created) def = ScriptableObject.CreateInstance<HullMeshDef>();
 
             def.Id = id;
