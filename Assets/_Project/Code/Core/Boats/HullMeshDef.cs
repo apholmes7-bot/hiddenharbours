@@ -113,11 +113,18 @@ namespace HiddenHarbours.Core
                  "hull can never climb past this line: the waterline still rides the EXTERIOR " +
                  "planking, but never boards the boat. 0 = clamp off (the pre-fix render, " +
                  "byte-identical). GAME-SIDE like RestingDraftMeters — the baker never writes it, " +
-                 "so it survives re-bakes. Start from the rig source's deck constant (the rig's " +
-                 "DECK), then SHAVE it down until the storm acceptance shows zero boarded water — " +
-                 "the shave absorbs the baked-iso beam residual (~0.17 height-metres per rig-metre " +
-                 "of half-beam; docs/design/water-rendering.md §24). Lower = drier = safer.")]
+                 "so it survives re-bakes. The rig source's own deck constant (the rig's DECK); " +
+                 "the storm acceptance adjudicates it in pixels. Lower = drier = safer.")]
         [Min(0f)] public float WatertightDeckHeightMeters = 0f;
+
+        [Tooltip("The watertight clamp's HALF-BEAM (rig ground metres): how far the hull's " +
+                 "ground lines reach abeam of the root. Load-bearing for the far-rail beam " +
+                 "residual — a water sample fights a LOWER height on each farther ground line " +
+                 "(r − tan(elev)·ry), so the clamp must protect the worst line within this reach " +
+                 "(docs/design/water-rendering.md §24). GAME-SIDE like the deck height (the " +
+                 "baker never writes it). Slightly generous is safe (a touch drier); too small " +
+                 "re-opens far-rail flooding — the storm acceptance adjudicates.")]
+        [Min(0f)] public float WatertightHalfBeamMeters = 0f;
 
         /// <summary>
         /// True when this def can actually be drawn: a mesh, at least one non-empty ramp (≤ the

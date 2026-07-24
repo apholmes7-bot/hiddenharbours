@@ -86,6 +86,7 @@ namespace HiddenHarbours.Art
                 CellH = def.CellH,
                 ElevationDeg = def.ElevationDeg,
                 WatertightDeckHeightMeters = def.WatertightDeckHeightMeters,
+                WatertightHalfBeamMeters = def.WatertightHalfBeamMeters,
             };
         }
 

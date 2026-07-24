@@ -204,6 +204,7 @@ MonoBehaviour:
   RockHeavePixels: 1
   RestingDraftMeters: 1.1
   WatertightDeckHeightMeters: 2.05
+  WatertightHalfBeamMeters: 3.5
 --- !u!43 &3494189248910243859
 Mesh:
   m_ObjectHideFlags: 0

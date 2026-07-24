@@ -2030,30 +2030,71 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
   painted the sea over the boat's inside. Early phase-3 called that flooded cockpit "the known
   intermediate state"; the owner has judged it: it is a defect, and it is now impossible by
   construction. The fix stays inside the per-hull-constant discipline (never a per-vertex touch
-  of the rig's own convention): each throttled pose push, the renderer bounds the HIGHEST surface
-  the hull can currently meet — `DisplacedWaterMath.MaxSurfaceLiftMeters`, the max of the
-  shader-twin field (`WaveFieldBridge.ShaderTwinSample` over the SAME published `_WaveTrain*`
-  globals the water's vertex stage lifts with — the ONE-SEA rule closed at the globals) over the
-  hull footprint (centre + two 8-point rings at half the rig cell's width), times the frame's
-  effective exaggeration (`WaterIsoDepthFrame.Exaggeration`, published per tick by the surface;
-  shore fade deliberately taken as 1 — an offshore bound that can only over-dry, never flood) —
-  and clamps the Z-BIAS heave (and ONLY the z bias; the on-screen ride stays the honest shared
-  heave) so that bound sits at most `HullMeshDef.WatertightDeckHeightMeters` above the keel
-  (`DisplacedWaterMath.WatertightZHeaveMeters` = `max(heave, maxLift − deckHeight)`). The deck
-  height is GAME-SIDE per-hull data like `RestingDraftMeters` (the baker never writes it; 0 =
-  clamp off, byte-identical pre-fix render): the rig sources' own deck constants — lobster boat
-  0.5 m (her cockpit sole sits AT her design waterline, so her waterline tops out at her marks),
-  side dragger 2.05 m (0.95 m of honest exterior climb above her resting waterline before the
-  clamp engages). Result: water still climbs the exterior planking with every wave — at the
-  crest-at-root instant the clamp is a no-op and the climb is fully truthful — but the moment a
-  crest-off-the-root differential would put water inside the bulwarks, the whole calibrated frame
-  rides up just enough that it cannot. Displaced OFF there is no frame and no clamp (the A/B
-  byte-identity contract holds); a silent wave field bounds the lift at 0 and the clamp is inert.
-  Proof: `HullWaterlineAcceptanceTests`' storm suite (reference wind ×2.2, sea state 1.0) pins
-  BOARDED water — covered hull pixels disconnected from the bottom-contiguous waterline run — at
-  exactly 0 for both committed hulls at the storm's most dangerous instants, alongside a live
-  exterior run; the unclamped control (deck height 0, the pre-fix state) must flood loudly or
-  the metric proved nothing.
+  of the rig's own convention) and is a PER-POINT law, measured into shape in pixels — the
+  lineage matters: a 1:1 differential clamp flooded the cockpit (the projections are not 1:1); a
+  blanket footprint-max bound dry-docked the dragger (distant crests that cannot touch a hull
+  still inflated it); a root-line-only per-point law re-flooded the far rail (the beam residual
+  is per-ground-line). Each cut was adjudicated by the acceptance suite before the complete law
+  below replaced it:
+
+  - **Who fights whom.** The hull's height projects at cos(elev) px/m and its ground at
+    sin(elev); the water's lift moves its pixels at 1 px/m (`ws.y += lift`); both depths obey
+    the calibrated convention above. Solving the pixel-share: a water sample at ground offset
+    `Δ` from the hull's ROOT line with lift `L` fights, on EACH hull ground line `ry`, exactly
+    the height `r(ry) = r_f − tan(elev)·ry` where `r_f = (Δ + L)/cos`, and wins iff
+    `r(ry)·(cos²+sin) < L·(cos+sin) − zHeave·sin + ry·cos·(1−sin)` — the climb rate ≈1.146
+    rig-m per metre of lift at 40°, a z-heave counterweight of only ≈0.523, and the far-rail
+    beam residual as an exact per-line term.
+  - **The clamp** (`DisplacedWaterMath.WatertightZHeaveMeters`, per pose push): scan the
+    footprint (x ±half the rig cell's width, step 2 m; y ±6 m — all the water that can share a
+    pixel with the hull — step 0.5 m, the axis that bounds the blind spot), evaluate the
+    shader-twin field (`WaveFieldBridge.ShaderTwinSample` over the SAME published `_WaveTrain*`
+    globals the water's vertex stage lifts with — the ONE-SEA rule closed at the globals —
+    times the frame's published effective exaggeration, shore fade taken as 1: an offshore
+    bound that can only over-dry, never flood). Every sample whose root-line fight lands ON OR
+    ABOVE the deck line (`r_f ≥ WatertightDeckHeightMeters`) demands protection of the WORST
+    ground line it threatens — `ry* = min(WatertightHalfBeamMeters, (r_f − deckHeight)/tan)` —
+    i.e. `zh ≥ (L·(cos+sin) − (r_f − tan·ry*)·(cos²+sin) + ry*·cos·(1−sin))/sin`; the Z-BIAS
+    heave (and ONLY the z bias — the on-screen ride stays the honest shared heave) is raised to
+    the maximum demand plus an engagement-ramped safety
+    (`WatertightDemandSafetyMeters` = 0.4 zh-m: full where protection binds hard, exactly zero
+    at the no-clamp boundary — daily seas stay bit-untouched; it buys out the discrete scan's
+    between-station residue, measured as 16–53 px single-instant leaks without it). Samples
+    fighting the open planking BELOW the deck line demand NOTHING — the exterior waterline
+    keeps every centimetre of truthful climb the interior allows, storms included.
+  - **The data.** `HullMeshDef.WatertightDeckHeightMeters` + `WatertightHalfBeamMeters` are
+    GAME-SIDE per-hull data like `RestingDraftMeters` (the baker never writes them; deck height
+    0 = clamp off, byte-identical pre-fix render): the rig sources' own constants — lobster
+    sole DECK 0.50 / half-beam 2.5 (station 2.20 committed generous: the washboards ride the
+    sheer outside the station line, and only this value answers in the capped protection
+    branch), side dragger working deck DECK 2.05 / half-beam 3.50 ("max beam 7 m"). All
+    measured green 2026-07-23.
+
+  Result: water still climbs the exterior planking with every wave, but the moment a crest would
+  put water inside the bulwarks, the calibrated frame rides up exactly enough that it cannot.
+  Per-hull looks follow the geometry honestly: the DRAGGER (real freeboard — 2.05 m deck over
+  1.1 m draft) keeps her daily-sea waterline essentially clamp-free (her reference-sea demands
+  measure ≈ 0) and wears a bounded band even in the gale; the LOBSTER — whose sole sits AT her
+  design waterline — is pinned at her marks whenever the local sea could top them, so her share
+  of the living waterline is the trough swing (the sea drops away, bares her planking, and
+  returns to her marks). A per-face interior mask in the facet shader is the known upgrade that
+  would give a sole-at-the-waterline hull an over-the-marks climb too — a shader-side follow-up,
+  deliberately out of this fix's C#-only scope. Displaced OFF there is no frame and no clamp
+  (the A/B byte-identity contract holds); a silent wave field demands nothing and the clamp is
+  inert.
+  Proof: `HullWaterlineAcceptanceTests` — the per-point law, its worst-line term and the ramped
+  safety pinned HEADLESS (CI-adjudicated) against an independent reconstruction over the packed
+  reference field, plus the OFF states (deck height 0 / silent field) bit-exact; the GPU storm
+  suite (reference wind ×2.2, sea state 1.0 — a full gale) pins BOARDED water (covered hull
+  pixels disconnected from the bottom-contiguous waterline run) at SPECK LEVEL — ≤ 64 px, a
+  1–2 px thin-rigging residue tolerance sitting 30–150× under the measured defect class
+  (1,800–9,900 px of solid interior water) — for BOTH committed hulls at the storm's most
+  dangerous instants (crests scanned at the root and four footprint offsets; a gale deliberately
+  demands DRYNESS only — interior protection may occupy the whole freeboard there); the
+  reference-sea production tests own the climb contract — the dragger's living daily band, the
+  lobster's trough swing, speck-level boarding in daily seas (lobster measures exactly 0); and
+  the unclamped control (deck height 0, the pre-fix state) must flood loudly or the metric
+  proved nothing.
 - **Deck corollary (phase-4 note):** while the sea is displaced, a deck occupant that wants to
   interleave with ITS hull must ride the hull's frame (parent under the hull renderer or apply the
   same registry frame) — a raw world-z≈0 deck renderer sits far NEARER than a calibrated hull.

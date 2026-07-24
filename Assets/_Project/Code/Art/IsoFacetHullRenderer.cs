@@ -36,6 +36,9 @@ namespace HiddenHarbours.Art
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.WatertightDeckHeightMeters"/>).
         /// 0 (the default) = clamp off, the pre-fix render byte-identical.</summary>
         public float WatertightDeckHeightMeters;
+        /// <summary>The clamp's half-beam reach (rig ground metres) — the far-rail residual's
+        /// exact term (<see cref="HiddenHarbours.Core.HullMeshDef.WatertightHalfBeamMeters"/>).</summary>
+        public float WatertightHalfBeamMeters;
     }
 
     /// <summary>
@@ -352,23 +355,24 @@ namespace HiddenHarbours.Art
                 Vector3 root = transform.position;
                 float heaveMeters = _heavePixels / (float)_setup.PxPerMetre;
                 // THE WATERTIGHT CLAMP (owner playtest 2026-07-23): the z-bias heave — and only
-                // the z bias; the visual ride above stays the honest shared heave — is raised so
-                // the highest surface currently on the hull's footprint (the same published field
-                // the water shader lifts with, exaggeration included) sits at most the def's
-                // deck-height above the keel. Water still climbs the exterior planking with every
-                // wave; it can never climb past the line where it would board the boat. Deck
-                // height 0 (unset def) or a silent field (no bridge) leaves this byte-inert.
+                // the z bias; the visual ride above stays the honest shared heave — is raised
+                // exactly enough that no water sample on the hull's footprint (the same
+                // published field the water shader lifts with, exaggeration included) can win
+                // the shared z-test against any hull face above the def's deck line. Water
+                // still climbs the exterior planking with every wave; it can never climb past
+                // the line where it would board the boat. Deck height 0 (unset def) or a
+                // silent field (no bridge) leaves this byte-inert.
                 float zHeaveMeters = heaveMeters;
                 if (_setup.WatertightDeckHeightMeters > 0f)
                 {
                     WaveFieldBridge.ReadPublishedField(out Vector4 t0, out Vector4 t1,
                                                        out Vector4 t2, out Vector4 t3,
                                                        out Vector4 ph, out Vector4 fp);
-                    float maxLift = DisplacedWaterMath.MaxSurfaceLiftMeters(
-                        new Vector2(root.x, root.y), _footprintRadiusMeters,
-                        in t0, in t1, in t2, in t3, in ph, in fp, isoFrame.Exaggeration);
                     zHeaveMeters = DisplacedWaterMath.WatertightZHeaveMeters(
-                        heaveMeters, maxLift, _setup.WatertightDeckHeightMeters);
+                        heaveMeters, _setup.WatertightDeckHeightMeters,
+                        _setup.WatertightHalfBeamMeters,
+                        new Vector2(root.x, root.y), _footprintRadiusMeters,
+                        in t0, in t1, in t2, in t3, in ph, in fp, in isoFrame);
                 }
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            - root.z;
