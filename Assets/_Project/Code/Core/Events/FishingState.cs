@@ -126,14 +126,49 @@ namespace HiddenHarbours.Core
         /// counting the fall — owner decision #4). 0 on the cast path and outside a live drop.</summary>
         public readonly float RigDepthM;
 
-        /// <summary>Full presenter-wave constructor — sets every field, including the cast/rig
-        /// presentation reads.</summary>
+        /// <summary>
+        /// <b>WHICH WAY SHE IS PULLING</b> — the unit direction of the hooked fish's current run, in world
+        /// space. Zero outside a live v2 fight (and whenever she isn't running).
+        ///
+        /// <para>This is the single most important read in the fight and the reason it is published rather
+        /// than inferred: the player's lean is SCORED against this exact vector, so presentation must be
+        /// able to draw this exact vector. Deriving it from frame-to-frame position instead — the obvious
+        /// shortcut — silently disagrees with it, because a fish can be mid-run (a direction you are being
+        /// judged on) while barely moving (a hover in her choreography). A player leaning against what the
+        /// water showed them would then be penalised for it. The cast preview shipped with precisely that
+        /// bug — the preview and the resolver computing one quantity two different ways — and this field
+        /// exists so the fight never repeats it.</para>
+        /// </summary>
+        public readonly float FishRunDirX;
+
+        /// <summary>World-space Y of her run direction — see <see cref="FishRunDirX"/>.</summary>
+        public readonly float FishRunDirY;
+
+        /// <summary>Full constructor — sets every field, including her published run direction.</summary>
+        public FishingState(FishingPhase phase, float tension01, float landing01,
+                            string fishId, string displayName, FishCategory category, float weightKg,
+                            float depth01, bool slackWindowOpen, float rodBend01,
+                            float fishOffsetX, float fishOffsetY,
+                            float castCharge01, float castAimX, float castAimY, float rigDepthM,
+                            float fishRunDirX, float fishRunDirY)
+            : this(phase, tension01, landing01, fishId, displayName, category, weightKg,
+                   depth01, slackWindowOpen, rodBend01, fishOffsetX, fishOffsetY,
+                   castCharge01, castAimX, castAimY, rigDepthM)
+        {
+            FishRunDirX = fishRunDirX;
+            FishRunDirY = fishRunDirY;
+        }
+
+        /// <summary>Presenter-wave constructor (preserved) — her run direction defaults to neutral (0,0),
+        /// so every earlier caller compiles and behaves unchanged.</summary>
         public FishingState(FishingPhase phase, float tension01, float landing01,
                             string fishId, string displayName, FishCategory category, float weightKg,
                             float depth01, bool slackWindowOpen, float rodBend01,
                             float fishOffsetX, float fishOffsetY,
                             float castCharge01, float castAimX, float castAimY, float rigDepthM)
         {
+            FishRunDirX = 0f;
+            FishRunDirY = 0f;
             Phase = phase;
             Tension01 = tension01;
             Landing01 = landing01;

@@ -65,7 +65,8 @@ namespace HiddenHarbours.Tests.EditMode
             RodFightMovement pattern = RodFightMovement.Darter, float strength = 0.5f,
             float run = 1.6f, float slack = 1.2f, float jitter = 0.3f,
             float rise = 0.65f, float fall = 0.7f, float fill = 0.32f,
-            float runPressure = 0.3f, float relief = 0.45f, float surfaceAt = 0.5f)
+            float runPressure = 0.3f, float relief = 0.45f, float surfaceAt = 0.5f,
+            float give = 0f, float cap = 0.15f, float holdsDeep = 0.35f, float roamScale = 1f)
         {
             var def = ScriptableObject.CreateInstance<RodFightDef>();
             def.Id = "rodfight.test";
@@ -78,6 +79,12 @@ namespace HiddenHarbours.Tests.EditMode
             def.runTensionPressure = runPressure;
             def.counterSteerRelief = relief;
             def.surfaceThreshold01 = surfaceAt;
+            // The give-back defaults OFF here so every pre-existing test keeps judging the fight it was
+            // written against; the give-back suite opts in explicitly.
+            def.lineGiveBackPerSec = give;
+            def.maxGiveBack01 = cap;
+            def.HoldsDeep01 = holdsDeep;
+            def.RoamRadiusScale = roamScale;
             _spawned.Add(def);
             return def;
         }
@@ -193,6 +200,138 @@ namespace HiddenHarbours.Tests.EditMode
             float cramped = deep.FishOffset(3f, 0.4f).magnitude;
             float full = deep.FishOffset(3f, 1f).magnitude;
             Assert.Less(cramped, full, "the deep fraction genuinely shrinks the excursion");
+        }
+
+        // ---- she takes a little line back (owner's ruling 2026-07-23) ------------------------
+
+        [Test]
+        public void EasingThroughARun_LosesGround_AndLeaningAgainstHerHoldsIt()
+        {
+            // Easing off is the safe play for your LINE — and it now has a price. Leaning against her
+            // while you ease pays that price back: at a full counter-lean she takes nothing.
+            var loose = new RodFightSim(MakeDef(give: 0.2f), new System.Random(4));
+            var held = new RodFightSim(MakeDef(give: 0.2f), new System.Random(4));
+
+            // Bank some ground first (both identically), so there is something to lose — but stop well
+            // short of landing her, or the fight ends and there is nothing left to take back.
+            for (int i = 0; i < 400 && loose.Landing01 < 0.5f; i++)
+            {
+                bool reel = loose.Effort01 <= 0f;
+                loose.Tick(0.02f, reel, -1f);
+                held.Tick(0.02f, reel, -1f);
+            }
+            Assert.Greater(loose.Landing01, 0f, "the setup must actually win some ground");
+            Assert.IsFalse(loose.IsOver, "…without finishing the fight");
+            float banked = loose.Landing01;
+
+            // Now ride out her runs: one player eases with no lean, the other leans fully. Strictly
+            // bounded — every exit condition is on the loop counter, never on a state that can freeze.
+            int ran = 0;
+            for (int i = 0; i < 600 && !loose.IsOver && !held.IsOver; i++)
+            {
+                bool running = loose.Effort01 > 0f;
+                loose.Tick(0.02f, false, 0f);     // easing, no lean — she takes line
+                held.Tick(0.02f, false, -1f);     // easing, full lean — she is held
+                if (running) ran++;
+            }
+
+            Assert.Greater(ran, 0, "she must actually run for this to mean anything");
+            Assert.Less(loose.Landing01, banked, "easing through her run with no lean gives ground back");
+            Assert.Greater(held.Landing01, loose.Landing01,
+                "leaning against her while you ease holds the ground you won");
+        }
+
+        [Test]
+        public void InASlackWindow_SheTakesNothing_HoweverYouHoldTheRod()
+        {
+            var sim = new RodFightSim(MakeDef(give: 0.5f), new System.Random(8));
+            for (int i = 0; i < 600; i++) { if (sim.Effort01 <= 0f) break; sim.Tick(0.02f, false, 0f); }
+            Assert.AreEqual(0f, sim.Effort01, "reached a slack window");
+
+            float before = sim.Landing01;
+            for (int i = 0; i < 5 && sim.Effort01 <= 0f; i++) sim.Tick(0.02f, false, 0f);
+            Assert.AreEqual(before, sim.Landing01, 1e-6f,
+                "she isn't pulling — a slack window can never cost you line");
+        }
+
+        [Test]
+        public void SheCanNeverDragYouBelowTheFloor_HoweverLongSheRuns()
+        {
+            // "Only a little": the cap is against your BEST moment of the fight, so ground truly won is
+            // yours. Drive a punishing give-back and never touch the reel after banking.
+            var sim = new RodFightSim(MakeDef(give: 5f, cap: 0.2f), new System.Random(12));
+            // Bank ground, but STOP short of landing her — a finished fight can't give anything back,
+            // and reeling on slack with a full lean lands one fast.
+            for (int i = 0; i < 400 && sim.Landing01 < 0.6f; i++) sim.Tick(0.02f, sim.Effort01 <= 0f, -1f);
+
+            float high = sim.Landing01;
+            Assert.That(high, Is.InRange(0.25f, 0.95f),
+                "bank enough that the floor is meaningfully above zero, without ending the fight");
+
+            for (int i = 0; i < 3000; i++)
+            {
+                sim.Tick(0.02f, false, 0f);   // ease forever, never lean, never reel
+                Assert.GreaterOrEqual(sim.Landing01, high - 0.2f - 1e-4f,
+                    "she may never take more than maxGiveBack01 below your high-water mark");
+            }
+            Assert.Less(sim.Landing01, high, "…but she really did take some");
+        }
+
+        [Test]
+        public void TheCrossing_StaysOneWay_EvenWhenSheTakesLineBack()
+        {
+            // Landing can now fall, so the naive phase read would let a surfaced fish sink out of sight
+            // and pop back up, flickering the whole presentation. It must latch.
+            var sim = new RodFightSim(MakeDef(give: 5f, cap: 0.5f, surfaceAt: 0.3f), new System.Random(19));
+            bool surfaced = false;
+            for (int i = 0; i < 4000 && !sim.IsOver; i++)
+            {
+                bool reel = !surfaced && sim.Effort01 <= 0f;   // stop reeling once she's up, and let her run
+                sim.Tick(0.02f, reel, surfaced ? 0f : -1f);
+                if (sim.Phase == RodFightPhase.Surface) surfaced = true;
+                if (surfaced)
+                    Assert.AreEqual(RodFightPhase.Surface, sim.Phase,
+                        $"tick {i}: once she has shown herself she stays shown, even as she takes line back");
+            }
+            Assert.IsTrue(surfaced, "she must surface for this to mean anything");
+        }
+
+        // ---- she comes in as you win (the diegetic landing bar) -----------------------------
+
+        [Test]
+        public void Approach_TracksTheFight_ZeroAtTheHookupAndOneWhenLanded()
+        {
+            var sim = new RodFightSim(MakeDef(), new System.Random(3));
+            Assert.AreEqual(0f, sim.Approach01, 1e-6f, "at the hookup she is right out where she took it");
+
+            float last = 0f;
+            for (int i = 0; i < 6000 && !sim.IsOver; i++)
+            {
+                sim.Tick(0.02f, sim.Effort01 <= 0f && sim.Tension01 < RodFightPolicies.PulseTensionCap, -1f);
+                Assert.That(sim.Approach01, Is.InRange(-1e-4f, 1f + 1e-4f), "the approach stays on its rails");
+                last = sim.Approach01;
+            }
+            Assert.AreEqual(FishFightResult.Landed, sim.Result);
+            Assert.AreEqual(1f, last, 1e-3f, "a landed fish is all the way in");
+        }
+
+        [Test]
+        public void HoldsDeep_ChangesTheJourney_NotTheOutcome()
+        {
+            // The stubbornness dial is pure feel: at the SAME landing progress, a bulldog has given far
+            // less ground than a come-easy fish — but it must not change who wins.
+            var easy = new RodFightSim(MakeDef(holdsDeep: 0f), new System.Random(77));
+            var bulldog = new RodFightSim(MakeDef(holdsDeep: 1f), new System.Random(77));
+            for (int i = 0; i < 200; i++)
+            {
+                bool reel = easy.Effort01 <= 0f;
+                easy.Tick(0.02f, reel, -1f);
+                bulldog.Tick(0.02f, reel, -1f);
+            }
+
+            Assert.AreEqual(easy.Landing01, bulldog.Landing01, 1e-6f, "identical fights, identical progress");
+            Assert.Less(bulldog.Approach01, easy.Approach01,
+                "at the same progress the bulldog is still out there — she holds her ground and comes late");
         }
 
         // ---- the Strength dial (Wave-3 carried thread) --------------------------------------

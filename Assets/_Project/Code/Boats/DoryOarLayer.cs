@@ -84,14 +84,14 @@ namespace HiddenHarbours.Boats
 
         [Header("Stroke feel (tunable)")]
         [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull (the art README's tempo is ~9).")]
-        [SerializeField] private float _strokeFramesPerSecond = 9f;
+        [SerializeField] private float _strokeFramesPerSecond = DoryOarMath.DefaultStrokeFramesPerSecond;
         [Tooltip("|oar state| at or below which the oar is idle (trailing/shipped) rather than stroking.")]
-        [SerializeField] private float _oarDeadzone = 0.05f;
+        [SerializeField] private float _oarDeadzone = DoryOarMath.DefaultOarDeadzone;
         [Tooltip("How much a GENTLE pull slows the sweep: 0 = every stroke runs at the full tempo; 1 = the rate is proportional to effort. 0.5 = a half-effort pull strokes at three-quarter speed.")]
         [Range(0f, 1f)]
-        [SerializeField] private float _effortInfluence = 0.5f;
+        [SerializeField] private float _effortInfluence = DoryOarMath.DefaultEffortInfluence;
         [Tooltip("Seconds BOTH oars must be idle before they ship (col 8). Below this they trail (col 9), so a brief pause between strokes doesn't stow them.")]
-        [SerializeField] private float _restGraceSeconds = 1.2f;
+        [SerializeField] private float _restGraceSeconds = DoryOarMath.DefaultRestGraceSeconds;
 
         [Header("Rock coupling (the oar cells are baked ROCK-FREE — this leans them onto the hull)")]
         [Tooltip("Master strength of the whole rock coupling. 0 = the oars sit level on a rocking hull; 1 = the tuned read.")]

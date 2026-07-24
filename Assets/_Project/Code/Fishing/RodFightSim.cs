@@ -28,9 +28,15 @@ namespace HiddenHarbours.Fishing
         private readonly RodFightMovement _pattern;
         private readonly int _motionSeed;
 
-        // The Def's six tuning floats, captured at fight start (a mid-fight asset edit can't tear the
+        // The Def's tuning floats, captured at fight start (a mid-fight asset edit can't tear the
         // fight), with the Strength dial already folded into the run pressure.
         private readonly float _rise, _fall, _fill, _effectiveRunPressure, _steerRelief, _surfaceThreshold;
+        private readonly float _giveBack, _maxGiveBack;
+        private readonly float _roamScale, _holdsDeep01;
+
+        // The high-water mark of how landed she has ever been. She may be dragged back from it, but never
+        // by more than _maxGiveBack — "you always keep most of what you won" (owner's ruling 2026-07-23).
+        private float _landingHighWater;
 
         private float _fightSeconds;     // the choreography clock — runs from the HOOKUP (she fights deep too)
         private float _surfaceSeconds;   // seconds since she broke the surface — the deep→surface roam blend
@@ -40,9 +46,12 @@ namespace HiddenHarbours.Fishing
         public FishFightResult Result { get; private set; }
         public bool IsOver => Result != FishFightResult.None;
 
-        /// <summary>Deep (timing only) or Surface (steer live) — from <see cref="RodFightMath.PhaseFor"/>;
-        /// landing never falls, so the crossing is one-way.</summary>
-        public RodFightPhase Phase => RodFightMath.PhaseFor(Landing01, _surfaceThreshold);
+        /// <summary>Deep (unseen) or Surface (visible) — from <see cref="RodFightMath.PhaseFor"/>, read off
+        /// the HIGH-WATER landing rather than the live one. Landing can now fall (she takes line back), so
+        /// reading it live would let a surfaced fish sink out of sight and pop up again, flickering the
+        /// whole presentation. Once she has shown herself she stays shown: the crossing remains strictly
+        /// one-way, which is the long-standing contract the tests pin.</summary>
+        public RodFightPhase Phase => RodFightMath.PhaseFor(_landingHighWater, _surfaceThreshold);
 
         /// <summary>Her effort THIS tick: 1 = a hard run (MAINTAIN), 0 = a slack window (PULL).</summary>
         public float Effort01 => _rhythm.Effort01;
@@ -98,7 +107,44 @@ namespace HiddenHarbours.Fishing
             _effectiveRunPressure = RodFightStrength.EffectiveRunPressure(def.runTensionPressure, def.Strength);
             _steerRelief = def.counterSteerRelief;
             _surfaceThreshold = def.surfaceThreshold01;
+            _giveBack = def.lineGiveBackPerSec;
+            _maxGiveBack = def.maxGiveBack01;
+            _roamScale = def.RoamRadiusScale;
+            _holdsDeep01 = def.HoldsDeep01;
         }
+
+        /// <summary>
+        /// How far she can be dragged back RIGHT NOW: her high-water landing less the Def's
+        /// <c>maxGiveBack01</c>, never below 0. The "only a little" promise made concrete — she can take
+        /// line during a run, but ground you have truly won is yours (owner's ruling 2026-07-23).
+        /// </summary>
+        public float LandingFloor01 => Mathf.Max(0f, _landingHighWater - Mathf.Max(0f, _maxGiveBack));
+
+        /// <summary>
+        /// <b>How close she has been brought in</b>, 0 (out where she was hooked) → 1 (alongside), which is
+        /// the diegetic replacement for the landing bar: the caller walks the fight anchor in along this,
+        /// so REELING VISIBLY DRAGS HER TOWARD YOU and a run that takes line pushes her back out.
+        ///
+        /// <para>Eased by <c>HoldsDeep01</c>, the Def's stubbornness: a bulldog that "holds deep" makes you
+        /// win most of the gauge before she gives any real ground, then comes in a rush at the end; a
+        /// come-easy fish tracks the gauge almost linearly. Same <see cref="Landing01"/>, very different
+        /// journey — this is a big part of what makes the species feel like different animals.</para>
+        /// </summary>
+        public float Approach01
+        {
+            get
+            {
+                float landed = Mathf.Clamp01(Landing01);
+                float hold = Mathf.Clamp01(_holdsDeep01);
+                // hold = 0 → linear; hold = 1 → she barely moves until the gauge is nearly full.
+                return Mathf.Lerp(landed, landed * landed * landed, hold);
+            }
+        }
+
+        /// <summary>The Def's on-screen footprint multiplier — how much water this species works while
+        /// she fights (a bulldog barely travels; a mackerel ranges wide). Applied by the caller to its
+        /// roam radius so the dial stays data, not a hard-coded per-species constant.</summary>
+        public float RoamRadiusScale => _roamScale;
 
         /// <summary>
         /// Advance the fight by <paramref name="dt"/> seconds. <paramref name="reeling"/> is the held
@@ -128,10 +174,14 @@ namespace HiddenHarbours.Fishing
             float tensionRate = RodFightMath.TensionRatePerSec(reeling, effort, steerAlignment, phase,
                 _rise, _fall, _effectiveRunPressure, _steerRelief, deckAnglePressurePerSec);
             float landingRate = RodFightMath.LandingRatePerSec(reeling, effort, steerAlignment, phase,
-                _fill);
+                _fill, _giveBack);
 
             Tension01 = Mathf.Clamp01(Tension01 + tensionRate * dt);
-            Landing01 = Mathf.Clamp01(Landing01 + landingRate * dt);
+
+            // Landing can now FALL (she takes line) — but never below the high-water floor, so a bad run
+            // costs you a little ground and never the fight you have already fought.
+            Landing01 = Mathf.Clamp(Landing01 + landingRate * dt, LandingFloor01, 1f);
+            if (Landing01 > _landingHighWater) _landingHighWater = Landing01;
 
             if (Phase == RodFightPhase.Surface) _surfaceSeconds += dt;
 

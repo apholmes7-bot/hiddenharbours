@@ -16,6 +16,8 @@ MonoBehaviour:
   DisplayName: Atlantic Cod — Bulldogger
   Strength: 0.7
   MovementPattern: 1
+  RoamRadiusScale: 0.5
+  HoldsDeep01: 0.85
   StaminaCadence:
     RunSeconds: 2.8
     SlackSeconds: 1.2
@@ -27,3 +29,5 @@ MonoBehaviour:
   runTensionPressure: 0.4
   counterSteerRelief: 0.4
   surfaceThreshold01: 0.65
+  lineGiveBackPerSec: 0.16
+  maxGiveBack01: 0.18

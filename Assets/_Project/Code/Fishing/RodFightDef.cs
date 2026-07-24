@@ -87,6 +87,20 @@ namespace HiddenHarbours.Fishing
         [Tooltip("How she moves near the surface — what the mouse-steer counters (§3).")]
         public RodFightMovement MovementPattern = RodFightMovement.Darter;
 
+        [Range(0.15f, 2f)]
+        [Tooltip("HOW MUCH WATER SHE WORKS — her on-screen footprint, as a multiple of the controller's " +
+                 "roam radius. Small = she digs in and barely travels (a bulldog cod); large = she ranges " +
+                 "right across the swim (a mackerel). Together with MovementPattern this is most of what " +
+                 "makes a species recognisable before you ever see her.")]
+        public float RoamRadiusScale = 1f;
+
+        [Range(0f, 1f)]
+        [Tooltip("HOW STUBBORNLY SHE HOLDS HER GROUND — how much of the fight you must win before she " +
+                 "gives real distance and starts coming toward you. 0 = she comes in steadily as you " +
+                 "reel; 1 = she hangs out there almost the whole fight and then comes in a rush at the " +
+                 "end. Pure feel: it changes the JOURNEY, never who wins.")]
+        public float HoldsDeep01 = 0.35f;
+
         [Tooltip("The run↔slack rhythm (§5): how long she runs vs. rests. FightsHard = long runs, short slacks.")]
         public StaminaCadence StaminaCadence = new StaminaCadence { RunSeconds = 2.0f, SlackSeconds = 1.4f, Jitter01 = 0.3f };
 
@@ -127,5 +141,19 @@ namespace HiddenHarbours.Fishing
                  "and the line's entry point; at/above, she's up where you can see her. Same fight either " +
                  "side — this is how long she stays down (§3).")]
         public float surfaceThreshold01 = 0.5f;
+
+        [Min(0f)]
+        [Tooltip("SHE TAKES LINE BACK: landing lost per second while you EASE OFF through her full run " +
+                 "with no lean (owner's ruling 2026-07-23, \"only a little\"). Leaning against her holds " +
+                 "her — at a full counter-lean she takes nothing — and in her slack windows she takes " +
+                 "nothing at all. 0 = the old progress-only fight, exactly. Keep well below " +
+                 "landingFillPerSec so a competent hand still nets forward through her runs.")]
+        public float lineGiveBackPerSec = 0.12f;
+
+        [Range(0f, 1f)]
+        [Tooltip("…BUT ONLY A LITTLE: the most she can ever drag you back BELOW your best moment of the " +
+                 "fight. Ground you have truly won is yours — this is the cozy floor under the line she " +
+                 "takes (P5). Small is the point; at 0 she can never take an inch.")]
+        public float maxGiveBack01 = 0.15f;
     }
 }

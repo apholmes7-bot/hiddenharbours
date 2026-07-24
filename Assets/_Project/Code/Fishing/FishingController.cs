@@ -79,6 +79,10 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Pointer closer than this (world m) to the character reads as NO steer (neutral) — a " +
                  "resting mouse is never a hidden penalty. A dead-band, not a feel dial.")]
         [Min(0f)] [SerializeField] private float _steerDeadzoneM = 0.3f;
+        [Tooltip("How close (world m) a fully-landed fish is drawn in to the angler — where 'alongside' " +
+                 "is. REELING WALKS HER IN from where she was hooked to here, and a run that takes line " +
+                 "pushes her back out: with no HUD, watching her close that gap IS the progress read.")]
+        [Min(0.1f)] [SerializeField] private float _alongsideMetres = 1.1f;
         [Tooltip("How much of the surfaced roam the line's ENTRY POINT works while she is still deep and " +
                  "unseen (0..1 of the roam radius). This is the read you lean against before you can see " +
                  "her: a fish well down moves the entry point a little, not a lot. 0 pins the line dead " +
@@ -100,7 +104,7 @@ namespace HiddenHarbours.Fishing
         // ---- rod fight v2 state (the deep→surface arc; the sim is RodFightSim) ---------------
         private RodFightSim _rodFight;          // non-null only while a v2 fight runs
         private float _lastSteerAlignment;      // this tick's steer read, for the RodBend01 publish
-        private Vector2 _fightAnchorWorld;      // where the line entered the water (world) — the surface anchor
+        private Vector2 _fightAnchorWorld;      // where she was HOOKED (world) — the far end of the approach
         private bool _hasFightAnchor;
 
         // ---- flick-cast gesture state (see the class doc; the maths is FlickCastMath) --------
@@ -606,8 +610,7 @@ namespace HiddenHarbours.Fishing
             if (fight.DeckAngleFactor <= 0f) return 0f;
 
             Vector2 angler = AnglerPosition;
-            Vector2 fishWorld = _fightAnchorWorld
-                              + _rodFight.FishOffset(_fishRoamRadiusM, _deepEntryRoamFraction);
+            Vector2 fishWorld = FishWorldPosition();
             float across = DeckAngleMath.AcrossHull01(
                 DeckAngleMath.WorldToDeckFrame(angler - deck.HullPosition, deck.DrawnHeadingDegrees),
                 DeckAngleMath.WorldToDeckFrame(fishWorld - deck.HullPosition, deck.DrawnHeadingDegrees),
@@ -625,6 +628,7 @@ namespace HiddenHarbours.Fishing
             FishCategory cat = _pendingFish != null ? _pendingFish.Category : FishCategory.InshoreGroundfish;
             Vector2 fishOffset = FightOffset(phase);
             Vector2 castAim = CastAimRead(phase);
+            Vector2 runDir = FightRunDir(phase);
             _state = new FishingState(phase, tension, landing, id, name, cat, _pendingWeight,
                                       depth01: DepthRead01(phase),
                                       slackWindowOpen: BottomSlackOpen(phase) || FightSlackOpen(phase),
@@ -632,7 +636,8 @@ namespace HiddenHarbours.Fishing
                                       fishOffsetX: fishOffset.x, fishOffsetY: fishOffset.y,
                                       castCharge01: CastChargeRead(phase),
                                       castAimX: castAim.x, castAimY: castAim.y,
-                                      rigDepthM: RigDepthRead(phase));
+                                      rigDepthM: RigDepthRead(phase),
+                                      fishRunDirX: runDir.x, fishRunDirY: runDir.y);
             EventBus.Publish(new FishingStateChanged(_state));
         }
 
@@ -708,6 +713,52 @@ namespace HiddenHarbours.Fishing
             return RodFightMath.RodBend01(_rodFight.Effort01, _lastSteerAlignment, _rodFight.Phase);
         }
 
+        /// <summary>
+        /// WHICH WAY SHE IS PULLING (Core <c>FishingState.FishRunDirX/Y</c>) — the EXACT vector the
+        /// player's lean is scored against, handed to presentation so the water can show the truth rather
+        /// than an approximation of it (see the field's own doc for why that distinction has teeth).
+        /// Neutral (0,0) whenever she isn't running: outside the v2 fight, and in her slack windows, where
+        /// there is nothing to lean against and a direction shown would be a lie.
+        /// </summary>
+        private Vector2 FightRunDir(FishingPhase phase)
+        {
+            if (_rodFight == null || _rodFight.Effort01 <= 0f ||
+                (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return Vector2.zero;
+            return _rodFight.DartDir;
+        }
+
+        /// <summary>
+        /// WHERE SHE IS RIGHT NOW, in world metres — the one place the fight's geometry is composed, read
+        /// by both the published line far-end and the deck-angle stance.
+        ///
+        /// <para><b>She is walked IN as she is won</b> (owner ask 2026-07-24). The fight runs along the
+        /// line from where she was hooked to <see cref="_alongsideMetres"/> off the angler, and
+        /// <c>RodFightSim.Approach01</c> says how far down that line she has been dragged. Reeling brings
+        /// her closer; a run that takes line back pushes her out again. With no HUD, watching that gap
+        /// close is the entire progress read — it is what replaced the landing bar.</para>
+        ///
+        /// <para>Her roam shrinks with the approach too (a fish a metre off the rod tip cannot range two
+        /// metres), so the choreography tightens into a thrash at your feet instead of a wide swim.
+        /// Measured from the LIVE angler each call, so walking the deck re-aims the whole thing free.</para>
+        /// </summary>
+        private Vector2 FishWorldPosition()
+        {
+            Vector2 angler = AnglerPosition;
+            Vector2 fromAngler = _fightAnchorWorld - angler;
+            float hookedRange = fromAngler.magnitude;
+
+            // The line she is fought along. Degenerate (hooked on top of the angler) → hold the anchor.
+            Vector2 dir = hookedRange > 1e-4f ? fromAngler / hookedRange : Vector2.zero;
+            float alongside = Mathf.Min(_alongsideMetres, hookedRange);
+            float range = Mathf.Lerp(hookedRange, alongside, Mathf.Clamp01(_rodFight.Approach01));
+
+            // Her roam closes with her: at arm's length she thrashes, she doesn't swim.
+            float roam = _fishRoamRadiusM * _rodFight.RoamRadiusScale
+                       * (hookedRange > 1e-4f ? Mathf.Clamp01(range / hookedRange) : 1f);
+
+            return angler + dir * range + _rodFight.FishOffset(roam, _deepEntryRoamFraction);
+        }
+
         /// <summary>The line's far end relative to the ANGLER (Core FishingState.FishOffsetX/Y): the entry
         /// point working around the anchor while she's deep (a smaller excursion — see
         /// <see cref="_deepEntryRoamFraction"/>; it is what tells the player which way to lean before she's
@@ -718,8 +769,7 @@ namespace HiddenHarbours.Fishing
         {
             if (_rodFight == null || !_hasFightAnchor ||
                 (phase != FishingPhase.FightDeep && phase != FishingPhase.FightSurface)) return Vector2.zero;
-            return _fightAnchorWorld + _rodFight.FishOffset(_fishRoamRadiusM, _deepEntryRoamFraction)
-                 - AnglerPosition;
+            return FishWorldPosition() - AnglerPosition;
         }
 
         private void EnsureHold()

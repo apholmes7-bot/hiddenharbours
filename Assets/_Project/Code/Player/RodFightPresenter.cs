@@ -80,6 +80,10 @@ namespace HiddenHarbours.Player
         [SerializeField] private Color _lineColor = new Color(0.86f, 0.89f, 0.92f, 0.75f);
         [Tooltip("The near-snap colour the line whitens TOWARD as tension climbs.")]
         [SerializeField] private Color _strainColor = new Color(1f, 1f, 1f, 1f);
+        [Tooltip("The colour a SLACK line falls to — dull and unlit, the far end of the same axis the " +
+                 "strain colour sits at. One colour scale, one meaning: dull = she has given (REEL), " +
+                 "bright = the line is loading (EASE OFF). Never two languages on one channel.")]
+        [SerializeField] private Color _slackColor = new Color(0.52f, 0.57f, 0.62f, 0.62f);
         [Tooltip("How LATE the whitening arrives (RodLineMath.Whiten01 lateBias, ≥ 1). Lower = the line " +
                  "starts showing strain earlier. This is the fight's strain read now that the HUD bars " +
                  "are gone, so it arrives sooner than the old cozy 2.2.")]
@@ -99,7 +103,7 @@ namespace HiddenHarbours.Player
 
         [Header("Slack pop + rest sag (the tells)")]
         [Tooltip("How far past rest the belly kicks when the line suddenly slackens (0..1 of rest sag).")]
-        [SerializeField, Range(0f, 1f)] private float _slackOvershoot01 = 0.5f;
+        [SerializeField, Range(0f, 1f)] private float _slackOvershoot01 = 0.8f;
         [SerializeField, Min(0.05f)] private float _slackSettleSeconds = 0.7f;
         [Tooltip("The resting line's taut read while waiting on a bobber.")]
         [SerializeField, Range(0f, 1f)] private float _restTaut = 0.35f;
@@ -120,10 +124,28 @@ namespace HiddenHarbours.Player
         [Tooltip("Peak height (m) of the flying bobber's lob over the cast.")]
         [SerializeField, Min(0f)] private float _castArcHeightM = 0.8f;
 
-        [Header("The deep shadow's circling (visual only — the fight is unchanged)")]
-        [SerializeField, Min(0f)] private float _shadowRadiusM = 0.7f;
+        [Header("The deep shadow — she is UNSEEN, so this is how you read which way she's running")]
+        [Tooltip("Idle drift (m) the shadow adds on top of her real position — a fish never holds " +
+                 "perfectly still. Keep SMALL: this is garnish, and anything comparable to her real " +
+                 "travel hides the very thing the player is trying to read.")]
+        [SerializeField, Min(0f)] private float _shadowRadiusM = 0.18f;
         [SerializeField, Min(0.1f)] private float _shadowPeriodSeconds = 3.5f;
         [SerializeField, Range(0f, 1f)] private float _shadowSquash = 0.55f;
+        [Tooltip("How firmly she must be RUNNING (0..1, eased) for the shadow to turn and face her run " +
+                 "instead of drifting idly. Low: the whole point is that the shape points the way she is " +
+                 "pulling the instant she starts pulling, because that is what you lean against.")]
+        [SerializeField, Range(0f, 1f)] private float _shadowRunFacingThreshold01 = 0.25f;
+
+        [Header("Her boil — the surface swirl over an unseen fish (the WHICH-WAY-TO-LEAN read)")]
+        [Tooltip("Draw a swirl on the water directly over the deep fish, so her direction is legible " +
+                 "at a glance instead of having to spot a dark shape. Reuses the sink-ripple sprite.")]
+        [SerializeField] private bool _showDeepBoil = true;
+        [Tooltip("Boil size (m) when she is running her hardest. It breathes with her effort, so the " +
+                 "swirl SWELLING is itself the 'she's running now' tell.")]
+        [SerializeField, Min(0f)] private float _boilRadiusM = 0.85f;
+        [Tooltip("Boil size (m) in a slack window — she has stopped pulling and the water settles.")]
+        [SerializeField, Min(0f)] private float _boilCalmRadiusM = 0.3f;
+        [SerializeField, Range(0f, 1f)] private float _boilAlpha = 0.5f;
 
         [Header("Sorting (world elements; the rod rides the fisher's own order ±1)")]
         [SerializeField] private int _lineSortingOrder = 50;     // the trap rope's precedent
@@ -140,6 +162,13 @@ namespace HiddenHarbours.Player
         private SpriteRenderer _rodSr;
         private Vector2 _rodGrip;              // where the rod is held this frame — the load bends it about here
         private Quaternion _rodBaseRotation;   // the unloaded pose the lean is measured off
+
+        // Her TRUE travel while deep — the read the shadow faces and the boil trails. Tracked from the
+        // published far end frame to frame, so it is her honest motion, never a decorative loop.
+        private Vector2 _deepTravelDir = Vector2.right;
+        private float _deepRunning01;      // eased 0..1: is she pulling right now (and so, is there a way to lean)
+        private Vector2 _lastDeepPos;
+        private bool _hasLastDeepPos;
         private SpriteRenderer _bobberSr;
         private SpriteRenderer _fishSr;
         private SpriteRenderer _heldSr;
@@ -273,23 +302,37 @@ namespace HiddenHarbours.Player
             else _bobberSr.enabled = false;
 
             Vector2 entry = tip + Vector2.down * _entryDropM;   // the straight-down path's water entry
-            if ((show & RodElements.SinkRipples) != 0) RenderRipple(entry);
-            else _rippleSr.enabled = false;
+            bool ripplesShown = (show & RodElements.SinkRipples) != 0;
+            if (ripplesShown) RenderRipple(entry);
 
             if ((show & RodElements.FishShadow) != 0)
             {
                 entry = angler + new Vector2(_s.FishOffsetX, _s.FishOffsetY);
+                TrackDeepTravel(entry, dt);
                 RenderShadow(entry);
+                // Her BOIL rides the same renderer the sink rings use — it is idle through a fight, and a
+                // swirl on the water over an unseen fish is the most legible "she's over THERE, running
+                // THAT way" the world can give without a single pixel of UI.
+                if (_showDeepBoil && !ripplesShown) { RenderBoil(entry); ripplesShown = true; }
                 far = entry;
             }
             else if ((show & RodElements.FishSurface) != 0)
             {
                 far = RenderSurfaceFish(angler, dt);
+                // She's visible now, but the READ must not change under the player halfway through the
+                // fight: the same swirl keeps marking the same run direction, so the lean is one
+                // continuous skill from the hookup to the net rather than two different games.
+                TrackDeepTravel(far, dt);
+                if (_showDeepBoil && !ripplesShown) { RenderBoil(far); ripplesShown = true; }
             }
             else
             {
                 _fishSr.enabled = false;   // the on-the-line fish never lingers into land/result beats
             }
+
+            if (!ripplesShown) _rippleSr.enabled = false;
+            bool fishShown = (show & (RodElements.FishShadow | RodElements.FishSurface)) != 0;
+            if (!fishShown) { _hasLastDeepPos = false; _deepRunning01 = 0f; }
 
             if ((show & RodElements.HeldFish) != 0) RenderHeldFish(angler);
             else _heldSr.enabled = false;
@@ -455,6 +498,71 @@ namespace HiddenHarbours.Player
 
         // ---- the fish ------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Follow WHICH WAY SHE IS PULLING, straight off the published <c>FishRunDirX/Y</c> — the very
+        /// vector the player's lean is scored against, so the shape on the water and the maths behind it
+        /// can never disagree. (Deriving it from her frame-to-frame movement instead would: she can be
+        /// mid-run — a direction you are judged on — while hovering nearly still. See the Core field.)
+        /// Eased so the shape TURNS rather than snapping, and held through her slack windows: when she
+        /// stops pulling the arrow simply stops being drawn, it doesn't spin to a fresh lie.
+        /// </summary>
+        private void TrackDeepTravel(Vector2 pos, float dt)
+        {
+            var run = new Vector2(_s.FishRunDirX, _s.FishRunDirY);
+            float mag = run.magnitude;
+            if (mag > 1e-4f)
+            {
+                float k = 1f - Mathf.Exp(-8f * Mathf.Max(0f, dt));
+                _deepTravelDir = Vector2.Lerp(_deepTravelDir, run / mag, k).normalized;
+                _deepRunning01 = Mathf.Lerp(_deepRunning01, 1f, k);
+            }
+            else
+            {
+                _deepRunning01 = Mathf.Lerp(_deepRunning01, 0f, 1f - Mathf.Exp(-8f * Mathf.Max(0f, dt)));
+            }
+            _lastDeepPos = pos;
+            _hasLastDeepPos = true;
+        }
+
+        /// <summary>
+        /// HER BOIL — the swirl of water an unseen fish pushes up as she works below (owner ask
+        /// 2026-07-24: make the fight readable, effects allowed, no UI). It rides her true position, so
+        /// watching it slide tells you which way to lean; and it BREATHES with her effort — swelling as
+        /// she runs, settling in a slack window — so the same swirl also says when to reel. Two of the
+        /// three reads the player needs, in one diegetic mark, on a renderer that was idle anyway.
+        /// </summary>
+        private void RenderBoil(Vector2 pos)
+        {
+            if (_rippleSprite == null) { _rippleSr.enabled = false; return; }
+
+            // Effort read straight off the published rod load: 1 while she runs, ~0 when she gives.
+            float working = Mathf.Clamp01(_s.RodBend01);
+            float radius = Mathf.Lerp(_boilCalmRadiusM, _boilRadiusM, working);
+            if (radius <= 0f) { _rippleSr.enabled = false; return; }
+
+            // A slow churn so it never reads as a frozen decal, plus a swell on her effort.
+            float churn = 1f + 0.12f * Mathf.Sin(Time.time * 3.1f);
+            float scale = radius * churn;
+
+            _rippleSr.transform.position = new Vector3(pos.x, pos.y, 0f);
+
+            // THE SHAPE POINTS THE WAY. Round while she holds; DRAWN OUT along her run once she pulls —
+            // water shouldered aside by a fish going somewhere. So even a glance at the swirl answers
+            // "which way is she taking me", which is the whole question the lean asks.
+            float stretch = Mathf.Lerp(1f, 1.7f, _deepRunning01);
+            _rippleSr.transform.localScale = new Vector3(scale * stretch, scale * _shadowSquash / stretch, 1f);
+            _rippleSr.transform.rotation = _deepRunning01 > 0.05f
+                ? Quaternion.Euler(0f, 0f, Mathf.Atan2(_deepTravelDir.y, _deepTravelDir.x) * Mathf.Rad2Deg)
+                : Quaternion.identity;
+            _rippleSr.sprite = _rippleSprite;
+            _rippleSr.sortingOrder = _rippleSortingOrder;
+
+            Color c = _rippleSr.color;
+            c.a = _boilAlpha * Mathf.Lerp(0.55f, 1f, working);   // she is loudest when she is pulling
+            _rippleSr.color = c;
+            _rippleSr.enabled = true;
+        }
+
         private void RenderShadow(Vector2 entry)
         {
             FishSpeciesVisual sp = CurrentSpecies();
@@ -465,7 +573,15 @@ namespace HiddenHarbours.Player
             }
 
             Vector2 pos = entry + RodPresenterMath.ShadowOffset(_shadowTheta, _shadowRadiusM, _shadowSquash);
-            float heading = RodPresenterMath.ShadowHeadingDegrees(_shadowTheta, _shadowSquash);
+
+            // SHE FACES WHERE SHE IS ACTUALLY GOING (owner ask 2026-07-24 — "more readable as to what to
+            // do"). This used to take its heading purely from the decorative circle above, so the shape
+            // pointed wherever a 3.5 s loop happened to point — the player watching the one thing that
+            // should say "lean the other way" was reading noise. Her real travel wins whenever she is
+            // meaningfully moving; only when she is holding station does the idle drift supply a facing.
+            float heading = _deepRunning01 > _shadowRunFacingThreshold01
+                ? RodPresenterMath.HeadingDegrees(_deepTravelDir.x, _deepTravelDir.y)
+                : RodPresenterMath.ShadowHeadingDegrees(_shadowTheta, _shadowSquash);
             int row = IsoFacing.HeadingToFacingIndex(heading, Directions, 0f, false);
             int frame = RodPresenterMath.FlipFrame(_stateClock, _fishSecondsPerFrame, sp.ShadowFramesPerDir);
             int idx = RodPresenterMath.SheetIndex(row, frame, sp.ShadowFramesPerDir, sp.ShadowFrames.Length);
@@ -586,7 +702,13 @@ namespace HiddenHarbours.Player
             float shudderAmp = fight
                 ? _shudderAmpM * RodLineMath.StrainShudder01(_s.Tension01, _shudderStart01) : 0f;
 
-            Color c = Color.Lerp(_lineColor, _strainColor, whiten);
+            // THE COLOUR AXIS IS THE INSTRUCTION (owner ask 2026-07-24 — readable, but no UI): the line
+            // falls dull the moment she gives (REEL) and climbs to bar-white as it loads (EASE OFF). One
+            // channel, one continuous meaning, so there is nothing to learn — the line just looks slack or
+            // looks dangerous.
+            Color c = _s.SlackWindowOpen && fight
+                ? Color.Lerp(_lineColor, _slackColor, 1f)
+                : Color.Lerp(_lineColor, _strainColor, whiten);
             _line.startColor = c;
             _line.endColor = c;
 
