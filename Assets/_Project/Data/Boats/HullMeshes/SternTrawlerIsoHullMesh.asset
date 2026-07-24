@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.stern_trawler_iso
   SourceRigPath: docs/art/rigs/sternTrawlerIsoRig.js
-  Mesh: {fileID: 6509417830734160900}
+  Mesh: {fileID: 2370329281690721040}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -203,7 +203,9 @@ MonoBehaviour:
   RockPitchDegrees: 0.9
   RockHeavePixels: 1
   RestingDraftMeters: 0
---- !u!43 &6509417830734160900
+  WatertightDeckHeightMeters: 0
+  WatertightHalfBeamMeters: 0
+--- !u!43 &2370329281690721040
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

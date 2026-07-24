@@ -1,6 +1,167 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-5800983622718322004
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b2db8b2f7729f4a8bbfaaea8a23715, type: 3}
+  m_Name: SportSkiffIsoHullMesh
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
+  Id: hullmesh.sport_skiff_iso
+  SourceRigPath: docs/art/rigs/sportSkiffIsoRig.js
+  Mesh: {fileID: 7495076333423062600}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282138381
+    - serializedVersion: 2
+      rgba: 4283323668
+    - serializedVersion: 2
+      rgba: 4284969756
+    - serializedVersion: 2
+      rgba: 4288324395
+    - serializedVersion: 2
+      rgba: 4289378377
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285100138
+    - serializedVersion: 2
+      rgba: 4286745220
+    - serializedVersion: 2
+      rgba: 4288324252
+    - serializedVersion: 2
+      rgba: 4289772212
+    - serializedVersion: 2
+      rgba: 4291154122
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283455274
+    - serializedVersion: 2
+      rgba: 4285101117
+    - serializedVersion: 2
+      rgba: 4286746965
+    - serializedVersion: 2
+      rgba: 4288130420
+    - serializedVersion: 2
+      rgba: 4289447575
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3
+  Bias: 2.7
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4279835152
+  PivotPx: {x: 122, y: 120}
+  PxPerMetre: 32
+  CellW: 244
+  CellH: 216
+  ElevationDeg: 40
+  AzimuthCounterClockwise: 1
+  RockRollDegrees: 3.8
+  RockPitchDegrees: 2.2
+  RockHeavePixels: 1.5
+  RestingDraftMeters: 0
+  WatertightDeckHeightMeters: 0
+  WatertightHalfBeamMeters: 0
+--- !u!43 &7495076333423062600
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,162 +339,3 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8b2db8b2f7729f4a8bbfaaea8a23715, type: 3}
-  m_Name: SportSkiffIsoHullMesh
-  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
-  Id: hullmesh.sport_skiff_iso
-  SourceRigPath: docs/art/rigs/sportSkiffIsoRig.js
-  Mesh: {fileID: -5800983622718322004}
-  Ramps:
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285557341
-    - serializedVersion: 2
-      rgba: 4287663230
-    - serializedVersion: 2
-      rgba: 4289835171
-    - serializedVersion: 2
-      rgba: 4291481026
-    - serializedVersion: 2
-      rgba: 4292863453
-    - serializedVersion: 2
-      rgba: 4293587182
-    - serializedVersion: 2
-      rgba: 4294179063
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4282138381
-    - serializedVersion: 2
-      rgba: 4283323668
-    - serializedVersion: 2
-      rgba: 4284969756
-    - serializedVersion: 2
-      rgba: 4288324395
-    - serializedVersion: 2
-      rgba: 4289378377
-    Offset: -1
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4282925370
-    - serializedVersion: 2
-      rgba: 4284899158
-    - serializedVersion: 2
-      rgba: 4287399290
-    - serializedVersion: 2
-      rgba: 4289833887
-    - serializedVersion: 2
-      rgba: 4292005571
-    - serializedVersion: 2
-      rgba: 4293848550
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285100138
-    - serializedVersion: 2
-      rgba: 4286745220
-    - serializedVersion: 2
-      rgba: 4288324252
-    - serializedVersion: 2
-      rgba: 4289772212
-    - serializedVersion: 2
-      rgba: 4291154122
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4283455274
-    - serializedVersion: 2
-      rgba: 4285101117
-    - serializedVersion: 2
-      rgba: 4286746965
-    - serializedVersion: 2
-      rgba: 4288130420
-    - serializedVersion: 2
-      rgba: 4289447575
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4282135318
-    - serializedVersion: 2
-      rgba: 4284108836
-    - serializedVersion: 2
-      rgba: 4286608954
-    - serializedVersion: 2
-      rgba: 4289110879
-    - serializedVersion: 2
-      rgba: 4291086735
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279702288
-    - serializedVersion: 2
-      rgba: 4280754461
-    - serializedVersion: 2
-      rgba: 4282004011
-    - serializedVersion: 2
-      rgba: 4283319613
-    - serializedVersion: 2
-      rgba: 4284701778
-    - serializedVersion: 2
-      rgba: 4286281323
-    - serializedVersion: 2
-      rgba: 4288255114
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279702288
-    - serializedVersion: 2
-      rgba: 4280754461
-    - serializedVersion: 2
-      rgba: 4282004011
-    - serializedVersion: 2
-      rgba: 4283319613
-    - serializedVersion: 2
-      rgba: 4284701778
-    - serializedVersion: 2
-      rgba: 4286281323
-    - serializedVersion: 2
-      rgba: 4288255114
-    Offset: -2
-  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
-  Gain: 3
-  Bias: 2.7
-  Bayer16:
-  - 0.03125
-  - 0.53125
-  - 0.15625
-  - 0.65625
-  - 0.78125
-  - 0.28125
-  - 0.90625
-  - 0.40625
-  - 0.21875
-  - 0.71875
-  - 0.09375
-  - 0.59375
-  - 0.96875
-  - 0.46875
-  - 0.84375
-  - 0.34375
-  Keyline:
-    serializedVersion: 2
-    rgba: 4279835152
-  PivotPx: {x: 122, y: 120}
-  PxPerMetre: 32
-  CellW: 244
-  CellH: 216
-  ElevationDeg: 40
-  AzimuthCounterClockwise: 1
-  RockRollDegrees: 3.8
-  RockPitchDegrees: 2.2
-  RockHeavePixels: 1.5
-  RestingDraftMeters: 0

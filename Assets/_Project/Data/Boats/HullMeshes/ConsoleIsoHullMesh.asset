@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.console_iso
   SourceRigPath: docs/art/rigs/consoleIsoRig.js
-  Mesh: {fileID: 2415100256355844285}
+  Mesh: {fileID: 1135365574663791723}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -165,7 +165,9 @@ MonoBehaviour:
   RockPitchDegrees: 1.9
   RockHeavePixels: 1.3
   RestingDraftMeters: 0
---- !u!43 &2415100256355844285
+  WatertightDeckHeightMeters: 0
+  WatertightHalfBeamMeters: 0
+--- !u!43 &1135365574663791723
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

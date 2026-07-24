@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-4529923890767578267
+--- !u!43 &-9153443762376552028
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.punt_iso
   SourceRigPath: docs/art/rigs/puntIsoRig.js
-  Mesh: {fileID: -4529923890767578267}
+  Mesh: {fileID: -9153443762376552028}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -331,3 +331,5 @@ MonoBehaviour:
   RockPitchDegrees: 2.4
   RockHeavePixels: 1.5
   RestingDraftMeters: 0
+  WatertightDeckHeightMeters: 0
+  WatertightHalfBeamMeters: 0

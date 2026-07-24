@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-4195731882597357020
+--- !u!43 &-5376289052971202911
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.tanker_iso
   SourceRigPath: docs/art/rigs/tankerIsoRig.js
-  Mesh: {fileID: -4195731882597357020}
+  Mesh: {fileID: -5376289052971202911}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -383,3 +383,5 @@ MonoBehaviour:
   RockPitchDegrees: 0.4
   RockHeavePixels: 1
   RestingDraftMeters: 0
+  WatertightDeckHeightMeters: 0
+  WatertightHalfBeamMeters: 0
