@@ -47,7 +47,11 @@ namespace HiddenHarbours.Tools.RigBaking
             "shingleCottage", "whiteFarmhouse", "redSaltbox", "gothicRevival", "dormerCape",
         };
 
-        [MenuItem("Hidden Harbours/Art/Bake Buildings (houses + wharf)", priority = 23)]
+        // Priority 39 puts this at the head of the BAKE cluster (40–50: lobster boat, punt, character,
+        // fish, rod, …). It was 23 first, which is the Build-Decor-Prefabs group up at the top of the
+        // Art menu — Unity draws a separator at any priority gap over 10, so the command was rendering
+        // in the wrong section entirely and read as missing.
+        [MenuItem("Hidden Harbours/Art/Bake Buildings (houses + wharf)", priority = 39)]
         public static void BakeAllMenu()
         {
             var log = new StringBuilder();
@@ -92,8 +96,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public static BuildingBakeResult Bake(string rigKey, string preset)
         {
             string stem = $"{Prefix(rigKey)}_{preset}";
-            return BuildingRigBaker.Bake(
-                new BuildingBakeRequest(rigKey, preset, BuildingsFolder, stem));
+            return BuildingRigBaker.Bake(BuildingBakeRequest.FromPreset(
+                rigKey, preset, RigCatalog.Get(rigKey).GlobalName, BuildingsFolder, stem));
         }
 
         /// <summary>Every (rig, preset) pair the menu bakes.</summary>

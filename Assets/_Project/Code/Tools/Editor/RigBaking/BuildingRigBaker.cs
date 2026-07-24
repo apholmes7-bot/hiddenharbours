@@ -8,30 +8,70 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace HiddenHarbours.Tools.RigBaking
 {
-    /// <summary>What to bake: one PRESET of one building rig, through the 8-facing turntable.</summary>
+    /// <summary>
+    /// What to bake: one BUILD of one building rig, through the 8-facing turntable.
+    ///
+    /// <para>A "build" is a JS options expression, not a preset name — because the Building Studio lets
+    /// the owner dial every axis by hand and bake the result, and a preset is just the special case
+    /// where those options come from the rig's own table. <see cref="FromPreset"/> makes that case a
+    /// one-liner; <see cref="FromOptions"/> takes a hand-dialled build.</para>
+    /// </summary>
     public readonly struct BuildingBakeRequest
     {
         /// <summary>Catalog key — <c>"house"</c> or <c>"wharfBuilding"</c>.</summary>
         public readonly string RigKey;
 
-        /// <summary>A preset name from the rig's own <c>PRESETS</c> table, e.g. <c>"netShed"</c>.</summary>
-        public readonly string Preset;
+        /// <summary>
+        /// The JS expression evaluating to the options object handed to <c>render()</c>. For a preset
+        /// this spreads the rig's own table; for a studio build it is a literal of the dialled axes.
+        /// </summary>
+        public readonly string OptsJs;
+
+        /// <summary>Human label for logs and the sidecar — a preset name, or the studio's build name.</summary>
+        public readonly string Label;
 
         /// <summary>Project-relative output folder, e.g. <c>"Assets/_Project/Art/Sprites/Buildings"</c>.</summary>
         public readonly string OutputFolder;
 
-        /// <summary>Sheet stem. Defaults to <c>&lt;RigPrefix&gt;_&lt;Preset&gt;</c>.</summary>
+        /// <summary>Sheet stem (no extension).</summary>
         public readonly string BaseName;
 
-        /// <summary>Facings to bake. 8 is the ADR-0006 recipe and the only value the presets are drawn for.</summary>
+        /// <summary>Facings to bake. 8 is the ADR-0006 recipe and what these rigs are drawn for.</summary>
         public readonly int Facings;
 
-        public BuildingBakeRequest(string rigKey, string preset, string outputFolder,
-                                   string baseName, int facings = 8)
+        /// <summary>
+        /// True when <see cref="OptsJs"/> came from the rig's PRESETS table, so the bake can run the
+        /// "did the preset actually apply?" tripwire. A hand-dialled build has nothing to compare
+        /// against — matching the default is a legitimate thing for the owner to ask for.
+        /// </summary>
+        public readonly bool IsPreset;
+
+        public BuildingBakeRequest(string rigKey, string optsJs, string label, string outputFolder,
+                                   string baseName, int facings = 8, bool isPreset = false)
         {
-            RigKey = rigKey; Preset = preset; OutputFolder = outputFolder;
-            BaseName = baseName; Facings = facings;
+            RigKey = rigKey; OptsJs = optsJs; Label = label; OutputFolder = outputFolder;
+            BaseName = baseName; Facings = facings; IsPreset = isPreset;
         }
+
+        /// <summary>
+        /// Bake one of the rig's own presets.
+        ///
+        /// <para>⚠️ Note the options are SPREAD, not named. <c>render(dir,{preset:'netShed'})</c> is
+        /// silently wrong — no building rig's <c>resolve()</c> reads a <c>preset</c> key, so it renders
+        /// the DEFAULT build with no error at all. This is the one place that spelling is decided.</para>
+        /// </summary>
+        public static BuildingBakeRequest FromPreset(string rigKey, string preset, string globalName,
+                                                     string outputFolder, string baseName, int facings = 8)
+            => new BuildingBakeRequest(
+                rigKey,
+                $"Object.assign({{}},{globalName}.PRESETS['{preset.Replace("'", "\\'")}'])",
+                preset, outputFolder, baseName, facings, isPreset: true);
+
+        /// <summary>Bake a hand-dialled build (the Building Studio's "Bake this build").</summary>
+        public static BuildingBakeRequest FromOptions(string rigKey, string optsJs, string label,
+                                                      string outputFolder, string baseName, int facings = 8)
+            => new BuildingBakeRequest(rigKey, optsJs, label, outputFolder, baseName, facings,
+                                       isPreset: false);
     }
 
     public sealed class BuildingBakeResult
@@ -121,27 +161,26 @@ namespace HiddenHarbours.Tools.RigBaking
             var geo = RigCatalog.Install(host, entry);
             string g = entry.GlobalName;
 
-            AssertPresetExists(host, g, req.Preset);
-
-            // ⚠️ THE PRESET IS SPREAD, NOT NAMED. The obvious call — render(dir, {preset:'netShed'}) —
-            // is silently wrong: neither rig's resolve() reads a `preset` key at all (it reads `type`/
-            // `era`, `body`, `siding`, `size`, …). Passing the name would render the DEFAULT building
-            // with no error, no warning, and a perfectly plausible-looking shed on disk. PRESETS is a
-            // data table meant to be spread into opts, which is what this does — the rig's own values,
-            // untouched. AssertPresetApplies below is the tripwire for exactly this mistake.
-            string optsJs = $"Object.assign({{}},{g}.PRESETS['{Escape(req.Preset)}'])";
+            // The options expression comes from the request — a spread of the rig's own PRESETS table,
+            // or a build the owner dialled in the Building Studio. BuildingBakeRequest.FromPreset owns
+            // the spelling of the preset case, including the {preset:'name'} trap documented there.
+            string optsJs = req.OptsJs;
+            if (req.IsPreset) AssertPresetExists(host, g, req.Label);
 
             var result = new BuildingBakeResult
             {
                 RigKey = req.RigKey,
-                Preset = req.Preset,
+                Preset = req.Label,
                 EngineName = host.EngineName,
                 NativeCellWidth = geo.Width,
                 NativeCellHeight = geo.Height,
                 Facings = req.Facings,
             };
 
-            AssertPresetApplies(host, g, optsJs, req.Preset, geo.Width, geo.Height);
+            // The did-it-actually-apply tripwire only makes sense for a preset: a hand-dialled build
+            // that happens to match the rig default is a legitimate thing for the owner to ask for.
+            if (req.IsPreset) AssertPresetApplies(host, g, optsJs, req.Label, geo.Width, geo.Height);
+            else AssertRenders(host, g, optsJs, req.Label, geo.Width, geo.Height);
 
             // ---- MEASURE the convention, then cross-check the catalog's declaration ---------------
             var probe = BuildingRigAzimuthProbe.Measure(host, g, optsJs, geo.Width, geo.Height, geo.PivotX);
@@ -185,7 +224,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (xMax < xMin)
                 throw new InvalidOperationException(
-                    $"Every facing of '{req.Preset}' rendered fully transparent. Nothing to bake — " +
+                    $"Every facing of '{req.Label}' rendered fully transparent. Nothing to bake — " +
                     "the preset name resolved but drew no pixels.");
 
             // Pad, then clamp back inside the native cell.
@@ -345,7 +384,7 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.AppendLine("{");
             sb.AppendLine($"  \"sheet\": \"{Path.GetFileName(r.AssetPath)}\",");
             sb.AppendLine($"  \"rig\": \"{req.RigKey}\",");
-            sb.AppendLine($"  \"preset\": \"{Escape(req.Preset)}\",");
+            sb.AppendLine($"  \"build\": \"{Escape(req.Label)}\",");
             sb.AppendLine($"  \"facings\": {r.Facings},");
             sb.AppendLine($"  \"cols\": {r.Columns},");
             sb.AppendLine($"  \"rows\": {r.Rows},");
@@ -442,6 +481,20 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException(
                     $"Preset '{preset}' rendered {withPreset.Length} bytes, expected " +
                     $"{width * height * 4} for {width}×{height} RGBA.");
+        }
+
+        /// <summary>
+        /// The geometry guard a hand-dialled build still needs: the preset tripwire is skipped for it,
+        /// but the crop and the probe both assume the render came back at the rig's declared cell size.
+        /// </summary>
+        static void AssertRenders(IRigScriptHost host, string g, string optsJs, string label,
+                                  int width, int height)
+        {
+            byte[] rgba = host.EvaluateBytes($"{g}.render(0,{optsJs})");
+            if (rgba.Length != width * height * 4)
+                throw new InvalidOperationException(
+                    $"Build '{label}' rendered {rgba.Length} bytes, expected {width * height * 4} " +
+                    $"for {width}×{height} RGBA.");
         }
 
         static bool BytesEqual(byte[] a, byte[] b)

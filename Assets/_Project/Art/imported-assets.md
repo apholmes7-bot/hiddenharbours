@@ -775,3 +775,42 @@ only holds while `anchors()` and `render()` are resolving the same building.
 
 `Art/Sprites/Buildings/HouseIso_<preset>.png` + `.json`, and `WharfBuildingIso_<preset>.png` + `.json`.
 **Not committed until the owner runs the bake** — the sheets are generated, not authored.
+
+
+### The Building Studio — dial a build, then bake it
+
+**Hidden Harbours ▸ Art ▸ Building Studio.** The wharf rig has twenty axes and the house rig nineteen;
+the twelve shipped presets are a thin sample of that space. The studio makes the whole surface reachable
+without writing JS, and makes baking the last step rather than the only way to see anything.
+
+- **Dropdowns are read from the rig**, not hard-coded — paint colours, sidings, roofs, doors, windows,
+  cupolas, rooflines and types all come from the rig's own exported tables at load time, so a drop that
+  adds a colour appears with no code change. Only four axes have no exported table (attic, porch,
+  wainscot, loft); those are transcribed and **grepped by a test**.
+- **Load a preset** to start from a known build, then dial from there. **Bake 8-facing sheet** runs the
+  same `BuildingRigBaker` as the batch menu — same crop, same probe, same sidecar.
+- **Elevation is a preview-only dial.** The bake always uses the rig's default 40°, the fleet's turntable
+  elevation; a building baked at another camera would not sit in the same space as the boats.
+- **Orientation is shown honestly.** The preview names the cell's rig LABEL *and* the bearing it actually
+  DEPICTS. Both rigs turn counter-clockwise, so the cell the rig calls `'E'` draws a building facing
+  **west**. The bake corrects this; the studio shows raw rig output, and labelling it `'E'` alone would
+  repeat the exact mistake that has shipped five times here. The pivot (the building's ground point) is
+  drawn as a crosshair.
+
+#### ⚠️ Unknown option keys and values fail SILENTLY
+
+Both rigs resolve options as `opts[k] != null ? opts[k] : fallback` and then look the value up in a
+table. A **misspelled key** and an **unknown value** are both perfectly legal — the rig just renders
+something else, with no error and no warning. That is why the studio only ever offers values it read
+from the rig, and why every axis key is checked against the rig source by a test.
+
+**A worked example of that trap, found while building this:** the wharf rig's `TYPES`/`PRESETS` tables
+spell window density `winD`, so `winD` looks like the option key. It is not. The deciding line is
+
+```
+winD: opts.winDensity != null ? opts.winDensity : T.winD
+```
+
+— left of the colon is the internal build field, right is the option a caller passes. Dialling `winD`
+would have been accepted in silence and done nothing. **The kit README was right and the first pass at
+this table was wrong**; both rigs take `winDensity`.
