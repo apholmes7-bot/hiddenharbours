@@ -125,6 +125,37 @@ namespace HiddenHarbours.Art
             return WaterSurface.Smoothstep(lo, hi, darkness);
         }
 
+        /// <summary>The shader's <c>_CloudMoonlitVis</c> default: how strongly the clouds' NIGHT share reads
+        /// under a FULL, high moon (see <see cref="MoonlitCloudVisibility"/>). 0.35 = faint moonlit bands;
+        /// 1 = the pre-fix full-strength night clouds exactly (the legacy passthrough).</summary>
+        public const float DefaultCloudMoonlitVisibility = 0.35f;
+
+        /// <summary>
+        /// Twin of the shader's moonlit night-cloud gate (owner playtest 2026-07-23, the "whole sea becomes
+        /// white" defect): the clouds' NIGHT share rides the COMPENSATED post-grade bucket, which cancels
+        /// the day/night multiply EXACTLY — so a full-strength night share painted daylight-strength cloud
+        /// bands over a sea the overlay had dimmed to a few percent, a milky veil that smothered every
+        /// water detail from dusk on. Clouds are a REFLECTION of the sky, not a light source: at night they
+        /// read only by MOONLIGHT. The night share's weight is therefore
+        /// <c>nightFactor × saturate(moonPresence × moonBrightness) × visibility</c> — full-moon-up nights
+        /// keep faint moonlit bands, a moonless/new-moon night shows none, and the no-MoonCycle fallback
+        /// (presence = brightness = 1) keeps a bare-scene preview sane. The moon disc/glitter/stars/boat
+        /// beam are genuine LIGHT content and keep the compensated bucket ungated. <paramref name="visibility"/>
+        /// = 1 restores the pre-fix behaviour exactly (the legacy passthrough contract).
+        /// </summary>
+        /// <param name="nightFactor">The <see cref="NightFactor"/> darkness gate (0 day .. 1 night).</param>
+        /// <param name="moonPresence">The moon's above-horizon presence (<c>_MoonPhaseState.w</c>; fallback 1).</param>
+        /// <param name="moonBrightness">The moon's live brightness (<c>_MoonPhaseState.z</c>; fallback 1).</param>
+        /// <param name="visibility">The owner dial (<c>_CloudMoonlitVis</c>,
+        /// default <see cref="DefaultCloudMoonlitVisibility"/>).</param>
+        public static float MoonlitCloudVisibility(float nightFactor, float moonPresence,
+                                                   float moonBrightness, float visibility)
+        {
+            return Mathf.Clamp01(nightFactor)
+                 * Mathf.Clamp01(moonPresence * moonBrightness)
+                 * Mathf.Clamp01(visibility);
+        }
+
         /// <summary>The sun elevation by which the golden-hour gate has fully risen (the shader's
         /// <c>SUN_GLITTER_RISE_END</c>): the glitter fades in just above the horizon.</summary>
         public const float SunGlitterRiseEnd = 0.02f;

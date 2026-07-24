@@ -362,6 +362,10 @@ Shader "HiddenHarbours/Water"
         _CloudDriftSpeed  ("Cloud drift speed (along the wind)", Float) = 0.06
         _CloudSoftness    ("Cloud edge softness (0 = crisp, 1 = wispy)", Range(0,1)) = 0.6
         _CloudColor       ("Cloud color (pale; tinted warm at dusk by the sky)", Color) = (0.86, 0.88, 0.92, 1.0)
+        // The clouds' NIGHT share is MOONLIT (owner playtest 2026-07-23: the compensated full-strength night
+        // clouds veiled the dimmed sea white). Scaled by the moon's presence x brightness; this dials the
+        // faint moonlit remainder. 1 = the pre-fix full-strength night clouds EXACTLY; 0 = clouds gone at night.
+        _CloudMoonlitVis  ("Cloud night visibility under a lit moon (1 = legacy full)", Range(0,1)) = 0.35
         _MoonStrength     ("Moon reflection strength (night)", Range(0,2)) = 0.9
         _MoonSize         ("Moon reflected disc size (m)", Float) = 1.2
         _MoonGlitter      ("Moon glitter path intensity", Range(0,2)) = 1.0
@@ -444,6 +448,11 @@ Shader "HiddenHarbours/Water"
         _PaletteSatCap        ("Palette saturation cap", Range(0,1)) = 0.55
         _PalettePullStrength  ("Palette anchor pull (soft; 0.3..0.4 is a rail)", Range(0,1)) = 0.35
         _PaletteNightFloor    ("Palette night floor (on-screen; 0 = night goes dark)", Range(0,1)) = 0.0
+        // The floor's DAY KNEE (owner playtest 2026-07-23: the saturating pre-compensation held the dusk sea
+        // at daylight-floor brightness and clamped its value structure flat — the "whole sea becomes white"
+        // defect). At/above this day/night luma the floor pre-compensates exactly as ADR 0015 shipped; below
+        // it the on-screen floor rides DOWN with the scene. 0 = the pre-fix saturating curve EXACTLY.
+        _PaletteFloorKnee     ("Palette floor day knee (dnLuma; below it the floor dims with the scene)", Range(0,1)) = 0.45
         _PaletteDeep    ("Palette anchor   deep", Color)    = (0.05, 0.135, 0.205, 1)
         _PaletteMid     ("Palette anchor   mid", Color)     = (0.14, 0.30, 0.38, 1)
         _PaletteShallow ("Palette anchor   shallow", Color) = (0.34, 0.60, 0.62, 1)
@@ -803,6 +812,7 @@ Shader "HiddenHarbours/Water"
                 float  _CloudDriftSpeed;
                 float  _CloudSoftness;
                 float4 _CloudColor;
+                float  _CloudMoonlitVis;
                 float  _MoonStrength;
                 float  _MoonSize;
                 float  _MoonGlitter;
@@ -837,6 +847,7 @@ Shader "HiddenHarbours/Water"
                 float  _PaletteSatCap;
                 float  _PalettePullStrength;
                 float  _PaletteNightFloor;
+                float  _PaletteFloorKnee;
                 float4 _PaletteDeep;
                 float4 _PaletteMid;
                 float4 _PaletteShallow;
@@ -1169,6 +1180,26 @@ Shader "HiddenHarbours/Water"
                 return g > 1e-5 ? grad / g : float2(0, 0);    // flat seabed => no shore preference
             #else
                 return float2(0, 0);                          // no height map => no shoreward bias (open water)
+            #endif
+            }
+
+            // ---- LOCAL seabed slope magnitude (m elevation per m ground) — the shore-cosmetic scale ---------
+            // The same central difference ShoreDir reads (the painted-height gradient over ±_ShoreSampleStep),
+            // kept as a MAGNITUDE: how steeply the painted beach climbs here. The fragment scales the two
+            // cosmetic DEPTH offsets (the §"organic shore fringe" wiggle and the beach swash) by this,
+            // saturated at the 1 m/m authoring reference, so their VISIBLE contour excursion equals the
+            // authored metres on any painted slope (a gentle bar no longer multiplies them into metres-wide
+            // swirl tongues — the 2026-07-23 owner defect). No height map ⇒ 0 (uniform deep has no shore to
+            // dress). READ-ONLY of the height field — never depth/clip()/_WaterLevel/the sim (P1, rule 5).
+            float SeabedSlopeMag(float2 worldXY)
+            {
+            #if defined(_USE_HEIGHTTEX)
+                float h = max(_ShoreSampleStep, 1e-3);
+                float ex = SeabedElevation(worldXY + float2(h, 0)) - SeabedElevation(worldXY - float2(h, 0));
+                float ey = SeabedElevation(worldXY + float2(0, h)) - SeabedElevation(worldXY - float2(0, h));
+                return length(float2(ex, ey)) / (2.0 * h);
+            #else
+                return 0.0;                                   // no height map => no shore, nothing to scale
             #endif
             }
 
@@ -1719,6 +1750,15 @@ Shader "HiddenHarbours/Water"
 
                 float2 pp = Pixelize(worldXY);
 
+                // ---- the LIVING MOON's state, read FIRST (the clouds' night share below is moonlit) ---------
+                // moonBright: live brightness (illuminated-fraction × presence) — fall back to 1 (full) if unset.
+                // moonPresence: 0..1 above-horizon (fades the moon at the horizons) — fall back to 1 if unset.
+                bool moonStateOn = (abs(_MoonPhaseState.x) + abs(_MoonPhaseState.y)
+                                  + _MoonPhaseState.z + _MoonPhaseState.w) > 1e-4;
+                float moonBright   = moonStateOn ? _MoonPhaseState.z : 1.0;
+                float moonPresence = moonStateOn ? _MoonPhaseState.w : 1.0;
+                float terminator   = moonStateOn ? _MoonPhaseState.y : -1.0;   // -1 = full disc by default
+
                 // ---- (1) drifting CLOUDS (day + night) ------------------------------------------------------
                 // Soft, elongated pale bands scrolled along the shared sim wind. Built from a couple of FBM
                 // samples on a coord COMPRESSED across the wind so the cloud cells elongate into wisps ALONG it
@@ -1749,25 +1789,32 @@ Shader "HiddenHarbours/Water"
                     float3 cloudCol = lerp(_CloudColor.rgb, sky, 0.35);
                     float3 cloudTerm = cloudCol * cloudMask * _CloudStrength;
                     // SPLIT by the night factor: the day share stays in the pre-grade composite (daylight is
-                    // pixel-identical — night = 0 routes ALL of it here); the night share joins the compensated
-                    // post-grade add so the clouds keep reading as the overlay darkens (they were crushed with
-                    // the moon before). The shares sum to the original term — no dusk discontinuity.
+                    // pixel-identical — night = 0 routes ALL of it here). The night share joins the compensated
+                    // post-grade add — but MOONLIT and FAINT (owner playtest 2026-07-23, the "whole sea becomes
+                    // white" defect): the compensated bucket cancels the day/night multiply EXACTLY, so a
+                    // full-strength night share painted daylight-strength cloud bands over a sea the overlay had
+                    // dimmed to a few percent — a milky veil that smothered every water detail from dusk on
+                    // (rendered-frame evidence in the fix PR). Clouds are a REFLECTION of the sky, not a light
+                    // source: at night they read only by MOONLIGHT — gated by the moon's presence × live
+                    // brightness (the same _MoonPhaseState the disc reads; the no-MoonCycle fallback of 1 keeps
+                    // a bare-scene preview sane) and scaled to _CloudMoonlitVis (default 0.35: faint moonlit
+                    // bands under a full moon, gone on a moonless night). _CloudMoonlitVis = 1 restores the
+                    // pre-fix full-strength night share EXACTLY (the legacy passthrough). The moon disc /
+                    // glitter / stars / beam / rain rings are genuine light content and keep their bucket
+                    // untouched. C# twin: WaterReflection.MoonlitCloudVisibility — change both in lockstep.
                     dayRGB += cloudTerm * (1.0 - night);
-                    nightRGB += cloudTerm * night;
+                    float moonlitVis = saturate(moonPresence * moonBright)
+                                     * saturate(_CloudMoonlitVis);
+                    nightRGB += cloudTerm * night * moonlitVis;
                 }
 
                 // ---- (2) the LIVING MOON: a reflected disc (phase-shaped) + a vertical GLITTER PATH (night) --
                 // The moon RISES/ARCS/SETS across the night (its direction comes from MoonCycle via _MoonDir) and
                 // changes shape over the lunar month (the crescent/gibbous TERMINATOR comes from _MoonPhaseState),
                 // dimming to a thin crescent at new moon. When no MoonCycle runs, fall back to a fixed full moon
-                // opposite the sun so a bare scene still shows one.
-                // moonBright: live brightness (illuminated-fraction × presence) — fall back to 1 (full) if unset.
-                // moonPresence: 0..1 above-horizon (fades the moon at the horizons) — fall back to 1 if unset.
-                bool moonStateOn = (abs(_MoonPhaseState.x) + abs(_MoonPhaseState.y)
-                                  + _MoonPhaseState.z + _MoonPhaseState.w) > 1e-4;
-                float moonBright   = moonStateOn ? _MoonPhaseState.z : 1.0;
-                float moonPresence = moonStateOn ? _MoonPhaseState.w : 1.0;
-                float terminator   = moonStateOn ? _MoonPhaseState.y : -1.0;   // -1 = full disc by default
+                // opposite the sun so a bare scene still shows one. (The moon STATE — moonStateOn / moonBright /
+                // moonPresence / terminator — is read at the top of this function now, because the clouds' night
+                // share above is moonlit-gated by it.)
                 // the moon reads when the SKY is dark (day/night) AND the moon is up + lit.
                 float moonGate = night * moonPresence;
                 if (moonGate > 0.001 && moonBright > 0.001 && (_MoonStrength > 0.001 || _MoonGlitter > 0.001))
@@ -1999,15 +2046,28 @@ Shader "HiddenHarbours/Water"
             float PaletteLuma(float3 rgb) { return dot(rgb, float3(0.299, 0.587, 0.114)); }
 
             // DAY/NIGHT-AWARE value floor: pre-compensate for the day/night overlay's downstream MULTIPLY so the
-            // ON-SCREEN water lands at ~paletteFloor in daylight, yet true night still goes genuinely dark. The
-            // overlay multiplies the whole frame by _DayNightTint AFTER the water renders (ADR 0013), so we floor
-            // the water's PRE-overlay value at min(1, paletteFloor / dayNightLuma): in daylight dnLuma~1 => ~floor;
-            // at deep night dnLuma is small => the quotient saturates at 1 (water full-bright pre-overlay) and the
-            // overlay still darkens it to genuine dark. nightFloor (on-screen) optionally keeps a faint night sea.
+            // ON-SCREEN water lands at ~paletteFloor in daylight, yet dusk and night ride DOWN with the scene.
+            // The overlay multiplies the whole frame by _DayNightTint AFTER the water renders (ADR 0013), so we
+            // floor the water's PRE-overlay value at min(1, paletteFloor / max(dayNightLuma, KNEE)):
+            //   * dnLuma >= the knee (daylight + overcast): == paletteFloor / dnLuma — the exact ADR 0015
+            //     pre-compensation; on-screen the floor lands at paletteFloor. Never muddy.
+            //   * dnLuma < the knee (dusk .. night): the divisor HOLDS at the knee, so the pre-overlay floor
+            //     stops growing and the ON-SCREEN floor rides down with the scene (× dnLuma/knee).
+            // WHY THE KNEE (owner playtest 2026-07-23, "the whole sea becomes white"): the un-kneed quotient
+            // saturated toward 1 through dusk — at a dusk tint (~0.17..0.34 luma) it clamped MOST of the sea's
+            // pre-overlay values to one high floor, so the on-screen sea held DAYLIGHT-floor brightness while
+            // the whole scene dimmed around it AND lost its value structure to the clamp — a uniform flat
+            // bright sheet (rendered-frame evidence in the fix PR: the dusk-storm frame was 99.7% flat at the
+            // floor). With the knee the clamp level stays at the BOTTOM of the value distribution, so dusk
+            // keeps its crest/trough/foam structure and genuinely darkens. _PaletteFloorKnee = 0 restores the
+            // pre-fix saturating curve EXACTLY (max(dn, 0) == dn — the legacy passthrough contract).
+            // nightFloor (on-screen) is UNTOUCHED: its whole job is to survive deep night, so it keeps the
+            // saturating divide. Mirrors WaterPaletteGrade.ValueFloorDayNight — change both in lockstep.
             float PaletteValueFloorDayNight(float paletteFloor, float dayNightLuma, float nightFloor)
             {
                 float dn = max(dayNightLuma, 1e-3);
-                float dayPre   = min(1.0, max(paletteFloor, 0.0) / dn);
+                float kneeDn   = max(dn, saturate(_PaletteFloorKnee));
+                float dayPre   = min(1.0, max(paletteFloor, 0.0) / kneeDn);
                 float nightPre = min(1.0, max(nightFloor, 0.0) / dn);
                 return min(1.0, max(dayPre, nightPre));
             }
@@ -2307,7 +2367,21 @@ Shader "HiddenHarbours/Water"
                 // Pixel-grid-quantized value noise (organic SHAPE at the pixel scale, not sub-pixel smoothness —
                 // the pixelization principle, ADR 0010 (2)); reuse the existing Pixelize + ValueNoise helpers.
                 float shoreN = ValueNoise(Pixelize(worldXY) * max(_ShoreNoiseScale, 1e-3)) - 0.5;  // -0.5..0.5
-                float depthC = depth + shoreN * _ShoreNoise * shoreEdge;   // cosmetic; == depth when _ShoreNoise = 0
+                // ---- SLOPE-AWARE shore cosmetics (owner playtest 2026-07-23: "shoreline looks a bit
+                // swirly"). The fringe wiggle and the beach swash below offset a cosmetic DEPTH, so their
+                // VISIBLE contour excursion is amplitude ÷ the local beach slope — slope-blind constants
+                // tuned on a steep edge painted METRES-wide swinging worm tongues on a gently painted bar
+                // (excursion 5× the authored value at a 0.2 m/m beach). Scaling the depth offsets by the
+                // LOCAL painted slope (saturated at the 1 m/m authoring reference) makes the authored
+                // amplitudes read as CONTOUR metres on ANY coast: _SwashAmplitude / _ShoreNoise now mean
+                // "metres of visible wet-edge excursion", steep shores keep today's look. Cosmetic only —
+                // never depth/clip()/_WaterLevel/the sim (P1, rule 5); gated to the shore bands so the
+                // gradient taps don't run on open water.
+                float shoreCosmeticReach = max(max(_ShoreNoiseBand, 1e-3),
+                                               max(_FoamWidth, 1e-3) * 2.0 + abs(_SwashAmplitude));
+                float shoreSlope = (depth < shoreCosmeticReach)
+                                       ? saturate(SeabedSlopeMag(worldXY)) : 1.0;
+                float depthC = depth + shoreN * _ShoreNoise * shoreSlope * shoreEdge;   // cosmetic; == depth when _ShoreNoise = 0
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
@@ -2544,8 +2618,19 @@ Shader "HiddenHarbours/Water"
                         float3 bandShade = q < 0.5
                             ? lerp(_PaletteDeep.rgb, _PaletteMid.rgb, q * 2.0)
                             : lerp(_PaletteMid.rgb, _PaletteShallow.rgb, (q - 0.5) * 2.0);
+                        // ---- the SEAM fades the bands, exactly as it fades the caps (owner playtest
+                        // 2026-07-23: "shoreline looks a bit swirly"). The displaced surface dies at the
+                        // walkable waterline (ShoreFade01 — the seam twin, §21), so envelope-relative
+                        // shade on the dying edge marked waves that visibly are not there — the band-edge
+                        // dither drew worm contours crowding along the shore over the bright shallow ramp.
+                        // Same curve, same band as capShoreFade below (_ShoreFadeBand: pushed DERIVED per
+                        // tick on the displaced pass; the material default 0.5 m gives the flat pass a
+                        // thin graceful band; a zeroed band degrades to "no fade", never a divide). The
+                        // C# twin is WhitecapSalienceMath.BandShoreSalience — change both in lockstep.
+                        // Depth is READ-ONLY here (P1, rule 5).
+                        float bandSeam = ShoreFade01(depth, _ShoreFadeBand);
                         col.rgb = lerp(col.rgb, bandShade,
-                                       saturate(_EnvelopeBandStrength) * swellReadGate * bandLive);
+                                       saturate(_EnvelopeBandStrength) * swellReadGate * bandLive * bandSeam);
                     }
                 }
 
@@ -2665,7 +2750,10 @@ Shader "HiddenHarbours/Water"
                 // gameplay waterline) stays the clean iso-contour. depthC is local + foam-only (P1, rule 5).
                 float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);
                 float swashGate  = 1.0 - smoothstep(0.0, swashReach, depthC);   // 1 at the wet edge -> 0 deeper
-                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * swashGate;  // local, foam-only
+                // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
+                // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
+                // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
+                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * shoreSlope * swashGate;  // local, foam-only
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
                 float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
                 if (foamEdge > 0.001)
