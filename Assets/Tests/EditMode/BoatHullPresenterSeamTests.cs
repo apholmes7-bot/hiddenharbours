@@ -54,16 +54,39 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The hulls ALLOWED (and required) to be the mesh variant — the ADR 0022 rollout, in order:
-        /// the lobster boat (phase 4's end-to-end hull) and the side dragger (phase 5, the 25 m hull
-        /// that motivated the ADR). <b>This list is the gate, and it is meant to be edited slowly:</b>
-        /// every hull added here must arrive with a committed, usable <c>HullMeshDef</c> and its own
-        /// measured acceptance. Everything else must still deserialise to Sprite.
+        /// The hulls ALLOWED (and required) to be the mesh variant — the ADR 0022 rollout: the lobster
+        /// boat (phase 4's end-to-end hull), the side dragger (phase 5, the 25 m hull that motivated
+        /// the ADR), and as of phase 6 the rest of the fleet, on the owner's "all boats will need to be
+        /// a mesh". <b>This list is the gate, and it is meant to be edited slowly:</b> every hull added
+        /// here must arrive with a committed, usable <c>HullMeshDef</c> and its own measured acceptance.
+        /// Everything else must still deserialise to Sprite.
+        ///
+        /// <para><b>Kept hand-written on purpose.</b> <c>HullMeshFleet</c> now knows which hulls are
+        /// mesh, and deriving this list from it would be tidier and worth nothing — the catalog would
+        /// be asserting about itself. The value here is that a human wrote the id down twice.</para>
+        ///
+        /// <para>The one visual deliberately NOT here is <c>visual.fishing_boat</c>: the legacy 8-dir
+        /// fishing skiff has no rig behind her, so there is nothing to extract a mesh from and she
+        /// stays a sprite hull.</para>
         /// </summary>
         private static readonly string[] MeshVariantHulls =
         {
+            // phase 4 / phase 5
             "visual.lobster_boat_iso",
             "visual.side_dragger_iso",
+            // phase 6 — converted from baked sheets, compasses deliberately kept (the V-key A/B)
+            "visual.dory_iso",
+            "visual.punt_iso_basic",
+            "visual.punt_iso_upgraded",
+            "visual.console_skiff",
+            "visual.sport_skiff_single",
+            "visual.sport_skiff_twin",
+            "visual.cape_islander_iso",
+            // phase 6 — mesh-only: never had a sheet, and none was ever possible
+            "visual.stern_trawler_iso",
+            "visual.stern_trawler_mk2_iso",
+            "visual.coastal_packet_iso",
+            "visual.tanker_iso",
         };
 
         [Test]

@@ -194,9 +194,57 @@ Suggested phasing, each independently verifiable:
 
    ⚠️ Open question 4 is still open: the extractor's shim fired for **all five** of `F, MATS, GAIN, BIAS, LN`
    on her rig too. `docs/art/rigs/**` was not touched.
-6. The rest of the fleet. The owner's verdict on the lobster A/B (2026-07-22) was **"much better as a mesh —
-   all boats will need to be a mesh"**, and phase 5 is the proof the path scales to a second hull without the
-   baker, the shader or the seam changing. ← next
+6. **The rest of the fleet — DONE (2026-07-23).** The owner's verdict on the lobster A/B (2026-07-22) was
+   **"much better as a mesh — all boats will need to be a mesh"**, and phase 5 was the proof the path scales
+   to a second hull without the baker, the shader or the seam changing. Phase 6 took it to **all eleven**.
+
+   The per-hull menu items became a per-hull TABLE (`HullMeshFleet`), because eleven hand-written bake
+   entry points is not a fleet. Two families, and the difference is the sheet rather than the size: six
+   hulls convert from baked 32-facing art and **keep their sprite compass** (that is the owner's V-key A/B,
+   the only check on the mesh path that works by eye), five are mesh-only.
+
+   **Measured, whole fleet, against the phase-2 CPU oracle** (worst whole-cell divergence over 8 headings,
+   built mesh at f32 — the bar is 0.5%):
+
+   | hull | LOA | tris | asset | sheet set would be | ratio | worst |
+   |---|---|---|---|---|---|---|
+   | dory | 4.3 m | 814 | 141.6 KB | 12.2 MiB | 88× | **0.0000%** |
+   | punt | 5.2 m | 968 | 169.3 KB | 15.1 MiB | 91× | 0.0361% |
+   | console skiff | 7.0 m | 954 | 167.3 KB | 25.7 MiB | 158× | 0.0000% |
+   | sport skiff | 7.0 m | 1,242 | 215.5 KB | 25.7 MiB | 122× | 0.0083% |
+   | Cape Islander | 12.8 m | 1,082 | 184.3 KB | 93.5 MiB | 520× | 0.0097% |
+   | lobster boat | 12.0 m | 1,384 | 237.7 KB | 93.5 MiB | 403× | 0.0047% |
+   | side dragger | 25 m | 1,616 | 276.9 KB | 346.5 MiB | 1,282× | 0.0107% |
+   | stern trawler | 38 m | 1,624 | 277.7 KB | 756.0 MiB | 2,787× | 0.0071% |
+   | stern trawler Mk2 | 38 m | 2,458 | 417.8 KB | 756.0 MiB | 1,853× | 0.0103% |
+   | coastal packet | 60 m | 2,508 | 428.9 KB | **1,815.0 MiB** | 4,333× | 0.0161% |
+   | tanker | 110 m | 3,492 | 596.6 KB | **1,500.0 MiB** | 2,574× | 0.0025% |
+
+   The upper four had never been in Unity at all, and the table says why: a sheet set for the packet alone
+   would have been 1.8 GiB. **The tanker is the ADR's best argument** — she is authored at 16 px/m, half
+   the fleet standard, because at 32 she would be a ~3,500 px cell. The mesh does not care; px/m is data
+   (`HullMeshDef.PxPerMetre`, read from the rig, asserted per-hull), and she is now the regression target
+   for anything downstream that quietly assumes 32.
+
+   Two things phase 6 found that phases 4–5 could not:
+
+   - **The dory needed a real fix.** She is the oldest hull rig and predates the `MATS` convention
+     entirely, selecting her two ramps inline (`f.mat==='iron' ? IRON[idx-2] : RAMP[idx]`). The shim
+     widens a private symbol so it can be READ — it had nothing to widen, and failed with "MATS is not
+     defined". The shim can now also **reconstruct** a symbol from a rig's own values, reported separately
+     from a widening because the claims differ: widening asserts nothing about the art, a reconstruction is
+     our reading of what `_paint` means. Hers is adjudicated in pixels against her own renderer and comes
+     back **0.0000% across all 8 headings**, with a sabotage (one-step ramp offset) proving the check is
+     load-bearing. `docs/art/rigs/**` untouched; exporting a real `MATS` retires the entry.
+   - **A file that exists but does not load is not a new asset.** Treating it as one runs field
+     initialisers and silently resets every field the baker does not write — `RestingDraftMeters`, which
+     the waterline work tunes per hull. It fired for real during this build: a run off a borrowed
+     `Library/` (stale script→guid map) wrote `m_Script: {fileID: 0}` into every def, after which they
+     stopped resolving to their own type, and the next run "created" them over the top and zeroed the
+     lobster's 0.5 and the dragger's 1.1. The baker now stops instead.
+
+   ⚠️ Open question 4 remains open and is now measured across the whole fleet: the shim fires for all five
+   of `F, MATS, GAIN, BIAS, LN` on **every** hull rig.
 
 ## Alternatives considered
 

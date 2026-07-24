@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: PuntIsoUpgraded
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.punt_iso_upgraded
+  Variant: 1
+  HullMesh: {fileID: 11400000, guid: b4e90d7cc81ead549867ccfcd05d9386, type: 2}
   Facings:
   - {fileID: -983038365637044164, guid: 2026e67792789e4428f35d85e8262dd2, type: 3}
   - {fileID: -3166928882823280052, guid: 2026e67792789e4428f35d85e8262dd2, type: 3}

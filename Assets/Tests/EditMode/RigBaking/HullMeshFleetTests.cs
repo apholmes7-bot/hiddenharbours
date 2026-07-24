@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -117,8 +116,8 @@ namespace HiddenHarbours.Tests.RigBaking
         public void Catalog_IdsFollowTheProjectConvention()
         {
             // CLAUDE.md §5: ids are type.snake_case, append-only and stable.
-            var idRx = new Regex(@"^hullmesh\.[a-z0-9]+(_[a-z0-9]+)*$");
-            var visRx = new Regex(@"^visual\.[a-z0-9]+(_[a-z0-9]+)*$");
+            const string idRx = @"^hullmesh\.[a-z0-9]+(_[a-z0-9]+)*$";
+            const string visRx = @"^visual\.[a-z0-9]+(_[a-z0-9]+)*$";
 
             foreach (var hull in HullMeshFleet.Hulls)
             {
@@ -287,11 +286,11 @@ namespace HiddenHarbours.Tests.RigBaking
                     Assert.IsNotNull(visual, path);
 
                     if (hull.HasBakedSheet)
-                        Assert.IsTrue(visual.HasFullCompass,
+                        Assert.IsTrue(visual.HasFullCompass(),
                             $"{visual.Id} lost her sprite compass. She has baked art, and keeping it " +
                             "wired is the ONLY check on the mesh path that works by eye (V at the helm).");
                     else
-                        Assert.IsFalse(visual.HasFullCompass,
+                        Assert.IsFalse(visual.HasFullCompass(),
                             $"{visual.Id} has no baked sheet, so a compass here is fiction — the V key " +
                             "would offer an A/B with nothing on the sprite side.");
                 }
