@@ -23,6 +23,7 @@ namespace HiddenHarbours.Tests.EditMode
             public int UsedUnits => _items.Count;
             public IReadOnlyList<CatchItem> Items => _items;
             public bool TryAdd(CatchItem item) { _items.Add(item); return true; }
+            public void Clear() => _items.Clear();
         }
 
         private readonly List<Object> _spawned = new();
