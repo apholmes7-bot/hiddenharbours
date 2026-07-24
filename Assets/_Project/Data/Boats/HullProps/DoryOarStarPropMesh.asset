@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: hullprop.dory_oar_star
   SourceRigPath: docs/art/rigs/doryIsoRig.js
   SourceFaceBuilder: buildOar(1,{sweep:0,dip:0})
-  Mesh: {fileID: 2422727854834902700}
+  Mesh: {fileID: 6477747196912114394}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -73,7 +73,7 @@ MonoBehaviour:
   MaxSteerDegrees: 0
   MaxTiltDegrees: 0
   LateralMountsMeters: []
---- !u!43 &2422727854834902700
+--- !u!43 &6477747196912114394
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

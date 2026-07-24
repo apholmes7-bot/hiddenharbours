@@ -75,10 +75,16 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.lobster_boat_iso",
             "visual.side_dragger_iso",
             // phase 6 — converted from a baked sheet, compass deliberately kept (the V-key A/B).
-            // She is the ONLY sheeted hull phase 6 could flip: the dory (oars) and the punt/console/
+            // She was the ONLY sheeted hull phase 6 could flip: the dory (oars) and the punt/console/
             // sport skiffs (outboards) wear sprite overlays that are baked per facing cell and cannot
-            // ride a rotating mesh, so their meshes are baked and wired but their variant stays Sprite.
+            // ride a rotating mesh, so their meshes were baked and wired but their variant stayed Sprite.
             "visual.cape_islander_iso",
+            // phase 7 — the first hull whose OVERLAY crossed over rather than being dropped. Her oars
+            // are HullPropMeshDefs now, posed through IHullPropRenderer from the same stroke state the
+            // sprite oars animate from, and adjudicated against the rig's own renderOars to a half
+            // degree of blade feather (DoryOarPropMeshAcceptanceTests). She keeps her sheets AND her
+            // compass, so the owner's V key still A/Bs the whole boat, oars included.
+            "visual.dory_iso",
             // phase 6 — mesh-only: never had a sheet, and none was ever possible
             "visual.stern_trawler_iso",
             "visual.stern_trawler_mk2_iso",

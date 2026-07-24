@@ -663,8 +663,17 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 var child = go.transform.Find(BoatHullSkinner.VisualChildName);
                 Assert.IsNotNull(child, $"step {step}: {expected.Id} wears its compass");
-                Assert.AreEqual(1, go.GetComponents<DirectionalBoatSprite>().Length,
-                    $"step {step}: one compass, not a pile — a cycle must swap, never stack");
+                // ⚠️ ONE HULL RIG, of EITHER kind. A sprite hull carries DirectionalBoatSprite and a
+                // mesh hull (ADR 0022) carries MeshHullDriver instead — the dory became the latter in
+                // phase 7 — so counting only compasses would read 0 for her and call a correct swap a
+                // failure. Summing them keeps the original claim ("a cycle must swap, never stack")
+                // and strengthens it: it now also catches a mesh driver stacking, or a hull ending a
+                // swap wearing both rigs at once.
+                int compasses = go.GetComponents<DirectionalBoatSprite>().Length;
+                int meshDrivers = go.GetComponents<MeshHullDriver>().Length;
+                Assert.AreEqual(1, compasses + meshDrivers,
+                    $"step {step}: one hull rig, not a pile — a cycle must swap, never stack " +
+                    $"(found {compasses} sprite compass(es) + {meshDrivers} mesh driver(s))");
             }
 
             Assert.AreSame(roster[0], boat.Hull, "a full lap wraps back to the dory");
@@ -681,7 +690,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var (picker, _, _, _, go) = NewPickedBoat(roster);
             yield return null;
 
-            Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "precondition: the dory has her oars");
+            AssertHasOars(go, "precondition: the dory has her oars");
             Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "precondition: …and no engine");
 
             picker.Next();
@@ -689,6 +698,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsNull(go.GetComponent<DoryOarLayer>(),
                 "the dory's oars must not row a skiff — and they'd z-fight the engine leg if they stayed");
+            Assert.IsNull(go.GetComponent<DoryOarMeshLayer>(),
+                "…and neither must her oar MESHES: a fitting outlives its hull only as a bug");
             var motor = go.GetComponent<OutboardMotorLayer>();
             Assert.IsNotNull(motor, "the twin's outboards are bolted on");
             Assert.IsTrue(motor.IsWired);
@@ -697,8 +708,45 @@ namespace HiddenHarbours.Tests.PlayMode
             picker.Next();   // wrap back to the dory
             yield return null;
 
-            Assert.IsNotNull(go.GetComponent<DoryOarLayer>(), "…and back: the oars return");
+            AssertHasOars(go, "…and back: the oars return");
             Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "the engine comes off the rowboat");
+        }
+
+        /// <summary>
+        /// The dory has oars — drawn EITHER way (ADR 0022 phase 7).
+        ///
+        /// <para>This test's claim was always "the rowboat has oars", never "the rowboat has
+        /// <c>DoryOarLayer</c>"; the component was simply the only way to have them. Phase 7 gave her
+        /// oars a mesh of their own (<c>DoryOarMeshLayer</c>, posing real fittings through the Core
+        /// seam), which is exactly the condition phase 6 blocked her flip on — and this assertion was
+        /// one of the four failures that proved the block was needed. It now checks the claim rather
+        /// than the mechanism, and insists the layer is actually WIRED, so "the component exists but
+        /// poses nothing" cannot pass as oars.</para>
+        /// </summary>
+        private static void AssertHasOars(GameObject go, string because)
+        {
+            var sprite = go.GetComponent<DoryOarLayer>();
+            var mesh = go.GetComponent<DoryOarMeshLayer>();
+            Assert.IsTrue(sprite != null || mesh != null,
+                $"{because} — neither DoryOarLayer (sprite) nor DoryOarMeshLayer (mesh) is present, " +
+                "so she is rowing with nothing.");
+
+            // ⚠️ And the OARS must match the HULL. Without this the test would pass on a silent
+            // fallback: if the mesh path failed to install, the skinner drops back to the sprite
+            // compass with sprite oars, everything is non-null, and nobody notices the mesh dory
+            // never shipped. A hull with no DirectionalBoatSprite IS a mesh hull, and a mesh hull's
+            // oars can only be fittings.
+            bool hullIsMesh = go.GetComponent<DirectionalBoatSprite>() == null;
+            if (hullIsMesh)
+                Assert.IsNotNull(mesh,
+                    $"{because} — she is presented as a MESH hull (no sprite compass) but carries the " +
+                    "SPRITE oar layer, whose sheets are baked per facing cell and cannot ride a " +
+                    "continuously-rotating hull. That is the dory-with-no-oars regression.");
+
+            if (mesh != null)
+                Assert.IsTrue(mesh.IsWired,
+                    $"{because} — the mesh oar layer is present but not wired to two configured " +
+                    "fittings, which draws no oars at all.");
         }
 
         [UnityTest]

@@ -263,7 +263,50 @@ Suggested phasing, each independently verifiable:
    and they are what holds five hulls on the sprite compass (above). They have rigs already
    (`doryIsoRig.renderOars`, `skiffMotorRig.js`), so the path is the one this ADR has now run five times:
    extract, build, bake, measure against the CPU oracle. Doing it flips five hulls with a one-field edit
-   each and finishes the owner's mandate. ← next
+   each and finishes the owner's mandate.
+
+   **The oars — DONE.** `HullPropMeshDef` + `IHullPropRenderer` in Core, whose entire contract is a
+   *local rotation*: Boats owns what a stroke or a steer means and Art never learns, which is why oars
+   and outboards — which articulate nothing alike — ride one seam. The extractor gained the one
+   structural difference a fitting has: a hull's geometry is the static `F` array, a fitting's comes from
+   a **builder that takes a pose** (`buildOar(side,{sweep,dip})`), called at a canonical pose chosen so
+   the runtime transform is exactly rigid. `DoryOarMeshLayer` poses them from the same `DoryOarMath`
+   state machine the sprite oars use, reading the **continuous** stroke phase and discarding the column's
+   rounding — the same unquantising #243 did for wave rock. A fitting is parented to the hull's posed
+   mesh child, so it shares the depth buffer: that retires the sprite era's `upper`/`lower` part split
+   and its draw-the-far-engine-first rule, and the oars' whole rock-coupling block (five tunables to lean
+   a rock-free overlay onto a rock-baked hull) simply becomes true.
+
+   ⚠️ **What acceptance had to learn, and it generalises to every rig surface built this way.** The rigs
+   make a zero-thickness blade double-sided by pushing each face **twice** — `q` then its exact reverse
+   (`doryIsoRig.js:241`) — bit-identical vertices, identical `db`, opposite normals, so ramp index 5
+   against index 0. **Which twin you see is decided by the last bit of a barycentric sum.** Instrumenting
+   the CPU oracle per pixel (`RigPaintTrace` records every triangle covering a pixel, winner *and*
+   losers) settled it: over 8 headings × 8 stroke phases, 1,519 tied pixels, the rig's own choice agrees
+   with `deff < zbuf` 50.6%, `deff <= zbuf` 50.4%, its own `Float32Array` z-buffer 44.6%, front-facing
+   51.2%, lit 51.2%, dark 48.8%. Six rules, all chance — **no renderer reproduces the rig there, and
+   neither would the rig re-run with other arithmetic.** That is also why dropping the twin measured
+   *worse* (cluster 49 → 60): it makes us deterministic, so we agree less often than a coin.
+
+   So the fixture stops comparing what is not a fact and asserts what is: **zero** silhouette differences
+   (the twins have identical vertices, so coverage is never ambiguous and the mask cannot suppress one);
+   cluster ≤ 6 outside the twins (measured worst 3); and inside them, the rig must have painted one of
+   the **two** colours we computed — `RigAmbiguousPixels`, 0 exceptions in 1,519, twins identified
+   structurally rather than by a depth tolerance (float32 breaks the quad's planarity and the two
+   triangulations drift ~7e-8 apart). The old sabotage was proving nothing — a naive shortest-arc pose
+   scored cluster **11 against a floor of 12** — so it was replaced by a measured sensitivity curve
+   (extra feather twist → detections, 2 oars × 64 poses): 0° → **0**, 0.25° → 38, 0.5° → 76, 1° → 138,
+   2° → 310, 4° → 814. The fixture resolves **half a degree** of blade roll.
+
+   `visual.dory_iso` is therefore `Variant = Mesh` — the first hull whose overlay **crossed over** rather
+   than being dropped — keeping her sheets *and* her compass so the owner's V-key A/B still covers the
+   whole boat. ⚠️ On a GPU the same tie is z-fighting; the deterministic cure is shading from whichever
+   side faces the camera (`SV_IsFrontFace` in the facet pass), which is art-pipeline's shader and not a
+   bake decision. Flagged, not done.
+
+   **The outboards are next** and reuse all of it: `puntIsoRig`'s own motor (`basic`/`upgraded`,
+   maxSteer 32) and `skiffMotorRig` (`work`/`sport`, maxSteer 30, twin mount ±0.34 m), steer and tilt
+   about the clamp, twin = two instances of one def. Four hulls, five visuals. ← next
 
 ## Alternatives considered
 
