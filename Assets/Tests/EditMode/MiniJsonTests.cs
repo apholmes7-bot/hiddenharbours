@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
 {

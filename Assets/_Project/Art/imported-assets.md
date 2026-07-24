@@ -616,3 +616,87 @@ should be authored against these.
 tool, prefab or scene references these yet. `TileAssetBuilder`/`TilePaletteBuilder` still build the
 older loose tileset, untouched. Standing up the ISO ground/fringe rule-tiles and the road blob-47
 autotiler is the next step and belongs with the world-scene work, not with the import.
+
+---
+
+## Batch — Wharf / dock tile kit (owner drop 2026-07-23)
+
+The working waterfront's **deck**: near-plan 32×32 tiles that sit in the ground plane like `Grass.png`,
+plus the mooring hardware and the shore-armour arms. Same 32 px = 1 m / no-AA / upper-left key standard
+as the fleet, so buildings, boats and deck all register.
+
+### ⚠️ The cell is 32×**56**, and that is the whole contract
+
+The camera looks from the **south**, so a south-facing deck edge drops a visible **vertical face** over
+the water. The top **32 rows are the deck** (the tile proper); the bottom **24 are face + waterline
+foam**, and they **overhang downward over whatever is drawn in the cell below**.
+
+Two consequences, both easy to get wrong and both loud once you do:
+
+- **The atlas pivots TOP-LEFT**, not centre — the sidecar's "cell top-left aligns to tile screen origin".
+  Centre is the right pivot for every other tile sheet in this repo and it is wrong here: it would sink
+  every wharf tile 12 px into the water, consistently enough to look like an art bug rather than an
+  import one.
+- **Whatever draws these must paint BACK TO FRONT** (north rows first), or a face will overdraw the deck
+  of its own southern neighbour.
+
+N/E/W open edges get a raised curb only — the tall face is south + the SE/SW diagonals. That is a
+single-camera convention, and it means a thin finger pier reads best running **N–S**.
+
+### Sheets
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Tilesets/Wharf/WharfAtlas.png` | 544×392 | 17 cols × 7 rows of **32×56** | 119 | quay · lowpier · tallpier · **float f0–f3** |
+| `Tilesets/Wharf/WharfBreakwaters.png` | 144×240 | 3 × 4 of **48×60** | 12 | riprap · crib · wall · sheet |
+| `Tilesets/Wharf/WharfOverlays.png` | 520×41 | **packed, irregular** | 14 | rails · cleat · bollard · ring · dolphin · ladder · tyre · pile head · gangway |
+
+- **Atlas columns** are the 17-piece auto-tile set: `ctr` · 4 edges · 4 outer corners · 4 end caps
+  (three sides open) · 4 diagonal 45° cuts. An "open" side is one that drops to water.
+- **`float` is ONE material occupying FOUR rows** — a 4-frame bob loop (f0–f3, ±1 px heave at ~6 fps,
+  offsets 0, −1, 0, +1). The three fixed materials have no frames. `WharfKitCatalog.AtlasRow` throws if
+  you ask a concrete quay for a bob frame, because a caller animating a quay has a bug.
+- **Breakwaters pivot on the CREST** (top-centre), not the base — that is what lets consecutive pieces
+  butt into a continuous run around a 45° turn, since the four armour types have different base heights
+  (the gap below each is its foam fringe).
+- **Overlays are sidecar-sliced**, because their pivots mean *different things per fitting*: standers
+  (bollard/dolphin/pile head) sit 1 px above their base — the same contact rule as the shoreline kit's
+  sea stacks; hangers (ladder/tyre/gangway) pivot at the **top** and fall away from where they attach;
+  the low flat fittings (cleat, recessed ring) project their contact point **mid-sprite**, which is
+  correct for a 7 px-tall object at a ¾ camera and not a bug; rails pivot on the **edge line** they run
+  along, which is their bottom row for an N/S run and their top for an E/W one. Wood and galvanised-pipe
+  rails are geometrically identical per run, so material is a paint decision and never a placement one.
+
+### Source rig
+
+**`docs/art/rigs/wharfKitRig.js`** → `WharfKit` — **already in the repo and unchanged** (byte-identical
+once line endings are normalised; same check as `roadPathRig`). It re-bakes the **deck tiles** — any
+material, any edge/diagonal combination, any bob frame. Overlays and breakwaters ship as baked sheets;
+edit them via their PNGs or ask the art director for a parametric rig.
+
+### ⚠️ The wharf BUILDING sheet is deliberately NOT in `Assets/`
+
+`WharfBuildingIso_shack.png` ships in the building-kit zip at **9600 × 1160** — 8 facings × a
+1200 × 1160 cell. It is reference only, and it stays under `docs/art/wharf-building-kit/`:
+
+- Unity's default cap is 2048, so it would import **silently downscaled**. Lifting the cap to hold it
+  means `NextPowerOfTwo(9600) = 16384`, i.e. a **16384 × 2048** texture ≈ **134 MB** at RGBA32 — for one
+  preset of one building.
+- The cell is oversized on purpose (it must hold the `cannery`/`fishPlant` presets), so a net shed is a
+  small object in a 37 m × 36 m frame. For comparison the 12.9 m Cape Islander bakes at 456 × 420.
+- **`wharfBuildingRig.js` is already in the repo** and is the source of truth. Under ADR 0021 the right
+  path is an **in-engine bake** via `RigBaker`, which already splits pages under the 4096 cap and
+  measures the azimuth convention from rendered pixels rather than trusting a label — and this rig is in
+  the README's *inferred* counter-clockwise group, so it has never been measured. Registering it in
+  `RigCatalog` is its own task; importing a 9600 px reference PNG is not a substitute for it.
+
+### Also in this change: `MiniJson` moved down an assembly
+
+`WharfOverlays.json` is dictionary-shaped (`"frames": { "cleat": {…} }`), which `JsonUtility` cannot
+read. The repo already had a reader for exactly that case — but it lived in `HiddenHarbours.App.Editor`,
+which sits at the **top** of the editor dependency graph (it references `Art.Editor`, not the reverse),
+so nothing below it could reach it. It has moved to `HiddenHarbours.Art.Editor` with its `.meta`, and its
+two callers updated. The alternative was a second, worse JSON parser thirty lines from a good one.
+
+**WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, prefab or
+scene references these yet.

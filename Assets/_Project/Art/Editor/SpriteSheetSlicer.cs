@@ -62,6 +62,12 @@ namespace HiddenHarbours.Art.Editor
         private static readonly Vector2 Centre = new Vector2(0.5f, 0.5f);
         private static readonly Vector2 Bottom = new Vector2(0.5f, 0f);
 
+        // Wharf-kit anchors. TopLeft is the deck tile's screen origin (the face hangs BELOW the cell's
+        // own tile); TopCentre is a breakwater piece's crest line (so an arm's pieces butt along the
+        // crest rather than along their bases, which sit at different heights per armour type).
+        private static readonly Vector2 TopLeft = new Vector2(0f, 1f);
+        private static readonly Vector2 TopCentre = new Vector2(0.5f, 1f);
+
         // The iso-dory waterline pivot: the art director's README fixes the anchor at (80, 88) measured
         // from each 160×156 cell's TOP-LEFT (the hull's waterline contact point). Unity pivots are
         // normalized from the BOTTOM-left, so the bottom-origin y is (156−88)=68 → (80/160, 68/156) =
@@ -324,6 +330,36 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Tilesets/Roads/RoadIso_cobble_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
             new SheetSpec(Root + "Tilesets/Roads/RoadIso_sand_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
             new SheetSpec(Root + "Tilesets/Roads/RoadIso_brick_new_blob47.png",    12, 4, 32, 32, SpriteAlignment.Center, Centre),
+
+            // ---- Wharf / dock tile kit: the working waterfront's deck. Near-plan 32×32 tiles that sit in
+            //      the ground plane like Grass.png, but on a TALLER cell — because the camera looks from
+            //      the south, a S-facing deck edge drops a visible vertical face over the water.
+            //
+            // ⚠ THE CELL IS 32×56, NOT 32×32, AND THAT IS THE WHOLE CONTRACT. The top 32 rows are the deck
+            //   (the tile proper); the bottom 24 are the FACE + waterline foam, which OVERHANG downward
+            //   over whatever is drawn in the cell below. Hence the TOP-LEFT pivot: the sidecar says
+            //   "cell top-left aligns to tile screen origin", so the deck lands on its own tile and the
+            //   face hangs past it. A centre pivot — the obvious choice for every other tile sheet in
+            //   this manifest — would sink every wharf tile 12 px into the water. Whatever draws these
+            //   must also paint BACK TO FRONT (north rows first) or a face will overdraw its neighbour.
+            //
+            // 17 cols × 7 rows. Columns are the auto-tile set (ctr · 4 edges · 4 outer corners · 4 end
+            // caps · 4 diagonal cuts); rows are quay · lowpier · tallpier, then the FLOAT material's four
+            // bob frames f0..f3 (a ±1 px heave loop at ~6 fps, offsets 0,−1,0,+1). So "float" is one
+            // material occupying four rows, not four materials — see WharfKitCatalog.
+            new SheetSpec(Root + "Tilesets/Wharf/WharfAtlas.png", 17, 7, 32, 56, SpriteAlignment.TopLeft, TopLeft),
+
+            // Breakwater / shore-armour arms: 3 cols (straight · 45° diag · end cap) × 4 rows
+            // (riprap · crib · wall · sheet), cell 48×60. Pivot is TOP-CENTRE because the sidecar anchors
+            // these on the CREST line, not the base — that is what lets consecutive pieces butt into a
+            // continuous run around a corner. The structure's base sits ~6 px above the cell bottom; the
+            // gap below it is the foam fringe.
+            new SheetSpec(Root + "Tilesets/Wharf/WharfBreakwaters.png", 3, 4, 48, 60, SpriteAlignment.TopCenter, TopCentre),
+
+            // WharfOverlays.png is NOT here: 14 fittings at 14 different sizes (rails, cleat, bollard,
+            // ring, dolphin, ladder, tyre, pile head, gangway) whose pivots mean four DIFFERENT things —
+            // edge-line for rails, base for cleats/bollards, centre for the ring, top for the things that
+            // hang off a face. WharfOverlaySlicer reads all of it from WharfOverlays.json.
         };
 
         // ---- entry points -------------------------------------------------------------------------
