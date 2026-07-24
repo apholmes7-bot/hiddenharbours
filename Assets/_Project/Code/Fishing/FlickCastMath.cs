@@ -161,6 +161,43 @@ namespace HiddenHarbours.Fishing
             return new FlickCastResult(true, dir, power01, quality01, distance, a + dir * distance);
         }
 
+        // ---- live wind-back reads (presentation only — the cast still resolves at release) ----------
+
+        /// <summary>
+        /// The LIVE wind-back charge 0..1 while the gesture is held: how far the pointer is drawn from
+        /// the character, normalized by the same full-power flick length the resolved cast uses — so the
+        /// castBack sheets scrub in the same units the release will be judged in. Presentation data only
+        /// (published as <c>FishingState.CastCharge01</c>); <see cref="Evaluate"/> alone decides the
+        /// cast. Pure, NaN-safe (junk reads as 0 — the rod simply hasn't loaded).
+        /// </summary>
+        public static float WindBackCharge01(Vector2 pointerWorld, Vector2 anchor, float fullPowerFlickMetres)
+        {
+            float dx = pointerWorld.x - anchor.x, dy = pointerWorld.y - anchor.y;
+            if (float.IsNaN(dx) || float.IsNaN(dy)) return 0f;
+            float len = Mathf.Sqrt(dx * dx + dy * dy);
+            return Mathf.Clamp01(len / SafePos(fullPowerFlickMetres));
+        }
+
+        /// <summary>
+        /// The live AIM offset (world m, relative to the angler) of where the wound-back rod is pointing
+        /// the cast: opposite the drag (the pointer is pulled BEHIND the character, the line will fly the
+        /// other way), reaching <paramref name="castCapMetres"/> at full charge. The wind-back's
+        /// presentation preview (published as <c>FishingState.CastAimX/Y</c>) — the resolved cast still
+        /// comes from the whole gesture at release. Zero when the pointer sits on the anchor (nothing is
+        /// wound back) or any input is NaN. Pure.
+        /// </summary>
+        public static Vector2 WindBackAimOffset(Vector2 pointerWorld, Vector2 anchor,
+                                                float fullPowerFlickMetres, float castCapMetres)
+        {
+            float dx = anchor.x - pointerWorld.x, dy = anchor.y - pointerWorld.y;
+            if (float.IsNaN(dx) || float.IsNaN(dy)) return Vector2.zero;
+            float len = Mathf.Sqrt(dx * dx + dy * dy);
+            if (len < 1e-4f) return Vector2.zero;
+            float charge = Mathf.Clamp01(len / SafePos(fullPowerFlickMetres));
+            float reach = charge * Mathf.Max(0f, Safe(castCapMetres));
+            return new Vector2(dx / len * reach, dy / len * reach);
+        }
+
         /// <summary>Fastest segment speed (m/s) over the forward sweep (apex → release), or −1 when no
         /// consecutive usable pair has a positive time step (timing then can't be measured).</summary>
         private static float PeakSweepSpeed(FlickSample[] samples, int fromIdx, int toIdx)

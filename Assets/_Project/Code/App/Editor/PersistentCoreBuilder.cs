@@ -91,6 +91,10 @@ namespace HiddenHarbours.App.Editor
         const string ArtLineHook       = "Assets/_Project/Art/UI/LineHook.png";
         const string ArtFishSilhouette = "Assets/_Project/Art/UI/FishOnSilhouette.png";
 
+        // The rod-fight presenter's splash/ripple reuse (the RodLineMath-documented art sources).
+        const string ArtSplashBurst    = "Assets/_Project/Art/Fishing/SplashBurst.png";
+        const string ArtSurfaceRipple  = "Assets/_Project/Art/Textures/Water/SurfaceRipple.png";
+
         /// <summary>Inputs a scene builder hands the core (all data refs are the RELOADED/persisted assets,
         /// so they serialize into the scene instead of saving as "None").</summary>
         public struct Params
@@ -429,17 +433,51 @@ namespace HiddenHarbours.App.Editor
             // under the fisher wherever they stand — the dock, the shore, the flats, or the deck.
             SetRef(fishing, "_angler", playerGo.transform);
 
-            // THE ROD-FIGHT ANIMATION (Rod Fishing v2 wave 3): while a rod interaction is live the fisher
-            // plays the baked fight sheets — the two-tap BITE tell, the STRIKE as the hook sets, the REEL
-            // cycle through the deep→surface fight (and the legacy fight), the LAND beat — all read off
-            // the Core FishingStateChanged snapshots (rule 4: no Fishing reference), facing the published
-            // fish offset. Sheets are 8-dir × N frames in d/f slice order; a sheet that gave no clean
-            // 8-row set wires empty and that pose stays inert (null-safe greybox rule).
+            // THE ROD-FIGHT ANIMATION (Rod Fishing v2 wave 3 + the presenter wave): while a rod
+            // interaction is live the fisher plays the baked fight sheets — the castBack wind-back
+            // (SCRUBBED by the published charge), the castRelease flick, the rod-out HOLD, the two-tap
+            // BITE tell, the STRIKE as the hook sets, the REEL cycle through the deep→surface fight (and
+            // the legacy fight), the LAND beat — all read off the Core FishingStateChanged snapshots
+            // (rule 4: no Fishing reference), facing the published fish offset / cast aim. Sheets are
+            // 8-dir × N frames in d/f slice order; a sheet that gave no clean 8-row set wires empty and
+            // that pose stays inert — but LOUDLY now (LoadIsoDirFramesChecked): a committed sheet that
+            // wires zero frames is a build error, not a shrug (the owner lost a playtest to the silence).
             var fightAnim = playerGo.AddComponent<PlayerFishingAnimator>();
-            SetRefArray(fightAnim, "_biteFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_bite.png").Cast<Object>().ToArray());
-            SetRefArray(fightAnim, "_strikeFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_strike.png").Cast<Object>().ToArray());
-            SetRefArray(fightAnim, "_reelFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_reel.png").Cast<Object>().ToArray());
-            SetRefArray(fightAnim, "_landFrames", LoadIsoDirFrames($"{ArtFisherIsoFolder}/Fisher_land.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_biteFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_bite.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_strikeFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_strike.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_reelFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_reel.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_landFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_land.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_holdFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_hold.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_castBackFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_castBack.png").Cast<Object>().ToArray());
+            SetRefArray(fightAnim, "_castReleaseFrames", LoadIsoDirFramesChecked($"{ArtFisherIsoFolder}/Fisher_castRelease.png").Cast<Object>().ToArray());
+
+            // THE ROD-FIGHT PRESENTER (the presentation seam): the rod overlay pinned to the fisher's
+            // hands, the line, the bobber, the sink ripples, the fish (shadow → surface → held) and the
+            // splash beats — every pin parsed from the baked anchor sidecars into world-metre DATA
+            // (RodKitImporter; rule 6: nothing eyeballed), every sheet wired as serialized refs, all of
+            // it driven ONLY by the Core FishingStateChanged snapshots. Null-safe per element: a missing
+            // sheet/sidecar leaves that element inert and the rest of the show goes on.
+            var rodPresenter = playerGo.AddComponent<RodFightPresenter>();
+            RodStateVisual[] rodStates = RodKitImporter.BuildRodStates("cane", out int[] rodBehindDirs);
+            BobberStateVisual[] bobberStates = RodKitImporter.BuildBobberStates();
+            FishSpeciesVisual[] fishVisuals = RodKitImporter.BuildFishSpecies(p.RegionFish);
+            RodKitImporter.BuildLandHands(out Vector2[] handMid, out Vector2[] handRight, out int landFrames);
+            rodPresenter.Configure(rodStates, rodBehindDirs, bobberStates, fishVisuals,
+                                   handMid, handRight, landFrames,
+                                   LoadSheetFrames(ArtSplashBurst),
+                                   LoadSpriteAny(ArtSurfaceRipple));
+            EditorUtility.SetDirty(rodPresenter);
+            Debug.Log("[PersistentCoreBuilder] Rod-fight presenter wired: " +
+                      $"rod states {CountWired(rodStates)}/{RodKitImporter.RodStateOrder.Length}, " +
+                      $"bobber states {CountWired(bobberStates)}/{RodKitImporter.BobberStateOrder.Length}, " +
+                      $"fish species {(fishVisuals != null ? fishVisuals.Length : 0)}, " +
+                      $"land-hand anchors {(handMid != null ? "OK" : "MISSING")}.");
+
+            // With the diegetic tells live (a rod in hand + a bobber to watch), the old VS-13 gauge's
+            // pre-fight TEXT would double-caption them ("A bite! Hook it!" under a dipping bobber) —
+            // mute just the text for those beats. The gauge itself (bars, fight/result text) stays
+            // exactly as shipped, and stays FULLY verbal when the kit didn't wire (greybox safety).
+            SetBool(gauge, "_muteDiegeticText", CountWired(rodStates) > 0 && CountWired(bobberStates) > 0);
 
             // --- CAMERA FOLLOW (starts on the player at the on-foot framing; switches on ControlModeChanged) -
             var cameraFollow = camGo.AddComponent<CameraFollow>();
@@ -664,12 +702,36 @@ namespace HiddenHarbours.App.Editor
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
         }
 
+        /// <summary>Like <see cref="LoadIsoDirFrames"/> but LOUD: when the sheet FILE exists on disk yet
+        /// yields zero usable frames (unsliced, mis-named slices, a dirty count), that is a broken build
+        /// — log an ERROR naming the sheet, so a re-run can never silently wire a dead pose again (the
+        /// owner's statue-still playtest). A genuinely absent file stays a quiet no-op (pre-art greybox).</summary>
+        public static Sprite[] LoadIsoDirFramesChecked(string path)
+        {
+            Sprite[] frames = LoadIsoDirFrames(path);
+            if (frames.Length == 0 && AssetDatabase.LoadAssetAtPath<Texture2D>(path) != null)
+                Debug.LogError($"[PersistentCoreBuilder] '{path}' exists but wired ZERO frames — the " +
+                               "sheet is not sliced into a clean 8-direction _d<dir>_f<frame> set. That " +
+                               "pose will be INERT in play. Slice/re-import the sheet, then re-run this builder.");
+            return frames;
+        }
+
+        static int CountWired(object[] entries)
+        {
+            if (entries == null) return 0;
+            int n = 0;
+            for (int i = 0; i < entries.Length; i++)
+                if (entries[i] != null) n++;
+            return n;
+        }
+
         // An 8-direction iso sheet's sprites in direction·framesPerDir + frame order, recovered from the
         // _d<dir>_f<frame> sub-sprite names (the CharacterVisualLibraryBuilder convention — a trailing-
         // number sort would collate every direction's frame 0 together). All-or-nothing: a missing/dupe
         // cell or a count that isn't a clean 8 rows returns EMPTY, so the consumer stays inert rather
-        // than half-bound (the visual-def builder's gate).
-        static Sprite[] LoadIsoDirFrames(string path)
+        // than half-bound (the visual-def builder's gate). PUBLIC: the rod-kit importer and the wiring
+        // regression tests load through this exact gate — testing a copy would let the real one rot.
+        public static Sprite[] LoadIsoDirFrames(string path)
         {
             const int directions = 8;
             var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
