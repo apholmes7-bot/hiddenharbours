@@ -1,289 +1,319 @@
 # Hidden Harbours — The Plan to M1
 
-> **Status:** Working plan. Written 2026-07-24 against `main` @ `9df75c6`.
+> **Status:** Working plan. Rewritten 2026-07-24 after the owner's M1 reframe (see §1). Audited against
+> `main` @ `9df75c6`.
 > **Canon:** [`../docs/vision-and-pillars.md`](../docs/vision-and-pillars.md) wins on any conflict, then
 > [`../CLAUDE.md`](../CLAUDE.md), then this file.
-> **What this is:** an honest audit of how much of M1 is already built, the reconciliation of the M1 spec with
-> what the project actually became, and the sequenced, owner-decision-gated route to calling the vertical slice
-> **Done**.
-> **What this is not:** new design. Everything here phases work already specced in
-> [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md) and [`backlog.md`](backlog.md).
+> **What this is:** the M1 the game actually wants — a **world-first** vertical slice on St Peters Island —
+> what it takes to build it, what's already built, and the decisions that gate it.
+> **Supersedes:** the milestone scope in [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md),
+> which is mechanic-first and no longer describes the game. §9 carries the amended Definition of Done.
 
 ---
 
-## 1. The headline
+## 1. The reframe (why this document was rewritten)
 
-**M1 is roughly 80% built, and the 20% that remains is mostly not code.** The riskiest item in the whole
-milestone — the dory force model (VS-09, flagged "the #1 risk, prototype first") — shipped and has been
-owner-playtested repeatedly. What is left is the *finish*: two region scenes the owner must author, an audio
-track that has no source assets at all, a HUD that reads as programmer text instead of a widget, a
-localization seam that was never wired, and an acceptance pass nobody has run.
+The old M1 spec is a **mechanic-first** slice: a force model, a tension band, a price curve, six fish, one
+cove. It treats the vertical slice as a *proof that the verbs are fun.*
 
-Three things block progress that no agent can unblock. They are listed in §5 and they should be answered
-before the next wave of work starts.
+That is the wrong test for this game. Hidden Harbours is a **world game**. Its nearest neighbours — Stardew
+Valley, Big Ambitions — do not hold players with verb depth. They hold them with a place worth waking up in
+and a ladder you can see the next rung of. Sailing and fishing being fun is necessary and (per the last two
+months of playtests) already achieved. It is not sufficient, and it is not what M1 should be proving.
+
+**M1's real question is therefore not "are the verbs fun?" but "is this a world I want to spend a season
+in?"** Everything below follows from that.
 
 ---
 
-## 2. Where we actually are (audited, not assumed)
+## 2. What a vertical slice looks like in the games this one resembles
 
-Evidence: 617 C# files, 254 test files, 24 ADRs, 341 art PNGs, CI green on `main` (run 2026-07-24T14:08Z),
-save schema at v4 with four migration steps.
+**Stardew Valley's slice is Spring Year 1, week one — not "grow a parsnip."** What ships in it:
 
-### 2.1 Done — the M0 loop and most of M1's systems
+- **Ten named people** with faces, houses, schedules, and an opinion of you — before you have done anything.
+- **The whole town map, complete**: shops with opening hours, the beach, the bus stop, the mine door you
+  cannot open yet.
+- **Verb depth: almost nil.** Hoe, water, harvest, hand-pick forage. Four verbs, no skill ceiling.
+- **A relentless drip**: parsnips day 1 → Willy gifts you the rod day 2 → forage and the shipping bin →
+  the mines open day 5 → the Egg Festival day 13 → backpack upgrade when you can afford it.
 
-| Item | State | Evidence |
+**Big Ambitions' slice is one tiny shop — in a Manhattan that is entirely there on day one.** The shop
+mechanics are trivial: buy stock, set a price, hire a clerk. What sells it is that you can walk real
+districts, read real addresses, ride the bus, and stand in a competitor's store. The map tells you there are
+fifty rungs above the one you're on.
+
+**The shared formula, and the one to copy:**
+
+1. A **small, complete, inhabited place** — not a big empty one.
+2. **Shallow verbs, deep world.**
+3. **A visible ladder** — you can see the next rung before you can reach it.
+4. **A new rung every couple of days.**
+5. **A reason tomorrow is different from today.**
+
+Point 5 is where **Hidden Harbours has a structural advantage over Stardew.** Stardew's day-to-day variation
+is weather RNG plus a fixed festival calendar — you don't learn it, you just receive it. Hidden Harbours'
+variation is the **tide**: deterministic, forecastable, learnable, and able to gate content. A player who
+reads the tide table and plans around it is exercising a *skill* Stardew never offers. **The tide is M1's
+engine, and the tide-gated crossing to the mainland is the best idea in this design.** Build the slice around
+it.
+
+---
+
+## 3. The M1 arc — the ladder
+
+The owner's arc, laid out as rungs. Target pacing: **something new roughly every other day for the first two
+weeks.** The grind is intentional; the drip is what makes it bearable.
+
+| Day (≈) | Rung | New thing the player gets | Teaches |
+|---|---|---|---|
+| 1 | **Arrive** | You come to St Peters to be with your **aunt** after your uncle's death. The island, the cast, the cottage. | The place, the people, the tone (bittersweet, warm) |
+| 1 | **The shovel** | Aunt's shovel, gifted. Dig shellfish on the flats **at low water**. | Verb 1 (dig) · the **tide** as your first constraint (P1) |
+| 1–2 | **The general store** | Sell shellfish to the store. First coin. | Money · the island's economy is *small* |
+| 2–3 | **The used rod** | Buy it at the store. Fish from shore. | Verb 2 (fish) · gear as progression |
+| 3–4 | **The white bucket & the freezer** | Fish **rots**. Aunt freezes your catch while you fill a whole bucket. | **Freshness** — the pressure that makes time matter |
+| 4–5 | **The crossing** | The springs come. Walk the **tide-gated sandbar** to the mainland with a frozen bucket. | The world is bigger · tide as a **gate** · a returning-tide clock (P5) |
+| 5 | **Nine Mile Creek** | The wharf. A real fish buyer — better prices than the store. And there, hauled out: **a dory in disrepair.** | Where you sell matters · **the visible next rung** |
+| 6–9 | **The dory** | Earn it. Buy her. Pay to repair her. **Sail her home** to the St Peters dock. | Verb 3 (sail) · the slice's emotional peak (P2/P4) |
+| 9–11 | **Offshore** | New species reachable only by boat, further out. | The boat *unlocks world*, not just stats |
+| 11–13 | **Shellfish gear** | Traps/pots — catch that works while you do something else. | Verb 4 · the first taste of P4 (earn it, then automate it) |
+| 13–15 | **The used outboard** | Bought secondhand from someone at the wharf. Range and speed. | Progression that **opens map**, and the promise of more |
+
+**Why the outboard is a better M1 climax than the Punt** (the old spec's "buy a bigger boat" beat): it
+upgrades a boat you are already attached to instead of discarding her, it is cheap enough to actually reach
+inside a slice, and it buys **range** — more world — rather than a bigger number. That is Stardew's
+rod-upgrade shape, not its farm-expansion shape, and it is the right one this early. The Punt stays in the
+game as a later rung.
+
+---
+
+## 4. The tide gate — how to do it without breaking the sim
+
+The brief says *"the tide doesn't lower enough until the player completes the introduction."* Taken
+literally that means a scripted tide, which breaks CLAUDE.md rule 5 (the sim is a pure function of
+`(worldSeed, gameTime)`) — and, worse, breaks the pillar. If the tide is a story flag, it stops being a force
+the player learns to read, and P1 dies in the tutorial.
+
+**Do it the honest way instead: gate the calendar, not the tide.**
+
+Tides run a spring/neap cycle of about 14.75 days. **Choose the world's start date so that the first big
+spring low falls on day 4–5** — exactly when the arc wants the crossing. The tide stays 100% deterministic and
+honest; the *story* is placed against it rather than the other way round. Aunt Ginny says "Thursday's the big
+drain — that's your day," and the tutorial has now taught the player to read a tide table, on a real crossing,
+with a real consequence. That is P1 delivered perfectly rather than faked.
+
+**And handle the dawdler.** If the player misses the springs, the next ones are ~14 days out — brutal. So make
+the crossing **possible on any decent low but comfortable only near springs**: off-peak the channel window is
+narrower, there's more wading, and the returning tide is a tighter clock. Dawdling then costs *risk and
+nerve*, not two lost weeks. Cozy, but with teeth.
+
+This one decision converts the tutorial from a scripted sequence into the game's best teaching moment. It is
+also nearly free — it is a start-date constant, not a system.
+
+---
+
+## 5. What changes against the old spec
+
+| | Old M1 (mechanic-first) | New M1 (world-first) |
 |---|---|---|
-| VS-01/02/03 bootstrap, intents, versioned save | **Done** | asmdef modules under `Code/`, `SaveData` v4, `SaveMigration` with 4 guarded steps |
-| VS-04 clock + deterministic semidiurnal tide | **Done** | `Environment/TideModel.cs`, `GameClock.cs`, determinism tests |
-| VS-05 EnvironmentService v1 — wind, current, sea-state, FORCES sample | **Done** | `EnvironmentSample`, `WindProfile`, `CurrentModel`, `WeatherModel` |
-| VS-07 dory v0 + follow-cam | **Done** (superseded by VS-09) | `CameraFollow`, `CameraZoomPolicy` |
-| **VS-09 dory force model v1 — the #1 risk** | **Done** | `BoatController` (thrust, anisotropic fore/aft drag, `WindExposure`, speed-scaled `RudderAuthority`), `SeakeepingForcesMath` |
-| VS-10/12 FishSpecies schema + catch resolver | **Done** | `FishSpeciesDef`, `CatchResolver`, `CatchResolverTests` |
-| VS-13/14 fishing interaction + polish | **Done** (rod-fishing v2 landing) | `RodFightSim`, `RodFightPresenter`, owner playtests 2026-07-23/24 (#277, #281, #283) |
-| VS-15 buyer + supply/demand price | **Done** | `Market`, `MarketMath`, `SellPricing`, Cove + Greywick `MarketId` |
-| VS-18 sell screen (functional) | **Done** (M0 bar) | `SellScreen`, `SellService` |
-| VS-17 HUD v0 + wind/sea/compass/set-&-drift readouts | **Done** (functional) | `HudController`, `WindReadout`, `CompassReadout.SetAndDrift` |
-| VS-20 Coddle Cove | **Done + committed** | `Greybox.unity`, ADR 0011 logic/visual split, `Refresh Cove Logic` |
-| VS-23 art convention + import lock | **Done** | PPU=32/Point/no-compression, sheet-slice tests |
-| VS-24 cove art pass | **Done, and then some** | displaced 3D water (ADR 0023), tide-aware shoreline, day/night grade, wet-shore seam |
-| VS-25/26 character, boat & fish art | **Done, and then some** | in-engine JS rig baking (ADR 0021), 11 mesh hulls (ADR 0022), deck-character mesh (ADR 0024) |
-| VS-27 ambient bed v0 | **Done** (procedural) | `ProceduralAudio`, `AudioDirector` |
-| VS-29 tools | **Done** | `TideScrubberWindow`, `TideTableWindow`, `FishSpeciesDefEditor`, `TerrainPaintTool`, `RegionValidatorWindow` |
-| VS-08 boats as data | **Done in spirit** | `BoatHullDef` carries mass/draught/hold/engine/drag/windage; no boat is special-cased by name; hold read from data. The literal Hull/Engine/Hold/Gear **component split is not built** — see §4.8 |
-| CI green gate | **Working** | Buildalon runner, EditMode + PlayMode on every PR |
+| **Home region** | Coddle Cove | **St Peters Island** |
+| **Second region** | Port Greywick (services) | **Nine Mile Creek** (a working wharf, not a town) |
+| **Opening** | Inherit Ned's dory | **Accompany your aunt**; earn the dory |
+| **First verb** | Handline fishing | **Digging shellfish at low water** |
+| **First market** | Wharf fish buyer | **The island general store** (worse prices — a reason to cross) |
+| **The gate** | — | **The tide-gated sandbar crossing** |
+| **Pressure** | Hold capacity | **Freshness/rot** — freeze it, keep it alive, or lose value |
+| **Climax purchase** | The Punt (a bigger boat) | **A used outboard** (range on the boat you love) |
+| **Cast** | Ned (departed) + 1–2 neighbours | **Aunt + a small inhabited island**: schoolhouse, general store, a few homes, 4–6 named people |
+| **Proves** | "Are the verbs fun?" | **"Is this a world worth a season?"** |
 
-### 2.2 The M0 go/no-go was answered by playing, not by a document
-
-VS-30 asked for a written M0 verdict. What happened instead is better: the owner has been playtesting the loop
-directly and driving fixes into it (see the last ~10 commits, all `owner playtest` tagged). Treat M0 as
-**passed by demonstration**. Do not spend a wave re-running it; fold the surviving value — the documented
-**core-loop smoke test** — into the M1 acceptance pass (§4.7).
+**Out of M1** (not cancelled — re-phased): Port Greywick as a full town (already M2-13), Coddle Cove as the
+home harbour (M2), the Punt purchase, blue-mussel and pollock, everything above the dory in the hull ladder.
 
 ---
 
-## 3. What changed since the M1 spec was written (read before planning)
+## 6. The good news — how much of this exists
 
-The M1 spec in [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md) describes a game that is no
-longer exactly the game being built. Three drifts, all of them ratified or defensible, none of them yet
-reflected in the M1 Definition of Done:
+The last audit called the St Peters work "scope drift past M1." **That was wrong, and this document corrects
+it.** The owner was building the *right* M1 against a spec that described the wrong one. Concretely, already
+built and playtested:
 
-**3.1 The opening was replaced.** The DoD still says *"You inherit the dory from Uncle Ned."* Canon §5.8 and
-the owner-ratified St Peters batch (M2-31/31b/31c) replaced that with **buy-and-repair**: dig clams on the
-bared flats → walk the tide-gated sandbar to Greywick → buy a cod licence and a rod → buy a **damaged** dory at
-the shipwright and pay to repair her → sail her home to Coddle Cove. `OnboardingDirector` implements exactly
-this today. The cottage and Ned's memory stay inherited; the dory is earned (P4). **The DoD line is obsolete
-and must be rewritten**, not quietly ignored.
+- **The clam dig** (`ClamDig`, `ClamDigger`, `ClamSpot`, the "two squirting holes" tell) and the **shovel** and
+  **bucket** as owned gear (`Data/Gear/Shovel.asset`, `ClamBucket.asset`, `ClamBucket : IHold`).
+- **The tide-gated sandbar seam** — `Core.TidalExposure`, `IEnvironmentService.WaterLevelAt`,
+  `TidalWalkability`, `PaintedTidalTerrain` (ADR 0009/0014). The hard part of the crossing is done.
+- **Buy-and-repair** (`RepairLedger`, `DamagedDoryOffer`, `Shipwright`, boarding gated on repair).
+- **Licences and vendors** (`LicenseService`, `GearShop`, `PotShop`, `LicenseVendor`).
+- **Traps and pots**, soak-and-haul, the deck-work loop.
+- **Aunt Ginny**, dialogue, the onboarding director already walking this exact arc.
+- **The dory sails** — the force model (VS-09, the old spec's #1 risk) shipped and has been owner-playtested
+  repeatedly. Wind pushes, tide sets, she carries way.
+- **The sea itself** — deterministic tide, wind, displaced 3D water, tide-aware shoreline, day/night grade.
+- Market with supply/demand and two channels; sell screen; save at schema v4; CI green.
 
-**3.2 M2 work landed inside M1.** Traps and pots, the licence system, the clam dig, the St Peters region, the
-lobster boat and ten other hulls above the Punt — all built. Most of it is the owner-ratified 2026 batch, so
-it is not rogue work, but CLAUDE.md rule 8 ("stay in your phase") has not been holding, and every hour spent
-on an M3 hull is an hour not spent closing M1. **Recommendation: freeze new M2/M3 feature work until M1 is
-signed off.** Bugfixes to already-built M2 systems are fine; new ones are not.
-
-**3.3 The six species drifted.** Spec: `cod, haddock, pollock, mackerel, rock-crab, blue-mussel`. Built:
-`AtlanticCod, Haddock, Mackerel, RockCrab, SoftShellClam, AmericanLobster`. Pollock and blue-mussel are
-absent; clam (the opening beat) and lobster (M2 trap gear) took their slots. Mussels are now owned by M3-16
-(aquaculture) anyway. See decision **D2**.
+**The verbs are done. What's missing is the world, the pressure, and the pacing.**
 
 ---
 
-## 4. The gaps — eight workstreams
+## 7. The gaps — seven workstreams
 
-Ordered by what blocks what. Owners are the `agents/` roles.
+Ordered by what blocks what.
 
-### 4.1 · Region scenes: adopt and commit Greywick + St Peters — `owner` + `tools-editor` — **the schedule risk**
-`Greybox.unity` (Coddle Cove) is the only committed scene. Greywick and St Peters exist **only as editor
-builders** (`GreywickBuilder`, `StPetersBuilder`) that generate from zero on every run; ADR 0019 phase 1 —
-generalizing the CREATE/REFRESH split to every region and adopting them one by one — is still *Proposed,
-awaiting owner sign-off*. Until this lands, **VS-22 cannot be verified**, the whole opening arc lives on the
-owner's machine rather than in the repo, and any builder re-run can eat hand-authored work.
+### 7.1 · Make St Peters a place — `world-content` + `owner` + `art-pipeline` — **the biggest item in M1**
+Today the island is: one cottage, Aunt Ginny, Ned's letter, a dock. The arc needs an inhabited village.
 
-- Ratify ADR 0019 (or reject it and say what replaces it).
-- `tools-editor`: extend the `RegionLogicRoot` + `Refresh <region> Logic` pattern to `GreywickBuilder` and
-  `StPetersBuilder`; make full rebuild warn-and-confirm the way the cove's does.
-- **Owner:** run each builder once, author the visual layer, commit the `.unity`. Headless agents cannot
-  author a valid scene — this act is irreducibly the owner's.
-- **Exit:** three committed region scenes; the cove↔Greywick↔St Peters hops load additively without breaking
-  the persistent core; `RegionValidatorWindow` clean on all three.
+- **Aunt's house** (interior or at minimum a lived-in exterior with the **freezer** as an interactable),
+  **the schoolhouse**, **the general store**, and **2–3 more homes**.
+- **4–6 named inhabitants** with portraits, a line of dialogue with an opinion, and a fixed spot. Anchored, not
+  scheduled — routines are M2, and Stardew's week one works fine with people who mostly stand still.
+- The flats where you dig; the sandbar head; the dock.
+- **Owner authors the scene** (ADR 0019 — see §8, D3). Agents build the tooling and the logic layer.
+- **Exit:** you can walk the island in two minutes, meet everyone, and know what each building is for.
 
-### 4.2 · Audio v1 — `audio` + `owner` — **the largest true content gap**
-There are **zero audio files in the repo**. Everything you hear today is synthesized at runtime by
-`ProceduralAudio`. The music bus exists in `AudioDirector` and ducks correctly, but it has no stem to play.
-VS-28 — the warm Coddle Cove theme, the **rising-wind tell** (canon calls it sacred, P1/P5's early warning),
-the catch sting, the "made it home" warmth — is essentially unbuilt.
+### 7.2 · Nine Mile Creek — `world-content` + `owner` + `art-pipeline`
+A new small region: the wharf, the **fish buyer** (better prices than the island store), the **derelict dory**
+hauled out where you can see her from arrival, the **used-outboard seller**, and a couple of buildings for
+flavour. A working creek, not a town. Greywick's outdated art is **retired, not repainted** (see D1).
 
-- Blocked on decision **D4** (where audio comes from).
-- `audio`: sea-state/wind/time-layered beds; adaptive music v1 with the wind tell wired to the same
-  `EnvironmentSample` the HUD reads, so sound and widget never disagree; catch sting on `FishCaught`;
-  home-warmth resolve on wharf arrival.
-- **Exit:** rising wind is *audible before* anything dangerous could happen and mirrors the HUD; beds
-  cross-fade with no cuts; per-bus volume sliders respected; no load errors on any region.
+- **Exit:** you arrive off the sandbar, sell, see the dory, and understand she is the next rung.
 
-### 4.3 · HUD v1 as widgets, and the diegetic sell screen — `ui-ux`
-The reads all exist and are correct; they render as **uGUI text labels built in code**. VS-19 asks for a wind
-widget with arrow/barbs, a compass ribbon, and a **set-&-drift ghost track** — a faint predicted course line on
-the water, not the `"COG 042 · set 12°R"` string `CompassReadout` returns today. M1-06 asks for the sell
-screen's chalkboard skin.
+### 7.3 · Freshness & rot — `economy-sim` + `gameplay-systems` — **the one genuinely new system**
+Load-bearing in the new arc and currently **not built**. `CatchSpoilMath` exists but is *visual only* — its own
+header says "Who sets spoil: nobody yet." Needs:
 
-- Wind widget (direction relative to heading, strength by arrow length + barbs + label — redundant coding).
-- Compass ribbon/rose.
-- Set-&-drift predictor as a **world-space ghost track**; keep the text read as the accessible fallback.
-- Sell screen chalkboard skin; keep the live marginal-price/total behaviour exactly as-is.
-- **Exit:** all sea-reads legible at a glance and validated against colourblind palettes; zero per-frame
-  allocation (the current HUD's discipline must survive the reskin).
+- A **freshness clock** per catch: a `gameTime` timestamp that survives save and time-skip (never a
+  per-frame countdown), driving a 0..1 spoil value.
+- Three arrest modes: **frozen** (aunt's freezer, later ice), **kept alive** (hydration — shellfish in a wet
+  bucket, later a live well), and **nothing** (it rots).
+- **Price consequence**: rot cuts value on a curve; fully spoiled is worth ~nothing but is never a
+  hard-punish event (P5 — cozy). Wire to the existing `SellPricing`.
+- Wire the existing spoil *visual* to the new clock so a rotting bucket looks rotten.
+- **Exit:** filling a bucket over three days without the freezer visibly and financially costs you; freezing
+  or keeping them alive saves them; a save/reload and a sleep-skip both preserve freshness exactly.
 
-### 4.4 · Runtime tide-table panel (VS-06) — `gameplay-systems` + `ui-ux`
-`TideTableWindow` is **editor-only**. The player-facing "Uncle's booklet" — today + tomorrow's highs and lows
-for the region, a now-marker, a simple curve, and time frozen (`timeFlowMultiplier = 0`) while you read it —
-does not exist in the build. The extrema-finding logic is already written and tested inside the editor
-window; this is mostly a lift into runtime plus a panel.
+### 7.4 · The pacing model — `economy-sim` — **do this first, it's the cheapest de-risk**
+"A new rung every couple of days" is a balance problem, and it is far cheaper to solve in a spreadsheet than
+in a build. Model the whole ladder before building content against it: clam density and dig rate, store vs
+wharf prices, rod cost, dory price, repair cost, trap cost, outboard cost, offshore catch rates, spoilage loss.
 
-- **Exit:** listed highs/lows match the live tide within rounding; the HUD gauge's time-to-turn agrees with
-  the table; opening pauses and closing resumes.
+- **Exit:** a day-by-day projection showing rungs landing on the §3 schedule for an average player, tuned
+  in `GameConfig`/Def assets (no magic numbers), and re-checkable after any price change.
 
-### 4.5 · Localization tables — `lead-architect`
-A hard DoD line — *"all player-facing strings go through localization tables"* — with nothing behind it.
-`HudStrings` and `WorldStrings` are honest, well-documented **seams**, and `NpcDef`/`DialogueDef` carry the
-same note, but no localization package is in `Packages/manifest.json` and no table exists. Cheap now; brutal
-after M2 triples the string count. See decision **D5**.
+### 7.5 · The island store as a market channel — `economy-sim`
+Selling today happens at a wharf stall. The arc needs the **general store** to buy shellfish and sell gear,
+at **deliberately worse prices** than Nine Mile Creek — so the crossing has an economic reason on top of a
+story one, and "where you sell matters" is taught in the first hour. `MarketId` already supports channels.
 
-- **Exit:** Unity Localization wired, one English table, every user-facing string routed through it, no call
-  site rewritten (the seams pay off).
+### 7.6 · The reads the player needs — `ui-ux` + `gameplay-systems`
+Cut to what the new arc actually requires, in priority order:
 
-### 4.6 · The first-boat beat and the species set — `economy-sim` + `world-content`
-The DoD promises *"buy the Punt at the Greywick Shipwright — the 'real fisher now' beat."* The shipwright's
-catalogue is `DamagedDoryOffer`, `CrabPotOffer`, `LobsterPotOffer`. **The Punt is not purchasable**, though its
-hull (`PuntUpgraded.asset`), art, and sheet-slice tests all exist. See decisions **D1** and **D2**.
+1. **The in-game tide table** (VS-06) — currently editor-only. **Now essential**: it is how the player plans
+   the crossing. Highs and lows for today and tomorrow, a now-marker, time frozen while reading.
+2. **Freshness read** on the bucket/hold — how long has this been sitting.
+3. **The wind widget and compass** (VS-19) — text today; needed once the dory is sailing.
+4. Set-&-drift ghost track — **defer to M2**; the text read is enough for a forgiving inshore slice.
+5. Sell-screen chalkboard skin — keep, it's cheap and it sells the diegetic promise.
 
-- **Exit (assuming D1 recommendation):** the repaired dory is the *earned* opening beat; the Punt is the M1
-  *aspirational* purchase at Greywick (~1,800 ₲), reachable in a few sessions of good fishing, deducting coin,
-  switching the active boat, and persisting across save/load. Insufficient funds blocks gracefully.
+### 7.7 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
+Unchanged from the previous audit and still real:
 
-### 4.7 · Performance pass + M1 acceptance + external playtest — `qa-test`
-M1-16 (profiling) shows no evidence of having been run, and VS-31 — the acceptance pass and the closed
-Steam/itch.io playtest that produces the **soft-launch-readiness verdict** — gates the entire milestone.
-
-- Profile against the ADR 0005 **desktop baseline** (60fps, typical desktop/laptop GPU): displaced water,
-  2D lights, HUD, physics, one active boat. Confirm no per-frame GC in the hot path.
-- Document and automate the **core-loop smoke test** (board → sail → fish → return → sell → sleep → reload).
-- Save-migration test: a save written by an older build loads without loss (schema is at v4 — exercise
-  v1→v4, not just v3→v4).
-- Run the external playtest; deliver the written verdict with a **GO / POLISH / PIVOT** recommendation.
-- **Exit:** the reconciled DoD (§6) is green and the verdict is in the owner's hands.
-
-### 4.8 · Deferred on purpose — log, don't build
-- **Boat composable components (VS-08 literal form).** `BoatHullDef` is one SO carrying hull + engine + hold
-  stats. It satisfies every M1 acceptance criterion — data-driven, swappable, no name special-casing — so
-  **do not refactor it for M1**. M2-17 (component swaps at the shipwright) is the item that actually needs the
-  split; do it there, with a save migration, when there is a reason.
-- **Pollock/blue-mussel** — pending D2.
-- **Everything M2+.** See §3.2's freeze.
+- **Audio: zero asset files in the repo.** The music bus ducks correctly but has no stem. The rising-wind
+  tell is canon-sacred and unbuilt. Longest real-world lead time in M1 — see D4.
+- **Localization** is a hard DoD line with nothing behind it; `HudStrings`/`WorldStrings`/`NpcDef` are seams
+  built for exactly this. Cheap now, brutal after M2.
+- **Acceptance**: desktop-baseline profiling, an automated core-loop smoke test, a v1→v4 save-migration test,
+  then the external playtest and the written **GO / POLISH / PIVOT** verdict.
+- **The playtest that matters most is the pacing one**: does a fresh player hit the §3 rungs on schedule, and
+  do they want a third session?
 
 ---
 
-## 5. Owner decisions needed (these block work)
+## 8. Decisions (these gate work)
 
 | # | Decision | Recommendation |
 |---|---|---|
-| **D1** | The "real fisher now" beat: is it the repaired dory, the Punt, or both? | **Both.** The repaired dory is the *earned* opening (already built, playtested, canon §5.8). Add the **Punt** as M1's aspirational Greywick purchase — the DoD promises a boat you save up for, the art and hull already exist, and it costs one `ShipwrightOffer` asset plus price tuning. Cheapest possible way to keep the promise. |
-| **D2** | The six species: add pollock and blue-mussel, or ratify the built set? | **Add pollock only** (one asset — it gives the rod pool real depth and it is the third of the three handline groundfish). **Drop blue-mussel from M1** — M3-16 aquaculture already owns mussels. Ratify clam and lobster as built. Then **update the spec to match reality** rather than carrying a lie in the DoD. |
-| **D3** | Ratify ADR 0019 (hand-authored scenes as source of truth) and commit Greywick + St Peters? | **Yes, and soon.** This is the schedule's critical path: agents can build the tooling but cannot author a `.unity`. Until you run the builders and commit the scenes, two thirds of the game's regions live only on your machine and VS-22 cannot be signed off. |
-| **D4** | Where does audio come from — commissioned, licensed, or procedural-only? | **Licensed/commissioned for the music bed and the wind tell; keep procedural for ambience.** The rising-wind tell is canon-sacred and a synthesized approximation will undersell it. This is the one M1 gap with a real-world lead time — decide it first even though the work happens last. |
-| **D5** | Wire Unity Localization now, or ship M1 English-only against the seams? | **Wire it now.** The seams (`HudStrings`, `WorldStrings`, `NpcDef`, `DialogueDef`) were built for exactly this and mean no call site changes. It is a day's work today and a multi-week retrofit after M2. |
-| **D6** | Freeze new M2/M3 feature work until M1 signs off? | **Yes.** Bugfixes and polish on shipped systems continue; new M2/M3 features wait. This is CLAUDE.md rule 8, and it is the difference between finishing the slice and drifting past it. |
+| **D1** | Is Nine Mile Creek a **rename** of Port Greywick, or a **new region** that takes its M1 role? | **New region.** Renaming breaks `region.port_greywick` (ids are append-only and stable, CLAUDE.md §5) and throws away canon's mid-size town, which M2-13 already scopes. A creek wharf and a town are different places. Build `region.nine_mile_creek` fresh with current art; **shelve** the Greywick scene and its outdated art for the M2 town pass. Nothing is deleted. |
+| **D2** | Is **Coddle Cove** in M1 at all? | **No — and rename the milestone.** Your arc ends with the dory moored at St Peters; the Cove never appears. It stays in the repo, committed and unbroken, as the M2 home harbour canon already says you settle into. M1 becomes **"Vertical Slice — St Peters"**: two regions, which is the right size. Three regions taxes every art, audio, and perf pass for a place the slice doesn't use. |
+| **D3** | Ratify ADR 0019 and author the two region scenes? | **Yes — this is the critical path.** Agents cannot author a `.unity`; the tooling is ready and the scenes are yours to build. With the reframe, this is *most of M1*: the world **is** the deliverable. Nothing in §7.1–7.2 finishes without you at the editor. |
+| **D4** | Where does audio come from — commissioned, licensed, or procedural-only? | **License or commission the music bed and the wind tell; keep procedural ambience.** Longest lead time in the milestone — decide it now even though it lands last. A world game with no music will read as a tech demo no matter how good the water looks. |
+| **D5** | Wire Unity Localization now, or ship English-only against the seams? | **Now.** The seams were built for it, so no call site changes. A day today; weeks after M2 triples the string count. |
+| **D6** | Freeze later-milestone work? | **Freeze M3+ only** — the offshore hulls, trawlers, tanker, and the eleven-hull fleet are genuine drift. The St Peters batch is **not** drift; it is this M1, and the last audit was wrong to call it scope creep. Keep building it. |
+| **D7** | Do pollock and blue-mussel come back? | **No.** The species that matter now are: the island shellfish (dig), the shore fish (rod), 2–3 **offshore** species that reward the dory, and the trap shellfish. Species earn their place by which **rung** they unlock, not by filling a list of six. Mussels stay with M3-16 aquaculture. |
 
 ---
 
-## 6. The route (four waves)
+## 9. The amended Definition of Done
 
-Waves, not dates — they express dependency, and tracks inside a wave run in parallel.
+Supersedes §6 of [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md) once ratified. Bars are the
+ADR 0005 desktop baseline (60fps on a typical desktop/laptop GPU, KB/mouse + gamepad).
 
-**Wave 0 — unblock (owner, days not weeks).**
-Answer D1–D6. Ratify ADR 0019. Kick off audio sourcing (longest lead time, so start it first even though it
-lands last).
+**The world** *(new — and the point of the milestone)*
+- [ ] **St Peters is an inhabited place**: aunt's house, schoolhouse, general store, 2–3 homes, and 4–6 named
+      people with faces and opinions. You can walk it in two minutes and know what everything is for.
+- [ ] **Nine Mile Creek is a working wharf**: fish buyer, the derelict dory in plain sight, the outboard
+      seller. Reached across the sandbar.
+- [ ] Both regions are **committed scenes** that load additively without breaking the persistent core.
+- [ ] The opening is **warm and bittersweet** — you came for your aunt, not for a fishing career.
 
-**Wave 1 — the things nothing else can proceed without.**
-- `tools-editor`: generalize CREATE/REFRESH to Greywick + St Peters (§4.1).
-- `owner`: author and commit the two region scenes.
-- `lead-architect`: wire localization + the English table (§4.5).
-- `economy-sim`: the Punt shipwright offer + price tuning; `world-content`: the pollock asset (§4.6).
-- *Runs in parallel, gated only by Wave 0.*
+**The ladder**
+- [ ] A first-time player hits a **new rung every ~2 days for the first two weeks**, on the §3 schedule,
+      validated in playtest — not just modelled.
+- [ ] Each rung is **visible before it is reachable** (the derelict dory is the template).
+- [ ] The **used outboard** closes the slice: bought secondhand, extends range, and points at more.
 
-**Wave 2 — make it read like a finished game.**
-- `ui-ux`: wind widget, compass ribbon, set-&-drift ghost track, chalkboard sell screen (§4.3).
-- `gameplay-systems` + `ui-ux`: runtime tide-table panel (§4.4).
-- `audio`: beds, adaptive music v1, rising-wind tell, catch sting, home warmth (§4.2) — as assets arrive.
-- *Needs Wave 1's committed scenes to be authored against.*
+**The sea (P1)**
+- [ ] The **tide is the engine**: it gates the dig, gates the crossing, and is read from an **in-game tide
+      table**. It is never scripted — the calendar is placed against a fully deterministic sim.
+- [ ] The crossing is **possible off-peak and comfortable at springs**; missing it costs nerve, not a week.
+- [ ] You sail the repaired dory with the force model — wind pushes, tide sets, she carries way. ✅ *done*
 
-**Wave 3 — prove it.**
-- `qa-test`: desktop-baseline profiling pass; automated core-loop smoke test; v1→v4 save-migration test.
-- `qa-test`: external closed playtest (Steam/itch.io) + the written soft-launch-readiness verdict.
-- `lead-architect`: update the M1 DoD in `milestone-1-vertical-slice.md` to §7 below, and mark the obsolete
-  inherited-dory line resolved in canon §5.8 and `npcs-and-routines.md` §3.1 (M2-31c's outstanding
-  documentation debt).
+**The pressure (P5)**
+- [ ] **Fish rot.** Freezing or keeping them alive arrests it; neglect costs coin, never a wipe. Freshness
+      survives save and time-skip exactly.
 
-**The gate:** M1 is Done when §7 is green and the owner has made the go/no-go call.
-
----
-
-## 7. The reconciled M1 Definition of Done
-
-Supersedes §6 of [`milestone-1-vertical-slice.md`](milestone-1-vertical-slice.md) once ratified. Changes from
-the original are marked **[amended]**. Bars are the ADR 0005 **desktop baseline** — 60fps on a typical
-desktop/laptop GPU, KB/mouse + gamepad comfort; the touch/one-thumb pass moves to the mobile port.
-
-**The loop**
-- [ ] **[amended]** You **earn** the dory — clam-dig, sandbar, licence, rod, buy-and-repair at the shipwright,
-      sail her home — through a guided onboarding that teaches the full loop. (Was: "inherit from Uncle Ned."
-      The cottage and Ned's memory stay inherited; the boat is earned — canon §5.8, P4.)
-- [ ] You read the **tide** — HUD gauge **and the in-game tide table** — and it is a real, deterministic force
-      you can plan around.
-- [ ] You sail with the **force model** — wind pushes, tide sets, the boat carries way — and it feels like
-      seamanship. ✅ *already true*
-- [ ] You **fish** the rod interaction and land any of the region's species; the first cod feels like a
-      triumph. ✅ *already true*
-- [ ] You **sell** to a buyer whose price moves as you sell and recovers over days; the sell screen shows the
-      marginal price. ✅ *already true (skin pending)*
-- [ ] **[amended]** You earn a stake and **buy the Punt** at the Greywick Shipwright — the aspirational
-      upgrade above the earned dory.
-- [ ] You **sleep** to advance the day and **save/resume anywhere**; an older save migrates without loss.
-
-**The feel (P1/P5 + cozy)**
-- [ ] Coddle Cove looks and sounds like the canon home harbour — tide-aware moving shoreline, animated water,
-      day-night grade ✅, **plus** gulls, hull slap, adaptive music, and the **rising-wind tell**.
-- [ ] The opening is warm and hopeful, not grim.
-- [ ] The sea reads at a glance — tide gauge, **wind widget, compass, set-&-drift ghost track** — with
-      redundant coding that works on colourblind palettes.
-
-**The craft (production health)**
-- [ ] PPU=32 / true metric scale holds everywhere. ✅
+**The craft**
 - [ ] Content is data-driven; environment is a pure function of `(seed, gameTime)`. ✅
+- [ ] PPU=32 / true metric scale holds everywhere. ✅
 - [ ] All player-facing strings go through **localization tables**.
-- [ ] **[amended]** All three region scenes (**Coddle Cove, Port Greywick, St Peters**) are **committed** and
-      load additively without breaking the persistent core.
-- [ ] The build hits the **desktop frame budget** (profiled) and the **core-loop smoke test** passes in CI.
+- [ ] Music, ambience, and the **rising-wind tell** are in and mixed.
+- [ ] Desktop frame budget profiled; **core-loop smoke test** passes in CI; a v1 save migrates to current.
 
 **The verdict**
-- [ ] An external playtest completed the slice and came back for repeat sessions; `qa-test` delivered a
-      written **soft-launch-readiness verdict** with a GO / POLISH / PIVOT recommendation.
+- [ ] External testers completed the arc **and came back for a third session**; `qa-test` delivered the
+      written soft-launch-readiness verdict with a GO / POLISH / PIVOT recommendation.
 
 ---
 
-## 8. Risks
+## 10. The route
+
+**Wave 0 — decide (owner).** D1–D7. Ratify ADR 0019. Start audio sourcing (longest lead time).
+
+**Wave 1 — the numbers and the tooling, before the content.**
+`economy-sim`: the pacing model (§7.4) — this determines every price and catch rate downstream, so it comes
+first. `tools-editor`: CREATE/REFRESH for the two new regions. `lead-architect`: localization. `economy-sim` +
+`gameplay-systems`: the freshness clock (§7.3).
+
+**Wave 2 — build the world.**
+`world-content` + `art-pipeline` + **owner**: St Peters village and Nine Mile Creek. The island store as a
+market channel. The cast, their portraits, their lines. The tide-table panel. **This is the bulk of M1 and
+the owner is in the loop for all of it.**
+
+**Wave 3 — dress and pace it.**
+Audio (beds, theme, wind tell, catch sting, home warmth). Wind widget and compass. Sell-screen skin. Tune the
+ladder against the Wave 1 model with real play data.
+
+**Wave 4 — prove it.**
+Profiling, smoke test, save migration, external playtest, the verdict. **Test the pacing, not just the
+absence of bugs** — the question is whether they come back on day three.
+
+---
+
+## 11. Risks
 
 | Risk | Why it bites | Mitigation |
 |---|---|---|
-| **Scene authoring is owner-serialized** | Agents can generate builders but cannot author a valid `.unity`. Two of three regions are uncommitted. Everything in Wave 2 wants to be built against them. | Ratify ADR 0019 and commit the scenes **first**. This is the one place where owner time is genuinely the bottleneck. |
-| **Audio has a real-world lead time** | Zero assets exist; a music bed and a canon-sacred wind tell cannot be conjured in a sprint. | Start sourcing in Wave 0, land in Wave 2. Ship the *layering and cue logic* against placeholder stems so only the audio swaps in. |
-| **Scope keeps drifting past M1** | Ten hulls above the Punt and a full trap economy already exist. The pull toward M3 is strong and the slice is 80% done — the classic way a vertical slice never ships. | D6's freeze. Log every good idea to `backlog.md`; build none of it until the verdict is in. |
-| **The DoD no longer describes the game** | Acceptance against a stale checklist produces a false pass — or a real one that is quietly wrong about what shipped. | §7. Ratify it before running acceptance, not after. |
-| **Playtest logistics are underestimated** | A closed Steam/itch.io playtest needs a build pipeline, a page, keys, and testers — none of which is code. | Treat it as a Wave 1 side-task, not a Wave 3 discovery. |
-
----
-
-## 9. What M1 signs off into
-
-Nothing here changes M2. The St Peters batch (M2-31 through M2-39) is already partly built and stays queued
-behind the verdict. If the verdict is **GO**, M2's first job is the documentation debt M2-31c named — the
-inherited-dory framing in canon §5.8 and `npcs-and-routines.md` §3.1 — plus grounding and rescue (M2-A), the
-teeth that the cove has deliberately been withholding.
+| **The world is owner-serialized** | The milestone is now mostly scene authoring, and agents cannot author a `.unity`. Owner hours are the schedule. | Ratify ADR 0019 first. Agents pre-build every prefab, interactable, and logic root so authoring is placement, not construction. |
+| **Pacing is invisible until it's wrong** | "A rung every couple of days" fails quietly — it feels fine to the person who tuned it and grindy to everyone else. | Model it in Wave 1 before content exists. Then test it on people who have never seen it. |
+| **Freshness makes the game stressful, not cozy** | A rot timer is the easiest way to turn cozy into anxious. | Generous windows, an always-available arrest (the freezer is free and adjacent), value loss only — never destroyed catch, never a failed day. |
+| **Audio lead time** | Zero assets; a canon-sacred wind tell can't be conjured in a sprint. | Decide D4 in Wave 0; build all cue logic against placeholder stems so only the audio swaps in. |
+| **The verbs pull focus again** | Fishing and sailing are the fun part to work on, and they're already done. Every hour there is an hour the village doesn't get. | D6's freeze, and this document: M1 is the world now. |
+| **Retiring Greywick feels like waste** | Two regions of built work step out of M1. | They aren't deleted — Coddle Cove is M2's home harbour and Greywick is M2's town, both already scoped in the backlog. The work is re-phased, not lost. |
