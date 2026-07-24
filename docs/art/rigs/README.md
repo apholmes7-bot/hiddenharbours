@@ -49,10 +49,19 @@ Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `cap
 · `sideDraggerIsoRig` · `skiffMotorRig` · `sportSkiffIsoRig` · `sternTrawlerIsoRig` ·
 `sternTrawlerMk2IsoRig` · `tankerIsoRig` · `wharfBuildingRig`
 
-**No azimuth term (18 + 4 + 1)** — kits, props and creatures that aren't 8-way directional; they need no
+**No azimuth term (18 + 4 + 1 + 2)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
 `crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`
-(flat water-surface clumps — the kit bakes NO heading by design).
+(flat water-surface clumps — the kit bakes NO heading by design); the terrain kits add
+`shoreIsoKitRig` · `roadPathRig` (see the caveat below — they are *static tiles*, which is not the same
+thing as being safe).
+
+> **⚠️ "No azimuth term" ≠ "no compass risk" for the terrain kits.** `shoreIsoKitRig` bakes no
+> turntable, so there is no heading to mirror and the probe machinery does not apply — but its cliff and
+> fringe *pieces* are named by bearing (`faceS`, `cornSW`, `sideW`, `edN`…), and nothing has checked
+> those names against rendered pixels. The slices are therefore named by GRID POSITION and the labels
+> live in one place, `ShorelineIsoCatalog`, precisely so a wrong label is a one-line fix and not a
+> re-slice. Treat those bearings as a prior, exactly like every list on this page.
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
@@ -68,6 +77,16 @@ hand-exported sheets until they are re-baked.
 `puntIsoRig.js`, `consoleIsoRig.js`, `sportSkiffIsoRig.js` and `skiffMotorRig.js` were already in the repo
 under `docs/art/punt-iso-rig/` and `docs/art/skiff-fleet-rigs/`. **The versions here differ** (md5 mismatch
 on all four) — these came from the art director's live project folder and are newer.
+
+**`roadPathRig.js` is NOT one of them (checked 2026-07-23).** The road/path kit zip's copy `md5`s
+differently from the one imported in #227, but that difference is **line endings only** — strip the CRs and
+the two files are byte-identical. The committed `RoadIso_*_new_blob47.png` atlases therefore bake from
+exactly the rig already in the repo. Worth recording, because an `md5` mismatch on a text file in a repo
+with `eol` normalization is not evidence of anything: **diff it before believing it.**
+
+**`shoreIsoKitRig.js` is new** and does *not* replace `shorelineKitRig.js`/`shorelineRig.js` — those bake
+the older **near-plan** shoreline still sitting loose in `Art/Tilesets/`, this one bakes the **ISO** re-cut
+that matches the boat camera. Both are kept: nothing already painted from the near-plan tiles should break.
 
 The older per-kit copies have been removed so there is ONE canonical location; their `README.txt` files are
 kept, since they document the shipped kits' cell sizes and pivots.

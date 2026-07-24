@@ -1,0 +1,78 @@
+{
+ "grid": "square 32x32, 32px=1m, camera 3/4 from S @40deg (ADR-0006 boat bake match)",
+ "water": "NONE baked. Engine shader owns water/foam/waterline (ADR 0010/0012/0023). Tiles are pure land; the tide sweeps over them.",
+ "ground": {
+  "sheet": "ShoreIsoGround.png",
+  "rows": [
+   "grass",
+   "marram",
+   "sand",
+   "ripple",
+   "shingle",
+   "shelf"
+  ],
+  "cols": "3 adjacent world tiles (noise is world-locked; bake any gx,gy via rig)"
+ },
+ "fringe": {
+  "sheet": "ShoreIsoFringe.png",
+  "rows": [
+   "grass",
+   "marram",
+   "sand"
+  ],
+  "cols": [
+   "edN",
+   "edE",
+   "edS",
+   "edW",
+   "coNE",
+   "coSE",
+   "coSW",
+   "coNW",
+   "inNE",
+   "inSE",
+   "inSW",
+   "inNW"
+  ],
+  "use": "transparent overlay; stamp over the neighbour material tile"
+ },
+ "cliff": {
+  "sheet": "ShoreIsoCliff.png",
+  "rows": [
+   "cap",
+   "mid",
+   "toe"
+  ],
+  "cols": [
+   "faceS",
+   "cornSW",
+   "cornSE",
+   "sideW",
+   "sideE",
+   "innSW",
+   "innSE",
+   "diagSW",
+   "diagSE",
+   "caveToe"
+  ],
+  "stack": "cap + mid*N + toe, ~1.3m/band at the 40deg camera"
+ },
+ "dune": {
+  "sheet": "ShoreIsoDune.png",
+  "rows": [
+   "single band"
+  ],
+  "cols": [
+   "faceS",
+   "cornSW",
+   "cornSE",
+   "sideW",
+   "sideE",
+   "innSW",
+   "innSE",
+   "diagSW",
+   "diagSE"
+  ]
+ },
+ "rig": "Art/shoreIsoKitRig.js"
+}

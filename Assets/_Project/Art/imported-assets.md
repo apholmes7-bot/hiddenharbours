@@ -515,3 +515,104 @@ are flat water-surface clumps, not turntable bakes.
 these yet. The runtime drift feature (drift/bob off the shared wave field, snag on buoys/rocks/rope,
 clumping, ramp-row weathering) is the banked emitter-lane build (`seaweed-flotsam` vision, owner ask
 2026-07-08); this lane provides the locked, correctly-pivoted, stable-GUID slices + the sidecar data.
+
+---
+
+## Batch — Terrain kits: Shoreline ISO (v7) + Road/Path blob-47 (owner drop 2026-07-23)
+
+Two **terrain** kits, imported together because they are the two halves of paintable ground: the
+coast, and everything you walk on once you're up it. Both are square **32×32 cells, 32 px = 1 m**,
+no AA, muted North-Atlantic KTC ramps, hash-value noise phased on **global tile coords** (`gx,gy`)
+so a painted run is seamless and never visibly repeats.
+
+**The shoreline kit is baked to the boat camera** — ¾ from the **SOUTH at 40°**, the fleet's
+turntable elevation (ADR 0006/0022). That is the point of the "v7 ISO" re-bake: the older near-plan
+`Shore*`/`Grass`/`Sand`/`Rock` tiles still sitting loose in `Tilesets/` were drawn to a different
+camera than the hulls, so land and boat never quite shared a space. **Those older tiles are left
+exactly where they are** — nothing already painted breaks; the new kit is a parallel set.
+
+### ⚠ The water contract — this kit bakes ZERO water, on purpose
+
+The engine shader owns **all** of it (ADR 0010 / 0012 / 0023): it clips at the live depth-0 tide
+contour, rides foam and swash on that line, and pins the displaced 3D surface to the same one
+(`ShoreFadeMath`). So there is **no foam tile, no waterline tile, no shallows tile** here, and none
+should be authored against these.
+
+- **Every ground material is drawn to read right DRY *and* SUBMERGED**, because the tide sweeps whole
+  flats over it — that is what makes a St Peters clam flat work as one painted surface across the
+  whole swing rather than two sets of art.
+- **Rule-tiles carry terrain-TYPE edges only** (grass↔sand↔rock) plus permanent landforms (cliff,
+  dune). Butt any tile straight against shader water: there is nothing to line up.
+
+### Sheets
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Tilesets/ShorelineIso/ShoreIsoGround.png` | 96×192 | 3 cols × 6 rows of **32×32** | 18 | grass · marram · sand · ripple · shingle · shelf |
+| `Tilesets/ShorelineIso/ShoreIsoFringe.png` | 384×96 | 12 × 3 | 36 | grass · marram · sand |
+| `Tilesets/ShorelineIso/ShoreIsoCliff.png` | 320×96 | 10 × 3 | 30 | cap · mid · toe |
+| `Tilesets/ShorelineIso/ShoreIsoDune.png` | 288×32 | 9 × 1 | 9 | (single band) |
+| `Tilesets/ShorelineIso/ShoreIsoSprites.png` | 186×44 | **packed, irregular** | 7 | sea stacks `reef/s/m/l` + slab boulders `bs/bm/bl` |
+| `Tilesets/Roads/RoadIso_<surface>_new_blob47.png` × 7 | 384×128 | 12 × 4 | 48 | blob-47 by neighbour mask |
+
+- **Ground COLUMNS are three adjacent world tiles, not three art variants.** The rig's noise is a
+  pure function of `(gx,gy)`, so neighbours butt seamlessly — these three are a sample of that field.
+- **Fringe** is a transparent overlay: stamp it **over the neighbour's ground tile** where two
+  terrain types meet for a ragged tongue (grass/marram carry a 1 px soil under-shadow on
+  camera-facing edges).
+- **Cliffs stack**: `cap + mid×N + toe` for any height, ~1.3 m of drawn face per band at the 40°
+  camera. Strata key on **global row Y**, so bands painted at the same world height align across a
+  whole coast with no hand-matching. `caveToe` is the carved arch — it is how a sea cave gets a mouth,
+  and it is cliff-only (the dune has the same nine landform pieces *minus* the cave).
+- **Roads**: 12×4 = **48 cells holding 47 blob tiles + one spare padding cell**. Anything that walks
+  the atlas by its rectangle would paint that 48th cell as road — `ShorelineIsoCatalog.RoadBlobCount`
+  is the stop.
+
+### Slicing + naming
+
+- The five uniform sheets and all seven road atlases are **`SpriteSheetSlicer` manifest entries**
+  (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets*), **Center pivot** — a tilemap places
+  by cell, so any other pivot shifts a painted tile off its own cell and a stacked cliff band off its
+  neighbour.
+- `ShoreIsoSprites.png` is **packed at seven different sizes with per-item base-centre pivots**, so it
+  gets its own sidecar-driven `ShorelineIsoSpriteSlicer` (menu *Hidden Harbours ▸ Art ▸ Slice
+  Shoreline Iso Rock Sprites*), reading rects and pivots from `ShoreIsoSprites.json`. Every pivot is
+  horizontally centred and exactly **1 px above the item's base** — that contact point is what makes a
+  sea stack and a boulder of different heights place by the same rule instead of floating.
+- **Slice names state GEOMETRY, not semantics** (`ShoreIsoCliff_7` = the 8th cell, row-major from the
+  top-left) — the same rule as `CharacterSheetSlicer`, and for the same reason: compass-labelled art
+  has been mislabelled in five kits here. The meaning is resolved in one place,
+  **`ShorelineIsoCatalog`**, against the kit's own `ShorelineIso.json` contract.
+- **⚠ The compass letters (`cornSW`, `sideW`, `faceS`, `edN`…) are the kit's CLAIM, not a
+  measurement.** There is no azimuth probe for a static tile, so nothing here has been checked against
+  rendered pixels. The column ORDER is what the catalog guarantees; if a painted cliff faces the wrong
+  way in-scene, correct the label→column map in `ShorelineIsoCatalog` (and the kit README) — never
+  renumber the slices.
+
+### Source rigs
+
+- **`docs/art/rigs/shoreIsoKitRig.js`** → `ShoreIso` (new). Re-bakes any tile, any cliff height, any
+  sprite: `ground(mat,{gx,gy,seed})` · `fringe(mat,piece)` · `cliff(piece,{band,gy,feature:'cave'})` ·
+  `column(piece,rows)` · `dune(piece)` · `stack(size)` · `boulder(size)`.
+- **`docs/art/rigs/roadPathRig.js`** → `RoadKit` (**already in the repo since #227, unchanged**). The
+  kit zip's copy `md5`s differently, but that is **line endings only** — byte-identical once the CRs
+  are stripped, so these atlases bake from exactly the rig already committed.
+  `render(surface,{con,diag,wear,ground,markings,gx,gy,seed})` · `renderGround(ground,{gx,gy})` ·
+  `BLOB47`. The PNGs are one bake at `new` wear over a grass verge with no markings; **`worn`/
+  `cracked`, dirt/sand verges and lane markings all live in the rig** — re-bake, never hand-edit a
+  sheet.
+- Kit READMEs + the reference previews (`_preview-hero.png`, `road-scene.png` — reference only, NOT
+  for import) are under `docs/art/shoreline-iso-kit/` and `docs/art/road-path-kit/`.
+
+### Known limits (kit v7)
+
+- N-facing cliff back-lips reuse the plateau grass tile (occluded at this camera); diagonals are 45°
+  only.
+- Overlay dressing (marram tufts, driftwood, fences, spruce) is **not** in this kit — it comes from
+  the Wildflowers / Seaweed / Shoreline Finds sets already imported, which all composite fine on this
+  ground.
+
+**WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, paint
+tool, prefab or scene references these yet. `TileAssetBuilder`/`TilePaletteBuilder` still build the
+older loose tileset, untouched. Standing up the ISO ground/fringe rule-tiles and the road blob-47
+autotiler is the next step and belongs with the world-scene work, not with the import.
