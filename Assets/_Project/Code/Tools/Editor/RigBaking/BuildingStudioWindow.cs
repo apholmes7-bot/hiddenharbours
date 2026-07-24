@@ -61,13 +61,22 @@ namespace HiddenHarbours.Tools.RigBaking
         AzimuthConvention _convention = AzimuthConvention.CounterClockwise;
         string _conventionNote = "";
 
-        // Dropdown values pulled from the rig's own tables, per axis key.
+        // Chip values pulled from the rig's own tables, per axis key — plus why one came back empty.
         Dictionary<string, string[]> _choices = new Dictionary<string, string[]>();
+        Dictionary<string, string> _choiceErrors = new Dictionary<string, string>();
         string[] _presets = Array.Empty<string>();
+        string _presetError;
 
         Texture2D _preview;
         string _previewKey = "";           // the opts+facing the cached texture was rendered for
         string _error;
+
+        // The 8-facing turntable strip, mirroring the demo page's turntable. Refreshed only when
+        // nothing is being dragged (see RefreshTurntableIfNeeded) — eight renders of a 1200×1160 cell
+        // on every slider frame would make dialling unusable.
+        bool _showTurntable = true;
+        readonly Texture2D[] _turntable = new Texture2D[8];
+        string _turntableKey = "";
 
         // ---- lifecycle ------------------------------------------------------------------------
 
@@ -86,6 +95,13 @@ namespace HiddenHarbours.Tools.RigBaking
             if (_preview != null) DestroyImmediate(_preview);
             _preview = null;
             _previewKey = "";
+
+            for (int i = 0; i < _turntable.Length; i++)
+            {
+                if (_turntable[i] != null) DestroyImmediate(_turntable[i]);
+                _turntable[i] = null;
+            }
+            _turntableKey = "";
         }
 
         // ---- the rig host ---------------------------------------------------------------------
@@ -143,6 +159,7 @@ namespace HiddenHarbours.Tools.RigBaking
         void LoadChoicesFromRig()
         {
             _choices = new Dictionary<string, string[]>();
+            _choiceErrors = new Dictionary<string, string>();
 
             foreach (var axis in BuildingAxes.For(_rigKey))
             {
@@ -154,10 +171,11 @@ namespace HiddenHarbours.Tools.RigBaking
                     continue;
                 }
 
-                _choices[axis.Key] = KeysOf(axis.RigTable);
+                _choices[axis.Key] = KeysOf(axis.RigTable, out string err);
+                if (err != null) _choiceErrors[axis.Key] = $"{axis.RigTable}: {err}";
             }
 
-            _presets = KeysOf("PRESETS");
+            _presets = KeysOf("PRESETS", out _presetError);
         }
 
         /// <summary>
@@ -165,22 +183,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// (<c>SHAPES</c>, <c>SIDINGS</c>, <c>ROOFS</c> — the wharf rig exports ROOF_KEYS as an array).
         /// Both shapes appear across these two rigs, so asking which it is beats assuming.
         /// </summary>
-        /// <summary>Joins the rig's table keys. A JS identifier can never contain a newline.</summary>
-        static readonly char[] Separator = { '\n' };
 
-        string[] KeysOf(string table)
+        string[] KeysOf(string table, out string error)
         {
+            error = null;
             string expr = $"(function(){{var t={_globalName}.{table}; if(!t) return ''; " +
-                          "return (Array.isArray(t)?t:Object.keys(t)).join('\n');})()";
+                          "return (Array.isArray(t)?t:Object.keys(t)).join('|');})()";
             try
             {
                 string joined = _host.EvaluateString(expr);
-                return string.IsNullOrEmpty(joined)
-                    ? Array.Empty<string>()
-                    : joined.Split(Separator).Where(s => s.Length > 0).ToArray();
+                if (string.IsNullOrEmpty(joined))
+                {
+                    error = $"{_globalName}.{table} is absent or empty";
+                    return Array.Empty<string>();
+                }
+                return joined.Split('|').Where(s => s.Length > 0).ToArray();
             }
-            catch
+            catch (Exception e)
             {
+                // ⚠️ REPORT, never swallow. A bare `catch { return empty; }` here is what hid the
+                // newline bug above: every table threw, every dropdown read "(rig exports no values)",
+                // and the window looked like the RIG was missing data rather than like this code was
+                // broken. The message now reaches the inspector, so the next failure names itself.
+                error = e.Message.Split('\n')[0];
                 return Array.Empty<string>();
             }
         }
@@ -197,6 +222,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"Could not load the rig.\n\n{_error}", MessageType.Error);
                 return;
             }
+
+            DrawPresetRow();
 
             EditorGUILayout.BeginHorizontal();
             DrawAxesPanel();
@@ -219,24 +246,49 @@ namespace HiddenHarbours.Tools.RigBaking
                 Invalidate();
             }
 
-            GUILayout.Space(6);
-            GUILayout.Label("Preset", EditorStyles.miniLabel, GUILayout.Width(40));
-
-            using (new EditorGUI.DisabledScope(_presets.Length == 0))
-            {
-                int p = EditorGUILayout.Popup(-1, _presets, EditorStyles.toolbarPopup,
-                                              GUILayout.Width(150));
-                if (p >= 0) LoadPreset(_presets[p]);
-            }
-
             if (GUILayout.Button("Reset to rig defaults", EditorStyles.toolbarButton))
             {
                 _dialled = BuildingAxes.Defaults(_rigKey);
                 Invalidate();
             }
 
+            _showTurntable = GUILayout.Toggle(_showTurntable, "Turntable",
+                                              EditorStyles.toolbarButton, GUILayout.Width(72));
+
             GUILayout.FlexibleSpace();
             GUILayout.Label(_conventionNote, EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// The preset ROW — the demo page's "preset wharf row", as buttons rather than a dropdown, so
+        /// every starting point is visible at once instead of hidden behind a click. Loading one is a
+        /// starting point, not a mode: the axes stay live afterwards.
+        /// </summary>
+        void DrawPresetRow()
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+            GUILayout.Label("Start from", EditorStyles.miniBoldLabel, GUILayout.Width(64));
+
+            if (_presets.Length == 0)
+            {
+                GUILayout.Label(_presetError == null
+                                    ? "the rig exports no PRESETS"
+                                    : $"PRESETS unreadable — {_presetError}",
+                                EditorStyles.miniLabel);
+            }
+            else
+            {
+                foreach (var p in _presets)
+                {
+                    bool active = string.Equals(_buildName, p, StringComparison.Ordinal);
+                    var style = active ? EditorStyles.miniButtonMid : EditorStyles.miniButton;
+                    if (GUILayout.Button(active ? $"● {p}" : p, style, GUILayout.MinWidth(72)))
+                        LoadPreset(p);
+                }
+            }
+
+            GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
         }
 
@@ -252,27 +304,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 switch (axis.Kind)
                 {
                     case BuildingAxisKind.Choice:
-                    {
-                        var values = _choices.TryGetValue(axis.Key, out var v) ? v : Array.Empty<string>();
-                        if (values.Length == 0)
-                        {
-                            EditorGUILayout.LabelField(axis.Label, "(rig exports no values)");
-                            break;
-                        }
-                        string cur = _dialled[axis.Key] as string;
-                        int idx = Array.IndexOf(values, cur);
-                        // A default the rig's table doesn't contain means our transcription drifted —
-                        // show it rather than silently snapping to values[0].
-                        if (idx < 0)
-                        {
-                            values = values.Concat(new[] { $"{cur} (not in rig)" }).ToArray();
-                            idx = values.Length - 1;
-                        }
-                        int next = EditorGUILayout.Popup(axis.Label, idx, values);
-                        if (next != idx && next < values.Length && !values[next].EndsWith("(not in rig)"))
-                            _dialled[axis.Key] = values[next];
+                        DrawChips(axis);
                         break;
-                    }
 
                     case BuildingAxisKind.Unit:
                         _dialled[axis.Key] = (double)EditorGUILayout.Slider(
@@ -303,6 +336,52 @@ namespace HiddenHarbours.Tools.RigBaking
 
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// One Choice axis as a wrapping row of CHIPS — the demo page's control, and the right one
+        /// here: every value for an axis is visible at once, so picking a siding is a glance rather
+        /// than a click-and-scan. A dropdown hides exactly the thing the owner is trying to compare.
+        /// </summary>
+        void DrawChips(in BuildingAxis axis)
+        {
+            var values = _choices.TryGetValue(axis.Key, out var v) ? v : Array.Empty<string>();
+
+            EditorGUILayout.LabelField(axis.Label, EditorStyles.miniBoldLabel);
+
+            if (values.Length == 0)
+            {
+                // Name the REASON, not just the absence. "(rig exports no values)" is what this window
+                // showed when the bug was in this file, and it pointed the finger at the rig.
+                EditorGUILayout.HelpBox(
+                    _choiceErrors.TryGetValue(axis.Key, out var why)
+                        ? $"Could not read this axis — {why}"
+                        : "The rig exports no values for this axis.",
+                    MessageType.Warning);
+                return;
+            }
+
+            string cur = _dialled[axis.Key] as string;
+            int idx = Array.IndexOf(values, cur);
+
+            // A current value the rig's table does not contain means our transcription drifted. Show it
+            // as an extra, clearly-marked chip rather than silently snapping to values[0] — a silent
+            // snap would hide precisely the drift the chip is evidence of.
+            var shown = values;
+            if (idx < 0 && !string.IsNullOrEmpty(cur))
+            {
+                shown = values.Concat(new[] { $"⚠ {cur}" }).ToArray();
+                idx = shown.Length - 1;
+            }
+
+            // Chips wrap on the panel width; ~92 px each reads the labels in this kit without truncating.
+            int perRow = Mathf.Max(1, Mathf.FloorToInt((EditorGUIUtility.currentViewWidth * 0.34f) / 92f));
+            int next = GUILayout.SelectionGrid(idx, shown, perRow, EditorStyles.miniButton);
+
+            if (next != idx && next < values.Length)
+                _dialled[axis.Key] = values[next];
+
+            EditorGUILayout.Space(2);
         }
 
         void DrawPreviewPanel()
@@ -360,9 +439,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (_showPivot) DrawPivotCross(fit);
             }
 
+            if (_showTurntable) DrawTurntableStrip();
+
             // ---- bake -----------------------------------------------------------------------------
             EditorGUILayout.BeginHorizontal();
             _buildName = EditorGUILayout.TextField("Build name", _buildName);
+
+            if (GUILayout.Button("Save this cell", GUILayout.Width(100), GUILayout.Height(22)))
+                SaveCurrentCell();
 
             if (GUILayout.Button("Bake 8-facing sheet", GUILayout.Width(160), GUILayout.Height(22)))
                 BakeCurrent();
@@ -374,6 +458,71 @@ namespace HiddenHarbours.Tools.RigBaking
                 EditorStyles.miniLabel);
 
             EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// All eight facings at a glance — the demo page's turntable. This is the control that makes
+        /// orientation checkable: a single facing tells you nothing about whether the set turns the way
+        /// you expect, and the mislabel this repo keeps hitting is only visible across the whole row.
+        /// Each thumbnail is captioned with its cell index and the bearing it actually DEPICTS.
+        /// </summary>
+        void DrawTurntableStrip()
+        {
+            RefreshTurntableIfNeeded();
+
+            EditorGUILayout.BeginHorizontal();
+            for (int cell = 0; cell < 8; cell++)
+            {
+                EditorGUILayout.BeginVertical(GUILayout.Width(78));
+
+                Rect r = GUILayoutUtility.GetRect(74, 74, GUILayout.Width(74), GUILayout.Height(74));
+                EditorGUI.DrawRect(r, cell == _facing
+                                          ? new Color(0.25f, 0.32f, 0.40f)
+                                          : new Color(0.14f, 0.15f, 0.17f));
+
+                var tex = _turntable[cell];
+                if (tex != null)
+                    GUI.DrawTexture(FitRect(tex.width, tex.height, r, 3f), tex,
+                                    ScaleMode.StretchToFill, alphaBlend: true);
+
+                if (GUI.Button(r, GUIContent.none, GUIStyle.none))
+                {
+                    _facing = cell;
+                    Invalidate();
+                }
+
+                GUILayout.Label($"{cell} · {DepictedBearing(cell)}",
+                                EditorStyles.miniLabel, GUILayout.Width(74));
+                EditorGUILayout.EndVertical();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Label(
+                "Captions are the bearing each cell DEPICTS, not the rig's label for it.",
+                EditorStyles.miniLabel);
+        }
+
+        void RefreshTurntableIfNeeded()
+        {
+            // Only rebuild when nothing is being dragged. Eight renders of a 1200×1160 cell per slider
+            // FRAME would make the window unusable; waiting for the drag to finish costs nothing,
+            // because the big preview is already live and is what the eye is on mid-drag.
+            if (GUIUtility.hotControl != 0) return;
+
+            string opts = BuildingAxes.ToOptionsLiteral(_dialled, _elev);
+            string key = $"{_rigKey}|{opts}";
+            if (key == _turntableKey && _turntable[0] != null) return;
+
+            for (int cell = 0; cell < 8; cell++)
+            {
+                var tex = RenderCell(cell, opts, out string err);
+                if (err != null) { _error = err; break; }
+
+                if (_turntable[cell] != null) DestroyImmediate(_turntable[cell]);
+                _turntable[cell] = tex;
+            }
+
+            _turntableKey = key;
         }
 
         void DrawPivotCross(Rect fit)
@@ -390,7 +539,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- rendering -------------------------------------------------------------------------
 
-        void Invalidate() { _previewKey = ""; Repaint(); }
+        void Invalidate() { _previewKey = ""; _turntableKey = ""; Repaint(); }
 
         void RefreshPreviewIfNeeded()
         {
@@ -398,26 +547,41 @@ namespace HiddenHarbours.Tools.RigBaking
             string key = $"{_rigKey}|{_facing}|{opts}";
             if (key == _previewKey && _preview != null) return;
 
+            var tex = RenderCell(_facing, opts, out string err);
+            _previewKey = key;        // set either way, so a failing render doesn't spin
+
+            if (err != null) { _error = err; return; }
+
+            if (_preview != null) DestroyImmediate(_preview);
+            _preview = tex;
+            _error = null;
+        }
+
+        /// <summary>
+        /// Render one cell to a texture. Shared by the big preview and the turntable strip so the two
+        /// can never disagree about what a cell looks like.
+        ///
+        /// <para>The studio shows RAW rig output at the cell index, deliberately un-corrected — the
+        /// banner and the strip captions are what explain the difference. Passing the corrected dir
+        /// here would hide the very thing the owner asked to be able to see.</para>
+        /// </summary>
+        Texture2D RenderCell(int cell, string optsJs, out string error)
+        {
+            error = null;
             try
             {
-                // The studio shows RAW rig output at the cell index, deliberately un-corrected — the
-                // banner above the picture is what explains the difference. Passing the corrected dir
-                // here would hide the very thing the owner asked to be able to see.
-                string d = ((double)_facing).ToString("R", CultureInfo.InvariantCulture);
-                byte[] rgba = _host.EvaluateBytes($"{_globalName}.render({d},{opts})");
+                string d = ((double)cell).ToString("R", CultureInfo.InvariantCulture);
+                byte[] rgba = _host.EvaluateBytes($"{_globalName}.render({d},{optsJs})");
 
-                if (rgba.Length != _geo.Width * _geo.Height * 4)
+                int expect = _geo.Width * _geo.Height * 4;
+                if (rgba.Length != expect)
                     throw new InvalidOperationException(
-                        $"render returned {rgba.Length} bytes, expected {_geo.Width * _geo.Height * 4}.");
+                        $"render returned {rgba.Length} bytes, expected {expect}.");
 
-                if (_preview == null || _preview.width != _geo.Width || _preview.height != _geo.Height)
+                var tex = new Texture2D(_geo.Width, _geo.Height, TextureFormat.RGBA32, false, false)
                 {
-                    if (_preview != null) DestroyImmediate(_preview);
-                    _preview = new Texture2D(_geo.Width, _geo.Height, TextureFormat.RGBA32, false, false)
-                    {
-                        filterMode = FilterMode.Point,
-                    };
-                }
+                    filterMode = FilterMode.Point,
+                };
 
                 // The rig hands back TOP-LEFT-origin rows; Unity textures are bottom-origin.
                 var px = new Color32[_geo.Width * _geo.Height];
@@ -432,17 +596,35 @@ namespace HiddenHarbours.Tools.RigBaking
                     }
                 }
 
-                _preview.SetPixels32(px);
-                _preview.Apply(false, false);
-
-                _previewKey = key;
-                _error = null;
+                tex.SetPixels32(px);
+                tex.Apply(false, false);
+                return tex;
             }
             catch (Exception e)
             {
-                _error = e.Message;
-                _previewKey = key;    // don't spin on a failing render
+                error = e.Message;
+                return null;
             }
+        }
+
+        /// <summary>
+        /// Write the cell on screen straight to a PNG — the demo page's single-cell download. Useful
+        /// for a one-off prop or a reference shot without committing to an 8-facing sheet.
+        /// </summary>
+        void SaveCurrentCell()
+        {
+            if (_preview == null) return;
+
+            string stem = $"{Prefix()}_{BuildingAxes.SafeStem(_buildName, "Build")}_cell{_facing}";
+            string path = EditorUtility.SaveFilePanel("Save this cell",
+                                                      System.IO.Path.Combine(RigCatalog.RepoRoot,
+                                                                             BuildingBakeMenu.BuildingsFolder),
+                                                      stem, "png");
+            if (string.IsNullOrEmpty(path)) return;
+
+            System.IO.File.WriteAllBytes(path, _preview.EncodeToPNG());
+            AssetDatabase.Refresh();
+            Debug.Log($"[building-studio] Saved cell {_facing} → {path}");
         }
 
         // ---- baking ----------------------------------------------------------------------------
