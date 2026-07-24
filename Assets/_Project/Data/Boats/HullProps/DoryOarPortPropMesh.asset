@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-6513242483873705133
+--- !u!43 &-5632539364499830811
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,7 +193,7 @@ MonoBehaviour:
   Id: hullprop.dory_oar_port
   SourceRigPath: docs/art/rigs/doryIsoRig.js
   SourceFaceBuilder: buildOar(-1,{sweep:0,dip:0})
-  Mesh: {fileID: -6513242483873705133}
+  Mesh: {fileID: -5632539364499830811}
   Ramps:
   - Colors:
     - serializedVersion: 2

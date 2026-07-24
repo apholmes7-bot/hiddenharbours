@@ -274,6 +274,42 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+
+        /// <summary>
+        /// Drop faces that are an EXACT REVERSE of an earlier one — the rigs' way of making a
+        /// zero-thickness surface visible from both sides (the dory's oar blade pushes every segment
+        /// twice, <c>q</c> then <c>[q3,q2,q1,q0]</c>, at <c>doryIsoRig.js:241</c>).
+        ///
+        /// <para><b>Why a mesh must not keep both, measured rather than assumed.</b> The pair is
+        /// exactly coplanar with identical <c>db</c>, so the two carry identical depth and OPPOSITE
+        /// normals, and which one you see is decided purely by how the depth test breaks a tie:</para>
+        /// <list type="bullet">
+        ///   <item>the rig's rasteriser (and phase 2's transcription of it) uses a strict
+        ///   <c>deff &lt; zbuf</c>, so the FIRST face wins;</item>
+        ///   <item>the facet shader is <c>Cull Off</c> with <c>ZTest LEqual</c>, so the LAST one
+        ///   wins.</item>
+        /// </list>
+        /// <para>They therefore disagree by construction — and worse, neither is stable: the two
+        /// faces fan-triangulate differently, so the interpolated depth at a given pixel differs in
+        /// the last bits and the winner changes across a patch. Measured on the dory's oar as a
+        /// 49-pixel connected patch shading from the opposite normal. On a GPU that same ambiguity
+        /// is z-fighting, which on a moving oar reads as a shimmering blade.</para>
+        ///
+        /// <para>⚠️ <b>OFF by default, because MEASURING it refuted the obvious conclusion.</b> The
+        /// reasoning above predicts that dropping the reverse should make the mesh agree with the
+        /// rig. It does not: on the dory's oar the worst connected cluster got WORSE, 49 → 60
+        /// (24 → 16 triangles, 4 faces dropped per oar). So the rig's own render is genuinely
+        /// showing the REVERSED face across part of that patch — its two fan triangulations give
+        /// marginally different interpolated depths, and the second face wins where its happens to
+        /// come out smaller. Keeping both is therefore CLOSER to the rig, and the residual has a
+        /// different cause that is still open.</para>
+        ///
+        /// <para>Kept as a switch rather than deleted: the CPU-versus-GPU tie-break disagreement is
+        /// real and independently worth knowing (it applies to any rig surface built this way,
+        /// including the outboards), and this is the measured way to test its effect on a new
+        /// fitting rather than reasoning about it.</para>
+        /// </summary>
+        public bool DropReverseDuplicateFaces = false;
     }
 
     public static class RigMeshExtractor
@@ -416,6 +452,17 @@ namespace HiddenHarbours.Tools.RigBaking
             string faceSource = prop == null ? $"{g}.F" : $"{g}.{prop.FaceBuilderCall}";
             ReadFaces(host, g, faceSource, data);
 
+            if (prop != null && prop.DropReverseDuplicateFaces)
+            {
+                int dropped = DropReverseDuplicateFaces(data);
+                if (dropped > 0)
+                    Debug.Log($"[rig-mesh] {faceSource}: dropped {dropped} exact-reverse duplicate " +
+                              $"face(s) of {dropped * 2} in double-sided pairs. See " +
+                              $"{nameof(RigPropExtraction)}.{nameof(RigPropExtraction.DropReverseDuplicateFaces)} " +
+                              "— keeping both makes the visible normal depend on how the depth test " +
+                              "breaks an exact tie, which the CPU oracle and the GPU resolve opposite ways.");
+            }
+
             if (data.Faces.Count == 0)
                 throw new InvalidOperationException(
                     prop == null
@@ -525,6 +572,41 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (data.Materials.Count == 0)
                 throw new InvalidOperationException($"{g}.MATS is empty.");
+        }
+
+        /// <summary>
+        /// Remove every face that is the exact reverse of one already kept. Exact vertex equality is
+        /// the right test and not a fragile one: the pair comes from the SAME array in the rig
+        /// (<c>[q[3],q[2],q[1],q[0]]</c>), so the doubles are bit-identical, and anything merely
+        /// close is a different face that must survive.
+        /// </summary>
+        static int DropReverseDuplicateFaces(RigMeshData data)
+        {
+            var kept = new List<RigFace>(data.Faces.Count);
+            int dropped = 0;
+
+            foreach (RigFace f in data.Faces)
+            {
+                bool isReverseOfKept = false;
+                foreach (RigFace k in kept)
+                {
+                    if (k.V.Length != f.V.Length || k.Mat != f.Mat) continue;
+                    bool reverse = true;
+                    for (int i = 0; i < f.V.Length && reverse; i++)
+                    {
+                        Vector3d a = f.V[i], b = k.V[f.V.Length - 1 - i];
+                        reverse = a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+                    }
+                    if (reverse) { isReverseOfKept = true; break; }
+                }
+
+                if (isReverseOfKept) dropped++;
+                else kept.Add(f);
+            }
+
+            data.Faces.Clear();
+            data.Faces.AddRange(kept);
+            return dropped;
         }
 
         /// <param name="faceSource">JS evaluating to the face list — <c>&lt;Global&gt;.F</c> for a
