@@ -1,6 +1,8 @@
 # Hidden Harbours — Scene Sizing & World Scale
 
-> **Status:** PROPOSAL, awaiting the owner's call on §4 and §5. Subordinate to
+> **Status:** **Sizes RATIFIED by the owner 2026-07-23** (§5.1 island scale · §5.1a the reef ring and
+> its one dock · §5.2 the neap fix). Nothing is BUILT yet — §6 is the ordered work, and §6.1 is the
+> blocker. Remaining open questions are in §7. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon) and
 > [`world-and-regions.md`](world-and-regions.md) (which owns *what* each region is; this doc only
 > answers *how big*). Nothing here is built yet — no builder, scene or terrain asset is changed by
@@ -170,15 +172,54 @@ inventory the size has to hold):
 | **Freshwater springs, ruined tractors/homesteads** | Beachcombing/POI dressing | — |
 | **Rabbits, seals, birds** | Ambient life | `foxRig` pattern |
 
-> **"The extensive reefs make landing difficult for all but shallow draft boats" is the single best
-> line in the owner's brief**, because it is already implementable with what exists. Draught is real
-> data (`BoatHullDef.DraughtMeters` — dory 0.3 m, dragger 2.9 m) and the painted seabed already
-> decides depth per tide. Ringing St Peters in a shallow reef shelf means **the island you start on is
-> the island your big boat can never come home to** — P2 and P5 in one geographic fact, costing no new
-> systems. Worth ratifying deliberately rather than letting it happen by accident.
-
 **The sandbar leaves the WEST end.** This flips today's greybox, where the island sits at x = −40 and
 the bar runs *east* to x = +34. The island moves east of centre and the bar exits west.
+
+### 5.1a The reef ring and the one dock — ✅ RATIFIED (owner, 2026-07-23)
+
+> *"There is one dock on the far end of the island opposite the sandbar. It's modest, but can take
+> powerboats there."*
+
+**The reef ring is in, with one door in it.** Since the bar exits west, the dock sits on the **east
+end** — the far side from the crossing, which is also the right side dramatically: you walk out the
+west and you come home under power to the east.
+
+This costs no new systems. Draught is already real data and the painted seabed already decides depth
+per tide, so the whole thing is authored terrain:
+
+| Hull | Draught | Can it use the dock? |
+|---|---|---|
+| Dory (rowed) | 0.30 m | ✅ |
+| Fishing skiff | 0.35 m | ✅ |
+| Punt / punt upgraded | 0.50 / 0.55 m | ✅ |
+| Sport skiff / twin | 0.50 / 0.55 m | ✅ |
+| Console skiff | 0.55 m | ✅ |
+| **Lobster boat** | **1.30 m** | ❌ except near high water |
+| **Cape Islander** | **1.40 m** | ❌ except near high water |
+| **Side dragger** | **2.90 m** | ❌ never |
+
+**The cut lands exactly where the boat ladder does.** Every skiff- and punt-tier hull is **≤ 0.6 m**;
+the first two *working* hulls are **1.3–1.4 m**; the dragger is **2.9 m**. So "modest, but takes
+powerboats" is not a vague phrase — it is a **0.6 m gate**, and it separates the tier you learn on
+from the tier you graduate to. **The island you start on becomes the island your big boat can never
+come home to.** That is P2 and P5 in one piece of geography.
+
+**Authoring numbers** (St Peters swings ±3.5 m at spring, ±1.575 m at neap, about mean 0; a hull
+floats where `waterLevel − bedElevation > draught`):
+
+- **Dock approach / berth bed ≈ −1.0 m.** Clears 0.6 m draught whenever the water is above −0.4 m —
+  most of the cycle — and dries near spring low, so the dock has its own gentle tide gate rather than
+  being a permanent open door. Deliberate: even coming home under power should mean reading the tide.
+- **Reef shelf ≈ −1.0 to −1.5 m** around the rest of the coast, shallowing to the beaches. A 1.4 m
+  Cape Islander needs water above −0.1 m to cross a −1.5 m shelf, i.e. **roughly the top half of the
+  tide** — "difficult", per the brief, not impossible. The 2.9 m dragger never crosses at all.
+- Keep a couple of the `ShoreIsoSprites` sea stacks *on* the shelf as the visible tell. The reef
+  should be legible from the deck before it is legible from the depth sounder.
+
+> **One thing to watch when this is authored:** the lobster boat and Cape Islander land in a
+> *sometimes* band, not a *never* band. That is the more interesting answer — but it means the
+> "you've outgrown home" beat arrives as a nagging tide constraint rather than a clean door closing.
+> If it should land harder, raise the shelf rather than lowering the boats.
 
 ### 5.2 The sandbar as its own scene — sized by the tide, and the tide is generous
 
@@ -194,9 +235,9 @@ rather than estimated (`GameConfig`: `SecondsPerDay 1200`, `TidalPeriodHours 12.
   floods at all.**
 
 **Recommendation: a 640 × 200 m corridor with a ~600 m bar path.** That is **3:20 on foot each way**
-(1:49 sprinting), so a round trip is **6:40 against a 6:43 window** — you make it if you go straight
-there and back, and you are stranded the moment you linger. That is precisely the teeth canon asks
-for, and it lands *because* the window is nearly seven minutes, not four.
+(1:49 sprinting), so walking it both ways is **6:40 against a ~6:31 spring window** — you are stranded
+if you stroll, and you make it if you sprint the return. That is precisely the teeth canon asks for,
+and it lands *because* the window is over six minutes rather than the four an earlier draft assumed.
 
 > **An earlier draft of this section sized the bar at 400 m on an estimated ~4-minute window.** The
 > real window is 65% longer, which is the difference between a bar you can always walk back across and
@@ -208,13 +249,31 @@ with the deeper **channel** cut across it (boat-crossable at higher water) — t
 inverse-over-the-tide relationship the greybox already models in `StPetersBuilder`'s
 `SandbarCrestElevation` / `ChannelBedElevation`.
 
-> **⚠️ Flag for the owner — the tide gate switches itself off for part of every lunar month.** Because
-> neap amplitude (1.575 m) sits just under the crest (1.6 m), there are stretches where the bar is
-> permanently dry and St Peters is never cut off. That may be a *lovely* rhythm — "the sea lets you
-> come and go this week" — or it may quietly defuse the prologue's one lesson, depending on where the
-> player is in the month when they first walk it. Either way it is currently an accident of two numbers
-> that were chosen independently, and it should become a decision. The cheap fix if it's unwanted is to
-> drop the crest a little below neap high water (≈1.4 m).
+> **✅ RATIFIED (owner, 2026-07-23) — the neap gap is fixed: `SandbarCrestElevation` 1.6 m → 1.4 m.**
+> As shipped, neap amplitude (1.575 m) sits *just* under the 1.6 m crest, so for part of every lunar
+> month the bar never floods and the prologue's one tide gate silently switches itself off. Putting the
+> crest below neap high water means **the island is cut off twice a day, every day of the month** — the
+> lesson always holds, and the tide is never something you can ignore.
+>
+> **What the change actually costs, computed both ways:**
+>
+> | Crest | Spring: exposed / flooded | Neap: exposed / flooded |
+> |---|---|---|
+> | 1.6 m (today) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
+> | **1.4 m (ratified)** | **6:31** / 3:49 | **8:46** / 1:34 |
+>
+> **The gate now exists at every point in the month**, which is the whole purpose. The spring window
+> barely moves (6:44 → 6:31).
+>
+> **And the mechanic gains a gradient nobody designed but everybody wants:** neap is the *forgiving*
+> end (8:46 of dry bar, and the flood only lasts 1:34, so being caught costs you a short wait), spring
+> is the tense one (6:31, and being caught costs a real 3:49). The sea is kinder some weeks than
+> others, and it is kinder in a way the player can learn to read.
+>
+> **Against a 600 m bar** the numbers land exactly where you'd want them: walking it both ways is
+> 6:40, which **just misses** the 6:31 spring window and fits neap comfortably. Sprinting the return
+> (walk out 3:20, sprint back 1:49 = 5:09) always makes it. So the bar reads as *"you can do this, but
+> not at spring, and not if you dawdle"* — and the escape valve is your own legs, not luck.
 
 If the crossing later wants to feel longer or shorter, **move the tide constants before moving the
 bar** — the window is one number, the bar is a scene's worth of terrain.
@@ -261,24 +320,38 @@ Ordered, with the blocker first. None of it is done in this document.
    noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
 5. **Then, and only then, author.** Island → bar → the rest, in that order.
 
+**One change is ready to make now and depends on none of the above:**
+`StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified). It is a one-line edit to a
+value the EditMode terrain test already shares as its single source of truth, so it can land ahead of
+everything else — and it should, because the current value means the tide gate is off for part of every
+month in whatever anyone playtests next.
+
 **Also worth doing while the coast is authored, but not blocking:** stand up ISO ground/fringe
 rule-tiles and the road blob-47 autotiler from the kits imported today. They are sliced and catalogued
 (`ShorelineIsoCatalog`) but nothing paints with them yet.
 
 ---
 
-## 7. Open questions for the owner
+## 7. Ruled, and still open
 
-1. **Is 2½ minutes the right walk across St Peters?** It is the number everything else keys off. A
-   smaller island is cheaper to author and cosier; a bigger one earns the word "explore". Easy to dial
-   later *if* item 1 above lands first — after that, island size is a number, not a rebuild.
-2. **Ratify the reef ring?** (§5.1) — making the home island permanently unreachable by deep-draught
-   boats is a strong, free, thematically perfect constraint, but it is a real design commitment.
-3. **Cannery: in or out?** The brief says a fish stage that later became a lobster factory, and that a
+### ✅ Ruled by the owner, 2026-07-23
+
+1. **Island scale — ~450 × 260 m** (a ~2:30 walk). §5.1.
+2. **The neap gap — fix it**, crest 1.6 → 1.4 m, so the island is cut off twice a day every day of the
+   month. §5.2. *(Bonus: the gate gains a spring-tense / neap-forgiving gradient, at no cost.)*
+3. **The reef ring — in, with one modest dock on the east end**, opposite the sandbar, taking
+   powerboats. §5.1a. *(Lands as a 0.6 m draught gate: skiff/punt tier home, working hulls tide-gated,
+   dragger never.)*
+
+### Still open
+
+4. **Cannery: in or out?** The brief says a fish stage that later became a lobster factory, and that a
    cannery "is not needed". A working relic is cheaper and reads better than a building with no job.
-4. **Does the sandbar scene support the return trip at all,** or is it deliberately one-way on the
-   first crossing (canon §6.0 has the first trip on foot, then you sail home)? §5.2 sizes it so a
+5. **Does the sandbar support the return trip at all,** or is it deliberately one-way on the first
+   crossing (canon §6.0 has the first trip on foot, then you sail home)? §5.2 sizes it so a spring-low
    round trip is *possible but tight*; a one-way-only bar could be longer and more dramatic.
-5. **The neap gap** (§5.2) — should the bar stay dry for part of every lunar month, or should the
-   crest drop below neap high water so the island is *always* sometimes cut off?
-6. **The dragger's speed** (§1.2) — is a 25 m dragger being slower than a rowed dory intended?
+6. **The dragger's speed** (§1.2) — is a 25 m dragger being slower than a rowed dory intended? It sets
+   the size of every offshore region.
+7. **Does the water read cliff coast differently from flat coast?** (§5.3, note 2) — a sandstone toe
+   should take a wave as impact and spray; a clam flat as a long silent sweep. Best answered while the
+   coast is being authored, by the water lane.
