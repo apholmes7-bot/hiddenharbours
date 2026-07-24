@@ -325,8 +325,16 @@ prematurely.
 
 ## 7. Phasing (tied to the roadmap)
 
-This direction is **M2/M3 work**. It must not jump the queue ahead of finishing M1 (roadmap §0,
-canon §7). The sequence:
+> **Update (owner, 2026-07-24) — the diegetic *instruments* have been pulled into M1.** Following the
+> art director's UI-rig drop (`docs/art/rigs/ui/`), the owner has re-scoped the **analog throttle, the
+> watch-gated clock, and the per-boat helm consoles + upgradable equipment** into **M1**, eyes open to
+> the added scope. That work — and its concrete build order — lives in
+> [`diegetic-instruments-and-consoles.md`](diegetic-instruments-and-consoles.md), which supersedes the
+> M2/M3 assignment below **for those features only**. The rest of this direction (physical inventory, the
+> container grid, merchant conversation, world persistence) is unchanged and stays M2/M3.
+
+This direction is **M2/M3 work** (except the instruments re-scoped above). It must not jump the queue
+ahead of finishing M1 (roadmap §0, canon §7). The sequence:
 
 ### 7.1 M1 — finish as-is (no change from this doc)
 
