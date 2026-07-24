@@ -137,7 +137,13 @@ never referencing Fishing. The contract's rules:
   DisplayName, Category, WeightKg`) keep their exact semantics. v2 added three diegetic reads —
   `Depth01` (held position in the water column, §2.3), `SlackWindowOpen` (the PULL-now tell, §3),
   `RodBend01` (rod-curvature presentation read, distinct from the `Tension01` danger axis) — via a
-  new full constructor; the original 7-arg constructor remains and defaults them neutral.
+  new full constructor; the original 7-arg constructor remains and defaults them neutral. Wave 3
+  added `FishOffsetX/Y` (the line's far end, **fight phases only** — a pinned contract), and the
+  presenter wave added four presentation reads the rod/line/bobber renderer runs on: `CastCharge01`
+  (live wind-back charge / cast-flight progress), `CastAimX/Y` (the cast-path far end outside the
+  fight — aim preview, flying line, resting bobber, legacy-fight hook spot) and `RigDepthM` (raw
+  metres of line down on the weighted path — paces the count-the-fall sink ripples). Every earlier
+  constructor still compiles and defaults the newer reads neutral.
 - **Species fight personality is data**: `Fishing.RodFightDef` (Data/RodFights, ids `rodfight.*`,
   append-only) carries the tuning the pure `RodFightMath` (Wave 2) consumes. The fishing fight is
   real-time and RNG-injected — **not** part of the `(worldSeed, gameTime)` determinism contract,

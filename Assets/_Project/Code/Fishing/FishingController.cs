@@ -110,6 +110,13 @@ namespace HiddenHarbours.Fishing
         private float _gestureClock;   // seconds since the wind-back began (integrated from injected dt)
         private FlickCastResult _lastCast;
 
+        // The most recent pointer fed to the wind-back (for the live castBack/aim publish) and the
+        // resolved cast's total flight time (for the Cast phase's progress publish). Presentation
+        // reads only — the cast itself still resolves from the whole gesture at release.
+        private Vector2 _lastPointerWorld;
+        private bool _lastPointerValid;
+        private float _castFlightSeconds;
+
         /// <summary>Read-only snapshot of the live interaction (for tests / direct readers).</summary>
         public FishingState State => _state;
         public FishingPhase Phase => _phase;
@@ -186,12 +193,15 @@ namespace HiddenHarbours.Fishing
                     // The line is in flight. Touchdown hands off to the waiting/bite flow at the landing
                     // point. (Depth-drop seam: a weighted rig's Sinking phase slots in HERE, between
                     // touchdown and Waiting — the sink/column game is its own build, not this one.)
+                    // Publishes every tick so presentation can fly the bobber along CastCharge01.
                     _phaseTimer -= dt;
                     if (_phaseTimer <= 0f) BeginWaiting();
+                    else Emit(FishingPhase.Cast, 0f, 0f);
                     break;
 
                 case FishingPhase.Waiting:
                     if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
+                    else Emit(FishingPhase.Waiting, 0f, 0f);         // cast path: the aim tracks a walking angler
                     _phaseTimer -= dt;
                     if (_phaseTimer <= 0f) OnBite();
                     break;
@@ -203,6 +213,7 @@ namespace HiddenHarbours.Fishing
                 case FishingPhase.Bite:
                     _phaseTimer -= dt;
                     if (pressed || _phaseTimer <= 0f) BeginFight(); // press hooks early; else auto-hook (forgiving)
+                    else Emit(FishingPhase.Bite, 0f, 0f);           // the bobber tell anchors on the live publish
                     break;
 
                 case FishingPhase.Fighting:
@@ -250,6 +261,8 @@ namespace HiddenHarbours.Fishing
             _gestureHead = 0;
             _gestureCount = 0;
             _gestureClock = 0f;
+            _lastPointerValid = false;
+            _castFlightSeconds = 0f;
             _lastCast = FlickCastResult.NoCast;
             _fight = null;
             EndRodFight();
@@ -296,20 +309,28 @@ namespace HiddenHarbours.Fishing
             _gestureHead = 0;
             _gestureCount = 0;
             _gestureClock = 0f;
+            _lastPointerValid = false;
+            // Records the first sample AND publishes WindBack (the rod rig / Fisher_castBack sheet
+            // animates off the per-tick publish, scrubbed by the live CastCharge01 read).
             RecordGestureSample(0f, pointerWorld, pointerValid: true);
-            Emit(FishingPhase.WindBack, 0f, 0f);   // the rod rig / Fisher_castBack sheet animates off this
         }
 
         /// <summary>One tick of the held drag: advance the gesture clock and record the pointer into the
         /// ring (overwrite-oldest — see the capacity note on the field). An invalid pointer records
-        /// nothing but keeps time, so a hiccup mid-gesture degrades, never corrupts.</summary>
+        /// nothing but keeps time, so a hiccup mid-gesture degrades, never corrupts. Publishes the
+        /// wind-back every tick so presentation scrubs the castBack sheets on the live charge.</summary>
         private void RecordGestureSample(float dt, Vector2 pointerWorld, bool pointerValid)
         {
             _gestureClock += dt;
-            if (!pointerValid) return;
-            _gestureRing[_gestureHead] = new FlickSample(pointerWorld, _gestureClock);
-            _gestureHead = (_gestureHead + 1) % GestureCapacity;
-            if (_gestureCount < GestureCapacity) _gestureCount++;
+            if (pointerValid)
+            {
+                _lastPointerWorld = pointerWorld;
+                _lastPointerValid = true;
+                _gestureRing[_gestureHead] = new FlickSample(pointerWorld, _gestureClock);
+                _gestureHead = (_gestureHead + 1) % GestureCapacity;
+                if (_gestureCount < GestureCapacity) _gestureCount++;
+            }
+            Emit(FishingPhase.WindBack, 0f, 0f);
         }
 
         /// <summary>The release edge: linearize the ring and resolve the whole gesture through the pure
@@ -353,6 +374,7 @@ namespace HiddenHarbours.Fishing
 
             _lastCast = cast;
             _phaseTimer = cast.DistanceMetres / Mathf.Max(0.01f, s.LineFlightMetresPerSec);
+            _castFlightSeconds = _phaseTimer;   // total flight, for the Cast progress publish
             Emit(FishingPhase.Cast, 0f, 0f);
         }
 
@@ -592,13 +614,69 @@ namespace HiddenHarbours.Fishing
             string name = _pendingFish != null ? _pendingFish.DisplayName : null;
             FishCategory cat = _pendingFish != null ? _pendingFish.Category : FishCategory.InshoreGroundfish;
             Vector2 fishOffset = FightOffset(phase);
+            Vector2 castAim = CastAimRead(phase);
             _state = new FishingState(phase, tension, landing, id, name, cat, _pendingWeight,
                                       depth01: DepthRead01(phase),
                                       slackWindowOpen: BottomSlackOpen(phase) || FightSlackOpen(phase),
                                       rodBend01: FightRodBend01(phase),
-                                      fishOffsetX: fishOffset.x, fishOffsetY: fishOffset.y);
+                                      fishOffsetX: fishOffset.x, fishOffsetY: fishOffset.y,
+                                      castCharge01: CastChargeRead(phase),
+                                      castAimX: castAim.x, castAimY: castAim.y,
+                                      rigDepthM: RigDepthRead(phase));
             EventBus.Publish(new FishingStateChanged(_state));
         }
+
+        // ---- the presenter-wave reads (all neutral outside the phases that own them) -----------------
+
+        /// <summary>The live cast-gesture read (<c>FishingState.CastCharge01</c>): the wind-back charge
+        /// while the gesture is held, the flight progress while the line flies. 0 everywhere else.</summary>
+        private float CastChargeRead(FishingPhase phase)
+        {
+            if (phase == FishingPhase.WindBack)
+            {
+                if (!_lastPointerValid) return 0f;
+                FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
+                return FlickCastMath.WindBackCharge01(_lastPointerWorld, AnglerPosition, s.FullPowerFlickMetres);
+            }
+            if (phase == FishingPhase.Cast && _castFlightSeconds > 1e-4f)
+                return 1f - Mathf.Clamp01(_phaseTimer / _castFlightSeconds);
+            return 0f;
+        }
+
+        /// <summary>The cast-path line-far-end read (<c>FishingState.CastAimX/Y</c>, rel. the angler):
+        /// the wind-back's live aim preview, the flying far end through Cast, the resting bobber through
+        /// Waiting/Bite, and the hooked spot through the LEGACY fight (she fights at the bobber there).
+        /// (0,0) on the weighted/depth path, in the v2 fight (FishOffset owns it — a pinned contract)
+        /// and in every result/idle beat. Measured from the LIVE angler each publish, so a walking
+        /// angler reads a moving line for free (the FightOffset precedent).</summary>
+        private Vector2 CastAimRead(FishingPhase phase)
+        {
+            if (phase == FishingPhase.WindBack)
+            {
+                if (!_lastPointerValid) return Vector2.zero;
+                FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
+                return FlickCastMath.WindBackAimOffset(_lastPointerWorld, AnglerPosition,
+                                                       s.FullPowerFlickMetres, s.MaxCastDistanceMetres);
+            }
+
+            if (_depthGame || !_lastCast.IsCast) return Vector2.zero;
+            switch (phase)
+            {
+                case FishingPhase.Cast:
+                    return (_lastCast.LandingPoint - AnglerPosition) * CastChargeRead(phase);
+                case FishingPhase.Waiting:
+                case FishingPhase.Bite:
+                case FishingPhase.Fighting:   // the legacy fight only — v2 phases publish FishOffset instead
+                    return _lastCast.LandingPoint - AnglerPosition;
+                default:
+                    return Vector2.zero;
+            }
+        }
+
+        /// <summary>The raw rig depth read (<c>FishingState.RigDepthM</c>): metres of line under the
+        /// surface on the weighted path — the sink ripples pace on it. 0 on the cast path and idle.</summary>
+        private float RigDepthRead(FishingPhase phase)
+            => _depthGame && phase != FishingPhase.Idle ? _depthM : 0f;
 
         // ---- the v2 fight's published reads (all neutral outside a live v2 fight) --------------
 

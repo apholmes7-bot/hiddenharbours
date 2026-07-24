@@ -22,12 +22,48 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FishingPose.Reel, PlayerFishingAnimMath.PoseFor(FishingPhase.FightDeep, afterStrike, strike));
             Assert.AreEqual(FishingPose.Reel, PlayerFishingAnimMath.PoseFor(FishingPhase.FightSurface, afterStrike, strike));
             Assert.AreEqual(FishingPose.Land, PlayerFishingAnimMath.PoseFor(FishingPhase.Landed, 0f, strike));
+            // The presenter wave: the cast beats + the rod-out hold own the body too.
+            Assert.AreEqual(FishingPose.CastBack, PlayerFishingAnimMath.PoseFor(FishingPhase.WindBack, 0f, strike));
+            Assert.AreEqual(FishingPose.CastRelease, PlayerFishingAnimMath.PoseFor(FishingPhase.Cast, 0f, strike));
+            Assert.AreEqual(FishingPose.Hold, PlayerFishingAnimMath.PoseFor(FishingPhase.Waiting, 0f, strike));
+            Assert.AreEqual(FishingPose.Hold, PlayerFishingAnimMath.PoseFor(FishingPhase.Sinking, 0f, strike));
             // No pose anywhere else — the walk skin owns the renderer.
-            foreach (FishingPhase p in new[] { FishingPhase.Idle, FishingPhase.Waiting, FishingPhase.WindBack,
-                                               FishingPhase.Cast, FishingPhase.Sinking, FishingPhase.Snapped,
+            foreach (FishingPhase p in new[] { FishingPhase.Idle, FishingPhase.Snapped,
                                                FishingPhase.NoBite, FishingPhase.Tending })
                 Assert.AreEqual(FishingPose.None, PlayerFishingAnimMath.PoseFor(p, 0f, strike),
                     $"{p} must not own the renderer (Tending has no rod; a snap goes straight back to walking)");
+        }
+
+        [Test]
+        public void TheHold_YieldsToAMovingAngler_ButTheShortBeatsDoNot()
+        {
+            const float strike = 0.5f;
+            // Waiting/Sinking: the line can stay out for a long while and the player is free to walk —
+            // a moving body must belong to the walk skin (no moonwalking hold pose).
+            Assert.AreEqual(FishingPose.None,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.Waiting, 0f, strike, stationary: false));
+            Assert.AreEqual(FishingPose.None,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.Sinking, 0f, strike, stationary: false));
+            // The cast/bite/fight/land beats are short and own the renderer regardless (the shipped rule).
+            Assert.AreEqual(FishingPose.CastBack,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.WindBack, 0f, strike, stationary: false));
+            Assert.AreEqual(FishingPose.Bite,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.Bite, 0f, strike, stationary: false));
+            Assert.AreEqual(FishingPose.Reel,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.FightDeep, 10f, strike, stationary: false));
+            Assert.AreEqual(FishingPose.Land,
+                PlayerFishingAnimMath.PoseFor(FishingPhase.Landed, 0f, strike, stationary: false));
+        }
+
+        [Test]
+        public void ScrubFrame_FollowsProgress_AndClampsTheEnds()
+        {
+            Assert.AreEqual(0, PlayerFishingAnimMath.ScrubFrame(0f, 6), "unloaded = the first frame");
+            Assert.AreEqual(3, PlayerFishingAnimMath.ScrubFrame(0.5f, 6));
+            Assert.AreEqual(5, PlayerFishingAnimMath.ScrubFrame(1f, 6), "full charge = fully drawn back");
+            Assert.AreEqual(5, PlayerFishingAnimMath.ScrubFrame(2f, 6), "over-charge clamps");
+            Assert.AreEqual(0, PlayerFishingAnimMath.ScrubFrame(-1f, 6), "negative-safe");
+            Assert.AreEqual(0, PlayerFishingAnimMath.ScrubFrame(0.5f, 0), "count ≤ 0 is safe");
         }
 
         [Test]

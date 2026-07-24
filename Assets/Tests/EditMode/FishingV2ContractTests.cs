@@ -126,6 +126,36 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void FishingState_Wave3Constructor_DefaultsThePresenterReadsNeutral()
+        {
+            // The presenter wave grew the struct again (cast charge/aim + raw rig depth). The Wave-3
+            // 12-arg constructor is preserved and defaults them all neutral, so no earlier publisher
+            // can accidentally signal a live cast or a sinking rig.
+            var s = new FishingState(FishingPhase.FightSurface, 0.2f, 0.7f,
+                                     "fish.mackerel", "Mackerel", FishCategory.Pelagic, 0.8f,
+                                     depth01: 0f, slackWindowOpen: true, rodBend01: 0.4f,
+                                     fishOffsetX: 1.5f, fishOffsetY: -2.25f);
+            Assert.AreEqual(0f, s.CastCharge01, "earlier publishers carry no cast charge");
+            Assert.AreEqual(0f, s.CastAimX, "earlier publishers carry no cast-path far end");
+            Assert.AreEqual(0f, s.CastAimY);
+            Assert.AreEqual(0f, s.RigDepthM, "earlier publishers carry no raw rig depth");
+        }
+
+        [Test]
+        public void FishingState_PresenterConstructor_CarriesTheNewReads()
+        {
+            var s = new FishingState(FishingPhase.WindBack, 0f, 0f,
+                                     null, null, FishCategory.InshoreGroundfish, 0f,
+                                     depth01: 0f, slackWindowOpen: false, rodBend01: 0f,
+                                     fishOffsetX: 0f, fishOffsetY: 0f,
+                                     castCharge01: 0.6f, castAimX: 1.25f, castAimY: -3.5f, rigDepthM: 4.5f);
+            Assert.AreEqual(0.6f, s.CastCharge01);
+            Assert.AreEqual(1.25f, s.CastAimX);
+            Assert.AreEqual(-3.5f, s.CastAimY);
+            Assert.AreEqual(4.5f, s.RigDepthM);
+        }
+
+        [Test]
         public void FishingState_Idle_IsInactive_AndNeutral()
         {
             var idle = FishingState.Idle;
@@ -134,6 +164,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0f, idle.Depth01);
             Assert.IsFalse(idle.SlackWindowOpen);
             Assert.AreEqual(0f, idle.RodBend01);
+            Assert.AreEqual(0f, idle.CastCharge01);
+            Assert.AreEqual(0f, idle.CastAimX);
+            Assert.AreEqual(0f, idle.CastAimY);
+            Assert.AreEqual(0f, idle.RigDepthM);
         }
 
         [Test]

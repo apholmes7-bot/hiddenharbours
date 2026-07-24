@@ -97,12 +97,42 @@ namespace HiddenHarbours.Core
         /// <see cref="FishOffsetX"/>.</summary>
         public readonly float FishOffsetY;
 
-        /// <summary>Full v2 constructor — sets every field, including the diegetic reads and the Wave-3
-        /// line-far-end offset.</summary>
+        // ---- Rod-fight PRESENTER reads (additive; default neutral — the presentation wave) ----------
+        /// <summary>0..1 cast-gesture read for the presentation lane: while
+        /// <see cref="FishingPhase.WindBack"/> it is how far the rod is DRAWN BACK (the live wind-back
+        /// charge — the castBack sheets scrub on it); while <see cref="FishingPhase.Cast"/> it is the
+        /// line's FLIGHT progress toward the landing point (0 = just released, 1 = touchdown). Neutral 0
+        /// everywhere else. Presentation-only data — the cast itself still resolves from the whole
+        /// gesture at release (<c>FlickCastMath.Evaluate</c>), never from this read.</summary>
+        public readonly float CastCharge01;
+
+        /// <summary>World-metre X offset, relative to the angler, of the line's far end on the CAST
+        /// path OUTSIDE the v2 fight — the read the bobber/line presentation anchors on, deliberately
+        /// separate from <see cref="FishOffsetX"/> (which stays a fight-only read, a pinned contract):
+        /// the live aim preview while winding back, the flying line's far end through
+        /// <see cref="FishingPhase.Cast"/>, the resting bobber through Waiting/Bite, and the hooked
+        /// spot through the LEGACY <see cref="FishingPhase.Fighting"/> (the fish fights at the bobber
+        /// there). (0,0) on the weighted/depth path (the rig drops at the angler's feet — the line runs
+        /// straight down), in the v2 fight phases (<see cref="FishOffsetX"/> owns the far end there)
+        /// and in every result/idle beat.</summary>
+        public readonly float CastAimX;
+
+        /// <summary>World-metre Y of the cast-path far end — see <see cref="CastAimX"/>.</summary>
+        public readonly float CastAimY;
+
+        /// <summary>Metres of line UNDER the surface on the weighted/depth path — the raw depth behind
+        /// <see cref="Depth01"/>'s normalized read. Presentation paces the sink ripples on it
+        /// (<c>RodLineMath.SinkRipplePhase</c> is phased by metres fallen, so counting the pulses IS
+        /// counting the fall — owner decision #4). 0 on the cast path and outside a live drop.</summary>
+        public readonly float RigDepthM;
+
+        /// <summary>Full presenter-wave constructor — sets every field, including the cast/rig
+        /// presentation reads.</summary>
         public FishingState(FishingPhase phase, float tension01, float landing01,
                             string fishId, string displayName, FishCategory category, float weightKg,
                             float depth01, bool slackWindowOpen, float rodBend01,
-                            float fishOffsetX, float fishOffsetY)
+                            float fishOffsetX, float fishOffsetY,
+                            float castCharge01, float castAimX, float castAimY, float rigDepthM)
         {
             Phase = phase;
             Tension01 = tension01;
@@ -116,6 +146,22 @@ namespace HiddenHarbours.Core
             RodBend01 = rodBend01;
             FishOffsetX = fishOffsetX;
             FishOffsetY = fishOffsetY;
+            CastCharge01 = castCharge01;
+            CastAimX = castAimX;
+            CastAimY = castAimY;
+            RigDepthM = rigDepthM;
+        }
+
+        /// <summary>Wave-3 constructor (preserved) — the presenter-wave reads default to neutral, so
+        /// every Wave-3 caller compiles and behaves unchanged.</summary>
+        public FishingState(FishingPhase phase, float tension01, float landing01,
+                            string fishId, string displayName, FishCategory category, float weightKg,
+                            float depth01, bool slackWindowOpen, float rodBend01,
+                            float fishOffsetX, float fishOffsetY)
+            : this(phase, tension01, landing01, fishId, displayName, category, weightKg,
+                   depth01, slackWindowOpen, rodBend01, fishOffsetX, fishOffsetY,
+                   castCharge01: 0f, castAimX: 0f, castAimY: 0f, rigDepthM: 0f)
+        {
         }
 
         /// <summary>Wave-2 constructor (preserved) — the Wave-3 fish offset defaults to neutral (0,0), so

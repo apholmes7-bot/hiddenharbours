@@ -27,6 +27,12 @@ namespace HiddenHarbours.Fishing
         [Header("Display tuning")]
         [Tooltip("Tension fraction at/above which the strain bar reads as the red SNAP zone (shape+colour+text).")]
         [SerializeField] private float _snapZone = 0.75f;
+        [Tooltip("Mute the PRE-FIGHT status text (wind-back/cast/waiting/bite/sinking) — set by the " +
+                 "start builder once the diegetic rod/bobber presenter is wired, so the gauge stops " +
+                 "double-captioning tells the world now shows ('A bite! Hook it!' under a dipping " +
+                 "bobber). Bars and the fight/result text are untouched; leave false on a greybox rig " +
+                 "with no presenter art.")]
+        [SerializeField] private bool _muteDiegeticText = false;
 
         [Header("On-the-line struggle (VS-14 catch-feel; gameplay-systems FYI)")]
         [Tooltip("Jitter amplitude (px) of the on-line fish at calm tension vs. at full frantic.")]
@@ -157,8 +163,19 @@ namespace HiddenHarbours.Fishing
                 _fishIcon.rectTransform.localScale = new Vector3(scale, scale, 1f);
             }
 
-            if (_statusLabel != null) _statusLabel.text = StatusText(s);
+            if (_statusLabel != null)
+                _statusLabel.text = _muteDiegeticText && IsDiegeticallyTold(s.Phase)
+                    ? string.Empty
+                    : StatusText(s);
         }
+
+        /// <summary>The pre-fight beats the rod/bobber presenter now SHOWS (the wind-back rod, the
+        /// flying/dipping bobber, the sink ripples) — the phases whose caption the builder mutes once
+        /// that presenter is wired. Fight and result text always stay.</summary>
+        private static bool IsDiegeticallyTold(FishingPhase phase)
+            => phase == FishingPhase.WindBack || phase == FishingPhase.Cast
+            || phase == FishingPhase.Waiting || phase == FishingPhase.Bite
+            || phase == FishingPhase.Sinking;
 
         private static string StatusText(FishingState s) => s.Phase switch
         {
