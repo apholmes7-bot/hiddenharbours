@@ -6,7 +6,9 @@
 > (**M2/M3**) can build it without re-deriving. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (CANON) — when in doubt, that file wins; then
 > the [`art-and-audio-bible.md`](art-and-audio-bible.md), whose **§6 (Lighting, day-night & fog)** is the
-> canon home of this look and whose **§6.1** advanced-rendering roadmap this elaborates.
+> canon home of this look and whose **§6.1** advanced-rendering roadmap this elaborates. One of three
+> captured [advanced-rendering targets](advanced-rendering-targets.md) (with the seabed/terrain and
+> sprite-light-response captures) — read that index for the shared rules.
 >
 > **Pillars served.** **P1 The Sea Has Moods** — fog, rain, cloud and sky *are* the sea's moods you read
 > and respect, not set-dressing. **P5 Cozy, but with Teeth** — fog is a real navigation hazard (The
