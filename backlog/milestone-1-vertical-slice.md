@@ -7,6 +7,10 @@
 > **Workflow:** pull the top *unblocked* item for your role; follow the Definition of Done (§6); see
 > `../agents/coordination.md` for the multi-agent protocol.
 >
+> **⚠ Read [`plan-to-m1.md`](plan-to-m1.md) first.** It audits which of the items below are already built,
+> reconciles this spec with the opening/species changes that landed since it was written, and carries the
+> **amended Definition of Done** (its §7) that supersedes §6 once ratified.
+>
 > **Pillars:** **P1** The Sea Has Moods · **P2** From Dory to Dynasty · **P3** A Living Working Coast ·
 > **P4** Earn It, Then Automate It · **P5** Cozy, but with Teeth.
 

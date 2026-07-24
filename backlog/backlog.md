@@ -8,6 +8,9 @@
 >
 > **Pillars:** **P1** The Sea Has Moods · **P2** From Dory to Dynasty · **P3** A Living Working Coast ·
 > **P4** Earn It, Then Automate It · **P5** Cozy, but with Teeth.
+>
+> **Closing out M1?** [`plan-to-m1.md`](plan-to-m1.md) is the current audit + route to the vertical-slice
+> sign-off, including the owner decisions that gate it and the M2/M3 feature freeze it recommends.
 
 ---
 
