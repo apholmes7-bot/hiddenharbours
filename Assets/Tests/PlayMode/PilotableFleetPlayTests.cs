@@ -125,13 +125,13 @@ namespace HiddenHarbours.Tests.PlayMode
         /// owner halved it — and green for a reason that no longer matches the product. Read it, derive the wait
         /// from it, and a re-tune re-times the test for free.
         /// </summary>
-        private static float SteerColumnsPerSecond(OutboardMotorLayer motor)
+        private static float SteerColumnsPerSecond(MonoBehaviour motor)
         {
 #if UNITY_EDITOR
             var field = new SerializedObject(motor).FindProperty("_steerColumnsPerSecond");
             Assert.IsNotNull(field,
-                "OutboardMotorLayer._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits from " +
-                "that cadence on purpose — re-point this read; do not paper over it with a magic sleep.");
+                $"{motor.GetType().Name}._steerColumnsPerSecond was renamed or removed. This test DERIVES its waits " +
+                "from that cadence on purpose — re-point this read; do not paper over it with a magic sleep.");
             Assert.Greater(field.floatValue, 0f,
                 "a zero/negative cadence snaps the engine instantly (OutboardMotorMath.StepTowardColumn), which " +
                 "would make the swivel this test exists to prove unobservable");
@@ -700,16 +700,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the dory's oars must not row a skiff — and they'd z-fight the engine leg if they stayed");
             Assert.IsNull(go.GetComponent<DoryOarMeshLayer>(),
                 "…and neither must her oar MESHES: a fitting outlives its hull only as a bug");
-            var motor = go.GetComponent<OutboardMotorLayer>();
-            Assert.IsNotNull(motor, "the twin's outboards are bolted on");
-            Assert.IsTrue(motor.IsWired);
-            Assert.AreEqual(OutboardMotorLayer.MotorFit.Twin, motor.Fit);
+            DrawnEngine.On(go, "the twin's outboards are bolted on",
+                           expectedMaxSteerDegrees: 30f, expectedEngines: 2);
 
             picker.Next();   // wrap back to the dory
             yield return null;
 
             AssertHasOars(go, "…and back: the oars return");
             Assert.IsNull(go.GetComponent<OutboardMotorLayer>(), "the engine comes off the rowboat");
+            Assert.IsNull(go.GetComponent<OutboardMotorMeshLayer>(),
+                "…and neither does her engine MESH stay bolted to a rowboat");
         }
 
         /// <summary>
@@ -723,6 +723,88 @@ namespace HiddenHarbours.Tests.PlayMode
         /// than the mechanism, and insists the layer is actually WIRED, so "the component exists but
         /// poses nothing" cannot pass as oars.</para>
         /// </summary>
+        /// <summary>
+        /// <b>The boat's outboard, drawn EITHER way (ADR 0022 phase 7)</b> — the motor's twin of
+        /// <see cref="AssertHasOars"/>.
+        ///
+        /// <para>These tests' claim was always "her engine swivels off the live helm at her own
+        /// authority, and centres when nobody is driving"; <see cref="OutboardMotorLayer"/> was simply
+        /// the only way to have one. Phase 7 gave both outboard rigs meshes
+        /// (<see cref="OutboardMotorMeshLayer"/>, posing real fittings through the Core seam), which is
+        /// the condition phase 6 blocked the punt and both skiffs on — so the claim is now checked
+        /// through whichever representation the hull actually wears, in DEGREES, which both have.</para>
+        ///
+        /// <para>⚠️ And the engine must MATCH THE HULL, for the same reason the oars must: without that
+        /// check a silent fallback to the sprite compass passes, and nobody notices the mesh skiff
+        /// never shipped.</para>
+        /// </summary>
+        private readonly struct DrawnEngine
+        {
+            public readonly OutboardMotorLayer Sprite;
+            public readonly OutboardMotorMeshLayer Mesh;
+            readonly float _maxSteer;
+            readonly int _columns;
+
+            private DrawnEngine(OutboardMotorLayer sprite, OutboardMotorMeshLayer mesh,
+                                float maxSteer, int columns)
+            { Sprite = sprite; Mesh = mesh; _maxSteer = maxSteer; _columns = columns; }
+
+            public static DrawnEngine On(GameObject go, string because,
+                                         float expectedMaxSteerDegrees, int expectedEngines)
+            {
+                var sprite = go.GetComponent<OutboardMotorLayer>();
+                var mesh = go.GetComponent<OutboardMotorMeshLayer>();
+                Assert.IsTrue(sprite != null || mesh != null,
+                    $"{because} — neither OutboardMotorLayer (sprite) nor OutboardMotorMeshLayer (mesh) " +
+                    "is present, so she is running on nothing.");
+
+                bool hullIsMesh = go.GetComponent<DirectionalBoatSprite>() == null;
+                if (hullIsMesh)
+                    Assert.IsNotNull(mesh,
+                        $"{because} — she is presented as a MESH hull (no sprite compass) but carries " +
+                        "the SPRITE motor layer, whose sheets are baked per facing cell and cannot ride " +
+                        "a continuously-rotating hull. That is the skiff-with-no-engine regression.");
+
+                if (mesh != null)
+                {
+                    Assert.IsTrue(mesh.IsWired,
+                        $"{because} — the mesh motor layer is present but not wired to a configured " +
+                        "fitting, which draws no engine at all.");
+                    Assert.AreEqual(expectedEngines, mesh.EngineCount,
+                        $"{because} — wrong number of engines on the transom.");
+                    Assert.AreEqual(expectedMaxSteerDegrees, mesh.MaxSteerDegrees, 0.001f,
+                        $"{because} — at the authority her own art bakes, not another hull's.");
+                }
+                else
+                {
+                    Assert.IsTrue(sprite.IsWired, $"{because} — the sprite motor layer is not wired.");
+                    Assert.AreEqual(expectedMaxSteerDegrees, sprite.MaxSteerDegrees, 0.001f,
+                        $"{because} — at the authority her own sheets bake, not another hull's.");
+                    Assert.AreEqual(expectedEngines == 2
+                            ? OutboardMotorLayer.MotorFit.Twin
+                            : OutboardMotorLayer.MotorFit.Single,
+                        sprite.Fit, $"{because} — wrong number of engines on the transom.");
+                }
+
+                return new DrawnEngine(sprite, mesh, expectedMaxSteerDegrees,
+                                       OutboardMotorMath.SteerColumns);
+            }
+
+            /// <summary>The swivel she is DRAWN at, in degrees — the one quantity both representations
+            /// have. The sprite path rounds it to a baked column; the mesh path does not, which is the
+            /// difference phase 7 exists to make.</summary>
+            public float SteerDegrees => Mesh != null
+                ? Mesh.SteerDegrees
+                : OutboardMotorMath.SteerDegreesForColumn(Sprite.SteerColumn, _columns, _maxSteer);
+
+            /// <summary>Her own steer authority in degrees — an art fact of whichever representation
+            /// is wired (punt ±32, skiffs ±30).</summary>
+            public float MaxSteerDegrees => _maxSteer;
+
+            /// <summary>The component whose serialized cadence times the waits.</summary>
+            public MonoBehaviour Component => Sprite != null ? (MonoBehaviour)Sprite : Mesh;
+        }
+
         private static void AssertHasOars(GameObject go, string because)
         {
             var sprite = go.GetComponent<DoryOarLayer>();
@@ -774,33 +856,33 @@ namespace HiddenHarbours.Tests.PlayMode
             var hull = LoadHull("PuntUpgraded");
             var (go, boat, _) = NewBoat(hull, Vector3.zero);
             var sr = go.AddComponent<SpriteRenderer>();
-            var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
-            Assert.IsNotNull(rig.Motor, "precondition: the punt wears her tiller outboard");
-            Assert.AreEqual(32f, rig.Motor.MaxSteerDegrees, 0.001f,
-                "…at the authority her own sheets bake, not the skiffs' 30");
-            Assert.AreEqual(OutboardMotorLayer.MotorFit.Single, rig.Motor.Fit, "…and only one of them");
-
-            int centre = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns);
-            int hardPort = 0;
+            BoatHullSkinner.ApplyHull(go, sr, hull, boat);
+            // ⚠️ In DEGREES, not in sheet columns (ADR 0022 phase 7): her engine is a mesh fitting now
+            // and has no columns to land on. The claim was never "column 0" — it was "hard over to
+            // port at HER authority", which is −32° either way.
+            DrawnEngine engine = DrawnEngine.On(go, "precondition: the punt wears her tiller outboard",
+                                                expectedMaxSteerDegrees: 32f, expectedEngines: 1);
+            const float HardPortDegrees = -32f;
 
             // A DURATION, never a frame count — budgeted from the layer's own cadence (see SpinUntil).
-            float cadence = SteerColumnsPerSecond(rig.Motor);
-            float budget = (Mathf.Abs(centre - hardPort) / cadence) * 4f;
+            float cadence = SteerColumnsPerSecond(engine.Component);
+            float budget = (OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns) / cadence) * 4f;
 
             yield return null;
-            Assert.AreEqual(centre, rig.Motor.SteerColumn, "she wakes dead ahead");
+            Assert.AreEqual(0f, engine.SteerDegrees, 0.01f, "she wakes dead ahead");
 
             boat.SetControl(1f, -1f);                    // hard a-port
-            yield return SpinUntil(() => rig.Motor.SteerColumn == hardPort, budget);
-            Assert.AreEqual(hardPort, rig.Motor.SteerColumn,
-                "the tiller goes hard over to port off the helm alone");
+            yield return SpinUntil(() => engine.SteerDegrees <= HardPortDegrees + 0.01f, budget);
+            Assert.AreEqual(HardPortDegrees, engine.SteerDegrees, 0.01f,
+                "the tiller goes hard over to port off the helm alone, at her own ±32° — not the " +
+                "skiffs' 30");
 
             boat.enabled = false;                        // the player steps off, mid-turn
-            yield return SpinUntil(() => rig.Motor.SteerColumn == centre, budget);
+            yield return SpinUntil(() => Mathf.Abs(engine.SteerDegrees) <= 0.01f, budget);
 
             // Note the helm is STILL hard-over: Stop() clears _steer, disabling does not. So she can only
             // come back by the layer refusing to read an unmanned helm — the #205 gate.
-            Assert.AreEqual(centre, rig.Motor.SteerColumn,
+            Assert.AreEqual(0f, engine.SteerDegrees, 0.01f,
                 "a dropped helm centres the punt's engine too — she must never sit frozen hard-over (#205)");
         }
 
@@ -812,48 +894,48 @@ namespace HiddenHarbours.Tests.PlayMode
             var hull = LoadHull("SportSkiff");
             var (go, boat, _) = NewBoat(hull, Vector3.zero);
             var sr = go.AddComponent<SpriteRenderer>();
-            var rig = BoatHullSkinner.ApplyHull(go, sr, hull, boat);
-            Assert.IsNotNull(rig.Motor, "precondition: the sport skiff wears her outboard");
+            BoatHullSkinner.ApplyHull(go, sr, hull, boat);
+            DrawnEngine engine = DrawnEngine.On(go, "precondition: the sport skiff wears her outboard",
+                                                expectedMaxSteerDegrees: 30f, expectedEngines: 1);
 
-            int centre = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns);
-            // Hard a-starboard is the sheet's LAST column, derived through the same public mapping the layer
-            // uses rather than spelled "8" — the sheets' column count is an art fact that may yet grow.
-            int hardStarboard = OutboardMotorMath.ColumnForSteerDegrees(
-                OutboardMotorMath.MaxSteerDegrees, OutboardMotorMath.SteerColumns, OutboardMotorMath.MaxSteerDegrees);
+            // Hard a-starboard, in DEGREES — HER authority, read off the layer rather than spelled out
+            // here, so a re-baked sheet or fitting re-aims the test for free.
+            float hardStarboard = engine.MaxSteerDegrees;
 
             // The swivel is rate-limited, so the wait must be a DURATION, never a frame count. Budget the full
             // centre→hard-over travel at the layer's own cadence, times a slack factor so this is decided by the
             // engine's behaviour and never by a knife-edge on the clock. SpinUntil returns as soon as she
             // arrives, so the slack costs nothing when the product is healthy — it is only ever spent failing.
-            float cadence = SteerColumnsPerSecond(rig.Motor);
-            float fullSwivel = Mathf.Abs(hardStarboard - centre) / cadence;
+            float cadence = SteerColumnsPerSecond(engine.Component);
+            float fullSwivel = OutboardMotorMath.CenterColumn(OutboardMotorMath.SteerColumns) / cadence;
             float budget = fullSwivel * 4f;
 
             yield return null;
-            Assert.AreEqual(centre, rig.Motor.SteerColumn, "she wakes dead ahead, never on a stale hard-over");
+            Assert.AreEqual(0f, engine.SteerDegrees, 0.01f,
+                "she wakes dead ahead, never on a stale hard-over");
 
             boat.SetControl(1f, 1f);                     // hard a-starboard
-            yield return SpinUntil(() => rig.Motor.SteerColumn == hardStarboard, budget);
+            yield return SpinUntil(() => engine.SteerDegrees >= hardStarboard - 0.01f, budget);
 
-            // DECISIVE, not one column past centre. The old assertion (Greater than centre) only needed half a
+            // DECISIVE, not one step past centre. The old assertion (Greater than centre) only needed half a
             // column of travel and was therefore a coin-flip on frame rate; requiring the FULL hard-over means a
             // broken cadence cannot squeak past, and it earns the precondition the drop test needs below.
-            Assert.AreEqual(hardStarboard, rig.Motor.SteerColumn,
+            Assert.AreEqual(hardStarboard, engine.SteerDegrees, 0.01f,
                 $"{fullSwivel:0.00}s of swivel ({cadence:0.#} columns/sec) must walk the engine from dead ahead " +
                 "to hard a-starboard");
-            Assert.Greater(rig.Motor.SteerColumn, centre,
+            Assert.Greater(engine.SteerDegrees, 0f,
                 "the engine swung to starboard off the WHEEL alone — no push, no driving system writing it");
 
             // …and THAT is what makes the next assertion mean something. Before this test waited on time it
             // never got off centre in CI, so "a dropped helm centres the engine" passed by never having left —
             // the #205 guard was vacuous. It can only be reached now from a genuinely hard-over engine.
             boat.enabled = false;                        // the player steps off, mid-turn
-            yield return SpinUntil(() => rig.Motor.SteerColumn == centre, budget);
+            yield return SpinUntil(() => Mathf.Abs(engine.SteerDegrees) <= 0.01f, budget);
 
             // Note the helm is STILL hard-over: BoatController.Stop() clears _steer, disabling it does not. So
             // the engine can only come back by the layer refusing to read an unmanned helm (IsHelmManned) —
             // delete that gate and this fails, which is exactly the regression #205 fixed.
-            Assert.AreEqual(centre, rig.Motor.SteerColumn,
+            Assert.AreEqual(0f, engine.SteerDegrees, 0.01f,
                 "a dropped helm centres the engine — an empty skiff must never sit frozen hard-over (#205)");
         }
     }

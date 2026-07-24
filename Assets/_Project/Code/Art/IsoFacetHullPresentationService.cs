@@ -140,6 +140,7 @@ namespace HiddenHarbours.Art
             return new IsoFacetPropSetup
             {
                 Mesh = def.Mesh,
+                FixedMesh = def.FixedMesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
                 LightN = def.LightN,

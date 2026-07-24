@@ -125,8 +125,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>part:'all'</c> — one mesh for the whole engine.</para>
         /// </summary>
         static FleetProp Motor(string key, string rig, string global, string assetName, string propId,
-                               string faceCall, string[] extraSymbols, string lateralMountsCall,
-                               bool backfaceRescueNeedsOptIn, string label,
+                               string faceCall, string probeCall, string[] extraSymbols,
+                               string lateralMountsCall, bool backfaceRescueNeedsOptIn, string label,
                                params string[] wornByVisuals) => new FleetProp(
             key: key,
             scriptPath: $"{Rigs}/{rig}",
@@ -136,6 +136,12 @@ namespace HiddenHarbours.Tools.RigBaking
             extraction: new RigPropExtraction
             {
                 FaceBuilderCall = faceCall,
+                // ⚠️ AN OUTBOARD IS NOT ONE RIGID BODY. Both rigs build the clamp bracket (and the
+                // skiff's tilt-tube cap) through the identity placement I rather than the posed X —
+                // it is bolted to the transom and the engine swivels ON it. This second build, at a
+                // pose with BOTH articulation axes off zero, is how the bake finds that out by
+                // measurement instead of by reading the rig and declaring it.
+                PoseProbeFaceBuilderCall = probeCall,
                 PivotCall = "swivelPt()",
                 // ⚠️ The engine ships its OWN, WIDER cell — 212×168 against the punt's 184×168 hull,
                 // 272×216 against the skiffs' 244×216 — because it swings outboard of the transom.
@@ -159,6 +165,7 @@ namespace HiddenHarbours.Tools.RigBaking
             assetName: $"PuntMotor{name}PropMesh",
             propId: $"hullprop.punt_motor_{variant}",
             faceCall: $"motorFaces({{variant:'{variant}',steer:0,tilt:0,part:'all'}})",
+            probeCall: $"motorFaces({{variant:'{variant}',steerDeg:11,tilt:7,part:'all'}})",
             extraSymbols: new[] { "motorFaces", "swivelPt" },
             lateralMountsCall: null,          // single engine, on the centreline — by the art
             backfaceRescueNeedsOptIn: true,   // puntIsoRig.js:152 gates the rescue on b <= -1
@@ -173,6 +180,7 @@ namespace HiddenHarbours.Tools.RigBaking
             assetName: $"SkiffMotor{name}PropMesh",
             propId: $"hullprop.skiff_motor_{variant}",
             faceCall: $"motorFaces({{variant:'{variant}',steer:0,tilt:0,mx:0,part:'all'}})",
+            probeCall: $"motorFaces({{variant:'{variant}',steerDeg:11,tilt:7,mx:0,part:'all'}})",
             // PX and defaultElev are not on this rig's export at all — it is a LAYER, not a hull. Both
             // are reconstructed from its own S / DEFAULT_ELEV (RigMeshSymbols.Reconstructions).
             extraSymbols: new[] { "motorFaces", "swivelPt", "PX", "defaultElev" },

@@ -54,12 +54,26 @@ namespace HiddenHarbours.Tests.RigBaking
         static readonly float[] SteerPositions = { 0f, 1.37f, 2.5f, 4f, 5.62f, 7.15f, 8f };
 
         /// <summary>
-        /// Tilts swept, in degrees. Mostly 0 (the running pose, and the only one the game drives
-        /// today), plus a part-trim and the rig's own <c>tiltMax</c> — because tilt is the axis that
-        /// catches a COMPOSITION error: <c>Rz(steer)·Rx(−tilt)</c> and <c>Rx(−tilt)·Rz(steer)</c> are
-        /// the same rotation whenever either angle is zero, and differ everywhere else.
+        /// The (steer position, tilt) pairs swept at every heading. The FULL steer sweep runs at the
+        /// running trim, which is the pose the game actually drives; tilt is then sampled at three
+        /// steers, including both hard-overs.
+        ///
+        /// <para><b>Tilt is in here at all because it is the axis that catches a COMPOSITION error:</b>
+        /// <c>Rz(steer)·Rx(−tilt)</c> and <c>Rx(−tilt)·Rz(steer)</c> are the same rotation whenever
+        /// either angle is zero, and differ everywhere else. A sweep that only ever ran at trim 0
+        /// could not tell them apart — see
+        /// <see cref="SwappingTheSteerAndTiltComposition_IsCaught_AtAPoseWhereTheyDiffer"/>.</para>
+        ///
+        /// <para>A cross product of every steer with every tilt would say nothing more and would put
+        /// minutes on the CI suite (the cells here are 212×168 and 272×216, and the oracle is a
+        /// software rasteriser in V8).</para>
         /// </summary>
-        static readonly float[] Tilts = { 0f, 17f, 40f };
+        static IEnumerable<(float position, float tilt)> Poses()
+        {
+            foreach (float p in SteerPositions) yield return (p, 0f);
+            foreach (float t in new[] { 17f, 40f })
+                foreach (float p in new[] { 0f, 2.5f, 8f }) yield return (p, t);
+        }
 
         /// <summary>
         /// Single-pixel noise floor for colour differences, over the whole sweep. Same reasoning as
@@ -67,12 +81,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// float32 the vertex buffer imposes — is isolated pixels at a facet or dither boundary, while
         /// a real defect is a connected patch because it is geometry that moved.
         ///
-        /// <para>MEASURED clean, worst over all four fittings × 8 headings × 7 steers × 3 tilts (plus
-        /// the twin's two clamp positions): see the sabotage curve below for what it costs in
-        /// sensitivity — nothing that matters, because the curve's first rung already clears it by
-        /// more than an order of magnitude.</para>
+        /// <para>MEASURED clean, worst over all four fittings × 8 headings × 13 poses (624 renders,
+        /// plus the twin's second clamp position): <b>1</b> — a single pixel, once, on the twin's port
+        /// engine. Three of the five cases come back at <b>0/0/0</b>: not "close", identical. Four is
+        /// a guard, not the load-bearing assertion; the two zero-tolerance checks above it are, and
+        /// the sensitivity curve below shows this one moving to 17 at a quarter of a degree.</para>
         /// </summary>
-        const int MaxNoiseCluster = 24;
+        const int MaxNoiseCluster = 4;
 
         // ---- the fittings under test ------------------------------------------------------------
 
@@ -134,24 +149,43 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         static Mesh Pose(HullPropMeshDef def, Quaternion r, float lateralMeters)
         {
-            Vector3 p = def.PivotLocalMeters;
-            Vector3 mount = new Vector3(lateralMeters, 0f, 0f);
+            // ⚠️ The BOLTED-DOWN half first, then the half that swivels — which is the order the rig
+            // emits them in (the bracket is built before the cowl), so the combined buffer is the
+            // rig's own face order and a depth tie would fall the same way. The extractor refuses to
+            // split a rig whose fixed faces are interleaved, for exactly this reason.
+            Mesh bolted = def.FixedMesh == null
+                ? null
+                : Transform(def.FixedMesh, Quaternion.identity, Vector3.zero,
+                            new Vector3(lateralMeters, 0f, 0f));
+            Mesh swivelled = Transform(def.Mesh, r, def.PivotLocalMeters,
+                                       new Vector3(lateralMeters, 0f, 0f));
+            if (bolted == null) return swivelled;
 
-            var src = def.Mesh.vertices;
-            var srcN = def.Mesh.normals;
+            Mesh both = Combine(bolted, swivelled);
+            Object.DestroyImmediate(bolted);
+            Object.DestroyImmediate(swivelled);
+            return both;
+        }
+
+        /// <summary>One mesh, rotated about <paramref name="pivot"/> and then offset — the exact
+        /// arithmetic <c>IsoFacetPropRenderer.Apply</c> puts on the child's Transform.</summary>
+        static Mesh Transform(Mesh source, Quaternion r, Vector3 pivot, Vector3 offset)
+        {
+            var src = source.vertices;
+            var srcN = source.normals;
             var uv = new List<Vector4>();
-            def.Mesh.GetUVs(0, uv);
+            source.GetUVs(0, uv);
 
             var dst = new Vector3[src.Length];
             var dstN = new Vector3[srcN.Length];
-            for (int i = 0; i < src.Length; i++) dst[i] = mount + p + r * (src[i] - p);
+            for (int i = 0; i < src.Length; i++) dst[i] = offset + pivot + r * (src[i] - pivot);
             for (int i = 0; i < srcN.Length; i++) dstN[i] = r * srcN[i];
 
             var m = new Mesh { name = "PosedMotor", hideFlags = HideFlags.HideAndDontSave };
             m.SetVertices(dst);
             m.SetNormals(dstN);
             m.SetUVs(0, uv);
-            m.SetTriangles(def.Mesh.triangles, 0);
+            m.SetTriangles(source.triangles, 0);
             return m;
         }
 
@@ -190,8 +224,10 @@ namespace HiddenHarbours.Tests.RigBaking
         /// the rig's own <c>renderMotor</c> at the UNCORRUPTED pose.
         /// </summary>
         static Verdict Sweep(IRigScriptHost host, RigMeshData data, HullPropMeshDef def,
-                             in MotorCase c, string rigGlobal, float steerError, float[] tilts)
+                             in MotorCase c, string rigGlobal, float steerError,
+                             IEnumerable<(float position, float tilt)> poseSet)
         {
+            var poseList = new List<(float position, float tilt)>(poseSet);
             int[] partners = RigMeshExtractor.FindReverseDuplicatePartners(data);
             bool anyTwins = false;
             for (int i = 0; i < partners.Length; i++) if (partners[i] >= 0) { anyTwins = true; break; }
@@ -203,8 +239,7 @@ namespace HiddenHarbours.Tests.RigBaking
             string where = "nowhere";
 
             for (int dir = 0; dir < 8; dir++)
-            foreach (float position in SteerPositions)
-            foreach (float tilt in tilts)
+            foreach ((float position, float tilt) in poseList)
             foreach (float mount in c.Mounts)
             {
                 float steer = OutboardMotorMath.SteerDegreesForPosition(position, SteerColumns, maxSteer);
@@ -289,7 +324,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 RigMeshData data = Extract(host, p);
 
-                Verdict v = Sweep(host, data, def, c, p.GlobalName, steerError: 0f, tilts: Tilts);
+                Verdict v = Sweep(host, data, def, c, p.GlobalName, steerError: 0f, poseSet: Poses());
                 report.AppendLine($"  {c.Label}: {v}");
 
                 Assert.AreEqual(0, v.Silhouette,
@@ -322,11 +357,21 @@ namespace HiddenHarbours.Tests.RigBaking
         /// assertions below are that <b>zero error is the only clean point</b> and that the first
         /// non-zero rung already fails the acceptance outright.</para>
         ///
-        /// <para>⚠️ An outboard is a COMPACT part — its longest lever from the swivel is well under a
-        /// metre, against the dory oar's 2.3 m — so do not expect the oar's half-degree in the
-        /// SILHOUETTE channel. The sensitive channel here is shading: rotating the whole engine turns
-        /// every facet normal, which walks whole panels a ramp step and shows up as large connected
-        /// clusters long before the outline visibly moves.</para>
+        /// <para><b>MEASURED</b>, sport outboard, 24 poses per rung (8 headings × 3 steers),
+        /// steer error → (silhouette differences, worst colour cluster):</para>
+        /// <code>
+        ///   0.00° → (  0,  0)   ← the only clean point
+        ///   0.25° → ( 34, 17)
+        ///   0.50° → ( 54, 17)
+        ///   1.00° → ( 94, 17)
+        ///   2.00° → (233, 29)
+        ///   4.00° → (468, 34)
+        /// </code>
+        /// <para><b>The fixture resolves a QUARTER of a degree of swivel</b>, on both channels at once
+        /// — which was not the expected answer. An outboard is a compact part (its longest lever from
+        /// the swivel is well under a metre, against the dory oar's 2.3 m), so the silhouette was the
+        /// channel in doubt; at 0.25° it already moves 34 pixels, because a sub-pixel shift still
+        /// flips the pixels the outline lands on.</para>
         /// </summary>
         [Test]
         public void ASteerError_IsCaught_ProvingTheFixtureResolvesTheSwivel()
@@ -335,7 +380,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // full set would cost minutes to say the same thing.
             FleetProp p = HullPropFleet.Get("skiffMotorSport");
             HullPropMeshDef def = Load(p);
-            float[] tiltsForCurve = { 0f };
+            var posesForCurve = new[] { (0f, 0f), (2.5f, 0f), (8f, 0f) };
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = Extract(host, p);
@@ -347,7 +392,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             for (int i = 0; i < errors.Length; i++)
             {
-                verdicts[i] = Sweep(host, data, def, c, p.GlobalName, errors[i], tiltsForCurve);
+                verdicts[i] = Sweep(host, data, def, c, p.GlobalName, errors[i], posesForCurve);
                 curve.AppendLine($"  {errors[i],5:F2}° → {verdicts[i].Silhouette,6} silhouette, " +
                                  $"worst cluster {verdicts[i].WorstCluster,6}, " +
                                  $"{verdicts[i].Differing,7}/{verdicts[i].Inked} px " +
@@ -590,6 +635,27 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.AreEqual((float)host.EvaluateNumber($"{global}.MOTOR.pivot.x"), def.PivotPx.x, 1e-3f,
                     $"{p.Label}: cell pivot x.");
                 Assert.AreEqual(data.PxPerMetre, def.PxPerMetre, $"{p.Label}: px/metre.");
+
+                // ⚠️ An outboard is NOT one rigid body: the clamp bracket is bolted to the transom
+                // and the engine swivels on it. Both rigs build it through the identity placement,
+                // and the bake finds that out by building the face list at two poses and keeping the
+                // faces that did not move. If this ever comes back null the split silently stopped
+                // happening, and the bracket would ride round with the cowl — invisible dead ahead
+                // and worst at hard-over, which is the failure most likely to be waved through.
+                Assert.IsNotNull(def.FixedMesh,
+                    $"{p.Label}: the clamp bracket is fixed to the transom and must be baked as the " +
+                    "fitting's non-articulating half.");
+                Assert.Greater(def.FixedMesh.vertexCount, 0, $"{p.Label}: the bracket has no geometry.");
+
+                int fixedVerts = 0, movingVerts = 0;
+                foreach (RigFace f in data.Faces)
+                    if (f.FixedInPose) fixedVerts += f.V.Length; else movingVerts += f.V.Length;
+
+                Assert.AreEqual(fixedVerts, def.FixedMesh.vertexCount,
+                    $"{p.Label}: the committed bracket does not carry the faces a fresh extraction " +
+                    $"measures as pose-fixed ({data.FixedFaceCount} of {data.Faces.Count}).");
+                Assert.AreEqual(movingVerts, def.Mesh.vertexCount,
+                    $"{p.Label}: the swivelling half does not carry the rest.");
             }
         }
     }
