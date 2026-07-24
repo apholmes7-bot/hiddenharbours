@@ -74,13 +74,10 @@ namespace HiddenHarbours.Tests.EditMode
             // phase 4 / phase 5
             "visual.lobster_boat_iso",
             "visual.side_dragger_iso",
-            // phase 6 — converted from baked sheets, compasses deliberately kept (the V-key A/B)
-            "visual.dory_iso",
-            "visual.punt_iso_basic",
-            "visual.punt_iso_upgraded",
-            "visual.console_skiff",
-            "visual.sport_skiff_single",
-            "visual.sport_skiff_twin",
+            // phase 6 — converted from a baked sheet, compass deliberately kept (the V-key A/B).
+            // She is the ONLY sheeted hull phase 6 could flip: the dory (oars) and the punt/console/
+            // sport skiffs (outboards) wear sprite overlays that are baked per facing cell and cannot
+            // ride a rotating mesh, so their meshes are baked and wired but their variant stays Sprite.
             "visual.cape_islander_iso",
             // phase 6 — mesh-only: never had a sheet, and none was ever possible
             "visual.stern_trawler_iso",

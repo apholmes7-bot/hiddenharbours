@@ -251,8 +251,10 @@ namespace HiddenHarbours.Tests.RigBaking
         // ---- 4. the wiring is honest ----------------------------------------------------------
 
         [Test]
-        public void EveryFleetVisual_PointsAtItsMeshInMeshMode()
+        public void EveryFleetVisual_PointsAtItsOwnBakedMesh()
         {
+            // Wiring is unconditional — every hull in the fleet carries her mesh, whether or not she is
+            // presented as one. See OverlayBlockedReason.
             foreach (var hull in HullMeshFleet.Hulls)
             {
                 var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
@@ -260,8 +262,6 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(path);
                     Assert.IsNotNull(visual, $"{hull.Key}: no visual at {path}.");
-                    Assert.AreEqual(BoatHullVariant.Mesh, visual.Variant,
-                        $"{visual.Id} is not in mesh mode — the owner ruled the whole fleet goes mesh.");
                     Assert.AreSame(def, visual.HullMesh,
                         $"{visual.Id} points at the wrong hull mesh.");
                     Assert.AreEqual(def.ElevationDeg, visual.ArtBakeElevationDegrees, 1e-3f,
@@ -269,6 +269,46 @@ namespace HiddenHarbours.Tests.RigBaking
                         "than the mesh is projected through.");
                 }
             }
+        }
+
+        /// <summary>
+        /// <b>The rollout is variant-gated, and the gate is the sprite overlays.</b> A hull whose oars
+        /// or outboard are baked per facing cell must stay on the sprite compass, because
+        /// <c>BoatHullSkinner.ApplyMesh</c> drops those overlays — a mesh rotates continuously and
+        /// there is no cell to look up. This is not a caution: flipping them turned four
+        /// <c>PilotableFleetPlayTests</c> red with "the dory has her oars: expected not null".
+        /// </summary>
+        [Test]
+        public void OnlyOverlayFreeHulls_ArePresentedAsMesh()
+        {
+            foreach (var hull in HullMeshFleet.Hulls)
+                foreach (string path in hull.VisualAssetPaths)
+                {
+                    var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(path);
+                    Assert.IsNotNull(visual, path);
+
+                    if (hull.FlipsToMesh)
+                    {
+                        Assert.AreEqual(BoatHullVariant.Mesh, visual.Variant,
+                            $"{visual.Id} wears no sprite overlay and should be presented as a mesh — " +
+                            "the owner ruled the fleet goes mesh wherever it can.");
+                        Assert.IsFalse(visual.HasOarSheets() || visual.HasMotor(),
+                            $"{visual.Id} is flipped to Mesh but binds oar/motor sheets, which the mesh " +
+                            "path silently drops. Give her an OverlayBlockedReason in HullMeshFleet.");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(BoatHullVariant.Sprite, visual.Variant,
+                            $"{visual.Id} is blocked ({hull.OverlayBlockedReason}) and must stay a " +
+                            "sprite hull until that overlay has a mesh of its own.");
+                        Assert.IsTrue(visual.HasOarSheets() || visual.HasMotor(),
+                            $"{visual.Id} carries an OverlayBlockedReason but binds no oar or motor " +
+                            "sheets, so the block is stale — flip her.");
+                        Assert.IsTrue(visual.HasHullMesh(),
+                            $"{visual.Id} is blocked, but her mesh must still be baked and wired so the " +
+                            "flip is one field later.");
+                    }
+                }
         }
 
         /// <summary>

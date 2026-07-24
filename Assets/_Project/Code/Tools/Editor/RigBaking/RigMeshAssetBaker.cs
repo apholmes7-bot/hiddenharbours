@@ -184,7 +184,7 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int v = 0; v < hull.VisualAssetPaths.Length; v++)
             {
                 string path = hull.VisualAssetPaths[v];
-                if (hull.HasBakedSheet) WireSheetedVisual(path, def);
+                if (hull.HasBakedSheet) WireSheetedVisual(path, def, hull.OverlayBlockedReason);
                 else EnsureMeshOnlyVisual(path, hull.VisualIds[v], def);
             }
         }
@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// Visual Defs does not know these two fields, so it cannot undo them, and nothing the owner
         /// changes in the Inspector is stomped by a re-bake.</para>
         /// </summary>
-        static void WireSheetedVisual(string assetPath, HullMeshDef def)
+        static void WireSheetedVisual(string assetPath, HullMeshDef def, string overlayBlockedReason)
         {
             var visual = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>(assetPath);
             if (visual == null)
@@ -210,12 +210,22 @@ namespace HiddenHarbours.Tools.RigBaking
                 return;
             }
 
+            // The mesh is wired either way. What the block decides is only whether she is PRESENTED as
+            // one — and wiring without flipping is inert, because ShouldPresentMesh gates on the
+            // variant alone. That leaves the eventual flip a one-field change.
             visual.HullMesh = def;
-            visual.Variant = HiddenHarbours.Boats.BoatHullVariant.Mesh;
+            if (overlayBlockedReason == null)
+                visual.Variant = HiddenHarbours.Boats.BoatHullVariant.Mesh;
+
             EditorUtility.SetDirty(visual);
             AssetDatabase.SaveAssets();
-            Debug.Log($"[rig-mesh] {visual.Id}: Variant → Mesh, HullMesh → {def.Id}. Her sprite " +
-                      "compass stays wired — that is the A/B comparison (V at the helm).");
+
+            Debug.Log(overlayBlockedReason == null
+                ? $"[rig-mesh] {visual.Id}: Variant → Mesh, HullMesh → {def.Id}. Her sprite compass " +
+                  "stays wired — that is the A/B comparison (V at the helm)."
+                : $"[rig-mesh] {visual.Id}: HullMesh → {def.Id}, but Variant STAYS Sprite — " +
+                  $"{overlayBlockedReason}. The mesh is baked, proven and wired; flipping her is one " +
+                  "field once that overlay has a mesh of its own.");
         }
 
         /// <summary>

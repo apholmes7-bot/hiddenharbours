@@ -64,9 +64,30 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Human-readable, for log lines and the owner-facing report. Never parsed.</summary>
         public readonly string Label;
 
+        /// <summary>
+        /// Non-null when this hull's mesh is baked and wired but the visual must STAY on the sprite
+        /// variant, with the reason. Null means the bake flips her.
+        ///
+        /// <para><b>Why a hull can be mesh-ready and not mesh.</b> Some hulls wear sprite overlays —
+        /// the dory's oars, the outboards on the punt and the two skiffs — and those are baked PER
+        /// FACING CELL. A mesh hull rotates continuously, so there is no cell to look up and
+        /// <c>BoatHullSkinner.ApplyMesh</c> drops them (deliberately, with a warning). Flipping these
+        /// hulls would therefore mean a dory that cannot row, which is a visible regression and not a
+        /// trade worth making for a smoother hull.</para>
+        ///
+        /// <para>The mesh is still baked and still wired into <c>HullMesh</c>, because the wiring is
+        /// inert while the variant is Sprite (<c>ShouldPresentMesh</c> gates on the variant alone) and
+        /// it makes the eventual flip a one-field change once the overlays have meshes of their own.
+        /// PROVEN, not assumed: <c>PilotableFleetPlayTests</c> caught this the moment the flip went in
+        /// — four failures, "the dory has her oars: expected not null, but was null".</para>
+        /// </summary>
+        public readonly string OverlayBlockedReason;
+
+        public bool FlipsToMesh => OverlayBlockedReason == null;
+
         public FleetHull(string key, string scriptPath, string globalName, string meshAssetPath,
                          string meshId, string[] visualAssetPaths, string[] visualIds,
-                         bool hasBakedSheet, string label)
+                         bool hasBakedSheet, string label, string overlayBlockedReason = null)
         {
             Key = key;
             ScriptPath = scriptPath;
@@ -77,6 +98,7 @@ namespace HiddenHarbours.Tools.RigBaking
             VisualIds = visualIds;
             HasBakedSheet = hasBakedSheet;
             Label = label;
+            OverlayBlockedReason = overlayBlockedReason;
         }
     }
 
@@ -109,11 +131,17 @@ namespace HiddenHarbours.Tools.RigBaking
         const string Meshes = "Assets/_Project/Data/Boats/HullMeshes";
         const string Visuals = "Assets/_Project/Data/Boats/Visuals";
 
+        /// <summary>The overlay that keeps a hull on sprites — see <see cref="FleetHull.OverlayBlockedReason"/>.</summary>
+        const string Oars = "her OARS are baked per facing cell and cannot ride a continuously-rotating " +
+                            "mesh; flipping her would mean a dory that does not row";
+        const string Outboard = "her OUTBOARD is baked per facing cell and cannot ride a " +
+                                "continuously-rotating mesh; flipping her would lose the engine";
+
         static FleetHull Sheeted(string key, string rig, string global, string name, string snake,
-                                 string label, params string[] visualAssets) =>
+                                 string label, string overlayBlocked, params string[] visualAssets) =>
             new FleetHull(key, $"{Rigs}/{rig}", global, $"{Meshes}/{name}HullMesh.asset",
                           $"hullmesh.{snake}", visualAssets.Select(v => $"{Visuals}/{v}.asset").ToArray(),
-                          Array.Empty<string>(), hasBakedSheet: true, label);
+                          Array.Empty<string>(), hasBakedSheet: true, label, overlayBlocked);
 
         static FleetHull MeshOnly(string key, string rig, string global, string name, string snake,
                                   string label) =>
@@ -136,29 +164,31 @@ namespace HiddenHarbours.Tools.RigBaking
             // visible by eye rather than by test.
 
             Sheeted("dory", "doryIsoRig.js", "DoryIso", "DoryIso", "dory_iso",
-                    "dory (T0, ~4.3 m — the boat he starts in)", "DoryIso"),
+                    "dory (T0, ~4.3 m — the boat he starts in)", Oars, "DoryIso"),
 
             // ONE hull, TWO visuals: basic and upgraded differ by engine, not by planking.
             Sheeted("punt", "puntIsoRig.js", "PuntIso", "PuntIso", "punt_iso",
                     "punt (T1, ~5.2 m — the golden master, and a real purchasable boat)",
-                    "PuntIsoBasic", "PuntIsoUpgraded"),
+                    Outboard, "PuntIsoBasic", "PuntIsoUpgraded"),
 
             Sheeted("consoleSkiff", "consoleIsoRig.js", "ConsoleIso", "ConsoleIso", "console_iso",
-                    "console skiff (~7.0 m, aluminium)", "ConsoleSkiff"),
+                    "console skiff (~7.0 m, aluminium)", Outboard, "ConsoleSkiff"),
 
             // Likewise one hull, two visuals: the twin differs by a second outboard.
             Sheeted("sportSkiff", "sportSkiffIsoRig.js", "SportSkiffIso", "SportSkiffIso",
                     "sport_skiff_iso", "sport skiff (~7.0 m, glass — single and twin)",
-                    "SportSkiffSingle", "SportSkiffTwin"),
+                    Outboard, "SportSkiffSingle", "SportSkiffTwin"),
 
+            // The biggest hull that wears NO sprite overlay, so she is the one sheeted boat phase 6
+            // can actually flip — and therefore the owner's second A/B, after the lobster.
             Sheeted("capeIslander", "capeIslanderIsoRig.js", "CapeIslanderIso", "CapeIslanderIso",
                     "cape_islander_iso", "Cape Islander (T2, ~12.8 m — the hub workboat)",
-                    "CapeIslanderIso"),
+                    null, "CapeIslanderIso"),
 
             // Phase 4's hull: the first mesh end-to-end, and the one the owner A/B'd.
             Sheeted("lobsterBoat", "lobsterBoatIsoRig.js", "LobsterBoatIso", "LobsterBoatIso",
                     "lobster_boat_iso", "lobster boat (T3, ~12.0 m — the first mesh hull)",
-                    "LobsterBoatIso"),
+                    null, "LobsterBoatIso"),
 
             // ---- mesh-only: no sheet, and none was ever possible ---------------------------------
             // These are the hulls ADR 0022 was written for. Sheet-equivalent sizes are reported by

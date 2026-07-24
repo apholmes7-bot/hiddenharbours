@@ -196,12 +196,25 @@ Suggested phasing, each independently verifiable:
    on her rig too. `docs/art/rigs/**` was not touched.
 6. **The rest of the fleet — DONE (2026-07-23).** The owner's verdict on the lobster A/B (2026-07-22) was
    **"much better as a mesh — all boats will need to be a mesh"**, and phase 5 was the proof the path scales
-   to a second hull without the baker, the shader or the seam changing. Phase 6 took it to **all eleven**.
+   to a second hull without the baker, the shader or the seam changing. Phase 6 **baked all eleven** and
+   **presents seven**; the gap is the point and is explained below.
 
    The per-hull menu items became a per-hull TABLE (`HullMeshFleet`), because eleven hand-written bake
    entry points is not a fleet. Two families, and the difference is the sheet rather than the size: six
    hulls convert from baked 32-facing art and **keep their sprite compass** (that is the owner's V-key A/B,
    the only check on the mesh path that works by eye), five are mesh-only.
+
+   ⚠️ **The rollout is variant-gated, and the gate is the sprite overlays.** Baking a hull and PRESENTING
+   her as one are separate decisions. Five hulls (six visuals) wear overlays that are baked per facing
+   cell — the dory's oars, the outboards on the punt, the console skiff and the sport skiff — and
+   `BoatHullSkinner.ApplyMesh` drops them by design, because a mesh rotates continuously and there is no
+   cell to look up. So their meshes are baked, measured and wired into `HullMesh`, but their `Variant`
+   stays `Sprite`. That wiring is inert (`ShouldPresentMesh` gates on the variant alone), so the flip is a
+   one-field change the day those overlays have meshes of their own — **the natural phase 7**. This was
+   not foresight: flipping them turned four `PilotableFleetPlayTests` red with "the dory has her oars:
+   expected not null, but was null", which is exactly the visible regression the owner would have hit on
+   his first press of F. The Cape Islander is the only sheeted hull that wears no overlay, and so the only
+   one phase 6 could flip — which makes her the owner's second A/B after the lobster.
 
    **Measured, whole fleet, against the phase-2 CPU oracle** (worst whole-cell divergence over 8 headings,
    built mesh at f32 — the bar is 0.5%):
@@ -245,6 +258,12 @@ Suggested phasing, each independently verifiable:
 
    ⚠️ Open question 4 remains open and is now measured across the whole fleet: the shim fires for all five
    of `F, MATS, GAIN, BIAS, LN` on **every** hull rig.
+
+7. **The overlays.** The dory's oars and the fleet's outboards are the last sprite art bolted to a hull,
+   and they are what holds five hulls on the sprite compass (above). They have rigs already
+   (`doryIsoRig.renderOars`, `skiffMotorRig.js`), so the path is the one this ADR has now run five times:
+   extract, build, bake, measure against the CPU oracle. Doing it flips five hulls with a one-field edit
+   each and finishes the owner's mandate. ← next
 
 ## Alternatives considered
 
