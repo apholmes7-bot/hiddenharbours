@@ -684,11 +684,8 @@ edit them via their PNGs or ask the art director for a parametric rig.
   preset of one building.
 - The cell is oversized on purpose (it must hold the `cannery`/`fishPlant` presets), so a net shed is a
   small object in a 37 m × 36 m frame. For comparison the 12.9 m Cape Islander bakes at 456 × 420.
-- **`wharfBuildingRig.js` is already in the repo** and is the source of truth. Under ADR 0021 the right
-  path is an **in-engine bake** via `RigBaker`, which already splits pages under the 4096 cap and
-  measures the azimuth convention from rendered pixels rather than trusting a label — and this rig is in
-  the README's *inferred* counter-clockwise group, so it has never been measured. Registering it in
-  `RigCatalog` is its own task; importing a 9600 px reference PNG is not a substitute for it.
+- **`wharfBuildingRig.js` is already in the repo** and is the source of truth. ✅ **The in-engine bake
+  now exists** — see the next section.
 
 ### Also in this change: `MiniJson` moved down an assembly
 
@@ -700,3 +697,81 @@ two callers updated. The alternative was a second, worse JSON parser thirty line
 
 **WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, prefab or
 scene references these yet.
+
+
+---
+
+## The BUILDING bake — houses + wharf buildings (`BuildingRigBaker`)
+
+Both building rigs (`houseIsoRig` → the clapboard houses, `wharfBuildingRig` → net sheds, storage barns
+and fish plants) are baked **in-engine** under ADR 0021, not hand-exported. Menu:
+**Hidden Harbours ▸ Art ▸ Bake Buildings (houses + wharf)**. Twelve presets — five house, seven wharf.
+
+### Why they needed their own baker rather than `RigBaker`
+
+**The cell is sized for the largest possible build.** The house cell is 992×1060 and the wharf-building
+cell is 1200×1160, because the latter must hold the `cannery`. A net shed drawn in that cell is a small
+object in a 37 m × 36 m frame. Eight facings uncropped is 9600 px wide — which is exactly the reference
+sheet the kit shipped, and exactly why that PNG was left in `docs/` and never imported.
+
+So **the bake tight-crops**, and that is not an optimisation — it is what makes a bake possible:
+
+| | uncropped | cropped |
+|---|---|---|
+| Widest legal grid | 3 cols × 3 rows | fits far wider |
+| Sheet | 3600 × 3480 | a few hundred px per cell |
+| Texture memory | **~50 MB per preset** | a fraction of it |
+
+**One crop rect for all eight facings, not one per cell.** A grid slice needs a uniform cell — but the
+reason that actually bites is the **pivot**: it must be identical across facings or the building shifts
+as it turns (the same rule the boat kits state as "so a heading swap never shifts the boat"). The crop is
+therefore the *union* of all eight silhouettes, and the pivot moves by exactly the crop origin.
+
+**The pivot is DATA, not a constant.** Every other sheet in this repo pins its pivot with a named const
+(`DoryWaterline`, `PuntOrigin`) because the kit fixes the cell. Here the cell depends on the preset — a
+cannery crops differently from a shack — so each bake writes a **sidecar JSON** beside the PNG carrying
+the cropped cell size, the cropped pivot, the crop origin, the measured convention, the footprint, and
+the per-facing overlay anchors (door, ridge, chimney/stack tops) already in cropped-cell pixels.
+
+### ⚠️ The preset trap — `{preset:'netShed'}` silently renders the wrong building
+
+The obvious call looks right and is wrong: **neither rig's `resolve()` reads a `preset` key at all.** It
+reads `type`/`era`, `body`, `siding`, `size`… so passing the name falls through to the *default* build
+with no error and no warning — you would get seven identical sheds under seven different names, and the
+only way to notice is to line all seven up. `PRESETS` is a data table meant to be **spread** into the
+options, which is what the baker does (`Object.assign({}, Rig.PRESETS['netShed'])`).
+
+`AssertPresetApplies` is the tripwire: it renders one facing with the preset and once with `{}` and
+refuses if the bytes are identical. It cannot prove every field applied, but it catches the
+whole-preset-ignored case, which is the one with teeth.
+
+### The azimuth probe reads the DOOR, not a bow
+
+`RigAzimuthProbe` works by PCA-ing a hull at a quarter turn and breaking the 180° ambiguity with a
+bow-taper test — a boat is pointed at one end and blunt at the other. **A building has no bow.** Its
+silhouette at a quarter turn is nearly mirror-symmetric, so that probe would return noise dressed as a
+confident answer.
+
+`BuildingRigAzimuthProbe` reads the **door** instead. Both rigs put the main door on the `+Y` gable and
+expose it through `anchors(dir, opts).door`, already projected to screen pixels — and crucially
+`anchors()` calls the *same* `camBasis`/`projVert` that `render()` draws with, so it is not a
+declaration about where the door is, it is the arithmetic that puts it there. Cell 2 is labelled `'E'`;
+if its door lands left of the pivot, the labels are lying by −90° and the rig is counter-clockwise.
+
+Reading the rigs' projection by hand (`th = +dir·45°`, `xr = x·ct − y·stt`, door at `+Y`) predicts
+**counter-clockwise for both**, matching the README's inference — but that is a prediction, not a
+measurement. **Nothing is measured until the bake actually runs**, at which point it either agrees with
+the catalog or refuses.
+
+The probe additionally checks the rendered silhouette's width at two facings against the `Wd`/`Ln` the
+rig reports, at 32 px = 1 m, and **refuses** if they disagree — because the shared-projection argument
+only holds while `anchors()` and `render()` are resolving the same building.
+
+> **Stated plainly:** the handedness is *not* independently re-derived from pixels the way the punt's
+> byte-identical golden master was. There is no building feature as unambiguous as a bow taper. It rests
+> on the shared-projection argument above, guarded by the width check.
+
+### Output
+
+`Art/Sprites/Buildings/HouseIso_<preset>.png` + `.json`, and `WharfBuildingIso_<preset>.png` + `.json`.
+**Not committed until the owner runs the bake** — the sheets are generated, not authored.
