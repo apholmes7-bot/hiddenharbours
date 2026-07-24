@@ -16,6 +16,8 @@ MonoBehaviour:
   DisplayName: Haddock — Circler
   Strength: 0.5
   MovementPattern: 2
+  RoamRadiusScale: 1.15
+  HoldsDeep01: 0.4
   StaminaCadence:
     RunSeconds: 2.0
     SlackSeconds: 1.5
@@ -27,3 +29,5 @@ MonoBehaviour:
   runTensionPressure: 0.35
   counterSteerRelief: 0.45
   surfaceThreshold01: 0.5
+  lineGiveBackPerSec: 0.11
+  maxGiveBack01: 0.14

@@ -79,6 +79,9 @@ namespace HiddenHarbours.Tests.EditMode
             def.runTensionPressure = 0.3f;
             def.counterSteerRelief = 0.45f;
             def.surfaceThreshold01 = surfaceAt;
+            // Give-back OFF for the controller suite: these tests judge the fight's PLUMBING (phases,
+            // publishes, determinism), and the give-back's own behaviour is pinned in RodFightSimTests.
+            def.lineGiveBackPerSec = 0f;
             _spawned.Add(def);
             return def;
         }
@@ -247,8 +250,81 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(sawDeepOffsetMove,
                 "while she's DEEP the entry point must work around too — with no HUD that motion is the " +
                 "only thing telling the player which way she's running");
-            Assert.Less(deepSpread, surfaceSpread,
-                "…but a fish well down moves the surface entry LESS than one thrashing on top");
+            // She is FARTHER OUT while deep and NEARER once surfaced, because reeling walks her in
+            // (owner ask 2026-07-24). Note this deliberately replaced the opposite assertion: the
+            // published offset used to be pure roam, so a bigger deep excursion than surface one was a
+            // bug; now the offset also carries her DISTANCE, and closing that distance is the whole
+            // progress read. Her roam amplitudes are compared where they are still separable, in
+            // RodFightSimTests.DeepRoam_IsSmallerThanTheSurfaceRoam.
+            Assert.Greater(deepSpread, surfaceSpread,
+                "she must be hooked out at range and reeled in close — that closing gap IS the progress " +
+                "read that replaced the landing bar");
+        }
+
+        [Test]
+        public void ReelingVisiblyDragsHerIn_TheDiegeticLandingBar()
+        {
+            // With the HUD bars gone, the ONLY way to see how the fight is going is her closing the gap
+            // (owner ask 2026-07-24). Deleting the landing bar without this left no progress read at all.
+            var hold = new FakeHold();
+            var c = MakeController(hold, new[] { MakeFish("fish.v2", MakeRodFight(RodFightMovement.Circler)) }, 404);
+            AdvanceIntoRodFight(c);
+
+            float atHookup = new Vector2(c.State.FishOffsetX, c.State.FishOffsetY).magnitude;
+            Assert.Greater(atHookup, 0.5f, "she is hooked out at distance, not on top of the angler");
+
+            PlayCompetent(c);
+            Assert.AreEqual(FishingPhase.Landed, c.Phase, "the setup must actually win the fight");
+
+            // Walk the published trace: the closest she ever got must be far nearer than where she started.
+            float closest = float.MaxValue;
+            foreach (FishingState s in _published)
+            {
+                if (s.Phase != FishingPhase.FightDeep && s.Phase != FishingPhase.FightSurface) continue;
+                closest = Mathf.Min(closest, new Vector2(s.FishOffsetX, s.FishOffsetY).magnitude);
+            }
+            Assert.Less(closest, atHookup * 0.5f,
+                $"reeling must visibly drag her in — she was hooked at {atHookup:0.00} m and never got " +
+                $"closer than {closest:0.00} m. That gap closing IS the progress read now.");
+        }
+
+        [Test]
+        public void ThePublishedRunDirection_IsExactlyWhatTheLeanIsScoredAgainst()
+        {
+            // The readability contract (owner ask 2026-07-24: the world must say what to do). The player
+            // is scored on their lean against her run; the world draws that run. If the two are computed
+            // differently they drift apart and the player is punished for believing what they saw — which
+            // is exactly the bug the cast preview shipped with. So: while she runs, the published
+            // direction must be a real unit vector, and leaning against THE PUBLISHED ONE must be
+            // measurably better for the line than leaning with it.
+            var hold = new FakeHold();
+            var c = MakeController(hold, new[] { MakeFish("fish.v2", MakeRodFight(RodFightMovement.Darter)) }, 606);
+            AdvanceIntoRodFight(c);
+
+            int sawRun = 0, sawSlack = 0;
+            for (int i = 0; i < 300 && !IsResult(c.Phase); i++)
+            {
+                c.Tick(0.02f, false);
+                var s = c.State;
+                var run = new Vector2(s.FishRunDirX, s.FishRunDirY);
+                if (s.SlackWindowOpen) { Assert.AreEqual(Vector2.zero, run, "nothing to lean against in the slack"); sawSlack++; }
+                else if (run != Vector2.zero) { Assert.AreEqual(1f, run.magnitude, 1e-3f, "a unit direction"); sawRun++; }
+            }
+            Assert.Greater(sawRun, 0, "she must run");
+            Assert.Greater(sawSlack, 0, "and she must give");
+
+            // Now prove the published vector is the ACTIONABLE one, through the real input path.
+            var a = new RodFightSim(MakeRodFight(RodFightMovement.Circler), new System.Random(5));
+            var b = new RodFightSim(MakeRodFight(RodFightMovement.Circler), new System.Random(5));
+            for (int i = 0; i < 300; i++)
+            {
+                Vector2 shown = a.DartDir;                       // what the world draws
+                a.Tick(0.02f, false, RodFightMotionMath.SteerAlignment(-shown, a.DartDir, 0.1f));  // lean against it
+                b.Tick(0.02f, false, RodFightMotionMath.SteerAlignment(shown, b.DartDir, 0.1f));   // lean with it
+            }
+            Assert.Less(a.Tension01, b.Tension01,
+                "leaning against the direction the WORLD SHOWS must be the right move — if it isn't, the " +
+                "player is being taught a lie by the only instrument they have");
         }
 
         // ---- determinism through the whole controller ---------------------------------------

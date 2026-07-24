@@ -16,6 +16,8 @@ MonoBehaviour:
   DisplayName: Pollock — Thrasher
   Strength: 0.55
   MovementPattern: 3
+  RoamRadiusScale: 0.85
+  HoldsDeep01: 0.5
   StaminaCadence:
     RunSeconds: 1.6
     SlackSeconds: 1.1
@@ -27,3 +29,5 @@ MonoBehaviour:
   runTensionPressure: 0.38
   counterSteerRelief: 0.5
   surfaceThreshold01: 0.45
+  lineGiveBackPerSec: 0.13
+  maxGiveBack01: 0.15

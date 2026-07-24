@@ -178,8 +178,8 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// Signed <b>landing</b> gain per second (progress to aboard at 1). The caller does
-        /// <c>Landing01 = clamp01(Landing01 + rate · dt)</c>; a full gauge lands the fish. Non-negative in this
-        /// model (landing never slips — the crossing to Surface is one-way).
+        /// <c>Landing01 = clamp01(Landing01 + rate · dt)</c>; a full gauge lands the fish. This 5-arg
+        /// overload is the progress-only model (never negative); the 6-arg one below adds the give-back.
         ///
         /// <para><b>You land her by REELING WHILE YOU LEAN ON HER</b> (owner's call 2026-07-23). Nothing but
         /// the reel wins line — a lean on its own, however perfect, never lands a fish; it only takes the
@@ -208,8 +208,41 @@ namespace HiddenHarbours.Fishing
         /// stay below <c>tensionRisePerSec</c> (invariant 1).</param>
         public static float LandingRatePerSec(bool reeling, float fishEffort01, float steerAlignment,
             RodFightPhase phase, float landingFillPerSec)
+            => LandingRatePerSec(reeling, fishEffort01, steerAlignment, phase, landingFillPerSec,
+                                 lineGiveBackPerSec: 0f);
+
+        /// <summary>
+        /// The full landing rate, including the <b>give-back</b> — she can now take a little of your line
+        /// back (owner's ruling 2026-07-23: "only a little"). Signed, so this is the first version that can
+        /// return a NEGATIVE rate.
+        ///
+        /// <para><b>When she takes line.</b> Only while you are EASING OFF (not reeling) and she is actually
+        /// running, at <c>lineGiveBackPerSec · fishEffort01 · (1 − counterLean)</c>. So:</para>
+        /// <list type="bullet">
+        ///   <item><b>Easing through her run</b> — the safe play for your line — now costs you a little
+        ///   ground. That is the point: safety has a price, so the fight has a shape.</item>
+        ///   <item><b>Leaning against her while you ease</b> holds her: at a full counter-lean she takes
+        ///   nothing at all. The lean is now doubly worth it (it also makes the reel pay — see above).</item>
+        ///   <item><b>In her slack windows she takes nothing</b>, whatever you do — she isn't pulling.</item>
+        /// </list>
+        ///
+        /// <para><b>The "only a little" cap is NOT here.</b> This function is a pure rate; the promise that
+        /// you always keep most of what you won is a stateful high-water floor, owned by
+        /// <see cref="RodFightSim"/> (<c>LandingFloor01</c>). Keeping them apart means the rate stays a pure
+        /// function and the cap stays testable on its own.</para>
+        /// </summary>
+        /// <param name="lineGiveBackPerSec">Landing lost per second while easing off through her FULL run
+        /// with no lean (≥ 0; 0 restores the progress-only model exactly, bit-for-bit).</param>
+        public static float LandingRatePerSec(bool reeling, float fishEffort01, float steerAlignment,
+            RodFightPhase phase, float landingFillPerSec, float lineGiveBackPerSec)
         {
-            if (!reeling) return 0f;   // line only comes in on the REEL — the lean alone never lands her
+            if (!reeling)
+            {
+                // Easing off: she takes back what you are not holding against her.
+                float runEffort = Mathf.Clamp01(Safe(fishEffort01));
+                float held = Mathf.Clamp01(-Mathf.Clamp(Safe(steerAlignment), -1f, 1f)); // the counter-lean
+                return -Mathf.Max(0f, Safe(lineGiveBackPerSec)) * runEffort * (1f - held);
+            }
 
             float effort = Mathf.Clamp01(Safe(fishEffort01));
             float fill = Mathf.Max(0f, Safe(landingFillPerSec));
@@ -302,6 +335,27 @@ namespace HiddenHarbours.Fishing
         public static bool MaintainOutbleedsTheRunAtTheWorstStance(
             float runTensionPressure, float deckAngleFactor, float tensionFallPerSec)
             => Safe(runTensionPressure) + Mathf.Max(0f, Safe(deckAngleFactor)) < Safe(tensionFallPerSec);
+
+        /// <summary>
+        /// Invariant 3 — <b>the fight always goes somewhere</b> (the guard the give-back needs; owner's
+        /// ruling 2026-07-23, "only a little"). True iff ONE clean slack-window reel wins more than she can
+        /// ever drag back: <c>landingFillPerSec · slackSeconds &gt; maxGiveBack01</c>.
+        ///
+        /// <para><b>Why this is the right test.</b> Landing can now fall, so the naive worry is a fish that
+        /// takes line faster than you win it — an unlandable fish, the exact opposite of cozy. But she can
+        /// never pull you below <c>highWater − maxGiveBack01</c>, so the fight ratchets: every slack window
+        /// lifts the high-water mark, and the following run can only claw back to the floor under it. Net
+        /// progress per run↔slack cycle is therefore <c>(fill · slack) − maxGiveBack01</c>, and this
+        /// predicate is exactly "that is positive". The give-back RATE never enters it — she can take line
+        /// as fast as you like; the cap is what keeps the fight winnable.</para>
+        ///
+        /// <para>Author against the JITTERED-SHORT slack window, not the nominal one: a species with
+        /// <c>Jitter01</c> = 0.3 can roll a slack 30% short, and the guarantee must hold there too. The
+        /// content test sweeps the shipped Defs at their worst roll.</para>
+        /// </summary>
+        public static bool ProgressOutrunsTheGiveBack(float landingFillPerSec, float slackSeconds,
+                                                      float maxGiveBack01)
+            => Safe(landingFillPerSec) * Mathf.Max(0f, Safe(slackSeconds)) > Safe(maxGiveBack01);
 
         // ---- guards -----------------------------------------------------------------------------
 
