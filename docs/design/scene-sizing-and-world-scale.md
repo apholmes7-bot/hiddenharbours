@@ -120,7 +120,7 @@ Regions and their gating boats come from [`world-and-regions.md`](world-and-regi
 | Region | Scene extent | Gating mode | Cross long axis | Screens | Note |
 |---|---|---|---|---|---|
 | **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~450 × 260 m inside it. |
-| **St Peters Bar** *(new)* | **400 × 180 m** | on foot | **~2:13** walk / 1:13 sprint | 25 | §5.2. Sized by the tide window, not by comfort. |
+| **St Peters Bar** *(new)* | **640 × 200 m** | on foot | **~3:20** walk / 1:49 sprint | 40 | §5.2. Sized by the tide window (6:43 at spring), not by comfort. |
 | **Port Greywick** | 420 × 320 m | on foot | ~2:20 | 26 | A town is a foot region with a harbour edge. |
 | **Coddle Cove** | 520 × 400 m | dory | ~2:53 | 21 | Home water: small, sheltered, legible in one look. |
 | **The Sunkers** | 700 × 700 m | punt/skiff | ~5:02 punt | 23 | A reef field needs room to pick a line through it. |
@@ -180,27 +180,44 @@ inventory the size has to hold):
 **The sandbar leaves the WEST end.** This flips today's greybox, where the island sits at x = −40 and
 the bar runs *east* to x = +34. The island moves east of centre and the bar exits west.
 
-### 5.2 The sandbar as its own scene — and why it's only 400 m
+### 5.2 The sandbar as its own scene — sized by the tide, and the tide is generous
 
 The owner asked for the bar to be a whole scene. It should be. But its length is not a comfort
-decision — **it is set by the tide**, and the arithmetic is unforgiving:
+decision — **it is set by the tide window**, so here is that window computed from the live config
+rather than estimated (`GameConfig`: `SecondsPerDay 1200`, `TidalPeriodHours 12.4206`,
+`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m):
 
-- The clock runs **1200 s per game day**, so one game hour = 50 real seconds.
-- A semi-diurnal tide cycle (~12.4 h) is therefore **~10.3 real minutes**.
-- The bar is exposed for roughly 40% of that: **a window of about 4 real minutes.**
+- One game hour = **50 real seconds**, so a full tide cycle = 12.42 × 50 = **10 min 21 s real**.
+- At **spring**, the bar is dry whenever the water is under its 1.6 m crest — i.e. `sin θ < 0.457`,
+  which is **65% of the cycle**. **Exposed ≈ 6 min 43 s; flooded ≈ 3 min 38 s.**
+- At **neap**, amplitude falls to 0.45 × 3.5 = **1.575 m — below the 1.6 m crest. The bar never
+  floods at all.**
 
-A 600 m bar is a 3:20 walk each way — you could go, but you could never come back, and "cut off until
-the next low water" stops being a lesson and becomes the only outcome. At **400 m** the walk is
-**~2:13 each way**, so a prompt round trip fits inside one window and dawdling strands you. That is
-exactly the teeth canon asks for: *lost time, never worse* (P5 at its kindest).
+**Recommendation: a 640 × 200 m corridor with a ~600 m bar path.** That is **3:20 on foot each way**
+(1:49 sprinting), so a round trip is **6:40 against a 6:43 window** — you make it if you go straight
+there and back, and you are stranded the moment you linger. That is precisely the teeth canon asks
+for, and it lands *because* the window is nearly seven minutes, not four.
 
-The scene is a **corridor, 400 × 180 m**: bar crest ~30–50 m of walkable width, narrowing as the tide
-falls and rises, with the deeper **channel** cut across it (boat-crossable at higher water — the same
+> **An earlier draft of this section sized the bar at 400 m on an estimated ~4-minute window.** The
+> real window is 65% longer, which is the difference between a bar you can always walk back across and
+> one you have to judge. Worth recording as a reminder that this scene's length and the tide constants
+> are the same decision wearing two hats.
+
+The scene is a corridor: bar crest ~30–50 m of walkable width, narrowing as the tide falls and rises,
+with the deeper **channel** cut across it (boat-crossable at higher water) — the same
 inverse-over-the-tide relationship the greybox already models in `StPetersBuilder`'s
-`SandbarCrestElevation` / `ChannelBedElevation`).
+`SandbarCrestElevation` / `ChannelBedElevation`.
 
-If the crossing later wants to feel longer, **lengthen the tide window before lengthening the bar** —
-the window is one number, the bar is a scene's worth of terrain.
+> **⚠️ Flag for the owner — the tide gate switches itself off for part of every lunar month.** Because
+> neap amplitude (1.575 m) sits just under the crest (1.6 m), there are stretches where the bar is
+> permanently dry and St Peters is never cut off. That may be a *lovely* rhythm — "the sea lets you
+> come and go this week" — or it may quietly defuse the prologue's one lesson, depending on where the
+> player is in the month when they first walk it. Either way it is currently an accident of two numbers
+> that were chosen independently, and it should become a decision. The cheap fix if it's unwanted is to
+> drop the crest a little below neap high water (≈1.4 m).
+
+If the crossing later wants to feel longer or shorter, **move the tide constants before moving the
+bar** — the window is one number, the bar is a scene's worth of terrain.
 
 ### 5.3 Waves crashing into the island
 
@@ -262,4 +279,6 @@ rule-tiles and the road blob-47 autotiler from the kits imported today. They are
 4. **Does the sandbar scene support the return trip at all,** or is it deliberately one-way on the
    first crossing (canon §6.0 has the first trip on foot, then you sail home)? §5.2 sizes it so a
    round trip is *possible but tight*; a one-way-only bar could be longer and more dramatic.
-5. **The dragger's speed** (§1.2) — is a 25 m dragger being slower than a rowed dory intended?
+5. **The neap gap** (§5.2) — should the bar stay dry for part of every lunar month, or should the
+   crest drop below neap high water so the island is *always* sometimes cut off?
+6. **The dragger's speed** (§1.2) — is a 25 m dragger being slower than a rowed dory intended?
