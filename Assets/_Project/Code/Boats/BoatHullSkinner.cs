@@ -57,6 +57,12 @@ namespace HiddenHarbours.Boats
         /// <summary>Engine B's upper layer. Twin fit only.</summary>
         public const string UpperMotorBChildName = "MotorUpperB";
 
+        /// <summary>Fitting slots the MESH outboard takes (ADR 0022 phase 7) — one per clamp
+        /// position, so a twin is "A" and "B" and a single fit is "A" alone. Named slots (rather than
+        /// an index) because the presentation service re-configures a fitting IN PLACE by slot, so a
+        /// re-skin swaps the engine instead of accumulating engines.</summary>
+        public static readonly string[] MotorMeshSlotNames = { "MotorA", "MotorB" };
+
         /// <summary>Optional knobs a caller varies. Defaults are the player boat's rig, exactly.</summary>
         public struct Options
         {
@@ -338,10 +344,11 @@ namespace HiddenHarbours.Boats
             RemoveMotor(root, child);
 
             // ADR 0022 phase 7: a fitting the visual carries as a MESH is not "skipped", it is drawn —
-            // so only warn about the sheets a mesh really cannot wear. The oars are the first fitting
-            // to cross over; the outboards follow the same way.
+            // so only warn about the sheets a mesh really cannot wear. The oars crossed over first,
+            // the outboards followed, and between them that is every sprite overlay in the game.
             bool oarsGoMesh = visual.HasOarMeshes();
-            if ((visual.HasOarSheets() && !oarsGoMesh) || visual.HasMotor())
+            bool motorGoesMesh = visual.HasMotorMesh();
+            if ((visual.HasOarSheets() && !oarsGoMesh) || (visual.HasMotor() && !motorGoesMesh))
                 Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor SHEETS but is " +
                                  "presented as a MESH hull — sprite overlays are baked per facing cell and " +
                                  "cannot ride a continuously-rotating mesh. They are skipped. Bake that " +
@@ -381,6 +388,11 @@ namespace HiddenHarbours.Boats
             // what makes the sprite path's rock coupling, part split and draw-order rules unnecessary.
             if (!options.SkipOars && boat != null && oarsGoMesh) WireOarMeshes(root, child, visual, boat);
             else RemoveOarMeshes(root, child);
+
+            // The outboard needs no controller to INSTALL — an unmanned boat still shows her engine,
+            // dead ahead — exactly as on the sprite path. The layer's own manned-helm gate drives it.
+            if (motorGoesMesh) WireMotorMeshes(root, child, visual, boat);
+            else RemoveMotorMeshes(root, child);
 
             // The hull rides the SAME shared wave field as every sprite hull — the presenter's
             // continuous-rock capability just stops the phase being quantised to frames.
@@ -430,12 +442,85 @@ namespace HiddenHarbours.Boats
             layer.Configure(port, star, boat);
         }
 
-        /// <summary>A hull that wears no oar meshes must not keep the previous hull's.</summary>
+        /// <summary>
+        /// Bolt the MESH outboard to an installed mesh hull and hand it to
+        /// <see cref="OutboardMotorMeshLayer"/>, which swivels it from the same helm-and-cadence state
+        /// machine the sprite engine uses.
+        ///
+        /// <para><b>The twin is not a second asset.</b> It is this same fitting instantiated once per
+        /// clamp position the def carries (±0.34 m), each posed by the same rotation and offset
+        /// laterally — no second bake, and no draw-the-far-engine-first rule, because the two share
+        /// the hull's depth buffer. A visual asking for a twin whose def declares no mounts falls back
+        /// to one centreline engine and says so, rather than silently stacking two in the same place.</para>
+        /// </summary>
+        private static void WireMotorMeshes(GameObject root, Transform child, BoatVisualDef visual,
+                                            BoatController boat)
+        {
+            var service = HullMeshPresentation.Service;
+            bool twin = visual.MotorFit == OutboardMotorLayer.MotorFit.Twin;
+            float[] mounts = visual.MotorMesh.MountsForFit(twin);
+
+            if (twin && mounts.Length < 2)
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' asks for a TWIN outboard but " +
+                               $"fitting '{visual.MotorMesh.Id}' declares no lateral mounts, so both " +
+                               "engines would sit in the same place. Fitting ONE on the centreline " +
+                               "instead. Re-bake the fitting — its rig states the spacing " +
+                               "(MOTOR.mounts.dual).");
+
+            if (mounts.Length > MotorMeshSlotNames.Length)
+            {
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}': fitting " +
+                               $"'{visual.MotorMesh.Id}' declares {mounts.Length} clamp positions but " +
+                               $"only {MotorMeshSlotNames.Length} slots are named. Add slot names " +
+                               "rather than reusing one — two engines in one slot is one engine.");
+                RemoveMotorMeshes(root, child);
+                return;
+            }
+
+            var engines = new IHullPropRenderer[mounts.Length];
+            for (int i = 0; i < mounts.Length; i++)
+                engines[i] = service?.AttachProp(child.gameObject, visual.MotorMesh, MotorMeshSlotNames[i]);
+
+            for (int i = 0; i < engines.Length; i++)
+            {
+                if (engines[i] != null) continue;
+                Debug.LogError($"[BoatHullSkinner] Visual '{visual.Id}' is a MESH hull whose outboard " +
+                               "could not be attached (the presentation service refused it). Removing " +
+                               "the engine — a boat with half a twin is worse than the honest failure. " +
+                               "Re-bake the fitting and check the def loads.");
+                RemoveMotorMeshes(root, child);
+                return;
+            }
+
+            // Any slot beyond this fit's engine count is a leftover from a TWIN hull worn before.
+            for (int i = mounts.Length; i < MotorMeshSlotNames.Length; i++)
+                service?.DetachProp(child.gameObject, MotorMeshSlotNames[i]);
+
+            var layer = root.GetComponent<OutboardMotorMeshLayer>();
+            if (layer == null) layer = root.AddComponent<OutboardMotorMeshLayer>();
+            layer.Configure(engines, mounts, boat, visual.MotorColumnCount,
+                            visual.MotorMaxSteerDegrees, visual.MotorMesh.MaxTiltDegrees);
+        }
+
+        /// <summary>A hull that wears no oar meshes must not keep the previous hull's — and must not
+        /// take her ENGINE off on the way past, which is why this detaches by slot.</summary>
         private static void RemoveOarMeshes(GameObject root, Transform child)
         {
             var layer = root != null ? root.GetComponent<DoryOarMeshLayer>() : null;
             if (layer != null) DestroyComponent(layer);
-            if (child != null) HullMeshPresentation.Service?.DetachProps(child.gameObject);
+            if (child == null) return;
+            HullMeshPresentation.Service?.DetachProp(child.gameObject, PortOarChildName);
+            HullMeshPresentation.Service?.DetachProp(child.gameObject, StarOarChildName);
+        }
+
+        /// <summary>A hull that wears no mesh outboard must not keep the previous hull's.</summary>
+        private static void RemoveMotorMeshes(GameObject root, Transform child)
+        {
+            var layer = root != null ? root.GetComponent<OutboardMotorMeshLayer>() : null;
+            if (layer != null) DestroyComponent(layer);
+            if (child == null) return;
+            for (int i = 0; i < MotorMeshSlotNames.Length; i++)
+                HullMeshPresentation.Service?.DetachProp(child.gameObject, MotorMeshSlotNames[i]);
         }
 
         /// <summary>Strip the mesh presentation off a boat (renderer via the Art service, driver on the
@@ -443,6 +528,10 @@ namespace HiddenHarbours.Boats
         private static void RemoveMeshPresentation(GameObject root, Transform child)
         {
             RemoveOarMeshes(root, child);
+            RemoveMotorMeshes(root, child);
+            // A hull leaving the mesh path takes EVERY fitting with her, including any slot this
+            // build does not know the name of.
+            if (child != null) HullMeshPresentation.Service?.DetachProps(child.gameObject);
             if (child != null) HullMeshPresentation.Service?.Remove(child.gameObject);
             var driver = root != null ? root.GetComponent<MeshHullDriver>() : null;
             if (driver != null) DestroyComponent(driver);

@@ -82,6 +82,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             public void DetachProps(GameObject host) { PropDetaches++; Props.Clear(); }
 
+            public void DetachProp(GameObject host, string slot)
+            {
+                if (Props.Remove(slot)) PropDetaches++;
+            }
+
             public void Remove(GameObject host) { Removes++; }
         }
 

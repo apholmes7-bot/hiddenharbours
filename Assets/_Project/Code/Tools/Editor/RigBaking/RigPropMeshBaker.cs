@@ -201,6 +201,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     case "OarPort": visual.OarPortMesh = def; break;
                     case "OarStar": visual.OarStarMesh = def; break;
+                    // ONE motor field, whatever the fit: the twin is this same def instantiated twice
+                    // at the mounts the def carries, not a second engine asset.
+                    case "Motor": visual.MotorMesh = def; break;
                     default:
                         Debug.LogError(
                             $"[rig-prop] {p.Label}: unknown fitting slot '{slot}' on {assetPath}. The " +

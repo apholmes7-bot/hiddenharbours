@@ -127,6 +127,21 @@ namespace HiddenHarbours.Core
                 ? LateralMountsMeters
                 : SingleCentreMount;
 
+        /// <summary>
+        /// The mounts to instantiate this fitting at for a given FIT.
+        ///
+        /// <para><b>The fit belongs to the BOAT, not to the fitting.</b> One skiff outboard def serves
+        /// three visuals — the console skiff and the sport skiff single (one engine, centreline) and
+        /// the sport skiff twin (two, at the ±0.34 m its rig declares) — so reading
+        /// <see cref="EffectiveMounts"/> unconditionally would bolt two engines onto the workboat.
+        /// A multi fit on a def that declares fewer than two mounts falls back to one on the
+        /// centreline rather than inventing a spacing.</para>
+        /// </summary>
+        public float[] MountsForFit(bool multiEngine) =>
+            multiEngine && LateralMountsMeters != null && LateralMountsMeters.Length >= 2
+                ? LateralMountsMeters
+                : SingleCentreMount;
+
         static readonly float[] SingleCentreMount = { 0f };
     }
 }

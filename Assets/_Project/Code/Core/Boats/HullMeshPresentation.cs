@@ -97,6 +97,16 @@ namespace HiddenHarbours.Core
         /// <summary>Remove every fitting attached to <paramref name="host"/>. Safe when none are.</summary>
         void DetachProps(GameObject host);
 
+        /// <summary>
+        /// Remove just the fitting in <paramref name="slot"/>. Safe when none is there.
+        ///
+        /// <para>Needed because a hull's fittings are decided INDEPENDENTLY — a boat may take her
+        /// oars as meshes and wear no engine, or the reverse — so "this hull has no outboard" must
+        /// not be able to unbolt her oars on the way past. <see cref="DetachProps"/> stays for the
+        /// wholesale clear when a hull leaves the mesh path entirely.</para>
+        /// </summary>
+        void DetachProp(GameObject host, string slot);
+
         /// <summary>Remove a previously installed renderer (and everything it owns) from
         /// <paramref name="host"/>. Safe when none is present.</summary>
         void Remove(GameObject host);

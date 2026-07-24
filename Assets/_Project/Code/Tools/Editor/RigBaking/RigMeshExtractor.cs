@@ -60,6 +60,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// canonical matrix. Reported, never assumed — see <see cref="RigMeshSymbols"/>.</summary>
         public bool BayerWasExported;
 
+        /// <summary>
+        /// <b>Does the rig's interior/backface rescue need a face to OPT IN?</b> The hull rigs gate it
+        /// (<c>if(sh&lt;0 &amp;&amp; ((f.b||0)&lt;=-1))</c>, puntIsoRig.js:152) — the facet shader
+        /// reproduces exactly that. <c>skiffMotorRig.js</c>:169 does NOT: it rescues EVERY back-facing
+        /// face, and not one of its faces carries a bias at or below −1, so the two rules are
+        /// genuinely different functions on that rig rather than the same one written twice.
+        ///
+        /// <para>Extraction cannot detect this — it is a property of the rig's <c>_paint</c>, not of
+        /// its data — so it is declared per fitting on <see cref="RigPropExtraction"/> and adjudicated
+        /// in pixels like every other transcription. Default true = the hull rule, so no existing bake
+        /// changes.</para>
+        /// </summary>
+        public bool BackfaceRescueNeedsOptIn = true;
+
+        /// <summary>
+        /// <b>Does this render path run the rig's 1 px depth-discontinuity darkening?</b> A hull's
+        /// <c>render()</c> passes <c>doEdge = true</c>; every FITTING entry point in the repo passes
+        /// false (<c>renderOars</c>, both <c>renderMotor</c>s), and <c>skiffMotorRig</c> has no such
+        /// pass at all. Comparing a fitting against an oracle that darkens where the rig does not is
+        /// a difference the fixture would blame on the geometry.
+        /// </summary>
+        public bool DepthEdgeDarkening = true;
+
         public Color32 Keyline;
         public int W, H;
         /// <summary>Pivot in cell pixels from the TOP-LEFT — the rigs' screen origin, and the
@@ -188,6 +211,31 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     ["MATS"] = "{wood:{ramp:RAMP,off:0},iron:{ramp:IRON,off:-2}}",
                 },
+
+                // ---- the outboards (ADR 0022 phase 7) --------------------------------------------
+                // Both motor rigs describe their swivel as a PAIR of private consts rather than as a
+                // point: `const YA = -L/2 - 0.06, ZT = MOUNT.z;` (punt) and `const L = 7.0,
+                // YA = -L/2 - 0.07, ZT = 0.72;` (skiff). Their `mxform(opts)` then tilts about the
+                // line {y = 0, z = ZT} and steers about the vertical through {x = 0, y = 0}, before
+                // translating the whole thing to (mx, YA, ·) — so the ONE point every real pose is a
+                // pure rotation about is (0, YA, ZT). That reading is what this expression asserts,
+                // and it is adjudicated in pixels by OutboardPropMeshAcceptanceTests: get it wrong
+                // and the engine still swings, but about the wrong point, and the silhouette moves.
+                ["puntIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["swivelPt"] = "function(){return [0,YA,ZT];}",
+                },
+
+                // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
+                // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
+                // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
+                // rename, not an invention, and a wrong one would misplace every vertex on screen.
+                ["skiffMotorRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["swivelPt"] = "function(){return [0,YA,ZT];}",
+                    ["PX"] = "S",
+                    ["defaultElev"] = "DEFAULT_ELEV",
+                },
             };
 
         /// <summary>
@@ -274,6 +322,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+
+        /// <summary>The rig's backface rule for THIS fitting — see
+        /// <see cref="RigMeshData.BackfaceRescueNeedsOptIn"/>.</summary>
+        public bool BackfaceRescueNeedsOptIn = true;
+
+        /// <summary>Whether this fitting's render path darkens depth discontinuities. <b>Defaults to
+        /// FALSE</b>, unlike a hull's, because every fitting entry point in the repo passes
+        /// <c>doEdge = false</c> — see <see cref="RigMeshData.DepthEdgeDarkening"/>.</summary>
+        public bool DepthEdgeDarkening = false;
 
         /// <summary>
         /// Drop faces that are an EXACT REVERSE of an earlier one — the rigs' way of making a
@@ -448,6 +505,10 @@ namespace HiddenHarbours.Tools.RigBaking
                                       host.EvaluateNumber($"{g}.LN[2]")),
                 Keyline = ParseHex(host.EvaluateString($"{g}.KEY")),
                 BayerWasExported = bayerExported,
+                // The two facts about the rig's RASTERISER that its data cannot carry. A hull keeps
+                // the defaults; a fitting declares them (see RigPropExtraction).
+                BackfaceRescueNeedsOptIn = prop == null || prop.BackfaceRescueNeedsOptIn,
+                DepthEdgeDarkening = prop == null || prop.DepthEdgeDarkening,
                 ShimmedSymbols = missing,
                 ReconstructedSymbols =
                     missing.Where(s => RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList(),

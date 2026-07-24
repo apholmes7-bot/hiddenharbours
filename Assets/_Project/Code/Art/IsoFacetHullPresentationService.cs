@@ -115,6 +115,17 @@ namespace HiddenHarbours.Art
             }
         }
 
+        /// <inheritdoc/>
+        public void DetachProp(GameObject host, string slot)
+        {
+            if (host == null || string.IsNullOrEmpty(slot)) return;
+            var hull = host.GetComponent<IsoFacetHullRenderer>();
+            Transform posed = hull != null ? hull.transform.Find(PosedMeshChild) : null;
+            Transform existing = posed != null ? posed.Find(slot) : null;
+            if (existing != null && existing.GetComponent<IsoFacetPropRenderer>() != null)
+                Destroy(existing.gameObject);
+        }
+
         /// <summary>The fitting def, converted to the renderer's runtime setup — plain copies.</summary>
         public static IsoFacetPropSetup ToPropSetup(HullPropMeshDef def)
         {
