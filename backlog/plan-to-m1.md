@@ -68,7 +68,8 @@ weeks.** The grind is intentional; the drip is what makes it bearable.
 |---|---|---|---|
 | 1 | **Arrive** | You come to St Peters to be with your **aunt** after your uncle's death. The island, the cast, the cottage. | The place, the people, the tone (bittersweet, warm) |
 | 1 | **The shovel** | Aunt's shovel, gifted. Dig shellfish on the flats **at low water**. | Verb 1 (dig) · the **tide** as your first constraint (P1) |
-| 1–2 | **The general store** | Sell shellfish to the store. First coin. | Money · the island's economy is *small* |
+| 1 | **The clam licence** | You've a bucket of clams and no papers. Aunt fronts the fee; you walk to the **general store** and buy the licence yourself. | Licences gate what you may land · the store exists · a warm debt to your aunt |
+| 1–2 | **First sale** | Sell shellfish to the store. First coin — and you owe Ginny for the licence. | Money · the island's economy is *small* |
 | 2–3 | **The used rod** | Buy it at the store. Fish from shore. | Verb 2 (fish) · gear as progression |
 | 3–4 | **The white bucket & the freezer** | Fish **rots**. Aunt freezes your catch while you fill a whole bucket. | **Freshness** — the pressure that makes time matter |
 | 4–5 | **The crossing** | The springs come. Walk the **tide-gated sandbar** to the mainland with a frozen bucket. | The world is bigger · tide as a **gate** · a returning-tide clock (P5) |
@@ -76,13 +77,20 @@ weeks.** The grind is intentional; the drip is what makes it bearable.
 | 6–9 | **The dory** | Earn it. Buy her. Pay to repair her. **Sail her home** to the St Peters dock. | Verb 3 (sail) · the slice's emotional peak (P2/P4) |
 | 9–11 | **Offshore** | New species reachable only by boat, further out. | The boat *unlocks world*, not just stats |
 | 11–13 | **Shellfish gear** | Traps/pots — catch that works while you do something else. | Verb 4 · the first taste of P4 (earn it, then automate it) |
-| 13–15 | **The used outboard** | Bought secondhand from someone at the wharf. Range and speed. | Progression that **opens map**, and the promise of more |
+| 13–15 | **The used outboard** | Bought secondhand from someone at the wharf and **hung on the dory's transom**. She stops being rowed. Range and speed. | Progression that **opens map**, and the promise of more |
 
-**Why the outboard is a better M1 climax than the Punt** (the old spec's "buy a bigger boat" beat): it
-upgrades a boat you are already attached to instead of discarding her, it is cheap enough to actually reach
-inside a slice, and it buys **range** — more world — rather than a bigger number. That is Stardew's
-rod-upgrade shape, not its farm-expansion shape, and it is the right one this early. The Punt stays in the
-game as a later rung.
+**The outboard goes on the dory — it is not the Punt.** Worth stating plainly, because the two are easy to
+conflate: `boat.dory` is `Propulsion: Oars` (she is rowed, `OarPower: 300`), and `boat.punt_upgraded` is
+`Propulsion: Engine` with a 14-unit hold — "The Punt (**Upgraded**)", where the upgrade *is* the motor. So
+the Punt already has an outboard, and buying one for the dory is a **different rung**, not a substitute.
+
+Making it the M1 climax is deliberate. It upgrades a boat you are attached to instead of discarding her,
+it is cheap enough to actually reach inside a slice, and it buys **range** — more world — rather than a
+bigger number. That is Stardew's rod-upgrade shape, not its farm-expansion shape, and it is the right one
+this early. **The Punt stays on the ladder as the rung above**, reached late in M1 if pacing allows or just
+after it: she is the step up in *hold*, which is the pressure the trap loop starts to apply.
+
+How the outboard actually lands in data is a small architecture call — see **D8**.
 
 ---
 
@@ -119,10 +127,10 @@ also nearly free — it is a start-date constant, not a system.
 | **Second region** | Port Greywick (services) | **Nine Mile Creek** (a working wharf, not a town) |
 | **Opening** | Inherit Ned's dory | **Accompany your aunt**; earn the dory |
 | **First verb** | Handline fishing | **Digging shellfish at low water** |
-| **First market** | Wharf fish buyer | **The island general store** (worse prices — a reason to cross) |
+| **First market** | Wharf fish buyer | **The island general store** (worse prices — a reason to cross) · also sells the **clam licence** |
 | **The gate** | — | **The tide-gated sandbar crossing** |
 | **Pressure** | Hold capacity | **Freshness/rot** — freeze it, keep it alive, or lose value |
-| **Climax purchase** | The Punt (a bigger boat) | **A used outboard** (range on the boat you love) |
+| **Climax purchase** | The Punt (a bigger boat, straight away) | **A used outboard for the dory** (range on the boat you love); the Punt becomes the rung above |
 | **Cast** | Ned (departed) + 1–2 neighbours | **Aunt + a small inhabited island**: schoolhouse, general store, a few homes, 4–6 named people |
 | **Proves** | "Are the verbs fun?" | **"Is this a world worth a season?"** |
 
@@ -198,10 +206,28 @@ wharf prices, rod cost, dory price, repair cost, trap cost, outboard cost, offsh
 - **Exit:** a day-by-day projection showing rungs landing on the §3 schedule for an average player, tuned
   in `GameConfig`/Def assets (no magic numbers), and re-checkable after any price change.
 
-### 7.5 · The island store as a market channel — `economy-sim`
-Selling today happens at a wharf stall. The arc needs the **general store** to buy shellfish and sell gear,
-at **deliberately worse prices** than Nine Mile Creek — so the crossing has an economic reason on top of a
-story one, and "where you sell matters" is taught in the first hour. `MarketId` already supports channels.
+### 7.5 · The island general store — market, gear shop, and licence vendor — `economy-sim`
+Selling today happens at a wharf stall. The arc needs the **general store** to do three jobs:
+
+- **Buy shellfish** at **deliberately worse prices** than Nine Mile Creek — so the crossing has an economic
+  reason on top of a story one, and "where you sell matters" is taught in the first hour. `MarketId` already
+  supports channels; add the island as one.
+- **Sell the used rod** (`GearShop` exists; `Data/Gear/Rod.asset` exists).
+- **Sell the clam licence** — a new `LicenseDef` (`license.clam`) beside the existing `license.cod`, vended
+  by the existing `LicenseVendor`. Data-only; no new code.
+
+**The chicken-and-egg, and how to dodge it.** `CatchLicensePolicy.MayLand` gates *landing* a species and
+**fails closed** — no wallet, no gated catch. So a clam licence you must buy with clam money is a deadlock.
+The fix is a character beat rather than a mechanic: **Aunt Ginny fronts the fee**, and the player walks to
+the store and buys the licence themselves. The transaction is still the player's (they meet the vendor UI,
+they learn licences gate species), the deadlock never happens, and it plants a small warm debt to pay back.
+
+Then the **cod licence at Nine Mile Creek is the one you pay for yourself** — the same system, second time,
+now with real money on the line. Licence one is taught; licence two is earned.
+
+> **Housekeeping:** `Data/Licenses/CodLicense.asset` flavour text still reads *"Greywick's harbourmaster
+> signs you off…"*. Retarget to Nine Mile Creek under D1. The `id` (`license.cod`) is stable and does **not**
+> change.
 
 ### 7.6 · The reads the player needs — `ui-ux` + `gameplay-systems`
 Cut to what the new arc actually requires, in priority order:
@@ -238,6 +264,7 @@ Unchanged from the previous audit and still real:
 | **D5** | Wire Unity Localization now, or ship English-only against the seams? | **Now.** The seams were built for it, so no call site changes. A day today; weeks after M2 triples the string count. |
 | **D6** | Freeze later-milestone work? | **Freeze M3+ only** — the offshore hulls, trawlers, tanker, and the eleven-hull fleet are genuine drift. The St Peters batch is **not** drift; it is this M1, and the last audit was wrong to call it scope creep. Keep building it. |
 | **D7** | Do pollock and blue-mussel come back? | **No.** The species that matter now are: the island shellfish (dig), the shore fish (rod), 2–3 **offshore** species that reward the dory, and the trap shellfish. Species earn their place by which **rung** they unlock, not by filling a list of six. Mussels stay with M3-16 aquaculture. |
+| **D8** | How does the outboard land on the dory — a **hull variant asset** or a **real component swap**? | **Variant asset for M1; component split in M2-17.** `BoatHullDef.Propulsion` is a fixed field on the hull, so the cheap route is a second asset — `boat.dory_outboard`, `Propulsion: Engine` — that the purchase swaps the active hull to. Zero code, and it is exactly the pattern the repo already uses (`boat.punt_upgraded` *is* the Punt-with-a-motor variant). The cost is two assets to keep in sync for one boat, which is fine at one upgrade and bad at ten. **M2-17 (component swaps at the shipwright) is the item that should do the proper Hull/Engine/Hold split** — with a save migration, when there are many upgrades to justify it. Do not refactor `BoatHullDef` for M1. |
 
 ---
 
@@ -258,7 +285,10 @@ ADR 0005 desktop baseline (60fps on a typical desktop/laptop GPU, KB/mouse + gam
 - [ ] A first-time player hits a **new rung every ~2 days for the first two weeks**, on the §3 schedule,
       validated in playtest — not just modelled.
 - [ ] Each rung is **visible before it is reachable** (the derelict dory is the template).
-- [ ] The **used outboard** closes the slice: bought secondhand, extends range, and points at more.
+- [ ] The **clam licence** is bought by the player at the general store on day one, with Ginny's fee — and
+      the **cod licence** later is paid for out of their own earnings.
+- [ ] The **used outboard** closes the slice: bought secondhand, hung on the dory, extends range, and points
+      at the Punt above it.
 
 **The sea (P1)**
 - [ ] The **tide is the engine**: it gates the dig, gates the crossing, and is read from an **in-game tide
