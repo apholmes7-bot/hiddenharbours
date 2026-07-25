@@ -63,6 +63,8 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 | Clams per dig, dig time | `ClamDig` tunables | with the tide window, gives clams/day |
 | Low-water window length | derived from the tide sim | **not** authored — read it, don't set it |
 | Shore-rod catch rate | `CatchResolver` weights + `FishSpeciesDef` | fish/hour from the beach |
+| Bait/tackle effect on the roll | `Data/Bait`, `Data/Tackle` | how much the right hook is worth |
+| Sea-state effect on the catch | rod-fishing v2 (#290) | rough water fishes better — and fights harder |
 | Offshore catch rate & value | `FishSpeciesDef` | must visibly out-earn shore fishing |
 | Trap soak yield | `TrapDef` | the P4 "works while you don't" rung |
 
@@ -85,7 +87,8 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 | Damaged dory | `ShipwrightOffer` | the big save-up |
 | Dory repair | `RepairLedger` | paid separately — two beats, not one |
 | Traps / pots | `PotOffer` | |
-| **Ice** (per load) | store `GearOffer` / consumable | **recurring** — the only running cost in M1 |
+| **Ice** (per load) | store `GearOffer` / consumable | **recurring** — a running cost, per trip |
+| **Bait / tackle** | `Data/Bait`, `Data/Tackle` (landed #291) | **recurring** — and it *targets* species, not just enables them |
 | **Lid** (one-off) | store `GearOffer` | slows the melt; "spend once to stop spending" |
 | **Used outboard** | new `ShipwrightOffer` | the closing rung |
 
@@ -126,10 +129,21 @@ Three things the model must not fake:
   instead of making a trip to sell). The freezer being free-but-fixed and ice being paid-but-portable is the
   trade.
 
-- **Ice is also the first recurring cost, and that changes the curve's shape.** Every other purchase in M1 is
-  one-off. So check the crossover: a trip with ice must **net more than the same trip without** once the
-  catch is worth enough, and must *not* before that. If ice is always correct it is a tax, not a decision; if
-  it is never correct it is dead content. Tune the crossover, and the lid should pull it earlier.
+- **Ice is a recurring cost, and so is bait — the two of them change the curve's shape.** Most M1 purchases
+  are one-off; these are spent per trip, so they set a floor under every outing. Check the crossover for each:
+  a trip with ice must **net more than the same trip without** once the catch is worth enough, and must *not*
+  before that. If ice is always correct it is a tax, not a decision; if it is never correct it is dead
+  content. Tune the crossover, and the lid should pull it earlier.
+
+- **Bait and tackle now gate what bites** (landed on `main`, #291: `Data/Bait`, `Data/Tackle`). That makes
+  bait a **per-trip cost with a targeting benefit** — the right tackle raises the odds of the species you
+  actually want, so the model has to price *choosing* bait, not just buying it. A player who fishes the
+  wrong tackle should earn visibly less than one who reads the water.
+
+- **Sea state modulates the catch** (owner ruling 2026-07-25, #290: rough water fishes better and fights
+  harder). So income is not flat across a day — it varies with conditions the player can read and choose to
+  go out in. Model at least the calm/rough split, or the projection will understate a good skipper and
+  overstate a cautious one.
 
 - **Watch the knock-on to the whole schedule.** Ice raises hours-per-session, which raises income per day,
   which pulls every later rung *forward*. Re-run §2 after tuning ice — a change that looks local to one
