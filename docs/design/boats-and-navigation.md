@@ -43,8 +43,8 @@ Eight tiers, **a branching tree near the top** (canon): the **Lobster Boat** (sh
 | Tier | Boat | Length (m) | Draught (m) | Hold (HU) | Crew slots | Range | Seaworthiness (max safe sea state) | Handling / responsiveness | Fuel (FU) | ~Cost (₲) | Unlocks at |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | **0** | **The Dory** (uncle's) | 4.5 | **0.3** | 6 | 1 | Inshore only | **4 — Popple** | ★★★★★ Nimble but tender | 10 (small outboard) + oars | — (inherited) | Start (Coddle Cove) |
-| **1** | **Punt / Skiff** | 6.0 | **0.5** | 14 | 1 | Inshore + near sheltered | 4 — Popple | ★★★★☆ Lively | 25 | ~1,800 | First purchase (shipwright, Coddle Cove/Greywick) |
-| **2** | **Cape Islander** (inshore longliner) | 13.0 | **1.1** | 60 | 2 | Coastal | 6 — Knockabout | ★★★☆☆ Sure-footed workboat | 90 | ~14,000 | Greywick story unlock + basic skill |
+| **1** | **Punt / Skiff** | 6.0 | **0.5** | 14 | 1 | Inshore + near sheltered | 4 — Popple | ★★★★☆ Lively | 25 | ~1,800 | First purchase (shipwright, Coddle Cove/Nine Mile Creek) |
+| **2** | **Cape Islander** (inshore longliner) | 13.0 | **1.1** | 60 | 2 | Coastal | 6 — Knockabout | ★★★☆☆ Sure-footed workboat | 90 | ~14,000 | Nine Mile Creek story unlock + basic skill |
 | **3** | **Lobster Boat** (specialist branch) | 12.0 | **1.0** | 70 (trap-biased) | 2 | Coastal (shellfish grounds) | 6 — Knockabout | ★★★☆☆ Stable, deck-roomy | 85 | ~18,000 | Branch off Cape Islander (lobster path) |
 | **4** | **Side Dragger / Trawler** (offshore branch) | 25.0 | **2.4** | 200 | 3 | Offshore (works The Banks) | 7 — Gale | ★★☆☆☆ Heavy, deliberate | 320 | ~70,000 | Branch off Cape Islander (offshore path); gates The Banks |
 | **5** | **Stern Trawler / Seiner** | 38.0 | **3.6** | 420 | 5 | Far offshore / weather-capable | **8 — Storm-tolerant (survives gale, hates storm)** | ★★☆☆☆ Big, slow to answer | 700 | ~190,000 | Upgrade from Dragger; gates Ironbound |
@@ -249,7 +249,7 @@ broachRisk = clamp(
 
 ### 3.4 Collisions
 
-- Hitting **terrain** (rocks/wharves/land), **other boats** (NPC traffic, esp. busy Greywick & the Shipping Lanes), or **fixed hazards** (sunkers, wrecks, ice floes-as-flavor).
+- Hitting **terrain** (rocks/wharves/land), **other boats** (NPC traffic, esp. busy Nine Mile Creek & the Shipping Lanes), or **fixed hazards** (sunkers, wrecks, ice floes-as-flavor).
 - Box2D handles the impulse; we add **damage scaled by impact speed × relative mass** → hull damage / possible holing (§3.3), plus a **collision penalty** (minor cargo jostle, a scratch repair). Low-speed bumps (docking) are harmless (cozy). High-speed ramming a wharf is expensive but recoverable.
 - **NPC boats** give way per simple right-of-way so collisions are *usually your fault* (readable, fair). Fog (low visibility) makes collisions a real risk in The Smother → **radar** (§5) is the answer (P2/P5 payoff).
 
@@ -273,7 +273,7 @@ When you're aground (and can't kedge off), swamped-but-afloat, broken down, or o
 | Option | How | Cost | Feel |
 |---|---|---|---|
 | **Self-recover** | Float off on the rising tide (grounding); pump out a minor leak; field-fix a minor breakdown; **row/sail** a small boat home; kedge off with an anchor. | **Time** (+ minor stamina/parts). | The cozy, satisfying out — *you handle it.* Always preferred when possible. |
-| **Radio for a tow** | **Marine radio** (instrument, §5) calls a **tow operator** out of Port Greywick. They steam to you and tow you to the nearest harbour/shipwright. | **Money** (₲), scaling with **distance from harbour** and **boat size** (towing a tanker costs a fortune). Set in `economy-and-business.md`. | The reliable paid safety net. Costs enough to sting, not enough to ruin. |
+| **Radio for a tow** | **Marine radio** (instrument, §5) calls a **tow operator** out of Nine Mile Creek. They steam to you and tow you to the nearest harbour/shipwright. | **Money** (₲), scaling with **distance from harbour** and **boat size** (towing a tanker costs a fortune). Set in `economy-and-business.md`. | The reliable paid safety net. Costs enough to sting, not enough to ruin. |
 | **Harbour rescue** | If you have **no radio** (early game) or can't afford a tow, a **harbour/coastguard rescue** eventually comes (a help NPC notices you're overdue, or you fire a flare from the **safety kit**). Slower to arrive. | **Smaller money penalty** or a **favor/relationship cost** (P3); possibly **lose part of the load** (see below). | The "the town looks after its own" safety net — warm, but humbling. You always get home. |
 | **Drift to safety** | Do nothing active: **wind + current carry you** (§3.8). Sometimes drifts you off a bar or toward shore; sometimes into worse water. You can **anchor** to stop drifting and wait. | **Time + risk.** | The gamble. Reading wind/tide (P1) tells you whether drifting helps or hurts. |
 
@@ -311,11 +311,11 @@ When stability fully fails (sustained broachRisk → knockdown → capsize) or t
 
 ## 4. Boat upgrades & customization
 
-> Upgrades are **the texture of P2 progression between tiers** and the **answer to every P5 danger**. They're sold/installed by the **Shipwright** NPC (Port Greywick; canon §5.3) and gated by money (and some by story/region). All upgrades are **data swaps on the boat's components** (§9), so the shipwright UI is a clean "slot → choose part" screen.
+> Upgrades are **the texture of P2 progression between tiers** and the **answer to every P5 danger**. They're sold/installed by the **Shipwright** NPC (Nine Mile Creek; canon §5.3) and gated by money (and some by story/region). All upgrades are **data swaps on the boat's components** (§9), so the shipwright UI is a clean "slot → choose part" screen.
 
 ### 4.1 The shipwright (where upgrades happen)
 
-- **Location:** Port Greywick wharf (canon). A named NPC with routines (P3 — see `npcs-and-routines.md`); relationship can unlock better stock / discounts.
+- **Location:** Nine Mile Creek wharf (canon). A named NPC with routines (P3 — see `npcs-and-routines.md`); relationship can unlock better stock / discounts.
 - **Services:** **buy boats** (move up the ladder / branch), **install upgrades** (swap components below), **repair** (hull/engine damage, post-grounding), **maintain** (engine health — preventive; P4), **paint/cosmetics** (pure customization, no stats — express ownership, P2). Costs flow through `economy-and-business.md`.
 - **Customization vs upgrade:** *upgrades* change stats; *customization* (hull colour, name, trim, deck details) is cosmetic ownership expression. Both matter for "this boat is **mine**."
 
@@ -499,7 +499,7 @@ craft. Phased **M2**.)*
 
 > *Skipper has saved for the Cape Islander (P2 milestone) and rigged a depth sounder + bilge pump (P5 mitigation).*
 > **Skill (P1):** crossing toward the Sunkers on a falling tide, the **depth sounder alarms** — under-keel down to 0.4 m. The 1.1 m draught means the channel that was fine for the dory is now marginal. The skipper **eases off, crabs up-current** (the flood is setting them toward a sunker), and threads the visible-at-low-water rocks. Pure navigation-as-skill.
-> **Teeth (P5):** greed kicks in — a great lobster soak means staying past low water. On the way out, distracted, the skipper clips a sunker at speed → **holing**, **bilge rising**. The **pump** buys time; they **run for Greywick**, pumping, bilge gaining slowly. They *just* make the wharf. **Repair bill, a humbling, half a day lost — but home.** Next spring tide, they read the table first and stay clear. **That loop — capability earned, danger survived, lesson learned — is the game.**
+> **Teeth (P5):** greed kicks in — a great lobster soak means staying past low water. On the way out, distracted, the skipper clips a sunker at speed → **holing**, **bilge rising**. The **pump** buys time; they **run for Nine Mile Creek**, pumping, bilge gaining slowly. They *just* make the wharf. **Repair bill, a humbling, half a day lost — but home.** Next spring tide, they read the table first and stay clear. **That loop — capability earned, danger survived, lesson learned — is the game.**
 
 ---
 
@@ -623,7 +623,7 @@ and **no behaviour change** — so the decision can still go either way without 
 
 - **One active player boat** dominates; AI/crew/freight boats are **abstracted** when off-screen (they don't run full physics — they move on routes/timers; see `economy-and-business.md`/`npcs-and-routines.md`) and only spin up a lightweight body when visible.
 - Environment sampled at **4 Hz** per active boat (interpolated) — cheap (§ env doc §8). Danger checks piggyback on the same cadence; no per-frame allocation (struct samples, pooled effects).
-- Keep colliders simple (a few-vertex hull polygon, not pixel-perfect); use Box2D-v3's solver settings tuned for stability over precision; cap simultaneous on-screen boats (Greywick/Shipping Lanes traffic) with LOD/abstraction.
+- Keep colliders simple (a few-vertex hull polygon, not pixel-perfect); use Box2D-v3's solver settings tuned for stability over precision; cap simultaneous on-screen boats (Nine Mile Creek/Shipping Lanes traffic) with LOD/abstraction.
 - Instruments (radar/GPS overlays) render on demand, not continuously when stowed.
 
 ### 9.4 Save data (what persists)
@@ -856,7 +856,7 @@ are important — you read roughly how full a tray/tote is by looking at it*).
 3. **Capsize consequence ceiling.** Exact partial-load-loss % per event severity, repair cost curves, and whether a worst-case can ever *cost the boat* (recommend **never** — only money/time/partial load; keep the boat). Lock with economy.
 4. **Tow economy balance.** Tow/rescue pricing vs the player's wallet at each tier so it *stings but never spirals* (canon). Coordinate with `economy-and-business.md`; tutorial regions should have a cheap/free safety net.
 5. **Fuel friction.** Is fuel a meaningful resource throughout, or mostly an early/mid concern (with later boats so capable it fades)? Decide whether running dry stays a real threat at high tiers or becomes a non-issue.
-6. **NPC traffic & right-of-way fidelity.** How smart must NPC boats be to keep collisions "your fault" and fair, especially in busy Greywick and the Shipping Lanes, without heavy AI cost on mobile?
+6. **NPC traffic & right-of-way fidelity.** How smart must NPC boats be to keep collisions "your fault" and fair, especially in busy Nine Mile Creek and the Shipping Lanes, without heavy AI cost on mobile?
 7. **Branch convergence requirement.** Must a player who took the **Lobster** branch buy back through an offshore boat to reach the **commerce tier**, or can a successful lobsterman jump straight to a Coastal Packet with enough capital? (Recommend: capital-gated jump allowed — money is the great converger — but confirm it doesn't skip needed seamanship learning.)
 8. **Multi-boat / fleet control UX (Tier 6–7).** When you command a fleet (canon end-game), how much is hand-steered vs dispatched-on-routes? This is where P4 automation peaks — needs its own design pass (likely in `economy-and-business.md` for the logistics layer, with this doc owning the per-hull physics).
 9. **Depth representation handoff.** Confirm with [`time-tides-weather.md`](time-tides-weather.md) §10 OQ1 and `world-and-regions.md` exactly how `seabedElevation`/`waterDepth` is authored per region (heightfield texture vs tile metadata) so grounding reads cleanly against the same data the water visuals use.

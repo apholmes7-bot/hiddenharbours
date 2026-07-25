@@ -6,7 +6,7 @@
 > [`world-and-regions.md`](world-and-regions.md), [`time-tides-weather.md`](time-tides-weather.md),
 > [`ux-and-mobile-controls.md`](ux-and-mobile-controls.md), [`../adr/0003-data-driven-content.md`](../adr/0003-data-driven-content.md).
 >
-> **Scope:** the **Schedule-I / Big-Ambitions layer** — the living market at **Port Greywick**, storage,
+> **Scope:** the **Schedule-I / Big-Ambitions layer** — the living market at **Nine Mile Creek**, storage,
 > value-add manufacturing, shipping/logistics to mainland markets, and the **staff & automation** that
 > turns the player from laborer into owner. This is where the *dynasty* end of P2 is paid off and where
 > P4 ("Earn It, Then Automate It") mostly lives.
@@ -17,7 +17,7 @@
 
 | Pillar | How this doc serves it |
 |---|---|
-| **P2 From Dory to Dynasty** | The money ladder: hand-selling a dory's cod at the Greywick wharf → storing & timing sales → processing into value-add goods → shipping bulk freight to the mainland with the Coastal Tanker. Each rung is a *visible* leap in scale and capability. |
+| **P2 From Dory to Dynasty** | The money ladder: hand-selling a dory's cod at the Nine Mile Creek wharf → storing & timing sales → processing into value-add goods → shipping bulk freight to the mainland with the Coastal Tanker. Each rung is a *visible* leap in scale and capability. |
 | **P3 A Living Working Coast** | The market **breathes**: a simulated NPC fleet lands fish too (gluts and scarcity happen without you), prices move on a sim tick, buyers have moods and contracts. The town runs whether you fish or not. |
 | **P4 Earn It, Then Automate It** | You do **every** job by hand first — catch, haul, sell, process — so it has weight. Then you **hire crew** and **build facilities** to automate the tedium and shift to *owner*. Managers progressively remove micro-management as the empire grows. |
 | **P5 Cozy, but with Teeth** | Perishable catch creates *time pressure* (sell or process before it spoils); bulk shipping carries *risk* (weather, loss). Stakes, not stress. |
@@ -28,7 +28,7 @@
 
 ---
 
-## 1. The supply & demand market at Port Greywick
+## 1. The supply & demand market at Nine Mile Creek
 
 The market is the heart of P3. Every tradeable thing is a **`Commodity`** (a ScriptableObject —
 see §8.1). Raw catch maps to commodities (each `FishSpecies` resolves to a commodity by id; see
@@ -96,13 +96,13 @@ recompute effPrice from §1.2
 
 ### 1.4 Multiple buyers / markets, auction house, contracts
 
-Greywick is the hub, but it is **not one price**:
+Nine Mile Creek is the hub, but it is **not one price**:
 
 - **The Fish Buyer (wharf):** instant, fair-ish spot price, takes anything, slightly below auction.
   The early-game default — cash now.
-- **The Auction House (Greywick):** consign a lot; price found by simulated bidders over a short
+- **The Auction House (Nine Mile Creek):** consign a lot; price found by simulated bidders over a short
   window; higher expected value but slower and variable. Big or premium lots shine here. Unlocked early
-  per canon (Port Greywick is an early story unlock).
+  per canon (Nine Mile Creek is an early story unlock).
 - **Specialty buyers (shops/restaurants):** the restaurant pays a premium for fresh prize fish and
   live lobster but in small quantity; the cannery buys herring/mackerel cheap in bulk; the apothecary
   wants fish oil; etc. Each has its own `D`/elasticity — different buyers absorb gluts differently.
@@ -137,7 +137,7 @@ goods set their own). Higher `e` ⇒ crashes & recovers faster.
 > **The central economic tension (P2/P4):** *raw* catch is volatile, perishable, and crashes when you
 > scale up (your own success gluts your home market). **Processing** (§4) and **shipping** (§6) convert
 > volatile, perishable raw into stable, durable, export-grade value — which is *why* you build the
-> business. The market is designed so that "just catch more and dump it at Greywick" hits a ceiling,
+> business. The market is designed so that "just catch more and dump it at Nine Mile Creek" hits a ceiling,
 > and the way *through* the ceiling is value-add + logistics + automation.
 
 ---
@@ -268,7 +268,7 @@ hired, paid, kept (reasonably) happy, and given **policies + AI routines** that 
 
 ### 5.2 Hiring, wages, morale, skill
 
-- **Hiring:** recruit at Greywick (a hiring board / the tavern). Candidates have **skill levels**, a
+- **Hiring:** recruit at Nine Mile Creek (a hiring board / the tavern). Candidates have **skill levels**, a
   **wage expectation**, and **traits** (e.g., *Sea-legs* = weather-tolerant, *Thrifty*, *Green* =
   cheap but low skill, *Sticky-fingers* = small shrink risk). You commit to a wage + schedule.
 - **Wages** are a recurring cost on the daily settle (§1.3). Underpaying relative to skill/expectation
@@ -340,7 +340,7 @@ managers. Examples:
 
 ## 6. Shipping & logistics (the dynasty money)
 
-Local demand is finite; you will glut Greywick. **Shipping** moves durable goods (and some iced/live
+Local demand is finite; you will glut Nine Mile Creek. **Shipping** moves durable goods (and some iced/live
 premium) to **distant/mainland markets** with higher prices and different demand — the outlet that
 makes fleet-scale income real (P2). This ties directly to **The Shipping Lanes** commerce layer and the
 freighter/tanker tier in [`boats-and-navigation.md`](boats-and-navigation.md).
@@ -387,7 +387,7 @@ station — P2 and P4 converging.
 | Property / facility | Economic function |
 |---|---|
 | **Home wharf (Coddle Cove)** | Free starter sell point (Fish Buyer visits) + first ice/well + first berth. Where hand-play begins. |
-| **Greywick berths (2nd / 3rd)** | Each berth lets you **operate another boat** (own + staffed). Berths are the gate on *fleet size* — the throttle on the whole catch pipeline. |
+| **Nine Mile Creek berths (2nd / 3rd)** | Each berth lets you **operate another boat** (own + staffed). Berths are the gate on *fleet size* — the throttle on the whole catch pipeline. |
 | **Cold storage / wet well** | Time-the-market + spoilage buffer + live-shellfish premium (§2/§3). |
 | **Dry warehouse** | Bulk, spoil-proof staging for processed goods and freight (§2/§6). |
 | **Processing plants** (salt house, smokehouse, cannery, reduction, pack house) | The value-add engine (§4). Throughput/capacity = how much volatile raw you can convert to stable value. |
@@ -471,7 +471,7 @@ module refs):
   method, the bucket's 20-unit hold) is **gameplay-systems'** — they map an owned-gear id to it. The
   rod fishes cod only once the cod licence is *also* held (owning the rod ≠ being licensed).
 - **The soft-shell clam (`FishSpeciesDef`, `fish.soft_shell_clam`):** the opening's by-hand income —
-  Shellfish, hand-dug, sellable at Greywick through the existing per-category market. Authored on the
+  Shellfish, hand-dug, sellable at Nine Mile Creek through the existing per-category market. Authored on the
   existing `Handline` (by-hand) gear tag until gameplay-systems reconciles a dedicated `Shovel`/
   `ClamFork` `GearTag` ([`fish-and-content.md`](fish-and-content.md) §3.5a — a new enum tag is review-
   gated). Gated to `region.coddle_cove` as a placeholder until world-content authors the St Peters
@@ -495,7 +495,7 @@ module refs):
 ### 9.1b Pots are bought, not conjured (owner green-light 2026-07-15)
 
 The trap loop's first real **P2/P4 money turn**: lobster/crab pots are **owned, finite, counted
-stock**, purchased at the Greywick shipwright — catch lobster → afford more pots → catch more lobster.
+stock**, purchased at the Nine Mile Creek shipwright — catch lobster → afford more pots → catch more lobster.
 All data-driven, behind Core seams:
 
 - **`PotOffer` (ScriptableObject, `Data/Shipwright/`):** the *economic* side of a pot — `Id`
@@ -587,7 +587,7 @@ tapping — it means setting better standing orders (the UX expression of P4).
    policy to avoid over-fiddly.)
 7. **Processing quality tiers:** do processed goods inherit a quality grade from input quality + skill
    (premium salt cod vs. standard), adding depth, or is processed output flat-quality for simplicity?
-8. **Inter-market arbitrage depth:** how freely can the player exploit price gaps between Greywick and
+8. **Inter-market arbitrage depth:** how freely can the player exploit price gaps between Nine Mile Creek and
    the mainland before transit time/risk/freight cost should rein it in? Tune so shipping is rewarding
    but not a free money printer (ties to §6 risk tuning).
 9. **Where does fuel/operating cost sit?** Per-trip fuel and crew wages as ongoing costs add realism and

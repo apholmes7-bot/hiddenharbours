@@ -203,7 +203,7 @@ Containers are **things in the world**, not abstract slots:
 
 - You **place items into** a container and you can **carry the container** and **place it down**. The
   first fish container is the **bucket**: a ~20-clam / fish pail you fill by digging, carry to
-  Greywick, and empty at the stall. (The M1 build already models this bucket as a hand-carried hold —
+  Nine Mile Creek, and empty at the stall. (The M1 build already models this bucket as a hand-carried hold —
   see §6 — which is the seed of this model.)
 - **World persistence: items and containers set down in the world stay there.** A bucket left on the
   wharf is *there* when you come back; a tool rack you place is a fixture. This is a genuinely

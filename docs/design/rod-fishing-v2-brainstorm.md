@@ -74,7 +74,7 @@ bobber.**
 
 This branches on the **gear the player chose**, not a new parallel system. It also makes the
 dock→deck arc a natural progression (P2): **dock = stable ground** (early, matches the St Peters
-clams → Greywick rod → boat ladder), **deck = a moving platform** (later, harder — §4).
+clams → Nine Mile Creek rod → boat ladder), **deck = a moving platform** (later, harder — §4).
 
 ### 2.2 The flick-cast (replaces the current long/short two-cast)
 

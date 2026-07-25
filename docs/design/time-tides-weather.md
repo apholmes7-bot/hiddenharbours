@@ -238,7 +238,7 @@ This single rule produces *every* tidal gameplay consequence:
 
 | Region | Profile feel | What tide does (P1/P5) |
 |---|---|---|
-| **St Peters Island** *(the opening, M2)* | **Big amplitude (~3–4 m range — much larger than the Cove's gentle tide), broad shallow flats and a low sandbar to Greywick.** The deliberate contrast: the prologue's enormous tide makes the falling-tide reveal unmissable, where the Cove's is gentle and forgiving. | As the tide **falls**, exposed seabed becomes **walkable**: the **clam flats** bare (the by-hand first catch) **and** the **sandbar to Port Greywick** bares as a **walking path** (boat-crossable channels **narrow as the tide falls**). The flood covers both and **seals the island off** — the player's first, kindest tide-gate (cut-off costs only time, P5). One `RegionTideProfile` + terrain elevation drives both flats and sandbar. |
+| **St Peters Island** *(the opening, M2)* | **Big amplitude (~3–4 m range — much larger than the Cove's gentle tide), broad shallow flats and a low sandbar to Nine Mile Creek.** The deliberate contrast: the prologue's enormous tide makes the falling-tide reveal unmissable, where the Cove's is gentle and forgiving. | As the tide **falls**, exposed seabed becomes **walkable**: the **clam flats** bare (the by-hand first catch) **and** the **sandbar to Nine Mile Creek** bares as a **walking path** (boat-crossable channels **narrow as the tide falls**). The flood covers both and **seals the island off** — the player's first, kindest tide-gate (cut-off costs only time, P5). One `RegionTideProfile` + terrain elevation drives both flats and sandbar. |
 | **Coddle Cove** (start) | Small amplitude, gentle slope, deep enough channel that you **never ground the dory in the main channel** — a forgiving tutorial. (Deliberately the **gentle** counterpoint to St Peters' big tide.) | Teaches the *concept* of tide safely: the wharf float rises/falls, mudflat edges show at low water, but you can't get badly stuck. |
 | **The Sunkers** | Reef field. Many tiles have `seabedElevation` just below mean level → submerged rocks (**sunkers**) that **break the surface near low water**. | At **low tide** the sunkers are exposed hazards you can see and avoid (and tide-pool/shellfish forage); at **high tide** they're *hidden just under the surface* → grounding/holing risk (P5). Reading the tide turns a deathtrap into a larder. |
 | **The Drownded Lands** | Vast flats with `seabedElevation` near mid-range. | At **low water** huge areas go dry → **walkable seabed** (clams, wrecks, secrets — canon). At **high water** they flood (*drownded*). Spring lows expose the most; the *biggest* secrets only surface at **spring low tide**. Get caught out there on a fast flood and you're in trouble (P5) — but never lethal; you wade/swim back or lose forage, not your life. |
@@ -259,7 +259,7 @@ This single rule produces *every* tidal gameplay consequence:
 > **Falling tide → walkable seabed → the St Peters sandbar (the opening's signature, M2).** The owner's
 > decided opening (canon [`../vision-and-pillars.md`](../vision-and-pillars.md) §5.8) leans on this
 > mechanic from minute one: as the deterministic tide **falls**, **exposed seabed becomes walkable**,
-> and a **tide-gated sandbar between St Peters and Port Greywick bares as a walking path at low water**
+> and a **tide-gated sandbar between St Peters and Nine Mile Creek bares as a walking path at low water**
 > (with **boat-crossable channels that narrow as the tide falls**) — the **first way to reach the
 > mainland, on foot**. St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
 > gentle tide**, so the same falling tide that bares the **clam flats** (the by-hand first catch) also
@@ -307,7 +307,7 @@ Canon: *"a readable tide table is a core tool"* and is a **gate** for The Drownd
 | Tier | Item | Horizon | Regions | Notes |
 |---|---|---|---|---|
 | 0 | Uncle's dog-eared **Tide Booklet** | Today + 1 day | Coddle Cove, The Sunkers | Inherited. Times rounded to 10 min. |
-| 1 | **Greywick Almanac** (buy) | 7 days | + The Drownded Lands, Fundy Rips | Unlocks Drownded Lands access (canon gate). Exact times. |
+| 1 | **Nine Mile Creek Almanac** (buy) | 7 days | + The Drownded Lands, Fundy Rips | Unlocks Drownded Lands access (canon gate). Exact times. |
 | 2 | **Harbourmaster's Charts** | 28 days (full moon cycle) | All known regions | Shows spring/neap calendar; best for planning expeditions. |
 | 3 | **HUD Tide Widget** (skill/upgrade) | Live glance | Current region | Always-on next-HW/LW + countdown on the HUD. The "mastery" reward. |
 
@@ -483,7 +483,7 @@ Three escalating instruments. The reward for using them is *foresight*; the cost
 | Tool | Where | Gives | Confidence |
 |---|---|---|---|
 | **Barometer** (wall instrument; portable upgrade for the boat) | Cottage; later boat-mounted | Current `barometer_hPa` + trend arrow (rising/steady/falling). **Falling = weather coming.** The earliest, most reliable cue. | Trend is trustworthy; you infer the rest. |
-| **Harbourmaster** (NPC at Port Greywick) | Port Greywick wharf | A spoken **daily forecast**: today + tomorrow sea state, wind, fog, any **gale/storm warning**. Friendlier/more detailed as relationship grows (P3 tie-in). | Good for ~24–48 h. |
+| **Harbourmaster** (NPC at Nine Mile Creek) | Nine Mile Creek wharf | A spoken **daily forecast**: today + tomorrow sea state, wind, fog, any **gale/storm warning**. Friendlier/more detailed as relationship grows (P3 tie-in). | Good for ~24–48 h. |
 | **Marine radio** (boat upgrade) | On the boat | **Live updates while at sea**: warnings as fronts develop, "small craft advisory", storm warnings. Critical for offshore (Banks/Ironbound) safety. | Best at-sea early-warning; updates as fronts move. |
 
 - **The sky itself is a free, learnable forecast.** Telegraph cues — greasy swell, mares' tails cloud, a sudden lull, the glass dropping, fog bank on the horizon, a sickly light before a squall — are rendered/audible so an attentive player can read weather *without any tool*, then confirm with instruments. **Reading the signs is the mastery fantasy** (P1). (Optional later: a "weather lore" skill that surfaces these cues as subtle UI hints.)
@@ -624,7 +624,7 @@ worldSeed ──────────┤
 > **Morning (plan, P1):** reads the **Harbourmaster's Charts** at the cottage (`timeFlowMultiplier=0`): spring **low water 07:50** (good — the Sunkers will be visible on the way out), but the **barometer is falling** and the harbourmaster warns of a **gale building from the nor'west by late afternoon**. Decision: go early, be home by 15:00.
 > **Outbound (P1+P2):** times the **Fundy Rips slack at 08:10** to slip through (mid-tide later would be a 3 m/s wall). Sea state 4 (Popple) inshore — fine for the stern trawler (maxSafeSeaState 7), a death sentence for the dory.
 > **At the grounds (P5 looming):** marine radio upgrades the warning to a **storm warning**; sea state climbing 5→6. Hold's half full of a rare Ironbound fish.
-> **The gut-check (P5):** push for a full hold and risk getting caught in a gale offshore in worsening seas, or run for home now with a good (not great) trip? The skipper reads the swell building, the glass still dropping — and **turns for home**. Catches the next Rips slack at 14:30. Ties up at Greywick as the first storm gusts hit. **That decision — earned by reading tide + weather — is the game.**
+> **The gut-check (P5):** push for a full hold and risk getting caught in a gale offshore in worsening seas, or run for home now with a good (not great) trip? The skipper reads the swell building, the glass still dropping — and **turns for home**. Catches the next Rips slack at 14:30. Ties up at Nine Mile Creek as the first storm gusts hit. **That decision — earned by reading tide + weather — is the game.**
 
 ---
 

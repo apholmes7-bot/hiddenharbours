@@ -112,7 +112,7 @@
 ### Epic M1-B — Economy & the first boat (`economy-sim` / `gameplay-systems`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
 |---|---|---|---|---|---|
-| M1-05 | Greywick market basics + Shipwright buy flow | economy-sim + gameplay-systems | Greywick spot price + buy the **Punt** (~1,800 ₲); switch active boat | Sell at a different price than the cove; buying Punt deducts coin, persists; low-funds blocked gracefully | VS-16 |
+| M1-05 | Nine Mile Creek market basics + Shipwright buy flow | economy-sim + gameplay-systems | Nine Mile Creek spot price + buy the **Punt** (~1,800 ₲); switch active boat | Sell at a different price than the cove; buying Punt deducts coin, persists; low-funds blocked gracefully | VS-16 |
 | M1-06 | Sell screen diegetic skin (chalkboard) | ui-ux | M1 polish of the sell flow (marginal price + total) | Diegetic skin; live total matches coin received; sell-all works | VS-18 |
 
 ### Epic M1-C — HUD v1 (read the sea) (`ui-ux`)
@@ -124,7 +124,7 @@
 | ID | Title | Owner | One-liner | Key AC | Maps to |
 |---|---|---|---|---|---|
 | M1-08 | Uncle Ned + onboarding flow | world-content + ui-ux | late Uncle Ned (brief prologue + his logbook); inherit the dory; teach-the-loop; 1–2 neighbours; dialogue panel | First-timer guided through one full loop; flags saved; warm/bittersweet Maritime tone | VS-21 |
-| M1-09 | Minimal Port Greywick scene | world-content | Short hop to a wharf with Fish Buyer + Shipwright + flavour buildings | Sail/transition cove→Greywick; sell + buy Punt; harbour workable at any tide; clean load | VS-22 |
+| M1-09 | Minimal Nine Mile Creek scene | world-content | Short hop to a wharf with Fish Buyer + Shipwright + flavour buildings | Sail/transition cove→Nine Mile Creek; sell + buy Punt; harbour workable at any tide; clean load | VS-22 |
 
 ### Epic M1-E — Art pass (`art-pipeline`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
@@ -176,7 +176,7 @@
 | M2-10 | The Sunkers (reef field, grounding teeth) | world-content | Submerged rocks; tide-gauge landmarks; channels | Reefs surface at low water (safe forage) / hide at high (holing risk); teaches grounding cheaply |
 | M2-11 | The Drownded Lands (walkable seabed) | world-content | Flats drain to walkable seabed at low water; returning-tide clock | On-foot seabed at low water; spring lows expose the rarest; flood is a lethal-but-survivable clock |
 | M2-12 | Fundy Rips (tide-as-a-wall) | world-content | Narrows; current gated; slack-water transit window | Peak current a wall; only slack is safe; spring tides far worse |
-| M2-13 | Port Greywick — full town | world-content | Auction house, shops, shipwright, harbourmaster, named cast | Real town with services + named NPCs; the breathing-coast hub |
+| M2-13 | Nine Mile Creek — full town | world-content | Auction house, shops, shipwright, harbourmaster, named cast | Real town with services + named NPCs; the breathing-coast hub. **This is M1's wharf grown up, not a second settlement** — Nine Mile Creek was renamed to Nine Mile Creek (plan §7.10), so the coast has ONE mainland port |
 | M2-14 | Seabed heightfields + tide-revealed geography tooling | tools-editor + world-content | Per-region tidal-height thresholds drive walkable/visual state | Same `WaterLevel` drives sim + visuals; authoring tool for thresholds |
 
 ### Epic M2-D — Boats, gear & upgrades (P2) (`gameplay-systems` / `economy-sim`)
@@ -211,8 +211,8 @@
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
 | M2-27 | Map / chart UI + fog-of-war + tide-table tiers | ui-ux | Nautical chart, discovered-by-presence reveal, buyable charts, table tiers | Locked regions fogged; charts pre-reveal authored hazards; table horizon grows with tier |
-| M2-28 | Region art passes (Sunkers / Drownded / Rips / Greywick) | art-pipeline | Per-region grade + tide-driven visuals + bigger boats | Each region reads as its own mood; tide visuals match sim; metric scale holds |
-| M2-29 | Weather/danger audio + town hum | audio | Storm/fog/region beds; danger cues; inhabited town | Storm/fog beds; aground/lost cues; Greywick sounds populated |
+| M2-28 | Region art passes (Sunkers / Drownded / Rips / Nine Mile Creek) | art-pipeline | Per-region grade + tide-driven visuals + bigger boats | Each region reads as its own mood; tide visuals match sim; metric scale holds |
+| M2-29 | Weather/danger audio + town hum | audio | Storm/fog/region beds; danger cues; inhabited town | Storm/fog beds; aground/lost cues; Nine Mile Creek sounds populated |
 | M2-30 | Streaming-at-passages + perf pass + save migration | qa-test + lead-architect | Stream clusters at passages; profile; migrate M1 saves | One/two regions resident; hits budget; old saves migrate |
 
 ### Epic M2-I — Owner-ratified 2026 additions (St Peters opening · lobster gear · weather/winter · wet tide)
@@ -223,13 +223,13 @@
 > **Core seams already landed for this batch (ADR 0009):** the **tidal-exposure query**
 > (`IEnvironmentService.WaterLevelAt` + `Core.TidalExposure.IsExposed/WaterDepth`) the world terrain and the
 > on-foot walkability sim share for the falling-tide sandbar, and **`Core.RegionDisplayNames`** so the crossing
-> fade card reads "Coddle Cove"/"Port Greywick". Build M2-31/31b/31c against these; do not re-invent them.
+> fade card reads "Coddle Cove"/"Nine Mile Creek". Build M2-31/31b/31c against these; do not re-invent them.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig at low water; **walk the tide-gated sandbar to Greywick** | New starter region; **tide-gated SANDBAR to Greywick** (low-water walking path; channels narrow as the tide falls) reads + works via the Core tidal-exposure seam; **clam-dig → walk sandbar → Greywick** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
+| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig at low water; **walk the tide-gated sandbar to Nine Mile Creek** | New starter region; **tide-gated SANDBAR to Nine Mile Creek** (low-water walking path; channels narrow as the tide falls) reads + works via the Core tidal-exposure seam; **clam-dig → walk sandbar → Nine Mile Creek** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
 | M2-32 | St Peters clam-dig (shovel + "two squirting holes") | gameplay-systems + world-content | Read the tell on bared flats, dig with a shovel; clam-licence gate (licence system = economy) | Passive "tend" dig (no tension fight); **licence-gated** (licence system owned by economy); the **first catch, before any rod**; reconcile shovel vs `ClamFork` tag (new tag = review-gated) (`fish-and-content` §3.5a) |
-| M2-31b | Greywick early-progression: cod licence + rod + **buy & repair a damaged dory** | economy-sim (+ gameplay-systems) | At Greywick: buy a **cod fishing licence** + a **rod**; sell clams; **buy a damaged dory at the shipwright and pay to repair it**, then sail it home to Coddle Cove | Minimal **licence system** (clam + cod licences) lands in economy; shipwright sells a **damaged** dory + a paid **repair** to usable; arc completes by **sailing the repaired dory to the Cove** (`vision` §5.8, `progression-and-housing` §2.2/§3) |
+| M2-31b | Nine Mile Creek early-progression: cod licence + rod + **buy & repair a damaged dory** | economy-sim (+ gameplay-systems) | At Nine Mile Creek: buy a **cod fishing licence** + a **rod**; sell clams; **buy a damaged dory at the shipwright and pay to repair it**, then sail it home to Coddle Cove | Minimal **licence system** (clam + cod licences) lands in economy; shipwright sells a **damaged** dory + a paid **repair** to usable; arc completes by **sailing the repaired dory to the Cove** (`vision` §5.8, `progression-and-housing` §2.2/§3) |
 | M2-31c | Rework VS-21 onboarding: inherited dory → **earned + repaired** dory | world-content | The built M1 onboarding (`VS-21`: Ned's logbook + "inherit the dory" at the Cove) is **partly invalidated** by the dropped inherited-dory framing — rework the inherited-dory beat into a buy-and-repair beat | Cottage + Ned's memory stay inherited; the **dory beat becomes buy-and-repair**; dialogue/onboarding **reused, not rebuilt**; flagged in canon §5.8 + `npcs-and-routines` §3.1 (do **not** silently drop) |
 | M2-33 | Lobster gear loop (trap+buoy, leave-helm gaff-haul, winch) | gameplay-systems | Set baited trap+buoy; lay alongside, **leave the helm to gaff & haul** (boat drifts); powered-winch upgrade | Hand-haul is a stamina action; winch automates it (P4); approach/drift reads as seamanship (P1/P5) (`boats-and-navigation` §6.3, `fish-and-content` §3.5b) |
 | M2-34 | Weather v2: waves-push + traveling gusts | gameplay-systems | Wave-push force shoves the hull; moving gust cells you see coming | Wave-push adds to drift + broach (new FORCES field, save-compat bump); gust cells propagate + telegraph; deterministic (`time-tides-weather` §4.8) |

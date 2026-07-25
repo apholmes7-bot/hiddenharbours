@@ -124,7 +124,7 @@ also nearly free — it is a start-date constant, not a system.
 | | Old M1 (mechanic-first) | New M1 (world-first) |
 |---|---|---|
 | **Home region** | Coddle Cove | **St Peters Island** |
-| **Second region** | Port Greywick (services) | **Nine Mile Creek** (a working wharf, not a town) |
+| **Second region** | Port Greywick (services) | **Nine Mile Creek** — the *same place, renamed* (D1); a working wharf, not yet a town |
 | **Opening** | Inherit Ned's dory | **Accompany your aunt**; earn the dory |
 | **First verb** | Handline fishing | **Digging shellfish at low water** |
 | **First market** | Wharf fish buyer | **The island general store** (worse prices — a reason to cross) · also sells the **clam licence** |
@@ -134,7 +134,7 @@ also nearly free — it is a start-date constant, not a system.
 | **Cast** | Ned (departed) + 1–2 neighbours | **Aunt + a small inhabited island**: schoolhouse, general store, a few homes, 4–6 named people |
 | **Proves** | "Are the verbs fun?" | **"Is this a world worth a season?"** |
 
-**Out of M1** (not cancelled — re-phased): Port Greywick as a full town (already M2-13), Coddle Cove as the
+**Out of M1** (not cancelled — re-phased): the mainland port as a **full town** (M2-13 — now Nine Mile Creek grown up, not a second settlement), Coddle Cove as the
 home harbour (M2), the Punt purchase, blue-mussel and pollock, everything above the dory in the hull ladder.
 
 ---
@@ -188,7 +188,8 @@ Today the island is: one cottage, Aunt Ginny, Ned's letter, a dock. The arc need
 ### 7.2 · Nine Mile Creek — `world-content` + `owner` + `art-pipeline`
 A new small region: the wharf, the **fish buyer** (better prices than the island store), the **derelict dory**
 hauled out where you can see her from arrival, the **used-outboard seller**, and a couple of buildings for
-flavour. A working creek, not a town. Greywick's outdated art is **retired, not repainted** (see D1).
+flavour. A working creek, not a town. This is **Greywick renamed** (D1, mechanics in §7.10) — the region is
+kept and re-dressed, so its outdated art is **replaced from the baked rigs** rather than repainted by hand.
 
 - **Exit:** you arrive off the sandbar, sell, see the dory, and understand she is the next rung.
 
@@ -298,8 +299,8 @@ Then the **cod licence at Nine Mile Creek is the one you pay for yourself** — 
 now with real money on the line. Licence one is taught; licence two is earned.
 
 > **Housekeeping:** `Data/Licenses/CodLicense.asset` flavour text still reads *"Greywick's harbourmaster
-> signs you off…"*. Retarget to Nine Mile Creek under D1. The `id` (`license.cod`) is stable and does **not**
-> change.
+> signs you off…"*. Retargeted as part of the rename (§7.10). The `id` (`license.cod`) is stable and does
+> **not** change.
 
 ### 7.6 · The reads the player needs — `ui-ux` + `gameplay-systems`
 Cut to what the new arc actually requires, in priority order:
@@ -378,6 +379,44 @@ before the GO/POLISH/PIVOT verdict is in.
 - **Exit:** a tester can install the build, start a new game, adjust volume, pause, quit, relaunch and
   continue — and can tell you which build they were on.
 
+### 7.10 · Rename Port Greywick → Nine Mile Creek — `lead-architect` + `world-content`
+The owner's call (D1): it is **one place, renamed**, not a new region beside the old one. Canon's mid-size
+town (M2-13) becomes Nine Mile Creek grown up, so the coast has **one** mainland port.
+
+**Canon leads, and has already been changed.** A region's name is a locked canon fact, so the docs went
+first (CLAUDE.md): canon, the roadmap, all ten design docs and this backlog now say **Nine Mile Creek** —
+162 replacements. **The ADRs deliberately keep "Greywick"**: an ADR records a decision as it was made on its
+date, and rewriting one falsifies the record. Only the **code and assets** remain, below.
+
+**Do the id properly — and do it now.** `RegionDef.Id` is `region.port_greywick`, and ids are append-only
+and stable (CLAUDE.md §5). That rule exists to protect **shipped saves**, and there are none: M1 isn't
+finished, nothing has been released, and the only saves in existence are the owner's. So the choice is
+between carrying `region.port_greywick` forever as the id of a place called Nine Mile Creek — a papercut for
+every future reader — or changing it while the cost is nearly zero.
+
+**Change it, now, before the region content is authored against it.** This is the cheapest this will ever be.
+
+**The surface is smaller than the mention count suggests** (≈278 code / 231 test / 261 doc mentions, but most
+are prose):
+- `Data/Regions/PortGreywick.asset` → id `region.nine_mile_creek`, `DisplayName: Nine Mile Creek`,
+  `SceneName: NineMileCreek`. Rename the asset file too.
+- The id appears as a **literal in only ~8 code and ~13 test sites**, plus 3 fish assets that list it in
+  `RegionIds` (`AtlanticCod`, `Haddock`, `Mackerel`).
+- `MarketId.Greywick` → `NineMileCreek`. **The enum value stays 1** — only the symbol changes, so nothing
+  serialized moves.
+- `GreywickBuilder.cs`, `GreywickMarketTests.cs`, `GreywickDockTests.cs` → renamed files.
+- `GreywickHouseRed.png` / `GreywickHouseTeal.png` → renamed (and superseded anyway when the building rigs
+  bake, M2-40/46).
+- `Core.RegionDisplayNames`, `WorldStrings`, `RegionFade`, `OnboardingDirector` copy.
+- `Data/Licenses/CodLicense.asset` flavour: *"Greywick's harbourmaster…"*. (`license.cod` id is unaffected.)
+
+**One save migration.** `SaveData.PlacedTrapDto.Region` stores a region **string**, so a placed trap saved
+before the rename would orphan. Add a guarded `SaveMigration` step rewriting `region.port_greywick` →
+`region.nine_mile_creek` — the same shape as the four steps already there.
+
+- **Exit:** no `Greywick` anywhere outside changelog history; a pre-rename save loads with its traps intact;
+  the content-validation test passes; CI green.
+
 ### 7.9 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
 Unchanged from the previous audit and still real:
 
@@ -396,7 +435,7 @@ Unchanged from the previous audit and still real:
 
 | # | Decision | Recommendation |
 |---|---|---|
-| **D1** | Is Nine Mile Creek a **rename** of Port Greywick, or a **new region** that takes its M1 role? | **New region.** Renaming breaks `region.port_greywick` (ids are append-only and stable, CLAUDE.md §5) and throws away canon's mid-size town, which M2-13 already scopes. A creek wharf and a town are different places. Build `region.nine_mile_creek` fresh with current art; **shelve** the Greywick scene and its outdated art for the M2 town pass. Nothing is deleted. |
+| **D1** | Is Nine Mile Creek a rename of Port Greywick, or a new region? | **DECIDED by the owner: a rename. Greywick *is* Nine Mile Creek.** One place, renamed — not two. That also means canon's mid-size town (M2-13) is **Nine Mile Creek grown up**, not a separate settlement, so the coast has one mainland port rather than two. See §7.10 for how the rename is done without breaking saves — and note it is a **canon change**, so `vision-and-pillars.md` and `world-and-regions.md` §6.3 must be updated *first* (CLAUDE.md: canon leads). |
 | **D2** | Is **Coddle Cove** in M1 at all? | **No — and rename the milestone.** Your arc ends with the dory moored at St Peters; the Cove never appears. It stays in the repo, committed and unbroken, as the M2 home harbour canon already says you settle into. M1 becomes **"Vertical Slice — St Peters"**: two regions, which is the right size. Three regions taxes every art, audio, and perf pass for a place the slice doesn't use. |
 | **D3** | Ratify ADR 0019 and author the two region scenes? | **Yes — this is the critical path.** Agents cannot author a `.unity`; the tooling is ready and the scenes are yours to build. With the reframe, this is *most of M1*: the world **is** the deliverable. Nothing in §7.1–7.2 finishes without you at the editor. |
 | **D4** | Where does audio come from — commissioned, licensed, or procedural-only? | **License or commission the music bed and the wind tell; keep procedural ambience.** Longest lead time in the milestone — decide it now even though it lands last. A world game with no music will read as a tech demo no matter how good the water looks. |
@@ -494,4 +533,4 @@ absence of bugs** — the question is whether they come back on day three.
 | **Freshness makes the game stressful, not cozy** | A rot timer is the easiest way to turn cozy into anxious. | Generous windows, an always-available arrest (the freezer is free and adjacent), value loss only — never destroyed catch, never a failed day. |
 | **Audio lead time** | Zero assets; a canon-sacred wind tell can't be conjured in a sprint. | Decide D4 in Wave 0; build all cue logic against placeholder stems so only the audio swaps in. |
 | **The verbs pull focus again** | Fishing and sailing are the fun part to work on, and they're already done. Every hour there is an hour the village doesn't get. | D6's freeze, and this document: M1 is the world now. |
-| **Retiring Greywick feels like waste** | Two regions of built work step out of M1. | They aren't deleted — Coddle Cove is M2's home harbour and Greywick is M2's town, both already scoped in the backlog. The work is re-phased, not lost. |
+| **Coddle Cove steps out of M1** | A committed, fully art-passed region leaves the slice. | It isn't deleted — canon already has it as the home harbour you settle into, so it is M2's, scoped and waiting. Greywick isn't lost either: it is **renamed**, not retired, and its logic carries straight over. |
