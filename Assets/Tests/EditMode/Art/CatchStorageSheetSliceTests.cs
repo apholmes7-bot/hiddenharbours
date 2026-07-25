@@ -25,11 +25,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// direction rows × 1 frame; item strips ONE row × 4 lay variants; the mask matches the tote
     /// exactly (it must overlay pixel-on-pixel).</para>
     ///
-    /// <para><b>Every stem starts in <see cref="AwaitingOwnerBake"/></b> — the owner-bake guard
-    /// pattern of PR #252/#260: the sheets are specced here before any PNG exists, each per-sheet
-    /// test reads Skipped (honestly) until the owner runs <i>Hidden Harbours ▸ Art ▸ Bake Catch
-    /// Storage Kit</i>, and the moment a sheet lands it is held to every assertion. When the whole
-    /// kit has landed, empty this set (per its own rule) so a missing sheet fails loudly.</para>
+    /// <para><b>The kit has LANDED</b> — every stem once started in <see cref="AwaitingOwnerBake"/>
+    /// (the owner-bake guard pattern of PR #252/#260: sheets specced before any PNG exists, each
+    /// per-sheet test reading Skipped honestly until the owner ran <i>Hidden Harbours ▸ Art ▸ Bake
+    /// Catch Storage Kit</i>). All 59 arrived on 2026-07-25 and the set is now empty, so every
+    /// stem is held to every assertion and a missing sheet fails loudly.</para>
     /// </summary>
     public class CatchStorageSheetSliceTests
     {
@@ -87,11 +87,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// Guarded stems whose sheets are SPECIFIED but not yet on disk — currently the WHOLE kit:
-        /// this wave ships the baker and the spec; the machine-contended bake is the owner's click
-        /// (Hidden Harbours ▸ Art ▸ Bake Catch Storage Kit). Empty this set when the bake lands.
+        /// Guarded stems whose sheets are SPECIFIED but not yet on disk. <b>EMPTY since the owner
+        /// ran the bake (2026-07-25) and all 59 sheets landed</b> — per this set's own rule, so a
+        /// missing sheet now fails loudly instead of reading as a patient Skip.
         /// </summary>
-        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>(Sheets.Keys);
+        private static readonly HashSet<string> AwaitingOwnerBake = new HashSet<string>();
 
         private static bool OnDisk(string stem) => File.Exists(Storage + stem + ".png");
 
