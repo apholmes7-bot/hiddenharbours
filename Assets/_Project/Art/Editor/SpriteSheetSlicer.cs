@@ -278,6 +278,52 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Boats/LobsterBoatIso.png",      8, 4, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
             new SheetSpec(Root + "Boats/LobsterBoatIsoRock0.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
             new SheetSpec(Root + "Boats/LobsterBoatIsoRock1.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
+
+            // ---- Shoreline ISO tile kit (v7): the PEI red-sandstone coast rebuilt to MATCH THE BOAT BAKE
+            //      — square 32×32 cells, 32 px = 1 m, ¾ camera from the SOUTH at 40° (the fleet's turntable
+            //      elevation), band-edge-only Bayer dither world-locked to global pixel coords. These
+            //      REPLACE the older near-plan Shore*/Grass/Sand/Rock tiles sitting loose in Tilesets/,
+            //      which are left untouched so nothing already painted breaks.
+            //
+            // ⚠ THE KIT BAKES ZERO WATER, ON PURPOSE (ADR 0010/0012/0023). The shader owns the waterline:
+            //   it clips at the live depth-0 tide contour, rides foam/swash on it, and pins the displaced
+            //   surface to the same line. Every ground material is authored to read right DRY AND
+            //   SUBMERGED because the tide sweeps whole flats. Rule-tiles carry terrain-TYPE edges only
+            //   (grass↔sand↔rock) plus permanent landforms. Do not author a foam/waterline tile against
+            //   these — butt land straight at the shader water and there is nothing to line up.
+            //
+            // Cell 32×32 everywhere, Center pivot (a tilemap places by cell, so centre is the only pivot
+            // that keeps a cliff band stacked on the cell it was painted into). Slice names are GEOMETRIC
+            // (`<Stem>_<index>`, row-major from top-left); the row/col SEMANTICS live in
+            // ShorelineIsoCatalog, which reads them off the kit's own ShorelineIso.json contract. That
+            // split is deliberate: the cliff columns carry compass-ish labels (cornSW, sideW, faceS…) and
+            // this repo has shipped mislabelled compass art five times — a slice name states which cell,
+            // never which way it looks (same rule as CharacterSheetSlicer).
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoGround.png",  3, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoFringe.png", 12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoCliff.png",  10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoDune.png",    9, 1, 32, 32, SpriteAlignment.Center, Centre),
+            // ShoreIsoSprites.png is NOT here: it is a packed sheet of freestanding rock at seven
+            // DIFFERENT sizes with per-item base-centre pivots, so it has no uniform grid to slice.
+            // ShorelineIsoSpriteSlicer reads its rects and pivots from the ShoreIsoSprites.json sidecar.
+
+            // ---- Road / path / sidewalk kit: flat 32×32 NEAR-PLAN ground tiles that sit IN the ground
+            //      plane exactly like Grass.png/Dirt.png, so they register with the iso houses, the wharf
+            //      deck and the shoreline flats. One pre-baked reference atlas per surface at `new` wear
+            //      over a grass verge, no markings; wear states, other verges, markings and whole painted
+            //      maps all bake from roadPathRig.js.
+            //
+            // 12 cols × 4 rows = 48 cells holding the canonical 47-tile blob autotiler set (isolated ·
+            // caps · straights · bends · tees · crosses), sorted by neighbour mask — so the LAST cell
+            // (index 47) is spare padding, not a tile. Index → neighbour mask is RoadKit.BLOB47's order;
+            // ShorelineIsoCatalog.RoadBlobCount names the 47 so nothing indexes the 48th by accident.
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_dirt_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_gravel_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_concrete_new_blob47.png", 12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_asphalt_new_blob47.png",  12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_cobble_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_sand_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_brick_new_blob47.png",    12, 4, 32, 32, SpriteAlignment.Center, Centre),
         };
 
         // ---- entry points -------------------------------------------------------------------------

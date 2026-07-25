@@ -861,6 +861,11 @@ and none is a flat repeat of the last.
 
 ### 9.1 Scene-per-region strategy
 
+> **How big is each scene?** See [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md)
+> — the per-region extents, derived from the measured camera framing and the boat ladder's real
+> terminal speeds rather than picked. It also carries the scaled-up St Peters and the sandbar-as-its-
+> own-scene proposal (owner ask, 2026-07-23).
+
 - **One Unity scene per region** (additively loaded), e.g. `Scene_CoddleCove`,
   `Scene_TheSunkers`, `Scene_PortGreywick`, `Scene_DrowndedLands`, `Scene_FundyRips`,
   `Scene_TheBanks`, `Scene_Ironbound`, `Scene_TheSmother`, plus the lane network for
