@@ -240,7 +240,10 @@ relationship to the player · questline/service hook.**
 > here is deleted**.
 > **✅ Reconciliation RESOLVED for the buy-and-repair beat (2026 — onboarding relocated to St Peters).**
 > The owner **dropped the "inherit Uncle Ned's dory" framing**; your first boat is now a **plain damaged
-> dory bought at the Greywick shipwright and repaired for a fee**, not handed down. The onboarding has now
+> dory bought and put right**, not handed down. *(Amended 2026-07-25: she lies at the **Nine Mile Creek
+> wharf**, and **no shipwright stands in that region** — so who sells her, and who repairs her for what,
+> are open. This is the beat that most needs a named character; see
+> [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)* The onboarding has now
 > been **relocated to the St Peters opening and reworked into the earned/buy-and-repair beat** (the
 > dialogue/onboarding *system* was reused, not rebuilt, exactly as required): **Aunt Ginny** is placed at
 > the St Peters island start (anchored by the cottage — no routine yet, that's M2) teaching the new loop,

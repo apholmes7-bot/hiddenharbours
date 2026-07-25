@@ -151,16 +151,7 @@ window, weather, or simply the honest length of the crossing.
 
 ## 7. ⏳ Open — the owner must settle these
 
-1. **⚠️ Where does the dory come from?** Canon
-   ([`world-and-regions.md`](world-and-regions.md) §125/§237) says the opening's first crossing is
-   **on foot over the sandbar to Port Greywick**, where the shipwright **sells you the damaged
-   dory**, which you then repair and sail to Coddle Cove. The drop says the player **gets the dory at
-   Nine Mile Creek** and rows to St Peters.
-   [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1 has this as its own gating question —
-   *is Nine Mile Creek Greywick's wharf, or its own region?* **If Nine Mile Creek IS the landing at
-   the far end of the sandbar, the drop and canon agree and §1 is answered.** If it is a separate
-   place, the opening has genuinely moved and canon needs amending. This gates the Nine Mile Creek
-   doc, the opening, and any content built for either.
+1. ~~**⚠️ Where does the dory come from?**~~ ✅ **SETTLED 2026-07-25 — see §7.1 below.**
 2. **Is St Peters gas sold in CANS** (carry it to the boat) rather than through a pump? (§3)
 3. **What makes the row demanding?** (§5.1)
 4. **⚠️ Does Ned's two-stroke need OIL MIXED WITH THE GAS?** A real two-stroke outboard burns a
@@ -169,3 +160,29 @@ window, weather, or simply the honest length of the crossing.
    motor. **Charming or fiddly is a taste call, not a research one.** If yes, it wants art (an oil
    tin) and a line from Ginny; if no, the engine simply drinks gas like everything else and nobody
    will mind.
+
+### 7.1 ✅ Settled 2026-07-25 — where the dory comes from
+
+**Nine Mile Creek IS Port Greywick's working wharf** — one region, two zones (owner ruling; see
+[`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1). That dissolves the apparent conflict:
+the wharf *is* the landing at the far end of the sandbar, so canon's "cross the bar on foot to
+Greywick" and the drop's "go to Nine Mile Creek to get the dory" are **the same crossing described
+from two ends.** No canon amendment is needed for the geography.
+
+Two further rulings the same day, which **do** amend canon:
+
+- **There is no shipwright in this region.** The damaged dory lies at the wharf and is sold by
+  someone else there — a fisherman, the harbourmaster, whoever the world-content lane decides.
+  Canon's "buy her at the **Greywick shipwright**" is superseded on the *seller*, not on the
+  *transaction*: she is still **bought**, not inherited (the ratified earn-the-boat beat stands).
+- **She still arrives damaged and must be put right** before she will swim.
+
+⏳ **Consequently open, and NOT invented here:** (a) **who repairs her**, now that no shipwright
+stands in the region — the recommendation is *you do, by hand*, which is the strongest available
+P4 beat and already has a hook (stamina is spent on the manual bilge pump and field repairs);
+(b) **where the shipwright's yard lives instead**, since boat purchase and upgrades for the whole
+rest of the game hang off it (`Data/Shipwright/` is built and shipping today).
+
+**The opening, end to end, as it now stands:** dig clams at St Peters → cross the bar on foot →
+find the damaged dory at the Nine Mile Creek wharf → earn her, buy her, put her right → **row**
+her home to St Peters → Aunt Ginny hands over Ned's old motor → your first errand is buying gas.

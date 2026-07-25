@@ -222,8 +222,9 @@ M1; performance pass for scene streaming at passages (`lead-architect` + `qa-tes
 **Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
 and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue, **built first as a
 greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Greywick at low
-water** → buy a **cod licence + rod**, sell clams, **buy a damaged dory at the Greywick shipwright and pay to
-repair it** → **sail it home to Coddle Cove**. The start and the Ned/Ginny onboarding **relocate** here from the M1
+water** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine Mile Creek wharf and
+have her put right** → **sail it home to Coddle Cove**. *(Owner ruling 2026-07-25: the wharf is Greywick's own,
+one region two zones; no shipwright stands there — seller and repairer are open.)* The start and the Ned/Ginny onboarding **relocate** here from the M1
 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it. **Note:** the owner has
 **dropped the "inherit Uncle Ned's dory" framing** — the dory is now *earned and repaired*, which **partly
 invalidates the built VS-21 onboarding** (the inherited-dory beat needs rework — a flagged later task), while Ned's
