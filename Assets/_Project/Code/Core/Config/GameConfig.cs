@@ -113,6 +113,20 @@ namespace HiddenHarbours.Core
                  "impossible — depth is a WEIGHT on the catch roll, not a wall.")]
         public DepthDropSettings DepthDrop = DepthDropSettings.Default;
 
+        [Header("Bait & tackle (what's on the hook — a WEIGHT on the catch, never a wall)")]
+        [Tooltip("How much the right bait and the right tackle matter. Bait is the PRECISE tool (a fish " +
+                 "that wants food refuses the wrong food); tackle is the BROAD one (a curious fish will " +
+                 "still hit the wrong lure). Turn the boosts to 1 and the damps to 1 to make what's on " +
+                 "the hook irrelevant again.")]
+        public BaitTackleSettings BaitTackle = BaitTackleSettings.Default;
+
+        [Header("Jigging (working the lure — the five hand-feels)")]
+        [Tooltip("What each kind of tackle wants you to DO with it, and how much it matters. Bait fishes " +
+                 "itself; a lure only fishes if you work it, and each one wants its own tempo and stroke " +
+                 "size. Raise Tolerance01 to make the actions easier to find by feel; raise " +
+                 "DeadLureFraction01 to be kinder to a player who leaves the rod still.")]
+        public JiggingSettings Jigging = JiggingSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -500,5 +514,118 @@ namespace HiddenHarbours.Core
             TrapDefId = trapDefId;
             Count = count;
         }
+    }
+
+    /// <summary>
+    /// WHAT'S ON THE HOOK (<see cref="GameConfig.BaitTackle"/>) — how much the right bait and the right
+    /// tackle change what bites. Consumed by <c>CatchResolver.BaitAffinity</c> /
+    /// <c>LureAffinity</c> as plain multipliers on the catch roll, the same Core-policy /
+    /// feature-consumer split as <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>Weights, never walls</b> — the promise depth already makes. The wrong kit catches LESS;
+    /// it never catches NOTHING. That is what lets a beginner with a bare spoon still fill a bucket
+    /// while an angler who has learned the pairings fills it faster and with what they were after.</para>
+    ///
+    /// <para><b>Bait is precise, tackle is broad.</b> The wrong bait is damped harder than the wrong
+    /// lure, because a fish that wants food will refuse the wrong food outright, while a curious fish
+    /// will still occasionally hit a lure it doesn't love. That asymmetry is the whole reason to carry
+    /// both: bait to TARGET, tackle to COVER.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct BaitTackleSettings
+    {
+        [Tooltip("How much likelier a species is when the bait on the hook is one it wants (≥ 1; " +
+                 "1 = bait doesn't matter). This is the strongest targeting tool in the game — bigger " +
+                 "than the depth weight on purpose, because choosing bait is a deliberate act.")]
+        [Min(1f)] public float BaitFavourBoost;
+
+        [Tooltip("What's left of a species' chance when the bait is one it does NOT want (0..1; " +
+                 "1 = no penalty). Low: the wrong bait is a real mistake. Never 0 — a haddock will " +
+                 "still occasionally take a squid strip meant for cod.")]
+        [Range(0f, 1f)] public float WrongBaitDamp01;
+
+        [Tooltip("How much likelier a species is when the tackle tied on is one it chases (≥ 1; " +
+                 "1 = tackle doesn't matter). Smaller than the bait boost — tackle covers water, bait " +
+                 "picks a fish.")]
+        [Min(1f)] public float LureFavourBoost;
+
+        [Tooltip("What's left of a species' chance on a lure it doesn't favour (0..1). Gentler than the " +
+                 "wrong-bait damp: a fish will hit the wrong lure out of curiosity far more readily " +
+                 "than it will eat the wrong food.")]
+        [Range(0f, 1f)] public float WrongLureDamp01;
+
+        /// <summary>The reference tuning: the right bait roughly triples a species' share and the wrong
+        /// one cuts it to a third; the right tackle doubles and the wrong one costs a third. So a
+        /// correctly-baited, correctly-tackled cast is worth about six times a badly-chosen one — a
+        /// decision you can feel — while nothing is ever off the table.</summary>
+        public static BaitTackleSettings Default => new BaitTackleSettings
+        {
+            BaitFavourBoost = 3f,
+            WrongBaitDamp01 = 0.35f,
+            LureFavourBoost = 2f,
+            WrongLureDamp01 = 0.65f,
+        };
+    }
+
+    /// <summary>
+    /// WORKING THE LURE (<see cref="GameConfig.Jigging"/> — owner's ask 2026-07-25). Five hand-feels,
+    /// tuned in ONE place rather than restated on every tackle asset: a piece of tackle just names its
+    /// <c>JigStyle</c> and the numbers live here, so the owner can re-feel all five without touching
+    /// content. The pure maths that consumes them is <c>JigMath</c> (Fishing-side).
+    ///
+    /// <para>Tempo is strokes per second (a stroke = one reversal of the hand: the top of a lift, the
+    /// bottom of a drop). Stroke is how far the pointer travels between reversals, in world metres — so
+    /// these read against the same on-screen scale the cast does (the on-foot view is about 16 m wide).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct JiggingSettings
+    {
+        [Header("The five actions (tempo = strokes/sec, stroke = world metres)")]
+        [Tooltip("COD JIG — big slow heaves, then let it flutter back. She takes it on the drop.")]
+        [Min(0f)] public float LiftAndDropTempo;
+        [Min(0f)] public float LiftAndDropStroke;
+
+        [Tooltip("MACKEREL FEATHERS — short fast twitches, like a shoal of fry breaking up.")]
+        [Min(0f)] public float QuickJerksTempo;
+        [Min(0f)] public float QuickJerksStroke;
+
+        [Tooltip("SPOON — one long even sweep, wobbling steadily through the water.")]
+        [Min(0f)] public float SteadySweepTempo;
+        [Min(0f)] public float SteadySweepStroke;
+
+        [Tooltip("SOFT BAIT — slow and small, with long pauses. Something dying, not something fleeing.")]
+        [Min(0f)] public float SlowCrawlTempo;
+        [Min(0f)] public float SlowCrawlStroke;
+
+        [Tooltip("SPINNER — quick and continuous; the blade has to keep turning or it is just a weight.")]
+        [Min(0f)] public float FastSteadyTempo;
+        [Min(0f)] public float FastSteadyStroke;
+
+        [Header("How forgiving, and how dead")]
+        [Tooltip("How far off the target action you can be and still score well (0..1). Bigger = the " +
+                 "actions are easy to find by feel. At 0.5 you do well anywhere from about two-thirds " +
+                 "to one-and-a-half times the target.")]
+        [Range(0.05f, 1f)] public float Tolerance01;
+
+        [Tooltip("What fraction of its fishing a MOTIONLESS lure keeps (0..1). The owner's call was " +
+                 "'nearly dead, but bait still fishes' — low enough that working it is obviously the " +
+                 "point, above zero because nothing else in this fishing is a hard wall. Expressed as a " +
+                 "much longer wait for a bite, so the player can SEE it rather than being quietly " +
+                 "denied by a dice roll.")]
+        [Range(0.01f, 1f)] public float DeadLureFraction01;
+
+        /// <summary>The reference feel. The five actions are spread wide enough to be distinct in the
+        /// hand — a lift-and-drop is a big movement twice a second, a spinner is small and five times a
+        /// second — and a dead lure fishes at a tenth, so it waits roughly ten times as long.</summary>
+        public static JiggingSettings Default => new JiggingSettings
+        {
+            LiftAndDropTempo = 0.8f,  LiftAndDropStroke = 1.6f,
+            QuickJerksTempo  = 4.0f,  QuickJerksStroke  = 0.35f,
+            SteadySweepTempo = 1.2f,  SteadySweepStroke = 1.1f,
+            SlowCrawlTempo   = 0.5f,  SlowCrawlStroke   = 0.45f,
+            FastSteadyTempo  = 5.0f,  FastSteadyStroke  = 0.6f,
+            Tolerance01 = 0.5f,
+            DeadLureFraction01 = 0.1f,
+        };
     }
 }

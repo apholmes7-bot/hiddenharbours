@@ -46,6 +46,20 @@ namespace HiddenHarbours.Fishing
                  "spot). Other canon flags are appended to the enum as later systems wire them.")]
         public FishFlags BehaviorFlags = FishFlags.None;
 
+        [Header("What tempts it (a WEIGHT on the roll, never a wall)")]
+        [Tooltip("Which lure PRESENTATIONS this species chases. A mackerel hits feathers and flash; a " +
+                 "pollock chases anything worked; a haddock is fussy and wants real bait, so leave its " +
+                 "mask thin. When the tackle tied on matches, the species is weighted UP in the catch " +
+                 "roll; when it doesn't, damped — never zeroed. None = indifferent to tackle, which is " +
+                 "exactly how every species behaved before this field existed.")]
+        public LureTag FavoredLures = LureTag.None;
+
+        /// <summary>True when the tackle tied on is one this species chases. <see cref="LureTag.None"/>
+        /// on either side is "no opinion" — false, so the caller applies its neutral weight rather than
+        /// a bonus (an unauthored species is never accidentally favoured by everything).</summary>
+        public bool LureFavored(LureTag lure)
+            => lure != LureTag.None && (FavoredLures & lure) != 0;
+
         [Header("Rod fight (Rod Fishing v2 — opt-in, append-only)")]
         [Tooltip("The v2 fight personality this species opts into (RodFightDef, data not code — design/" +
                  "rod-fishing-v2-brainstorm.md §5). Leave EMPTY and the species keeps the simple/legacy " +

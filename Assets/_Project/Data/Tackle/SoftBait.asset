@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728bc29789bc43b495394839046603e3, type: 3}
+  m_Name: SoftBait
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.TackleDef
+  Id: tackle.soft_bait
+  DisplayName: Soft Bait
+  Flavor: A limp rubber body on a weighted hook. Slow, lifelike and patient - for fish that have seen every bit of shining metal in the cove.
+  Lure: 4
+  JigStyle: 4
+  FavorsSpeciesIds:
+  - fish.atlantic_cod
+  - fish.haddock
