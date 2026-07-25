@@ -6,6 +6,14 @@
    1px keyline post-pass, NO AA. Palette-clamped to the existing Dory wood ramp.
    32 px = 1 m. Empty hull (rower/oars are separate sprites).
 
+   BUILD AXIS: render(dir,{build:'oars'|'motor'}). 'oars' = the pulling boat as baked before (unchanged
+   pixels). 'motor' = the outboard upgrade: a STERN BENCH (new seating position, tiller in reach) plus a
+   transom MOTOR BOARD (outer clamp pad + inner doubler + cheeks + bolts) that strengthens the narrow
+   dory transom for a clamp-on outboard. Oars, thole pins and both rowing thwarts stay (motor is an
+   upgrade, not a conversion). The small outboard itself is its own overlay layer, doryMotorRig.js
+   (globalThis.DoryMotor — a little tiller two-stroke, cell 196x164 pivot (98,92), pivot-aligned to
+   this hull) — this rig bakes the clamp point it registers to: motorMount(dir,opts).
+
    Cell 160x156 per direction; boat origin (amidships, keel bottom, centreline) projects to
    the SAME screen pivot for every heading, so a direction swap never shifts placement.
    Exposes globalThis.DoryIso = { W, H, PX, DIRS, pivot, order, ROCK, rock(i), render(dir, {elev,roll,pitch,heave}) -> Uint8ClampedArray }.
@@ -22,6 +30,7 @@
     return { roll: ROCK.rollA*Math.sin(a), pitch: ROCK.pitchA*Math.sin(a+Math.PI/2), heave: ROCK.heaveA*Math.sin(a) };
   }
   const L = 4.5, TH = 0.035, FLOOR = 0.06, SEAT = 0.30, OARLOCK_U = 0.31;
+  const STERN_U = 0.13;                  // stern-bench station (motor build) -> y = -1.665 m, 0.58 m fwd of the transom
   const NSEG = 18, NST = 3;              // length segments / side strakes
 
   // wood ramp dark->light (sampled from Art/Boats/Dory.png) + keyline + iron
@@ -59,10 +68,31 @@
     return [ side*lerp(wb,ws,frac), st.y, st.kz+lerp(0,dep,frac) ];
   }
   function floorPt(side,u){ const st=station(u); return [ side*(st.wb-TH*0.6)*0.94, st.y, st.kz+FLOOR ]; }
+  // inner half-width AT a given height — thwarts/benches must fit the flare at their LOWEST face,
+  // otherwise the ends poke out through the planking (the hull narrows as you go down).
+  function halfAt(u,z,inset){
+    const st=station(u);
+    const ws=st.ws-(inset?TH:0), wb=st.wb-(inset?TH*0.6:0), dep=st.dep-(inset?0.02:0);
+    return lerp(wb, ws, Math.max(0,Math.min(1,(z-st.kz)/dep)));
+  }
 
   // ---- face list (boat space), built once ----
-  const F = [];
+  const F = [];    // hull + rowing fit-out (both builds)
+  const FM = [];   // motor-upgrade extras (build:'motor')
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'wood',b:b||0,db:db||0});
+  const faceM=(v,mat,b,db)=>FM.push({v,mat:mat||'wood',b:b||0,db:db||0});
+  function boxFaces(c,h,mat,b,db){       // axis-aligned block, outward winding
+    const P=(sx,sy,sz)=>[c[0]+sx*h[0], c[1]+sy*h[1], c[2]+sz*h[2]];
+    const f=(v)=>({v,mat,b:b||0,db:db||0});
+    return [
+      f([P(-1,-1,1),P(1,-1,1),P(1,1,1),P(-1,1,1)]),
+      f([P(-1,1,-1),P(1,1,-1),P(1,-1,-1),P(-1,-1,-1)]),
+      f([P(-1,1,1),P(1,1,1),P(1,1,-1),P(-1,1,-1)]),
+      f([P(1,-1,1),P(-1,-1,1),P(-1,-1,-1),P(1,-1,-1)]),
+      f([P(1,1,1),P(1,-1,1),P(1,-1,-1),P(1,1,-1)]),
+      f([P(-1,-1,1),P(-1,1,1),P(-1,1,-1),P(-1,-1,-1)]),
+    ];
+  }
   (function build(){
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -92,18 +122,76 @@
     // (bow closes as a sharp stem where the two skins meet at the centreline — no separate post)
     // thwarts (two seats)
     for(const u of [0.34,0.60]){
-      const st=station(u), hx=st.ws*0.90-TH, zTop=st.kz+SEAT, zBot=zTop-0.05, bd=0.20;
+      const st=station(u), zTop=st.kz+SEAT, zBot=zTop-0.05, bd=0.20, hx=halfAt(u,zBot,1)-0.006;
       const y0=st.y-bd/2, y1=st.y+bd/2;
       face([[-hx,y0,zTop],[hx,y0,zTop],[hx,y1,zTop],[-hx,y1,zTop]],'wood',0.6);   // top
       face([[-hx,y1,zTop],[hx,y1,zTop],[hx,y1,zBot],[-hx,y1,zBot]],'wood',-1.2);  // aft face
       face([[hx,y0,zTop],[-hx,y0,zTop],[-hx,y0,zBot],[hx,y0,zBot]],'wood',-0.4);  // fwd face
     }
+    // bottom boards (two battens flanking the keel line — footing over the bilge, and they read the length)
+    for(const sx of [-1,1]){
+      const NB=7, uA=0.17, uB=0.80;
+      for(let i=0;i<NB;i++){
+        const ua=uA+(uB-uA)*i/NB, ub=uA+(uB-uA)*(i+1)/NB;
+        const sa=station(ua), sb=station(ub);
+        const xa0=sx*0.06, xa1=sx*0.14, za=sa.kz+FLOOR+0.03, zb=sb.kz+FLOOR+0.03;
+        const q=[[xa0,sa.y,za],[xa1,sa.y,za],[xa1,sb.y,zb],[xa0,sb.y,zb]];
+        face(sx>0?q:[q[1],q[0],q[3],q[2]],'wood',0.35,0.03);
+      }
+    }
+    // breasthook (the plate that closes the stem) + the stem-head RING BOLT the painter lives on
+    face([skin(-1,0.93,1),skin(1,0.93,1),skin(1,1,1),skin(-1,1,1)],'wood',0.9,0.04);
+    function ringBolt(x,y,z,ro,ri,tk,b){    // 4-bar iron ring; nothing under the middle, so the hole reads as wood
+      const bar=(ro-ri)/2, off=(ro+ri)/2;
+      F.push(...boxFaces([x,y+off,z],[ro,bar,tk],'iron',b,-0.05));                     // fwd bar
+      F.push(...boxFaces([x,y-off,z],[ro,bar,tk],'iron',b-0.3,-0.05));                 // aft bar
+      F.push(...boxFaces([x-off,y,z],[bar,ri,tk],'iron',b,-0.05));                     // port bar
+      F.push(...boxFaces([x+off,y,z],[bar,ri,tk],'iron',b-0.25,-0.05));                // stbd bar
+    }
+    (function(){ const st=station(0.965); ringBolt(0, st.y, st.kz+st.dep+0.03, 0.052, 0.022, 0.015, 0.6); })();
+    // quarter knees (sheer-level plates tying the transom corners into the sides)
+    for(const side of [-1,1]){
+      const c=skin(side,0,1), f=skin(side,0.085,1), inb=[side*0.15,-L/2,c[2]];
+      face(side>0?[c,f,inb]:[c,inb,f],'wood',0.8,0.04);
+    }
+    // port-quarter ring bolt through the knee — the stern line when she lies alongside a dock
+    ringBolt(-0.30, -2.16, T[0][3]+T[0][2]+0.026, 0.05, 0.018, 0.014, 0.5);
     // oarlock thole pins (amidships, both sides)
     for(const side of [-1,1]){
       const st=station(OARLOCK_U), x=side*(st.ws-TH*0.5), zt2=st.kz+st.dep;
       face([[x-0.03,st.y-0.03,zt2+0.12],[x+0.03,st.y-0.03,zt2+0.12],[x+0.03,st.y+0.03,zt2+0.12],[x-0.03,st.y+0.03,zt2+0.12]],'iron',0.5,0.02);
       face([[x-0.03,st.y+0.03,zt2+0.12],[x+0.03,st.y+0.03,zt2+0.12],[x+0.03,st.y+0.03,zt2],[x-0.03,st.y+0.03,zt2]],'iron',-0.5,0.02);
     }
+  })();
+
+  // ---- motor upgrade (build:'motor') ----
+  // A clamp-on outboard needs two things this dory hasn't got: somewhere aft to SIT with the tiller in
+  // reach, and enough transom to clamp to. TR = transom plane + sheer height at the stern.
+  const TR = { y:-L/2, zTop:T[0][3]+T[0][2], halfW:T[0][0] };
+  const BOARD = { halfW:0.30, t:0.045, rise:0.10, drop:0.16 };   // clamp pad: 0.60 x 0.26 m, 45 mm thick, stands 100 mm proud of the sheer
+  (function buildMotor(){
+    // stern bench — the new seating position (deeper than a rowing thwart so it reads as a seat, not a brace)
+    const st=station(STERN_U), zTop=st.kz+SEAT, zBot=zTop-0.055, bd=0.26, hx=halfAt(STERN_U,zBot,1)-0.006;
+    const y0=st.y-bd/2, y1=st.y+bd/2;
+    faceM([[-hx,y0,zTop],[hx,y0,zTop],[hx,y1,zTop],[-hx,y1,zTop]],'wood',0.75);   // top (fresh board, lit)
+    faceM([[-hx,y1,zTop],[hx,y1,zTop],[hx,y1,zBot],[-hx,y1,zBot]],'wood',-1.2);   // fwd face
+    faceM([[hx,y0,zTop],[-hx,y0,zTop],[-hx,y0,zBot],[hx,y0,zBot]],'wood',-0.4);   // aft face
+    // outer motor board: bolted across the transom, standing proud of the sheer = the clamp face.
+    // Written face-by-face (not a plain block) so the fresh top cap catches the key and the pad reads
+    // as an added board from every heading, including the stern-away ones where only its top edge shows.
+    const zT=TR.zTop+BOARD.rise, zB=TR.zTop-BOARD.drop, yA=TR.y-BOARD.t*2, yF=TR.y, hw=BOARD.halfW;
+    faceM([[-hw,yA,zT],[hw,yA,zT],[hw,yF,zT],[-hw,yF,zT]],'wood',0.95,-0.06);      // top cap
+    faceM([[hw,yA,zT],[-hw,yA,zT],[-hw,yA,zB],[hw,yA,zB]],'wood',0.45,-0.05);       // aft clamp face
+    faceM([[hw,yF,zT],[hw,yA,zT],[hw,yA,zB],[hw,yF,zB]],'wood',0.2,-0.05);         // stbd end grain
+    faceM([[-hw,yA,zT],[-hw,yF,zT],[-hw,yF,zB],[-hw,yA,zB]],'wood',0.2,-0.05);     // port end grain
+    // inner doubler + two cheeks — spread the clamp load into the transom
+    FM.push(...boxFaces([0, TR.y+0.05, TR.zTop-0.09],[0.275, 0.05, 0.07],'wood',-0.15,-0.05));
+    for(const sx of [-1,1]) FM.push(...boxFaces([sx*0.245, TR.y+0.115, TR.zTop-0.1075],[0.035, 0.065, 0.0625],'wood',-0.35,-0.05));
+    // bolt heads through the board (4)
+    for(const sx of [-1,1]) for(const bzz of [TR.zTop-0.09, TR.zTop+0.045])
+      FM.push(...boxFaces([sx*0.205, TR.y-BOARD.t*2-0.004, bzz],[0.022, 0.006, 0.022],'iron',0.6,-0.06));
+    // motor lanyard eye on the inner doubler (the safety line that keeps a kicker out of the harbour)
+    FM.push(...boxFaces([-0.115, TR.y+0.05, TR.zTop-0.005],[0.025,0.02,0.03],'iron',0.55,-0.06));
   })();
 
   // ---- shared rasterizer ----
@@ -204,7 +292,24 @@
   }
   function render(dir, opts){
     opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
-    return _toRGBA(_paint(F, Object.assign({}, opts, {dir}), true));
+    const motor = opts.build==='motor' || opts.motor===true;
+    return _toRGBA(_paint(motor ? F.concat(FM) : F, Object.assign({}, opts, {dir}), true));
+  }
+
+  // outboard clamp point — top centre of the motor board's aft (clamp) face, in hull-cell coords.
+  // The small-motor layer (later pass on the outboard rig) registers its swivel axis to this point.
+  const MOUNT = { x:0, y:TR.y-BOARD.t*2, z:TR.zTop+BOARD.rise };
+  function motorMount(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), p=projVert(MOUNT.x, MOUNT.y-0.01, MOUNT.z, B);
+    return { x:p.sx, y:p.sy };
+  }
+  // seated operator anchor: stern-bench top centre (motor build)
+  const HELM = (()=>{ const st=station(STERN_U); return { x:0, y:st.y, z:st.kz+SEAT }; })();
+  function helmSeat(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), p=projVert(HELM.x, HELM.y, HELM.z, B);
+    return { x:p.sx, y:p.sy };
   }
 
   // ---- oars (separate overlay layer, same camera + pivot as the hull) ----
@@ -266,15 +371,34 @@
     return TUBS.map(m=>{ const p=projVert(m.x,m.y,m.z,B); return {x:p.sx, y:p.sy}; });
   }
 
-  // pilot foot-contact on the sole at the rowing station (feet planted to work the oars) — rides the wave
+  // bow painter eye — mooring / tow / docking line attach (both builds), in hull-cell coords
+  const PAINTER = (()=>{ const st=station(0.965); return { x:0, y:st.y, z:st.kz+st.dep+0.055 }; })();
+  function painter(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), p=projVert(PAINTER.x, PAINTER.y, PAINTER.z, B);
+    return { x:p.sx, y:p.sy };
+  }
+  // port-quarter eye — the stern line when she lies alongside (both builds)
+  const STERN_EYE = { x:-0.30, y:-2.16, z:T[0][3]+T[0][2]+0.045 };
+  function sternEye(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), p=projVert(STERN_EYE.x, STERN_EYE.y, STERN_EYE.z, B);
+    return { x:p.sx, y:p.sy };
+  }
+  // pilot foot-contact on the sole — rowing station (feet planted to work the oars), or the motor
+  // station just forward of the stern bench when build:'motor'. Rides the wave.
   const PILOT = { x:0, y:-0.30 };
+  const PILOT_MOTOR = { x:0, y:-1.28 };
   function pilotStand(dir, opts){
     opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
-    const st=station((PILOT.y+L/2)/L), B=camBasis(opts), p=projVert(PILOT.x, PILOT.y, st.kz+FLOOR, B);
+    const P = (opts.build==='motor' || opts.motor===true) ? PILOT_MOTOR : PILOT;
+    const st=station((P.y+L/2)/L), B=camBasis(opts), p=projVert(P.x, P.y, st.kz+FLOOR, B);
     return { x:p.sx, y:p.sy };
   }
 
   root.DoryIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
-    order:['N','NE','E','SE','S','SW','W','NW'], RAMP, KEY, render, ROCK, rock:rockMotion,
-    renderOars, oarHandles, OAR, TUBS, tubMounts, PILOT, pilotStand };
+    order:['N','NE','E','SE','S','SW','W','NW'], BUILDS:['oars','motor'], defaultBuild:'oars',
+    RAMP, KEY, IRON, render, ROCK, rock:rockMotion,
+    renderOars, oarHandles, OAR, TUBS, tubMounts, PILOT, PILOT_MOTOR, pilotStand,
+    STERN_U, BOARD, MOUNT, motorMount, HELM, helmSeat, PAINTER, painter, STERN_EYE, sternEye };
 })(typeof globalThis!=='undefined'?globalThis:window);

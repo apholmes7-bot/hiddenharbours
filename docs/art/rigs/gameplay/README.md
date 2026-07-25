@@ -70,9 +70,12 @@ Every coordinate in these files is **computed from the rig's own math** (station
 stay known:
 
 - lobsterBoat & capeIslander foredeck `DROP = 0.05` (capeIslanderIsoRig.js:198 — verified,
-  previously flagged); sportSkiff & console foredeck `DROP = 0.07`
-  (sportSkiffIsoRig.js:147, consoleIsoRig.js:154) — **not** 0.05. The `DROP = 0.045` at
-  sportSkiffIsoRig.js:222 is the bimini canvas skirt, a canvas detail — ignore it.
+  previously flagged); sportSkiff foredeck `DROP = 0.07` (sportSkiffIsoRig.js:147) — **not**
+  0.05. The `DROP = 0.045` at sportSkiffIsoRig.js:222 is the bimini canvas skirt, a canvas
+  detail — ignore it. **The console skiff's `DROP = 0.07` trap is RETIRED** (2026-07-25):
+  her pass-2 rig has no `DROP` at all — the foredeck is flush at the sheer,
+  `fz(u) = station(u).kz + station(u).dep − 0.012` (consoleIsoRig.js:272). Her bow cleat `z`
+  moved 0.989 → 1.047 in the same pass.
 - The tanker's bow-rake weighting is `0.25 + 0.75·frac` (tankerIsoRig.js:85); the rest of
   the fleet uses `0.30 + 0.70·frac`.
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
@@ -82,8 +85,8 @@ stay known:
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
-| dory | 4.5 m | bilge floor (3d) | — open boat | bow painter (data-only, ruled) |
-| punt | 5.2 m | bilge floor (3d) | — open boat | bow painter (data-only, ruled) |
+| dory | 4.5 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
+| punt | 5.2 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | console | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | sportSkiff | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
@@ -111,3 +114,11 @@ recorded in place as `_ruled`/`_ruled_items` — no open `_confirm` remains. The
 change ordered by those rulings (cape washboards run to the foredeck) is applied and the
 cape sidecar re-derived. Two art additions were **banked, not ordered**: packet/tanker
 midship breast bollards, and tanker catwalk end-ladders.
+
+⚠ **One of those rulings has been reopened by art and needs the owner again.** The 2026-07-22
+ruling on the dory's and punt's bow painter was "the data-only painter point stands, **NO
+visible ring/fitting is added to the art**". The small-craft rig kit v2 (2026-07-25) models a
+visible iron ring bolt at that point on **both** hulls, plus a second port-quarter ring, and
+moves the tie-point itself (dory `station(1.0)` → `station(0.965)`, punt `station(1.0)` →
+`station(0.962)`). The original judgment text is kept verbatim in both sidecars' `_ruled`
+with the reversal appended — provenance, not deletion. **Owner: re-rule.**

@@ -1,79 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
-  m_Name: DoryOarStarPropMesh
-  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
-  Id: hullprop.dory_oar_star
-  SourceRigPath: docs/art/rigs/doryIsoRig.js
-  SourceFaceBuilder: buildOar(1,{sweep:0,dip:0})
-  Mesh: {fileID: 6477747196912114394}
-  Ramps:
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279969587
-    - serializedVersion: 2
-      rgba: 4280759879
-    - serializedVersion: 2
-      rgba: 4281353822
-    - serializedVersion: 2
-      rgba: 4281683819
-    - serializedVersion: 2
-      rgba: 4282935946
-    - serializedVersion: 2
-      rgba: 4283660442
-    - serializedVersion: 2
-      rgba: 4283597737
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279179296
-    - serializedVersion: 2
-      rgba: 4279509034
-    - serializedVersion: 2
-      rgba: 4280036410
-    Offset: -2
-  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
-  Gain: 3
-  Bias: 2.7
-  Bayer16:
-  - 0.03125
-  - 0.53125
-  - 0.15625
-  - 0.65625
-  - 0.78125
-  - 0.28125
-  - 0.90625
-  - 0.40625
-  - 0.21875
-  - 0.71875
-  - 0.09375
-  - 0.59375
-  - 0.96875
-  - 0.46875
-  - 0.84375
-  - 0.34375
-  Keyline:
-    serializedVersion: 2
-    rgba: 4279047196
-  PivotPx: {x: 80, y: 88}
-  PxPerMetre: 32
-  CellW: 160
-  CellH: 156
-  ElevationDeg: 40
-  PivotLocalMeters: {x: 0.71395, y: -0.855, z: 0.5156}
-  MaxSteerDegrees: 0
-  MaxTiltDegrees: 0
-  LateralMountsMeters: []
---- !u!43 &6477747196912114394
+--- !u!43 &-2936365756411134651
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,3 +178,77 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
+  m_Name: DoryOarStarPropMesh
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
+  Id: hullprop.dory_oar_star
+  SourceRigPath: docs/art/rigs/doryIsoRig.js
+  SourceFaceBuilder: buildOar(1,{sweep:0,dip:0})
+  Mesh: {fileID: -2936365756411134651}
+  FixedMesh: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279179296
+    - serializedVersion: 2
+      rgba: 4279509034
+    - serializedVersion: 2
+      rgba: 4280036410
+    Offset: -2
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3
+  Bias: 2.7
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4279047196
+  PivotPx: {x: 80, y: 88}
+  PxPerMetre: 32
+  CellW: 160
+  CellH: 156
+  ElevationDeg: 40
+  PivotLocalMeters: {x: 0.71395, y: -0.855, z: 0.5156}
+  MaxSteerDegrees: 0
+  MaxTiltDegrees: 0
+  LateralMountsMeters: []

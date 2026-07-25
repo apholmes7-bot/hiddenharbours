@@ -1,49 +1,132 @@
 {
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "consoleIsoRig.js",
-  "derivedFromRigSha256": "bfcacae5b41fb49f20382221916ce0c7ab4604ed8c2131b76d9a672e7afbcfd7",
-  "generated": "2026-07-22",
+  "exportSymbol": "ConsoleIso",
+  "derivedFromRigSha256": "7fc9455043a35eb57624f78ed595e4f2ac5640c25d9cdbac7fd25dbbc398f4d1",
+  "units": "metres",
   "frame": {
-    "units": "m",
-    "scale_px_per_m": 32,
-    "origin": "amidships, keel bottom, centreline",
+    "origin": "amidships / keel-bottom / centreline",
     "axes": "+x starboard, +y bow, +z up",
-    "heading_independent": true
+    "scale_px_per_m": 32,
+    "LOA_m": 7,
+    "polygon_winding": "CCW viewed from +Z (above)"
   },
-  "hull": {
-    "loa_m": 7.0,
-    "tier": "T2 centre-console skiff (workboat)"
-  },
+  "authoring": "Gameplay geometry (our layer). Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Derived from the rig SHA above; a rig reshape re-opens this file.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
   "DECK": [
     {
-      "id": "cockpit_sole",
-      "winding": "ccw_from_above",
+      "id": "cockpit",
       "z": 0.28,
+      "winding": "ccw_from_above",
       "polygon": [
-          [0.725, -3.5], [0.823, -2.8], [0.888, -2.1], [0.925, -1.4],
-          [0.935, -0.7], [0.915, 0.0], [0.844, 0.7], [0.712, 1.4],
-          [0.511, 2.1], [-0.511, 2.1], [-0.712, 1.4], [-0.844, 0.7],
-          [-0.915, 0.0], [-0.935, -0.7], [-0.925, -1.4], [-0.888, -2.1],
-          [-0.823, -2.8], [-0.725, -3.5]
+        [
+          -0.511,
+          2.1
         ],
-      "_derivation": "sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.28 (consoleIsoRig.js:137-143); sampled u=0 (transom) to u=0.80 (foredeck bulkhead, consoleIsoRig.js:141)"
+        [
+          -0.673,
+          1.575
+        ],
+        [
+          -0.788,
+          1.05
+        ],
+        [
+          -0.862,
+          0.525
+        ],
+        [
+          -0.915,
+          0
+        ],
+        [
+          -0.93,
+          -0.525
+        ],
+        [
+          -0.935,
+          -1.05
+        ],
+        [
+          -0.92,
+          -1.575
+        ],
+        [
+          -0.888,
+          -2.1
+        ],
+        [
+          -0.848,
+          -2.625
+        ],
+        [
+          -0.773,
+          -3.15
+        ],
+        [
+          0.773,
+          -3.15
+        ],
+        [
+          0.848,
+          -2.625
+        ],
+        [
+          0.888,
+          -2.1
+        ],
+        [
+          0.92,
+          -1.575
+        ],
+        [
+          0.935,
+          -1.05
+        ],
+        [
+          0.93,
+          -0.525
+        ],
+        [
+          0.915,
+          0
+        ],
+        [
+          0.862,
+          0.525
+        ],
+        [
+          0.788,
+          1.05
+        ],
+        [
+          0.673,
+          1.575
+        ],
+        [
+          0.511,
+          2.1
+        ]
+      ],
+      "note": "Walk-around sole (centre console splits it fore/aft). No washboards (open boat) — absence is data."
     }
   ],
   "CLEATS": [
     {
       "id": "bow_1",
       "type": "cleat",
-      "pos": [0, 3.1, 0.989],
-      "provenance": "consoleIsoRig.js:164 \u2014 boxF([0, 3.1, fz(0.94)+0.045], ...); pos = box centre; fz(u)=kz+dep-DROP with DROP=0.07 (consoleIsoRig.js:154) \u2014 VERIFIED, NOT 0.05"
+      "pos": [
+        0,
+        3.1,
+        1.047
+      ],
+      "provenance": "bow cleat, consoleIsoRig.js:340 — boxF([0, 3.10, fz(0.94)+0.045], ...); pos = box centre. PASS 2 RE-DERIVATION (2026-07-25): this rig has no DROP at all. The foredeck is flush at the sheer, fz(u) = station(u).kz + station(u).dep - 0.012 (consoleIsoRig.js:272), cut inboard of the rail cap by fw(u) = station(u).ws - TH*1.5 - 0.014 (:273), bulkhead at FORE_U = 0.80 (:271). So the cleat rides 0.070 - 0.012 = 0.058 m higher than the pass-1 value: z 0.989 -> 1.047, measured on the landed rig. x and y are unaffected — bow_1 is on the centreline, so the inboard cut does not touch it. The repo README's 'console foredeck DROP = 0.07' derivation trap is RETIRED for this hull."
     }
   ],
-  "_excluded": [
-    "WASHBOARD \u2014 open skiff, no side decks",
-    "FOREDECK as DECK \u2014 raised moulded bow platform (u 0.80..0.985, consoleIsoRig.js:153-163) stays excluded; cockpit-only, owner-ruled 2026-07-22"
-  ],
-  "_notes": [
-    "cockpit obstructions (not holes): centre console x\u00b10.34, y -0.25..0.55 (lines 165-181); helm seat at y=-0.86 (183-185); aft bench x\u00b10.70 at y=-3.10 (187-188); canopy legs at x\u00b10.44, y=-0.88/+0.50 (190-193)"
-  ],
+  "_excluded": {
+    "stern": "Outboard on the transom (motorMount) — no stern cleat modeled."
+  },
   "_ruled_items": [
-    "was _confirm: the bow cleat stands on the excluded foredeck \u2014 if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the foredeck stays excluded; mooring is the toss-a-line cast verb, the character never needs to stand at the bow cleat."
+    "was _confirm: the bow cleat stands on the excluded foredeck — if mooring animations need the character to reach it on foot, the foredeck exclusion needs an owner ruling. RULED: ACCEPTED (owner, 2026-07-22) — the foredeck stays excluded; mooring is the toss-a-line cast verb, the character never needs to stand at the bow cleat. Still true on the pass-2 hull: the foredeck is flush rather than dropped, but it is still not a DECK polygon."
   ]
 }
