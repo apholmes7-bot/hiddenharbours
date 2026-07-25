@@ -7,8 +7,17 @@ namespace HiddenHarbours.Core
         Ambient = 0,
         /// <summary>Kept ALIVE by hydration — shellfish in a wet bucket, later a live well. Arrested.</summary>
         Live = 1,
-        /// <summary>FROZEN — Aunt Ginny's freezer, later ice. Arrested.</summary>
+        /// <summary>
+        /// FROZEN solid — Aunt Ginny's freezer, and anything mains-powered later. Arrested for as long as
+        /// it sits there; unlike <see cref="Iced"/> it does not run out.
+        /// </summary>
         Frozen = 2,
+        /// <summary>
+        /// On ICE — a tote packed with ice, lid on or off. Holds the catch like a freezer does, but only
+        /// until the ice melts: protection here is a <b>duration</b>, not a permanent state. See
+        /// <see cref="Freshness.SettleThroughProtection"/>.
+        /// </summary>
+        Iced = 3,
     }
 
     /// <summary>
@@ -25,6 +34,12 @@ namespace HiddenHarbours.Core
         /// <summary>Rate scale while <see cref="StorageMode.Frozen"/>. 0 = fully arrested.</summary>
         public readonly float FrozenRateMultiplier;
         /// <summary>
+        /// Rate scale while <see cref="StorageMode.Iced"/> and the ice still holds. 0 = ice stops rot dead
+        /// while it lasts; raise it slightly to make ice a strong SLOW rather than a stop. Either way what
+        /// makes ice interesting is that it runs out — the melt lives on the container, not here.
+        /// </summary>
+        public readonly float IcedRateMultiplier;
+        /// <summary>
         /// The spoil at which a buyer will no longer take it at any price. At and above this the catch is
         /// <b>rubbish</b>: worth nothing, sellable to no one, and still taking up hold space until it is
         /// dumped. The single dial for "how far gone before the fishmonger waves you off" — set it to 1 to
@@ -33,21 +48,25 @@ namespace HiddenHarbours.Core
         public readonly float UnsellableSpoil;
 
         public SpoilPolicy(float ambientRateMultiplier, float liveRateMultiplier,
-                           float frozenRateMultiplier, float unsellableSpoil)
+                           float frozenRateMultiplier, float icedRateMultiplier, float unsellableSpoil)
         {
             AmbientRateMultiplier = ambientRateMultiplier;
             LiveRateMultiplier    = liveRateMultiplier;
             FrozenRateMultiplier  = frozenRateMultiplier;
+            IcedRateMultiplier    = icedRateMultiplier;
             UnsellableSpoil       = unsellableSpoil;
         }
 
         /// <summary>
-        /// The slice default. <see cref="StorageMode.Live"/> and <see cref="StorageMode.Frozen"/> both fully
-        /// arrest for M1 — a slow live-holding attrition is a dial we can turn later without touching the
-        /// maths. Refusal at 0.9 because a fishmonger turns away visibly-off fish well before it is liquid,
-        /// and because a dead zone where you sell rot for pennies teaches nothing.
+        /// The slice default. <see cref="StorageMode.Live"/>, <see cref="StorageMode.Frozen"/> and
+        /// <see cref="StorageMode.Iced"/> all fully arrest for M1 — what separates them is not rate but
+        /// reach: the freezer is only at home, ice travels but melts, and keeping alive works only for
+        /// shellfish. A slow live-holding attrition, or ice as a slow rather than a stop, are dials we can
+        /// turn later without touching the maths. Refusal at 0.9 because a fishmonger turns away visibly-off
+        /// fish well before it is liquid, and because a dead zone where you sell rot for pennies teaches
+        /// nothing.
         /// </summary>
-        public static SpoilPolicy Default => new SpoilPolicy(1f, 0f, 0f, 0.9f);
+        public static SpoilPolicy Default => new SpoilPolicy(1f, 0f, 0f, 0f, 0.9f);
     }
 
     /// <summary>
@@ -107,6 +126,7 @@ namespace HiddenHarbours.Core
             {
                 case StorageMode.Live:   return policy.LiveRateMultiplier;
                 case StorageMode.Frozen: return policy.FrozenRateMultiplier;
+                case StorageMode.Iced:   return policy.IcedRateMultiplier;
                 default:                 return policy.AmbientRateMultiplier;
             }
         }
@@ -150,6 +170,39 @@ namespace HiddenHarbours.Core
         {
             FreshnessState settled = Settle(state, nowGameSeconds, spoilPerDay, secondsPerDay, policy);
             return new FreshnessState(settled.SpoilAccrued, settled.LastSettleGameSeconds, mode);
+        }
+
+        /// <summary>
+        /// Settle across a span whose protection <b>runs out partway through</b> — the ice case. Held in the
+        /// current mode until <paramref name="protectionEndsAtGameSeconds"/>, then ambient from there to
+        /// <paramref name="nowGameSeconds"/>, and left in <see cref="StorageMode.Ambient"/> if the ice is
+        /// gone.
+        ///
+        /// <para><b>Why this exists.</b> Settle-on-read needs the rate to be constant between settles.
+        /// Ice that faded away continuously would break that and take the sleep-skip guarantee with it — the
+        /// whole reason this class is shaped the way it is. So ice is modelled as full protection for a
+        /// <b>duration</b>: piecewise-constant, with one event (the ice running out) at a computable instant.
+        /// Sleeping straight through that instant therefore lands on exactly the number an unbroken session
+        /// would, and "you have six hours of ice left" is a far more legible resource than a chill fraction
+        /// drifting toward zero.</para>
+        ///
+        /// <para>The container owns the melt — how much ice, how fast it goes, and how much a LID slows it —
+        /// and hands the resulting instant in. This function knows nothing about lids or ice quantity.</para>
+        /// </summary>
+        public static FreshnessState SettleThroughProtection(
+            in FreshnessState state, double nowGameSeconds, double protectionEndsAtGameSeconds,
+            float spoilPerDay, float secondsPerDay, in SpoilPolicy policy)
+        {
+            // Protection outlasts the span: an ordinary settle in the current mode.
+            if (protectionEndsAtGameSeconds >= nowGameSeconds)
+                return Settle(state, nowGameSeconds, spoilPerDay, secondsPerDay, policy);
+
+            // Bank the protected stretch (if any is left), then thaw and bank the rest at ambient rate.
+            FreshnessState protectedLeg = Settle(state, protectionEndsAtGameSeconds,
+                                                 spoilPerDay, secondsPerDay, policy);
+            var thawed = new FreshnessState(protectedLeg.SpoilAccrued, protectedLeg.LastSettleGameSeconds,
+                                            StorageMode.Ambient);
+            return Settle(thawed, nowGameSeconds, spoilPerDay, secondsPerDay, policy);
         }
 
         /// <summary>

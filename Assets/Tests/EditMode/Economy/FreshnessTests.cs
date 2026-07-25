@@ -137,6 +137,68 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(SecondsPerDay, back.LastSettleGameSeconds, 1e-6f, "and never rewind its stamp");
         }
 
+        // ---- ice: protection that runs out -----------------------------------------------------
+
+        private static FreshnessState SettleIced(FreshnessState s, double now, double iceGoneAt)
+            => Freshness.SettleThroughProtection(s, now, iceGoneAt, SpoilPerDay, SecondsPerDay, Policy);
+
+        [Test]
+        public void WhileTheIceHolds_NothingSpoils()
+        {
+            var s = Freshness.Landed(0d, StorageMode.Iced);
+            var after = SettleIced(s, SecondsPerDay, SecondsPerDay * 2d);   // ice lasts two days
+
+            Assert.AreEqual(0f, after.SpoilAccrued, 1e-6f);
+            Assert.AreEqual(StorageMode.Iced, after.Mode, "still on ice");
+        }
+
+        [Test]
+        public void WhenTheIceRunsOut_ItThawsAndStartsRotting()
+        {
+            var s = Freshness.Landed(0d, StorageMode.Iced);
+            var after = SettleIced(s, SecondsPerDay * 2d, SecondsPerDay);   // ice gone after one day
+
+            Assert.AreEqual(0.5f, after.SpoilAccrued, 1e-5f, "one unprotected day at 0.5/day");
+            Assert.AreEqual(StorageMode.Ambient, after.Mode, "the ice is gone — it's just a warm tote now");
+        }
+
+        [Test]
+        public void SleepingThroughTheIceRunningOut_MatchesWatchingIt()
+        {
+            const double iceGoneAt = SecondsPerDay * 0.7d;
+            const double end = SecondsPerDay * 2d;
+
+            // Watched: settled every hour straight through the moment the ice gave out.
+            var watched = Freshness.Landed(0d, StorageMode.Iced);
+            for (int h = 1; h <= 48; h++)
+                watched = SettleIced(watched, SecondsPerDay * (h / 24d), iceGoneAt);
+
+            // Slept: one settle spanning the whole thing, exhaustion included.
+            var slept = SettleIced(Freshness.Landed(0d, StorageMode.Iced), end, iceGoneAt);
+
+            Assert.AreEqual(slept.SpoilAccrued, watched.SpoilAccrued, 1e-5f,
+                            "the sleep-skip guarantee has to survive a protection boundary");
+        }
+
+        [Test]
+        public void IceThatWasAlreadyGone_ProtectsNothing()
+        {
+            var s = Freshness.Landed(SecondsPerDay, StorageMode.Iced);      // landed AFTER the ice melted
+            var after = SettleIced(s, SecondsPerDay * 2d, 0d);
+
+            Assert.AreEqual(0.5f, after.SpoilAccrued, 1e-5f, "the whole span is ambient");
+        }
+
+        [Test]
+        public void MoreIce_IsStrictlyBetter()
+        {
+            var s = Freshness.Landed(0d, StorageMode.Iced);
+            float meagre = SettleIced(s, SecondsPerDay * 2d, SecondsPerDay * 0.5d).SpoilAccrued;
+            float generous = SettleIced(s, SecondsPerDay * 2d, SecondsPerDay * 1.5d).SpoilAccrued;
+
+            Assert.Less(generous, meagre, "packing more ice must always pay — a lid buys the same thing");
+        }
+
         // ---- the money consequence -------------------------------------------------------------
 
         [Test]
