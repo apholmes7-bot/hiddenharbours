@@ -272,9 +272,37 @@ namespace HiddenHarbours.Tools.RigBaking
                 // pure rotation about is (0, YA, ZT). That reading is what this expression asserts,
                 // and it is adjudicated in pixels by OutboardPropMeshAcceptanceTests: get it wrong
                 // and the engine still swings, but about the wrong point, and the silhouette moves.
+                // ---- paint became DATA (small-craft rig kit v2, 2026-07-25) ----------------------
+                // ⚠️ The punt and the console skiff no longer HAVE a `MATS` constant. Their pass-2
+                // rigs carry named `SCHEMES` and derive every ramp per render:
+                //
+                //     const pal = palette(opts), MATS = pal.mats, RINDEX = pal.rindex;
+                //
+                // so the material table is now a function of the colourway, not a property of the
+                // rig. Widening `MATS:MATS` therefore fails outright ("MATS is not defined") and
+                // BOTH hulls stopped baking. `palette({})` is the rig's own resolver called with no
+                // colourway, which its own code resolves to `DEFAULT_SCHEME` — i.e. this pins the
+                // bake to each rig's DEFAULT SCHEME (measured: 'harbour-white' on both) and reads
+                // the table the rig itself would use, rather than transcribing one here.
+                //
+                // ⚠️ WHAT THIS DELIBERATELY DOES NOT DO. Choosing a colourway at runtime, and the
+                // new per-material `dith` weight the pass-2 console carries (0 = crisp banded
+                // paint, 1 = full 4×4 Bayer), are NOT modelled: `RigMeshData.Materials` is
+                // {ramp, off} and the reference rasteriser thresholds against a single uniform
+                // Bayer value (see its `data.Bayer[x & 3, y & 3]`). Mesh and oracle therefore agree
+                // with each other and both dither the console's painted panels where her renderer
+                // now wants them crisp. That is a real, visible gap and it is a separate piece of
+                // work — one mesh per scheme, or ramps derived at runtime, is an architecture
+                // decision, not a bake flag.
                 ["puntIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["swivelPt"] = "function(){return [0,YA,ZT];}",
+                    ["MATS"] = "palette({}).mats",
+                },
+
+                ["consoleIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "palette({}).mats",
                 },
 
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull

@@ -1,45 +1,359 @@
 {
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "puntIsoRig.js",
-  "derivedFromRigSha256": "04ff6795ea322b37553d88d0452c3d3c5203efeaadf69c7f3f56241b27c2c895",
-  "generated": "2026-07-22",
+  "exportSymbol": "PuntIso",
+  "derivedFromRigSha256": "7ca7928fc4acb3c5bb4f1e01e5e9295050f95f02a8b1acbb7fe419e3e7f4962a",
+  "units": "metres",
   "frame": {
-    "units": "m",
-    "scale_px_per_m": 32,
-    "origin": "amidships, keel bottom, centreline",
+    "origin": "amidships / keel-bottom / centreline",
     "axes": "+x starboard, +y bow, +z up",
-    "heading_independent": true
+    "scale_px_per_m": 32,
+    "LOA_m": 5.2,
+    "polygon_winding": "CCW viewed from +Z (above)"
   },
-  "hull": {
-    "loa_m": 5.2,
-    "tier": "T1 motor punt"
-  },
+  "authoring": "Gameplay geometry (our layer). Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Derived from the rig SHA above; a rig reshape re-opens this file.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
   "DECK": [
     {
-      "id": "bilge_floor",
+      "id": "floor",
       "winding": "ccw_from_above",
       "polygon3d": [
-          [0.413, -2.6, 0.14], [0.458, -2.08, 0.092], [0.486, -1.56, 0.068], [0.501, -1.04, 0.06],
-          [0.505, -0.52, 0.06], [0.497, 0.0, 0.06], [0.467, 0.52, 0.068], [0.409, 1.04, 0.094],
-          [0.315, 1.56, 0.138], [0.181, 2.08, 0.204], [0.008, 2.6, 0.3], [-0.008, 2.6, 0.3],
-          [-0.181, 2.08, 0.204], [-0.315, 1.56, 0.138], [-0.409, 1.04, 0.094], [-0.467, 0.52, 0.068],
-          [-0.497, 0.0, 0.06], [-0.505, -0.52, 0.06], [-0.501, -1.04, 0.06], [-0.486, -1.56, 0.068],
-          [-0.458, -2.08, 0.092], [-0.413, -2.6, 0.14]
+        [
+          -0.181,
+          2.08,
+          0.204
         ],
-      "_derivation": "interior floor, floorPt (puntIsoRig.js:71): x=\u00b1(wb-TH*0.6)*0.94, z=kz+FLOOR, FLOOR=0.06; sampled u=0..1 (keel line rises toward both ends, so the floor is polygon3d)",
-      "_note": "thwarts (bench seats) cross the floor at u=0.15, 0.48, 0.74 (stern/mid/fwd benches), z=kz+SEAT=kz+0.30 (puntIsoRig.js:110-117) \u2014 step-over obstructions, not holes"
+        [
+          -0.291,
+          1.664,
+          0.149
+        ],
+        [
+          -0.382,
+          1.248,
+          0.107
+        ],
+        [
+          -0.436,
+          0.832,
+          0.081
+        ],
+        [
+          -0.473,
+          0.416,
+          0.066
+        ],
+        [
+          -0.497,
+          0,
+          0.06
+        ],
+        [
+          -0.503,
+          -0.416,
+          0.06
+        ],
+        [
+          -0.504,
+          -0.832,
+          0.06
+        ],
+        [
+          -0.498,
+          -1.248,
+          0.06
+        ],
+        [
+          -0.481,
+          -1.664,
+          0.071
+        ],
+        [
+          -0.458,
+          -2.08,
+          0.092
+        ],
+        [
+          0.458,
+          -2.08,
+          0.092
+        ],
+        [
+          0.481,
+          -1.664,
+          0.071
+        ],
+        [
+          0.498,
+          -1.248,
+          0.06
+        ],
+        [
+          0.504,
+          -0.832,
+          0.06
+        ],
+        [
+          0.503,
+          -0.416,
+          0.06
+        ],
+        [
+          0.497,
+          0,
+          0.06
+        ],
+        [
+          0.473,
+          0.416,
+          0.066
+        ],
+        [
+          0.436,
+          0.832,
+          0.081
+        ],
+        [
+          0.382,
+          1.248,
+          0.107
+        ],
+        [
+          0.291,
+          1.664,
+          0.149
+        ],
+        [
+          0.181,
+          2.08,
+          0.204
+        ]
+      ],
+      "note": "Open bilge floor between the thwarts; half-width = rig floorPt() = (wb-TH*0.6)*0.94, z=keelZ+FLOOR. No washboards (open punt) — absence is data.",
+      "_notes": [
+        {
+          "id": "stern_bench",
+          "kind": "obstruction",
+          "type": "bench",
+          "footprint": {
+            "x": [
+              -0.622,
+              0.622
+            ],
+            "y": [
+              -1.99,
+              -1.65
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.19
+          },
+          "z_abs_m": {
+            "top": 0.316,
+            "underside": 0.266,
+            "floor_plane_here": 0.076
+          },
+          "spans_sole": "wall-to-wall — bench half-width 0.622 m vs sole half-width 0.475 m here, so it crosses the whole walkable strip",
+          "provenance": "rig thwart table u=0.15, bd=0.34: zTop=station.kz+SEAT, zBot=zTop-0.05, hx=station.ws*0.90-TH (exact)",
+          "note": "The motor station — this is the seat STATIONS.helm_seat sits on, tiller in reach. Widest of the three (0.34 m fore-and-aft) because it is sat on under way, not just perched on."
+        },
+        {
+          "id": "thwart_mid",
+          "kind": "obstruction",
+          "type": "thwart",
+          "footprint": {
+            "x": [
+              -0.668,
+              0.668
+            ],
+            "y": [
+              -0.204,
+              -0.004
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.19
+          },
+          "z_abs_m": {
+            "top": 0.3,
+            "underside": 0.25,
+            "floor_plane_here": 0.06
+          },
+          "spans_sole": "wall-to-wall — seat half-width 0.668 m vs sole half-width 0.499 m here",
+          "provenance": "rig thwart table u=0.48, bd=0.20 (exact); same station as STATIONS.row_seat",
+          "note": "The rowing station: ROWLOCKS sit 0.31 m aft of it."
+        },
+        {
+          "id": "thwart_fwd",
+          "kind": "obstruction",
+          "type": "thwart",
+          "footprint": {
+            "x": [
+              -0.548,
+              0.548
+            ],
+            "y": [
+              1.148,
+              1.348
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.19
+          },
+          "z_abs_m": {
+            "top": 0.347,
+            "underside": 0.297,
+            "floor_plane_here": 0.107
+          },
+          "spans_sole": "wall-to-wall — seat half-width 0.548 m vs sole half-width 0.382 m here",
+          "provenance": "rig thwart table u=0.74, bd=0.20 (exact)",
+          "note": "No station on it — a passenger/gear seat, and what the painter's bight gets made fast to when there is no ring to hand."
+        },
+        {
+          "id": "floor_battens",
+          "kind": "surface",
+          "type": "batten",
+          "footprint": {
+            "x": [
+              [
+                -0.23,
+                -0.09
+              ],
+              [
+                0.09,
+                0.23
+              ]
+            ],
+            "y": [
+              -1.924,
+              1.82
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.028
+          },
+          "spans_sole": "no — two runs flanking the centreline, inside the sole",
+          "provenance": "rig floor battens: x 0.09..0.23 each side, u 0.13..0.85, z=station.kz+FLOOR+0.028 (exact)",
+          "note": "NOT an obstruction — footing over the bilge. 28 mm proud of the floor plane, walk straight over. Listed so nobody reads them off a bake as a step."
+        }
+      ],
+      "_notes_convention": "Every thwart top sits SEAT - FLOOR = 0.240 m above the floor plane, so all three are step-overs, not walls. Per the 2026-07-22 ruling these become game-side colliders sourced from these notes — never holes in the DECK polygon."
     }
   ],
+  "_excluded": {
+    "washboard": "Open punt — no washboards.",
+    "cleats": "Superseded — CLEATS is now modeled (bow_1 stem ring bolt + stern_port quarter-knee ring). No deck/mid cleats: an open 5.2 m boat does not carry them.",
+    "motor": "The outboard is a separate layer (renderMotor, own 212x168 cell, pivot-aligned). This hull bakes the clamp pad + MOUNT / motorMount(dir,opts).",
+    "oars": "Oars are a separate overlay layer in the HULL cell — see ROWLOCKS for the hull-side fittings."
+  },
   "CLEATS": [
     {
       "id": "bow_1",
-      "type": "painter",
-      "pos": [0, 2.6, 0.8],
-      "provenance": "puntIsoRig.js offsets table row 8 (stem head): y=station(1).y, z=station(1).kz+station(1).dep \u2014 NOT a modelled fitting",
-      "_ruled": "was _confirm: no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head. RULED: ACCEPTED AS AUTHORED (owner, 2026-07-22) \u2014 the data-only painter point stands, NO visible ring/fitting is added to the art ('option 1 is fine for now'); a visible fitting may be revisited later."
+      "type": "ring_bolt",
+      "pos": [
+        0,
+        2.402,
+        0.798
+      ],
+      "provenance": "rig PAINTER / painter(dir,opts) — iron ring bolt through the breasthook at the stem head, station(0.962) sheer + 0.050 (exact).",
+      "note": "Answers the open question in the previous pass: yes, she gets a mooring point, and the same one the dory got — painter rove through a ring in the breasthook, inboard end knotted there for good.",
+      "_ruled": "was _confirm: no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head. RULED: ACCEPTED AS AUTHORED (owner, 2026-07-22) — the data-only painter point stands, NO visible ring/fitting is added to the art ('option 1 is fine for now'); a visible fitting may be revisited later. ⚠ REOPENED BY ART, 2026-07-25 (small-craft rig kit v2): the rig now MODELS a visible iron ring bolt at this point, so the 'NO visible ring/fitting' half of the 2026-07-22 ruling no longer describes the art. The tie-point itself also moved: station(1.0) -> station(0.962), pos y 2.6 -> 2.4024 m, z 0.80 -> 0.79832 m. Recorded, not deleted — the owner re-rules."
+    },
+    {
+      "id": "stern_port",
+      "type": "ring_bolt",
+      "pos": [
+        -0.42,
+        -2.4,
+        0.588
+      ],
+      "provenance": "rig STERN_EYE / sternEye(dir,opts) — through the port quarter knee, 0.028 above the knee plate (exact).",
+      "note": "The alongside case: under power she comes to the wharf and needs bow AND stern lines. Offset to PORT to stay clear of the outboard clamp on the transom centreline; mirror x if the wharf convention lands starboard-to. No starboard twin, no transom cleat."
     }
   ],
-  "_excluded": [
-    "WASHBOARD \u2014 open boat, no side decks (gunwale cap only)",
-    "outboard motor pad on the transom top centre (lines 105-109) \u2014 engine mount, not a tie-off"
-  ]
+  "ROWLOCKS": [
+    {
+      "id": "port",
+      "side": "port",
+      "socket_pos": [
+        -0.765,
+        -0.416,
+        0.454
+      ],
+      "pin_top_z": 0.565,
+      "loom_seat": [
+        -0.779,
+        -0.416,
+        0.518
+      ],
+      "provenance": "rig OARLOCK_U=0.42 — socket plate + thole pin baked into the gunwale (exact); loom_seat = rig oarlockPt(side), the point the oar pivots about when pulling.",
+      "note": "A rower on the mid thwart (u 0.48) has these 0.31 m aft of the seat — hands meet amidships. Oars are a separate layer: renderOars(dir,{state,t}) + oarHandles(dir,opts)."
+    },
+    {
+      "id": "star",
+      "side": "starboard",
+      "socket_pos": [
+        0.765,
+        -0.416,
+        0.454
+      ],
+      "pin_top_z": 0.565,
+      "loom_seat": [
+        0.779,
+        -0.416,
+        0.518
+      ],
+      "provenance": "rig OARLOCK_U=0.42 — socket plate + thole pin baked into the gunwale (exact); loom_seat = rig oarlockPt(side), the point the oar pivots about when pulling.",
+      "note": "A rower on the mid thwart (u 0.48) has these 0.31 m aft of the seat — hands meet amidships. Oars are a separate layer: renderOars(dir,{state,t}) + oarHandles(dir,opts)."
+    }
+  ],
+  "STATIONS": [
+    {
+      "id": "row_seat",
+      "type": "seat",
+      "pos": [
+        0,
+        -0.104,
+        0.3
+      ],
+      "provenance": "rig ROW_SEAT / rowSeat(dir,opts) — mid thwart top centre, station(0.48) keel + SEAT (exact).",
+      "note": "The rowing station. Occupied only when the oars are in the locks; the motor station takes over otherwise."
+    },
+    {
+      "id": "helm_seat",
+      "type": "seat",
+      "pos": [
+        0,
+        -1.82,
+        0.316
+      ],
+      "provenance": "rig HELM / helmSeat(dir,opts) — stern bench top centre, station(0.15) keel + SEAT (exact).",
+      "note": "Tiller in reach of the outboard clamp. pilotStand(dir,opts) puts the feet on the floor at y=-1.25, in the pocket immediately forward of it."
+    }
+  ],
+  "PAINT": {
+    "model": "slots -> derived ramps. The hull carries five paint slots (hull topsides, trim/sheer band, cove line, bottom, interior); each slot is ONE base hex and the rig derives its ramp (rampFrom) in OKLCH with a locked lightness curve, chroma capped at C_CAP=0.115, shadows rotated toward 258deg and highlights toward 92deg.",
+    "slots": [
+      "hull",
+      "trim",
+      "cove",
+      "bottom",
+      "interior"
+    ],
+    "defaults": "bottom falls back to trim; interior falls back to bare wood (WOOD ramp). Oars (\"oar\") and outboard cowling (\"cowl\") keep fixed ramps and never follow the paint.",
+    "presets": [
+      "harbour-white",
+      "dory-buff",
+      "bottle-green",
+      "squall-grey",
+      "cranberry",
+      "tar-black"
+    ],
+    "canonical": "harbour-white keeps the hand-tuned pass-1 arrays, so that scheme is bit-identical to the original bake.",
+    "persistence": "store a boat's colourway as the 4-5 base hexes, not as a baked sheet — render(dir,{paint:{...}}) at load, or export one PNG per scheme.",
+    "picker": "chipWall() returns the legal grid a UI should offer: 10 hue families x 6 value bands, chroma peaking midtone. A raw hex from code is accepted and clamped the same way."
+  }
 }
