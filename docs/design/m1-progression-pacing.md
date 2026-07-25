@@ -116,11 +116,24 @@ Three things the model must not fake:
   difference is the mechanic teaching itself. It must also confirm the careless player still **climbs**: if
   losing a bucket to rot can strand someone with no way to earn the next rung, the loss is too sharp.
 
-- **Ice is the first recurring cost, so it changes the shape of the curve.** Every other purchase in M1 is
-  one-off; ice is spent per trip. The model must show that a trip with ice **nets more than the same trip
-  without it** once the catch is worth enough — and that early on, when it isn't, going without is the right
-  call. If ice is always correct it is a tax, not a decision; if it is never correct it is dead content. The
-  crossover point is the number to tune, and the lid should move it earlier.
+- **Cold is priced in TIME, so model it that way.** The natural instinct is to ask "does ice net more coin?"
+  — but what the player is buying is **productive hours**. Model it as: *how much longer can I stay out
+  before the first fish I landed forces me back, and what is an extra hour of fishing worth?* Coin is the
+  output of that sum, not the input.
+
+  That makes the whole cold chain one calculation with three answers: **ice buys time at sea**, **a lid buys
+  more time per unit of ice**, and **the freezer buys time ashore** (bank a part-load and go out again
+  instead of making a trip to sell). The freezer being free-but-fixed and ice being paid-but-portable is the
+  trade.
+
+- **Ice is also the first recurring cost, and that changes the curve's shape.** Every other purchase in M1 is
+  one-off. So check the crossover: a trip with ice must **net more than the same trip without** once the
+  catch is worth enough, and must *not* before that. If ice is always correct it is a tax, not a decision; if
+  it is never correct it is dead content. Tune the crossover, and the lid should pull it earlier.
+
+- **Watch the knock-on to the whole schedule.** Ice raises hours-per-session, which raises income per day,
+  which pulls every later rung *forward*. Re-run §2 after tuning ice — a change that looks local to one
+  consumable can quietly collapse days 11–15 into a single afternoon.
 
 **Model two players**, and check both:
 - **Efficient** — digs every low water, freezes everything, sells at the wharf. Should hit the §2 targets

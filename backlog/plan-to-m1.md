@@ -198,6 +198,31 @@ tunables in a `SpoilPolicy` struct.
 no buyer will take it at any price, and it **still occupies hold space until it is dumped**. The loss is coin
 and a wasted trip, never a ruined save.
 
+**What cold actually sells the player is TIME.** This is the frame to design and tune against, not coin.
+Freshness puts a clock on your catch: the moment you land the first fish you are on your way back. Every
+form of cold buys slack against that clock, and each buys it somewhere different:
+
+| | Buys you | Costs |
+|---|---|---|
+| **Ice** | **Time at sea** — stay out, fill the hold, make one trip where you'd have made two | Recurring, per trip |
+| **A lid** | **More time per unit of ice** — the same load stretches further | One-off |
+| **The freezer** | **Time ashore** — bank the catch and wait: for a full bucket, for a better price, for the tide | Free, but only at home |
+| **Kept alive** | Time, free — but only for shellfish | Species-limited |
+
+Two things follow from that framing. First, **ice must not buy so much time that the clock stops mattering** —
+its duration should extend a trip, never erase the constraint. Second, it slots cleanly beside the other
+rungs, because each upgrade buys a *different* axis of "more per trip": the **outboard buys range**, **ice
+buys endurance**, **the Punt buys capacity**. Three different answers to the same pressure, which is why they
+should arrive days apart rather than together.
+
+And it is P1 doing its job. The tide already sets your schedule — low water for digging, the returning tide
+on the sandbar. Spoilage is the third clock, and ice is the **first tool that lets the player push back
+against one of them**. That is a good thing to earn in a slice about learning to read the sea.
+
+> The freezer's "time ashore" is deliberately shallow in M1 — it exists so Ginny can hold your catch until
+> you've a whole bucket to carry across. Holding stock to time the *market* is M2-21's job; don't build it
+> here, but note that this is its seed.
+
 **Ice and lids — the portable cold chain.** The freezer is free but only at home, so cold has to be
 *carriable* for the arc to work at sea. Three pieces, and they make the general store a repeat destination
 rather than a one-visit shop:
