@@ -18,3 +18,4 @@ MonoBehaviour:
   Lure: 1
   FavorsSpeciesIds:
   - fish.atlantic_cod
+  - fish.pollock

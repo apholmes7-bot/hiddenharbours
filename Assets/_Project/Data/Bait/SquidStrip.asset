@@ -18,3 +18,4 @@ MonoBehaviour:
   Price: 6
   FavorsSpeciesIds:
   - fish.atlantic_cod
+  - fish.pollock

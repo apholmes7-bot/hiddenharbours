@@ -19,3 +19,4 @@ MonoBehaviour:
   FavorsSpeciesIds:
   - fish.atlantic_cod
   - fish.mackerel
+  - fish.pollock
