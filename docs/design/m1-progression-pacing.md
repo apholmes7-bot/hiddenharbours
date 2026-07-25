@@ -74,7 +74,8 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 | Island store demand D | `GameConfig` | **deliberately worse than the wharf** |
 | Nine Mile Creek demand D | `GameConfig` | the reason to cross |
 | Elasticity per species | `FishSpeciesDef` | gluts crash faster |
-| Spoiled-value floor | `SpoilPolicy.SpoiledValueFloor` | currently 0.25 |
+| Refusal threshold | `SpoilPolicy.UnsellableSpoil` | past it, **no sale at any price** |
+| Perishability per species | `FishSpeciesDef` (to author) | mackerel fast, shellfish hardy |
 
 **Costs — buy side**
 | Input | Where | Note |
@@ -107,9 +108,11 @@ Three things the model must not fake:
   the whole point of the market is that dumping is punished.
 - **The tide gates income, not just the crossing.** Clam digging is only possible around low water, so
   clams/day is bounded by the tide sim, not by player effort. Read the window from the actual formula.
-- **Freshness taxes the careless.** A bucket carried three days without the freezer sells at
-  `Freshness.ValueMultiplier` — the model should show the *difference* between a careful and a careless
-  player, because that difference is the mechanic teaching itself.
+- **Freshness taxes the careless, and past a point it takes everything.** Value falls to nothing and beyond
+  `SpoilPolicy.UnsellableSpoil` the catch cannot be sold at all — it is rubbish occupying hold space until
+  dumped. The model must show the *difference* between a careful and a careless player, because that
+  difference is the mechanic teaching itself. It must also confirm the careless player still **climbs**: if
+  losing a bucket to rot can strand someone with no way to earn the next rung, the loss is too sharp.
 
 **Model two players**, and check both:
 - **Efficient** — digs every low water, freezes everything, sells at the wharf. Should hit the §2 targets

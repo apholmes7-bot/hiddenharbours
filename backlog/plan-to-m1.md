@@ -185,18 +185,36 @@ flavour. A working creek, not a town. Greywick's outdated art is **retired, not 
 - **Exit:** you arrive off the sandbar, sell, see the dory, and understand she is the next rung.
 
 ### 7.3 · Freshness & rot — `economy-sim` + `gameplay-systems` — **the one genuinely new system**
-Load-bearing in the new arc and currently **not built**. `CatchSpoilMath` exists but is *visual only* — its own
-header says "Who sets spoil: nobody yet." Needs:
+Load-bearing in the new arc. `CatchSpoilMath` draws the rot but its own header says "Who sets spoil: nobody
+yet."
 
-- A **freshness clock** per catch: a `gameTime` timestamp that survives save and time-skip (never a
-  per-frame countdown), driving a 0..1 spoil value.
-- Three arrest modes: **frozen** (aunt's freezer, later ice), **kept alive** (hydration — shellfish in a wet
-  bucket, later a live well), and **nothing** (it rots).
-- **Price consequence**: rot cuts value on a curve; fully spoiled is worth ~nothing but is never a
-  hard-punish event (P5 — cozy). Wire to the existing `SellPricing`.
-- Wire the existing spoil *visual* to the new clock so a rotting bucket looks rotten.
-- **Exit:** filling a bucket over three days without the freezer visibly and financially costs you; freezing
-  or keeping them alive saves them; a save/reload and a sleep-skip both preserve freshness exactly.
+**Landed** (`feat/freshness-clock`): the Core contract and arithmetic — a **settle-on-read** accumulator
+(spoil banked, the instant it was banked, the mode held since), so spoil is a pure function of `(state, now)`
+and a reload, a sleep-skip and a fast-forward all agree. Changing mode settles first, so an hour in the sun
+before the freezer is remembered forever. Three modes (ambient rots; **frozen** and **kept alive** arrest),
+tunables in a `SpoilPolicy` struct.
+
+**Fresh pays; rotten is rubbish.** Value falls linearly to **nothing** — no floor. Past the policy threshold
+no buyer will take it at any price, and it **still occupies hold space until it is dumped**. The loss is coin
+and a wasted trip, never a ruined save.
+
+**Still to build, each its own slice:**
+- Stamp catches at landing; **perishability per species** on `FishSpeciesDef` (fast-rotting mackerel vs
+  hardy shellfish).
+- **Price + refusal wiring.** Note the trap: the value multiplier alone cannot make a catch worthless at the
+  till, because `SellPricing.UnitPrice` floors every unit at 1₲. **Refusal must be a hard gate in front of
+  the pricing maths**, not a price that trends to zero.
+- The **freezer** (Ginny's) and **live-bucket** interactables that set the mode.
+- A **dispose verb** — empty the bucket, dump it over the side. Without it a spoiled hold is a soft-lock.
+- Wire the existing rot **visual** to the clock, plus a **freshness read on the hold**. Non-negotiable now
+  that a catch can become worth nothing: watching a bucket rot is a lesson; a buyer refusing one that looked
+  fine is a bug.
+- **Persist hold contents.** `SaveData` does not carry them at all today, so "freshness survives a save"
+  needs a **v4→v5 bump** with a migration.
+
+- **Exit:** filling a bucket over three days without the freezer visibly and financially costs you, and past
+  a point nobody will buy it and you must dump it; freezing or keeping them alive saves them; a save/reload
+  and a sleep-skip both preserve freshness exactly.
 
 ### 7.4 · The pacing model — `economy-sim` — **do this first, it's the cheapest de-risk**
 "A new rung every couple of days" is a balance problem, and it is far cheaper to solve in a spreadsheet than
@@ -364,8 +382,9 @@ ADR 0005 desktop baseline (60fps on a typical desktop/laptop GPU, KB/mouse + gam
 - [ ] You sail the repaired dory with the force model — wind pushes, tide sets, she carries way. ✅ *done*
 
 **The pressure (P5)**
-- [ ] **Fish rot.** Freezing or keeping them alive arrests it; neglect costs coin, never a wipe. Freshness
-      survives save and time-skip exactly.
+- [ ] **Fish rot.** Fresh pays best; neglected catch loses value and eventually **no buyer will take it** —
+      rubbish you must dump before the hold is any use again. Freezing or keeping them alive arrests it, and
+      the rot is **visible well before** it becomes worthless. Freshness survives save and time-skip exactly.
 
 **The craft**
 - [ ] Content is data-driven; environment is a pure function of `(seed, gameTime)`. ✅
