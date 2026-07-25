@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: fcc78fb31fc639f44b41f7c1ec894f0d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7166066296344196632
+    second: Bucket_pail_few_shell_0
+  - first:
+      213: -6796795935692121191
+    second: Bucket_pail_few_shell_1
+  - first:
+      213: -7582488607091082955
+    second: Bucket_pail_few_shell_2
+  - first:
+      213: -5697543878353943178
+    second: Bucket_pail_few_shell_3
+  - first:
+      213: -7193219864155284834
+    second: Bucket_pail_few_shell_4
+  - first:
+      213: 4862585338640416033
+    second: Bucket_pail_few_shell_5
+  - first:
+      213: 1521798979770102190
+    second: Bucket_pail_few_shell_6
+  - first:
+      213: -7555136321993519134
+    second: Bucket_pail_few_shell_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 364
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72d7368873d697043b8fc79867f20bc5
+      internalID: 514077269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf3e9d210f994aa4eb19e76eae11c19e
+      internalID: -533324301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 260
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3bc7661c9f42a144b50dbb7cfa8fc33
+      internalID: -4430963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8babb1b036573a54ab1bb7f5d5a9c07c
+      internalID: -426235940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eda108b80a7d5d47bdeeae23d9745c5
+      internalID: 1511945376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fe172be3063f1a42b483739acab4dfd
+      internalID: -324265691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c0aa82a6e59b954ca4e8d95305c4dd4
+      internalID: -540089203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bucket_pail_few_shell_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c14c8242edcacd47a250b47d1c71a53
+      internalID: -2095958335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 01a128fe325b0f44d981b16fead6ce2a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bucket_pail_few_shell_d0_f0: 514077269
+      Bucket_pail_few_shell_d1_f0: -533324301
+      Bucket_pail_few_shell_d2_f0: -4430963
+      Bucket_pail_few_shell_d3_f0: -426235940
+      Bucket_pail_few_shell_d4_f0: 1511945376
+      Bucket_pail_few_shell_d5_f0: -324265691
+      Bucket_pail_few_shell_d6_f0: -540089203
+      Bucket_pail_few_shell_d7_f0: -2095958335
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
