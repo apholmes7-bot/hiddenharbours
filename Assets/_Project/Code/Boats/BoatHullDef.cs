@@ -113,5 +113,14 @@ namespace HiddenHarbours.Boats
                  "convention). NOTE: hull assets serialized before this field existed deserialize it as " +
                  "(0,0) = dead amidships — author it explicitly on any hull that carries a container.")]
         public Vector2 DeckContainerOffset = new Vector2(0.35f, -0.9f);
+
+        [Header("Helm console (the diegetic dashboard — engine hulls up the ladder)")]
+        [Tooltip("Optional HELM CONSOLE — the dashboard rig + upgradable equipment this hull carries, as " +
+                 "data (rule 2). Points at a HelmConsoleDef naming the console renderer " +
+                 "(Console/Sport/Novi/Cape) and its equipment slots (sounder, compass, radar, gps). Null = " +
+                 "no console: the bare/rowed dory shows nothing; a motorised dory shows only its tiller. " +
+                 "Append-only, mirrors the Visual / DeckContainer pointers above. How the console renders " +
+                 "is ADR 0025.")]
+        public HelmConsoleDef Helm;
     }
 }

@@ -22,6 +22,10 @@ namespace HiddenHarbours.Player
         public const string ShovelId = "gear.shovel";
         public const string BucketId = "gear.bucket";
         public const string RodId    = "gear.rod";
+        /// <summary>The watch: the diegetic instrument that grants the time/date readout (the keystone
+        /// diegetic-UI proof — diegetic-ui-and-inventory.md §3.3). Unlike the boat-fitted instruments
+        /// (sounder/radar/gps/compass), the watch is CARRIED on the player and reads on any boat / ashore.</summary>
+        public const string WatchId  = "gear.watch";
 
         /// <summary>True iff the player owns the gear with this stable id (reads the live save's owned-gear
         /// list). Null save / null-or-empty id → false.</summary>
@@ -43,5 +47,10 @@ namespace HiddenHarbours.Player
         /// rod additionally needs the cod licence — that's the separate land-time gate in Fishing.</summary>
         public static bool CanRodFish(SaveData save) => Owns(save, RodId);
         public static bool CanRodFish() => CanRodFish(GameServices.Save?.Current);
+
+        /// <summary>Does the player own the watch? (Gates the diegetic clock/date readout — the watch is the
+        /// first "true UI" the player earns; before it there is no time on screen, diegetic-ui §3.3.)</summary>
+        public static bool HasWatch(SaveData save) => Owns(save, WatchId);
+        public static bool HasWatch() => HasWatch(GameServices.Save?.Current);
     }
 }
