@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ConsoleSkiff
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.console_skiff
-  Variant: 0
+  Variant: 1
   HullMesh: {fileID: 11400000, guid: d681332addb706645ac359c491ef7de5, type: 2}
   Facings:
   - {fileID: 2151550861935500239, guid: 0a3fc06be11cf6041b8747917f5589d8, type: 3}
@@ -97,6 +97,8 @@ MonoBehaviour:
   OarPort: []
   OarStar: []
   OarColumnCount: 10
+  OarPortMesh: {fileID: 0}
+  OarStarMesh: {fileID: 0}
   MotorLower:
   - {fileID: -845709291150461024, guid: 570821dd9bdef574e9384d4c8df20e94, type: 3}
   - {fileID: -4274342088327765730, guid: 570821dd9bdef574e9384d4c8df20e94, type: 3}
@@ -247,6 +249,7 @@ MonoBehaviour:
   MotorMaxSteerDegrees: 30
   MotorVariant: 0
   MotorFit: 0
+  MotorMesh: {fileID: 11400000, guid: df22c1011012ef44b9d4d6fb2cbb9440, type: 2}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3

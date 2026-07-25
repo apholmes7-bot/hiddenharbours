@@ -302,19 +302,22 @@ namespace HiddenHarbours.Tests.RigBaking
                             $"{visual.Id} is flipped to Mesh and binds oar SHEETS but no oar MESHES, so " +
                             "the mesh path drops her oars and she rows with nothing. Bake the fitting " +
                             "(Bake ALL hull fittings) or give her an OverlayBlockedReason.");
-                        Assert.IsFalse(visual.HasMotor(),
-                            $"{visual.Id} is flipped to Mesh but binds motor sheets, which the mesh " +
-                            "path silently drops — the outboards have no fitting mesh yet. Give her an " +
-                            "OverlayBlockedReason in HullMeshFleet.");
+                        // The outboards crossed over the same way the oars did, so the same shape of
+                        // claim applies to them: sheets are fine, sheets with no fitting are not.
+                        Assert.IsFalse(visual.HasMotor() && !visual.HasMotorMesh(),
+                            $"{visual.Id} is flipped to Mesh and binds motor SHEETS but no motor MESH, " +
+                            "so the mesh path drops her engine and she runs on nothing. Bake the " +
+                            "fitting (Bake ALL hull fittings) or give her an OverlayBlockedReason.");
                     }
                     else
                     {
                         Assert.AreEqual(BoatHullVariant.Sprite, visual.Variant,
                             $"{visual.Id} is blocked ({hull.OverlayBlockedReason}) and must stay a " +
                             "sprite hull until that overlay has a mesh of its own.");
-                        Assert.IsTrue(visual.HasOarSheets() || visual.HasMotor(),
-                            $"{visual.Id} carries an OverlayBlockedReason but binds no oar or motor " +
-                            "sheets, so the block is stale — flip her.");
+                        Assert.IsTrue((visual.HasOarSheets() && !visual.HasOarMeshes()) ||
+                                      (visual.HasMotor() && !visual.HasMotorMesh()),
+                            $"{visual.Id} carries an OverlayBlockedReason but every overlay she binds " +
+                            "already has a fitting mesh, so the block is stale — flip her.");
                         Assert.IsTrue(visual.HasHullMesh(),
                             $"{visual.Id} is blocked, but her mesh must still be baked and wired so the " +
                             "flip is one field later.");

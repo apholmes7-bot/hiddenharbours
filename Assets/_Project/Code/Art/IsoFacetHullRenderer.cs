@@ -127,6 +127,21 @@ namespace HiddenHarbours.Art
         /// <summary>The id in [1,255] this hull writes into the facet buffer's alpha. 0 = not registered.</summary>
         public int HullId => _hullId;
 
+        /// <summary>
+        /// The child that carries this hull's heading, rock and heave — what an articulated fitting
+        /// parents to (ADR 0022 phase 7).
+        ///
+        /// <para>⚠️ <b>Handed out directly rather than looked up by NAME, and that is a bug fix, not a
+        /// tidy-up.</b> Re-configuring this renderer (which is what a hull SWAP does) destroys the old
+        /// child and builds a new one with the same name — and in play mode <c>Destroy</c> is deferred
+        /// to end of frame, so for the rest of that frame BOTH exist and <c>transform.Find("FacetMesh")</c>
+        /// returns the DOOMED one. Fittings attached to it were destroyed with it at end of frame:
+        /// the boat you swapped TO lost her oars or her engine, silently, one frame later. Caught by
+        /// <c>PilotableFleetPlayTests.Picker_SwappingDoryToSkiff_TradesTheOarsForAnOutboard</c> the
+        /// moment the skiffs' engines became fittings and it had two mesh hulls to swap between.</para>
+        /// </summary>
+        public Transform PosedMesh => _meshChild;
+
         public bool IsConfigured => _setup != null;
 
         /// <summary>The overlay quad's renderer — set sorting layer/order here (it is the only

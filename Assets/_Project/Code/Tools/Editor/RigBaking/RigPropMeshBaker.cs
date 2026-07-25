@@ -68,7 +68,11 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"  ✓ {p.Label}\n" +
                         $"      {def.Mesh.vertexCount} verts / {def.Mesh.triangles.Length / 3} tris, " +
                         $"cell {def.CellW}×{def.CellH} @ {def.PxPerMetre} px/m\n" +
-                        $"      turns about {def.PivotLocalMeters} m (hull-local)\n");
+                        $"      turns about {def.PivotLocalMeters} m (hull-local)\n" +
+                        (def.FixedMesh == null
+                            ? ""
+                            : $"      + a bolted-down part: {def.FixedMesh.vertexCount} verts / " +
+                              $"{def.FixedMesh.triangles.Length / 3} tris\n"));
                 }
                 catch (Exception e)
                 {
@@ -92,7 +96,19 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, p.ScriptPath, p.GlobalName, p.Extraction);
-            RigMeshBuild build = RigMeshBuilder.Build(data, $"{p.Key}PropMesh");
+
+            // A fitting may be bolted-down geometry PLUS geometry that articulates — the outboards'
+            // clamp bracket is fixed to the transom while the engine swivels on it. Which faces are
+            // which was MEASURED during extraction; here they simply become two meshes off one
+            // extraction, so they can never disagree about palette, light or cell.
+            var moving = new List<RigFace>();
+            var fixedFaces = new List<RigFace>();
+            foreach (RigFace f in data.Faces) (f.FixedInPose ? fixedFaces : moving).Add(f);
+
+            RigMeshBuild build = RigMeshBuilder.Build(data.WithFaces(moving), $"{p.Key}PropMesh");
+            RigMeshBuild fixedBuild = fixedFaces.Count == 0
+                ? null
+                : RigMeshBuilder.Build(data.WithFaces(fixedFaces), $"{p.Key}PropFixedMesh");
 
             // The pivot — the whole pose, in one vector. Read from the rig, never from a call site.
             Vector3 pivot = ReadVector3(host, $"{p.GlobalName}.{p.Extraction.PivotCall}",
@@ -149,24 +165,27 @@ namespace HiddenHarbours.Tools.RigBaking
                 for (int y = 0; y < 4; y++)
                     def.Bayer16[x * 4 + y] = (float)data.Bayer[x, y];
 
-            Mesh oldMesh = def.Mesh;
+            Mesh oldMesh = def.Mesh, oldFixed = def.FixedMesh;
             def.Mesh = build.Mesh;
+            def.FixedMesh = fixedBuild?.Mesh;
             if (created)
             {
                 AssetDatabase.CreateAsset(def, p.AssetPath);
             }
-            else if (oldMesh != null)
+            else
             {
-                AssetDatabase.RemoveObjectFromAsset(oldMesh);
-                UnityEngine.Object.DestroyImmediate(oldMesh, allowDestroyingAssets: true);
+                DropSubAsset(oldMesh);
+                DropSubAsset(oldFixed);
             }
             AssetDatabase.AddObjectToAsset(build.Mesh, def);
+            if (fixedBuild != null) AssetDatabase.AddObjectToAsset(fixedBuild.Mesh, def);
             EditorUtility.SetDirty(def);
             AssetDatabase.SaveAssets();
             AssetDatabase.ImportAsset(p.AssetPath);
 
             Debug.Log($"[rig-prop] {(created ? "Created" : "Refreshed")} {p.AssetPath}: {build}, " +
-                      $"turns about {pivot} m.");
+                      $"turns about {pivot} m" +
+                      (fixedBuild == null ? "." : $"; plus a BOLTED-DOWN part that does not: {fixedBuild}."));
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked fitting at {p.AssetPath} is not usable — see fields.");
 
@@ -201,6 +220,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     case "OarPort": visual.OarPortMesh = def; break;
                     case "OarStar": visual.OarStarMesh = def; break;
+                    // ONE motor field, whatever the fit: the twin is this same def instantiated twice
+                    // at the mounts the def carries, not a second engine asset.
+                    case "Motor": visual.MotorMesh = def; break;
                     default:
                         Debug.LogError(
                             $"[rig-prop] {p.Label}: unknown fitting slot '{slot}' on {assetPath}. The " +
@@ -213,6 +235,13 @@ namespace HiddenHarbours.Tools.RigBaking
                 Debug.Log($"[rig-prop] wired {def.Id} into {assetPath} slot '{slot}'.");
             }
             AssetDatabase.SaveAssets();
+        }
+
+        static void DropSubAsset(Mesh mesh)
+        {
+            if (mesh == null) return;
+            AssetDatabase.RemoveObjectFromAsset(mesh);
+            UnityEngine.Object.DestroyImmediate(mesh, allowDestroyingAssets: true);
         }
 
         static Vector3 ReadVector3(IRigScriptHost host, string expr, string what)

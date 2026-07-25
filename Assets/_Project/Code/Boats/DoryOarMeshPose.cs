@@ -116,7 +116,7 @@ namespace HiddenHarbours.Boats
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
                     m[i, j] = ax1[i] * ax0[j] + r1[i] * r0[j] + u1[i] * u0[j];
-            return QuaternionFromRotation(m);
+            return RigRotationMath.FromMatrix(m);
         }
 
         /// <summary>The rig's frame construction, verbatim. See the class note on its handedness.</summary>
@@ -129,41 +129,5 @@ namespace HiddenHarbours.Boats
             up = Vector3.Cross(right, ax);
         }
 
-        /// <summary>
-        /// Matrix → quaternion by the standard trace method, written out rather than routed through
-        /// <c>Quaternion.LookRotation</c>: LookRotation re-orthonormalises against ITS conventions
-        /// for which axis is forward and which is up, and a silent convention mismatch here is a
-        /// mirrored blade that still looks like an oar.
-        /// </summary>
-        static Quaternion QuaternionFromRotation(in Matrix4x4 m)
-        {
-            float trace = m[0, 0] + m[1, 1] + m[2, 2];
-            Quaternion q;
-            if (trace > 0f)
-            {
-                float s = Mathf.Sqrt(trace + 1f) * 2f;
-                q = new Quaternion((m[2, 1] - m[1, 2]) / s, (m[0, 2] - m[2, 0]) / s,
-                                   (m[1, 0] - m[0, 1]) / s, 0.25f * s);
-            }
-            else if (m[0, 0] > m[1, 1] && m[0, 0] > m[2, 2])
-            {
-                float s = Mathf.Sqrt(1f + m[0, 0] - m[1, 1] - m[2, 2]) * 2f;
-                q = new Quaternion(0.25f * s, (m[0, 1] + m[1, 0]) / s,
-                                   (m[0, 2] + m[2, 0]) / s, (m[2, 1] - m[1, 2]) / s);
-            }
-            else if (m[1, 1] > m[2, 2])
-            {
-                float s = Mathf.Sqrt(1f + m[1, 1] - m[0, 0] - m[2, 2]) * 2f;
-                q = new Quaternion((m[0, 1] + m[1, 0]) / s, 0.25f * s,
-                                   (m[1, 2] + m[2, 1]) / s, (m[0, 2] - m[2, 0]) / s);
-            }
-            else
-            {
-                float s = Mathf.Sqrt(1f + m[2, 2] - m[0, 0] - m[1, 1]) * 2f;
-                q = new Quaternion((m[0, 2] + m[2, 0]) / s, (m[1, 2] + m[2, 1]) / s,
-                                   0.25f * s, (m[1, 0] - m[0, 1]) / s);
-            }
-            return Quaternion.Normalize(q);
-        }
     }
 }

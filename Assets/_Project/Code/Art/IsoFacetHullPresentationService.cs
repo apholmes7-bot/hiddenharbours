@@ -47,8 +47,13 @@ namespace HiddenHarbours.Art
             return renderer;
         }
 
-        /// <summary>The child that carries a hull's heading, rock and heave.</summary>
-        const string PosedMeshChild = "FacetMesh";
+        /// <summary>
+        /// The child that carries a hull's heading, rock and heave — asked of the renderer, never
+        /// found by name. See <see cref="IsoFacetHullRenderer.PosedMesh"/> for why the name lookup was
+        /// a real defect: a hull swap leaves two children called "FacetMesh" alive for one frame, and
+        /// <c>Find</c> returns the one that is about to be destroyed.
+        /// </summary>
+        static Transform PosedMeshOf(IsoFacetHullRenderer hull) => hull != null ? hull.PosedMesh : null;
 
         /// <inheritdoc/>
         public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot)
@@ -76,12 +81,13 @@ namespace HiddenHarbours.Art
             // carries heading, rock and heave, and a fitting must inherit all three or it shears off
             // the boat the instant she moves — which is exactly the failure the sprite path's layers
             // had whenever a rock frame and a steer column disagreed.
-            Transform posed = hull.transform.Find(PosedMeshChild);
+            Transform posed = PosedMeshOf(hull);
             if (posed == null)
             {
                 Debug.LogError($"[IsoFacetHullPresentationService] '{host.name}': the hull renderer has " +
-                               $"no '{PosedMeshChild}' child to hang '{def.Id}' from. The renderer's " +
-                               "child layout changed and this attach point must be re-aimed.");
+                               $"no posed mesh child to hang '{def.Id}' from. The renderer was never " +
+                               "configured, or its child layout changed and this attach point must be " +
+                               "re-aimed.");
                 return null;
             }
 
@@ -104,8 +110,7 @@ namespace HiddenHarbours.Art
         {
             if (host == null) return;
             var hull = host.GetComponent<IsoFacetHullRenderer>();
-            if (hull == null) return;
-            Transform posed = hull.transform.Find(PosedMeshChild);
+            Transform posed = PosedMeshOf(hull);
             if (posed == null) return;
 
             for (int i = posed.childCount - 1; i >= 0; i--)
@@ -113,6 +118,17 @@ namespace HiddenHarbours.Art
                 var prop = posed.GetChild(i).GetComponent<IsoFacetPropRenderer>();
                 if (prop != null) Destroy(prop.gameObject);
             }
+        }
+
+        /// <inheritdoc/>
+        public void DetachProp(GameObject host, string slot)
+        {
+            if (host == null || string.IsNullOrEmpty(slot)) return;
+            var hull = host.GetComponent<IsoFacetHullRenderer>();
+            Transform posed = PosedMeshOf(hull);
+            Transform existing = posed != null ? posed.Find(slot) : null;
+            if (existing != null && existing.GetComponent<IsoFacetPropRenderer>() != null)
+                Destroy(existing.gameObject);
         }
 
         /// <summary>The fitting def, converted to the renderer's runtime setup — plain copies.</summary>
@@ -129,6 +145,7 @@ namespace HiddenHarbours.Art
             return new IsoFacetPropSetup
             {
                 Mesh = def.Mesh,
+                FixedMesh = def.FixedMesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
                 LightN = def.LightN,

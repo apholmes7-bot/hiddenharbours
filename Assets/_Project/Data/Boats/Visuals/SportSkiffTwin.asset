@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SportSkiffTwin
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatVisualDef
   Id: visual.sport_skiff_twin
-  Variant: 0
+  Variant: 1
   HullMesh: {fileID: 11400000, guid: fe9e5b688c0942b459036bdad288ed19, type: 2}
   Facings:
   - {fileID: 4242073497960288322, guid: 569f76c5a1f0e1e4eb10c4c5b893a586, type: 3}
@@ -97,6 +97,8 @@ MonoBehaviour:
   OarPort: []
   OarStar: []
   OarColumnCount: 10
+  OarPortMesh: {fileID: 0}
+  OarStarMesh: {fileID: 0}
   MotorLower:
   - {fileID: 769943853798607638, guid: afeb9bd0ba2a5604fbdc872cf89387dd, type: 3}
   - {fileID: 6786785082107038135, guid: afeb9bd0ba2a5604fbdc872cf89387dd, type: 3}
@@ -247,6 +249,7 @@ MonoBehaviour:
   MotorMaxSteerDegrees: 30
   MotorVariant: 1
   MotorFit: 1
+  MotorMesh: {fileID: 11400000, guid: 8bd0f207b12239146809a764b0f71d00, type: 2}
   MotorRockRollDegrees: 3.8
   MotorRockPitchDegrees: 2.2
   MotorRockHeavePixels: 1.5
