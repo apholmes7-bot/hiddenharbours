@@ -85,6 +85,8 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 | Damaged dory | `ShipwrightOffer` | the big save-up |
 | Dory repair | `RepairLedger` | paid separately — two beats, not one |
 | Traps / pots | `PotOffer` | |
+| **Ice** (per load) | store `GearOffer` / consumable | **recurring** — the only running cost in M1 |
+| **Lid** (one-off) | store `GearOffer` | slows the melt; "spend once to stop spending" |
 | **Used outboard** | new `ShipwrightOffer` | the closing rung |
 
 ---
@@ -113,6 +115,12 @@ Three things the model must not fake:
   dumped. The model must show the *difference* between a careful and a careless player, because that
   difference is the mechanic teaching itself. It must also confirm the careless player still **climbs**: if
   losing a bucket to rot can strand someone with no way to earn the next rung, the loss is too sharp.
+
+- **Ice is the first recurring cost, so it changes the shape of the curve.** Every other purchase in M1 is
+  one-off; ice is spent per trip. The model must show that a trip with ice **nets more than the same trip
+  without it** once the catch is worth enough — and that early on, when it isn't, going without is the right
+  call. If ice is always correct it is a tax, not a decision; if it is never correct it is dead content. The
+  crossover point is the number to tune, and the lid should move it earlier.
 
 **Model two players**, and check both:
 - **Efficient** — digs every low water, freezes everything, sells at the wharf. Should hit the §2 targets

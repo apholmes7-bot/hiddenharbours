@@ -198,13 +198,34 @@ tunables in a `SpoilPolicy` struct.
 no buyer will take it at any price, and it **still occupies hold space until it is dumped**. The loss is coin
 and a wasted trip, never a ruined save.
 
+**Ice and lids — the portable cold chain.** The freezer is free but only at home, so cold has to be
+*carriable* for the arc to work at sea. Three pieces, and they make the general store a repeat destination
+rather than a one-visit shop:
+
+- **Ice is a consumable** added to a storage container. It holds the catch like a freezer does, but only
+  until it melts — **protection is a duration, not a state**. That framing is load-bearing: it keeps spoil
+  piecewise-constant so the sleep-skip guarantee survives (`Freshness.SettleThroughProtection`, landed), and
+  "six hours of ice left" is a legible resource where "chill 0.62" is not.
+- **A lid** placed over a container slows the melt (and is a cheap one-off buy against ice's recurring cost —
+  a nice early "spend to stop spending" beat).
+- Together they make a **real decision**: how much ice do I buy for a long day offshore, and is it worth the
+  margin? That decision does not exist while the only cold is at home.
+- Container-side work: ice quantity + melt rate on `DeckContainerDef` (which today carries only id, name and
+  fill sprites), a lid state and sprite, the melt maths (lid-modified), and the store selling both.
+
+**Frozen visual.** Fish get a frozen look the way they get a rotten one. The pattern is already set:
+`catchKit.js` exposes `tintSpoil`, and `CatchSpoilMath` is its byte-parity-tested C# twin feeding
+`CatchFillRenderer.SetSpoil`. A frost tint is the exact sibling — `tintFrost` in the rig, a
+`CatchFrostMath` twin, `SetFrost` on the renderer — so a glance at a tote tells you whether it is keeping.
+`art-director` owns the rig recipe; `art-pipeline` owns the twin and the wiring.
+
 **Still to build, each its own slice:**
 - Stamp catches at landing; **perishability per species** on `FishSpeciesDef` (fast-rotting mackerel vs
   hardy shellfish).
 - **Price + refusal wiring.** Note the trap: the value multiplier alone cannot make a catch worthless at the
   till, because `SellPricing.UnitPrice` floors every unit at 1₲. **Refusal must be a hard gate in front of
   the pricing maths**, not a price that trends to zero.
-- The **freezer** (Ginny's) and **live-bucket** interactables that set the mode.
+- The **freezer** (Ginny's), **live-bucket** and **ice/lid** interactables that set the mode.
 - A **dispose verb** — empty the bucket, dump it over the side. Without it a spoiled hold is a soft-lock.
 - Wire the existing rot **visual** to the clock, plus a **freshness read on the hold**. Non-negotiable now
   that a catch can become worth nothing: watching a bucket rot is a lesson; a buyer refusing one that looked
@@ -383,8 +404,12 @@ ADR 0005 desktop baseline (60fps on a typical desktop/laptop GPU, KB/mouse + gam
 
 **The pressure (P5)**
 - [ ] **Fish rot.** Fresh pays best; neglected catch loses value and eventually **no buyer will take it** —
-      rubbish you must dump before the hold is any use again. Freezing or keeping them alive arrests it, and
-      the rot is **visible well before** it becomes worthless. Freshness survives save and time-skip exactly.
+      rubbish you must dump before the hold is any use again. Freezing, icing or keeping them alive arrests
+      it, and the state is **visible on the catch** — rotten and frozen both read at a glance, well before
+      worthless. Freshness survives save and time-skip exactly.
+- [ ] **Cold is carriable and it costs.** Ice bought at the store holds a container for a while and melts;
+      a lid slows it. Deciding how much ice a long day is worth is a real call, and the store is worth
+      returning to.
 
 **The craft**
 - [ ] Content is data-driven; environment is a pure function of `(seed, gameTime)`. ✅
