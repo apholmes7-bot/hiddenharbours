@@ -113,6 +113,13 @@ namespace HiddenHarbours.Core
                  "impossible — depth is a WEIGHT on the catch roll, not a wall.")]
         public DepthDropSettings DepthDrop = DepthDropSettings.Default;
 
+        [Header("Bait & tackle (what's on the hook — a WEIGHT on the catch, never a wall)")]
+        [Tooltip("How much the right bait and the right tackle matter. Bait is the PRECISE tool (a fish " +
+                 "that wants food refuses the wrong food); tackle is the BROAD one (a curious fish will " +
+                 "still hit the wrong lure). Turn the boosts to 1 and the damps to 1 to make what's on " +
+                 "the hook irrelevant again.")]
+        public BaitTackleSettings BaitTackle = BaitTackleSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -500,5 +507,56 @@ namespace HiddenHarbours.Core
             TrapDefId = trapDefId;
             Count = count;
         }
+    }
+
+    /// <summary>
+    /// WHAT'S ON THE HOOK (<see cref="GameConfig.BaitTackle"/>) — how much the right bait and the right
+    /// tackle change what bites. Consumed by <c>CatchResolver.BaitAffinity</c> /
+    /// <c>LureAffinity</c> as plain multipliers on the catch roll, the same Core-policy /
+    /// feature-consumer split as <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>Weights, never walls</b> — the promise depth already makes. The wrong kit catches LESS;
+    /// it never catches NOTHING. That is what lets a beginner with a bare spoon still fill a bucket
+    /// while an angler who has learned the pairings fills it faster and with what they were after.</para>
+    ///
+    /// <para><b>Bait is precise, tackle is broad.</b> The wrong bait is damped harder than the wrong
+    /// lure, because a fish that wants food will refuse the wrong food outright, while a curious fish
+    /// will still occasionally hit a lure it doesn't love. That asymmetry is the whole reason to carry
+    /// both: bait to TARGET, tackle to COVER.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct BaitTackleSettings
+    {
+        [Tooltip("How much likelier a species is when the bait on the hook is one it wants (≥ 1; " +
+                 "1 = bait doesn't matter). This is the strongest targeting tool in the game — bigger " +
+                 "than the depth weight on purpose, because choosing bait is a deliberate act.")]
+        [Min(1f)] public float BaitFavourBoost;
+
+        [Tooltip("What's left of a species' chance when the bait is one it does NOT want (0..1; " +
+                 "1 = no penalty). Low: the wrong bait is a real mistake. Never 0 — a haddock will " +
+                 "still occasionally take a squid strip meant for cod.")]
+        [Range(0f, 1f)] public float WrongBaitDamp01;
+
+        [Tooltip("How much likelier a species is when the tackle tied on is one it chases (≥ 1; " +
+                 "1 = tackle doesn't matter). Smaller than the bait boost — tackle covers water, bait " +
+                 "picks a fish.")]
+        [Min(1f)] public float LureFavourBoost;
+
+        [Tooltip("What's left of a species' chance on a lure it doesn't favour (0..1). Gentler than the " +
+                 "wrong-bait damp: a fish will hit the wrong lure out of curiosity far more readily " +
+                 "than it will eat the wrong food.")]
+        [Range(0f, 1f)] public float WrongLureDamp01;
+
+        /// <summary>The reference tuning: the right bait roughly triples a species' share and the wrong
+        /// one cuts it to a third; the right tackle doubles and the wrong one costs a third. So a
+        /// correctly-baited, correctly-tackled cast is worth about six times a badly-chosen one — a
+        /// decision you can feel — while nothing is ever off the table.</summary>
+        public static BaitTackleSettings Default => new BaitTackleSettings
+        {
+            BaitFavourBoost = 3f,
+            WrongBaitDamp01 = 0.35f,
+            LureFavourBoost = 2f,
+            WrongLureDamp01 = 0.65f,
+        };
     }
 }

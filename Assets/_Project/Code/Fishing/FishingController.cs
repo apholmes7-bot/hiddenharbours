@@ -54,6 +54,20 @@ namespace HiddenHarbours.Fishing
                  "the deck, wherever this component itself is mounted. Left empty it falls back to this " +
                  "component's own transform — every existing rig/test behaves exactly as before.")]
         [SerializeField] private Transform _angler;
+        [Header("What's on the hook (bait & tackle — owner's ruling 2026-07-25)")]
+        [Tooltip("The BAIT currently on the hook. Its FavorsSpeciesIds steer what bites, and one is " +
+                 "spent each time a fish takes it. Empty (or an empty tackle box) = you're fishing the " +
+                 "lure alone — which always works. See TackleBox for the wallet.")]
+        [SerializeField] private BaitDef _bait;
+        [Tooltip("The TACKLE tied on. Always works, never consumed — the fallback that guarantees you " +
+                 "can fish with an empty bait box, and the reason running out is never a dead end.")]
+        [SerializeField] private TackleDef _tackle;
+        [Tooltip("Every bait the player can put on here (the dev cycle walks this list). The shop " +
+                 "supplies these later; for now the start builder wires the authored set.")]
+        [SerializeField] private BaitDef[] _baitBox;
+        [Tooltip("Every tackle the player can tie on (the dev cycle walks this list).")]
+        [SerializeField] private TackleDef[] _tackleBox;
+
         [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
@@ -304,6 +318,16 @@ namespace HiddenHarbours.Fishing
                 return; // stay Idle; nothing to cast into
             }
 
+            // Nothing on the end of the line at all — no bait in the box AND no tackle tied on. The
+            // starting grant makes this near-impossible in play; it exists so a stripped rig fails
+            // legibly instead of casting a bare hook that can never catch anything.
+            if (!HasSomethingOnTheHook)
+            {
+                Debug.Log("[Fishing] Nothing on the hook — tie something on, or bait up.");
+                EventBus.Publish(new DevNotice("Nothing on the hook — you need bait or a lure."));
+                return;
+            }
+
             _pendingFish = null;
             _pendingWeight = 0f;
 
@@ -446,7 +470,8 @@ namespace HiddenHarbours.Fishing
         {
             // Resolve WHICH fish at bite-time via the existing resolver (we don't rewrite catch logic).
             CatchContext ctx = BuildContext();
-            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, _rng);
+            BaitTackleSettings kit = _config != null ? _config.BaitTackle : BaitTackleSettings.Default;
+            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, in kit, _rng);
             if (fish == null)
             {
                 _phaseTimer = _resultDisplay;
@@ -454,6 +479,10 @@ namespace HiddenHarbours.Fishing
                 Emit(FishingPhase.NoBite, 0f, 0f);
                 return;
             }
+
+            // Something ate it — the bait is gone whether or not this fish is landed (owner's ruling
+            // 2026-07-25). Spent HERE rather than at the cast so water nothing looked at costs nothing.
+            SpendBaitOnBite();
 
             _pendingFish = fish;
             _pendingWeight = CatchResolver.RollWeight(fish, _rng);
@@ -941,7 +970,81 @@ namespace HiddenHarbours.Fishing
             float hour = clock != null ? clock.HourOfDay : 12f;
             Season season = clock != null ? clock.Season : Season.HighSummer;
             return new CatchContext(EffectiveRegionId, tide, hour, season, _gear,
-                                    _depthGame ? _depthM : CatchContext.NoDepth, _floorM);
+                                    _depthGame ? _depthM : CatchContext.NoDepth, _floorM,
+                                    TiedOnLure, BaitOnTheHook);
         }
+
+        // ---- what's on the hook (owner's ruling 2026-07-25) ---------------------------------------
+
+        /// <summary>The lure presentation currently tied on, or <see cref="LureTag.None"/> with an empty
+        /// rod. Tackle is presence-owned and never consumed, so this needs no stock check.</summary>
+        private LureTag TiedOnLure => _tackle != null ? _tackle.Lure : LureTag.None;
+
+        /// <summary>
+        /// The species the bait on the hook draws — or null when there is no bait to fish with, which is
+        /// the owner's rule made concrete: <b>no bait, no bait-fishing</b>. It reads the live wallet, not
+        /// just the serialized selection, so an empty box silently reverts you to fishing the lure alone
+        /// rather than pretending you baited up.
+        /// </summary>
+        private System.Collections.Generic.IReadOnlyList<string> BaitOnTheHook
+            => _bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id)
+                ? _bait.FavorsSpeciesIds
+                : null;
+
+        /// <summary>
+        /// Does this rig use the bait/tackle system at all? A rig with nothing wired — no bait, no
+        /// tackle, no boxes to pick from — predates the system (every EditMode fixture, every greybox
+        /// scene built before it), and must keep fishing exactly as it always did.
+        ///
+        /// <para>This is the same gate-off posture the rest of the module already takes: no authored
+        /// bathymetry means open water, no environment service means a flat calm. A new subsystem
+        /// degrades to "as before", never to "refuses to work".</para>
+        /// </summary>
+        private bool KitConfigured
+            => _tackle != null || _bait != null
+            || (_tackleBox != null && _tackleBox.Length > 0)
+            || (_baitBox != null && _baitBox.Length > 0);
+
+        /// <summary>
+        /// TRUE when there is something on the end of the line worth casting — bait in the box, or
+        /// tackle tied on. On an unconfigured rig this is always true (see <see cref="KitConfigured"/>).
+        ///
+        /// <para>On a rig that DOES carry a kit, the owner's rule bites: no bait and no tackle means
+        /// nothing to fish with. The starting grant makes that near-impossible in play, so this is a
+        /// safety net against a stripped rig rather than an everyday gate.</para>
+        /// </summary>
+        public bool HasSomethingOnTheHook
+            => !KitConfigured
+            || TiedOnLure != LureTag.None
+            || (_bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id));
+
+        /// <summary>
+        /// A fish took the bait — spend one. Called on the BITE rather than the cast, deliberately: a
+        /// cast nothing looked at costs you nothing, and bait is only gone once something has actually
+        /// eaten it. Silent no-op when fishing a bare lure.
+        /// </summary>
+        private void SpendBaitOnBite()
+        {
+            if (_bait == null) return;
+            TackleBox.TrySpendBait(GameServices.Save?.Current, _bait.Id);
+        }
+
+        /// <summary>Put a bait on / tie a tackle on (the dev cycle, the shop, and tests all come
+        /// through here rather than poking the fields).</summary>
+        public void SetBait(BaitDef bait) => _bait = bait;
+
+        /// <summary>See <see cref="SetBait"/>.</summary>
+        public void SetTackle(TackleDef tackle) => _tackle = tackle;
+
+        /// <summary>The bait currently selected (may be one the player has run out of — see
+        /// <see cref="BaitOnTheHook"/> for what is actually fishing).</summary>
+        public BaitDef Bait => _bait;
+
+        /// <summary>The tackle currently tied on.</summary>
+        public TackleDef Tackle => _tackle;
+
+        /// <summary>The authored bait/tackle the dev cycle walks (builder-wired).</summary>
+        public BaitDef[] BaitBox => _baitBox;
+        public TackleDef[] TackleBoxItems => _tackleBox;
     }
 }
