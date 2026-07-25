@@ -275,7 +275,38 @@ This is the **visual half of D8**: `boat.dory_outboard` flips `Propulsion` Oars�
 - **Exit:** the repaired dory wears a secondhand kicker that swivels with the helm and rides the wave field
   with the hull; cutting the motor ships the oars back out; the sprite path is untouched.
 
-### 7.8 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
+### 7.8 · The shell — title, new game, settings, pause — `ui-ux` + `lead-architect`
+**There is no shell around the game today.** No title screen, no main menu, no pause menu, no settings UI, no
+`Application.Quit`. `GameRoot` boots straight into play and `SaveService.Load()` does
+`loaded ?? SaveMigration.NewGame()`.
+
+**The forcing item is New Game, not the title art.** With one auto-loaded slot and no reset, a tester cannot
+get a second first-impression and cannot recover from a bug except by hand-deleting a file. For a milestone
+whose acceptance criterion is *"did they come back for a third session?"*, that is disqualifying.
+
+**Minimum shell for a closed playtest:**
+- **New Game** (confirm before overwriting an existing save) — the item that actually blocks the playtest.
+- **Continue** — load the existing save. One slot is plenty for M1.
+- **Settings**: master / ambience / SFX / music sliders, wired to `AudioDirector`'s existing serialized
+  fields, plus fullscreen/windowed. The M1 DoD already promises "independent volume sliders" and there is no
+  player-facing surface for them.
+- **Quit.**
+- **A build/version stamp on screen.** Cheap, and it makes every playtest bug report attributable to a build
+  instead of a guess.
+- **A pause menu** carrying the same settings plus quit-to-title — testers need it mid-session, and the
+  tide-table panel already establishes the pause-the-world pattern (`timeFlowMultiplier = 0`).
+
+**Deliberately not M1:** save slots, cloud saves, an animated or music-synced title sequence, key rebinding,
+graphics presets beyond fullscreen/windowed.
+
+**The title image is nearly free.** The project renders a whole world — frame the dory at a mooring at dawn
+from an in-game camera and put the wordmark over it. Do **not** spend hand-painted art budget on a title
+before the GO/POLISH/PIVOT verdict is in.
+
+- **Exit:** a tester can install the build, start a new game, adjust volume, pause, quit, relaunch and
+  continue — and can tell you which build they were on.
+
+### 7.9 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
 Unchanged from the previous audit and still real:
 
 - **Audio: zero asset files in the repo.** The music bus ducks correctly but has no stem. The rising-wind
@@ -341,6 +372,8 @@ ADR 0005 desktop baseline (60fps on a typical desktop/laptop GPU, KB/mouse + gam
 - [ ] PPU=32 / true metric scale holds everywhere. ✅
 - [ ] All player-facing strings go through **localization tables**.
 - [ ] Music, ambience, and the **rising-wind tell** are in and mixed.
+- [ ] The build has a **shell**: title, **New Game**, Continue, volume sliders, pause, quit, and a visible
+      build stamp. A tester can restart from scratch without touching a file.
 - [ ] Desktop frame budget profiled; **core-loop smoke test** passes in CI; a v1 save migrates to current.
 
 **The verdict**
@@ -366,7 +399,8 @@ the owner is in the loop for all of it.**
 **Wave 3 — dress and pace it.**
 Audio (beds, theme, wind tell, catch sting, home warmth). Wind widget and compass. Sell-screen skin. **The
 dory's outboard prop mesh and its mesh motor layer (§7.7)** — start the bake early in this wave, since the
-slice's closing rung cannot land without it. Tune the ladder against the Wave 1 model with real play data.
+slice's closing rung cannot land without it. **The shell (§7.8)** — New Game before anything else in it, since
+Wave 4's playtest cannot run without a reset. Tune the ladder against the Wave 1 model with real play data.
 
 **Wave 4 — prove it.**
 Profiling, smoke test, save migration, external playtest, the verdict. **Test the pacing, not just the
