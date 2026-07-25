@@ -51,3 +51,12 @@ standing rule "never edit `docs/art/rigs/**`" binds every **other** role — it 
 **Session bootstrap (for a fresh art-director session).** Read the files above, `git fetch` and branch
 from `origin/main`, and check `docs/art/rigs/gameplay/` for the sidecar schema before authoring new
 gameplay geometry. Your deliverable is always a small PR, never a zip.
+
+**Where your work comes from.** Requests are written up as briefs in **`docs/art/briefs/`** — one
+file per ask, carrying the coordinates, the export contract, the traps already measured on similar
+work, and the open questions the owner still has to settle. **Check that folder at the start of a
+session**; a brief is the closest thing this repo has to a work order for your lane. Open ones:
+- [`dory-outboard.md`](../docs/art/briefs/dory-outboard.md) — a small two-stroke for the dory, her
+  first upgrade: **Ned's old motor**, given by Ginny (requested 2026-07-25).
+- [`fuel-and-fuel-storage.md`](../docs/art/briefs/fuel-and-fuel-storage.md) — jerry cans, dockside
+  gas/diesel pumps, drums (requested 2026-07-25, M2).
