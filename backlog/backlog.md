@@ -192,7 +192,7 @@
 | M2-18 | Full supply/demand market sim | economy-sim | Hourly+daily tick; demandMood walk; event shocks | Prices breathe over days; deterministic from `(seed, tick)`; cheap on mobile |
 | M2-19 | NPC-fleet landings model | economy-sim | Aggregate supply curve lands fish without the player (P3) | Gluts/scarcity happen ashore; keyed to season/weather; not a full agent sim |
 | M2-20 | Auction house + multiple buyers + first contracts | economy-sim | Consignment auction; specialty buyers; standing contracts | Different channels absorb gluts differently; a contract trades upside for stability |
-| M2-21 | Storage (ice/well, cold storage) + perishability | economy-sim | Time-the-market + spoilage buffer | Freshness as timestamp survives save/time-skip; storage slows/arrests spoilage |
+| M2-21 | Storage (ice/well, cold storage) + perishability | economy-sim | Time-the-market + spoilage buffer | Freshness as timestamp survives save/time-skip; storage slows/arrests spoilage. **The terminus of M1's cold ladder** (bucket → ice → Ginny's freezer): **industrial freezing arrives as a purchasable building** sited on M2-J wharf frontage, and is what finally makes *holding stock to time the market* a strategy rather than a stopgap |
 | M2-22 | First processing facilities (salt house, smokehouse) | economy-sim | Convert volatile raw → stable value-add (run by hand first) | Salt cod / smoked herring recipes; processing raises value + lowers elasticity + cuts spoilage |
 
 ### Epic M2-F — NPC routines & relationships (P3) (`world-content`)
@@ -238,6 +238,31 @@
 | M2-39 | Diegetic interact highlight (shader, no UI) | art-pipeline + gameplay-systems | Facing-aware `IInteractable` candidate gets a subtle outline/rim shader; one bound input acts (pick up / place / grab) | Exactly one candidate highlighted; **no screen-space UI**; input via `InputService` intent; no per-frame alloc; **build first — M2-37/38 consume this verb** (`deck-boarding-cleats-and-interact-capture` §3) |
 | M2-37 | Deck & washboard boarding (Space to climb) | gameplay-systems + art-pipeline | Walkable `DECK`/`WASHBOARD` polygons come from the **rig export** (ADR 0022 mechanism); Space climbs on/off where the hull supports it | Rig-data → Def, no hand transcription; deck rides the wave field under the player; no prompt on hulls without washboards (`deck-boarding-cleats-and-interact-capture` §2–3) |
 | M2-38 | Cleats, ropes & toss-a-line mooring | gameplay-systems + world-content | Per-hull named `CLEATS` (rig data) + shore cleats; grab a line and **toss it with the fishing-cast verb**; made fast = the boat holds | Toss reuses the cast verb; a made-fast line constrains tide/wind drift (sim keeps computing); cozy fail = slipped loop, coil and retry (`deck-boarding-cleats-and-interact-capture` §3) |
+
+### Epic M2-J — Buildings & the built waterfront (P2/P4) (`art-pipeline` / `gameplay-systems` / `economy-sim`)
+> The owner's 2026 directive: **the wharf kit's elements become gameplay.** `docs/art/rigs/wharfKitRig.js`
+> is already a parametric tile kit — four materials (`float`, `lowpier`, `tallpier`, `quay`) with per-tile
+> edge options (`open` sides, 45° `cut` corners, `inner` concave corners, float bob `frame`) — but it is
+> **not in `RigCatalog` and has never been baked**; scenes use a single flat `WharfDeck.png`. Those same
+> parameters are what a *player-facing* build verb needs, so the kit is the building system's tileset,
+> already written.
+>
+> **The design that makes this serve P1 rather than decorate:** the four materials are not cosmetic, they
+> are answers to **water depth and tidal range**. A float rides the tide; a low pier suits a modest range; a
+> tall pier stands clear of a big drop; a quay is a solid wall for deep, dredged water. So *"what can I build
+> here?"* becomes a **tide question**, answered by the seam that already exists —
+> `Core.TidalExposure` / `IEnvironmentService.WaterLevelAt` (ADR 0009/0014).
+>
+> **Persistence is already precedented:** ADR 0020 (`PlacedTraps`) established *store only irreducible
+> facts, recompute the rest*. A placed wharf tile is the same shape — `(material, grid cell, region)`. The
+> edge flags must be **recomputed from neighbours at load, never saved** (rule 5): save the occupancy, not
+> the autotiled appearance.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M2-40 | Bake the parametric wharf kit | art-pipeline | Add `wharfKitRig` to `RigCatalog`; bake all four materials × edge configurations; retire the flat `WharfDeck` tile | Every material/edge/corner variant bakes; **authored** wharves in the region scenes rebuild from the kit (so the player-built version later is the same tiles, not a second system); PPU=32 + waterline foam hold |
+| M2-41 | Player-built wharf (the first building verb) | gameplay-systems + economy-sim | Buy wharf tiles and **place them on a grid over water**; edges/corners autotile from neighbours; structures persist | Material choice **gated by water depth + tidal range** (P1 — a float where it's deep, a quay only where dredged); placement uses the M2-39 interact verb; persists on the ADR 0020 pattern (occupancy saved, edge flags recomputed); a built wharf is a real dock — boats moor and sell there |
+| M2-42 | What a wharf carries | economy-sim + world-content | Built decking becomes **frontage**: sites you can then site a shed/stall/store on (the hook M2-22's processing and M2-21's cold storage attach to) | A wharf tile can host one placed structure; capacity/adjacency rules are data; nothing hosts until its own item lands (inert-stub pattern) |
 
 ---
 

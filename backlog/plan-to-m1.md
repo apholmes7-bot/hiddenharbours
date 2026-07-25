@@ -177,6 +177,12 @@ Today the island is: one cottage, Aunt Ginny, Ned's letter, a dock. The arc need
 - **Owner authors the scene** (ADR 0019 — see §8, D3). Agents build the tooling and the logic layer.
 - **Exit:** you can walk the island in two minutes, meet everyone, and know what each building is for.
 
+> **Don't preclude the built waterfront (M2-J).** Wharves become **player-buildable** in M2 from
+> `wharfKitRig.js`'s parametric tiles. That kit has never been baked — the scenes use a flat `WharfDeck.png`
+> — so if M1's wharves are hand-authored from the flat tile, M2 inherits *two* wharf systems and a
+> re-authoring job. **Bake the kit first (M2-40) and author M1's wharves from it.** This is not new M1
+> scope: same wharves, better tiles, and the player-built version later is the same pieces.
+
 ### 7.2 · Nine Mile Creek — `world-content` + `owner` + `art-pipeline`
 A new small region: the wharf, the **fish buyer** (better prices than the island store), the **derelict dory**
 hauled out where you can see her from arrival, the **used-outboard seller**, and a couple of buildings for
