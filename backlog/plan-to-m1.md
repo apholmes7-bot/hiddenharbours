@@ -239,7 +239,43 @@ Cut to what the new arc actually requires, in priority order:
 4. Set-&-drift ghost track — **defer to M2**; the text read is enough for a forgiving inshore slice.
 5. Sell-screen chalkboard skin — keep, it's cheap and it sells the diegetic promise.
 
-### 7.7 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
+### 7.7 · The dory's outboard — `art-pipeline` (+ `art-director`) + `gameplay-systems`
+**The slice's climax rung has an art dependency that does not exist yet.** Worth stating plainly, because
+everything around it is done and it would be easy to assume the motor is too.
+
+**What's already there — and it's the hard part.** The dory is a **mesh hull**: `DoryIso.asset` binds
+`HullMesh` → `DoryIsoHullMesh.asset` (ADR 0022 phases 6–7). Her **oars are real prop meshes**
+(`DoryOarPortPropMesh`, `DoryOarStarPropMesh`) posed through the generic `IHullPropRenderer` /
+`IsoFacetPropRenderer` — which is exactly the socket a transom motor wants. And the mesh path solves the
+problem an outboard actually has on a 4.5 m boat: per `DoryOarMeshLayer`'s own notes, a mesh fitting is
+parented to the hull's **posed** mesh child and so **inherits roll, pitch and heave for free**, where the
+sprite oars needed five hand-tuned rock-coupling knobs to keep an overlay on the gunwale.
+
+**What's missing.** The outboard is **sprite-only**. `OutboardMotorLayer` composites two baked sheets
+(`MotorLower`/`MotorUpper`) on a 9-column heading×steer grid and parents under `DirectionalBoatSprite` — the
+*sprite* presenter. It was built for the skiffs and the punt and cannot hang on a mesh hull. `HullProps/`
+contains only the two dory oars. The dory's `MotorLower`/`MotorUpper` are empty, and her
+`MotorMountLocalMeters` is the **skiff default** that 12 of 14 visuals carry unchanged — only the Punt's
+(`-2.63, 0.56`) is genuinely authored. There is no dory transom mount.
+
+**The work — four pieces, all on a trodden path:**
+1. Bake an outboard **prop mesh** through `RigPropMeshBaker`. `docs/art/rigs/skiffMotorRig.js` is the existing
+   source; a small **kicker** suits a 4.5 m dory better than the skiffs' four-stroke, and reads right for a
+   secondhand motor bought off a wharf.
+2. A **mesh motor layer** posing it from helm state — reusing `OutboardMotorMath`'s steer arithmetic exactly
+   as `DoryOarMeshLayer` reuses `DoryOarMath`. **One state machine, not two** (the codebase is explicit about
+   this, and for good reason: the owner A/Bs sprite against mesh and a second transcription would quietly
+   make him compare two different boats).
+3. A real **transom mount** authored on `DoryIso.asset`.
+4. **Oars ship when the motor runs.** `DoryOarMath` already carries a shipped state — wire it, don't rebuild it.
+
+This is the **visual half of D8**: `boat.dory_outboard` flips `Propulsion` Oars→Engine, and the visual swap is
+"bind the motor prop mesh, ship the oars."
+
+- **Exit:** the repaired dory wears a secondhand kicker that swivels with the helm and rides the wave field
+  with the hull; cutting the motor ships the oars back out; the sprite path is untouched.
+
+### 7.8 · Audio, localization, acceptance — `audio` · `lead-architect` · `qa-test`
 Unchanged from the previous audit and still real:
 
 - **Audio: zero asset files in the repo.** The music bus ducks correctly but has no stem. The rising-wind
@@ -264,7 +300,7 @@ Unchanged from the previous audit and still real:
 | **D5** | Wire Unity Localization now, or ship English-only against the seams? | **Now.** The seams were built for it, so no call site changes. A day today; weeks after M2 triples the string count. |
 | **D6** | Freeze later-milestone work? | **Freeze M3+ only** — the offshore hulls, trawlers, tanker, and the eleven-hull fleet are genuine drift. The St Peters batch is **not** drift; it is this M1, and the last audit was wrong to call it scope creep. Keep building it. |
 | **D7** | Do pollock and blue-mussel come back? | **No.** The species that matter now are: the island shellfish (dig), the shore fish (rod), 2–3 **offshore** species that reward the dory, and the trap shellfish. Species earn their place by which **rung** they unlock, not by filling a list of six. Mussels stay with M3-16 aquaculture. |
-| **D8** | How does the outboard land on the dory — a **hull variant asset** or a **real component swap**? | **Variant asset for M1; component split in M2-17.** `BoatHullDef.Propulsion` is a fixed field on the hull, so the cheap route is a second asset — `boat.dory_outboard`, `Propulsion: Engine` — that the purchase swaps the active hull to. Zero code, and it is exactly the pattern the repo already uses (`boat.punt_upgraded` *is* the Punt-with-a-motor variant). The cost is two assets to keep in sync for one boat, which is fine at one upgrade and bad at ten. **M2-17 (component swaps at the shipwright) is the item that should do the proper Hull/Engine/Hold split** — with a save migration, when there are many upgrades to justify it. Do not refactor `BoatHullDef` for M1. |
+| **D8** | How does the outboard land on the dory — a **hull variant asset** or a **real component swap**? | **Variant asset for M1; component split in M2-17.** `BoatHullDef.Propulsion` is a fixed field on the hull, so the cheap route is a second asset — `boat.dory_outboard`, `Propulsion: Engine` — that the purchase swaps the active hull to. Zero code, and it is exactly the pattern the repo already uses (`boat.punt_upgraded` *is* the Punt-with-a-motor variant). The cost is two assets to keep in sync for one boat, which is fine at one upgrade and bad at ten. **M2-17 (component swaps at the shipwright) is the item that should do the proper Hull/Engine/Hold split** — with a save migration, when there are many upgrades to justify it. Do not refactor `BoatHullDef` for M1. **The visual half is §7.7** — the motor does not exist as a prop mesh yet. |
 
 ---
 
@@ -328,8 +364,9 @@ market channel. The cast, their portraits, their lines. The tide-table panel. **
 the owner is in the loop for all of it.**
 
 **Wave 3 — dress and pace it.**
-Audio (beds, theme, wind tell, catch sting, home warmth). Wind widget and compass. Sell-screen skin. Tune the
-ladder against the Wave 1 model with real play data.
+Audio (beds, theme, wind tell, catch sting, home warmth). Wind widget and compass. Sell-screen skin. **The
+dory's outboard prop mesh and its mesh motor layer (§7.7)** — start the bake early in this wave, since the
+slice's closing rung cannot land without it. Tune the ladder against the Wave 1 model with real play data.
 
 **Wave 4 — prove it.**
 Profiling, smoke test, save migration, external playtest, the verdict. **Test the pacing, not just the
