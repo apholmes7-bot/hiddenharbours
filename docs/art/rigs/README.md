@@ -42,7 +42,8 @@ its leaning lid lands at the E/W rows, the bucket by the fish tray's diagonal ch
 storage bake refuses on a catalog mismatch like every sibling.)
 
 **COUNTER-CLOCKWISE (19)** — cell `i` depicts heading **−45°·i** while labelled `+45°·i`.
-Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `capeIslanderIsoRig`,
+Pixel-verified: `puntIsoRig` (golden master — byte-identical until the v2 rig revised her, see below),
+`doryIsoRig`, `capeIslanderIsoRig`,
 `lobsterBoatIsoRig`. The rest are inferred and must be measured before use:
 `bucketRig` · `capeIslanderIsoRig` · `coastalPacketIsoRig` · `consoleIsoRig` · `doryIsoRig` · `fishTubRig`
 · `houseIsoRig` · `interiorIsoRig` · `interiorPropRig` · `lobsterBoatIsoRig` · `puntIsoRig` · `shovelIsoRig`
@@ -104,6 +105,40 @@ kept, since they document the shipped kits' cell sizes and pivots.
 against the sheet already shipped in `Assets/_Project/Art/Boats/`. If the punt does not match, the likely
 cause is that the shipped art was baked from the *older* rig, not that the baker is wrong. Establish which
 before chasing a phantom bug.
+
+**And as of 2026-07-25 it no longer matches, for that exact reason.** The small-craft rig kit v2 revised
+the punt, so `PuntIso.png` is one revision behind her rig: all eight paired cells fell to **98.08–98.42%**
+(spread 0.34 pp) while the off-axis check held at 84.62%, i.e. uniform art drift, not a broken correction.
+`PuntGoldenMasterTests` now asserts the **spread** rather than the absolute match, and says so in place.
+To restore the strong form, the art director re-exports `PuntIso.png` from the v2 rig **by hand from his
+browser** — re-baking it in engine would make the test compare the baker against itself.
+
+---
+
+## The small craft rig kit v2 (imported 2026-07-25)
+
+Updated `doryIsoRig.js`, `puntIsoRig.js`, `consoleIsoRig.js`, plus two rigs that are **versioned but
+wired to nothing**:
+
+- `doryMotorRig.js` → `globalThis.DoryMotor` — the dory's little tiller two-stroke (cell 196×164,
+  pivot 98,92 onto her 80,88; `maxSteer` 32°, `tiltMax` 40°, one `stock` variant). Not in
+  `HullPropFleet`; landing it is its own piece of work. Note its export publishes neither
+  `motorFaces` nor `swivelPt`, so it will need the same shim the other two motors take.
+- `wheelRig.js` → the helm wheel at control scale. No `dir`, returns a canvas, needs a DOM — it sits
+  outside the shared rig contract and has no consumer.
+
+`skiffMotorRig.js` was **not** re-imported: the drop's copy is byte-identical modulo CRLF.
+
+⚠️ **Paint became data on the punt and the console skiff.** Neither rig has a `MATS` constant any more —
+`palette(opts)` derives every ramp from a named scheme — so both hulls stopped baking outright until
+`RigMeshSymbols.Reconstructions` learned to read `palette({}).mats`. That pins their bake to each rig's
+`DEFAULT_SCHEME` (**`harbour-white`** on both). Choosing a colourway at runtime, and the console's new
+per-material `dith` weight, are **not** modelled — see the note on that reconstruction.
+
+⚠️ **The dory's `'oars'` build is NOT "unchanged pixel-for-pixel"** as the drop's README claims. Measured
+across 192 cells / 4.79 M px: 96 of 96 hull cells differ, 34,703 px, because four additions landed in the
+shared face list and the two rowing thwarts were resized 131–145 mm narrower per side. Her oar layer and
+every anchor ARE identical.
 
 ## Boats that exist only as a rig
 

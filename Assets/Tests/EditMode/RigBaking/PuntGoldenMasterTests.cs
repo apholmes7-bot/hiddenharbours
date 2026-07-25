@@ -20,6 +20,12 @@ namespace HiddenHarbours.Tests.RigBaking
     /// that the imported puntIsoRig.js DIFFERS (md5) from the older copy that previously lived at
     /// docs/art/punt-iso-rig/ — the shipped PNG may simply have been baked from the older rig.
     /// Establish which before chasing a phantom bug.
+    ///
+    /// ⚠️ AS OF 2026-07-25 THAT IS EXACTLY THE STATE. The small-craft rig kit v2 revised the punt
+    /// (oar layer, floor battens, breasthook, quarter knees, two ring bolts, paint-as-data), so the
+    /// shipped PNG is one revision behind and the paired cells now sit at ~98.2% rather than ~100%.
+    /// The assertion that discriminates a rig revision from a broken bake is therefore the SPREAD
+    /// across cells, not the absolute match — see the block in the test body.
     /// </summary>
     public class PuntGoldenMasterTests
     {
@@ -88,7 +94,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 // healthiest possible reason.
                 // ──────────────────────────────────────────────────────────────────────────────
 
-                double worstPaired = 100.0, bestNaive = 0.0;
+                double worstPaired = 100.0, bestPaired = 0.0, bestNaive = 0.0;
                 for (int k = 0; k < Facings; k++)
                 {
                     int shippedCell = (Facings - k) % Facings;
@@ -100,20 +106,53 @@ namespace HiddenHarbours.Tests.RigBaking
                               $"   |   naive same-index: {naive.MatchPercent:F2}%");
 
                     worstPaired = Math.Min(worstPaired, paired.MatchPercent);
+                    bestPaired  = Math.Max(bestPaired,  paired.MatchPercent);
                     if (k != shippedCell) bestNaive = Math.Max(bestNaive, naive.MatchPercent);
                 }
 
-                Debug.Log($"[golden-master] worst paired cell {worstPaired:F2}%, " +
-                          $"best off-axis naive cell {bestNaive:F2}%");
+                double spread = bestPaired - worstPaired;
+                Debug.Log($"[golden-master] paired cells {worstPaired:F2}%..{bestPaired:F2}% " +
+                          $"(spread {spread:F2} pp), best off-axis naive cell {bestNaive:F2}%");
 
-                Assert.Greater(worstPaired, 99.9,
-                    $"Worst paired cell is only {worstPaired:F2}%. The baked art does not reproduce " +
-                    "the shipped art under the counter-clockwise permutation.\n" +
+                // ⚠️ THE SHIPPED SHEET IS NOW ONE RIG REVISION BEHIND, AND THAT IS DELIBERATE ART.
+                //
+                // PuntIso.png was hand-exported from the pre-v2 puntIsoRig.js. The small-craft rig
+                // kit v2 (2026-07-25) gave the punt an oar layer, floor battens, a breasthook,
+                // quarter knees, two ring bolts and paint-as-data, so the current rig no longer
+                // draws the boat in that PNG. MEASURED at import: 1.78% of her pixels move across
+                // the 8 headings — i.e. ~98.2% agreement, which is exactly what the paired cells
+                // now report.
+                //
+                // This fixture's own triage rule (kept verbatim below) says how to read that:
+                // "If ALL cells drift by a similar small amount, that rig revision is the
+                // explanation, not a bug. If ONE cell is wrong, the correction is." So the
+                // discriminating assertion is no longer the absolute match — it is the SPREAD.
+                // Measured 2026-07-25: cells span 98.08%..98.42%, a spread of 0.34 pp. A broken
+                // permutation puts one cell near the off-axis figure (~70-85%) and blows the
+                // spread open by ~28 pp; a uniform art revision cannot.
+                //
+                // The absolute floor stays as a guard with real bite (0.58 pp of headroom over
+                // the measured worst cell), so a bake that degrades further still goes red.
+                //
+                // To get the STRONG form back, the art director re-exports PuntIso.png from the
+                // v2 rig — it must stay a hand export from his browser, because re-baking it in
+                // engine would make this test compare the baker against itself.
+                Assert.Greater(worstPaired, 97.5,
+                    $"Worst paired cell is only {worstPaired:F2}%, below the floor a known rig " +
+                    "revision explains. The baked art does not reproduce the shipped art under " +
+                    "the counter-clockwise permutation.\n" +
                     "⚠️ Before assuming the baker is broken: docs/art/rigs/README.md records that " +
                     "the imported puntIsoRig.js differs by md5 from the older copy that used to " +
                     "live at docs/art/punt-iso-rig/. If ALL cells drift by a similar small amount, " +
                     "that rig revision is the explanation, not a bug. If ONE cell is wrong, the " +
                     "correction is.");
+
+                Assert.Less(spread, 0.75,
+                    $"The paired cells disagree with the shipped sheet by UNEVEN amounts " +
+                    $"({worstPaired:F2}%..{bestPaired:F2}%, spread {spread:F2} pp). A rig revision " +
+                    "moves every heading by about the same amount; a single bad cell means the " +
+                    "counter-clockwise correction, the facing order, or one cell's bake is wrong. " +
+                    "Find the outlier cell in the per-cell log above — that is the broken one.");
 
                 // And the correction must actually be doing something: off-axis cells must NOT
                 // line up at the same index. (N and S sit on the mirror axis and legitimately do,

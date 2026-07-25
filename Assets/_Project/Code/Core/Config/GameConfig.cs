@@ -76,6 +76,14 @@ namespace HiddenHarbours.Core
                  "on day rollover, not per frame.")]
         [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
 
+        [Header("Helm throttle (the notched single-lever throttle)")]
+        [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +
+                 "full AHEAD and to full ASTERN (reverse usually shorter), and an optional hold-to-repeat " +
+                 "rate. Up/Down step a HELD detent (so you can sit at part-throttle — impossible with the " +
+                 "old on/off key). The detent value IS the LeverRig 'drive' the console draws. Consumed by " +
+                 "ThrottleDetentModel; owner-tunable, no code (rule 6).")]
+        public HelmThrottleSettings HelmThrottle = HelmThrottleSettings.Default;
+
         [Header("Rod fight (Rod Fishing v2 — the deep→surface fight, cove defaults)")]
         [Tooltip("Fight-wide DEFAULT tuning for the v2 rod fight (pull-on-slack / maintain-on-run + " +
                  "counter-steer + the deep→surface arc). These are the forgiving cove baselines the owner " +
@@ -239,6 +247,39 @@ namespace HiddenHarbours.Core
             CounterSteerRelief = 0.45f,
             SurfaceThreshold01 = 0.5f,
             DeckAngleFactor = 0.15f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>notched single-lever throttle</b> (<see cref="GameConfig.HelmThrottle"/>).
+    /// The throttle is no longer on/off: Up/Down each step a <b>held</b> detent, so the player can hold
+    /// part-throttle — the thing a keyboard couldn't do. These counts define how many detents lie between
+    /// neutral and each end of travel; <c>ThrottleDetentModel</c> (Core) consumes them and produces the
+    /// signed <c>drive</c> both the physics (<c>BoatController.SetControl</c>) and the diegetic lever
+    /// (<c>LeverRig</c>) read. Reverse travel is usually shorter than ahead, like a real binnacle.
+    /// </summary>
+    [System.Serializable]
+    public struct HelmThrottleSettings
+    {
+        [Tooltip("Detents between neutral and FULL AHEAD (≥ 1). More = finer throttle control; each Up " +
+                 "press advances one. E.g. 4 gives quarter-throttle steps (0 / 0.25 / 0.5 / 0.75 / 1).")]
+        [Min(1)] public int AheadNotches;
+
+        [Tooltip("Detents between neutral and FULL ASTERN (≥ 1). Usually fewer than ahead (reverse has " +
+                 "shorter travel). Full astern is still normalised to drive −1 (the astern-power factor on " +
+                 "the hull does the 'weaker reverse'), so this is only how many steps to get there.")]
+        [Min(1)] public int AsternNotches;
+
+        [Tooltip("Hold-to-repeat rate, detents/second, while Up or Down is HELD (0 = edge-only: one detent " +
+                 "per press, the deliberate binnacle feel). > 0 lets a held key walk the throttle open.")]
+        [Min(0f)] public float HoldRepeatPerSec;
+
+        /// <summary>Four ahead notches (quarter steps), two astern, edge-only — the reference feel.</summary>
+        public static HelmThrottleSettings Default => new HelmThrottleSettings
+        {
+            AheadNotches = 4,
+            AsternNotches = 2,
+            HoldRepeatPerSec = 0f,
         };
     }
 
