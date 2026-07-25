@@ -113,6 +113,28 @@ namespace HiddenHarbours.Core
                  "impossible — depth is a WEIGHT on the catch roll, not a wall.")]
         public DepthDropSettings DepthDrop = DepthDropSettings.Default;
 
+        [Header("Bait & tackle (what's on the hook — a WEIGHT on the catch, never a wall)")]
+        [Tooltip("How much the right bait and the right tackle matter. Bait is the PRECISE tool (a fish " +
+                 "that wants food refuses the wrong food); tackle is the BROAD one (a curious fish will " +
+                 "still hit the wrong lure). Turn the boosts to 1 and the damps to 1 to make what's on " +
+                 "the hook irrelevant again.")]
+        public BaitTackleSettings BaitTackle = BaitTackleSettings.Default;
+
+        [Header("Jigging (working the lure — the five hand-feels)")]
+        [Tooltip("What each kind of tackle wants you to DO with it, and how much it matters. Bait fishes " +
+                 "itself; a lure only fishes if you work it, and each one wants its own tempo and stroke " +
+                 "size. Raise Tolerance01 to make the actions easier to find by feel; raise " +
+                 "DeadLureFraction01 to be kinder to a player who leaves the rod still.")]
+        public JiggingSettings Jigging = JiggingSettings.Default;
+
+        [Header("The sea in the fight (P1 — rough water fishes better and fights harder)")]
+        [Tooltip("How much the WEATHER matters to fishing. Rough water is a TRADE: the fish are bolder so " +
+                 "bites come quicker and run bigger, but the swell works your line so every fish is " +
+                 "harder to hold — and in a real blow a good fish can genuinely beat you. Set every " +
+                 "factor to 0 to go back to weather-blind fishing, where a gale plays exactly like a " +
+                 "flat calm.")]
+        public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -500,5 +522,171 @@ namespace HiddenHarbours.Core
             TrapDefId = trapDefId;
             Count = count;
         }
+    }
+
+    /// <summary>
+    /// WHAT'S ON THE HOOK (<see cref="GameConfig.BaitTackle"/>) — how much the right bait and the right
+    /// tackle change what bites. Consumed by <c>CatchResolver.BaitAffinity</c> /
+    /// <c>LureAffinity</c> as plain multipliers on the catch roll, the same Core-policy /
+    /// feature-consumer split as <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>Weights, never walls</b> — the promise depth already makes. The wrong kit catches LESS;
+    /// it never catches NOTHING. That is what lets a beginner with a bare spoon still fill a bucket
+    /// while an angler who has learned the pairings fills it faster and with what they were after.</para>
+    ///
+    /// <para><b>Bait is precise, tackle is broad.</b> The wrong bait is damped harder than the wrong
+    /// lure, because a fish that wants food will refuse the wrong food outright, while a curious fish
+    /// will still occasionally hit a lure it doesn't love. That asymmetry is the whole reason to carry
+    /// both: bait to TARGET, tackle to COVER.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct BaitTackleSettings
+    {
+        [Tooltip("How much likelier a species is when the bait on the hook is one it wants (≥ 1; " +
+                 "1 = bait doesn't matter). This is the strongest targeting tool in the game — bigger " +
+                 "than the depth weight on purpose, because choosing bait is a deliberate act.")]
+        [Min(1f)] public float BaitFavourBoost;
+
+        [Tooltip("What's left of a species' chance when the bait is one it does NOT want (0..1; " +
+                 "1 = no penalty). Low: the wrong bait is a real mistake. Never 0 — a haddock will " +
+                 "still occasionally take a squid strip meant for cod.")]
+        [Range(0f, 1f)] public float WrongBaitDamp01;
+
+        [Tooltip("How much likelier a species is when the tackle tied on is one it chases (≥ 1; " +
+                 "1 = tackle doesn't matter). Smaller than the bait boost — tackle covers water, bait " +
+                 "picks a fish.")]
+        [Min(1f)] public float LureFavourBoost;
+
+        [Tooltip("What's left of a species' chance on a lure it doesn't favour (0..1). Gentler than the " +
+                 "wrong-bait damp: a fish will hit the wrong lure out of curiosity far more readily " +
+                 "than it will eat the wrong food.")]
+        [Range(0f, 1f)] public float WrongLureDamp01;
+
+        /// <summary>The reference tuning: the right bait roughly triples a species' share and the wrong
+        /// one cuts it to a third; the right tackle doubles and the wrong one costs a third. So a
+        /// correctly-baited, correctly-tackled cast is worth about six times a badly-chosen one — a
+        /// decision you can feel — while nothing is ever off the table.</summary>
+        public static BaitTackleSettings Default => new BaitTackleSettings
+        {
+            BaitFavourBoost = 3f,
+            WrongBaitDamp01 = 0.35f,
+            LureFavourBoost = 2f,
+            WrongLureDamp01 = 0.65f,
+        };
+    }
+
+    /// <summary>
+    /// WORKING THE LURE (<see cref="GameConfig.Jigging"/> — owner's ask 2026-07-25). Five hand-feels,
+    /// tuned in ONE place rather than restated on every tackle asset: a piece of tackle just names its
+    /// <c>JigStyle</c> and the numbers live here, so the owner can re-feel all five without touching
+    /// content. The pure maths that consumes them is <c>JigMath</c> (Fishing-side).
+    ///
+    /// <para>Tempo is strokes per second (a stroke = one reversal of the hand: the top of a lift, the
+    /// bottom of a drop). Stroke is how far the pointer travels between reversals, in world metres — so
+    /// these read against the same on-screen scale the cast does (the on-foot view is about 16 m wide).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct JiggingSettings
+    {
+        [Header("The five actions (tempo = strokes/sec, stroke = world metres)")]
+        [Tooltip("COD JIG — big slow heaves, then let it flutter back. She takes it on the drop.")]
+        [Min(0f)] public float LiftAndDropTempo;
+        [Min(0f)] public float LiftAndDropStroke;
+
+        [Tooltip("MACKEREL FEATHERS — short fast twitches, like a shoal of fry breaking up.")]
+        [Min(0f)] public float QuickJerksTempo;
+        [Min(0f)] public float QuickJerksStroke;
+
+        [Tooltip("SPOON — one long even sweep, wobbling steadily through the water.")]
+        [Min(0f)] public float SteadySweepTempo;
+        [Min(0f)] public float SteadySweepStroke;
+
+        [Tooltip("SOFT BAIT — slow and small, with long pauses. Something dying, not something fleeing.")]
+        [Min(0f)] public float SlowCrawlTempo;
+        [Min(0f)] public float SlowCrawlStroke;
+
+        [Tooltip("SPINNER — quick and continuous; the blade has to keep turning or it is just a weight.")]
+        [Min(0f)] public float FastSteadyTempo;
+        [Min(0f)] public float FastSteadyStroke;
+
+        [Header("How forgiving, and how dead")]
+        [Tooltip("How far off the target action you can be and still score well (0..1). Bigger = the " +
+                 "actions are easy to find by feel. At 0.5 you do well anywhere from about two-thirds " +
+                 "to one-and-a-half times the target.")]
+        [Range(0.05f, 1f)] public float Tolerance01;
+
+        [Tooltip("What fraction of its fishing a MOTIONLESS lure keeps (0..1). The owner's call was " +
+                 "'nearly dead, but bait still fishes' — low enough that working it is obviously the " +
+                 "point, above zero because nothing else in this fishing is a hard wall. Expressed as a " +
+                 "much longer wait for a bite, so the player can SEE it rather than being quietly " +
+                 "denied by a dice roll.")]
+        [Range(0.01f, 1f)] public float DeadLureFraction01;
+
+        /// <summary>The reference feel. The five actions are spread wide enough to be distinct in the
+        /// hand — a lift-and-drop is a big movement twice a second, a spinner is small and five times a
+        /// second — and a dead lure fishes at a tenth, so it waits roughly ten times as long.</summary>
+        public static JiggingSettings Default => new JiggingSettings
+        {
+            LiftAndDropTempo = 0.8f,  LiftAndDropStroke = 1.6f,
+            QuickJerksTempo  = 4.0f,  QuickJerksStroke  = 0.35f,
+            SteadySweepTempo = 1.2f,  SteadySweepStroke = 1.1f,
+            SlowCrawlTempo   = 0.5f,  SlowCrawlStroke   = 0.45f,
+            FastSteadyTempo  = 5.0f,  FastSteadyStroke  = 0.6f,
+            Tolerance01 = 0.5f,
+            DeadLureFraction01 = 0.1f,
+        };
+    }
+
+    /// <summary>
+    /// THE SEA'S HAND IN THE CATCH (<see cref="GameConfig.SeaFishing"/> — owner's ruling 2026-07-25),
+    /// the dials behind Pillar 1's arrival in the rod loop. The pure maths that consumes them is
+    /// <c>SeaFightMath</c> (Fishing-side), the same Core-policy / feature-consumer split as
+    /// <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>The trade.</b> Rough water makes fish bolder — so it fishes BETTER
+    /// (<see cref="SeaBoldness01"/> quickens the bite, <see cref="SeaBigFishBias01"/> brings up the better
+    /// fish) — while the swell works your line, so it fights HARDER
+    /// (<see cref="SeaFightFactor"/>). Weather becomes a decision, not a tax.</para>
+    ///
+    /// <para><b>All three at 0 = weather-blind fishing</b>, bit-for-bit as the rod loop shipped before
+    /// this change: a gale plays exactly like a flat calm. That is the off-switch and the A/B baseline.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct SeaFishingSettings
+    {
+        [Tooltip("THE COST. Extra tension per second (0..1-gauge/s) the SEA puts through your line at a " +
+                 "full storm — the swell working the rod, a wave snatching the line. It grows with the " +
+                 "SQUARE of the sea state, so a chop is barely felt and a real sea is dangerous. 0 = OFF " +
+                 "(the fight ignores the weather). Guard-rail: keep it low enough that easing off still " +
+                 "recovers in EVERYDAY weather (test-enforced up to SeaFightMath.CozySeaCeiling01) — " +
+                 "above that line the sea is meant to be able to beat you.")]
+        [Min(0f)] public float SeaFightFactor;
+
+        [Tooltip("THE REWARD (bites). How much quicker fish bite at a full storm, 0..1 — broken water " +
+                 "hides you and emboldens them. 0.5 = bites arrive in half the time in a storm. Grows " +
+                 "LINEARLY (unlike the cost), so even a chop already fishes noticeably better. 0 = OFF.")]
+        [Range(0f, 1f)] public float SeaBoldness01;
+
+        [Tooltip("THE REWARD (size). How strongly a full storm favours the BIG ones, 0..1 — the better " +
+                 "fish come up to feed in broken water. 1 = a storm catch sits at the very top of the " +
+                 "species' weight range. This is what makes a hard sea worth fishing, and a storm fish a " +
+                 "story. 0 = OFF (the plain uniform weight roll).")]
+        [Range(0f, 1f)] public float SeaBigFishBias01;
+
+        /// <summary>
+        /// The reference tuning, solved against the shipped species rather than guessed. The cost squares
+        /// away to almost nothing in everyday weather — at the cozy ceiling it adds only 0.087, which every
+        /// authored personality absorbs with room to spare — yet reaches 0.35 in a full storm, enough to
+        /// out-pressure the ease and genuinely take the three STRONG fish (cod, pollock, haddock). The
+        /// mackerel is deliberately left un-toothed even in a gale: a small fish becoming unlandable in
+        /// weather would be frustration, not danger. The rewards arrive earlier and more gently — a storm
+        /// bites about a third quicker and leans the size roll halfway up the range.
+        /// </summary>
+        public static SeaFishingSettings Default => new SeaFishingSettings
+        {
+            SeaFightFactor = 0.35f,
+            SeaBoldness01 = 0.35f,
+            SeaBigFishBias01 = 0.5f,
+        };
     }
 }

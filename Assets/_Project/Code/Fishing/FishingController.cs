@@ -54,6 +54,20 @@ namespace HiddenHarbours.Fishing
                  "the deck, wherever this component itself is mounted. Left empty it falls back to this " +
                  "component's own transform — every existing rig/test behaves exactly as before.")]
         [SerializeField] private Transform _angler;
+        [Header("What's on the hook (bait & tackle — owner's ruling 2026-07-25)")]
+        [Tooltip("The BAIT currently on the hook. Its FavorsSpeciesIds steer what bites, and one is " +
+                 "spent each time a fish takes it. Empty (or an empty tackle box) = you're fishing the " +
+                 "lure alone — which always works. See TackleBox for the wallet.")]
+        [SerializeField] private BaitDef _bait;
+        [Tooltip("The TACKLE tied on. Always works, never consumed — the fallback that guarantees you " +
+                 "can fish with an empty bait box, and the reason running out is never a dead end.")]
+        [SerializeField] private TackleDef _tackle;
+        [Tooltip("Every bait the player can put on here (the dev cycle walks this list). The shop " +
+                 "supplies these later; for now the start builder wires the authored set.")]
+        [SerializeField] private BaitDef[] _baitBox;
+        [Tooltip("Every tackle the player can tie on (the dev cycle walks this list).")]
+        [SerializeField] private TackleDef[] _tackleBox;
+
         [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
@@ -212,7 +226,12 @@ namespace HiddenHarbours.Fishing
                 case FishingPhase.Waiting:
                     if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
                     else Emit(FishingPhase.Waiting, 0f, 0f);         // cast path: the aim tracks a walking angler
-                    _phaseTimer -= dt;
+
+                    // THE WAIT IS NOW SOMETHING YOU DO (owner's ask 2026-07-25). Bait fishes itself, so
+                    // its timer runs at full speed; a LURE only fishes if you work it, and the clock
+                    // runs slow — up to ten times slow — for a rod hanging dead in the water.
+                    _jig.Tick(dt, pointerWorld, pointerValid);
+                    _phaseTimer -= dt / Mathf.Max(0.01f, JigDelayScale());
                     if (_phaseTimer <= 0f) OnBite();
                     break;
 
@@ -302,6 +321,16 @@ namespace HiddenHarbours.Fishing
             {
                 Debug.Log("[Fishing] Hold is full — head in and sell.");
                 return; // stay Idle; nothing to cast into
+            }
+
+            // Nothing on the end of the line at all — no bait in the box AND no tackle tied on. The
+            // starting grant makes this near-impossible in play; it exists so a stripped rig fails
+            // legibly instead of casting a bare hook that can never catch anything.
+            if (!HasSomethingOnTheHook)
+            {
+                Debug.Log("[Fishing] Nothing on the hook — tie something on, or bait up.");
+                EventBus.Publish(new DevNotice("Nothing on the hook — you need bait or a lure."));
+                return;
             }
 
             _pendingFish = null;
@@ -394,6 +423,9 @@ namespace HiddenHarbours.Fishing
         private void BeginWaiting()
         {
             _phaseTimer = RandomBiteDelay();
+            // A fresh cast starts with a dead rod: the working has to be earned again, so the flick's
+            // own sweep can't be mistaken for the first few strokes of a jig.
+            _jig.Reset();
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
 
@@ -446,7 +478,8 @@ namespace HiddenHarbours.Fishing
         {
             // Resolve WHICH fish at bite-time via the existing resolver (we don't rewrite catch logic).
             CatchContext ctx = BuildContext();
-            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, _rng);
+            BaitTackleSettings kit = _config != null ? _config.BaitTackle : BaitTackleSettings.Default;
+            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, in kit, _rng);
             if (fish == null)
             {
                 _phaseTimer = _resultDisplay;
@@ -455,8 +488,16 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
+            // Something ate it — the bait is gone whether or not this fish is landed (owner's ruling
+            // 2026-07-25). Spent HERE rather than at the cast so water nothing looked at costs nothing.
+            SpendBaitOnBite();
+
             _pendingFish = fish;
-            _pendingWeight = CatchResolver.RollWeight(fish, _rng);
+            // The sea leans the size roll up — a blow brings the better fish up to feed (the other half
+            // of the weather reward; §P1). Exactly the shipped uniform roll in a flat calm.
+            SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            _pendingWeight = CatchResolver.RollWeight(
+                fish, _rng, SeaFightMath.WeightBias01(SeaState01(), sea.SeaBigFishBias01));
             _phaseTimer = _hookWindow;
             Emit(FishingPhase.Bite, 0f, 0f);
         }
@@ -514,7 +555,8 @@ namespace HiddenHarbours.Fishing
             // on a deck that transform rides the hull's physics root, so when the unmanned boat
             // weathervanes mid-fight the steer target and the line angle drift under the player
             // (design §4.2 decision #3, the moving platform). Nothing is cached across ticks.
-            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment, DeckAnglePressurePerSec());
+            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment,
+                           DeckAnglePressurePerSec(), SeaPressurePerSec());
 
             if (_rodFight.Result == FishFightResult.Landed) OnLanded();
             else if (_rodFight.Result == FishFightResult.Snapped) OnSnapped();
@@ -617,6 +659,30 @@ namespace HiddenHarbours.Fishing
                 deck.DeckCenter, deck.DeckHalfExtents);
             return DeckAngleMath.TensionPerSec(across, fight.DeckAngleFactor);
         }
+
+        /// <summary>
+        /// THE SEA'S PRESSURE ON THE LINE this tick (owner's ruling 2026-07-25) — the swell working the
+        /// rod, graded by the pure <see cref="SeaFightMath.TensionPerSec"/> from the LIVE sea state and
+        /// the owner's <c>GameConfig.SeaFishing.SeaFightFactor</c>.
+        ///
+        /// <para>Read fresh every tick rather than captured at the hookup: the weather is a real force
+        /// that keeps acting, and it turns over slowly enough (hours) that a fight never sees it jump.
+        /// Exactly 0 with no environment service (EditMode rigs, greybox — the established gate-off
+        /// posture), with the factor at 0, or in a flat calm, so the weather-blind fight is preserved
+        /// bit-for-bit.</para>
+        /// </summary>
+        private float SeaPressurePerSec()
+        {
+            if (GameServices.Environment == null) return 0f;
+            SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            if (s.SeaFightFactor <= 0f) return 0f;
+            return SeaFightMath.TensionPerSec(GameServices.Environment.Sample().SeaState01, s.SeaFightFactor);
+        }
+
+        /// <summary>The live sea state 0..1, or 0 (flat calm) when no environment service is wired —
+        /// the one place the rod loop asks the world what the weather is doing.</summary>
+        private float SeaState01()
+            => GameServices.Environment != null ? GameServices.Environment.Sample().SeaState01 : 0f;
 
         // ---- helpers ------------------------------------------------------------------------
 
@@ -778,11 +844,18 @@ namespace HiddenHarbours.Fishing
                 _hold = _holdProvider.GetComponent<IHold>();
         }
 
+        /// <summary>How long until the next bite. Broken water emboldens fish, so a rough day simply
+        /// FISHES FASTER (owner's ruling 2026-07-25 — the reward half of the weather trade): the whole
+        /// window scales by <see cref="SeaFightMath.BiteDelayScale"/>, ×1 in a flat calm. The RNG draw
+        /// itself is untouched, so a seeded rig still replays its own bite sequence.</summary>
         private float RandomBiteDelay()
         {
             float lo = Mathf.Min(_minBiteDelay, _maxBiteDelay);
             float hi = Mathf.Max(_minBiteDelay, _maxBiteDelay);
-            return lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
+            float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
+
+            SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01);
         }
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
@@ -941,7 +1014,115 @@ namespace HiddenHarbours.Fishing
             float hour = clock != null ? clock.HourOfDay : 12f;
             Season season = clock != null ? clock.Season : Season.HighSummer;
             return new CatchContext(EffectiveRegionId, tide, hour, season, _gear,
-                                    _depthGame ? _depthM : CatchContext.NoDepth, _floorM);
+                                    _depthGame ? _depthM : CatchContext.NoDepth, _floorM,
+                                    TiedOnLure, BaitOnTheHook);
         }
+
+        // ---- what's on the hook (owner's ruling 2026-07-25) ---------------------------------------
+
+        /// <summary>The lure presentation currently tied on, or <see cref="LureTag.None"/> with an empty
+        /// rod. Tackle is presence-owned and never consumed, so this needs no stock check.</summary>
+        private LureTag TiedOnLure => _tackle != null ? _tackle.Lure : LureTag.None;
+
+        /// <summary>
+        /// The species the bait on the hook draws — or null when there is no bait to fish with, which is
+        /// the owner's rule made concrete: <b>no bait, no bait-fishing</b>. It reads the live wallet, not
+        /// just the serialized selection, so an empty box silently reverts you to fishing the lure alone
+        /// rather than pretending you baited up.
+        /// </summary>
+        private System.Collections.Generic.IReadOnlyList<string> BaitOnTheHook
+            => _bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id)
+                ? _bait.FavorsSpeciesIds
+                : null;
+
+        /// <summary>
+        /// Does this rig use the bait/tackle system at all? A rig with nothing wired — no bait, no
+        /// tackle, no boxes to pick from — predates the system (every EditMode fixture, every greybox
+        /// scene built before it), and must keep fishing exactly as it always did.
+        ///
+        /// <para>This is the same gate-off posture the rest of the module already takes: no authored
+        /// bathymetry means open water, no environment service means a flat calm. A new subsystem
+        /// degrades to "as before", never to "refuses to work".</para>
+        /// </summary>
+        private bool KitConfigured
+            => _tackle != null || _bait != null
+            || (_tackleBox != null && _tackleBox.Length > 0)
+            || (_baitBox != null && _baitBox.Length > 0);
+
+        /// <summary>
+        /// TRUE when there is something on the end of the line worth casting — bait in the box, or
+        /// tackle tied on. On an unconfigured rig this is always true (see <see cref="KitConfigured"/>).
+        ///
+        /// <para>On a rig that DOES carry a kit, the owner's rule bites: no bait and no tackle means
+        /// nothing to fish with. The starting grant makes that near-impossible in play, so this is a
+        /// safety net against a stripped rig rather than an everyday gate.</para>
+        /// </summary>
+        public bool HasSomethingOnTheHook
+            => !KitConfigured
+            || TiedOnLure != LureTag.None
+            || (_bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id));
+
+        /// <summary>
+        /// A fish took the bait — spend one. Called on the BITE rather than the cast, deliberately: a
+        /// cast nothing looked at costs you nothing, and bait is only gone once something has actually
+        /// eaten it. Silent no-op when fishing a bare lure.
+        /// </summary>
+        private void SpendBaitOnBite()
+        {
+            if (_bait == null) return;
+            TackleBox.TrySpendBait(GameServices.Save?.Current, _bait.Id);
+        }
+
+        // ---- working the lure (owner's ask 2026-07-25) --------------------------------------------
+
+        /// <summary>How the rod is actually being worked this cast — measured from the pointer, reset
+        /// at every new cast so last cast's rhythm never carries over.</summary>
+        private readonly JigWork _jig = new JigWork();
+
+        /// <summary>
+        /// THE ACTION THE ROD IS ASKING FOR right now. A lure's own <see cref="JigStyle"/> when one is
+        /// tied on and NO bait is fishing — because bait fishes itself, and a baited hook doesn't care
+        /// whether you sit still (the owner's rule: "nearly dead, but bait still fishes").
+        /// </summary>
+        private JigStyle WantedJigStyle
+            => _tackle != null && BaitOnTheHook == null ? _tackle.JigStyle : JigStyle.None;
+
+        /// <summary>How well the rod is being worked, 0..1. Always 1 when nothing needs working.</summary>
+        public float JigQuality01
+        {
+            get
+            {
+                JiggingSettings j = _config != null ? _config.Jigging : JiggingSettings.Default;
+                return JigMath.Quality01(WantedJigStyle, _jig.StrokesPerSec, _jig.StrokeMetres, in j);
+            }
+        }
+
+        /// <summary>How much SLOWER the wait runs because the lure isn't being worked properly — 1 when
+        /// it's worked well (or needs no working), rising toward the dead-lure multiple when it hangs
+        /// still. The controller divides its countdown by this.</summary>
+        private float JigDelayScale()
+        {
+            JiggingSettings j = _config != null ? _config.Jigging : JiggingSettings.Default;
+            return JigMath.BiteDelayScale(WantedJigStyle, JigQuality01, in j);
+        }
+
+        /// <summary>Put a bait on / tie a tackle on (the dev cycle, the shop, and tests all come
+        /// through here rather than poking the fields). Working state resets — a fresh lure is a fresh
+        /// rhythm, and the old one's tempo must not be credited to the new one.</summary>
+        public void SetBait(BaitDef bait) { _bait = bait; _jig.Reset(); }
+
+        /// <summary>See <see cref="SetBait"/>.</summary>
+        public void SetTackle(TackleDef tackle) { _tackle = tackle; _jig.Reset(); }
+
+        /// <summary>The bait currently selected (may be one the player has run out of — see
+        /// <see cref="BaitOnTheHook"/> for what is actually fishing).</summary>
+        public BaitDef Bait => _bait;
+
+        /// <summary>The tackle currently tied on.</summary>
+        public TackleDef Tackle => _tackle;
+
+        /// <summary>The authored bait/tackle the dev cycle walks (builder-wired).</summary>
+        public BaitDef[] BaitBox => _baitBox;
+        public TackleDef[] TackleBoxItems => _tackleBox;
     }
 }

@@ -437,8 +437,11 @@ namespace HiddenHarbours.Tools.RigBaking
                                                   Rotate(tri.N2, basis))
                     : Rotate(tri.N, basis);
                 double sh = ShadeOf(n, basis, data.LightN);
-                // The rig's interior/backface rescue: faces that opt in with b <= -1.
-                if (sh < 0 && tri.FaceBias <= -1)
+                // The rig's interior/backface rescue. The hull rigs gate it on the face opting in with
+                // b <= -1; skiffMotorRig rescues every back-facing face. Which rule applies is a fact
+                // about the rig's own _paint, carried on the data — see
+                // RigMeshData.BackfaceRescueNeedsOptIn.
+                if (sh < 0 && (!data.BackfaceRescueNeedsOptIn || tri.FaceBias <= -1))
                     sh = ShadeOf(new Vector3d(-n.X, -n.Y, -n.Z), basis, data.LightN) * 0.9;
 
                 double fidx = sh * data.Gain + data.Bias + tri.FaceBias;
@@ -498,7 +501,9 @@ namespace HiddenHarbours.Tools.RigBaking
             Array.Copy(col, outCol, col.Length);
 
             // ---- the rig's 1px depth-discontinuity darkening (doEdge) -----------------------
-            for (int y = 0; y < ph; y++)
+            // A hull's render() asks for it; every fitting entry point passes doEdge = false, and the
+            // skiff motor rig has no such pass at all. See RigMeshData.DepthEdgeDarkening.
+            for (int y = 0; data.DepthEdgeDarkening && y < ph; y++)
             for (int x = 0; x < pw; x++)
             {
                 int i = y * pw + x;

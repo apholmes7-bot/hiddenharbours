@@ -85,6 +85,21 @@ namespace HiddenHarbours.Tests.EditMode
             // degree of blade feather (DoryOarPropMeshAcceptanceTests). She keeps her sheets AND her
             // compass, so the owner's V key still A/Bs the whole boat, oars included.
             "visual.dory_iso",
+            // phase 7, the rest — the OUTBOARDS crossed over too, so the last four boats that were
+            // held on the sprite compass by a per-facing overlay come with them. Two rigs and four
+            // paint builds: puntIsoRig's own tiller engine (basic/upgraded, ±32°) and skiffMotorRig's
+            // remote-steer four-stroke (work/sport, ±30°) fitting BOTH skiff hulls. Each is posed
+            // through IHullPropRenderer from the same helm-and-cadence state machine the sprite
+            // engine used, read CONTINUOUSLY, and adjudicated against its rig's own renderMotor to a
+            // quarter degree of swivel (OutboardPropMeshAcceptanceTests). All four keep their sheets
+            // and their compasses, so the V-key A/B still covers the whole boat.
+            "visual.punt_iso_basic",
+            "visual.punt_iso_upgraded",
+            "visual.console_skiff",
+            "visual.sport_skiff_single",
+            // …and the twin, which needed no extra art: the same fitting instantiated at the ±0.34 m
+            // its rig declares, sorted by the shared depth buffer rather than by a draw-order rule.
+            "visual.sport_skiff_twin",
             // phase 6 — mesh-only: never had a sheet, and none was ever possible
             "visual.stern_trawler_iso",
             "visual.stern_trawler_mk2_iso",

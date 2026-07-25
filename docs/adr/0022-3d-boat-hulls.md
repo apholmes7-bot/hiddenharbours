@@ -257,13 +257,19 @@ Suggested phasing, each independently verifiable:
      lobster's 0.5 and the dragger's 1.1. The baker now stops instead.
 
    ⚠️ Open question 4 remains open and is now measured across the whole fleet: the shim fires for all five
-   of `F, MATS, GAIN, BIAS, LN` on **every** hull rig.
+   of `F, MATS, GAIN, BIAS, LN` on **every** hull rig. Phase 7 adds to the tally: a FITTING also needs
+   its builder and its pivot widened (`buildOar`/`oarlockPt`, `motorFaces`), and
+   `skiffMotorRig.js` — a layer rather than a hull — exports neither `PX` nor `defaultElev`, so both
+   are reconstructed from its own `S`/`DEFAULT_ELEV`. Neither motor rig exposes its swivel as a
+   point (it is two private consts, `YA` and `ZT`), so `swivelPt()` is a reconstruction too, and
+   therefore adjudicated in pixels like every other one.
 
-7. **The overlays.** The dory's oars and the fleet's outboards are the last sprite art bolted to a hull,
-   and they are what holds five hulls on the sprite compass (above). They have rigs already
-   (`doryIsoRig.renderOars`, `skiffMotorRig.js`), so the path is the one this ADR has now run five times:
-   extract, build, bake, measure against the CPU oracle. Doing it flips five hulls with a one-field edit
-   each and finishes the owner's mandate.
+7. **The overlays — DONE (2026-07-24).** The dory's oars and the fleet's outboards were the last
+   sprite art bolted to a hull, and they were what held five hulls on the sprite compass (above).
+   They had rigs already (`doryIsoRig.renderOars`, `puntIsoRig.renderMotor`, `skiffMotorRig.js`), so
+   the path was the one this ADR had already run five times: extract, build, bake, measure against
+   the CPU oracle. **Every hull in the fleet is now presented as a mesh** — eleven hulls, fourteen
+   visuals — and `HullMeshFleet` carries no `OverlayBlockedReason` at all.
 
    **The oars — DONE.** `HullPropMeshDef` + `IHullPropRenderer` in Core, whose entire contract is a
    *local rotation*: Boats owns what a stroke or a steer means and Art never learns, which is why oars
@@ -304,9 +310,83 @@ Suggested phasing, each independently verifiable:
    side faces the camera (`SV_IsFrontFace` in the facet pass), which is art-pipeline's shader and not a
    bake decision. Flagged, not done.
 
-   **The outboards are next** and reuse all of it: `puntIsoRig`'s own motor (`basic`/`upgraded`,
-   maxSteer 32) and `skiffMotorRig` (`work`/`sport`, maxSteer 30, twin mount ±0.34 m), steer and tilt
-   about the clamp, twin = two instances of one def. Four hulls, five visuals. ← next
+   **The outboards — DONE**, and with them the phase, the rollout and the owner's mandate. Two rigs
+   (the punt owns her tiller engine outright — own 212×168 cell, own ±32°, `basic`/`upgraded`;
+   `skiffMotorRig`'s remote-steer four-stroke fits BOTH 7 m skiffs, 272×216, ±30°, `work`/`sport`),
+   four bakes, five visuals flipped. The variant is DATA (`BoatVisualDef.MotorVariant`, and the
+   punt's upgrade is a real gameplay distinction), and the twin is **two instances of one def** at
+   the ±0.34 m its rig declares — no second bake. `MOTOR.parts`, `MOTOR.behind=[3,4,5]` and the
+   draw-the-far-engine-first rule are deliberately not transcribed; a shared depth buffer makes them
+   true, and the twin is now measured saying so: both engines into one z-buffer against the rig
+   painting both face lists in one pass, **0 silhouette differences, worst cluster 0**.
+
+   The steer is read CONTINUOUSLY. `OutboardMotorMath` always carried the drawn swivel as a float
+   and rounded it to one of nine baked columns at the last step; `SteerDegreesForPosition` is that
+   same affine map without the rounding, so the mesh engine swivels through the tuned cadence,
+   deadzone and per-hull authority the owner already signed off — the same unquantising #243 did for
+   the hull's rock and #285 for the dory's stroke, and it agrees with the sprite path at every
+   column the sprite path had.
+
+   ⚠️ **What the outboards found, and it generalises: a fitting is not necessarily one rigid body.**
+   Both rigs build the clamp bracket (and the skiff's tilt-tube cap) through the IDENTITY placement
+   `I` rather than the posed `X`, because the bracket is bolted to the transom and the engine swivels
+   ON it. A mesh that rotated the whole face list carried the bracket round with the cowl — measured
+   against the rigs as 489 silhouette differences and a 39–53 px connected patch, **invisible dead
+   ahead** and worst at hard-over and full tilt. The dory's oar had no such part, so the seam had
+   never met one. `HullPropMeshDef` gains a `FixedMesh` and the renderer a second child that takes
+   the clamp offset and nothing else; **which faces belong to it is MEASURED** (build the face list
+   again at a pose with both articulation axes off zero, keep the faces whose vertices did not move)
+   rather than read off the rig — 6 of 96 on the punt, 12 of 100 on the skiff, which is one box and
+   two boxes respectively. The extractor refuses to split a rig whose fixed faces are interleaved
+   with its moving ones, because two meshes rasterise in the order (fixed, moving) and that is only
+   the rig's own order while every fixed face precedes every moving one.
+
+   Two more facts about the rigs' RASTERISER that their data cannot carry, found by reading `_paint`
+   rather than assuming it: `skiffMotorRig` rescues **every** back-facing face where the hull rigs
+   gate it on `b <= -1` (and not one of its faces carries a bias that low, so the two rules genuinely
+   differ there — ⚠️ the facet shader implements the hull rule, so this is a flagged, unmeasured GPU
+   difference in art-pipeline's lane), and every fitting entry point passes `doEdge = false`. Both
+   are declared per fitting and honoured by the CPU oracle.
+
+   **Measured, four fittings × 8 headings × 13 poses** (steer swept through
+   `SteerDegreesForPosition` at deliberately FRACTIONAL positions — poses no baked column exists for
+   — plus tilt at both hard-overs), against each rig's own `renderMotor`:
+
+   | fitting | tris | asset | silhouette | unresolvable colour | worst cluster |
+   |---|---:|---:|---:|---:|---:|
+   | punt outboard, basic | 200 | 17.7 KB | 0 | 0 | **0** |
+   | punt outboard, upgraded | 200 | 17.7 KB | 0 | 0 | **0** |
+   | skiff outboard, work | 208 | 18.4 KB | 0 | 0 | **0** |
+   | skiff outboard, sport (twin, both mounts) | 208 | 18.4 KB | 0 | 0 | 1 |
+   | skiff outboard, sport (single) | 208 | 18.4 KB | 0 | 0 | **0** |
+
+   Three of the five are identical, not close; the twin's single pixel is 1 in 84,526. **Neither
+   motor rig builds a double-sided twin**, so there are no ambiguous pixels to exclude — the phase-7
+   machinery (`RigAmbiguousPixels`) stays wired for the day a rig grows one, and reports 0.
+
+   Sensitivity, sport outboard, steer error → (silhouette, worst cluster): **0° → (0, 0)** ·
+   0.25° → (34, 17) · 0.5° → (54, 17) · 1° → (94, 17) · 2° → (233, 29) · 4° → (468, 34). **The
+   fixture resolves a quarter of a degree of swivel**, on both channels at once, and zero error is
+   the only clean point. Swapping the steer/tilt composition order scores 240 against a correct 0 —
+   a sabotage that is invisible unless BOTH angles are non-zero, which is why tilt is swept at all.
+
+   Two defects in phase 7's own machinery fell out of doing this, both invisible until a second
+   fitting and a second mesh hull existed:
+   - `IsoFacetPropRenderer` never wrote `_HullOrigin` or `_HullId`, so the oars dithered against the
+     WORLD origin — the 13–16% dither crawl this ADR measured and drove to 0.00%, reintroduced on the
+     parts with the largest flat panels — and wrote hull id 0 into the keyline resolve.
+   - The service found the posed child by NAME. Re-configuring a hull renderer (what a swap does)
+     destroys the old child and builds a new one with the same name, and in play mode `Destroy` is
+     deferred to end of frame — so `Find` returned the DOOMED one and the boat you swapped TO lost
+     her fittings one frame later. The renderer now hands the child out directly.
+
+   ⚠️ **Known and accepted, unchanged from the oars:** where a rig DOES build coplanar twins the tie
+   is z-fighting on a GPU, and the deterministic cure is `SV_IsFrontFace` in the facet pass —
+   art-pipeline's shader, not a bake decision. The outboards are the lower risk of the two: they
+   have no zero-thickness double-sided surface at all. Their exposure is ordinary coincident
+   geometry (a decal quad on a cowl panel, a leg box against the cavitation plate), which the CPU
+   oracle resolves deterministically at cluster 0 and a GPU resolves by `LEqual` — stable while
+   nothing is exactly coplanar, and nothing here is.
 
 ## Alternatives considered
 

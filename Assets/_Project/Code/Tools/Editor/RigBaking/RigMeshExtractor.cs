@@ -23,6 +23,21 @@ namespace HiddenHarbours.Tools.RigBaking
         public double B;
         /// <summary>Per-face depth bias toward the camera — the rig's <c>f.db</c>.</summary>
         public double Db;
+
+        /// <summary>
+        /// <b>True when this face does NOT move with the fitting's pose</b> — measured, by building the
+        /// face list twice at two different poses and seeing which vertices changed
+        /// (<see cref="RigPropExtraction.PoseProbeFaceBuilderCall"/>). Always false for a hull.
+        ///
+        /// <para>⚠️ <b>An outboard is not one rigid body, and nothing before phase 7 had met one.</b>
+        /// Both motor rigs build the clamp bracket (and the skiff's tilt-tube cap) through the
+        /// IDENTITY placement <c>I</c> rather than through the posed <c>X</c>, because the bracket is
+        /// bolted to the transom and the engine swivels ON it. Rotating those faces with the rest
+        /// puts the bracket a couple of pixels out and reshades it — measured as a 39–53 px connected
+        /// patch, worst at hard-over and full tilt, which is precisely where nobody would notice by
+        /// eye.</para>
+        /// </summary>
+        public bool FixedInPose;
     }
 
     /// <summary>A MATS entry: a palette ramp plus a constant index offset.</summary>
@@ -60,6 +75,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// canonical matrix. Reported, never assumed — see <see cref="RigMeshSymbols"/>.</summary>
         public bool BayerWasExported;
 
+        /// <summary>
+        /// <b>Does the rig's interior/backface rescue need a face to OPT IN?</b> The hull rigs gate it
+        /// (<c>if(sh&lt;0 &amp;&amp; ((f.b||0)&lt;=-1))</c>, puntIsoRig.js:152) — the facet shader
+        /// reproduces exactly that. <c>skiffMotorRig.js</c>:169 does NOT: it rescues EVERY back-facing
+        /// face, and not one of its faces carries a bias at or below −1, so the two rules are
+        /// genuinely different functions on that rig rather than the same one written twice.
+        ///
+        /// <para>Extraction cannot detect this — it is a property of the rig's <c>_paint</c>, not of
+        /// its data — so it is declared per fitting on <see cref="RigPropExtraction"/> and adjudicated
+        /// in pixels like every other transcription. Default true = the hull rule, so no existing bake
+        /// changes.</para>
+        /// </summary>
+        public bool BackfaceRescueNeedsOptIn = true;
+
+        /// <summary>
+        /// <b>Does this render path run the rig's 1 px depth-discontinuity darkening?</b> A hull's
+        /// <c>render()</c> passes <c>doEdge = true</c>; every FITTING entry point in the repo passes
+        /// false (<c>renderOars</c>, both <c>renderMotor</c>s), and <c>skiffMotorRig</c> has no such
+        /// pass at all. Comparing a fitting against an oracle that darkens where the rig does not is
+        /// a difference the fixture would blame on the geometry.
+        /// </summary>
+        public bool DepthEdgeDarkening = true;
+
         public Color32 Keyline;
         public int W, H;
         /// <summary>Pivot in cell pixels from the TOP-LEFT — the rigs' screen origin, and the
@@ -87,6 +125,42 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             get { int n = 0; foreach (var f in Faces) n += f.V.Length; return n; }
         }
+
+        /// <summary>How many faces do not move with the pose — see <see cref="RigFace.FixedInPose"/>.</summary>
+        public int FixedFaceCount
+        {
+            get { int n = 0; foreach (var f in Faces) if (f.FixedInPose) n++; return n; }
+        }
+
+        /// <summary>
+        /// The same rig, described by a SUBSET of its faces — everything else (materials, light,
+        /// dither, cell) shared by reference, because it is the same rig either way. Used to build a
+        /// fitting's swivelling and fixed halves as two meshes off ONE extraction, so they cannot
+        /// disagree about palette or cell.
+        /// </summary>
+        public RigMeshData WithFaces(List<RigFace> faces) => new RigMeshData
+        {
+            RigKey = RigKey,
+            GlobalName = GlobalName,
+            Faces = faces,
+            Materials = Materials,
+            LightN = LightN,
+            Gain = Gain,
+            Bias = Bias,
+            Bayer = Bayer,
+            BayerWasExported = BayerWasExported,
+            BackfaceRescueNeedsOptIn = BackfaceRescueNeedsOptIn,
+            DepthEdgeDarkening = DepthEdgeDarkening,
+            Keyline = Keyline,
+            W = W,
+            H = H,
+            PivotX = PivotX,
+            PivotY = PivotY,
+            PxPerMetre = PxPerMetre,
+            DefaultElev = DefaultElev,
+            ShimmedSymbols = ShimmedSymbols,
+            ReconstructedSymbols = ReconstructedSymbols,
+        };
 
         /// <summary>Fan triangulation, which is what the rig itself does in <c>_paint</c>.</summary>
         public int TriangleCount
@@ -188,6 +262,31 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     ["MATS"] = "{wood:{ramp:RAMP,off:0},iron:{ramp:IRON,off:-2}}",
                 },
+
+                // ---- the outboards (ADR 0022 phase 7) --------------------------------------------
+                // Both motor rigs describe their swivel as a PAIR of private consts rather than as a
+                // point: `const YA = -L/2 - 0.06, ZT = MOUNT.z;` (punt) and `const L = 7.0,
+                // YA = -L/2 - 0.07, ZT = 0.72;` (skiff). Their `mxform(opts)` then tilts about the
+                // line {y = 0, z = ZT} and steers about the vertical through {x = 0, y = 0}, before
+                // translating the whole thing to (mx, YA, ·) — so the ONE point every real pose is a
+                // pure rotation about is (0, YA, ZT). That reading is what this expression asserts,
+                // and it is adjudicated in pixels by OutboardPropMeshAcceptanceTests: get it wrong
+                // and the engine still swings, but about the wrong point, and the silhouette moves.
+                ["puntIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["swivelPt"] = "function(){return [0,YA,ZT];}",
+                },
+
+                // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
+                // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
+                // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
+                // rename, not an invention, and a wrong one would misplace every vertex on screen.
+                ["skiffMotorRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["swivelPt"] = "function(){return [0,YA,ZT];}",
+                    ["PX"] = "S",
+                    ["defaultElev"] = "DEFAULT_ELEV",
+                },
             };
 
         /// <summary>
@@ -255,6 +354,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>buildOar(1,{sweep:0,dip:0})</c>. Prefixed with <c>&lt;Global&gt;.</c> by the extractor.</summary>
         public string FaceBuilderCall;
 
+        /// <summary>
+        /// <b>The same builder at a DIFFERENT pose</b> — how the extractor finds out which faces are
+        /// bolted down. Optional; null means "every face moves", which is right for an oar.
+        ///
+        /// <para>⚠️ <b>A fitting is not necessarily one rigid body.</b> Both outboard rigs build the
+        /// clamp bracket through the identity placement <c>I</c> instead of the posed <c>X</c>,
+        /// because the bracket is fixed to the transom and the engine swivels ON it — so a mesh that
+        /// rotated the whole face list would carry the bracket round with the cowl. That is a real
+        /// defect and a subtle one (it only appears off dead ahead), and it is exactly what this probe
+        /// exists to catch.</para>
+        ///
+        /// <para><b>Identified by MEASUREMENT, never by transcription.</b> Building the list twice and
+        /// comparing vertices asks the rig which faces move; reading the rig and declaring "the
+        /// bracket is the first six faces" is the class of claim this project has been burned by. Pick
+        /// a probe pose with BOTH articulation axes non-zero, so a face that happens to be invariant
+        /// under one of them is not mistaken for a fixed one.</para>
+        /// </summary>
+        public string PoseProbeFaceBuilderCall;
+
         /// <summary>JS returning <c>[x,y,z]</c> in hull-rig metres: the point the fitting turns
         /// about. Same prefixing.</summary>
         public string PivotCall;
@@ -274,6 +392,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+
+        /// <summary>The rig's backface rule for THIS fitting — see
+        /// <see cref="RigMeshData.BackfaceRescueNeedsOptIn"/>.</summary>
+        public bool BackfaceRescueNeedsOptIn = true;
+
+        /// <summary>Whether this fitting's render path darkens depth discontinuities. <b>Defaults to
+        /// FALSE</b>, unlike a hull's, because every fitting entry point in the repo passes
+        /// <c>doEdge = false</c> — see <see cref="RigMeshData.DepthEdgeDarkening"/>.</summary>
+        public bool DepthEdgeDarkening = false;
 
         /// <summary>
         /// Drop faces that are an EXACT REVERSE of an earlier one — the rigs' way of making a
@@ -448,6 +575,10 @@ namespace HiddenHarbours.Tools.RigBaking
                                       host.EvaluateNumber($"{g}.LN[2]")),
                 Keyline = ParseHex(host.EvaluateString($"{g}.KEY")),
                 BayerWasExported = bayerExported,
+                // The two facts about the rig's RASTERISER that its data cannot carry. A hull keeps
+                // the defaults; a fitting declares them (see RigPropExtraction).
+                BackfaceRescueNeedsOptIn = prop == null || prop.BackfaceRescueNeedsOptIn,
+                DepthEdgeDarkening = prop == null || prop.DepthEdgeDarkening,
                 ShimmedSymbols = missing,
                 ReconstructedSymbols =
                     missing.Where(s => RigMeshSymbols.IsReconstructed(scriptPath, s)).ToList(),
@@ -458,6 +589,9 @@ namespace HiddenHarbours.Tools.RigBaking
 
             string faceSource = prop == null ? $"{g}.F" : $"{g}.{prop.FaceBuilderCall}";
             ReadFaces(host, g, faceSource, data);
+
+            if (prop != null && !string.IsNullOrEmpty(prop.PoseProbeFaceBuilderCall))
+                MarkFacesFixedInPose(host, g, prop, data, faceSource);
 
             if (prop != null && prop.DropReverseDuplicateFaces)
             {
@@ -626,6 +760,60 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (a.X != b.X || a.Y != b.Y || a.Z != b.Z) return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Builds the fitting's face list a SECOND time at a different pose and flags every face whose
+        /// vertices did not move — see <see cref="RigPropExtraction.PoseProbeFaceBuilderCall"/>.
+        ///
+        /// <para>Exact equality is the right test: a fixed face comes out of the rig's identity
+        /// placement both times, so its doubles are bit-identical, while a face that moved by any
+        /// amount at all moved by far more than a last-bit difference.</para>
+        /// </summary>
+        static void MarkFacesFixedInPose(IRigScriptHost host, string g, RigPropExtraction prop,
+                                         RigMeshData data, string faceSource)
+        {
+            var probe = new RigMeshData { Materials = data.Materials };
+            ReadFaces(host, g, $"{g}.{prop.PoseProbeFaceBuilderCall}", probe);
+
+            if (probe.Faces.Count != data.Faces.Count)
+                throw new InvalidOperationException(
+                    $"{faceSource} yields {data.Faces.Count} faces but the pose probe " +
+                    $"{prop.PoseProbeFaceBuilderCall} yields {probe.Faces.Count}. The probe must differ " +
+                    "from the canonical pose ONLY in the articulation — a different variant or part " +
+                    "changes which faces exist, and then 'this face did not move' is meaningless.");
+
+            int fixedCount = 0, lastFixed = -1, firstMoving = int.MaxValue;
+            for (int i = 0; i < data.Faces.Count; i++)
+            {
+                RigFace a = data.Faces[i], b = probe.Faces[i];
+                bool same = a.V.Length == b.V.Length;
+                for (int k = 0; same && k < a.V.Length; k++)
+                    same = a.V[k].X == b.V[k].X && a.V[k].Y == b.V[k].Y && a.V[k].Z == b.V[k].Z;
+
+                data.Faces[i].FixedInPose = same;
+                if (same) { fixedCount++; lastFixed = i; }
+                else firstMoving = Math.Min(firstMoving, i);
+            }
+
+            if (fixedCount == 0 || fixedCount == data.Faces.Count) return;
+
+            // ⚠️ The two halves are drawn as two meshes, so they are rasterised in the order
+            // (fixed, then moving) rather than in the rig's interleaved order. That is only
+            // equivalent when the rig itself emits every fixed face first — which both outboard rigs
+            // do, and which is asserted rather than assumed, because an interleaved rig would need
+            // the depth ties to fall the same way and they would not.
+            if (lastFixed > firstMoving)
+                throw new InvalidOperationException(
+                    $"{faceSource}: the pose-fixed faces are INTERLEAVED with the moving ones (last " +
+                    $"fixed at {lastFixed}, first moving at {firstMoving}). Splitting the fitting into " +
+                    "a fixed mesh and a swivelling one reorders them, which is safe only while every " +
+                    "fixed face precedes every moving one. This rig needs a different split.");
+
+            Debug.Log($"[rig-mesh] {faceSource}: {fixedCount} of {data.Faces.Count} faces do NOT move " +
+                      $"with the pose (measured against {prop.PoseProbeFaceBuilderCall}) — the fitting " +
+                      "is bolted-down geometry plus geometry that articulates, and they are baked as " +
+                      "two meshes.");
         }
 
         /// <summary>Remove the later member of every reverse-duplicate pair.</summary>

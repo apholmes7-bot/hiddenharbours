@@ -97,12 +97,15 @@ MonoBehaviour:
   OarPort: []
   OarStar: []
   OarColumnCount: 10
+  OarPortMesh: {fileID: 0}
+  OarStarMesh: {fileID: 0}
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 1
   MotorMaxSteerDegrees: 30
   MotorVariant: 0
   MotorFit: 0
+  MotorMesh: {fileID: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3

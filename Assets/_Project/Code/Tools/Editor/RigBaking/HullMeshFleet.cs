@@ -131,19 +131,25 @@ namespace HiddenHarbours.Tools.RigBaking
         const string Meshes = "Assets/_Project/Data/Boats/HullMeshes";
         const string Visuals = "Assets/_Project/Data/Boats/Visuals";
 
-        /// <summary>The overlay that keeps a hull on sprites — see <see cref="FleetHull.OverlayBlockedReason"/>.
+        /// <summary>
+        /// ⚠️ <b>NOTHING IS BLOCKED ANY MORE (ADR 0022 phase 7 complete).</b> This constant is gone,
+        /// and the field it fed (<see cref="FleetHull.OverlayBlockedReason"/>) is now null on every
+        /// hull in the table.
         ///
-        /// <para>⚠️ <b>The dory's block is LIFTED (ADR 0022 phase 7).</b> Her oars are no longer baked
-        /// per facing cell: they are <c>HullPropMeshDef</c>s of their own, posed at runtime through
-        /// <c>IHullPropRenderer</c> from the same stroke state the sprite oars animate from, and
-        /// adjudicated against the rig's own <c>renderOars</c> by <c>DoryOarPropMeshAcceptanceTests</c>
-        /// — which resolves a half-degree feather error. So the condition this block was written to
-        /// wait for has been met, and she flips. The outboards are still blocked; they are the same
-        /// job on two more rigs.</para>
+        /// <para>The block existed because a hull's sprite overlays are baked one cell per facing and
+        /// a mesh hull turns continuously, so <c>BoatHullSkinner.ApplyMesh</c> dropped them — flipping
+        /// those hulls would have shipped a dory that cannot row and four skiffs with no engines.
+        /// Phase 7 removed the cause rather than the symptom: the dory's oars became
+        /// <c>HullPropMeshDef</c>s (#285), and this change did the same for both outboard rigs
+        /// (<c>puntIsoRig</c>'s own tiller engine, <c>skiffMotorRig</c>'s remote-steer four-stroke,
+        /// two paint builds each). Every one is posed at runtime through <c>IHullPropRenderer</c> from
+        /// the SAME state machine its sprite twin used, and adjudicated in pixels against the rig's
+        /// own renderer.</para>
+        ///
+        /// <para>The field stays on <see cref="FleetHull"/> deliberately: it is how the next hull that
+        /// arrives wearing something unbaked declares itself, instead of being flipped and losing it
+        /// silently. The coverage test still enforces the pairing in both directions.</para>
         /// </summary>
-        const string Outboard = "her OUTBOARD is baked per facing cell and cannot ride a " +
-                                "continuously-rotating mesh; flipping her would lose the engine";
-
         static FleetHull Sheeted(string key, string rig, string global, string name, string snake,
                                  string label, string overlayBlocked, params string[] visualAssets) =>
             new FleetHull(key, $"{Rigs}/{rig}", global, $"{Meshes}/{name}HullMesh.asset",
@@ -175,18 +181,22 @@ namespace HiddenHarbours.Tools.RigBaking
             Sheeted("dory", "doryIsoRig.js", "DoryIso", "DoryIso", "dory_iso",
                     "dory (T0, ~4.3 m — the boat he starts in)", null, "DoryIso"),
 
-            // ONE hull, TWO visuals: basic and upgraded differ by engine, not by planking.
+            // ONE hull, TWO visuals: basic and upgraded differ by engine, not by planking — and the
+            // engine is now a fitting per build (hullprop.punt_motor_basic / _upgraded), which is
+            // what UNBLOCKED her. Her tiller outboard is her own rig's, not the skiffs' at another
+            // size: own cell, own ±32°.
             Sheeted("punt", "puntIsoRig.js", "PuntIso", "PuntIso", "punt_iso",
                     "punt (T1, ~5.2 m — the golden master, and a real purchasable boat)",
-                    Outboard, "PuntIsoBasic", "PuntIsoUpgraded"),
+                    null, "PuntIsoBasic", "PuntIsoUpgraded"),
 
             Sheeted("consoleSkiff", "consoleIsoRig.js", "ConsoleIso", "ConsoleIso", "console_iso",
-                    "console skiff (~7.0 m, aluminium)", Outboard, "ConsoleSkiff"),
+                    "console skiff (~7.0 m, aluminium)", null, "ConsoleSkiff"),
 
-            // Likewise one hull, two visuals: the twin differs by a second outboard.
+            // Likewise one hull, two visuals: the twin differs by a second outboard — the SAME
+            // fitting instantiated at ±0.34 m, so the twin needed no art and no bake of its own.
             Sheeted("sportSkiff", "sportSkiffIsoRig.js", "SportSkiffIso", "SportSkiffIso",
                     "sport_skiff_iso", "sport skiff (~7.0 m, glass — single and twin)",
-                    Outboard, "SportSkiffSingle", "SportSkiffTwin"),
+                    null, "SportSkiffSingle", "SportSkiffTwin"),
 
             // The biggest hull that wears NO sprite overlay, so she is the one sheeted boat phase 6
             // can actually flip — and therefore the owner's second A/B, after the lobster.
@@ -239,9 +249,10 @@ namespace HiddenHarbours.Tools.RigBaking
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["skiffMotorRig.js"] =
-                    "An OUTBOARD, not a hull: it mounts on the skiffs and rides their rock. It has no " +
-                    "ROCK block of its own and is drawn as a sprite overlay bound to the visual def's " +
-                    "MotorLower/MotorUpper columns, so it has no place in a hull-mesh table.",
+                    "An OUTBOARD, not a hull: it mounts on both 7 m skiffs and rides their rock. It " +
+                    "has no ROCK block of its own and no hull to present, so it has no place in a " +
+                    "hull-mesh table — it is baked as an articulated FITTING instead (ADR 0022 phase " +
+                    "7, HullPropFleet: hullprop.skiff_motor_work / _sport).",
             };
 
         public static FleetHull Get(string key)

@@ -9,6 +9,11 @@ namespace HiddenHarbours.Art
     public sealed class IsoFacetPropSetup
     {
         public Mesh Mesh;
+
+        /// <summary>The part of the fitting that does NOT articulate (the outboard's clamp bracket),
+        /// or null. Same material, same lateral mount, no rotation.</summary>
+        public Mesh FixedMesh;
+
         public Color32[][] Ramps;
         public int[] RampOffsets;
         public Vector3 LightN;
@@ -51,7 +56,9 @@ namespace HiddenHarbours.Art
         private Material _facetMaterial;
         private Texture2D _rampTex, _darkRampTex;
         private MeshRenderer _meshRenderer;
-        private Transform _meshChild;
+        private Transform _meshChild, _fixedChild;
+        private IsoFacetHullRenderer _hull;
+        private MaterialPropertyBlock _props;
 
         private Quaternion _rotation = Quaternion.identity;
         private float _lateral;
@@ -81,6 +88,9 @@ namespace HiddenHarbours.Art
         {
             _setup = setup ?? throw new ArgumentNullException(nameof(setup));
             Teardown(keepSetup: true);
+            // The hull this fitting is bolted to — for the dither ORIGIN and the hull id, both of
+            // which are facts about the boat rather than about the part. See WriteHullProperties.
+            _hull = GetComponentInParent<IsoFacetHullRenderer>();
             BuildRampTextures(setup);
             BuildMaterial(setup);
             BuildChild(setup);
@@ -155,19 +165,62 @@ namespace HiddenHarbours.Art
 
         private void BuildChild(IsoFacetPropSetup setup)
         {
-            var go = new GameObject("FacetProp") { hideFlags = HideFlags.DontSave };
-            go.transform.SetParent(transform, false);
-            go.AddComponent<MeshFilter>().sharedMesh = setup.Mesh;
-            _meshRenderer = go.AddComponent<MeshRenderer>();
-            _meshRenderer.sharedMaterial = _facetMaterial;
-            _meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            _meshRenderer.receiveShadows = false;
-            _meshRenderer.lightProbeUsage = LightProbeUsage.Off;
-            _meshRenderer.allowOcclusionWhenDynamic = false;
-            _meshChild = go.transform;
+            _meshRenderer = MakeChild("FacetProp", setup.Mesh, out _meshChild);
+            // The bolted-down half — the outboard's clamp bracket, which the engine swivels ON. A
+            // second child rather than a second fitting: same asset, same palette, same material,
+            // same lateral mount, and it simply never takes the rotation. Both children join the same
+            // LightMode renderer list, so they share the hull's depth buffer like everything else.
+            if (setup.FixedMesh != null)
+                MakeChild("FacetPropFixed", setup.FixedMesh, out _fixedChild);
         }
 
-        private void LateUpdate() => Apply();
+        private MeshRenderer MakeChild(string name, Mesh mesh, out Transform child)
+        {
+            var go = new GameObject(name) { hideFlags = HideFlags.DontSave };
+            go.transform.SetParent(transform, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var r = go.AddComponent<MeshRenderer>();
+            r.sharedMaterial = _facetMaterial;
+            r.shadowCastingMode = ShadowCastingMode.Off;
+            r.receiveShadows = false;
+            r.lightProbeUsage = LightProbeUsage.Off;
+            r.allowOcclusionWhenDynamic = false;
+            child = go.transform;
+            return r;
+        }
+
+        private void LateUpdate()
+        {
+            Apply();
+            WriteHullProperties();
+        }
+
+        /// <summary>
+        /// <b>The two uniforms that belong to the BOAT, not to the part</b>, written per frame into a
+        /// property block exactly as <see cref="IsoFacetHullRenderer"/> writes them for the hull.
+        ///
+        /// <para><b>Why a fitting needs them at all.</b> The facet shader derives its ordered-dither
+        /// index from WORLD position relative to <c>_HullOrigin</c> — that is the whole fix ADR 0022
+        /// measured at 13–16% dither crawl and drove to 0.00%. A renderer that never writes it leaves
+        /// the uniform at the world origin, so the dither slides across the part as the boat sails: on
+        /// a large flat cowl panel that is the crawl the ADR eliminated, reintroduced on the one piece
+        /// of the boat with the biggest unbroken panels. <c>_HullId</c> is the same story for the
+        /// keyline resolve, which floods the neighbour's key colour AND id: id 0 reads as "no hull".</para>
+        ///
+        /// <para>⚠️ The origin is the hull's ROOT, not this fitting's transform and not the heaved mesh
+        /// child — the rig subtracts heave from screen y AFTER projecting, so the dither stays indexed
+        /// by the final screen pixel only when the origin excludes it. Same reasoning, same value, as
+        /// the hull's own write; taking it from the hull is what keeps them on ONE grid.</para>
+        /// </summary>
+        private void WriteHullProperties()
+        {
+            if (_meshRenderer == null || _hull == null) return;
+            _props ??= new MaterialPropertyBlock();
+            Vector3 p = _hull.transform.position;
+            _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
+            _props.SetFloat(IsoFacetShaderIds.HullId, _hull.HullId / 255f);
+            _meshRenderer.SetPropertyBlock(_props);
+        }
 
         /// <summary>
         /// Rotate about the pivot, in the hull's frame. A Transform applies rotation THEN translation
@@ -180,8 +233,13 @@ namespace HiddenHarbours.Art
         private void Apply()
         {
             if (!_dirty || _meshChild == null || _setup == null) return;
-            Vector3 pivot = _setup.PivotLocalMeters + new Vector3(_lateral, 0f, 0f);
+            var mount = new Vector3(_lateral, 0f, 0f);
+            Vector3 pivot = _setup.PivotLocalMeters + mount;
             _meshChild.SetLocalPositionAndRotation(pivot - _rotation * pivot, _rotation);
+            // The bolted-down half takes the clamp offset and NOTHING else — it is fixed to the
+            // transom, which is the whole reason it is a separate child.
+            if (_fixedChild != null)
+                _fixedChild.SetLocalPositionAndRotation(mount, Quaternion.identity);
             _dirty = false;
         }
 
@@ -190,15 +248,17 @@ namespace HiddenHarbours.Art
         private void Teardown(bool keepSetup)
         {
             if (_meshChild != null) DestroySafely(_meshChild.gameObject);
+            if (_fixedChild != null) DestroySafely(_fixedChild.gameObject);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
             if (_rampTex != null) DestroySafely(_rampTex);
             if (_darkRampTex != null) DestroySafely(_darkRampTex);
             _meshChild = null;
+            _fixedChild = null;
             _meshRenderer = null;
             _facetMaterial = null;
             _rampTex = null;
             _darkRampTex = null;
-            if (!keepSetup) _setup = null;
+            if (!keepSetup) { _setup = null; _hull = null; }
         }
 
         static void DestroySafely(UnityEngine.Object o)

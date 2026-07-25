@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -80,6 +81,48 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.GreaterOrEqual(footprints.Count, defs.Length - 1,
                 "the authored personalities must not collapse onto one footprint — at most the template " +
                 "may duplicate a species (pattern × roam × stubbornness should be distinct per fish)");
+        }
+
+        [Test]
+        public void EveryAuthoredPersonality_StaysCozyInEverydayWeather()
+        {
+            // The weather guard-rail (owner's ruling 2026-07-25). A blow is MEANT to be able to beat you —
+            // but only a real one. Every authored fish must still be recoverable by easing off in ordinary
+            // weather, at the worst deck stance, mid-run, using the run pressure the sim actually applies
+            // (Strength-scaled — the raw authored number understates the strong fish badly).
+            var sea = SeaFishingSettings.Default;
+            var cfg = RodFightSettings.Default;
+            foreach ((string path, RodFightDef def) in AuthoredDefs())
+            {
+                float effectiveRun = RodFightStrength.EffectiveRunPressure(def.runTensionPressure, def.Strength);
+                Assert.IsTrue(
+                    SeaFightMath.MaintainOutbleedsTheEverydaySea(
+                        effectiveRun, cfg.DeckAngleFactor, sea.SeaFightFactor, def.tensionFallPerSec),
+                    $"{path}: in everyday weather this fish can't be eased out of trouble " +
+                    $"(run {effectiveRun:0.000} + deck {cfg.DeckAngleFactor:0.00} + sea " +
+                    $"{SeaFightMath.TensionPerSec(SeaFightMath.CozySeaCeiling01, sea.SeaFightFactor):0.000} " +
+                    $"vs ease {def.tensionFallPerSec:0.00}). Raise tensionFallPerSec, or lower " +
+                    "runTensionPressure/Strength — ordinary weather must stay dependable.");
+            }
+        }
+
+        [Test]
+        public void AStorm_HasTeethForTheStrongFish()
+        {
+            // The owner asked for real teeth, and the shape matters: a gale should be able to take a good
+            // fish off you, while a small one stays landable — a mackerel becoming impossible in weather
+            // would read as frustration, not danger.
+            var sea = SeaFishingSettings.Default;
+            int toothy = 0;
+            foreach ((string path, RodFightDef def) in AuthoredDefs())
+            {
+                float effectiveRun = RodFightStrength.EffectiveRunPressure(def.runTensionPressure, def.Strength);
+                if (SeaFightMath.AStormCanBeatYou(effectiveRun, sea.SeaFightFactor, def.tensionFallPerSec))
+                    toothy++;
+            }
+            Assert.Greater(toothy, 0,
+                "no authored fish can be beaten even by a full storm — the weather has been tuned back " +
+                "into decoration, which is exactly what this change set exists to fix");
         }
 
         [Test]

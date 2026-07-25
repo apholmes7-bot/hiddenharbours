@@ -105,6 +105,32 @@ namespace HiddenHarbours.Boats
             return -maxSteerDegrees + (2f * maxSteerDegrees * col) / (columns - 1);
         }
 
+        /// <summary>
+        /// <b>The steer angle a CONTINUOUS position stands for</b> — <see cref="SteerDegreesForColumn"/>
+        /// with the rounding taken out (ADR 0022 phase 7).
+        ///
+        /// <para><b>Why this exists.</b> <see cref="StepTowardColumn"/> has always carried the drawn
+        /// swivel as a float; the sprite path then quantised it to the nearest of nine baked columns
+        /// because nine cells was all the art had. A mesh engine has no cells, so it reads the same
+        /// accumulator — the same tuned cadence, the same deadzone, the same authority the owner
+        /// signed off — at the position it is actually at. Exactly what #243 did for the hull's wave
+        /// rock and what <see cref="DoryOarMeshPose.Row"/> does for the stroke.</para>
+        ///
+        /// <para>Agrees with <see cref="SteerDegreesForColumn"/> at every integer position by
+        /// construction (same affine map), so the two representations of one engine can never
+        /// disagree about where hard-over is. Out-of-range positions clamp rather than extrapolate,
+        /// and a non-finite one reads dead ahead.</para>
+        /// </summary>
+        public static float SteerDegreesForPosition(float position, int steerColumns, float maxSteerDegrees)
+        {
+            int columns = Mathf.Max(1, steerColumns);
+            if (columns == 1) return 0f;
+            if (float.IsNaN(position)) return 0f;
+
+            float p = Mathf.Clamp(position, 0f, columns - 1);
+            return -maxSteerDegrees + (2f * maxSteerDegrees * p) / (columns - 1);
+        }
+
         /// <summary>The inverse of <see cref="SteerDegreesForColumn"/>: the column that best draws a steer
         /// angle. Rounds to the NEAREST column and clamps to the sheet, so a hard-over beyond the sheet's
         /// authority pins at the extreme instead of indexing off the end.</summary>

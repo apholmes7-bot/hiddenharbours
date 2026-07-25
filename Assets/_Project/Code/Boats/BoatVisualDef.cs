@@ -168,6 +168,16 @@ namespace HiddenHarbours.Boats
                  "kit ships one.")]
         public OutboardMotorLayer.MotorFit MotorFit = OutboardMotorLayer.MotorFit.Single;
 
+        [Tooltip("The baked OUTBOARD as a mesh fitting (ADR 0022 phase 7), for Variant = Mesh. One " +
+                 "field whatever the fit: a Twin is this SAME def instantiated once per entry of its " +
+                 "LateralMountsMeters (±0.34 m), so there is no second engine asset and no " +
+                 "draw-the-far-one-first rule — a fitting parented to a mesh hull writes the same " +
+                 "depth buffer. Produced by Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull " +
+                 "fittings, which also wires this field. Ignored while Variant = Sprite, so a hull " +
+                 "may carry both this and the sheets above — which is what keeps the owner's V-key " +
+                 "A/B covering the whole boat.")]
+        public HiddenHarbours.Core.HullPropMeshDef MotorMesh = null;
+
         [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
         [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
                  "stiffer), Sport 3.8 (light glass hull, livelier), Punt 4.2 (beamier than the dory, so a " +
@@ -249,6 +259,19 @@ namespace HiddenHarbours.Boats
         public bool HasOarMeshes() =>
             OarPortMesh != null && OarPortMesh.IsUsable() &&
             OarStarMesh != null && OarStarMesh.IsUsable();
+
+        /// <summary>
+        /// True when this visual's OUTBOARD is wired as a usable mesh fitting (ADR 0022 phase 7) —
+        /// the gate the skinner's mesh branch bolts the engine behind, and the condition that lifted
+        /// the punt's and both skiffs' phase-6 block.
+        ///
+        /// <para>Deliberately independent of <see cref="HasFullCompass"/> and of
+        /// <see cref="MotorFit"/>: a fitting is posed by rotation rather than indexed by facing, and
+        /// the twin is the same def instantiated twice
+        /// (<see cref="HiddenHarbours.Core.HullPropMeshDef.MountsForFit"/>),
+        /// so one usable def is the whole requirement either way.</para>
+        /// </summary>
+        public bool HasMotorMesh() => MotorMesh != null && MotorMesh.IsUsable();
 
         /// <summary>
         /// True when BOTH motor sheets give their full heading×column grid — the gate

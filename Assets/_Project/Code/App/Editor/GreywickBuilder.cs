@@ -570,6 +570,7 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset"),
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset"),
+                AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset"),
             }.Where(f => f != null).Cast<Object>().ToArray();
             if (rodFish.Length > 0) SetRefArray(fishing, "_regionFish", rodFish);
             else Debug.LogWarning("[GreywickBuilder] No rod species assets found under " + DataFish +
