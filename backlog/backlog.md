@@ -239,30 +239,52 @@
 | M2-37 | Deck & washboard boarding (Space to climb) | gameplay-systems + art-pipeline | Walkable `DECK`/`WASHBOARD` polygons come from the **rig export** (ADR 0022 mechanism); Space climbs on/off where the hull supports it | Rig-data → Def, no hand transcription; deck rides the wave field under the player; no prompt on hulls without washboards (`deck-boarding-cleats-and-interact-capture` §2–3) |
 | M2-38 | Cleats, ropes & toss-a-line mooring | gameplay-systems + world-content | Per-hull named `CLEATS` (rig data) + shore cleats; grab a line and **toss it with the fishing-cast verb**; made fast = the boat holds | Toss reuses the cast verb; a made-fast line constrains tide/wind drift (sim keeps computing); cozy fail = slipped loop, coil and retry (`deck-boarding-cleats-and-interact-capture` §3) |
 
-### Epic M2-J — Buildings & the built waterfront (P2/P4) (`art-pipeline` / `gameplay-systems` / `economy-sim`)
-> The owner's 2026 directive: **the wharf kit's elements become gameplay.** `docs/art/rigs/wharfKitRig.js`
-> is already a parametric tile kit — four materials (`float`, `lowpier`, `tallpier`, `quay`) with per-tile
-> edge options (`open` sides, 45° `cut` corners, `inner` concave corners, float bob `frame`) — but it is
-> **not in `RigCatalog` and has never been baked**; scenes use a single flat `WharfDeck.png`. Those same
-> parameters are what a *player-facing* build verb needs, so the kit is the building system's tileset,
-> already written.
+### Epic M2-J — Wharf buildings & the built waterfront (P2/P4) (`art-pipeline` / `gameplay-systems` / `economy-sim`)
+> The owner's 2026 directive: **the wharf-building rig's elements become gameplay**, and industrial
+> freezing arrives when the player starts buying buildings.
 >
-> **The design that makes this serve P1 rather than decorate:** the four materials are not cosmetic, they
-> are answers to **water depth and tidal range**. A float rides the tide; a low pier suits a modest range; a
-> tall pier stands clear of a big drop; a quay is a solid wall for deep, dredged water. So *"what can I build
-> here?"* becomes a **tide question**, answered by the seam that already exists —
-> `Core.TidalExposure` / `IEnvironmentService.WaterLevelAt` (ADR 0009/0014).
+> **`docs/art/rigs/wharfBuildingRig.js` is a parametric building generator, and its presets are already the
+> business ladder:** `netShed` / `redShed` / `tealShack` (**shack**) → `gambrelBarn` / **`iceHouse`**
+> (**storage**) → `fishPlant` / `cannery` (**processing**). That is net shed → cold store → cannery: P4's
+> whole arc, pre-authored. It is **not in `RigCatalog` and has never been baked** — no building rig is
+> (`houseIsoRig`, `lighthouseIso` likewise); every building in the game today is a hand-made sprite.
 >
-> **Persistence is already precedented:** ADR 0020 (`PlacedTraps`) established *store only irreducible
-> facts, recompute the rest*. A placed wharf tile is the same shape — `(material, grid cell, region)`. The
-> edge flags must be **recomputed from neighbours at load, never saved** (rule 5): save the occupancy, not
-> the autotiled appearance.
+> **Its builder surface is the building's data schema, not art options.** `type`, `shape`, `size`, `siding`,
+> `base`, `body`, `roof`, `door`, `windows`, `cupola`, `dock`, `hvac`, `stacks`, `vents`, `sign`, `boom`,
+> `weather`, `night`. Several of those are *already gameplay state*:
+> - **`size` 0..1** → capacity / throughput. The upgrade axis.
+> - **`weather` 0..1** → **condition**. Buildings decay and want maintenance — and `RepairLedger` already
+>   does exactly this for the damaged dory.
+> - **`night` + lit windows** → is it **running**? A dark plant is idle; a lit one is working.
+> - **`stacks` 0..3 + smoke** → **visible production**. Smoke from your own stack is the best "the business
+>   runs without me" tell there is (P3 + P4 in one image).
+> - **`dock`** (raised loading dock + roll-up bays) and **`boom`** (roof hoist) → where boats unload; the
+>   winch line M2-33 already opened.
+> - **`sign`** — the rig ships a *blank* gable sign board, "letter it separately". **The player names their
+>   business.**
+> - **`body`** → livery: your buildings match each other.
+>
+> **The runtime seam is pre-built.** `anchors(dir, opts)` returns `{stacks[], door, ridge, Wd, Ln}` in cell
+> px — attachment points for the smoke, glow and label layers. So smoke emitters and door interactables are
+> **read from rig data, never hand-placed**: the same rule ADR 0022 set for hull props and M2-37 for deck
+> polygons. **Rig data → Def, no hand transcription.**
+>
+> **And the two wharf rigs compose:** `wharfBuildingRig`'s own header says *"Buildings sit true on the Wharf
+> tile kit."* So decking-as-frontage (M2-45) is an art-side invariant already, not something to invent.
+>
+> **Persistence is precedented:** ADR 0020 (`PlacedTraps`) established *store only irreducible facts,
+> recompute the rest*. A sited building is `(defId, cell, region)` + its mutable state (condition, running);
+> its **appearance is recomputed from the Def**, never saved.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M2-40 | Bake the parametric wharf kit | art-pipeline | Add `wharfKitRig` to `RigCatalog`; bake all four materials × edge configurations; retire the flat `WharfDeck` tile | Every material/edge/corner variant bakes; **authored** wharves in the region scenes rebuild from the kit (so the player-built version later is the same tiles, not a second system); PPU=32 + waterline foam hold |
-| M2-41 | Player-built wharf (the first building verb) | gameplay-systems + economy-sim | Buy wharf tiles and **place them on a grid over water**; edges/corners autotile from neighbours; structures persist | Material choice **gated by water depth + tidal range** (P1 — a float where it's deep, a quay only where dredged); placement uses the M2-39 interact verb; persists on the ADR 0020 pattern (occupancy saved, edge flags recomputed); a built wharf is a real dock — boats moor and sell there |
-| M2-42 | What a wharf carries | economy-sim + world-content | Built decking becomes **frontage**: sites you can then site a shed/stall/store on (the hook M2-22's processing and M2-21's cold storage attach to) | A wharf tile can host one placed structure; capacity/adjacency rules are data; nothing hosts until its own item lands (inert-stub pattern) |
+| M2-40 | Bake the wharf-building rig | art-pipeline | Add `wharfBuildingRig` to `RigCatalog`; bake the preset ladder across all 8 facings; export `anchors` alongside the sheets | All 7 presets bake at PPU=32 on the shared ¾ camera; **`anchors` ships as data** (stacks/door/ridge), not transcribed by hand; a building sits true on wharf-kit decking |
+| M2-41 | `WharfBuildingDef` — the rig surface as data | lead-architect + economy-sim | One SO per building mirroring the rig axes (`type`/`size`/`body`/`sign`/`dock`/`stacks`…), plus cost, capacity and what it *does* | Authoring a new building = a new asset, no code (ADR 0003); the visual axes and the gameplay axes are **one** schema, so a bigger `size` really is more capacity; ids append-only |
+| M2-42 | Buy & site a building (the ownership beat) | gameplay-systems + economy-sim | Purchase from the ladder, site it on wharf frontage, **name it** (the rig's blank sign) | Siting uses the M2-39 interact verb; persists on the ADR 0020 pattern (`defId`, cell, region + state; appearance recomputed); insufficient funds blocks gracefully; the sign carries the player's name for it |
+| M2-43 | Buildings run, and wear | gameplay-systems + economy-sim | **Running** state drives lit windows + stack smoke; `weather` accrues as condition; maintenance restores it | You can tell at a glance across the harbour which of your buildings are working; condition decays deterministically and is repaired through the `RepairLedger` pattern; neglect costs throughput, never the building |
+| M2-44 | The ladder's rungs do their jobs | economy-sim | **shack** = gear/net store · **storage/`iceHouse`** = the industrial cold store (M2-21's terminus) · **processing/`fishPlant`,`cannery`** = M2-22's salt house/smokehouse home | Each type unlocks the function its preset promises; the ice house is what finally makes holding stock to time the market a strategy; recipes/capacity are data |
+| M2-45 | Player-built wharf decking | gameplay-systems + economy-sim | Buy and place `wharfKitRig` tiles over water; edges/corners autotile from neighbours; the deck is the **frontage** buildings site onto | Material **gated by water depth + tidal range** (P1 — a float where it's deep, a quay only where dredged; `Core.TidalExposure`/`WaterLevelAt`, ADR 0009/0014); occupancy saved, **edge flags recomputed at load, never stored** (rule 5); a built wharf is a real dock — boats moor and sell there |
+| M2-46 | Bake the wharf tile kit | art-pipeline | Add `wharfKitRig` to `RigCatalog`; bake four materials × edge configurations; retire the flat `WharfDeck` tile | Every material/edge/corner variant bakes; **authored** wharves rebuild from the kit so the player-built version later is the same tiles, not a second system; waterline foam holds |
 
 ---
 
