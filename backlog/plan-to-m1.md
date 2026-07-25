@@ -1,7 +1,7 @@
 # Hidden Harbours — The Plan to M1
 
 > **Status:** Working plan. Rewritten 2026-07-24 after the owner's M1 reframe (see §1). Audited against
-> `main` @ `9df75c6`.
+> `main` @ `9df75c6`; §7.7 re-checked against `16ee546` (ADR 0022 phase 7 complete).
 > **Canon:** [`../docs/vision-and-pillars.md`](../docs/vision-and-pillars.md) wins on any conflict, then
 > [`../CLAUDE.md`](../CLAUDE.md), then this file.
 > **What this is:** the M1 the game actually wants — a **world-first** vertical slice on St Peters Island —
@@ -313,8 +313,8 @@ Cut to what the new arc actually requires, in priority order:
 5. Sell-screen chalkboard skin — keep, it's cheap and it sells the diegetic promise.
 
 ### 7.7 · The dory's outboard — `art-pipeline` (+ `art-director`) + `gameplay-systems`
-**The slice's climax rung has an art dependency that does not exist yet.** Worth stating plainly, because
-everything around it is done and it would be easy to assume the motor is too.
+**Mostly delivered by ADR 0022 phase 7 while this plan was being written.** What is left is a dory-sized
+motor mesh, three lines of data, and one wire.
 
 **What's already there — and it's the hard part.** The dory is a **mesh hull**: `DoryIso.asset` binds
 `HullMesh` → `DoryIsoHullMesh.asset` (ADR 0022 phases 6–7). Her **oars are real prop meshes**
@@ -324,26 +324,27 @@ problem an outboard actually has on a 4.5 m boat: per `DoryOarMeshLayer`'s own n
 parented to the hull's **posed** mesh child and so **inherits roll, pitch and heave for free**, where the
 sprite oars needed five hand-tuned rock-coupling knobs to keep an overlay on the gunwale.
 
-**What's missing.** The outboard is **sprite-only**. `OutboardMotorLayer` composites two baked sheets
-(`MotorLower`/`MotorUpper`) on a 9-column heading×steer grid and parents under `DirectionalBoatSprite` — the
-*sprite* presenter. It was built for the skiffs and the punt and cannot hang on a mesh hull. `HullProps/`
-contains only the two dory oars. The dory's `MotorLower`/`MotorUpper` are empty, and her
-`MotorMountLocalMeters` is the **skiff default** that 12 of 14 visuals carry unchanged — only the Punt's
-(`-2.63, 0.56`) is genuinely authored. There is no dory transom mount.
+**What landed while this plan was being written.** ADR 0022 **phase 7 completed** on `main` (#286,
+`16ee546`) and it did most of this item:
 
-**The work — four pieces, all on a trodden path:**
-1. Bake an outboard **prop mesh** through `RigPropMeshBaker`. `docs/art/rigs/skiffMotorRig.js` is the existing
-   source; a small **kicker** suits a 4.5 m dory better than the skiffs' four-stroke, and reads right for a
-   secondhand motor bought off a wharf.
-2. A **mesh motor layer** posing it from helm state — reusing `OutboardMotorMath`'s steer arithmetic exactly
-   as `DoryOarMeshLayer` reuses `DoryOarMath`. **One state machine, not two** (the codebase is explicit about
-   this, and for good reason: the owner A/Bs sprite against mesh and a second transcription would quietly
-   make him compare two different boats).
-3. A real **transom mount** authored on `DoryIso.asset`.
-4. **Oars ship when the motor runs.** `DoryOarMath` already carries a shipped state — wire it, don't rebuild it.
+- **`OutboardMotorMeshLayer`** + **`OutboardMotorMeshPose`** exist — the mesh motor layer, and it reuses
+  `OutboardMotorMath` throughout (one state machine, not two, exactly as the codebase requires).
+- **Four outboard prop meshes are baked**: `PuntMotorBasic`, `PuntMotorUpgraded`, `SkiffMotorSport`,
+  `SkiffMotorWork`.
+- **`BoatVisualDef` gained a `MotorMesh` field**, and the dory's asset now carries the slot.
 
-This is the **visual half of D8**: `boat.dory_outboard` flips `Propulsion` Oars→Engine, and the visual swap is
-"bind the motor prop mesh, ship the oars."
+**What is actually left — much smaller than it was:**
+1. **A motor mesh suited to the dory.** All four baked motors are punt/skiff four-strokes; a 4.5 m dory
+   wants a small **kicker**, which also reads right for something bought secondhand off a wharf. (Reusing a
+   punt motor at reduced scale is the cheap fallback if the owner would rather not bake a fifth.)
+2. **Assign it** — `DoryIso.asset` has `MotorMesh: {fileID: 0}`, i.e. the slot is there and empty.
+3. **A real transom mount.** `MotorMountLocalMeters` is still the skiff default `(0, -3.53, 0.72)` that 12
+   of 14 visuals carry unchanged; only the Punt's is genuinely authored.
+4. **Ship the oars when the motor runs.** `DoryOarMath` already carries a shipped state — wire it, don't
+   rebuild it.
+
+This is the **visual half of D8**: `boat.dory_outboard` flips `Propulsion` Oars→Engine, and the visual swap
+is "bind the motor mesh, ship the oars."
 
 - **Exit:** the repaired dory wears a secondhand kicker that swivels with the helm and rides the wave field
   with the hull; cutting the motor ships the oars back out; the sprite path is untouched.
