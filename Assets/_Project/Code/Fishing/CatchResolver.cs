@@ -233,6 +233,24 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Roll a catch weight within the species' size range.</summary>
         public static float RollWeight(FishSpeciesDef f, System.Random rng)
-            => f.MinWeightKg + (float)rng.NextDouble() * (f.MaxWeightKg - f.MinWeightKg);
+            => RollWeight(f, rng, seaWeightBias01: 0f);
+
+        /// <summary>
+        /// Roll a catch weight, with the SEA leaning it toward the top of the species' range (owner's
+        /// ruling 2026-07-25 — the better fish come up to feed in broken water, the reward that makes a
+        /// harder sea worth fishing). <paramref name="seaWeightBias01"/> comes from
+        /// <see cref="SeaFightMath.WeightBias01"/>; at 0 — a flat calm, or the owner's dial off — this is
+        /// bit-for-bit the plain uniform roll above.
+        ///
+        /// <para>The bias reshapes the SAME single <c>NextDouble</c> draw rather than adding another
+        /// (rule 5: the RNG stream is untouched, so a seeded catch still replays), and it is one-sided —
+        /// a calm sea never makes fish SMALLER than the authored range says.</para>
+        /// </summary>
+        public static float RollWeight(FishSpeciesDef f, System.Random rng, float seaWeightBias01)
+        {
+            float uniform = (float)rng.NextDouble();
+            float biased = SeaFightMath.BiasedWeight01(uniform, seaWeightBias01);
+            return f.MinWeightKg + biased * (f.MaxWeightKg - f.MinWeightKg);
+        }
     }
 }
