@@ -1,0 +1,1108 @@
+{
+ "tileset": "Hidden Harbours Wharf Kit",
+ "grid": "square 32x32 near-plan, camera from south (S/diagonal faces visible)",
+ "tile": 32,
+ "cellH": 56,
+ "deckH": 32,
+ "faceH": 24,
+ "pivot": "cell top-left aligns to tile screen origin (deck fills rows 0-31; face overhangs rows 32+ downward over water/tile below)",
+ "materials": {
+  "float": "grey planks + yellow safety curb, floats (4-frame bob loop f0..f3)",
+  "lowpier": "~1m brown landing stage, slim piles",
+  "tallpier": "~1.6m brown pier, piles+underdeck shadow+reflections",
+  "quay": "concrete deck, timber curb, tide-stained face + algae + waterline foam"
+ },
+ "variants": {
+  "ctr": "center (no open sides)",
+  "edN": "straight N edge",
+  "edE": "E",
+  "edS": "S (face)",
+  "edW": "W",
+  "coNE": "outer corner",
+  "coSE": "",
+  "coSW": "",
+  "coNW": "",
+  "capN": "end cap (3 sides open)",
+  "capS": "",
+  "capE": "",
+  "capW": "",
+  "diNE": "45° diagonal edge (corner cut)",
+  "diSE": "",
+  "diSW": "",
+  "diNW": ""
+ },
+ "bob": "float rows f0..f3 = 4-frame heave loop, play ~6fps; offsets 0,-1,0,+1 px",
+ "frames": {
+  "quay.ctr": {
+   "x": 0,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "ctr",
+   "frame": null
+  },
+  "quay.edN": {
+   "x": 32,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "edN",
+   "frame": null
+  },
+  "quay.edE": {
+   "x": 64,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "edE",
+   "frame": null
+  },
+  "quay.edS": {
+   "x": 96,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "edS",
+   "frame": null
+  },
+  "quay.edW": {
+   "x": 128,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "edW",
+   "frame": null
+  },
+  "quay.coNE": {
+   "x": 160,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "coNE",
+   "frame": null
+  },
+  "quay.coSE": {
+   "x": 192,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "coSE",
+   "frame": null
+  },
+  "quay.coSW": {
+   "x": 224,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "coSW",
+   "frame": null
+  },
+  "quay.coNW": {
+   "x": 256,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "coNW",
+   "frame": null
+  },
+  "quay.capN": {
+   "x": 288,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "capN",
+   "frame": null
+  },
+  "quay.capS": {
+   "x": 320,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "capS",
+   "frame": null
+  },
+  "quay.capE": {
+   "x": 352,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "capE",
+   "frame": null
+  },
+  "quay.capW": {
+   "x": 384,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "capW",
+   "frame": null
+  },
+  "quay.diNE": {
+   "x": 416,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "diNE",
+   "frame": null
+  },
+  "quay.diSE": {
+   "x": 448,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "diSE",
+   "frame": null
+  },
+  "quay.diSW": {
+   "x": 480,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "diSW",
+   "frame": null
+  },
+  "quay.diNW": {
+   "x": 512,
+   "y": 0,
+   "w": 32,
+   "h": 56,
+   "material": "quay",
+   "variant": "diNW",
+   "frame": null
+  },
+  "lowpier.ctr": {
+   "x": 0,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "ctr",
+   "frame": null
+  },
+  "lowpier.edN": {
+   "x": 32,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "edN",
+   "frame": null
+  },
+  "lowpier.edE": {
+   "x": 64,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "edE",
+   "frame": null
+  },
+  "lowpier.edS": {
+   "x": 96,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "edS",
+   "frame": null
+  },
+  "lowpier.edW": {
+   "x": 128,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "edW",
+   "frame": null
+  },
+  "lowpier.coNE": {
+   "x": 160,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "coNE",
+   "frame": null
+  },
+  "lowpier.coSE": {
+   "x": 192,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "coSE",
+   "frame": null
+  },
+  "lowpier.coSW": {
+   "x": 224,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "coSW",
+   "frame": null
+  },
+  "lowpier.coNW": {
+   "x": 256,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "coNW",
+   "frame": null
+  },
+  "lowpier.capN": {
+   "x": 288,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "capN",
+   "frame": null
+  },
+  "lowpier.capS": {
+   "x": 320,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "capS",
+   "frame": null
+  },
+  "lowpier.capE": {
+   "x": 352,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "capE",
+   "frame": null
+  },
+  "lowpier.capW": {
+   "x": 384,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "capW",
+   "frame": null
+  },
+  "lowpier.diNE": {
+   "x": 416,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "diNE",
+   "frame": null
+  },
+  "lowpier.diSE": {
+   "x": 448,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "diSE",
+   "frame": null
+  },
+  "lowpier.diSW": {
+   "x": 480,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "diSW",
+   "frame": null
+  },
+  "lowpier.diNW": {
+   "x": 512,
+   "y": 56,
+   "w": 32,
+   "h": 56,
+   "material": "lowpier",
+   "variant": "diNW",
+   "frame": null
+  },
+  "tallpier.ctr": {
+   "x": 0,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "ctr",
+   "frame": null
+  },
+  "tallpier.edN": {
+   "x": 32,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "edN",
+   "frame": null
+  },
+  "tallpier.edE": {
+   "x": 64,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "edE",
+   "frame": null
+  },
+  "tallpier.edS": {
+   "x": 96,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "edS",
+   "frame": null
+  },
+  "tallpier.edW": {
+   "x": 128,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "edW",
+   "frame": null
+  },
+  "tallpier.coNE": {
+   "x": 160,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "coNE",
+   "frame": null
+  },
+  "tallpier.coSE": {
+   "x": 192,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "coSE",
+   "frame": null
+  },
+  "tallpier.coSW": {
+   "x": 224,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "coSW",
+   "frame": null
+  },
+  "tallpier.coNW": {
+   "x": 256,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "coNW",
+   "frame": null
+  },
+  "tallpier.capN": {
+   "x": 288,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "capN",
+   "frame": null
+  },
+  "tallpier.capS": {
+   "x": 320,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "capS",
+   "frame": null
+  },
+  "tallpier.capE": {
+   "x": 352,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "capE",
+   "frame": null
+  },
+  "tallpier.capW": {
+   "x": 384,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "capW",
+   "frame": null
+  },
+  "tallpier.diNE": {
+   "x": 416,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "diNE",
+   "frame": null
+  },
+  "tallpier.diSE": {
+   "x": 448,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "diSE",
+   "frame": null
+  },
+  "tallpier.diSW": {
+   "x": 480,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "diSW",
+   "frame": null
+  },
+  "tallpier.diNW": {
+   "x": 512,
+   "y": 112,
+   "w": 32,
+   "h": 56,
+   "material": "tallpier",
+   "variant": "diNW",
+   "frame": null
+  },
+  "float.ctr.f0": {
+   "x": 0,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "ctr",
+   "frame": 0
+  },
+  "float.edN.f0": {
+   "x": 32,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edN",
+   "frame": 0
+  },
+  "float.edE.f0": {
+   "x": 64,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edE",
+   "frame": 0
+  },
+  "float.edS.f0": {
+   "x": 96,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edS",
+   "frame": 0
+  },
+  "float.edW.f0": {
+   "x": 128,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edW",
+   "frame": 0
+  },
+  "float.coNE.f0": {
+   "x": 160,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNE",
+   "frame": 0
+  },
+  "float.coSE.f0": {
+   "x": 192,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSE",
+   "frame": 0
+  },
+  "float.coSW.f0": {
+   "x": 224,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSW",
+   "frame": 0
+  },
+  "float.coNW.f0": {
+   "x": 256,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNW",
+   "frame": 0
+  },
+  "float.capN.f0": {
+   "x": 288,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capN",
+   "frame": 0
+  },
+  "float.capS.f0": {
+   "x": 320,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capS",
+   "frame": 0
+  },
+  "float.capE.f0": {
+   "x": 352,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capE",
+   "frame": 0
+  },
+  "float.capW.f0": {
+   "x": 384,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capW",
+   "frame": 0
+  },
+  "float.diNE.f0": {
+   "x": 416,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNE",
+   "frame": 0
+  },
+  "float.diSE.f0": {
+   "x": 448,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSE",
+   "frame": 0
+  },
+  "float.diSW.f0": {
+   "x": 480,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSW",
+   "frame": 0
+  },
+  "float.diNW.f0": {
+   "x": 512,
+   "y": 168,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNW",
+   "frame": 0
+  },
+  "float.ctr.f1": {
+   "x": 0,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "ctr",
+   "frame": 1
+  },
+  "float.edN.f1": {
+   "x": 32,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edN",
+   "frame": 1
+  },
+  "float.edE.f1": {
+   "x": 64,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edE",
+   "frame": 1
+  },
+  "float.edS.f1": {
+   "x": 96,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edS",
+   "frame": 1
+  },
+  "float.edW.f1": {
+   "x": 128,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edW",
+   "frame": 1
+  },
+  "float.coNE.f1": {
+   "x": 160,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNE",
+   "frame": 1
+  },
+  "float.coSE.f1": {
+   "x": 192,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSE",
+   "frame": 1
+  },
+  "float.coSW.f1": {
+   "x": 224,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSW",
+   "frame": 1
+  },
+  "float.coNW.f1": {
+   "x": 256,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNW",
+   "frame": 1
+  },
+  "float.capN.f1": {
+   "x": 288,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capN",
+   "frame": 1
+  },
+  "float.capS.f1": {
+   "x": 320,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capS",
+   "frame": 1
+  },
+  "float.capE.f1": {
+   "x": 352,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capE",
+   "frame": 1
+  },
+  "float.capW.f1": {
+   "x": 384,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capW",
+   "frame": 1
+  },
+  "float.diNE.f1": {
+   "x": 416,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNE",
+   "frame": 1
+  },
+  "float.diSE.f1": {
+   "x": 448,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSE",
+   "frame": 1
+  },
+  "float.diSW.f1": {
+   "x": 480,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSW",
+   "frame": 1
+  },
+  "float.diNW.f1": {
+   "x": 512,
+   "y": 224,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNW",
+   "frame": 1
+  },
+  "float.ctr.f2": {
+   "x": 0,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "ctr",
+   "frame": 2
+  },
+  "float.edN.f2": {
+   "x": 32,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edN",
+   "frame": 2
+  },
+  "float.edE.f2": {
+   "x": 64,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edE",
+   "frame": 2
+  },
+  "float.edS.f2": {
+   "x": 96,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edS",
+   "frame": 2
+  },
+  "float.edW.f2": {
+   "x": 128,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edW",
+   "frame": 2
+  },
+  "float.coNE.f2": {
+   "x": 160,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNE",
+   "frame": 2
+  },
+  "float.coSE.f2": {
+   "x": 192,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSE",
+   "frame": 2
+  },
+  "float.coSW.f2": {
+   "x": 224,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSW",
+   "frame": 2
+  },
+  "float.coNW.f2": {
+   "x": 256,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNW",
+   "frame": 2
+  },
+  "float.capN.f2": {
+   "x": 288,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capN",
+   "frame": 2
+  },
+  "float.capS.f2": {
+   "x": 320,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capS",
+   "frame": 2
+  },
+  "float.capE.f2": {
+   "x": 352,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capE",
+   "frame": 2
+  },
+  "float.capW.f2": {
+   "x": 384,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capW",
+   "frame": 2
+  },
+  "float.diNE.f2": {
+   "x": 416,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNE",
+   "frame": 2
+  },
+  "float.diSE.f2": {
+   "x": 448,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSE",
+   "frame": 2
+  },
+  "float.diSW.f2": {
+   "x": 480,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSW",
+   "frame": 2
+  },
+  "float.diNW.f2": {
+   "x": 512,
+   "y": 280,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNW",
+   "frame": 2
+  },
+  "float.ctr.f3": {
+   "x": 0,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "ctr",
+   "frame": 3
+  },
+  "float.edN.f3": {
+   "x": 32,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edN",
+   "frame": 3
+  },
+  "float.edE.f3": {
+   "x": 64,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edE",
+   "frame": 3
+  },
+  "float.edS.f3": {
+   "x": 96,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edS",
+   "frame": 3
+  },
+  "float.edW.f3": {
+   "x": 128,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "edW",
+   "frame": 3
+  },
+  "float.coNE.f3": {
+   "x": 160,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNE",
+   "frame": 3
+  },
+  "float.coSE.f3": {
+   "x": 192,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSE",
+   "frame": 3
+  },
+  "float.coSW.f3": {
+   "x": 224,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coSW",
+   "frame": 3
+  },
+  "float.coNW.f3": {
+   "x": 256,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "coNW",
+   "frame": 3
+  },
+  "float.capN.f3": {
+   "x": 288,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capN",
+   "frame": 3
+  },
+  "float.capS.f3": {
+   "x": 320,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capS",
+   "frame": 3
+  },
+  "float.capE.f3": {
+   "x": 352,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capE",
+   "frame": 3
+  },
+  "float.capW.f3": {
+   "x": 384,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "capW",
+   "frame": 3
+  },
+  "float.diNE.f3": {
+   "x": 416,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNE",
+   "frame": 3
+  },
+  "float.diSE.f3": {
+   "x": 448,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSE",
+   "frame": 3
+  },
+  "float.diSW.f3": {
+   "x": 480,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diSW",
+   "frame": 3
+  },
+  "float.diNW.f3": {
+   "x": 512,
+   "y": 336,
+   "w": 32,
+   "h": 56,
+   "material": "float",
+   "variant": "diNW",
+   "frame": 3
+  }
+ }
+}

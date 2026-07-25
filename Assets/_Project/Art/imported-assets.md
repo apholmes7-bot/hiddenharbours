@@ -616,3 +616,201 @@ should be authored against these.
 tool, prefab or scene references these yet. `TileAssetBuilder`/`TilePaletteBuilder` still build the
 older loose tileset, untouched. Standing up the ISO ground/fringe rule-tiles and the road blob-47
 autotiler is the next step and belongs with the world-scene work, not with the import.
+
+---
+
+## Batch — Wharf / dock tile kit (owner drop 2026-07-23)
+
+The working waterfront's **deck**: near-plan 32×32 tiles that sit in the ground plane like `Grass.png`,
+plus the mooring hardware and the shore-armour arms. Same 32 px = 1 m / no-AA / upper-left key standard
+as the fleet, so buildings, boats and deck all register.
+
+### ⚠️ The cell is 32×**56**, and that is the whole contract
+
+The camera looks from the **south**, so a south-facing deck edge drops a visible **vertical face** over
+the water. The top **32 rows are the deck** (the tile proper); the bottom **24 are face + waterline
+foam**, and they **overhang downward over whatever is drawn in the cell below**.
+
+Two consequences, both easy to get wrong and both loud once you do:
+
+- **The atlas pivots TOP-LEFT**, not centre — the sidecar's "cell top-left aligns to tile screen origin".
+  Centre is the right pivot for every other tile sheet in this repo and it is wrong here: it would sink
+  every wharf tile 12 px into the water, consistently enough to look like an art bug rather than an
+  import one.
+- **Whatever draws these must paint BACK TO FRONT** (north rows first), or a face will overdraw the deck
+  of its own southern neighbour.
+
+N/E/W open edges get a raised curb only — the tall face is south + the SE/SW diagonals. That is a
+single-camera convention, and it means a thin finger pier reads best running **N–S**.
+
+### Sheets
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Tilesets/Wharf/WharfAtlas.png` | 544×392 | 17 cols × 7 rows of **32×56** | 119 | quay · lowpier · tallpier · **float f0–f3** |
+| `Tilesets/Wharf/WharfBreakwaters.png` | 144×240 | 3 × 4 of **48×60** | 12 | riprap · crib · wall · sheet |
+| `Tilesets/Wharf/WharfOverlays.png` | 520×41 | **packed, irregular** | 14 | rails · cleat · bollard · ring · dolphin · ladder · tyre · pile head · gangway |
+
+- **Atlas columns** are the 17-piece auto-tile set: `ctr` · 4 edges · 4 outer corners · 4 end caps
+  (three sides open) · 4 diagonal 45° cuts. An "open" side is one that drops to water.
+- **`float` is ONE material occupying FOUR rows** — a 4-frame bob loop (f0–f3, ±1 px heave at ~6 fps,
+  offsets 0, −1, 0, +1). The three fixed materials have no frames. `WharfKitCatalog.AtlasRow` throws if
+  you ask a concrete quay for a bob frame, because a caller animating a quay has a bug.
+- **Breakwaters pivot on the CREST** (top-centre), not the base — that is what lets consecutive pieces
+  butt into a continuous run around a 45° turn, since the four armour types have different base heights
+  (the gap below each is its foam fringe).
+- **Overlays are sidecar-sliced**, because their pivots mean *different things per fitting*: standers
+  (bollard/dolphin/pile head) sit 1 px above their base — the same contact rule as the shoreline kit's
+  sea stacks; hangers (ladder/tyre/gangway) pivot at the **top** and fall away from where they attach;
+  the low flat fittings (cleat, recessed ring) project their contact point **mid-sprite**, which is
+  correct for a 7 px-tall object at a ¾ camera and not a bug; rails pivot on the **edge line** they run
+  along, which is their bottom row for an N/S run and their top for an E/W one. Wood and galvanised-pipe
+  rails are geometrically identical per run, so material is a paint decision and never a placement one.
+
+### Source rig
+
+**`docs/art/rigs/wharfKitRig.js`** → `WharfKit` — **already in the repo and unchanged** (byte-identical
+once line endings are normalised; same check as `roadPathRig`). It re-bakes the **deck tiles** — any
+material, any edge/diagonal combination, any bob frame. Overlays and breakwaters ship as baked sheets;
+edit them via their PNGs or ask the art director for a parametric rig.
+
+### ⚠️ The wharf BUILDING sheet is deliberately NOT in `Assets/`
+
+`WharfBuildingIso_shack.png` ships in the building-kit zip at **9600 × 1160** — 8 facings × a
+1200 × 1160 cell. It is reference only, and it stays under `docs/art/wharf-building-kit/`:
+
+- Unity's default cap is 2048, so it would import **silently downscaled**. Lifting the cap to hold it
+  means `NextPowerOfTwo(9600) = 16384`, i.e. a **16384 × 2048** texture ≈ **134 MB** at RGBA32 — for one
+  preset of one building.
+- The cell is oversized on purpose (it must hold the `cannery`/`fishPlant` presets), so a net shed is a
+  small object in a 37 m × 36 m frame. For comparison the 12.9 m Cape Islander bakes at 456 × 420.
+- **`wharfBuildingRig.js` is already in the repo** and is the source of truth. ✅ **The in-engine bake
+  now exists** — see the next section.
+
+### Also in this change: `MiniJson` moved down an assembly
+
+`WharfOverlays.json` is dictionary-shaped (`"frames": { "cleat": {…} }`), which `JsonUtility` cannot
+read. The repo already had a reader for exactly that case — but it lived in `HiddenHarbours.App.Editor`,
+which sits at the **top** of the editor dependency graph (it references `Art.Editor`, not the reverse),
+so nothing below it could reach it. It has moved to `HiddenHarbours.Art.Editor` with its `.meta`, and its
+two callers updated. The alternative was a second, worse JSON parser thirty lines from a good one.
+
+**WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, prefab or
+scene references these yet.
+
+
+---
+
+## The BUILDING bake — houses + wharf buildings (`BuildingRigBaker`)
+
+Both building rigs (`houseIsoRig` → the clapboard houses, `wharfBuildingRig` → net sheds, storage barns
+and fish plants) are baked **in-engine** under ADR 0021, not hand-exported. Menu:
+**Hidden Harbours ▸ Art ▸ Bake Buildings (houses + wharf)**. Twelve presets — five house, seven wharf.
+
+### Why they needed their own baker rather than `RigBaker`
+
+**The cell is sized for the largest possible build.** The house cell is 992×1060 and the wharf-building
+cell is 1200×1160, because the latter must hold the `cannery`. A net shed drawn in that cell is a small
+object in a 37 m × 36 m frame. Eight facings uncropped is 9600 px wide — which is exactly the reference
+sheet the kit shipped, and exactly why that PNG was left in `docs/` and never imported.
+
+So **the bake tight-crops**, and that is not an optimisation — it is what makes a bake possible:
+
+| | uncropped | cropped |
+|---|---|---|
+| Widest legal grid | 3 cols × 3 rows | fits far wider |
+| Sheet | 3600 × 3480 | a few hundred px per cell |
+| Texture memory | **~50 MB per preset** | a fraction of it |
+
+**One crop rect for all eight facings, not one per cell.** A grid slice needs a uniform cell — but the
+reason that actually bites is the **pivot**: it must be identical across facings or the building shifts
+as it turns (the same rule the boat kits state as "so a heading swap never shifts the boat"). The crop is
+therefore the *union* of all eight silhouettes, and the pivot moves by exactly the crop origin.
+
+**The pivot is DATA, not a constant.** Every other sheet in this repo pins its pivot with a named const
+(`DoryWaterline`, `PuntOrigin`) because the kit fixes the cell. Here the cell depends on the preset — a
+cannery crops differently from a shack — so each bake writes a **sidecar JSON** beside the PNG carrying
+the cropped cell size, the cropped pivot, the crop origin, the measured convention, the footprint, and
+the per-facing overlay anchors (door, ridge, chimney/stack tops) already in cropped-cell pixels.
+
+### ⚠️ The preset trap — `{preset:'netShed'}` silently renders the wrong building
+
+The obvious call looks right and is wrong: **neither rig's `resolve()` reads a `preset` key at all.** It
+reads `type`/`era`, `body`, `siding`, `size`… so passing the name falls through to the *default* build
+with no error and no warning — you would get seven identical sheds under seven different names, and the
+only way to notice is to line all seven up. `PRESETS` is a data table meant to be **spread** into the
+options, which is what the baker does (`Object.assign({}, Rig.PRESETS['netShed'])`).
+
+`AssertPresetApplies` is the tripwire: it renders one facing with the preset and once with `{}` and
+refuses if the bytes are identical. It cannot prove every field applied, but it catches the
+whole-preset-ignored case, which is the one with teeth.
+
+### The azimuth probe reads the DOOR, not a bow
+
+`RigAzimuthProbe` works by PCA-ing a hull at a quarter turn and breaking the 180° ambiguity with a
+bow-taper test — a boat is pointed at one end and blunt at the other. **A building has no bow.** Its
+silhouette at a quarter turn is nearly mirror-symmetric, so that probe would return noise dressed as a
+confident answer.
+
+`BuildingRigAzimuthProbe` reads the **door** instead. Both rigs put the main door on the `+Y` gable and
+expose it through `anchors(dir, opts).door`, already projected to screen pixels — and crucially
+`anchors()` calls the *same* `camBasis`/`projVert` that `render()` draws with, so it is not a
+declaration about where the door is, it is the arithmetic that puts it there. Cell 2 is labelled `'E'`;
+if its door lands left of the pivot, the labels are lying by −90° and the rig is counter-clockwise.
+
+Reading the rigs' projection by hand (`th = +dir·45°`, `xr = x·ct − y·stt`, door at `+Y`) predicts
+**counter-clockwise for both**, matching the README's inference — but that is a prediction, not a
+measurement. **Nothing is measured until the bake actually runs**, at which point it either agrees with
+the catalog or refuses.
+
+The probe additionally checks the rendered silhouette's width at two facings against the `Wd`/`Ln` the
+rig reports, at 32 px = 1 m, and **refuses** if they disagree — because the shared-projection argument
+only holds while `anchors()` and `render()` are resolving the same building.
+
+> **Stated plainly:** the handedness is *not* independently re-derived from pixels the way the punt's
+> byte-identical golden master was. There is no building feature as unambiguous as a bow taper. It rests
+> on the shared-projection argument above, guarded by the width check.
+
+### Output
+
+`Art/Sprites/Buildings/HouseIso_<preset>.png` + `.json`, and `WharfBuildingIso_<preset>.png` + `.json`.
+**Not committed until the owner runs the bake** — the sheets are generated, not authored.
+
+
+### The Building Studio — dial a build, then bake it
+
+**Hidden Harbours ▸ Art ▸ Building Studio.** The wharf rig has twenty axes and the house rig nineteen;
+the twelve shipped presets are a thin sample of that space. The studio makes the whole surface reachable
+without writing JS, and makes baking the last step rather than the only way to see anything.
+
+- **Dropdowns are read from the rig**, not hard-coded — paint colours, sidings, roofs, doors, windows,
+  cupolas, rooflines and types all come from the rig's own exported tables at load time, so a drop that
+  adds a colour appears with no code change. Only four axes have no exported table (attic, porch,
+  wainscot, loft); those are transcribed and **grepped by a test**.
+- **Load a preset** to start from a known build, then dial from there. **Bake 8-facing sheet** runs the
+  same `BuildingRigBaker` as the batch menu — same crop, same probe, same sidecar.
+- **Elevation is a preview-only dial.** The bake always uses the rig's default 40°, the fleet's turntable
+  elevation; a building baked at another camera would not sit in the same space as the boats.
+- **Orientation is shown honestly.** The preview names the cell's rig LABEL *and* the bearing it actually
+  DEPICTS. Both rigs turn counter-clockwise, so the cell the rig calls `'E'` draws a building facing
+  **west**. The bake corrects this; the studio shows raw rig output, and labelling it `'E'` alone would
+  repeat the exact mistake that has shipped five times here. The pivot (the building's ground point) is
+  drawn as a crosshair.
+
+#### ⚠️ Unknown option keys and values fail SILENTLY
+
+Both rigs resolve options as `opts[k] != null ? opts[k] : fallback` and then look the value up in a
+table. A **misspelled key** and an **unknown value** are both perfectly legal — the rig just renders
+something else, with no error and no warning. That is why the studio only ever offers values it read
+from the rig, and why every axis key is checked against the rig source by a test.
+
+**A worked example of that trap, found while building this:** the wharf rig's `TYPES`/`PRESETS` tables
+spell window density `winD`, so `winD` looks like the option key. It is not. The deciding line is
+
+```
+winD: opts.winDensity != null ? opts.winDensity : T.winD
+```
+
+— left of the colon is the internal build field, right is the option a caller passes. Dialling `winD`
+would have been accepted in silence and done nothing. **The kit README was right and the first pass at
+this table was wrong**; both rigs take `winDensity`.

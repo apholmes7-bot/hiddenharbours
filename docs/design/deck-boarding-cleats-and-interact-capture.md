@@ -68,6 +68,37 @@ build on data that already exists.
   reuses the shared wave/rock phase, same as the leave-helm gaff-haul in M2-33).
 - Extends M2-33's leave-the-helm precedent from "stand at the rail" to "walk the working deck".
 
+#### ⚠️ Not every hull is walked — the dory has STATIONS (owner-ratified, 2026-07-25)
+
+The smallest boats are not scaled-down decks; they are a different thing, and the dory's own
+geometry settles it. Measured by the art director off `doryIsoRig.js` (the sidecar's `DECK[0]._notes`
+carries the full working):
+
+- The sole is a **centreline strip: 0.45 m at its widest** (y −0.72) and **~0.25 m at the ends** —
+  **narrower than a standing stance**, so a player's weight physically cannot leave the centreline.
+- **Three full-width crossings inside 2.35 m of length** (two thwarts + the stern bench). Every seat
+  spans the sole wall-to-wall — seat half-widths are ~2× the sole's — so none is an island to walk
+  around.
+- Seats clear the floor by exactly **0.24 m** (`SEAT − FLOOR`, identical bow to stern by
+  construction): **step-overs, not walls**.
+- Sheer is only ~0.40 m above the sole amidships, and her rock loop is lively (roll 5°, pitch 3°).
+
+**Ruling: the dory is authored as STATIONS plus a move-aft transition, not free walking.** The
+supporting fact that makes this cheap as well as truthful: her two authored stations — the rowing
+position (y −0.30) and the motor position (y −1.28) — sit in **adjacent pockets separated by exactly
+one crossing** (`thwart_aft`). Fore-to-aft is *one deliberate step-over*, not four. A nav mesh with
+step-over traversal would cost more and model her worse.
+
+**⏳ Where the line falls is OPEN.** The Cape Islander and up are unambiguously walked. The punt is
+the interesting case and must be **measured, not assumed**: she is *flat-floored and beamier* (her
+`floorPt` uses the bottom width where the dory uses a narrow bilge) and her roll is stiffer (4.2° vs
+5.0°), so her sole may genuinely be walkable at 5.2 m. Same for the skiffs. **M2-37 must not design
+against "all small boats are stations" until those measurements exist.**
+
+Note this ruling is about *locomotion*, not about the symbols: the dory still exports `DECK`,
+`CLEATS` and the rest as data. A station is a place you occupy; the polygon is still what contains
+you while you occupy it.
+
 ### M2-38 — Cleats, ropes, and the toss-a-line moor
 - Each hull exposes its named `CLEATS`; shore furniture (wharves, floats) has counterpart cleat/bollard
   points (world-content authors those in-scene — shore is hand-authored, boats are rig data).

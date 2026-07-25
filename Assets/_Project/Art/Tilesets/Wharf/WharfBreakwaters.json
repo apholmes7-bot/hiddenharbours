@@ -1,0 +1,88 @@
+{
+ "sheet": "Breakwater / shore-armour pieces. cell 48x60. pivot=cell top-center at crest; base sits ~6px above cell bottom (foam fringe below).",
+ "types": {
+  "riprap": "rock armour (rubble mound)",
+  "crib": "timber crib (log box filled with stone)",
+  "wall": "concrete wave wall w/ recurve crest",
+  "sheet": "steel sheet-pile wall + capping beam + bollards"
+ },
+ "variants": {
+  "straight": "E-W run (tileable)",
+  "diag": "45° run",
+  "end": "rounded/battered end cap"
+ },
+ "frames": {
+  "riprap.straight": {
+   "x": 0,
+   "y": 0,
+   "w": 48,
+   "h": 60
+  },
+  "riprap.diag": {
+   "x": 48,
+   "y": 0,
+   "w": 48,
+   "h": 60
+  },
+  "riprap.end": {
+   "x": 96,
+   "y": 0,
+   "w": 48,
+   "h": 60
+  },
+  "crib.straight": {
+   "x": 0,
+   "y": 60,
+   "w": 48,
+   "h": 60
+  },
+  "crib.diag": {
+   "x": 48,
+   "y": 60,
+   "w": 48,
+   "h": 60
+  },
+  "crib.end": {
+   "x": 96,
+   "y": 60,
+   "w": 48,
+   "h": 60
+  },
+  "wall.straight": {
+   "x": 0,
+   "y": 120,
+   "w": 48,
+   "h": 60
+  },
+  "wall.diag": {
+   "x": 48,
+   "y": 120,
+   "w": 48,
+   "h": 60
+  },
+  "wall.end": {
+   "x": 96,
+   "y": 120,
+   "w": 48,
+   "h": 60
+  },
+  "sheet.straight": {
+   "x": 0,
+   "y": 180,
+   "w": 48,
+   "h": 60
+  },
+  "sheet.diag": {
+   "x": 48,
+   "y": 180,
+   "w": 48,
+   "h": 60
+  },
+  "sheet.end": {
+   "x": 96,
+   "y": 180,
+   "w": 48,
+   "h": 60
+  }
+ }
+}

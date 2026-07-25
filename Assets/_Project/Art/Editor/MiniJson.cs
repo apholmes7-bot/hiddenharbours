@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace HiddenHarbours.App.Editor
+namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
     /// A tiny, dependency-free JSON reader for the EDITOR import path — the rig bakes' anchor sidecars
@@ -15,6 +15,14 @@ namespace HiddenHarbours.App.Editor
     /// or null. Malformed input throws <see cref="FormatException"/> — import callers catch and degrade
     /// (the null-safe greybox rule). Editor-only by design: nothing at runtime parses JSON (the builder
     /// converts anchors to serialized world-metre tables once, at build time).
+    ///
+    /// <para><b>Why it lives in Art.Editor and not App.Editor, where it started.</b> It is a general
+    /// utility with no art in it, but assembly order decides where a shared thing can live:
+    /// <c>App.Editor</c> sits at the TOP of the editor dependency graph (it references Art.Editor, not
+    /// the other way round), so nothing below it could reach a parser parked there. The wharf kit's
+    /// dictionary-shaped sidecar was the second caller and it slices from Art.Editor — the choice was
+    /// move this down or write a second, worse JSON reader thirty lines away. Anything editor-side may
+    /// now use it.</para>
     /// </summary>
     public static class MiniJson
     {

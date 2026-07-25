@@ -64,6 +64,15 @@ thing as being safe).
 > live in one place, `ShorelineIsoCatalog`, precisely so a wrong label is a one-line fix and not a
 > re-slice. Treat those bearings as a prior, exactly like every list on this page.
 
+**The two BUILDING rigs (`houseIsoRig`, `wharfBuildingRig`) now have a probe, but are still UNMEASURED
+until a bake actually runs.** `BuildingRigAzimuthProbe` reads the **door** anchor rather than a bow taper,
+because a building has no bow for PCA to bite on and that probe would return noise dressed as an answer.
+It runs at bake time and refuses on a mismatch, exactly like every sibling — so their listing above stays
+a prior until someone runs *Art ▸ Bake Buildings* and the bake either passes or refuses. Note the honest
+limit, recorded in that file too: the door anchor is the same `projVert` arithmetic that draws the
+pixels (so it is measurement, not a declaration), but it is **not** the independent pixel re-derivation
+the punt's byte-identical golden master was.
+
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
 maintained by hand: this mislabel has now caused defects in five separate kits, every time because someone

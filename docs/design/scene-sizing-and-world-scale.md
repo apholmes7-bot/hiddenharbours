@@ -123,7 +123,7 @@ Regions and their gating boats come from [`world-and-regions.md`](world-and-regi
 |---|---|---|---|---|---|
 | **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~450 × 260 m inside it. |
 | **St Peters Bar** *(new)* | **640 × 200 m** | on foot | **~3:20** walk / 1:49 sprint | 40 | §5.2. Sized by the tide window (6:43 at spring), not by comfort. |
-| **Port Greywick** | 420 × 320 m | on foot | ~2:20 | 26 | A town is a foot region with a harbour edge. |
+| **Port Greywick** *(incl. the Nine Mile Creek wharf)* | 600 × 400 m | on foot | ~3:20 | 37 | Two places in one region — the wharf where fish move, the town where money does. See [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md); 420 × 320 m if the wharf becomes its own region instead. |
 | **Coddle Cove** | 520 × 400 m | dory | ~2:53 | 21 | Home water: small, sheltered, legible in one look. |
 | **The Sunkers** | 700 × 700 m | punt/skiff | ~5:02 punt | 23 | A reef field needs room to pick a line through it. |
 | **The Drownded Lands** | 900 × 700 m | skiff + tide | ~3:51 console | 27 | Big flats are the whole point; most of it is walkable at low water. |

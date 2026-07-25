@@ -1,0 +1,132 @@
+{
+ "sheet": "Wharf overlay sprites (transparent, pivoted). Draw AFTER the deck tile.",
+ "pivot": "pivotX/pivotY is the anchor pixel: rails=edge line, cleat/bollard/dolphin/pilehead=base, ring=center, ladder/tyre/gangway=top (hangs down)",
+ "frames": {
+  "rail_wood_h": {
+   "x": 0,
+   "y": 0,
+   "w": 32,
+   "h": 14,
+   "pivotX": 0,
+   "pivotY": 13,
+   "note": "wood railing, N/S edge run"
+  },
+  "rail_wood_v": {
+   "x": 33,
+   "y": 0,
+   "w": 6,
+   "h": 32,
+   "pivotX": 1,
+   "pivotY": 0,
+   "note": "wood railing, E/W edge run"
+  },
+  "rail_wood_d": {
+   "x": 40,
+   "y": 0,
+   "w": 34,
+   "h": 20,
+   "pivotX": 0,
+   "pivotY": 2,
+   "note": "wood railing, 45° edge run"
+  },
+  "rail_pipe_h": {
+   "x": 75,
+   "y": 0,
+   "w": 32,
+   "h": 14,
+   "pivotX": 0,
+   "pivotY": 13,
+   "note": "pipe railing, N/S edge run"
+  },
+  "rail_pipe_v": {
+   "x": 108,
+   "y": 0,
+   "w": 6,
+   "h": 32,
+   "pivotX": 1,
+   "pivotY": 0,
+   "note": "pipe railing, E/W edge run"
+  },
+  "rail_pipe_d": {
+   "x": 115,
+   "y": 0,
+   "w": 34,
+   "h": 20,
+   "pivotX": 0,
+   "pivotY": 2,
+   "note": "pipe railing, 45° edge run"
+  },
+  "cleat": {
+   "x": 150,
+   "y": 0,
+   "w": 11,
+   "h": 7,
+   "pivotX": 5,
+   "pivotY": 4,
+   "note": "galvanised horn cleat, base on deck"
+  },
+  "bollard": {
+   "x": 162,
+   "y": 0,
+   "w": 11,
+   "h": 12,
+   "pivotX": 5,
+   "pivotY": 11,
+   "note": "cast bollard w/ safety band, base on deck"
+  },
+  "ring": {
+   "x": 174,
+   "y": 0,
+   "w": 9,
+   "h": 7,
+   "pivotX": 4,
+   "pivotY": 3,
+   "note": "recessed mooring ring, flush on deck"
+  },
+  "dolphin": {
+   "x": 184,
+   "y": 0,
+   "w": 15,
+   "h": 20,
+   "pivotX": 7,
+   "pivotY": 19,
+   "note": "timber mooring dolphin (3-pile cluster), base in water"
+  },
+  "ladder": {
+   "x": 200,
+   "y": 0,
+   "w": 9,
+   "h": 20,
+   "pivotX": 4,
+   "pivotY": 0,
+   "note": "steel access ladder, hangs down a face"
+  },
+  "tyre": {
+   "x": 210,
+   "y": 0,
+   "w": 11,
+   "h": 14,
+   "pivotX": 5,
+   "pivotY": 0,
+   "note": "tyre fender, hangs on a face"
+  },
+  "pilehead": {
+   "x": 222,
+   "y": 0,
+   "w": 7,
+   "h": 16,
+   "pivotX": 3,
+   "pivotY": 15,
+   "note": "single capped pile"
+  },
+  "gangway": {
+   "x": 230,
+   "y": 0,
+   "w": 16,
+   "h": 40,
+   "pivotX": 8,
+   "pivotY": 0,
+   "note": "aluminium gangway ramp (quay→float)"
+  }
+ }
+}
