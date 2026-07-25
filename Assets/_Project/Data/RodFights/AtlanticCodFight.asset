@@ -24,7 +24,7 @@ MonoBehaviour:
     Jitter01: 0.25
   Tell: 1
   tensionRisePerSec: 0.7
-  tensionFallPerSec: 0.75
+  tensionFallPerSec: 0.85
   landingFillPerSec: 0.26
   runTensionPressure: 0.4
   counterSteerRelief: 0.4

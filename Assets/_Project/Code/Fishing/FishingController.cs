@@ -493,7 +493,11 @@ namespace HiddenHarbours.Fishing
             SpendBaitOnBite();
 
             _pendingFish = fish;
-            _pendingWeight = CatchResolver.RollWeight(fish, _rng);
+            // The sea leans the size roll up — a blow brings the better fish up to feed (the other half
+            // of the weather reward; §P1). Exactly the shipped uniform roll in a flat calm.
+            SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            _pendingWeight = CatchResolver.RollWeight(
+                fish, _rng, SeaFightMath.WeightBias01(SeaState01(), sea.SeaBigFishBias01));
             _phaseTimer = _hookWindow;
             Emit(FishingPhase.Bite, 0f, 0f);
         }
@@ -551,7 +555,8 @@ namespace HiddenHarbours.Fishing
             // on a deck that transform rides the hull's physics root, so when the unmanned boat
             // weathervanes mid-fight the steer target and the line angle drift under the player
             // (design §4.2 decision #3, the moving platform). Nothing is cached across ticks.
-            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment, DeckAnglePressurePerSec());
+            _rodFight.Tick(dt, actionHeld, _lastSteerAlignment,
+                           DeckAnglePressurePerSec(), SeaPressurePerSec());
 
             if (_rodFight.Result == FishFightResult.Landed) OnLanded();
             else if (_rodFight.Result == FishFightResult.Snapped) OnSnapped();
@@ -654,6 +659,30 @@ namespace HiddenHarbours.Fishing
                 deck.DeckCenter, deck.DeckHalfExtents);
             return DeckAngleMath.TensionPerSec(across, fight.DeckAngleFactor);
         }
+
+        /// <summary>
+        /// THE SEA'S PRESSURE ON THE LINE this tick (owner's ruling 2026-07-25) — the swell working the
+        /// rod, graded by the pure <see cref="SeaFightMath.TensionPerSec"/> from the LIVE sea state and
+        /// the owner's <c>GameConfig.SeaFishing.SeaFightFactor</c>.
+        ///
+        /// <para>Read fresh every tick rather than captured at the hookup: the weather is a real force
+        /// that keeps acting, and it turns over slowly enough (hours) that a fight never sees it jump.
+        /// Exactly 0 with no environment service (EditMode rigs, greybox — the established gate-off
+        /// posture), with the factor at 0, or in a flat calm, so the weather-blind fight is preserved
+        /// bit-for-bit.</para>
+        /// </summary>
+        private float SeaPressurePerSec()
+        {
+            if (GameServices.Environment == null) return 0f;
+            SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            if (s.SeaFightFactor <= 0f) return 0f;
+            return SeaFightMath.TensionPerSec(GameServices.Environment.Sample().SeaState01, s.SeaFightFactor);
+        }
+
+        /// <summary>The live sea state 0..1, or 0 (flat calm) when no environment service is wired —
+        /// the one place the rod loop asks the world what the weather is doing.</summary>
+        private float SeaState01()
+            => GameServices.Environment != null ? GameServices.Environment.Sample().SeaState01 : 0f;
 
         // ---- helpers ------------------------------------------------------------------------
 
@@ -815,11 +844,18 @@ namespace HiddenHarbours.Fishing
                 _hold = _holdProvider.GetComponent<IHold>();
         }
 
+        /// <summary>How long until the next bite. Broken water emboldens fish, so a rough day simply
+        /// FISHES FASTER (owner's ruling 2026-07-25 — the reward half of the weather trade): the whole
+        /// window scales by <see cref="SeaFightMath.BiteDelayScale"/>, ×1 in a flat calm. The RNG draw
+        /// itself is untouched, so a seeded rig still replays its own bite sequence.</summary>
         private float RandomBiteDelay()
         {
             float lo = Mathf.Min(_minBiteDelay, _maxBiteDelay);
             float hi = Mathf.Max(_minBiteDelay, _maxBiteDelay);
-            return lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
+            float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
+
+            SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01);
         }
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)

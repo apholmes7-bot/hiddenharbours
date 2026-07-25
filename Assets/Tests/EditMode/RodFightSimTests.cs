@@ -334,6 +334,90 @@ namespace HiddenHarbours.Tests.EditMode
                 "at the same progress the bulldog is still out there — she holds her ground and comes late");
         }
 
+        // ---- the sea reaches the fight (owner's ruling 2026-07-25) --------------------------
+
+        [Test]
+        public void SeaPressure_LoadsTheLine_AndAFlatCalmIsBitForBit()
+        {
+            // Same seed, same hands, same everything — one fought in a flat calm, one in a sea.
+            var calm = new RodFightSim(MakeDef(), new System.Random(90));
+            var rough = new RodFightSim(MakeDef(), new System.Random(90));
+            var alsoCalm = new RodFightSim(MakeDef(), new System.Random(90));
+
+            float storm = SeaFightMath.TensionPerSec(1f, SeaFishingSettings.Default.SeaFightFactor);
+            int ticked = 0;
+            for (int i = 0; i < 150; i++)
+            {
+                // Stop the moment either fight ENDS: a snap freezes the accumulators, so comparing past
+                // that point measures "one fight stopped early", not the sea's effect. (The first version
+                // of this test failed exactly there — the rough fight snapped and its landing froze.)
+                if (calm.IsOver || rough.IsOver) break;
+                bool reel = calm.Effort01 <= 0f;
+                calm.Tick(0.02f, reel, -1f, 0f, 0f);
+                rough.Tick(0.02f, reel, -1f, 0f, storm);
+                alsoCalm.Tick(0.02f, reel, -1f, 0f);        // the four-arg overload
+                ticked++;
+            }
+
+            Assert.Greater(ticked, 10, "the fights must actually run for the comparison to mean anything");
+            Assert.Greater(rough.Tension01, calm.Tension01,
+                "the swell must genuinely load the line — otherwise the weather is decoration again");
+            Assert.AreEqual(calm.Tension01, alsoCalm.Tension01, 1e-6f,
+                "a flat calm must be BIT-FOR-BIT the weather-blind fight (the A/B baseline)");
+            Assert.AreEqual(calm.Landing01, rough.Landing01, 1e-6f,
+                "the sea loads the LINE only — while both fights are live it must never change how " +
+                "landed she is (LandingRatePerSec structurally cannot see the sea)");
+        }
+
+        [Test]
+        public void AStorm_TakesTheFishOffAPassiveHand_ButNotOffOneThatLeans()
+        {
+            // THE SHAPE OF THE OWNER'S TEETH, measured rather than assumed. The first version of this
+            // test asserted a gale beats a COMPETENT hand and failed — because leaning fully against her
+            // buys counter-steer relief every tick, which still outruns the storm. That turned out to be
+            // the better design and is now what's pinned: weather punishes PASSIVITY, not skill.
+            //
+            //   ease + full lean : calm -0.45/s, storm -0.10/s  -> both recover; skill still wins
+            //   ease + no lean   : calm  0.00/s, storm +0.35/s  -> only the storm ratchets you to a snap
+            //
+            // So a player who backs off but never works the rod gets away with it in calm water and
+            // loses the fish in a blow. That is exactly "cozy, but with teeth".
+            float storm = SeaFightMath.TensionPerSec(1f, SeaFishingSettings.Default.SeaFightFactor);
+            int passiveCalmSurvived = 0, passiveStormLost = 0, leaningStormSurvived = 0;
+
+            for (int seed = 1; seed <= 8; seed++)
+            {
+                var calm = new RodFightSim(MakeDef(strength: 1f, runPressure: 0.35f), new System.Random(seed));
+                var gale = new RodFightSim(MakeDef(strength: 1f, runPressure: 0.35f), new System.Random(seed));
+                var skilled = new RodFightSim(MakeDef(strength: 1f, runPressure: 0.35f), new System.Random(seed));
+
+                // The PASSIVE hand: reels her slack, eases through her runs — but never leans.
+                for (int i = 0; i < 9000 && !calm.IsOver; i++)
+                    calm.Tick(0.02f, calm.Effort01 <= 0f && calm.Tension01 < RodFightPolicies.PulseTensionCap,
+                              0f, 0f, 0f);
+                for (int i = 0; i < 9000 && !gale.IsOver; i++)
+                    gale.Tick(0.02f, gale.Effort01 <= 0f && gale.Tension01 < RodFightPolicies.PulseTensionCap,
+                              0f, 0f, storm);
+                // The SKILLED hand, same gale: leans against every run.
+                for (int i = 0; i < 9000 && !skilled.IsOver; i++)
+                    skilled.Tick(0.02f, skilled.Effort01 <= 0f && skilled.Tension01 < RodFightPolicies.PulseTensionCap,
+                                 -1f, 0f, storm);
+
+                if (calm.Result != FishFightResult.Snapped) passiveCalmSurvived++;
+                if (gale.Result == FishFightResult.Snapped) passiveStormLost++;
+                if (skilled.Result != FishFightResult.Snapped) leaningStormSurvived++;
+            }
+
+            Assert.Greater(passiveCalmSurvived, 0,
+                "in calm water a merely-passive hand must get away with it — everyday fishing stays kind");
+            Assert.Greater(passiveStormLost, 0,
+                "…but a full gale must take her off that same hand. If this reads 0 the weather has been " +
+                "tuned back into decoration and the owner's teeth are gone.");
+            Assert.Greater(leaningStormSurvived, 0,
+                "…and leaning on her must still save you IN the gale — the sea punishes passivity, " +
+                "never skill, or the lesson the whole fight teaches would invert in bad weather");
+        }
+
         // ---- the Strength dial (Wave-3 carried thread) --------------------------------------
 
         [Test]

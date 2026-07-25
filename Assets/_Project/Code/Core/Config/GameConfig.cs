@@ -127,6 +127,14 @@ namespace HiddenHarbours.Core
                  "DeadLureFraction01 to be kinder to a player who leaves the rod still.")]
         public JiggingSettings Jigging = JiggingSettings.Default;
 
+        [Header("The sea in the fight (P1 — rough water fishes better and fights harder)")]
+        [Tooltip("How much the WEATHER matters to fishing. Rough water is a TRADE: the fish are bolder so " +
+                 "bites come quicker and run bigger, but the swell works your line so every fish is " +
+                 "harder to hold — and in a real blow a good fish can genuinely beat you. Set every " +
+                 "factor to 0 to go back to weather-blind fishing, where a gale plays exactly like a " +
+                 "flat calm.")]
+        public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -626,6 +634,59 @@ namespace HiddenHarbours.Core
             FastSteadyTempo  = 5.0f,  FastSteadyStroke  = 0.6f,
             Tolerance01 = 0.5f,
             DeadLureFraction01 = 0.1f,
+        };
+    }
+
+    /// <summary>
+    /// THE SEA'S HAND IN THE CATCH (<see cref="GameConfig.SeaFishing"/> — owner's ruling 2026-07-25),
+    /// the dials behind Pillar 1's arrival in the rod loop. The pure maths that consumes them is
+    /// <c>SeaFightMath</c> (Fishing-side), the same Core-policy / feature-consumer split as
+    /// <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>The trade.</b> Rough water makes fish bolder — so it fishes BETTER
+    /// (<see cref="SeaBoldness01"/> quickens the bite, <see cref="SeaBigFishBias01"/> brings up the better
+    /// fish) — while the swell works your line, so it fights HARDER
+    /// (<see cref="SeaFightFactor"/>). Weather becomes a decision, not a tax.</para>
+    ///
+    /// <para><b>All three at 0 = weather-blind fishing</b>, bit-for-bit as the rod loop shipped before
+    /// this change: a gale plays exactly like a flat calm. That is the off-switch and the A/B baseline.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct SeaFishingSettings
+    {
+        [Tooltip("THE COST. Extra tension per second (0..1-gauge/s) the SEA puts through your line at a " +
+                 "full storm — the swell working the rod, a wave snatching the line. It grows with the " +
+                 "SQUARE of the sea state, so a chop is barely felt and a real sea is dangerous. 0 = OFF " +
+                 "(the fight ignores the weather). Guard-rail: keep it low enough that easing off still " +
+                 "recovers in EVERYDAY weather (test-enforced up to SeaFightMath.CozySeaCeiling01) — " +
+                 "above that line the sea is meant to be able to beat you.")]
+        [Min(0f)] public float SeaFightFactor;
+
+        [Tooltip("THE REWARD (bites). How much quicker fish bite at a full storm, 0..1 — broken water " +
+                 "hides you and emboldens them. 0.5 = bites arrive in half the time in a storm. Grows " +
+                 "LINEARLY (unlike the cost), so even a chop already fishes noticeably better. 0 = OFF.")]
+        [Range(0f, 1f)] public float SeaBoldness01;
+
+        [Tooltip("THE REWARD (size). How strongly a full storm favours the BIG ones, 0..1 — the better " +
+                 "fish come up to feed in broken water. 1 = a storm catch sits at the very top of the " +
+                 "species' weight range. This is what makes a hard sea worth fishing, and a storm fish a " +
+                 "story. 0 = OFF (the plain uniform weight roll).")]
+        [Range(0f, 1f)] public float SeaBigFishBias01;
+
+        /// <summary>
+        /// The reference tuning, solved against the shipped species rather than guessed. The cost squares
+        /// away to almost nothing in everyday weather — at the cozy ceiling it adds only 0.087, which every
+        /// authored personality absorbs with room to spare — yet reaches 0.35 in a full storm, enough to
+        /// out-pressure the ease and genuinely take the three STRONG fish (cod, pollock, haddock). The
+        /// mackerel is deliberately left un-toothed even in a gale: a small fish becoming unlandable in
+        /// weather would be frustration, not danger. The rewards arrive earlier and more gently — a storm
+        /// bites about a third quicker and leans the size roll halfway up the range.
+        /// </summary>
+        public static SeaFishingSettings Default => new SeaFishingSettings
+        {
+            SeaFightFactor = 0.35f,
+            SeaBoldness01 = 0.35f,
+            SeaBigFishBias01 = 0.5f,
         };
     }
 }
