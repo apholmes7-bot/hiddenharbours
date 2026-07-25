@@ -226,7 +226,12 @@ namespace HiddenHarbours.Fishing
                 case FishingPhase.Waiting:
                     if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
                     else Emit(FishingPhase.Waiting, 0f, 0f);         // cast path: the aim tracks a walking angler
-                    _phaseTimer -= dt;
+
+                    // THE WAIT IS NOW SOMETHING YOU DO (owner's ask 2026-07-25). Bait fishes itself, so
+                    // its timer runs at full speed; a LURE only fishes if you work it, and the clock
+                    // runs slow — up to ten times slow — for a rod hanging dead in the water.
+                    _jig.Tick(dt, pointerWorld, pointerValid);
+                    _phaseTimer -= dt / Mathf.Max(0.01f, JigDelayScale());
                     if (_phaseTimer <= 0f) OnBite();
                     break;
 
@@ -418,6 +423,9 @@ namespace HiddenHarbours.Fishing
         private void BeginWaiting()
         {
             _phaseTimer = RandomBiteDelay();
+            // A fresh cast starts with a dead rod: the working has to be earned again, so the flick's
+            // own sweep can't be mistaken for the first few strokes of a jig.
+            _jig.Reset();
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
 
@@ -1029,12 +1037,46 @@ namespace HiddenHarbours.Fishing
             TackleBox.TrySpendBait(GameServices.Save?.Current, _bait.Id);
         }
 
+        // ---- working the lure (owner's ask 2026-07-25) --------------------------------------------
+
+        /// <summary>How the rod is actually being worked this cast — measured from the pointer, reset
+        /// at every new cast so last cast's rhythm never carries over.</summary>
+        private readonly JigWork _jig = new JigWork();
+
+        /// <summary>
+        /// THE ACTION THE ROD IS ASKING FOR right now. A lure's own <see cref="JigStyle"/> when one is
+        /// tied on and NO bait is fishing — because bait fishes itself, and a baited hook doesn't care
+        /// whether you sit still (the owner's rule: "nearly dead, but bait still fishes").
+        /// </summary>
+        private JigStyle WantedJigStyle
+            => _tackle != null && BaitOnTheHook == null ? _tackle.JigStyle : JigStyle.None;
+
+        /// <summary>How well the rod is being worked, 0..1. Always 1 when nothing needs working.</summary>
+        public float JigQuality01
+        {
+            get
+            {
+                JiggingSettings j = _config != null ? _config.Jigging : JiggingSettings.Default;
+                return JigMath.Quality01(WantedJigStyle, _jig.StrokesPerSec, _jig.StrokeMetres, in j);
+            }
+        }
+
+        /// <summary>How much SLOWER the wait runs because the lure isn't being worked properly — 1 when
+        /// it's worked well (or needs no working), rising toward the dead-lure multiple when it hangs
+        /// still. The controller divides its countdown by this.</summary>
+        private float JigDelayScale()
+        {
+            JiggingSettings j = _config != null ? _config.Jigging : JiggingSettings.Default;
+            return JigMath.BiteDelayScale(WantedJigStyle, JigQuality01, in j);
+        }
+
         /// <summary>Put a bait on / tie a tackle on (the dev cycle, the shop, and tests all come
-        /// through here rather than poking the fields).</summary>
-        public void SetBait(BaitDef bait) => _bait = bait;
+        /// through here rather than poking the fields). Working state resets — a fresh lure is a fresh
+        /// rhythm, and the old one's tempo must not be credited to the new one.</summary>
+        public void SetBait(BaitDef bait) { _bait = bait; _jig.Reset(); }
 
         /// <summary>See <see cref="SetBait"/>.</summary>
-        public void SetTackle(TackleDef tackle) => _tackle = tackle;
+        public void SetTackle(TackleDef tackle) { _tackle = tackle; _jig.Reset(); }
 
         /// <summary>The bait currently selected (may be one the player has run out of — see
         /// <see cref="BaitOnTheHook"/> for what is actually fishing).</summary>

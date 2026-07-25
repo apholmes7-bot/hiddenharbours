@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Cod Jig
   Flavor: A hand-length bar of leaded metal. Drop it to the bottom, work it up in long lifts, and let it flutter back down.
   Lure: 1
+  JigStyle: 1
   FavorsSpeciesIds:
   - fish.atlantic_cod
   - fish.pollock

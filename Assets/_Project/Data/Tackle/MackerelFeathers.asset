@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Mackerel Feathers
   Flavor: A string of dressed hooks, bright as a shoal of fry. No bait, no finesse - when the mackerel are in you lift them three at a time.
   Lure: 8
+  JigStyle: 2
   FavorsSpeciesIds:
   - fish.mackerel

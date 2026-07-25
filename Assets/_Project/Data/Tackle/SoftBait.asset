@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Soft Bait
   Flavor: A limp rubber body on a weighted hook. Slow, lifelike and patient - for fish that have seen every bit of shining metal in the cove.
   Lure: 4
+  JigStyle: 4
   FavorsSpeciesIds:
   - fish.atlantic_cod
   - fish.haddock

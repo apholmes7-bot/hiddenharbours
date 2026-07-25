@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Spinner
   Flavor: A blade that spins on a wire and throws light in every direction. Draws a strike out of temper rather than hunger.
   Lure: 16
+  JigStyle: 5
   FavorsSpeciesIds:
   - fish.mackerel

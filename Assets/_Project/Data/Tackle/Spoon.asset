@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Spoon
   Flavor: A curved blade of hammered brass that wobbles and flashes on the retrieve. The all-water lure - nothing's favourite, everything's possibility.
   Lure: 1
+  JigStyle: 3
   FavorsSpeciesIds:
   - fish.pollock

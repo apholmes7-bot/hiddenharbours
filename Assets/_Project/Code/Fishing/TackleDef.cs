@@ -42,6 +42,11 @@ namespace HiddenHarbours.Fishing
                  "of feathers is Feather, and so on.")]
         public LureTag Lure = LureTag.Spoon;
 
+        [Tooltip("How this tackle wants to be WORKED. A lure only fishes if you work it, and each kind " +
+                 "wants its own tempo and stroke (the numbers live in GameConfig.Jigging). None = it " +
+                 "fishes itself and a still rod is fine — which is what BAIT does.")]
+        public JigStyle JigStyle = JigStyle.LiftAndDrop;
+
         [Header("What it draws")]
         [Tooltip("Stable FishSpeciesDef ids this tackle is especially good for. Belt-and-braces beside " +
                  "the species' own FavoredLures mask: EITHER match earns the boost, so a content author " +

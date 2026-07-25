@@ -120,6 +120,13 @@ namespace HiddenHarbours.Core
                  "the hook irrelevant again.")]
         public BaitTackleSettings BaitTackle = BaitTackleSettings.Default;
 
+        [Header("Jigging (working the lure — the five hand-feels)")]
+        [Tooltip("What each kind of tackle wants you to DO with it, and how much it matters. Bait fishes " +
+                 "itself; a lure only fishes if you work it, and each one wants its own tempo and stroke " +
+                 "size. Raise Tolerance01 to make the actions easier to find by feel; raise " +
+                 "DeadLureFraction01 to be kinder to a player who leaves the rod still.")]
+        public JiggingSettings Jigging = JiggingSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -557,6 +564,68 @@ namespace HiddenHarbours.Core
             WrongBaitDamp01 = 0.35f,
             LureFavourBoost = 2f,
             WrongLureDamp01 = 0.65f,
+        };
+    }
+
+    /// <summary>
+    /// WORKING THE LURE (<see cref="GameConfig.Jigging"/> — owner's ask 2026-07-25). Five hand-feels,
+    /// tuned in ONE place rather than restated on every tackle asset: a piece of tackle just names its
+    /// <c>JigStyle</c> and the numbers live here, so the owner can re-feel all five without touching
+    /// content. The pure maths that consumes them is <c>JigMath</c> (Fishing-side).
+    ///
+    /// <para>Tempo is strokes per second (a stroke = one reversal of the hand: the top of a lift, the
+    /// bottom of a drop). Stroke is how far the pointer travels between reversals, in world metres — so
+    /// these read against the same on-screen scale the cast does (the on-foot view is about 16 m wide).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct JiggingSettings
+    {
+        [Header("The five actions (tempo = strokes/sec, stroke = world metres)")]
+        [Tooltip("COD JIG — big slow heaves, then let it flutter back. She takes it on the drop.")]
+        [Min(0f)] public float LiftAndDropTempo;
+        [Min(0f)] public float LiftAndDropStroke;
+
+        [Tooltip("MACKEREL FEATHERS — short fast twitches, like a shoal of fry breaking up.")]
+        [Min(0f)] public float QuickJerksTempo;
+        [Min(0f)] public float QuickJerksStroke;
+
+        [Tooltip("SPOON — one long even sweep, wobbling steadily through the water.")]
+        [Min(0f)] public float SteadySweepTempo;
+        [Min(0f)] public float SteadySweepStroke;
+
+        [Tooltip("SOFT BAIT — slow and small, with long pauses. Something dying, not something fleeing.")]
+        [Min(0f)] public float SlowCrawlTempo;
+        [Min(0f)] public float SlowCrawlStroke;
+
+        [Tooltip("SPINNER — quick and continuous; the blade has to keep turning or it is just a weight.")]
+        [Min(0f)] public float FastSteadyTempo;
+        [Min(0f)] public float FastSteadyStroke;
+
+        [Header("How forgiving, and how dead")]
+        [Tooltip("How far off the target action you can be and still score well (0..1). Bigger = the " +
+                 "actions are easy to find by feel. At 0.5 you do well anywhere from about two-thirds " +
+                 "to one-and-a-half times the target.")]
+        [Range(0.05f, 1f)] public float Tolerance01;
+
+        [Tooltip("What fraction of its fishing a MOTIONLESS lure keeps (0..1). The owner's call was " +
+                 "'nearly dead, but bait still fishes' — low enough that working it is obviously the " +
+                 "point, above zero because nothing else in this fishing is a hard wall. Expressed as a " +
+                 "much longer wait for a bite, so the player can SEE it rather than being quietly " +
+                 "denied by a dice roll.")]
+        [Range(0.01f, 1f)] public float DeadLureFraction01;
+
+        /// <summary>The reference feel. The five actions are spread wide enough to be distinct in the
+        /// hand — a lift-and-drop is a big movement twice a second, a spinner is small and five times a
+        /// second — and a dead lure fishes at a tenth, so it waits roughly ten times as long.</summary>
+        public static JiggingSettings Default => new JiggingSettings
+        {
+            LiftAndDropTempo = 0.8f,  LiftAndDropStroke = 1.6f,
+            QuickJerksTempo  = 4.0f,  QuickJerksStroke  = 0.35f,
+            SteadySweepTempo = 1.2f,  SteadySweepStroke = 1.1f,
+            SlowCrawlTempo   = 0.5f,  SlowCrawlStroke   = 0.45f,
+            FastSteadyTempo  = 5.0f,  FastSteadyStroke  = 0.6f,
+            Tolerance01 = 0.5f,
+            DeadLureFraction01 = 0.1f,
         };
     }
 }
