@@ -24,6 +24,7 @@ Two pivot formulas coexist, and they differ by exactly one row:
 |---|---|---|
 | Shared helper (boats, characters) | `(H − pivotY) / H` | `RigCatalog.cs` → `RigGeometry.UnityNormalisedPivot` |
 | Fishing kit | `(Cell.y − PivotTopLeftPx.y) / Cell.y` — the same form | `FishingSheetSlicer.cs` → `KitSpec.NormalizedPivot` |
+| Hand-sliced iso sheets | the same form, written out per kit: `74f/168f` for the punt's `(168 − 94)`, `96f/216f` for the skiffs', `68f/156f` for the dory's | `SpriteSheetSlicer.cs` → `PuntOrigin` / `SkiffOrigin` / `DoryWaterline` |
 | Tree bake (PR #298) | `pad / cellH`, where the rig exports `pad = h − 1 − pivotY` | `TreeKitCatalog.cs` → `NormalizedPivot` |
 
 `(H − pivotY)/H` places the pivot on the **top edge** of the pivot row; `pad/h` places it on the
@@ -79,8 +80,18 @@ units, so whatever `x` is, `y` is. **`pivot` is continuous; `(H − pivotY)/H` i
 Corroboration already in the repo: the punt's hull cell (184×168, pivot 92,94) and its **wider**
 motor cell (212×168, pivot 106,94) must normalise to the *same* pivot for the outboard to land on
 the transom, and `92/184 = 106/212 = 0.5` exactly. Under the index reading the corrected values
-would be `92.5/184 = 0.502717` and `106.5/212 = 0.502358` — no longer equal, and the motor layer
-would shear off the transom. `PuntSheetSliceTests` already asserts that identity.
+would be `92.5/184 = 0.502717` and `106.5/212 = 0.502358` — no longer equal. `PuntSheetSliceTests`
+already asserts that identity.
+
+⚠️ **Scope of the existing evidence, stated honestly.** `SpriteSheetSlicer` records that these
+pivots were "verified pixel-exact (zero RGB diff over all 8 headings, both paint builds) by
+re-compositing the kit's `_preview-*.png` reference sheets from these slices". That is real
+evidence, but it validates the layers' alignment *relative to each other*: a pivot that was
+consistently one row off would shift every layer together and still re-composite cleanly. It does
+not settle the absolute row — which is exactly why §2 and §3 are needed. Likewise
+`CharacterRigBakeTests`' `8f / CellH` is the helper's own formula written out, so it agrees by
+construction and could not have caught this either. Both are consistent with the finding; neither
+proves it alone.
 
 ### 3. Measured from pixels, not just argued
 

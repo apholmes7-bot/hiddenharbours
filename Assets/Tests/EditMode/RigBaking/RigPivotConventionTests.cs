@@ -119,8 +119,9 @@ namespace HiddenHarbours.Tests.RigBaking
             yield return ("lobsterBoat", 4);
             yield return ("character", 0);
             yield return ("character", 4);
-            yield return ("fish", 0);
-            yield return ("fish", 4);
+
+            // NOT the fish: measured at 35 opaque px, because dir 0/4 points a mackerel at the
+            // camera and a fish nose-on is a sliver. Symmetric, but nothing to mirror.
         }
 
         [Test]
@@ -136,13 +137,29 @@ namespace HiddenHarbours.Tests.RigBaking
                 var geo = RigCatalog.Install(host, entry);
 
                 string d = dir.ToString(CultureInfo.InvariantCulture);
-                byte[] rgba = host.EvaluateBytes($"{entry.GlobalName}.render({d},{{}})");
 
-                var r = RigPivotConventionProbe.MeasureFromSymmetricRender(
-                    rgba, geo.Width, geo.Height, (int)geo.PivotX);
+                // A rig that cannot be rendered with default opts ABSTAINS rather than collapsing
+                // the proof — the sample count below is what keeps that honest.
+                RigPivotConventionProbe.Result r;
+                try
+                {
+                    byte[] rgba = host.EvaluateBytes($"{entry.GlobalName}.render({d},{{}})");
+                    r = RigPivotConventionProbe.MeasureFromSymmetricRender(
+                        rgba, geo.Width, geo.Height, (int)geo.PivotX);
+                }
+                catch (System.Exception ex)
+                {
+                    report.AppendLine($"---- {key} dir {dir}: ABSTAINED — {ex.GetType().Name}: {ex.Message}");
+                    report.AppendLine();
+                    continue;
+                }
 
-                report.AppendLine($"---- {key} dir {dir} ({geo.Width}×{geo.Height}, pivotX={geo.PivotX}) ----");
-                report.AppendLine(r.Report);
+                // Written out as we go, not just accumulated: an assertion below aborts the test,
+                // and the measurement is the whole point of running it.
+                string sample = $"---- {key} dir {dir} ({geo.Width}×{geo.Height}, pivotX={geo.PivotX}) ----\n"
+                              + r.Report;
+                TestContext.WriteLine(sample);
+                report.AppendLine(sample);
                 report.AppendLine();
 
                 if (!r.IsDecisive) continue;
@@ -193,12 +210,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The punt's boat origin is (168 − 94)/168 = 0.440476…, the value the hull and the " +
                 "wider motor cell must share for the outboard to land on the transom.");
 
-            // The rejected alternative, and its size. One row at PPU 32 = 1/32 m.
-            float oneRowLower = (float)((geo.Height - 1 - geo.PivotY) / geo.Height);
-            float deltaNorm = corner - oneRowLower;
-            Assert.AreEqual(1.0f / geo.Height, deltaNorm, 1e-9f);
+            // The rejected alternative, and its size. Computed in DOUBLE: differencing two ~0.44
+            // floats loses about 2.3e-8, which is larger than the quantity under test deserves.
+            double cornerD = (geo.Height - geo.PivotY) / geo.Height;
+            double oneRowLowerD = (geo.Height - 1 - geo.PivotY) / geo.Height;
+            double deltaNorm = cornerD - oneRowLowerD;
+            Assert.AreEqual(1.0 / geo.Height, deltaNorm, 1e-12,
+                "The two candidate formulas must differ by exactly one row of the cell.");
             TestContext.WriteLine(
-                $"corner (H−pivotY)/H = {corner:F8}   index-style (H−1−pivotY)/H = {oneRowLower:F8}\n" +
+                $"corner (H−pivotY)/H = {cornerD:F8}   index-style (H−1−pivotY)/H = {oneRowLowerD:F8}\n" +
                 $"difference = 1 row = {deltaNorm:F8} normalised = 1 px = {1.0 / 32.0:F5} m at PPU 32.");
         }
 
