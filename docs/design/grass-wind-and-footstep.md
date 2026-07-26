@@ -120,3 +120,35 @@ new art, and wants to come from `Trees.json` per species rather than staying one
 **Pinned by** `Assets/Tests/EditMode/Art/WindBendTessellationTests.cs`, which asserts the
 *capability* rather than the import flag: at least three distinct vertex heights, and at least one
 vertex **below** the trunk anchor, or there is no row the shader can hold still while the crown moves.
+
+### ✅ `_TrunkAnchor` is now per species (2026-07-26)
+
+The in-engine tree bake (`TreeRigBaker` → `Assets/_Project/Art/Foliage/Trees/Trees.json`) writes
+`trunkAnchor = nearFlarePad / cellH` for each species, read from the rig's own `sheetSpec()`.
+Measured across the ten:
+
+| | anchor | | anchor |
+|---|---|---|---|
+| Black Spruce | **0.0833** | White Birch | 0.1091 |
+| White Pine | 0.0881 | Red Spruce | 0.1205 |
+| White Cedar | 0.0942 | Red Maple | 0.1346 |
+| Trembling Aspen | 0.0962 | Balsam Fir | 0.1400 |
+| Tamarack | 0.1074 | Red Oak | **0.1447** |
+
+So the single shipped `0.14` on `Art/Materials/Tree.mat` sits at the **top** of the range and
+over-anchors eight of the ten — it freezes canopy that should move rather than letting a flare
+slide, which is the safer of the two failures but still not what the art says. Read the value with
+`TreeKitCatalog.TrunkAnchorFor(contract, species, stage)`; the consumer that *applies* it (a
+per-renderer `MaterialPropertyBlock`, or a material per species) belongs with tree placement, which
+has not been built yet. `Tree.mat`'s constant is deliberately untouched so the 43 old hand-drawn
+trees keep working.
+
+⚠️ **The equivalent assert on the old set is vacuous.** `WindBendTessellationTests
+.TreeSprites_HaveAVertexBelowTheTrunkAnchor_SoTheBaseCanBeHeldStill` normalises `uv.y` against each
+sprite's own min/max and then asks for a vertex below the anchor — but the minimum vertex maps to
+exactly `0`, and `0 < anchor` for every positive anchor, so it cannot fail. The rig kit's equivalent
+(`TreeSheetImportTests.TheAnchorLine_ActuallyCutsEverySpritesMesh_NotJustTouchesItsBottom`) uses
+**absolute** atlas `uv.y` — valid because those sheets are one sway row, so `uv.y` and cell-relative
+height are the same number the shader's `saturate(IN.uv.y)` reads — and requires the anchor to
+genuinely *split* the mesh. Verified by sabotage: on `FullRect` it fails with "only 2 distinct
+vertex heights".

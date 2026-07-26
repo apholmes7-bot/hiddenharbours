@@ -1,0 +1,353 @@
+#if UNITY_EDITOR
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+
+namespace HiddenHarbours.Art.Editor
+{
+    /// <summary>
+    /// The PLACEMENT CONTRACT for the Acadian tree kit — the schema of
+    /// <c>Assets/_Project/Art/Foliage/Trees/Trees.json</c> and the one place anything downstream
+    /// reads a tree's cell, pivot, flare pad, trunk anchor or true height.
+    ///
+    /// <para><b>Serializer == parser.</b> <c>TreeRigBaker</c> writes this exact type with
+    /// <see cref="JsonUtility.ToJson(object,bool)"/> and <see cref="Load"/> reads it back with
+    /// <see cref="JsonUtility.FromJson{T}"/>, so the bake and its consumers cannot drift apart —
+    /// the same rule <c>CatchStorageAnchors</c> established for the storage kit.</para>
+    ///
+    /// <para>⚠️ <b>NOTHING HERE IS A HAND-MAINTAINED TABLE.</b> Every number is read from
+    /// <c>TreeRig.sheetSpec()</c> at bake time (ADR 0021 §4: cell geometry, pivot and the crop rect
+    /// come from the rig, not from a README). If a species' cell changes, re-bake — do not edit the
+    /// JSON.</para>
+    /// </summary>
+    public static class TreeKitCatalog
+    {
+        /// <summary>The kit's folder. A SIBLING of the loose <c>Foliage/*.png</c> single-tree
+        /// sprites from the 2026-07-15 drop (which share these species names and are NOT rig art),
+        /// and outside <see cref="FoliageSheetSlicer.FlowersRoot"/> so neither tool sees the
+        /// other's sheets.</summary>
+        public const string TreesRoot = "Assets/_Project/Art/Foliage/Trees/";
+
+        public const string ContractFileName = "Trees.json";
+
+        public static string ContractPath => TreesRoot + ContractFileName;
+
+        /// <summary>The rig this kit is baked from. Read-only reference for us — it is the
+        /// art-director role's file (<c>docs/art/rigs/**</c>).</summary>
+        public const string RigScriptPath = "docs/art/rigs/treeIsoRig.js";
+
+        public const string RigGlobalName = "TreeRig";
+
+        /// <summary>
+        /// The DEFAULT importer texture cap. Over this Unity imports SILENTLY DOWNSCALED and the
+        /// sprite COUNT still matches, so only a cell-size/pivot assert catches it. The tree
+        /// slicer deliberately does NOT lift the cap the way <c>SpriteSheetSlicer</c> does for the
+        /// 3648 px hull sheets: every tree sheet is comfortably inside it (the widest is Red Oak at
+        /// 676 px), so a sheet that needed a lift would mean the bake recipe grew — which is a
+        /// decision, not an import setting.
+        /// </summary>
+        public const int ImportSizeCap = 2048;
+
+        /// <summary>Channel suffix on a sheet stem. The albedo carries no suffix (it is what
+        /// ships); the two data channels do.</summary>
+        public const string MaskSuffix = "_mask";
+        public const string NormalSuffix = "_normal";
+
+        /// <summary>The three channels, in bake order.</summary>
+        public enum Channel { Albedo, Mask, Normal }
+
+        public static readonly Channel[] Channels =
+        {
+            Channel.Albedo, Channel.Mask, Channel.Normal,
+        };
+
+        public static string SuffixFor(Channel c) => c switch
+        {
+            Channel.Albedo => "",
+            Channel.Mask => MaskSuffix,
+            Channel.Normal => NormalSuffix,
+            _ => throw new ArgumentOutOfRangeException(nameof(c)),
+        };
+
+        /// <summary>
+        /// ⚠️ <b>THE TWO DATA CHANNELS MUST IMPORT WITH sRGB OFF.</b> The mask packs
+        /// <c>R = key light · G = back rim · B = depth · A = coverage</c> and the normal packs a
+        /// view-space vector: both are NUMBERS, not colour. Leave sRGB on and Unity applies a gamma
+        /// curve to them — the sprite still LOOKS fine in the inspector, the lighting is simply
+        /// wrong by a curve, and nothing but a numeric assert notices.
+        /// </summary>
+        public static bool IsColourChannel(Channel c) => c == Channel.Albedo;
+
+        /// <summary>Sheet stem for one species × stage × season × channel, e.g.
+        /// <c>RedSpruce_mature_summer_mask</c>.</summary>
+        public static string StemFor(string species, string stage, string season, Channel channel) =>
+            $"{species}_{stage}_{season}{SuffixFor(channel)}";
+
+        public static string SheetPath(string species, string stage, string season, Channel channel) =>
+            TreesRoot + StemFor(species, stage, season, channel) + ".png";
+
+        // =================================================================================
+        // the contract schema
+        // =================================================================================
+
+        [Serializable]
+        public sealed class Contract
+        {
+            public string note;
+            public string rig;
+            public string global;
+            public int ppu;
+            public CameraBlock camera;
+            public LightBlock light;
+            public RulesBlock rules;
+            public SheetBlock sheet;
+            public ChannelBlock channels;
+            public Entry[] trees;
+        }
+
+        [Serializable]
+        public sealed class CameraBlock
+        {
+            public string name;
+            public string view;
+            public float elevDeg;
+            public float heightScale;
+            public float depthScale;
+        }
+
+        [Serializable]
+        public sealed class LightBlock
+        {
+            public float[] key;
+            public float[] rim;
+            public string note;
+        }
+
+        [Serializable]
+        public sealed class RulesBlock
+        {
+            public int rimPx;
+            public int minBodyPx;
+            public int minClumpRadiusPx;
+            public string note;
+        }
+
+        [Serializable]
+        public sealed class SheetBlock
+        {
+            public int cols;
+            public int rows;
+            public string colAxis;
+            public string rowAxis;
+            /// <summary>How many sway rows the RIG can produce (4). Kept so the difference from
+            /// <see cref="rows"/> is visible in the data, not just in a commit message.</summary>
+            public int rigSwayRows;
+            public string swayNote;
+        }
+
+        [Serializable]
+        public sealed class ChannelBlock
+        {
+            public string albedo;
+            public string mask;
+            public string normal;
+            public string coverageNote;
+        }
+
+        [Serializable]
+        public sealed class Entry
+        {
+            public string species;
+            public string name;
+            public string latin;
+            public string form;
+            public string stage;
+            public string[] seasons;
+
+            /// <summary>True world height in metres at this stage (PPU 32).</summary>
+            public float metres;
+
+            public int cellW;
+            public int cellH;
+
+            /// <summary>The trunk foot, in cell px from the TOP-LEFT — the rig's own
+            /// <c>sheetSpec().pivot</c>.</summary>
+            public int pivotX;
+            public int pivotY;
+
+            /// <summary>Rows of near-root flare BELOW the trunk foot: <c>cellH − 1 − pivotY</c>,
+            /// the rig's own <c>pad</c>. ⚠️ This is why a tree does NOT pivot bottom-centre.</summary>
+            public int nearFlarePad;
+
+            /// <summary>
+            /// <c>_TrunkAnchor</c> for THIS species: the trunk foot as a fraction of cell height,
+            /// <c>nearFlarePad / cellH</c>. The wind shader holds everything below this still and
+            /// sways the canopy above it, so the value belongs per species — measured 0.083
+            /// (Black Spruce) to 0.145 (Red Oak) against the one shipped material constant of 0.14.
+            /// </summary>
+            public float trunkAnchor;
+
+            /// <summary>The Unity sprite pivot: normalised, BOTTOM-origin. Equals
+            /// <c>(pivotX / cellW, nearFlarePad / cellH)</c> — see
+            /// <see cref="NormalizedPivot"/> for why the y term is not <c>(cellH − pivotY)/cellH</c>.</summary>
+            public float unityPivotX;
+            public float unityPivotY;
+
+            /// <summary>Baked sheet size: <c>cols × cellW</c> by <c>rows × cellH</c>.</summary>
+            public int sheetW;
+            public int sheetH;
+
+            /// <summary>What the rig's own <c>sheetSpec()</c> reports for the FULL 4-sway-row
+            /// sheet, plus its 2048 verdict. Recorded even though we bake one row, so the day
+            /// somebody wants the sway rows the headroom is already on record.</summary>
+            public int rigSheetW;
+            public int rigSheetH;
+            public bool rigFitsUnity2048;
+
+            public Audit audit;
+        }
+
+        [Serializable]
+        public sealed class Audit
+        {
+            /// <summary>Worst (highest) <c>report.thinPct</c> across the baked variants — foliage
+            /// mass too thin to carry a rim, per rule 1.</summary>
+            public float thinPct;
+            public int bodyRatio;
+            public int despeckled;
+            public bool pass;
+            public bool underFloor;
+        }
+
+        // =================================================================================
+        // reading it back
+        // =================================================================================
+
+        /// <summary>
+        /// The committed contract, or null with a logged error if it is missing/unparseable.
+        /// </summary>
+        public static Contract Load()
+        {
+            if (!File.Exists(ContractPath))
+            {
+                Debug.LogError(
+                    $"[TreeKitCatalog] No contract at '{ContractPath}'. Run " +
+                    "Hidden Harbours ▸ Art ▸ Bake Acadian Trees — the sheets and this file are " +
+                    "written by the same bake and are only meaningful together.");
+                return null;
+            }
+
+            var contract = JsonUtility.FromJson<Contract>(File.ReadAllText(ContractPath));
+            if (contract?.trees == null || contract.trees.Length == 0)
+            {
+                Debug.LogError($"[TreeKitCatalog] '{ContractPath}' parsed but carries no trees.");
+                return null;
+            }
+            return contract;
+        }
+
+        /// <summary>One species+stage entry, or null if the bake did not cover it.</summary>
+        public static Entry Find(Contract contract, string species, string stage)
+        {
+            if (contract?.trees == null) return null;
+            foreach (var e in contract.trees)
+                if (string.Equals(e.species, species, StringComparison.Ordinal) &&
+                    string.Equals(e.stage, stage, StringComparison.Ordinal))
+                    return e;
+            return null;
+        }
+
+        /// <summary>
+        /// The Unity sprite pivot for an entry: normalised from the BOTTOM-LEFT, so
+        /// <c>(pivotX / cellW, nearFlarePad / cellH)</c>.
+        ///
+        /// <para>⚠️ <b>THE Y TERM IS DELIBERATELY <c>pad/h</c>, NOT THE REPO'S USUAL
+        /// <c>(h − pivotY)/h</c></b> (<c>RigGeometry.UnityNormalisedPivot</c>,
+        /// <c>FishingSheetSlicer.KitSpec.NormalizedPivot</c>). Those two differ by exactly one
+        /// pixel — the top edge of the trunk-foot row versus its bottom edge — and for a tree the
+        /// bottom edge is the one that matters, for a reason no other kit has: the SAME fraction
+        /// also has to serve as the wind shader's <c>_TrunkAnchor</c>. Take
+        /// <c>(h − pivotY)/h</c> and the ground plane would sit one row ABOVE the anchor, so the
+        /// lowest row of near-root flare would be outside the planted band and would sway. The
+        /// design doc already publishes this number as <c>uv.y = 20/166 = 0.120</c> for Red
+        /// Spruce; matching it keeps one fraction doing both jobs.</para>
+        ///
+        /// <para>Either choice is edge-aligned, which is what keeps the sprite pixel-snapped at
+        /// PPU 32 — a pixel-CENTRE pivot <c>(pad + 0.5)/h</c> would be half a pixel off the
+        /// camera's grid and shimmer.</para>
+        /// </summary>
+        public static Vector2 NormalizedPivot(Entry e) =>
+            new Vector2((float)e.pivotX / e.cellW, (float)e.nearFlarePad / e.cellH);
+
+        /// <summary>The pivot in cell px from the rect's own bottom-left, which is what
+        /// <c>Sprite.pivot</c> reports.</summary>
+        public static Vector2 PivotPixels(Entry e) => new Vector2(e.pivotX, e.nearFlarePad);
+
+        /// <summary>
+        /// This species' <c>_TrunkAnchor</c> — the named entry point for whoever wires the wind
+        /// shader when trees get placed, so the number comes from the bake and not from a material
+        /// default. Throws rather than falling back to a plausible constant: silently anchoring
+        /// every species at 0.14 is exactly the reading this replaces.
+        ///
+        /// <para>The measured spread across the ten species is <b>0.0833 (Black Spruce) to 0.1447
+        /// (Red Oak)</b>, against the single 0.14 shipped on <c>Art/Materials/Tree.mat</c> — so one
+        /// material-wide value over-anchors eight of the ten, freezing canopy that should move.
+        /// The consumer wants a per-renderer <c>MaterialPropertyBlock</c> (or a material per
+        /// species); this catalog supplies the value, not the wiring.</para>
+        /// </summary>
+        public static float TrunkAnchorFor(Contract contract, string species, string stage)
+        {
+            Entry e = Find(contract, species, stage);
+            if (e == null)
+                throw new ArgumentException(
+                    $"No '{species}/{stage}' in {ContractFileName}. This wave bakes mature/summer " +
+                    "only; the other stages and seasons are a deliberate follow-up, not a gap to " +
+                    "paper over with a default anchor.");
+            return e.trunkAnchor;
+        }
+
+        /// <summary>Every sheet path this contract claims, in bake order.</summary>
+        public static string[] AllSheetPaths(Contract contract)
+        {
+            int n = 0;
+            foreach (var e in contract.trees) n += e.seasons.Length * Channels.Length;
+            var paths = new string[n];
+            int i = 0;
+            foreach (var e in contract.trees)
+            foreach (string season in e.seasons)
+            foreach (var c in Channels)
+                paths[i++] = SheetPath(e.species, e.stage, season, c);
+            return paths;
+        }
+
+        /// <summary>The <see cref="Channel"/> a stem belongs to, by its suffix.</summary>
+        public static Channel ChannelOf(string stem) =>
+            stem.EndsWith(MaskSuffix, StringComparison.Ordinal) ? Channel.Mask
+            : stem.EndsWith(NormalSuffix, StringComparison.Ordinal) ? Channel.Normal
+            : Channel.Albedo;
+
+        /// <summary>The entry a sheet stem belongs to, or null for a stranger (which must fail,
+        /// not guess).</summary>
+        public static Entry EntryForStem(Contract contract, string stem)
+        {
+            foreach (var e in contract.trees)
+            foreach (string season in e.seasons)
+            foreach (var c in Channels)
+                if (string.Equals(stem, StemFor(e.species, e.stage, season, c), StringComparison.Ordinal))
+                    return e;
+            return null;
+        }
+
+        /// <summary>Read the sprite mesh type an importer will use — it lives on
+        /// <see cref="TextureImporterSettings"/>, not on the importer itself, which is an easy
+        /// thing to look for in the wrong place.</summary>
+        public static SpriteMeshType MeshTypeOf(TextureImporter importer)
+        {
+            var s = new TextureImporterSettings();
+            importer.ReadTextureSettings(s);
+            return s.spriteMeshType;
+        }
+    }
+}
+#endif
