@@ -55,7 +55,19 @@ convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing ki
 `crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`
 (flat water-surface clumps — the kit bakes NO heading by design); the terrain kits add
 `shoreIsoKitRig` · `roadPathRig` (see the caveat below — they are *static tiles*, which is not the same
-thing as being safe).
+thing as being safe); the tree kit adds **`treeIsoRig`** (+ its batch harness `_treeBake.js`) — a tree
+has no heading, so its sheet axes are **variant × sway frame**, not direction.
+
+> ⚠️ **`treeIsoRig`'s pivot is the TRUNK FOOT, not the cell's bottom row.** The near root flare
+> projects *below* it under the 40° camera, so the cell carries `pad` rows underneath the pivot
+> (`sheetSpec().pivot` and `nearFlarePad` in `Trees.json`). Assuming bottom-centre — the convention
+> every other tree sprite in this repo uses — **sinks every tree into the ground.** Precedent: the dory
+> bakes at pivot (80,88) in a 160×156 cell for the same reason. See
+> [`../tree-rig-kit/README.md`](../tree-rig-kit/README.md).
+>
+> This rig is also the **first to ship a complete public API** (`render` · `packMask` · `normalView` ·
+> `sheetSpec` · `cellOf` + its constants, all on `root.TreeRig`). It needs **no symbol shim** — the
+> thing ADR 0022 open question 4 has been asking of every other rig.
 
 > **⚠️ "No azimuth term" ≠ "no compass risk" for the terrain kits.** `shoreIsoKitRig` bakes no
 > turntable, so there is no heading to mirror and the probe machinery does not apply — but its cliff and
