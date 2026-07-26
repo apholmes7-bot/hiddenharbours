@@ -284,6 +284,29 @@ namespace HiddenHarbours.Art.Editor
         /// <c>Sprite.pivot</c> reports.</summary>
         public static Vector2 PivotPixels(Entry e) => new Vector2(e.pivotX, e.nearFlarePad);
 
+        /// <summary>
+        /// This species' <c>_TrunkAnchor</c> — the named entry point for whoever wires the wind
+        /// shader when trees get placed, so the number comes from the bake and not from a material
+        /// default. Throws rather than falling back to a plausible constant: silently anchoring
+        /// every species at 0.14 is exactly the reading this replaces.
+        ///
+        /// <para>The measured spread across the ten species is <b>0.0833 (Black Spruce) to 0.1447
+        /// (Red Oak)</b>, against the single 0.14 shipped on <c>Art/Materials/Tree.mat</c> — so one
+        /// material-wide value over-anchors eight of the ten, freezing canopy that should move.
+        /// The consumer wants a per-renderer <c>MaterialPropertyBlock</c> (or a material per
+        /// species); this catalog supplies the value, not the wiring.</para>
+        /// </summary>
+        public static float TrunkAnchorFor(Contract contract, string species, string stage)
+        {
+            Entry e = Find(contract, species, stage);
+            if (e == null)
+                throw new ArgumentException(
+                    $"No '{species}/{stage}' in {ContractFileName}. This wave bakes mature/summer " +
+                    "only; the other stages and seasons are a deliberate follow-up, not a gap to " +
+                    "paper over with a default anchor.");
+            return e.trunkAnchor;
+        }
+
         /// <summary>Every sheet path this contract claims, in bake order.</summary>
         public static string[] AllSheetPaths(Contract contract)
         {
