@@ -1,7 +1,7 @@
 # Nine Mile Creek — the first wharf
 
-> **Status:** PROPOSAL from the owner's brief + reference photographs, 2026-07-23. One structural
-> question is genuinely open and gates the rest — see §1. Subordinate to
+> **Status:** the structural question is **RULED** (owner, 2026-07-25 — §1): this is Port Greywick's
+> working wharf, one region with the town, and it is where the damaged dory is bought. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon) and
 > [`world-and-regions.md`](world-and-regions.md). Sizes follow the rules in
 > [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md).
@@ -16,7 +16,31 @@
 
 ---
 
-## 1. ⚠️ The one question that has to be answered first
+## 1. ✅ RULED BY THE OWNER, 2026-07-25 — option A, and two riders
+
+**Nine Mile Creek IS Port Greywick's working wharf: one region, two zones.** The wharf is where
+fish move; the town, one road up the hill, is where money and paperwork move. One scene,
+**600 × 400 m** (already the row in [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md)).
+Nothing ratified changes, and the wharf is built exactly as briefed.
+
+Two riders came with the ruling, and they **do** amend canon:
+
+1. **There is no shipwright in this region.** Not on the wharf, not up the hill.
+2. **The dory is here** — lying at the wharf, still **damaged**, still **bought** (the ratified
+   earn-the-boat beat stands; she is not inherited). Sold by someone who is not a shipwright.
+
+⏳ **Left open on purpose, for the world-content lane and the owner:** who sells her, **who repairs
+her** (recommendation: *you do, by hand* — the strongest P4 reading, and stamina already pays for
+the manual bilge pump and field repairs), and **where the shipwright's yard lives instead**, since
+every later boat purchase and upgrade hangs off it (`Data/Shipwright/` ships today). ⚠️ Note for
+whoever takes it: `WorldStrings.OnboardBuyDory` / `OnboardRepairDory` and `OnboardingDirector`
+still name the Greywick shipwright in player-facing text — that is the M2 onboarding rework canon
+already flagged, now with a concrete new shape.
+
+<details>
+<summary>The original question and the case for A (kept for the record)</summary>
+
+### ⚠️ The one question that had to be answered first
 
 **Canon says the sandbar lands you at Port Greywick** — the market town with the shops, the auction,
 most of the NPCs, the cod licence, the rod, and the shipwright who sells you the damaged dory
@@ -40,6 +64,10 @@ place — Nine Mile Creek is a working wharf on PEI's south shore, not a town.
 
 Everything below is written for **A**, and holds for **B** unchanged apart from the scene extent
 (§4).
+
+</details>
+
+Everything below is written for the ruling above.
 
 ---
 
