@@ -102,8 +102,36 @@ symmetric about its centreline, and mirrors the alpha mask under both hypotheses
 - index reading → axis at `pivotX + 0.5`, `j` reflects to `2·pivotX − j`
 
 The true axis reproduces the mask; the false one is displaced one column and disagrees along every
-near-vertical edge. `RigPivotConventionTests` asserts the verdict, and requires a minimum number of
-decisive samples so it cannot pass vacuously.
+near-vertical edge. **Measured 2026-07-26** (full EditMode suite, 3344/3344 green, `skipped=0`):
+
+| Sample | opaque px | mirror about `pivotX.0` (corner) | mirror about `pivotX.5` (index) | `minX+maxX` | verdict |
+|---|---|---|---|---|---|
+| punt dir 0 | 5 288 | **0 px disagree** | 254 px | 183 = 2·92 − 1 | corner |
+| punt dir 4 | 4 848 | **0 px** | 236 px | 183 | corner |
+| lobsterBoat dir 0 | 37 980 | **0 px** | 674 px | 455 = 2·228 − 1 | corner |
+| lobsterBoat dir 4 | 28 597 | 2 px | 546 px | 455 | corner |
+| character dir 0 | 497 | 14 px | 94 px | 63 = 2·32 − 1 | *abstained* |
+| character dir 4 | 514 | 12 px | 94 px | 63 | *abstained* |
+
+Three of four hull samples mirror about continuous `92.0`/`228.0` with **not one pixel out of
+place**, and every sample's extreme span independently lands on the corner reading's prediction.
+The character's idle pose is slightly asymmetric, so it does not clear the 8× decisiveness bar and
+abstains rather than voting — the honest outcome, and its numbers still lean corner by ~7×.
+
+`RigPivotConventionTests` asserts the verdict and requires a minimum number of decisive samples, so
+it cannot pass vacuously.
+
+**The guard, measured by sabotage.** Flipping `UnityNormalisedPivot` to `(H − 1 − pivotY)/H` and
+re-running the suite turns **3 of 3344** tests red:
+
+- punt `0.4404762 → 0.4345238` (−1/168)
+- character `0.0909091 → 0.0795455` (−1/88)
+
+Both are exactly one row — **1 px, 0.03125 m at PPU 32**. Worth noting what that number reveals:
+before this ADR only **one** test (`CharacterRigBakeTests`) caught the flip, and it covers only the
+character. No boat test caught it at all — `PuntSheetSliceTests` and its siblings assert hard-coded
+normalised values against the sliced PNGs rather than against the helper, so the boat bake path had
+**no coverage of this helper whatsoever**. That is the real gap this PR closes.
 
 ### 4. Why the tree is different, and still right
 
