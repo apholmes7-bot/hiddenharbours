@@ -73,6 +73,70 @@ close the gap; both are proven possible (the reference author's own URP port is 
 opt-in-per-sprite cost profile, on **hero elements only**; keep **(b)** on the table if a scene needs true
 many-light interplay. Neither is built yet — both are the deferred **M2/M3 night-lighting vision**.
 
+### 4.1 ⭐ The mechanism, from the author (owner-relayed, 2026-07-25)
+
+The author described the real implementation, which **closes the "how does a flat sprite know front from
+back" gap** the table above left open. Recorded because it is the load-bearing trick:
+
+> **Every light carries a technical sprite: a radial gradient split into two colours — green in the top
+> half, blue in the bottom.** An object samples that gradient **at its own position**. Land in the green
+> zone → the light is **in front** → the shader lifts the **green channel** of that object's lighting
+> texture. Land in the blue zone → the light is **behind** → it lifts the **blue channel**.
+
+So "in front or behind" is a **2D screen-space lookup against the light's own sprite** — no depth buffer,
+no normals, no per-object geometry. That is exactly why it survives on flat billboards. The object's
+lighting texture is correspondingly a **two-channel mask**: green = the pixels that catch a light in
+front of it, blue = the pixels that rim when the light is behind. *(The owner's first reference image
+shows both artefacts side by side: the tree's own green/blue lighting texture, and the light's
+green-over-blue radial gradient.)*
+
+Three further notes from the author, each a design constraint rather than a detail:
+
+- **Every object gets a fake normal pointing straight up.** Purpose: equalise object colour against
+  terrain colour regardless of the directional light's angle.
+- **Standard point lights were abandoned deliberately.** There was no way to remove lighting influence
+  from specific pixels of a flat sprite while still controlling brightness per pixel for directional,
+  point and ambient *separately* — "without rewriting the engine."
+- **Water and light both live in the terrain shader.** The motive was puddles: paint small water directly
+  on the terrain with no geometry, then *"why not make all water paintable directly on the terrain."*
+  **Stated cost: the main object shader must duplicate the terrain shader's calculations** to stay
+  visually matched. **Stated limitation: multiple light sources are approximate** — accepted, on the
+  grounds that the average player will not notice.
+
+### 4.2 What this means for us — three findings
+
+**1. We already converged on that architecture, independently.** ADR 0016's follow-up already bleeds the
+boat light's colour **into the water shader**, and the water shader already carries the painted terrain
+height map (ADR 0010/0012/0023) with the shader owning the moving waterline. *"Light and water are part
+of the terrain shader"* is not a new direction for this project — it is a description of where we already
+are. That materially de-risks adoption.
+
+**2. The author's stated downside is a cost we have already paid — and already solved.** Duplicated maths
+across two shaders is precisely the `ShoreFade01` ↔ `Fade01` situation, and the answer here is the
+**HLSL-twin discipline**: a line-for-line transcription plus a **test that pins the shader's exact text
+and fails red on drift** (`WhitecapSalienceMath` does the same job for the C# twin). Any adoption must
+carry that discipline **from the first commit**, not retrofit it — it is the difference between the
+author's honest caveat and a maintainable system.
+
+**3. ⭐ Our masks can be DERIVED, not painted — which retires path (a)'s only real cost.** §4 lists "a
+mask-authoring step per sprite" as the con, and OQ 3 asks whether the rig pipeline could generate them.
+**ADR 0022 already answers it:** the rigs *are* flat-facet 3D renderers — they compute per-face normals
+and shade from a fixed key direction, which is the entire reason boat hulls could become meshes. A
+front-catch / back-catch mask is therefore a **bake output of information the rig already holds**, not a
+hand-paint job. The trees are rig-generated; so is most of the prop library. That turns "author two masks
+per hero sprite" into "extend the baker with two more output channels once."
+
+⚠️ Note also that the fake-upward-normal trick solves a problem **we do not have in that shape**: ADR 0013
+put us on **Sprite-Unlit** with a multiply-overlay tint, so our sprites sample no scene light at all. We
+start from a simpler position than the reference did, not a harder one.
+
+### 4.3 ⚠️ Sequencing — read before anyone starts
+
+This technique lands **in the terrain/water shader and the object shader**, which is the **same lane as
+the in-flight hull-water work**. It must not start until that lands, or two sessions will be editing the
+same fragment. The natural order is: hull-water work merges → the mask-bake spike (cheap, art-lane, no
+shader edits) → then the shader itself, with the HLSL-twin test written first.
+
 ---
 
 ## 5. Where it earns its keep (on-brand uses)
@@ -116,8 +180,11 @@ rendering — applied to a **handful of hero sprites**, owner-steered.
    cost on a hero sprite (a tree, a cottage, a hull).
 2. **Which sprites opt in** — the hero set (player, active boat, lighthouse, key buildings/props) vs the
    long tail (which stays unlit under the global grade). Keep the list small for perf.
-3. **Mask authoring cost** — how many hero sprites, and does the paper-doll/rig pipeline (`docs/art/rigs`)
-   generate the masks or are they hand-painted? Sequence with art volume (grow region-by-region).
+3. ~~**Mask authoring cost**~~ — ✅ **largely answered (§4.2 finding 3): the rig baker can DERIVE both
+   masks**, because the rigs already carry per-face normals and a fixed key direction (ADR 0022). The
+   residual question is narrower and worth a spike: *does a derived front/back split read as well as a
+   hand-painted one on a 5.5 m tree*, and what happens to the sprites that have **no** rig (imported
+   sheets, hand-drawn one-offs) — those still need hand masks or an opt-out.
 4. **Palette discipline** — the reserved-pop rule for glowing light so night reads *warm-light-in-cold*,
    not a rave (art bible §4.2).
 </content>
