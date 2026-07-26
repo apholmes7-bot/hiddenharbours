@@ -158,6 +158,10 @@ Shader "HiddenHarbours/GrassWind"
 
                 // Bend weight: 0 at the root (uv.y = 0) -> 1 at the tip. Squared so the base stays planted and
                 // the displacement concentrates toward the tip.
+                // ⚠️ This shaping happens PER VERTEX, so it only survives on a TESSELLATED sprite. On a FullRect
+                // quad it is evaluated at uv.y 0 and 1 only and interpolates linearly, and the squaring does
+                // nothing at all (0^2 = 0, 1^2 = 1). The grass tufts import Tight, so it works here — the trees
+                // did not, which is the defect WindBendTessellationTests now pins for both.
                 float bendW = saturate(IN.uv.y);
                 bendW = bendW * bendW;
 

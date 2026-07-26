@@ -12,6 +12,13 @@
 // never shows a hard phase seam down its trunk — the canopy flexes naturally and neighbouring trees differ.
 // There is NO footstep interaction (trees don't bend underfoot) and NO loops (so no [unroll] magenta trap).
 //
+// ⚠️ THE BEND CURVE REQUIRES A TESSELLATED SPRITE. bendW is shaped in the VERTEX stage, so on a sprite imported
+// as FullRect (a FOUR-VERTEX quad) it is only ever evaluated at uv.y 0 and uv.y 1 and the rasteriser interpolates
+// LINEARLY between them: the squaring collapses, _TrunkAnchor becomes inert for every value, and the whole sprite
+// shears from its bottom row instead of keeping a planted trunk. Measured 2026-07-25 on the shipped trees, which
+// were all FullRect: worst deviation 0.362 of full sway near mid-canopy. Sprites driven by this shader MUST import
+// with Mesh Type Tight (the grass tufts always did). Pinned by Assets/Tests/EditMode/Art/WindBendTessellationTests.
+//
 // SHADER CAUTIONS honoured: NO operator characters in any [Header(...)] label or Property string (ShaderLab parse
 // error -> magenta); helpers declared BEFORE use; globals OUTSIDE the per-material CBUFFER, tunables INSIDE it;
 // pixel-snapped + point-sampled, PPU 32. Visual-only: drives no sim, saves nothing (rule 5). The Tree material's
