@@ -118,13 +118,23 @@ and fails red on drift** (`WhitecapSalienceMath` does the same job for the C# tw
 carry that discipline **from the first commit**, not retrofit it — it is the difference between the
 author's honest caveat and a maintainable system.
 
-**3. ⭐ Our masks can be DERIVED, not painted — which retires path (a)'s only real cost.** §4 lists "a
+**3. ⭐ Masks can be DERIVED for the RIG-BUILT library — but the trees are not in it.** §4 lists "a
 mask-authoring step per sprite" as the con, and OQ 3 asks whether the rig pipeline could generate them.
-**ADR 0022 already answers it:** the rigs *are* flat-facet 3D renderers — they compute per-face normals
-and shade from a fixed key direction, which is the entire reason boat hulls could become meshes. A
-front-catch / back-catch mask is therefore a **bake output of information the rig already holds**, not a
-hand-paint job. The trees are rig-generated; so is most of the prop library. That turns "author two masks
-per hero sprite" into "extend the baker with two more output channels once."
+For rig-built art **ADR 0022 answers it**: the rigs *are* flat-facet 3D renderers — they compute per-face
+normals and shade from a fixed key direction, which is the entire reason boat hulls could become meshes.
+A front-catch / back-catch mask is therefore a **bake output of information the rig already holds**, not a
+hand-paint job. That covers hulls, buildings, the wharf kit, flowers, fish, gear — most of the prop
+library — turning "author two masks per hero sprite" into "extend the baker with two output channels
+once."
+
+⚠️ **Verified 2026-07-25, and it cuts against the obvious first target: there is NO tree rig.** The 43
+trees at `Art/Sprites/Environment/Trees/` are **imported PNGs** (`Tree01`–`Tree43`, 64×64 up to
+218×236) with no rig behind them, so nothing can be baked from normals they never had. For trees the
+masks must be **derived from the image itself** — an alpha distance transform gives a rim band (the
+back-light channel) and an interior body (the front-light channel), which is the shape the reference's
+hand-painted masks visibly take. That is cheap and automatic across all 43, **but it is a hypothesis
+until it is looked at**, which is exactly what the spike is for. Same applies to every other imported
+sheet; the rig-less tail needs derived masks or an opt-out either way.
 
 ⚠️ Note also that the fake-upward-normal trick solves a problem **we do not have in that shape**: ADR 0013
 put us on **Sprite-Unlit** with a multiply-overlay tint, so our sprites sample no scene light at all. We
