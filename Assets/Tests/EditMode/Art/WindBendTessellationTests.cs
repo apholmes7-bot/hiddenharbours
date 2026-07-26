@@ -39,6 +39,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// quantity asserted here. The equivalent guard on the PR #298 tree kit
     /// (<c>TreeSheetImportTests.TheAnchorLine_ActuallyCutsEverySpritesMesh…</c>) is the reference
     /// this now matches.</para>
+    ///
+    /// <para><b>Measured sabotage 2026-07-26</b> (PR #299), so this assert's threshold is a number
+    /// somebody checked rather than a claim. Sweeping a bottom-padding regression on Tree41
+    /// (171×244) through Unity's real Tight mesher, the OLD predicate passed at ALL ten sampled
+    /// pads — including 64 px, where the mesh floor sits at uv.y 0.2541 and nothing is anchored at
+    /// all. The version here flips PASS→FAIL between a mesh floor of 0.1393 and 0.1557, bracketing
+    /// <c>_TrunkAnchor</c> 0.14 exactly. End-to-end on a two-cell re-slice, the upper cell reports
+    /// its floor 0.3600 above the anchor (88 px), swaying at 0.1436 of full amplitude instead of 0.
+    /// Note the amplitude cost just past the threshold is small (~1e-6): the defect this catches is
+    /// STRUCTURAL — no genuinely planted row — and grows with the gap. All 43 sheets currently clear
+    /// it by the maximum possible margin, reaching uv.y 0.0000.</para>
     /// </summary>
     public class WindBendTessellationTests
     {
