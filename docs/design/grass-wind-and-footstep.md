@@ -94,3 +94,29 @@ Place grass-tuft `SpriteRenderer`s (sharing `Grass.mat`) in the St Peters cleari
 grass reads the shared wind automatically. The footstep bend is a **fading trail** along the path the
 player walks (a footprint-sized disturbance per recent position), so the grass reads as trodden-down
 rather than a halo orbiting the player.
+
+## ⚠️ The bend curve requires a tessellated sprite (measured 2026-07-25)
+
+Both wind shaders shape their sway in the **vertex stage** — grass as `bendW = uv.y²`, trees as
+`bendW = smoothstep(_TrunkAnchor, 1, uv.y)²`. A sprite imported as **FullRect is a four-vertex
+quad**, so that expression is only ever evaluated at `uv.y = 0` and `uv.y = 1`, and the rasteriser
+interpolates **linearly** between them. Every shaping term then does nothing: the squaring collapses
+(0² = 0, 1² = 1) and `_TrunkAnchor` cannot change `smoothstep(a,1,0) = 0` or `smoothstep(a,1,1) = 1`
+for **any** value of `a`.
+
+**The grass tufts were always `Tight`, so grass was never affected.** All 43 trees shipped as
+`FullRect`, so the "trunk stays planted" promise in that shader's own header was not being kept —
+the whole sprite sheared from its bottom row. Measured on `Tree38` at the shipped material values:
+peak sway 0.133 m = 4.3 px, **worst deviation 0.362 of full sway (~1.5 px) near mid-canopy**, and
+3.5× the intended motion at half height. Small in absolute terms, which is why nobody reported it;
+inert knobs are worse than wrong ones, because the next person tunes them and sees nothing.
+
+It matters more from here on: the [Acadian tree rig](../art/tree-rig-kit/README.md) pivots at the
+**trunk foot** with a near-root flare *below* it (20 px on Red Spruce), and a sliding root flare
+reads as broken in a way a sliding trunk did not. Note the rig's own geometry puts that trunk foot
+at `uv.y = 20/166 = 0.120` — so the shipped `_TrunkAnchor` of 0.14 is already about right for the
+new art, and wants to come from `Trees.json` per species rather than staying one material constant.
+
+**Pinned by** `Assets/Tests/EditMode/Art/WindBendTessellationTests.cs`, which asserts the
+*capability* rather than the import flag: at least three distinct vertex heights, and at least one
+vertex **below** the trunk anchor, or there is no row the shader can hold still while the crown moves.
