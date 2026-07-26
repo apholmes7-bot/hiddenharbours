@@ -28,6 +28,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// specifically at least one below the trunk anchor, or there is no row that can be held still
     /// while the crown moves. Asserting the capability keeps the test honest if Unity ever changes
     /// how it tessellates.</para>
+    ///
+    /// <para><b>The anchor is a POSITION, so it is measured in absolute atlas uv</b> (fixed
+    /// 2026-07-26). As first shipped, the anchor assert normalised <c>uv.y</c> against each sprite's
+    /// own min/max and then asked for a vertex below the anchor — but the lowest vertex maps to
+    /// exactly 0 by construction, and <c>0 &lt; anchor</c> holds for every positive anchor, so that
+    /// assert could not fail on any input. It was decoration. What the shader reads is the RAW atlas
+    /// coordinate — <c>smoothstep(_TrunkAnchor, 1, saturate(IN.uv.y))</c>,
+    /// <c>HiddenHarboursTreeWind.shader:156</c> — never a per-sprite fraction, so that is the
+    /// quantity asserted here. The equivalent guard on the PR #298 tree kit
+    /// (<c>TreeSheetImportTests.TheAnchorLine_ActuallyCutsEverySpritesMesh…</c>) is the reference
+    /// this now matches.</para>
     /// </summary>
     public class WindBendTessellationTests
     {
@@ -70,8 +81,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TreeSprites_HaveAVertexBelowTheTrunkAnchor_SoTheBaseCanBeHeldStill()
         {
-            foreach (string path in TreePaths())
+            string[] paths = TreePaths();
+            Assert.That(paths, Is.Not.Empty, TreeDir + " has no sprites — did the folder move?");
+
+            float highestFloor = float.MinValue;
+            string tightest = null;
+
+            foreach (string path in paths)
             {
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                Assert.That(tex, Is.Not.Null, path + ": no Texture2D");
+
                 Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
                 // ⚠️ These import as spriteMode Multiple; LoadAssetAtPath<Sprite> returns null.
                 Assert.That(sprites, Is.Not.Empty, path + ": no Sprite sub-asset");
@@ -79,25 +99,79 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 foreach (Sprite s in sprites)
                 {
                     Vector2[] uv = s.uv;
+                    Assert.That(uv, Is.Not.Empty, s.name + ": no UVs");
                     Assert.That(uv.Length, Is.LessThanOrEqualTo(MaxVerticesPerSprite),
                                 s.name + ": " + uv.Length + " vertices — heavier than the budget allows");
 
-                    // uv.y spans the sprite's rect within the sheet, so normalise against its own range.
+                    // PRECONDITION for reading uv.y as a height. The shader samples the RAW atlas
+                    // coordinate, so atlas uv.y only means "fraction of the tree's height" while a
+                    // sheet holds ONE sprite spanning the whole texture — which is how all 43 of these
+                    // hand-drawn trees are cut (one sprite, rect (0,0,w,h)). If that ever stops being
+                    // true, the SHADER breaks before this test does: a cell in the upper row of a
+                    // two-row sheet has uv.y ≥ 0.5 everywhere, so its own trunk foot lands far above
+                    // _TrunkAnchor and sways with the canopy. One material cannot hold a per-cell
+                    // anchor, so the answer is to keep one sprite per sheet (the PR #298 kit bakes ONE
+                    // sway row for exactly this reason) — not to normalise this assert.
+                    bool spansSheet = s.rect.x == 0f && s.rect.y == 0f
+                                   && s.rect.width == tex.width && s.rect.height == tex.height;
+                    Assert.That(spansSheet, Is.True,
+                                s.name + ": rect " + s.rect + " does not span the whole " + tex.width +
+                                "×" + tex.height + " texture, so atlas uv.y is no longer this tree's " +
+                                "own height fraction. The wind shader reads raw uv.y and cannot know " +
+                                "the difference — re-cut the sheet to one sprite, or give the cell its " +
+                                "own material/_TrunkAnchor.");
+
                     float lo = uv.Min(v => v.y), hi = uv.Max(v => v.y);
                     Assert.That(hi - lo, Is.GreaterThan(1e-6f), s.name + ": degenerate UV range");
 
+                    // A COUNT of distinct heights is invariant to where the rect sits in the atlas, so
+                    // normalising is safe here — and only here. This is the assert that catches a
+                    // FullRect 4-vertex quad (PR #297).
                     int distinctRows = uv.Select(v => Mathf.RoundToInt((v.y - lo) / (hi - lo) * 100f))
                                          .Distinct().Count();
                     Assert.That(distinctRows, Is.GreaterThan(2),
                                 s.name + ": only " + distinctRows + " distinct vertex heights — a bend " +
                                 "curve cannot be expressed with fewer than 3, it interpolates linearly");
 
-                    bool anchored = uv.Any(v => (v.y - lo) / (hi - lo) < TrunkAnchor);
-                    Assert.That(anchored, Is.True,
+                    // The anchor line must genuinely SPLIT the mesh: a row to hold still AND a row to
+                    // move. Measured in absolute atlas uv, the same number the shader samples.
+                    int below = uv.Count(v => v.y < TrunkAnchor);
+                    Assert.That(below, Is.GreaterThan(0),
                                 s.name + ": no vertex below the trunk anchor (" + TrunkAnchor + "), so " +
-                                "there is no row the shader can hold still while the crown sways");
+                                "there is no row the shader can hold still while the crown sways. The " +
+                                "mesh spans uv.y " + lo.ToString("F4") + ".." + hi.ToString("F4") +
+                                " — its lowest vertex sits " + (lo - TrunkAnchor).ToString("F4") +
+                                " ABOVE the anchor (" + Mathf.RoundToInt((lo - TrunkAnchor) * tex.height) +
+                                " px), where the shader already sways it at " +
+                                BendWeight(lo).ToString("F4") + " of full amplitude instead of 0.");
+                    Assert.That(below, Is.LessThan(uv.Length),
+                                s.name + ": EVERY one of its " + uv.Length + " vertices is below the " +
+                                "anchor (" + TrunkAnchor + ") — the whole tree is planted and nothing " +
+                                "would sway at all. The mesh spans uv.y " + lo.ToString("F4") + ".." +
+                                hi.ToString("F4") + ".");
+
+                    if (lo > highestFloor) { highestFloor = lo; tightest = s.name; }
                 }
             }
+
+            // The margin this test is actually holding. Print it: an assert whose headroom nobody has
+            // measured is how the vacuous version of this check shipped in the first place.
+            Debug.Log("[tree-anchor] closest to the anchor is " + tightest + ", whose lowest vertex " +
+                      "sits at atlas uv.y " + highestFloor.ToString("F4") + " — " +
+                      (TrunkAnchor - highestFloor).ToString("F4") + " of headroom below _TrunkAnchor " +
+                      TrunkAnchor + ". Measured 2026-07-26 across " + paths.Length + " sheets.");
+        }
+
+        /// <summary>Mirrors <c>HiddenHarboursTreeWind.shader:156-157</c> exactly:
+        /// <c>bendW = smoothstep(_TrunkAnchor, 1, saturate(uv.y))</c>, then squared. Used only to say
+        /// how badly a failure sways — but it has to be the shader's own curve to be worth printing.
+        /// ⚠️ NOT <see cref="Mathf.SmoothStep"/>: Unity's interpolates BETWEEN from and to, whereas
+        /// HLSL's returns the 0..1 position of x between the two edges.</summary>
+        private static float BendWeight(float uvY)
+        {
+            float t = Mathf.Clamp01((Mathf.Clamp01(uvY) - TrunkAnchor) / (1f - TrunkAnchor));
+            float w = t * t * (3f - 2f * t);
+            return w * w;
         }
 
         private static SpriteMeshType GetMeshType(TextureImporter imp)
