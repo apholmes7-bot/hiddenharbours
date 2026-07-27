@@ -236,6 +236,26 @@ namespace HiddenHarbours.Art
         public const float ArtSizeTieMeters = 0.06f;
 
         /// <summary>
+        /// A piece's base colour, before the shared day/night tint and the fade alpha.
+        ///
+        /// <para>⚠️ <b>The palette is FOR THE GREYBOX BLOB.</b> That blob is generated white-with-alpha
+        /// precisely so this colour multiplies through it and gives a bed of code-built shapes some
+        /// tonal variety. The painted drift-weed clumps already carry the art director's own banded
+        /// ramps — living, golden and bleached, each with its wet-surface glint — so multiplying a dark
+        /// olive over them would mud every clump in the bed and throw away the work. Painted art
+        /// therefore rides <b>white</b>.</para>
+        ///
+        /// <para>This is a two-line decision that is invisible when wrong (the weed simply looks
+        /// murky), which is exactly why it lives here as a tested static rather than inline in the
+        /// spawn path.</para>
+        /// </summary>
+        public static Color PieceTint(bool paintedArt, Color[] palette, int key)
+        {
+            if (paintedArt || palette == null || palette.Length == 0) return Color.white;
+            return palette[(int)(AmbientParticleMath.Hash01(key, 7) * palette.Length) % palette.Length];
+        }
+
+        /// <summary>
         /// Picks a ramp row (0 living, 1 golden, 2 bleached) by relative weight, seeded off the piece's
         /// spawn key so a clump keeps its colour for life — the owner's 2026-07-23 ruling is that all
         /// four species ship their golden rows and the runtime may weight them.

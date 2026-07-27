@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art;
 
-namespace HiddenHarbours.Tests.Art
+namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
     /// The PURE half of wiring the painted drift weed: which clump a piece wears for a given tier.
@@ -206,6 +206,49 @@ namespace HiddenHarbours.Tests.Art
             // A weight on ONE row must pin every piece to it.
             for (int key = 0; key < 200; key++)
                 Assert.AreEqual(2, SeaweedMath.PickRamp(new[] { 0f, 0f, 1f }, RampRows, key));
+        }
+
+        // ---- the tint, which is the quiet way this wiring could look wrong ------------------------
+
+        [Test]
+        public void PieceTint_IsWhiteForPaintedArt_SoTheKitsOwnRampsSurvive()
+        {
+            var palette = new[]
+            {
+                new Color(0.23f, 0.29f, 0.16f), new Color(0.18f, 0.24f, 0.15f),
+                new Color(0.30f, 0.26f, 0.13f), new Color(0.16f, 0.21f, 0.17f),
+            };
+
+            for (int key = 0; key < 300; key++)
+                Assert.AreEqual(Color.white, SeaweedMath.PieceTint(true, palette, key),
+                    $"key {key}: painted weed must ride white. The palette exists to colour the " +
+                    "white-with-alpha greybox blob; multiplying it over finished art muds every clump.");
+        }
+
+        [Test]
+        public void PieceTint_StillTintsTheGreyboxBlobFromThePalette()
+        {
+            var palette = new[] { Color.red, Color.green, Color.blue };
+
+            var used = new HashSet<Color>();
+            for (int key = 0; key < 400; key++)
+            {
+                Color c = SeaweedMath.PieceTint(false, palette, key);
+                Assert.Contains(c, palette, $"key {key}: greybox tint must come from the palette");
+                used.Add(c);
+            }
+            Assert.AreEqual(3, used.Count, "all palette tones should get used across a bed");
+
+            // Same key, same tone — a blob may not flicker between tones.
+            Assert.AreEqual(SeaweedMath.PieceTint(false, palette, 99),
+                            SeaweedMath.PieceTint(false, palette, 99));
+        }
+
+        [Test]
+        public void PieceTint_FallsBackToWhiteWithNoPalette()
+        {
+            Assert.AreEqual(Color.white, SeaweedMath.PieceTint(false, null, 1));
+            Assert.AreEqual(Color.white, SeaweedMath.PieceTint(false, new Color[0], 1));
         }
 
         [Test]

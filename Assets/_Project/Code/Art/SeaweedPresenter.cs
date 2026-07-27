@@ -347,14 +347,9 @@ namespace HiddenHarbours.Art
                 bed.BaseRotDeg[i] = AmbientParticleMath.Hash01(key, 11) * 360f;
                 bed.ArtKey[i] = key;
 
-                // ⚠️ The palette tint is FOR THE GREYBOX BLOB, which is drawn white-with-alpha
-                // precisely so this multiply colours it. The painted kit already carries the art
-                // director's own banded ramps, so tinting it would multiply a dark olive over
-                // finished art and mud every clump. Painted beds therefore ride white and take only
-                // the shared day/night tint and the fade alpha.
-                bed.Tint[i] = UsesPaintedArt(def) || palette == null
-                    ? Color.white
-                    : palette[(int)(AmbientParticleMath.Hash01(key, 7) * palette.Length) % palette.Length];
+                // Painted art rides WHITE — the palette is for the greybox blob and would mud the
+                // art director's own ramps. See SeaweedMath.PieceTint for why, and its tests.
+                bed.Tint[i] = SeaweedMath.PieceTint(UsesPaintedArt(def), palette, key);
                 ApplyLook(bed, i);
                 return true;
             }
