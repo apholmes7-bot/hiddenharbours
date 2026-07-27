@@ -221,5 +221,157 @@ namespace HiddenHarbours.Art
             }
             return merges;
         }
+
+        // ==== painted-weed art selection ==================================================================
+        //
+        // Which clump of the drift-weed kit a piece wears. Kept here, pure and over plain arrays, for the
+        // same reason the drift maths is: it is a feel decision, and it must be verifiable headless
+        // without importing a single sprite.
+
+        /// <summary>
+        /// Two clumps whose drawn sizes are within this (metres) count as the same size for selection,
+        /// so the nearest-size rule still leaves room for variety. ~2 px at PPU 32 — below the point
+        /// where an eye reads two clumps as different sizes at all.
+        /// </summary>
+        public const float ArtSizeTieMeters = 0.06f;
+
+        /// <summary>
+        /// A piece's base colour, before the shared day/night tint and the fade alpha.
+        ///
+        /// <para>⚠️ <b>The palette is FOR THE GREYBOX BLOB.</b> That blob is generated white-with-alpha
+        /// precisely so this colour multiplies through it and gives a bed of code-built shapes some
+        /// tonal variety. The painted drift-weed clumps already carry the art director's own banded
+        /// ramps — living, golden and bleached, each with its wet-surface glint — so multiplying a dark
+        /// olive over them would mud every clump in the bed and throw away the work. Painted art
+        /// therefore rides <b>white</b>.</para>
+        ///
+        /// <para>This is a two-line decision that is invisible when wrong (the weed simply looks
+        /// murky), which is exactly why it lives here as a tested static rather than inline in the
+        /// spawn path.</para>
+        /// </summary>
+        public static Color PieceTint(bool paintedArt, Color[] palette, int key)
+        {
+            if (paintedArt || palette == null || palette.Length == 0) return Color.white;
+            return palette[(int)(AmbientParticleMath.Hash01(key, 7) * palette.Length) % palette.Length];
+        }
+
+        /// <summary>
+        /// Picks a ramp row (0 living, 1 golden, 2 bleached) by relative weight, seeded off the piece's
+        /// spawn key so a clump keeps its colour for life — the owner's 2026-07-23 ruling is that all
+        /// four species ship their golden rows and the runtime may weight them.
+        ///
+        /// <para>Weights shorter than <paramref name="rampCount"/> leave the missing rows at zero,
+        /// which is the predictable reading: <c>{1}</c> means "living only". All-zero or null weights
+        /// fall back to row 0 rather than drawing nothing.</para>
+        /// </summary>
+        public static int PickRamp(float[] weights, int rampCount, int key)
+        {
+            if (rampCount <= 0) return -1;
+
+            float total = 0f;
+            for (int r = 0; r < rampCount; r++) total += WeightAt(weights, r);
+            if (total <= 0f) return 0;
+
+            float pick = AmbientParticleMath.Hash01(key, 23) * total;
+            float acc = 0f;
+            for (int r = 0; r < rampCount; r++)
+            {
+                acc += WeightAt(weights, r);
+                if (pick < acc) return r;
+            }
+            return rampCount - 1;      // only reachable on float slop at the very top of the range
+        }
+
+        private static float WeightAt(float[] w, int i) =>
+            w != null && i >= 0 && i < w.Length ? Mathf.Max(0f, w[i]) : 0f;
+
+        /// <summary>
+        /// Picks which painted clump a piece should wear: the one drawn NEAREST the tier footprint the
+        /// bed asked for, chosen among equals by the piece's seeded key. Returns an index into the
+        /// kit's flat arrays, or −1 when there is no art at all.
+        ///
+        /// <para><b>Size wins over species continuity, deliberately.</b> A clump that merges climbs a
+        /// tier and may therefore change species — Eelgrass tops out at 0.9 m and cannot serve a
+        /// 1.15 m tier, so holding species fixed would force a rescale and break the pixel grid. A
+        /// clump that grew by absorbing a neighbour reading as a different mix of weed is honest;
+        /// resampled pixel art is not.</para>
+        ///
+        /// <para>Falls back in order: the chosen ramp within the allowed species → any ramp within the
+        /// allowed species (a species need not ship every row) → the whole kit. The last step means a
+        /// bed whose filter and ramp weights between them exclude everything still draws weed rather
+        /// than vanishing.</para>
+        /// </summary>
+        /// <param name="targetSizeMeters">The tier footprint the bed wants.</param>
+        /// <param name="speciesAllowed">Per-species allow mask, or null for "all".</param>
+        /// <param name="ramp">Preferred ramp row, or −1 for "any".</param>
+        public static int PickWeedArt(float targetSizeMeters,
+                                      float[] sizes, int[] speciesIndex, int[] rampIndex, int count,
+                                      bool[] speciesAllowed, int ramp, int key)
+        {
+            if (sizes == null || count <= 0) return -1;
+            count = Mathf.Min(count, sizes.Length);
+
+            int hit = NearestArt(targetSizeMeters, sizes, speciesIndex, rampIndex, count,
+                                 speciesAllowed, ramp, key);
+            if (hit >= 0) return hit;
+
+            if (ramp >= 0)
+            {
+                hit = NearestArt(targetSizeMeters, sizes, speciesIndex, rampIndex, count,
+                                 speciesAllowed, -1, key);
+                if (hit >= 0) return hit;
+            }
+
+            return speciesAllowed == null
+                ? -1
+                : NearestArt(targetSizeMeters, sizes, speciesIndex, rampIndex, count, null, -1, key);
+        }
+
+        private static int NearestArt(float target,
+                                      float[] sizes, int[] speciesIndex, int[] rampIndex, int count,
+                                      bool[] speciesAllowed, int ramp, int key)
+        {
+            float bestDelta = float.MaxValue;
+            for (int i = 0; i < count; i++)
+            {
+                if (!ArtEligible(i, speciesIndex, rampIndex, speciesAllowed, ramp)) continue;
+                float d = Mathf.Abs(sizes[i] - target);
+                if (d < bestDelta) bestDelta = d;
+            }
+            if (bestDelta == float.MaxValue) return -1;      // nothing eligible
+
+            float cutoff = bestDelta + ArtSizeTieMeters;
+            int ties = 0;
+            for (int i = 0; i < count; i++)
+                if (ArtEligible(i, speciesIndex, rampIndex, speciesAllowed, ramp) &&
+                    Mathf.Abs(sizes[i] - target) <= cutoff) ties++;
+
+            // Hash01 can return exactly 1f, so fold the product back into range.
+            int wanted = ties > 1 ? (int)(AmbientParticleMath.Hash01(key, 29) * ties) % ties : 0;
+            int seen = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (!ArtEligible(i, speciesIndex, rampIndex, speciesAllowed, ramp)) continue;
+                if (Mathf.Abs(sizes[i] - target) > cutoff) continue;
+                if (seen == wanted) return i;
+                seen++;
+            }
+            return -1;
+        }
+
+        private static bool ArtEligible(int i, int[] speciesIndex, int[] rampIndex,
+                                        bool[] speciesAllowed, int ramp)
+        {
+            if (ramp >= 0)
+            {
+                if (rampIndex == null || i >= rampIndex.Length || rampIndex[i] != ramp) return false;
+            }
+            if (speciesAllowed != null)
+            {
+                int s = speciesIndex != null && i < speciesIndex.Length ? speciesIndex[i] : -1;
+                if (s < 0 || s >= speciesAllowed.Length || !speciesAllowed[s]) return false;
+            }
+            return true;
+        }
     }
 }

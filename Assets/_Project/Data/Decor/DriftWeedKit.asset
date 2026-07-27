@@ -1,0 +1,235 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94122e9a43130934caead2a9c1ac600d, type: 3}
+  m_Name: DriftWeedKit
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.DriftWeedKit
+  Species:
+  - Bladderwrack
+  - SugarKelp
+  - Eelgrass
+  - TornMat
+  Ramps:
+  - living
+  - golden
+  - bleached
+  Entries:
+  - Sprite: {fileID: 8606163136670691258, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 0
+    RampIndex: 0
+    VariantCell: 0
+  - Sprite: {fileID: -1299968077485466454, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.25
+    SpeciesIndex: 0
+    RampIndex: 0
+    VariantCell: 1
+  - Sprite: {fileID: -4388735383441429422, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.6
+    SpeciesIndex: 0
+    RampIndex: 0
+    VariantCell: 2
+  - Sprite: {fileID: 6950332413159117470, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.05
+    SpeciesIndex: 0
+    RampIndex: 0
+    VariantCell: 3
+  - Sprite: {fileID: 2370220264902690938, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 0
+    RampIndex: 1
+    VariantCell: 0
+  - Sprite: {fileID: -3722040470775898969, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.25
+    SpeciesIndex: 0
+    RampIndex: 1
+    VariantCell: 1
+  - Sprite: {fileID: 147984683553588983, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.6
+    SpeciesIndex: 0
+    RampIndex: 1
+    VariantCell: 2
+  - Sprite: {fileID: -3029522340272767248, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.05
+    SpeciesIndex: 0
+    RampIndex: 1
+    VariantCell: 3
+  - Sprite: {fileID: 556223850478521908, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 0
+    RampIndex: 2
+    VariantCell: 0
+  - Sprite: {fileID: -769997060696000057, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.25
+    SpeciesIndex: 0
+    RampIndex: 2
+    VariantCell: 1
+  - Sprite: {fileID: -783210087151300804, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 0.6
+    SpeciesIndex: 0
+    RampIndex: 2
+    VariantCell: 2
+  - Sprite: {fileID: -1874029923072184111, guid: 73ea644ad6b174e4caaeee83df7dbe4d, type: 3}
+    SizeMeters: 1.05
+    SpeciesIndex: 0
+    RampIndex: 2
+    VariantCell: 3
+  - Sprite: {fileID: -8376389002727379239, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.6
+    SpeciesIndex: 1
+    RampIndex: 0
+    VariantCell: 0
+  - Sprite: {fileID: 746484967571891235, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 1
+    RampIndex: 0
+    VariantCell: 1
+  - Sprite: {fileID: 9188568066361628719, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.1
+    SpeciesIndex: 1
+    RampIndex: 0
+    VariantCell: 2
+  - Sprite: {fileID: -7090738021658054584, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.6
+    SpeciesIndex: 1
+    RampIndex: 1
+    VariantCell: 0
+  - Sprite: {fileID: 7917023372689368805, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 1
+    RampIndex: 1
+    VariantCell: 1
+  - Sprite: {fileID: -7657784130241396183, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.1
+    SpeciesIndex: 1
+    RampIndex: 1
+    VariantCell: 2
+  - Sprite: {fileID: -7761316435932862827, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.6
+    SpeciesIndex: 1
+    RampIndex: 2
+    VariantCell: 0
+  - Sprite: {fileID: 1153418365919918676, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 1
+    RampIndex: 2
+    VariantCell: 1
+  - Sprite: {fileID: 7549919938984369551, guid: f82997fbdaefb664b98261445e11974f, type: 3}
+    SizeMeters: 1.1
+    SpeciesIndex: 1
+    RampIndex: 2
+    VariantCell: 2
+  - Sprite: {fileID: -2134484941551665606, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.7
+    SpeciesIndex: 2
+    RampIndex: 0
+    VariantCell: 0
+  - Sprite: {fileID: -2090435357170724830, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 2
+    RampIndex: 0
+    VariantCell: 1
+  - Sprite: {fileID: -2244419682535772861, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.45
+    SpeciesIndex: 2
+    RampIndex: 0
+    VariantCell: 2
+  - Sprite: {fileID: 175041782832796436, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.8
+    SpeciesIndex: 2
+    RampIndex: 0
+    VariantCell: 3
+  - Sprite: {fileID: -7122867244002721264, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.7
+    SpeciesIndex: 2
+    RampIndex: 1
+    VariantCell: 0
+  - Sprite: {fileID: -647672192030247348, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 2
+    RampIndex: 1
+    VariantCell: 1
+  - Sprite: {fileID: -925891604518014754, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.45
+    SpeciesIndex: 2
+    RampIndex: 1
+    VariantCell: 2
+  - Sprite: {fileID: -4264477177053690144, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.8
+    SpeciesIndex: 2
+    RampIndex: 1
+    VariantCell: 3
+  - Sprite: {fileID: -7551192128097845922, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.7
+    SpeciesIndex: 2
+    RampIndex: 2
+    VariantCell: 0
+  - Sprite: {fileID: -2147716105119447979, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.9
+    SpeciesIndex: 2
+    RampIndex: 2
+    VariantCell: 1
+  - Sprite: {fileID: -6298076505497632020, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.45
+    SpeciesIndex: 2
+    RampIndex: 2
+    VariantCell: 2
+  - Sprite: {fileID: -3719656165231660713, guid: c8c614b6e71766e42ab388a3764b5cfa, type: 3}
+    SizeMeters: 0.8
+    SpeciesIndex: 2
+    RampIndex: 2
+    VariantCell: 3
+  - Sprite: {fileID: 4812487236592656863, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.4
+    SpeciesIndex: 3
+    RampIndex: 0
+    VariantCell: 0
+  - Sprite: {fileID: -6123771850719656680, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 3
+    RampIndex: 0
+    VariantCell: 1
+  - Sprite: {fileID: -3355729039936916433, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.15
+    SpeciesIndex: 3
+    RampIndex: 0
+    VariantCell: 2
+  - Sprite: {fileID: 3002224306459596789, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.4
+    SpeciesIndex: 3
+    RampIndex: 1
+    VariantCell: 0
+  - Sprite: {fileID: -7309122532991373535, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 3
+    RampIndex: 1
+    VariantCell: 1
+  - Sprite: {fileID: 7257098192668633506, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.15
+    SpeciesIndex: 3
+    RampIndex: 1
+    VariantCell: 2
+  - Sprite: {fileID: -30329409886184520, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.4
+    SpeciesIndex: 3
+    RampIndex: 2
+    VariantCell: 0
+  - Sprite: {fileID: 7269607377077674661, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 2
+    SpeciesIndex: 3
+    RampIndex: 2
+    VariantCell: 1
+  - Sprite: {fileID: -392644703374979397, guid: cd4c9088d1505ca459832b9115dcdcf1, type: 3}
+    SizeMeters: 1.15
+    SpeciesIndex: 3
+    RampIndex: 2
+    VariantCell: 2
+  BuiltFromRigSha256: bcada722e4b0be37ee9389e3462a69ce18d59c11193095f10adc453934b0110c
