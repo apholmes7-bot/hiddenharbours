@@ -209,7 +209,13 @@ namespace HiddenHarbours.Art.Editor
                     "anchor to give it. Anchoring at a plausible default is exactly the reading " +
                     "this component replaces — fix the caller.", nameof(placement));
 
-            var sr = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
+            // ⚠️ `GetComponent<T>() ?? AddComponent<T>()` LOOKS right and is wrong: `??` tests the
+            // real C# reference, so it never reaches UnityEngine.Object's overloaded `==` and a
+            // "fake null" component satisfies it. AddComponent is then skipped and the first field
+            // write throws MissingComponentException. Always compare with `== null`.
+            var sr = go.GetComponent<SpriteRenderer>();
+            if (sr == null) sr = go.AddComponent<SpriteRenderer>();
+
             sr.sprite = sprite;
             if (material != null) sr.sharedMaterial = material;
             sr.sortingOrder = sortingOrder;
@@ -220,7 +226,8 @@ namespace HiddenHarbours.Art.Editor
 
             if (go.GetComponent<YSortSprite>() == null) go.AddComponent<YSortSprite>();
 
-            var anchor = go.GetComponent<TreeTrunkAnchor>() ?? go.AddComponent<TreeTrunkAnchor>();
+            var anchor = go.GetComponent<TreeTrunkAnchor>();
+            if (anchor == null) anchor = go.AddComponent<TreeTrunkAnchor>();
             anchor.Anchor = placement.Entry.trunkAnchor;
 
             return sr;
