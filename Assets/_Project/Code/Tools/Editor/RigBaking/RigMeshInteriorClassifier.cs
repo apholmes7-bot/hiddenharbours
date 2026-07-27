@@ -31,21 +31,38 @@ namespace HiddenHarbours.Tools.RigBaking
     /// defect); light reaches the UNDERSIDE of an overhanging washboard and the classifier then
     /// wets its top; light lands on elevated bow decks. The owner named the pattern rather than the
     /// instances (2026-07-26): <i>"fixing one surface at a time feels tedious, there must be a
-    /// better solution, like defining the exterior walls of a boat or something."</i> The level is
-    /// that better solution: it retires the whole family at once, and it needs no notion of which
-    /// SIDE of a face is being looked at — which is fortunate, because the raster takes
-    /// <c>Mathf.Abs(area)</c> and could never be given one (winding does not survive mirroring on 7
-    /// of the 11 hulls).</para>
+    /// better solution, like defining the exterior walls of a boat or something."</i> The level
+    /// retires the over-the-lip family at once. What the level alone could not retire is the
+    /// <b>inner strake</b>: the rigs model a separate inner skin inset 0.035–0.05 m from the
+    /// planking, and from in under the covering board a below-horizon ray genuinely reaches its
+    /// BACK — while the surface the player sees is its FRONT. Raster density cannot rescue that
+    /// (measured: 16 → 96 px/m changed the console and cape by exactly 0 faces at 836 s of cost);
+    /// the two sides of one face simply have different relationships to the sea.</para>
     ///
-    /// <para>Everything else — cockpit soles, hold floors, inner bulwarks, washboards, foredecks —
-    /// is INTERIOR, and the guard pass keeps the water off it per pixel.</para>
+    /// <para><b>So the classification is PER SIDE (<see cref="ClassifySides"/>).</b> Each side of a
+    /// face is exterior iff the sea can see THAT side and can rise to the face. A side is named by
+    /// the face's own first-three-vertex normal (<see cref="RigMeshBuilder.ObjectNormal"/>): FRONT
+    /// is the side the normal points toward. ⚠️ This is NOT the sidedness that was rejected when
+    /// normals were tried as a classifier. That attempt needed the normal to point OUTWARD — an
+    /// orientation claim that mirroring breaks on 7 of the 11 hulls (mirror twins share winding, so
+    /// one twin's normal points into the boat). Here the normal is only a LABEL for telling a
+    /// face's two sides apart, and it does not matter which one it lands on: the guard pass decodes
+    /// the rendered side from the SAME stored normal (<c>sign(dot(worldNormal, towardCamera))</c>,
+    /// orthogonal maps preserve dot products), so bake and render agree face by face however the
+    /// mirroring fell. Nothing anywhere assumes "front = outboard".</para>
+    ///
+    /// <para>Everything the sea cannot reach on the side being rendered — cockpit soles, hold
+    /// floors, inner bulwarks, inner strakes, washboards, foredecks — is INTERIOR there, and the
+    /// guard pass keeps the water off it per pixel.</para>
     ///
     /// <para>⚠️ <b>The accepted cost.</b> A level cuts both ways: the sea also stops drawing on her
     /// OUTSIDE above the rail, so she no longer takes green water over the topsides in a heavy sea.
     /// Owner-accepted, because a boat that read as swamped was the defect being removed.</para>
     ///
-    /// <para><b>It reads no normal, no material and no rig source, and that is deliberate.</b> Each
-    /// of those was tried and measured false:</para>
+    /// <para><b>It trusts no normal's DIRECTION, no material and no rig source, and that is
+    /// deliberate.</b> (The face normal is read — but only as the two-side label described above,
+    /// never as a claim about which way is out.) Each of those was tried as a classifier and
+    /// measured false:</para>
     /// <list type="bullet">
     /// <item><b>Normals do not survive mirroring.</b> Pairing every off-centreline face with its
     /// mirror twin and comparing normals: on 7 of the 11 hulls the MAJORITY of paired faces carry
@@ -214,14 +231,47 @@ namespace HiddenHarbours.Tools.RigBaking
             return sheers[idx];
         }
 
+        // ---- the per-face side codes baked into UV0.w (see RigMeshBuilder.AttrUvChannel) --------
+
+        /// <summary>Both sides wettable. Also the value every mesh baked before the mask existed
+        /// carries (and every FITTING mesh, whose legs and propellers must stay wettable).</summary>
+        public const byte SideExterior = 0;
+        /// <summary>Neither side reachable — the sea can never draw here. Exactly the set the old
+        /// side-blind classifier called interior, which is why the deck-line cross-check pins THIS
+        /// code and carries over unchanged.</summary>
+        public const byte SideInterior = 1;
+        /// <summary>Only the BACK is reachable: dry when the camera renders the FRONT (the side the
+        /// face normal points toward). The inner-strake family lands here.</summary>
+        public const byte SideFrontInterior = 2;
+        /// <summary>Only the FRONT is reachable: dry when the camera renders the BACK. Most of the
+        /// single-skin planking lands here — its outboard side is sea, its inboard side is the
+        /// cockpit wall the player looks at.</summary>
+        public const byte SideBackInterior = 3;
+
         /// <summary>
-        /// Classify every face of <paramref name="data"/>. Returns one flag per face, in
-        /// <c>data.Faces</c> order: true = INTERIOR (the sea must never draw over it).
+        /// Classify every face of <paramref name="data"/>, side-blind. Returns one flag per face, in
+        /// <c>data.Faces</c> order: true = INTERIOR on BOTH sides (the sea must never draw over the
+        /// face whichever side is rendered). Kept because "the sea cannot reach this face at all" is
+        /// the quantity the deck-line cross-check and the rail tests reason about; the bake itself
+        /// uses <see cref="ClassifySides"/>.
+        /// </summary>
+        public static bool[] Classify(RigMeshData data)
+        {
+            byte[] sides = ClassifySides(data);
+            var interior = new bool[sides.Length];
+            for (int i = 0; i < sides.Length; i++) interior[i] = sides[i] == SideInterior;
+            return interior;
+        }
+
+        /// <summary>
+        /// Classify every SIDE of every face of <paramref name="data"/>. Returns one side code per
+        /// face (<see cref="SideExterior"/>…<see cref="SideBackInterior"/>), in <c>data.Faces</c>
+        /// order. A side is exterior iff the sea can see that side and can rise to the face.
         ///
         /// <para>Deterministic by construction — single-threaded, fixed iteration order, no
         /// parallelism and no hashing. A bake that is not reproducible is not a golden master.</para>
         /// </summary>
-        public static bool[] Classify(RigMeshData data)
+        public static byte[] ClassifySides(RigMeshData data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             for (int i = 0; i < ElevationsDeg.Length; i++)
@@ -238,9 +288,14 @@ namespace HiddenHarbours.Tools.RigBaking
             var triB = new List<Vector3>();
             var triC = new List<Vector3>();
             var triFace = new List<int>();
+            var faceNormals = new List<Vector3>();
             int faceIndex = 0;
             foreach (var f in data.Faces)
             {
+                // The SAME normal the builder stores on every vertex of this face (first three
+                // verts, the rig's own convention) — the side LABEL the guard pass will decode
+                // against, so it must be this one and no recomputation of it.
+                faceNormals.Add(RigMeshBuilder.ObjectNormal(f.V[0], f.V[1], f.V[2]).ToVector3());
                 for (int t = 1; t + 1 < f.V.Length; t++)
                 {
                     triA.Add(f.V[0].ToVector3());
@@ -251,9 +306,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 faceIndex++;
             }
 
-            var exterior = new bool[faceIndex];
+            var extFront = new bool[faceIndex];
+            var extBack = new bool[faceIndex];
             int triCount = triFace.Count;
-            if (triCount == 0) return new bool[faceIndex];   // nothing to see: all "exterior", i.e. inert
+            if (triCount == 0) return new byte[faceIndex];   // nothing to see: all "exterior", i.e. inert
 
             for (int e = 0; e < ElevationsDeg.Length; e++)
             {
@@ -270,7 +326,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         Mathf.Cos(elev) * Mathf.Cos(az),
                         Mathf.Cos(elev) * Mathf.Sin(az),
                         Mathf.Sin(elev));
-                    MarkVisible(triA, triB, triC, triFace, eye, exterior);
+                    MarkVisible(triA, triB, triC, triFace, faceNormals, eye, extFront, extBack);
                 }
             }
 
@@ -283,7 +339,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 int fi = 0;
                 foreach (var f in data.Faces)
                 {
-                    if (exterior[fi])
+                    if (extFront[fi] || extBack[fi])
                     {
                         float lowest = float.MaxValue;
                         foreach (var vert in f.V)
@@ -291,27 +347,34 @@ namespace HiddenHarbours.Tools.RigBaking
                             float z = vert.ToVector3().z;
                             if (z < lowest) lowest = z;
                         }
-                        if (!(lowest < railZ)) exterior[fi] = false;
+                        if (!(lowest < railZ)) { extFront[fi] = false; extBack[fi] = false; }
                     }
                     fi++;
                 }
             }
 
-            var interior = new bool[faceIndex];
-            for (int i = 0; i < faceIndex; i++) interior[i] = !exterior[i];
-            return interior;
+            var sides = new byte[faceIndex];
+            for (int i = 0; i < faceIndex; i++)
+                sides[i] = extFront[i]
+                    ? (extBack[i] ? SideExterior : SideBackInterior)
+                    : (extBack[i] ? SideFrontInterior : SideInterior);
+            return sides;
         }
 
         /// <summary>
         /// One orthographic view along <paramref name="eye"/>: rasterise every triangle keeping the
         /// nearest depth, then sweep again and mark every triangle that is frontmost (within
-        /// <see cref="CoplanarEpsMeters"/>) at any pixel it covers.
+        /// <see cref="CoplanarEpsMeters"/>) at any pixel it covers — into <paramref name="extFront"/>
+        /// or <paramref name="extBack"/> by WHICH SIDE this eye sees: the sign of
+        /// <c>dot(faceNormal, eye)</c>, the same quantity the guard pass computes at render time
+        /// (in world space, where the orthogonal object matrix preserves it exactly).
         ///
         /// <para>The TWO-PHASE structure is the point. A single winner-takes-all pass silently
         /// loses every coplanar decoration band to the surface underneath it.</para>
         /// </summary>
         private static void MarkVisible(List<Vector3> ta, List<Vector3> tb, List<Vector3> tc,
-                                        List<int> triFace, Vector3 eye, bool[] exterior)
+                                        List<int> triFace, List<Vector3> faceNormals, Vector3 eye,
+                                        bool[] extFront, bool[] extBack)
         {
             // An orthonormal basis with `eye` as the depth axis. Depth grows AWAY from the camera,
             // so the nearest surface has the smallest value.
@@ -351,20 +414,27 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // ---- phase 1: nearest depth per pixel ----
             for (int i = 0; i < count; i++)
-                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, null, 0, triFace, exterior);
+                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, null, 0, triFace, null);
 
-            // ---- phase 2: mark everything frontmost within the coplanar epsilon ----
+            // ---- phase 2: mark everything frontmost within the coplanar epsilon, on the side
+            // this eye is looking at. The dot is fixed per (face, eye) — a planar face shows one
+            // side per view — so each triangle resolves its target array once, up front.
             for (int i = 0; i < count; i++)
-                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, depth, 1, triFace, exterior);
+            {
+                bool[] mark = Vector3.Dot(faceNormals[triFace[i]], eye) >= 0f ? extFront : extBack;
+                if (mark[triFace[i]]) continue;   // this side already proven visible from elsewhere
+                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, depth, 1, triFace, mark);
+            }
         }
 
         /// <summary>Scanline-rasterise one projected triangle. <paramref name="phase"/> 0 writes the
-        /// depth buffer; phase 1 reads it and marks the triangle's FACE exterior where it is
-        /// frontmost within the epsilon.</summary>
+        /// depth buffer (<paramref name="mark"/> unused); phase 1 reads it and marks the triangle's
+        /// FACE into <paramref name="mark"/> — the caller's per-side array — where it is frontmost
+        /// within the epsilon.</summary>
         private static void Raster(Vector3[] pu, int tri, float minU, float minV,
                                    float scaleU, float scaleV, int w, int h,
                                    float[] depth, float[] read, int phase,
-                                   List<int> triFace, bool[] exterior)
+                                   List<int> triFace, bool[] mark)
         {
             Vector3 a = pu[tri * 3 + 0], b = pu[tri * 3 + 1], c = pu[tri * 3 + 2];
             float ax = (a.x - minU) * scaleU, ay = (a.y - minV) * scaleV;
@@ -406,7 +476,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     }
                     else if (d <= read[idx] + CoplanarEpsMeters)
                     {
-                        exterior[triFace[tri]] = true;
+                        mark[triFace[tri]] = true;
                         return;   // one visible pixel is enough; the rest of this triangle is moot
                     }
                 }

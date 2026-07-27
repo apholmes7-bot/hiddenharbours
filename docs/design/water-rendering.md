@@ -2494,3 +2494,60 @@ honoured: fresh material (never Water.mat's baked height map), `_USE_HEIGHTTEX` 
 height texture, plain `LEqual` through the render-graph camera path (no hand-rolled reversed-Z),
 shader warm-up before measuring. The test can dump its three adjudicated frames as PNGs
 (`HH_WATERLINE_DUMP=<dir>`) for a human eye on a red run.
+
+### 24.3 Sidedness — the inner strake, and why a face's two sides are two different surfaces
+
+The rail retired the over-the-lip family, and the next playtest found the survivor: *"its still on
+the console walls, in the cape islander its at the wall intersection with the floor"* — mainly the
+interior wall boards (console vertical wall sections), the upper bow interior, the rear washboards.
+The rigs model a separate **inner skin** (`skin(side,u,frac,inset)`; dory `TH = 0.035`, console
+`0.045`, cape `0.05`), inset by `TH` at the sheer and narrowing toward the floor. From in under the
+covering board, a below-horizon ray **genuinely reaches its BACK** — this is not a sampling
+artefact: raising the raster from 16 to 96 px/m (62.5 → 10.4 mm) changed the console and cape by
+exactly **0 faces**, at 836 s of classify time. But the surface the player looks at is its FRONT.
+One face, two sides, two different relationships to the sea — and a face-level flag cannot say both.
+
+**So the classification is per SIDE** (`RigMeshInteriorClassifier.ClassifySides`): each side of a
+face is exterior iff the sea can see THAT side and can rise to the face (the rail caps both sides).
+`UV0.w` becomes a side code — `0` exterior both sides (and every pre-mask bake / every fitting),
+`1` interior both sides, `2` interior on the FRONT only, `3` interior on the BACK only — and the
+guard pass decodes which side the camera is rendering before writing the mask.
+
+⚠️ **This is NOT the sidedness that was rejected when normals were tried as a classifier.** That
+attempt needed the normal to point OUTWARD — an orientation claim mirroring breaks on 7 of the 11
+hulls (mirror twins share winding, so one twin's normal points into the boat). Here the first-three-
+vertex normal is only a **LABEL** telling a face's two sides apart, and it does not matter which
+side it lands on: the classifier sorts a view into front/back by `sign(dot(faceNormal, eye))`, and
+the guard vertex stage recomputes the same quantity in world space
+(`sign(dot(worldNormal, towardCamera))`, third row of the view matrix) — the object matrix is
+orthogonal (rotation × the deliberate det −1 mirror), and **orthogonal maps preserve dot products**,
+so bake and render agree face by face however the mirroring fell. `SV_IsFrontFace` was deliberately
+NOT used: its winding convention would have to survive the reflection and the shared-winding twins,
+which is exactly the parity minefield the label sidesteps.
+
+| hull | fully interior (= old interior) | front-dry (code 2) | back-dry (code 3) |
+|---|---|---|---|
+| dory | 203/472 | 83 | 117 |
+| punt | 335/575 | 62 | 93 |
+| console skiff | 336/663 | **90** | 134 |
+| sport skiff | 323/621 | 93 | 129 |
+| cape islander | 277/509 | **49** | 104 |
+| lobster boat | 410/676 | 66 | 117 |
+| side dragger | 533/792 | 54 | 110 |
+| stern trawler | 610/793 | 13 | 66 |
+| stern trawler mk2 | 670/1210 | 196 | 170 |
+| coastal packet | 1011/1254 | 49 | 89 |
+| tanker | 1475/1760 | 9 | 107 |
+
+**The golden master survives untouched by construction.** "Fully interior" (code 1 — the sea reaches
+neither side) is exactly the set the side-blind classifier produced, so every fully-interior count
+and every lowest-fully-interior height above is **identical to the §24.2 table**, and the deck-line
+cross-check re-pins nothing. The change is again **monotone**: codes 2/3 only ever dry a side that
+was previously wettable (the sea's own reachable side stays wet), so it cannot introduce flooding.
+The bolded numbers are the cure for the reported defect: the console's and cape's inner strakes are
+front-dry, so the wall the player looks at no longer takes the sea, while its outboard back — where
+the water genuinely laps under the covering board — stays honest. Guards:
+`HullMeshFleetTests.EveryCommittedHullMesh_CarriesPerSideInteriorCodes` (every hull has one-sided
+faces; console + cape specifically carry code-2 faces), and the fully-interior cross-check now
+filters to code 1. Rollback unchanged: `IsoFacetHullFeature._interiorMask` off ⇒ no guard pass at
+all; a pre-sidedness mesh (0/1 only) renders exactly as before through the new shader.

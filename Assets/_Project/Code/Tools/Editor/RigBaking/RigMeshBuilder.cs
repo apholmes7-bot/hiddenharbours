@@ -43,15 +43,20 @@ namespace HiddenHarbours.Tools.RigBaking
     public static class RigMeshBuilder
     {
         /// <summary>UV0 channel carrying the per-face constants the shader needs:
-        /// <c>x = material id, y = face bias b, z = depth bias db, w = interior flag</c>. Flat
-        /// across the face. <c>w</c> is the ADR 0023 per-face INTERIOR MASK: 1 = an open interior
-        /// surface the displaced sea must never draw over, 0 = exterior (and the value every mesh
-        /// baked before the mask existed carries, so an un-rebaked hull renders exactly as before).</summary>
+        /// <c>x = material id, y = face bias b, z = depth bias db, w = interior SIDE CODE</c>. Flat
+        /// across the face. <c>w</c> is the ADR 0023 per-face interior mask, PER SIDE
+        /// (<see cref="RigMeshInteriorClassifier.ClassifySides"/>): 0 = exterior both sides (and the
+        /// value every mesh baked before the mask existed carries, so an un-rebaked hull renders
+        /// exactly as before), 1 = interior both sides, 2 = interior when the camera renders the
+        /// FRONT (the side the face normal points toward), 3 = interior when it renders the BACK.
+        /// The guard pass decodes the rendered side from the stored normal, so the code is
+        /// meaningful whichever way mirroring left the winding.</summary>
         public const int AttrUvChannel = 0;
 
         /// <summary>
-        /// Build the mesh. <paramref name="interior"/> is the per-FACE interior mask, in
-        /// <c>data.Faces</c> order (see <see cref="RigMeshInteriorClassifier"/>).
+        /// Build the mesh. <paramref name="interior"/> is the side-blind per-FACE interior mask, in
+        /// <c>data.Faces</c> order — kept for callers that predate the per-side codes; true maps to
+        /// <see cref="RigMeshInteriorClassifier.SideInterior"/>.
         ///
         /// <para>⚠️ It defaults to <c>null</c> deliberately, and must stay that way: fittings are
         /// built through this same method, and every prop mesh must remain EXTERIOR. An outboard's
@@ -61,6 +66,24 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static RigMeshBuild Build(RigMeshData data, string meshName = null,
                                          bool[] interior = null)
+        {
+            byte[] sides = null;
+            if (interior != null)
+            {
+                sides = new byte[interior.Length];
+                for (int i = 0; i < interior.Length; i++)
+                    sides[i] = interior[i] ? RigMeshInteriorClassifier.SideInterior
+                                           : RigMeshInteriorClassifier.SideExterior;
+            }
+            return Build(data, meshName, sides);
+        }
+
+        /// <summary>
+        /// Build the mesh. <paramref name="interiorSides"/> is the per-face SIDE CODE array
+        /// (<see cref="RigMeshInteriorClassifier.ClassifySides"/>), in <c>data.Faces</c> order;
+        /// null (every fitting) bakes 0 = exterior everywhere — see the overload's warning.
+        /// </summary>
+        public static RigMeshBuild Build(RigMeshData data, string meshName, byte[] interiorSides)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
@@ -75,10 +98,10 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (var f in data.Faces)
             {
                 Vector3 n = ObjectNormal(f.V[0], f.V[1], f.V[2]).ToVector3();
-                float interiorFlag = interior != null && faceIndex < interior.Length && interior[faceIndex]
-                    ? 1f : 0f;
+                float sideCode = interiorSides != null && faceIndex < interiorSides.Length
+                    ? interiorSides[faceIndex] : 0f;
                 faceIndex++;
-                var attr = new Vector4(f.Mat, (float)f.B, (float)f.Db, interiorFlag);
+                var attr = new Vector4(f.Mat, (float)f.B, (float)f.Db, sideCode);
 
                 int baseIndex = v;
                 for (int k = 0; k < f.V.Length; k++, v++)

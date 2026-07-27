@@ -75,10 +75,11 @@ Shader "HiddenHarbours/IsoFacet"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
-                // x = matId  y = faceBias b  z = depthBias db  w = INTERIOR flag (1 = an open
-                // interior surface the sea must never draw over; 0 = exterior, and the value every
-                // mesh baked before the interior mask existed carries — so an un-rebaked hull
-                // behaves exactly as it did before this pass was added).
+                // x = matId  y = faceBias b  z = depthBias db  w = INTERIOR side code (0 =
+                // exterior both sides — the value every mesh baked before the interior mask
+                // existed carries, so an un-rebaked hull behaves exactly as before; 1 = interior
+                // both sides; 2/3 = interior on the front/back side only — see vertGuard, which
+                // decodes the rendered side).
                 float4 attrs      : TEXCOORD0;
             };
 
@@ -163,7 +164,24 @@ Shader "HiddenHarbours/IsoFacet"
             {
                 GuardVaryings o;
                 o.positionCS = vert(v).positionCS;
-                o.interior = v.attrs.w;
+
+                // attrs.w is the PER-SIDE interior code (RigMeshInteriorClassifier.ClassifySides):
+                //   0 = exterior both sides   1 = interior both sides
+                //   2 = interior when the camera renders the FRONT (the side the face normal
+                //       points toward)        3 = interior when it renders the BACK
+                // Which side is being rendered comes from the SAME stored normal the bake labelled
+                // the sides with — never from SV_IsFrontFace, whose winding convention would have
+                // to survive the object matrix's deliberate reflection (det −1) and the rigs'
+                // shared-winding mirror twins. Orthogonal maps preserve dot products, so
+                // sign(dot(worldNormal, towardCamera)) here equals sign(dot(normalOS, eyeOS)),
+                // the exact quantity the classifier sorted sides by. The third row of the view
+                // matrix is the world-space toward-camera axis. A face edge-on to the camera
+                // (dot 0) rasterises no pixels, so its tie-break never shows.
+                float3 wn = mul((float3x3)unity_ObjectToWorld, v.normalOS);
+                bool front = dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0;
+                int code = (int)round(v.attrs.w);
+                bool interior = code == 1 || code == (front ? 2 : 3);
+                o.interior = interior ? 1.0 : 0.0;
                 return o;
             }
 

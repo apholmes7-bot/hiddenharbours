@@ -273,32 +273,39 @@ namespace HiddenHarbours.Tools.RigBaking
         /// refreshed) def.
         /// </summary>
         /// <summary>Report what the interior classifier decided, in the only terms a human can
-        /// review: how many faces it called interior, and how far above the keel the LOWEST of them
-        /// sits. That second number is the cross-check — compare it against this hull's
-        /// hand-measured <c>WatertightDeckHeightMeters</c>.</summary>
-        private static void LogInteriorMask(string globalName, RigMeshData data, bool[] interior)
+        /// review: how many faces it called fully interior (plus the one-sided split), and how far
+        /// above the keel the LOWEST fully-interior face sits. That second number is the
+        /// cross-check — compare it against this hull's hand-measured
+        /// <c>WatertightDeckHeightMeters</c>. It is measured over the FULLY-interior set (code 1)
+        /// on purpose: that set is identical to what the side-blind classifier produced, so the
+        /// pinned deck-line agreement carries across the per-side change untouched.</summary>
+        private static void LogInteriorMask(string globalName, RigMeshData data, byte[] sides)
         {
-            int count = 0, total = 0;
+            int full = 0, frontOnly = 0, backOnly = 0, total = 0;
             float lowest = float.MaxValue;
             foreach (var f in data.Faces)
             {
-                if (total < interior.Length && interior[total])
+                byte code = total < sides.Length ? sides[total] : (byte)0;
+                if (code == RigMeshInteriorClassifier.SideInterior)
                 {
-                    count++;
+                    full++;
                     for (int k = 0; k < f.V.Length; k++)
                         lowest = Mathf.Min(lowest, (float)f.V[k].Z);
                 }
+                else if (code == RigMeshInteriorClassifier.SideFrontInterior) frontOnly++;
+                else if (code == RigMeshInteriorClassifier.SideBackInterior) backOnly++;
                 total++;
             }
-            string low = count > 0 ? $"{lowest:0.###} m above the keel" : "n/a";
+            string low = full > 0 ? $"{lowest:0.###} m above the keel" : "n/a";
             float rail = RigMeshInteriorClassifier.DeriveRailHeight(data);
             string railText = rail < float.MaxValue ? $"{rail:0.###} m" : "none (degenerate)";
-            Debug.Log($"[rig-mesh] {globalName} interior mask: {count}/{total} faces interior " +
-                      $"({(total > 0 ? 100f * count / total : 0f):0.#}%), lowest interior = {low}, " +
-                      $"rail = {railText}. Two independent checks on this line: the lowest interior " +
-                      "should land on this hull's WatertightDeckHeightMeters, and the rail must sit " +
-                      "ABOVE it — a rail at or below the deck line would leave the deck itself " +
-                      "wettable.");
+            Debug.Log($"[rig-mesh] {globalName} interior mask: {full}/{total} faces fully interior " +
+                      $"({(total > 0 ? 100f * full / total : 0f):0.#}%), one-sided {frontOnly} " +
+                      $"front-dry + {backOnly} back-dry, lowest fully-interior = {low}, " +
+                      $"rail = {railText}. Two independent checks on this line: the lowest " +
+                      "fully-interior should land on this hull's WatertightDeckHeightMeters, and " +
+                      "the rail must sit ABOVE it — a rail at or below the deck line would leave " +
+                      "the deck itself wettable.");
         }
 
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id)
@@ -313,9 +320,9 @@ namespace HiddenHarbours.Tools.RigBaking
             // artefact a bake produces. The lowest interior height in particular should land on the
             // hand-measured HullMeshDef.WatertightDeckHeightMeters — it does for 9 of the 11 hulls,
             // which is the independent cross-check that says the classifier is right.
-            bool[] interior = RigMeshInteriorClassifier.Classify(data);
-            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interior);
-            LogInteriorMask(globalName, data, interior);
+            byte[] interiorSides = RigMeshInteriorClassifier.ClassifySides(data);
+            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
+            LogInteriorMask(globalName, data, interiorSides);
 
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
             var quarter = new RigViewOptions(2, data.DefaultElev);   // dir 2 of 8 = 90° of turntable

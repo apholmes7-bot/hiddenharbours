@@ -328,11 +328,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 Vector3[] verts = def.Mesh.vertices;
 
                 // Mesh vertices are in the RIG's own frame, so z IS height above the keel bottom.
+                // Counted over the FULLY-interior faces only (side code 1): that set is identical
+                // to what the side-blind classifier produced, so the deck-line agreement pinned
+                // below carries across the per-side change without re-measurement. One-sided faces
+                // (codes 2/3) are policed by their own test.
                 int interior = 0;
                 float lowest = float.MaxValue;
                 for (int i = 0; i < attrs.Count && i < verts.Length; i++)
                 {
-                    if (attrs[i].w <= 0.5f) continue;
+                    if (attrs[i].w <= 0.5f || attrs[i].w >= 1.5f) continue;
                     interior++;
                     if (verts[i].z < lowest) lowest = verts[i].z;
                 }
@@ -364,6 +368,64 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"Only {agreeTightly} of {HullMeshFleet.Hulls.Count} hulls agree with their deck " +
                 $"line to within {Tight} m; nine did when the mask shipped. A drop here means the " +
                 "classifier drifted even though no hull broke the loose bound.");
+        }
+
+        /// <summary>
+        /// <b>Every committed hull carries the PER-SIDE interior codes — the inner strake's only
+        /// guard.</b>
+        ///
+        /// <para>The rail retired the over-the-lip family, and the walls' faces the sea genuinely
+        /// cannot see went interior — but the inner strake survived both: the rigs model a separate
+        /// inner skin 0.035–0.05 m inside the planking, and from in under the covering board a
+        /// below-horizon ray really does reach its BACK, while the surface the player looks at is
+        /// its FRONT. No sampling density fixes that (16 → 96 px/m moved the console and cape by
+        /// exactly 0 faces), because the two sides of one face have different relationships to the
+        /// sea. The cure is the side codes (UV0.w = 2/3), and this test is what notices a re-bake
+        /// or a refactor silently flattening them back to 0/1 — the strake defect returning with
+        /// every other check green, exactly how it shipped the first time.</para>
+        ///
+        /// <para>Two claims, both measured at the shipped sampling: every hull has one-sided faces
+        /// at all (planking whose outboard side is sea and whose inboard side is the cockpit wall),
+        /// and the two hulls the owner reported the strake on (console, cape) have faces that are
+        /// dry specifically on their FRONT (code 2) — the visible face of an inner skin whose back
+        /// the sea reaches.</para>
+        /// </summary>
+        [Test]
+        public void EveryCommittedHullMesh_CarriesPerSideInteriorCodes()
+        {
+            var flat = new List<string>();
+
+            foreach (var hull in HullMeshFleet.Hulls)
+            {
+                var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                Assert.IsNotNull(def, hull.Key);
+                Assert.IsNotNull(def.Mesh, $"{hull.Key}: no mesh sub-asset.");
+
+                var attrs = new List<Vector4>();
+                def.Mesh.GetUVs(RigMeshBuilder.AttrUvChannel, attrs);
+
+                int frontDry = 0, backDry = 0;
+                foreach (Vector4 a in attrs)
+                {
+                    if (a.w > 1.5f && a.w < 2.5f) frontDry++;
+                    else if (a.w > 2.5f) backDry++;
+                }
+
+                if (frontDry + backDry == 0) flat.Add(hull.Key);
+
+                if (hull.Key == "consoleSkiff" || hull.Key == "capeIslander")
+                    Assert.Greater(frontDry, 0,
+                        $"{hull.Key} has no front-dry (code 2) faces, but she is one of the two " +
+                        "hulls the owner reported the inner-strake leak on (2026-07-26: \"its " +
+                        "still on the console walls, in the cape islander its at the wall " +
+                        "intersection with the floor\"). Without code-2 faces the strake's visible " +
+                        "side is wettable again and the defect is back on screen.");
+            }
+
+            Assert.IsEmpty(flat,
+                "These committed hulls carry NO one-sided interior codes (every UV0.w is 0 or 1), " +
+                "so their meshes predate the per-side mask — re-bake: Hidden Harbours ▸ Art ▸ 3D " +
+                "Hulls ▸ Bake ALL fleet hull meshes. " + string.Join(", ", flat));
         }
 
         /// <summary>
