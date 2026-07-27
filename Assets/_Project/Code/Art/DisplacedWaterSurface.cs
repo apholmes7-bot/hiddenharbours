@@ -121,6 +121,13 @@ namespace HiddenHarbours.Art
         private static readonly int IdWaveFieldParams  = Shader.PropertyToID("_WaveFieldParams");
         private static readonly int IdWaterIsoDepth    = Shader.PropertyToID("_WaterIsoDepth");
         private static readonly int IdHeightWorldMin   = Shader.PropertyToID("_HeightWorldMin");
+        private static readonly int IdOceanSwellScale  = Shader.PropertyToID("_OceanSwellScale");
+
+        /// <summary>The shipped default of <c>_OceanSwellScale</c>, which the shader normalises the
+        /// knob against (<c>WAVE_LEGACY_SCALE_REF</c> in HiddenHarboursWater.shader). At exactly
+        /// this value the displaced vertex stage renders the field's TRUE wavelengths — the sea the
+        /// hull physically rocks on. Any other value visually re-scales the DRAWN wavelengths.</summary>
+        private const float WaveLegacyScaleRef = 0.025f;
 
         private Renderer _flatRenderer;
         private MaterialPropertyBlock _mpb;
@@ -336,9 +343,33 @@ namespace HiddenHarbours.Art
             Vector4 heightMin = _mpb.HasVector(IdHeightWorldMin)
                 ? _mpb.GetVector(IdHeightWorldMin)
                 : _displacedMaterial.GetVector(IdHeightWorldMin);
+            // ⚠️ THE FREQUENCY SCALE — the term that made the watertight clamp guard the wrong sea
+            // (owner playtest 2026-07-25, "water is in the hulls still", on EVERY hull including the
+            // two whose clamp data was already proven green).
+            //
+            // `_OceanSwellScale` began life as col.rgb-only DRESSING: a visual wavelength knob the
+            // fragment normalises against its shipped default 0.025, "so that default renders the
+            // field's TRUE wavelengths (= what the hull rocks on)". ADR 0023's vertex stage then
+            // sampled the field through the SAME normalisation — and at that moment a visual knob
+            // started moving real geometry. The owner's Water.mat carries 0.07, so the sea he is
+            // drawn is the field at 2.8x frequency, while `WaveFieldBridge.ShaderTwinSample` — the
+            // clamp's sampler — has no scale term at all and evaluates at 1. The clamp was scanning
+            // for crests 2.8x farther apart than the ones actually lifting the surface, so it found
+            // its worst case in the wrong place, under-demanded, and let the real crests board every
+            // hull equally, worse the rougher it got. Publishing the LIVE value (same source as
+            // every other field here: the copied block first, the material else — presets and the
+            // owner's live tuning both reach it) closes the see-what-you-clamp discipline on the one
+            // term that was missing from it.
+            float swellScale = _mpb.HasFloat(IdOceanSwellScale)
+                ? _mpb.GetFloat(IdOceanSwellScale)
+                : (_displacedMaterial.HasProperty(IdOceanSwellScale)
+                    ? _displacedMaterial.GetFloat(IdOceanSwellScale)
+                    : WaveLegacyScaleRef);
+            float freqScale = Mathf.Max(swellScale, 1e-4f) / WaveLegacyScaleRef;
+
             // The chunk vertices rest at this transform's world z (local z 0 under the mesh root).
             var frame = new WaterIsoDepthFrame(heightMin.y, iso.x, iso.y, transform.position.z,
-                                               exaggeration);
+                                               exaggeration, freqScale);
             DisplacedWaterRegistry.PublishIsoDepthFrame(this, in frame);
         }
 

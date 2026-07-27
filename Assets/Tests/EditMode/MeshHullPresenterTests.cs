@@ -39,6 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
             public float RollDegrees { get; set; }
             public float PitchDegrees { get; set; }
             public float HeavePixels { get; set; }
+            public float RidePixels { get; set; }
             public bool IsConfigured => true;
             public int SortingLayerId; public int SortingOrder;
             public void SetSorting(int layerId, int order) { SortingLayerId = layerId; SortingOrder = order; }

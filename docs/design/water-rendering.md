@@ -2104,6 +2104,24 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
   is per-ground-line). Each cut was adjudicated by the acceptance suite before the complete law
   below replaced it:
 
+  - ⚠️ **TWO TERMS WERE MISSING FROM THIS LAW UNTIL 2026-07-25, and both are the same story:
+    a quantity that was worth nothing when the law was written became dominant later.** The law
+    below is stated for a hull whose own screen heave `H` is ZERO, and for a sea sampled at the
+    published trains' true wave numbers. Neither held in production:
+    (1) **The hull's own screen heave.** Its image is translated in world/screen Y by `H` while
+    `HullDepthBias` anchors its depth at the root line, so the pixel-share is really
+    `r(ry) = (Δ + L − H)/cos − tan·ry` and the win test carries a further `− H·cos`. Drop them and
+    the demand is `H·cot(elev)` ≈ 1.19·|H| too LOW — and `H` is NEGATIVE most of the time (the ride
+    always subtracts the resting draft, and the sharpened field sits below still water for most of
+    its period), i.e. exactly when the boat is down in a trough with the sea standing over her. It
+    was written when a mesh hull's heave was the rig's ~0.04 m rock bob; phase 3 step 2 made the
+    channel metre-scale. The 0.4 m ramped safety only ever covered |H| ≤ 0.34 m.
+    (2) **The drawn sea's frequency scale** — see the `_OceanSwellScale` note under "The data".
+    Both fixes are inert at their old values (`H = 0`, scale 1), which is *precisely* why nothing
+    went red: `HullWaterlineAcceptanceTests.SetPose` pins `_hull.HeavePixels = 0f` inside every GPU
+    render, and the EditMode pin re-implements the same H-free formula, so **the suite and the code
+    agreed with each other and disagreed with the game.** A test that shares an assumption with the
+    thing it guards cannot see that assumption break.
   - **Who fights whom.** The hull's height projects at cos(elev) px/m and its ground at
     sin(elev); the water's lift moves its pixels at 1 px/m (`ws.y += lift`); both depths obey
     the calibrated convention above. Solving the pixel-share: a water sample at ground offset
@@ -2137,6 +2155,47 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
     branch), side dragger working deck DECK 2.05 / half-beam 3.50 ("max beam 7 m"). All
     measured green 2026-07-23.
 
+    ⚠️ **And it is data, which means it can be MISSING — it was, for nine hulls (owner playtest
+    2026-07-25: "water shader is leaking onto deck of iso hulls making boats look semi
+    submerged").** The clamp shipped 2026-07-23 against the only two mesh hulls that existed;
+    ADR 0022 phase 6 landed the other nine a day later with all three flotation fields at 0, so
+    every boat the player actually sails had the clamp switched off and the sea drew inside her.
+    Nothing went red, because the watertight asserts reach two hulls by literal asset path and
+    the fleet-wide fixture's oracle is a fresh rig extraction — and these fields have no rig
+    counterpart by design. The enumeration guard now lives with the fleet, CPU-only so CI
+    adjudicates it: `HullMeshFleetTests.EveryCommittedHullMesh_CarriesTheWatertightClampAndAWaterline`.
+    The committed fleet, deck height / half-beam / resting draft in rig metres:
+
+    | hull | deck | half-beam | draft | deck height read from |
+    |---|---|---|---|---|
+    | dory | 0.06 | 0.85 | 0.11 | no `DECK`; open sole `floorPt` = `kz + FLOOR`, min keel z 0 |
+    | punt | 0.06 | 0.90 | 0.19 | no `DECK`; open bilge sole, battens sit higher |
+    | console skiff | 0.28 | 1.25 | 0.21 | `DECK = 0.28` (sole hatch is a lid, not a hole) |
+    | sport skiff | 0.28 | 1.25 | 0.19 | `DECK = 0.28` |
+    | lobster boat | 0.50 | 2.50 | 0.50 | `DECK = 0.50` |
+    | cape islander | 0.72 | 2.40 | 0.53 | `DECK = 0.72` (flat sole, does not follow the rocker) |
+    | side dragger | 2.05 | 3.50 | 1.10 | `DECK = 2.05` |
+    | stern trawler | 1.75 | 4.70 | 1.60 | ⚠ the open STERN RAMP floor, not her `DECK = 3.5` |
+    | stern trawler mk2 | 1.75 | 4.70 | 1.63 | same envelope as her sister |
+    | coastal packet | 5.00 | 5.50 | 1.90 | `DECK = 5.0` (flush-decked; hold is closed) |
+    | tanker | 8.60 | 9.00 | 2.47 | `DECK = 8.6`, the lowest of her three deck levels |
+
+    Two of those are judgement calls, not measurements, and are the first knobs if a storm run
+    disagrees: the **trawlers' 1.75** (their stern ramp is open to the sea, so the lowest open
+    interior surface is 3.4 m below the working deck — "lower = drier = safer" says 1.75, but if a
+    wet ramp mouth is correct art, 3.5 is a one-field revert) and the **tanker's 0.38-ratio draft
+    2.47**, the one hull where the ratio and the rig disagree — her painted boot line sits at
+    z 3.25–3.95, so 3.60 is the rig's own answer.
+
+    **The regime split this data creates, in plain terms.** Reducing the clamp at 40° elevation,
+    a hull's zero-lift demand is `0.4257·halfBeam − 1.913·deck`; when that exceeds `−draft` the
+    clamp binds even in a dead calm. The dragger (`−2.43`), packet and tanker keep an honest
+    living waterline; the lobster (`+0.108`) is pinned at her marks, and the **dory (`+0.247`) and
+    punt (`+0.268`) are the most-clamped hulls in the fleet** — their soles sit 6 cm above the
+    keel, so they trade "semi-submerged" for "sitting ON the sea". That is the safe direction and
+    the shipped lobster's accepted precedent, but there is no data cure: the real one is the
+    per-face interior mask named above.
+
   Result: water still climbs the exterior planking with every wave, but the moment a crest would
   put water inside the bulwarks, the calibrated frame rides up exactly enough that it cannot.
   Per-hull looks follow the geometry honestly: the DRAGGER (real freeboard — 2.05 m deck over
@@ -2144,9 +2203,8 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
   measure ≈ 0) and wears a bounded band even in the gale; the LOBSTER — whose sole sits AT her
   design waterline — is pinned at her marks whenever the local sea could top them, so her share
   of the living waterline is the trough swing (the sea drops away, bares her planking, and
-  returns to her marks). A per-face interior mask in the facet shader is the known upgrade that
-  would give a sole-at-the-waterline hull an over-the-marks climb too — a shader-side follow-up,
-  deliberately out of this fix's C#-only scope. Displaced OFF there is no frame and no clamp
+  returns to her marks). ⭐ **The per-face interior mask named here as "the known upgrade" is now
+  BUILT and SUPERSEDES this whole clamp — see §24.1.** Displaced OFF there is no frame and no clamp
   (the A/B byte-identity contract holds); a silent wave field demands nothing and the clamp is
   inert.
   Proof: `HullWaterlineAcceptanceTests` — the per-point law, its worst-line term and the ramped
@@ -2166,6 +2224,175 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
   interleave with ITS hull must ride the hull's frame (parent under the hull renderer or apply the
   same registry frame) — a raw world-z≈0 deck renderer sits far NEARER than a calibrated hull.
 
+### 24.1 The per-face interior mask — the sea is told what it may not draw on
+
+**The clamp above hit its ceiling, in two directions at once** (owner playtest 2026-07-25, after the
+H-term and frequency-scale fixes landed): *"when the bow faces south you see water at the stern,
+also a lot of the boats ride very high in the water now with props not submerged."* Both are the
+same limit. The clamp guards ground-lines only out to `WatertightHalfBeamMeters`, but a bow-on hull's
+ground-lines span her half-LENGTH, so the stern lies outside the guarded band; and closing that gap
+costs **+0.42 m (dory) to +2.50 m (side dragger)** of extra shove on every boat — which is the second
+complaint, and is the same wall that "dry-docked the dragger" in the clamp's own lineage. A blunt
+whole-hull z shove cannot keep a sole dry without also lifting the planking, the transom and the
+propeller out of the water with it.
+
+**So stop guessing the hull's reach and ask the GPU.** Each face of a baked hull now carries an
+INTERIOR flag in `UV0.w`. A guard pass (`HHHullGuard`, a second pass on the facet shader riding the
+SAME `vert`) rasterises the fleet into a one-channel `_HHHullGuardTex` with `ZWrite On / ZTest LEqual`
+against **its own** depth buffer, so the surviving value at each pixel is the flag of the NEAREST hull
+surface there. The displaced water's fragment then `discard`s where that reads interior — killing the
+colour *and* the depth write, so the pixel keeps the hull's depth and the hull composes normally.
+
+Per-pixel exact, orientation-free, and **no wave maths is duplicated anywhere** — which matters,
+because a duplicated copy of the lift is precisely what caused the frequency-scale defect. The
+exterior is left completely alone: the waterline climbs the planking truthfully at every heading, an
+outboard's leg and prop stay wettable, and hulls float at their tuned resting draft because nothing
+is shoving them nearer the camera. `IsoFacetHullRenderer` bypasses the clamp when the mask is on AND
+that hull's mesh actually carries flags, so an un-rebaked hull keeps her clamp rather than silently
+losing all protection.
+
+**Why not a stencil** (the first design, rejected): `Stencil Ref` is per-PASS fixed state in ShaderLab
+while "interior" is per-FACE; `SV_StencilRef` is SM5.1 and would burn the mobile port; and it was
+never established that the Depth32 buffer even has stencil bits. **Why not `ZTest Equal`** on the
+facet pass: after the water writes, `LEqual` already selects the identical fragment set — `Equal`
+adds only a hard dependency on two separately-compiled vertex programs agreeing bit-for-bit, a
+silent GPU-only failure (the boat vanishing in patches) that CI can never see.
+
+**The classifier — "can the sea see it?"** A face is EXTERIOR iff it is frontmost at even one pixel
+from even one direction at or below the horizon, all round. It reads no normal, no material and no
+rig source, and each of those was measured false first: **normals do not survive mirroring** (on 7 of
+11 hulls the majority of paired faces carry the shared winding, so half the planking would be
+misclassified); material names do not separate (the dory's whole palette is `{wood, iron}`); `b <= -1`
+includes the boot stripe and excludes every sole; an inset threshold is a continuum, not a split.
+Two structural details are load-bearing: the raster is **two-phase** (a winner-takes-all pass loses
+every coplanar decoration band to the plank beneath — 184 wrongly-interior faces on the dory alone),
+and it **samples strictly below elevation 0** (see the ring's two fences immediately below).
+
+⚠️ **The sampling ring is fenced on BOTH sides, for two different reasons.**
+
+*Above 0* — at +1° an upward-facing deck becomes visible and leaks into the wettable set (18 dory /
+18 lobster / 44 packet faces flipping), i.e. decks becoming floodable fleet-wide.
+
+*At exactly 0* — the ray is **level**, and a level ray clears a low gunwale and lands on the **inner
+planking of the far side**. Sheer curve makes that routine rather than a graze, since freeboard is
+lowest amidships; one frontmost pixel then condemns the whole face. This shipped in the first mask
+bake and the owner found it by eye (playtest 2026-07-26): *"it doesnt seem to affect the lower floor
+deck though, now its just the interior walls of the boat"* — with the diagnosis attached, *"the waves
+need to read on the exterior walls to give the submerged effect but the walls considered interior
+need to not show any water shader."* It was wave-independent (unchanged at `WaveExaggeration = 0`),
+never touched the sole (a level ray cannot hit an upward-facing floor — edge-on at 0, backfacing
+below), and hit only the vertical interior surfaces, which is exactly the set a level ray can reach.
+
+**Why every existing check passed it.** The cross-check below measures the *lowest* interior face,
+which the sole satisfies on every hull — the metric is structurally blind to the walls above it. Same
+shape as the clamp's post-mortem in §24: the test and the code agreed with each other and disagreed
+with the game. Removing the ring is surgical, because every remaining elevation looks **upward** at
+the hull and can only ever reach her outside; −8° is what actually decides the topsides. The
+classifier asserts the fence rather than commenting it.
+
+⚠️ **It is a GOLDEN MASTER, not a formula** — 5–30% of sea-band faces move under a doubling of the
+azimuth count, so the sampling constants are committed data and a change to them is a deliberate
+re-bake with re-measured pins.
+
+**The evidence it is right.** The classifier's lowest interior face, from geometry alone, against the
+deck heights measured independently by hand off the rigs' own `DECK` constants:
+
+| hull | interior faces (0° ring → without) | lowest interior | deck line | Δ |
+|---|---|---|---|---|
+| dory | 116 → **134** /472 | 0.060 | 0.06 | **0.000** |
+| punt | 138 → **156** /575 | 0.060 | 0.06 | **0.000** |
+| console skiff | 126 → **150** /663 | 0.271 | 0.28 | −0.009 |
+| sport skiff | 107 → **136** /621 | 0.271 | 0.28 | −0.009 |
+| lobster boat | 135 → **167** /676 | 0.491 | 0.50 | −0.009 |
+| cape islander | 95 → **122** /509 | 0.710 | 0.72 | −0.010 |
+| side dragger | 163 → **194** /792 | 2.034 | 2.05 | −0.016 |
+| stern trawler | 117 → **158** /793 | 1.750 | 1.75 | **0.000** |
+| stern trawler mk2 | 121 → **188** /1210 | 1.750 | 1.75 | **0.000** |
+| coastal packet | 178 → **197** /1254 | 4.731 | 5.00 | −0.269 ⚠ |
+| tanker | 204 → **250** /1760 | 8.582 | 8.60 | −0.018 |
+
+Ten of eleven within 18 mm, by two methods sharing no code and no input. The coastal packet is the
+one outlier and is also the least stable hull under sampling perturbation — she is named in the guard
+rather than hidden by a loose tolerance. Pinned by
+`HullMeshFleetTests.EveryCommittedHullMesh_CarriesTheInteriorMaskAndAgreesWithItsDeckLine` and
+`InteriorClassifier_SamplesStrictlyBelowTheHorizon`.
+
+**Reading the walls re-bake (2026-07-26).** Every hull gained 18–67 protected faces and **every
+lowest-interior height is bit-identical** across the change. That pairing is the whole proof: the
+faces that flipped all sit *above* the sole (the interior walls), and none dropped toward the keel —
+so no outer planking became interior and the waterline still climbs her exactly as before. The
+failure mode this rules out is the opposite one named above: coarser sampling over-classifies, which
+would have shown as a dry patch on the planking where the sea should be washing.
+
+**The stern ramp stays wet** (owner ruling 2026-07-26: *"you can keep the ramp wet. its a cool
+effect"*), and the same column proves it rather than promising it. A stern ramp cuts *down* from the
+deck toward the water, so its floor spans heights below the deck line; if any of it had flipped to
+interior, the trawlers' lowest-interior would have fallen below 1.750. Both are still pinned exactly
+at 1.750, so the ramp mouth is still exterior. This closes the open §24.1 question — no `DECK = 3.5`
+move, no rig change.
+
+### 24.2 The rail — the sea has a LEVEL
+
+Removing the level ray fixed the walls and nothing else, and the next playtest found the next
+instance: *"stern washboards are still being covered"*, then *"some in the bow still show, some of
+the elevated decks on bow show it, some of the larger vessels show it on what looks like deck."* The
+owner named the real problem rather than the instances: **"fixing one surface at a time feels
+tedious, there must be a better solution, like defining the exterior walls of a boat or something."**
+He was right, and visibility was the wrong primitive all along.
+
+**Light reaches places water cannot.** It enters through the gap over a gunwale. It falls on the
+UNDERSIDE of an overhanging washboard — which rides the sheer outside the station line — and the
+classifier then wets its *top*, because `Raster` takes `Mathf.Abs(area)` and has no idea which side
+of a face it is looking at. It cannot be given one either: winding does not survive mirroring on 7 of
+the 11 hulls, which is why normals were rejected in the first place. Every one of these is a separate
+patch under a visibility rule.
+
+**Water is not light: it arrives from outside and it has a level it cannot climb above.** So the rule
+gains a second half — a face is EXTERIOR iff the sea can *see* it **and** the sea can *rise* to it.
+`RigMeshInteriorClassifier.DeriveRailHeight` traces the sheer station by station (the highest vertex
+still out at that station's own half-beam, so cabins and consoles are excluded by geometry rather
+than by name) and takes a low percentile, because water enters where the sheer is lowest. Anything
+lying wholly above that is out of reach whichever way it faces. **No sidedness required** — the level
+does the work that winding could not.
+
+| hull | rail | deck | interior (visibility → +rail) | lowest interior |
+|---|---|---|---|---|
+| dory | 0.460 | 0.06 | 134 → **203** /472 | 0.060 |
+| punt | 0.347 | 0.06 | 156 → **335** /575 | 0.060 |
+| console skiff | 0.607 | 0.28 | 150 → **336** /663 | 0.271 |
+| sport skiff | 0.622 | 0.28 | 136 → **323** /621 | 0.271 |
+| cape islander | 1.403 | 0.72 | 122 → **277** /509 | 0.710 |
+| lobster boat | 1.173 | 0.50 | 167 → **410** /676 | 0.491 |
+| side dragger | 2.600 | 2.05 | 194 → **533** /792 | 2.034 |
+| stern trawler | 3.500 | 1.75 | 158 → **610** /793 | 1.750 |
+| stern trawler mk2 | 4.550 | 1.75 | 188 → **670** /1210 | 1.750 |
+| coastal packet | 5.007 | 5.00 | 197 → **1011** /1254 | 4.731 |
+| tanker | 8.600 | 8.60 | 250 → **1475** /1760 | 8.582 |
+
+**Every rail clears its deck line** (pinned by `HullRailHeightTests.EveryHullsRail_SitsAboveHerDeck-
+Line`); a rail at or below the deck would mean the derivation had lost the hull side. **Every
+lowest-interior is unchanged**, so the independent deck-height cross-check survives the rewrite
+untouched. And the derivation recovered real structure nobody fed it: the stern trawler's rail landed
+at exactly **3.500**, the shelter-deck height §24.1 had previously guessed at by hand.
+
+The change is **monotone** — it only ever removes wettable faces — so it cannot introduce flooding
+anywhere. The only way it can be wrong is by drying something that should be wet, which is the
+failure direction this document has always preferred.
+
+⚠️ **The accepted cost (owner-accepted in advance).** A level cuts both ways: the sea also stops
+drawing on her OUTSIDE above the rail, so she no longer takes green water over the topsides in a
+heavy sea. That was judged the right trade, because a boat that read as swamped was the defect being
+removed. If it ever reads as too tame, the knob is `RigMeshInteriorClassifier.RailPercentile` — and
+raising it is a deliberate re-bake, not a tweak.
+
+**Accepted artefact:** the mask is binary and depth-blind, so a crest genuinely between camera and
+boat that overlaps her cockpit leaves an interior-shaped island of dry boat. No existing metric can
+see it — the storm suite counts water-over-hull and this is hull-over-water, so it reads as MORE hull
+and every assert passes. Owner verdict pending.
+
+**Rollback:** one serialized bool, `IsoFacetHullFeature._interiorMask`. Off ⇒ no guard pass, no
+discard, and the whole-hull clamp resumes — exactly the shipped behaviour, with no data edits.
+
 **The waterline composition — draw order IS the waterline.** The water pass now records BEFORE the
 facet/deck passes (`IsoFacetHullFeature`). Hull fragments below the lifted surface fail the shared
 z-test and never enter the facet MRT; the resolved hull texture holds only the EMERGENT hull, so
@@ -2175,6 +2402,32 @@ sea where the submerged planking used to be. Water pixels behind a hull stay in 
 and are simply covered in-scene by the hull overlay's sort. The keyline resolve is untouched: it
 floods the emergent silhouette, so **the hull outline follows the waterline and reads OVER the
 water** — the sprite fleet's ink-over-water convention at the flat waterline, kept.
+
+⚠️ **The composing WINDOW has to travel with the boat — the second half of the 2026-07-25
+"semi submerged" defect, and it is not a z-test bug at all.** A mesh hull's only in-scene face is
+the `HullOverlay` quad, and its shader is a 1:1 screen-space `Load()` that exists ONLY where that
+quad rasterises: a hull pixel outside the quad is never composed, and what shows there is whatever
+sorts beneath — the WaterOverlay, which covers the whole sea rect under every boat. The quad is the
+rig CELL rect (+1 px for the keyline), baked once and parented at the un-heaved root. That was
+sound while `HeavePixels` carried only the rig's own rock, which is an animation INSIDE the cell
+(the rig subtracts it from screen y after projecting, so it clips at the cell edge too — matching
+that is the golden master) and runs 1.0–1.6 px across the fleet, well inside the authored margin.
+Phase 3 step 2 then began pushing the displaced ride through the same channel in metres ×
+PxPerMetre — **20–100× that budget**. On a crest the hull's image slid up out of a window that
+stayed behind, her top band was dropped, and the sea drew through the gap: a hard horizontal cut
+that reads exactly like a swamped boat. On the dory (cell 156 px, pivot 88 from the top) the
+headroom is ~21 px ≈ 0.65 m against a reference-sea crest ride of ~1.4 m.
+
+The fix separates the two, because they are physically different things wearing the same units:
+the Core seam gains `IHullMeshRenderer.RidePixels` — *how much of `HeavePixels` is world ride
+rather than rig rock* — which `MeshHullDriver` reports alongside the unchanged total, and
+`IsoFacetHullRenderer.ApplyPose` translates the overlay quad by. The rock keeps clipping at the
+cell as the rig does; the boat moving through the world carries her window with her. Y only, never
+the calibrated z (meaningless to an in-scene quad under the ortho camera, and large enough to throw
+it out of frame). Ride 0 ⇒ window at localPosition 0 ⇒ byte-identical to before, so the flat-sea
+A/B contract holds unchanged. Note the interaction the two defects had: both worsen with sea state,
+so they presented as one symptom, and the acceptance suite could see neither — it pins
+`HeavePixels = 0` and builds its own screen-sized water overlay.
 
 **Heave honesty (phase 3 step 2 — SHIPPED): boats ride the sea they are drawn on.** While the
 displaced sea is active, every hull's vertical ride is the same displaced-height rule the surface
@@ -2241,3 +2494,60 @@ honoured: fresh material (never Water.mat's baked height map), `_USE_HEIGHTTEX` 
 height texture, plain `LEqual` through the render-graph camera path (no hand-rolled reversed-Z),
 shader warm-up before measuring. The test can dump its three adjudicated frames as PNGs
 (`HH_WATERLINE_DUMP=<dir>`) for a human eye on a red run.
+
+### 24.3 Sidedness — the inner strake, and why a face's two sides are two different surfaces
+
+The rail retired the over-the-lip family, and the next playtest found the survivor: *"its still on
+the console walls, in the cape islander its at the wall intersection with the floor"* — mainly the
+interior wall boards (console vertical wall sections), the upper bow interior, the rear washboards.
+The rigs model a separate **inner skin** (`skin(side,u,frac,inset)`; dory `TH = 0.035`, console
+`0.045`, cape `0.05`), inset by `TH` at the sheer and narrowing toward the floor. From in under the
+covering board, a below-horizon ray **genuinely reaches its BACK** — this is not a sampling
+artefact: raising the raster from 16 to 96 px/m (62.5 → 10.4 mm) changed the console and cape by
+exactly **0 faces**, at 836 s of classify time. But the surface the player looks at is its FRONT.
+One face, two sides, two different relationships to the sea — and a face-level flag cannot say both.
+
+**So the classification is per SIDE** (`RigMeshInteriorClassifier.ClassifySides`): each side of a
+face is exterior iff the sea can see THAT side and can rise to the face (the rail caps both sides).
+`UV0.w` becomes a side code — `0` exterior both sides (and every pre-mask bake / every fitting),
+`1` interior both sides, `2` interior on the FRONT only, `3` interior on the BACK only — and the
+guard pass decodes which side the camera is rendering before writing the mask.
+
+⚠️ **This is NOT the sidedness that was rejected when normals were tried as a classifier.** That
+attempt needed the normal to point OUTWARD — an orientation claim mirroring breaks on 7 of the 11
+hulls (mirror twins share winding, so one twin's normal points into the boat). Here the first-three-
+vertex normal is only a **LABEL** telling a face's two sides apart, and it does not matter which
+side it lands on: the classifier sorts a view into front/back by `sign(dot(faceNormal, eye))`, and
+the guard vertex stage recomputes the same quantity in world space
+(`sign(dot(worldNormal, towardCamera))`, third row of the view matrix) — the object matrix is
+orthogonal (rotation × the deliberate det −1 mirror), and **orthogonal maps preserve dot products**,
+so bake and render agree face by face however the mirroring fell. `SV_IsFrontFace` was deliberately
+NOT used: its winding convention would have to survive the reflection and the shared-winding twins,
+which is exactly the parity minefield the label sidesteps.
+
+| hull | fully interior (= old interior) | front-dry (code 2) | back-dry (code 3) |
+|---|---|---|---|
+| dory | 203/472 | 83 | 117 |
+| punt | 335/575 | 62 | 93 |
+| console skiff | 336/663 | **90** | 134 |
+| sport skiff | 323/621 | 93 | 129 |
+| cape islander | 277/509 | **49** | 104 |
+| lobster boat | 410/676 | 66 | 117 |
+| side dragger | 533/792 | 54 | 110 |
+| stern trawler | 610/793 | 13 | 66 |
+| stern trawler mk2 | 670/1210 | 196 | 170 |
+| coastal packet | 1011/1254 | 49 | 89 |
+| tanker | 1475/1760 | 9 | 107 |
+
+**The golden master survives untouched by construction.** "Fully interior" (code 1 — the sea reaches
+neither side) is exactly the set the side-blind classifier produced, so every fully-interior count
+and every lowest-fully-interior height above is **identical to the §24.2 table**, and the deck-line
+cross-check re-pins nothing. The change is again **monotone**: codes 2/3 only ever dry a side that
+was previously wettable (the sea's own reachable side stays wet), so it cannot introduce flooding.
+The bolded numbers are the cure for the reported defect: the console's and cape's inner strakes are
+front-dry, so the wall the player looks at no longer takes the sea, while its outboard back — where
+the water genuinely laps under the covering board — stays honest. Guards:
+`HullMeshFleetTests.EveryCommittedHullMesh_CarriesPerSideInteriorCodes` (every hull has one-sided
+faces; console + cape specifically carry code-2 faces), and the fully-interior cross-check now
+filters to code 1. Rollback unchanged: `IsoFacetHullFeature._interiorMask` off ⇒ no guard pass at
+all; a pre-sidedness mesh (0/1 only) renders exactly as before through the new shader.

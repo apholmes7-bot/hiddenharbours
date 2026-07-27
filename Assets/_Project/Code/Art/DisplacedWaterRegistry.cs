@@ -58,20 +58,41 @@ namespace HiddenHarbours.Art
         /// bound the surface lift a hull can meet (shore fade deliberately excluded — an offshore
         /// bound, conservative near the coast). 1 when published through the legacy overload.</summary>
         public readonly float Exaggeration;
+        /// <summary>
+        /// The DRAWN sea's wave-number scale — <c>_OceanSwellScale / 0.025</c> of the tick that
+        /// published this frame (the shader's own <c>WAVE_LEGACY_SCALE_REF</c> normalisation).
+        ///
+        /// <para>⚠️ <b>Load-bearing, and it was missing.</b> The displaced vertex stage samples the
+        /// wave field through this scale, so at anything but the shipped default the surface the
+        /// player sees has DIFFERENT WAVELENGTHS from the raw published trains. The watertight clamp
+        /// must scan the sea that is actually drawn or it looks for crests in the wrong places and
+        /// lets the real ones board the hull — which is exactly what shipped
+        /// (<c>Water.mat</c> carries 0.07 ⇒ 2.8, and the clamp was scanning at 1). 1 = the shipped
+        /// default and the field's true wavelengths; also the value the legacy overloads publish, so
+        /// every pre-existing caller keeps its exact behaviour.</para>
+        /// </summary>
+        public readonly float FreqScale;
 
         public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ)
-            : this(referenceY, cosElev, sinElev, baseZ, 1f)
+            : this(referenceY, cosElev, sinElev, baseZ, 1f, 1f)
         {
         }
 
         public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ,
                                   float exaggeration)
+            : this(referenceY, cosElev, sinElev, baseZ, exaggeration, 1f)
+        {
+        }
+
+        public WaterIsoDepthFrame(float referenceY, float cosElev, float sinElev, float baseZ,
+                                  float exaggeration, float freqScale)
         {
             ReferenceY = referenceY;
             CosElev = cosElev;
             SinElev = sinElev;
             BaseZ = baseZ;
             Exaggeration = exaggeration;
+            FreqScale = freqScale;
         }
     }
 

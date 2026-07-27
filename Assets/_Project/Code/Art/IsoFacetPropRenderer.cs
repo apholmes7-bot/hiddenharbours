@@ -56,6 +56,11 @@ namespace HiddenHarbours.Art
         private Material _facetMaterial;
         private Texture2D _rampTex, _darkRampTex;
         private MeshRenderer _meshRenderer;
+        // The bolted half's renderer. ⚠️ It MUST be held, not discarded: it needs the same per-boat
+        // property block as the swivelling half, and a facet renderer with no _HullId writes alpha 0
+        // — the reserved "no hull here" — which the keyline resolve reads as EMPTY and every overlay
+        // quad then clips. See WriteHullProperties.
+        private MeshRenderer _fixedRenderer;
         private Transform _meshChild, _fixedChild;
         private IsoFacetHullRenderer _hull;
         private MaterialPropertyBlock _props;
@@ -171,7 +176,7 @@ namespace HiddenHarbours.Art
             // same lateral mount, and it simply never takes the rotation. Both children join the same
             // LightMode renderer list, so they share the hull's depth buffer like everything else.
             if (setup.FixedMesh != null)
-                MakeChild("FacetPropFixed", setup.FixedMesh, out _fixedChild);
+                _fixedRenderer = MakeChild("FacetPropFixed", setup.FixedMesh, out _fixedChild);
         }
 
         private MeshRenderer MakeChild(string name, Mesh mesh, out Transform child)
@@ -220,6 +225,18 @@ namespace HiddenHarbours.Art
             _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
             _props.SetFloat(IsoFacetShaderIds.HullId, _hull.HullId / 255f);
             _meshRenderer.SetPropertyBlock(_props);
+            // ⚠️ AND THE BOLTED HALF (owner playtest 2026-07-25). Its renderer used to be discarded
+            // at the MakeChild call, so it never received this block. `_HullId` is not in the
+            // shader's Properties list and nothing sets it globally, so it rasterised at 0 — the
+            // reserved "no hull here" alpha. The keyline resolve reads those pixels as EMPTY and
+            // every overlay quad clips them, while the bracket's `ZWrite On` has already won the
+            // shared z-test against the transom it clamps onto: a bracket-shaped hole punched clean
+            // through the stern, showing whatever sorts under every boat — the sea. Live on all four
+            // motor defs (punt basic/upgraded, skiff work/sport); the dory's oars carry no FixedMesh,
+            // which is why rowing her never showed it. The same omission left _HullOrigin at the
+            // world origin, so its dither crawled too — the ADR 0022 defect, reintroduced.
+            if (_fixedRenderer != null)
+                _fixedRenderer.SetPropertyBlock(_props);
         }
 
         /// <summary>
@@ -255,6 +272,7 @@ namespace HiddenHarbours.Art
             _meshChild = null;
             _fixedChild = null;
             _meshRenderer = null;
+            _fixedRenderer = null;
             _facetMaterial = null;
             _rampTex = null;
             _darkRampTex = null;
