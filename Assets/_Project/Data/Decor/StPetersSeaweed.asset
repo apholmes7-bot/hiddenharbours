@@ -38,6 +38,12 @@ MonoBehaviour:
   - 0.45
   - 0.75
   - 1.15
+  WeedArt: {fileID: 11400000, guid: b698b318af89bfa4db473452a26cc3b8, type: 2}
+  RampWeights:
+  - 1
+  - 0.3
+  - 0.12
+  SpeciesFilter: []
   TierSprites: []
   Palette:
   - {r: 0.23, g: 0.29, b: 0.16, a: 1}

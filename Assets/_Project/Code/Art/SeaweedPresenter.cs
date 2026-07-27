@@ -274,7 +274,9 @@ namespace HiddenHarbours.Art
                 Tint = new Color[n],
                 Renderers = new SpriteRenderer[n],
                 AbsorbedBy = new int[n],
+                ArtKey = new int[n],
             };
+            bed.SpeciesMask = def.WeedArt != null ? def.WeedArt.ResolveSpeciesMask(def.SpeciesFilter) : null;
 
             bed.Root = new GameObject("[SeaweedBed] " + def.Id);
             bed.Root.transform.SetParent(transform, worldPositionStays: true);
@@ -343,9 +345,16 @@ namespace HiddenHarbours.Art
                 bed.SnagId[i] = null;
                 bed.SnagUntil[i] = 0.0;
                 bed.BaseRotDeg[i] = AmbientParticleMath.Hash01(key, 11) * 360f;
-                bed.Tint[i] = palette != null
-                    ? palette[(int)(AmbientParticleMath.Hash01(key, 7) * palette.Length) % palette.Length]
-                    : Color.white;
+                bed.ArtKey[i] = key;
+
+                // ⚠️ The palette tint is FOR THE GREYBOX BLOB, which is drawn white-with-alpha
+                // precisely so this multiply colours it. The painted kit already carries the art
+                // director's own banded ramps, so tinting it would multiply a dark olive over
+                // finished art and mud every clump. Painted beds therefore ride white and take only
+                // the shared day/night tint and the fade alpha.
+                bed.Tint[i] = UsesPaintedArt(def) || palette == null
+                    ? Color.white
+                    : palette[(int)(AmbientParticleMath.Hash01(key, 7) * palette.Length) % palette.Length];
                 ApplyLook(bed, i);
                 return true;
             }
@@ -484,21 +493,57 @@ namespace HiddenHarbours.Art
             }
         }
 
-        /// <summary>Set a piece's sprite + world footprint for its size tier: the owner's painted weed
-        /// when the Def slots it, else the shared greybox blob; scaled so the sprite's width IS the
-        /// Def's tier footprint regardless of the art's PPU.</summary>
+        /// <summary>True when this bed has painted art to draw (and so must not be palette-tinted).</summary>
+        private static bool UsesPaintedArt(SeaweedDef def) => def.WeedArt != null && def.WeedArt.Count > 0;
+
+        /// <summary>
+        /// Set a piece's sprite for its size tier.
+        ///
+        /// <para><b>Painted kit (the normal path):</b> pick the clump the art director drew NEAREST this
+        /// tier's footprint and draw it at <b>scale 1</b> — native pixels, no resampling. The kit spans
+        /// 0.45–2.0 m, so the tier ladder is a target to match against rather than a size to force art
+        /// into. Forcing it is what the legacy path below does, and on pixel art it comes apart on the
+        /// grid.</para>
+        ///
+        /// <para><b>Legacy / greybox fallback:</b> the old behaviour exactly — one sprite per tier (or
+        /// the code-built blob), rescaled so its width IS the tier footprint whatever its PPU.</para>
+        /// </summary>
         private void ApplyLook(BedRuntime bed, int i)
         {
             var def = bed.Def;
             int tier = Mathf.Clamp(bed.Tier[i], 0, def.MaxTier);
+            float footprint = def.TierSizesMeters != null && def.TierSizesMeters.Length > 0
+                ? def.TierSizesMeters[Mathf.Clamp(tier, 0, def.TierSizesMeters.Length - 1)] : 1f;
+            var sr = bed.Renderers[i];
+
+            if (UsesPaintedArt(def))
+            {
+                var kit = def.WeedArt;
+                int key = bed.ArtKey[i];
+                int ramp = SeaweedMath.PickRamp(def.RampWeights,
+                                                kit.Ramps != null ? kit.Ramps.Length : 0, key);
+                int pick = SeaweedMath.PickWeedArt(footprint, kit.Sizes, kit.SpeciesIndices,
+                                                   kit.RampIndices, kit.Count,
+                                                   bed.SpeciesMask, ramp, key);
+                if (pick >= 0)
+                {
+                    Sprite painted = kit.Entries[pick].Sprite;
+                    if (painted != null)
+                    {
+                        if (sr.sprite != painted) sr.sprite = painted;
+                        // Native size: the art IS the footprint. Reset in case this piece was
+                        // previously drawn on the fallback path.
+                        if (sr.transform.localScale != Vector3.one) sr.transform.localScale = Vector3.one;
+                        return;
+                    }
+                }
+                // Fall through: a kit with a hole in it still draws a blob rather than nothing.
+            }
 
             Sprite sprite = def.TierSprites != null && tier < def.TierSprites.Length && def.TierSprites[tier] != null
                 ? def.TierSprites[tier] : _greyboxBlob;
-            var sr = bed.Renderers[i];
             if (sr.sprite != sprite) sr.sprite = sprite;
 
-            float footprint = def.TierSizesMeters != null && def.TierSizesMeters.Length > 0
-                ? def.TierSizesMeters[Mathf.Clamp(tier, 0, def.TierSizesMeters.Length - 1)] : 1f;
             float width = sprite != null ? Mathf.Max(0.01f, sprite.bounds.size.x) : 1f;
             float scale = footprint / width;
             sr.transform.localScale = new Vector3(scale, scale, 1f);
@@ -572,6 +617,15 @@ namespace HiddenHarbours.Art
             public Color[] Tint;
             public SpriteRenderer[] Renderers;
             public int[] AbsorbedBy;          // merge scratch, pre-allocated
+
+            /// <summary>The piece's seeded art key, kept from its spawn so the painted clump it wears
+            /// (and above all its ramp row) stays stable for the piece's life instead of re-rolling
+            /// every time a merge re-runs ApplyLook.</summary>
+            public int[] ArtKey;
+
+            /// <summary>The bed's species filter resolved against the kit ONCE at activation — null
+            /// means every species. Resolving per piece would allocate on the spawn path.</summary>
+            public bool[] SpeciesMask;
         }
     }
 }
