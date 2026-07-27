@@ -114,13 +114,22 @@ namespace HiddenHarbours.Art.Editor
             EnsureFolder($"{PrefabRoot}/Flowers");
             n += BuildFlowerPrefabs($"{PrefabRoot}/Flowers");
 
+            // --- The ACADIAN TREE KIT (rig-baked, PR #298) — a different set from Tree01..Tree43
+            //     above and built by its own builder, because a rig tree carries two things a
+            //     hand-drawn one does not: a trunk-foot pivot that is NOT bottom-centre, and a
+            //     per-species trunk anchor. Owned by AcadianTreePrefabBuilder; called here so the
+            //     one-shot toolkit command covers it too. ---
+            n += AcadianTreePrefabBuilder.BuildAll(AcadianTreeCatalog.PrefabRoot);
+
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[DecorPrefabBuilder] Built {n} decor prefabs under {PrefabRoot} " +
-                      "(Trees/ Buildings/ Props/ Grass/ Flowers/). " +
+                      "(Trees/ Trees/Acadian/ Buildings/ Props/ Grass/ Flowers/). " +
                       "Drag one from the Project window into a scene to place it (see docs/authoring-scenes.md). " +
                       "Grass and flowers sway in Play automatically; for the footstep bend, put a GrassFootstep " +
-                      "on the player. To scatter flowers by hand use Hidden Harbours ▸ Tools ▸ Flower Paint Tool. " +
+                      "on the player. To scatter flowers by hand use Hidden Harbours ▸ Tools ▸ Flower Paint Tool, " +
+                      "and for the Acadian trees Hidden Harbours ▸ Tools ▸ Tree Paint Tool (or ▸ Place Acadian " +
+                      "Tree Lineup to stand all ten species in a row and compare them). " +
                       "The Lamppost (Props/) carries its OWN warm night light — drop it and it lights the ground " +
                       "beneath it at night automatically (scrub the clock to night to see it).");
         }
