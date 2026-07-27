@@ -89,6 +89,23 @@ namespace HiddenHarbours.Art
         [SerializeField, Tooltip("Hidden/HiddenHarbours/IsoFacetResolve (auto-found when null).")]
         private Shader _resolveShader;
 
+        [SerializeField, Tooltip("The per-face INTERIOR MASK (ADR 0023). On: a guard pass marks " +
+                                 "each pixel whose nearest hull surface is an open interior, and " +
+                                 "the displaced sea discards there, so water can never draw inside " +
+                                 "a boat. Off: the shipped whole-hull watertight clamp instead. " +
+                                 "This is the one-boolean rollback — not a balance knob, so it " +
+                                 "lives here and not in GameConfig.")]
+        private bool _interiorMask = true;
+
+        /// <summary>
+        /// Mirror of <c>_interiorMask</c> for the code that cannot see the feature asset — chiefly
+        /// <see cref="IsoFacetHullRenderer.ApplyPose"/>, which must BYPASS the whole-hull watertight
+        /// clamp when the mask is doing the job instead (running both would re-introduce exactly the
+        /// over-drying the mask exists to cure). Written every AddRenderPasses; defaults to false so
+        /// a project with no feature instance keeps the shipped clamp behaviour.
+        /// </summary>
+        public static bool InteriorMaskEnabled { get; private set; }
+
         private HullPass _pass;
         private Material _resolveMaterial;
 
@@ -134,10 +151,12 @@ namespace HiddenHarbours.Art
                 _resolveMaterial = CoreUtils.CreateEngineMaterial(shader);
             }
 
+            InteriorMaskEnabled = _interiorMask;
             _pass.renderPassSortingLayerID = LowestSortingLayerId();
             _pass.ResolveMaterial = _resolveMaterial;
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
+            _pass.DrawGuard = _interiorMask;
             renderer.EnqueuePass(_pass);
         }
 
@@ -173,8 +192,13 @@ namespace HiddenHarbours.Art
             // ADR 0023 phase 2: the displaced water surface's off-screen pass (the water shader's
             // "HHWaterDisplaced" pass). Drawn against the SAME private depth buffer as the hulls.
             private static readonly ShaderTagId s_WaterTag = new ShaderTagId("HHWater");
+            // The per-face interior mask's guard pass (ADR 0023) — the facet shader's second pass.
+            private static readonly ShaderTagId s_GuardTag = new ShaderTagId("HHHullGuard");
 
             public Material ResolveMaterial;
+            /// <summary>Record the interior-guard pass (the per-face mask)? Only meaningful with
+            /// both hulls and water live — with no sea there is nothing to keep out.</summary>
+            public bool DrawGuard;
             /// <summary>Record the hull MRT + keyline resolve this frame (any live mesh hull)?</summary>
             public bool DrawHulls;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
@@ -203,6 +227,11 @@ namespace HiddenHarbours.Art
             }
 
             private class WaterPassData
+            {
+                public RendererListHandle Renderers;
+            }
+
+            private class GuardPassData
             {
                 public RendererListHandle Renderers;
             }
@@ -257,6 +286,70 @@ namespace HiddenHarbours.Art
                 // convention — see WaterIsoDepthFrame; with no displaced
                 // surface active there is no water pass, no frame, and the recording below is
                 // byte-identical to the water-off path.
+                // ---- the INTERIOR GUARD (ADR 0023: the per-face interior mask) ----------------
+                // The cure for the whole-hull watertight clamp's two failure modes at once (owner
+                // playtest 2026-07-25: "when the bow faces south you see water at the stern" +
+                // "boats ride very high with props not submerged"). The clamp guessed, from a
+                // footprint scan and a half-BEAM radius, how far to shove a whole hull toward the
+                // camera; a bow-on hull reaches her half-LENGTH, so the stern leaked, and closing
+                // that gap would have cost another 0.4–2.5 m of shove on every boat.
+                //
+                // This asks the GPU instead. One extra rasterisation of the hull geometry writes
+                // the per-face INTERIOR flag (UV0.w) into a single-channel target, with ZWrite +
+                // LEqual against its OWN depth buffer — so the surviving value at each pixel is the
+                // flag of the NEAREST hull surface there. The displaced water's fragment then
+                // discards where that reads interior. Per-pixel exact, orientation-free, and it
+                // duplicates no wave maths anywhere (a duplicated copy of the lift is precisely
+                // what caused the frequency-scale defect this same week).
+                //
+                // ⚠️ ITS OWN DEPTH BUFFER, never `depthBuf`. Sharing would (a) make the facet pass's
+                // depth semantics depend on a second vertex program agreeing bit-for-bit, a silent
+                // GPU-only failure CI can never see, and (b) let the water z-test against hull
+                // geometry, which would turn the fittings' authored cell overhang (an outboard's
+                // cell is ~28 px wider than its hull's) into transparent holes to the seabed rather
+                // than the harmless cosmetic clip it is today.
+                TextureHandle guardTex = default;
+                bool drawGuard = drawHulls && DrawWater && DrawGuard;
+                if (drawGuard)
+                {
+                    guardTex = renderGraph.CreateTexture(new TextureDesc(w, h)
+                    {
+                        name = "_HHHullGuardTex",
+                        format = GraphicsFormat.R8_UNorm,
+                        clearBuffer = true,
+                        clearColor = Color.black,   // 0 = exterior; see the fallback's doc
+                        filterMode = FilterMode.Point,
+                        wrapMode = TextureWrapMode.Clamp,
+                        msaaSamples = MSAASamples.None,
+                    });
+                    TextureHandle guardDepth = renderGraph.CreateTexture(new TextureDesc(w, h)
+                    {
+                        name = "_HHHullGuardZ",
+                        format = GraphicsFormat.None,
+                        depthBufferBits = DepthBits.Depth32,
+                        clearBuffer = true,
+                        msaaSamples = MSAASamples.None,
+                    });
+
+                    using var builder = renderGraph.AddRasterRenderPass<GuardPassData>(
+                        "HH Hull Interior Guard", out GuardPassData passData, profilingSampler);
+                    var guardSorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
+                    var guardDrawing = new DrawingSettings(s_GuardTag, guardSorting) { perObjectData = PerObjectData.None };
+                    var guardFiltering = new FilteringSettings(RenderQueueRange.all);
+                    passData.Renderers = renderGraph.CreateRendererList(
+                        new RendererListParams(renderingData.cullResults, guardDrawing, guardFiltering));
+
+                    builder.UseRendererList(passData.Renderers);
+                    builder.SetRenderAttachment(guardTex, 0);
+                    builder.SetRenderAttachmentDepth(guardDepth);
+                    builder.AllowPassCulling(false);
+                    builder.SetGlobalTextureAfterPass(guardTex, IsoFacetShaderIds.GuardTex);
+                    builder.SetRenderFunc((GuardPassData data, RasterGraphContext ctx) =>
+                    {
+                        ctx.cmd.DrawRendererList(data.Renderers);
+                    });
+                }
+
                 if (DrawWater)
                 {
                     RTHandle waterTarget = GetWaterTarget(cameraData.camera.GetEntityId(), w, h);
@@ -282,6 +375,11 @@ namespace HiddenHarbours.Art
                             new RendererListParams(renderingData.cullResults, drawing, filtering));
 
                         builder.UseRendererList(passData.Renderers);
+                        // The water fragment SAMPLES the guard. Declaring the read makes
+                        // guard-before-water a real dependency edge in the graph rather than an
+                        // accident of the order these using-blocks happen to be written in.
+                        if (drawGuard)
+                            builder.UseTexture(guardTex, AccessFlags.Read);
                         builder.SetRenderAttachment(waterTex, 0);
                         builder.SetRenderAttachmentDepth(depthBuf);
                         // The consumer is the in-scene WaterOverlay quad, whose read the graph

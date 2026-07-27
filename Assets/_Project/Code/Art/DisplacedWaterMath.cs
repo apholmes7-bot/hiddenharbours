@@ -246,9 +246,20 @@ namespace HiddenHarbours.Art
             halfBeamMeters = Mathf.Max(0f, halfBeamMeters);
 
             halfWidthMeters = Mathf.Max(0f, halfWidthMeters);
-            int nx = Mathf.Max(1, Mathf.CeilToInt(halfWidthMeters / FootprintScanStepMeters));
+            // ⚠️ THE STEPS MUST SHORTEN WITH THE WAVELENGTHS. Both scan steps were sized against
+            // "the fleet's shortest meaningful trains (λ ≥ ~10 m)" — but freqScale divides every
+            // effective wavelength by exactly that factor. At the owner's 2.8 the shortest trains
+            // land at ~3.6 m, and the 2 m x-step is then BELOW NYQUIST (1.8 samples per wave): the
+            // scan can straddle a crest with two trough samples and miss it almost entirely — a
+            // near-full-amplitude miss, not the ~2 % of amplitude the fixed step was chosen for.
+            // That is the second half of why the clamp under-protected every hull. Refining both
+            // axes keeps samples-per-wavelength invariant; cost stays trivial (the dragger's worst
+            // case goes ~375 → ~2.8 k four-train evaluations per pose push, i.e. tens of
+            // microseconds on the desktop baseline — rule 7 is comfortable).
+            float scan = Mathf.Max(1f, frame.FreqScale);
+            int nx = Mathf.Max(1, Mathf.CeilToInt(halfWidthMeters * scan / FootprintScanStepMeters));
             int ny = Mathf.Max(1, Mathf.CeilToInt(
-                FootprintScanHalfHeightMeters / FootprintScanRowStepMeters));
+                FootprintScanHalfHeightMeters * scan / FootprintScanRowStepMeters));
 
             float demand = float.MinValue;
             for (int ix = -nx; ix <= nx; ix++)
@@ -257,16 +268,44 @@ namespace HiddenHarbours.Art
                 for (int iy = -ny; iy <= ny; iy++)
                 {
                     float dy = FootprintScanHalfHeightMeters * iy / (float)ny;
+                    // ⚠️ frame.FreqScale, NOT the implicit 1: the displaced vertex stage samples the
+                    // field through _OceanSwellScale/0.025, so at the owner's 0.07 the DRAWN sea runs
+                    // at 2.8x frequency. Scanning at 1 hunted crests 2.8x too far apart, under-
+                    // demanded, and let the real ones board every hull (owner playtest 2026-07-25).
                     float lift = exaggeration * WaveFieldBridge.ShaderTwinSample(
                         new Vector2(x, centerWorld.y + dy), train0, train1, train2, train3,
-                        phases, fieldParams).Height;
-                    float foughtR = (dy + lift) * cInv;
+                        phases, fieldParams, frame.FreqScale).Height;
+                    // ⚠️ THE HULL'S OWN SCREEN HEAVE IS PART OF THE FIGHT (owner playtest
+                    // 2026-07-25, "water is in the hulls still" — on EVERY hull, including the two
+                    // whose clamp data was already proven green).
+                    //
+                    // The hull's image is translated in world/screen Y by `heaveMeters` while its
+                    // DEPTH is anchored at the root line (HullDepthBias takes root.y with no heave
+                    // term of its own). So which hull face shares a pixel with a water sample
+                    // depends on that lift: equating screen y for a water sample at ground offset
+                    // dy with lift L against a face at rig height r on ground line ry gives
+                    //     r(ry) = (dy + L − H)/cos − tan·ry,
+                    // and the water wins iff
+                    //     r(c²+s) < L(c+s) − zHeave·s + ry·c(1−s) − H·c.
+                    // Both H terms were absent: the law was derived when a mesh hull's heave was
+                    // the rig's ~0.04 m rock bob, where dropping them was worth nothing. ADR 0023
+                    // phase 3 step 2 made the channel metre-scale — and H is NEGATIVE most of the
+                    // time (the ride always subtracts the resting draft, and the sharpened field
+                    // sits below still water for most of its period), which makes the demand come
+                    // out `H·cot(elev)` ≈ 1.19·|H| TOO LOW exactly when the boat is down in a
+                    // trough with the sea standing over her. The 0.4 m ramped safety only ever
+                    // covered |H| ≤ 0.34 m.
+                    //
+                    // At H = 0 both terms vanish and this is bit-identical to the shipped law —
+                    // which is precisely the pose HullWaterlineAcceptanceTests pins
+                    // (`_hull.HeavePixels = 0f`), and precisely why the suite could never see this.
+                    float foughtR = (dy + lift - heaveMeters) * cInv;
                     if (foughtR < deckHeightMeters) continue;   // fights the open planking: allowed
                     float ryStar = Mathf.Min(halfBeamMeters,
                                              (foughtR - deckHeightMeters) / tanE);
                     float protectedR = foughtR - tanE * ryStar;
                     float need = (lift * (c + s) - protectedR * (c * c + s)
-                                  + ryStar * c * (1f - s)) / s;
+                                  + ryStar * c * (1f - s) - heaveMeters * c) / s;
                     if (need > demand) demand = need;
                 }
             }

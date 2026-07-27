@@ -22,6 +22,7 @@ namespace HiddenHarbours.Art
         static readonly Stack<int> s_FreeIds = new Stack<int>();
         static int s_NextId = 1;
         static Texture2D s_ClearFallback;
+        static Texture2D s_GuardFallback;
 
         /// <summary>How many hulls are live. The renderer feature's cheap gate.</summary>
         public static int Count => s_Hulls.Count;
@@ -64,6 +65,33 @@ namespace HiddenHarbours.Art
             s_ClearFallback.SetPixel(0, 0, Color.clear);
             s_ClearFallback.Apply(false, true);
             Shader.SetGlobalTexture(IsoFacetShaderIds.HullScreenTex, s_ClearFallback);
+            EnsureGuardFallbackBound();
+        }
+
+        /// <summary>
+        /// Bind a 1×1 <b>BLACK</b> texture as the global interior-guard so the displaced water's
+        /// discard reads "exterior everywhere" before the guard pass has ever run.
+        ///
+        /// <para>⚠️ <b>Black, not clear, and this is load-bearing.</b> The water fragment discards
+        /// where the guard reads <c>&gt; 0.5</c>. An UNBOUND sampler returns Unity's grey
+        /// placeholder — approximately 0.5 — so leaving it unbound makes "does the entire sea
+        /// disappear this frame?" a coin flip decided by a driver's rounding. A clear (alpha-0)
+        /// texture is no safer: the guard is single-channel and only .r is read, and clear's red
+        /// IS 0, but naming it black is what keeps the next reader from "tidying" it to a
+        /// transparent white.</para>
+        /// </summary>
+        static void EnsureGuardFallbackBound()
+        {
+            if (s_GuardFallback != null) return;
+            s_GuardFallback = new Texture2D(1, 1, TextureFormat.RGBA32, false, false)
+            {
+                name = "HHHullGuardFallback",
+                hideFlags = HideFlags.HideAndDontSave,
+                filterMode = FilterMode.Point,
+            };
+            s_GuardFallback.SetPixel(0, 0, Color.black);
+            s_GuardFallback.Apply(false, true);
+            Shader.SetGlobalTexture(IsoFacetShaderIds.GuardTex, s_GuardFallback);
         }
     }
 
@@ -74,6 +102,12 @@ namespace HiddenHarbours.Art
         /// <summary>The displaced water surface's resolved screen texture (ADR 0023 phase 2) —
         /// written by the feature's water pass, sampled by the in-scene WaterOverlay quad.</summary>
         public static readonly int WaterScreenTex = Shader.PropertyToID("_HHWaterScreenTex");
+        /// <summary>The per-pixel INTERIOR GUARD (ADR 0023, the per-face interior mask): 1 where the
+        /// nearest hull surface at that pixel is an open interior, 0 everywhere else. Written by the
+        /// facet shader's HHHullGuard pass into its own depth buffer, read by the displaced water's
+        /// fragment, which discards against it — so the sea can never draw inside a boat, at any
+        /// heading, with no footprint scan and no duplicated wave maths.</summary>
+        public static readonly int GuardTex = Shader.PropertyToID("_HHHullGuardTex");
         public static readonly int FacetTex = Shader.PropertyToID("_HHFacetTex");
         public static readonly int DarkTex = Shader.PropertyToID("_HHDarkTex");
         public static readonly int KeyTex = Shader.PropertyToID("_HHKeyTex");

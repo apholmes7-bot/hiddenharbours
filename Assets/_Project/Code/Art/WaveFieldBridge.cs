@@ -272,6 +272,30 @@ namespace HiddenHarbours.Art
         public static WaveSample ShaderTwinSample(Vector2 worldPos,
                                                   Vector4 train0, Vector4 train1, Vector4 train2,
                                                   Vector4 train3, Vector4 phases, Vector4 fieldParams)
+            => ShaderTwinSample(worldPos, train0, train1, train2, train3, phases, fieldParams, 1f);
+
+        /// <summary>
+        /// The same transcription at an explicit FREQUENCY SCALE — the shader's <c>freqScale</c>
+        /// argument, which multiplies every train's wave number (<c>float k = trains[i].z * fs</c>).
+        ///
+        /// <para>⚠️ <b>Why this overload has to exist.</b> The displaced vertex stage does NOT sample
+        /// at scale 1: it passes <c>_OceanSwellScale / 0.025</c>, a knob that was pure col.rgb
+        /// dressing until ADR 0023 made the same sampling line move real vertices. The owner's
+        /// material carries 0.07, so the DRAWN sea runs at 2.8 while this twin — the sampler behind
+        /// the watertight hull clamp — evaluated at 1 and guarded a sea that was not on screen. A
+        /// clamp that scans the wrong wavelengths finds its worst case in the wrong place and lets
+        /// the real crests board the boat, on every hull, worse the rougher it gets (owner playtest
+        /// 2026-07-25). The scale reaches the clamp through
+        /// <c>WaterIsoDepthFrame.FreqScale</c>, republished live each tick.</para>
+        ///
+        /// <para>The scale-1 overload above is kept exactly as it was: <c>WaveFieldBridgeTests</c>
+        /// pins it against <see cref="WaveMath.Sample"/>, which is the SIM field and genuinely has
+        /// no visual scale — that parity proof must not move.</para>
+        /// </summary>
+        public static WaveSample ShaderTwinSample(Vector2 worldPos,
+                                                  Vector4 train0, Vector4 train1, Vector4 train2,
+                                                  Vector4 train3, Vector4 phases, Vector4 fieldParams,
+                                                  float freqScale)
         {
             float height = 0f;
             float slopeX = 0f;
@@ -287,7 +311,9 @@ namespace HiddenHarbours.Art
                 float amplitude = train.w;
                 if (i >= count || amplitude <= 0f) continue;  // the shader masks on (i < count && amp > 0)
 
-                float waveNumber = train.z;
+                // `float k = trains[i].z * fs` — the shader scales the published wave number, and
+                // every downstream term (theta AND the analytic slope) then reads the SCALED k.
+                float waveNumber = train.z * Mathf.Max(freqScale, 1e-3f);
                 float theta = waveNumber * (train.x * worldPos.x + train.y * worldPos.y) + phi;
                 float sin = Mathf.Sin(theta);
                 float cos = Mathf.Cos(theta);

@@ -43,10 +43,24 @@ namespace HiddenHarbours.Tools.RigBaking
     public static class RigMeshBuilder
     {
         /// <summary>UV0 channel carrying the per-face constants the shader needs:
-        /// <c>x = material id, y = face bias b, z = depth bias db, w = 0</c>. Flat across the face.</summary>
+        /// <c>x = material id, y = face bias b, z = depth bias db, w = interior flag</c>. Flat
+        /// across the face. <c>w</c> is the ADR 0023 per-face INTERIOR MASK: 1 = an open interior
+        /// surface the displaced sea must never draw over, 0 = exterior (and the value every mesh
+        /// baked before the mask existed carries, so an un-rebaked hull renders exactly as before).</summary>
         public const int AttrUvChannel = 0;
 
-        public static RigMeshBuild Build(RigMeshData data, string meshName = null)
+        /// <summary>
+        /// Build the mesh. <paramref name="interior"/> is the per-FACE interior mask, in
+        /// <c>data.Faces</c> order (see <see cref="RigMeshInteriorClassifier"/>).
+        ///
+        /// <para>⚠️ It defaults to <c>null</c> deliberately, and must stay that way: fittings are
+        /// built through this same method, and every prop mesh must remain EXTERIOR. An outboard's
+        /// leg and propeller have to stay wettable — flagging a cowl top interior would mean a
+        /// green sea could never swallow the engine. A non-null default would also silently change
+        /// every fitting mesh and force an unnecessary prop re-bake.</para>
+        /// </summary>
+        public static RigMeshBuild Build(RigMeshData data, string meshName = null,
+                                         bool[] interior = null)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
@@ -57,10 +71,14 @@ namespace HiddenHarbours.Tools.RigBaking
             var tris = new List<int>(data.TriangleCount * 3);
 
             int v = 0;
+            int faceIndex = 0;
             foreach (var f in data.Faces)
             {
                 Vector3 n = ObjectNormal(f.V[0], f.V[1], f.V[2]).ToVector3();
-                var attr = new Vector4(f.Mat, (float)f.B, (float)f.Db, 0f);
+                float interiorFlag = interior != null && faceIndex < interior.Length && interior[faceIndex]
+                    ? 1f : 0f;
+                faceIndex++;
+                var attr = new Vector4(f.Mat, (float)f.B, (float)f.Db, interiorFlag);
 
                 int baseIndex = v;
                 for (int k = 0; k < f.V.Length; k++, v++)

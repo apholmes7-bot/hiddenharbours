@@ -3106,7 +3106,7 @@ Shader "HiddenHarbours/Water"
 
             HLSLPROGRAM
             #pragma vertex vertDisplaced
-            #pragma fragment frag
+            #pragma fragment fragDisplaced
             // multi_compile (not shader_feature) so the height-map branch is ALWAYS compiled — WaterSurface
             // toggles _USE_HEIGHTTEX at runtime after baking, and a shader_feature variant absent from the
             // build would silently fall back to the off (uniform-deep) path.
@@ -3173,6 +3173,33 @@ Shader "HiddenHarbours/Water"
                 OUT.uv = IN.uv;
                 OUT.worldXY = ground;   // frag paints AND clips at the ground position — the lift
                 return OUT;             // moves pixels, never the waterline contour.
+            }
+
+            // ---- THE INTERIOR MASK (ADR 0023) -----------------------------------------------
+            // The sea may not draw inside a boat. IsoFacetHullFeature's guard pass has already
+            // written, for every pixel, whether the NEAREST hull surface there is an open interior
+            // (cockpit sole, hold floor, working deck); this discards against it.
+            //
+            // `discard` kills the depth write as well as the colour, which is the whole point: the
+            // pixel keeps the hull's depth, the hull fragment survives its own z-test, and the hull
+            // overlay composes it — an interior that simply cannot be reached by the sea, at any
+            // heading, with no footprint scan and no radius to guess wrong.
+            //
+            // Everything OUTSIDE the boat is deliberately left alone, so the waterline climbs her
+            // planking truthfully and an outboard's leg and prop stay wettable. Declared in THIS
+            // pass only — never at SubShader scope, where it would reach the Universal2D pass that
+            // draws the in-scene Sea sprite and the owner's eight water presets.
+            //
+            // ⚠️ Reads a GLOBAL bound by the feature (and to a 1x1 BLACK fallback by
+            // IsoFacetHullRegistry before it has ever run). Unbound, a sampler returns Unity's grey
+            // placeholder ~0.5 and this test becomes a coin flip on whether the whole sea vanishes.
+            Texture2D<float> _HHHullGuardTex;
+
+            half4 fragDisplaced (Varyings IN) : SV_Target
+            {
+                if (_HHHullGuardTex.Load(int3(int2(IN.positionCS.xy), 0)) > 0.5)
+                    discard;
+                return frag(IN);
             }
             ENDHLSL
         }

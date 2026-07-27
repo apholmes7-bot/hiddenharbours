@@ -43,23 +43,14 @@ Shader "HiddenHarbours/IsoFacet"
     {
         Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" "IgnoreProjector"="True" }
 
-        Pass
-        {
-            Name "HHHullFacet"
-            // Drawn ONLY by IsoFacetHullFeature's renderer list — see the header comment.
-            Tags { "LightMode" = "HHHullFacet" }
+        // Both passes below share ONE vertex program, deliberately. The guard pass must land on
+        // exactly the pixels the facet pass will land on — including the per-face `db` depth bias
+        // — so the two cannot be allowed to drift apart as separately-maintained copies. (The
+        // water shader uses this same SubShader-scope include pattern for the same reason.)
+        HLSLINCLUDE
+        #pragma target 3.5
 
-            Cull Off            // the rig z-buffers everything; it never backface-culls
-            ZWrite On
-            ZTest LEqual
-            Blend Off
-
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma target 3.5
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             // Palette lookups are integer Loads — never filtered, never mipped.
             Texture2D<float4> _RampTex;
@@ -84,7 +75,11 @@ Shader "HiddenHarbours/IsoFacet"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS   : NORMAL;
-                float4 attrs      : TEXCOORD0;   // x = matId  y = faceBias b  z = depthBias db
+                // x = matId  y = faceBias b  z = depthBias db  w = INTERIOR flag (1 = an open
+                // interior surface the sea must never draw over; 0 = exterior, and the value every
+                // mesh baked before the interior mask existed carries — so an un-rebaked hull
+                // behaves exactly as it did before this pass was added).
+                float4 attrs      : TEXCOORD0;
             };
 
             struct Varyings
@@ -152,6 +147,67 @@ Shader "HiddenHarbours/IsoFacet"
                 o.depth = i.wpos.z;
                 return o;
             }
+
+            // ---- the INTERIOR GUARD (ADR 0023: the per-face interior mask) -------------------
+            // Rides the SAME vert() above, so it occupies the same pixels with the same depth.
+            // Its one job is to answer, per pixel, "is the nearest hull surface here an open
+            // interior?" — resolved by the ordinary z-test into the guard pass's OWN depth
+            // buffer, which is why no stencil is needed and why the facet pass is untouched.
+            struct GuardVaryings
+            {
+                float4 positionCS : SV_POSITION;
+                nointerpolation float interior : TEXCOORD0;
+            };
+
+            GuardVaryings vertGuard (Attributes v)
+            {
+                GuardVaryings o;
+                o.positionCS = vert(v).positionCS;
+                o.interior = v.attrs.w;
+                return o;
+            }
+
+            float fragGuard (GuardVaryings i) : SV_Target
+            {
+                return i.interior;
+            }
+        ENDHLSL
+
+        Pass
+        {
+            Name "HHHullFacet"
+            // Drawn ONLY by IsoFacetHullFeature's renderer list — see the header comment.
+            Tags { "LightMode" = "HHHullFacet" }
+
+            Cull Off            // the rig z-buffers everything; it never backface-culls
+            ZWrite On
+            ZTest LEqual
+            Blend Off
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            ENDHLSL
+        }
+
+        // The interior guard. Recorded by IsoFacetHullFeature ONLY while a displaced sea is live
+        // and the mask is enabled; its single-channel output is published as _HHHullGuardTex and
+        // the displaced water's fragment discards against it. Same state as the facet pass (so the
+        // same fragments survive), ColorMask R because the target is R8.
+        Pass
+        {
+            Name "HHHullGuard"
+            Tags { "LightMode" = "HHHullGuard" }
+
+            Cull Off
+            ZWrite On
+            ZTest LEqual
+            Blend Off
+            ColorMask R
+
+            HLSLPROGRAM
+            #pragma vertex vertGuard
+            #pragma fragment fragGuard
             ENDHLSL
         }
     }
