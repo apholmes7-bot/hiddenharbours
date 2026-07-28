@@ -281,6 +281,21 @@
 | M3-16 | Mussel/oyster aquaculture leasing | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
 | M3-17 | Advanced rendering pass (3D-water→2D bake · dynamic + cloud shadows · parallax-underwater) | art-pipeline + lead-architect | Bake 3D water to the 2D surface; sun-driven dynamic shadows; drifting cloud shadows; shallow-water underwater preview | Holds one-perspective + PPU=32 + desktop budget; baked sculpt-light unchanged; shallow preview telegraphs hazards/forage (`art-and-audio-bible` §6.1) |
 
+#### The realness pass (ADR 0027) — eight techniques taken from Unity's HDRP water, every one pixelized
+> Owner-flagged 2026-07-28 (*"i can appreciate realness attributes, as long as the end look gets pixelated … i think
+> i want reflections too"*). **ADR 0027 is Proposed** — `lead-architect` sign-off gates M3-20/21 (render plumbing) and
+> M3-23 (the wave field). M3-18/19 are Tier A and can start on owner ratification alone. Phase order is P1→P6 in the
+> ADR; M3-21 is sequenced early **against the in-flight dynamic-wake PRs**, not by visual payoff.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M3-18 | Wave-field caustics · convergence (Jacobian) foam · sea-state band scaling (ADR 0027 P1) | art-pipeline | Caustics from `WaveFieldSample()` curvature instead of free-running noise; foam where the surface *pinches*, not only where it is tall; band wavelength grows with `_Chop` | `col.rgb`-only, no new uniform; shimmer lines up with the visible swell; crossing trains foam at their intersections; passthrough at strength 0. **Also carries the pixel-grid follow-up** (ADR 0027 "Pixelation"): give layers *deliberately different* grids — foam coarser than caustics — instead of one shared grid every edge snaps to |
+| M3-19 | Seabed absorption — `_SeabedTex` bake + per-channel Beer-Lambert (ADR 0027 P2) | art-pipeline + lead-architect | Bake the seabed over the `_HeightTex` world rect so the shader composites the bottom itself; `T = exp(−σ·2d)` per channel; `_AbsorptionBands` quantizes | Retires `_ShallowTranslucency`/`_ShallowMinAlpha` and **dissolves §17.3's cancellation by construction**; painted `_DepthRamp` untouched; σ = 0 exact passthrough; headless twins (monotone, red-before-blue, 2× path) |
+| M3-20 | Object reflections — `HHReflect` renderer list, wave-warped (ADR 0027 P3) | lead-architect + art-pipeline | Fourth filtered list into `_HHReflectTex`; mirror about the ADR 0026 ground-contact pivot; water shader warps the lookup by `WaveFieldSample()` | **Revisits ADR 0010 addendum 8** on the `IsoFacetHullFeature` precedent; zero-cost-when-idle honoured; reuses shipped `WaterReflection` sea-state curves; point-filtered RT + lookup snapped on the **world** PPU grid (⚠️ screen-snapping crawls on every camera pan); night-lit sources ride the §11.6 post-grade compensation |
+| M3-21 | Advected foam buffer for wake (ADR 0027 P4) | lead-architect + art-pipeline | Camera-relative ping-pong RT: advect along `FoamDriftDir`, decay, inject where hulls pass; **adds** to existing foam | ⚠️ **Decide before the in-flight wake PRs land** — retrofitting the buffer after is materially more expensive; cells anchored to the **world** PPU grid and scrolled in whole cells — a camera-relative buffer makes the whole trail crawl |
+| M3-22 | Wind fetch from the height map (ADR 0027 P5) | art-pipeline → gameplay-systems | March upwind across `_HeightTex` to a **fixed** step cap; lee shores calm, exposed shores build; visual first, then into the field | ⚠️ Fixed iteration count only — `[unroll]` over a runtime bound is a guarded magenta trap; promotion into the field earns a C# twin + ADR 0018 amendment |
+| M3-23 | Spectrum-shaped swell — JONSWAP weighting, directional spreading, wave groups (ADR 0027 P6) | lead-architect + gameplay-systems | Replace flat train weighting in `_WaveFieldParams` so the sea produces **sets**; explicitly **not** an FFT | ⚠️ **Changes what hulls ride** — C# twin, headless determinism tests, ADR 0018 amendment, and an owner **feel verdict** taken against the ADR 0023 hull set |
+
 ---
 
 # M4 — Dynasty
