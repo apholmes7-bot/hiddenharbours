@@ -155,8 +155,12 @@ scene draw: it is **one filtered list of near-water objects**.
 - **Sea-state response is already built.** Reuse the shipped `WaterReflection.ReflectionStrength()` /
   `ReflectionSharpness()`: sharp on glass, broken in chop, gone in a storm. Object reflections inherit the P1 mood
   behaviour for free.
-- **Pixelation:** the RT inherits the camera's render resolution, point-filtered, and the warped lookup snaps to the
-  PPU grid — pixel art by construction rather than by post-hoc filtering.
+- **Pixelation — the lookup snaps in WORLD space, not RT/screen space.** The RT inherits the camera's render
+  resolution and is point-filtered, but that alone is *screen*-locked: with `CameraFollow` panning continuously
+  behind the boat, a screen-snapped reflection lookup **crawls** on every pan. The warped sample coordinate is
+  therefore quantized on the **world** PPU grid (the `Pixelize` helper), so a reflection cell belongs to a place on
+  the water and stays there as the camera moves — the same zero-crawl-by-construction law the shader's world-locked
+  Bayer dither and the ADR 0022 facet pass already hold. See "Pixelation" below.
 - **Composition:** over the §11 sky mirror (a boat reads on top of reflected cloud), under the foam (whitecaps read
   on top of the boat). Pre-grade, so it dims with night like the rest of the sea — **except** night-lit sources,
   which ride the §11.6 post-grade compensation exactly as the moon glitter does, or a lit wheelhouse at night will
@@ -164,9 +168,14 @@ scene draw: it is **one filtered list of near-water objects**.
 
 **(8) #6 — An advected foam buffer for wake.**
 Unity's foam generators write into a buffer that **advects and decays**. That *is* the "trail left behind you"
-architecture, versus attaching a trail to the boat. A persistent camera-relative RT, ping-ponged per frame:
-advect along the existing `FoamDriftDir` (the wind/current blend), decay, inject where hulls pass; sampled by the
-water shader as a mask that **adds** to the existing foam rather than replacing it.
+architecture, versus attaching a trail to the boat. A persistent RT, ping-ponged per frame: advect along the
+existing `FoamDriftDir` (the wind/current blend), decay, inject where hulls pass; sampled by the water shader as a
+mask that **adds** to the existing foam rather than replacing it.
+
+> ⚠️ **Its cells are anchored to the WORLD PPU grid, with camera-relative *addressing* only.** A wake is a mark
+> left on a place in the sea; if the buffer's cells are camera-relative the whole trail crawls under every pan —
+> the one artefact that would make it read as a screen filter instead of a wake. The scroll-on-camera-move must
+> therefore be in whole world cells. Same law as the reflection lookup (see "Pixelation" below).
 
 > ⚠️ **This intersects the dynamic-wake work already in flight.** Deciding the buffer architecture *after* those PRs
 > land is materially more expensive than deciding it now. This item is sequenced early for that reason alone, not
@@ -176,6 +185,38 @@ water shader as a mask that **adds** to the existing foam rather than replacing 
 
 ## Pixelation — the owner's condition, made concrete per item
 
+### Why per-layer WORLD-space, and not one pixelize at the end (owner question, 2026-07-28)
+
+Asked directly: *"can pixelation just happen at the end? instead of every step? would that lead to better results?"*
+Recorded here because the answer is not obvious and the question will recur.
+
+**End-stage pixelation already happens** — every scene runs a `PixelPerfectCamera`, so the frame is rendered at a
+fixed low internal resolution and upscaled. The per-layer snap is not a second copy of that; it solves a different
+problem.
+
+**Screen-space quantization is locked to the camera; world-space is locked to a place in the sea.** With
+`CameraFollow` panning continuously behind the boat, a field computed at full precision and quantized only at the
+end **crawls**: the world→pixel mapping slides underneath every feature and edge pixels flip on and off. Snapping
+the *sample coordinate* in world space (the `Pixelize` helper, `floor(p·ppu)/ppu`) means a foam cell belongs to a
+spot on the water and stays there while the camera moves. The shader already states this law for its world-locked
+Bayer dither — *"world-derived dither cannot crawl under camera translation … zero crawl by construction"* — and it
+is the same discipline as the ADR 0022 facet pass and the boat rigs.
+
+**It has also been measured.** The dither comment records a spike where the smooth-then-quantize approach
+*"dissolves the quantised bands back into a smooth gradient and the surface reads as airbrushed 3D, not this
+game (spike run-1, measured)."* That is the failure mode a blanket end-stage switch would reintroduce.
+
+**What the question does correctly identify:** every layer currently pixelizes onto the *same* grid, so all feature
+edges land on shared cell lines — part of why the sea can read as one blocky field rather than elements at distinct
+scales. The remedy is **not** end-stage; it is (a) **deliberately different grids per layer** (foam coarser than
+caustics), and (b) **edge-window dither** to recover sub-cell detail. Both mechanisms exist already
+(`_CapDitherBand`, `_EnvelopeBandDitherWin`) but are not used as an explicit scale hierarchy. Treat that as the
+follow-up this question earns, tracked against M3-18.
+
+**The consequence for Tier C:** #8 and #6 introduce the project's first *render targets* in the water path, and a
+render target is screen-space by default — exactly the crawl trap. Both must quantize in **world** space (see their
+decisions above). This is the one place where "pixelate at the end" would have silently been the wrong call.
+
 | Item | How the output is pixelized |
 |---|---|
 | #7 absorption | Seabed sampled on pixelized world coords; `_AbsorptionBands` quantizes transmission (**default ON**) |
@@ -184,8 +225,8 @@ water shader as a mask that **adds** to the existing foam rather than replacing 
 | #4 band scaling | Scales frequency only — the pixelize step is downstream and unchanged |
 | #1 fetch | Fixed-step march on pixelized coords; `_FetchBands` quantizes the result |
 | #5 spectrum | Field is quantized where it is read, exactly as today |
-| #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the PPU grid |
-| #6 wake buffer | RT cells aligned to the PPU world grid |
+| #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
+| #6 wake buffer | Cells anchored to the **world** PPU grid; camera-relative addressing only, scrolled in whole world cells |
 
 ---
 
