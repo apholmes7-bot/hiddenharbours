@@ -22,8 +22,12 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <item><b>It can see it.</b> Render the hull orthographically from many directions strictly
     /// below the horizon, all round, and mark every face frontmost at even one pixel from even one
     /// direction.</item>
-    /// <item><b>It can rise to it.</b> The sea has a LEVEL. Any face lying wholly above the hull's
-    /// own rail (<see cref="DeriveRailHeight"/>) is out of reach whichever way it faces.</item>
+    /// <item><b>It can rise to it.</b> The sea has a LEVEL. Only visible pixels lying below the
+    /// hull's own rail (<see cref="DeriveRailHeight"/>) count — applied PER HIT inside the raster,
+    /// because a surface standing up inside the boat (a console wall, a stern bulkhead) straddles
+    /// the rail: its base is on the deck, but the only pixels of it the sea can see are the ones a
+    /// shallow ray reaches by clearing a low gunwale, which are above that sheer and out of the
+    /// water's reach. A per-face cap missed the whole family (owner playtest 2026-07-27).</item>
     /// </list>
     ///
     /// <para><b>Visibility alone was tried first, and shipped, and kept failing in new places</b> —
@@ -311,6 +315,20 @@ namespace HiddenHarbours.Tools.RigBaking
             int triCount = triFace.Count;
             if (triCount == 0) return new byte[faceIndex];   // nothing to see: all "exterior", i.e. inert
 
+            // The sea's LEVEL, applied PER HIT inside the raster rather than per face afterwards.
+            // The per-face version (cap faces lying WHOLLY above the rail) left a family behind
+            // (owner playtest 2026-07-27: console walls, the cape/lobster stern interior wall):
+            // a surface STANDING UP inside the boat straddles the rail — its base sits on the deck,
+            // below the rail, so the whole-face cap never fires — while the only pixels of it the
+            // sea can actually see are the ones a shallow ray reaches by clearing a low stretch of
+            // gunwale, which geometry forces to lie at or ABOVE that sheer (the ray descends going
+            // outward, so its hull crossing is lower than its hit). Water at its level cannot make
+            // that entry. Requiring the HIT POINT itself to lie below the rail retires the whole
+            // over-the-gunwale-entry family and subsumes the whole-face cap (a face wholly above
+            // the rail has no below-rail pixel to be seen at). Strictly below, not at — a
+            // washboard's plane sits exactly ON the sheer that defines the rail.
+            float railZ = DeriveRailHeight(data);
+
             for (int e = 0; e < ElevationsDeg.Length; e++)
             {
                 float elev = ElevationsDeg[e] * Mathf.Deg2Rad;
@@ -326,30 +344,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         Mathf.Cos(elev) * Mathf.Cos(az),
                         Mathf.Cos(elev) * Mathf.Sin(az),
                         Mathf.Sin(elev));
-                    MarkVisible(triA, triB, triC, triFace, faceNormals, eye, extFront, extBack);
-                }
-            }
-
-            // ---- the sea's LEVEL: nothing above the rail is in reach, whichever way it faces ----
-            // Strictly below, not at: a washboard's own plane sits exactly ON the sheer that defines
-            // the rail, and "<=" would leave every one of them wettable — which is the defect.
-            float railZ = DeriveRailHeight(data);
-            if (railZ < float.MaxValue)
-            {
-                int fi = 0;
-                foreach (var f in data.Faces)
-                {
-                    if (extFront[fi] || extBack[fi])
-                    {
-                        float lowest = float.MaxValue;
-                        foreach (var vert in f.V)
-                        {
-                            float z = vert.ToVector3().z;
-                            if (z < lowest) lowest = z;
-                        }
-                        if (!(lowest < railZ)) { extFront[fi] = false; extBack[fi] = false; }
-                    }
-                    fi++;
+                    MarkVisible(triA, triB, triC, triFace, faceNormals, eye, railZ, extFront, extBack);
                 }
             }
 
@@ -364,17 +359,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>
         /// One orthographic view along <paramref name="eye"/>: rasterise every triangle keeping the
         /// nearest depth, then sweep again and mark every triangle that is frontmost (within
-        /// <see cref="CoplanarEpsMeters"/>) at any pixel it covers — into <paramref name="extFront"/>
-        /// or <paramref name="extBack"/> by WHICH SIDE this eye sees: the sign of
-        /// <c>dot(faceNormal, eye)</c>, the same quantity the guard pass computes at render time
-        /// (in world space, where the orthogonal object matrix preserves it exactly).
+        /// <see cref="CoplanarEpsMeters"/>) at any pixel it covers WHOSE HIT POINT lies below
+        /// <paramref name="railZ"/> (the sea cannot rise above its level — see the caller's rail
+        /// comment) — into <paramref name="extFront"/> or <paramref name="extBack"/> by WHICH SIDE
+        /// this eye sees: the sign of <c>dot(faceNormal, eye)</c>, the same quantity the guard pass
+        /// computes at render time (in world space, where the orthogonal object matrix preserves it
+        /// exactly).
         ///
         /// <para>The TWO-PHASE structure is the point. A single winner-takes-all pass silently
         /// loses every coplanar decoration band to the surface underneath it.</para>
         /// </summary>
         private static void MarkVisible(List<Vector3> ta, List<Vector3> tb, List<Vector3> tc,
                                         List<int> triFace, List<Vector3> faceNormals, Vector3 eye,
-                                        bool[] extFront, bool[] extBack)
+                                        float railZ, bool[] extFront, bool[] extBack)
         {
             // An orthonormal basis with `eye` as the depth axis. Depth grows AWAY from the camera,
             // so the nearest surface has the smallest value.
@@ -387,12 +384,16 @@ namespace HiddenHarbours.Tools.RigBaking
             float minU = float.MaxValue, maxU = float.MinValue;
             float minV = float.MaxValue, maxV = float.MinValue;
             var pu = new Vector3[count * 3];   // (u, v, depth) per corner, projected once
+            var mz = new float[count * 3];     // MODEL height per corner — the rail is a height law
             for (int i = 0; i < count; i++)
             {
                 Vector3 p0 = ta[i], p1 = tb[i], p2 = tc[i];
                 pu[i * 3 + 0] = new Vector3(Vector3.Dot(p0, u), Vector3.Dot(p0, v), -Vector3.Dot(p0, n));
                 pu[i * 3 + 1] = new Vector3(Vector3.Dot(p1, u), Vector3.Dot(p1, v), -Vector3.Dot(p1, n));
                 pu[i * 3 + 2] = new Vector3(Vector3.Dot(p2, u), Vector3.Dot(p2, v), -Vector3.Dot(p2, n));
+                mz[i * 3 + 0] = p0.z;
+                mz[i * 3 + 1] = p1.z;
+                mz[i * 3 + 2] = p2.z;
                 for (int k = 0; k < 3; k++)
                 {
                     Vector3 q = pu[i * 3 + k];
@@ -414,28 +415,42 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // ---- phase 1: nearest depth per pixel ----
             for (int i = 0; i < count; i++)
-                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, null, 0, triFace, null);
+                Raster(pu, mz, i, minU, minV, scaleU, scaleV, w, h, depth, null, 0, float.MaxValue, triFace, null);
 
-            // ---- phase 2: mark everything frontmost within the coplanar epsilon, on the side
-            // this eye is looking at. The dot is fixed per (face, eye) — a planar face shows one
-            // side per view — so each triangle resolves its target array once, up front.
+            // ---- phase 2: mark everything frontmost within the coplanar epsilon AND below the
+            // rail, on the side this eye is looking at. The dot is fixed per (face, eye) — a
+            // planar face shows one side per view — so each triangle resolves its target array
+            // once, up front.
             for (int i = 0; i < count; i++)
             {
                 bool[] mark = Vector3.Dot(faceNormals[triFace[i]], eye) >= 0f ? extFront : extBack;
                 if (mark[triFace[i]]) continue;   // this side already proven visible from elsewhere
-                Raster(pu, i, minU, minV, scaleU, scaleV, w, h, depth, depth, 1, triFace, mark);
+                Raster(pu, mz, i, minU, minV, scaleU, scaleV, w, h, depth, depth, 1, railZ, triFace, mark);
             }
         }
 
         /// <summary>Scanline-rasterise one projected triangle. <paramref name="phase"/> 0 writes the
         /// depth buffer (<paramref name="mark"/> unused); phase 1 reads it and marks the triangle's
         /// FACE into <paramref name="mark"/> — the caller's per-side array — where it is frontmost
-        /// within the epsilon.</summary>
-        private static void Raster(Vector3[] pu, int tri, float minU, float minV,
+        /// within the epsilon AND the hit point's interpolated MODEL height lies strictly below
+        /// <paramref name="railZ"/> (the sea's level; above-rail pixels keep scanning rather than
+        /// early-out, because a straddling face may still show a legal below-rail pixel).</summary>
+        private static void Raster(Vector3[] pu, float[] mz, int tri, float minU, float minV,
                                    float scaleU, float scaleV, int w, int h,
-                                   float[] depth, float[] read, int phase,
+                                   float[] depth, float[] read, int phase, float railZ,
                                    List<int> triFace, bool[] mark)
         {
+            // Exact gate before the interpolated one: a triangle whose EVERY corner sits at or
+            // above the rail can have no legal pixel, and the per-pixel barycentric sum can round
+            // a hair BELOW the corner minimum — measured on the tanker and trawler, whose decks
+            // sit bit-exactly AT their rails (8.6 / 3.5): without this gate FP jitter marked 13 /
+            // 2 exactly-at-rail faces wettable. Corner comparison is exact; interpolation is not.
+            if (phase == 1)
+            {
+                float triMin = Mathf.Min(mz[tri * 3 + 0], Mathf.Min(mz[tri * 3 + 1], mz[tri * 3 + 2]));
+                if (!(triMin < railZ)) return;
+            }
+
             Vector3 a = pu[tri * 3 + 0], b = pu[tri * 3 + 1], c = pu[tri * 3 + 2];
             float ax = (a.x - minU) * scaleU, ay = (a.y - minV) * scaleV;
             float bx = (b.x - minU) * scaleU, by = (b.y - minV) * scaleV;
@@ -476,8 +491,13 @@ namespace HiddenHarbours.Tools.RigBaking
                     }
                     else if (d <= read[idx] + CoplanarEpsMeters)
                     {
-                        mark[triFace[tri]] = true;
-                        return;   // one visible pixel is enough; the rest of this triangle is moot
+                        float zModel = w0 * mz[tri * 3 + 0] + w1 * mz[tri * 3 + 1] + w2 * mz[tri * 3 + 2];
+                        if (zModel < railZ)
+                        {
+                            mark[triFace[tri]] = true;
+                            return;   // one legal visible pixel is enough; the rest is moot
+                        }
+                        // Visible but above the sea's level here — not an entry the water can make.
                     }
                 }
             }

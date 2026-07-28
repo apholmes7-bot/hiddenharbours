@@ -2539,6 +2539,9 @@ which is exactly the parity minefield the label sidesteps.
 | coastal packet | 1011/1254 | 49 | 89 |
 | tanker | 1475/1760 | 9 | 107 |
 
+(⚠️ Superseded one revision later: §24.4 moves the rail test from the face to the HIT and re-bakes
+every count in this table. The fully-interior *heights* are unchanged there too.)
+
 **The golden master survives untouched by construction.** "Fully interior" (code 1 — the sea reaches
 neither side) is exactly the set the side-blind classifier produced, so every fully-interior count
 and every lowest-fully-interior height above is **identical to the §24.2 table**, and the deck-line
@@ -2551,3 +2554,62 @@ the water genuinely laps under the covering board — stays honest. Guards:
 faces; console + cape specifically carry code-2 faces), and the fully-interior cross-check now
 filters to code 1. Rollback unchanged: `IsoFacetHullFeature._interiorMask` off ⇒ no guard pass at
 all; a pre-sidedness mesh (0/1 only) renders exactly as before through the new shader.
+
+### 24.4 The rail belongs to the HIT, not the face — the wall that straddles it
+
+Sidedness cured the inner strake and the owner's next look found what it had not (2026-07-27,
+screenshots): *"on dory it seems to be just the lowest hull interior boards, not the deck, same
+situation for the punt, centre console boats it seems to be the centre console walls themselves,
+then the cape islander/lobster boat it seems to be the stern interior wall."*
+
+The console wall and the stern bulkhead are the same shape of thing: **a surface standing up inside
+the boat, straddling the rail.** Its base sits on the deck — below the rail — so §24.2's cap, which
+only retires faces lying *wholly* above the rail, never fired on it. Yet the only pixels of it the
+sea can see are the ones a shallow ray reaches by clearing a low stretch of gunwale, and geometry
+forces those to lie at or above that sheer: the ray descends as it travels outward, so its crossing
+of the hull side is always *lower* than what it lands on inside. Water at its level cannot make that
+entry. The face was condemned by a hit the sea could never have made.
+
+**So the level applies per HIT, not per face.** A visible pixel counts as sea-reachable only if the
+hit point's own height is below the rail — evaluated inside the raster, on the interpolated model
+height, in the same test that already checks frontmost-ness. This **subsumes** the whole-face cap (a
+face wholly above the rail has no below-rail pixel to be seen at, so it still classifies interior)
+and retires the over-the-gunwale-entry family with it. A face is now exterior iff **some point of it
+that the sea can see is also a point the sea can reach.**
+
+⚠️ **The exact gate in front of the interpolated one is load-bearing, not defensive.** A barycentric
+sum of three corner heights can land a hair *below* the minimum corner, and the tanker's and
+trawler's decks sit bit-exactly AT their rails (8.600 / 3.500). Without a corner-exact
+`min(z) < railZ` pre-test, FP jitter marked **13 tanker and 2 trawler** exactly-at-rail faces
+wettable — a measured regression against the previous bake, caught by the counts, not by a test.
+Corner comparison is exact; interpolation is not.
+
+| hull | fully interior (§24.3 → §24.4) | front-dry | back-dry | lowest fully-interior |
+|---|---|---|---|---|
+| dory | 203 → **211** /472 | 81 | 115 | 0.060 |
+| punt | 335 → **337** /575 | 65 | 96 | 0.060 |
+| console skiff | 336 → **372** /663 | 87 | 126 | 0.271 |
+| sport skiff | 323 → **357** /621 | 88 | 124 | 0.271 |
+| cape islander | 277 → **298** /509 | 52 | 95 | 0.710 |
+| lobster boat | 410 → **426** /676 | 68 | 111 | 0.491 |
+| side dragger | 533 → **583** /792 | 49 | 94 | 2.034 |
+| stern trawler | 610 → **626** /793 | 14 | 67 | 1.750 |
+| stern trawler mk2 | 670 → **719** /1210 | 186 | 169 | 1.750 |
+| coastal packet | 1011 → **1029** /1254 | 41 | 82 | 4.731 |
+| tanker | 1475 → **1481** /1760 | 6 | 104 | 8.582 |
+
+Every hull gains interior faces (+2 to +50 — the standing walls joining), and **every
+lowest-fully-interior is unchanged from §24.2 and §24.3**, so the hand-measured deck-line
+cross-check survives its third rewrite untouched. Monotone again: moving the level test from the
+face to the hit can only *withdraw* wettable evidence, never add it, so no bake this rule produces
+can flood something a previous one kept dry.
+
+**Still open, and NOT this mask's to fix:** the dory's and punt's lowest interior boards. Those two
+have no standing wall — geometry says an over-gunwale ray can only land *above* the entry sheer —
+and the owner reported in the same breath that *"a lot of the boats seem to be sitting very low …
+nearly submerged."* A hull riding too deep loses the shared z-test to the drawn sea, so her lower
+interior fragments never enter the facet MRT and the flat sea sprite shows through from underneath.
+No interior mask can intercept that; it is a DRAFT/ride problem (`HullMeshDef.RestingDraftMeters`
+and the §24 ride law), banked by the owner for its own session. Triage rule: a classifier miss is a
+whole face wet regardless of sea state and unchanged at `WaveExaggeration = 0`; a draft flood rides
+up and down with the swell and hugs the lowest surfaces.
