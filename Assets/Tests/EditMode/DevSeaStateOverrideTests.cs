@@ -22,11 +22,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// wind DIRECTION is preserved (only the strength is forced).</item>
     /// </list>
     ///
-    /// Sabotage measured (2026-07-28): breaking the round trip by feeding the RAW dial straight into
-    /// the strength (skipping the inverse — the obvious wrong implementation) makes
-    /// <c>Forced_SeaState01_LandsExactly</c> fail at every non-trivial dial value (e.g. dial 0.5 →
-    /// strength 0.5 m/s → SeaState01 0.0714, off by 0.43); flipping the inverse's band index off by
-    /// one fails the band-edge pins by a full band width.
+    /// Sabotage MEASURED (2026-07-28, headless run): feeding the RAW dial straight into the strength
+    /// (skipping the inverse — the obvious wrong implementation) fails exactly the two consistency
+    /// tests, targeted not a collapse (6 of 8 stay green): <c>Forced_SeaState01_LandsExactly</c> at
+    /// dial 0.25 returns 0.0714 (off by 0.179 — strength 0.25 m/s lands mid-Glass), and
+    /// <c>ForcedStorm_ReachesStormConsistently</c> never reaches Storm (1 m/s is Ripple).
     /// </summary>
     public class DevSeaStateOverrideTests
     {
