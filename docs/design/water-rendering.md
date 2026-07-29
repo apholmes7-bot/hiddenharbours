@@ -2672,3 +2672,79 @@ No interior mask can intercept that; it is a DRAFT/ride problem (`HullMeshDef.Re
 and the §24 ride law), banked by the owner for its own session. Triage rule: a classifier miss is a
 whole face wet regardless of sea state and unchanged at `WaveExaggeration = 0`; a draft flood rides
 up and down with the swell and hugs the lowest surfaces.
+
+## 25. Sea-state band scaling + dispersion — the octaves stop sliding over each other (ADR 0027 #4 + #9)
+
+The two items land together — the ADR is explicit that building #4 without #9 leaves waves that grow
+longer but do not speed up. Both default **OFF = today's fixed wavelengths and hand-set speeds
+EXACTLY** (bit-for-bit passthrough: the frequency factor divides by exactly 1.0 at response 0, the
+dispersion blend is a lerp whose 0 endpoint is the legacy value, and a zero shoal shift adds
+exactly 0). C# twin: `WaterDispersion` — `BandFrequencyFactor` / `DeepPhaseSpeed` / `PhaseSpeed` /
+`BandSpeed` / `SwellPhaseRate` / `ShoalShift`, mirrored one-for-one by the shader's `BandFreq` /
+`Dispersion*` helpers — **change one, change BOTH in the same PR** (`WaterDispersionTests` pins the
+laws headless, including the bit-exact passthrough).
+
+### 25.1 #4 — band wavelengths scale with sea state
+
+Real seas grow in **wavelength** as they build, not only in amplitude; the visual octaves' spatial
+frequencies were fixed, so a storm read as the same-sized water moving harder. Every band read of
+`_NoiseScale` / `_WindChopScale` / `_CrossSwellScale` (and the legacy `_OceanSwellScale` band) now
+goes through `BandFreq(scale) = scale / (1 + _BandScaleResponse · _Chop)` — wavelength grows
+linearly in the already-pushed sea state (`_Chop` is sim-pushed; read, never authored — §12.1).
+**One uniform, one meaning:** every visual consumer of each scaled uniform applies the same law —
+the untile warp fields, the spec normal-tilt read and the whitecap blob scale all coarsen with the
+same growing sea. Two reads are deliberately excluded, with reasons stated where they live:
+
+- **the depth-read warp** (`worldXY * _NoiseScale + 7.3` feeding `SeabedElevation` → `depth` →
+  `clip()`): scaling it would move where the gameplay waterline shimmers — Tier A must never touch
+  the height read/clip (rule 5);
+- **the wave-field `freqScale` mapping** (`_OceanSwellScale / 0.025` in the fragment, the displaced
+  vertex stage, and `DisplacedWaterSurface.PublishIsoDepthFrame`): the trains already carry the
+  wavelength-growth law at the sim level (`WaveMath.TrainsFrom`, `DominantWavelengthPerWindSpeed`),
+  so scaling the mapping would double-apply it — and it moves drawn geometry the interior-mask /
+  watertight-clamp stack guards (the `_OceanSwellScale` incident, 2026-07-25). All three freqScale
+  computations remain textually identical to each other, so hull and water cannot disagree.
+
+### 25.2 #9 — band speeds derived from wavelength (dispersion)
+
+Each octave carried an independent hand-tuned speed with no relation to its wavelength — and the
+legacy set is **anti-dispersive** (the 40 m swell band's 0.72 m/s world speed is a fraction of what
+dispersion gives it relative to the 1.4 m chop's 0.09 m/s) — a large part of why the multi-scale sea
+read as stacked layers sliding over each other. Each band's wavelength is `λ = 1/BandFreq(scale)`
+(the noise cell size in metres; for the legacy swell band it is the literal sine wavelength). Speeds
+blend from the legacy value toward `bandMult × √(gλ/2π)` by the master `_DispersionScale`; the
+per-band multipliers keep the owner's art direction (rule 6), and their 0.06 default **anchors the
+wind-chop band on its legacy 0.09 m/s at full dispersion** so the master re-ties the slower bands to
+physics around an unchanged fastest band. Octave A's scroll is `_Flow` — the tidal current, not a
+wave phase speed — so #9 leaves it alone. The trains need nothing: `WaveTrain.PhaseSpeed` has been
+the dispersion relation since ADR 0018 ("speed is never free").
+
+**Shallow water — why the scroll rate stays depth-uniform and the shoal enters as a bounded static
+drift.** A per-pixel depth-dependent scroll RATE on an absolute-world-coordinate band accumulates
+unbounded domain shear (the pattern offset between two depths differs by `Δc·t`; on the legacy swell
+band that is ~26× the base wavenumber of spurious frequency after 600 s over a typical shoal — a
+shimmer/spiral generator at every shoreline). The stable equivalent ships instead:
+`DispersionShoalShift = saturate(s) · bunch · λ · (1 − c(λ,d)/c_deep)` — a **bounded** (≤ bunch·λ),
+**static** drift along the band's travel direction, keyed to the full finite-depth relation
+`c = √(gλ/2π · tanh(2πd/λ))` off the **same read-only depth** every other layer consumes. Where the
+drift's along-travel gradient compresses the domain by a factor m, the band's local wavelength AND
+its apparent phase speed both drop by m — waves genuinely **slow and bunch approaching shore**, with
+zero time-accumulating artefacts. The octaves read one guarded, still (unwarped) seabed sample for
+it (free at the defaults). `_ShorewardBias` (§5.12) is untouched — whether #9 subsumes part of it is
+an open question to be **measured later**, per the ADR.
+
+### 25.3 Tunables (rule 6; all default to today's exact look)
+
+| Property | Default | Effect |
+|---|---|---|
+| `_BandScaleResponse` | `0` (**OFF**) | Wavelength growth per unit sea state (λ_eff = λ·(1 + r·_Chop)). |
+| `_DispersionScale` | `0` (**OFF**) | 0 = today's hand-set speeds exactly; 1 = fully wavelength-derived. The master. |
+| `_DispersionChopMult` | `0.06` | Feel multiplier, wind-chop band (default anchors it on its legacy 0.09 m/s). |
+| `_DispersionCrossMult` | `0.06` | Feel multiplier, cross-swell band. |
+| `_DispersionSwellMult` | `0.06` | Feel multiplier, legacy ocean-swell band (native-rate blend — scale 0 keeps 0.018 bit-for-bit). |
+| `_DispersionShoalBunch` | `1` | Shoal drift bound, × wavelength at zero depth (bunches + slows wavefronts near shore). |
+
+None of the six is mood-eased (no `MoodFloatNames` entry — no double-drive); whether
+`_BandScaleResponse` / `_DispersionScale` should be is an open question for the owner. The see/feel
+gap this opens (drawn octaves speed-scaled, the ride unchanged) is accepted and explicit for P1 —
+the promotion into the field is P2, gated on an ADR 0018 amendment.
