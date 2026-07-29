@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
 
         /// <summary>A fresh save for a brand-new game — current version, empty collections.</summary>
         public static SaveData NewGame() => new SaveData { SchemaVersion = CurrentVersion };
@@ -82,6 +82,18 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 4;
             }
 
+            // ---- v4 → v5: held catch persists (M1 §7.3 — freshness must survive a save). Three lists,
+            // one per container (boat hold / clam pail / Ginny's freezer), each record = species id +
+            // quantity + the FreshnessState triple. A pre-v5 save simply carried no hold contents — it
+            // gets empty lists (an empty hold, never a crash) and everything else carries through.
+            if (data.SchemaVersion < 5)
+            {
+                data.BoatHoldCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                data.BucketCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                data.FreezerCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                data.SchemaVersion = 5;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -93,6 +105,9 @@ namespace HiddenHarbours.Core
             data.PlacedTraps ??= new System.Collections.Generic.List<PlacedTrapDto>();
             data.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
             data.PotStock ??= new System.Collections.Generic.List<PotStock>();
+            data.BoatHoldCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+            data.BucketCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+            data.FreezerCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).

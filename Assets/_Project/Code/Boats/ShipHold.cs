@@ -33,6 +33,41 @@ namespace HiddenHarbours.Boats
                 gameObject.AddComponent<DeckIceBox>();
         }
 
+        // The hold's catch persists (M1 §7.3, SaveData v5): every mutation pushes a snapshot into the
+        // save blob (cheap — a handful of units, event-time only; the DISK write stays SaveService's
+        // autosave), and the GameLoaded edge restores it — so freshness survives a reload exactly
+        // (spoil is a pure function of the restored state + the restored clock).
+        private void OnEnable() => EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+        private void OnDisable() => EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+
+        private void OnGameLoaded(GameLoaded _)
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            var restored = new List<CatchItem>();
+            int units = HoldCatchCodec.Restore(save.Current.BoatHoldCatch, GameServices.CatchFactory, restored);
+            ReplaceAll(restored);   // capacity-exempt: the hold was legal when saved
+            int saved = CountUnits(save.Current.BoatHoldCatch);
+            if (units < saved)
+                Debug.LogWarning($"[ShipHold] Restored {units}/{saved} held catch — some species ids " +
+                                 "no longer resolve (skipped, never a crash).", this);
+        }
+
+        private void SyncToSave()
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            HoldCatchCodec.Capture(_items, save.Current.BoatHoldCatch ??= new List<HeldCatchDto>());
+        }
+
+        private static int CountUnits(List<HeldCatchDto> records)
+        {
+            int n = 0;
+            if (records != null)
+                for (int i = 0; i < records.Count; i++) n += records[i].Quantity;
+            return n;
+        }
+
         public int CapacityUnits => _hull != null ? _hull.HoldUnits : 0;
         public int UsedUnits => _items.Count;
         public IReadOnlyList<CatchItem> Items => _items;
@@ -41,10 +76,15 @@ namespace HiddenHarbours.Boats
         {
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
+            SyncToSave();
             return true;
         }
 
-        public void Clear() => _items.Clear();
+        public void Clear()
+        {
+            _items.Clear();
+            SyncToSave();
+        }
 
         /// <summary>
         /// SURGICAL replace of the hold's contents — the freshness restamp / save-restore write
@@ -58,6 +98,7 @@ namespace HiddenHarbours.Boats
             if (items != null)
                 for (int i = 0; i < items.Count; i++)
                     _items.Add(items[i]);
+            SyncToSave();
         }
 
         /// <summary>

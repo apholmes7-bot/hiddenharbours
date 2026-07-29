@@ -53,10 +53,36 @@ namespace HiddenHarbours.Player
         {
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
+            SyncToSave();
             return true;
         }
 
-        public void Clear() => _items.Clear();
+        public void Clear()
+        {
+            _items.Clear();
+            SyncToSave();
+        }
+
+        // The pail's catch persists (M1 §7.3, SaveData v5) — the ShipHold pattern: mutations push a
+        // snapshot into the save blob (disk stays SaveService's autosave); GameLoaded restores it, so
+        // a bucket of clams reloads into your hand with its freshness exact. Restore writes _items
+        // directly (the saved pail was legal; the ownership gate must not eat a reloaded catch).
+        private void OnEnable() => EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+        private void OnDisable() => EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+
+        private void OnGameLoaded(GameLoaded _)
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            HoldCatchCodec.Restore(save.Current.BucketCatch, GameServices.CatchFactory, _items);
+        }
+
+        private void SyncToSave()
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            HoldCatchCodec.Capture(_items, save.Current.BucketCatch ??= new List<HeldCatchDto>());
+        }
 
         /// <summary>Wire capacity/ownership in one call (tests / editor).</summary>
         public void Configure(int capacity, bool requireOwnedBucket)

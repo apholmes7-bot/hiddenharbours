@@ -50,10 +50,15 @@ namespace HiddenHarbours.Player
             _items.Add(item.WithFreshness(Freshness.WithMode(item.Freshness, spoil.NowGameSeconds,
                                                              item.SpoilPerDay, spoil.SecondsPerDay,
                                                              spoil.Policy, StorageMode.Frozen)));
+            SyncToSave();
             return true;
         }
 
-        public void Clear() => _items.Clear();
+        public void Clear()
+        {
+            _items.Clear();
+            SyncToSave();
+        }
 
         /// <summary>Surgical restore write (save/load) — items land EXACTLY as given, no re-mode.</summary>
         public void ReplaceAll(IReadOnlyList<CatchItem> items)
@@ -62,10 +67,36 @@ namespace HiddenHarbours.Player
             if (items != null)
                 for (int i = 0; i < items.Count; i++)
                     _items.Add(items[i]);
+            SyncToSave();
         }
 
-        private void OnEnable() => _reach.Enable();
-        private void OnDisable() => _reach.Disable();
+        private void OnEnable()
+        {
+            _reach.Enable();
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+        }
+
+        private void OnDisable()
+        {
+            _reach.Disable();
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
+
+        // Banked catch persists (M1 §7.3, SaveData v5) — the ShipHold pattern; restore lands items
+        // EXACTLY as saved (already Frozen), never re-moded.
+        private void OnGameLoaded(GameLoaded _)
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            HoldCatchCodec.Restore(save.Current.FreezerCatch, GameServices.CatchFactory, _items);
+        }
+
+        private void SyncToSave()
+        {
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            HoldCatchCodec.Capture(_items, save.Current.FreezerCatch ??= new List<HeldCatchDto>());
+        }
 
         private void Update()
         {
@@ -119,6 +150,7 @@ namespace HiddenHarbours.Player
                 if (_bucket.TryAdd(thawed)) { _items.RemoveAt(i); taken++; }
                 else break;   // bucket full — the rest stays frozen
             }
+            if (taken > 0) SyncToSave();   // the withdraw mutates _items directly — snapshot it too
             EventBus.Publish(new DevNotice(taken > 0
                 ? $"You take {taken} from the freezer — back on the clock now."
                 : "Your bucket has no room."));
