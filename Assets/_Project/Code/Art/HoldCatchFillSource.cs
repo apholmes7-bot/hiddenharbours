@@ -33,6 +33,13 @@ namespace HiddenHarbours.Art
         private IHold _hold;
         private readonly List<string> _kinds = new List<string>();
 
+        // The freshness clock's VISUAL tick (M1 §7.3): spoil accrues continuously (settle-on-read), so
+        // the tint can't be purely event-driven — a slow realtime cadence re-reads the worst item and
+        // feeds SetSpoil (which dirty-checks, so an unchanged read costs nothing). Display only — the
+        // cadence is presentation, never sim (rule 5 untouched); throttled, no per-frame work (rule 7).
+        private const float SpoilTickSeconds = 2f;
+        private float _nextSpoilTick;
+
         private void Awake()
         {
             _renderer = GetComponent<CatchFillRenderer>();
@@ -86,6 +93,32 @@ namespace HiddenHarbours.Art
                 ? (float)_hold.UsedUnits / _hold.CapacityUnits
                 : 0f;
             _renderer.SetContents(_kinds, fill01);
+            PushSpoil();
+        }
+
+        private void LateUpdate()
+        {
+            if (Time.unscaledTime < _nextSpoilTick) return;
+            _nextSpoilTick = Time.unscaledTime + SpoilTickSeconds;
+            PushSpoil();
+        }
+
+        /// <summary>Feed the renderer the WORST item's settled spoil — the tote telegraphs its most
+        /// urgent problem (a fresh tote with one rotten fish should read wrong, not fine).</summary>
+        private void PushSpoil()
+        {
+            if (_renderer == null) return;
+            if (_hold == null) { _renderer.SetSpoil(0f); return; }
+
+            SpoilContext spoil = SpoilContext.Capture();
+            float worst = 0f;
+            IReadOnlyList<CatchItem> items = _hold.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                float s = spoil.SpoilOf(items[i]);
+                if (s > worst) worst = s;
+            }
+            _renderer.SetSpoil(worst);
         }
     }
 }
