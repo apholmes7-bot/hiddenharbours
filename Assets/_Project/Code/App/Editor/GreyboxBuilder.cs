@@ -468,6 +468,8 @@ namespace HiddenHarbours.App.Editor
             coveArrival.transform.position = CoveArrivalPos;        // just WEST of the dock head (arrive from the west)
             var coveAnchor = anchorGo.AddComponent<RegionAnchor>();
             coveAnchor.Configure(CoveRegionId, coveArrival.transform, dockZone.transform, disembarkPoint.transform);
+            // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
+            coveAnchor.ConfigureExtent(CoveSeaCenter, CoveSeaSize);
         }
 
         // =====================================================================================

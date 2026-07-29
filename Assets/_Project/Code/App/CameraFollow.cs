@@ -15,7 +15,11 @@ namespace HiddenHarbours.App
     /// Pixel-perfect is preserved at each discrete tier (the Pixel-Perfect reference resolution is
     /// bumped to the tier — NOT a continuous lerp); the upgrade transition briefly eases the zoom for a
     /// tangible beat. The framing helpers below are the single source of truth shared by the greybox
-    /// builder and the EditMode tests. A fuller rig (bounds) is later ui-ux/world work. PC-first (ADR 0005).
+    /// builder and the EditMode tests. PC-first (ADR 0005).
+    ///
+    /// WORLD BOUNDS (scene-sizing §6 item 4): the view is clamped inside the region's authored
+    /// rectangle — see <see cref="CameraBounds"/> and <see cref="ConfigureBounds"/>. Unconfigured
+    /// (zero size) means unclamped, so this is inert until a region builder wires its extent.
     ///
     /// ON-DECK ZOOM (owner playtest 2026-07-08): stepping onto the DECK steps the camera IN one
     /// pixel-perfect step past the on-foot framing, so the boat fills the screen and deck work reads in
@@ -169,6 +173,15 @@ namespace HiddenHarbours.App
         [Tooltip("How quickly the look-ahead offset eases in and out.")]
         [SerializeField] private float _lookaheadSmooth = 3f;
 
+        // ---- world bounds (scene-sizing §6 item 4) -------------------------------------------
+        //
+        // ⚠️ DELIBERATELY NOT SERIALIZED HERE. This camera lives on the PERSISTENT CORE — it survives
+        // every region hop — so a rectangle baked onto it at build time would be the START region's
+        // extent forever, and travelling to a bigger region would clamp the view to a box in the
+        // middle of it. The bounds must change WITH the region, so they arrive through the same seam
+        // the region id does: RegionAnchor publishes them on enable (which covers boot AND travel,
+        // where the travel coordinator alone would miss boot), and this reads them live.
+
         private Camera _cam;
         private PixelPerfectCamera _ppc;
 
@@ -303,6 +316,58 @@ namespace HiddenHarbours.App
             FollowTarget();
             TickZoom(Time.timeAsDouble);
             if (_tweening) TickFramingTween();
+            // ⚠️ The clamp runs LAST, after the zoom has settled for this frame. Its allowance is a
+            // function of the half-extents, so clamping before TickZoom/TickFramingTween would size
+            // the allowance to the PREVIOUS frame's zoom — visible as a one-frame overshoot past the
+            // map edge on every zoom step, which is exactly where a bounds rig gets noticed.
+            ApplyBounds();
+        }
+
+        /// <summary>
+        /// The rectangle the view is kept inside — the ACTIVE region's authored extent, read live
+        /// from the region seam (<c>GameServices.CurrentRegionBounds</c>, published by
+        /// <see cref="RegionAnchor"/> from <c>RegionDef.WorldCenter</c>/<c>WorldSizeMeters</c>). No
+        /// region reporting an extent (a bare test scene, a region built before this rig, EditMode)
+        /// means zero size, which means unbounded — so nothing changes anywhere until a region
+        /// publishes one.
+        /// </summary>
+        public CameraBounds Bounds
+        {
+            get
+            {
+                Rect r = GameServices.CurrentRegionBounds;
+                return new CameraBounds(r.center, r.size);
+            }
+        }
+
+        /// <summary>
+        /// Half-extents of what the camera shows RIGHT NOW, in world metres — orthographic size is
+        /// half the visible height, and the width follows the viewport aspect. Read live rather than
+        /// derived from the framing constants so it is correct mid-tween and at whatever aspect the
+        /// window happens to be (an ultrawide monitor sees more world width at the same zoom, and must
+        /// be held further from the edge for it).
+        /// </summary>
+        private bool TryGetHalfExtents(out float halfWidth, out float halfHeight)
+        {
+            if (_cam == null) _cam = GetComponent<Camera>();
+            if (_cam == null) { halfWidth = halfHeight = 0f; return false; }
+
+            halfHeight = _cam.orthographicSize;
+            float aspect = _cam.aspect > 0f ? _cam.aspect : (ReferenceWidthPx / (float)ReferenceHeightPx);
+            halfWidth = halfHeight * aspect;
+            return true;
+        }
+
+        private void ApplyBounds()
+        {
+            CameraBounds bounds = Bounds;
+            if (!bounds.IsBounded) return;
+            if (!TryGetHalfExtents(out float halfWidth, out float halfHeight)) return;
+
+            Vector3 p = transform.position;
+            Vector2 clamped = CameraBounds.Clamp(new Vector2(p.x, p.y), in bounds, halfWidth, halfHeight);
+            if (clamped.x != p.x || clamped.y != p.y)
+                transform.position = new Vector3(clamped.x, clamped.y, p.z);   // depth is never touched
         }
 
         /// <summary>
