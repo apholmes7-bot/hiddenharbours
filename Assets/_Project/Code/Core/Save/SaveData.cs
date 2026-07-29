@@ -85,6 +85,63 @@ namespace HiddenHarbours.Core
         /// <see cref="PotLocker"/>, never stored — the same recompute-don't-store discipline as the soak
         /// (rule 5). One record per trap kind. Added in v4. (ADR 0020 addendum.)</summary>
         public List<PotStock> PotStock = new();
+
+        /// <summary>The BOAT hold's catch (M1 §7.3 — freshness must survive a save). One record per run
+        /// of identical units: species id, quantity, and the three <c>FreshnessState</c> fields — the
+        /// save carries the species REFERENCE and the clock, never the Def's stats (rule 2); the item
+        /// is rebuilt from the Def at load. Spoil stays a pure function of <c>(state, now)</c>, so the
+        /// restored numbers land exactly (the #289 settle-on-read guarantee). Added in v5.</summary>
+        public List<HeldCatchDto> BoatHoldCatch = new();
+
+        /// <summary>The hand-carried clam PAIL's catch — same record shape as
+        /// <see cref="BoatHoldCatch"/>, its own list because it is its own container (a clam dug on
+        /// the flats must reload into your hand, not the boat). Added in v5.</summary>
+        public List<HeldCatchDto> BucketCatch = new();
+
+        /// <summary>Ginny's FREEZER's catch (the third hold the §7.3 slice created — banked catch
+        /// must not evaporate on reload). Same record shape. Added in v5.</summary>
+        public List<HeldCatchDto> FreezerCatch = new();
+    }
+
+    /// <summary>
+    /// One run of identical held catch: a species (by stable id — the Def is resolved at load, rule 2),
+    /// how many, and the freshness clock all of them share (<c>FreshnessState</c>'s three fields, flat
+    /// scalars for clean JSON — the <see cref="PlacedTrapDto"/> precedent). Units landed at different
+    /// instants carry different clocks and therefore occupy different records; <see cref="Quantity"/>
+    /// compresses the common same-haul case without ever merging distinct freshness.
+    /// </summary>
+    [Serializable]
+    public struct HeldCatchDto
+    {
+        /// <summary>Stable species Def id (e.g. "fish.atlantic_cod"), resolved at load.</summary>
+        public string SpeciesId;
+
+        /// <summary>How many units share this exact freshness state (≥ 1).</summary>
+        public int Quantity;
+
+        /// <summary>Spoil banked as of <see cref="LastSettleGameSeconds"/> (FreshnessState.SpoilAccrued).</summary>
+        public float SpoilAccrued;
+
+        /// <summary>The clock instant the banked spoil is correct at (FreshnessState.LastSettleGameSeconds),
+        /// full precision like <see cref="SaveData.GameTimeSeconds"/>.</summary>
+        public double LastSettleGameSeconds;
+
+        /// <summary>The <c>StorageMode</c> held since, as its stable int value (append-only enum).</summary>
+        public int Mode;
+
+        public HeldCatchDto(string speciesId, int quantity, float spoilAccrued,
+                            double lastSettleGameSeconds, int mode)
+        {
+            SpeciesId = speciesId;
+            Quantity = quantity;
+            SpoilAccrued = spoilAccrued;
+            LastSettleGameSeconds = lastSettleGameSeconds;
+            Mode = mode;
+        }
+
+        /// <summary>This record's clock as the runtime <see cref="FreshnessState"/>.</summary>
+        public FreshnessState Freshness => new FreshnessState(SpoilAccrued, LastSettleGameSeconds,
+                                                              (StorageMode)Mode);
     }
 
     /// <summary>
