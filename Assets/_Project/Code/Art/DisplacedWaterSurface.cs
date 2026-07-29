@@ -320,9 +320,32 @@ namespace HiddenHarbours.Art
             // vertex stage above through the Core seam, so boat heave rides the same exaggeration
             // and the same shore fade as the surface it is drawn on (re-published every tick — a
             // live config edit reaches the boats within one refresh, never a stale copy).
-            DisplacedSea.Publish(this, new DisplacedSeaState(exaggeration, band));
+            // ⚠️ The FREQ SCALE rides along, and it is the term that was missing. The vertex stage
+            // above samples the field at _OceanSwellScale/0.025 — 2.8 at the owner's materials — so a
+            // rider sampling at 1 rides a different WAVE and the drawn sea climbs over it (the
+            // "nearly submerged" defect). Same value, same tick, same source as the iso-depth frame's.
+            DisplacedSea.Publish(this, new DisplacedSeaState(exaggeration, band, EffectiveFreqScale()));
 
             PublishIsoDepthFrame(exaggeration);
+        }
+
+        /// <summary>
+        /// The frequency scale the vertex stage is ACTUALLY sampling the shared wave field at:
+        /// <c>_OceanSwellScale / WaveLegacyScaleRef</c>, live from the copied block first and the
+        /// material else (presets and the owner's in-Play tuning both reach it).
+        ///
+        /// <para>Extracted so the iso-depth frame and the <see cref="DisplacedSea"/> state cannot
+        /// disagree about it — they are two readers of one number, and the whole class of defect this
+        /// term causes is two readers disagreeing.</para>
+        /// </summary>
+        private float EffectiveFreqScale()
+        {
+            float swellScale = _mpb.HasFloat(IdOceanSwellScale)
+                ? _mpb.GetFloat(IdOceanSwellScale)
+                : (_displacedMaterial != null && _displacedMaterial.HasProperty(IdOceanSwellScale)
+                    ? _displacedMaterial.GetFloat(IdOceanSwellScale)
+                    : WaveLegacyScaleRef);
+            return Mathf.Max(swellScale, 1e-4f) / WaveLegacyScaleRef;
         }
 
         /// <summary>
@@ -360,16 +383,9 @@ namespace HiddenHarbours.Art
             // every other field here: the copied block first, the material else — presets and the
             // owner's live tuning both reach it) closes the see-what-you-clamp discipline on the one
             // term that was missing from it.
-            float swellScale = _mpb.HasFloat(IdOceanSwellScale)
-                ? _mpb.GetFloat(IdOceanSwellScale)
-                : (_displacedMaterial.HasProperty(IdOceanSwellScale)
-                    ? _displacedMaterial.GetFloat(IdOceanSwellScale)
-                    : WaveLegacyScaleRef);
-            float freqScale = Mathf.Max(swellScale, 1e-4f) / WaveLegacyScaleRef;
-
             // The chunk vertices rest at this transform's world z (local z 0 under the mesh root).
             var frame = new WaterIsoDepthFrame(heightMin.y, iso.x, iso.y, transform.position.z,
-                                               exaggeration, freqScale);
+                                               exaggeration, EffectiveFreqScale());
             DisplacedWaterRegistry.PublishIsoDepthFrame(this, in frame);
         }
 
