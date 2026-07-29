@@ -47,6 +47,9 @@ namespace HiddenHarbours.App.Editor
     public sealed class TerrainPaintTool : EditorWindow
     {
         private const string DataDir = "Assets/_Project/Data/Terrain";
+        private const string RegionDir = "Assets/_Project/Data/Regions";
+        /// <summary>The game's start region — what a freshly-opened tool defaults to.</summary>
+        private const string DefaultRegionId = "region.st_peters";
 
         private enum Brush { TerrainType, Raise, Lower, SetHeight, Smooth }
 
@@ -71,6 +74,11 @@ namespace HiddenHarbours.App.Editor
         }
 
         [SerializeField] private PaintedHeightMap _map;
+        // ⭐ THE REGION IS WHERE THE SIZE COMES FROM (scene-sizing §6.1/§6.2). This tool used to mint a
+        // SQUARE 192² map over a hard-coded 160 × 120 m rect — which is 1.2 px/m across and 1.6 px/m up,
+        // two densities nobody chose, and a size that could not be changed without editing this file.
+        // Extent and resolution are now authored ONCE on the RegionDef and read from here.
+        [SerializeField] private RegionDef _region;
         [SerializeField] private Tilemap _groundTilemap;          // the LOOK target (auto-found / create-on-demand)
         [SerializeField] private Brush _brush = Brush.TerrainType;
         [SerializeField] private int _typeIndex;                  // selected terrain TYPE in the preset list
@@ -121,7 +129,7 @@ namespace HiddenHarbours.App.Editor
             new TerrainTypePreset { name = "Deep",    elevation = StPetersBuilder.DeepHarbourElevation,   clearTile = true },   // -4, no tile
             new TerrainTypePreset { name = "Channel", elevation = StPetersBuilder.ChannelBedElevation,    clearTile = true },   // -0.6, no tile
             new TerrainTypePreset { name = "Beach",   elevation = 0.3f },                                                       // sand
-            new TerrainTypePreset { name = "Sandbar", elevation = StPetersBuilder.SandbarCrestElevation },                      // 1.6, wet-sand-ish
+            new TerrainTypePreset { name = "Sandbar", elevation = StPetersBuilder.SandbarCrestElevation },                      // 1.4, wet-sand-ish
             new TerrainTypePreset { name = "Grass",   elevation = StPetersBuilder.IslandElevation },                            // 6, grass
             new TerrainTypePreset { name = "Cliff",   elevation = 8f },                                                         // rock
         };
@@ -209,6 +217,35 @@ namespace HiddenHarbours.App.Editor
             _map = (PaintedHeightMap)EditorGUILayout.ObjectField("Height Map", _map, typeof(PaintedHeightMap), false);
             if (EditorGUI.EndChangeCheck()) { CacheTexture(); _overlayDirty = true; }
 
+            if (_region == null) _region = DefaultRegion();
+
+            _region = (RegionDef)EditorGUILayout.ObjectField(
+                new GUIContent("Region", "The region whose EXTENT a new map is minted at. Size and " +
+                               "pixels-per-metre are authored on the RegionDef so the sea plane, the " +
+                               "seabed and the camera bounds all read one number."),
+                _region, typeof(RegionDef), false);
+
+            if (_region == null)
+                EditorGUILayout.HelpBox(
+                    "No RegionDef assigned and region.st_peters was not found. A map's extent is DATA " +
+                    "(RegionDef.WorldSizeMeters / SeabedPixelsPerMetre) — assign a region before " +
+                    "minting one, rather than falling back to a size nobody authored.",
+                    MessageType.Warning);
+            else if (!_region.HasUsableExtent)
+                EditorGUILayout.HelpBox(
+                    $"'{_region.DisplayName}' has an unusable extent: {_region.WorldSizeMeters.x} × " +
+                    $"{_region.WorldSizeMeters.y} m at {_region.SeabedPixelsPerMetre} px/m → " +
+                    $"{_region.SeabedTexels.x} × {_region.SeabedTexels.y} texels. Both sizes must be " +
+                    $"positive and neither axis may exceed {RegionDef.MaxSeabedTexels}.",
+                    MessageType.Error);
+            else
+                EditorGUILayout.LabelField(
+                    $"Extent: {_region.WorldSizeMeters.x:0.#} × {_region.WorldSizeMeters.y:0.#} m " +
+                    $"at {_region.SeabedPixelsPerMetre:0.##} px/m → {_region.SeabedTexels.x} × " +
+                    $"{_region.SeabedTexels.y} texels ({_region.SeabedBytes / 1024f:0.#} KiB R8)",
+                    EditorStyles.miniLabel);
+
+            using (new EditorGUI.DisabledScope(_region == null || !_region.HasUsableExtent))
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("New Blank Map…")) CreateBlankMap();
@@ -782,12 +819,59 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// The region a freshly-opened tool defaults to: <c>region.st_peters</c>, the game's start
+        /// scene. Null (with the warning above) rather than a literal fallback if it is missing — a
+        /// map minted at a size nobody authored is exactly the failure this change removes.
+        /// </summary>
+        private static RegionDef DefaultRegion()
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:RegionDef", new[] { RegionDir }))
+            {
+                var r = AssetDatabase.LoadAssetAtPath<RegionDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (r != null && r.Id == DefaultRegionId) return r;
+            }
+            return null;
+        }
+
         private void CreateBlankMap()
         {
-            const int res = 192;   // matches the ADR-0012 bake resolution
-            var map = CreatePaintedMapAsset("PaintedSeabed", res, new Vector2(0f, 0f), new Vector2(160f, 120f),
+            if (!RequireExtent(out Vector2 center, out Vector2 worldSize, out Vector2Int texels)) return;
+
+            var map = CreatePaintedMapAsset("PaintedSeabed", texels.x, texels.y, center, worldSize,
                                             -4f, 6f, fillElevation: -4f);
             if (map != null) { _map = map; CacheTexture(); _overlayDirty = true; }
+        }
+
+        /// <summary>
+        /// The region's extent, or a loud refusal. Every map this tool mints is sized from DATA — the
+        /// tool holds no size of its own, so there is nothing to fall back to and nothing to drift.
+        /// </summary>
+        private bool RequireExtent(out Vector2 center, out Vector2 worldSize, out Vector2Int texels)
+        {
+            center = default; worldSize = default; texels = default;
+
+            if (_region == null)
+            {
+                Debug.LogError(
+                    "[TerrainPaintTool] No region assigned — a painted map's extent is authored on the " +
+                    "RegionDef (WorldSizeMeters / SeabedPixelsPerMetre), not here. Assign one.");
+                return false;
+            }
+            if (!_region.HasUsableExtent)
+            {
+                Debug.LogError(
+                    $"[TerrainPaintTool] '{_region.DisplayName}' has an unusable extent: " +
+                    $"{_region.WorldSizeMeters.x} × {_region.WorldSizeMeters.y} m at " +
+                    $"{_region.SeabedPixelsPerMetre} px/m → {_region.SeabedTexels.x} × " +
+                    $"{_region.SeabedTexels.y} texels. Fix the RegionDef rather than the tool.");
+                return false;
+            }
+
+            center = _region.WorldCenter;
+            worldSize = _region.WorldSizeMeters;
+            texels = _region.SeabedTexels;
+            return true;
         }
 
         /// <summary>
@@ -797,9 +881,7 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         private void ExportStPeters()
         {
-            const int res = 192;
-            Vector2 center = new Vector2(0f, 0f);
-            Vector2 worldSize = new Vector2(160f, 120f);
+            if (!RequireExtent(out Vector2 center, out Vector2 worldSize, out Vector2Int texels)) return;
             const float min0 = -4f, max0 = 6f;
 
             // (F1) Overwrite the committed seed in place rather than minting a "StPetersSeabed 1.asset"
@@ -820,20 +902,22 @@ namespace HiddenHarbours.App.Editor
             StPetersBuilder.ConfigureTidalTerrain(terrain);
 
             Vector2 min = center - worldSize * 0.5f;
-            var pixels = new Color[res * res];
-            for (int y = 0; y < res; y++)
-            for (int x = 0; x < res; x++)
+            // ⚠ Sampled on the region's OWN grid, which is non-square when the region is. The old code
+            // walked a square res² over a 160 × 120 m rect, so every texel was 1.2 m wide and 0.75 m tall.
+            var pixels = new Color[texels.x * texels.y];
+            for (int y = 0; y < texels.y; y++)
+            for (int x = 0; x < texels.x; x++)
             {
-                float wx = min.x + (x + 0.5f) / res * worldSize.x;
-                float wy = min.y + (y + 0.5f) / res * worldSize.y;
+                float wx = min.x + (x + 0.5f) / texels.x * worldSize.x;
+                float wy = min.y + (y + 0.5f) / texels.y * worldSize.y;
                 float elev = terrain.ElevationAtZones(new Vector2(wx, wy));
                 float r01 = PaintedHeightField.EncodeElevation(elev, min0, max0);
-                pixels[y * res + x] = new Color(r01, r01, r01, 1f);
+                pixels[y * texels.x + x] = new Color(r01, r01, r01, 1f);
             }
             Object.DestroyImmediate(go);
 
-            var map = CreatePaintedMapAsset("StPetersSeabed", res, center, worldSize, min0, max0,
-                                            pixels: pixels, overwrite: true);
+            var map = CreatePaintedMapAsset("StPetersSeabed", texels.x, texels.y, center, worldSize,
+                                            min0, max0, pixels: pixels, overwrite: true);
             if (map != null)
             {
                 _map = map; CacheTexture(); _overlayDirty = true;
@@ -853,9 +937,14 @@ namespace HiddenHarbours.App.Editor
         /// PNG). When <paramref name="overwrite"/> is true an existing same-named map is updated in place
         /// (no <c>StPetersSeabed 1.asset</c> duplicate); otherwise a unique path is minted (blank maps).
         /// </summary>
-        private static PaintedHeightMap CreatePaintedMapAsset(string baseName, int res, Vector2 center,
-            Vector2 worldSize, float minElev, float maxElev, float fillElevation = 0f, Color[] pixels = null,
-            bool overwrite = false)
+        /// <summary>
+        /// Mints (or overwrites) a painted height map at a given TEXEL GRID. The grid is two numbers,
+        /// not one: a region is rarely square, and a square texture stretched over a non-square rect
+        /// samples the two axes at different densities — which is what the hard-coded 192² did.
+        /// </summary>
+        private static PaintedHeightMap CreatePaintedMapAsset(string baseName, int resX, int resY,
+            Vector2 center, Vector2 worldSize, float minElev, float maxElev, float fillElevation = 0f,
+            Color[] pixels = null, bool overwrite = false)
         {
             if (!AssetDatabase.IsValidFolder(DataDir))
             {
@@ -875,12 +964,12 @@ namespace HiddenHarbours.App.Editor
             }
 
             // Build the R8 pixel buffer (R = normalized elevation; G=B=R so 8-bit grayscale PNG round-trips).
-            var tex = new Texture2D(res, res, TextureFormat.R8, false, true);
+            var tex = new Texture2D(resX, resY, TextureFormat.R8, false, true);
             if (pixels == null)
             {
                 float r01 = PaintedHeightField.EncodeElevation(fillElevation, minElev, maxElev);
                 var c = new Color(r01, r01, r01, 1f);
-                var fill = new Color[res * res];
+                var fill = new Color[resX * resY];
                 for (int i = 0; i < fill.Length; i++) fill[i] = c;
                 tex.SetPixels(fill);
             }

@@ -1,0 +1,676 @@
+{
+  "rig": "shorePlantRig",
+  "version": 1,
+  "generated": "baked from Art/shorePlantRig.js at full growth stage",
+  "projection": {
+    "ppu": 32,
+    "elev": 40,
+    "heightScale": 0.766,
+    "depthScale": 0.6428,
+    "pivot": "ground contact (holdfast / root crown), bottom-centre of the union cell",
+    "antialias": false,
+    "alpha": "binary",
+    "keyline": "#101d21"
+  },
+  "materials": {
+    "body": {
+      "id": 1,
+      "linear": false,
+      "massFloorPx": 5,
+      "carriesRim": true,
+      "note": "obeys the mass floor: no radius under MIN_R in any axis, clamped at the emitter"
+    },
+    "strap": {
+      "id": 2,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": false,
+      "note": "blades, culms, fronds, sheets. Exempt from the mass floor by declaration; forbidden a rim."
+    },
+    "wood": {
+      "id": 3,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": "thickness-gated",
+      "note": "stems and holdfasts. Linear, so not policed by the floor; the rim gate decides per pixel."
+    },
+    "fleck": {
+      "id": 4,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": false,
+      "note": "single-pixel detail (wax berries, bloom). Flat, no rim, no relief."
+    }
+  },
+  "bakes": {
+    "light": {
+      "file": "<key>_light.png",
+      "R": "key light · N·L from the fixed upper-left key · ALL materials, straps included — the strap spine lives here",
+      "G": "back rim · DEFINED FOR BODY AND WOOD ONLY. Identically 0 on strap and fleck pixels — not a spine, not reinterpreted. Gate every read on state.B.",
+      "B": "surface depth, normalised per sprite",
+      "A": "coverage"
+    },
+    "state": {
+      "file": "<key>_tide.png",
+      "R": "wetness 0–255 · gloss authority",
+      "G": "255 where the pixel is below the baked waterline",
+      "B": "255 on STRAP pixels — the no-rim flag. This is the branch. Read it, do not infer it.",
+      "A": "coverage"
+    }
+  },
+  "water": {
+    "bakesWater": false,
+    "bakesCaustics": false,
+    "bakesMovingLight": false,
+    "note": "Submergence bakes COLOUR only — darker, cooler, contrast falling monotonically with depth. No dapple, no pattern, no per-frame light. The live sprite-light shader owns the moving caustics so they stay correlated with the swell."
+  },
+  "tide": {
+    "rangeM": 4,
+    "dryFallM": 0.85,
+    "steps": [
+      {
+        "key": "low",
+        "t": 0,
+        "waterM": 0
+      },
+      {
+        "key": "ebb",
+        "t": 0.3,
+        "waterM": 1.2
+      },
+      {
+        "key": "half",
+        "t": 0.55,
+        "waterM": 2.2
+      },
+      {
+        "key": "flood",
+        "t": 0.8,
+        "waterM": 3.2
+      },
+      {
+        "key": "high",
+        "t": 1,
+        "waterM": 4
+      }
+    ],
+    "derives": [
+      "lay",
+      "wet",
+      "submergence",
+      "swayMode"
+    ],
+    "input": "water height over the plant’s own ground = tideM - zone.base. Maps onto the painted seabed height plus the deterministic tide; no new sim.",
+    "waterRow": "row index in sprite space where the surface crosses. null when the surface is outside the sprite — read `submerged` to tell which side."
+  },
+  "zones": [
+    {
+      "key": "fringe",
+      "name": "Subtidal fringe",
+      "baseM": 0.15,
+      "substrate": "bedrock · kelp"
+    },
+    {
+      "key": "mid",
+      "name": "Mid intertidal",
+      "baseM": 1.55,
+      "substrate": "cobble · rock"
+    },
+    {
+      "key": "low",
+      "name": "Low marsh",
+      "baseM": 2.55,
+      "substrate": "creek mud"
+    },
+    {
+      "key": "high",
+      "name": "High marsh",
+      "baseM": 3.35,
+      "substrate": "peat sod · brackish"
+    },
+    {
+      "key": "upland",
+      "name": "Upland & dune",
+      "baseM": 4.65,
+      "substrate": "sand · headland"
+    }
+  ],
+  "sway": {
+    "frames": 4,
+    "modes": [
+      "breeze",
+      "surge",
+      "still"
+    ],
+    "note": "pinned at the pivot row; breeze above the waterline, phase-lagged surge below, still when drained and limp"
+  },
+  "sheets": {
+    "axisA": "variant × sway",
+    "axisB": "tide × sway",
+    "cap": 2048,
+    "cellPolicy": "ONE union cell and ONE pivot per species per growth stage, unioned over 4 variants × 2 seasons × 5 tides. Runtime tide-state swaps are pivot-stable by construction.",
+    "totalMb": 11.42,
+    "allFit": true
+  },
+  "species": [
+    {
+      "key": "SugarKelp",
+      "name": "Sugar Kelp",
+      "latin": "Saccharina latissima",
+      "zone": "fringe",
+      "baseM": 0.15,
+      "heightM": 2.75,
+      "unit": "plant",
+      "limp": 0.92,
+      "algae": true,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        142,
+        131
+      ],
+      "pivot": [
+        70,
+        88
+      ],
+      "variantSheet": [
+        568,
+        524
+      ],
+      "tideSheet": [
+        710,
+        524
+      ],
+      "worstInkPct": 16,
+      "worstInkTide": "high",
+      "fits2048": true
+    },
+    {
+      "key": "IrishMoss",
+      "name": "Irish Moss",
+      "latin": "Chondrus crispus",
+      "zone": "fringe",
+      "baseM": 0.15,
+      "heightM": 0.53,
+      "unit": "mat",
+      "limp": 0.5,
+      "algae": true,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        56,
+        47
+      ],
+      "pivot": [
+        28,
+        31
+      ],
+      "variantSheet": [
+        224,
+        188
+      ],
+      "tideSheet": [
+        280,
+        188
+      ],
+      "worstInkPct": 33,
+      "worstInkTide": "flood",
+      "fits2048": true
+    },
+    {
+      "key": "Eelgrass",
+      "name": "Eelgrass",
+      "latin": "Zostera marina",
+      "zone": "fringe",
+      "baseM": 0.15,
+      "heightM": 1.44,
+      "unit": "clump",
+      "limp": 0.62,
+      "algae": false,
+      "brackish": true,
+      "freshTolerant": false,
+      "cell": [
+        77,
+        69
+      ],
+      "pivot": [
+        38,
+        51
+      ],
+      "variantSheet": [
+        308,
+        276
+      ],
+      "tideSheet": [
+        385,
+        276
+      ],
+      "worstInkPct": 23,
+      "worstInkTide": "ebb",
+      "fits2048": true
+    },
+    {
+      "key": "KnottedWrack",
+      "name": "Knotted Wrack",
+      "latin": "Ascophyllum nodosum",
+      "zone": "mid",
+      "baseM": 1.55,
+      "heightM": 1.63,
+      "unit": "plant",
+      "limp": 0.84,
+      "algae": true,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        98,
+        94
+      ],
+      "pivot": [
+        48,
+        64
+      ],
+      "variantSheet": [
+        392,
+        376
+      ],
+      "tideSheet": [
+        490,
+        376
+      ],
+      "worstInkPct": 21,
+      "worstInkTide": "flood",
+      "fits2048": true
+    },
+    {
+      "key": "Bladderwrack",
+      "name": "Bladderwrack",
+      "latin": "Fucus vesiculosus",
+      "zone": "mid",
+      "baseM": 1.55,
+      "heightM": 1.06,
+      "unit": "plant",
+      "limp": 0.8,
+      "algae": true,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        71,
+        69
+      ],
+      "pivot": [
+        35,
+        47
+      ],
+      "variantSheet": [
+        284,
+        276
+      ],
+      "tideSheet": [
+        355,
+        276
+      ],
+      "worstInkPct": 20,
+      "worstInkTide": "half",
+      "fits2048": true
+    },
+    {
+      "key": "SeaLettuce",
+      "name": "Sea Lettuce",
+      "latin": "Ulva lactuca",
+      "zone": "mid",
+      "baseM": 1.55,
+      "heightM": 0.47,
+      "unit": "mat",
+      "limp": 0.95,
+      "algae": true,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        61,
+        55
+      ],
+      "pivot": [
+        30,
+        31
+      ],
+      "variantSheet": [
+        244,
+        220
+      ],
+      "tideSheet": [
+        305,
+        220
+      ],
+      "worstInkPct": 9,
+      "worstInkTide": "high",
+      "fits2048": true
+    },
+    {
+      "key": "Cordgrass",
+      "name": "Saltmarsh Cordgrass",
+      "latin": "Spartina alterniflora",
+      "zone": "low",
+      "baseM": 2.55,
+      "heightM": 1.81,
+      "unit": "clump",
+      "limp": 0,
+      "algae": false,
+      "brackish": true,
+      "freshTolerant": false,
+      "cell": [
+        70,
+        83
+      ],
+      "pivot": [
+        34,
+        70
+      ],
+      "variantSheet": [
+        280,
+        332
+      ],
+      "tideSheet": [
+        350,
+        332
+      ],
+      "worstInkPct": 30,
+      "worstInkTide": "low",
+      "fits2048": true
+    },
+    {
+      "key": "Glasswort",
+      "name": "Glasswort",
+      "latin": "Salicornia maritima",
+      "zone": "low",
+      "baseM": 2.55,
+      "heightM": 0.47,
+      "unit": "mat",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        41,
+        40
+      ],
+      "pivot": [
+        20,
+        24
+      ],
+      "variantSheet": [
+        164,
+        160
+      ],
+      "tideSheet": [
+        205,
+        160
+      ],
+      "worstInkPct": 16,
+      "worstInkTide": "half",
+      "fits2048": true
+    },
+    {
+      "key": "SaltmeadowHay",
+      "name": "Saltmeadow Hay",
+      "latin": "Spartina patens",
+      "zone": "high",
+      "baseM": 3.35,
+      "heightM": 0.75,
+      "unit": "mat",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        82,
+        55
+      ],
+      "pivot": [
+        41,
+        29
+      ],
+      "variantSheet": [
+        328,
+        220
+      ],
+      "tideSheet": [
+        410,
+        220
+      ],
+      "worstInkPct": 27,
+      "worstInkTide": "high",
+      "fits2048": true
+    },
+    {
+      "key": "BlackRush",
+      "name": "Black Rush",
+      "latin": "Juncus gerardii",
+      "zone": "high",
+      "baseM": 3.35,
+      "heightM": 0.66,
+      "unit": "clump",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        40,
+        41
+      ],
+      "pivot": [
+        19,
+        29
+      ],
+      "variantSheet": [
+        160,
+        164
+      ],
+      "tideSheet": [
+        200,
+        164
+      ],
+      "worstInkPct": 28,
+      "worstInkTide": "flood",
+      "fits2048": true
+    },
+    {
+      "key": "Cattail",
+      "name": "Cattail",
+      "latin": "Typha latifolia",
+      "zone": "high",
+      "baseM": 3.35,
+      "heightM": 2.06,
+      "unit": "clump",
+      "limp": 0,
+      "algae": false,
+      "brackish": true,
+      "freshTolerant": true,
+      "cell": [
+        90,
+        73
+      ],
+      "pivot": [
+        44,
+        60
+      ],
+      "variantSheet": [
+        360,
+        292
+      ],
+      "tideSheet": [
+        450,
+        292
+      ],
+      "worstInkPct": 36,
+      "worstInkTide": "half",
+      "fits2048": true
+    },
+    {
+      "key": "Threesquare",
+      "name": "Threesquare Bulrush",
+      "latin": "Schoenoplectus pungens",
+      "zone": "high",
+      "baseM": 3.35,
+      "heightM": 1.13,
+      "unit": "clump",
+      "limp": 0,
+      "algae": false,
+      "brackish": true,
+      "freshTolerant": true,
+      "cell": [
+        38,
+        52
+      ],
+      "pivot": [
+        18,
+        40
+      ],
+      "variantSheet": [
+        152,
+        208
+      ],
+      "tideSheet": [
+        190,
+        208
+      ],
+      "worstInkPct": 36,
+      "worstInkTide": "high",
+      "fits2048": true
+    },
+    {
+      "key": "MarramGrass",
+      "name": "Marram Grass",
+      "latin": "Ammophila breviligulata",
+      "zone": "upland",
+      "baseM": 4.65,
+      "heightM": 1.03,
+      "unit": "clump",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        64,
+        66
+      ],
+      "pivot": [
+        31,
+        44
+      ],
+      "variantSheet": [
+        256,
+        264
+      ],
+      "tideSheet": [
+        320,
+        264
+      ],
+      "worstInkPct": 34,
+      "worstInkTide": "high",
+      "fits2048": true
+    },
+    {
+      "key": "Bayberry",
+      "name": "Bayberry",
+      "latin": "Morella pensylvanica",
+      "zone": "upland",
+      "baseM": 4.65,
+      "heightM": 1.81,
+      "unit": "plant",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        78,
+        74
+      ],
+      "pivot": [
+        38,
+        64
+      ],
+      "variantSheet": [
+        312,
+        296
+      ],
+      "tideSheet": [
+        390,
+        296
+      ],
+      "worstInkPct": 55,
+      "worstInkTide": "flood",
+      "fits2048": true
+    },
+    {
+      "key": "SweetFern",
+      "name": "Sweet Fern",
+      "latin": "Comptonia peregrina",
+      "zone": "upland",
+      "baseM": 4.65,
+      "heightM": 1.16,
+      "unit": "plant",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        60,
+        60
+      ],
+      "pivot": [
+        29,
+        49
+      ],
+      "variantSheet": [
+        240,
+        240
+      ],
+      "tideSheet": [
+        300,
+        240
+      ],
+      "worstInkPct": 26,
+      "worstInkTide": "ebb",
+      "fits2048": true
+    },
+    {
+      "key": "BeachPea",
+      "name": "Beach Pea",
+      "latin": "Lathyrus japonicus",
+      "zone": "upland",
+      "baseM": 4.65,
+      "heightM": 0.5,
+      "unit": "mat",
+      "limp": 0,
+      "algae": false,
+      "brackish": false,
+      "freshTolerant": false,
+      "cell": [
+        76,
+        45
+      ],
+      "pivot": [
+        39,
+        23
+      ],
+      "variantSheet": [
+        304,
+        180
+      ],
+      "tideSheet": [
+        380,
+        180
+      ],
+      "worstInkPct": 32,
+      "worstInkTide": "low",
+      "fits2048": true
+    }
+  ],
+  "asserts": [
+    "every sheet axis <= 2048 (Unity downscales silently; only a pivot assert catches it)",
+    "state.B (strap flag) must gate every read of light.G",
+    "no strap pixel carries light.G > 0",
+    "pivot is identical across all tide states of a species (union cell invariant)",
+    "shader must not add a second caustic to an already-dappled sprite: none is baked"
+  ]
+}

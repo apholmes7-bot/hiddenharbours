@@ -96,6 +96,36 @@ namespace HiddenHarbours.App.Editor
         public const float TideAmplitude = 3.5f;
         public const float TidePhaseHours = 1f;
 
+        // --- REGION EXTENT (authored here, PUBLISHED on the RegionDef, read by everyone else) ---------
+        // ⭐ The region's rectangle used to be the literal `new Vector2(160f, 120f)` written out in four
+        // places in this builder and two more in TerrainPaintTool — so the sea plane, the shader's height
+        // bake, the displaced mesh and the painted seabed each carried their own copy of the same
+        // decision, and resizing the region meant finding all six (scene-sizing §6.2). They now all read
+        // ONE authored number, mirrored onto RegionDef.WorldSizeMeters the same way the tide fields are.
+        //
+        // ⚠ This is deliberately still the CURRENT 160 × 120 m greybox extent. Growing St Peters to its
+        // ruled 760 × 520 m (scene-sizing §5, sized by time-to-cross) is the NEXT change, and it is a
+        // re-bake of the seabed and a camera-bounds job — not something to smuggle into the enabler that
+        // makes it possible.
+        public static readonly Vector2 RegionWorldCenter = new Vector2(0f, 0f);
+        public static readonly Vector2 RegionWorldSize   = new Vector2(160f, 120f);
+
+        /// <summary>
+        /// Painted-seabed and shader-height-bake resolution, in TEXELS PER METRE. The old code baked a
+        /// SQUARE 192² over this non-square rect, which is 1.2 px/m across and 1.6 px/m up — different
+        /// densities on the two axes, chosen by nobody. 2 px/m is the ruled inshore figure
+        /// (scene-sizing §6.1): a 0.5 m texel, so the shader's wet edge follows a fine grid rather than
+        /// reading as rectangular steps on the near-flat bar crest.
+        /// </summary>
+        public const float SeabedPixelsPerMetre = 2f;
+
+        /// <summary>The height-bake grid the water shader uses — derived from the extent, never a
+        /// literal. Square, because <c>WaterSurface</c> bakes a square texture.</summary>
+        public static int WaterHeightBakeResolution =>
+            Mathf.Clamp(
+                Mathf.CeilToInt(Mathf.Max(RegionWorldSize.x, RegionWorldSize.y) * SeabedPixelsPerMetre),
+                64, HiddenHarbours.World.RegionDef.MaxSeabedTexels);
+
         // --- TidalTerrain elevation zones (authored geometry; single source of truth shared with the
         // EditMode test). Island plateau is high (always exposed). The sandbar crest sits JUST BELOW high
         // water (covers at high, bares as the tide falls). The channel bed is between crest and deep floor
@@ -108,7 +138,14 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector2 SandbarFrom  = new Vector2(-22f, 0f); // toward the island
         public static readonly Vector2 SandbarTo    = new Vector2(34f, 0f);  // toward Nine Mile Creek
         public const float SandbarHalfWidth        = 9f;
-        public const float SandbarCrestElevation    = 1.6f;   // < high water (~2.5) → covers at high, bares falling
+        // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
+        // envelope drops the swing to NeapAmplitudeFraction (0.45) × 3.5 = 1.575 m, so a 1.6 m crest sits
+        // ABOVE the highest water of a neap week and the bar simply never floods: the tide gate switches
+        // itself off for part of every lunar month, silently, and the region's defining mechanic goes with
+        // it. At 1.4 the gate exists at every point in the month AND gains a gradient — neap is FORGIVING
+        // (long dry bar, brief flood), spring is TENSE. Ruled 2026-07-23 (#280); see
+        // docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap tests in StPetersTerrainTests.
+        public const float SandbarCrestElevation    = 1.4f;   // < neap high water (1.575) → floods at EVERY tide
         public const float ChannelAlong            = 0.62f;
         public const float ChannelHalfWidth        = 4.5f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls
@@ -161,6 +198,12 @@ namespace HiddenHarbours.App.Editor
                 r.Id = "region.st_peters"; r.DisplayName = "St Peters Island"; r.SceneName = SceneName;
                 r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
                 r.TideMeanLevel = TideMean; r.TideAmplitude = TideAmplitude; r.TidePhaseHours = TidePhaseHours;
+                // ⭐ The region's rectangle, PUBLISHED as data so the sea plane, the painted seabed, the
+                // paint tool and (later) the camera bounds all read one authored number instead of each
+                // carrying a copy of `new Vector2(160f, 120f)` (scene-sizing §6.2).
+                r.WorldCenter = RegionWorldCenter;
+                r.WorldSizeMeters = RegionWorldSize;
+                r.SeabedPixelsPerMetre = SeabedPixelsPerMetre;
                 r.UnlockFlag = "";   // the opening — always reachable, no gate
                 // The region's spawn table: the flats' hand-dug clam PLUS the trap-caught shellfish now that
                 // the lobster/crab are region-tagged for St Peters (their FishSpeciesDef.RegionIds include
@@ -223,13 +266,13 @@ namespace HiddenHarbours.App.Editor
             {
                 wsr.sprite = seaTile;
                 wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = new Vector2(160f, 120f);
+                wsr.size = RegionWorldSize;
                 water.transform.localScale = Vector3.one;
             }
             else
             {
                 wsr.sprite = waterSprite; wsr.color = new Color(0.15f, 0.27f, 0.34f);
-                water.transform.localScale = new Vector3(160f, 120f, 1f);
+                water.transform.localScale = new Vector3(RegionWorldSize.x, RegionWorldSize.y, 1f);
             }
 
             // --- LAYERED SIM-DRIVEN WATER SHADER (ADR 0010 / design/water-rendering.md) ------------------
@@ -253,7 +296,8 @@ namespace HiddenHarbours.App.Editor
                 // FINE grid — the wet edge stops reading as ~1.5 m rectangular steps on the near-flat bar
                 // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
                 // available if the crest still facets, but 192 is the ADR's recommended start.
-                ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
+                ConfigureWaterSurface(surface, RegionWorldCenter, RegionWorldSize,
+                                      WaterHeightBakeResolution);
                 // (ADR 0023 arc step 3) The owner's GameConfig: WaterSurface pushes its DisplacedWater
                 // salience knobs (cap salience / envelope threshold / band strength) each tick — the
                 // one asset where the owner tunes how loudly the big wave is marked, no code (rule 6).
@@ -288,7 +332,7 @@ namespace HiddenHarbours.App.Editor
                 // block is the live source, re-read every tick; grid density + the per-coast shore
                 // gradient stay on the component (scene data, not world policy).
                 var displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
-                displaced.Configure(new Vector2(0f, 0f), new Vector2(160f, 120f),
+                displaced.Configure(RegionWorldCenter, RegionWorldSize,
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat), config);
             }
             else

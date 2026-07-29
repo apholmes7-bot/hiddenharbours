@@ -113,6 +113,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<HiddenHarbours.Environment.EnvironmentService>(), "an EnvironmentService for the tide");
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<PlayerWallet>(), "a wallet");
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<HiddenHarbours.UI.HudController>(), "the glanceable HUD");
+
+            // The builder must wire GameRoot._config, or a builder re-run silently reverts every wave
+            // consumer to WaveFieldSettings.Default — the unreachable-copy failure ADR 0018 §(f) closes.
+            var gameRootSo = new UnityEditor.SerializedObject(_core.ServicesRoot.GetComponent<GameRoot>());
+            Assert.AreSame(_config, gameRootSo.FindProperty("_config").objectReferenceValue,
+                "GameRoot._config is wired by the builder (it publishes GameServices.Config)");
         }
 
         // ---- the camera follows the player on foot ------------------------------------------
@@ -358,15 +364,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(so.FindProperty("_masterStrength").floatValue, 0f,
                 "the rock ships ON (master strength > 0) so the owner can feel it without touching the Inspector");
 
-            // Settings parity (ADR 0018 §(4)): the boat derives its trains from the same Default settings the
-            // Art-side bridge publishes to the shader — same field, same waves. Spot-check the anchors.
-            var settings = so.FindProperty("_settings");
-            Assert.AreEqual(WaveFieldSettings.Default.PrimaryAmplitude,
-                settings.FindPropertyRelative("PrimaryAmplitude").floatValue, 1e-6f,
-                "wave-field settings start from WaveFieldSettings.Default (parity with the shader bridge)");
-            Assert.AreEqual(WaveFieldSettings.Default.CrestSharpening,
-                settings.FindPropertyRelative("CrestSharpening").floatValue, 1e-6f,
-                "…crest sharpening too (B3/GameConfig unifies the two instances into one tunable source)");
+            // Settings parity (ADR 0018 §(4)) USED to be spot-checked here by comparing this component's
+            // own serialized _settings against WaveFieldSettings.Default — a parity check between two
+            // copies, which is the best a per-component field allows. The §(5) unification removed the
+            // copy: the boat now reads GameConfig.WaveField through GameServices, the same instance the
+            // Art-side bridge publishes to the shader, so "same field, same waves" is true by
+            // construction rather than by two values happening to match.
+            //
+            // What is left worth asserting HERE is that the copy has not come back on this component.
+            // (The project-wide guard is WaveFieldSettingsUnificationTests.)
+            Assert.IsNull(so.FindProperty("_settings"),
+                "BoatWaveMotion must not carry its own wave-field settings — it reads the ONE " +
+                "GameConfig.WaveField, or the hull rocks on a sea the shader is not drawing");
+            Assert.IsNull(so.FindProperty("_animatorSettings"),
+                "…nor its own animator smoothing, for the same reason");
         }
 
         [Test]

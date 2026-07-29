@@ -226,7 +226,8 @@ floats where `waterLevel − bedElevation > draught`):
 The owner asked for the bar to be a whole scene. It should be. But its length is not a comfort
 decision — **it is set by the tide window**, so here is that window computed from the live config
 rather than estimated (`GameConfig`: `SecondsPerDay 1200`, `TidalPeriodHours 12.4206`,
-`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m):
+`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m **as
+this was written — now 1.4, see the ratified box below**):
 
 - One game hour = **50 real seconds**, so a full tide cycle = 12.42 × 50 = **10 min 21 s real**.
 - At **spring**, the bar is dry whenever the water is under its 1.6 m crest — i.e. `sin θ < 0.457`,
@@ -250,6 +251,13 @@ inverse-over-the-tide relationship the greybox already models in `StPetersBuilde
 `SandbarCrestElevation` / `ChannelBedElevation`.
 
 > **✅ RATIFIED (owner, 2026-07-23) — the neap gap is fixed: `SandbarCrestElevation` 1.6 m → 1.4 m.**
+> **✅ APPLIED IN CODE 2026-07-29.** `StPetersBuilder.SandbarCrestElevation` now reads `1.4f`, and two
+> EditMode tests hold it there: one walks a whole lunar month of the real `TideModel` and asserts the
+> crest clears the *weakest* high water it produces (derived from `GameConfig`, not from the 1.575
+> below, so re-tuning the neap fraction re-checks the gate); the other is the measured sabotage —
+> it asserts the old 1.6 m **would** strand the bar, so the guard is shown firing on exactly the
+> value it replaced.
+>
 > As shipped, neap amplitude (1.575 m) sits *just* under the 1.6 m crest, so for part of every lunar
 > month the bar never floods and the prologue's one tide gate silently switches itself off. Putting the
 > crest below neap high water means **the island is cut off twice a day, every day of the month** — the
@@ -259,8 +267,8 @@ inverse-over-the-tide relationship the greybox already models in `StPetersBuilde
 >
 > | Crest | Spring: exposed / flooded | Neap: exposed / flooded |
 > |---|---|---|
-> | 1.6 m (today) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
-> | **1.4 m (ratified)** | **6:31** / 3:49 | **8:46** / 1:34 |
+> | 1.6 m (the old value) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
+> | **1.4 m (ratified · shipped)** | **6:31** / 3:49 | **8:46** / 1:34 |
 >
 > **The gate now exists at every point in the month**, which is the whole purpose. The spring window
 > barely moves (6:44 → 6:31).
@@ -307,24 +315,27 @@ it changes the *amount of it on screen at once*. Two consequences worth naming:
 
 Ordered, with the blocker first. None of it is done in this document.
 
-1. **Un-hard-code the terrain paint tool.** `TerrainPaintTool` fixes `res = 192` and
-   `worldSize = (160,120)`. It needs to take world size and a **pixels-per-metre** setting instead, and
-   `StPetersSeabed` needs re-baking at the new extent. Recommend **2 px/m for St Peters** (crisp enough
-   for coves and cave mouths; 1520 × 1040 R8 ≈ 1.6 MB) and **1 px/m offshore**. *(`tools-editor`)*
-2. **Sea plane / region extent becomes data, not a literal.** All three builders hard-code
-   `localScale = (160, 120)`. Region extent belongs on `RegionDef` next to the tide fields, so a
-   region's size is authored once and read by the sea, the terrain and the camera bounds alike.
-   *(`world-content` + `lead-architect` for the Core seam)*
+1. ~~**Un-hard-code the terrain paint tool.**~~ **✅ DONE 2026-07-29.** The tool holds no size of its
+   own: it takes the extent from a `RegionDef` and derives the texel grid as **size × pixels-per-metre**
+   on each axis. **2 px/m** is the shipped inshore figure; **1 px/m** offshore. *(Note the old
+   `res = 192` was SQUARE over a 160 × 120 m rect — 1.2 px/m across and 1.6 px/m up, two densities
+   nobody chose. A derived grid is isotropic by construction.)* `StPetersSeabed` still needs re-baking
+   when the extent actually grows — the tool will now do it at the right shape.
+2. ~~**Sea plane / region extent becomes data, not a literal.**~~ **✅ DONE 2026-07-29.**
+   `RegionDef.WorldCenter` / `WorldSizeMeters` / `SeabedPixelsPerMetre` sit next to the tide fields;
+   `StPetersBuilder` authors them once and publishes them, and the tiled sea sprite, the flat backdrop,
+   the shader's height bake and the displaced mesh all read them. Six copies of `(160, 120)` became
+   one. **The camera bounds (item 4) can now read the same number.**
 3. **Close the open shoreline defects first** (§5.3, note 1).
 4. **Camera bounds.** There is no bounds rig yet (`CameraFollow`'s comment says so). At 160 m nobody
    noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
 5. **Then, and only then, author.** Island → bar → the rest, in that order.
 
-**One change is ready to make now and depends on none of the above:**
-`StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified). It is a one-line edit to a
-value the EditMode terrain test already shares as its single source of truth, so it can land ahead of
-everything else — and it should, because the current value means the tide gate is off for part of every
-month in whatever anyone playtests next.
+~~**One change is ready to make now and depends on none of the above:**
+`StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified).~~ **✅ DONE 2026-07-29** — it
+landed ahead of everything else, as it should have: the old value meant the tide gate was off for part
+of every month in whatever anyone playtested next. Now guarded by the neap-gap tests in
+`StPetersTerrainTests`.
 
 **Also worth doing while the coast is authored, but not blocking:** stand up ISO ground/fringe
 rule-tiles and the road blob-47 autotiler from the kits imported today. They are sliced and catalogued
