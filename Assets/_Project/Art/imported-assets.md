@@ -814,3 +814,86 @@ winD: opts.winDensity != null ? opts.winDensity : T.winD
 — left of the colon is the internal build field, right is the option a caller passes. Dialling `winD`
 would have been accepted in silence and done nothing. **The kit README was right and the first pass at
 this table was wrong**; both rigs take `winDensity`.
+
+---
+
+## Batch — Rock Iso (`RockIso`), the rig and the contract (owner drop 2026-07-28)
+
+Sibling of the Shoreline ISO v8 kit from the same drop: **ShoreIso2 owns the ground, RockIso owns
+every stone standing on it.** They share a camera, a PPU and the red-sandstone ramp — `RockIso`'s
+`sandstone` IS ShoreIso2's `redrock` verbatim, so a rock composites onto a cliff toe with no seam.
+
+| Species | Cell | Variants | Sheet | What it is |
+|---|---|---|---|---|
+| `Erratic` | 52×44 | 4 | 208×132 | single shore boulder |
+| `Outcrop` | 88×60 | 3 | 264×180 | 2–5 boulder cluster, shoreline edge dressing |
+| `PoolLedge` | 80×48 | 3 | 240×144 | wave-cut plate with a tide-pool basin |
+| `Skerry` | 104×52 | 4 | 416×156 | awash hazard rock, clipped at the sea plane |
+| `Cloven` | 60×76 | 3 | 180×228 | split landmark, chart-mark scale |
+| `Cobble` | 52×32 | 3 | 156×96 | beach cobbles & shingle, tiny filler |
+
+Sheets are **variant COLS × dress ROWS**, named `<Species>_<stone>_<tide>.png`. Axes: stone
+(`sandstone · granite · basalt · quartzite` — colour AND structure) × tide (`dry · wet · awash`) ×
+dress (`bare · barnacled · weeded`, the sheet rows).
+
+### ⭐ This kit ships NO pixels — it bakes to order
+
+6 species × 4 stones × 3 tides = **72 sheets**, so the drop ships the rig and the sidecar and nothing
+else. `RockIsoBaker` (menu *Hidden Harbours ▸ Art ▸ Bake Rock Iso Sheets*) writes them in-engine from
+`docs/art/rigs/rockIsoRig.js`, running the rig UNMODIFIED in the V8 host (ADR 0021). Two menu items,
+because the **atlas budget is a real decision**: the default bakes `sandstone` × 3 tides = 18 sheets;
+an *ALL 4 stones* item behind a confirm dialog bakes all 72.
+
+**The anchors are stone- and tide-independent** (the geometry is seed-stable), so one contract entry
+serves all twelve bakes of a variant — which is what lets the engine be wired against `RockIso.json`
+before a single PNG exists.
+
+**⚠ The baker does NOT rewrite `RockIso.json`**, unlike the art director's `_rockBake.js`. The
+committed sidecar is the ORACLE: `RockIsoBaker.AssertMatchesContract` compares the rig's live geometry
+against it before writing a pixel and **refuses on any disagreement**. Every anchor is expressed in
+cell pixels, so a cell that drifted by one row would silently invalidate all twenty variants at once —
+this turns that into a loud stop pointing at the art director.
+
+### ⚠ The pivot is the GROUND CONTACT, and it needs its own slicer
+
+Under the 40° camera a rock's near flank is drawn **below** its ground contact — measured **7–22 px =
+0.219–0.688 m**, positive on every one of the twenty variants. A bottom-centre pivot (what
+`ArtImportPipeline` picks for standing art) floats every rock by exactly that.
+
+`RockSheetSlicer` exists rather than a `SpriteSheetSlicer` manifest row because that manifest writes
+**one pivot per sheet**, and a rock sheet's pivot is **per variant COLUMN** — each variant is a
+different volume with its own contact point. One shared pivot would plant one column and misplace the
+rest. Same reason `TreeSheetSlicer` exists.
+
+Normalisation is ADR 0026's `(x/W, (H−y)/H)`. **Not** the tree kit's `pad/cellH`: the rock contract
+publishes a continuous top-left coordinate and no `pad`. Read what the contract publishes.
+
+### Anchors (all in `RockIso.json`, all measured off the built volume)
+
+`footprint` collision ellipse (rx, ry in m) + ground contact px · `perch` highest standable point,
+**`flat:false` ⇒ decorative, do not spawn on it** · `snags` outer silhouette catches for rope and pot
+lines · `hazard` awash danger radius in m · `pool` tide-pool basin rect + depth (the **shader's** fill
+target — the bake leaves the basin empty) · `weedLine` the tide mark where rockweed drapes.
+
+Verified invariants: `pivot == footprint.ground`, horizontally centred, on all 20; `hazard` present
+*exactly* when `waterline > 0` (7 variants); `pool` on PoolLedge alone and always inside its cell.
+
+**⚠ `perch.flat` is a PER-VARIANT flag, not a species rule.** The kit README reads like a species rule
+("Cobble and most Skerry builds"), but measured: all four Skerry are false, Cobble is 2 of 3, and
+`PoolLedgeC` is flat. **Exactly two variants in the kit are standable — `PoolLedgeC` and `CobbleB`.**
+Honour the flag, not the point.
+
+**⚠ Snag separation is a GROUND-PLANE angle, not a screen angle.** The kit's rule is ≥60° apart;
+measured naively in screen px, 9 of 19 variants appear to break it (worst 42.5°). They do not — the
+camera squashes depth by 0.643. Un-squashed, the true minimum is **60.6°**. A sabotage test pins the
+wrong measurement so nobody removes the correction.
+
+### 🔴 Flagged to the art director, not patched
+
+**`SkerryD` ships ONE snag where the README promises 2–3.** The other nineteen variants all carry
+exactly three. Pinned by a canary test asserting the current state — if a re-bake fixes it, that test
+goes red and should be deleted.
+
+**WIRE-IN (NOT done here):** no sheets baked, nothing placed, no prefab/spawner/collision reads these
+anchors yet, and the older hand-drawn `Sprites/Shore/RockCluster.png`, `RockMid.png`, `RockSmall.png`
+and `TidePoolRock.png` are untouched.
