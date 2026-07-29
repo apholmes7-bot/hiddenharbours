@@ -33,18 +33,46 @@ namespace HiddenHarbours.Art.Editor
 
         public static string ContractPath => TreesRoot + ContractFileName;
 
-        /// <summary>The rig this kit is baked from. Read-only reference for us — it is the
-        /// art-director role's file (<c>docs/art/rigs/**</c>).</summary>
-        public const string RigScriptPath = "docs/art/rigs/treeIsoRig.js";
+        /// <summary>
+        /// The rig this kit is baked from. Read-only reference for us — it is the art-director
+        /// role's file (<c>docs/art/rigs/**</c>).
+        ///
+        /// <para><b>PASS 2 since 2026-07-29.</b> <c>treeIsoRig2.js</c> supersedes
+        /// <c>treeIsoRig.js</c>, which stays committed as the previous generation (the same way
+        /// <c>shoreIsoKitRig2.js</c> sits beside <c>shoreIsoKitRig.js</c>). Pass 1 built real volume
+        /// and lit it correctly, but every crown came out of one soft-ellipsoid cloud with per-pixel
+        /// value noise on top, so the family read as artichokes. Pass 2 builds crowns as identified
+        /// leaf MASSES with hard edges where two meet, partitions the surface into per-species Worley
+        /// leaf CELLS shaded flat, serrates the outline with a tooth wave, and draws visible
+        /// branches.</para>
+        ///
+        /// <para>⚠️ <b>Nothing about the CONTRACT changed</b>, which is why the swap is two constants
+        /// and a re-bake rather than a pipeline rewrite: PPU, camera (ELEV/CE/SE), LIGHT, the three
+        /// rules (RIM_PX/MIN_BODY/MIN_R), SEASONS, STAGES, VARIANTS, SWAY and all ten species keys
+        /// are IDENTICAL between the two passes — verified constant by constant at import. What
+        /// changed is the pixels, and with them every species' measured cell and pivot, which is
+        /// exactly what this contract exists to carry from the rig rather than restate.</para>
+        /// </summary>
+        public const string RigScriptPath = "docs/art/rigs/treeIsoRig2.js";
 
-        public const string RigGlobalName = "TreeRig";
+        /// <summary>⚠️ <c>TreeRig2</c>, not <c>TreeRig</c>. Pass 2 installs its own global and
+        /// exposes the same surface, so a consumer swaps ONE identifier — but a stale <c>TreeRig</c>
+        /// here would silently bake pass-1 pixels against a pass-2 contract if both files were ever
+        /// loaded into one host. Everything reads this constant; nothing hardcodes the name.</summary>
+        public const string RigGlobalName = "TreeRig2";
+
+        /// <summary>The superseded pass-1 rig, kept committed for provenance and for the
+        /// constants-are-identical proof in <c>TreeRigBakeTests</c>. Nothing bakes from it.</summary>
+        public const string PreviousRigScriptPath = "docs/art/rigs/treeIsoRig.js";
+
+        public const string PreviousRigGlobalName = "TreeRig";
 
         /// <summary>
         /// The DEFAULT importer texture cap. Over this Unity imports SILENTLY DOWNSCALED and the
         /// sprite COUNT still matches, so only a cell-size/pivot assert catches it. The tree
         /// slicer deliberately does NOT lift the cap the way <c>SpriteSheetSlicer</c> does for the
         /// 3648 px hull sheets: every tree sheet is comfortably inside it (the widest is Red Oak at
-        /// 676 px), so a sheet that needed a lift would mean the bake recipe grew — which is a
+        /// 660 px), so a sheet that needed a lift would mean the bake recipe grew — which is a
         /// decision, not an import setting.
         /// </summary>
         public const int ImportSizeCap = 2048;
@@ -183,8 +211,11 @@ namespace HiddenHarbours.Art.Editor
             /// <summary>
             /// <c>_TrunkAnchor</c> for THIS species: the trunk foot as a fraction of cell height,
             /// <c>nearFlarePad / cellH</c>. The wind shader holds everything below this still and
-            /// sways the canopy above it, so the value belongs per species — measured 0.083
-            /// (Black Spruce) to 0.145 (Red Oak) against the one shipped material constant of 0.14.
+            /// sways the canopy above it, so the value belongs per species — measured 0.0519
+            /// (Trembling Aspen) to 0.0922 (White Cedar) on the pass-2 rig, against the one shipped
+            /// material constant of 0.14. (Pass 1 measured 0.0833–0.1447. The pass-2 buttressed root
+            /// flare is a shallower pad, so the whole band moved DOWN — the shipped 0.14 now
+            /// over-anchors all ten species rather than eight of the ten.)
             /// </summary>
             public float trunkAnchor;
 
@@ -270,8 +301,9 @@ namespace HiddenHarbours.Art.Editor
         /// also has to serve as the wind shader's <c>_TrunkAnchor</c>. Take
         /// <c>(h − pivotY)/h</c> and the ground plane would sit one row ABOVE the anchor, so the
         /// lowest row of near-root flare would be outside the planted band and would sway. The
-        /// design doc already publishes this number as <c>uv.y = 20/166 = 0.120</c> for Red
-        /// Spruce; matching it keeps one fraction doing both jobs.</para>
+        /// design doc published this number as <c>uv.y = 20/166 = 0.120</c> for Red Spruce under the
+        /// pass-1 rig, and it is <c>10/159 = 0.0629</c> under pass 2; matching whichever the live
+        /// bake reports keeps one fraction doing both jobs.</para>
         ///
         /// <para>Either choice is edge-aligned, which is what keeps the sprite pixel-snapped at
         /// PPU 32 — a pixel-CENTRE pivot <c>(pad + 0.5)/h</c> would be half a pixel off the
@@ -290,9 +322,10 @@ namespace HiddenHarbours.Art.Editor
         /// default. Throws rather than falling back to a plausible constant: silently anchoring
         /// every species at 0.14 is exactly the reading this replaces.
         ///
-        /// <para>The measured spread across the ten species is <b>0.0833 (Black Spruce) to 0.1447
-        /// (Red Oak)</b>, against the single 0.14 shipped on <c>Art/Materials/Tree.mat</c> — so one
-        /// material-wide value over-anchors eight of the ten, freezing canopy that should move.
+        /// <para>The measured spread across the ten species is <b>0.0519 (Trembling Aspen) to 0.0922
+        /// (White Cedar)</b> on the pass-2 rig (pass 1: 0.0833–0.1447), against the single 0.14
+        /// shipped on <c>Art/Materials/Tree.mat</c> — so one material-wide value now over-anchors
+        /// <b>all ten</b>, freezing canopy that should move.
         /// The consumer wants a per-renderer <c>MaterialPropertyBlock</c> (or a material per
         /// species); this catalog supplies the value, not the wiring.</para>
         /// </summary>

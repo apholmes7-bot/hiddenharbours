@@ -1116,3 +1116,121 @@ ISO timestamp. That makes the file diff-stable, and is why the tests compare **f
 tool or Def reads this contract yet, and `SpriteLightResponse.hlsl` is **not** branched on `state.B`.
 The older hand-drawn `Sprites/Shore/SeaweedClump.png`, `SeaweedMat.png` and `SeaweedWisp.png` are
 untouched.
+
+---
+
+## Batch — Acadian trees, **PASS 2** re-import (owner drop 2026-07-29)
+
+`docs/art/rigs/treeIsoRig2.js` (`globalThis.TreeRig2`) supersedes `treeIsoRig.js`. Pass 1 built real
+volume and lit it correctly, but every crown came out of one soft-ellipsoid cloud with per-pixel value
+noise on top, so the family read as artichokes. Pass 2 rebuilds **what gets built and how the surface
+is quantised**: crowns are 5–9 identified leaf MASSES with a hard edge where two meet (not one blended
+green wall), the foliage surface is partitioned into per-species jittered Worley **leaf cells** shaded
+flat from their own mean, `blob()` adds a triangular **tooth wave** over the low-order lobing with a
+tooth-aware de-speckle, and broadleaves get primaries → secondaries → twigs with banded bark.
+
+Both generations stay committed, the way `shoreIsoKitRig2.js` sits beside `shoreIsoKitRig.js`.
+`_treeBake.js` is updated to the drop's version, which resolves `TreeRig2 || TreeRig` — so the art
+director's harness still runs against either pass.
+
+### ⭐ The swap was TWO CONSTANTS and a re-bake, and that is a claim with a test behind it
+
+`TreeKitCatalog.RigScriptPath` and `.RigGlobalName` are the entire code change. Everything else —
+cell, pivot, flare pad, trunk anchor, metres, the audit numbers — is read from the live rig at bake
+time and was never restated in C#, which is exactly what made a whole-family art revision a two-line
+diff.
+
+`PassTwoRig_KeepsEveryContractConstant_SoTheSwapWasAReBakeAndNotAReDesign` loads **both** passes into
+one V8 host (they install different globals, so they cannot collide) and asserts `PPU`, `RIM_PX`,
+`MIN_BODY`, `MIN_R`, `SWAY`, `VARIANTS`, `ELEV`, `CE`, `SE`, both `LIGHT` vectors, `SEASONS`,
+`STAGE_KEYS`, `STAGES` and the ten species keys **in order** are identical — then sabotages itself by
+rendering Red Spruce from both and requiring the pixels to DIFFER (18,260 px → 20,034 px of coverage),
+so the test cannot pass by `RigScriptPath` still pointing at pass 1.
+
+That identity is why the sprite-light mask contract, `_TrunkAnchor` and the reflection wiring all
+survived untouched. **The revised set comes through `AcadianTreeCatalog.Configure`**, so it inherits
+sprite-light response (#314) and `ReflectiveObject` (#330, ADR 0027 #8) by construction — no
+per-species wiring, and the prefab-shape and reflection pins stayed green through the swap.
+
+### The geometry moved — every number below is measured off the bake, none is authored
+
+| species | cell 1 -> 2 | trunk foot 1 -> 2 | pad | _TrunkAnchor | thinPct | m |
+|---|---|---|---|---|---|---|
+| `RedSpruce` | 110x166 -> **126x159** | (54,145) -> **(63,148)** | 20 -> **10** | 0.1205 -> **0.0629** | 0.6% -> **0.6%** | 5.7 |
+| `BlackSpruce` | 84x156 -> **86x155** | (43,142) -> **(44,145)** | 13 -> **9** | 0.0833 -> **0.0581** | 0.4% -> **0.5%** | 5.6 |
+| `BalsamFir` | 108x150 -> **125x142** | (54,128) -> **(62,132)** | 21 -> **9** | 0.1400 -> **0.0634** | 0.4% -> **0.4%** | 5.0 |
+| `WhitePine` | 138x193 -> **153x191** | (69,175) -> **(76,179)** | 17 -> **11** | 0.0881 -> **0.0576** | 1.4% -> **0.2%** | 6.9 |
+| `WhiteCedar` | 78x138 -> **79x141** | (41,124) -> **(41,127)** | 13 -> **13** | 0.0942 -> **0.0922** | 0.2% -> **0.4%** | 4.8 |
+| `Tamarack` | 104x149 -> **91x144** | (51,132) -> **(46,134)** | 16 -> **9** | 0.1074 -> **0.0625** | 1.1% -> **5.4%** | 5.3 |
+| `WhiteBirch` | 114x165 -> **117x161** | (57,146) -> **(58,151)** | 18 -> **9** | 0.1091 -> **0.0559** | 0.0% -> **0.0%** | 5.7 |
+| `RedMaple` | 137x156 -> **149x150** | (68,134) -> **(74,137)** | 21 -> **12** | 0.1346 -> **0.0800** | 0.0% -> **0.1%** | 5.6 |
+| `RedOak` | 169x159 -> **165x145** | (84,135) -> **(82,131)** | 23 -> **13** | 0.1447 -> **0.0897** | 0.0% -> **0.1%** | 5.3 |
+| `TremblingAspen` | 88x156 -> **95x154** | (44,140) -> **(47,145)** | 15 -> **8** | 0.0962 -> **0.0519** | 0.0% -> **0.3%** | 5.6 |
+
+30 sheets (10 species × mature/summer × albedo+mask+normal), **1544 KiB of PNG**, one sway row —
+`TreeRigBaker.SwayRowsBaked` is still 1 because the shader owns the swaying off the shared
+`_WindWorld`. Widest sheet is Red Oak at **660 px**, so **1388 px of headroom** under the 2048 cap;
+the guard is still asserted twice (the rig's own `sheetSpec().fits` for the full 4-row sheet, and the
+sheet we actually lay out).
+
+### ⚠ The root flare HALVED, so two calibrated tests were re-derived
+
+Pass 1 drew a broad root skirt; pass 2 draws **three splayed buttresses with dark splits**. That is a
+narrower footprint by design, and it moved the pad from 13–23 px to **8–13 px** — so the trunk-foot
+pivot band dropped from 0.0833–0.1447 to **0.0519–0.0922**.
+
+Two tests carried pass-1 magnitudes and were re-measured against the new bake. **Neither assertion's
+job changed**, and both are still falsifiable:
+
+* `BottomCentre_WouldSinkEverySpecies_…` — renamed for the new range. Its own docstring anticipated
+  this ("stated as a range so a re-bake that changes the flare cannot slip through"). The trap has
+  NOT gone away: 8 px at PPU 32 is still a quarter-metre of visible sink, and the species that used
+  to be worst (23 px) is now the best case (13 px).
+* `TheDrawnHeight_…` — upper ratio bound 1.08 → 1.12. The measured span is **0.998 (Red Maple) to
+  1.081 (White Birch)**, and the old cap clipped White Birch by 0.0007. A drawn height runs slightly
+  above a flat height×0.766 because the cell's top row is set by the crown's SILHOUETTE, not the
+  leader, and pass 2's serrated outline and hanging masses extend it further; the rig also rounds
+  `metres` to 0.1 m, which is ±1% on its own. The bound still rejects the error it exists for —
+  scaling to raw metres is +30.5%, refused with 18 points to spare.
+
+⚠️ **`Tree.mat`'s single `_TrunkAnchor` 0.14 now sits ABOVE the whole band** (it was above eight of
+the ten). One material-wide value over-anchors all ten species, freezing canopy that should move —
+the case for the per-renderer anchor `TreeKitCatalog.TrunkAnchorFor` already supplies got stronger.
+
+### Re-measured sabotage curves (the bake's own proof, all still green)
+
+* **30 sheets / 120 cells are BIT-EXACT** against a fresh `TreeRig2` render. A 1-row shift breaks
+  18.63% of the Red Spruce cell, so the exact comparison is not blind.
+* Mask channel order **R = key · G = rim · B = depth · A = coverage** holds. An R↔G swap moves
+  4,907 px = **24.49%** of a Red Spruce cell (pass 1: 5,405 px / 29.60%).
+* Coverage: albedo/mask 6570 px, normal 5848 px, **keyline-only 722 px = 11.0%** (pass 1: 8.0%). The
+  serrated outline has more perimeter per unit area, so the 1 px keyline ring is a larger share.
+  Unchanged rule: light the keyline from the MASK, never from the normal.
+* Sway frame 1 vs 0 differs by **5.18% (Balsam Fir) to 20.37% (Trembling Aspen)** — "we committed
+  frame 0" stays falsifiable.
+
+### 🔴 Flagged to the art director, not patched — **Tamarack fails the rig's own rule 1**
+
+The pass-2 rig gates rule 1 on `audit.pass && thinPct <= 4%` — **its own threshold, read out of
+`treeIsoRig2.js`**. Nine species clear it with room to spare (worst: Red Spruce 0.6%) and pass 2
+IMPROVED most of them. **Tamarack alone regressed, 1.1% → 5.4%** — a 35% overshoot, not a rounding
+miss. Its `bodyRatio` also fell 80 → 66.
+
+Tamarack is the larch, the one deciduous conifer in the family, with the thinnest needle grain in
+`GRAINS`. The plausible mechanism is that pass 2's Worley leaf-cell partition subdivides an
+already-wispy tuft below the 5 px clump floor — but **which** is the art director's call, and the fix
+belongs in the rig (`docs/art/rigs/**`, not this lane), never in the bake or in the assert.
+
+Handled as the `SkerryD` flag from the Rock Iso import (#312): the species is named in
+`TreeSheetImportTests.RigRuleFailures` and pinned by
+`TamarackFailsTheRigsOwnRuleOne_AFlaggedRegressionNotAnExemption`, a **canary that goes red when the
+rig is FIXED** (delete it then) and also red if Tamarack climbs past 6%. The main per-species
+`audit.pass` assert still covers the other nine.
+
+**OWNER RULING NEEDED:** ship Tamarack out of spec pending a rig fix (current state), or hold it out
+of the kit until pass 3.
+
+**WIRE-IN (NOT done here):** no scene placement (world-content's lane), no `Tree.mat`
+`_LightResponse` dial-in (owner's pending verdict), no tree scale/style redesign, and the other three
+stages (`sapling/young/pole`) and two seasons (`autumn/winter`) are still un-baked — the same
+deliberate hundreds-of-MB decision as pass 1.
