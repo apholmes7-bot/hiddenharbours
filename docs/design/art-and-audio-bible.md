@@ -301,7 +301,7 @@ swapped wholesale — identity persists, mood changes:
 |---|---|
 | **Coddle Cove** | Balanced, warmest, "home" — full master ramp, cozy. |
 | **The Sunkers** | Cool with green tide-pool pops; white breaking water on rocks as hazard tells. |
-| **Port Greywick** | Warm human colour (painted clapboard, signage, lit windows) — the most *colourful* place (P3 life). |
+| **Nine Mile Creek** | Warm human colour (painted clapboard, signage, lit windows) — the most *colourful* place (P3 life). |
 | **The Drownded Lands** | Wide, low, big-sky; wet-mud browns and reflective tide-pools at low water; eerie expanse. |
 | **Fundy Rips** | High-energy water, churned surface, strong directional light on the current race. |
 | **The Banks** | Open, deep, fewer landmarks; deepwater navy dominant; weather is the spectacle. |
@@ -388,7 +388,7 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
   the visual half of the tide-tell value set in [`time-tides-weather.md`](time-tides-weather.md) §3.5.
   Extends the already-locked **tide-aware shoreline** (§2.1/§2.2) from "the waterline moves" to "the
   bared surfaces read *wet*." Lands with the **M2 region art passes**; the **St Peters tide-gated
-  sandbar** (the low-water walking path to Greywick) is the gameplay-critical case
+  sandbar** (the low-water walking path to Nine Mile Creek) is the gameplay-critical case
   ([`world-and-regions.md`](world-and-regions.md) §6.0, §7) — in the shader plan the sandbar is just a
   low ridge in the height map whose depth≈0 foam band sweeps the same waterline the player walks
   ([`water-rendering.md`](water-rendering.md) §4).
@@ -442,7 +442,7 @@ maritime — never wallpaper.
     near-silence + foghorn in The Smother.
   - **Weather:** rain on deck/roof, sleet, distant thunder; muffled, close-pressing quiet in fog.
 - **Region recolours the bed:** Coddle Cove = gentle/home; Ironbound = harsh wind & surf; The
-  Smother = muffled, sparse, a slow foghorn and your own creaking hull; Greywick = town hum.
+  Smother = muffled, sparse, a slow foghorn and your own creaking hull; Nine Mile Creek = town hum.
 
 ### 8.2 Diegetic harbour & deck sounds (P3 life)
 
@@ -457,7 +457,7 @@ vs cobble, lighthouse bell, ferry horn. The town and wharves should sound *inhab
   drone, occasional wordless voice; Maritime/Newfoundland folk DNA without pastiche. Often the score
   steps *back* to let the sea speak.
 - **Adaptive by context:**
-  - **Region** — each has a tonal palette (Coddle Cove warm & hopeful; Greywick livelier & social;
+  - **Region** — each has a tonal palette (Coddle Cove warm & hopeful; Nine Mile Creek livelier & social;
     Ironbound stark & vast; The Smother eerie/minimal; The Banks open & lonely).
   - **Weather/tension** — calm days drift; as wind/sea/storm rises, music thins, darkens, adds
     low-end tension (or drops to near-silence so the *wind* is the score), then resolves to warmth
