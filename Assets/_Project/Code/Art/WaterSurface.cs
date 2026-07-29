@@ -146,6 +146,15 @@ namespace HiddenHarbours.Art
                  "PaintedHeightMap asset. Used when Depth Source is PaintedHeightMap (or Auto, if assigned).")]
         [SerializeField] private Texture2D _paintedHeightTex;
 
+        [Header("Seabed absorption (ADR 0027 num 7; the bottom seen THROUGH the column)")]
+        [Tooltip("This region's baked _SeabedTex — the BOTTOM's albedo over the SAME world rect as the " +
+                 "height map above (rgb = albedo, A = coverage). Bake it with Hidden Harbours > Art > Bake " +
+                 "Seabed Texture. Leave it empty and the sea composites no bottom at all.\n\n" +
+                 "It lives HERE, per surface, and NOT on Water.mat — the material is SHARED by every region " +
+                 "and a bake belongs to ONE region's world rect. Assigning it on the material would stretch " +
+                 "one region's bottom across another region's coast.")]
+        [SerializeField] private Texture2D _seabedTexture;
+
         [Header("Edit-mode shoreline preview (ADR 0014; design without pressing Play)")]
         [Tooltip("In the Scene view (not playing) drive the shader's water level from the slider below so the " +
                  "coast is VISIBLE — land dry, the bar baring, the channel flooded — while you design. " +
@@ -273,6 +282,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdHeightMax  = Shader.PropertyToID("_HeightMax");
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
+        private static readonly int IdSeabedTex  = Shader.PropertyToID("_SeabedTex");
         // (ADR 0023 arc step 3) the owner's GameConfig salience knobs — pushed from _config when wired.
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
@@ -371,6 +381,18 @@ namespace HiddenHarbours.Art
         private void OnEnable()
         {
             BakeHeightMapIfNeeded();
+            // (ADR 0027 #7) Publish this region's seabed unconditionally, not only down the two
+            // height-feed paths above. Those are skipped whenever the height bake is off or no source
+            // resolves — and a surface that never pushes anything would sample the MATERIAL's default
+            // _SeabedTex, which is opaque black, and paint a black bottom across its shallows the
+            // moment another region turns the keyword on. The push is one SetTexture on enable.
+            if (_renderer != null)
+            {
+                _mpb ??= new MaterialPropertyBlock();
+                _renderer.GetPropertyBlock(_mpb);
+                FeedSeabedTexture(_mpb);
+                _renderer.SetPropertyBlock(_mpb);
+            }
             _timer = 0f;
             // First push snaps the smoothed flow to the LIVE sim (no ease-in from a stale zero on enable) — the
             // momentum kicks in only once the surface is already tracking the real current/wind.
@@ -827,6 +849,7 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdHeightMax, _heightMax);
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
+            FeedSeabedTexture(_mpb);
             _renderer.SetPropertyBlock(_mpb);
 
             // Enable the shader's height-map branch so the depth read uses the bake.
@@ -849,10 +872,75 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdHeightMax, _heightMax);
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
+            FeedSeabedTexture(_mpb);
             _renderer.SetPropertyBlock(_mpb);
 
             EnableHeightTexKeyword();
         }
+
+        /// <summary>
+        /// (ADR 0027 #7 activation) Push THIS region's baked seabed into <c>_SeabedTex</c>, over the same
+        /// world rect the height map just published — so the bottom is registered to the elevation that
+        /// decides how deep it is, with no second rect to keep in step.
+        ///
+        /// <para>⚠️ <b>Why the texture is per-SURFACE and not on the material.</b> <c>Water.mat</c> is
+        /// SHARED by every region. A bake belongs to ONE region's world rect, so assigning it on the
+        /// material would stretch the cove's bottom across St Peters' coast the moment both are loaded.
+        /// The rect is already per-surface (an MPB push); the bottom has to travel with it.</para>
+        ///
+        /// <para>⚠️ <b>And why a CLEAR fallback, not "leave it unbound".</b> The <c>_USE_SEABEDTEX</c>
+        /// keyword is a MATERIAL flag, so turning it on for the region that HAS a bake turns the shader
+        /// block on for every region sharing the material. A surface with no bake would then sample the
+        /// material's default <c>"black"</c> texture — which is opaque black, alpha 1 — and composite a
+        /// BLACK BOTTOM across its whole shallows. Pushing an explicit transparent 1x1 makes "no bake"
+        /// mean coverage 0, which composites nothing. Same lesson, same shape, as the interior guard's
+        /// black 1x1 and the reflection target's clear one.</para>
+        /// </summary>
+        private void FeedSeabedTexture(MaterialPropertyBlock mpb)
+        {
+            mpb.SetTexture(IdSeabedTex, _seabedTexture != null ? _seabedTexture : ClearSeabedFallback());
+        }
+
+        // A transparent 1x1 standing in for "this region has no baked bottom". Created once, shared by
+        // every surface, never serialized.
+        private static Texture2D s_ClearSeabed;
+
+        private static Texture2D ClearSeabedFallback()
+        {
+            if (s_ClearSeabed != null) return s_ClearSeabed;
+            s_ClearSeabed = new Texture2D(1, 1, TextureFormat.RGBA32, false, false)
+            {
+                name = "WaterSurface.NoSeabed",
+                hideFlags = HideFlags.HideAndDontSave,
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+            };
+            s_ClearSeabed.SetPixel(0, 0, Color.clear);
+            s_ClearSeabed.Apply(false, true);
+            return s_ClearSeabed;
+        }
+
+        /// <summary>
+        /// (ADR 0027 #7 activation) Point this surface at its region's baked seabed — the builder's
+        /// wiring seam, mirroring <see cref="ConfigurePaintedHeightMap"/>. Takes a Unity-generic
+        /// <see cref="Texture2D"/> so Art stays decoupled from World (rule 4). Re-feeds immediately so
+        /// the Scene view updates without pressing Play.
+        /// </summary>
+        public void ConfigureSeabedTexture(Texture2D seabed)
+        {
+            _seabedTexture = seabed;
+            if (_renderer == null) _renderer = GetComponent<Renderer>();
+            if (_renderer == null) return;
+            if (_mpb == null) _mpb = new MaterialPropertyBlock();
+            _renderer.GetPropertyBlock(_mpb);
+            FeedSeabedTexture(_mpb);
+            _renderer.SetPropertyBlock(_mpb);
+        }
+
+        /// <summary>The baked seabed this surface will hand the shader, or null when the region has none.
+        /// Read by the builder tests, so "the bake reached the surface" is asserted against the component
+        /// rather than against the builder call that was supposed to set it.</summary>
+        public Texture2D SeabedTexture => _seabedTexture;
 
         /// <summary>
         /// (WS-1) Ensure the shader's <c>_USE_HEIGHTTEX</c> branch is on. The committed <c>Water.mat</c>

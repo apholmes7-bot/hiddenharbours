@@ -16,6 +16,7 @@ Material:
   - _USE_DEPTHRAMP
   - _USE_FOAMTEX
   - _USE_HEIGHTTEX
+  - _USE_SEABEDTEX
   - _USE_SPARKLETEX
   - _USE_SURFACETEX
   - _USE_WHITECAPTEX
@@ -123,6 +124,9 @@ Material:
     - _NightSoftness: 0.3
     - _NightStart: 0.35
     - _NoiseScale: 0.35
+    - _ObjectReflectSink: 0.35
+    - _ObjectReflectStrength: 0.5
+    - _ObjectReflectWarp: 0.35
     - _OceanSwellScale: 0.07
     - _OceanSwellSharpness: 6
     - _OceanSwellSpeed: 0.018
@@ -183,13 +187,13 @@ Material:
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
     - _SwellReadStrength: 0.35
-    - _Turbidity: 0
+    - _Turbidity: 0.25
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
     - _UseHeightTex: 1
-    - _UseSeabedTex: 0
+    - _UseSeabedTex: 1
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1

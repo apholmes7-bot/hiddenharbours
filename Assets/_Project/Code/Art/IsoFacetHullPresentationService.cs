@@ -44,7 +44,35 @@ namespace HiddenHarbours.Art
             var renderer = host.GetComponent<IsoFacetHullRenderer>();
             if (renderer == null) renderer = host.AddComponent<IsoFacetHullRenderer>();
             renderer.Configure(ToSetup(def));
+            MakeReflective(renderer);
             return renderer;
+        }
+
+        /// <summary>
+        /// (ADR 0027 #8) Make this hull reflect in the water.
+        ///
+        /// <para><b>On the OVERLAY quad, not the host.</b> The overlay is the renderer that carries
+        /// <c>HiddenHarbours/IsoFacetOverlay</c> — the shader with the <c>HHReflect</c> pass — and it
+        /// is also the thing whose pixels ARE the hull's visible image (re-composed from the keyline
+        /// resolve). The host GameObject has no renderer at all, and the facet mesh child draws only
+        /// into the off-screen MRT.</para>
+        ///
+        /// <para><b>Here rather than in a builder,</b> because this service is the one place a mesh
+        /// hull is ever installed — the fleet is constructed at runtime from Defs, not authored into
+        /// a scene, so "wire it where the thing is made" lands here. Every hull the game builds
+        /// therefore reflects, and the water's own <c>_ObjectReflectStrength</c> is the single dial
+        /// that decides whether that shows.</para>
+        ///
+        /// <para>No pivot override: the overlay quad is built around the hull's PIVOT, which the rig
+        /// convention puts at her waterline contact (ADR 0026) — already the axis a reflection wants.</para>
+        /// </summary>
+        static void MakeReflective(IsoFacetHullRenderer hull)
+        {
+            MeshRenderer overlay = hull != null ? hull.OverlayRenderer : null;
+            if (overlay == null) return;
+            var reflector = overlay.GetComponent<ReflectiveObject>();
+            if (reflector == null) reflector = overlay.gameObject.AddComponent<ReflectiveObject>();
+            reflector.Refresh();
         }
 
         /// <summary>

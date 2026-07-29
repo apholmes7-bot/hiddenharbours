@@ -1860,6 +1860,50 @@ the post-grade compensated light content (§11.6), both untouched. `col.rgb` onl
 (`Sigma` / `Transmission` / `BandTransmission` / `Composite`) and `SeabedBake` (the world↔texel mapping the
 bake and the shader must agree on) — **change one, change both in the same PR.**
 
+
+### 17.8 Activation — the cove's committed bake, and why it is baked from ELEVATION
+
+§17.7 shipped the capability dormant. This is what turned it on for the current playable region.
+
+**The bake source had to change, because the cove has nothing painted.** §17.7's bake tool reads the
+ground TILEMAP — the honest source where a bottom has been painted. The committed `Greybox.unity` has
+**no tilemap at all** (it carries markers, a GameRoot and a Wharf; the whole `--LOGIC--` tree is
+builder output, created on a builder run and never committed). A tilemap bake there is a fully
+transparent texture and absorption stays invisible. So the tool gained a second source: **terrain
+ELEVATION through `SeabedPalette`**, which needs no painting because every region already authors its
+depth.
+
+> ⚠️ **`SeabedPalette` is deliberately NOT `World.TerrainHeightPalette`.** That one is the editor's
+> hypsometric DESIGNER OVERLAY and its underwater stops are navy and blue, because it is showing you
+> how deep something is. Feed it to `_SeabedTex` and you paint the water's own colour onto the bottom:
+> the blue doubles up and absorption — whose whole job is taking the red out of a warm bottom — has
+> nothing left to take. A seabed is sand, silt and rock; the blue is the water's job, and the water
+> already does it. Pinned by a test that asserts the bottom is never bluer than it is red.
+
+**The bake is reproducible, not hand-made.** `Hidden Harbours ▸ Art ▸ Bake Cove Seabed` (and
+`CoveSeabedBakeEntry.Run` for `-executeMethod`) builds the cove's terrain **from the builder's own
+constants** in a throwaway object — no scene opened, so it works from a clean checkout and there is
+nothing that could dirty a committed scene. A committed texture nobody can regenerate is a texture
+nobody can correct.
+
+Committed: `Data/Terrain/CoveSeabed_SeabedTex.png`, 512² over the 80 × 50 m cove =
+0.16 × 0.10 m per texel (≈ 5 × 3 screen px at PPU 32), **1.0 MB RGBA32**, LFS-tracked like every PNG.
+
+### 17.9 `_SeabedTex` is per-REGION, and the trap that makes that load-bearing
+
+**`Water.mat` is shared by every region**, and a bake belongs to ONE region's world rect — assigning it
+on the material would stretch the cove's bottom across St Peters' coast. So the texture rides the same
+per-surface `MaterialPropertyBlock` push the world rect already uses: `WaterSurface.ConfigureSeabedTexture`,
+wired by each region's builder.
+
+> ⚠️ **And a region with no bake must PUBLISH a transparent 1×1, not leave the slot unbound.**
+> `_USE_SEABEDTEX` is a MATERIAL keyword, so turning it on for the region that has a bake turns the
+> shader block on for **every** region sharing the material. A surface that pushed nothing would then
+> sample the material's default `"black"` texture — which is **opaque** black, alpha 1 — and composite
+> a black bottom across its whole shallows. `WaterSurface` therefore pushes an explicit clear 1×1 on
+> enable, unconditionally, so "no bake" means coverage 0 and composites nothing. Same lesson, same
+> shape, as the interior guard's black 1×1 and the reflection target's clear one. Pinned by a test.
+
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 
 Faint foam **streaks aligned with the tidal current** so the player can **read which way the sea is setting**
@@ -3115,3 +3159,37 @@ than magenta-in-build.
 **Nothing ships reflective.** The `HHReflect` pass exists in `HiddenHarboursTreeWind`; no prefab carries
 a `ReflectiveObject`, so no pass is enqueued and `_ObjectReflectStrength` is 0. Opting a boat, a wharf
 or a treeline in is: add the component, then raise the strength.
+
+### 26.10 Activation — what actually reflects, and where each wiring lives
+
+§26 shipped the capability with nothing carrying a `ReflectiveObject`. This is what opted the first
+renderers in — **in the builders**, never by editing a committed scene. A committed scene here is
+builder OUTPUT, so a feature activated by hand survives exactly until the next builder run erases it,
+and nothing fails: the effect just quietly stops being there.
+
+| What reflects | Where the wiring lives | Why there |
+|---|---|---|
+| **The Acadian rig trees** | `AcadianTreeCatalog.Configure` | The ONE place such a tree is configured — the Tree Paint Tool comes through it too, so a *painted* treeline reflects without the owner touching a component. |
+| **The hand-drawn trees** (`Tree01..43`) | `DecorPrefabBuilder` | Their prefabs are built there, with the TreeWind material that carries the `HHReflect` pass. |
+| **The fleet** (every mesh hull) | `IsoFacetHullPresentationService.Install` | Hulls are constructed at RUNTIME from Defs, never authored into a scene, so "wire it where the thing is made" lands in the service that installs them. |
+
+**The fleet needed the reflect pass on the OVERLAY shader, not the facet one.** A mesh hull's visible
+image is not what the facet MRT holds — it is what the keyline resolve made of it, which the overlay
+quad re-composes from `_HHHullScreenTex`. Mirroring the facet pass would reflect raw facet colour with
+no keyline, no darkening and no hull-id filter: recognisably the wrong boat. So the reflection mirrors
+the **overlay quad** and re-composes from the same resolved texture — which means the quad rasterises
+**mirrored** while sampling **unmirrored**, flipping the fetch back about the pivot's screen row
+(computed once in the vertex stage through `ComputeScreenPos`, which carries the render target's Y-flip
+convention).
+
+**What is NOT wired, and why.** Wharf structures and props sit on the **default sprite material**,
+which has no `HHReflect` pass — a `ReflectiveObject` on one of those would join the filtered list and
+draw nothing. Giving them a pass means a project sprite shader for decor, which is its own piece of
+work. The wharf TILE kit is a tilemap, so it cannot carry a per-renderer component at all; when it is
+wired it wants one reflector on the tilemap renderer with a pivot override, because that kit pivots
+TOP-LEFT and its breakwaters on the CREST.
+
+> ⚠️ **`useWaterLevel` was removed from `ReflectiveObject`, unused.** It set the mirror axis (a world-Y
+> POSITION) from the tide (an ELEVATION in metres above datum) — different quantities, the same
+> conflation the distance gate had. A floating hull needs no such option anyway: her pivot already
+> rides the swell with her.
