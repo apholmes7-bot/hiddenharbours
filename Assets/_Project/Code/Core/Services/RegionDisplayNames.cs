@@ -5,10 +5,10 @@ namespace HiddenHarbours.Core
 {
     /// <summary>
     /// A tiny Core-owned lookup so any module can turn a region's <b>scene name</b> (or stable region
-    /// <b>id</b>) into the proper player-facing <b>display name</b> — "Coddle Cove", "Port Greywick" —
+    /// <b>id</b>) into the proper player-facing <b>display name</b> — "Coddle Cove", "Nine Mile Creek" —
     /// without referencing the World module. It exists to resolve the crossing fade-card follow-up
     /// (ui-ux #54): the fade overlay reads only <c>SceneManager.activeSceneChanged</c> (a scene name)
-    /// and must render "Port Greywick", not "Greywick" or "Greybox".
+    /// and must render "Nine Mile Creek", not "NineMileCreek" or "Greybox".
     ///
     /// <para><b>Who fills it, who reads it.</b> The <em>world</em> owns region data (<c>RegionDef</c>)
     /// and <b>registers</b> the scene-name/id → display-name mappings here at boot (World → Core is an
@@ -22,7 +22,7 @@ namespace HiddenHarbours.Core
     public static class RegionDisplayNames
     {
         // Keyed by the lookup key (scene name OR region id), ordinal/case-insensitive so a scene named
-        // "Greywick" resolves whether the registrar used the scene name or the id. First registration
+        // "NineMileCreek" resolves whether the registrar used the scene name or the id. First registration
         // for a key wins (authoring mistakes degrade gracefully rather than flipping at runtime).
         private static readonly Dictionary<string, string> _byKey =
             new(StringComparer.OrdinalIgnoreCase);

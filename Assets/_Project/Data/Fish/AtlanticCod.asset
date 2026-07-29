@@ -21,7 +21,7 @@ MonoBehaviour:
   RegionIds:
   - region.coddle_cove
   - region.st_peters
-  - region.port_greywick
+  - region.nine_mile_creek
   AllowedGear: 3
   Seasons: 15
   MinTide: -10

@@ -4,14 +4,14 @@ namespace HiddenHarbours.World
 {
     /// <summary>
     /// A passage between regions (VS-22): a trigger the player/boat enters to travel to a target
-    /// <see cref="RegionDef"/> via the <see cref="RegionSceneLoader"/>. The Greywick scene places one
+    /// <see cref="RegionDef"/> via the <see cref="RegionSceneLoader"/>. The Nine Mile Creek scene places one
     /// of these at the harbour mouth as the "back to Coddle Cove" hop.
     ///
-    /// SCOPE: a stub for the Cove↔Greywick transition. The matching Cove→Greywick passage belongs in
+    /// SCOPE: a stub for the Cove↔Nine Mile Creek transition. The matching Cove→Nine Mile Creek passage belongs in
     /// the Cove (greybox) scene, which this task must not touch — see the TODO; placing it there needs
     /// a GreyboxBuilder change. Triggering is forgiving (P5): any collider that enters fires it, since
     /// the only mover in the greybox is the player/boat. A real version gates by an actor tag + an
-    /// on-screen "sail to Port Greywick" prompt (ui-ux). Needs a trigger Collider2D on the same
+    /// on-screen "sail to Nine Mile Creek" prompt (ui-ux). Needs a trigger Collider2D on the same
     /// GameObject (the builder adds a BoxCollider2D); <see cref="Reset"/> flags it as a trigger.
     ///
     /// <para><b>Re-fire guard (the helm-drop fix).</b> A passage must fire <i>once per genuine crossing</i>,
@@ -121,7 +121,7 @@ namespace HiddenHarbours.World
             _loader.Travel(_target);
         }
 
-        // TODO (Cove side): place the matching Coddle Cove -> Port Greywick passage in the cove scene.
+        // TODO (Cove side): place the matching Coddle Cove -> Nine Mile Creek passage in the cove scene.
         // That lives in GreyboxBuilder (out of scope for VS-22), so it's left as a wiring note.
     }
 }

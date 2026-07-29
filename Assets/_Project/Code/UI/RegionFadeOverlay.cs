@@ -6,7 +6,7 @@ namespace HiddenHarbours.UI
 {
     /// <summary>
     /// A self-contained fullscreen fade that covers the VS-22 region-transition snap (the additive
-    /// scene-cut + the persistent-rig reposition) so the Cove↔Greywick crossing reads as a short voyage
+    /// scene-cut + the persistent-rig reposition) so the Cove↔Nine Mile Creek crossing reads as a short voyage
     /// instead of a hard teleport. On a region change it FLASHES black and FADES IN — the new region
     /// reveals as the black clears — with a brief arrival card.
     ///

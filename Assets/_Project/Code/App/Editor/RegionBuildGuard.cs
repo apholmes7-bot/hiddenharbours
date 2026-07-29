@@ -13,7 +13,7 @@ namespace HiddenHarbours.App.Editor
     /// → rebuild) discards <em>everything</em> the owner hand-authored in that scene — painted terrain, decor,
     /// and (the incident that motivated this) hand-placed lights like a boat spotlight. ADR 0011 shipped this
     /// guard on the cove pilot only; ADR 0019 §1 makes it <b>mandatory on EVERY region builder's CREATE,
-    /// immediately — including not-yet-adopted Greywick / St Peters</b>, keyed purely on the scene FILE
+    /// immediately — including not-yet-adopted Nine Mile Creek / St Peters</b>, keyed purely on the scene FILE
     /// EXISTING on disk (no adoption bookkeeping). One helper = one wording, so all builders behave
     /// identically (CLAUDE.md rule 6 — no divergent copies of the same rule).</para>
     ///
@@ -41,10 +41,10 @@ namespace HiddenHarbours.App.Editor
         /// silently. If it DOES exist, it shows the modal wipe warning; the builder proceeds only if the user
         /// confirms the destructive rebuild. On cancel it logs the safe alternative and returns <c>false</c>.</para>
         /// </summary>
-        /// <param name="regionName">Human name of the region (e.g. "Port Greywick") — shown in the dialog and
+        /// <param name="regionName">Human name of the region (e.g. "Nine Mile Creek") — shown in the dialog and
         /// used to name the safe <c>Refresh &lt;Region&gt; Logic</c> command.</param>
         /// <param name="scenePath">The committed scene's on-disk asset path (e.g.
-        /// "Assets/_Project/Scenes/Greywick.unity").</param>
+        /// "Assets/_Project/Scenes/NineMileCreek.unity").</param>
         public static bool ConfirmOverwrite(string regionName, string scenePath)
         {
             // No file yet → first-ever build, nothing to wipe. Proceed silently (ADR 0019 §1).

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseDef
   Id: license.cod
   DisplayName: Cod Fishing License
-  Flavor: Greywick's harbourmaster signs you off to take cod on rod and line.
+  Flavor: Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.
   Price: 120
   PermittedSpeciesIds:
   - fish.atlantic_cod

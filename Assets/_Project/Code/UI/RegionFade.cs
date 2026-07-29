@@ -38,9 +38,9 @@ namespace HiddenHarbours.UI
 
         /// <summary>
         /// A readable arrival title from a scene name: split camelCase and underscores/hyphens into words
-        /// (e.g. "CoddleCove" → "Coddle Cove", "Port_Greywick" → "Port Greywick"; "Greywick" → "Greywick").
+        /// (e.g. "CoddleCove" → "Coddle Cove", "NineMileCreek" → "Nine Mile Creek"; "Greybox" → "Greybox").
         /// Deliberately decoupled from World <c>RegionDef</c> data — proper player-facing display names
-        /// (Coddle Cove / Port Greywick) are a follow-up once region display names are exposed via Core.
+        /// (Coddle Cove / Nine Mile Creek) are a follow-up once region display names are exposed via Core.
         /// </summary>
         public static string ArrivalTitle(string sceneName)
         {

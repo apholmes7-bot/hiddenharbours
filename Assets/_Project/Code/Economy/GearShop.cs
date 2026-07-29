@@ -6,7 +6,7 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// Sells a piece of gear/equipment at a shop (the Greywick store, St Peters opening: the rod, the
+    /// Sells a piece of gear/equipment at a shop (the Nine Mile Creek store, St Peters opening: the rod, the
     /// shovel). Reuses the <see cref="Shipwright"/>/<see cref="LicenseVendor"/> buy pattern: check the
     /// price, spend from the <see cref="IWallet"/>, and on success record the gear id as owned in the
     /// save and raise <see cref="GearPurchased"/>. <b>Economy side only</b> — it records the purchase;

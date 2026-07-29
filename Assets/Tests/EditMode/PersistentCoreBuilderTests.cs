@@ -131,7 +131,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "the camera starts following the PLAYER (not the boat) — the on-foot start");
         }
 
-        // ---- the travel rig is present (the sandbar passage to Greywick works) --------------
+        // ---- the travel rig is present (the sandbar passage to Nine Mile Creek works) --------------
 
         [Test]
         public void Build_PlacesTheTravelRig_LoaderAndCoordinator()

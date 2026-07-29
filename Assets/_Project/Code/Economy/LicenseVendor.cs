@@ -5,7 +5,7 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// Sells a fishing/gear license at a vendor (the Greywick harbourmaster, St Peters opening). Reuses
+    /// Sells a fishing/gear license at a vendor (the Nine Mile Creek harbourmaster, St Peters opening). Reuses
     /// the <see cref="Shipwright"/> buy pattern: check the fee, spend from the <see cref="IWallet"/>, and
     /// on success grant the license through the Core <see cref="ILicenseService"/> and raise
     /// <see cref="LicensePurchased"/>. <b>Economy side only</b> — it never touches Fishing/Player; the

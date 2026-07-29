@@ -80,12 +80,12 @@ namespace HiddenHarbours.Art.Editor
                                      ySort: true, material: treeMaterial)) n++;
             }
 
-            // --- Buildings (centre pivot). Cottage day/night, Greywick houses, shipwright, buyer stall. ---
+            // --- Buildings (centre pivot). Cottage day/night, Nine Mile Creek houses, shipwright, buyer stall. ---
             EnsureFolder($"{PrefabRoot}/Buildings");
             string[] buildings =
             {
                 "Cottage", "CottageNight", "ShipwrightShed", "FishBuyerStall",
-                "GreywickHouseRed", "GreywickHouseTeal",
+                "NineMileCreekHouseRed", "NineMileCreekHouseTeal",
             };
             foreach (var b in buildings)
                 if (BuildDecorPrefab(b, $"{ArtSprites}/Buildings/{b}.png", $"{PrefabRoot}/Buildings/{b}.prefab", BuildingSortingOrder)) n++;

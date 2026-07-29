@@ -216,7 +216,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void Regions_Exist_AndHaveNonEmptyUniqueIds()
         {
             var regions = LoadAll<RegionDef>();
-            Assert.IsNotEmpty(regions, "the slice must ship at least one RegionDef in Data/Regions (the cove + Greywick)");
+            Assert.IsNotEmpty(regions, "the slice must ship at least one RegionDef in Data/Regions (the cove + Nine Mile Creek)");
 
             var seen = new Dictionary<string, string>();
             foreach (var r in regions)

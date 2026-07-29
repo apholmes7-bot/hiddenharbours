@@ -13,7 +13,15 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
+
+        /// <summary>
+        /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
+        /// it is rewritten to. Public so the test can state the pair it is guarding rather than
+        /// re-typing two magic strings that could drift apart from the migration silently.
+        /// </summary>
+        public const string RenamedRegionFrom = "region.port_greywick";
+        public const string RenamedRegionTo = "region.nine_mile_creek";
 
         /// <summary>A fresh save for a brand-new game — current version, empty collections.</summary>
         public static SaveData NewGame() => new SaveData { SchemaVersion = CurrentVersion };
@@ -80,6 +88,34 @@ namespace HiddenHarbours.Core
                     }
                 }
                 data.SchemaVersion = 4;
+            }
+
+            // ---- v4 → v5: Port Greywick was RENAMED Nine Mile Creek (plan-to-m1 D1/§7.10), and its
+            // stable region id went with it. Placed traps are the only save field that stores a region
+            // id as a STRING (PlacedTrapDto.Region — scene-per-region, ADR 0004), so a trap dropped
+            // before the rename would name a region no def claims: it would load, sit in an unloadable
+            // region, and never be haulable again. Rewriting the id here is the whole migration.
+            //
+            // ⚠ THIS IS THE FIRST STEP THAT REINTERPRETS AN EXISTING VALUE rather than only adding, so
+            // it is worth saying why that is legitimate: the value's REFERENT was renamed, not its
+            // meaning. The trap is in the same water it was always in. The step is narrow by
+            // construction — it touches exactly one field, matches exactly one id, and leaves every
+            // other region string alone.
+            if (data.SchemaVersion < 5)
+            {
+                if (data.PlacedTraps != null)
+                {
+                    for (int i = 0; i < data.PlacedTraps.Count; i++)
+                    {
+                        if (!string.Equals(data.PlacedTraps[i].Region, RenamedRegionFrom,
+                                           System.StringComparison.Ordinal))
+                            continue;
+                        PlacedTrapDto dto = data.PlacedTraps[i];
+                        dto.Region = RenamedRegionTo;
+                        data.PlacedTraps[i] = dto;   // PlacedTrapDto is a struct — write it back
+                    }
+                }
+                data.SchemaVersion = 5;
             }
 
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.

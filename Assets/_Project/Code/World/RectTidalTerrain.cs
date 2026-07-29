@@ -7,7 +7,7 @@ namespace HiddenHarbours.World
     /// A rectangular-plateau <see cref="ITidalTerrain"/> — the analytic seabed for regions whose land is
     /// quays, docks and coast STRIPS rather than St Peters' island/bar/channel shapes (ADR 0012
     /// recommendation 4: "the default for any tide-gated coast is the shader" — this is the height source
-    /// that converges Coddle Cove and Port Greywick onto the St Peters tide-driven water model).
+    /// that converges Coddle Cove and Nine Mile Creek onto the St Peters tide-driven water model).
     ///
     /// <para><b>Authored ELEVATION ZONES (deterministic, never saved).</b> Elevation is a pure function of
     /// world position composed from a deep floor plus a list of axis-aligned rectangular LAND ZONES: flat
@@ -21,7 +21,7 @@ namespace HiddenHarbours.World
     ///
     /// <para><b>Falloff = the visible tide.</b> The falloff band is where the waterline lives: a GENTLE
     /// falloff (the cove's south beach) makes the shoreline visibly advance/retreat metres over the tide;
-    /// a STEEP one (Greywick's dredged quay edge, canon "deep sheltered harbour") keeps the sweep modest.
+    /// a STEEP one (Nine Mile Creek's dredged quay edge, canon "deep sheltered harbour") keeps the sweep modest.
     /// All values are serialized tunables (rule 6) the owner can dial in the Inspector; hand-painting
     /// later replaces this via the Terrain Paint Tool's Adopt step (ADR 0014), exactly like St Peters.</para>
     ///

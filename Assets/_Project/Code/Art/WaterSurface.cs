@@ -31,7 +31,7 @@ namespace HiddenHarbours.Art
     /// depth the gameplay reads (they cannot disagree — the P1 integrity rule). This stays the source when it is
     /// present.</description></item>
     /// <item><description><b>Distance to land</b> — the FALLBACK when there is NO tidal terrain (the hand-painted
-    /// cove, Greywick): derive a smooth shallow→deep gradient purely from the scene geometry. Build a land mask
+    /// cove, Nine Mile Creek): derive a smooth shallow→deep gradient purely from the scene geometry. Build a land mask
     /// from the best available source (painted land tilemaps, land/shore colliders, the closed shore fence), run a
     /// distance transform, and map distance-to-nearest-land → depth via a tunable curve (shallow at the shoreline,
     /// deepening offshore). This gives any scene a gradual drop-off + foam at the coast WITHOUT an authored
@@ -126,7 +126,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private bool _bakeHeightMap = true;
         [Tooltip("Which seabed source to bake. Auto: use ITidalTerrain.ElevationAt when a region wires it (the " +
                  "visible depth then equals the gameplay depth); otherwise estimate depth from distance-to-land so " +
-                 "even a scene with NO tidal terrain (the painted cove, Greywick) shallows up at the coast.")]
+                 "even a scene with NO tidal terrain (the painted cove, Nine Mile Creek) shallows up at the coast.")]
         [SerializeField] private DepthSource _depthSource = DepthSource.Auto;
         [Tooltip("World-space rectangle the height map covers (centre + size). Should span the visible water.")]
         [SerializeField] private Vector2 _heightWorldCenter = new Vector2(0f, 0f);
@@ -232,7 +232,7 @@ namespace HiddenHarbours.Art
                  "Sampled by overlap at each cell. Leave empty to rely on tilemaps + the shore fence.")]
         [SerializeField] private LayerMask _landColliderMask = 0;
         [Tooltip("The closed shore-fence EdgeCollider2D dividing land from water (the cove's 'ShoreEdge', " +
-                 "Greywick's 'Shoreline'). If its polyline is CLOSED, the interior is filled as land. Auto-found " +
+                 "Nine Mile Creek's 'Shoreline'). If its polyline is CLOSED, the interior is filled as land. Auto-found " +
                  "by name when left empty; assign to override. An OPEN fence is skipped (use tilemaps/colliders).")]
         [SerializeField] private EdgeCollider2D _shoreFence;
         [Tooltip("Names searched (in order) to auto-find the shore fence when none is assigned.")]
@@ -929,7 +929,7 @@ namespace HiddenHarbours.Art
         /// Rasterize the scene's land geometry into a boolean mask over the bake rect. A cell is land if ANY
         /// source marks it: a painted land tilemap holds a tile there, a land-layer collider overlaps it, or it
         /// lies inside the closed shore fence. Source-agnostic so it works in the painted cove (tilemap) and the
-        /// collider-fenced regions (Greywick) without per-scene authoring.
+        /// collider-fenced regions (Nine Mile Creek) without per-scene authoring.
         /// </summary>
         private bool[] BuildLandMask(int res)
         {
@@ -1001,7 +1001,7 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// The shore fence's points in WORLD space IF the polyline is closed (first == last vertex); otherwise
-        /// null. An open fence (Greywick's west waterline) cannot be filled by point-in-polygon, so we skip it and
+        /// null. An open fence (Nine Mile Creek's west waterline) cannot be filled by point-in-polygon, so we skip it and
         /// rely on tilemaps/colliders for that scene.
         /// </summary>
         private static Vector2[] ClosedPolygonWorld(EdgeCollider2D edge)

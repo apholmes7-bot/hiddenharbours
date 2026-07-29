@@ -4,13 +4,13 @@ namespace HiddenHarbours.World
 {
     /// <summary>
     /// A region of the coast, as data (ADR 0003): one asset per region under <c>Data/Regions</c>,
-    /// keyed by a stable <see cref="Id"/> (e.g. <c>region.port_greywick</c>). The world is "scene per
+    /// keyed by a stable <see cref="Id"/> (e.g. <c>region.nine_mile_creek</c>). The world is "scene per
     /// region, loaded additively" (CLAUDE.md §3), so a region's content lives in its own scene and
     /// this def is the lightweight, code-readable handle to it: which scene to load, how to gate it,
     /// and the region's flavour/tunables. (Schema: docs/architecture/data-model.md — id, display name,
     /// unlock gate, scene ref, tide profile, depth, spawn tables, …)
     ///
-    /// Minimal for VS-22 (Port Greywick is the first authored region besides the greybox cove). Spawn
+    /// Minimal for VS-22 (Nine Mile Creek is the first authored region besides the greybox cove). Spawn
     /// tables / hazards / NPC lists / palette grade are listed by id or left empty here and filled as
     /// those systems land — never hard-coded against a region in C#.
     /// </summary>
@@ -18,18 +18,18 @@ namespace HiddenHarbours.World
     public class RegionDef : ScriptableObject
     {
         [Header("Identity")]
-        [Tooltip("Stable id, append-only (e.g. region.port_greywick). Save/unlock state keys off it.")]
-        public string Id = "region.port_greywick";
-        public string DisplayName = "Port Greywick";
+        [Tooltip("Stable id, append-only (e.g. region.nine_mile_creek). Save/unlock state keys off it.")]
+        public string Id = "region.nine_mile_creek";
+        public string DisplayName = "Nine Mile Creek";
         [TextArea] public string Description;
 
         [Header("Scene (loaded additively)")]
         [Tooltip("Name of the scene asset for this region (no path/extension), as registered in Build " +
-                 "Settings — e.g. \"Greywick\". The scene-load path loads it additively.")]
-        public string SceneName = "Greywick";
+                 "Settings — e.g. \"Nine Mile Creek\". The scene-load path loads it additively.")]
+        public string SceneName = "NineMileCreek";
 
         [Header("Gating")]
-        [Tooltip("Optional unlock flag id; empty = always reachable. Greywick unlocks early via story.")]
+        [Tooltip("Optional unlock flag id; empty = always reachable. Nine Mile Creek unlocks early via story.")]
         public string UnlockFlag = "";
 
         [Header("Extent — the region's world rectangle (authored ONCE, read by everything)")]
@@ -59,7 +59,7 @@ namespace HiddenHarbours.World
         public float TidePhaseHours = 0f;
 
         [Header("Content (by id)")]
-        [Tooltip("Spawn-table fish ids (data-model: by id, never direct refs). Greywick is a services " +
+        [Tooltip("Spawn-table fish ids (data-model: by id, never direct refs). Nine Mile Creek is a services " +
                  "region, not a fishing ground, so this is usually empty/marginal.")]
         public string[] SpawnFishIds = new string[0];
 

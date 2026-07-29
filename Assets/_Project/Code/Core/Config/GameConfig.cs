@@ -15,7 +15,7 @@ namespace HiddenHarbours.Core
         public float SecondsPerDay = 1200f;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = 28;
-        [Tooltip("Which weekday is Market Day at Greywick (0 = Monday).")]
+        [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
 
         [Header("Tide")]
@@ -85,10 +85,15 @@ namespace HiddenHarbours.Core
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
-        [Tooltip("Demand D at Port Greywick. Set higher than the cove so WHERE you sell matters: Greywick " +
+        [Tooltip("Demand D at Nine Mile Creek. Set higher than the cove so WHERE you sell matters: Nine Mile Creek " +
                  "pays a premium on a glut (the reason to make the hop), and its supply recovers separately. " +
                  "(economy-and-business §1.2/§1.4)")]
-        [Min(0.01f)] public float MarketDemandGreywick = 1.4f;
+        // ⚠ RENAMED from MarketDemandGreywick (plan-to-m1 §7.10). The old name is the KEY this
+        // value is serialised under in every existing GameConfig.asset — including the owner's
+        // hand-tuned local copy — so without this attribute the rename would silently reset his
+        // tuning to the 1.4 default and nothing would say so.
+        [UnityEngine.Serialization.FormerlySerializedAs("MarketDemandGreywick")]
+        [Min(0.01f)] public float MarketDemandNineMileCreek = 1.4f;
         [Tooltip("Fraction of a category's accumulated supply (glut) cleared at each daily settle (0..1). " +
                  "Higher = faster price recovery over days (economy-and-business §1.3). Deterministic — fired " +
                  "on day rollover, not per frame.")]

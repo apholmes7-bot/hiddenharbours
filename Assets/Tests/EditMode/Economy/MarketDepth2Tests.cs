@@ -53,11 +53,11 @@ namespace HiddenHarbours.Tests.Economy
 
         // ---- builders -----------------------------------------------------------------------
 
-        private GameConfig MakeConfig(float cove = 1f, float greywick = 1.4f, float recovery = 0.5f)
+        private GameConfig MakeConfig(float cove = 1f, float nineMileCreek = 1.4f, float recovery = 0.5f)
         {
             var c = ScriptableObject.CreateInstance<GameConfig>();
             c.MarketDemandCove = cove;
-            c.MarketDemandGreywick = greywick;
+            c.MarketDemandNineMileCreek = nineMileCreek;
             c.MarketDailyRecovery = recovery;
             _spawned.Add(c);
             return c;
@@ -127,8 +127,8 @@ namespace HiddenHarbours.Tests.Economy
         [Test]
         public void DemandFor_FallsBackToBaseline_ThenOverrideWins()
         {
-            var market = MakeMarket(MakeConfig(cove: 1f, greywick: 1.4f), MarketId.Greywick);
-            Assert.AreEqual(1.4f, market.DemandFor(Cod), 1e-6f, "an unlisted category uses the market baseline (Greywick=1.4)");
+            var market = MakeMarket(MakeConfig(cove: 1f, nineMileCreek: 1.4f), MarketId.NineMileCreek);
+            Assert.AreEqual(1.4f, market.DemandFor(Cod), 1e-6f, "an unlisted category uses the market baseline (Nine Mile Creek=1.4)");
 
             market.SetCategoryDemand(Cod, 0.5f);
             Assert.AreEqual(0.5f, market.DemandFor(Cod), 1e-6f, "a per-category override wins over the baseline");

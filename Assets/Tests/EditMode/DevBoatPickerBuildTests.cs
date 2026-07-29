@@ -143,7 +143,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NoRoster_SpawnsNoPicker()
         {
-            // Greywick spawns no player boat, and a scene that hands over no roster wants no dev key bound.
+            // Nine Mile Creek spawns no player boat, and a scene that hands over no roster wants no dev key bound.
             var dory = MakeHull("boat.dory", 6);
             Build(dory, null);
 

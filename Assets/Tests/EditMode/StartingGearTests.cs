@@ -57,7 +57,7 @@ namespace HiddenHarbours.Tests.EditMode
             StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId });
             Assert.IsTrue(PlayerGear.CanDig(save), "shovel granted → can dig");
             Assert.IsTrue(PlayerGear.HasBucket(save), "bucket granted → on-foot clam hold available");
-            Assert.IsFalse(PlayerGear.CanRodFish(save), "still no rod — that's bought at Greywick");
+            Assert.IsFalse(PlayerGear.CanRodFish(save), "still no rod — that's bought at Nine Mile Creek");
 
             save.OwnedGear.Add(PlayerGear.RodId);
             Assert.IsTrue(PlayerGear.CanRodFish(save), "rod bought → rod-fishing enabled");
