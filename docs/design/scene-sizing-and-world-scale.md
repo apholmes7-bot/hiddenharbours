@@ -174,6 +174,10 @@ inventory the size has to hold):
 
 **The sandbar leaves the WEST end.** This flips today's greybox, where the island sits at x = −40 and
 the bar runs *east* to x = +34. The island moves east of centre and the bar exits west.
+**✅ DONE 2026-07-29** — island centre `(70, 0)` with semi-axes 225 × 130, bar `(−150, 0) → (−350, 0)`,
+dock on the east end. ⚠ The island is now an **ellipse**: a disc long enough to be 450 m end to end
+would be 450 m across a 520 m scene, so `TidalTerrain` gained a Y radius (0 = circular, unchanged for
+every other region).
 
 ### 5.1a The reef ring and the one dock — ✅ RATIFIED (owner, 2026-07-23)
 
@@ -326,10 +330,23 @@ Ordered, with the blocker first. None of it is done in this document.
    `StPetersBuilder` authors them once and publishes them, and the tiled sea sprite, the flat backdrop,
    the shader's height bake and the displaced mesh all read them. Six copies of `(160, 120)` became
    one. **The camera bounds (item 4) can now read the same number.**
-3. **Close the open shoreline defects first** (§5.3, note 1).
+3. ~~**Close the open shoreline defects first** (§5.3, note 1).~~ **✅ VERIFIED CLOSED 2026-07-29.**
+   Both defects named in §5.3 — the all-white sea and the swirly shoreline — were fixed and merged the
+   same week this document was written, in **#279** (`8623789`), which this section predates. Checked
+   against current `main` rather than taken on trust: all four root-cause fixes are live in
+   `HiddenHarboursWater.shader` (`_PaletteFloorKnee`, `_CloudMoonlitVis`, the envelope bands ×
+   `ShoreFade01`, and the swash/fringe × `SeabedSlopeMag`), and **no material overrides any of them
+   back to its legacy value** — the two knobs are not written in `Water.mat` at all, so they run on
+   the shader defaults, which are the *fixed* values (0.45 / 0.35) and not the legacy reverts (0 / 1).
+   ⚠ Still outstanding is an **owner verdict**, not a defect: #279's fix makes dusk and night seas
+   genuinely darker (the brightness *was* the bug), and that has not been played yet.
 4. **Camera bounds.** There is no bounds rig yet (`CameraFollow`'s comment says so). At 160 m nobody
    noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
-5. **Then, and only then, author.** Island → bar → the rest, in that order.
+5. **Then, and only then, author.** Island → bar → the rest, in that order. **⏳ STARTED
+   2026-07-29:** the region now *is* 760 × 520 with the island at its ruled 450 × 260 east of centre
+   and the bar leaving the west end (§5.1), as greybox analytic terrain. What that PR deliberately did
+   NOT do: **bake or commit a seabed** (held until the extent settles), author the **dock berth or the
+   reef ring** (§5.1a's −1.0 / −1.0-to-−1.5 m shelves), or place a single building, tile, plant or NPC.
 
 ~~**One change is ready to make now and depends on none of the above:**
 `StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified).~~ **✅ DONE 2026-07-29** — it
