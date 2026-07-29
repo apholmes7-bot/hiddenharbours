@@ -963,3 +963,156 @@ goes red and should be deleted.
 **WIRE-IN (NOT done here):** no sheets baked, nothing placed, no prefab/spawner/collision reads these
 anchors yet, and the older hand-drawn `Sprites/Shore/RockCluster.png`, `RockMid.png`, `RockSmall.png`
 and `TidePoolRock.png` are untouched.
+
+---
+
+## Batch — Shoreline Plants (`ShorePlants`), the rig and the contract (owner drop 2026-07-29)
+
+The last habitat with no rig. Everything between the spruce line and the low-water mark was
+hand-drawn per tide state, so the same weed had three unrelated silhouettes depending on which
+artist drew which tide. **Sixteen species across the five tidal zones, one generator** — sibling of
+ShoreIso2 (the ground) and RockIso (the stones standing on it), sharing their camera and PPU.
+
+### ⭐ What this rig knows that the others don't: the tide is an AXIS, not a variant
+
+Water height over a plant's **own** ground — `tideM − zone.baseM`, in metres — is resolved once and
+drives four things, so they cannot disagree:
+
+- **lay** — algae owe their height to the water. Drained, the same skeleton concertinas onto its
+  substrate and falls downslope. It puddles; it does not stretch out flat.
+- **wet** — soaked while any part is under, drying off over `DRY_M` = 0.85 m of further fall.
+  Upland plants are never wet with no special case, because the tide never reaches their ground.
+- **submergence** — everything below the waterline takes the cold water ramp and loses contrast with
+  depth. **Colour only** (see below).
+- **sway mode** — breeze above the waterline, phase-lagged surge below, and *nothing* when drained
+  and limp. That stillness is most of why a low tide reads as low.
+
+The zone staircase, metres above chart datum: subtidal fringe 0.15 · mid intertidal 1.55 · low marsh
+2.55 · high marsh 3.35 · upland 4.65, against a nominal range `TIDE_M` = 4.0 m. It maps straight onto
+the **painted seabed height plus the deterministic tide** (ADR 0014, rule 5) — no new simulation.
+
+### ⭐ This kit ships NO pixels — it bakes to order
+
+16 species × two sheet axes × 3 seasons × 3 growth stages is a matrix an import has no business
+choosing from, so the drop ships the rig and the contract and nothing else — the same call RockIso
+makes. `ShorePlantBaker` (menu *Hidden Harbours ▸ Art ▸ Bake Shore Plant Sheets*) writes them
+in-engine from `docs/art/rigs/shorePlantRig.js`, running the rig UNMODIFIED in the V8 host
+(ADR 0021). Two menu items, because the **atlas budget is a real decision**:
+
+- default — the **tide axis** (5 tide states × 4 sway frames), summer, full growth, variant 0, all
+  sixteen species = 16 sheets. That is the gameplay-minimum set: the tide moves continuously and
+  every plant follows it, so the tide axis is what a placed plant actually samples.
+- behind a confirm — **both axes** (adds 4 variants × 4 sway frames at half tide) = 32 sheets.
+
+**Three PNGs per sheet.** The albedo, plus `<stem>_light.png` and `<stem>_tide.png` — the contract's
+own filenames. Both mask channels are **DATA**: sRGB OFF, uncompressed, `alphaIsTransparency` off.
+
+Sheet stems name the **fixed** dimension, never the axis: `<Species>_<season>_<stage>_v0` is a tide
+axis sheet, `<Species>_<season>_<stage>_atLow` a variant one. That is deliberate — the state
+channel's suffix *is* `_tide`, so a stem ending in a tide key would be indistinguishable from another
+sheet's data channel and would get sliced in the wrong colour space. A test pins that no legal stem
+can collide.
+
+### 🔴 The strap material is a DECLARATION, and a shader must branch on it from data
+
+A 2 px rim must leave 6 px of interior behind it, so no BODY mass is emitted under a 5 px radius. But
+**a grass blade IS 2 px wide** — so blades, culms, fronds and sheets are declared **STRAP**: exempt
+from the mass floor, and in exchange **forbidden a rim**. The exemption is a material, not a fudge,
+which is what makes it auditable. Wood and fleck are linear too.
+
+| bake | R | G | B | A |
+|---|---|---|---|---|
+| `_light` | key light · N·L · **ALL** materials, straps included | back rim · **BODY AND WOOD ONLY**, identically 0 on strap and fleck | surface depth | coverage |
+| `_tide` | wetness (gloss authority) | 255 below the baked waterline | **255 on STRAP pixels — the no-rim flag** | coverage |
+
+**`light.G` is not re-used as a spine channel — no channel changes meaning per material.** A strap's
+lit spine is real N·L off its bowed cross-section normal, so it arrives in `light.R` with everything
+else. **Gate every read of `light.G` on `state.B`; never infer strap-vs-mass from the sprite.** The
+sprite-light include (`SpriteLightResponse.hlsl`, #314) is the consumer that will branch on it —
+**not wired here, import only.**
+
+Measured, not asserted: across the zone probes at low/half/high tide, **zero strap pixels carry
+`light.G`**, and the rig's own `report.strapRimLeak` agrees. A sabotage raising ONE strap pixel to
+`G = 1` is detected.
+
+### 🔴 No baked water, and no baked moving light
+
+Submergence bakes **colour only** — darker, cooler, contrast falling monotonically with depth. There
+is no dapple, no spatial pattern and nothing per-frame, because **the live shader's caustics are
+swell-driven** and a baked dapple would put two uncorrelated patterns on the same frond
+(ADR 0010/0012/0023). `contract().water.bakesCaustics === false`, and a test scans submerged cells
+for the actual signature of a dapple — high-frequency luminance direction changes along a scanline —
+with an injected 5 px ripple as the measured sabotage.
+
+`waterRow` is reported per render so a scene can line its water plane up with the bake; it is `null`
+when the surface is outside the sprite in either direction (read `submerged` for which side).
+
+### ⭐ Cells stay UNIONED over the tide states — one cell, one pivot per species
+
+The runtime tide axis is continuous, so plants swap sprite state constantly as water rises over their
+ground. With ONE cell and ONE ground-contact pivot those swaps are **anchored by construction**.
+Per-tide cells would give every state its own pivot, and a 1 px disagreement becomes a visible hop
+the moment the tide crosses a threshold. **Sheet waste is only memory; a state hop is an artifact.**
+
+The cost is measured, not assumed — this is the table any per-species exception would be argued on:
+
+| species | zone | h (m) | unit | cell | pivot | drape | variant sheet | tide sheet | worst ink | waste | headroom | KiB |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `SugarKelp` | fringe | 2.75 | plant | 142×131 | 70,88 | 1.34 m | 568×524 | 710×524 | 16% (high) | 84% | 1338 | 2615 |
+| `IrishMoss` | fringe | 0.53 | mat | 56×47 | 28,31 | 0.50 m | 224×188 | 280×188 | 33% (flood) | 67% | 1768 | 370 |
+| `Eelgrass` | fringe | 1.44 | clump | 77×69 | 38,51 | 0.56 m | 308×276 | 385×276 | 23% (ebb) | 77% | 1663 | 747 |
+| `KnottedWrack` | mid | 1.63 | plant | 98×94 | 48,64 | 0.94 m | 392×376 | 490×376 | 21% (flood) | 79% | 1558 | 1295 |
+| `Bladderwrack` | mid | 1.06 | plant | 71×69 | 35,47 | 0.69 m | 284×276 | 355×276 | 20% (half) | 80% | 1693 | 688 |
+| `SeaLettuce` | mid | 0.47 | mat | 61×55 | 30,31 | 0.75 m | 244×220 | 305×220 | 9% (high) | **91%** | 1743 | 471 |
+| `Cordgrass` | low | 1.81 | clump | 70×83 | 34,70 | 0.41 m | 280×332 | 350×332 | 30% (low) | 70% | 1698 | 817 |
+| `Glasswort` | low | 0.47 | mat | 41×40 | 20,24 | 0.50 m | 164×160 | 205×160 | 16% (half) | 84% | 1843 | 230 |
+| `SaltmeadowHay` | high | 0.75 | mat | 82×55 | 41,29 | 0.81 m | 328×220 | 410×220 | 27% (high) | 73% | 1638 | 634 |
+| `BlackRush` | high | 0.66 | clump | 40×41 | 19,29 | 0.38 m | 160×164 | 200×164 | 28% (flood) | 72% | 1848 | 230 |
+| `Cattail` | high | 2.06 | clump | 90×73 | 44,60 | 0.41 m | 360×292 | 450×292 | 36% (half) | 64% | 1598 | 923 |
+| `Threesquare` | high | 1.13 | clump | 38×52 | 18,40 | 0.38 m | 152×208 | 190×208 | 36% (high) | 64% | 1840 | 277 |
+| `MarramGrass` | upland | 1.03 | clump | 64×66 | 31,44 | 0.69 m | 256×264 | 320×264 | 34% (high) | 66% | 1728 | 594 |
+| `Bayberry` | upland | 1.81 | plant | 78×74 | 38,64 | 0.31 m | 312×296 | 390×296 | 55% (flood) | **45%** | 1658 | 811 |
+| `SweetFern` | upland | 1.16 | plant | 60×60 | 29,49 | 0.34 m | 240×240 | 300×240 | 26% (ebb) | 74% | 1748 | 506 |
+| `BeachPea` | upland | 0.50 | mat | 76×45 | 39,23 | 0.69 m | 304×180 | 380×180 | 32% (low) | 68% | 1668 | 480 |
+
+**All 32 sheets fit the 2048 cap with 1338 px of headroom to spare** (SugarKelp, the largest).
+Both axes, all sixteen species, at full growth: **11.41 MiB RGBA uncompressed** — and that is the
+ALBEDO only; a full three-channel bake is 3×. Worst waste is **Sea Lettuce at 91%** — 471 KiB for
+both its axes, which is not worth an exception. Bayberry is the tightest packed at 45%.
+
+🔴 **If a species ever busts 2048, flip THAT species to per-tide cells as a targeted exception —
+decided by the owner on these numbers, never by an importer.** `ShorePlantBaker.AssertFits` refuses
+before writing a pixel, because over the cap Unity imports the sheet **silently downscaled with the
+sprite count still matching**, and only a pivot assert much later would notice.
+
+### ⚠ The pivot is the GROUND CONTACT (holdfast / root crown), and the drape hangs below it
+
+Measured **10–43 px = 0.31–1.34 m** of art below the contact point across the sixteen species — a
+drained kelp folds onto its rock and puddles downslope. A bottom-of-cell pivot floats every plant by
+exactly that, and `ArtImportPipeline`'s default is wrong here for all sixteen.
+
+Normalisation is ADR 0026's `(x/W, (H−y)/H)`. **Not** the tree kit's `pad/cellH` — the committed
+contract publishes the `pivot` and no `pad`, and nothing here consumes a pad the way the tree's wind
+shader consumes `_TrunkAnchor`. The rig *does* compute `pad = cellH − 1 − pivotY` internally; a test
+pins that relation and a second one proves the two conventions differ by exactly one row on every
+species, so an assert on the pivot has teeth rather than passing under either convention.
+
+`ShorePlantSheetSlicer` exists rather than a `SpriteSheetSlicer` manifest row because the manifest
+knows nothing about a three-channel sheet family with per-channel colour space. **Every rect on a
+sheet carries the SAME pivot** — that is the whole purchase the union cell makes.
+
+### ⚠ The baker does NOT rewrite the contract
+
+`shorePlantRig.contract.json` is the ORACLE. `ShorePlantBaker.AssertMatchesContract` compares the
+rig's live cell, pivot and both sheet dimensions against it before writing a pixel and **refuses on
+any disagreement** — a rig change surfaces as a loud stop pointing at the art director, never as
+sheets whose pivots quietly no longer match their own contract.
+
+One deliberate divergence from a fresh `ShorePlants.contract()` call: the drop's committed JSON
+carries `"generated": "baked from Art/shorePlantRig.js at full growth stage"` where the rig emits an
+ISO timestamp. That makes the file diff-stable, and is why the tests compare **fields**, not bytes.
+
+**WIRE-IN (NOT done here):** no sheets baked, nothing placed in a scene, no prefab, spawner, paint
+tool or Def reads this contract yet, and `SpriteLightResponse.hlsl` is **not** branched on `state.B`.
+The older hand-drawn `Sprites/Shore/SeaweedClump.png`, `SeaweedMat.png` and `SeaweedWisp.png` are
+untouched.
