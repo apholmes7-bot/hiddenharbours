@@ -6,6 +6,7 @@
         "UnityEditor.TestRunner",
         "UnityEngine.UI",
         "HiddenHarbours.Core",
+        "HiddenHarbours.App",
         "HiddenHarbours.UI",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Fishing",
@@ -16,8 +17,12 @@
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
-    "precompiledReferences": ["nunit.framework.dll"],
-    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "overrideReferences": true,
     "autoReferenced": false
 }

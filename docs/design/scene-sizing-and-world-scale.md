@@ -327,8 +327,22 @@ Ordered, with the blocker first. None of it is done in this document.
    the shader's height bake and the displaced mesh all read them. Six copies of `(160, 120)` became
    one. **The camera bounds (item 4) can now read the same number.**
 3. **Close the open shoreline defects first** (§5.3, note 1).
-4. **Camera bounds.** There is no bounds rig yet (`CameraFollow`'s comment says so). At 160 m nobody
-   noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
+4. ~~**Camera bounds.**~~ **✅ DONE 2026-07-29.** `CameraBounds` (a pure clamp, tested headless) plus
+   `CameraFollow`'s `LateUpdate`. The rectangle is the region's authored extent — item 2's
+   `RegionDef.WorldCenter`/`WorldSizeMeters`, propagated by each region builder to its `RegionAnchor`
+   exactly as it is propagated to the sea, the backdrop and the height bake. **No second bounds source.**
+   - The clamp holds the camera back by its **half-extents at the current zoom**, so the view's edge
+     lands on the map edge rather than the camera's centre — and it is automatically right across the
+     discrete pixel-perfect tiers and *during* a zoom tween, because it knows nothing about tiers.
+   - It runs **last** in `LateUpdate`, after the zoom settles; clamping first would leave a one-frame
+     overshoot past the edge on every zoom step.
+   - A region **narrower than the view centres** instead of jittering between edges (the naive
+     `Clamp(x, min+half, max−half)` has inverted bounds there and snaps to an arbitrary edge).
+   - ⚠️ The bounds are **not serialized on the camera**: it lives on the persistent core and outlives
+     every region, so a baked rectangle would be the start region's forever. They arrive through the
+     region seam (`GameServices.CurrentRegionBounds`, published by `RegionAnchor.OnEnable`, which
+     covers boot as well as a hop). Unpublished = unclamped, so nothing changes until a region reports.
+   - *(HUD/letterboxing for a region smaller than the view remains `ui-ux`'s call — logged, not built.)*
 5. **Then, and only then, author.** Island → bar → the rest, in that order.
 
 ~~**One change is ready to make now and depends on none of the above:**

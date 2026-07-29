@@ -66,6 +66,25 @@ namespace HiddenHarbours.Core
         public static string CurrentRegionId { get; set; }
 
         /// <summary>
+        /// The world rectangle the CURRENT region occupies — <c>RegionDef.WorldCenter</c> /
+        /// <c>WorldSizeMeters</c>, the one authored extent the sea sprite, the flat backdrop, the
+        /// shader's height bake and the displaced mesh all already read. Same writer and same
+        /// lifetime as <see cref="CurrentRegionId"/>: the active region's anchor reports it on enable
+        /// (which covers BOOT as well as a hop), and clears it on disable only if it still owns it.
+        ///
+        /// <para>Read by the camera's bounds clamp (<c>CameraFollow</c>), which lives on the
+        /// PERSISTENT core and therefore cannot carry a baked rectangle of its own — it would be the
+        /// start region's extent forever. OPTIONAL and NOT part of <see cref="Ready"/>: a zero-size
+        /// rect is "no region has reported", under which the clamp is inert.</para>
+        ///
+        /// <para>⚠️ Deliberately NOT a second place to author an extent. Anything that needs the
+        /// region's rectangle reads it from the <c>RegionDef</c> like everyone else; this is the
+        /// travel-aware relay for consumers that outlive the region scene, nothing more.</para>
+        /// FLAG lead-architect: new Core contract (sibling of the travel-aware region seam above).
+        /// </summary>
+        public static UnityEngine.Rect CurrentRegionBounds { get; set; }
+
+        /// <summary>
         /// The owner's tuning asset, wired once by <c>GameRoot</c>. OPTIONAL and deliberately NOT part
         /// of <see cref="Ready"/>: EditMode, a bare art scene and every test rig run without it, and
         /// each derived read below falls back to its own <c>Default</c>, so nothing breaks unwired.
@@ -113,6 +132,7 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
+            CurrentRegionBounds = default;
             Config = null;
         }
     }
