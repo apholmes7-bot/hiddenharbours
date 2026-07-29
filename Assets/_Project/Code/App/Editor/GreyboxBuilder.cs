@@ -74,6 +74,13 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
         const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
+        // (ADR 0027 num 7) The cove's BAKED SEABED — the bottom the water absorbs through the column.
+        // Committed beside the painted height maps; regenerate with the menu item below.
+        public const string CoveSeabedTex = "Assets/_Project/Data/Terrain/CoveSeabed_SeabedTex.png";
+        // 512 over the 80 x 50 m cove = 0.16 x 0.10 m per texel (about 5 x 3 screen px at PPU 32),
+        // 1.0 MB RGBA32 uncompressed. A cove is water the player sees CLOSE UP, which is why this is
+        // the finer end of the budget the ADR states (256 would be 0.26 MB and twice as blocky).
+        public const int CoveSeabedResolution = 512;
         const string Scenes     = "Assets/_Project/Scenes";
         const string SceneName  = "Greybox";
         const string ScenePath  = Scenes + "/" + SceneName + ".unity";
@@ -188,6 +195,40 @@ namespace HiddenHarbours.App.Editor
         /// every other object — the owner's painted Tilemaps + decor — untouched. Idempotent: running it twice
         /// yields the same logic tree.
         /// </summary>
+        /// <summary>
+        /// (ADR 0027 num 7) Re-bake the cove's seabed from its AUTHORED ELEVATION and commit it as
+        /// <c>CoveSeabed_SeabedTex.png</c>. Reproducible by anyone with the scene open, which is the
+        /// point: a committed texture nobody can regenerate is a texture nobody can correct.
+        ///
+        /// <para>The ELEVATION source, not the tilemap one, because the committed cove has NO ground
+        /// tilemap at all — a tilemap bake there is a fully transparent texture and absorption stays
+        /// invisible. Re-bake from the tilemap once the owner has painted a bottom.</para>
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Bake Cove Seabed", priority = 25)]
+        public static void BakeCoveSeabed()
+        {
+            // ⚠️ NOT from the open scene. The committed Greybox.unity carries no --LOGIC-- tree at
+            // all — the cove's terrain does not exist until a builder run writes it — so a
+            // scene-sourced bake would depend on whether somebody had run the builder locally, and
+            // would silently bake nothing when they had not. Build the SAME terrain the builder
+            // builds, from the same constants, in a throwaway object: reproducible by anyone, from a
+            // clean checkout, with no scene opened and therefore nothing to accidentally commit.
+            var probe = new GameObject("~CoveSeabedBakeTerrain") { hideFlags = HideFlags.HideAndDontSave };
+            try
+            {
+                var terrain = probe.AddComponent<RectTidalTerrain>();
+                ConfigureCoveTerrain(terrain);
+                var baked = HiddenHarbours.Art.Editor.SeabedBakeTool.BakeFromTerrain(
+                    terrain, CoveSeaCenter - CoveSeaSize * 0.5f, CoveSeaSize,
+                    CoveSeabedResolution, "CoveSeabed");
+                Debug.Log(baked != null
+                    ? "[GreyboxBuilder] Cove seabed re-baked from the builder's own terrain. Commit the " +
+                      "PNG with its .meta; Refresh Cove Logic re-wires it onto the Sea."
+                    : "[GreyboxBuilder] Cove seabed bake produced nothing — see the SeabedBakeTool error.");
+            }
+            finally { Object.DestroyImmediate(probe); }
+        }
+
         [MenuItem("Hidden Harbours/Refresh Cove Logic")]
         public static void RefreshLogic()
         {
@@ -371,6 +412,13 @@ namespace HiddenHarbours.App.Editor
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+                // (ADR 0027 num 7) This region's baked SEABED, over the SAME rect the height map uses.
+                // Wired PER SURFACE and never on Water.mat: the material is shared with St Peters, and a
+                // bake belongs to ONE region's world rect — assigning it on the material would stretch the
+                // cove's bottom across St Peters' coast. Null-safe: a missing bake pushes a transparent
+                // 1x1 and the sea composites no bottom (see WaterSurface.FeedSeabedTexture).
+                surface.ConfigureSeabedTexture(
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(CoveSeabedTex));
             }
             else
             {
@@ -468,6 +516,8 @@ namespace HiddenHarbours.App.Editor
             coveArrival.transform.position = CoveArrivalPos;        // just WEST of the dock head (arrive from the west)
             var coveAnchor = anchorGo.AddComponent<RegionAnchor>();
             coveAnchor.Configure(CoveRegionId, coveArrival.transform, dockZone.transform, disembarkPoint.transform);
+            // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
+            coveAnchor.ConfigureExtent(CoveSeaCenter, CoveSeaSize);
         }
 
         // =====================================================================================

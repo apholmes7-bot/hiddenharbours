@@ -83,17 +83,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// The canonical tree is exactly four components: Transform, SpriteRenderer, YSortSprite and
-        /// TreeTrunkAnchor. No Animator — the sway is the shader reading the shared sim wind, and an
-        /// Animator per tree would be deaf to it AND batch-break (rule 7). If one ever appears here,
-        /// that is the design being quietly reversed.
+        /// The canonical tree is exactly five components: Transform, SpriteRenderer, YSortSprite,
+        /// TreeTrunkAnchor and ReflectiveObject. No Animator — the sway is the shader reading the
+        /// shared sim wind, and an Animator per tree would be deaf to it AND batch-break (rule 7). If
+        /// one ever appears here, that is the design being quietly reversed.
+        ///
+        /// <para><b>ReflectiveObject joined the shape in the ADR 0027 activation pass</b>, and the list
+        /// is deliberately EXACT so that is a decision somebody makes rather than a drift somebody
+        /// notices later. It earns its place: a tree at the water's edge reflects in it, the TreeWind
+        /// material this species already uses is the one carrying the HHReflect pass, and the
+        /// component's own distance gate keeps an inland forest out of the reflective set — so every
+        /// tree may carry it while only the bankside ones cost anything.</para>
         /// </summary>
         [Test]
         public void EveryTreePrefab_IsTheCanonicalDecorShape_AndCarriesNoAnimator()
         {
             AcadianTreePrefabBuilder.BuildAll(Scratch);
 
-            var wanted = new[] { "SpriteRenderer", "Transform", "TreeTrunkAnchor", "YSortSprite" }
+            var wanted = new[] { "ReflectiveObject", "SpriteRenderer", "Transform", "TreeTrunkAnchor",
+                                 "YSortSprite" }
                          .OrderBy(n => n).ToArray();
             var problems = new List<string>();
 

@@ -25,13 +25,17 @@ namespace HiddenHarbours.Art
     /// trees equally), and the facet renderer learned it earlier with <c>_HullOrigin</c>. It is not
     /// an edge case; it is every sprite.</para>
     ///
-    /// <para><b>The pivot, by renderer kind.</b> A SpriteRenderer's transform position IS its
-    /// ground-contact pivot under the ADR 0026 convention (a tree's pivot is its trunk foot, a
-    /// building's is its base) — so the default is <c>transform.position</c>, with an optional
-    /// authored offset for art whose pivot is not on the contact point. For a mesh hull the axis is
-    /// the ADR 0023 calibrated iso-depth waterplane, which is where that hull actually meets the
-    /// sea; wire <see cref="_useWaterLevel"/> and the axis tracks the live tide instead of the
-    /// transform.</para>
+    /// <para><b>The pivot.</b> A renderer's transform position IS its ground-contact pivot under the
+    /// ADR 0026 convention (a tree's pivot is its trunk foot, a hull's is her waterline contact), so
+    /// the default is <c>transform.position</c> with an optional authored offset for art whose pivot is
+    /// not on the contact point — the wharf kit pivots TOP-LEFT and its breakwaters on the CREST, which
+    /// is exactly what the offset is for.</para>
+    ///
+    /// <para>⚠️ <b>There is deliberately no "use the water level" option.</b> One shipped in #326 and is
+    /// removed here, unused: it set the mirror axis (a world-Y POSITION) from the tide (an ELEVATION in
+    /// metres above datum). Those are different quantities — the same conflation the distance gate had —
+    /// and a floating hull needs no such option anyway, because her pivot already rides the swell with
+    /// her.</para>
     ///
     /// <para><b>The distance gate</b> is the bounded-set rule's second half: a reflector whose pivot
     /// sits more than <see cref="_maxHeightAboveWater"/> above the water level is not near enough to
@@ -50,11 +54,6 @@ namespace HiddenHarbours.Art
                  "about (ADR 0026). Leave at zero when the art's own pivot is already the contact " +
                  "point, which is the convention for the tree and building rigs.")]
         [SerializeField] private Vector2 _pivotOffset = Vector2.zero;
-
-        [Tooltip("Take the mirror axis from the LIVE water level rather than this transform — the " +
-                 "ADR 0023 calibrated waterplane, for anything that floats. A moored boat's " +
-                 "reflection then meets her hull at the waterline as the tide moves.")]
-        [SerializeField] private bool _useWaterLevel = false;
 
         [Tooltip("How far above the water level this reflector's pivot may sit and still reflect " +
                  "(m). The bounded-set rule's distance half: a clifftop tree does not reflect in " +
@@ -85,9 +84,7 @@ namespace HiddenHarbours.Art
             get
             {
                 Vector3 p = transform.position;
-                var pivot = new Vector2(p.x + _pivotOffset.x, p.y + _pivotOffset.y);
-                if (_useWaterLevel) pivot.y = WaterLevel();
-                return pivot;
+                return new Vector2(p.x + _pivotOffset.x, p.y + _pivotOffset.y);
             }
         }
 

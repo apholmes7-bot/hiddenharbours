@@ -434,6 +434,8 @@ namespace HiddenHarbours.App.Editor
             gwDisembark.transform.position = DisembarkPos;    // on the public wharf deck planks (west of the head)
             var gwAnchor = new GameObject("NineMileCreekRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.nine_mile_creek", gwArrival.transform, gwDock.transform, gwDisembark.transform);
+            // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
+            gwAnchor.ConfigureExtent(NineMileCreekSeaCenter, NineMileCreekSeaSize);
 
             // --- DEV BOOTSTRAP (owner iteration: press Play IN NINE MILE CREEK and walk/fish immediately) ------
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,

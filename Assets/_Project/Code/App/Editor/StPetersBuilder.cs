@@ -811,6 +811,10 @@ namespace HiddenHarbours.App.Editor
 
             var anchor = new GameObject("StPetersRegionAnchor").AddComponent<RegionAnchor>();
             anchor.Configure("region.st_peters", arrival.transform, dockZone.transform, disembark.transform);
+            // The camera's bounds clamp reads this on arrival (scene-sizing §6 item 4) — the SAME
+            // authored pair the sea, the backdrop, the height bake and the displaced mesh get above.
+            // At 760 × 520 m an unclamped camera sails clean off the painted map.
+            anchor.ConfigureExtent(RegionWorldCenter, RegionWorldSize);
 
             // --- SAVE & REGISTER ------------------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);

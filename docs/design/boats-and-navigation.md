@@ -767,6 +767,20 @@ against the low-HUD direction; the zoom feeds the same goal and the coming deck-
   the haul-tighten toggle, the deck-step ease seconds (0 = snap), and the anti-thrash hold seconds.
   Nothing is saved; the zoom is derived state, recomputed from the live control mode.
 
+**Owner ruling (2026-07-29): the helm framing law is "the WHOLE vessel visible, with margin."**
+Verbatim substance: *"cameras should zoom out on larger vessels so the whole vessels are visible; they
+seem fine up till lobster boat and then you're too zoomed in on larger vessels."* So: framing is correct
+up through the **Lobster Boat (~12 m)**; every larger hull (dragger 25 m → trawler 38 m → freighter
+60 m → tanker 110 m) is currently **over-zoomed** and must step the camera **OUT** until the full hull
+fits on screen with margin. Constraints that still bind: every stop stays a **PPU-integer pixel-perfect
+step** (never an arbitrary ortho size — the ratified discrete-zoom vision above); the framing derives
+from the hull's **`LengthMeters` → the nearest step that fits the whole vessel**, as per-hull **data,
+never a per-hull hard-code in C#** (rule 6); the on-foot/deck/haul steps of this section are unchanged —
+this rules the **helm** framing only. The big-fleet values are tunable data and may land ahead of M2:
+the dev key-cycle already sails those hulls, which is exactly how the defect was seen. *(This also
+serves canon §5.2's scale fantasy from the other side: constant PPU makes a tanker dwarf a dory —
+the camera has to step back far enough to let it.)*
+
 ### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
 
 Owner ask (2026-07-08): *"a few npc fishers… 3-5 boats sailing that can place their own buoys and haul
