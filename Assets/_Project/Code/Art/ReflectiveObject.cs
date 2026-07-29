@@ -91,10 +91,20 @@ namespace HiddenHarbours.Art
             }
         }
 
-        /// <summary>Whether this reflector currently passes the distance gate — i.e. whether it is
-        /// near enough to the sea to belong in the bounded reflective set.</summary>
+        /// <summary>
+        /// Whether this reflector currently passes the distance gate — i.e. whether the GROUND it
+        /// stands on is near enough to the sea for it to reflect in it.
+        ///
+        /// <para>⚠️ <b>It reads terrain ELEVATION, not world Y.</b> In a top-down game world Y is a
+        /// ground-plane coordinate (north), not height — the art fakes height by drawing UP the
+        /// screen. Gating on <c>transform.position.y</c> would exclude everything at the north end
+        /// of the map and admit every clifftop in the south, which is not a subtle error. Height
+        /// above water is <c>ITidalTerrain.ElevationAt(pivot) − waterLevel</c>, the same read every
+        /// other consumer of the one height map makes (§4). The mirror AXIS is a different quantity
+        /// and correctly stays world Y — see <see cref="MirrorPivot"/>.</para>
+        /// </summary>
         public bool WithinDistanceGate =>
-            transform.position.y - WaterLevel() <= Mathf.Max(_maxHeightAboveWater, 0f);
+            GroundElevation() - WaterLevel() <= Mathf.Max(_maxHeightAboveWater, 0f);
 
         /// <summary>Is this source pre-compensated light content (§11.6)?</summary>
         public bool NightLitSource => _nightLitSource;
@@ -204,6 +214,21 @@ namespace HiddenHarbours.Art
             if (env == null) return 0f;
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             return env.WaterLevelAt(now);
+        }
+
+        /// <summary>
+        /// The authored ground elevation under this reflector, in metres above chart datum — the
+        /// SAME one height map the water's depth read and the walkability check consume (§4, the
+        /// one-map/three-consumers rule), so "is it near the water" cannot drift from "is it wet".
+        /// Falls back to 0 with no terrain service (edit mode / a bare art scene), which puts a
+        /// bare-scene reflector level with the default water and inside the gate — the sane preview.
+        /// </summary>
+        private float GroundElevation()
+        {
+            var terrain = GameServices.TidalTerrain;
+            if (terrain == null) return 0f;
+            Vector3 p = transform.position;
+            return terrain.ElevationAt(new Vector2(p.x, p.y));
         }
 
         /// <summary>

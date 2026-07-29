@@ -93,21 +93,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void DistanceGate_KeepsAClifftopReflectorOutOfTheSet()
+        public void DistanceGate_ReadsTerrainELEVATION_NotWorldY()
         {
-            // The bounded-set rule's distance half. With no environment service the water level is
-            // 0 (the "unset" convention), so a reflector 40 m up is well past any sane gate and a
-            // reflector at the waterline is inside it.
-            SpriteRenderer high = MakeReflector(40f, out ReflectiveObject highReflector);
-            Assert.IsFalse(highReflector.WithinDistanceGate,
-                "a clifftop reflector does not reflect in the harbour below it.");
-            Assert.IsFalse(ReflectiveObject.IsInReflectionLayer(high),
-                "and it must not be admitted to the filtered list either.");
+            // ⚠️ The bug this test found, pinned. World Y in a top-down game is a GROUND-PLANE
+            // coordinate (north), not height — the art fakes height by drawing up the screen. A gate
+            // written against transform.position.y excludes everything at the north end of the map
+            // and admits every clifftop in the south. Height above water is
+            // ITidalTerrain.ElevationAt(pivot) − waterLevel, off the one height map (§4).
+            //
+            // With no terrain service both elevation and water level are 0 (the "unset" convention),
+            // so world Y must make NO difference at all — which is exactly what a world-Y gate could
+            // never satisfy.
+            SpriteRenderer far = MakeReflector(40f, out ReflectiveObject farNorth);
+            Assert.IsTrue(farNorth.WithinDistanceGate,
+                "40 m NORTH is not 40 m UP — the gate must not read world Y.");
+            Assert.IsTrue(ReflectiveObject.IsInReflectionLayer(far));
 
             Object.DestroyImmediate(_go);
-            SpriteRenderer low = MakeReflector(0.5f, out ReflectiveObject lowReflector);
-            Assert.IsTrue(lowReflector.WithinDistanceGate);
-            Assert.IsTrue(ReflectiveObject.IsInReflectionLayer(low));
+            SpriteRenderer near = MakeReflector(0.5f, out ReflectiveObject nearShore);
+            Assert.IsTrue(nearShore.WithinDistanceGate);
+            Assert.IsTrue(ReflectiveObject.IsInReflectionLayer(near));
         }
 
         [Test]

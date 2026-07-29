@@ -23,17 +23,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// is a no-op for ordinary premultiplied reflections at any coverage.</item>
     /// </list>
     ///
-    /// Sabotage MEASURED (2026-07-29, headless runs over this fixture, 12 tests — see the PR), three
-    /// arms, each targeted:
+    /// Sabotage MEASURED (2026-07-29, headless runs over this fixture and
+    /// <c>ReflectiveObjectTests</c> together, 19 tests — see the PR), three arms, each targeted, each
+    /// failing <b>3 of 19</b>:
     /// <list type="number">
     /// <item><b>mirror about the WRONG AXIS</b> (<c>MirrorY</c> → <c>−worldY</c>, i.e. the world
-    /// origin instead of the published pivot — precisely what the sprite-origin trap produces when a
-    /// shader reads <c>unity_ObjectToWorld</c>): see the class doc's measured table in the PR;</item>
+    /// origin instead of the published pivot — precisely what the sprite trap produces when a shader
+    /// reads <c>unity_ObjectToWorld</c>): <c>Mirror_UsesThePublishedPivot_NotTheWorldOrigin</c>
+    /// (−8.0 where 4.0 was expected — a reflection 12 m from where it belongs),
+    /// <c>Mirror_ReflectsBelowThePivotByTheHeightAboveIt</c> (−7.5 for −3.5) and
+    /// <c>Mirror_LeavesThePivotItselfFixed</c> (+3.5 for −3.5 — the axis is not even a fixed point
+    /// any more, so the reflection detaches from the waterline entirely);</item>
     /// <item><b>drop the world snap</b> (<c>WarpedSampleWorld</c> returns the un-Pixelized position):
-    /// the crawl arrives, and the fixture reports the sample delta it causes;</item>
-    /// <item><b>swap the split's min/max</b> in <c>SplitLitShare</c>: the lit share and the ordinary
-    /// share change places, which is a lit wheelhouse rendered as an ordinary surface AND an ordinary
-    /// hull rendered as compensated light.</item>
+    /// <c>WarpedSample_SnapsOntoTheWorldPixelGrid</c> (110.4736 of a cell where a whole 110 was
+    /// required), <c>WarpedSample_ZeroWarpIsTheFragmentsOwnCell</c> and
+    /// <c>WarpedSample_QuantizesToWholeWorldCells</c>. The crawl arm passes either way, and that is
+    /// the point of having both: an unsnapped lookup is smooth, and smooth is exactly what crawls;</item>
+    /// <item><b>swap the split's min/max</b> in <c>SplitLitShare</c>: all three split tests fail —
+    /// <c>Split_NightLitSource</c> puts 4.0 into the pre-grade share where 0.5 (the coverage) was the
+    /// cap, <c>Split_OrdinaryReflection</c> leaks an ordinary hull into the compensated bucket, and
+    /// <c>Split_IsLossless</c> catches a NEGATIVE post share (−1.8e-7). In pixels that is a lit
+    /// wheelhouse crushed by the night overlay AND an ordinary hull glowing through it.</item>
     /// </list>
     /// </summary>
     public class WaterReflectionWarpTests
@@ -123,20 +133,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // this rather than "it ignores the camera" — the lookup takes no camera argument, so
             // that would be a tautology about the signature, not a property of the law.
             var slope = new Vector2(0.31f, -0.17f);
+            const float warp = 0.35f;
             const float cell = 1f / Ppu;
-            var baseWorld = new Vector2(3.3123f, -1.2871f);
-            Vector2 home = WaterReflectionWarp.WarpedSampleWorld(baseWorld, slope, 0.35f, Ppu);
 
-            // …anywhere inside the same cell (the snapped position plus a sliver) reads it too.
+            // Pick a FRAGMENT whose warped position lands just inside a cell's low corner, so the
+            // sweep below stays within that one cell. (The warp offset is constant for a fixed
+            // slope, so "fragments in one cell" and "warped positions in one cell" are the same set
+            // — the offset just names which cell.)
+            Vector2 corner = WaterReflectionWarp.Pixelize(new Vector2(3.3123f, -1.2871f), Ppu);
+            Vector2 frag0 = corner - slope * warp + new Vector2(cell * 0.01f, cell * 0.01f);
+            Vector2 home = WaterReflectionWarp.WarpedSampleWorld(frag0, slope, warp, Ppu);
+            Assert.AreEqual(corner, home, "the fixture's own setup: frag0's warped position is `corner`.");
+
             for (int i = 1; i < 8; i++)
             {
-                var inside = home + new Vector2(cell * i / 8f, cell * i / 8f);
-                Assert.AreEqual(home, WaterReflectionWarp.WarpedSampleWorld(inside, slope, 0.35f, Ppu),
+                var inside = frag0 + new Vector2(cell * i / 10f, cell * i / 10f);
+                Assert.AreEqual(home, WaterReflectionWarp.WarpedSampleWorld(inside, slope, warp, Ppu),
                     "fragments within one world cell must share a reflection cell.");
             }
-            // …and a whole cell over is a different cell, by exactly one cell.
+            // …and a whole cell over is the next cell, by exactly one cell.
             Vector2 next = WaterReflectionWarp.WarpedSampleWorld(
-                home + new Vector2(cell, 0f), slope, 0.35f, Ppu);
+                frag0 + new Vector2(cell, 0f), slope, warp, Ppu);
             Assert.AreEqual(cell, next.x - home.x, 1e-5f);
         }
 

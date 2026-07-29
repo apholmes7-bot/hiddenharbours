@@ -226,7 +226,7 @@ amendment. Treat the boat-feel change as a **first-class outcome to be verified 
 
 ### Tier C — new render plumbing
 
-**(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.**
+**(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.** — **SHIPPED (P5, 2026-07-29).** Built as decided; `design/water-rendering.md` §26 is the live spec. Two things the decision text could not have known, both recorded there: the mirror axis had to be **published per renderer** (the SpriteRenderer identity-matrix trap — every sprite, not an edge case), and the pre/post-grade split for night-lit sources needs **no flag channel**, because premultiplied output makes "rgb exceeds coverage" mean exactly "compensated light content".
 
 ADR 0010's eighth addendum **rejected** reflections. That rejection is revisited here on a **new fact**, which is
 the only thing that justifies reopening an ADR. It read: a reflection pass "would need a second camera + render
@@ -350,7 +350,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 | **P2** ✅ | **#5 spectrum + grouping** ⬆ (was P6); ~~#4/#9 promoted into `_WaveFieldParams`~~ | B | **Pulled up, and SHIPPED** — PR A widened the field 4 → 8 trains (the ADR 0018 amendment); PR B added the JONSWAP weighting, the `cos^2s` fan and grouping behind `SpectrumBlend` (**default 0** — the passthrough discipline; the owner dials it in). ⚠️ **The #4/#9 "promotion" turned out to be an AUDIT RESULT, not code**: the field's trains already disperse (`WaveTrain.PhaseSpeed` *is* the relation) and already grow λ with wind, so applying the visual-octave laws there would double-apply them **and** move drawn geometry the interior-mask/clamp stack guards. Recorded in the ADR 0018 amendment so it is not re-litigated. **The owner's feel verdict is pending and gates P3.** |
 | **P3** | **#10 ripples** | A | After #5 deliberately — the ripple band should ride the *spectrum's* waves, not the octaves it replaces. |
 | **P4** ✅ | #7 absorption + `_SeabedTex` bake — **SHIPPED 2026-07-29** | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. Landed out of phase order (P2/P3 still open) precisely because it depends on nothing above — the independence the table already claimed. |
-| **P5** | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) | C | The owner's second explicit ask; depends on nothing above. |
+| **P5** ✅ | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) — **SHIPPED 2026-07-29** | C | The owner's second explicit ask; depends on nothing above — which is why it landed with P2/P3 still open. |
 | **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
 | **⏱ Parallel** | #6 advected foam buffer | C | ✅ **RULED 2026-07-29: DEFERRED to the fleet era** (see the item's decision block). The wake PRs it was racing landed and deliver the trail architecture; the buffer re-opens when multiple hulls sail at once. |
 
@@ -423,10 +423,21 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   further downstream by the world-grid pixelize and `_AbsorptionBands`. 256 → 0.26 MB, 1024 → 4.2 MB; the
   resolution is a field on the bake tool. Per region: one PNG next to the painted height map, the `_HeightTex`
   convention.
-- **Which objects get `HHReflect`?** Boats, wharf structures, trees and characters near the water. Needs a
-  distance-or-layer rule so the list stays bounded — an unbounded reflective set is the perf failure mode here.
-- **Reflection fidelity at PPU=32** — is a flat mirrored silhouette enough, or must reflections honour the interior
-  mask and hull self-occlusion? Cheapest correct answer wins; probe before building.
+- ~~**Which objects get `HHReflect`?**~~ **ANSWERED at P5: whichever ones the owner tags, bounded three ways.**
+  (a) **Layer** — the renderer must carry `ReflectionRegistry.RenderingLayer`, which only the
+  `ReflectiveObject` component sets. ⚠️ The shader TAG alone is not enough: the tree shader carries the
+  `HHReflect` pass, so tag-only filtering would sweep every tree in the scene into the list (the trap ADR
+  0023 hit with the flat Sea sprite). (b) **Distance** — the reflector's ground ELEVATION must be within its
+  own `maxHeightAboveWater` of the water level, so a clifftop tree does not reflect in the harbour below it.
+  (c) **Frustum** — Unity's culling drops off-screen reflectors for free. **Worst case 64 renderers**
+  (`MaxReflectors`), one filtered list, one `ARGBHalf` target; over the cap it logs once and still draws,
+  because a silent truncation reads as "everything is covered" when it is not.
+- ~~**Reflection fidelity at PPU=32**~~ **PROBED at P5, and the CHEAP answer wins: a flat mirrored silhouette is
+  enough.** `ObjectReflectionProbeTests` renders it end-to-end on the real water material through the real
+  feature pass at PPU 32: 256 source pixels above the waterline, **255 reflected below**, tapering away from
+  the waterline (a mirror, not a translated copy) and not bleeding into open water. **No interior mask and no
+  self-occlusion were built, and none is needed at this pixel scale.** ⚠️ CI cannot adjudicate it (no graphics
+  device — a render there crashes the editor), so the fixture gates on a device and skips loudly.
 - ~~**σ authoring**~~ **ANSWERED at P4: by mood, not by region, and not by Def.** σ is factored as **one**
   mood-eased turbidity scalar (`_Turbidity`, 1/m — in `WaterSurface.MoodFloatNames`) × a fixed per-channel ratio
   (`_AbsorptionRatio`, authored art). So ADR 0017 eases it per weather from the eight preset materials and

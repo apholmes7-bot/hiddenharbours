@@ -2953,3 +2953,165 @@ None of the six is mood-eased (no `MoodFloatNames` entry — no double-drive); w
 `_BandScaleResponse` / `_DispersionScale` should be is an open question for the owner. The see/feel
 gap this opens (drawn octaves speed-scaled, the ride unchanged) is accepted and explicit for P1 —
 the promotion into the field is P2, gated on an ADR 0018 amendment.
+
+## 26. Object reflections — a filtered renderer list into an RT, wave-warped (ADR 0027 #8)
+
+Boats, wharf structures and bankside trees **reflect in the water**. This is the project's first render
+target in the water path, and it reopens a settled rejection — so both halves are recorded here.
+
+### 26.1 Why ADR 0010 addendum 8 was reopened
+
+That addendum rejected reflections on a **fact about the codebase**, not a matter of taste: a reflection
+pass "would need a second camera + render target wired into the 2D URP renderer (**unverifiable here**)
+and a second draw of the scene."
+
+Both clauses stopped being true. **ADR 0022 phase 3 shipped `IsoFacetHullFeature`** — a working
+RenderGraph injection into the 2D renderer, registered in `Renderer2D.asset`, with per-camera
+`RTHandle`s, LightMode-filtered renderer lists and an explicit zero-cost-when-idle contract, under test.
+The wiring is in the repo. And the cost is not a second scene draw: it is **one filtered list of
+near-water objects**. A new fact is the only thing that justifies reopening an ADR; this is one.
+
+What is **still** rejected, unchanged: a planar reflection camera re-drawing the scene (the cost verdict
+was right), screen-space reflections (the 2D renderer has no depth/normals to march, and a boat's
+reflection would pop at the screen edge), and per-object mirrored duplicates (no single place to warp by
+the wave field, and it doubles renderer count and sorting complexity).
+
+### 26.2 The pass — a fourth renderer list
+
+`HHReflect` joins the existing recording in `IsoFacetHullFeature`, beside the facet MRT, the deck list
+and the displaced water:
+
+- **One `ARGBHalf` target** per camera (`_HHReflectTex`), at camera render resolution, **point**-filtered.
+  Half float for the same reason `_HHWaterScreenTex` is: a night-lit source writes its colour
+  **pre-compensated** for the day/night multiply (far above 1), and an 8-bit target would clamp it.
+- **No depth buffer, no interior mask, no self-occlusion** — the flat mirrored silhouette §26.6 found
+  sufficient. Premultiplied blending (`One OneMinusSrcAlpha`) inside the pass means overlapping
+  reflectors composite in one target with no sorting contract.
+- **Zero cost when idle**, and that is also this feature's *passthrough proof*: with no live
+  `ReflectiveObject` the registry count is 0, `AddRenderPasses` enqueues nothing, and there is no
+  "reflections off" branch to keep byte-identical — only an absent pass.
+
+### 26.3 The mirror axis is the ground-contact pivot — and it must be PUBLISHED
+
+A reflection is the source reflected in the plane it stands on. ADR 0026 already settled that a rig's
+pivot **is** its ground contact, so the axis needs no new convention: `y' = 2·pivotY − y`, in the vertex
+stage. For a mesh hull the same formula runs against the ADR 0023 calibrated iso-depth waterplane.
+
+> 🔴 **`unity_ObjectToWorld` is IDENTITY for a SpriteRenderer.** Unity submits sprite meshes with their
+> vertices **already in world space**, so the object origin reads `(0,0)` for every sprite in the scene.
+> A shader that mirrors about "the object origin" reflects the whole scene about the **world origin** —
+> not a subtle error, a total one. This repo measured the same trap in the tree lane on 2026-07-29 (a
+> 3 m-range lamp lit three trees equally), and the facet renderer learned it earlier with `_HullOrigin`.
+> **It is not an edge case; it is every sprite.**
+
+So `ReflectiveObject` publishes the pivot per renderer into the MaterialPropertyBlock as
+`_HHReflectOrigin` (`xy` = the pivot, `w` = 1 meaning "published"). With `w = 0` the HLSL **refuses to
+mirror** and collapses the geometry to a clipped point: a missing reflection is a bug you go and find, a
+reflection pinned to the world origin is a bug that looks like a haunted sea.
+
+> ⚠️ **World Y is the mirror axis but NOT "height".** In a top-down game world Y is a ground-plane
+> coordinate (north); the art fakes height by drawing up the screen, which is exactly why mirroring
+> about the pivot's world Y is the right *visual* mirror. The distance gate below is a different
+> quantity and reads terrain **elevation** off the one height map (§4). Conflating them cost a red test
+> in this PR and would have excluded every reflector at the north end of the map.
+
+### 26.4 The lookup — warped by the wave field, snapped in WORLD space
+
+The water shader samples `_HHReflectTex` with the lookup displaced by the **same `WaveFieldSample()`
+the hull rides** (ADR 0018, consumed as a black box — never forked), so a reflection wobbles on the very
+crests the boat is riding. That is the payoff, it needs **no new uniform**, and it is the reason this
+beats per-object mirrored duplicates: **one place to do the warp.** The displacement widens as
+`ReflectionSharpness()` falls, so a breaking sea scatters the mirror.
+
+> ⚠️ **The snap is in WORLD space, never screen/RT space.** A render target is screen-space by nature,
+> and with `CameraFollow` panning continuously behind the boat a lookup quantized on the RT's own grid
+> **crawls** on every pan — the one artefact that would make this read as a screen filter instead of a
+> reflection (ADR 0027's Pixelation section names this exact case). Snapping the *sample position* on the
+> world PPU grid means a reflection cell belongs to a place on the water and stays there. Measured:
+> across a sub-pixel camera pan the screen-snapped lookup travels ~0.97 px and changes cell repeatedly;
+> the world-snapped one does not move at all.
+
+The read uses `Load()` at integer pixel coordinates rather than a uv sample: the target is exactly
+camera-render-resolution so the map is 1:1, and `Load` shares `SV_POSITION`'s coordinate convention —
+which removes the render-target Y-flip ambiguity a uv fetch would smuggle in.
+
+### 26.5 Composition — over the sky, under the foam, pre-grade except the lit share
+
+Placed **after** the §11 sky mirror and sky content (a boat reads on top of reflected cloud — hence a
+premultiplied **over**-operator rather than an add) and **before** the foam (whitecaps read on top of
+the boat). **Pre-grade**, so it dims with the night like the rest of the sea.
+
+**Except night-lit sources.** A lit wheelhouse reflected in black water is *light content*; left
+pre-grade the day/night multiply crushes it to ~3% and the boat appears to douse her lamps in her own
+reflection. Those ride the §11.6 post-grade compensated bucket, exactly as the moon glitter does.
+
+The split needs **no flag channel, no second target and no extra uniform**. The pass writes
+*premultiplied* colour, so an ordinary reflection's rgb can never exceed its coverage; a night-lit
+source writes its colour already divided by the day/night tint, which at night puts it far **above**
+coverage. The excess over coverage *is* the light content:
+
+```hlsl
+float3 ordinary = min(refl.rgb, cov.xxx);          // pre-grade
+float3 lit      = max(refl.rgb - cov.xxx, 0.0);    // post-grade, compensated
+```
+
+By day the compensation factor is ≈ 1, so a lit source stays under coverage and the whole sample lands
+pre-grade — daylight unchanged, which is correct rather than a special case. Twin:
+`WaterReflectionWarp.SplitLitShare`.
+
+### 26.6 The fidelity probe — a flat mirrored silhouette IS enough at PPU 32
+
+ADR 0027 left this open: *is a flat mirrored silhouette enough, or must reflections honour the interior
+mask and hull self-occlusion? Cheapest correct answer wins; probe before building.*
+
+**Probed, and the cheap answer wins.** `ObjectReflectionProbeTests` renders the cheapest version
+end-to-end — a sea quad on the real water material, one reflective sprite, the real feature pass, at
+PPU 32 through `Camera.Render()` on the project's own 2D renderer — and it reads: 256 source pixels
+above the waterline, **255 reflected below**, tapering *away* from the waterline (so it is a mirror, not
+a translated copy), and not bleeding into open water. No interior mask and no self-occlusion were
+built, and none is needed at this pixel scale.
+
+> The probe's own first draft had **no water in it** and measured 0 reflected pixels — correctly.
+> `_HHReflectTex` is a private target, not the camera's colour buffer: without a sea to composite it,
+> the pass draws into a texture nobody reads. Worth knowing about the architecture.
+
+### 26.7 Bounding the reflective set (the ADR's open question)
+
+An unbounded reflective set is this item's perf failure mode. The rule, all three parts data (rule 6):
+
+| Half | Rule |
+|---|---|
+| **Layer** | The renderer must carry `ReflectionRegistry.RenderingLayer` (`1 << 29`), which only `ReflectiveObject` sets. ⚠️ The `HHReflect` **tag alone is not enough** — the tree shader carries that pass, so tag-only filtering would sweep every tree in the scene into the list. Same trap ADR 0023 hit with the flat Sea sprite sharing the water shader. |
+| **Distance** | The reflector's **ground elevation** must be within its own `maxHeightAboveWater` (default 3 m) of the water level. A clifftop tree does not reflect in the harbour below it. Throttled, never per frame. |
+| **Frustum** | Unity's own culling drops off-screen reflectors for free — the list is built from `cullResults` like every other. |
+
+**Worst case: 64 renderers** (`ReflectionRegistry.MaxReflectors`), one extra filtered renderer list and
+one `ARGBHalf` target at camera resolution. Exceeding the cap **logs once** and still draws — a silent
+truncation reads as "everything is covered" when it is not.
+
+### 26.8 Tunables (rule 6; all default to today's look)
+
+| Property | Default | Effect |
+|---|---|---|
+| `_ObjectReflectStrength` | `0` (**OFF**) | Master; 0 skips the whole block. Multiplies the §11 sea-state curve. |
+| `_ObjectReflectWarp` | `0.35` m | How far a unit of wave slope displaces the lookup. 0 = a flat mirror. |
+| `_ObjectReflectSink` | `0.35` | How much the reflection fades as the water deepens under it. 0 = no fade. |
+| `ReflectiveObject.pivotOffset` | `(0,0)` | Offset to the ground-contact pivot when the art's own pivot is not the contact point. |
+| `ReflectiveObject.useWaterLevel` | `false` | Take the axis from the live tide (the ADR 0023 waterplane) — for anything that floats. |
+| `ReflectiveObject.maxHeightAboveWater` | `3` m | The distance gate. |
+| `ReflectiveObject.nightLitSource` | `false` | Route this source's reflection to the post-grade compensated bucket (§26.5). |
+
+### 26.9 Determinism, guards + what ships enabled
+
+`col.rgb` and one render target only — never `depth` / `clip()` / `_WaterLevel` / the height read /
+`_WaveFieldParams` / anything the hulls ride (P1 integrity, rule 5). Nothing enters the save.
+Twins: `WaterReflectionWarp` (mirror, world-snapped warp, and the pre/post split) with measured
+sabotages; `ReflectiveObjectTests` pins the published-pivot contract against the **renderer**, because
+"the pivot reached the block" is exactly what silently does not happen when a shader tries to derive it.
+The shipped `Water.mat` variant is force-compiled by `WaterShaderCompileGuardTests` and the tree shader
+by `TreeWindShaderCompileGuardTests`, so an HLSL slip in either `HHReflect` pass fails CI red rather
+than magenta-in-build.
+
+**Nothing ships reflective.** The `HHReflect` pass exists in `HiddenHarboursTreeWind`; no prefab carries
+a `ReflectiveObject`, so no pass is enqueued and `_ObjectReflectStrength` is 0. Opting a boat, a wharf
+or a treeline in is: add the component, then raise the strength.
