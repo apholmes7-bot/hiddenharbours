@@ -619,6 +619,72 @@ autotiler is the next step and belongs with the world-scene work, not with the i
 
 ---
 
+## Batch — Shoreline ISO **v8** (`ShoreIso2`), two styles (owner drop 2026-07-28)
+
+The same coast, re-cut, and shipped **twice**. v7 above is left in place and untouched, so nothing
+already painted against it breaks. Same 32×32 cell, same 40°-from-the-south camera, and the **same
+zero-water contract** — verified rather than assumed: all ten delivered sheets were scanned at import
+and carry **zero blue-dominant pixels**.
+
+### Two styles, one geometry
+
+`nat` (naturalist — 8/7/8-step ramps, Bayer dither in the band-transition zone) and `gfx` (graphic —
+6/5/6-step ramps, hard edges, unified keyline) are the kit's A/B. Geometry, grid, piece names and
+pivots are **identical**; only the shading law differs, so a map authored against one drops straight
+onto the other. `ShorelineIso2Catalog.ContractsAgreeOnGeometry` keeps that true if either style is
+ever re-baked alone.
+
+### Sheets — `Tilesets/ShorelineIso2/{nat,gfx}/`
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Ground.png` | 128×192 | **4** cols × 6 rows of **32×32** | 24 | grass · marram · sand · ripple · shingle · shelf |
+| `Fringe.png` | 384×96 | 12 × 3 | 36 | grass · marram · sand |
+| `Cliff.png` | 320×96 | 10 × 3 | 30 | cap · mid · toe |
+| `Dune.png` | 288×64 | 9 × **2** | 18 | cap · toe |
+| `Contact.png` | 160×32 | 5 × 1 | 5 | (single row: `n · ne · e · nw · w`) |
+
+**⚠ Three grids changed from v7, so a v7 index is NOT a v8 index** — which is why v8 has its own
+`ShorelineIso2Catalog` rather than more members on `ShorelineIsoCatalog`:
+
+- **Ground 3 → 4 columns.** Still adjacent world tiles, not art variants.
+- **Dune 1 → 2 rows.** `cap` alone is a 1 m bank; `cap + toe` is 2 m.
+- **`Contact.png` is new** — the ambient-occlusion overlays v7 had none of. Stamp one on the GROUND
+  tile a landform stands next to and the landform seats instead of floating. All five are of the
+  NORTHERN half: at this camera a landform's south side is its own lit face.
+
+### ⚠ `Cliff.png` is 10 columns but **not** 30 tiles
+
+Column 9 is the cave, and a sea cave is carved at the waterline — it is filled on the **toe row
+only**. Cells **9 and 19 are fully transparent padding** (measured: 100% alpha-zero in both styles,
+pinned by `CliffPaddingCells_AreActuallyEmpty`). Exactly the road blob-47 trap one section up, where
+the 48th cell is spare. The slice still cuts the full rectangle — a sheet's slice count must match its
+grid — but `ShorelineIso2Catalog.CliffIndex` **throws** on `cap`/`mid` + cave rather than handing back
+an index that resolves to nothing.
+
+### Import settings — the soft alpha is load-bearing
+
+`Fringe` and `Contact` carry **semi-transparent** pixels (measured alpha 92–235) for the soil
+under-shadow and the AO overlays; every other sheet is binary. That makes `Compression = None` a
+correctness setting, not a tidiness one — block compression quantises exactly that gradient and the
+sheet still looks broadly right. This kit is all colour and ships **no** mask/normal/ID channel, so
+sRGB stays **ON** (the inverse of the tree kit's data-channel trap). Pinned by
+`EverySheet_CarriesTheLockedImportSettings`.
+
+### Slicing + naming
+
+Ten `SpriteSheetSlicer` manifest entries (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX
+Sheets*), **Center pivot**, sliced on import — the sheets ship ready to use. Slice names state
+GEOMETRY (`Cliff_7` = the 8th cell, row-major from the top-left) and the meaning is resolved in
+`ShorelineIso2Catalog` against each style's own `ShorelineIso.json`. The compass letters remain the
+kit's **claim, not a measurement** — same standing warning as v7.
+
+**WIRE-IN (NOT done here — import + slice only):** nothing places these. No `Tile` asset, rule-tile,
+palette entry, paint tool, prefab or scene references them, and v7 is not retired (that is a separate,
+owner-approved change).
+
+---
+
 ## Batch — Wharf / dock tile kit (owner drop 2026-07-23)
 
 The working waterfront's **deck**: near-plan 32×32 tiles that sit in the ground plane like `Grass.png`,

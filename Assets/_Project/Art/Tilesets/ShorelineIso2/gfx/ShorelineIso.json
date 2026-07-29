@@ -1,0 +1,138 @@
+{
+  "kit": "ShorelineIso v8",
+  "style": "gfx",
+  "projection": {
+    "grid": "square",
+    "tile": 32,
+    "ppm": 32,
+    "camera": "3/4 from S at 40 deg (ADR 0006/0022 boat bake)",
+    "key": "upper-left; W facets lit, E shaded, S base",
+    "dither": "none — hard bands",
+    "noise": "pure function of global pixel coords; tiles are seamless and never repeat"
+  },
+  "water": {
+    "contract": "ADR 0010/0012/0023 — the shader owns ALL water",
+    "baked": "none",
+    "note": "no waterline, foam, swash or shallows pixels anywhere in this kit"
+  },
+  "sheets": {
+    "Ground.png": {
+      "cell": [
+        32,
+        32
+      ],
+      "rows": [
+        "grass",
+        "marram",
+        "sand",
+        "ripple",
+        "shingle",
+        "shelf"
+      ],
+      "cols": "gx 0..3 (adjacent world tiles — seams invisible)",
+      "opaque": true
+    },
+    "Fringe.png": {
+      "cell": [
+        32,
+        32
+      ],
+      "rows": [
+        "grass",
+        "marram",
+        "sand"
+      ],
+      "cols": [
+        "edN",
+        "edE",
+        "edS",
+        "edW",
+        "coNE",
+        "coSE",
+        "coSW",
+        "coNW",
+        "inNE",
+        "inSE",
+        "inSW",
+        "inNW"
+      ],
+      "alpha": true,
+      "use": "stamp over the LOWER material's ground tile; the higher material laps onto it"
+    },
+    "Cliff.png": {
+      "cell": [
+        32,
+        32
+      ],
+      "rows": [
+        "cap",
+        "mid",
+        "toe"
+      ],
+      "cols": [
+        "faceS",
+        "cornSW",
+        "cornSE",
+        "sideW",
+        "sideE",
+        "innSW",
+        "innSE",
+        "diagSW",
+        "diagSE",
+        "toe+cave"
+      ],
+      "stack": "cap + mid x N + toe = any height; strata key on global row Y so bands align"
+    },
+    "Dune.png": {
+      "cell": [
+        32,
+        32
+      ],
+      "rows": [
+        "cap",
+        "toe"
+      ],
+      "cols": [
+        "faceS",
+        "cornSW",
+        "cornSE",
+        "sideW",
+        "sideE",
+        "innSW",
+        "innSE",
+        "diagSW",
+        "diagSE"
+      ],
+      "note": "cap + toe = a 2 m bank; cap alone = 1 m"
+    },
+    "Contact.png": {
+      "cell": [
+        32,
+        32
+      ],
+      "cols": [
+        "n",
+        "ne",
+        "e",
+        "nw",
+        "w"
+      ],
+      "alpha": true,
+      "use": "stamp on the GROUND tile a landform stands next to — bakes the ambient occlusion v7 had none of"
+    }
+  },
+  "rockProps": {
+    "owner": "Art/rockIsoRig.js (RockIso)",
+    "note": "sea stacks, skerries, outcrops, erratics, tide-pool ledges and cobble scatters are Rock Iso volumes with anchors. ShoreIso2 shares its red-sandstone ramp verbatim.",
+    "species": [
+      "Erratic",
+      "Outcrop",
+      "PoolLedge",
+      "Skerry",
+      "Cloven",
+      "Cobble"
+    ]
+  },
+  "api": "globalThis.ShoreIso2 — ground(mat,{gx,gy,seed,style}) · fringe(mat,piece,{...}) · cliff(piece,{band,gy,gx,seed,feature,style}) · column(piece,rows,{...}) · dune(piece,{band,...}) · contact(piece,{style})",
+  "rig": "Art/shoreIsoKitRig2.js"
+}

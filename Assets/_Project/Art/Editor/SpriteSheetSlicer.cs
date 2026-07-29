@@ -313,6 +313,47 @@ namespace HiddenHarbours.Art.Editor
             // DIFFERENT sizes with per-item base-centre pivots, so it has no uniform grid to slice.
             // ShorelineIsoSpriteSlicer reads its rects and pivots from the ShoreIsoSprites.json sidecar.
 
+            // ---- Shoreline ISO tile kit (v8 — `ShoreIso2`): the same coast, re-cut, and shipped TWICE.
+            //      Same 32×32 cell, same 40°-from-the-south camera, same zero-water contract as v7 above;
+            //      v7 is left in place and untouched so nothing already painted breaks.
+            //
+            // ⚠ TWO STYLES, ONE GEOMETRY. `nat` (8/7/8-step ramps, Bayer dither in the band-transition
+            //   zone) and `gfx` (6/5/6-step ramps, hard edges, unified keyline) are the kit's A/B. The
+            //   drop is explicit that geometry, grid, piece names and pivots are IDENTICAL and only the
+            //   shading law differs — a map authored against one drops straight onto the other. So these
+            //   ten specs are two copies of five, and ShorelineIso2Catalog.ContractsAgreeOnGeometry keeps
+            //   the pair honest if either style is ever re-baked alone.
+            //
+            // ⚠ THREE GRIDS CHANGED FROM v7, AND A v7 INDEX IS NOT A v8 INDEX:
+            //     Ground   3 → 4 columns (a fourth adjacent world tile, not a fourth art variant)
+            //     Dune     1 → 2 rows (`cap` alone = a 1 m bank; `cap + toe` = 2 m)
+            //     Contact  entirely new — the ambient-occlusion overlays v7 had none of
+            //   That is why v8 has its own catalog rather than more members on ShorelineIsoCatalog.
+            //
+            // ⚠ Cliff.png IS 10 COLUMNS BUT NOT 30 TILES. Column 9 is the cave, and a sea cave is carved
+            //   at the waterline: it is filled on the TOE row only, so cells 9 and 19 are fully
+            //   transparent PADDING (measured on import — 100% alpha-zero in both styles). Exactly the
+            //   road blob-47 trap, where the 48th cell is spare. The slice still cuts the full rectangle
+            //   — a sheet's slice count must match its grid — but ShorelineIso2Catalog.CliffIndex refuses
+            //   cap/mid + cave rather than handing back an index that resolves to nothing.
+            //
+            // Cell 32×32, Center pivot (a tilemap places by cell, so centre is the only pivot that keeps
+            // a stacked cliff band on the cell it was painted into). Slice names stay GEOMETRIC
+            // (`<Stem>_<index>`, row-major from top-left) — same reason as v7: compass-ish labels have
+            // shipped mislabelled here five times, so a slice name states which cell, never which way it
+            // looks.
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Ground.png",   4, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Fringe.png",  12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Cliff.png",   10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Dune.png",     9, 2, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Contact.png",  5, 1, 32, 32, SpriteAlignment.Center, Centre),
+
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Ground.png",   4, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Fringe.png",  12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Cliff.png",   10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Dune.png",     9, 2, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Contact.png",  5, 1, 32, 32, SpriteAlignment.Center, Centre),
+
             // ---- Road / path / sidewalk kit: flat 32×32 NEAR-PLAN ground tiles that sit IN the ground
             //      plane exactly like Grass.png/Dirt.png, so they register with the iso houses, the wharf
             //      deck and the shoreline flats. One pre-baked reference atlas per surface at `new` wear
