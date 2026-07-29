@@ -20,11 +20,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// <item>a golden value pins the whole Jacobian arithmetic to 1e-5.</item>
     /// </list>
     ///
-    /// Sabotage MEASURED (2026-07-28, headless run — see the PR): flipping the pinch sign in the
-    /// diagonal (1 − q·h) turns every crest into expansion — SABOTAGE_DIAG_PLACEHOLDER.
-    /// Dropping the cross term (jxy = 0) — SABOTAGE_CROSS_PLACEHOLDER. Targeted failures, not a
-    /// collapse. (A sign flip on h_xy itself is inert BY CONSTRUCTION — it enters squared — which
-    /// is why the sabotage arms target the q sign and the term's presence instead.)
+    /// Sabotage MEASURED (2026-07-28, headless runs — see the PR): flipping the pinch sign in the
+    /// diagonals (1 − q·h) turns every crest into expansion — 5 of 7 fail (the reference crest's
+    /// convergence 0.740 → 0.000; golden value, determinant shape, cross-term and fold pins all go
+    /// red) while the two sign-independent tests stay green. Dropping the cross term (J = jxx·jyy)
+    /// fails exactly 2 of 7 — the cross-term pin (expected +0.0400, got 0.0) and the golden value
+    /// (0.52 vs 0.53). Targeted failures, not a collapse. (A sign flip on h_xy itself is inert BY
+    /// CONSTRUCTION — it enters squared — which is why the sabotage arms target the q sign and the
+    /// term's presence instead.)
     /// </summary>
     public class WaterFoamTests
     {
@@ -120,8 +123,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.GreaterOrEqual(v, 0f);
                 Assert.LessOrEqual(v, 1f);
             }
-            Assert.AreEqual(1f, WaterFoam.Convergence(-5f, -5f, 0f, 10f),
-                "a folding surface (J far below 0) saturates the gate at 1.");
+            // A FOLDING surface is J dipping BELOW 0 (one axis inverting): jxx = −0.5, jyy = 0.4
+            // ⇒ J = −0.2 ⇒ the gate saturates at 1. (With BOTH axes inverted the determinant goes
+            // positive again — the −5/−5 case above — and the gate reads 0: the surface has folded
+            // through itself, beyond the pinch model's validity, and the clamp keeps it sane.)
+            Assert.AreEqual(1f, WaterFoam.Convergence(-0.15f, -0.06f, 0f, 10f),
+                "a folding surface (J below 0) saturates the gate at 1.");
         }
     }
 }
