@@ -315,14 +315,17 @@ it changes the *amount of it on screen at once*. Two consequences worth naming:
 
 Ordered, with the blocker first. None of it is done in this document.
 
-1. **Un-hard-code the terrain paint tool.** `TerrainPaintTool` fixes `res = 192` and
-   `worldSize = (160,120)`. It needs to take world size and a **pixels-per-metre** setting instead, and
-   `StPetersSeabed` needs re-baking at the new extent. Recommend **2 px/m for St Peters** (crisp enough
-   for coves and cave mouths; 1520 × 1040 R8 ≈ 1.6 MB) and **1 px/m offshore**. *(`tools-editor`)*
-2. **Sea plane / region extent becomes data, not a literal.** All three builders hard-code
-   `localScale = (160, 120)`. Region extent belongs on `RegionDef` next to the tide fields, so a
-   region's size is authored once and read by the sea, the terrain and the camera bounds alike.
-   *(`world-content` + `lead-architect` for the Core seam)*
+1. ~~**Un-hard-code the terrain paint tool.**~~ **✅ DONE 2026-07-29.** The tool holds no size of its
+   own: it takes the extent from a `RegionDef` and derives the texel grid as **size × pixels-per-metre**
+   on each axis. **2 px/m** is the shipped inshore figure; **1 px/m** offshore. *(Note the old
+   `res = 192` was SQUARE over a 160 × 120 m rect — 1.2 px/m across and 1.6 px/m up, two densities
+   nobody chose. A derived grid is isotropic by construction.)* `StPetersSeabed` still needs re-baking
+   when the extent actually grows — the tool will now do it at the right shape.
+2. ~~**Sea plane / region extent becomes data, not a literal.**~~ **✅ DONE 2026-07-29.**
+   `RegionDef.WorldCenter` / `WorldSizeMeters` / `SeabedPixelsPerMetre` sit next to the tide fields;
+   `StPetersBuilder` authors them once and publishes them, and the tiled sea sprite, the flat backdrop,
+   the shader's height bake and the displaced mesh all read them. Six copies of `(160, 120)` became
+   one. **The camera bounds (item 4) can now read the same number.**
 3. **Close the open shoreline defects first** (§5.3, note 1).
 4. **Camera bounds.** There is no bounds rig yet (`CameraFollow`'s comment says so). At 160 m nobody
    noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
