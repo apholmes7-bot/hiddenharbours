@@ -196,6 +196,7 @@ namespace HiddenHarbours.App.Editor
             var codFish      = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset");
             var haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
             var mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
+            var pollockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset");
 
             // --- SCENE ----------------------------------------------------------------------------------
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -307,6 +308,7 @@ namespace HiddenHarbours.App.Editor
             codFish      = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset");
             haddockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Haddock.asset");
             mackerelFish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Mackerel.asset");
+            pollockFish  = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset");
 
             // THE PILOTABLE FLEET (the owner's ask): every boat he can put himself in from the helm, in
             // cycle order — the iso dory he starts in, the 8-direction fishing boat, the punt on each of her
@@ -414,7 +416,7 @@ namespace HiddenHarbours.App.Editor
                 // The clam (the flats' dig) + the rod-catchable trio: the persistent controller carries
                 // ALL rod species; each cast filters by the species' RegionIds against the travel-aware
                 // current region, so the same pool serves St Peters' shore, the cove and Greywick.
-                RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish }
+                RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish, pollockFish }
                                        .Where(f => f != null).ToArray(),
                 Square           = waterSprite,
                 CameraBackground = new Color(0.07f, 0.14f, 0.18f),   // St Peters' cool dawn water

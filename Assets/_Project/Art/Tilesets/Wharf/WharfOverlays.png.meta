@@ -1,0 +1,494 @@
+fileFormatVersion: 2
+guid: 1296edfe2a78aeb4182e57d0a78e122c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2754714358136369157
+    second: WharfOverlays_0
+  - first:
+      213: 6769042032406898259
+    second: WharfOverlays_1
+  - first:
+      213: -1344377623322092761
+    second: WharfOverlays_2
+  - first:
+      213: 691821841782344988
+    second: WharfOverlays_3
+  - first:
+      213: 4087531384873528580
+    second: WharfOverlays_4
+  - first:
+      213: 2354302666549183373
+    second: WharfOverlays_5
+  - first:
+      213: -8041778607286097997
+    second: WharfOverlays_6
+  - first:
+      213: 8761022005165865488
+    second: WharfOverlays_7
+  - first:
+      213: 717767917067940548
+    second: WharfOverlays_8
+  - first:
+      213: -5257735407288741570
+    second: WharfOverlays_9
+  - first:
+      213: 8273938922411773786
+    second: WharfOverlays_10
+  - first:
+      213: 146414095371991145
+    second: WharfOverlays_11
+  - first:
+      213: -918611188465585840
+    second: WharfOverlays_12
+  - first:
+      213: 881482247325107316
+    second: WharfOverlays_13
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WharfOverlays_rail_wood_h
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 27
+        width: 32
+        height: 14
+      alignment: 9
+      pivot: {x: 0, y: 0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e163d88227d820b45aa879f4b7666806
+      internalID: -1693822410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_rail_wood_v
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 9
+        width: 6
+        height: 32
+      alignment: 9
+      pivot: {x: 0.16666667, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0813eef52ba3f6049bead42fa7854ae8
+      internalID: 1806115693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_rail_wood_d
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 21
+        width: 34
+        height: 20
+      alignment: 9
+      pivot: {x: 0, y: 0.9}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 954526af129a3534aa0b151a0311e715
+      internalID: -1948251050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_rail_pipe_h
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 27
+        width: 32
+        height: 14
+      alignment: 9
+      pivot: {x: 0, y: 0.071428575}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66a5e2999fca30746bd67a6e09408e35
+      internalID: -478765527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_rail_pipe_v
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 9
+        width: 6
+        height: 32
+      alignment: 9
+      pivot: {x: 0.16666667, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eef5785305db7894cb5d5792badaf196
+      internalID: -1049433055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_rail_pipe_d
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 21
+        width: 34
+        height: 20
+      alignment: 9
+      pivot: {x: 0, y: 0.9}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65413480f12e9bc40994a481946be53f
+      internalID: 1933661296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_cleat
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 34
+        width: 11
+        height: 7
+      alignment: 9
+      pivot: {x: 0.45454547, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0d81aaa7e485d64bbf90245c9b3b50e
+      internalID: -1636268171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_bollard
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 29
+        width: 11
+        height: 12
+      alignment: 9
+      pivot: {x: 0.45454547, y: 0.083333336}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67ada4c0e266e1e45ad49d49a859f43d
+      internalID: 425965243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_ring
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 34
+        width: 9
+        height: 7
+      alignment: 9
+      pivot: {x: 0.44444445, y: 0.5714286}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76aa9903e18470d4cb3be396b5cba83a
+      internalID: 1376655202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_dolphin
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 21
+        width: 15
+        height: 20
+      alignment: 9
+      pivot: {x: 0.46666667, y: 0.05}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2ab4201641f0734ca13c660cdcc80e9
+      internalID: -1809326716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_ladder
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 21
+        width: 9
+        height: 20
+      alignment: 9
+      pivot: {x: 0.44444445, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 340ff8a07f912134692b9bc15cb354f9
+      internalID: 159253323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_tyre
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 27
+        width: 11
+        height: 14
+      alignment: 9
+      pivot: {x: 0.45454547, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 760761b88a73edb4cbe793a8b821d7c6
+      internalID: 194222916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_pilehead
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 25
+        width: 7
+        height: 16
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c5195ae46b9b9d4aa3360499068e3dc
+      internalID: 1119178938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WharfOverlays_gangway
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 1
+        width: 16
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2d16f7d4683a094e99a4ffcc830c811
+      internalID: 791738460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2d872721b2f40cb48a9fa98ec62cdbcb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WharfOverlays_bollard: 425965243
+      WharfOverlays_cleat: -1636268171
+      WharfOverlays_dolphin: -1809326716
+      WharfOverlays_gangway: 791738460
+      WharfOverlays_ladder: 159253323
+      WharfOverlays_pilehead: 1119178938
+      WharfOverlays_rail_pipe_d: 1933661296
+      WharfOverlays_rail_pipe_h: -478765527
+      WharfOverlays_rail_pipe_v: -1049433055
+      WharfOverlays_rail_wood_d: -1948251050
+      WharfOverlays_rail_wood_h: -1693822410
+      WharfOverlays_rail_wood_v: 1806115693
+      WharfOverlays_ring: 1376655202
+      WharfOverlays_tyre: 194222916
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

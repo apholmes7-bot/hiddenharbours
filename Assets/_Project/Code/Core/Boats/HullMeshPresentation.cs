@@ -25,8 +25,28 @@ namespace HiddenHarbours.Core
         /// <summary>Pitch in degrees, the rig's own convention.</summary>
         float PitchDegrees { get; set; }
 
-        /// <summary>Heave in rig PIXELS (world metres = px / <see cref="HullMeshDef.PxPerMetre"/>).</summary>
+        /// <summary>Heave in rig PIXELS (world metres = px / <see cref="HullMeshDef.PxPerMetre"/>).
+        /// The TOTAL screen lift — the rig's own rock heave plus the displaced ride below.</summary>
         float HeavePixels { get; set; }
+
+        /// <summary>
+        /// How much of <see cref="HeavePixels"/> is WORLD RIDE rather than the rig's own rock: the
+        /// metre-scale displaced-sea lift (ADR 0023 phase 3 step 2), in the same rig pixels.
+        ///
+        /// <para><b>The two look alike and are not.</b> The rig's rock heave is an ANIMATION INSIDE
+        /// THE BAKED CELL — the rig subtracts it from screen y after projecting, so it clips at the
+        /// cell edge and the cell was authored with margin for it (1.0–1.6 px across the fleet). The
+        /// displaced ride is the whole BOAT moving through the world, and it arrives in metres ×
+        /// PxPerMetre, 20–100× that budget. A mesh hull's in-scene face is a fixed cell-sized
+        /// compositing window, so the drawer needs to know which is which: the rock must stay inside
+        /// the window (that is the golden master against the rig's own sheets), and the window must
+        /// travel with the ride, or the hull's image slides out of a window that stayed behind and
+        /// the sea shows through the gap.</para>
+        ///
+        /// <para>0 — the default, and always while the flat sea is up — leaves the render
+        /// byte-identical to before this channel existed (the A/B contract).</para>
+        /// </summary>
+        float RidePixels { get; set; }
 
         /// <summary>True when a hull setup is loaded and the renderer can draw.</summary>
         bool IsConfigured { get; }
@@ -96,6 +116,16 @@ namespace HiddenHarbours.Core
 
         /// <summary>Remove every fitting attached to <paramref name="host"/>. Safe when none are.</summary>
         void DetachProps(GameObject host);
+
+        /// <summary>
+        /// Remove just the fitting in <paramref name="slot"/>. Safe when none is there.
+        ///
+        /// <para>Needed because a hull's fittings are decided INDEPENDENTLY — a boat may take her
+        /// oars as meshes and wear no engine, or the reverse — so "this hull has no outboard" must
+        /// not be able to unbolt her oars on the way past. <see cref="DetachProps"/> stays for the
+        /// wholesale clear when a hull leaves the mesh path entirely.</para>
+        /// </summary>
+        void DetachProp(GameObject host, string slot);
 
         /// <summary>Remove a previously installed renderer (and everything it owns) from
         /// <paramref name="host"/>. Safe when none is present.</summary>

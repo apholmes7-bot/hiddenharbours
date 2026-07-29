@@ -62,6 +62,12 @@ namespace HiddenHarbours.Art.Editor
         private static readonly Vector2 Centre = new Vector2(0.5f, 0.5f);
         private static readonly Vector2 Bottom = new Vector2(0.5f, 0f);
 
+        // Wharf-kit anchors. TopLeft is the deck tile's screen origin (the face hangs BELOW the cell's
+        // own tile); TopCentre is a breakwater piece's crest line (so an arm's pieces butt along the
+        // crest rather than along their bases, which sit at different heights per armour type).
+        private static readonly Vector2 TopLeft = new Vector2(0f, 1f);
+        private static readonly Vector2 TopCentre = new Vector2(0.5f, 1f);
+
         // The iso-dory waterline pivot: the art director's README fixes the anchor at (80, 88) measured
         // from each 160×156 cell's TOP-LEFT (the hull's waterline contact point). Unity pivots are
         // normalized from the BOTTOM-left, so the bottom-origin y is (156−88)=68 → (80/160, 68/156) =
@@ -278,6 +284,123 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Boats/LobsterBoatIso.png",      8, 4, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
             new SheetSpec(Root + "Boats/LobsterBoatIsoRock0.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
             new SheetSpec(Root + "Boats/LobsterBoatIsoRock1.png", 8, 8, 456, 420, SpriteAlignment.Custom, LobsterBoatOrigin),
+
+            // ---- Shoreline ISO tile kit (v7): the PEI red-sandstone coast rebuilt to MATCH THE BOAT BAKE
+            //      — square 32×32 cells, 32 px = 1 m, ¾ camera from the SOUTH at 40° (the fleet's turntable
+            //      elevation), band-edge-only Bayer dither world-locked to global pixel coords. These
+            //      REPLACE the older near-plan Shore*/Grass/Sand/Rock tiles sitting loose in Tilesets/,
+            //      which are left untouched so nothing already painted breaks.
+            //
+            // ⚠ THE KIT BAKES ZERO WATER, ON PURPOSE (ADR 0010/0012/0023). The shader owns the waterline:
+            //   it clips at the live depth-0 tide contour, rides foam/swash on it, and pins the displaced
+            //   surface to the same line. Every ground material is authored to read right DRY AND
+            //   SUBMERGED because the tide sweeps whole flats. Rule-tiles carry terrain-TYPE edges only
+            //   (grass↔sand↔rock) plus permanent landforms. Do not author a foam/waterline tile against
+            //   these — butt land straight at the shader water and there is nothing to line up.
+            //
+            // Cell 32×32 everywhere, Center pivot (a tilemap places by cell, so centre is the only pivot
+            // that keeps a cliff band stacked on the cell it was painted into). Slice names are GEOMETRIC
+            // (`<Stem>_<index>`, row-major from top-left); the row/col SEMANTICS live in
+            // ShorelineIsoCatalog, which reads them off the kit's own ShorelineIso.json contract. That
+            // split is deliberate: the cliff columns carry compass-ish labels (cornSW, sideW, faceS…) and
+            // this repo has shipped mislabelled compass art five times — a slice name states which cell,
+            // never which way it looks (same rule as CharacterSheetSlicer).
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoGround.png",  3, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoFringe.png", 12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoCliff.png",  10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso/ShoreIsoDune.png",    9, 1, 32, 32, SpriteAlignment.Center, Centre),
+            // ShoreIsoSprites.png is NOT here: it is a packed sheet of freestanding rock at seven
+            // DIFFERENT sizes with per-item base-centre pivots, so it has no uniform grid to slice.
+            // ShorelineIsoSpriteSlicer reads its rects and pivots from the ShoreIsoSprites.json sidecar.
+
+            // ---- Shoreline ISO tile kit (v8 — `ShoreIso2`): the same coast, re-cut, and shipped TWICE.
+            //      Same 32×32 cell, same 40°-from-the-south camera, same zero-water contract as v7 above;
+            //      v7 is left in place and untouched so nothing already painted breaks.
+            //
+            // ⚠ TWO STYLES, ONE GEOMETRY. `nat` (8/7/8-step ramps, Bayer dither in the band-transition
+            //   zone) and `gfx` (6/5/6-step ramps, hard edges, unified keyline) are the kit's A/B. The
+            //   drop is explicit that geometry, grid, piece names and pivots are IDENTICAL and only the
+            //   shading law differs — a map authored against one drops straight onto the other. So these
+            //   ten specs are two copies of five, and ShorelineIso2Catalog.ContractsAgreeOnGeometry keeps
+            //   the pair honest if either style is ever re-baked alone.
+            //
+            // ⚠ THREE GRIDS CHANGED FROM v7, AND A v7 INDEX IS NOT A v8 INDEX:
+            //     Ground   3 → 4 columns (a fourth adjacent world tile, not a fourth art variant)
+            //     Dune     1 → 2 rows (`cap` alone = a 1 m bank; `cap + toe` = 2 m)
+            //     Contact  entirely new — the ambient-occlusion overlays v7 had none of
+            //   That is why v8 has its own catalog rather than more members on ShorelineIsoCatalog.
+            //
+            // ⚠ Cliff.png IS 10 COLUMNS BUT NOT 30 TILES. Column 9 is the cave, and a sea cave is carved
+            //   at the waterline: it is filled on the TOE row only, so cells 9 and 19 are fully
+            //   transparent PADDING (measured on import — 100% alpha-zero in both styles). Exactly the
+            //   road blob-47 trap, where the 48th cell is spare. The slice still cuts the full rectangle
+            //   — a sheet's slice count must match its grid — but ShorelineIso2Catalog.CliffIndex refuses
+            //   cap/mid + cave rather than handing back an index that resolves to nothing.
+            //
+            // Cell 32×32, Center pivot (a tilemap places by cell, so centre is the only pivot that keeps
+            // a stacked cliff band on the cell it was painted into). Slice names stay GEOMETRIC
+            // (`<Stem>_<index>`, row-major from top-left) — same reason as v7: compass-ish labels have
+            // shipped mislabelled here five times, so a slice name states which cell, never which way it
+            // looks.
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Ground.png",   4, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Fringe.png",  12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Cliff.png",   10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Dune.png",     9, 2, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/nat/Contact.png",  5, 1, 32, 32, SpriteAlignment.Center, Centre),
+
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Ground.png",   4, 6, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Fringe.png",  12, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Cliff.png",   10, 3, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Dune.png",     9, 2, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Contact.png",  5, 1, 32, 32, SpriteAlignment.Center, Centre),
+
+            // ---- Road / path / sidewalk kit: flat 32×32 NEAR-PLAN ground tiles that sit IN the ground
+            //      plane exactly like Grass.png/Dirt.png, so they register with the iso houses, the wharf
+            //      deck and the shoreline flats. One pre-baked reference atlas per surface at `new` wear
+            //      over a grass verge, no markings; wear states, other verges, markings and whole painted
+            //      maps all bake from roadPathRig.js.
+            //
+            // 12 cols × 4 rows = 48 cells holding the canonical 47-tile blob autotiler set (isolated ·
+            // caps · straights · bends · tees · crosses), sorted by neighbour mask — so the LAST cell
+            // (index 47) is spare padding, not a tile. Index → neighbour mask is RoadKit.BLOB47's order;
+            // ShorelineIsoCatalog.RoadBlobCount names the 47 so nothing indexes the 48th by accident.
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_dirt_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_gravel_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_concrete_new_blob47.png", 12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_asphalt_new_blob47.png",  12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_cobble_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_sand_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            new SheetSpec(Root + "Tilesets/Roads/RoadIso_brick_new_blob47.png",    12, 4, 32, 32, SpriteAlignment.Center, Centre),
+
+            // ---- Wharf / dock tile kit: the working waterfront's deck. Near-plan 32×32 tiles that sit in
+            //      the ground plane like Grass.png, but on a TALLER cell — because the camera looks from
+            //      the south, a S-facing deck edge drops a visible vertical face over the water.
+            //
+            // ⚠ THE CELL IS 32×56, NOT 32×32, AND THAT IS THE WHOLE CONTRACT. The top 32 rows are the deck
+            //   (the tile proper); the bottom 24 are the FACE + waterline foam, which OVERHANG downward
+            //   over whatever is drawn in the cell below. Hence the TOP-LEFT pivot: the sidecar says
+            //   "cell top-left aligns to tile screen origin", so the deck lands on its own tile and the
+            //   face hangs past it. A centre pivot — the obvious choice for every other tile sheet in
+            //   this manifest — would sink every wharf tile 12 px into the water. Whatever draws these
+            //   must also paint BACK TO FRONT (north rows first) or a face will overdraw its neighbour.
+            //
+            // 17 cols × 7 rows. Columns are the auto-tile set (ctr · 4 edges · 4 outer corners · 4 end
+            // caps · 4 diagonal cuts); rows are quay · lowpier · tallpier, then the FLOAT material's four
+            // bob frames f0..f3 (a ±1 px heave loop at ~6 fps, offsets 0,−1,0,+1). So "float" is one
+            // material occupying four rows, not four materials — see WharfKitCatalog.
+            new SheetSpec(Root + "Tilesets/Wharf/WharfAtlas.png", 17, 7, 32, 56, SpriteAlignment.TopLeft, TopLeft),
+
+            // Breakwater / shore-armour arms: 3 cols (straight · 45° diag · end cap) × 4 rows
+            // (riprap · crib · wall · sheet), cell 48×60. Pivot is TOP-CENTRE because the sidecar anchors
+            // these on the CREST line, not the base — that is what lets consecutive pieces butt into a
+            // continuous run around a corner. The structure's base sits ~6 px above the cell bottom; the
+            // gap below it is the foam fringe.
+            new SheetSpec(Root + "Tilesets/Wharf/WharfBreakwaters.png", 3, 4, 48, 60, SpriteAlignment.TopCenter, TopCentre),
+
+            // WharfOverlays.png is NOT here: 14 fittings at 14 different sizes (rails, cleat, bollard,
+            // ring, dolphin, ladder, tyre, pile head, gangway) whose pivots mean four DIFFERENT things —
+            // edge-line for rails, base for cleats/bollards, centre for the ring, top for the things that
+            // hang off a face. WharfOverlaySlicer reads all of it from WharfOverlays.json.
         };
 
         // ---- entry points -------------------------------------------------------------------------

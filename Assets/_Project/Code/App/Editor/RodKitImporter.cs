@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Player;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Art.Editor;   // MiniJson — the shared editor JSON reader
 
 namespace HiddenHarbours.App.Editor
 {

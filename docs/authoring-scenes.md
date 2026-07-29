@@ -25,7 +25,7 @@ That single command runs three steps (you can also run them one at a time from t
 |---|---|
 | **Build Terrain Tiles** | The paintable ground tiles + an auto-shaping shoreline, under `Assets/_Project/Art/Tilesets/Tiles/`. |
 | **Build Tile Palette** | A palette called **HiddenHarboursTerrain** you pick tiles from, under `Assets/_Project/Art/Tilesets/Palettes/`. |
-| **Build Decor Prefabs** | Drag-in trees, buildings, props, grass and wildflowers, under `Assets/_Project/Prefabs/Decor/`. |
+| **Build Decor Prefabs** | Drag-in trees, buildings, props, grass, wildflowers and the ten Acadian trees, under `Assets/_Project/Prefabs/Decor/`. |
 
 ---
 
@@ -98,7 +98,8 @@ neighbouring cell — the rule re-evaluates as you go.
 Decor is placed as **prefabs** — pre-made objects you drag in like stamps. No tilemap needed.
 
 1. In the **Project** window (bottom panel), open `Assets/_Project/Prefabs/Decor/`. You'll find
-   five folders: **Trees/**, **Buildings/**, **Props/**, **Grass/**, **Flowers/**.
+   five folders: **Trees/** (with **Trees/Acadian/** inside it), **Buildings/**, **Props/**,
+   **Grass/**, **Flowers/**.
 2. Click a folder and you'll see thumbnails (Tree01…Tree40, Cottage, ShipwrightShed, Barrel, Crate,
    WharfPost, GrassClump, GrassTuft, WildRoseClump, LupinBlueSingle, etc.).
 3. **Drag a prefab straight from the Project window into the Scene view** and drop it where you want
@@ -207,6 +208,51 @@ Flowers get the same three things the grass gets, all automatic — nothing to w
 > **Sway amount at full wind**. Every flower knob lives on those three materials
 > (`Flower_Single` / `Flower_Clump` / `Flower_Patch`) — change one and every flower of that size
 > follows, live, while you're in Play.
+
+### The Acadian trees (the ten rig-baked species)
+
+These are the new trees — red and black spruce, balsam fir, white pine, white cedar, tamarack, white
+birch, red maple, red oak and trembling aspen. They live in **Decor ▸ Trees ▸ Acadian/**, separately
+from the older hand-drawn `Tree01…Tree43` set, which is still there and still fine to use.
+
+**Start here: see all ten at once.** Open the scene you want to judge them in, then run
+**Hidden Harbours ▸ Tools ▸ Place Acadian Tree Lineup (all 10 species)**. It stands one of each in a
+row on a single ground line, named for its species and its real height, with a plain **1.7 m bar** at
+the left so you have something person-sized to compare against. Drag the whole `AcadianTreeLineup`
+object onto grass to see them against the terrain, and press **Play** for the wind. That is the
+fastest way to answer the three questions worth your eye:
+
+- **Is the scale right?** They're 4.8–6.9 m trees. Next to the 1.7 m bar, do they feel that big?
+- **Do the species read apart?** Spires, a pine, a cedar, a larch, and four broadleaves — can you
+  tell them apart in silhouette at normal zoom?
+- **Do they sit on the ground?** Each tree's roots should *flare over* the ground line, not float
+  above it or sink into it.
+
+**To plant a stand**, open **Hidden Harbours ▸ Tools ▸ Tree Paint Tool** and drag in the Scene view —
+the same gesture as the grass and flower brushes. Knobs: pick **one species or mix all ten**, choose
+which of the **four drawn variants** to mix (they're different individual trees, not poses), and set
+**trees per 100 m²** plus a **never closer than** distance in metres so trunks can't crowd. **Clear
+ALL painted trees** empties it; everything goes under one **`PaintedTrees`** object, one Undo step
+per stroke.
+
+**To place one exactly**, drag a prefab out of **Decor ▸ Trees ▸ Acadian/** as with any other decor.
+
+> **These plant at the trunk, not at the bottom of the picture.** Each species is drawn with its
+> near-root flare spreading *toward* you, which at our ¾ camera angle puts it **below** the point
+> where the trunk meets the ground — between 0.4 m and 0.7 m of it, depending on the species. So the
+> point you drop is the **trunk foot**, and a little root spreads down-screen from there. That's
+> deliberate; it's what makes them look planted rather than pasted on.
+
+> **Each species keeps its own trunk still.** How much of the trunk stays rigid while the canopy
+> sways is baked per species (a black spruce holds still lower down than a red oak). The trees carry
+> that number themselves, so unlike the older set you don't need to touch `_TrunkAnchor` on the
+> `Tree` material — every **other** wind knob there (`_SwayAmount`, `_SwaySpeed`, `_GustStrength`)
+> still drives all of them together, live, while you're in Play.
+
+> **After a re-bake of the tree art**, re-run **Hidden Harbours ▸ Art ▸ Build Acadian Tree Prefabs**.
+> It rebuilds each prefab in place, so trees you've already placed pick up the new art without being
+> re-placed. (Trees laid down with the **paint** tool are plain objects, not prefab instances — repaint
+> those.)
 
 ---
 

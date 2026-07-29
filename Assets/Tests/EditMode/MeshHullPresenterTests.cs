@@ -39,6 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
             public float RollDegrees { get; set; }
             public float PitchDegrees { get; set; }
             public float HeavePixels { get; set; }
+            public float RidePixels { get; set; }
             public bool IsConfigured => true;
             public int SortingLayerId; public int SortingOrder;
             public void SetSorting(int layerId, int order) { SortingLayerId = layerId; SortingOrder = order; }
@@ -81,6 +82,11 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             public void DetachProps(GameObject host) { PropDetaches++; Props.Clear(); }
+
+            public void DetachProp(GameObject host, string slot)
+            {
+                if (Props.Remove(slot)) PropDetaches++;
+            }
 
             public void Remove(GameObject host) { Removes++; }
         }
@@ -340,6 +346,110 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(BoatHullVariant.Sprite, rig.Presenter.Variant);
             Assert.AreEqual(0, service.Installs,
                 "every other hull stays a sprite and pays nothing for the mesh path existing");
+        }
+
+        // ---- the fittings (ADR 0022 phase 7) ---------------------------------------------------
+
+        private HullPropMeshDef MakeUsableProp(float[] mounts = null)
+        {
+            var def = ScriptableObject.CreateInstance<HullPropMeshDef>();
+            _spawned.Add(def);
+            // ⚠️ A real vertex, because HullPropMeshDef.IsUsable() insists on one — a fitting that
+            // cannot be drawn must be REFUSED rather than attached as an invisible engine, and a
+            // fixture with an empty mesh would be testing the refusal path by accident.
+            var mesh = new Mesh(); _spawned.Add(mesh);
+            mesh.SetVertices(new[] { Vector3.zero, Vector3.right, Vector3.up });
+            mesh.SetNormals(new[] { Vector3.forward, Vector3.forward, Vector3.forward });
+            mesh.SetUVs(0, new List<Vector4> { Vector4.zero, Vector4.zero, Vector4.zero });
+            mesh.SetTriangles(new[] { 0, 1, 2 }, 0);
+            def.Id = "hullprop.test_motor";
+            def.Mesh = mesh;
+            def.Ramps = new[] { new HullMeshDef.Ramp { Colors = new[] { new Color32(9, 9, 9, 255) }, Offset = 0 } };
+            def.Bayer16 = new float[16];
+            def.PxPerMetre = 32;
+            def.CellW = 272; def.CellH = 216;
+            def.ElevationDeg = 40f;
+            def.PivotLocalMeters = new Vector3(0f, -3.57f, 0.72f);
+            def.MaxSteerDegrees = 30f;
+            def.MaxTiltDegrees = 40f;
+            def.LateralMountsMeters = mounts ?? System.Array.Empty<float>();
+            return def;
+        }
+
+        /// <summary>
+        /// <b>The flip that finished phase 7.</b> A mesh hull carrying an outboard FITTING draws it,
+        /// where a mesh hull carrying only motor SHEETS had them dropped — which is the regression that
+        /// held the punt and both skiffs on the sprite compass through the whole of phase 6.
+        /// </summary>
+        [Test]
+        public void Skinner_MeshHullWithAMotorFitting_BoltsItOn()
+        {
+            var service = new FakeService();
+            HullMeshPresentation.Service = service;
+
+            var visual = MakeMeshVisual(MakeUsableDef());
+            visual.MotorMesh = MakeUsableProp(new[] { -0.34f, 0.34f });
+            visual.MotorFit = OutboardMotorLayer.MotorFit.Single;
+            visual.MotorMaxSteerDegrees = 30f;
+
+            var root = MakeRoot();
+            BoatHullSkinner.Apply(root, visual, boat: null);
+
+            var layer = root.GetComponent<OutboardMotorMeshLayer>();
+            Assert.IsNotNull(layer, "a mesh hull whose visual carries a motor FITTING must wear it.");
+            Assert.IsTrue(layer.IsWired);
+            Assert.AreEqual(1, layer.EngineCount,
+                "a Single fit takes ONE engine, even though the fitting knows a twin spacing.");
+            Assert.AreEqual(0f, layer.MountMeters(0), 1e-4f, "…on the centreline.");
+        }
+
+        /// <summary>The twin is the SAME fitting instantiated twice — no second asset, no second
+        /// bake, and no ordering rule between them (a shared depth buffer settles it).</summary>
+        [Test]
+        public void Skinner_TwinFit_InstantiatesOneFittingAtBothClampPositions()
+        {
+            var service = new FakeService();
+            HullMeshPresentation.Service = service;
+
+            var visual = MakeMeshVisual(MakeUsableDef());
+            visual.MotorMesh = MakeUsableProp(new[] { -0.34f, 0.34f });
+            visual.MotorFit = OutboardMotorLayer.MotorFit.Twin;
+
+            var root = MakeRoot();
+            BoatHullSkinner.Apply(root, visual, boat: null);
+
+            var layer = root.GetComponent<OutboardMotorMeshLayer>();
+            Assert.IsNotNull(layer);
+            Assert.AreEqual(2, layer.EngineCount);
+            Assert.AreEqual(-0.34f, layer.MountMeters(0), 1e-4f);
+            Assert.AreEqual(+0.34f, layer.MountMeters(1), 1e-4f);
+            Assert.AreEqual(2, service.Props.Count,
+                "two INSTANCES of one fitting, in two named slots — not one engine drawn twice.");
+        }
+
+        /// <summary>
+        /// ⚠️ A hull's fittings are decided independently, so "this hull has no outboard" must not
+        /// unbolt her OARS on the way past. That is why the seam grew a per-slot detach.
+        /// </summary>
+        [Test]
+        public void Skinner_AHullWithOarsButNoMotor_KeepsHerOars()
+        {
+            var service = new FakeService();
+            HullMeshPresentation.Service = service;
+
+            var visual = MakeMeshVisual(MakeUsableDef());
+            visual.OarPortMesh = MakeUsableProp();
+            visual.OarStarMesh = MakeUsableProp();
+            visual.MotorMesh = null;
+
+            var root = MakeRoot();
+            var boat = root.AddComponent<BoatController>();
+            BoatHullSkinner.Apply(root, visual, boat);
+
+            Assert.IsNotNull(root.GetComponent<DoryOarMeshLayer>(), "her oars are wired");
+            Assert.IsTrue(root.GetComponent<DoryOarMeshLayer>().IsWired,
+                "…and still attached after the motor branch decided she has no engine");
+            Assert.IsNull(root.GetComponent<OutboardMotorMeshLayer>());
         }
 
         // ---- the wave-motion channel ----------------------------------------------------------

@@ -169,12 +169,21 @@ namespace HiddenHarbours.Boats
             // Displaced OFF ⇒ the term is exactly 0 and this line is byte-inert (the A/B
             // contract extends to boats). The gate is the Core seam, not the stored ride, so a
             // becalmed or motion-less hull still sits AT its waterline while the sea is on.
+            // The RIDE is reported separately as well as folded into the total: it is a world
+            // translation of the whole boat, not an in-cell animation like the rig's rock, so the
+            // drawer has to carry the hull's compositing window with it (see IHullMeshRenderer.
+            // RidePixels). Same number, told twice — HeavePixels keeps its exact meaning.
+            float ride = 0f;
             if (DisplacedSea.IsActive)
-                heave += (_displacedHeaveMeters - _restingDraftMeters) * _pxPerMetre;
+            {
+                ride = (_displacedHeaveMeters - _restingDraftMeters) * _pxPerMetre;
+                heave += ride;
+            }
 
             _renderer.RollDegrees = roll + VisualTiltDegrees;
             _renderer.PitchDegrees = pitch;
             _renderer.HeavePixels = heave;
+            _renderer.RidePixels = ride;
         }
     }
 

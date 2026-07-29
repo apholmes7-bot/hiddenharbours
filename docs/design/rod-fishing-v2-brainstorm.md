@@ -279,6 +279,23 @@ Everything else is tuning existing weights, not new systems.
 - **Fail is always cozy:** throw the hook, cost time/bait; never damage, gear loss, or death.
   Real danger stays in weather/tide/grounding (P1/P5 anti-pillars).
 
+> **⚠️ AMENDED — owner's ruling, 2026-07-25.** Two parts, and the second overturns the line above.
+>
+> 1. **The weather is now a real force in the catch** (built). Rough water is a **trade**, not a
+>    tax: fish are bolder, so a blow fishes *better* (quicker bites, bigger fish), while the swell
+>    works your line, so every fish is *harder to hold*. The everyday sea stays dependable — a
+>    named guard-rail (`SeaFightMath.MaintainOutbleedsTheEverydaySea`) pins that easing off still
+>    recovers at or below `CozySeaCeiling01`, swept across every authored species — but **above
+>    that line a real blow can genuinely beat you**, which is the owner's teeth. "Real danger stays
+>    in weather/tide/grounding" is still true; weather has simply stopped stopping at the gunwale.
+> 2. **Gear loss is now permitted in a blow** — the owner explicitly chose "it can cost you the
+>    fish AND your rig", with the note that it breaks the never-lose-gear rule in view. So the
+>    bullet above is **no longer absolute**: a bad enough sea may cost terminal tackle.
+>    ⚠️ **NOT BUILT.** The rod consumes no bait and no tackle today (bait exists only for traps),
+>    so there is nothing for a lost rig to cost. It needs a consumable on the rod and a way to
+>    restock it before it can be anything but a punishment with no economy behind it. Flagged to
+>    the owner, deliberately deferred — see §8.
+
 ---
 
 ## 8. Open threads / next

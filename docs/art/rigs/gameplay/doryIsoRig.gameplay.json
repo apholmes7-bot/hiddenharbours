@@ -1,45 +1,339 @@
 {
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "doryIsoRig.js",
-  "derivedFromRigSha256": "30796fe431f7ed84ea371042f5ee1ad0a3a68f11075e99c6cdd968cb131e232e",
-  "generated": "2026-07-22",
+  "exportSymbol": "DoryIso",
+  "derivedFromRigSha256": "bd781b0388476bb99cec7c2a91cde3006982f2460a343e6e8f729f26995a5dfd",
+  "units": "metres",
   "frame": {
-    "units": "m",
-    "scale_px_per_m": 32,
-    "origin": "amidships, keel bottom, centreline",
+    "origin": "amidships / keel-bottom / centreline",
     "axes": "+x starboard, +y bow, +z up",
-    "heading_independent": true
+    "scale_px_per_m": 32,
+    "LOA_m": 4.5,
+    "polygon_winding": "CCW viewed from +Z (above)"
   },
-  "hull": {
-    "loa_m": 4.5,
-    "tier": "T0 Banks dory (player start)"
-  },
+  "authoring": "Gameplay geometry (our layer). Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Derived from the rig SHA above; a rig reshape re-opens this file.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
   "DECK": [
     {
-      "id": "bilge_floor",
+      "id": "floor",
       "winding": "ccw_from_above",
       "polygon3d": [
-          [0.14, -2.25, 0.2], [0.185, -1.8, 0.136], [0.213, -1.35, 0.096], [0.225, -0.9, 0.072],
-          [0.223, -0.45, 0.06], [0.215, 0.0, 0.06], [0.2, 0.45, 0.068], [0.168, 0.9, 0.094],
-          [0.123, 1.35, 0.146], [0.068, 1.8, 0.224], [0.004, 2.25, 0.32], [-0.004, 2.25, 0.32],
-          [-0.068, 1.8, 0.224], [-0.123, 1.35, 0.146], [-0.168, 0.9, 0.094], [-0.2, 0.45, 0.068],
-          [-0.215, 0.0, 0.06], [-0.223, -0.45, 0.06], [-0.225, -0.9, 0.072], [-0.213, -1.35, 0.096],
-          [-0.185, -1.8, 0.136], [-0.14, -2.25, 0.2]
+        [
+          -0.068,
+          1.8,
+          0.224
         ],
-      "_derivation": "interior floor, floorPt (doryIsoRig.js:61): x=\u00b1(wb-TH*0.6)*0.94, z=kz+FLOOR, FLOOR=0.06; sampled u=0..1 (keel line rises toward both ends, so the floor is polygon3d)",
-      "_note": "thwarts (bench seats) cross the floor at u=0.34 and u=0.60 (y=-0.72, +0.45), z=kz+SEAT=kz+0.30 (doryIsoRig.js:94-100) \u2014 step-over obstructions, not holes"
+        [
+          -0.113,
+          1.44,
+          0.16
+        ],
+        [
+          -0.153,
+          1.08,
+          0.107
+        ],
+        [
+          -0.183,
+          0.72,
+          0.081
+        ],
+        [
+          -0.203,
+          0.36,
+          0.066
+        ],
+        [
+          -0.215,
+          0,
+          0.06
+        ],
+        [
+          -0.221,
+          -0.36,
+          0.06
+        ],
+        [
+          -0.225,
+          -0.72,
+          0.066
+        ],
+        [
+          -0.225,
+          -1.08,
+          0.078
+        ],
+        [
+          -0.209,
+          -1.44,
+          0.102
+        ],
+        [
+          -0.185,
+          -1.8,
+          0.136
+        ],
+        [
+          0.185,
+          -1.8,
+          0.136
+        ],
+        [
+          0.209,
+          -1.44,
+          0.102
+        ],
+        [
+          0.225,
+          -1.08,
+          0.078
+        ],
+        [
+          0.225,
+          -0.72,
+          0.066
+        ],
+        [
+          0.221,
+          -0.36,
+          0.06
+        ],
+        [
+          0.215,
+          0,
+          0.06
+        ],
+        [
+          0.203,
+          0.36,
+          0.066
+        ],
+        [
+          0.183,
+          0.72,
+          0.081
+        ],
+        [
+          0.153,
+          1.08,
+          0.107
+        ],
+        [
+          0.113,
+          1.44,
+          0.16
+        ],
+        [
+          0.068,
+          1.8,
+          0.224
+        ]
+      ],
+      "note": "Narrow bilge floor between the two thwarts; half-width = rig floorPt() = (wb-TH*0.6)*0.94, z=keelZ+FLOOR. No washboards (rowed dory) — absence is data. Unchanged by the build axis (oars/motor). Bottom boards sit 30 mm above this plane in both builds — the standing surface is the boards, not the bilge. Polygon is WHOLE: no holes cut for deck furniture — see _notes for the obstructions and build colliders from them (owner ruling 2026-07-22, M2-37..39).",
+      "_notes": [
+        {
+          "id": "thwart_aft",
+          "kind": "obstruction",
+          "type": "thwart",
+          "builds": [
+            "oars",
+            "motor"
+          ],
+          "footprint": {
+            "x": [
+              -0.49,
+              0.49
+            ],
+            "y": [
+              -0.82,
+              -0.62
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.19,
+            "from_bottom_boards": 0.21
+          },
+          "z_abs_m": {
+            "top": 0.306,
+            "underside": 0.256,
+            "floor_plane_here": 0.066
+          },
+          "spans_sole": "wall-to-wall — seat half-width 0.490 m vs sole half-width 0.225 m here, so it crosses the whole walkable strip",
+          "provenance": "rig THWARTS u=0.34: zTop=station.kz+SEAT, zBot=zTop-0.05, hx=halfAt(u,zBot,inset)-0.006, bd=0.20 (exact)"
+        },
+        {
+          "id": "thwart_fwd",
+          "kind": "obstruction",
+          "type": "thwart",
+          "builds": [
+            "oars",
+            "motor"
+          ],
+          "footprint": {
+            "x": [
+              -0.474,
+              0.474
+            ],
+            "y": [
+              0.35,
+              0.55
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.19,
+            "from_bottom_boards": 0.21
+          },
+          "z_abs_m": {
+            "top": 0.308,
+            "underside": 0.258,
+            "floor_plane_here": 0.068
+          },
+          "spans_sole": "wall-to-wall — 0.474 m vs sole half-width 0.200 m here",
+          "provenance": "rig THWARTS u=0.60, same formula (exact)"
+        },
+        {
+          "id": "bench_stern",
+          "kind": "obstruction",
+          "type": "bench",
+          "builds": [
+            "motor"
+          ],
+          "footprint": {
+            "x": [
+              -0.388,
+              0.388
+            ],
+            "y": [
+              -1.795,
+              -1.535
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24,
+            "underside": 0.185,
+            "from_bottom_boards": 0.21
+          },
+          "z_abs_m": {
+            "top": 0.358,
+            "underside": 0.303,
+            "floor_plane_here": 0.118
+          },
+          "spans_sole": "wall-to-wall — 0.388 m vs sole half-width 0.198 m here",
+          "provenance": "rig STERN_U=0.13, bd=0.26, th=0.055, same formula (exact). MOTOR BUILD ONLY — absent in the oars build.",
+          "note": "The helm seat. helmSeat(dir,opts) pins the seated operator here; pilotStand(dir,{build:'motor'}) puts the feet at y=-1.28, i.e. in the pocket immediately forward of it."
+        },
+        {
+          "id": "motor_board",
+          "kind": "obstruction",
+          "type": "transom_furniture",
+          "builds": [
+            "motor"
+          ],
+          "footprint": {
+            "x": [
+              -0.3,
+              0.3
+            ],
+            "y": [
+              -2.34,
+              -2.07
+            ]
+          },
+          "height_above_floor_m": {
+            "lowest_inboard_part": 0.356,
+            "top": 0.6
+          },
+          "z_abs_m": {
+            "top": 0.8,
+            "doubler_bottom": 0.54,
+            "cheek_bottom": 0.53,
+            "floor_plane_here": 0.174
+          },
+          "spans_sole": "not a floor obstruction — its lowest inboard part clears the floor plane by 0.36 m (knee/thigh height) and its inboard reach stops 0.18 m aft of the bench",
+          "provenance": "rig BOARD {halfW:0.30, t:0.045, rise:0.10, drop:0.16} on TR.zTop=0.70, plus inner doubler and cheeks (exact)",
+          "note": "Collider-optional: relevant as a bump/lean surface and as the outboard's mount (MOUNT / motorMount), not as a walk blocker."
+        },
+        {
+          "id": "sole_read",
+          "kind": "observation",
+          "subject": "how a person actually moves in her",
+          "sole_width_m": {
+            "max": 0.45,
+            "at_y": -0.72,
+            "ends": 0.25,
+            "note": "the polygon is a centreline STRIP — narrower than a standing stance, so weight cannot move off the centreline at all"
+          },
+          "if_all_obstructions_block": {
+            "pockets_y": [
+              [
+                -2.25,
+                -1.795
+              ],
+              [
+                -1.535,
+                -0.82
+              ],
+              [
+                -0.62,
+                0.35
+              ],
+              [
+                0.55,
+                "~1.5 usable"
+              ]
+            ],
+            "lengths_m": [
+              0.455,
+              0.715,
+              0.97,
+              "~0.95"
+            ],
+            "consequence": "four disconnected pockets in 4.5 m — fore-to-aft travel becomes impossible without step-over, which is exactly the walking-aft-to-the-motor case that raised this"
+          },
+          "step_over": "all three seats are 0.24 m above the local floor (0.21 m off the bottom boards) — a step-over, not a wall. Heights are identical because the rig sets every seat at station.kz+SEAT and the floor at station.kz+FLOOR, so the clearance is SEAT-FLOOR everywhere.",
+          "stations_not_deck": "Rig-side read: this is a boat with STATIONS, not a walkable deck. 4.5 m LOA, sole 0.45 m at its widest, sheer only ~0.40 m above the sole amidships, three full-width crossings inside 2.35 m of length, and the authored rock loop is lively (ROCK roll 5.0deg / pitch 3.0deg / heave 1.6 px) — a tender flat-bottomed hull where you keep low and centred and step over thwarts rather than stroll. Suggest a move-aft/station transition (rowing thwart <-> stern bench) over free walking; note the two authored stations already sit in ADJACENT pockets (pilotStand rowing y=-0.30, motor y=-1.28) separated by exactly one crossing, thwart_aft. Design call, not an art call — flagged for M2-37..39."
+        }
+      ]
     }
   ],
+  "_excluded": {
+    "washboard": "Open rowed boat — no washboards.",
+    "cleats": "Superseded — CLEATS is now modeled (bow_1 stem ring bolt + stern_port quarter-knee ring). No deck/mid cleats and no starboard stern twin: an open 4.5 m boat does not carry them.",
+    "motor": "build:'motor' adds the stern bench + transom motor board (hull structure, same cell). Anchors: MOUNT / motorMount(dir,opts) = outboard clamp point; HELM / helmSeat(dir,opts) = seated operator; pilotStand(dir,{build:'motor'}) = feet at the tiller station. The outboard itself is a separate layer, not in this hull."
+  },
   "CLEATS": [
     {
       "id": "bow_1",
-      "type": "painter",
-      "pos": [0, 2.25, 0.86],
-      "provenance": "doryIsoRig.js offsets table row 8 (stem head): y=station(1).y, z=station(1).kz+station(1).dep \u2014 NOT a modelled fitting",
-      "_ruled": "was _confirm: no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head. RULED: ACCEPTED AS AUTHORED (owner, 2026-07-22) \u2014 the data-only painter point stands, NO visible ring/fitting is added to the art ('option 1 is fine for now'); a visible fitting may be revisited later."
+      "type": "ring_bolt",
+      "pos": [
+        0,
+        2.0925,
+        0.8618
+      ],
+      "builds": [
+        "oars",
+        "motor"
+      ],
+      "provenance": "rig PAINTER / painter(dir,opts) at station(0.965) sheer + 0.055 (exact). Data point UNCHANGED from the 2026-07-22 option-1 ruling; this pass only made the fitting VISIBLE (iron ring bolt through the breasthook at the stem head).",
+      "note": "Where a dory's painter really lives: rove through a hole in the stem head or a ring/becket in the breasthook, inboard end knotted there for good. Making fast round the forward thwart is what you do when there is no fitting, or with the bight when towing — so the visible ring is honest, not decoration.",
+      "_ruled": "was _confirm: no modelled ring/cleat in the rig; M2-38 wants every hull moorable, so a bow painter tie-point is authored at the stem head. RULED: ACCEPTED AS AUTHORED (owner, 2026-07-22) — the data-only painter point stands, NO visible ring/fitting is added to the art ('option 1 is fine for now'); a visible fitting may be revisited later. ⚠ REOPENED BY ART, 2026-07-25 (small-craft rig kit v2): the rig now MODELS a visible iron ring bolt at this point, so the 'NO visible ring/fitting' half of the 2026-07-22 ruling no longer describes the art. The tie-point itself also moved: station(1.0) -> station(0.965), pos y 2.25 -> 2.0925 m, z 0.86 -> 0.8618 m. Recorded, not deleted — the owner re-rules."
+    },
+    {
+      "id": "stern_port",
+      "type": "ring_bolt",
+      "pos": [
+        -0.3,
+        -2.16,
+        0.745
+      ],
+      "builds": [
+        "oars",
+        "motor"
+      ],
+      "provenance": "rig STERN_EYE / sternEye(dir,opts) — through the port quarter knee, 0.045 above the knee plate (exact).",
+      "note": "Added for the alongside case: under power she comes to the dock and needs bow AND stern lines. A boat this size would honestly carry nothing aft — you would take a turn round the after thwart or the motor's lanyard eye — so this is deliberately the humblest option that reads at the wharf: one ring through the quarter knee, offset to PORT to stay clear of the outboard clamp on the transom centreline. Side is arbitrary; mirror x if the wharf convention lands starboard-to. No starboard twin, no transom cleat."
     }
-  ],
-  "_excluded": [
-    "WASHBOARD \u2014 open boat, no side decks (gunwale cap only)",
-    "oarlock thole pins at u=0.31 both gunwales (lines 101-106) \u2014 oar gear, not tie-offs"
   ]
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728bc29789bc43b495394839046603e3, type: 3}
+  m_Name: Spinner
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.TackleDef
+  Id: tackle.spinner
+  DisplayName: Spinner
+  Flavor: A blade that spins on a wire and throws light in every direction. Draws a strike out of temper rather than hunger.
+  Lure: 16
+  JigStyle: 5
+  FavorsSpeciesIds:
+  - fish.mackerel

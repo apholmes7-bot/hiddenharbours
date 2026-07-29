@@ -49,6 +49,16 @@ namespace HiddenHarbours.Core
                  "offset — so posing is a pure rotation about Pivot, with no translation to get wrong.")]
         public Mesh Mesh;
 
+        [Tooltip("The part of this fitting that does NOT articulate, if it has one — the outboard's " +
+                 "clamp bracket, which is bolted to the transom while the engine swivels ON it. Null " +
+                 "for a fitting that is one rigid body (an oar).\n\n" +
+                 "⚠️ This is not a refinement: rotating it with the rest carries the bracket round " +
+                 "with the cowl, which is wrong everywhere except dead ahead and is worst at " +
+                 "hard-over — measured as a 39-53 px connected patch against the rig's own render. " +
+                 "Which faces belong here is MEASURED at bake time (build the rig's face list at two " +
+                 "poses, keep the ones that did not move), never read off the rig by eye.")]
+        public Mesh FixedMesh;
+
         [Header("Shading (this rig's own pipeline, verbatim)")]
         [Tooltip("Palette ramp + offset per rig material, in the rig's MATS order. A fitting from a " +
                  "separate rig carries a separate table — that is why it needs its own material.")]
@@ -124,6 +134,21 @@ namespace HiddenHarbours.Core
         /// </summary>
         public float[] EffectiveMounts =>
             LateralMountsMeters != null && LateralMountsMeters.Length > 0
+                ? LateralMountsMeters
+                : SingleCentreMount;
+
+        /// <summary>
+        /// The mounts to instantiate this fitting at for a given FIT.
+        ///
+        /// <para><b>The fit belongs to the BOAT, not to the fitting.</b> One skiff outboard def serves
+        /// three visuals — the console skiff and the sport skiff single (one engine, centreline) and
+        /// the sport skiff twin (two, at the ±0.34 m its rig declares) — so reading
+        /// <see cref="EffectiveMounts"/> unconditionally would bolt two engines onto the workboat.
+        /// A multi fit on a def that declares fewer than two mounts falls back to one on the
+        /// centreline rather than inventing a spacing.</para>
+        /// </summary>
+        public float[] MountsForFit(bool multiEngine) =>
+            multiEngine && LateralMountsMeters != null && LateralMountsMeters.Length >= 2
                 ? LateralMountsMeters
                 : SingleCentreMount;
 

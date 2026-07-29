@@ -515,3 +515,451 @@ are flat water-surface clumps, not turntable bakes.
 these yet. The runtime drift feature (drift/bob off the shared wave field, snag on buoys/rocks/rope,
 clumping, ramp-row weathering) is the banked emitter-lane build (`seaweed-flotsam` vision, owner ask
 2026-07-08); this lane provides the locked, correctly-pivoted, stable-GUID slices + the sidecar data.
+
+---
+
+## Batch — Terrain kits: Shoreline ISO (v7) + Road/Path blob-47 (owner drop 2026-07-23)
+
+Two **terrain** kits, imported together because they are the two halves of paintable ground: the
+coast, and everything you walk on once you're up it. Both are square **32×32 cells, 32 px = 1 m**,
+no AA, muted North-Atlantic KTC ramps, hash-value noise phased on **global tile coords** (`gx,gy`)
+so a painted run is seamless and never visibly repeats.
+
+**The shoreline kit is baked to the boat camera** — ¾ from the **SOUTH at 40°**, the fleet's
+turntable elevation (ADR 0006/0022). That is the point of the "v7 ISO" re-bake: the older near-plan
+`Shore*`/`Grass`/`Sand`/`Rock` tiles still sitting loose in `Tilesets/` were drawn to a different
+camera than the hulls, so land and boat never quite shared a space. **Those older tiles are left
+exactly where they are** — nothing already painted breaks; the new kit is a parallel set.
+
+### ⚠ The water contract — this kit bakes ZERO water, on purpose
+
+The engine shader owns **all** of it (ADR 0010 / 0012 / 0023): it clips at the live depth-0 tide
+contour, rides foam and swash on that line, and pins the displaced 3D surface to the same one
+(`ShoreFadeMath`). So there is **no foam tile, no waterline tile, no shallows tile** here, and none
+should be authored against these.
+
+- **Every ground material is drawn to read right DRY *and* SUBMERGED**, because the tide sweeps whole
+  flats over it — that is what makes a St Peters clam flat work as one painted surface across the
+  whole swing rather than two sets of art.
+- **Rule-tiles carry terrain-TYPE edges only** (grass↔sand↔rock) plus permanent landforms (cliff,
+  dune). Butt any tile straight against shader water: there is nothing to line up.
+
+### Sheets
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Tilesets/ShorelineIso/ShoreIsoGround.png` | 96×192 | 3 cols × 6 rows of **32×32** | 18 | grass · marram · sand · ripple · shingle · shelf |
+| `Tilesets/ShorelineIso/ShoreIsoFringe.png` | 384×96 | 12 × 3 | 36 | grass · marram · sand |
+| `Tilesets/ShorelineIso/ShoreIsoCliff.png` | 320×96 | 10 × 3 | 30 | cap · mid · toe |
+| `Tilesets/ShorelineIso/ShoreIsoDune.png` | 288×32 | 9 × 1 | 9 | (single band) |
+| `Tilesets/ShorelineIso/ShoreIsoSprites.png` | 186×44 | **packed, irregular** | 7 | sea stacks `reef/s/m/l` + slab boulders `bs/bm/bl` |
+| `Tilesets/Roads/RoadIso_<surface>_new_blob47.png` × 7 | 384×128 | 12 × 4 | 48 | blob-47 by neighbour mask |
+
+- **Ground COLUMNS are three adjacent world tiles, not three art variants.** The rig's noise is a
+  pure function of `(gx,gy)`, so neighbours butt seamlessly — these three are a sample of that field.
+- **Fringe** is a transparent overlay: stamp it **over the neighbour's ground tile** where two
+  terrain types meet for a ragged tongue (grass/marram carry a 1 px soil under-shadow on
+  camera-facing edges).
+- **Cliffs stack**: `cap + mid×N + toe` for any height, ~1.3 m of drawn face per band at the 40°
+  camera. Strata key on **global row Y**, so bands painted at the same world height align across a
+  whole coast with no hand-matching. `caveToe` is the carved arch — it is how a sea cave gets a mouth,
+  and it is cliff-only (the dune has the same nine landform pieces *minus* the cave).
+- **Roads**: 12×4 = **48 cells holding 47 blob tiles + one spare padding cell**. Anything that walks
+  the atlas by its rectangle would paint that 48th cell as road — `ShorelineIsoCatalog.RoadBlobCount`
+  is the stop.
+
+### Slicing + naming
+
+- The five uniform sheets and all seven road atlases are **`SpriteSheetSlicer` manifest entries**
+  (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets*), **Center pivot** — a tilemap places
+  by cell, so any other pivot shifts a painted tile off its own cell and a stacked cliff band off its
+  neighbour.
+- `ShoreIsoSprites.png` is **packed at seven different sizes with per-item base-centre pivots**, so it
+  gets its own sidecar-driven `ShorelineIsoSpriteSlicer` (menu *Hidden Harbours ▸ Art ▸ Slice
+  Shoreline Iso Rock Sprites*), reading rects and pivots from `ShoreIsoSprites.json`. Every pivot is
+  horizontally centred and exactly **1 px above the item's base** — that contact point is what makes a
+  sea stack and a boulder of different heights place by the same rule instead of floating.
+- **Slice names state GEOMETRY, not semantics** (`ShoreIsoCliff_7` = the 8th cell, row-major from the
+  top-left) — the same rule as `CharacterSheetSlicer`, and for the same reason: compass-labelled art
+  has been mislabelled in five kits here. The meaning is resolved in one place,
+  **`ShorelineIsoCatalog`**, against the kit's own `ShorelineIso.json` contract.
+- **⚠ The compass letters (`cornSW`, `sideW`, `faceS`, `edN`…) are the kit's CLAIM, not a
+  measurement.** There is no azimuth probe for a static tile, so nothing here has been checked against
+  rendered pixels. The column ORDER is what the catalog guarantees; if a painted cliff faces the wrong
+  way in-scene, correct the label→column map in `ShorelineIsoCatalog` (and the kit README) — never
+  renumber the slices.
+
+### Source rigs
+
+- **`docs/art/rigs/shoreIsoKitRig.js`** → `ShoreIso` (new). Re-bakes any tile, any cliff height, any
+  sprite: `ground(mat,{gx,gy,seed})` · `fringe(mat,piece)` · `cliff(piece,{band,gy,feature:'cave'})` ·
+  `column(piece,rows)` · `dune(piece)` · `stack(size)` · `boulder(size)`.
+- **`docs/art/rigs/roadPathRig.js`** → `RoadKit` (**already in the repo since #227, unchanged**). The
+  kit zip's copy `md5`s differently, but that is **line endings only** — byte-identical once the CRs
+  are stripped, so these atlases bake from exactly the rig already committed.
+  `render(surface,{con,diag,wear,ground,markings,gx,gy,seed})` · `renderGround(ground,{gx,gy})` ·
+  `BLOB47`. The PNGs are one bake at `new` wear over a grass verge with no markings; **`worn`/
+  `cracked`, dirt/sand verges and lane markings all live in the rig** — re-bake, never hand-edit a
+  sheet.
+- Kit READMEs + the reference previews (`_preview-hero.png`, `road-scene.png` — reference only, NOT
+  for import) are under `docs/art/shoreline-iso-kit/` and `docs/art/road-path-kit/`.
+
+### Known limits (kit v7)
+
+- N-facing cliff back-lips reuse the plateau grass tile (occluded at this camera); diagonals are 45°
+  only.
+- Overlay dressing (marram tufts, driftwood, fences, spruce) is **not** in this kit — it comes from
+  the Wildflowers / Seaweed / Shoreline Finds sets already imported, which all composite fine on this
+  ground.
+
+**WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, paint
+tool, prefab or scene references these yet. `TileAssetBuilder`/`TilePaletteBuilder` still build the
+older loose tileset, untouched. Standing up the ISO ground/fringe rule-tiles and the road blob-47
+autotiler is the next step and belongs with the world-scene work, not with the import.
+
+---
+
+## Batch — Shoreline ISO **v8** (`ShoreIso2`), two styles (owner drop 2026-07-28)
+
+The same coast, re-cut, and shipped **twice**. v7 above is left in place and untouched, so nothing
+already painted against it breaks. Same 32×32 cell, same 40°-from-the-south camera, and the **same
+zero-water contract** — verified rather than assumed: all ten delivered sheets were scanned at import
+and carry **zero blue-dominant pixels**.
+
+### Two styles, one geometry
+
+`nat` (naturalist — 8/7/8-step ramps, Bayer dither in the band-transition zone) and `gfx` (graphic —
+6/5/6-step ramps, hard edges, unified keyline) are the kit's A/B. Geometry, grid, piece names and
+pivots are **identical**; only the shading law differs, so a map authored against one drops straight
+onto the other. `ShorelineIso2Catalog.ContractsAgreeOnGeometry` keeps that true if either style is
+ever re-baked alone.
+
+### Sheets — `Tilesets/ShorelineIso2/{nat,gfx}/`
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Ground.png` | 128×192 | **4** cols × 6 rows of **32×32** | 24 | grass · marram · sand · ripple · shingle · shelf |
+| `Fringe.png` | 384×96 | 12 × 3 | 36 | grass · marram · sand |
+| `Cliff.png` | 320×96 | 10 × 3 | 30 | cap · mid · toe |
+| `Dune.png` | 288×64 | 9 × **2** | 18 | cap · toe |
+| `Contact.png` | 160×32 | 5 × 1 | 5 | (single row: `n · ne · e · nw · w`) |
+
+**⚠ Three grids changed from v7, so a v7 index is NOT a v8 index** — which is why v8 has its own
+`ShorelineIso2Catalog` rather than more members on `ShorelineIsoCatalog`:
+
+- **Ground 3 → 4 columns.** Still adjacent world tiles, not art variants.
+- **Dune 1 → 2 rows.** `cap` alone is a 1 m bank; `cap + toe` is 2 m.
+- **`Contact.png` is new** — the ambient-occlusion overlays v7 had none of. Stamp one on the GROUND
+  tile a landform stands next to and the landform seats instead of floating. All five are of the
+  NORTHERN half: at this camera a landform's south side is its own lit face.
+
+### ⚠ `Cliff.png` is 10 columns but **not** 30 tiles
+
+Column 9 is the cave, and a sea cave is carved at the waterline — it is filled on the **toe row
+only**. Cells **9 and 19 are fully transparent padding** (measured: 100% alpha-zero in both styles,
+pinned by `CliffPaddingCells_AreActuallyEmpty`). Exactly the road blob-47 trap one section up, where
+the 48th cell is spare. The slice still cuts the full rectangle — a sheet's slice count must match its
+grid — but `ShorelineIso2Catalog.CliffIndex` **throws** on `cap`/`mid` + cave rather than handing back
+an index that resolves to nothing.
+
+### Import settings — the soft alpha is load-bearing
+
+`Fringe` and `Contact` carry **semi-transparent** pixels (measured alpha 92–235) for the soil
+under-shadow and the AO overlays; every other sheet is binary. That makes `Compression = None` a
+correctness setting, not a tidiness one — block compression quantises exactly that gradient and the
+sheet still looks broadly right. This kit is all colour and ships **no** mask/normal/ID channel, so
+sRGB stays **ON** (the inverse of the tree kit's data-channel trap). Pinned by
+`EverySheet_CarriesTheLockedImportSettings`.
+
+### Slicing + naming
+
+Ten `SpriteSheetSlicer` manifest entries (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX
+Sheets*), **Center pivot**, sliced on import — the sheets ship ready to use. Slice names state
+GEOMETRY (`Cliff_7` = the 8th cell, row-major from the top-left) and the meaning is resolved in
+`ShorelineIso2Catalog` against each style's own `ShorelineIso.json`. The compass letters remain the
+kit's **claim, not a measurement** — same standing warning as v7.
+
+**WIRE-IN (NOT done here — import + slice only):** nothing places these. No `Tile` asset, rule-tile,
+palette entry, paint tool, prefab or scene references them, and v7 is not retired (that is a separate,
+owner-approved change).
+
+---
+
+## Batch — Wharf / dock tile kit (owner drop 2026-07-23)
+
+The working waterfront's **deck**: near-plan 32×32 tiles that sit in the ground plane like `Grass.png`,
+plus the mooring hardware and the shore-armour arms. Same 32 px = 1 m / no-AA / upper-left key standard
+as the fleet, so buildings, boats and deck all register.
+
+### ⚠️ The cell is 32×**56**, and that is the whole contract
+
+The camera looks from the **south**, so a south-facing deck edge drops a visible **vertical face** over
+the water. The top **32 rows are the deck** (the tile proper); the bottom **24 are face + waterline
+foam**, and they **overhang downward over whatever is drawn in the cell below**.
+
+Two consequences, both easy to get wrong and both loud once you do:
+
+- **The atlas pivots TOP-LEFT**, not centre — the sidecar's "cell top-left aligns to tile screen origin".
+  Centre is the right pivot for every other tile sheet in this repo and it is wrong here: it would sink
+  every wharf tile 12 px into the water, consistently enough to look like an art bug rather than an
+  import one.
+- **Whatever draws these must paint BACK TO FRONT** (north rows first), or a face will overdraw the deck
+  of its own southern neighbour.
+
+N/E/W open edges get a raised curb only — the tall face is south + the SE/SW diagonals. That is a
+single-camera convention, and it means a thin finger pier reads best running **N–S**.
+
+### Sheets
+
+| Sheet | Size | Grid | Slices | Rows (top→bottom) |
+|---|---|---|---|---|
+| `Tilesets/Wharf/WharfAtlas.png` | 544×392 | 17 cols × 7 rows of **32×56** | 119 | quay · lowpier · tallpier · **float f0–f3** |
+| `Tilesets/Wharf/WharfBreakwaters.png` | 144×240 | 3 × 4 of **48×60** | 12 | riprap · crib · wall · sheet |
+| `Tilesets/Wharf/WharfOverlays.png` | 520×41 | **packed, irregular** | 14 | rails · cleat · bollard · ring · dolphin · ladder · tyre · pile head · gangway |
+
+- **Atlas columns** are the 17-piece auto-tile set: `ctr` · 4 edges · 4 outer corners · 4 end caps
+  (three sides open) · 4 diagonal 45° cuts. An "open" side is one that drops to water.
+- **`float` is ONE material occupying FOUR rows** — a 4-frame bob loop (f0–f3, ±1 px heave at ~6 fps,
+  offsets 0, −1, 0, +1). The three fixed materials have no frames. `WharfKitCatalog.AtlasRow` throws if
+  you ask a concrete quay for a bob frame, because a caller animating a quay has a bug.
+- **Breakwaters pivot on the CREST** (top-centre), not the base — that is what lets consecutive pieces
+  butt into a continuous run around a 45° turn, since the four armour types have different base heights
+  (the gap below each is its foam fringe).
+- **Overlays are sidecar-sliced**, because their pivots mean *different things per fitting*: standers
+  (bollard/dolphin/pile head) sit 1 px above their base — the same contact rule as the shoreline kit's
+  sea stacks; hangers (ladder/tyre/gangway) pivot at the **top** and fall away from where they attach;
+  the low flat fittings (cleat, recessed ring) project their contact point **mid-sprite**, which is
+  correct for a 7 px-tall object at a ¾ camera and not a bug; rails pivot on the **edge line** they run
+  along, which is their bottom row for an N/S run and their top for an E/W one. Wood and galvanised-pipe
+  rails are geometrically identical per run, so material is a paint decision and never a placement one.
+
+### Source rig
+
+**`docs/art/rigs/wharfKitRig.js`** → `WharfKit` — **already in the repo and unchanged** (byte-identical
+once line endings are normalised; same check as `roadPathRig`). It re-bakes the **deck tiles** — any
+material, any edge/diagonal combination, any bob frame. Overlays and breakwaters ship as baked sheets;
+edit them via their PNGs or ask the art director for a parametric rig.
+
+### ⚠️ The wharf BUILDING sheet is deliberately NOT in `Assets/`
+
+`WharfBuildingIso_shack.png` ships in the building-kit zip at **9600 × 1160** — 8 facings × a
+1200 × 1160 cell. It is reference only, and it stays under `docs/art/wharf-building-kit/`:
+
+- Unity's default cap is 2048, so it would import **silently downscaled**. Lifting the cap to hold it
+  means `NextPowerOfTwo(9600) = 16384`, i.e. a **16384 × 2048** texture ≈ **134 MB** at RGBA32 — for one
+  preset of one building.
+- The cell is oversized on purpose (it must hold the `cannery`/`fishPlant` presets), so a net shed is a
+  small object in a 37 m × 36 m frame. For comparison the 12.9 m Cape Islander bakes at 456 × 420.
+- **`wharfBuildingRig.js` is already in the repo** and is the source of truth. ✅ **The in-engine bake
+  now exists** — see the next section.
+
+### Also in this change: `MiniJson` moved down an assembly
+
+`WharfOverlays.json` is dictionary-shaped (`"frames": { "cleat": {…} }`), which `JsonUtility` cannot
+read. The repo already had a reader for exactly that case — but it lived in `HiddenHarbours.App.Editor`,
+which sits at the **top** of the editor dependency graph (it references `Art.Editor`, not the reverse),
+so nothing below it could reach it. It has moved to `HiddenHarbours.Art.Editor` with its `.meta`, and its
+two callers updated. The alternative was a second, worse JSON parser thirty lines from a good one.
+
+**WIRE-IN (NOT done here — import + slice only):** no `Tile` asset, `RuleTile`, palette entry, prefab or
+scene references these yet.
+
+
+---
+
+## The BUILDING bake — houses + wharf buildings (`BuildingRigBaker`)
+
+Both building rigs (`houseIsoRig` → the clapboard houses, `wharfBuildingRig` → net sheds, storage barns
+and fish plants) are baked **in-engine** under ADR 0021, not hand-exported. Menu:
+**Hidden Harbours ▸ Art ▸ Bake Buildings (houses + wharf)**. Twelve presets — five house, seven wharf.
+
+### Why they needed their own baker rather than `RigBaker`
+
+**The cell is sized for the largest possible build.** The house cell is 992×1060 and the wharf-building
+cell is 1200×1160, because the latter must hold the `cannery`. A net shed drawn in that cell is a small
+object in a 37 m × 36 m frame. Eight facings uncropped is 9600 px wide — which is exactly the reference
+sheet the kit shipped, and exactly why that PNG was left in `docs/` and never imported.
+
+So **the bake tight-crops**, and that is not an optimisation — it is what makes a bake possible:
+
+| | uncropped | cropped |
+|---|---|---|
+| Widest legal grid | 3 cols × 3 rows | fits far wider |
+| Sheet | 3600 × 3480 | a few hundred px per cell |
+| Texture memory | **~50 MB per preset** | a fraction of it |
+
+**One crop rect for all eight facings, not one per cell.** A grid slice needs a uniform cell — but the
+reason that actually bites is the **pivot**: it must be identical across facings or the building shifts
+as it turns (the same rule the boat kits state as "so a heading swap never shifts the boat"). The crop is
+therefore the *union* of all eight silhouettes, and the pivot moves by exactly the crop origin.
+
+**The pivot is DATA, not a constant.** Every other sheet in this repo pins its pivot with a named const
+(`DoryWaterline`, `PuntOrigin`) because the kit fixes the cell. Here the cell depends on the preset — a
+cannery crops differently from a shack — so each bake writes a **sidecar JSON** beside the PNG carrying
+the cropped cell size, the cropped pivot, the crop origin, the measured convention, the footprint, and
+the per-facing overlay anchors (door, ridge, chimney/stack tops) already in cropped-cell pixels.
+
+### ⚠️ The preset trap — `{preset:'netShed'}` silently renders the wrong building
+
+The obvious call looks right and is wrong: **neither rig's `resolve()` reads a `preset` key at all.** It
+reads `type`/`era`, `body`, `siding`, `size`… so passing the name falls through to the *default* build
+with no error and no warning — you would get seven identical sheds under seven different names, and the
+only way to notice is to line all seven up. `PRESETS` is a data table meant to be **spread** into the
+options, which is what the baker does (`Object.assign({}, Rig.PRESETS['netShed'])`).
+
+`AssertPresetApplies` is the tripwire: it renders one facing with the preset and once with `{}` and
+refuses if the bytes are identical. It cannot prove every field applied, but it catches the
+whole-preset-ignored case, which is the one with teeth.
+
+### The azimuth probe reads the DOOR, not a bow
+
+`RigAzimuthProbe` works by PCA-ing a hull at a quarter turn and breaking the 180° ambiguity with a
+bow-taper test — a boat is pointed at one end and blunt at the other. **A building has no bow.** Its
+silhouette at a quarter turn is nearly mirror-symmetric, so that probe would return noise dressed as a
+confident answer.
+
+`BuildingRigAzimuthProbe` reads the **door** instead. Both rigs put the main door on the `+Y` gable and
+expose it through `anchors(dir, opts).door`, already projected to screen pixels — and crucially
+`anchors()` calls the *same* `camBasis`/`projVert` that `render()` draws with, so it is not a
+declaration about where the door is, it is the arithmetic that puts it there. Cell 2 is labelled `'E'`;
+if its door lands left of the pivot, the labels are lying by −90° and the rig is counter-clockwise.
+
+Reading the rigs' projection by hand (`th = +dir·45°`, `xr = x·ct − y·stt`, door at `+Y`) predicts
+**counter-clockwise for both**, matching the README's inference — but that is a prediction, not a
+measurement. **Nothing is measured until the bake actually runs**, at which point it either agrees with
+the catalog or refuses.
+
+The probe additionally checks the rendered silhouette's width at two facings against the `Wd`/`Ln` the
+rig reports, at 32 px = 1 m, and **refuses** if they disagree — because the shared-projection argument
+only holds while `anchors()` and `render()` are resolving the same building.
+
+> **Stated plainly:** the handedness is *not* independently re-derived from pixels the way the punt's
+> byte-identical golden master was. There is no building feature as unambiguous as a bow taper. It rests
+> on the shared-projection argument above, guarded by the width check.
+
+### Output
+
+`Art/Sprites/Buildings/HouseIso_<preset>.png` + `.json`, and `WharfBuildingIso_<preset>.png` + `.json`.
+**Not committed until the owner runs the bake** — the sheets are generated, not authored.
+
+
+### The Building Studio — dial a build, then bake it
+
+**Hidden Harbours ▸ Art ▸ Building Studio.** The wharf rig has twenty axes and the house rig nineteen;
+the twelve shipped presets are a thin sample of that space. The studio makes the whole surface reachable
+without writing JS, and makes baking the last step rather than the only way to see anything.
+
+- **Dropdowns are read from the rig**, not hard-coded — paint colours, sidings, roofs, doors, windows,
+  cupolas, rooflines and types all come from the rig's own exported tables at load time, so a drop that
+  adds a colour appears with no code change. Only four axes have no exported table (attic, porch,
+  wainscot, loft); those are transcribed and **grepped by a test**.
+- **Load a preset** to start from a known build, then dial from there. **Bake 8-facing sheet** runs the
+  same `BuildingRigBaker` as the batch menu — same crop, same probe, same sidecar.
+- **Elevation is a preview-only dial.** The bake always uses the rig's default 40°, the fleet's turntable
+  elevation; a building baked at another camera would not sit in the same space as the boats.
+- **Orientation is shown honestly.** The preview names the cell's rig LABEL *and* the bearing it actually
+  DEPICTS. Both rigs turn counter-clockwise, so the cell the rig calls `'E'` draws a building facing
+  **west**. The bake corrects this; the studio shows raw rig output, and labelling it `'E'` alone would
+  repeat the exact mistake that has shipped five times here. The pivot (the building's ground point) is
+  drawn as a crosshair.
+
+#### ⚠️ Unknown option keys and values fail SILENTLY
+
+Both rigs resolve options as `opts[k] != null ? opts[k] : fallback` and then look the value up in a
+table. A **misspelled key** and an **unknown value** are both perfectly legal — the rig just renders
+something else, with no error and no warning. That is why the studio only ever offers values it read
+from the rig, and why every axis key is checked against the rig source by a test.
+
+**A worked example of that trap, found while building this:** the wharf rig's `TYPES`/`PRESETS` tables
+spell window density `winD`, so `winD` looks like the option key. It is not. The deciding line is
+
+```
+winD: opts.winDensity != null ? opts.winDensity : T.winD
+```
+
+— left of the colon is the internal build field, right is the option a caller passes. Dialling `winD`
+would have been accepted in silence and done nothing. **The kit README was right and the first pass at
+this table was wrong**; both rigs take `winDensity`.
+
+---
+
+## Batch — Rock Iso (`RockIso`), the rig and the contract (owner drop 2026-07-28)
+
+Sibling of the Shoreline ISO v8 kit from the same drop: **ShoreIso2 owns the ground, RockIso owns
+every stone standing on it.** They share a camera, a PPU and the red-sandstone ramp — `RockIso`'s
+`sandstone` IS ShoreIso2's `redrock` verbatim, so a rock composites onto a cliff toe with no seam.
+
+| Species | Cell | Variants | Sheet | What it is |
+|---|---|---|---|---|
+| `Erratic` | 52×44 | 4 | 208×132 | single shore boulder |
+| `Outcrop` | 88×60 | 3 | 264×180 | 2–5 boulder cluster, shoreline edge dressing |
+| `PoolLedge` | 80×48 | 3 | 240×144 | wave-cut plate with a tide-pool basin |
+| `Skerry` | 104×52 | 4 | 416×156 | awash hazard rock, clipped at the sea plane |
+| `Cloven` | 60×76 | 3 | 180×228 | split landmark, chart-mark scale |
+| `Cobble` | 52×32 | 3 | 156×96 | beach cobbles & shingle, tiny filler |
+
+Sheets are **variant COLS × dress ROWS**, named `<Species>_<stone>_<tide>.png`. Axes: stone
+(`sandstone · granite · basalt · quartzite` — colour AND structure) × tide (`dry · wet · awash`) ×
+dress (`bare · barnacled · weeded`, the sheet rows).
+
+### ⭐ This kit ships NO pixels — it bakes to order
+
+6 species × 4 stones × 3 tides = **72 sheets**, so the drop ships the rig and the sidecar and nothing
+else. `RockIsoBaker` (menu *Hidden Harbours ▸ Art ▸ Bake Rock Iso Sheets*) writes them in-engine from
+`docs/art/rigs/rockIsoRig.js`, running the rig UNMODIFIED in the V8 host (ADR 0021). Two menu items,
+because the **atlas budget is a real decision**: the default bakes `sandstone` × 3 tides = 18 sheets;
+an *ALL 4 stones* item behind a confirm dialog bakes all 72.
+
+**The anchors are stone- and tide-independent** (the geometry is seed-stable), so one contract entry
+serves all twelve bakes of a variant — which is what lets the engine be wired against `RockIso.json`
+before a single PNG exists.
+
+**⚠ The baker does NOT rewrite `RockIso.json`**, unlike the art director's `_rockBake.js`. The
+committed sidecar is the ORACLE: `RockIsoBaker.AssertMatchesContract` compares the rig's live geometry
+against it before writing a pixel and **refuses on any disagreement**. Every anchor is expressed in
+cell pixels, so a cell that drifted by one row would silently invalidate all twenty variants at once —
+this turns that into a loud stop pointing at the art director.
+
+### ⚠ The pivot is the GROUND CONTACT, and it needs its own slicer
+
+Under the 40° camera a rock's near flank is drawn **below** its ground contact — measured **7–22 px =
+0.219–0.688 m**, positive on every one of the twenty variants. A bottom-centre pivot (what
+`ArtImportPipeline` picks for standing art) floats every rock by exactly that.
+
+`RockSheetSlicer` exists rather than a `SpriteSheetSlicer` manifest row because that manifest writes
+**one pivot per sheet**, and a rock sheet's pivot is **per variant COLUMN** — each variant is a
+different volume with its own contact point. One shared pivot would plant one column and misplace the
+rest. Same reason `TreeSheetSlicer` exists.
+
+Normalisation is ADR 0026's `(x/W, (H−y)/H)`. **Not** the tree kit's `pad/cellH`: the rock contract
+publishes a continuous top-left coordinate and no `pad`. Read what the contract publishes.
+
+### Anchors (all in `RockIso.json`, all measured off the built volume)
+
+`footprint` collision ellipse (rx, ry in m) + ground contact px · `perch` highest standable point,
+**`flat:false` ⇒ decorative, do not spawn on it** · `snags` outer silhouette catches for rope and pot
+lines · `hazard` awash danger radius in m · `pool` tide-pool basin rect + depth (the **shader's** fill
+target — the bake leaves the basin empty) · `weedLine` the tide mark where rockweed drapes.
+
+Verified invariants: `pivot == footprint.ground`, horizontally centred, on all 20; `hazard` present
+*exactly* when `waterline > 0` (7 variants); `pool` on PoolLedge alone and always inside its cell.
+
+**⚠ `perch.flat` is a PER-VARIANT flag, not a species rule.** The kit README reads like a species rule
+("Cobble and most Skerry builds"), but measured: all four Skerry are false, Cobble is 2 of 3, and
+`PoolLedgeC` is flat. **Exactly two variants in the kit are standable — `PoolLedgeC` and `CobbleB`.**
+Honour the flag, not the point.
+
+**⚠ Snag separation is a GROUND-PLANE angle, not a screen angle.** The kit's rule is ≥60° apart;
+measured naively in screen px, 9 of 19 variants appear to break it (worst 42.5°). They do not — the
+camera squashes depth by 0.643. Un-squashed, the true minimum is **60.6°**. A sabotage test pins the
+wrong measurement so nobody removes the correction.
+
+### 🔴 Flagged to the art director, not patched
+
+**`SkerryD` ships ONE snag where the README promises 2–3.** The other nineteen variants all carry
+exactly three. Pinned by a canary test asserting the current state — if a re-bake fixes it, that test
+goes red and should be deleted.
+
+**WIRE-IN (NOT done here):** no sheets baked, nothing placed, no prefab/spawner/collision reads these
+anchors yet, and the older hand-drawn `Sprites/Shore/RockCluster.png`, `RockMid.png`, `RockSmall.png`
+and `TidePoolRock.png` are untouched.

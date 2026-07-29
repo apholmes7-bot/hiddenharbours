@@ -1,0 +1,358 @@
+{
+    "note": "Baked in-engine by TreeRigBaker from docs/art/rigs/treeIsoRig.js — REGENERATE rather than hand-edit (Hidden Harbours > Art > Bake Acadian Trees). pivotX/pivotY are the TRUNK FOOT in cell px from the top-left; nearFlarePad rows of near-root flare sit BELOW it, which is why a tree does not pivot bottom-centre. unityPivot is the same point normalised bottom-origin, and trunkAnchor is that height as a fraction of the cell — the wind shader's _TrunkAnchor for this species.",
+    "rig": "docs/art/rigs/treeIsoRig.js",
+    "global": "TreeRig",
+    "ppu": 32,
+    "camera": {
+        "name": "ADR-0006/0022",
+        "view": "3/4 from S, orthographic",
+        "elevDeg": 40.0,
+        "heightScale": 0.7660444378852844,
+        "depthScale": 0.6427876353263855
+    },
+    "light": {
+        "key": [
+            -0.5476772785186768,
+            -0.6572127342224121,
+            0.517803966999054
+        ],
+        "rim": [
+            0.48055294156074526,
+            -0.2803225517272949,
+            -0.8309561610221863
+        ],
+        "note": "fixed upper-left key + back rim, screen space (art bible section 1)"
+    },
+    "rules": {
+        "rimPx": 2,
+        "minBodyPx": 6,
+        "minClumpRadiusPx": 5,
+        "note": "a 2 px rim must leave 6 px of interior; nothing is emitted under a 5 px clump radius; the rim is gated on local mass thickness"
+    },
+    "sheet": {
+        "cols": 4,
+        "rows": 1,
+        "colAxis": "variant",
+        "rowAxis": "sway frame",
+        "rigSwayRows": 4,
+        "swayNote": "ONE sway row is baked, on purpose: HiddenHarboursTreeWind.shader sways the canopy off the shared deterministic wind (_WindWorld) that the grass and water also read, so one gust moves all three together — and because the shader passes uv through untouched, albedo/mask/normal stay co-registered by construction. Baked frames would loop on a timer that knows nothing about the wind, at 4x the sheet area."
+    },
+    "channels": {
+        "albedo": "RGBA, binary alpha, no AA, keyline included",
+        "mask": "R=key light, G=back rim, B=depth, A=coverage",
+        "normal": "view-space normal, R=x, G=y-up, B=toward camera",
+        "coverageNote": "albedo and mask cover the same pixels; the NORMAL is 8% smaller because the rig's 1 px keyline ring is composited into rgba (and so into the mask's A) but carries no surface normal. Measured on Red Spruce mature: albedo/mask 7601 px, normal 6990 px, difference 611 px = exactly the keyline. Light the keyline from the mask, never from the normal — and note the three sheets import Tight, so the NORMAL's own mesh is slightly smaller too: sample all three through the ALBEDO's mesh and uv, do not give each channel its own renderer."
+    },
+    "trees": [
+        {
+            "species": "RedSpruce",
+            "name": "Red Spruce",
+            "latin": "Picea rubens",
+            "form": "spire",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.699999809265137,
+            "cellW": 110,
+            "cellH": 166,
+            "pivotX": 54,
+            "pivotY": 145,
+            "nearFlarePad": 20,
+            "trunkAnchor": 0.1204819306731224,
+            "unityPivotX": 0.4909090995788574,
+            "unityPivotY": 0.1204819306731224,
+            "sheetW": 440,
+            "sheetH": 166,
+            "rigSheetW": 440,
+            "rigSheetH": 664,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.6000000238418579,
+                "bodyRatio": 86,
+                "despeckled": 5,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "BlackSpruce",
+            "name": "Black Spruce",
+            "latin": "Picea mariana",
+            "form": "spire",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.599999904632568,
+            "cellW": 84,
+            "cellH": 156,
+            "pivotX": 43,
+            "pivotY": 142,
+            "nearFlarePad": 13,
+            "trunkAnchor": 0.0833333358168602,
+            "unityPivotX": 0.511904776096344,
+            "unityPivotY": 0.0833333358168602,
+            "sheetW": 336,
+            "sheetH": 156,
+            "rigSheetW": 336,
+            "rigSheetH": 624,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.4000000059604645,
+                "bodyRatio": 77,
+                "despeckled": 3,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "BalsamFir",
+            "name": "Balsam Fir",
+            "latin": "Abies balsamea",
+            "form": "spire",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.0,
+            "cellW": 108,
+            "cellH": 150,
+            "pivotX": 54,
+            "pivotY": 128,
+            "nearFlarePad": 21,
+            "trunkAnchor": 0.14000000059604646,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.14000000059604646,
+            "sheetW": 432,
+            "sheetH": 150,
+            "rigSheetW": 432,
+            "rigSheetH": 600,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.4000000059604645,
+                "bodyRatio": 86,
+                "despeckled": 4,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "WhitePine",
+            "name": "E. White Pine",
+            "latin": "Pinus strobus",
+            "form": "pine",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 6.900000095367432,
+            "cellW": 138,
+            "cellH": 193,
+            "pivotX": 69,
+            "pivotY": 175,
+            "nearFlarePad": 17,
+            "trunkAnchor": 0.08808290213346482,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.08808290213346482,
+            "sheetW": 552,
+            "sheetH": 193,
+            "rigSheetW": 552,
+            "rigSheetH": 772,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 1.399999976158142,
+                "bodyRatio": 85,
+                "despeckled": 2,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "WhiteCedar",
+            "name": "E. White Cedar",
+            "latin": "Thuja occidentalis",
+            "form": "cedar",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 4.800000190734863,
+            "cellW": 78,
+            "cellH": 138,
+            "pivotX": 41,
+            "pivotY": 124,
+            "nearFlarePad": 13,
+            "trunkAnchor": 0.09420289844274521,
+            "unityPivotX": 0.5256410241127014,
+            "unityPivotY": 0.09420289844274521,
+            "sheetW": 312,
+            "sheetH": 138,
+            "rigSheetW": 312,
+            "rigSheetH": 552,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.20000000298023225,
+                "bodyRatio": 84,
+                "despeckled": 3,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "Tamarack",
+            "name": "Tamarack",
+            "latin": "Larix laricina",
+            "form": "larch",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.300000190734863,
+            "cellW": 104,
+            "cellH": 149,
+            "pivotX": 51,
+            "pivotY": 132,
+            "nearFlarePad": 16,
+            "trunkAnchor": 0.10738255083560944,
+            "unityPivotX": 0.49038460850715639,
+            "unityPivotY": 0.10738255083560944,
+            "sheetW": 416,
+            "sheetH": 149,
+            "rigSheetW": 416,
+            "rigSheetH": 596,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 1.100000023841858,
+                "bodyRatio": 80,
+                "despeckled": 4,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "WhiteBirch",
+            "name": "White Birch",
+            "latin": "Betula papyrifera",
+            "form": "oval",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.699999809265137,
+            "cellW": 114,
+            "cellH": 165,
+            "pivotX": 57,
+            "pivotY": 146,
+            "nearFlarePad": 18,
+            "trunkAnchor": 0.1090909093618393,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.1090909093618393,
+            "sheetW": 456,
+            "sheetH": 165,
+            "rigSheetW": 456,
+            "rigSheetH": 660,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 89,
+                "despeckled": 4,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "RedMaple",
+            "name": "Red Maple",
+            "latin": "Acer rubrum",
+            "form": "round",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.599999904632568,
+            "cellW": 137,
+            "cellH": 156,
+            "pivotX": 68,
+            "pivotY": 134,
+            "nearFlarePad": 21,
+            "trunkAnchor": 0.13461539149284364,
+            "unityPivotX": 0.49635037779808047,
+            "unityPivotY": 0.13461539149284364,
+            "sheetW": 548,
+            "sheetH": 156,
+            "rigSheetW": 548,
+            "rigSheetH": 624,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 90,
+                "despeckled": 1,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "RedOak",
+            "name": "Red Oak",
+            "latin": "Quercus rubra",
+            "form": "round",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.300000190734863,
+            "cellW": 169,
+            "cellH": 159,
+            "pivotX": 84,
+            "pivotY": 135,
+            "nearFlarePad": 23,
+            "trunkAnchor": 0.14465409517288209,
+            "unityPivotX": 0.4970414340496063,
+            "unityPivotY": 0.14465409517288209,
+            "sheetW": 676,
+            "sheetH": 159,
+            "rigSheetW": 676,
+            "rigSheetH": 636,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 91,
+                "despeckled": 0,
+                "pass": true,
+                "underFloor": false
+            }
+        },
+        {
+            "species": "TremblingAspen",
+            "name": "Trembling Aspen",
+            "latin": "Populus tremuloides",
+            "form": "oval",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 5.599999904632568,
+            "cellW": 88,
+            "cellH": 156,
+            "pivotX": 44,
+            "pivotY": 140,
+            "nearFlarePad": 15,
+            "trunkAnchor": 0.09615384787321091,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.09615384787321091,
+            "sheetW": 352,
+            "sheetH": 156,
+            "rigSheetW": 352,
+            "rigSheetH": 624,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 84,
+                "despeckled": 1,
+                "pass": true,
+                "underFloor": false
+            }
+        }
+    ]
+}

@@ -17,8 +17,12 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>Owner tunables (rule 6).</b> Every number an owner might want to feel-tune lives
     /// here: how much weed, where, how it rides the sea, when clumps merge, what they snag on, when
-    /// the tide refloats a beached clump, and the look. Greybox blobs are generated in code until the
-    /// painted weed lands — <see cref="TierSprites"/> is the slot it drops into.</para>
+    /// the tide refloats a beached clump, and the look.</para>
+    ///
+    /// <para><b>The art.</b> Assign <see cref="WeedArt"/> — the shared <see cref="DriftWeedKit"/> — and
+    /// the bed wears the painted drift-weed clumps at their own authored size. With no kit assigned it
+    /// falls back to the code-built greybox blobs tinted by <see cref="Palette"/>, which is what the
+    /// bed shipped as before the art landed.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Seaweed Bed", fileName = "SeaweedBed")]
     public class SeaweedDef : ScriptableObject
@@ -95,13 +99,27 @@ namespace HiddenHarbours.Art
                  "0 on dead glass.")]
         [Range(0f, 45f)] public float WobbleMaxDegrees = 9f;
 
-        [Header("Look (greybox blobs in the KTC water tones until the painted weed lands)")]
-        [Tooltip("Clump footprint (m, sprite width) per size tier, small → big. Merges climb this " +
-                 "ladder; 2-3 sizes read well.")]
+        [Header("Look")]
+        [Tooltip("Clump footprint (m) per size tier, small → big. Merges climb this ladder; 2-3 sizes " +
+                 "read well. With a WeedArt kit assigned these are TARGETS — the presenter picks the " +
+                 "clump drawn nearest each one and draws it at native size rather than rescaling art.")]
         public float[] TierSizesMeters = { 0.45f, 0.75f, 1.15f };
-        [Tooltip("Painted weed sprites per size tier, same order as TierSizesMeters — the owner's art " +
-                 "slots in HERE when it lands. Any empty/short slot falls back to the generated greybox " +
-                 "blob, so partial art never breaks the bed.")]
+
+        [Tooltip("THE PAINTED WEED. Assign the shared DriftWeedKit and the bed wears the art director's " +
+                 "clumps at their own drawn size. Leave empty and the bed falls back to the code-built " +
+                 "greybox blobs tinted by Palette below — which is what shipped before the art landed.")]
+        public DriftWeedKit WeedArt;
+        [Tooltip("Relative chance of each of the kit's ramp rows — living / golden / bleached, in sheet " +
+                 "row order. A clump keeps its row for life. Owner ruling 2026-07-23: every species " +
+                 "ships its golden row and the runtime may weight it. {1} = living only.")]
+        public float[] RampWeights = { 1f, 0.3f, 0.12f };
+        [Tooltip("Kit species this bed may use, by name (Bladderwrack / SugarKelp / Eelgrass / TornMat). " +
+                 "Blank = all of them. Names are matched case-insensitively and unknown names are " +
+                 "ignored, so a typo cannot silently empty the bed.")]
+        public string[] SpeciesFilter = System.Array.Empty<string>();
+
+        [Tooltip("LEGACY per-tier sprite slots, kept so a bed authored before the DriftWeedKit still " +
+                 "renders. Used only when WeedArt is empty; these ARE rescaled to the tier footprint.")]
         public Sprite[] TierSprites = System.Array.Empty<Sprite>();
         [Tooltip("Weed tones cycled per piece (KTC palette — dark olive/kelp browns sampled against the " +
                  "North Atlantic water look).")]

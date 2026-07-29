@@ -10,8 +10,30 @@
    PIVOT, not corners. The motor swivels about the transom clamp: renderMotor(dir,{variant:'basic'|'upgraded', steer,-1..1 |
    steerDeg, tilt, elev, roll, pitch, heave}); pass the hull's rock(i) values so both layers ride the
    same wave. tillerGrip(dir,opts) -> motor-cell {x,y} of the tiller grip for the operator's hand.
+
+   PASS 3 adds:
+   OARS — a third overlay layer in the HULL cell (same pivot): renderOars(dir,{state:'row'|'shipped'|'trailing',
+   t:0..1, side, elev, roll, pitch, heave}) + oarHandles(dir,opts) for the rower's hands. She rows from the mid
+   thwart on rowlock sockets baked into the gunwale, so the oars stack on the motor build (kicker won't start ->
+   pull her home). Also baked: floor battens, breasthook + stem ring bolt (painter), quarter knees + a
+   port-quarter ring bolt (stern line). Anchors: painter, sternEye, rowSeat, helmSeat, pilotStand, tubMounts.
+
+   SPORT-MOTOR COLOURWAYS — the upgraded build's paint is data too: renderMotor(dir,{variant:'upgraded',
+   motorScheme:'regatta-white'|'harbour-teal'|'signal-gold'|'oxblood'|'midnight'|'spruce'}) or
+   motor:{cowl,accent,pan} for a free mix (same rampFrom envelope, same chipWall). The BASIC starter is
+   deliberately one weathered colourway — it never reads those mats, so its sheet is fixed.
+
+   COLOURWAYS — paint is data, not baked pixels. render(dir,{scheme:'harbour-white'|...}) picks a named preset;
+   render(dir,{paint:{hull,trim,cove,bottom,interior}}) mixes any base colours (bottom defaults to trim,\n   interior to bare wood; oars and motor cowl keep their own ramps). rampFrom(hex,n) derives a fleet-legal
+   ramp in OKLCH (locked lightness curve, chroma capped at C_CAP, shadows rotated cool / highlights warm), so a
+   free colour choice can't leave the fleet's envelope. chipWall() returns the legal swatch grid for a picker.
+   'harbour-white' keeps the hand-tuned pass-1 ramps -> bit-identical to the original bake.
+
    Exposes globalThis.PuntIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
-   MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, PAINT,TRIM,GOLD,WOOD,IRON,KEY }. */
+   MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, OAR, renderOars, oarHandles, OARLOCK_U,
+   SCHEMES, schemeIds, defaultScheme, palette, rampFrom, chipWall, C_CAP,
+   TUBS, tubMounts, PILOT, pilotStand, painter, sternEye, rowSeat, helmSeat,
+   PAINT,TRIM,GOLD,WOOD,IRON,KEY }. */
 (function (root) {
   const PX = 32, S = 32;
   const W = 184, H = 168, cx = 92, cy = 94;
@@ -24,6 +46,7 @@
     return { roll: ROCK.rollA*Math.sin(a), pitch: ROCK.pitchA*Math.sin(a+Math.PI/2), heave: ROCK.heaveA*Math.sin(a) };
   }
   const L = 5.2, TH = 0.035, FLOOR = 0.06, SEAT = 0.30;
+  const OARLOCK_U = 0.42;                // rowlock station — 0.31 m aft of the mid thwart, so a rower on it has the looms in hand
   const NSEG = 18;
 
   // paint ramps dark->light (KTC: keyed to the fleet Punt scheme — teal #2ba39a / white #eef0ea / gold #e0b13a)
@@ -35,10 +58,132 @@
   const MOTO  = ['#101317','#1d2127','#2b323a','#3d454e','#525c63','#6b767b','#8a9499'];  // engine grey-blacks
   const RED   = ['#4a100e','#7c1a15','#a8241b','#cf3626','#e2573c'];                      // upgrade stripe/decals
   const KEY   = '#101a19';
-  const MATS = { paint:{ramp:PAINT,off:0}, trim:{ramp:TRIM,off:-1}, gold:{ramp:GOLD,off:-3},
-                 wood:{ramp:WOOD,off:0}, iron:{ramp:IRON,off:-2},
-                 moto:{ramp:MOTO,off:0}, blk:{ramp:MOTO,off:-2}, red:{ramp:RED,off:-1} };
-  const RINDEX = {}; [PAINT,TRIM,GOLD,WOOD,IRON,MOTO,RED].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
+
+  // ---- paint mixer (OKLCH): any base colour -> a fleet-legal ramp -------------------------------
+  // The rig owns the ramp SHAPE (lightness curve, chroma ceiling, hue rotation); the caller only
+  // picks base colours. That is what keeps a free colour choice from going off-model.
+  const clamp01=(v)=>v<0?0:v>1?1:v;
+  const s2l=(c)=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);
+  const l2s=(c)=>c<=0.0031308?c*12.92:1.055*Math.pow(c,1/2.4)-0.055;
+  function hex2oklch(hex){
+    const R=s2l(parseInt(hex.slice(1,3),16)/255), G=s2l(parseInt(hex.slice(3,5),16)/255), B=s2l(parseInt(hex.slice(5,7),16)/255);
+    const l=Math.cbrt(0.4122214708*R+0.5363325363*G+0.0514459929*B);
+    const m=Math.cbrt(0.2119034982*R+0.6806995451*G+0.1073969566*B);
+    const s=Math.cbrt(0.0883024619*R+0.2817188376*G+0.6299787005*B);
+    const Lo=0.2104542553*l+0.7936177850*m-0.0040720468*s;
+    const A=1.9779984951*l-2.4285922050*m+0.4505937099*s;
+    const Bb=0.0259040371*l+0.7827717662*m-0.8086757660*s;
+    return { L:Lo, C:Math.hypot(A,Bb), h:(Math.atan2(Bb,A)*180/Math.PI+360)%360 };
+  }
+  function _lin(L,C,h){
+    const a=C*Math.cos(h*DEG), b=C*Math.sin(h*DEG);
+    const l_=L+0.3963377774*a+0.2158037573*b, m_=L-0.1055613458*a-0.0638541728*b, s_=L-0.0894841775*a-1.2914855480*b;
+    const l=l_*l_*l_, m=m_*m_*m_, s=s_*s_*s_;
+    return [ 4.0767416621*l-3.3077115913*m+0.2309699292*s,
+            -1.2684380046*l+2.6097574011*m-0.3413193965*s,
+            -0.0041960863*l-0.7034186147*m+1.7076147010*s ];
+  }
+  function oklch2hex(L,C,h){                 // gamut-fit by walking chroma down, so hue/value survive
+    let c=C;
+    for(let i=0;i<14;i++){ const v=_lin(L,c,h); if(v.every(x=>x>=-0.002&&x<=1.002)) break; c*=0.9; }
+    const v=_lin(L,c,h).map(x=>('0'+Math.round(clamp01(l2s(x))*255).toString(16)).slice(-2));
+    return '#'+v.join('');
+  }
+  const HUE_WARM=92, HUE_COOL=258;           // key light / sky fill — every ramp in the fleet leans these ways
+  const C_CAP=0.115;                         // saturation ceiling: no neon paint in this harbour
+  function rotToward(h,t,amt){ const d=((t-h+540)%360)-180; return (h+d*amt+360)%360; }
+  function rampFrom(hex, n, o){
+    o=o||{};
+    const anchor=o.anchor!=null?o.anchor:0.78, g=o.gamma||0.88, b=hex2oklch(hex);
+    const C0=Math.min(b.C, o.cap!=null?o.cap:C_CAP);
+    const Ldk=Math.max(0.24, b.L*(o.floor!=null?o.floor:0.60));
+    const Lhi=Math.min(0.985, b.L+(1-b.L)*(o.ceil!=null?o.ceil:0.38));
+    const out=[];
+    for(let i=0;i<n;i++){
+      const t=i/(n-1), k=t-anchor;
+      let Lv = t<anchor ? Ldk+(b.L-Ldk)*Math.pow(t/anchor,g) : b.L+(Lhi-b.L)*((t-anchor)/(1-anchor));
+      const C = Math.max(0.003, C0*(k<0 ? 1+0.10*(-k) : 1-0.55*k));
+      const h = rotToward(b.h, k<0?HUE_COOL:HUE_WARM, Math.min(0.14, Math.abs(k)*0.20));
+      let hx = oklch2hex(Lv,C,h);
+      for(let s=0; s<6 && out.length && hx===out[out.length-1]; s++){ Lv=Math.min(0.99,Lv+0.022); hx=oklch2hex(Lv,C,h); }
+      out.push(hx);
+    }
+    return out;
+  }
+  // the legal swatch grid a picker offers: chroma peaks midtone, neutral column first
+  const CHIP_HUES=[null,22,48,84,132,172,196,232,268,318];
+  const CHIP_L=[0.30,0.44,0.57,0.70,0.83,0.94];
+  function chipWall(){
+    return CHIP_L.map(Lv=>CHIP_HUES.map(h=>{
+      if(h==null) return oklch2hex(Lv,0.006,236);
+      const env=Math.sin(Math.PI*clamp01((Lv-0.10)/0.88));
+      return oklch2hex(Lv, Math.min(C_CAP, 0.018+0.098*env), h);
+    }));
+  }
+
+  // ---- colourways: presets are just base colours; the mixer derives the ramps -------------------
+  const SCHEMES = {
+    'harbour-white': { name:'Harbour White', hull:'#eef0ea', trim:'#2ba39a', cove:'#e0b13a',
+                       ramps:{ hull:PAINT, trim:TRIM, cove:GOLD },      // hand-tuned pass-1 bake, kept exact
+                       note:'the fleet scheme — matches her buoy' },
+    'dory-buff':     { name:'Dory Buff',    hull:'#e3d1a4', trim:'#8f3527', cove:'#3b3a33', note:'cream topsides, oxblood rail, bare interior' },
+    'bottle-green':  { name:'Bottle Green', hull:'#31694c', trim:'#e2dcc7', cove:'#e0b13a', bottom:'#8c3f2c', interior:'#cdb98d', note:'dark green, cream sheer, buff-painted interior' },
+    'squall-grey':   { name:'Squall Grey',  hull:'#8a99a1', trim:'#22354a', cove:'#c9ccc4', bottom:'#7c3a2a', interior:'#909c99', note:'workaday grey-blue, deck-grey interior' },
+    'cranberry':     { name:'Cranberry',    hull:'#a8452f', trim:'#e6ddc6', cove:'#e0b13a', note:'bog red, cream boot top' },
+    'tar-black':     { name:'Tar Black',    hull:'#2a2f33', trim:'#2ba39a', cove:'#e0b13a', note:'tarred topsides, teal rail' },
+  };
+  const DEFAULT_SCHEME='harbour-white';
+
+  // ---- sport-motor colourways: the upgrade's cosmetic axis (cowl shell / flash decals / pan) ----
+  // ONLY the 'upgraded' motor build reads these mats (cowl / red / blk) — the basic starter is one
+  // weathered colourway by design, so its sheet never changes. Same mixer, same envelope as the hull.
+  const MOTOR_SCHEMES = {
+    'regatta-white': { name:'Regatta White', cowl:'#eef0ea', accent:'#cf3626',
+                       ramps:{ cowl:PAINT, accent:RED, pan:MOTO },   // hand-tuned pass-2 bake, kept exact
+                       note:'stock sport paint \u2014 white shell, red wrap' },
+    'harbour-teal':  { name:'Harbour Teal',  cowl:'#2ba39a', accent:'#eef0ea', note:'fleet teal, white flash' },
+    'signal-gold':   { name:'Signal Gold',   cowl:'#e0b13a', accent:'#2a2f33', note:'cove gold, charcoal flash' },
+    'oxblood':       { name:'Oxblood',       cowl:'#8f3527', accent:'#e3d1a4', note:'deep red, cream flash' },
+    'midnight':      { name:'Midnight',      cowl:'#22354a', accent:'#e0b13a', note:'navy shell, gold flash' },
+    'spruce':        { name:'Spruce',        cowl:'#31694c', accent:'#e6ddc6', note:'bottle green, bone flash' },
+  };
+  const DEFAULT_MOTOR_SCHEME='regatta-white', PAN_BASE='#2b323a';
+
+  const _pal={}; let _palOrder=[];
+  function palette(o){
+    o=o||{};
+    const base = o.paint || SCHEMES[o.scheme] || SCHEMES[DEFAULT_SCHEME];
+    const hull=base.hull||SCHEMES[DEFAULT_SCHEME].hull, trim=base.trim||SCHEMES[DEFAULT_SCHEME].trim,
+          cove=base.cove||SCHEMES[DEFAULT_SCHEME].cove, bottom=base.bottom||trim, interior=base.interior||null;
+    const MD = MOTOR_SCHEMES[DEFAULT_MOTOR_SCHEME];
+    const mbase = o.motor || MOTOR_SCHEMES[o.motorScheme] || MD;
+    const cowl=mbase.cowl||MD.cowl, accent=mbase.accent||MD.accent, pan=mbase.pan||PAN_BASE;
+    const key=[hull,trim,cove,bottom,interior||'bare',base.ramps?'baked':'mix',
+               cowl,accent,pan,mbase.ramps?'baked':'mix'].join('|');
+    if(_pal[key]) return _pal[key];
+    const R=base.ramps||{}, MR=mbase.ramps||{};
+    const cowlR=MR.cowl||rampFrom(cowl,7), accR=MR.accent||rampFrom(accent,5,{anchor:0.75}),
+          panR=MR.pan||rampFrom(pan,7,{anchor:0.72});
+    const hullR=R.hull||rampFrom(hull,7), trimR=R.trim||rampFrom(trim,5,{anchor:0.75}),
+          coveR=R.cove||rampFrom(cove,3,{anchor:0.85});
+    const botR = bottom===trim ? trimR : rampFrom(bottom,5,{anchor:0.75});
+    const intR = interior ? rampFrom(interior,7,{anchor:0.72}) : WOOD;
+    const mats = { paint:{ramp:hullR,off:0}, trim:{ramp:trimR,off:-1}, gold:{ramp:coveR,off:-3},
+                   bottom:{ramp:botR,off:-1}, wood:{ramp:intR,off:0}, oar:{ramp:WOOD,off:0},
+                   iron:{ramp:IRON,off:-2}, moto:{ramp:MOTO,off:0}, blk:{ramp:panR,off:-2},
+                   red:{ramp:accR,off:-1}, cowl:{ramp:cowlR,off:0} };
+    const rindex={};
+    [hullR,trimR,coveR,botR,intR,cowlR,accR,panR,WOOD,IRON,MOTO,RED,PAINT].forEach(r=>r.forEach((c,i)=>{ if(!rindex[c]) rindex[c]={r,i}; }));
+    const out={ key, id:o.paint?'custom':(SCHEMES[o.scheme]?o.scheme:DEFAULT_SCHEME), name:base.name||'Custom',
+                base:{hull,trim,cove,bottom,interior}, note:base.note||'',
+                ramps:{hull:hullR,trim:trimR,cove:coveR,bottom:botR,interior:intR}, mats, rindex,
+                motor:{ id:o.motor?'custom':(MOTOR_SCHEMES[o.motorScheme]?o.motorScheme:DEFAULT_MOTOR_SCHEME),
+                        name:mbase.name||'Custom', note:mbase.note||'', base:{cowl,accent,pan},
+                        ramps:{cowl:cowlR,accent:accR,pan:panR} } };
+    _pal[key]=out; _palOrder.push(key);
+    if(_palOrder.length>24){ delete _pal[_palOrder.shift()]; }
+    return out;
+  }
   const GAIN = 3.0, BIAS = 2.7;
   const LN = (() => { const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
   const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r=>r.map(v=>(v+0.5)/16));
@@ -72,6 +217,7 @@
 
   // ---- hull face list ----
   const F = [];
+  const ID = (p)=>p;                       // identity transform for the box/tube helpers below
   const face=(v,mat,b,db)=>F.push({v,mat:mat||'paint',b:b||0,db:db||0});
   // outer paint scheme: white body, gold cove line, teal sheer band  [f0, f1, mat, b, db]
   const OB = [ [0,1/3,'paint',0,0], [1/3,2/3,'paint',0,0], [2/3,0.79,'paint',0,0],
@@ -89,9 +235,9 @@
         // inner skin (bare wood interior, 3 strakes)
         for(let k=0;k<3;k++){ const f0=k/3, f1=(k+1)/3;
           face([skin(side,u1,f0,1),skin(side,u0,f0,1),skin(side,u0,f1,1),skin(side,u1,f1,1)],'wood',-1.1); }
-        // bottom (teal anti-foul) + interior floor (wood)
+        // bottom (anti-foul, own colour slot) + interior floor (wood)
         face([floorPt(-1,u0),floorPt(1,u0),floorPt(1,u1),floorPt(-1,u1)],'wood',-0.4);
-        face([skin(-1,u0,0),skin(-1,u1,0),skin(1,u1,0),skin(1,u0,0)],'trim',-1.0);
+        face([skin(-1,u0,0),skin(-1,u1,0),skin(1,u1,0),skin(1,u0,0)],'bottom',-1.0);
         // gunwale cap (painted teal rail)
         const oa=skin(side,u0,1),ob=skin(side,u1,1),ia=skin(side,u0,1,1),ib=skin(side,u1,1,1);
         const inb=(p)=>[p[0]-side*TH*1.3,p[1],p[2]];
@@ -114,6 +260,41 @@
       face([[-hx,y0,zTop],[hx,y0,zTop],[hx,y1,zTop],[-hx,y1,zTop]],'wood',0.6);
       face([[-hx,y1,zTop],[hx,y1,zTop],[hx,y1,zBot],[-hx,y1,zBot]],'wood',-1.2);
       face([[hx,y0,zTop],[-hx,y0,zTop],[-hx,y0,zBot],[hx,y0,zBot]],'wood',-0.4);
+    }
+
+    // ---- pass-3 fit-out ----
+    // floor battens: two runs flanking the centreline — footing over the bilge, and they read her length
+    for(const sx of [-1,1]){
+      const NB=8, uA=0.13, uB=0.85;
+      for(let i=0;i<NB;i++){
+        const ua=uA+(uB-uA)*i/NB, ub=uA+(uB-uA)*(i+1)/NB;
+        const sa=station(ua), sb=station(ub);
+        const x0=sx*0.09, x1=sx*0.23, za=sa.kz+FLOOR+0.028, zb=sb.kz+FLOOR+0.028;
+        const q=[[x0,sa.y,za],[x1,sa.y,za],[x1,sb.y,zb],[x0,sb.y,zb]];
+        face(sx>0?q:[q[1],q[0],q[3],q[2]],'wood',0.3,0.03);
+      }
+    }
+    // breasthook closing the stem, and the iron ring bolt the painter lives on
+    face([skin(-1,0.94,1),skin(1,0.94,1),skin(1,1,1),skin(-1,1,1)],'wood',0.9,0.04);
+    function ringBolt(x,y,z,ro,ri,tk,b){   // 4-bar ring: nothing under the middle, so the hole reads as wood
+      const bar=(ro-ri)/2, off=(ro+ri)/2;
+      F.push(...box([x, y+off, z],[ro, bar, tk],'iron',b,-0.05,ID));
+      F.push(...box([x, y-off, z],[ro, bar, tk],'iron',b-0.3,-0.05,ID));
+      F.push(...box([x+off, y, z],[bar, ri, tk],'iron',b-0.12,-0.05,ID));
+      F.push(...box([x-off, y, z],[bar, ri, tk],'iron',b-0.22,-0.05,ID));
+    }
+    (function(){ const st=station(0.962); ringBolt(0, st.y, st.kz+st.dep+0.05, 0.05, 0.018, 0.014, 0.6); })();
+    // quarter knees tying the transom corners into the sides + the port-quarter ring bolt (stern line alongside)
+    for(const side of [-1,1]){
+      const c=skin(side,0,1), f=skin(side,0.075,1), inb=[side*0.30,-L/2,c[2]];
+      face(side>0?[c,f,inb]:[c,inb,f],'wood',0.8,0.04);
+    }
+    ringBolt(-0.42, -L/2+0.20, T[0][3]+T[0][2]+0.028, 0.045, 0.016, 0.013, 0.5);
+    // rowlock sockets + thole pins on the gunwale — she pulls home from the mid thwart when the kicker won't start
+    for(const side of [-1,1]){
+      const st=station(OARLOCK_U), x=side*(st.ws-TH*0.6), zt=st.kz+st.dep;
+      F.push(...box([x, st.y, zt+0.014],[0.030,0.055,0.014],'iron',0.35,-0.03,ID));
+      F.push(...box([x, st.y, zt+0.075],[0.019,0.019,0.050],'iron',0.55,-0.05,ID));
     }
   })();
 
@@ -143,6 +324,7 @@
   function _paint(faces, opts, doEdge, G){
     const PW=G?G.W:W, PH=G?G.H:H;
     const B=camBasis(opts);
+    const PAL=palette(opts), MATS=PAL.mats, RINDEX=PAL.rindex;
     const zbuf=new Float32Array(PW*PH).fill(Infinity);
     const col=new Array(PW*PH).fill(null);
     const dep=new Float32Array(PW*PH);
@@ -236,6 +418,7 @@
   // ---- outboard motor (separate pivoting layer; own wider cell, pivot-aligned to the hull) ----
   const MG = { W:212, H:168, cx:106, cy:94 };   // motor cell geometry
   const MOTOR = { steerFrames:9, maxSteer:32, tiltMax:40, behind:[3,4,5], parts:['upper','lower'], variants:['basic','upgraded'],
+    colourVariant:'upgraded', schemes:MOTOR_SCHEMES, schemeIds:Object.keys(MOTOR_SCHEMES), defaultScheme:DEFAULT_MOTOR_SCHEME,
     W:MG.W, H:MG.H, pivot:{x:MG.cx, y:MG.cy},
     angle:(f)=>-32 + (64*f)/8 };                // sheet col f (0..8) -> steer degrees
   const YA = -L/2 - 0.06, ZT = MOUNT.z;         // swivel axis (just aft of transom) / clamp height
@@ -296,9 +479,9 @@
       .concat(up_?[[Z(.795),.147,.167,-.138]]:[])          // extra slice bounds the red stripe band
       .concat([[Z(.860),.143,.160,-.145],[Z(.925),.112,.126,-.155],[Z(.958),.062,.072,-.163]]);
     const bands = up_
-      ? [['blk',-.3],['blk',-.12],['red',.18],['paint',.12],['paint',.28],['paint',.42]]
+      ? [['blk',-.3],['blk',-.12],['red',.18],['cowl',.12],['cowl',.28],['cowl',.42]]
       : [['moto',-.5],['moto',-.3],['moto',.02],['moto',.14],['moto',.26]];
-    const cap = up_?['paint',.5]:['moto',.34];
+    const cap = up_?['cowl',.5]:['moto',.34];
     const rings = prof.map(s=>ringOf(s,SZ,ycS).map(X));
     const fs=[];
     for(let i=0;i<rings.length-1;i++){
@@ -357,6 +540,77 @@
     return { x:p.sx, y:p.sy };
   }
 
+  // ---- oars (third overlay layer — HULL cell + pivot, so it stacks straight onto either build) ----
+  const OAR = { rowFrames:8, states:['row','shipped','trailing'], W, H, pivot:{x:cx,y:cy} };
+  const O_LOUT=1.62, O_LIN=0.80, O_TS=0.032, O_BLEN=0.54, O_BW=0.115, O_BT=0.011;
+  function oarlockPt(side){ const st=station(OARLOCK_U); return [ side*(st.ws-TH*0.2), st.y, st.kz+st.dep+0.078 ]; }
+  function oarDir(side, sweepDeg, dipDeg){ const f=sweepDeg*DEG, p=dipDeg*DEG;
+    return [ side*Math.cos(f)*Math.cos(p), -Math.sin(f)*Math.cos(p), -Math.sin(p) ]; }
+  function oarPose(state, t){
+    // shipped: not in the locks — slid aft along their own axis and canted inboard, lying across the thwarts
+    if(state==='shipped'||state==='resting') return { sweep:-86, dip:-3, slide:-0.62, dx:-0.30, dz:-0.10 };
+    if(state==='trailing') return { sweep: 74, dip: 13 };                    // dragging aft in the water
+    const tt=(((t||0)%1)+1)%1, a=2*Math.PI*tt;                               // pulling: blade traces an ellipse
+    return { sweep: 32*Math.sin(a), dip: 9 + 13*Math.cos(a) };   // catch 22deg down .. recovery 4deg clear of the water
+  }
+  function slab(quad, n, t, mat, b){       // flat board from 4 corners + thickness along n
+    const o=v_mul(n,t), A=quad.map(p=>v_add(p,o)), Bq=quad.map(p=>v_sub(p,o)), fs=[];
+    fs.push({v:A,mat,b:b||0,db:0});
+    fs.push({v:[Bq[3],Bq[2],Bq[1],Bq[0]],mat,b:(b||0)-1.0,db:0});
+    for(let k=0;k<4;k++){ const k2=(k+1)%4; fs.push({v:[A[k],A[k2],Bq[k2],Bq[k]],mat,b:(b||0)-0.5,db:0}); }
+    return fs;
+  }
+  function oarSeat(side, pose){            // where the loom sits: the lock when pulling, shifted when shipped
+    const O=oarlockPt(side), d=oarDir(side,pose.sweep,pose.dip);
+    const P=[ O[0]+(pose.dx||0)*side, O[1], O[2]+(pose.dz||0) ];
+    return { P: v_add(P, v_mul(d, pose.slide||0)), d };
+  }
+  function buildOar(side, pose){
+    const seat=oarSeat(side,pose), P=seat.P, d=seat.d;
+    const hand=v_sub(P, v_mul(d,O_LIN));                    // inboard end (the grip)
+    const thr=v_add(P, v_mul(d,O_LOUT-O_BLEN));             // blade throat
+    const tip=v_add(P, v_mul(d,O_LOUT));
+    let lat=v_cross(d,[0,0,1]); if(Math.hypot(lat[0],lat[1],lat[2])<1e-4) lat=[1,0,0];
+    lat=v_norm(lat); const nrm=v_norm(v_cross(lat,d));
+    const fs=[];
+    fs.push(...tube(hand, thr, O_TS, 'oar', 0.15, ID));                                     // loom
+    fs.push(...tube(hand, v_add(hand, v_mul(d,0.17)), O_TS*1.22, 'oar', -0.35, ID));        // grip
+    fs.push(...tube(v_sub(P,v_mul(d,0.055)), v_add(P,v_mul(d,0.055)), O_TS*1.4, 'iron', 0.05, ID)); // leather collar at the lock
+    const w0=O_BW*0.42, w1=O_BW;
+    fs.push(...slab([ v_add(thr,v_mul(lat,w0)), v_add(tip,v_mul(lat,w1)),
+                      v_sub(tip,v_mul(lat,w1)), v_sub(thr,v_mul(lat,w0)) ], nrm, O_BT, 'oar', 0.45));
+    return fs;
+  }
+  function sidePose(opts, side){ const o=(side<0?opts.port:opts.star)||{};
+    return oarPose(o.state||opts.state||'row', (o.t!==undefined?o.t:opts.t)||0); }
+  function oarFaces(opts){ const ss = opts.side==='port'?[-1]:opts.side==='star'?[1]:[-1,1];
+    return ss.reduce((f,s)=>f.concat(buildOar(s,sidePose(opts,s))),[]); }
+  function renderOars(dir, opts){
+    opts = (typeof opts==='number') ? {elev:opts} : (opts||{});
+    return _toRGBA(_paint(oarFaces(opts), Object.assign({}, opts, {dir}), false));
+  }
+  function oarHandles(dir, opts){          // per-side grip position (hull-cell px) for a rower's hands
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const B=camBasis(opts), res=[];
+    for(const side of [-1,1]){
+      const pose=sidePose(opts,side), seat=oarSeat(side,pose);
+      const Hp=v_sub(seat.P, v_mul(seat.d,O_LIN)), p=projVert(Hp[0],Hp[1],Hp[2],B);
+      res.push({ side:side<0?'port':'star', x:p.sx, y:p.sy });
+    }
+    return res;
+  }
+
+  // ---- anchors (hull-cell px; pass rock(i) so they ride the wave) ----
+  function _anchor(P){ return function(dir, opts){
+    opts = Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}), {dir});
+    const p=projVert(P.x, P.y, P.z, camBasis(opts)); return { x:p.sx, y:p.sy };
+  }; }
+  const ROW_SEAT = (()=>{ const st=station(0.48); return { x:0, y:st.y, z:st.kz+SEAT }; })();   // mid thwart — the rowing station
+  const HELM     = (()=>{ const st=station(0.15); return { x:0, y:st.y, z:st.kz+SEAT }; })();   // stern bench — tiller in reach
+  const PAINTER  = (()=>{ const st=station(0.962); return { x:0, y:st.y, z:st.kz+st.dep+0.05 }; })();
+  const STERN_EYE= { x:-0.42, y:-L/2+0.20, z:T[0][3]+T[0][2]+0.028 };
+  const rowSeat=_anchor(ROW_SEAT), helmSeat=_anchor(HELM), painter=_anchor(PAINTER), sternEye=_anchor(STERN_EYE);
+
   // pilot foot-contact on the floor just forward of the stern bench (works the tiller) — rides the wave
   const PILOT = { x:0, y:-1.25 };
   function pilotStand(dir, opts){
@@ -367,5 +621,9 @@
 
   root.PuntIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, TRIM, GOLD, WOOD, IRON, MOTO, RED, KEY,
-    render, ROCK, rock:rockMotion, MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, TUBS, tubMounts, PILOT, pilotStand };
+    render, ROCK, rock:rockMotion, MOTOR, renderMotor, tillerGrip, motorMount, MOUNT, TUBS, tubMounts, PILOT, pilotStand,
+    MOTOR_SCHEMES, motorSchemeIds:Object.keys(MOTOR_SCHEMES), defaultMotorScheme:DEFAULT_MOTOR_SCHEME,
+    OAR, OARLOCK_U, renderOars, oarHandles, oarPose,
+    ROW_SEAT, rowSeat, HELM, helmSeat, PAINTER, painter, STERN_EYE, sternEye,
+    SCHEMES, schemeIds:Object.keys(SCHEMES), defaultScheme:DEFAULT_SCHEME, palette, rampFrom, chipWall, C_CAP };
 })(typeof globalThis!=='undefined'?globalThis:window);

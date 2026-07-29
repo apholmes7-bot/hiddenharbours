@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -80,6 +81,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private float _rollDegrees;
         [SerializeField] private float _pitchDegrees;
         [SerializeField] private float _heavePixels;
+        [SerializeField] private float _ridePixels;
 
         private IsoFacetHullSetup _setup;
         private Material _facetMaterial;
@@ -88,6 +90,9 @@ namespace HiddenHarbours.Art
         private Texture2D _darkRampTex;
         private Mesh _overlayQuad;
         private Transform _meshChild;
+        // The overlay quad's transform, cached like _meshChild: ApplyPose moves it every frame
+        // (the compositing window follows the ride) and rule 7 forbids a per-frame lookup.
+        private Transform _overlayChild;
         private MeshRenderer _meshRenderer;
         private MeshRenderer _overlayRenderer;
         private SortingGroup _sortingGroup;
@@ -97,6 +102,27 @@ namespace HiddenHarbours.Art
         // The watertight clamp's footprint scan radius (half the cell width in world metres) —
         // derived once at Configure, cached (rule 7: ApplyPose runs every frame).
         private float _footprintRadiusMeters;
+        // Does this hull's baked mesh actually carry the per-face INTERIOR flag (ADR 0023)? Read
+        // once at Configure. It is what makes the rollout safe in either order: a hull baked
+        // before the classifier existed keeps the shipped whole-hull clamp, a re-baked one is
+        // guarded per pixel instead, and a half-re-baked project is never wrong in a NEW way.
+        private bool _hasInteriorFaces;
+
+        /// <summary>
+        /// True when any face of <paramref name="mesh"/> is flagged interior (UV0.w). Allocates
+        /// once per Configure — never per frame (rule 7) — and is deliberately a POSITIVE test:
+        /// "this mesh knows about interiors", not "this mesh is new enough", so it cannot be fooled
+        /// by a version stamp that says yes while the geometry says nothing.
+        /// </summary>
+        private static bool MeshCarriesInteriorFaces(Mesh mesh)
+        {
+            if (mesh == null) return false;
+            var uvs = new List<Vector4>(mesh.vertexCount);
+            mesh.GetUVs(0, uvs);
+            for (int i = 0; i < uvs.Count; i++)
+                if (uvs[i].w > 0.5f) return true;
+            return false;
+        }
 
         /// <summary>Heading in rig dir units (1 = 45° CCW). Continuous — that is the point.</summary>
         public float HeadingDirUnits
@@ -117,15 +143,42 @@ namespace HiddenHarbours.Art
             set { if (!Mathf.Approximately(_pitchDegrees, value)) { _pitchDegrees = value; _poseDirty = true; } }
         }
 
-        /// <summary>Heave in rig PIXELS (the rig's own unit; world metres = px / PPU).</summary>
+        /// <summary>Heave in rig PIXELS (the rig's own unit; world metres = px / PPU). The TOTAL
+        /// screen lift — the rig's rock plus <see cref="RidePixels"/>.</summary>
         public float HeavePixels
         {
             get => _heavePixels;
             set { if (!Mathf.Approximately(_heavePixels, value)) { _heavePixels = value; _poseDirty = true; } }
         }
 
+        /// <summary>
+        /// How much of <see cref="HeavePixels"/> is the displaced sea's WORLD RIDE rather than the
+        /// rig's own rock (the Core seam's <c>RidePixels</c>) — the amount the compositing window
+        /// must travel with the hull. See <see cref="ApplyPose"/>. 0 ⇒ the pre-split render.
+        /// </summary>
+        public float RidePixels
+        {
+            get => _ridePixels;
+            set { if (!Mathf.Approximately(_ridePixels, value)) _ridePixels = value; }
+        }
+
         /// <summary>The id in [1,255] this hull writes into the facet buffer's alpha. 0 = not registered.</summary>
         public int HullId => _hullId;
+
+        /// <summary>
+        /// The child that carries this hull's heading, rock and heave — what an articulated fitting
+        /// parents to (ADR 0022 phase 7).
+        ///
+        /// <para>⚠️ <b>Handed out directly rather than looked up by NAME, and that is a bug fix, not a
+        /// tidy-up.</b> Re-configuring this renderer (which is what a hull SWAP does) destroys the old
+        /// child and builds a new one with the same name — and in play mode <c>Destroy</c> is deferred
+        /// to end of frame, so for the rest of that frame BOTH exist and <c>transform.Find("FacetMesh")</c>
+        /// returns the DOOMED one. Fittings attached to it were destroyed with it at end of frame:
+        /// the boat you swapped TO lost her oars or her engine, silently, one frame later. Caught by
+        /// <c>PilotableFleetPlayTests.Picker_SwappingDoryToSkiff_TradesTheOarsForAnOutboard</c> the
+        /// moment the skiffs' engines became fittings and it had two mesh hulls to swap between.</para>
+        /// </summary>
+        public Transform PosedMesh => _meshChild;
 
         public bool IsConfigured => _setup != null;
 
@@ -173,6 +226,7 @@ namespace HiddenHarbours.Art
             _setup = setup;
             _footprintRadiusMeters = DisplacedWaterMath.FootprintRadiusMeters(
                 setup.CellW, setup.PxPerMetre);
+            _hasInteriorFaces = MeshCarriesInteriorFaces(setup.Mesh);
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
@@ -291,6 +345,7 @@ namespace HiddenHarbours.Art
             _overlayRenderer.shadowCastingMode = ShadowCastingMode.Off;
             _overlayRenderer.receiveShadows = false;
             _overlayRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            _overlayChild = overlayGo.transform;
 
             // Mesh renderers do not sort against sprites on their own (they fall back to world z)
             // — the documented workaround is a SortingGroup ("sort as 2D"), same as the water.
@@ -362,23 +417,61 @@ namespace HiddenHarbours.Art
                 // still climbs the exterior planking with every wave; it can never climb past
                 // the line where it would board the boat. Deck height 0 (unset def) or a
                 // silent field (no bridge) leaves this byte-inert.
+                // THE MASK SUPERSEDES THE CLAMP. Once the guard pass is keeping the sea out of this
+                // hull's interior per PIXEL, shoving her whole frame toward the camera as well
+                // would only rebuild the very defect the mask exists to cure — boats riding high
+                // with their props out of the water (owner playtest 2026-07-25). Both conditions
+                // are required: the feature must have the mask on, AND this hull's mesh must
+                // actually carry interior flags, so an un-rebaked hull keeps her clamp rather than
+                // silently losing all protection.
+                bool clampSuperseded = IsoFacetHullFeature.InteriorMaskEnabled && _hasInteriorFaces;
                 float zHeaveMeters = heaveMeters;
-                if (_setup.WatertightDeckHeightMeters > 0f)
+                if (!clampSuperseded && _setup.WatertightDeckHeightMeters > 0f)
                 {
-                    WaveFieldBridge.ReadPublishedField(out Vector4 t0, out Vector4 t1,
-                                                       out Vector4 t2, out Vector4 t3,
-                                                       out Vector4 ph, out Vector4 fp);
+                    PackedWaveField field = WaveFieldBridge.ReadPublishedField();
                     zHeaveMeters = DisplacedWaterMath.WatertightZHeaveMeters(
                         heaveMeters, _setup.WatertightDeckHeightMeters,
                         _setup.WatertightHalfBeamMeters,
                         new Vector2(root.x, root.y), _footprintRadiusMeters,
-                        in t0, in t1, in t2, in t3, in ph, in fp, in isoFrame);
+                        in field, in isoFrame);
                 }
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            - root.z;
             }
             if (_meshChild.localPosition != offset)
                 _meshChild.localPosition = offset;
+
+            // THE COMPOSING WINDOW FOLLOWS THE RIDE (owner playtest 2026-07-25: "water shader is
+            // leaking onto deck of iso hulls making boats look semi submerged").
+            //
+            // A mesh hull's only in-scene face is the HullOverlay quad, and its shader is a 1:1
+            // screen-space Load() that exists ONLY where that quad rasterises — so a hull pixel
+            // outside the quad is never composed, and what shows there is whatever sorts beneath:
+            // the WaterOverlay, which covers the whole sea rect under every boat. The quad is the
+            // rig CELL rect (+1 px for the keyline), baked once in BuildChildren and parented at
+            // the un-heaved root.
+            //
+            // That was sound while HeavePixels carried only the rig's own rock — 1.0–1.6 px across
+            // the fleet, and the cell is authored with margin for exactly that (the rig subtracts
+            // its rock from screen y AFTER projecting, so it clips at the cell edge too: matching
+            // it is the golden master). ADR 0023 phase 3 step 2 then began pushing the displaced
+            // ride through the same channel in metres × PxPerMetre — 20–100× that budget. On a
+            // crest the hull's image slid up out of a window that stayed behind, her top band was
+            // dropped, and the sea drew through the gap: a hard horizontal cut that reads exactly
+            // like a swamped boat. On the dory (cell 156 px, pivot 88 from the top) the headroom is
+            // ~21 px ≈ 0.65 m, and the reference sea's crest ride is ~1.4 m.
+            //
+            // So the window tracks the RIDE and not the rock: the rock keeps clipping at the cell
+            // as the rig does, while the boat moving through the world carries her window with her.
+            // Y only — never offset.z, which is the private depth buffer's calibrated iso
+            // convention (meaningless to an in-scene quad under the ortho camera, and large enough
+            // to throw it out of frame). Ride 0 ⇒ localPosition 0 ⇒ byte-identical to before.
+            if (_overlayChild != null)
+            {
+                Vector3 window = IsoFacetMath.HeaveOffset(_ridePixels, _setup.PxPerMetre);
+                if (_overlayChild.localPosition != window)
+                    _overlayChild.localPosition = window;
+            }
 
             _props ??= new MaterialPropertyBlock();
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
@@ -408,6 +501,7 @@ namespace HiddenHarbours.Art
             Kill(_darkRampTex);
             Kill(_overlayQuad);
             _meshChild = null;
+            _overlayChild = null;
             _meshRenderer = null;
             _overlayRenderer = null;
             _facetMaterial = null;

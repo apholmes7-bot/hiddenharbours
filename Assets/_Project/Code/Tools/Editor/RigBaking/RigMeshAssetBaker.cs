@@ -272,11 +272,57 @@ namespace HiddenHarbours.Tools.RigBaking
         /// Extract + build + measure + write one rig's hull-mesh asset. Returns the (created or
         /// refreshed) def.
         /// </summary>
+        /// <summary>Report what the interior classifier decided, in the only terms a human can
+        /// review: how many faces it called fully interior (plus the one-sided split), and how far
+        /// above the keel the LOWEST fully-interior face sits. That second number is the
+        /// cross-check — compare it against this hull's hand-measured
+        /// <c>WatertightDeckHeightMeters</c>. It is measured over the FULLY-interior set (code 1)
+        /// on purpose: that set is identical to what the side-blind classifier produced, so the
+        /// pinned deck-line agreement carries across the per-side change untouched.</summary>
+        private static void LogInteriorMask(string globalName, RigMeshData data, byte[] sides)
+        {
+            int full = 0, frontOnly = 0, backOnly = 0, total = 0;
+            float lowest = float.MaxValue;
+            foreach (var f in data.Faces)
+            {
+                byte code = total < sides.Length ? sides[total] : (byte)0;
+                if (code == RigMeshInteriorClassifier.SideInterior)
+                {
+                    full++;
+                    for (int k = 0; k < f.V.Length; k++)
+                        lowest = Mathf.Min(lowest, (float)f.V[k].Z);
+                }
+                else if (code == RigMeshInteriorClassifier.SideFrontInterior) frontOnly++;
+                else if (code == RigMeshInteriorClassifier.SideBackInterior) backOnly++;
+                total++;
+            }
+            string low = full > 0 ? $"{lowest:0.###} m above the keel" : "n/a";
+            float rail = RigMeshInteriorClassifier.DeriveRailHeight(data);
+            string railText = rail < float.MaxValue ? $"{rail:0.###} m" : "none (degenerate)";
+            Debug.Log($"[rig-mesh] {globalName} interior mask: {full}/{total} faces fully interior " +
+                      $"({(total > 0 ? 100f * full / total : 0f):0.#}%), one-sided {frontOnly} " +
+                      $"front-dry + {backOnly} back-dry, lowest fully-interior = {low}, " +
+                      $"rail = {railText}. Two independent checks on this line: the lowest " +
+                      "fully-interior should land on this hull's WatertightDeckHeightMeters, and " +
+                      "the rail must sit ABOVE it — a rail at or below the deck line would leave " +
+                      "the deck itself wettable.");
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id)
         {
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, scriptPath, globalName);
-            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh");
+
+            // The per-face INTERIOR MASK (ADR 0023). HULLS ONLY — never fittings, whose legs and
+            // propellers must stay wettable (see RigMeshBuilder.Build's parameter doc). The log
+            // line below IS the evidence trail: the committed mesh is an opaque binary blob, so the
+            // per-hull interior count and the lowest interior height are the only reviewable
+            // artefact a bake produces. The lowest interior height in particular should land on the
+            // hand-measured HullMeshDef.WatertightDeckHeightMeters — it does for 9 of the 11 hulls,
+            // which is the independent cross-check that says the classifier is right.
+            byte[] interiorSides = RigMeshInteriorClassifier.ClassifySides(data);
+            RigMeshBuild build = RigMeshBuilder.Build(data, $"{globalName}HullMesh", interiorSides);
+            LogInteriorMask(globalName, data, interiorSides);
 
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
             var quarter = new RigViewOptions(2, data.DefaultElev);   // dir 2 of 8 = 90° of turntable

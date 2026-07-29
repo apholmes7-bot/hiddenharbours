@@ -65,7 +65,14 @@ namespace HiddenHarbours.Art.Editor
                 PivotTopLeftPx = new Vector2Int(pivotX, pivotY);
             }
 
-            /// <summary>Normalized bottom-left pivot: <c>(x/W, (H−y)/H)</c>.</summary>
+            /// <summary>Normalized bottom-left pivot: <c>(x/W, (H−y)/H)</c>.
+            ///
+            /// <para>⚠️ The y term is <c>(H − y)/H</c>, not <c>(H − 1 − y)/H</c> — the field name
+            /// is accurate, this really is a continuous top-left-origin coordinate rather than a
+            /// row index, so the pivot lands on that row's TOP edge. Measured, not assumed: see
+            /// <b>ADR 0026</b>, which also explains why the tree bake's <c>pad/cellH</c> is one row
+            /// lower and equally correct. Same formula as
+            /// <c>RigGeometry.UnityNormalisedPivot</c>, deliberately.</para></summary>
             public Vector2 NormalizedPivot =>
                 new Vector2(PivotTopLeftPx.x / (float)Cell.x,
                             (Cell.y - PivotTopLeftPx.y) / (float)Cell.y);

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using HiddenHarbours.App.Editor;
+using HiddenHarbours.App.Editor; // RodKitImporter stayed here when MiniJson moved down
+using HiddenHarbours.Art.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
 {

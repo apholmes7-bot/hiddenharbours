@@ -262,8 +262,11 @@ present · Authored vs simulated · Role in progression.**
 > base sailed to later). Everything in this brief is **future work** captured now so the world stays
 > consistent. The Ginny/Ned onboarding **relocates** here at M2 and the **dialogue/onboarding system
 > is reused, not rebuilt**. **The decided arc:** St Peters → **walk the tide-gated sandbar to
-> Nine Mile Creek** → buy a **cod licence + rod**, sell clams, **buy a damaged dory at the Nine Mile Creek
-> shipwright and pay to repair it** → **sail the dory home to Coddle Cove** (canon §5.8).
+> Nine Mile Creek** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine
+> Mile Creek wharf and have her put right** → **sail the dory home to Coddle Cove** (canon §5.8).
+> *(Owner ruling 2026-07-25: the wharf is the town's own, one region two zones; **no shipwright stands
+> there**, so the seller is someone else on the wharf and who repairs her is open —
+> [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)*
 
 **Identity & mood.** Where the game begins. A tiny, weathered **home island** off the mainland —
 three clapboard houses, a one-room **school**, and a **general store**. Cut off from the mainland
@@ -275,9 +278,9 @@ you ever leave home. Cozy, safe, formative.
 where the aunt teaches the compass and hand skills + the **general store** for basic gear); **clam
 flats** that bare at low water; and the **tide-gated SANDBAR** (a cobble-and-sand bar) that bares as
 a **walking path to Nine Mile Creek** only near low water. Everything within an easy walk; shallow,
-soft, forgiving water all around. *(No dory here — your first boat is bought damaged and repaired at
-the **Nine Mile Creek shipwright**, §6.3; the earlier "uncle's broken dory on the slip" framing is retired,
-canon §5.8.)*
+soft, forgiving water all around. *(No dory here — your first boat is bought damaged **at the Nine
+Mile Creek wharf** (§6.3) and put right there; the earlier "uncle's broken dory on the slip" framing
+is retired, canon §5.8.)*
 
 **Hazards.** Deliberately minimal — the gentlest tutorial of all. The one teeth-of-tide lesson: **the
 sandbar floods.** Walk across toward Nine Mile Creek and dawdle past the turn of the tide and you are **cut
@@ -420,8 +423,10 @@ that breathes, the rhythm of a town that runs with or without you.
 **Physical layout & landmarks.** A protected harbour behind a stone breakwater, a long public
 wharf with multiple berths, and a walkable town above it. Key buildings (each a service hub —
 details in the relevant docs): the **auction house / fish market** (`economy-and-business.md`),
-the **chandlery / gear shop**, the **shipwright's yard** (boat purchase & upgrades,
-`boats-and-navigation.md`), the **chart shop**, the **tavern**, the **harbourmaster's office**,
+the **chandlery / gear shop**, ⚠️ the **shipwright's yard** (boat purchase & upgrades,
+`boats-and-navigation.md` — **owner ruled 2026-07-25 that no shipwright stands in this region;
+where the yard lives instead is OPEN, and every later boat purchase hangs off it**), the **chart
+shop**, the **tavern**, the **harbourmaster's office**,
 the **marine-supply / processing plant** (value-add, `economy-and-business.md`), and
 **housing/commercial property** for sale (`progression-and-housing.md`). A small **lighthouse**
 on the point. This is the densest authored content in the game.
@@ -860,6 +865,11 @@ and none is a flat repeat of the last.
 (Engineering shape only — defers to the ADRs and sibling docs for specifics.)
 
 ### 9.1 Scene-per-region strategy
+
+> **How big is each scene?** See [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md)
+> — the per-region extents, derived from the measured camera framing and the boat ladder's real
+> terminal speeds rather than picked. It also carries the scaled-up St Peters and the sandbar-as-its-
+> own-scene proposal (owner ask, 2026-07-23).
 
 - **One Unity scene per region** (additively loaded), e.g. `Scene_CoddleCove`,
   `Scene_TheSunkers`, `Scene_PortNine Mile Creek`, `Scene_DrowndedLands`, `Scene_FundyRips`,

@@ -26,18 +26,22 @@ namespace HiddenHarbours.Art
     /// <para><b>What it publishes</b> (via <see cref="Shader.SetGlobalVector(int, Vector4)"/>, outside
     /// any per-material CBUFFER, like <c>_SunDir</c>/<c>_WindWorld</c>/<c>_MoonDir</c>):
     /// <list type="bullet">
-    /// <item><c>_WaveTrain0..3</c> — per train: xy = unit travel direction, z = wave number
+    /// <item><c>_WaveTrain0..7</c> — per train: xy = unit travel direction, z = wave number
     ///   <c>k = 2π/λ</c> (precomputed here so the shader never divides by a wavelength), w = amplitude
     ///   (metres). Slots at or beyond the live count are zero.</item>
-    /// <item><c>_WavePhases</c> — per train, the animator-baked phase (radians, wrapped to [0, 2π) in
-    ///   C# DOUBLE before the float cast). The shader evaluates <c>θ = k·(dir·worldPos) + φᵢ</c> —
-    ///   <b>NO time uniform at all</b>: the advancing time lives in the phase the animator accumulates,
-    ///   so the unbounded game time never touches float trig on the GPU, and the shader NEVER re-derives
-    ///   the phase speed (dispersion lives in C# only — ADR 0018 §(4)).</item>
+    /// <item><c>_WavePhases</c> (trains 0–3) and <c>_WavePhases2</c> (trains 4–7) — the animator-baked
+    ///   phase (radians, wrapped to [0, 2π) in C# DOUBLE before the float cast). The shader evaluates
+    ///   <c>θ = k·(dir·worldPos) + φᵢ</c> — <b>NO time uniform at all</b>: the advancing time lives in
+    ///   the phase the animator accumulates, so the unbounded game time never touches float trig on
+    ///   the GPU, and the shader NEVER re-derives the phase speed (dispersion lives in C# only —
+    ///   ADR 0018 §(4)).</item>
     /// <item><c>_WaveFieldParams</c> — x = live train count (0 = nothing published → the shader's
     ///   legacy noise-swell look holds), y = crest sharpening p, z = total amplitude (metres; the
-    ///   crest-factor normalizer), w = reserved.</item>
+    ///   crest-factor normalizer), <b>w = the dominant (spectral-peak) slot index</b> — formerly
+    ///   <c>reserved</c>, published as 0, which is what the flat weighting still publishes.</item>
     /// </list>
+    /// The whole payload travels as ONE <see cref="PackedWaveField"/>; see that type for why the
+    /// width lives in a single value rather than in every signature that reads the sea.
     /// Per-frame cost: one animator tick + six <c>SetGlobalVector</c> calls, no allocation (rule 7).</para>
     ///
     /// <para><b>Self-installing</b> (mirrors <see cref="GrassWindBridge"/>/<see cref="MoonCycle"/>): a
@@ -68,11 +72,19 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     public sealed class WaveFieldBridge : MonoBehaviour
     {
-        private static readonly int IdWaveTrain0      = Shader.PropertyToID("_WaveTrain0");
-        private static readonly int IdWaveTrain1      = Shader.PropertyToID("_WaveTrain1");
-        private static readonly int IdWaveTrain2      = Shader.PropertyToID("_WaveTrain2");
-        private static readonly int IdWaveTrain3      = Shader.PropertyToID("_WaveTrain3");
+        /// <summary>One id per slot, indexed by slot — so publishing and reading back are both a loop
+        /// over <see cref="PackedWaveField.MaxTrains"/> and neither can drift from the other when the
+        /// seam widens again.</summary>
+        private static readonly int[] IdWaveTrain =
+        {
+            Shader.PropertyToID("_WaveTrain0"), Shader.PropertyToID("_WaveTrain1"),
+            Shader.PropertyToID("_WaveTrain2"), Shader.PropertyToID("_WaveTrain3"),
+            Shader.PropertyToID("_WaveTrain4"), Shader.PropertyToID("_WaveTrain5"),
+            Shader.PropertyToID("_WaveTrain6"), Shader.PropertyToID("_WaveTrain7"),
+        };
+
         private static readonly int IdWavePhases      = Shader.PropertyToID("_WavePhases");
+        private static readonly int IdWavePhases2     = Shader.PropertyToID("_WavePhases2");
         private static readonly int IdWaveFieldParams = Shader.PropertyToID("_WaveFieldParams");
 
         private const double TwoPi = Math.PI * 2.0;
@@ -160,26 +172,30 @@ namespace HiddenHarbours.Art
             EnvironmentSample sample = env.Sample();
             WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
                                                in _settings, in _animatorSettings);
-            Pack(in trains,
-                 out Vector4 train0, out Vector4 train1, out Vector4 train2, out Vector4 train3,
-                 out Vector4 phases, out Vector4 fieldParams);
-            Shader.SetGlobalVector(IdWaveTrain0, train0);
-            Shader.SetGlobalVector(IdWaveTrain1, train1);
-            Shader.SetGlobalVector(IdWaveTrain2, train2);
-            Shader.SetGlobalVector(IdWaveTrain3, train3);
-            Shader.SetGlobalVector(IdWavePhases, phases);
-            Shader.SetGlobalVector(IdWaveFieldParams, fieldParams);
+            PublishGlobals(Pack(in trains));
         }
 
-        private void PublishEmpty()
+        /// <summary>
+        /// Push a packed field to the shader globals. Allocation-free (rule 7): 8 + 2 + 1
+        /// <c>SetGlobalVector</c> calls on the throttled presentation tick.
+        ///
+        /// <para><b>Public because it is the ONLY place the uniform names live.</b> The rendering
+        /// acceptance suites and the shore-seam proof harness each publish a field of their own to
+        /// drive the real shader, and each used to spell the six <c>SetGlobalVector</c> calls out by
+        /// hand. Three hand-written copies of a seam is three places to forget when the seam widens
+        /// — and forgetting is silent: the extra slots simply keep whatever the last publisher left
+        /// in them, so a test would go on passing against a field that is not the one that ships.</para>
+        /// </summary>
+        public static void PublishGlobals(in PackedWaveField field)
         {
-            Shader.SetGlobalVector(IdWaveTrain0, Vector4.zero);
-            Shader.SetGlobalVector(IdWaveTrain1, Vector4.zero);
-            Shader.SetGlobalVector(IdWaveTrain2, Vector4.zero);
-            Shader.SetGlobalVector(IdWaveTrain3, Vector4.zero);
-            Shader.SetGlobalVector(IdWavePhases, Vector4.zero);
-            Shader.SetGlobalVector(IdWaveFieldParams, Vector4.zero);
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)
+                Shader.SetGlobalVector(IdWaveTrain[i], field.Train(i));
+            Shader.SetGlobalVector(IdWavePhases, field.PhasesLow);
+            Shader.SetGlobalVector(IdWavePhases2, field.PhasesHigh);
+            Shader.SetGlobalVector(IdWaveFieldParams, field.Params);
         }
+
+        private void PublishEmpty() => PublishGlobals(PackedWaveField.Empty);
 
         // ==== PURE packing (testable headless; no Unity scene needed) =====================================
 
@@ -193,21 +209,22 @@ namespace HiddenHarbours.Art
         /// <see cref="WaveMath.TrainsFrom"/> trains pack correctly too (their offsets are the t = 0
         /// hash phases).
         /// </summary>
-        public static void Pack(in WaveTrains trains,
-                                out Vector4 train0, out Vector4 train1, out Vector4 train2,
-                                out Vector4 train3, out Vector4 phases, out Vector4 fieldParams)
+        public static PackedWaveField Pack(in WaveTrains trains)
         {
             int count = trains.Count;
-            train0 = PackTrain(in trains, 0, count);
-            train1 = PackTrain(in trains, 1, count);
-            train2 = PackTrain(in trains, 2, count);
-            train3 = PackTrain(in trains, 3, count);
-            phases = new Vector4(
-                PhaseAt(in trains, 0, count),
-                PhaseAt(in trains, 1, count),
-                PhaseAt(in trains, 2, count),
-                PhaseAt(in trains, 3, count));
-            fieldParams = new Vector4(count, trains.CrestSharpening, trains.TotalAmplitude, 0f);
+            return new PackedWaveField(
+                PackTrain(in trains, 0, count), PackTrain(in trains, 1, count),
+                PackTrain(in trains, 2, count), PackTrain(in trains, 3, count),
+                PackTrain(in trains, 4, count), PackTrain(in trains, 5, count),
+                PackTrain(in trains, 6, count), PackTrain(in trains, 7, count),
+                new Vector4(PhaseAt(in trains, 0, count), PhaseAt(in trains, 1, count),
+                            PhaseAt(in trains, 2, count), PhaseAt(in trains, 3, count)),
+                new Vector4(PhaseAt(in trains, 4, count), PhaseAt(in trains, 5, count),
+                            PhaseAt(in trains, 6, count), PhaseAt(in trains, 7, count)),
+                // .w carries the spectral-peak slot. It is 0 under the flat weighting — the same
+                // bytes the old `reserved` 0f published, which is the P2 PR-A passthrough contract.
+                new Vector4(count, trains.CrestSharpening, trains.TotalAmplitude,
+                            trains.DominantIndex));
         }
 
         /// <summary>xy = direction, z = wave number k = 2π/λ, w = amplitude; zero for a dead slot.</summary>
@@ -239,16 +256,16 @@ namespace HiddenHarbours.Art
         /// so hull and water can never disagree about the field — the ONE-SEA rule, closed at the
         /// globals. Allocation-free (rule 7).
         /// </summary>
-        public static void ReadPublishedField(out Vector4 train0, out Vector4 train1,
-                                              out Vector4 train2, out Vector4 train3,
-                                              out Vector4 phases, out Vector4 fieldParams)
+        public static PackedWaveField ReadPublishedField()
         {
-            train0 = Shader.GetGlobalVector(IdWaveTrain0);
-            train1 = Shader.GetGlobalVector(IdWaveTrain1);
-            train2 = Shader.GetGlobalVector(IdWaveTrain2);
-            train3 = Shader.GetGlobalVector(IdWaveTrain3);
-            phases = Shader.GetGlobalVector(IdWavePhases);
-            fieldParams = Shader.GetGlobalVector(IdWaveFieldParams);
+            return new PackedWaveField(
+                Shader.GetGlobalVector(IdWaveTrain[0]), Shader.GetGlobalVector(IdWaveTrain[1]),
+                Shader.GetGlobalVector(IdWaveTrain[2]), Shader.GetGlobalVector(IdWaveTrain[3]),
+                Shader.GetGlobalVector(IdWaveTrain[4]), Shader.GetGlobalVector(IdWaveTrain[5]),
+                Shader.GetGlobalVector(IdWaveTrain[6]), Shader.GetGlobalVector(IdWaveTrain[7]),
+                Shader.GetGlobalVector(IdWavePhases),
+                Shader.GetGlobalVector(IdWavePhases2),
+                Shader.GetGlobalVector(IdWaveFieldParams));
         }
 
         // ==== The C# MIRROR of the shader twin (parity documentation, pinned by tests) ====================
@@ -269,25 +286,47 @@ namespace HiddenHarbours.Art
         /// — never the sim-side <see cref="WaveMath.Sample"/> path directly. Pure and
         /// allocation-free (rule 7).
         /// </summary>
-        public static WaveSample ShaderTwinSample(Vector2 worldPos,
-                                                  Vector4 train0, Vector4 train1, Vector4 train2,
-                                                  Vector4 train3, Vector4 phases, Vector4 fieldParams)
+        public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field)
+            => ShaderTwinSample(worldPos, in field, 1f);
+
+        /// <summary>
+        /// The same transcription at an explicit FREQUENCY SCALE — the shader's <c>freqScale</c>
+        /// argument, which multiplies every train's wave number (<c>float k = trains[i].z * fs</c>).
+        ///
+        /// <para>⚠️ <b>Why this overload has to exist.</b> The displaced vertex stage does NOT sample
+        /// at scale 1: it passes <c>_OceanSwellScale / 0.025</c>, a knob that was pure col.rgb
+        /// dressing until ADR 0023 made the same sampling line move real vertices. The owner's
+        /// material carries 0.07, so the DRAWN sea runs at 2.8 while this twin — the sampler behind
+        /// the watertight hull clamp — evaluated at 1 and guarded a sea that was not on screen. A
+        /// clamp that scans the wrong wavelengths finds its worst case in the wrong place and lets
+        /// the real crests board the boat, on every hull, worse the rougher it gets (owner playtest
+        /// 2026-07-25). The scale reaches the clamp through
+        /// <c>WaterIsoDepthFrame.FreqScale</c>, republished live each tick.</para>
+        ///
+        /// <para>The scale-1 overload above is kept exactly as it was: <c>WaveFieldBridgeTests</c>
+        /// pins it against <see cref="WaveMath.Sample"/>, which is the SIM field and genuinely has
+        /// no visual scale — that parity proof must not move.</para>
+        /// </summary>
+        public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field,
+                                                  float freqScale)
         {
             float height = 0f;
             float slopeX = 0f;
             float slopeY = 0f;
-            int count = (int)(fieldParams.x + 0.5f);
-            float sharpening = Mathf.Max(fieldParams.y, 1f);
-            float totalAmplitude = fieldParams.z;
+            int count = field.Count;
+            float sharpening = field.CrestSharpening;
+            float totalAmplitude = field.TotalAmplitude;
 
-            for (int i = 0; i < WaveTrains.MaxTrains; i++)   // the shader's FIXED loop bound
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)   // the shader's FIXED loop bound
             {
-                Vector4 train = i == 0 ? train0 : i == 1 ? train1 : i == 2 ? train2 : train3;
-                float phi = i == 0 ? phases.x : i == 1 ? phases.y : i == 2 ? phases.z : phases.w;
+                Vector4 train = field.Train(i);
+                float phi = field.Phase(i);
                 float amplitude = train.w;
                 if (i >= count || amplitude <= 0f) continue;  // the shader masks on (i < count && amp > 0)
 
-                float waveNumber = train.z;
+                // `float k = trains[i].z * fs` — the shader scales the published wave number, and
+                // every downstream term (theta AND the analytic slope) then reads the SCALED k.
+                float waveNumber = train.z * Mathf.Max(freqScale, 1e-3f);
                 float theta = waveNumber * (train.x * worldPos.x + train.y * worldPos.y) + phi;
                 float sin = Mathf.Sin(theta);
                 float cos = Mathf.Cos(theta);

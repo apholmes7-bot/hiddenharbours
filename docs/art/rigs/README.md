@@ -42,17 +42,48 @@ its leaning lid lands at the E/W rows, the bucket by the fish tray's diagonal ch
 storage bake refuses on a catalog mismatch like every sibling.)
 
 **COUNTER-CLOCKWISE (19)** — cell `i` depicts heading **−45°·i** while labelled `+45°·i`.
-Pixel-verified: `puntIsoRig` (golden master, byte-identical), `doryIsoRig`, `capeIslanderIsoRig`,
+Pixel-verified: `puntIsoRig` (golden master — byte-identical until the v2 rig revised her, see below),
+`doryIsoRig`, `capeIslanderIsoRig`,
 `lobsterBoatIsoRig`. The rest are inferred and must be measured before use:
 `bucketRig` · `capeIslanderIsoRig` · `coastalPacketIsoRig` · `consoleIsoRig` · `doryIsoRig` · `fishTubRig`
 · `houseIsoRig` · `interiorIsoRig` · `interiorPropRig` · `lobsterBoatIsoRig` · `puntIsoRig` · `shovelIsoRig`
 · `sideDraggerIsoRig` · `skiffMotorRig` · `sportSkiffIsoRig` · `sternTrawlerIsoRig` ·
 `sternTrawlerMk2IsoRig` · `tankerIsoRig` · `wharfBuildingRig`
 
-**No azimuth term (18 + 4 + 1)** — kits, props and creatures that aren't 8-way directional; they need no
+**No azimuth term (18 + 4 + 1 + 2)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
 `crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`
-(flat water-surface clumps — the kit bakes NO heading by design).
+(flat water-surface clumps — the kit bakes NO heading by design); the terrain kits add
+`shoreIsoKitRig` · `roadPathRig` (see the caveat below — they are *static tiles*, which is not the same
+thing as being safe); the tree kit adds **`treeIsoRig`** (+ its batch harness `_treeBake.js`) — a tree
+has no heading, so its sheet axes are **variant × sway frame**, not direction.
+
+> ⚠️ **`treeIsoRig`'s pivot is the TRUNK FOOT, not the cell's bottom row.** The near root flare
+> projects *below* it under the 40° camera, so the cell carries `pad` rows underneath the pivot
+> (`sheetSpec().pivot` and `nearFlarePad` in `Trees.json`). Assuming bottom-centre — the convention
+> every other tree sprite in this repo uses — **sinks every tree into the ground.** Precedent: the dory
+> bakes at pivot (80,88) in a 160×156 cell for the same reason. See
+> [`../tree-rig-kit/README.md`](../tree-rig-kit/README.md).
+>
+> This rig is also the **first to ship a complete public API** (`render` · `packMask` · `normalView` ·
+> `sheetSpec` · `cellOf` + its constants, all on `root.TreeRig`). It needs **no symbol shim** — the
+> thing ADR 0022 open question 4 has been asking of every other rig.
+
+> **⚠️ "No azimuth term" ≠ "no compass risk" for the terrain kits.** `shoreIsoKitRig` bakes no
+> turntable, so there is no heading to mirror and the probe machinery does not apply — but its cliff and
+> fringe *pieces* are named by bearing (`faceS`, `cornSW`, `sideW`, `edN`…), and nothing has checked
+> those names against rendered pixels. The slices are therefore named by GRID POSITION and the labels
+> live in one place, `ShorelineIsoCatalog`, precisely so a wrong label is a one-line fix and not a
+> re-slice. Treat those bearings as a prior, exactly like every list on this page.
+
+**The two BUILDING rigs (`houseIsoRig`, `wharfBuildingRig`) now have a probe, but are still UNMEASURED
+until a bake actually runs.** `BuildingRigAzimuthProbe` reads the **door** anchor rather than a bow taper,
+because a building has no bow for PCA to bite on and that probe would return noise dressed as an answer.
+It runs at bake time and refuses on a mismatch, exactly like every sibling — so their listing above stays
+a prior until someone runs *Art ▸ Bake Buildings* and the bake either passes or refuses. Note the honest
+limit, recorded in that file too: the door anchor is the same `projVert` arithmetic that draws the
+pixels (so it is measurement, not a declaration), but it is **not** the independent pixel re-derivation
+the punt's byte-identical golden master was.
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
@@ -69,6 +100,16 @@ hand-exported sheets until they are re-baked.
 under `docs/art/punt-iso-rig/` and `docs/art/skiff-fleet-rigs/`. **The versions here differ** (md5 mismatch
 on all four) — these came from the art director's live project folder and are newer.
 
+**`roadPathRig.js` is NOT one of them (checked 2026-07-23).** The road/path kit zip's copy `md5`s
+differently from the one imported in #227, but that difference is **line endings only** — strip the CRs and
+the two files are byte-identical. The committed `RoadIso_*_new_blob47.png` atlases therefore bake from
+exactly the rig already in the repo. Worth recording, because an `md5` mismatch on a text file in a repo
+with `eol` normalization is not evidence of anything: **diff it before believing it.**
+
+**`shoreIsoKitRig.js` is new** and does *not* replace `shorelineKitRig.js`/`shorelineRig.js` — those bake
+the older **near-plan** shoreline still sitting loose in `Art/Tilesets/`, this one bakes the **ISO** re-cut
+that matches the boat camera. Both are kept: nothing already painted from the near-plan tiles should break.
+
 The older per-kit copies have been removed so there is ONE canonical location; their `README.txt` files are
 kept, since they document the shipped kits' cell sizes and pivots.
 
@@ -76,6 +117,40 @@ kept, since they document the shipped kits' cell sizes and pivots.
 against the sheet already shipped in `Assets/_Project/Art/Boats/`. If the punt does not match, the likely
 cause is that the shipped art was baked from the *older* rig, not that the baker is wrong. Establish which
 before chasing a phantom bug.
+
+**And as of 2026-07-25 it no longer matches, for that exact reason.** The small-craft rig kit v2 revised
+the punt, so `PuntIso.png` is one revision behind her rig: all eight paired cells fell to **98.08–98.42%**
+(spread 0.34 pp) while the off-axis check held at 84.62%, i.e. uniform art drift, not a broken correction.
+`PuntGoldenMasterTests` now asserts the **spread** rather than the absolute match, and says so in place.
+To restore the strong form, the art director re-exports `PuntIso.png` from the v2 rig **by hand from his
+browser** — re-baking it in engine would make the test compare the baker against itself.
+
+---
+
+## The small craft rig kit v2 (imported 2026-07-25)
+
+Updated `doryIsoRig.js`, `puntIsoRig.js`, `consoleIsoRig.js`, plus two rigs that are **versioned but
+wired to nothing**:
+
+- `doryMotorRig.js` → `globalThis.DoryMotor` — the dory's little tiller two-stroke (cell 196×164,
+  pivot 98,92 onto her 80,88; `maxSteer` 32°, `tiltMax` 40°, one `stock` variant). Not in
+  `HullPropFleet`; landing it is its own piece of work. Note its export publishes neither
+  `motorFaces` nor `swivelPt`, so it will need the same shim the other two motors take.
+- `wheelRig.js` → the helm wheel at control scale. No `dir`, returns a canvas, needs a DOM — it sits
+  outside the shared rig contract and has no consumer.
+
+`skiffMotorRig.js` was **not** re-imported: the drop's copy is byte-identical modulo CRLF.
+
+⚠️ **Paint became data on the punt and the console skiff.** Neither rig has a `MATS` constant any more —
+`palette(opts)` derives every ramp from a named scheme — so both hulls stopped baking outright until
+`RigMeshSymbols.Reconstructions` learned to read `palette({}).mats`. That pins their bake to each rig's
+`DEFAULT_SCHEME` (**`harbour-white`** on both). Choosing a colourway at runtime, and the console's new
+per-material `dith` weight, are **not** modelled — see the note on that reconstruction.
+
+⚠️ **The dory's `'oars'` build is NOT "unchanged pixel-for-pixel"** as the drop's README claims. Measured
+across 192 cells / 4.79 M px: 96 of 96 hull cells differ, 34,703 px, because four additions landed in the
+shared face list and the two rowing thwarts were resized 131–145 mm narrower per side. Her oar layer and
+every anchor ARE identical.
 
 ## Boats that exist only as a rig
 

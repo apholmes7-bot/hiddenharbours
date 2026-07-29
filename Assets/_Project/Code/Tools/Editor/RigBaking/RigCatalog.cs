@@ -126,6 +126,28 @@ namespace HiddenHarbours.Tools.RigBaking
                 // the REST pivot itself (rest mode is the only mode it bakes).
                 ["bucket"] = new RigEntry($"{RigFolder}/bucketRig.js", "BucketIso",
                                           AzimuthConvention.CounterClockwise),
+
+                // ---- the buildings (Nine Mile Creek + the St Peters village) --------------------
+
+                // The clapboard houses. Same turntable, same elev 40°, same 32 px = 1 m as the fleet,
+                // so a cottage and a Cape Islander stand in one space. In the README's INFERRED
+                // counter-clockwise group and never measured — BuildingRigAzimuthProbe measures it at
+                // bake time from the door anchor (a building has no bow taper for RigAzimuthProbe to
+                // read) and the bake REFUSES on a mismatch, same as every sibling.
+                //
+                // ⚠️ Baked by BuildingRigBaker, never the boat turntable: the cell is 992×1060, so
+                // eight facings in a row would be 7936 px — past the 4096 cap. The building baker
+                // tight-crops to the drawn pixels first, which is what makes the bake possible at all.
+                ["house"] = new RigEntry($"{RigFolder}/houseIsoRig.js", "HouseIso",
+                                         AzimuthConvention.CounterClockwise),
+
+                // The net-shed / storage-barn / fish-plant family — the wharf's working buildings.
+                // Same story as the house, one size worse: the 1200×1160 cell is sized to hold the
+                // `cannery`, so a net shed occupies a fraction of it and eight uncropped facings would
+                // be 9600 px wide (the kit's own reference sheet, which is why that PNG stayed in
+                // docs/ and was never imported).
+                ["wharfBuilding"] = new RigEntry($"{RigFolder}/wharfBuildingRig.js", "WharfBuilding",
+                                                 AzimuthConvention.CounterClockwise),
             };
 
         public static string RepoRoot =>
@@ -227,6 +249,24 @@ namespace HiddenHarbours.Tools.RigBaking
             NativeDirs = nativeDirs; RockFrames = rockFrames; DefaultElevation = defaultElevation;
         }
 
+        /// <summary>
+        /// The Unity sprite pivot: normalised, BOTTOM-origin.
+        ///
+        /// <para>⚠️ <b>The y term is <c>(H − pivotY)/H</c>, NOT <c>(H − 1 − pivotY)/H</c>, and that
+        /// is correct — it has been challenged and MEASURED.</b> See <b>ADR 0026</b> and
+        /// <see cref="RigPivotConventionProbe"/>. In short: a rig's <c>pivot</c> is a CONTINUOUS
+        /// coordinate whose origin is the cell's top-left corner, not a pixel index. The rigs
+        /// project with <c>sy = cy − (…)·S</c> into a space the rasterizer samples at pixel
+        /// CENTRES (<c>y + 0.5</c>), and every rig in the repo sets <c>cx = W/2</c> exactly — an
+        /// integer only the continuous reading can produce, since a column index would need the
+        /// half-integer <c>(W − 1)/2</c>. So <c>pivotY</c> lands on the pivot row's TOP edge and
+        /// this formula is exact.</para>
+        ///
+        /// <para><b>The tree bake deliberately differs</b> (<c>TreeKitCatalog.NormalizedPivot</c>
+        /// uses the rig's own <c>pad/cellH</c>, one row lower). That is not a contradiction — a
+        /// tree's pivot is a chosen ROW, a hull's is a projected POINT. Do not unify them; ADR 0026
+        /// has the argument and a test guards both directions.</para>
+        /// </summary>
         public Vector2 UnityNormalisedPivot =>
             new Vector2((float)(PivotX / Width), (float)((Height - PivotY) / Height));
 

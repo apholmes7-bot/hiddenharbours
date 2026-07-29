@@ -163,6 +163,18 @@ namespace HiddenHarbours.Fishing
         /// dock, a clean rail, the owner's factor at 0) makes this bit-for-bit the three-arg tick.
         /// </summary>
         public void Tick(float dt, bool reeling, float steerAlignment, float deckAnglePressurePerSec)
+            => Tick(dt, reeling, steerAlignment, deckAnglePressurePerSec, seaPressurePerSec: 0f);
+
+        /// <summary>
+        /// The full tick including <b>the sea's own pressure</b> (owner's ruling 2026-07-25 — Pillar 1
+        /// finally reaching the rod loop): <paramref name="seaPressurePerSec"/> is the swell working the
+        /// rod and snatching at the line, computed by the pure <see cref="SeaFightMath.TensionPerSec"/>
+        /// from the LIVE sea state and handed in per tick exactly as the deck term is. It loads the line
+        /// only — it never touches landing — and at 0 (a flat calm, or the owner's factor off) this is
+        /// bit-for-bit the four-arg tick, which is the A/B baseline the tests pin.
+        /// </summary>
+        public void Tick(float dt, bool reeling, float steerAlignment, float deckAnglePressurePerSec,
+                         float seaPressurePerSec)
         {
             if (IsOver || float.IsNaN(dt) || dt <= 0f) return;
 
@@ -171,8 +183,12 @@ namespace HiddenHarbours.Fishing
             RodFightPhase phase = Phase;
             float effort = _rhythm.Effort01;
 
+            // The sea rides the SAME additive seam the deck stance does — both are outside forces loading
+            // the line, neither is anything the angler did wrong, and summing them is what lets a bad
+            // stance in a bad sea be genuinely dangerous while either alone stays manageable.
             float tensionRate = RodFightMath.TensionRatePerSec(reeling, effort, steerAlignment, phase,
-                _rise, _fall, _effectiveRunPressure, _steerRelief, deckAnglePressurePerSec);
+                _rise, _fall, _effectiveRunPressure, _steerRelief,
+                deckAnglePressurePerSec + Mathf.Max(0f, seaPressurePerSec));
             float landingRate = RodFightMath.LandingRatePerSec(reeling, effort, steerAlignment, phase,
                 _fill, _giveBack);
 
