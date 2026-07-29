@@ -8,9 +8,11 @@
   more variability, moving in different directions, ripples, variance in sizes, speed, building and collapsing."*
   Auditing each ask against the shipped shader exposed **two genuine gaps in the original eight** — nothing in the
   plan linked **wave speed to wavelength** (dispersion), and nothing added a **ripple/capillary band** at all. Both
-  are now items **#9** and **#10**. The audit also found the shipped variability layers **dialled down 4–6× from
-  their design defaults**, which adds a **zero-code tuning phase (P0)** ahead of everything, and **pulls #5 (the
-  spectrum) up from last to second** because it is the keystone for what the owner actually asked for.
+  are now items **#9** and **#10**. The audit also found the shipped variability layers sitting well under their
+  design defaults — but **deliberately so** (finding 4: the values are hand-tuned, and half of them are eased from
+  the mood materials, not `Water.mat`). That adds a **zero-code tuning phase (P0)** ahead of everything — framed as
+  a **revision of the owner’s own art direction, not a bug fix** — and **pulls #5 (the spectrum) up from last to
+  second** because it is the keystone for what the owner actually asked for.
 - **Decision owner:** `lead-architect` (render plumbing, the wave-field seam, the ADR-0018/0023 impact);
   `art-pipeline` owns the look (σ, colour, thresholds, all tunables).
 - **Flagged from:** the owner (2026-07-28), reviewing which techniques from Unity's HDRP Water System are worth
@@ -49,7 +51,9 @@ Read from `Assets/_Project/Art/Materials/Water.mat`, not assumed:
    anything `e^(−σd)` computes, the owner can already paint, per-channel, including non-physical shapes he prefers.
    `_DeepBlueStrength: 0.45` is standing evidence that the physical answer is *not* the wanted answer: that bounded
    pull toward navy exists precisely because the settled deep end wasn't what he wanted.
-2. **`_ShallowTranslucency: 0`** — the §17 see-through shallows shipped in Arc C are **off** in the live material.
+2. **`_ShallowTranslucency: 0`** — the §17 see-through shallows shipped in Arc C are **off**. This prop is
+   mood-eased (finding 4a), so `Water.mat` alone would not settle it — but **no mood material carries a non-zero
+   value** either (`Water_FoggySmother` sets it explicitly to 0; the rest do not override it). It is off everywhere.
 3. **The seabed arrives ungraded and untintable.** §17.1 shows the bottom by *lowering `col.a`* so a seabed sprite
    drawn behind the sea plane bleeds through the `SrcAlpha OneMinusSrcAlpha` blend. The water shader never sees
    that colour, so it cannot absorb it; and a **scalar** alpha cannot express **per-channel** transmission at all.
@@ -57,32 +61,46 @@ Read from `Assets/_Project/Art/Materials/Water.mat`, not assumed:
 
 Finding 1 kills the obvious version of absorption. Finding 3 is where the physics does work no existing knob does.
 
-### Finding 4 — the variability layers are already built, and dialled down 4–6× (added with #9/#10)
+### Finding 4 — the variability layers are built and set LOW, and that is deliberate art direction
 
 The owner asked for *"more variability, moving in different directions, ripples, variance in sizes, speed, building
-and collapsing."* Most of that is **shipped and turned down**. `Water.mat` against the ADR-0010 design defaults:
+and collapsing."* Most of that is **shipped and set well under its design defaults**. The values are **not drift**
+— the evidence says they were chosen. Two things must be established before anyone touches a number.
 
-| Property | Design default | Live | Effect of the gap |
+**(a) Which values actually run.** `_FbmStrength`, `_OceanSwellStrength`, `_OceanSwellSharpness` (and
+`_ShallowTranslucency`) are in `WaterSurface.MoodFloatNames`, and the scene carries `_weatherPaletteEnabled: 1` —
+so at runtime they are **eased across the eight mood materials in `Art/Materials/WaterPresets/`** (ADR 0017).
+Their `Water.mat` values are **baselines that get overwritten**. Tuning them in `Water.mat` does nothing.
+
+| Property | Design default | Where it lives | Live value |
 |---|---|---|---|
-| `_WindChop` | 0.4 | **0.07** | the wind-chop octave at ~1/6 strength |
-| `_Octave3Weight` | 0.3 | **0.108** | the cross-swell (the second direction) at ~1/3 |
-| `_FbmStrength` | 0.18 | **0.045** | the organic large-scale variance at ~1/4 |
-| `_FoamEvolveSpeed` | 0.25 | **0.1** | foam morphs 2.5× slower than designed |
-| `_OceanSwellSharpness` | 1.4 | **6** | crests narrow and peaked, not broad rolling bands |
-| `_FbmScale` | 0.05 | **3.26** | ⚠️ **inverted** — see below |
+| `_WindChop` | 0.4 | `Water.mat` (fixed) | **0.07** — the wind-chop octave at ~1/6 |
+| `_Octave3Weight` | 0.3 | `Water.mat` (fixed) | **0.108** — the cross-swell (second direction) at ~1/3 |
+| `_FoamEvolveSpeed` | 0.25 | `Water.mat` (fixed) | **0.1** — foam morphs 2.5× slower than designed |
+| `_FbmScale` | 0.05 | `Water.mat` (fixed) | **3.26** — see (b) |
+| `_FbmStrength` | 0.18 | **mood-eased** | 0.035 – 0.08 across all 8 moods |
+| `_OceanSwellStrength` | 0.16 | **mood-eased** | 0.05 (fog) → **0.16 (storm — the design default)** |
+| `_OceanSwellSharpness` | 1.4 | **mood-eased** | 6 (calm) → 2.5 (storm) |
 
-`_FbmScale` is the one that looks like a defect rather than a taste call: **smaller = longer wavelength** for that
-control, so at 3.26 the layer ADR 0010 §5.7 describes as producing *"broad slow patches"* is producing fine speckle
-at roughly 65× the intended frequency. With its strength also at a quarter, **the large-scale variance layer is not
-doing its job.** Confirm with the owner before changing it — it may be deliberate — but it should be a decision.
+**(b) `_FbmScale` = 3.26 is DELIBERATE — ruled, not open.** It is *not* mood-eased, so 3.26 runs everywhere. Git
+shows it was already **3.27** before `f2574a4` (*"commit the owner’s water tuning as the baseline (2026-07-05
+session)"*) and was nudged to **3.26** in that commit — the signature of a slider being dragged, not a default left
+behind. It is a chosen value; the same commit moved `_OceanSwellStrength` 0.09 → 0.12. **Do not "fix" it.**
 
-⚠️ `_Chop`, `_Roughness` and `_Flow` in the material are **sim-pushed at runtime** (`WaterSurface.PushUniforms`);
-their serialized values are last-write artefacts and must **not** be tuned there (`design/water-rendering.md`
-§12.1, the sim-override caveat).
+**(c) The mood ramp works as designed, and that reframes the ask.** `_OceanSwellStrength` runs 0.05 in fog and
+**reaches the 0.16 design default at storm**; `_OceanSwellSharpness` broadens from 6 to 2.5 as the sea builds. The
+swell layer is not turned off — it is **weather-scaled, and the sea has mostly been seen in calm weather.** Before
+concluding the sea lacks variability, **look at it in a storm.** That one observation may resolve much of the ask
+for free, and it costs a single weather override to test.
 
-**This is why P0 exists.** Turning the existing knobs back up is free, and it is the only way to learn what is
-genuinely missing versus merely dialled out — which makes the #5 decision (the highest-risk item here) far better
-informed. Same lesson as `_ShallowTranslucency: 0` and `_DepthBands: 0`: **audit what is enabled before building.**
+⚠️ `_Chop`, `_Roughness` and `_Flow` are **sim-pushed** (`WaterSurface.PushUniforms`); never tune them in a
+material (`design/water-rendering.md` §12.1).
+
+**This is why P0 exists — but P0 is a REVISION of the owner’s own art direction, not a bug fix.** Every one of these
+numbers was chosen; `_FbmStrength` sits at 0.035–0.08 in **all eight** mood materials independently, which is about
+as clear a statement of intent as a preset library can make. P0 asks the owner whether he wants to revise that now,
+and it edits **the mood materials** for mood-eased props and **`Water.mat`** for the fixed ones. Same lesson as
+`_DepthBands: 0`: **audit what is enabled, and where it lives, before building.**
 
 ### The determinism tax (this sets the tiering, not visual impact)
 
@@ -311,7 +329,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 
 | Phase | Items | Tier | Why here |
 |---|---|---|---|
-| **P0** | **Tuning pass — no code.** Restore `_WindChop`, `_Octave3Weight`, `_FbmStrength`, `_FoamEvolveSpeed` toward defaults; resolve the inverted `_FbmScale`; owner ruling on `_OceanSwellSharpness` | — | **Free.** Finding 4: the variability layers are built and dialled down 4–6×. Separates "missing" from "turned off" **before** committing to the riskiest item. |
+| **P0** | **Tuning pass — no code.** ① **First: view the sea in a STORM** (finding 4c) — the swell already ramps to its design default there. ② Then, if still wanted: raise `_WindChop` / `_Octave3Weight` / `_FoamEvolveSpeed` in **`Water.mat`**, and `_FbmStrength` / `_OceanSwell*` in the **eight mood materials**. ⛔ `_FbmScale` is ruled deliberate — leave it | — | **Free.** Separates "missing" from "weather-scaled" from "deliberately low" **before** committing to the riskiest item. ⚠️ This **revises the owner’s tuning**, so it is his call, not a fix. |
 | **P1** | #2 caustics, #3 convergence foam, #4 band scaling, **#9 dispersion** (all visual) | A | Cheapest, no sim risk, no plumbing. #9 pairs with #4 — wavelength and speed must land together. |
 | **P2** | **#5 spectrum + grouping** ⬆ (was P6); #4/#9 promoted into `_WaveFieldParams` | B | **Pulled up.** JONSWAP weighting = variance in sizes; directional spreading = a continuous spread, not 3 discrete axes; **grouping = crests that grow and die.** |
 | **P3** | **#10 ripples** | A | After #5 deliberately — the ripple band should ride the *spectrum's* waves, not the octaves it replaces. |
@@ -401,8 +419,10 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   earlier in the queue — see "the cost of this re-order".
 - **Does P0 shrink #5?** If restoring the dialled-down layers delivers most of the variability ask, #5 can be
   scoped down or deferred again. Decide this **on the evidence from P0**, not in advance.
-- **`_FbmScale` — defect or taste?** 65× off its design intent on the control that produces broad patches. Needs
-  an explicit owner ruling before it is touched; it is the one P0 change that is not obviously safe.
+- ~~**`_FbmScale` — defect or taste?**~~ **RULED: deliberate** (finding 4b — it was 3.27 before the owner’s tuning
+  commit `f2574a4` and was nudged to 3.26 in it). Not mood-eased, so 3.26 runs everywhere. **Leave it alone.**
+- **Does the sea just need worse weather?** `_OceanSwellStrength` already reaches its 0.16 design default at storm
+  (finding 4c). Check the storm mood **before** spending anything on P0 or #5 — it is one weather override.
 - **Can #10 survive the zoom tiers?** A ~3 px ripple is sub-pixel at wider zoom. If the per-tier amplitude fade
   cannot be made stable, **drop the item** rather than ship a shimmer source — prototype before committing.
 - **Does #9 subsume part of §5.12's shoreward bias?** Depth-limited dispersion slows and bunches waves near shore,
