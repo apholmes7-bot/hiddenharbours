@@ -54,6 +54,18 @@ namespace HiddenHarbours.Core
         public CatchSold(int totalPaid, int count) { TotalPaid = totalPaid; Count = count; }
     }
 
+    /// <summary>
+    /// Raised when spoiled catch is DUMPED out of a hold (the M1 §7.3 dispose verb — emptied on the
+    /// wharf, tipped over the side). The hold-reading presenters (deck tray, tote fill) refresh on it
+    /// exactly as they do on <see cref="CatchSold"/>; it is its own signal because nothing was paid —
+    /// a dump must never flash the payout HUD.
+    /// </summary>
+    public readonly struct CatchDumped
+    {
+        public readonly int Count;
+        public CatchDumped(int count) { Count = count; }
+    }
+
     /// <summary>Raised whenever the player's balance changes.</summary>
     public readonly struct MoneyChanged
     {

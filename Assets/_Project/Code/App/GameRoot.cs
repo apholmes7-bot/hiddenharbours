@@ -41,7 +41,11 @@ namespace HiddenHarbours.App
             GameServices.Clock = _clock;
             GameServices.Environment = _environment;
             GameServices.Wallet = _wallet;   // optional in the greybox
-            GameServices.Config = _config;   // optional; unwired = every block on its own Default
+            // The explicit reference wins; an unwired scene borrows the clock's own config (the clock
+            // cannot run without one), so a stale scene still reaches the owner's tunables rather than
+            // silently running every block on its C# Default. Unity fake-null: `!= null`, never `??`.
+            GameServices.Config = _config != null ? _config
+                                : _clock != null ? _clock.Config : null;
 
             if (!GameServices.Ready)
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +

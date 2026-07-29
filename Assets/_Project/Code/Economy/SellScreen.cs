@@ -45,6 +45,11 @@ namespace HiddenHarbours.Economy
         private readonly List<GameObject> _speciesButtons = new();
         private string _selectedSpecies;
 
+        // The freshness read this screen prices against (M1 §7.3): captured once per Refresh so every
+        // label and the eventual payout evaluate the same instant — quote == coin, freshness included.
+        private SpoilContext _spoil;
+        private Text _spoiledLabel;
+
         private static readonly Color Backdrop   = new Color(0f, 0f, 0f, 0.72f);
         private static readonly Color PanelColor = new Color(0.10f, 0.12f, 0.15f, 0.98f);
         private static readonly Color Accent     = new Color(0.55f, 0.95f, 0.55f);
@@ -92,10 +97,14 @@ namespace HiddenHarbours.Economy
         {
             if (_hold == null || _hold.UsedUnits == 0) { Close(); return; }   // nothing left → done
 
-            RebuildSpeciesList();
+            // One freshness read per refresh: rows, labels and payouts all price this same instant.
+            _spoil = SpoilContext.Capture();
 
-            // Keep the selection if it still exists, else select the first species.
-            if (_selectedSpecies == null || SellService.CountOf(_hold, _selectedSpecies) == 0)
+            RebuildSpeciesList();
+            UpdateSpoiledLabel();
+
+            // Keep the selection if it still has sellable units, else select the first species.
+            if (_selectedSpecies == null || SellService.CountSellableOf(_hold, _selectedSpecies, _spoil) == 0)
                 _selectedSpecies = _speciesButtons.Count > 0 ? _speciesButtons[0].name : null;
 
             SelectSpecies(_selectedSpecies);
@@ -115,7 +124,10 @@ namespace HiddenHarbours.Economy
                 CatchItem it = items[i];
                 if (!seen.Add(it.SpeciesId)) continue;
 
-                int count = SellService.CountOf(_hold, it.SpeciesId);
+                // Rows list what a buyer will TAKE: only sellable units count, and a species that is
+                // all rubbish gets no row (the spoiled label below the list carries that news).
+                int count = SellService.CountSellableOf(_hold, it.SpeciesId, _spoil);
+                if (count == 0) continue;
                 string id = it.SpeciesId;
                 string label = it.DisplayName + "   ×" + count;
 
@@ -139,7 +151,7 @@ namespace HiddenHarbours.Economy
         private void SelectSpecies(string speciesId)
         {
             _selectedSpecies = speciesId;
-            int count = SellService.CountOf(_hold, speciesId);
+            int count = SellService.CountSellableOf(_hold, speciesId, _spoil);
 
             foreach (var b in _speciesButtons)
             {
@@ -184,16 +196,15 @@ namespace HiddenHarbours.Economy
         private void UpdatePriceLabels()
         {
             if (_selectedSpecies == null) return;
-            int have = SellService.CountOf(_hold, _selectedSpecies);
+            int have = SellService.CountSellableOf(_hold, _selectedSpecies, _spoil);
             int q = Mathf.Clamp(Mathf.RoundToInt(_qtySlider.value), 0, have);
-            CatchItem sample = SampleOf(_selectedSpecies);
-            float supply = _market != null ? _market.SupplyOf(sample.Category) : 0f;
-            float demand = _market != null ? _market.DemandFor(sample.Category) : 1f; // per-category demand
 
+            // Each unit carries its own freshness multiplier now, so the q-th unit's price is the
+            // quote DIFFERENCE — exactly what confirming q rather than q−1 would add to the payout.
+            int total = SellService.Quote(_hold, _market, _selectedSpecies, q, _spoil);
             int marginal = q > 0
-                ? SellPricing.MarginalPrice(sample.BaseValue, sample.SupplyElasticity, supply, q - 1, demand)
+                ? total - SellService.Quote(_hold, _market, _selectedSpecies, q - 1, _spoil)
                 : 0;
-            int total = SellService.Quote(_hold, _market, _selectedSpecies, q);
 
             _qtyLabel.text = "Qty " + q + " / " + have;
             _marginalLabel.text = "This unit: " + Money(marginal);
@@ -205,12 +216,26 @@ namespace HiddenHarbours.Economy
             if (_moneyLabel != null && _wallet != null) _moneyLabel.text = Money(_wallet.Money);
         }
 
+        // The refusal is telegraphed, not silent (M1 §7.3): rubbish gets no row and no price, so this
+        // line is where the player learns the buyer waved it off — and that dumping is the way out.
+        private void UpdateSpoiledLabel()
+        {
+            if (_spoiledLabel == null) return;
+            int spoiled = SellService.CountSpoiled(_hold, _spoil);
+            _spoiledLabel.enabled = spoiled > 0;
+            if (spoiled > 0)
+                _spoiledLabel.text = spoiled + (spoiled == 1 ? " unit has" : " units have") +
+                                     " gone off — no buyer will take them. Dump them overboard.";
+        }
+
         // ---- actions ------------------------------------------------------------------------
 
         private void OnConfirm()
         {
             if (_selectedSpecies == null) return;
-            SellService.SellSpecies(_hold, _wallet, _market, _selectedSpecies, Mathf.RoundToInt(_qtySlider.value));
+            // Pass the SAME context the labels were drawn with, so the coin paid is the total shown.
+            SellService.SellSpecies(_hold, _wallet, _market, _selectedSpecies,
+                Mathf.RoundToInt(_qtySlider.value), _spoil);
             Refresh();
         }
 
@@ -218,14 +243,14 @@ namespace HiddenHarbours.Economy
         {
             if (_selectedSpecies == null) return;
             SellService.SellSpecies(_hold, _wallet, _market, _selectedSpecies,
-                SellService.CountOf(_hold, _selectedSpecies));
+                SellService.CountSellableOf(_hold, _selectedSpecies, _spoil), _spoil);
             Refresh();
         }
 
         private void OnSellEverything()
         {
-            SellService.SellAll(_hold, _wallet, _market);
-            Refresh();   // empties the hold → Close()
+            SellService.SellAll(_hold, _wallet, _market, _spoil);
+            Refresh();   // empties the hold → Close(); spoiled leftovers keep the screen (and the news) up
         }
 
         private void Close() => Destroy(gameObject);
@@ -321,6 +346,10 @@ namespace HiddenHarbours.Economy
                 OnConfirm, accent: true, align: TextAnchor.MiddleCenter, out _);
             MakeButton(panel, "SellType", "Sell all of type", 430f, -400f, 466f, 50f,
                 OnSellAllOfType, accent: false, align: TextAnchor.MiddleCenter, out _sellTypeLabel);
+
+            _spoiledLabel = MakeText(panel, "", 22, TextAnchor.UpperLeft, 24f, -436f, 560f, 30f);
+            _spoiledLabel.color = new Color(0.95f, 0.65f, 0.35f);   // gone-off amber, not alarm red
+            _spoiledLabel.enabled = false;
 
             MakeButton(panel, "SellAll", "Sell ALL", 24f, -470f, 280f, 56f,
                 OnSellEverything, accent: false, align: TextAnchor.MiddleCenter, out _);

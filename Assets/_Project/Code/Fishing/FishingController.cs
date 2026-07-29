@@ -585,8 +585,12 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
+            // Stamp the freshness clock at landing (M1 §7.3): the moment it leaves the water it is on
+            // the clock. Time comes from the Core clock, never Time.deltaTime (rule 5).
+            double landedAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             var item = new CatchItem(fish.Id, fish.DisplayName, fish.Category,
-                                     _pendingWeight, fish.BaseValue, fish.SupplyElasticity);
+                                     _pendingWeight, fish.BaseValue, fish.SupplyElasticity,
+                                     fish.SpoilPerDay, Freshness.Landed(landedAt));
 
             if (_hold != null && _hold.TryAdd(item))
             {

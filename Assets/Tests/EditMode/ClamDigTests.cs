@@ -143,6 +143,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, hold.UsedUnits);
         }
 
+        // A clock pinned at one instant, for the freshness-stamp check (M1 §7.3).
+        private sealed class StampClock : IGameClock
+        {
+            public double TotalSeconds { get; set; }
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 0f;
+            public float DayFraction => 0f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
+        [Test]
+        public void Dig_StampsTheFreshnessClock()
+        {
+            GameServices.Clock = new StampClock { TotalSeconds = 777d };
+            var clam = MakeClam();
+            clam.SpoilPerDay = 0.5f;
+            var hold = new FakeHold();
+
+            Assert.IsTrue(MakeDig(hold, clam).TryDig());
+            Assert.AreEqual(777d, hold.Items[0].Freshness.LastSettleGameSeconds, 1e-9,
+                            "a dug clam goes on the clock at the dig (M1 §7.3)");
+            Assert.AreEqual(0.5f, hold.Items[0].SpoilPerDay, 1e-6f, "the species' rate rides the item");
+        }
+
         [Test]
         public void Dig_FullBucket_RefusesAndCapsAt20()
         {

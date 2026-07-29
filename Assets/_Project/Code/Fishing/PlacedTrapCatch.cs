@@ -68,8 +68,11 @@ namespace HiddenHarbours.Fishing
             if (fish == null) return null;
 
             float weightKg = CatchResolver.RollWeight(fish, rng);   // same size roll the rod uses
+            // SpoilPerDay rides along like BaseValue does; the freshness STAMP happens at the haul
+            // (the caller's clock read) — this resolver stays pure and clock-free (rule 5).
             return new CatchItem(fish.Id, fish.DisplayName, fish.Category,
-                                 weightKg, fish.BaseValue, fish.SupplyElasticity);
+                                 weightKg, fish.BaseValue, fish.SupplyElasticity,
+                                 fish.SpoilPerDay, default);
         }
 
         /// <summary>
@@ -111,7 +114,8 @@ namespace HiddenHarbours.Fishing
 
                 float weightKg = CatchResolver.RollWeight(fish, rng);   // same size roll the rod uses
                 results.Add(new CatchItem(fish.Id, fish.DisplayName, fish.Category,
-                                          weightKg, fish.BaseValue, fish.SupplyElasticity));
+                                          weightKg, fish.BaseValue, fish.SupplyElasticity,
+                                          fish.SpoilPerDay, default));
             }
             return results.Count;
         }

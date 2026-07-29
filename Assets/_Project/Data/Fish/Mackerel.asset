@@ -31,6 +31,7 @@ MonoBehaviour:
   MinWeightKg: 0.3
   MaxWeightKg: 1.5
   BaseValue: 10
+  SpoilPerDay: 1.5
   SupplyElasticity: 0.35
   SpawnWeight: 0.8
   FavoredLures: 25

@@ -156,8 +156,11 @@ namespace HiddenHarbours.Fishing
             }
 
             float weight = CatchResolver.RollWeight(_clamSpecies, _rng);
+            // Stamp the freshness clock at the dig (M1 §7.3) — a clam in the pail is on the clock too.
+            double dugAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             var clam = new CatchItem(_clamSpecies.Id, _clamSpecies.DisplayName, _clamSpecies.Category,
-                                     weight, _clamSpecies.BaseValue, _clamSpecies.SupplyElasticity);
+                                     weight, _clamSpecies.BaseValue, _clamSpecies.SupplyElasticity,
+                                     _clamSpecies.SpoilPerDay, Freshness.Landed(dugAt));
             if (!_bucket.TryAdd(clam)) return false;   // race with capacity; cozy no-op
 
             EventBus.Publish(new FishCaught(clam));     // same land path the rod uses
