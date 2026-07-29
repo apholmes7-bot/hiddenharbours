@@ -73,15 +73,23 @@ namespace HiddenHarbours.Art.Editor
 
             public string Species => Entry.species;
 
-            /// <summary>The ALBEDO sheet's stem — also the prefab name and the sprite-name prefix.
-            /// The mask and normal sheets are not placed: nothing samples them yet (that lands in
-            /// the terrain/object lighting shader, a different lane), so a tree is lit
-            /// conventionally for now.</summary>
+            /// <summary>The ALBEDO sheet's stem — also the prefab name and the sprite-name prefix.</summary>
             public string Stem =>
                 TreeKitCatalog.StemFor(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Albedo);
 
             public string SheetPath =>
                 TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Albedo);
+
+            /// <summary>The MASK sheet (R key · G rim · B depth · A coverage). Bound as a TEXTURE, not
+            /// placed as a sprite: <c>HiddenHarboursTreeWind</c> samples it at the albedo's uv through
+            /// the albedo's mesh, because the rig's 1 px keyline ring exists here but not in the
+            /// normal, and giving either its own sprite loses the ring.</summary>
+            public string MaskSheetPath =>
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Mask);
+
+            /// <summary>The view-space NORMAL sheet. Same rule as the mask.</summary>
+            public string NormalSheetPath =>
+                TreeKitCatalog.SheetPath(Entry.species, Entry.stage, Season, TreeKitCatalog.Channel.Normal);
 
             /// <summary>For a tool dropdown and the scene hierarchy: "Red Spruce — 5.7 m". The
             /// height is the number the owner is being asked to judge, so it is in the label.</summary>
@@ -150,6 +158,21 @@ namespace HiddenHarbours.Art.Editor
                 if (string.Equals(s.name, firstFrame, StringComparison.Ordinal)) fallback = s;
             }
             return fallback;
+        }
+
+        /// <summary>
+        /// This species' baked light sheets as TEXTURES — <c>(mask, normal)</c>, either of which may be
+        /// null if that sheet is missing. Loaded with <see cref="AssetDatabase.LoadAssetAtPath{T}"/> at
+        /// <c>Texture2D</c>, which works even though these import <c>spriteMode: Multiple</c>: the
+        /// MULTIPLE trap bites <c>LoadAssetAtPath&lt;Sprite&gt;</c> (the sprites are sub-assets), not the
+        /// main texture object, and the main texture is exactly what the shader wants — it samples
+        /// these at the albedo's uv rather than as sprites of their own.
+        /// </summary>
+        public static (Texture2D mask, Texture2D normal) LoadLightSheets(Placement placement)
+        {
+            if (!placement.IsValid) return (null, null);
+            return (AssetDatabase.LoadAssetAtPath<Texture2D>(placement.MaskSheetPath),
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(placement.NormalSheetPath));
         }
 
         /// <summary>Every variant of a species, in order, with any that failed to load dropped.</summary>
@@ -229,6 +252,12 @@ namespace HiddenHarbours.Art.Editor
             var anchor = go.GetComponent<TreeTrunkAnchor>();
             if (anchor == null) anchor = go.AddComponent<TreeTrunkAnchor>();
             anchor.Anchor = placement.Entry.trunkAnchor;
+
+            // This species' baked lighting channels, on the SAME property block as the anchor. They
+            // are inert until the owner raises Tree.mat's _LightResponse off 0 — binding them costs
+            // nothing and means turning the response on is one slider, not a re-place of the forest.
+            var (mask, normal) = LoadLightSheets(placement);
+            anchor.SetLightSheets(mask, normal);
 
             return sr;
         }
