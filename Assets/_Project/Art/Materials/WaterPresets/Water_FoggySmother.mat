@@ -141,9 +141,6 @@ Material:
     - _ReflectionWindScatter: 1.4
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
-    - _ShallowMinAlpha: 0.65
-    - _ShallowSeeThroughDepth: 0.6
-    - _ShallowTranslucency: 0
     - _ShoreSampleStep: 0.4
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
@@ -167,6 +164,7 @@ Material:
     - _SwashScale: 0.2
     - _SwashSpeed: 0.08
     - _SwellFaceShade: 0
+    - _Turbidity: 1.2
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1

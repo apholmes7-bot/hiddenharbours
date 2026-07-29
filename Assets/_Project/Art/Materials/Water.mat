@@ -46,6 +46,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SeabedTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SparkleTex:
         m_Texture: {fileID: 2800000, guid: dd102f0aa90843ae976d90ee15af3b78, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -60,6 +64,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AbsorptionBands: 6
     - _BoatLightBrighten: 2.5
     - _BoatLightGain: 0.5
     - _BoatLightTintAmount: 0.25
@@ -148,9 +153,6 @@ Material:
     - _ReflectionWindScatter: 0.8
     - _Roughness: 0.14
     - _ShallowDepth: 0.15
-    - _ShallowMinAlpha: 0.65
-    - _ShallowSeeThroughDepth: 0.6
-    - _ShallowTranslucency: 0
     - _ShoreNoise: 0.75
     - _ShoreNoiseBand: 0.8
     - _ShoreNoiseScale: 0.6
@@ -181,11 +183,13 @@ Material:
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
     - _SwellReadStrength: 0.35
+    - _Turbidity: 0
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
     - _UseFoamTex: 1
     - _UseHeightTex: 1
+    - _UseSeabedTex: 0
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
@@ -199,6 +203,7 @@ Material:
     - _WindChopScale: 0.7
     - _WindChopSpeed: 0.09
     m_Colors:
+    - _AbsorptionRatio: {r: 1, g: 0.18, b: 0.08, a: 0}
     - _CausticColor: {r: 0.5, g: 0.85, b: 0.95, a: 1}
     - _CloudColor: {r: 0.86, g: 0.88, b: 0.92, a: 1}
     - _CrossSwellDir: {r: 0, g: 0, b: 0, a: 0}

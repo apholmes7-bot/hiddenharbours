@@ -495,25 +495,44 @@ Shader "HiddenHarbours/Water"
         _PaletteShallow ("Palette anchor   shallow", Color) = (0.34, 0.60, 0.62, 1)
         _PaletteFoam    ("Palette anchor   foam", Color)    = (0.92, 0.96, 0.98, 1)
 
-        [Header(See through shallows and day gated caustics (Arc C   col.a plus col.rgb only))]
-        // TWO owner-opt-in shallow-water effects, both default OFF (today's look byte-identical):
-        //  (1) SEE-THROUGH SHALLOWS lowers col.a in a thin band right at the shore so the SEABED sprite
-        //      drawn behind (lower sorting) BLEEDS THROUGH the transparent water (Blend SrcAlpha
-        //      OneMinusSrcAlpha). Only col.a is touched, and only AFTER the depth-colour block settles alpha
-        //      and BEFORE the shoreline foam re-opacifies it — never depth/clip/_WaterLevel/the sim (P1, rule 5).
-        //  (2) DAY-GATED CAUSTICS multiplies the existing shallow caustic add by a DAY factor
-        //      (saturate(_SunElevation): peaks at noon, naturally 0 at night) so the sun-dappled light nets
-        //      only show by day. When the day/night cycle is NOT running (_DayNightTint sum ~ 0: editor /
-        //      bare art scene) it treats the world as full day — the same "unset" convention NightFactor /
-        //      the palette grade use (NOT _SunElevation == 0, which is a real horizon value at sunrise/sunset).
-        // Because see-through lowers alpha in the SAME shallow band the caustics live in, the lowered alpha
-        // partly FADES the caustic-lit water under the blend — keep _ShallowMinAlpha conservative (> 0.5: the
-        // seabed shows UNGRADED so it must read as a HINT, not a hole) and optionally bias caustics deeper.
-        _ShallowTranslucency  ("Shallow see-through amount (0 = off / today)", Range(0,1)) = 0.0
-        _ShallowSeeThroughDepth("Shallow see-through band depth (m)", Float) = 0.6
-        _ShallowMinAlpha      ("Shallow min alpha at the waterline (keep above 0.5)", Range(0,1)) = 0.65
+        [Header(Day gated caustics (Arc C   col.rgb only))]
+        // DAY-GATED CAUSTICS multiplies the existing shallow caustic add by a DAY factor
+        // (saturate(_SunElevation): peaks at noon, naturally 0 at night) so the sun-dappled light nets
+        // only show by day. When the day/night cycle is NOT running (_DayNightTint sum ~ 0: editor /
+        // bare art scene) it treats the world as full day — the same "unset" convention NightFactor /
+        // the palette grade use (NOT _SunElevation == 0, which is a real horizon value at sunrise/sunset).
+        // NOTE (ADR 0027 num 7): the Arc C SEE-THROUGH SHALLOWS that used to sit here are RETIRED, not
+        // revived. _ShallowTranslucency / _ShallowSeeThroughDepth / _ShallowMinAlpha faked the bottom by
+        // LOWERING col.a so an ungraded sprite bled through the alpha blend; a scalar alpha cannot carry
+        // per-channel transmission, and the lowered alpha partly CANCELLED these caustics (the old §17.3
+        // tune-around). Seabed absorption below composites the bottom in the shader instead, so col.a
+        // stays opaque and that cancellation is gone BY CONSTRUCTION.
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+
+        [Header(Seabed absorption (ADR 0027 num 7)   the bottom seen THROUGH the column   col.rgb only)]
+        // The painted _DepthRamp stays the colour authority for the WATER BODY (ADR 0027 finding 1: a
+        // hand-painted LUT is strictly more general than any closed-form e^(-sigma d), and
+        // _DeepBlueStrength 0.45 is standing evidence the physical answer was already overridden by hand).
+        // Absorption applies ONLY to the bottom seen through the column, which the LUT cannot express at
+        // all (finding 3). Hand the shader the bottom's ALBEDO in _SeabedTex, baked over the SAME world
+        // rect as _HeightTex (_HeightWorldMin / _HeightWorldSize, ADR 0014's pattern, so NO new uniform),
+        // then transmit it by per-channel Beer-Lambert T = exp(-sigma_rgb * 2d) — path 2d because light
+        // descends and returns. Red dies first, so the depth-colour shift comes free.
+        //   PASSTHROUGH, twice over: the toggle is OFF (the whole block compiles out = byte-identical), and
+        //   inside it _Turbidity = 0 skips the block anyway. sigma = 0 means "no absorption model", NOT
+        //   "perfectly clear water" (which would show the bottom at full strength everywhere) — clear water
+        //   is not a sea state; useful sigma starts near 0.05 (design doc §17.7).
+        //   _Turbidity is MOOD-EASED (ADR 0017), so its per-weather values live in the eight
+        //   Art/Materials/WaterPresets materials, not here — that is what makes a murky sea a DERIVED
+        //   state instead of a hand-picked colour. The per-channel RATIO stays authored art here.
+        // Twin: WaterAbsorption (Sigma / Transmission / BandTransmission / Composite) — change one,
+        // change BOTH in the same PR. col.rgb only, never depth/clip/_WaterLevel/the height read/the sim.
+        [Toggle(_USE_SEABEDTEX)] _UseSeabedTex ("Use baked seabed texture", Float) = 0
+        [NoScaleOffset] _SeabedTex ("Seabed albedo over the height world rect (A equals coverage)", 2D) = "black" {}
+        _Turbidity        ("Turbidity sigma (1 per m; 0 = off / today)", Range(0,5)) = 0.0
+        _AbsorptionRatio  ("Per channel extinction ratio (rgb, red = 1)", Vector) = (1, 0.18, 0.08, 0)
+        _AbsorptionBands  ("Transmission posterize bands (0 = smooth; ON by default)", Range(0,32)) = 6
 
         // ---- ADR 0027 #2: caustics DRIVEN BY THE SHARED WAVE FIELD (default OFF = today) ---------------
         // The seabed shimmer derives from the local CURVATURE of WaveFieldSample() — brightest where the
@@ -661,6 +680,10 @@ Shader "HiddenHarbours/Water"
             TEXTURE2D(_SparkleTex);   SAMPLER(sampler_SparkleTex);
             TEXTURE2D(_DepthRamp);    SAMPLER(sampler_DepthRamp);
             TEXTURE2D(_WhitecapTex);  SAMPLER(sampler_WhitecapTex);
+            // The BAKED SEABED (ADR 0027 #7). NOT a tiling painted slot: it is baked ONCE over the
+            // _HeightTex world rect, so it is sampled by world position (not _PaintScale) with the
+            // importer's Point filter + Clamp wrap — pixel art, and no smearing between bottom cells.
+            TEXTURE2D(_SeabedTex);    SAMPLER(sampler_SeabedTex);
 
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
@@ -923,16 +946,19 @@ Shader "HiddenHarbours/Water"
                 float4 _PaletteMid;
                 float4 _PaletteShallow;
                 float4 _PaletteFoam;
-                // See-through shallows (col.a) + day-gated caustics (col.rgb) — Arc C, all default OFF.
-                float  _ShallowTranslucency;
-                float  _ShallowSeeThroughDepth;
-                float  _ShallowMinAlpha;
+                // Day-gated caustics (col.rgb) — Arc C, default OFF. (The Arc C see-through-shallows
+                // props that sat here are RETIRED by ADR 0027 #7's seabed absorption below.)
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
                 // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
                 float  _CausticCurvatureBlend;
                 float  _CausticCurvatureStep;
                 float  _CausticCurvatureGain;
+                // ADR 0027 #7 — seabed absorption. sigma = _Turbidity (mood-eased, 1/m) x
+                // _AbsorptionRatio.rgb (fixed per-channel character). Twin: WaterAbsorption.
+                float  _Turbidity;
+                float4 _AbsorptionRatio;
+                float  _AbsorptionBands;
                 // Current drift lines (col.rgb; keyed to _FlowDir/_Flow — the tidal set) — Arc C, default OFF.
                 float  _DriftLineStrength;
                 float  _DriftLineSpeed;
@@ -977,6 +1003,45 @@ Shader "HiddenHarbours/Water"
             {
                 float ppu = max(_PixelsPerUnit, 1.0);
                 return floor(p * ppu) / ppu;
+            }
+
+            // ==== ADR 0027 #7 — seabed absorption (per-channel Beer-Lambert on the TRANSMITTED bottom) ========
+            // C#-twinned by WaterAbsorption (Sigma / Transmission / BandTransmission / Composite — change
+            // one, change BOTH in the same PR). col.rgb ONLY: it never touches depth / clip() / _WaterLevel /
+            // the height read / the sim (P1 integrity, rule 5), and it never touches the WATER's own colour —
+            // the painted _DepthRamp keeps that authority (ADR 0027 finding 1).
+            #define ABSORPTION_PATH 2.0   // light descends the column AND returns: the path is 2d, not d
+                                          // (twin: WaterAbsorption.DownAndBack). Not a tunable — turbidity
+                                          // is the dial (rule 6).
+            #define ABSORPTION_EPS  1e-4  // below this TOTAL sigma the block is skipped: the exact
+                                          // sigma = 0 passthrough (twin: WaterAbsorption.MinSigmaSum).
+
+            // sigma (1/m, per channel) = ONE mood-eased turbidity scalar x the fixed per-channel ratio.
+            // Factoring it this way is what lets ADR 0017 ease turbidity per weather through a FLOAT in
+            // WaterSurface.MoodFloatNames while the per-channel character stays authored art (rule 6).
+            float3 AbsorptionSigma()
+            {
+                return max(_Turbidity, 0.0) * max(_AbsorptionRatio.rgb, 0.0);
+            }
+
+            // T = exp(-sigma * 2d): monotone DECREASING in depth on every channel, 1 at the waterline
+            // (zero water = you see the ground, which is what §17.1 was faking), and -> 0 with depth in the
+            // per-channel order sigma dictates (red first at the default ratio, so the depth-colour shift
+            // comes free). `depth` is READ-ONLY here.
+            float3 AbsorptionTransmission(float3 sigma, float depth)
+            {
+                return exp(-sigma * (ABSORPTION_PATH * max(depth, 0.0)));
+            }
+
+            // Posterize transmission into N discrete steps (the shader's existing _DepthBands/_SpecBands
+            // idiom), DEFAULT ON — the ADR's "every layer carries its own quantization control", which
+            // matters here precisely because _DepthBands is 0 so the base ramp contributes no pixel
+            // character of its own. Quantizing T (not depth) makes the steps crowd where the bottom is
+            // actually fading. bands < 1 = smooth.
+            float3 AbsorptionBand(float3 t, float bands)
+            {
+                if (bands < 1.0) return t;
+                return floor(saturate(t) * bands + 0.5) / bands;
             }
 
             // ==== ADR 0027 #4 + #9 — band scaling with sea state + dispersion-derived speeds ==================
@@ -2631,21 +2696,48 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _DeepBlueColor.rgb, deepT * saturate(_DeepBlueStrength));
                 }
 
-                // ---- SEE-THROUGH SHALLOWS (col.a ONLY; Arc C, default OFF) -------------------------------------
-                // Lower the water's ALPHA in a thin band right at the shore so the SEABED sprite drawn behind
-                // the Sea plane (lower sorting) bleeds through under the Blend SrcAlpha OneMinusSrcAlpha above.
-                // Applied HERE — after whatever alpha the depth block settled (the _USE_DEPTHRAMP sample OR the
-                // _ShallowColor/_DeepColor lerp), and BEFORE the shoreline foam re-opacifies col.a (the max()
-                // below) so the wet foam edge stays solid. `depth` is READ-ONLY here (the sim waterline is
+            #if defined(_USE_SEABEDTEX)
+                // ---- SEABED ABSORPTION (col.rgb ONLY; ADR 0027 #7 — SUPERSEDES the Arc C see-through) --------
+                // The bottom is composited HERE by the shader itself, so col.a stays OPAQUE and the alpha-blend
+                // dependency §17.1 relied on is gone. That is what dissolves §17.3's caustic/see-through
+                // cancellation BY CONSTRUCTION: the caustic add below is no longer faded by a lowered alpha.
+                //
+                // _SeabedTex is baked over the SAME world rect as _HeightTex (ADR 0014's _HeightWorldMin /
+                // _HeightWorldSize), so the bottom is registered to the elevation that decides how deep it is
+                // and NO new uniform is needed. Its ALPHA is COVERAGE, not opacity: where the owner's terrain
+                // painted no ground tile (the Deep / Channel types deliberately CLEAR theirs) coverage is 0 and
+                // nothing is composited — open water with no baked bed is unchanged by construction.
+                //
+                // The sample coordinate is snapped on the WORLD PPU grid (Pixelize — the crawl law, §3), so a
+                // bottom cell belongs to a place on the seabed and stays there while the camera pans; the
+                // texture itself is imported Point + Clamp so nothing smears between cells.
+                //
+                // Applied AFTER the depth block settles the base colour (the _USE_DEPTHRAMP sample OR the
+                // _ShallowColor/_DeepColor lerp) and after the deep-blue enrichment, and BEFORE every additive
+                // layer — so swell tint, fbm, spec, caustics and foam all ride ON TOP of the composited bottom,
+                // which is where they physically belong. depth/depthC are READ-ONLY (the sim waterline is
                 // untouched — never depth/clip/_WaterLevel/the height read; P1 integrity, CLAUDE.md rule 5).
-                // _ShallowTranslucency = 0 is an EXACT passthrough (col.a unchanged = today's opaque look).
-                if (_ShallowTranslucency > 0.001)
+                // _Turbidity = 0 skips the whole block — the EXACT passthrough (and the toggle above compiles
+                // it out entirely on the shipped material).
+                float3 absSigma = AbsorptionSigma();
+                if (dot(absSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
                 {
-                    // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the
-                    // see-through band wiggles WITH the visible shore instead of following the clean iso-contour.
-                    float shallowT = 1.0 - saturate(depthC / max(_ShallowSeeThroughDepth, 1e-3));  // 1 at edge -> 0 deep
-                    col.a *= lerp(1.0, _ShallowMinAlpha, shallowT * saturate(_ShallowTranslucency));
+                    // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the bottom
+                    // fades WITH the visible shore instead of following the clean iso-contour.
+                    float2 bedP  = Pixelize(worldXY);
+                    float2 bedUV = (bedP - _HeightWorldMin.xy)
+                                 / max(abs(_HeightWorldSize.xy), float2(1e-3, 1e-3));
+                    // Off-rect reads would smear the Clamp edge texel across the whole sea — zero the coverage
+                    // instead, so a region larger than its bake simply has no bottom outside it.
+                    float bedIn = (bedUV.x >= 0.0 && bedUV.x <= 1.0 &&
+                                   bedUV.y >= 0.0 && bedUV.y <= 1.0) ? 1.0 : 0.0;
+                    half4 bed = SAMPLE_TEXTURE2D(_SeabedTex, sampler_SeabedTex, bedUV);
+
+                    float3 bedT = AbsorptionTransmission(absSigma, max(depthC, 0.0));
+                    bedT = AbsorptionBand(bedT, _AbsorptionBands);
+                    col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }
+            #endif
 
                 // Tint the base by the surface so the swell is visible even in flat light.
                 col.rgb += swell * _SurfaceTint * 0.15;
@@ -3372,6 +3464,7 @@ Shader "HiddenHarbours/Water"
             #pragma shader_feature_local _ _USE_SPARKLETEX
             #pragma shader_feature_local _ _USE_DEPTHRAMP
             #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma shader_feature_local _ _USE_SEABEDTEX
             #pragma multi_compile_instancing
             ENDHLSL
         }
@@ -3416,6 +3509,7 @@ Shader "HiddenHarbours/Water"
             #pragma shader_feature_local _ _USE_SPARKLETEX
             #pragma shader_feature_local _ _USE_DEPTHRAMP
             #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma shader_feature_local _ _USE_SEABEDTEX
             #pragma multi_compile_instancing
 
             // ==== THE DISPLACED VERTEX STAGE (ADR 0023) ===============================================
