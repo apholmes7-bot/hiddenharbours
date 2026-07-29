@@ -7,9 +7,9 @@ namespace HiddenHarbours.Player
     /// <summary>
     /// The on-foot <b>clam bucket</b> — the player's hand-carried hold before they have a boat (St Peters
     /// opening). Implements the Core <see cref="IHold"/> contract exactly like the boat's <c>ShipHold</c>,
-    /// so the clam-dig interaction fills it and the Greywick stall empties it through the same seam — no
+    /// so the clam-dig interaction fills it and the Nine Mile Creek stall empties it through the same seam — no
     /// special-casing an "on-foot hold". It holds up to <see cref="Capacity"/> clams (the design's 20-clam
-    /// pail); when full, you head to Greywick to sell.
+    /// pail); when full, you head to Nine Mile Creek to sell.
     ///
     /// <para><b>Owned-gear gated.</b> The bucket is a capability granted by owning <c>gear.bucket</c>
     /// (<see cref="PlayerGear.HasBucket()"/>, starting gear on St Peters). Until owned its capacity reads as

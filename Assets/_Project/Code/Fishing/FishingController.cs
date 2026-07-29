@@ -161,7 +161,7 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>The region catches resolve against: the TRAVEL-AWARE current region
         /// (<see cref="GameServices.CurrentRegionId"/> — written by the active region's anchor) when one
-        /// is reported, else the serialized/authored fallback. Fixes "sail to Greywick, fish, and the
+        /// is reported, else the serialized/authored fallback. Fixes "sail to Nine Mile Creek, fish, and the
         /// roll still asks Coddle Cove's pool" — the region follows the player now.</summary>
         private string EffectiveRegionId
             => string.IsNullOrEmpty(GameServices.CurrentRegionId) ? _regionId : GameServices.CurrentRegionId;

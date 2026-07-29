@@ -19,7 +19,7 @@ namespace HiddenHarbours.World
     /// <list type="bullet">
     /// <item><description><b>Island</b> — a high plateau (always exposed; you can't tide it under).</description></item>
     /// <item><description><b>Sandbar</b> — a ridge crest just BELOW high water that bridges the island to
-    /// Greywick: covered at high tide, exposing as the tide falls (widest walkable flat at low water). The
+    /// Nine Mile Creek: covered at high tide, exposing as the tide falls (widest walkable flat at low water). The
     /// showcase's walker path.</description></item>
     /// <item><description><b>Channel</b> — a deeper trough cut THROUGH the sandbar: boat-crossable at higher
     /// tide, narrowing as the tide falls. The showcase's boat passage — inverse of the flats over the tide.</description></item>
@@ -51,10 +51,10 @@ namespace HiddenHarbours.World
                  "tide (always exposed).")]
         [SerializeField] private float _islandElevation = 6f;
 
-        [Header("Sandbar ridge (the tide-gated walking path to Greywick)")]
+        [Header("Sandbar ridge (the tide-gated walking path to Nine Mile Creek)")]
         [Tooltip("One end of the sandbar's centre-line (world XY) — toward the island.")]
         [SerializeField] private Vector2 _sandbarFrom = new Vector2(-22f, 0f);
-        [Tooltip("Other end of the sandbar's centre-line (world XY) — toward Greywick.")]
+        [Tooltip("Other end of the sandbar's centre-line (world XY) — toward Nine Mile Creek.")]
         [SerializeField] private Vector2 _sandbarTo = new Vector2(34f, 0f);
         [Tooltip("Half-width (m) of the sandbar either side of its centre-line — the flats bare out to here.")]
         [SerializeField] private float _sandbarHalfWidth = 9f;

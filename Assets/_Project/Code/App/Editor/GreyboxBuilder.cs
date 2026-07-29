@@ -24,7 +24,7 @@ namespace HiddenHarbours.App.Editor
     /// <list type="bullet">
     /// <item><b>LOGIC layer (code/builder).</b> The invisible gameplay scaffolding the simulation reads —
     /// the <see cref="RegionAnchor"/> + its arrival/dock/disembark markers, the wharf economy (Fish Buyer +
-    /// Shipwright) resolved through the persistent hold/wallet proxies, the region loader + the Cove→Greywick
+    /// Shipwright) resolved through the persistent hold/wallet proxies, the region loader + the Cove→Nine Mile Creek
     /// passage, the shore/piling colliders that gate gameplay, the fishing-spot marker, and the
     /// standalone-review camera. ALL of it is parented under ONE tagged root —
     /// <c>--LOGIC-- (generated, do not edit)</c>, marked with <see cref="RegionLogicRoot"/>.</item>
@@ -49,8 +49,8 @@ namespace HiddenHarbours.App.Editor
     /// the gameplay logic needs to move forward.</item>
     /// </list>
     ///
-    /// <para><b>Demoted from the start (#66).</b> The opening arc is St Peters → Greywick → buy + repair the
-    /// dory → SAIL HOME to Coddle Cove. The cove is a PLAIN region exactly like <see cref="GreywickBuilder"/>:
+    /// <para><b>Demoted from the start (#66).</b> The opening arc is St Peters → Nine Mile Creek → buy + repair the
+    /// dory → SAIL HOME to Coddle Cove. The cove is a PLAIN region exactly like <see cref="NineMileCreekBuilder"/>:
     /// it authors only the region's own logic + a <see cref="RegionAnchor"/>; the persistent rig is carried in
     /// from the START scene (St Peters) via the <see cref="RegionTravelCoordinator"/> and BINDS on arrival.</para>
     ///
@@ -63,7 +63,7 @@ namespace HiddenHarbours.App.Editor
         const string DataBoats  = "Assets/_Project/Data/Boats";
         const string DataFish   = "Assets/_Project/Data/Fish";
         const string DataShip   = "Assets/_Project/Data/Shipwright";
-        const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Greywick)
+        const string DataRegions= "Assets/_Project/Data/Regions";        // VS-22 region defs (cove + Nine Mile Creek)
         const string ArtSprites = "Assets/_Project/Art/Sprites";
         const string ArtPunt    = "Assets/_Project/Art/Boats/Punt.png";          // tier-1 swap sprite (VS-16) — kept on the hull asset
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
@@ -85,17 +85,17 @@ namespace HiddenHarbours.App.Editor
         // (Grid/Tilemaps + decor prefab instances) lives OUTSIDE this root and the builder never touches it.
         public const string LogicRootName = "--LOGIC-- (generated, do not edit)";
 
-        // VS-22 crossing geometry (canon map: Port Greywick lies WEST of the cove — "PORT GREYWICK ——+——
+        // VS-22 crossing geometry (canon map: Nine Mile Creek lies WEST of the cove — "NINE MILE CREEK ——+——
         // CODDLE COVE"). So you CROSS BY SAILING WEST, and you RETURN to the cove dock FROM THE WEST. These
         // are public so an EditMode test (CrossingDirectionTests) can assert the crossing reads true without
         // loading a scene. CoveDockZoneRadius mirrors ControlSwitcher's default _zoneRadius (the cove disembark
         // is a pure distance test), so the return arrival must park within it of the cove dock or E can't
-        // disembark — the proven cove/Greywick pattern (#52).
+        // disembark — the proven cove/Nine Mile Creek pattern (#52).
         public const float CoveDockZoneRadius = 3.5f;
         public static readonly Vector3 CoveDockZonePos      = new Vector3(0f, -12f, 0f);     // cove dock head / mooring
-        public static readonly Vector3 CoveArrivalPos       = new Vector3(-2.5f, -13.5f, 0f); // return from Greywick: just WEST of the dock
+        public static readonly Vector3 CoveArrivalPos       = new Vector3(-2.5f, -13.5f, 0f); // return from Nine Mile Creek: just WEST of the dock
         public static readonly Vector3 CoveDisembarkPos     = new Vector3(0f, -10.5f, 0f);    // on the dock planks
-        public static readonly Vector3 ToGreywickPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
+        public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-22f, -12f, 0f);   // WEST edge of the open water → sail west to cross
 
         // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
         // The cove now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain, the
@@ -163,7 +163,7 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log("[GreyboxBuilder] Built Greybox.unity (ADR 0011 committed-scene pilot): a single " +
                       $"'{LogicRootName}' root holds all of the cove's LOGIC (RegionAnchor + arrival/dock/" +
-                      "disembark, Fish Buyer + Shipwright via the persistent proxies, loader + Cove→Greywick " +
+                      "disembark, Fish Buyer + Shipwright via the persistent proxies, loader + Cove→Nine Mile Creek " +
                       "passage, shore/piling colliders, fishing spot, standalone camera — PLUS the converged " +
                       "tide-driven water, ADR 0012: a RectTidalTerrain + the layered WaterSurface Sea whose " +
                       "shoreline visibly sweeps the south beach off the live tide, the SAME height the " +
@@ -272,7 +272,7 @@ namespace HiddenHarbours.App.Editor
         static void BuildLogicTree(Transform root, DataRefs data)
         {
             // --- CAMERA (standalone-viewable; the coordinator silences it on arrival) ----------
-            // Mirrors Greywick's locked pixel-perfect, on-foot landscape framing so the cove reads at the same
+            // Mirrors Nine Mile Creek's locked pixel-perfect, on-foot landscape framing so the cove reads at the same
             // scale when reviewed standalone. The persistent core owns the live camera in play.
             var camGo = new GameObject("Main Camera");
             camGo.transform.SetParent(root, false);
@@ -430,28 +430,28 @@ namespace HiddenHarbours.App.Editor
             // --- REGION SCENE-LOAD PATH ---------------------------------------------------------
             // The persistent travel rig (loader + coordinator) is carried in from the start scene. This scene
             // places its OWN RegionSceneLoader (reviewable standalone; the additive loader re-activates it) and
-            // the Cove→Greywick passage. On arrival the carried coordinator drives travel.
+            // the Cove→Nine Mile Creek passage. On arrival the carried coordinator drives travel.
             var loaderGo = new GameObject("RegionSceneLoader");
             loaderGo.transform.SetParent(root, false);
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
-            SetRefArray(loader, "_regions", new Object[] { data.CoveRegion, data.GreywickRegion });
+            SetRefArray(loader, "_regions", new Object[] { data.CoveRegion, data.NineMileCreekRegion });
             SetString(loader, "_currentSceneName", SceneName);   // this scene; explicit (don't rely on Awake vs DDOL order)
 
-            // Cove→Greywick passage: SAIL WEST to cross — Port Greywick lies west of the cove (canon map). A
+            // Cove→Nine Mile Creek passage: SAIL WEST to cross — Nine Mile Creek lies west of the cove (canon map). A
             // wide, forgiving band down the WEST edge of the open water.
-            var toGreywickGo = new GameObject("PassageToPortGreywick");
-            toGreywickGo.transform.SetParent(root, false);
-            toGreywickGo.transform.position = ToGreywickPassagePos;
-            var toGreywickTrigger = toGreywickGo.AddComponent<BoxCollider2D>();
-            toGreywickTrigger.isTrigger = true;
-            toGreywickTrigger.size = new Vector2(3f, 28f);   // a tall west-edge band (forgiving, wide)
-            var toGreywickPassage = toGreywickGo.AddComponent<RegionPassage>();
-            SetRef(toGreywickPassage, "_target", data.GreywickRegion);
-            SetRef(toGreywickPassage, "_loader", loader);
+            var toNineMileCreekGo = new GameObject("PassageToNineMileCreek");
+            toNineMileCreekGo.transform.SetParent(root, false);
+            toNineMileCreekGo.transform.position = ToNineMileCreekPassagePos;
+            var toNineMileCreekTrigger = toNineMileCreekGo.AddComponent<BoxCollider2D>();
+            toNineMileCreekTrigger.isTrigger = true;
+            toNineMileCreekTrigger.size = new Vector2(3f, 28f);   // a tall west-edge band (forgiving, wide)
+            var toNineMileCreekPassage = toNineMileCreekGo.AddComponent<RegionPassage>();
+            SetRef(toNineMileCreekPassage, "_target", data.NineMileCreekRegion);
+            SetRef(toNineMileCreekPassage, "_loader", loader);
 
             // --- REGION ANCHOR (the persistent rig binds here on arrival) ------------------------
-            // The cove's board/dock geometry as a RegionAnchor (mirrors Greywick + St Peters). When you sail
-            // home from Greywick (WEST), the carried RegionTravelCoordinator reads this anchor and: parks the
+            // The cove's board/dock geometry as a RegionAnchor (mirrors Nine Mile Creek + St Peters). When you sail
+            // home from Nine Mile Creek (WEST), the carried RegionTravelCoordinator reads this anchor and: parks the
             // boat at the arrival point (just WEST of the dock), re-points the persistent ControlSwitcher's dock
             // to the cove dock zone + disembark spot. The arrival sits within CoveDockZoneRadius of the dock
             // zone (don't regress #52). NO persistent core is authored here.
@@ -484,14 +484,14 @@ namespace HiddenHarbours.App.Editor
             public BoatHullDef Dory;
             public BoatHullDef Punt;
             public RegionDef CoveRegion;
-            public RegionDef GreywickRegion;
+            public RegionDef NineMileCreekRegion;
             public ShipwrightOffer PuntOffer;
         }
 
         /// <summary>
         /// Create/keep the cove's stable data assets and return RELOADED on-disk refs (a fresh CreateInstance
         /// may not serialize into a scene reliably). The cove is no longer the start, so it doesn't stand up
-        /// the boat rig — but it still keeps these stable assets (first run wins; StPeters/Greywick author the
+        /// the boat rig — but it still keeps these stable assets (first run wins; StPeters/Nine Mile Creek author the
         /// canonical versions under the same ids). Public so a test can prep data without scene side effects.
         /// </summary>
         public static DataRefs PrepareData()
@@ -529,7 +529,7 @@ namespace HiddenHarbours.App.Editor
             // The lobster boat — likewise a picker rung ONLY (no ShipwrightOffer): see ApplyLobsterBoatStats.
             LoadOrCreate<BoatHullDef>(DataBoats + "/LobsterBoat.asset", ApplyLobsterBoatStats);
 
-            // Regions (VS-22 travel): this cove + Port Greywick, as data, for the loader/passage.
+            // Regions (VS-22 travel): this cove + Nine Mile Creek, as data, for the loader/passage.
             LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
             {
                 r.Id = CoveRegionId; r.DisplayName = "Coddle Cove"; r.SceneName = SceneName;
@@ -537,9 +537,9 @@ namespace HiddenHarbours.App.Editor
                 r.TideMeanLevel = 0f; r.TideAmplitude = 1.6f; r.TidePhaseHours = 0f;
                 r.Description = "Your home harbour — the sheltered greybox cove.";
             });
-            LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
+            LoadOrCreate<RegionDef>(DataRegions + "/NineMileCreek.asset", r =>
             {
-                r.Id = "region.port_greywick"; r.DisplayName = "Port Greywick"; r.SceneName = "Greywick";
+                r.Id = "region.nine_mile_creek"; r.DisplayName = "Nine Mile Creek"; r.SceneName = "NineMileCreek";
                 r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
                 r.TideMeanLevel = 0f; r.TideAmplitude = 0.8f; r.TidePhaseHours = 2f;
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
@@ -624,7 +624,7 @@ namespace HiddenHarbours.App.Editor
                 Dory           = dory,
                 Punt           = punt,
                 CoveRegion     = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset"),
-                GreywickRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset"),
+                NineMileCreekRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/NineMileCreek.asset"),
                 PuntOffer      = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset"),
             };
         }
@@ -1104,7 +1104,7 @@ namespace HiddenHarbours.App.Editor
         static Sprite LoadArtSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
         // Imported art is sliced (spriteMode Multiple, one sub-sprite), so LoadAssetAtPath<Sprite> returns
-        // null — fall back to the first sub-sprite. Null if the art isn't imported. (Mirrors GreywickBuilder.)
+        // null — fall back to the first sub-sprite. Null if the art isn't imported. (Mirrors NineMileCreekBuilder.)
         static Sprite LoadSpriteAny(string path)
         {
             var direct = AssetDatabase.LoadAssetAtPath<Sprite>(path);
@@ -1119,7 +1119,7 @@ namespace HiddenHarbours.App.Editor
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
         }
 
-        // The 1×1 white fallback square (created on demand; mirrors GreywickBuilder's).
+        // The 1×1 white fallback square (created on demand; mirrors NineMileCreekBuilder's).
         static Sprite MakeSquareSprite(string path)
         {
             var existing = AssetDatabase.LoadAssetAtPath<Sprite>(path);

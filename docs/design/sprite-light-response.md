@@ -155,7 +155,7 @@ Not neon trees — the restrained, canon-serving cases:
 
 - A **lighthouse beam** raking a wharf and **catching the edge** of buildings/boats as it sweeps (a
   gameplay beacon in The Smother — P1).
-- **Warm window-light** spilling onto a character at dusk in Greywick ("the most colourful place" — P3),
+- **Warm window-light** spilling onto a character at dusk in Nine Mile Creek ("the most colourful place" — P3),
   coordinating with the existing `CottageDayNight` pane swap.
 - **Deck lamps / running lights** picking out a hull on dark water; a **red buoy** glowing in fog.
 - **Storm lightning** as a brief coloured **rim-flash** (already atmosphere-only in the art bible).

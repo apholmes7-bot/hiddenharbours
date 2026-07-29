@@ -154,7 +154,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 20; i++)
                 Assert.IsTrue(MakeDig(hold, clam).TryDig(), $"hole {i + 1} yields its one clam");
             Assert.AreEqual(20, hold.UsedUnits, "the bucket caps at 20");
-            Assert.IsFalse(MakeDig(hold, clam).TryDig(), "the 21st hole refuses — head to Greywick and sell");
+            Assert.IsFalse(MakeDig(hold, clam).TryDig(), "the 21st hole refuses — head to Nine Mile Creek and sell");
             Assert.AreEqual(20, hold.UsedUnits, "still 20 — never over the cap");
         }
 

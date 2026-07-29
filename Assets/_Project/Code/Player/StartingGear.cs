@@ -6,7 +6,7 @@ namespace HiddenHarbours.Player
 {
     /// <summary>
     /// Grants the player's <b>starting equipment</b> on the St Peters opening — the clam shovel and the
-    /// clam bucket — as <em>starting gear, not a purchase</em> (the rod is bought later at Greywick). You
+    /// clam bucket — as <em>starting gear, not a purchase</em> (the rod is bought later at Nine Mile Creek). You
     /// wake on St Peters already able to dig: the shovel enables digging, the bucket is your on-foot clam
     /// hold (<see cref="ClamBucket"/>). It writes the gear ids into the save's owned-gear list so the
     /// capability (<see cref="PlayerGear"/>) and the persisted record agree, then it's done.

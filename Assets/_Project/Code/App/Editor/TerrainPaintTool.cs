@@ -976,7 +976,7 @@ namespace HiddenHarbours.App.Editor
             }
 
             // 2) Sim reads it: disable the scene's analytic terrain(s) — the zone-based TidalTerrain
-            //    (St Peters) OR the rect-based RectTidalTerrain (the converged cove/Greywick, ADR 0012
+            //    (St Peters) OR the rect-based RectTidalTerrain (the converged cove/Nine Mile Creek, ADR 0012
             //    rec. 4) — and add a PaintedTidalTerrain. Disabling (not deleting) keeps it reversible.
             var analytics = new System.Collections.Generic.List<MonoBehaviour>();
             analytics.AddRange(Object.FindObjectsByType<TidalTerrain>(FindObjectsSortMode.None));

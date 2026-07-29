@@ -5,7 +5,7 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// The wharf sell interaction: the interactable point at Port Greywick that closes the
+    /// The wharf sell interaction: the interactable point at Nine Mile Creek that closes the
     /// catch→sell loop (P4 "Earn It, Then Automate It"). It hands the dory's hold to the
     /// <see cref="FishBuyer"/>, which prices the batch at the current pre-glut market, pays the
     /// wallet, registers the sales (so future prices drop), and raises <c>CatchSold</c>.

@@ -8,7 +8,7 @@ namespace HiddenHarbours.World
     /// <see cref="RegionDisplayNames"/> lookup at boot — the "world registrar" that seam was designed for
     /// (Core's <see cref="RegionDisplayNames"/> doc-comment: "the world owns <see cref="RegionDef"/> and
     /// registers the scene-name/id → display-name mappings here at boot"). The UI's crossing fade-card
-    /// (which only sees a scene name) then resolves "St Peters Island" / "Port Greywick" without
+    /// (which only sees a scene name) then resolves "St Peters Island" / "Nine Mile Creek" without
     /// referencing the World module.
     ///
     /// <para>Registers BOTH keys per region — the stable id (<c>region.st_peters</c>) and the scene name

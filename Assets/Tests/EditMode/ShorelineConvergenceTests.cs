@@ -13,7 +13,7 @@ using HiddenHarbours.World;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// SHORELINE CONVERGENCE (ADR 0012 recommendation 4): Coddle Cove and Port Greywick now run the SAME
+    /// SHORELINE CONVERGENCE (ADR 0012 recommendation 4): Coddle Cove and Nine Mile Creek now run the SAME
     /// tide-driven water model as St Peters — an analytic seabed (<see cref="RectTidalTerrain"/>) whose one
     /// height drives the water render, the on-foot walkability and the boat grounding (P1: what you see is
     /// what you can sail/walk). These tests drive the terrains from the BUILDERS' authored constants (the
@@ -42,11 +42,11 @@ namespace HiddenHarbours.Tests.EditMode
             return t;
         }
 
-        static RectTidalTerrain MakeGreywick(out GameObject go)
+        static RectTidalTerrain MakeNineMileCreek(out GameObject go)
         {
-            go = new GameObject("GreywickTerrain_Test");
+            go = new GameObject("NineMileCreekTerrain_Test");
             var t = go.AddComponent<RectTidalTerrain>();
-            GreywickBuilder.ConfigureGreywickTerrain(t);
+            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(t);
             return t;
         }
 
@@ -86,7 +86,7 @@ namespace HiddenHarbours.Tests.EditMode
             var t = MakeCove(out var go);
             try
             {
-                // The return-from-Greywick arrival parks the boat here; it must float at dead low.
+                // The return-from-Nine Mile Creek arrival parks the boat here; it must float at dead low.
                 float arrivalDepth = TidalExposure.WaterDepth(
                     LowWater, t.ElevationAt(GreyboxBuilder.CoveArrivalPos));
                 Assert.Greater(arrivalDepth, DoryDraught,
@@ -94,8 +94,8 @@ namespace HiddenHarbours.Tests.EditMode
 
                 // The west passage band + the fishing spot keep water too.
                 Assert.Greater(TidalExposure.WaterDepth(
-                        LowWater, t.ElevationAt(GreyboxBuilder.ToGreywickPassagePos)), DoryDraught,
-                    "the Cove→Greywick passage stays sailable at low water");
+                        LowWater, t.ElevationAt(GreyboxBuilder.ToNineMileCreekPassagePos)), DoryDraught,
+                    "the Cove→Nine Mile Creek passage stays sailable at low water");
                 Assert.Greater(TidalExposure.WaterDepth(LowWater, t.ElevationAt(new Vector2(5f, -10f))), 0f,
                     "the fishing spot beside the dock keeps water at dead low");
             }
@@ -135,13 +135,13 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =====================================================================================
-        //  PORT GREYWICK
+        //  NINE MILE CREEK
         // =====================================================================================
 
         [Test]
-        public void Greywick_TownLandAndWharfDeck_AlwaysExposed_EvenAtHighWater()
+        public void NineMileCreek_TownLandAndWharfDeck_AlwaysExposed_EvenAtHighWater()
         {
-            var t = MakeGreywick(out var go);
+            var t = MakeNineMileCreek(out var go);
             try
             {
                 // The vendor buildings, the quay the player roams, the wharf deck (disembark) + head.
@@ -149,46 +149,46 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     new Vector2(-8f, 3f),  new Vector2(-8f, -3f),   // shipwright / fish stall
                     new Vector2(-12f, 9f), new Vector2(-12f, -9f),  // harbourmaster / general store
-                    (Vector2)GreywickBuilder.DisembarkPos,          // the wharf deck planks
-                    (Vector2)GreywickBuilder.DockZonePos,           // the wharf head
+                    (Vector2)NineMileCreekBuilder.DisembarkPos,          // the wharf deck planks
+                    (Vector2)NineMileCreekBuilder.DockZonePos,           // the wharf head
                 })
                 {
                     float e = t.ElevationAt(p);
                     Assert.IsTrue(TidalExposure.IsExposed(HighWater, e),
-                        $"Greywick's land/deck at {p} must stay walkable at the highest water");
+                        $"Nine Mile Creek's land/deck at {p} must stay walkable at the highest water");
                 }
             }
             finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
-        public void Greywick_DredgedHarbour_StaysDeep_AtLowWater()
+        public void NineMileCreek_DredgedHarbour_StaysDeep_AtLowWater()
         {
-            var t = MakeGreywick(out var go);
+            var t = MakeNineMileCreek(out var go);
             try
             {
-                // Canon: Greywick is the DEEP, DREDGED harbour (IsDeepHarbour). The arrival berth and the
+                // Canon: Nine Mile Creek is the DEEP, DREDGED harbour (IsDeepHarbour). The arrival berth and the
                 // return passage carry a real under-keel margin even at dead low — no tide-gating here.
                 float arrivalDepth = TidalExposure.WaterDepth(
-                    LowWater, t.ElevationAt(GreywickBuilder.ArrivalPos));
+                    LowWater, t.ElevationAt(NineMileCreekBuilder.ArrivalPos));
                 Assert.Greater(arrivalDepth, 2f,
                     "the dredged berth off the wharf head keeps a deep-harbour margin at low water");
                 Assert.Greater(TidalExposure.WaterDepth(
-                        LowWater, t.ElevationAt(GreywickBuilder.ToCovePassagePos)), 2f,
+                        LowWater, t.ElevationAt(NineMileCreekBuilder.ToCovePassagePos)), 2f,
                     "the return passage east stays deep");
-                Assert.AreEqual(GreywickBuilder.GreywickDeepElevation,
+                Assert.AreEqual(NineMileCreekBuilder.NineMileCreekDeepElevation,
                     t.ElevationAt(new Vector2(30f, 0f)), 1e-4f, "open harbour = the dredged floor");
             }
             finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
-        public void Greywick_QuayEdge_IsIntertidal_TheTideReadsAgainstTheQuay()
+        public void NineMileCreek_QuayEdge_IsIntertidal_TheTideReadsAgainstTheQuay()
         {
-            // The converged tide in Greywick: a MODEST intertidal band on the steep quay edge (the sand
+            // The converged tide in Nine Mile Creek: a MODEST intertidal band on the steep quay edge (the sand
             // strip east of the fence line) — the water visibly rises/falls against the quay, while the
             // dredged harbour itself never gates a boat. A point on the quay-edge falloff, clear of the wharf.
-            var t = MakeGreywick(out var go);
+            var t = MakeNineMileCreek(out var go);
             try
             {
                 float e = t.ElevationAt(new Vector2(-2.5f, 8f));
@@ -204,7 +204,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void BothTerrains_AreDeterministic_NoRng()
         {
             var cove = MakeCove(out var coveGo);
-            var gw = MakeGreywick(out var gwGo);
+            var gw = MakeNineMileCreek(out var gwGo);
             try
             {
                 var p = new Vector2(3.1f, -6.4f);
@@ -213,7 +213,7 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int i = 0; i < 8; i++)
                 {
                     Assert.AreEqual(c0, cove.ElevationAt(p), 1e-6f, "cove: pure authored geometry");
-                    Assert.AreEqual(g0, gw.ElevationAt(p), 1e-6f, "Greywick: pure authored geometry");
+                    Assert.AreEqual(g0, gw.ElevationAt(p), 1e-6f, "Nine Mile Creek: pure authored geometry");
                 }
             }
             finally

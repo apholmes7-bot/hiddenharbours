@@ -124,12 +124,12 @@ ScriptableObject):
 {
   "id": "auctioneer_marguerite",
   "displayNameKey": "npc.marguerite.name",        // localization key, not a literal string
-  "homeRegion": "port_greywick",
+  "homeRegion": "nine_mile_creek",
   "anchors": {
-    "home":   { "region": "port_greywick", "point": "marguerite_house" },
-    "work":   { "region": "port_greywick", "point": "auction_house_podium" },
-    "tavern": { "region": "port_greywick", "point": "tavern_corner_table" },
-    "church": { "region": "port_greywick", "point": "church_pew_3" }
+    "home":   { "region": "nine_mile_creek", "point": "marguerite_house" },
+    "work":   { "region": "nine_mile_creek", "point": "auction_house_podium" },
+    "tavern": { "region": "nine_mile_creek", "point": "tavern_corner_table" },
+    "church": { "region": "nine_mile_creek", "point": "church_pew_3" }
   },
   "schedules": [
     // Highest priority first; planner picks the first whose `when` matches world-state.

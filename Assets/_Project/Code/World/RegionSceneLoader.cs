@@ -10,7 +10,7 @@ namespace HiddenHarbours.World
     /// wrapper over <see cref="SceneManager"/> driven by the pure <see cref="RegionTravel"/> decisions
     /// and a <see cref="RegionRegistry"/> built from the wired regions.
     ///
-    /// SCOPE (VS-22): the load mechanism for the additive Cove↔Greywick hop. Carrying the player across +
+    /// SCOPE (VS-22): the load mechanism for the additive Cove↔Nine Mile Creek hop. Carrying the player across +
     /// re-showing a region is owned by the persistent core (App: PersistentObject + RegionTravelCoordinator,
     /// GreyboxBuilder) — flagged for lead-architect. To keep the persistent core from being duplicated, a
     /// region scene is loaded once and then TOGGLED by the coordinator rather than unloaded/reloaded; so

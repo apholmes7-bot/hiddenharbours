@@ -7,7 +7,7 @@ namespace HiddenHarbours.Economy
     /// The wharf buyer: sells everything in a hold at MARGINAL, self-glutting market prices — each unit
     /// slides down its category's curve (and is priced at its per-category demand), exactly like the
     /// sell screen. Pays the wallet, removes the catch, and raises <c>CatchSold</c>. Closes the
-    /// catch→sell loop. Hook this to an NPC/UI interaction in the Greywick scene (VS-22).
+    /// catch→sell loop. Hook this to an NPC/UI interaction in the Nine Mile Creek scene (VS-22).
     /// </summary>
     public class FishBuyer : MonoBehaviour
     {

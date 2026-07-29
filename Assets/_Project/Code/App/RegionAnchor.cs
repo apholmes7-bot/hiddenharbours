@@ -7,7 +7,7 @@ namespace HiddenHarbours.App
 {
     /// <summary>
     /// The binding point a region scene exposes to the persistent core (VS-22 travel). Each region scene
-    /// (Coddle Cove, Port Greywick) places ONE of these, naming where the persistent player/boat should
+    /// (Coddle Cove, Nine Mile Creek) places ONE of these, naming where the persistent player/boat should
     /// appear on arrival (<see cref="ArrivalPoint"/>) and which transforms are this region's boarding zone
     /// and disembark spot (<see cref="DockZone"/> / <see cref="DisembarkPoint"/>). On arrival the
     /// <see cref="RegionTravelCoordinator"/> repositions the rig here and re-points the control switcher's

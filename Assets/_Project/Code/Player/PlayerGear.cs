@@ -43,7 +43,7 @@ namespace HiddenHarbours.Player
         public static bool HasBucket(SaveData save) => Owns(save, BucketId);
         public static bool HasBucket() => HasBucket(GameServices.Save?.Current);
 
-        /// <summary>Can the player rod-fish? Requires the rod (bought at Greywick). NB: landing COD on the
+        /// <summary>Can the player rod-fish? Requires the rod (bought at Nine Mile Creek). NB: landing COD on the
         /// rod additionally needs the cod licence — that's the separate land-time gate in Fishing.</summary>
         public static bool CanRodFish(SaveData save) => Owns(save, RodId);
         public static bool CanRodFish() => CanRodFish(GameServices.Save?.Current);

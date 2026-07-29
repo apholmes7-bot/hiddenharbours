@@ -11,7 +11,7 @@ namespace HiddenHarbours.Player
     /// the wade model is layered on via <see cref="DepthAt"/> / <see cref="BandAt"/>, which return the water
     /// depth and its <see cref="DepthBand"/> (Dry/Wade/Swim/Deep) so <see cref="PlayerWalkController"/> can
     /// scale feel and soft-wall the boat-only band. As the tide falls more of the seabed bares and the
-    /// sandbar path to Greywick emerges; as it rises that path re-submerges. The boat-cross gate
+    /// sandbar path to Nine Mile Creek emerges; as it rises that path re-submerges. The boat-cross gate
     /// (<c>BoatCrossing</c>, Boats lane) reads the SAME single number (water level − ground elevation) —
     /// render==sim, they can never disagree.
     ///
