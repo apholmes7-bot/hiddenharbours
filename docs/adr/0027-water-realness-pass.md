@@ -272,6 +272,17 @@ mask that **adds** to the existing foam rather than replacing it.
 > land is materially more expensive than deciding it now. This item is sequenced early for that reason alone, not
 > because its visual payoff outranks the others.
 
+> ✅ **RULED (owner, 2026-07-29): DEFERRED to the fleet era.** The dynamic-wake PRs this item was racing landed
+> first, and they deliver the architecture goal — the shipped `BoatWakeEmitter` trail is **deposited in the world**
+> where the hull passed, **advects with the current**, and **decays in place** (pooled sprites, not an RT). What a
+> buffer still adds — wakes that **merge** across boats, unbounded persistence at fixed cost, shader-level blending
+> with the field foam — are multi-boat payoffs, and M1 sails one boat. The early-decision rationale above is
+> therefore moot: the retrofit this item was racing has already happened, benignly. **Re-opens when multiple hulls
+> sail at once** (M2/M3 fleet/automation); the emitter's world-space deposit events are the intended injection seam,
+> so nothing rots while it waits. Options note: `dev/NOTE-2026-07-29-adr0027-item6-wake-buffer.md` (option A taken;
+> option B — the buffer as the trail's persistence medium, sprites keeping only the young churn band — is the
+> recorded shape for the fleet-era build).
+
 ---
 
 ## Pixelation — the owner's condition, made concrete per item
@@ -338,7 +349,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 | **P4** | #7 absorption + `_SeabedTex` bake | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. |
 | **P5** | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) | C | The owner's second explicit ask; depends on nothing above. |
 | **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
-| **⏱ Parallel** | #6 advected foam buffer | C | **Not phase-ordered — externally clocked.** Must be decided against the **in-flight wake PRs** whatever else is running; retrofitting after they land is materially more expensive. |
+| **⏱ Parallel** | #6 advected foam buffer | C | ✅ **RULED 2026-07-29: DEFERRED to the fleet era** (see the item's decision block). The wake PRs it was racing landed and deliver the trail architecture; the buffer re-opens when multiple hulls sail at once. |
 
 **The cost of this re-order, stated plainly.** Pulling #5 to P2 brings the Tier B risk forward: it changes what the
 hulls ride, so the ADR 0018 amendment, the C# twins and the **owner feel verdict** all land *before* absorption and
