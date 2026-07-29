@@ -1,8 +1,10 @@
 # ADR 0027 — The realness pass: ten physically-grounded water upgrades, every one pixelized
 
-- **Status:** **Proposed** — awaiting `lead-architect` sign-off (renderer-feature plumbing is a cross-cutting
-  architectural call, CLAUDE.md rule 4 / `coordination.md` §1.1) and owner ratification of the phase order.
-  This change is **docs only**: it ships no shader, no C#, no scene, no material change.
+- **Status:** **Accepted** (2026-07-28) — the owner ratified the phase order and named **wave variability**
+  the priority; `lead-architect` signed off the plumbing split the same day (P1 = Tier A only:
+  `col.rgb`/visual octaves, no new render plumbing, nothing the hulls ride). Flipped from Proposed in the
+  first P1 code PR (#2 caustics), as sanctioned by the P1 handoff. The ADR text itself remains docs-only;
+  the P1 PRs carry the code.
 - **Date:** 2026-07-28
 - **Revision (2026-07-28, same day, PR #305 → follow-up):** the owner asked whether the plan delivers *"waves
   more variability, moving in different directions, ripples, variance in sizes, speed, building and collapsing."*
