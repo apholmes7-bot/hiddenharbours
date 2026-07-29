@@ -61,7 +61,7 @@ owner can scope either. **Do not hand-draw per-heading boat art yet** — final 
 preserved.
 
 **Priority key:**
-- **P1** = needed for the **current playable slice** (St Peters opening + the tide-gated sandbar walk + Port Greywick + Coddle Cove; dory/punt; the cove fish + clam dig; the sell/HUD/dialogue UI). Draw these first.
+- **P1** = needed for the **current playable slice** (St Peters opening + the tide-gated sandbar walk + Nine Mile Creek + Coddle Cove; dory/punt; the cove fish + clam dig; the sell/HUD/dialogue UI). Draw these first.
 - **P2** = **M2 fleet & later regions** (T2+ hulls, offshore/outer regions, the full 100-fish catalog, instrument-region content). Banked or deferred — do not draw ahead of phase.
 
 ---
@@ -81,8 +81,8 @@ mirrored). Pivot **feet**. Sheets are `Multiple`, sliced by 32 × 64 cell.
 | NPC — Ginny (Aunt / teaching figure) | 96×256 | feet | 3×4 of 32×64 | **IMPORTED** | P1 |
 | NPC — Neighbour (generic islander) | 96×256 | feet | 3×4 of 32×64 | **IMPORTED** | P1 |
 | NPC — Storekeeper (St Peters general store) | 96×256 | feet | 3×4 of 32×64 walk sheet | **NEEDED** | P1 |
-| NPC — Silas Boyne (shipwright, Greywick) | 96×256 | feet | 3×4 of 32×64 | **NEEDED** | P1 |
-| NPC — fish buyer / auctioneer (Greywick stall) | 96×256 | feet | 3×4 of 32×64 | **NEEDED** | P1 |
+| NPC — Silas Boyne (shipwright, Nine Mile Creek) | 96×256 | feet | 3×4 of 32×64 | **NEEDED** | P1 |
+| NPC — fish buyer / auctioneer (Nine Mile Creek stall) | 96×256 | feet | 3×4 of 32×64 | **NEEDED** | P1 |
 | Portrait — Ned | 96×96 | centre | Single — dialogue bust | **IMPORTED** | P1 |
 | Portrait — Ginny | 96×96 | centre | Single | **IMPORTED** | P1 |
 | Portrait — Player | 96×96 | centre | Single | **IMPORTED** | P1 |
@@ -90,7 +90,7 @@ mirrored). Pivot **feet**. Sheets are `Multiple`, sliced by 32 × 64 cell.
 | NPC — the rest of the core cast (Marguerite, Reuben, Odette, Wally, Bram, Edie, Harlan, Pearl, Tomas, Iris, Joachim) | 96×256 walk + 96×96 portrait each | feet / centre | 3×4 of 32×64; portrait Single | **NEEDED** | P2 |
 | Extras — layered paper-doll parts (body base + hair/hat/oilskins/boots/beard overlays) | 32×64 cells | feet | Overlay layers sharing the rig (mobile-cheap crowd variety, NPC doc §4.2) | **NEEDED** | P2 |
 
-> **Slice need:** the St Peters + sandbar + Greywick + Cove loop needs the **storekeeper**, the
+> **Slice need:** the St Peters + sandbar + Nine Mile Creek + Cove loop needs the **storekeeper**, the
 > **shipwright**, and the **fish buyer** as walk sheets + portraits (the three buy/sell faces). The
 > player, Ned, Ginny, Neighbour are done.
 
@@ -182,11 +182,11 @@ assets by `Art/Editor/TileAssetBuilder.cs`. One biome atlas per environment.
 | Dirt | 32×32 | centre | Single → Tile | **IMPORTED** | P1 |
 | Wharf decking | 32×32 | centre | Single → Tile | **IMPORTED** | P1 |
 | **Wet sand / mud flats** (St Peters + Drownded Lands bared seabed) | 32×32 | centre | Single → Tile; tide-exposed walkable | **NEEDED** | P1 |
-| **Cobble / dirt road** (Greywick town, St Peters paths) | 32×32 | centre | Single → Tile | **NEEDED** | P1 |
+| **Cobble / dirt road** (Nine Mile Creek town, St Peters paths) | 32×32 | centre | Single → Tile | **NEEDED** | P1 |
 | Kelp / weed (Sunkers, tide-pool shelves) | 32×32 | centre | Single → Tile | **NEEDED** | P2 |
 | Heath / moor, interior floors, breakwater stone (region biomes) | 32×32 | centre | Single → Tile per biome | **NEEDED** | P2 |
 
-> **Slice gap:** St Peters' bared **sandbar/flats** and Greywick's **town road/cobble** are the two
+> **Slice gap:** St Peters' bared **sandbar/flats** and Nine Mile Creek's **town road/cobble** are the two
 > P1 terrain tiles not yet imported. The five cove tiles (sand/grass/rock/dirt/wharf) are done.
 
 ---
@@ -223,20 +223,20 @@ Drawn with front faces + rooflines (¾ view), sized to metric footprint, pivot *
 |---|---|---|---|---|---|
 | Cottage — day (`Cottage`) | 160×192 | feet | Single (day↔night swap) | **IMPORTED** | P1 |
 | Cottage — night (`CottageNight`) | 160×192 | feet | Single | **IMPORTED** | P1 |
-| Shipwright shed (`ShipwrightShed`, Greywick) | 256×224 | feet | Single | **IMPORTED** | P1 |
-| Fish-buyer stall (`FishBuyerStall`, Greywick) | 128×160 | feet | Single | **IMPORTED** | P1 |
-| Greywick house — red (`GreywickHouseRed`) | 144×184 | feet | Single | **IMPORTED** | P1 |
-| Greywick house — teal (`GreywickHouseTeal`) | 160×176 | feet | Single | **IMPORTED** | P1 |
+| Shipwright shed (`ShipwrightShed`, Nine Mile Creek) | 256×224 | feet | Single | **IMPORTED** | P1 |
+| Fish-buyer stall (`FishBuyerStall`, Nine Mile Creek) | 128×160 | feet | Single | **IMPORTED** | P1 |
+| Nine Mile Creek house — red (`Nine Mile CreekHouseRed`) | 144×184 | feet | Single | **IMPORTED** | P1 |
+| Nine Mile Creek house — teal (`Nine Mile CreekHouseTeal`) | 160×176 | feet | Single | **IMPORTED** | P1 |
 | **St Peters — school** (one-room, the opening's teaching anchor) | ~160×192 | feet | Single | **NEEDED** | P1 |
 | **St Peters — general store** (basic gear / licence point) | ~160×192 | feet | Single | **NEEDED** | P1 |
 | **St Peters — 3 clapboard houses** (village) | ~128–160 wide | feet | Single (can reuse/recolour cottage) | **NEEDED** | P1 |
-| Greywick — auction house / fish market | ~256 wide | feet | Single | **NEEDED** | P2 |
-| Greywick — chandlery, tavern, harbourmaster office, chart shop, processing plant, church, lighthouse | varies | feet | Single each | **NEEDED** | P2 |
+| Nine Mile Creek — auction house / fish market | ~256 wide | feet | Single | **NEEDED** | P2 |
+| Nine Mile Creek — chandlery, tavern, harbourmaster office, chart shop, processing plant, church, lighthouse | varies | feet | Single each | **NEEDED** | P2 |
 | Outer-region structures (Ironbound lighthouse, wrecks, Smother foghorn structure, freight terminal) | varies | feet | Single each | **NEEDED** | P2 |
 
 > **Slice gap:** St Peters' **school**, **general store**, and **3 houses** are the P1 buildings not
-> yet drawn (the houses can recolour the existing cottage to save art). Greywick's two houses +
-> shipwright shed + buyer stall are done; the cove cottage is done. Greywick's *fuller* service
+> yet drawn (the houses can recolour the existing cottage to save art). Nine Mile Creek's two houses +
+> shipwright shed + buyer stall are done; the cove cottage is done. Nine Mile Creek's *fuller* service
 > buildings (tavern, auction house, etc.) are P2.
 
 ---
@@ -364,16 +364,16 @@ fishing UI, the clamming kit, and the tree pack are imported and (mostly) wired.
 
 ### P1 — the owner's "draw these first" list (for the current playable slice)
 
-Everything needed to finish **St Peters → sandbar → Greywick → Cove**. Short and concrete:
+Everything needed to finish **St Peters → sandbar → Nine Mile Creek → Cove**. Short and concrete:
 
 1. **St Peters buildings** — the one-room **school**, the **general store**, and **3 clapboard houses** (houses can recolour the existing cottage). *(§6)*
 2. **St Peters NPCs** — the **storekeeper** walk sheet + portrait. *(§1)*
-3. **Greywick buy/sell faces** — the **shipwright (Silas)** and the **fish buyer/auctioneer** walk sheets + portraits. *(§1)*
+3. **Nine Mile Creek buy/sell faces** — the **shipwright (Silas)** and the **fish buyer/auctioneer** walk sheets + portraits. *(§1)*
 4. **Two terrain tiles** — **wet sand / mud-flat** (the bared sandbar + clam flats) and a **town road / cobble** tile. *(§4)*
 5. **Two small UI glyphs** — a distinct **clam-licence** icon and a **stamina** glyph. *(§8)*
 6. **One FX** — a small **splash / ripple** flipbook. *(§9, optional polish)*
 
 That is roughly **a dozen sprites** to complete the slice's art. Everything else is **P2** — M2 fleet
-hulls (already banked as frozen placeholders), the rest of the 14-NPC cast, the full Greywick service
+hulls (already banked as frozen placeholders), the rest of the 14-NPC cast, the full Nine Mile Creek service
 buildings, the outer regions, and the long tail of the 100-fish catalog and instrument-region content.
 **Stay in phase: do not draw P2 art ahead of the roadmap.**

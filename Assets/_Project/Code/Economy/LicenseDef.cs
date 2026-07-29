@@ -5,7 +5,7 @@ namespace HiddenHarbours.Economy
     /// <summary>
     /// One fishing/gear license, as data (ADR 0003) — the legal right to fish a species or use a gear
     /// class (design/progression-and-housing.md §2.2). The St Peters opening sells the FIRST one, the
-    /// <b>cod license</b>, at Greywick: pay the fee, and the rod may then take cod. Content is data, not
+    /// <b>cod license</b>, at Nine Mile Creek: pay the fee, and the rod may then take cod. Content is data, not
     /// code — add a license by creating one of these assets, never by hard-coding a price or a flag.
     /// Create via Assets ▸ Create ▸ Hidden Harbours ▸ License, save in Data/Licenses.
     ///
@@ -26,7 +26,7 @@ namespace HiddenHarbours.Economy
         public string Id = "license.cod";
         [Tooltip("Player-facing name shown in the buy UI (ui-ux). Flavour only; the id is canonical.")]
         public string DisplayName = "Cod Fishing License";
-        [TextArea] public string Flavor = "Greywick's harbourmaster signs you off to take cod on rod and line.";
+        [TextArea] public string Flavor = "Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.";
 
         [Header("Cost")]
         [Min(0)]

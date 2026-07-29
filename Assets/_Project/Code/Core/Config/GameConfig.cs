@@ -19,7 +19,7 @@ namespace HiddenHarbours.Core
         public float SecondsPerDay = DefaultSecondsPerDay;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = 28;
-        [Tooltip("Which weekday is Market Day at Greywick (0 = Monday).")]
+        [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
 
         [Header("Tide")]
@@ -68,13 +68,36 @@ namespace HiddenHarbours.Core
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
 
+        [Header("The shared wave field (ADR 0018 — ONE sea, every consumer)")]
+        [Tooltip("The wind + sea-state → wave-train derivation: how many trains, their wavelengths and " +
+                 "amplitudes, the crest sharpening, and the ADR 0027 JONSWAP spectrum (SpectrumBlend 0 = " +
+                 "the hand-authored 4-train sea; dial it up for variance in sizes, a fan of directions, " +
+                 "and waves that arrive in SETS).\n\n" +
+                 "⚠️ THIS IS THE ONLY PLACE THESE LIVE. Eight components used to carry their own copy — " +
+                 "the water shader's bridge, the hull rocking, the seakeeping forces, the wake, the " +
+                 "buoys, the trap haul and the drift weed — and tuning one without the others meant the " +
+                 "hull rode a sea the shader was not drawing, which is the one thing ADR 0018 exists to " +
+                 "prevent.")]
+        public WaveFieldSettings WaveField = WaveFieldSettings.Default;
+
+        [Tooltip("The presentation smoother shared by every LOOK consumer (ADR 0018 addendum): how " +
+                 "languidly the train parameters chase the drifting weather, and the glass snap floor " +
+                 "(glass is sacred). The SIM path — seakeeping forces — deliberately does NOT ease; it " +
+                 "reads the pure WaveMath at game time, so gameplay never depends on frame rate.")]
+        public WaveFieldAnimatorSettings WaveFieldAnimator = WaveFieldAnimatorSettings.Default;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
-        [Tooltip("Demand D at Port Greywick. Set higher than the cove so WHERE you sell matters: Greywick " +
+        [Tooltip("Demand D at Nine Mile Creek. Set higher than the cove so WHERE you sell matters: Nine Mile Creek " +
                  "pays a premium on a glut (the reason to make the hop), and its supply recovers separately. " +
                  "(economy-and-business §1.2/§1.4)")]
-        [Min(0.01f)] public float MarketDemandGreywick = 1.4f;
+        // ⚠ RENAMED from MarketDemandGreywick (plan-to-m1 §7.10). The old name is the KEY this
+        // value is serialised under in every existing GameConfig.asset — including the owner's
+        // hand-tuned local copy — so without this attribute the rename would silently reset his
+        // tuning to the 1.4 default and nothing would say so.
+        [UnityEngine.Serialization.FormerlySerializedAs("MarketDemandGreywick")]
+        [Min(0.01f)] public float MarketDemandNineMileCreek = 1.4f;
         [Tooltip("Fraction of a category's accumulated supply (glut) cleared at each daily settle (0..1). " +
                  "Higher = faster price recovery over days (economy-and-business §1.3). Deterministic — fired " +
                  "on day rollover, not per frame.")]

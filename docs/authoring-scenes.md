@@ -48,8 +48,8 @@ That single command runs three steps (you can also run them one at a time from t
   2. **File ▸ Save As…** somewhere out of the way — e.g. `ScratchPaint` under
      `Assets/_Project/Scenes/` (don't commit it).
 
-> Greywick and St Peters are **not yet** committed/hand-paintable — only the cove pilot is so far. Don't
-> paint into `Greywick.unity` / `StPeters.unity` yet; they're still builder-generated.
+> Nine Mile Creek and St Peters are **not yet** committed/hand-paintable — only the cove pilot is so far. Don't
+> paint into `NineMileCreek.unity` / `StPeters.unity` yet; they're still builder-generated.
 
 ---
 

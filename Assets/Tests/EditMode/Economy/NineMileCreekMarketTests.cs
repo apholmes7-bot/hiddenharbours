@@ -7,22 +7,22 @@ using HiddenHarbours.Economy;
 namespace HiddenHarbours.Tests.Economy
 {
     /// <summary>
-    /// VS-16 — the deepened market: a second buyer (Port Greywick) with different demand than the cove,
+    /// VS-16 — the deepened market: a second buyer (Nine Mile Creek) with different demand than the cove,
     /// deterministic daily price recovery, and the additive marginal-price helper the sell screen reads.
     /// In its own assembly so it never collides with the shared EditMode tests other roles edit in
     /// parallel. Pricing is deterministic given (sell history, day count) — no RNG (rule 5).
     /// </summary>
-    public class GreywickMarketTests
+    public class NineMileCreekMarketTests
     {
         private const FishCategory Cat = FishCategory.Pelagic;
 
         private readonly List<Object> _spawned = new();
 
-        private GameConfig MakeConfig(float cove = 1f, float greywick = 1.4f, float recovery = 0.5f)
+        private GameConfig MakeConfig(float cove = 1f, float nineMileCreek = 1.4f, float recovery = 0.5f)
         {
             var c = ScriptableObject.CreateInstance<GameConfig>();
             c.MarketDemandCove = cove;
-            c.MarketDemandGreywick = greywick;
+            c.MarketDemandNineMileCreek = nineMileCreek;
             c.MarketDailyRecovery = recovery;
             _spawned.Add(c);
             return c;
@@ -81,24 +81,24 @@ namespace HiddenHarbours.Tests.Economy
                 "half the glut clears each day — deterministic, frame-rate independent");
         }
 
-        // ---- 2. Greywick prices differently than the cove (a reason to choose where to sell) --
+        // ---- 2. Nine Mile Creek prices differently than the cove (a reason to choose where to sell) --
 
         [Test]
-        public void Greywick_PricesDifferentlyThanCove_AtTheSameSupply()
+        public void NineMileCreek_PricesDifferentlyThanCove_AtTheSameSupply()
         {
-            var config = MakeConfig(cove: 1f, greywick: 1.4f);
+            var config = MakeConfig(cove: 1f, nineMileCreek: 1.4f);
             var cove = MakeMarket(config, MarketId.Cove);
-            var greywick = MakeMarket(config, MarketId.Greywick);
+            var nineMileCreek = MakeMarket(config, MarketId.NineMileCreek);
 
             cove.RegisterSale(Cat, 5);
-            greywick.RegisterSale(Cat, 5);                         // identical glut at both
+            nineMileCreek.RegisterSale(Cat, 5);                         // identical glut at both
 
             float covePrice = cove.PriceMultiplier(Cat, 0.2f);
-            float greywickPrice = greywick.PriceMultiplier(Cat, 0.2f);
+            float NineMileCreekPrice = nineMileCreek.PriceMultiplier(Cat, 0.2f);
 
-            Assert.AreNotEqual(covePrice, greywickPrice, "different demand → different price");
-            Assert.Greater(greywickPrice, covePrice,
-                "Greywick's higher demand absorbs the glut better → pays more (worth the hop)");
+            Assert.AreNotEqual(covePrice, NineMileCreekPrice, "different demand → different price");
+            Assert.Greater(NineMileCreekPrice, covePrice,
+                "Nine Mile Creek's higher demand absorbs the glut better → pays more (worth the hop)");
         }
 
         // ---- 3. mackerel (high elasticity) crashes faster than cod (low elasticity) ----------
@@ -155,7 +155,7 @@ namespace HiddenHarbours.Tests.Economy
         {
             float low = MarketMath.PriceMultiplier(5f, 0.3f, 1.0f);
             float high = MarketMath.PriceMultiplier(5f, 0.3f, 1.5f);
-            Assert.Greater(high, low, "more demand absorbs the same supply → a higher price (the Greywick lever)");
+            Assert.Greater(high, low, "more demand absorbs the same supply → a higher price (the Nine Mile Creek lever)");
         }
     }
 }

@@ -169,6 +169,14 @@ namespace HiddenHarbours.Core
                                       int dominantIndex)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
+            return From((ReadOnlySpan<WaveTrain>)source, count, crestSharpening, dominantIndex);
+        }
+
+        /// <summary>The same assembly from a span — what lets the spectrum derivation build its slots
+        /// in <c>stackalloc</c> scratch and stay allocation-free on the sim cadence (rule 7).</summary>
+        public static WaveTrains From(ReadOnlySpan<WaveTrain> source, int count, float crestSharpening,
+                                      int dominantIndex)
+        {
             int live = Mathf.Clamp(count, 0, Mathf.Min(MaxTrains, source.Length));
             return new WaveTrains(
                 live > 0 ? source[0] : default, live > 1 ? source[1] : default,
@@ -323,6 +331,44 @@ namespace HiddenHarbours.Core
         [Tooltip("Secondary train 3: amplitude fraction of the primary.")]
         public float Secondary3AmplitudeRatio;
 
+        // ---- the JONSWAP spectrum (ADR 0027 #5, P2) ------------------------------------------------
+        // ⚠️ THESE FIELDS DID NOT EXIST BEFORE 2026-07-29, so any prefab or scene serialized before
+        // then deserializes them as ZERO. SpectrumBlend = 0 is exactly the passthrough, so a stale
+        // asset is SAFE — it keeps the shipped 4-train sea. But the shape parameters would also be 0,
+        // which is why WaveSpectrum floors the ones for which zero is degenerate rather than
+        // meaningful: dialling the blend up on a stale asset must not produce a nonsense sea.
+
+        [Tooltip("0 = today's hand-authored 4-train field, EXACTLY (the passthrough). 1 = the full " +
+                 "JONSWAP spectrum: amplitudes from a spectral curve, a continuous fan of directions, " +
+                 "and neighbouring frequencies that beat into wave GROUPS. Dial it continuously — the " +
+                 "sea morphs, it does not switch.\n\n" +
+                 "⚠️ Keep this IDENTICAL on the WaveFieldBridge host and on BoatWaveMotion, or the " +
+                 "water and the hull will ride different seas (ADR 0018's one-sea rule holds only if " +
+                 "both consumers derive from the same settings).")]
+        [Range(0f, 1f)] public float SpectrumBlend;
+
+        [Tooltip("JONSWAP peak enhancement γ. 1 = Pierson-Moskowitz, a broad open-ocean swell with no " +
+                 "dominant size; 3.3 = the fetch-limited standard, a taller narrower peak (one wave " +
+                 "size clearly dominates). Lower it for a more confused sea. Clamped ≥ 1.")]
+        public float SpectrumPeakEnhancement;
+
+        [Tooltip("JONSWAP peak width σ — how far around the peak the enhancement reaches.")]
+        public float SpectrumPeakWidth;
+
+        [Tooltip("Frequency spacing between neighbouring spectrum trains, as a fraction of the peak " +
+                 "frequency. THIS IS THE WAVE-GROUP DIAL: the group (beat) period is 2π/(ω_p·spacing), " +
+                 "so smaller = longer, slower sets. 0.08 puts the period at roughly 25 s in calm air " +
+                 "and 60 s in a gale.")]
+        public float SpectrumFrequencySpacing;
+
+        [Tooltip("Half-width of the directional fan (degrees) the spectrum trains spread across, " +
+                 "either side of downwind. 0 = every train follows the wind exactly.")]
+        public float SpectrumSpreadDegrees;
+
+        [Tooltip("Directional spreading exponent s in cos^2s(θ). 0 = energy spread evenly across the " +
+                 "fan (a fully confused sea); larger = energy pulled into a narrow following sea.")]
+        public float SpectrumSpreadExponent;
+
         /// <summary>
         /// The reference tuning (ADR 0018 Arc B starting point): a 4-train field — the primary
         /// downwind swell plus three shorter, smaller cross-chop trains at asymmetric offsets
@@ -350,6 +396,18 @@ namespace HiddenHarbours.Core
             Secondary3AngleDegrees = 11f,
             Secondary3WavelengthRatio = 0.22f,
             Secondary3AmplitudeRatio = 0.18f,
+
+            // The spectrum ships OFF (ADR 0027: every item defaults to passthrough, so the tuned sea
+            // stays byte-identical until the owner dials it in). The shape values below are the
+            // reference tuning that blend > 0 uses — γ = 3.3 is JONSWAP's fetch-limited standard, and
+            // the 0.08 spacing is chosen so the wave-group period lands at ~25 s calm / ~60 s gale
+            // (WaveSpectrumTests pins that band).
+            SpectrumBlend = 0f,
+            SpectrumPeakEnhancement = 3.3f,
+            SpectrumPeakWidth = 0.08f,
+            SpectrumFrequencySpacing = 0.08f,
+            SpectrumSpreadDegrees = 55f,
+            SpectrumSpreadExponent = 2f,
         };
     }
 
@@ -463,8 +521,136 @@ namespace HiddenHarbours.Core
             // WaveFieldSettings.DerivedSecondaryTrainSlots.
             int count = 1 + Mathf.Clamp(settings.SecondaryTrainCount, 0,
                                         WaveFieldSettings.DerivedSecondaryTrainSlots);
-            return new WaveTrains(primary, secondary1, secondary2, secondary3, count, settings.CrestSharpening);
+
+            float blend = Mathf.Clamp01(settings.SpectrumBlend);
+            if (blend <= 0f)
+                return new WaveTrains(primary, secondary1, secondary2, secondary3,
+                                      count, settings.CrestSharpening);
+
+            // NB: the primary amplitude is deliberately NOT passed — the spectrum normalizes onto the
+            // legacy trains' TOTAL envelope, not onto the primary alone.
+            return SpectrumTrainsFrom(downwind, dominantWavelength, gravity, blend,
+                                      count, in settings,
+                                      primary, secondary1, secondary2, secondary3);
         }
+
+        /// <summary>
+        /// The ADR 0027 #5 spectrum: the hand-authored field morphed toward a JONSWAP-shaped,
+        /// directionally-spread, group-producing one by <c>blend</c>. Split out of
+        /// <see cref="TrainsFrom"/> only for readability — it is the same pure function, and
+        /// <c>blend = 0</c> never reaches here (the caller returns the legacy field bit-for-bit).
+        ///
+        /// <para><b>Every slot is a LERP from its legacy self toward its spectral self</b>, so the sea
+        /// morphs continuously as the dial turns instead of switching between two seas. Slots 0–3 have
+        /// a legacy counterpart; slots 4–7 do not, so they lerp up from <b>zero amplitude</b> — which
+        /// is why the field is continuous at blend → 0 even though the live slot count jumps from 4 to
+        /// 8 there (four silent trains contribute exactly nothing).</para>
+        ///
+        /// <para><b>The amplitude ENVELOPE is preserved</b> (Σ amplitudes unchanged). This is a
+        /// deliberate choice with feel consequences, and the alternative was rejected on evidence:
+        /// preserving <em>energy</em> (Σ A²) is the more physical normalization, but it grows Σ A —
+        /// and Σ A is the crest-factor normalizer the whitecap lifecycle divides by AND the bound the
+        /// watertight hull clamp scans against. Growing it would quietly reduce foam and raise every
+        /// hull. Preserving the envelope instead means the spectrum's peaks reach the SAME height the
+        /// hand-authored sea reached, and what the spectrum adds is the lulls between them — which is
+        /// precisely the owner's *"waves building and collapsing"*, at zero risk to two calibrated
+        /// systems.</para>
+        /// </summary>
+        private static WaveTrains SpectrumTrainsFrom(
+            Vector2 downwind, float dominantWavelength, float gravity,
+            float blend, int legacyCount, in WaveFieldSettings settings,
+            in WaveTrain legacy0, in WaveTrain legacy1, in WaveTrain legacy2, in WaveTrain legacy3)
+        {
+            int seed = settings.PhaseSeed;
+            float maxSpread = Mathf.Max(0f, settings.SpectrumSpreadDegrees) * Mathf.Deg2Rad;
+
+            // ---- (1) the raw spectral weights ------------------------------------------------------
+            // amplitude ∝ √(S(ω)) · cos^s(θ): the JONSWAP shape times the directional spreading, both
+            // taken as AMPLITUDE weights (√energy). Δω is common to every slot and normalizes away.
+            Span<float> weight = stackalloc float[WaveTrains.MaxTrains];
+            Span<float> angle = stackalloc float[WaveTrains.MaxTrains];
+            float weightTotal = 0f;
+            for (int i = 0; i < WaveTrains.MaxTrains; i++)
+            {
+                angle[i] = WaveSpectrum.AngleOffsetRadians(i, seed, maxSpread);
+                float shape = WaveSpectrum.JonswapShape(
+                    WaveSpectrum.FrequencyRatio(i, settings.SpectrumFrequencySpacing),
+                    settings.SpectrumPeakEnhancement, settings.SpectrumPeakWidth);
+                weight[i] = Mathf.Sqrt(Mathf.Max(0f, shape))
+                          * WaveSpectrum.DirectionalWeight(angle[i], settings.SpectrumSpreadExponent);
+                weightTotal += weight[i];
+            }
+
+            // ---- (2) normalize onto the legacy envelope --------------------------------------------
+            // Σ(spectrum amplitudes) == Σ(legacy amplitudes), so the lerp preserves the envelope at
+            // EVERY blend value, not just at the ends (a lerp of two equal sums is that same sum).
+            float legacyTotal = 0f;
+            for (int i = 0; i < legacyCount; i++)
+                legacyTotal += LegacySlot(i, legacy0, legacy1, legacy2, legacy3).Amplitude;
+
+            float normalizer = weightTotal > 1e-9f ? legacyTotal / weightTotal : 0f;
+
+            // ---- (3) morph each slot ---------------------------------------------------------------
+            // stackalloc, not a heap array: TrainsFrom runs on the throttled sim cadence for the
+            // bridge AND for every boat, and rule 7 forbids a per-tick allocation there.
+            Span<WaveTrain> trains = stackalloc WaveTrain[WaveTrains.MaxTrains];
+            int dominantIndex = 0;
+            float dominantAmplitude = -1f;
+            for (int i = 0; i < WaveTrains.MaxTrains; i++)
+            {
+                bool hasLegacy = i < legacyCount;
+                WaveTrain legacy = hasLegacy ? LegacySlot(i, legacy0, legacy1, legacy2, legacy3) : default;
+
+                float spectrumWavelength =
+                    dominantWavelength * WaveSpectrum.WavelengthRatio(i, settings.SpectrumFrequencySpacing);
+                float spectrumAmplitude = weight[i] * normalizer;
+
+                // A slot with no legacy counterpart has nothing to morph FROM: it simply fades in.
+                float wavelength = hasLegacy
+                    ? Mathf.Lerp(legacy.Wavelength, spectrumWavelength, blend)
+                    : spectrumWavelength;
+                float amplitude = Mathf.Lerp(hasLegacy ? legacy.Amplitude : 0f, spectrumAmplitude, blend);
+
+                // Directions morph as an ANGLE off downwind, never as a lerped vector — lerping two
+                // unit vectors shortens the chord and would drag the direction through a shrinking
+                // magnitude the WaveTrain ctor then renormalizes non-uniformly.
+                float legacyAngle = hasLegacy ? LegacyAngleDegrees(i, in settings) * Mathf.Deg2Rad : angle[i];
+                float slotAngle = Mathf.Lerp(legacyAngle, angle[i], blend);
+
+                trains[i] = new WaveTrain(RotateRadians(downwind, slotAngle),
+                                          wavelength, amplitude,
+                                          PhaseOffsetRadians(i, seed), gravity);
+
+                // The spectral peak is found, not assumed. The shape puts it at slot 0 by
+                // construction (JONSWAP peaks at ω/ω_p = 1, and slot 0's directional weight is the
+                // maximum cos^s(0) = 1) — but the phase consumers must follow the REAL peak if a
+                // tuning ever moves it, which is exactly what WaveTrains.DominantIndex is for.
+                if (amplitude > dominantAmplitude)
+                {
+                    dominantAmplitude = amplitude;
+                    dominantIndex = i;
+                }
+            }
+
+            return WaveTrains.From(trains, WaveTrains.MaxTrains, settings.CrestSharpening, dominantIndex);
+        }
+
+        private static WaveTrain LegacySlot(int index, in WaveTrain t0, in WaveTrain t1,
+                                            in WaveTrain t2, in WaveTrain t3) => index switch
+        {
+            0 => t0,
+            1 => t1,
+            2 => t2,
+            _ => t3,
+        };
+
+        private static float LegacyAngleDegrees(int index, in WaveFieldSettings settings) => index switch
+        {
+            0 => 0f,                                   // the primary runs downwind
+            1 => settings.Secondary1AngleDegrees,
+            2 => settings.Secondary2AngleDegrees,
+            _ => settings.Secondary3AngleDegrees,
+        };
 
         /// <summary>
         /// Sample the wave surface at a world position and time — ADR 0018 §(2), the read both a hull
@@ -589,9 +775,15 @@ namespace HiddenHarbours.Core
 
         /// <summary>Rotate a vector by a signed angle in degrees (counter-clockwise positive, the
         /// standard math convention — a NEGATIVE settings angle therefore reads clockwise on screen).</summary>
-        private static Vector2 Rotate(Vector2 v, float degrees)
+        private static Vector2 Rotate(Vector2 v, float degrees) => RotateRadians(v, degrees * Mathf.Deg2Rad);
+
+        /// <summary>The same rotation taking radians. The spectrum works in radians throughout (its
+        /// directional weight is a <c>cos</c>), so routing it through the degrees entry point would
+        /// convert to degrees and straight back — a round trip that costs precision for nothing.
+        /// ⚠️ <see cref="Rotate"/> must remain the exact expression it was: the passthrough proof
+        /// compares it against a frozen copy, and this refactor deliberately does not touch it.</summary>
+        private static Vector2 RotateRadians(Vector2 v, float radians)
         {
-            float radians = degrees * Mathf.Deg2Rad;
             float cos = Mathf.Cos(radians);
             float sin = Mathf.Sin(radians);
             return new Vector2(cos * v.x - sin * v.y, sin * v.x + cos * v.y);

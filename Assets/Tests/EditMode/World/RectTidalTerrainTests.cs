@@ -7,7 +7,7 @@ namespace HiddenHarbours.Tests.World.EditMode
 {
     /// <summary>
     /// The rectangular-plateau analytic terrain (<see cref="RectTidalTerrain"/> — the height source that
-    /// converges the cove/Greywick onto the St Peters tide-driven water model, ADR 0012 rec. 4): the pure
+    /// converges the cove/Nine Mile Creek onto the St Peters tide-driven water model, ADR 0012 rec. 4): the pure
     /// zone composition (plateau inside, smoothstep falloff outside, max-compose, deep floor), the
     /// out-of-zone clamp, and determinism (authored geometry, no RNG — CLAUDE.md rule 5). Engine-light,
     /// no scene.

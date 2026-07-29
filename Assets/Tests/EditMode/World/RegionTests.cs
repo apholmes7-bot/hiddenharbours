@@ -38,7 +38,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         [Test]
         public void RegionDef_HasScene_ReflectsSceneName()
         {
-            Assert.IsTrue(MakeRegion("region.port_greywick", "Greywick").HasScene);
+            Assert.IsTrue(MakeRegion("region.nine_mile_creek", "NineMileCreek").HasScene);
             Assert.IsFalse(MakeRegion("region.nowhere", "").HasScene);
             Assert.IsFalse(MakeRegion("region.blank", "   ").HasScene, "whitespace is not a scene");
         }
@@ -55,21 +55,21 @@ namespace HiddenHarbours.Tests.World.EditMode
         [Test]
         public void Registry_FindsByStableId()
         {
-            var greywick = MakeRegion("region.port_greywick", "Greywick");
+            var nineMileCreek = MakeRegion("region.nine_mile_creek", "NineMileCreek");
             var cove = MakeRegion("region.coddle_cove", "Greybox");
-            var reg = new RegionRegistry(new[] { greywick, cove });
+            var reg = new RegionRegistry(new[] { nineMileCreek, cove });
 
             Assert.AreEqual(2, reg.Count);
-            Assert.IsTrue(reg.Contains("region.port_greywick"));
+            Assert.IsTrue(reg.Contains("region.nine_mile_creek"));
             Assert.IsTrue(reg.TryGet("region.coddle_cove", out var got));
             Assert.AreSame(cove, got);
-            Assert.AreSame(greywick, reg.Get("region.port_greywick"));
+            Assert.AreSame(nineMileCreek, reg.Get("region.nine_mile_creek"));
         }
 
         [Test]
         public void Registry_UnknownId_IsMiss()
         {
-            var reg = new RegionRegistry(new[] { MakeRegion("region.port_greywick", "Greywick") });
+            var reg = new RegionRegistry(new[] { MakeRegion("region.nine_mile_creek", "NineMileCreek") });
             Assert.IsFalse(reg.Contains("region.banks"));
             Assert.IsFalse(reg.TryGet("region.banks", out var got));
             Assert.IsNull(got);
@@ -102,7 +102,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         [Test]
         public void Travel_CanLoad_RequiresARegionWithAScene()
         {
-            Assert.IsTrue(RegionTravel.CanLoad(MakeRegion("region.port_greywick", "Greywick")));
+            Assert.IsTrue(RegionTravel.CanLoad(MakeRegion("region.nine_mile_creek", "NineMileCreek")));
             Assert.IsFalse(RegionTravel.CanLoad(null));
             Assert.IsFalse(RegionTravel.CanLoad(MakeRegion("region.nowhere", "")));
         }
@@ -110,42 +110,42 @@ namespace HiddenHarbours.Tests.World.EditMode
         [Test]
         public void Travel_IsAlreadyHere_MatchesCurrentScene()
         {
-            var greywick = MakeRegion("region.port_greywick", "Greywick");
-            Assert.IsTrue(RegionTravel.IsAlreadyHere("Greywick", greywick));
-            Assert.IsFalse(RegionTravel.IsAlreadyHere("Greybox", greywick));
-            Assert.IsFalse(RegionTravel.IsAlreadyHere("", greywick), "no current scene → not 'here'");
+            var nineMileCreek = MakeRegion("region.nine_mile_creek", "NineMileCreek");
+            Assert.IsTrue(RegionTravel.IsAlreadyHere("NineMileCreek", nineMileCreek));
+            Assert.IsFalse(RegionTravel.IsAlreadyHere("Greybox", nineMileCreek));
+            Assert.IsFalse(RegionTravel.IsAlreadyHere("", nineMileCreek), "no current scene → not 'here'");
         }
 
         [Test]
         public void Travel_ShouldLoad_OnlyWhenLoadableAndElsewhere()
         {
-            var greywick = MakeRegion("region.port_greywick", "Greywick");
+            var nineMileCreek = MakeRegion("region.nine_mile_creek", "NineMileCreek");
             var cove = MakeRegion("region.coddle_cove", "Greybox");
 
-            // From the cove, Greywick is loadable.
-            Assert.IsTrue(RegionTravel.ShouldLoad("Greybox", greywick));
-            // Already in Greywick → don't reload it.
-            Assert.IsFalse(RegionTravel.ShouldLoad("Greywick", greywick));
+            // From the cove, Nine Mile Creek is loadable.
+            Assert.IsTrue(RegionTravel.ShouldLoad("Greybox", nineMileCreek));
+            // Already in Nine Mile Creek → don't reload it.
+            Assert.IsFalse(RegionTravel.ShouldLoad("NineMileCreek", nineMileCreek));
             // A region with no scene is never loadable.
-            Assert.IsFalse(RegionTravel.ShouldLoad("Greywick", MakeRegion("region.nowhere", "")));
+            Assert.IsFalse(RegionTravel.ShouldLoad("NineMileCreek", MakeRegion("region.nowhere", "")));
             // Null target → no-op.
-            Assert.IsFalse(RegionTravel.ShouldLoad("Greywick", null));
-            // Round-trip back to the cove from Greywick is loadable.
-            Assert.IsTrue(RegionTravel.ShouldLoad("Greywick", cove));
+            Assert.IsFalse(RegionTravel.ShouldLoad("NineMileCreek", null));
+            // Round-trip back to the cove from Nine Mile Creek is loadable.
+            Assert.IsTrue(RegionTravel.ShouldLoad("NineMileCreek", cove));
         }
 
         [Test]
-        public void Travel_RoundTrip_CoveGreywickCove_IsLoadableEachLeg_NoReloadInPlace()
+        public void Travel_RoundTrip_CoveNineMileCreekCove_IsLoadableEachLeg_NoReloadInPlace()
         {
             // The VS-22 round trip the passages drive: each hop into another region loads, and asking to
             // "travel" to the region you're already standing in is a no-op (the coordinator just re-shows
             // a region that's already loaded — no decision to load).
             var cove = MakeRegion("region.coddle_cove", "Greybox");
-            var greywick = MakeRegion("region.port_greywick", "Greywick");
+            var nineMileCreek = MakeRegion("region.nine_mile_creek", "NineMileCreek");
 
-            Assert.IsTrue(RegionTravel.ShouldLoad("Greybox", greywick), "outbound: cove → Greywick");
-            Assert.IsFalse(RegionTravel.ShouldLoad("Greywick", greywick), "in Greywick, don't reload Greywick");
-            Assert.IsTrue(RegionTravel.ShouldLoad("Greywick", cove), "return: Greywick → cove");
+            Assert.IsTrue(RegionTravel.ShouldLoad("Greybox", nineMileCreek), "outbound: cove → Nine Mile Creek");
+            Assert.IsFalse(RegionTravel.ShouldLoad("NineMileCreek", nineMileCreek), "in Nine Mile Creek, don't reload Nine Mile Creek");
+            Assert.IsTrue(RegionTravel.ShouldLoad("NineMileCreek", cove), "return: Nine Mile Creek → cove");
             Assert.IsFalse(RegionTravel.ShouldLoad("Greybox", cove), "back in the cove, don't reload the cove");
         }
     }

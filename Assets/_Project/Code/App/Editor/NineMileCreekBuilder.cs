@@ -17,24 +17,24 @@ using UnityEngine.Rendering.Universal;   // PixelPerfectCamera
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// One-click <b>Port Greywick</b> (VS-22): the market town as a SEPARATE region scene, built by
+    /// One-click <b>Nine Mile Creek</b> (VS-22): the market town as a SEPARATE region scene, built by
     /// its own builder so the greybox cove (GreyboxBuilder) is untouched. Menu: Hidden Harbours ▸
-    /// Build Greywick Scene. Re-runnable (idempotent on the assets).
+    /// Build Nine Mile Creek Scene. Re-runnable (idempotent on the assets).
     ///
-    /// Greywick is a <b>services region, not a town</b> (M2 grows it): a deep, sheltered harbour with a
+    /// Nine Mile Creek is a <b>services region, not a town</b> (M2 grows it): a deep, sheltered harbour with a
     /// public wharf carrying the Fish Buyer + the Shipwright (the same Economy components the cove uses,
     /// referenced by stable id), plus a couple of flavour buildings. It is authored as a per-region
     /// scene that the <see cref="RegionSceneLoader"/> loads additively (CLAUDE.md §3), and it adds the
-    /// Port Greywick + Coddle Cove <see cref="RegionDef"/> assets and a return passage.
+    /// Nine Mile Creek + Coddle Cove <see cref="RegionDef"/> assets and a return passage.
     ///
     /// SCOPE / TODO: this scene currently carries its own Main Camera + AudioListener so it can be
-    /// opened and reviewed standalone. When the additive Cove↔Greywick transition is fully wired (player
+    /// opened and reviewed standalone. When the additive Cove↔Nine Mile Creek transition is fully wired (player
     /// persistence + unloading the origin region — a bootstrap/GreyboxBuilder change, out of scope here),
     /// region scenes should drop their camera/listener in favour of a persistent bootstrap. The wharf's
     /// hold/wallet providers (the player's boat + wallet) live in the origin scene, so they're left
-    /// unwired here with the same TODO. The matching Cove→Greywick passage belongs in the cove scene.
+    /// unwired here with the same TODO. The matching Cove→Nine Mile Creek passage belongs in the cove scene.
     /// </summary>
-    public static class GreywickBuilder
+    public static class NineMileCreekBuilder
     {
         const string DataConfig  = "Assets/_Project/Data/Config";
         const string DataShip    = "Assets/_Project/Data/Shipwright";
@@ -58,10 +58,10 @@ namespace HiddenHarbours.App.Editor
         const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";
         const string ArtShipwright = "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png";
         const string ArtFishStall  = "Assets/_Project/Art/Sprites/Buildings/FishBuyerStall.png";
-        const string ArtHouseRed   = "Assets/_Project/Art/Sprites/Buildings/GreywickHouseRed.png";
-        const string ArtHouseTeal  = "Assets/_Project/Art/Sprites/Buildings/GreywickHouseTeal.png";
+        const string ArtHouseRed   = "Assets/_Project/Art/Sprites/Buildings/NineMileCreekHouseRed.png";
+        const string ArtHouseTeal  = "Assets/_Project/Art/Sprites/Buildings/NineMileCreekHouseTeal.png";
         const string Scenes      = "Assets/_Project/Scenes";
-        const string SceneName   = "Greywick";
+        const string SceneName   = "NineMileCreek";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
 
         // Dev-bootstrap core art/data (mirrors PersistentCoreBuilder's player + gauge wiring).
@@ -71,12 +71,12 @@ namespace HiddenHarbours.App.Editor
         // (The fight's UI art — TensionGauge / LineHook / FishOnSilhouette — is no longer wired anywhere:
         // the rod fight has no HUD. Owner's ruling 2026-07-23.)
 
-        // VS-22 arrival/dock geometry — single source of truth shared with GreywickDockTests. The persistent
+        // VS-22 arrival/dock geometry — single source of truth shared with NineMileCreekDockTests. The persistent
         // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
         // the boat parks at ArrivalPos on arrival, so ArrivalPos MUST sit within DockZoneRadius of DockZonePos
         // or the player lands out of dock range and can't disembark (the owner-playtest gap #52 fixed — keep it).
         //
-        // CROSSING DIRECTION (canon map): Port Greywick lies WEST of the cove, so you cross by SAILING WEST
+        // CROSSING DIRECTION (canon map): Nine Mile Creek lies WEST of the cove, so you cross by SAILING WEST
         // and ARRIVE HEADING WEST (the hop preserves heading). The harbour reads true: the public wharf is a
         // peninsula pointing EAST into the deep harbour (open to the east), its dockable HEAD the EAST tip.
         // You enter from the EAST, park just east of the head (still heading west), and step WEST onto the deck.
@@ -87,51 +87,51 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 ToCovePassagePos = new Vector3(14f, 0f, 0f); // return passage: EAST edge → sail east back to the cove
 
         // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
-        // Greywick now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain —
+        // Nine Mile Creek now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain —
         // the town land strip + the wharf as steep-sided plateaus over a DREDGED floor) registered into
         // GameServices.TidalTerrain, plus the layered WaterSurface shader on the harbour Sea plane baking
         // that terrain — the visible waterline and the walkability/boat-grounding gate read the one same
         // height (P1). The old static model (a flat tinted sea sprite + a drifting-marker scatter, no
         // tide) is retired; the Shoreline EdgeCollider2D REMAINS as the physical land/wharf wall the boat
-        // bumps (it is bounds, not the look). Canon holds: Greywick is the DEEP, DREDGED harbour
+        // bumps (it is bounds, not the look). Canon holds: Nine Mile Creek is the DEEP, DREDGED harbour
         // (IsDeepHarbour, -6 m floor), so its quay edge is steep and the waterline sweep is modest — the
         // tide reads here as rising/falling against the quay, not a wandering beach (the cove and St
         // Peters carry the big flats). NOTE the live tide is the persistent core's (St Peters ±3.5 m;
         // nothing re-points it per region yet) — these values are authored against that swing. Public +
         // single-source-of-truth so the EditMode convergence test asserts the same coast the scene is
         // built from (the StPetersBuilder convention). All tunables (rule 6).
-        public const float GreywickDeepElevation = -6f;   // the dredged floor (never bares; HarbourDepthMeters 6)
-        public const float GreywickLandElevation = 6f;    // town land + wharf deck: dry/walkable at every tide
-        public const float GreywickQuayFalloff   = 3f;    // steep dredged quay edge → a modest ~1.5 m waterline sweep
-        public const float GreywickWharfFalloff  = 1.2f;  // the wharf drops fast — boats float right at the head
-        public static readonly Vector2 GreywickLandCenter   = new Vector2(-16f, 0f);
-        public static readonly Vector2 GreywickLandHalfSize = new Vector2(12f, 20f);  // x -28..-4 (the fence's waterline), y -20..20
-        public static readonly Vector2 GreywickWharfCenter   = new Vector2(0f, 0f);
-        public static readonly Vector2 GreywickWharfHalfSize = new Vector2(4f, 3f);   // the deck: x -4..4, y -3..3 (head at x=4)
+        public const float NineMileCreekDeepElevation = -6f;   // the dredged floor (never bares; HarbourDepthMeters 6)
+        public const float NineMileCreekLandElevation = 6f;    // town land + wharf deck: dry/walkable at every tide
+        public const float NineMileCreekQuayFalloff   = 3f;    // steep dredged quay edge → a modest ~1.5 m waterline sweep
+        public const float NineMileCreekWharfFalloff  = 1.2f;  // the wharf drops fast — boats float right at the head
+        public static readonly Vector2 NineMileCreekLandCenter   = new Vector2(-16f, 0f);
+        public static readonly Vector2 NineMileCreekLandHalfSize = new Vector2(12f, 20f);  // x -28..-4 (the fence's waterline), y -20..20
+        public static readonly Vector2 NineMileCreekWharfCenter   = new Vector2(0f, 0f);
+        public static readonly Vector2 NineMileCreekWharfHalfSize = new Vector2(4f, 3f);   // the deck: x -4..4, y -3..3 (head at x=4)
         // The Sea plane + height-map bake rectangle (the existing 120×120 harbour plane).
-        public static readonly Vector2 GreywickSeaCenter = Vector2.zero;
-        public static readonly Vector2 GreywickSeaSize   = new Vector2(120f, 120f);
-        public const int   GreywickHeightResolution = 192;   // ADR 0012 §A step 1 (the smoothed-shore bake)
-        public const float GreywickHeightMin = -6f;            // brackets the DREDGED floor …
-        public const float GreywickHeightMax = 6f;             // … and the land plateau
+        public static readonly Vector2 NineMileCreekSeaCenter = Vector2.zero;
+        public static readonly Vector2 NineMileCreekSeaSize   = new Vector2(120f, 120f);
+        public const int   NineMileCreekHeightResolution = 192;   // ADR 0012 §A step 1 (the smoothed-shore bake)
+        public const float NineMileCreekHeightMin = -6f;            // brackets the DREDGED floor …
+        public const float NineMileCreekHeightMax = 6f;             // … and the land plateau
 
-        [MenuItem("Hidden Harbours/Build Greywick Scene")]
+        [MenuItem("Hidden Harbours/Build Nine Mile Creek Scene")]
         public static void Build()
         {
             // ADR 0019 §1 guard: this is a from-zero build (NewScene(EmptyScene) below) that WIPES anything the
-            // owner has hand-authored in Greywick.unity — the exact failure that ate a boat spotlight elsewhere.
+            // owner has hand-authored in NineMileCreek.unity — the exact failure that ate a boat spotlight elsewhere.
             // If the committed scene already exists on disk, make the owner confirm before we clear it; abort
             // (touch nothing) on cancel. First-ever build (no file) proceeds silently. Shared wording with every
             // region builder via RegionBuildGuard.
-            if (!RegionBuildGuard.ConfirmOverwrite("Port Greywick", ScenePath))
+            if (!RegionBuildGuard.ConfirmOverwrite("Nine Mile Creek", ScenePath))
                 return;
 
             EnsureFolders();
 
             // --- DATA: regions + the boat offer (reused by stable id) -----------------------
-            var greywick = LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
+            var nineMileCreek = LoadOrCreate<RegionDef>(DataRegions + "/NineMileCreek.asset", r =>
             {
-                r.Id = "region.port_greywick"; r.DisplayName = "Port Greywick"; r.SceneName = SceneName;
+                r.Id = "region.nine_mile_creek"; r.DisplayName = "Nine Mile Creek"; r.SceneName = SceneName;
                 r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
                 r.TideMeanLevel = 0f; r.TideAmplitude = 0.8f; r.TidePhaseHours = 2f;
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business " +
@@ -159,7 +159,7 @@ namespace HiddenHarbours.App.Editor
             {
                 l.Id = "license.cod"; l.DisplayName = "Cod Fishing License"; l.Price = 120;
                 l.PermittedSpeciesIds = new[] { "fish.atlantic_cod" };
-                l.Flavor = "Greywick's harbourmaster signs you off to take cod on rod and line.";
+                l.Flavor = "Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.";
             });
             var rodOffer = LoadOrCreate<GearOffer>(DataGear + "/Rod.asset", g =>
             {
@@ -194,7 +194,7 @@ namespace HiddenHarbours.App.Editor
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             // Camera (standalone-viewable; see the class TODO about additive cleanup). Mirrors the
-            // cove's locked pixel-perfect, on-foot landscape framing so Greywick reads at the same scale.
+            // cove's locked pixel-perfect, on-foot landscape framing so Nine Mile Creek reads at the same scale.
             var camGo = new GameObject("Main Camera");
             camGo.tag = "MainCamera";
             var cam = camGo.AddComponent<Camera>();
@@ -215,7 +215,7 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- TIDAL TERRAIN (the converged one-height source; ADR 0012 rec. 4) -----------
-            // Greywick's analytic seabed: town land + wharf plateaus over the dredged -6 m floor. It
+            // Nine Mile Creek's analytic seabed: town land + wharf plateaus over the dredged -6 m floor. It
             // registers into GameServices.TidalTerrain at runtime so the walkability, boat grounding AND
             // the water shader below read the SAME height (P1). Created BEFORE the Sea so on a region
             // toggle-on the terrain's OnEnable registers before the WaterSurface's OnEnable bakes (scene
@@ -223,7 +223,7 @@ namespace HiddenHarbours.App.Editor
             // Adopt step (ADR 0014) — the same adoption seam St Peters has.
             var terrainGo = new GameObject("TidalTerrain");
             var terrain = terrainGo.AddComponent<RectTidalTerrain>();
-            ConfigureGreywickTerrain(terrain);
+            ConfigureNineMileCreekTerrain(terrain);
 
             // --- DEEP HARBOUR WATER (the layered SIM-DRIVEN water shader — the St Peters model) ---
             // The harbour plane now carries Water.mat + a WaterSurface baking the terrain above, so the
@@ -235,30 +235,30 @@ namespace HiddenHarbours.App.Editor
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
             var seaTile = LoadSpriteAny(ArtSea);
             var water = new GameObject("Sea");
-            water.transform.position = new Vector3(GreywickSeaCenter.x, GreywickSeaCenter.y, 0f);
+            water.transform.position = new Vector3(NineMileCreekSeaCenter.x, NineMileCreekSeaCenter.y, 0f);
             var wsr = water.AddComponent<SpriteRenderer>();
             wsr.sortingOrder = -4;
             if (seaTile != null)
             {
                 wsr.sprite = seaTile;
                 wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = GreywickSeaSize;
+                wsr.size = NineMileCreekSeaSize;
                 water.transform.localScale = Vector3.one;
             }
             else
             {
                 wsr.sprite = waterSprite; wsr.color = new Color(0.12f, 0.22f, 0.30f); // deep harbour
-                water.transform.localScale = new Vector3(GreywickSeaSize.x, GreywickSeaSize.y, 1f);
+                water.transform.localScale = new Vector3(NineMileCreekSeaSize.x, NineMileCreekSeaSize.y, 1f);
             }
             var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
             if (waterMat != null)
             {
                 wsr.sharedMaterial = waterMat;
                 var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
-                ConfigureWaterSurface(surface, GreywickSeaCenter, GreywickSeaSize,
-                                      GreywickHeightResolution, GreywickHeightMin, GreywickHeightMax);
+                ConfigureWaterSurface(surface, NineMileCreekSeaCenter, NineMileCreekSeaSize,
+                                      NineMileCreekHeightResolution, NineMileCreekHeightMin, NineMileCreekHeightMax);
                 // (ADR 0023 arc step 3) The owner's GameConfig salience knobs — pushed each tick, so
-                // Greywick's harbour marks the big wave with the SAME tuning as St Peters (one asset).
+                // Nine Mile Creek's harbour marks the big wave with the SAME tuning as St Peters (one asset).
                 SetRef(surface, "_config", config);
                 // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
                 // (the live Water.mat is the calm baseline); null anchors no-op safely.
@@ -271,7 +271,7 @@ namespace HiddenHarbours.App.Editor
             }
             else
             {
-                Debug.LogWarning("[GreywickBuilder] Water.mat not found at " + ArtWaterMat + " — the harbour " +
+                Debug.LogWarning("[NineMileCreekBuilder] Water.mat not found at " + ArtWaterMat + " — the harbour " +
                                  "Sea is a plain backdrop. Re-run after the material imports for the tide-driven water.");
             }
 
@@ -279,7 +279,7 @@ namespace HiddenHarbours.App.Editor
             // in-memory instances created above — same gotcha the cove builder guards against).
             config    = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
             puntOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/PuntOffer.asset");
-            greywick  = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
+            nineMileCreek  = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/NineMileCreek.asset");
             cove      = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/CoddleCove.asset");
             codLicense       = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/CodLicense.asset");
             rodOffer         = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
@@ -288,7 +288,7 @@ namespace HiddenHarbours.App.Editor
             crabPotOffer     = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/CrabPotOffer.asset");
 
             // --- QUAY (the land the town sits on, along the WEST) ---------------------------
-            // Greywick lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
+            // Nine Mile Creek lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
             // public wharf is a peninsula reaching EAST into the deep harbour (open water is to the east).
             MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     new Vector2(-10f, 0f), new Vector2(10f, 30f), -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
             MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, 30f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
@@ -307,8 +307,8 @@ namespace HiddenHarbours.App.Editor
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
             var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), new Vector2(-8f,  3f), waterSprite, new Color(0.50f, 0.42f, 0.34f));
             var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  new Vector2(-8f, -3f), waterSprite, new Color(0.42f, 0.50f, 0.52f));
-            MakeBuilding("GreywickHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(-12f,  5f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
-            MakeBuilding("GreywickHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -5f), waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
+            MakeBuilding("NineMileCreekHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(-12f,  5f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
+            MakeBuilding("NineMileCreekHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -5f), waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
 
             // --- SHORELINE BOUNDARY ---------------------------------------------------------
             // Mirror the cove's ShoreEdge (an EdgeCollider2D fence dividing land from water) so the boat
@@ -363,7 +363,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(crabPotShop, "_walletProvider", providersGo);
 
             // --- ST PETERS OPENING VENDORS (places + data wiring; interaction drivers are gameplay/ui) ---
-            // The opening's earn-your-way loop ends at Greywick: sell clams (the Fish Buyer above —
+            // The opening's earn-your-way loop ends at Nine Mile Creek: sell clams (the Fish Buyer above —
             // baseline Shellfish demand handles the clam, no override needed), buy the COD LICENCE + the
             // ROD, save up, then buy the DAMAGED DORY and pay to repair her. world-content places these
             // components + wires their DATA (the licence/gear/damaged-dory offers, by stable id) and the
@@ -396,13 +396,13 @@ namespace HiddenHarbours.App.Editor
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------
             var loaderGo = new GameObject("RegionSceneLoader");
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
-            SetRefArray(loader, "_regions", new Object[] { greywick, cove });
+            SetRefArray(loader, "_regions", new Object[] { nineMileCreek, cove });
             SetString(loader, "_currentSceneName", SceneName);
 
-            // Return passage out to the EAST (toward the cove, which lies east of Greywick): sail east into
+            // Return passage out to the EAST (toward the cove, which lies east of Nine Mile Creek): sail east into
             // this wide, forgiving band to head back to Coddle Cove — so you arrive home at the cove dock
-            // FROM THE WEST (heading east). The matching Cove→Greywick passage lives on the cove's WEST edge
-            // (GreyboxBuilder.ToGreywickPassagePos).
+            // FROM THE WEST (heading east). The matching Cove→Nine Mile Creek passage lives on the cove's WEST edge
+            // (GreyboxBuilder.ToNineMileCreekPassagePos).
             var passageGo = new GameObject("PassageToCoddleCove");
             passageGo.transform.position = ToCovePassagePos;
             var trigger = passageGo.AddComponent<BoxCollider2D>();
@@ -425,18 +425,20 @@ namespace HiddenHarbours.App.Editor
             // then step WEST onto the deck. The PublicWharf deck is centred (0,0) size (8,6) → its seaward
             // (EAST) edge is x=4; the deep harbour is open east of it. The three positions are public
             // constants (single source of truth) so an EditMode test can assert the arrival↔dock distance
-            // stays inside DockZoneRadius without a scene (GreywickDockTests).
-            var gwArrival = new GameObject("GreywickArrival");
+            // stays inside DockZoneRadius without a scene (NineMileCreekDockTests).
+            var gwArrival = new GameObject("NineMileCreekArrival");
             gwArrival.transform.position = ArrivalPos;       // deep harbour, just EAST of the wharf head (open water; deck ends at x=4)
-            var gwDock = new GameObject("GreywickDockZone");
+            var gwDock = new GameObject("NineMileCreekDockZone");
             gwDock.transform.position = DockZonePos;          // the wharf's seaward (EAST) HEAD — within the dock radius of arrival
-            var gwDisembark = new GameObject("GreywickDisembark");
+            var gwDisembark = new GameObject("NineMileCreekDisembark");
             gwDisembark.transform.position = DisembarkPos;    // on the public wharf deck planks (west of the head)
-            var gwAnchor = new GameObject("GreywickRegionAnchor").AddComponent<RegionAnchor>();
-            gwAnchor.Configure("region.port_greywick", gwArrival.transform, gwDock.transform, gwDisembark.transform);
+            var gwAnchor = new GameObject("NineMileCreekRegionAnchor").AddComponent<RegionAnchor>();
+            gwAnchor.Configure("region.nine_mile_creek", gwArrival.transform, gwDock.transform, gwDisembark.transform);
+            // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
+            gwAnchor.ConfigureExtent(NineMileCreekSeaCenter, NineMileCreekSeaSize);
 
-            // --- DEV BOOTSTRAP (owner iteration: press Play IN GREYWICK and walk/fish immediately) ------
-            // Greywick is a region scene: the real player arrives with the persistent core from St Peters,
+            // --- DEV BOOTSTRAP (owner iteration: press Play IN NINE MILE CREEK and walk/fish immediately) ------
+            // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,
             // so playing this scene directly used to give "no character loads" (the owner's report). The
             // fix: bake a minimal, self-contained DEV CORE — services + follow camera + a walkable,
             // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
@@ -450,9 +452,9 @@ namespace HiddenHarbours.App.Editor
             // the harbour town. NEVER in the open harbour water (EAST of x=-4), on the public wharf deck
             // (x∈[-4,4], y∈[-3,3]) or its dock/disembark zones, on the paths, or overlapping a building
             // footprint (the x=-8 and x=-12 building rows). Cold-coast varieties only (green broadleaf,
-            // pine, birch). Data-driven (GreywickTrees) so counts/positions tweak freely; sortingOrder is
+            // pine, birch). Data-driven (NineMileCreekTrees) so counts/positions tweak freely; sortingOrder is
             // derived from base Y so trees further north sort behind, and the band sits below buildings.
-            PlaceTrees("Greywick", GreywickTrees, waterSprite);
+            PlaceTrees("NineMileCreek", NineMileCreekTrees, waterSprite);
 
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -460,8 +462,8 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GreywickBuilder] Built Greywick.unity — Port Greywick (services region), EAST-FACING " +
-                      "to read true (canon: Greywick lies WEST of the cove). You cross by sailing WEST, arrive " +
+            Debug.Log("[NineMileCreekBuilder] Built NineMileCreek.unity — Nine Mile Creek (services region), EAST-FACING " +
+                      "to read true (canon: Nine Mile Creek lies WEST of the cove). You cross by sailing WEST, arrive " +
                       "from the EAST heading west, and continue west onto the wharf (Fish Buyer B + Shipwright " +
                       "P, reused by id). NEW St Peters opening vendors PLACED: Harbourmaster (cod licence), " +
                       "General Store (rod), and a Shipwright DORY YARD with the DAMAGED dory (buy + repair) — " +
@@ -473,15 +475,15 @@ namespace HiddenHarbours.App.Editor
                       "rises/falls against the quay off the live deterministic tide and the SAME height gates " +
                       "walkability + boat grounding (P1). The drifting-marker scatter is retired.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Port Greywick scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Greywick " +
+                "Nine Mile Creek scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Nine Mile Creek " +
                 "lies WEST of the cove, so:\n• You SAIL WEST to cross\n• You ARRIVE from the EAST, heading " +
                 "west, and continue west onto the wharf (Fish Buyer + Shipwright)\n• The return passage heads " +
                 "EAST → you arrive home at the cove dock from the WEST\n\nLoaded additively by " +
-                "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Greywick Scene', then re-test.",
+                "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Nine Mile Creek Scene', then re-test.",
                 "Fair winds");
         }
 
-        // ---- dev bootstrap (press Play in Greywick → a playable, fishing-capable character) ----------
+        // ---- dev bootstrap (press Play in Nine Mile Creek → a playable, fishing-capable character) ----------
 
         /// <summary>
         /// Bake the INACTIVE dev core + the active <see cref="DevRegionBootstrap"/> that arbitrates it
@@ -498,7 +500,7 @@ namespace HiddenHarbours.App.Editor
             var devCore = new GameObject("DevCore");
 
             // Services root (mirrors PersistentCoreBuilder's GameRoot block; GameRoot wires GameServices
-            // on activation). Greywick's own authored tide (RegionDef PortGreywick: mean 0, amp 0.8,
+            // on activation). Nine Mile Creek's own authored tide (RegionDef NineMileCreek: mean 0, amp 0.8,
             // phase 2 h) so the dev session's harbour swings on this region's curve.
             var root = new GameObject("GameRoot");
             root.transform.SetParent(devCore.transform, false);
@@ -564,7 +566,7 @@ namespace HiddenHarbours.App.Editor
             playerGo.AddComponent<DevFishingInput>();
             SetRef(fishing, "_holdProvider", playerGo);   // the bucket above (IHold on the same GO)
             SetRef(fishing, "_config", config);
-            SetString(fishing, "_regionId", "region.port_greywick");
+            SetString(fishing, "_regionId", "region.nine_mile_creek");
             var rodFish = new[]
             {
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/AtlanticCod.asset"),
@@ -573,7 +575,7 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(DataFish + "/Pollock.asset"),
             }.Where(f => f != null).Cast<Object>().ToArray();
             if (rodFish.Length > 0) SetRefArray(fishing, "_regionFish", rodFish);
-            else Debug.LogWarning("[GreywickBuilder] No rod species assets found under " + DataFish +
+            else Debug.LogWarning("[NineMileCreekBuilder] No rod species assets found under " + DataFish +
                                   " — the dev bootstrap will cast into an empty pool (NoBite).");
 
             devCamGo.AddComponent<FightStrainCamera>();   // the fight's camera tell (no HUD)
@@ -613,17 +615,17 @@ namespace HiddenHarbours.App.Editor
 
         // ---- converged water model — shared config (single source of truth with the EditMode test) ----
 
-        /// <summary>Author Greywick's analytic seabed from the public constants above (the town land strip
+        /// <summary>Author Nine Mile Creek's analytic seabed from the public constants above (the town land strip
         /// + the wharf deck as steep-sided plateaus over the dredged floor). One place, mirrored by the
         /// EditMode shoreline-convergence test — the StPetersBuilder convention.</summary>
-        public static void ConfigureGreywickTerrain(RectTidalTerrain terrain)
+        public static void ConfigureNineMileCreekTerrain(RectTidalTerrain terrain)
         {
-            terrain.Configure(GreywickDeepElevation, new[]
+            terrain.Configure(NineMileCreekDeepElevation, new[]
             {
-                new RectTidalTerrain.LandZone(GreywickLandCenter, GreywickLandHalfSize,
-                                              GreywickLandElevation, GreywickQuayFalloff),
-                new RectTidalTerrain.LandZone(GreywickWharfCenter, GreywickWharfHalfSize,
-                                              GreywickLandElevation, GreywickWharfFalloff),
+                new RectTidalTerrain.LandZone(NineMileCreekLandCenter, NineMileCreekLandHalfSize,
+                                              NineMileCreekLandElevation, NineMileCreekQuayFalloff),
+                new RectTidalTerrain.LandZone(NineMileCreekWharfCenter, NineMileCreekWharfHalfSize,
+                                              NineMileCreekLandElevation, NineMileCreekWharfFalloff),
             });
         }
 
@@ -665,28 +667,28 @@ namespace HiddenHarbours.App.Editor
         {
             var p = so.FindProperty(field);
             if (p != null) p.floatValue = value;
-            else Debug.LogWarning($"[GreywickBuilder] no float field '{field}'.");
+            else Debug.LogWarning($"[NineMileCreekBuilder] no float field '{field}'.");
         }
 
         static void SetInt(SerializedObject so, string field, int value)
         {
             var p = so.FindProperty(field);
             if (p != null) p.intValue = value;
-            else Debug.LogWarning($"[GreywickBuilder] no int field '{field}'.");
+            else Debug.LogWarning($"[NineMileCreekBuilder] no int field '{field}'.");
         }
 
         static void SetV2(SerializedObject so, string field, Vector2 value)
         {
             var p = so.FindProperty(field);
             if (p != null) p.vector2Value = value;
-            else Debug.LogWarning($"[GreywickBuilder] no Vector2 field '{field}'.");
+            else Debug.LogWarning($"[NineMileCreekBuilder] no Vector2 field '{field}'.");
         }
 
         static void SetObj(SerializedObject so, string field, Object value)
         {
             var p = so.FindProperty(field);
             if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
-            else Debug.LogWarning($"[GreywickBuilder] no object-reference field '{field}'.");
+            else Debug.LogWarning($"[NineMileCreekBuilder] no object-reference field '{field}'.");
         }
 
         // ---- helpers (self-contained; the cove builder's are private) -----------------------
@@ -722,7 +724,7 @@ namespace HiddenHarbours.App.Editor
         {
             var so = new SerializedObject(c);
             var p = so.FindProperty(field);
-            if (p == null) { Debug.LogWarning($"[GreywickBuilder] no array field '{field}'."); return; }
+            if (p == null) { Debug.LogWarning($"[NineMileCreekBuilder] no array field '{field}'."); return; }
             p.arraySize = values.Length;
             for (int i = 0; i < values.Length; i++)
                 p.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
@@ -771,7 +773,7 @@ namespace HiddenHarbours.App.Editor
 
         // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the WEST land
         // waterline (x=-4) and dipping EAST around the public wharf deck so the wharf reads as a solid
-        // peninsula pointing into the deep harbour and the boat can't sail through Greywick. Land is WEST
+        // peninsula pointing into the deep harbour and the boat can't sail through Nine Mile Creek. Land is WEST
         // (x < -4); the deep harbour is open to the EAST. The boat arrives from the east and stops against
         // the wharf HEAD (the deck's east tip, x=4 — the dock zone). Public so an EditMode test can assert
         // its shape without a scene.
@@ -800,7 +802,7 @@ namespace HiddenHarbours.App.Editor
             sr.sortingOrder = 2;
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(5f, 5f, 1f); }
-            // Solid building so the boat / on-foot player can't pass through Greywick's geometry. Non-trigger
+            // Solid building so the boat / on-foot player can't pass through Nine Mile Creek's geometry. Non-trigger
             // BoxCollider2D sized to the rendered footprint (sprite bounds in local space, or the fallback
             // square's metric size). Buildings sit on the quay land beyond the shoreline; this makes each
             // read solid in its own right (owner playtest: "boat sails through the buildings").
@@ -849,12 +851,12 @@ namespace HiddenHarbours.App.Editor
             public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
         }
 
-        // COLD NORTH ATLANTIC scatter for Greywick — WEST quay land ONLY (land is x < -4; the deep harbour
+        // COLD NORTH ATLANTIC scatter for Nine Mile Creek — WEST quay land ONLY (land is x < -4; the deep harbour
         // is open to the EAST). Hugs the far-west back edge behind the x=-12 house row and tucks into the
         // gaps north/south of the building rows. NONE in the open harbour water, on the public wharf deck
         // (x∈[-4,4], y∈[-3,3]) or its zones, on the paths, or over a building (rows at x=-8 and x=-12, each
         // ≈5 m). Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22), birch (Tree25).
-        static readonly TreeSpec[] GreywickTrees =
+        static readonly TreeSpec[] NineMileCreekTrees =
         {
             // Far-west back edge of the quay, behind the x=-12 house row (north → south), clear of houses.
             new TreeSpec(-14.4f, 12.0f, "Tree02"),  // pine, NW
@@ -886,7 +888,7 @@ namespace HiddenHarbours.App.Editor
             var trees = new GameObject("Trees");
             trees.transform.SetParent(decor.transform, false);
             // The canopy wind-sway material (HiddenHarbours/TreeWind), shared with the drag-in tree prefabs, so
-            // Greywick's baked trees sway off the SAME wind as the grass + water. Optional — null leaves them
+            // Nine Mile Creek's baked trees sway off the SAME wind as the grass + water. Optional — null leaves them
             // static (re-run after importing the TreeWind shader + Tree.mat).
             var treeMaterial = AssetDatabase.LoadAssetAtPath<Material>(TreeMatPath);
             int placed = 0;
@@ -903,7 +905,7 @@ namespace HiddenHarbours.App.Editor
                 else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }
                 placed++;
             }
-            Debug.Log($"[GreywickBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
+            Debug.Log($"[NineMileCreekBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
         }
 
         static void EnsureFolders()

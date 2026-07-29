@@ -6,7 +6,7 @@ namespace HiddenHarbours.Economy
     /// <summary>
     /// SELF-INSTALLING (mirrors the AudioDirector / DayNightController / BoatWakeEmitter pattern):
     /// makes sure every vendor stall in every loaded scene has a buy-screen driver, with NO builder
-    /// edit and NO builder re-run. The Greywick builder deliberately left the St Peters opening
+    /// edit and NO builder re-run. The Nine Mile Creek builder deliberately left the St Peters opening
     /// vendors (harbourmaster's cod licence, the general store's rod, the dory yard's damaged dory)
     /// without an input driver — "the named seam ui-ux attaches its driver to". This is that
     /// attachment: after each scene load it scans the scene's <see cref="Shipwright"/>/<see

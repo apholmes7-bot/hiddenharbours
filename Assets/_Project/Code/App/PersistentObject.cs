@@ -6,7 +6,7 @@ namespace HiddenHarbours.App
     /// Marks a root GameObject as part of the PERSISTENT CORE (the VS-01 persistent-core / additive-region
     /// model): it survives region scene loads via <see cref="Object.DontDestroyOnLoad"/>. The greybox
     /// builder tags the GameRoot (clock/env/wallet), the player, the boat (+ hold), the camera, the
-    /// control switcher, the region loader and the travel coordinator with this, so a Cove↔Greywick hop
+    /// control switcher, the region loader and the travel coordinator with this, so a Cove↔Nine Mile Creek hop
     /// keeps the player, boat, hold and wallet (and their cross-references, which are by instance and so
     /// outlive the scene the objects were authored in).
     ///

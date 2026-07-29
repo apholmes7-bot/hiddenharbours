@@ -10,7 +10,7 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// Days of the week. The canon locks a 7-day week with one Market Day at Greywick;
+    /// Days of the week. The canon locks a 7-day week with one Market Day at Nine Mile Creek;
     /// which day is Market Day is tunable in <see cref="GameConfig"/>.
     /// </summary>
     public enum Weekday

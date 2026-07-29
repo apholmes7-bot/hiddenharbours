@@ -20,7 +20,7 @@ namespace HiddenHarbours.App.Editor
     /// authored <c>RegionDef</c> tide profile (mean ± amplitude — the spring envelope's extremes of
     /// <c>TideModel</c>, whose carrier and spring/neap envelope both peak at 1), never hard-coded
     /// (CLAUDE.md rule 6). <see cref="WidestSwing"/> exists because nothing re-points the live tide
-    /// per region yet — the START scene's profile is what actually runs everywhere (the Greywick
+    /// per region yet — the START scene's profile is what actually runs everywhere (the Nine Mile Creek
     /// builder's documented caveat), so a region must be checked against the widest envelope that can
     /// reach it.</para>
     ///
@@ -64,7 +64,7 @@ namespace HiddenHarbours.App.Editor
         /// The widest envelope of two swings — lowest low, highest high. Used to fold the START
         /// region's live tide into a region's own authored profile, because the environment service
         /// runs the start scene's profile everywhere until per-region re-pointing lands (the
-        /// GreywickBuilder caveat): a Greywick authored at ±0.8 m still LIVES under St Peters' ±3.5 m,
+        /// NineMileCreekBuilder caveat): a Nine Mile Creek authored at ±0.8 m still LIVES under St Peters' ±3.5 m,
         /// so its land must be checked against the wider swing.
         /// </summary>
         public static TideSwing WidestSwing(TideSwing a, TideSwing b)

@@ -87,16 +87,16 @@ namespace HiddenHarbours.World
         };
 
         // ---- onboarding nudges — the St Peters BUY-AND-REPAIR opening (one gentle line per step) ----
-        // The new arc (canon §5.8): dig CLAMS at low water → walk the bared sandbar to Greywick → buy a
+        // The new arc (canon §5.8): dig CLAMS at low water → walk the bared sandbar to Nine Mile Creek → buy a
         // cod LICENCE + a ROD, sell clams, save → BUY the damaged dory + PAY to REPAIR her → sail home to
         // Coddle Cove. The dory is EARNED, never inherited. Each line points at the next beat; the director
         // (OnboardingDirector) picks which one to show from the opening flags + Core signals.
         public const string OnboardTalkGinny = "Find Aunt Ginny on the island and press E — she'll set you straight.";
         public const string OnboardDigClams  = "Wait for the tide to drop, then dig clams on the bared flats (E by a hole).";
-        public const string OnboardCrossBar  = "Walk the bared sandbar east to Greywick before the tide floods it back.";
-        public const string OnboardBuyLicence= "At Greywick: sell your clams, then buy a COD LICENCE to fish.";
+        public const string OnboardCrossBar  = "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.";
+        public const string OnboardBuyLicence= "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.";
         public const string OnboardBuyRod    = "Buy a fishing ROD from the shop — then you can hand-line cod.";
-        public const string OnboardBuyDory   = "Save up, then BUY the damaged dory at the Greywick shipwright.";
+        public const string OnboardBuyDory   = "Save up, then BUY the damaged dory at the Nine Mile Creek shipwright.";
         public const string OnboardRepairDory= "She's yours but broken — pay the shipwright to REPAIR her.";
         public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
         public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";

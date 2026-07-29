@@ -31,7 +31,7 @@ namespace HiddenHarbours.Art
     /// depth the gameplay reads (they cannot disagree — the P1 integrity rule). This stays the source when it is
     /// present.</description></item>
     /// <item><description><b>Distance to land</b> — the FALLBACK when there is NO tidal terrain (the hand-painted
-    /// cove, Greywick): derive a smooth shallow→deep gradient purely from the scene geometry. Build a land mask
+    /// cove, Nine Mile Creek): derive a smooth shallow→deep gradient purely from the scene geometry. Build a land mask
     /// from the best available source (painted land tilemaps, land/shore colliders, the closed shore fence), run a
     /// distance transform, and map distance-to-nearest-land → depth via a tunable curve (shallow at the shoreline,
     /// deepening offshore). This gives any scene a gradual drop-off + foam at the coast WITHOUT an authored
@@ -126,7 +126,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private bool _bakeHeightMap = true;
         [Tooltip("Which seabed source to bake. Auto: use ITidalTerrain.ElevationAt when a region wires it (the " +
                  "visible depth then equals the gameplay depth); otherwise estimate depth from distance-to-land so " +
-                 "even a scene with NO tidal terrain (the painted cove, Greywick) shallows up at the coast.")]
+                 "even a scene with NO tidal terrain (the painted cove, Nine Mile Creek) shallows up at the coast.")]
         [SerializeField] private DepthSource _depthSource = DepthSource.Auto;
         [Tooltip("World-space rectangle the height map covers (centre + size). Should span the visible water.")]
         [SerializeField] private Vector2 _heightWorldCenter = new Vector2(0f, 0f);
@@ -232,7 +232,7 @@ namespace HiddenHarbours.Art
                  "Sampled by overlap at each cell. Leave empty to rely on tilemaps + the shore fence.")]
         [SerializeField] private LayerMask _landColliderMask = 0;
         [Tooltip("The closed shore-fence EdgeCollider2D dividing land from water (the cove's 'ShoreEdge', " +
-                 "Greywick's 'Shoreline'). If its polyline is CLOSED, the interior is filled as land. Auto-found " +
+                 "Nine Mile Creek's 'Shoreline'). If its polyline is CLOSED, the interior is filled as land. Auto-found " +
                  "by name when left empty; assign to override. An OPEN fence is skipped (use tilemaps/colliders).")]
         [SerializeField] private EdgeCollider2D _shoreFence;
         [Tooltip("Names searched (in order) to auto-find the shore fence when none is assigned.")]
@@ -305,8 +305,14 @@ namespace HiddenHarbours.Art
             "_SpecAmount", "_SpecSharpness", "_SpecSwellBias",
             // caustics (+ the Arc C day gate, so a FoggySmother preset can kill the sun-dapple)
             "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength", "_CausticDayGate",
-            // shallows see-through (Arc C — how much the seabed hints through the water per mood)
-            "_ShallowTranslucency",
+            // seabed absorption (ADR 0027 #7) — ONE turbidity scalar in 1/m, so the weather blend
+            // makes a MURKY sea a DERIVED state (Water_StirredBrown is no longer a hand-picked
+            // colour: it is high sigma over the same painted ramp). Supersedes the retired
+            // "_ShallowTranslucency", which could only fade a SCALAR alpha and never carried
+            // per-channel transmission. The per-channel character lives in the fixed
+            // _AbsorptionRatio VECTOR (authored art, not eased), which is why the mood-eased half
+            // is a single float and fits here (rule 6; twin: WaterAbsorption.Sigma).
+            "_Turbidity",
             // aesthetic pass (owner mandate 2026-07-08): deep-blue enrichment, foam clumping, face shading —
             // all look/mood props (a fog preset kills the navy pull + the lit faces; a storm mood can gather
             // the foam harder), never physics.
@@ -726,6 +732,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// The world-space rectangle the height map covers — the SAME rect the shader receives as
+        /// <c>_HeightWorldMin</c> / <c>_HeightWorldSize</c>. Exposed read-only so the ADR 0027 #7
+        /// seabed bake can be authored over exactly that frame (a bottom baked over a different
+        /// rect would slide against the coast whose depth decides how much of it shows).
+        /// </summary>
+        public Rect HeightWorldRect =>
+            new Rect(_heightWorldCenter - _heightWorldSize * 0.5f, _heightWorldSize);
+
+        /// <summary>
         /// (ADR 0014) Point this surface at a hand-painted height map: set the painted texture + its world
         /// rect (centre/size) + elevation range, select the painted depth source, and (in edit mode) re-feed
         /// the shader immediately so the Scene view updates. Takes Unity-generic args (a
@@ -914,7 +929,7 @@ namespace HiddenHarbours.Art
         /// Rasterize the scene's land geometry into a boolean mask over the bake rect. A cell is land if ANY
         /// source marks it: a painted land tilemap holds a tile there, a land-layer collider overlaps it, or it
         /// lies inside the closed shore fence. Source-agnostic so it works in the painted cove (tilemap) and the
-        /// collider-fenced regions (Greywick) without per-scene authoring.
+        /// collider-fenced regions (Nine Mile Creek) without per-scene authoring.
         /// </summary>
         private bool[] BuildLandMask(int res)
         {
@@ -986,7 +1001,7 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// The shore fence's points in WORLD space IF the polyline is closed (first == last vertex); otherwise
-        /// null. An open fence (Greywick's west waterline) cannot be filled by point-in-polygon, so we skip it and
+        /// null. An open fence (Nine Mile Creek's west waterline) cannot be filled by point-in-polygon, so we skip it and
         /// rely on tilemaps/colliders for that scene.
         /// </summary>
         private static Vector2[] ClosedPolygonWorld(EdgeCollider2D edge)

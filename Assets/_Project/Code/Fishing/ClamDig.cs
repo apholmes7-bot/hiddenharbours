@@ -7,7 +7,7 @@ namespace HiddenHarbours.Fishing
     /// The on-foot <b>clam dig</b> (St Peters opening, P4 "every job by hand first") — the hand-gather
     /// catch method, NOT the rod mini-game. At a clam-hole spot, when the flats are bared by the falling
     /// tide, you Interact to dig: one press adds a single clam to the bucket. It's the opening's first
-    /// by-hand income, the thing you do while you wait out the tide to walk the sandbar to Greywick.
+    /// by-hand income, the thing you do while you wait out the tide to walk the sandbar to Nine Mile Creek.
     ///
     /// <para><b>The gates (all cozy).</b> A dig only lands a clam when: (0) you are <em>at this hole</em> —
     /// the on-foot player is within a small reach (<see cref="ReachRadius"/>, ~1.25 m) of THIS spot, the
@@ -30,7 +30,7 @@ namespace HiddenHarbours.Fishing
     /// <para><b>Reuse, don't reinvent.</b> The clam is the existing <c>fish.soft_shell_clam</c>
     /// <see cref="FishSpeciesDef"/> (a Shellfish — the hand-gathered category); the weight roll
     /// (<see cref="CatchResolver.RollWeight"/>) and the <see cref="CatchItem"/> + <see cref="FishCaught"/>
-    /// land path are the same ones the rod uses, so the Greywick stall sells a dug clam exactly like a
+    /// land path are the same ones the rod uses, so the Nine Mile Creek stall sells a dug clam exactly like a
     /// landed fish. Because a dig is a single press (not the tension fight), it doesn't run the
     /// <c>FishFight</c> FSM — it's the lightest hand-gather: bend down, lift one out.</para>
     ///
@@ -151,7 +151,7 @@ namespace HiddenHarbours.Fishing
             if (_bucket == null) { Debug.Log("[ClamDig] Nowhere to put a clam — you need a bucket."); return false; }
             if (_bucket.UsedUnits >= _bucket.CapacityUnits)
             {
-                Debug.Log("[ClamDig] The bucket's full — head to Greywick and sell.");
+                Debug.Log("[ClamDig] The bucket's full — head to Nine Mile Creek and sell.");
                 return false;
             }
 

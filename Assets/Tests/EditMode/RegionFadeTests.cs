@@ -48,13 +48,13 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ShouldCover_TrueOnlyForARealNewArrival()
         {
-            Assert.IsTrue(RegionFade.ShouldCover("Greybox", "Greywick"), "Cove → Greywick fades");
-            Assert.IsTrue(RegionFade.ShouldCover("Greywick", "Greybox"), "Greywick → Cove fades (both directions)");
-            Assert.IsFalse(RegionFade.ShouldCover("Greywick", "Greywick"), "same scene is a no-op — no fade");
+            Assert.IsTrue(RegionFade.ShouldCover("Greybox", "NineMileCreek"), "Cove → Nine Mile Creek fades");
+            Assert.IsTrue(RegionFade.ShouldCover("NineMileCreek", "Greybox"), "Nine Mile Creek → Cove fades (both directions)");
+            Assert.IsFalse(RegionFade.ShouldCover("NineMileCreek", "NineMileCreek"), "same scene is a no-op — no fade");
             Assert.IsFalse(RegionFade.ShouldCover("Greybox", ""), "an unnamed/boot target does not fade");
             Assert.IsFalse(RegionFade.ShouldCover("Greybox", null), "a null target does not fade");
-            Assert.IsTrue(RegionFade.ShouldCover("", "Greywick"), "first activation into a named region fades");
-            Assert.IsTrue(RegionFade.ShouldCover(null, "Greywick"), "null previous still fades into a named region");
+            Assert.IsTrue(RegionFade.ShouldCover("", "NineMileCreek"), "first activation into a named region fades");
+            Assert.IsTrue(RegionFade.ShouldCover(null, "NineMileCreek"), "null previous still fades into a named region");
         }
 
         // ---- ArrivalTitle: a readable card from a scene name ---------------------------------
@@ -63,10 +63,15 @@ namespace HiddenHarbours.Tests.EditMode
         public void ArrivalTitle_PrettifiesTheSceneName()
         {
             Assert.AreEqual("Coddle Cove", RegionFade.ArrivalTitle("CoddleCove"), "splits camelCase");
-            Assert.AreEqual("Port Greywick", RegionFade.ArrivalTitle("Port_Greywick"), "splits underscores");
+            Assert.AreEqual("Nine Mile Creek", RegionFade.ArrivalTitle("Nine_Mile_Creek"), "splits underscores");
             Assert.AreEqual("Region 1", RegionFade.ArrivalTitle("Region-1"), "splits hyphens and digits");
-            Assert.AreEqual("Greywick", RegionFade.ArrivalTitle("Greywick"), "a single word is unchanged");
-            Assert.AreEqual("Greybox", RegionFade.ArrivalTitle("Greybox"), "the greybox cove scene reads as-is");
+            // ⚠ The "single word" case needs a genuinely single word. It used to be "Greywick"; after
+            // the rename the obvious substitution is "NineMileCreek", which is camelCase and therefore
+            // gets SPLIT — the assertion would have been testing the opposite of what it says.
+            Assert.AreEqual("Greybox", RegionFade.ArrivalTitle("Greybox"),
+                            "a single word is unchanged — the greybox cove scene reads as-is");
+            Assert.AreEqual("Nine Mile Creek", RegionFade.ArrivalTitle("NineMileCreek"),
+                            "…and the renamed region's scene name IS camelCase, so it splits");
             Assert.AreEqual("", RegionFade.ArrivalTitle(""), "empty in, empty out");
             Assert.AreEqual("", RegionFade.ArrivalTitle(null), "null in, empty out (never throws)");
         }

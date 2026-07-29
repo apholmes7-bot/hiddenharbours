@@ -66,7 +66,7 @@ Editor-only tools live in `Assets/_Project/Code/<Module>/Editor/` with their own
 - **`Bootstrap.unity`** is the only scene in the build list at index 0. It spins up the
   persistent services (Core/Environment/Economy/Save/Input/Audio) and then additively loads the
   starting region. Persistent systems live here as a `[DontDestroyOnLoad]` root.
-- **One scene per region** (`CoddleCove.unity`, `PortGreywick.unity`, `TheSunkers.unity`, …),
+- **One scene per region** (`CoddleCove.unity`, `NineMileCreek.unity`, `TheSunkers.unity`, …),
   loaded **additively**. Two agents working on two different regions touch two different scene
   files → **no merge conflict**. This is the single most important reason we split scenes.
 - **Prefab-first authoring.** Build content as prefabs and drop prefab *instances* in scenes.

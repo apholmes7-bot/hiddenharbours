@@ -4,7 +4,7 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.App
 {
     /// <summary>
-    /// A scene-local stand-in for the persistent player's wallet. A region scene (e.g. Port Greywick)
+    /// A scene-local stand-in for the persistent player's wallet. A region scene (e.g. Nine Mile Creek)
     /// loads additively and can't serialize-reference the persistent wallet — it lives in the persistent
     /// core, a different scene — so that region's Shipwright / WharfSellPoint resolve their
     /// <see cref="IWallet"/> from THIS proxy (they do <c>GetComponent&lt;IWallet&gt;()</c> on a provider

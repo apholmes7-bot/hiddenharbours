@@ -124,7 +124,10 @@ That is the concrete form of the owner's "as long as the end look gets pixelated
 
 ### Tier A — `col.rgb` / `col.a` only (no sim risk, no new plumbing)
 
-**(1) #7 — Depth absorption applies to the TRANSMITTED SEABED, never to the water's own colour.**
+**(1) #7 — Depth absorption applies to the TRANSMITTED SEABED, never to the water's own colour.** — **SHIPPED
+(P4, 2026-07-29).** Built as decided; `design/water-rendering.md` §17.7 is the live spec (§17.1/§17.3 retired in
+place). σ is factored as one mood-eased `_Turbidity` (1/m) × a fixed `_AbsorptionRatio`, which is what let the
+"one turbidity parameter" ruling survive contact with `MoodFloatNames` being a **float** list.
 The painted `_DepthRamp` stays the colour authority for the water body (finding 1). Absorption is applied to the
 **bottom seen through the column**, which the LUT does not and cannot cover (finding 3). Two parts:
 
@@ -223,7 +226,7 @@ amendment. Treat the boat-feel change as a **first-class outcome to be verified 
 
 ### Tier C — new render plumbing
 
-**(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.**
+**(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.** — **SHIPPED (P5, 2026-07-29).** Built as decided; `design/water-rendering.md` §26 is the live spec. Two things the decision text could not have known, both recorded there: the mirror axis had to be **published per renderer** (the SpriteRenderer identity-matrix trap — every sprite, not an edge case), and the pre/post-grade split for night-lit sources needs **no flag channel**, because premultiplied output makes "rgb exceeds coverage" mean exactly "compensated light content".
 
 ADR 0010's eighth addendum **rejected** reflections. That rejection is revisited here on a **new fact**, which is
 the only thing that justifies reopening an ADR. It read: a reflection pass "would need a second camera + render
@@ -271,6 +274,17 @@ mask that **adds** to the existing foam rather than replacing it.
 > ⚠️ **This intersects the dynamic-wake work already in flight.** Deciding the buffer architecture *after* those PRs
 > land is materially more expensive than deciding it now. This item is sequenced early for that reason alone, not
 > because its visual payoff outranks the others.
+
+> ✅ **RULED (owner, 2026-07-29): DEFERRED to the fleet era.** The dynamic-wake PRs this item was racing landed
+> first, and they deliver the architecture goal — the shipped `BoatWakeEmitter` trail is **deposited in the world**
+> where the hull passed, **advects with the current**, and **decays in place** (pooled sprites, not an RT). What a
+> buffer still adds — wakes that **merge** across boats, unbounded persistence at fixed cost, shader-level blending
+> with the field foam — are multi-boat payoffs, and M1 sails one boat. The early-decision rationale above is
+> therefore moot: the retrofit this item was racing has already happened, benignly. **Re-opens when multiple hulls
+> sail at once** (M2/M3 fleet/automation); the emitter's world-space deposit events are the intended injection seam,
+> so nothing rots while it waits. Options note: `dev/NOTE-2026-07-29-adr0027-item6-wake-buffer.md` (option A taken;
+> option B — the buffer as the trail's persistence medium, sprites keeping only the young churn band — is the
+> recorded shape for the fleet-era build).
 
 ---
 
@@ -333,12 +347,12 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 |---|---|---|---|
 | **P0** | **Tuning pass — no code.** ① **First: view the sea in a STORM** (finding 4c) — the swell already ramps to its design default there. ② Then, if still wanted: raise `_WindChop` / `_Octave3Weight` / `_FoamEvolveSpeed` in **`Water.mat`**, and `_FbmStrength` / `_OceanSwell*` in the **eight mood materials**. ⛔ `_FbmScale` is ruled deliberate — leave it | — | **Free.** Separates "missing" from "weather-scaled" from "deliberately low" **before** committing to the riskiest item. ⚠️ This **revises the owner’s tuning**, so it is his call, not a fix. |
 | **P1** | #2 caustics, #3 convergence foam, #4 band scaling, **#9 dispersion** (all visual) | A | Cheapest, no sim risk, no plumbing. #9 pairs with #4 — wavelength and speed must land together. |
-| **P2** | **#5 spectrum + grouping** ⬆ (was P6); #4/#9 promoted into `_WaveFieldParams` | B | **Pulled up.** JONSWAP weighting = variance in sizes; directional spreading = a continuous spread, not 3 discrete axes; **grouping = crests that grow and die.** |
+| **P2** ✅ | **#5 spectrum + grouping** ⬆ (was P6); ~~#4/#9 promoted into `_WaveFieldParams`~~ | B | **Pulled up, and SHIPPED** — PR A widened the field 4 → 8 trains (the ADR 0018 amendment); PR B added the JONSWAP weighting, the `cos^2s` fan and grouping behind `SpectrumBlend` (**default 0** — the passthrough discipline; the owner dials it in). ⚠️ **The #4/#9 "promotion" turned out to be an AUDIT RESULT, not code**: the field's trains already disperse (`WaveTrain.PhaseSpeed` *is* the relation) and already grow λ with wind, so applying the visual-octave laws there would double-apply them **and** move drawn geometry the interior-mask/clamp stack guards. Recorded in the ADR 0018 amendment so it is not re-litigated. **The owner's feel verdict is pending and gates P3.** |
 | **P3** | **#10 ripples** | A | After #5 deliberately — the ripple band should ride the *spectrum's* waves, not the octaves it replaces. |
-| **P4** | #7 absorption + `_SeabedTex` bake | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. |
-| **P5** | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) | C | The owner's second explicit ask; depends on nothing above. |
+| **P4** ✅ | #7 absorption + `_SeabedTex` bake — **SHIPPED 2026-07-29** | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. Landed out of phase order (P2/P3 still open) precisely because it depends on nothing above — the independence the table already claimed. |
+| **P5** ✅ | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) — **SHIPPED 2026-07-29** | C | The owner's second explicit ask; depends on nothing above — which is why it landed with P2/P3 still open. |
 | **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
-| **⏱ Parallel** | #6 advected foam buffer | C | **Not phase-ordered — externally clocked.** Must be decided against the **in-flight wake PRs** whatever else is running; retrofitting after they land is materially more expensive. |
+| **⏱ Parallel** | #6 advected foam buffer | C | ✅ **RULED 2026-07-29: DEFERRED to the fleet era** (see the item's decision block). The wake PRs it was racing landed and deliver the trail architecture; the buffer re-opens when multiple hulls sail at once. |
 
 **The cost of this re-order, stated plainly.** Pulling #5 to P2 brings the Tier B risk forward: it changes what the
 hulls ride, so the ADR 0018 amendment, the C# twins and the **owner feel verdict** all land *before* absorption and
@@ -403,19 +417,44 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
 
 ## Open questions (for the owning lanes, before each phase starts)
 
-- **`_SeabedTex` bake budget** — resolution, texture memory, per-region baking. Mirror `_HeightTex`'s budget and
-  measure against rule 7 before P2 starts.
-- **Which objects get `HHReflect`?** Boats, wharf structures, trees and characters near the water. Needs a
-  distance-or-layer rule so the list stays bounded — an unbounded reflective set is the perf failure mode here.
-- **Reflection fidelity at PPU=32** — is a flat mirrored silhouette enough, or must reflections honour the interior
-  mask and hull self-occlusion? Cheapest correct answer wins; probe before building.
-- **σ authoring** — per region by hand, or derived from a turbidity Def? Either way σ joins
-  `WaterSurface.MoodFloatNames` so ADR 0017 eases it per weather, making `Water_StirredBrown` a **derived** state
-  rather than a hand-picked colour.
+- ~~**`_SeabedTex` bake budget**~~ **ANSWERED at P4** (`design/water-rendering.md` §17.7, measured): **512²
+  RGBA32, point-filtered, no mips, uncompressed = 1.0 MB per region**, against `_HeightTex`'s 192² R8 = 36 KB.
+  Over St Peters' 160 × 120 m rect that is 0.31 × 0.23 m per texel (≈ 10 × 7.5 screen px at PPU 32) — posterized
+  further downstream by the world-grid pixelize and `_AbsorptionBands`. 256 → 0.26 MB, 1024 → 4.2 MB; the
+  resolution is a field on the bake tool. Per region: one PNG next to the painted height map, the `_HeightTex`
+  convention.
+- ~~**Which objects get `HHReflect`?**~~ **ANSWERED at P5: whichever ones the owner tags, bounded three ways.**
+  (a) **Layer** — the renderer must carry `ReflectionRegistry.RenderingLayer`, which only the
+  `ReflectiveObject` component sets. ⚠️ The shader TAG alone is not enough: the tree shader carries the
+  `HHReflect` pass, so tag-only filtering would sweep every tree in the scene into the list (the trap ADR
+  0023 hit with the flat Sea sprite). (b) **Distance** — the reflector's ground ELEVATION must be within its
+  own `maxHeightAboveWater` of the water level, so a clifftop tree does not reflect in the harbour below it.
+  (c) **Frustum** — Unity's culling drops off-screen reflectors for free. **Worst case 64 renderers**
+  (`MaxReflectors`), one filtered list, one `ARGBHalf` target; over the cap it logs once and still draws,
+  because a silent truncation reads as "everything is covered" when it is not.
+- ~~**Reflection fidelity at PPU=32**~~ **PROBED at P5, and the CHEAP answer wins: a flat mirrored silhouette is
+  enough.** `ObjectReflectionProbeTests` renders it end-to-end on the real water material through the real
+  feature pass at PPU 32: 256 source pixels above the waterline, **255 reflected below**, tapering away from
+  the waterline (a mirror, not a translated copy) and not bleeding into open water. **No interior mask and no
+  self-occlusion were built, and none is needed at this pixel scale.** ⚠️ CI cannot adjudicate it (no graphics
+  device — a render there crashes the editor), so the fixture gates on a device and skips loudly.
+- ~~**σ authoring**~~ **ANSWERED at P4: by mood, not by region, and not by Def.** σ is factored as **one**
+  mood-eased turbidity scalar (`_Turbidity`, 1/m — in `WaterSurface.MoodFloatNames`) × a fixed per-channel ratio
+  (`_AbsorptionRatio`, authored art). So ADR 0017 eases it per weather from the eight preset materials and
+  `Water_StirredBrown` **is** a derived state: high σ over the same painted ramp. A turbidity Def stays available
+  later (a river mouth wanting its own σ) but nothing needs it yet — one number per mood covers the ask, and it
+  is the cheapest thing that could work. Shipped spread: Tropical 0.12 → StirredBrown 3.0; `Water.mat` stays 0.
 - **Does `_DepthBands` get re-enabled?** It is `0` today (finding 1). Every item here carries its own quantization
-  so the answer does not block this plan — but it is the owner's call and worth making deliberately.
-- **`_ShallowTranslucency: 0`** — the Arc C see-through has been dark since it shipped. P2 supersedes it; confirm
-  that is the intent rather than reviving it first.
+  so the answer does not block this plan — but it is the owner's call and worth making deliberately. ⚠️ **P4
+  makes the contrast visible for the first time:** with `_AbsorptionBands` ON by default the *bottom* is
+  posterized while the *water body* over it is still a smooth ramp, so wherever the seabed reads strongly you get
+  banded bottom against smooth sea. Whether that reads as deliberate or as a mismatch is worth looking at once
+  the owner bakes a seabed. It did **not** block P4.
+- ~~**`_ShallowTranslucency: 0`**~~ **RETIRED at P4, confirmed not revived.** It was 0 in every material from the
+  day it shipped, and it could only ever fade a **scalar** alpha over an **ungraded** sprite the shader never
+  saw — the two defects §17.7 exists to fix. `_ShallowTranslucency` / `_ShallowSeeThroughDepth` /
+  `_ShallowMinAlpha` are gone from the shader, from `Water.mat`, from `Water_FoggySmother.mat` and from
+  `MoodFloatNames` (nothing else read them; `_Turbidity` takes its place in the eased set).
 - **Boat feel under P2 (was P6).** The spectrum changes what hulls ride. The owner owes a feel verdict, and it
   should be taken against the same hull set as the ADR 0023 verdict so the comparison is honest. Now arrives
   earlier in the queue — see "the cost of this re-order".

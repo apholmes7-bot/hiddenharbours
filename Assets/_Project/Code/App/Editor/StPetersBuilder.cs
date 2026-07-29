@@ -17,13 +17,13 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>
     /// One-click <b>St Peters Island</b> — the owner-ratified OPENING region as GREYBOX (no final art),
-    /// built by its own builder so the cove (GreyboxBuilder) and Greywick (GreywickBuilder) scenes are
+    /// built by its own builder so the cove (GreyboxBuilder) and Nine Mile Creek (NineMileCreekBuilder) scenes are
     /// untouched (scene per region, CLAUDE.md §3). Menu: Hidden Harbours ▸ Build St Peters Scene.
     /// Re-runnable (idempotent on the assets).
     ///
     /// <para><b>The opening (this builder authors the PLACES; gameplay-systems builds the ACTIONS).</b>
     /// You start on St Peters with a shovel + bucket → at LOW tide the sandbar/seabed bares → dig clams on
-    /// the exposed flats → walk the emerged sandbar PATH to Greywick (first trip, on foot) → at Greywick
+    /// the exposed flats → walk the emerged sandbar PATH to Nine Mile Creek (first trip, on foot) → at Nine Mile Creek
     /// sell clams + buy a cod licence + rod, save up, buy the DAMAGED dory + repair → sail home to the cove.
     /// This builder lays the island, the coast, the tide-gated sandbar (a walk path at low / boat channel at
     /// high), the clam-holes, and the START spawn. The dig/walk/gear actions are gameplay-systems'.</para>
@@ -39,7 +39,7 @@ namespace HiddenHarbours.App.Editor
     /// shared PERSISTENT CORE via <see cref="PersistentCoreBuilder"/> — the same rig the cove builds: the
     /// services root (clock/environment/wallet + HUD), the controllable on-foot Player (spawned at
     /// <see cref="StartSpawnPos"/>), the moored hand-rowed Dory, the follow camera at the on-foot framing,
-    /// the control switcher, and the travel rig (loader + coordinator) so the sandbar passage to Greywick
+    /// the control switcher, and the travel rig (loader + coordinator) so the sandbar passage to Nine Mile Creek
     /// works. The extracted helper keeps the core IDENTICAL between the two start scenes (it can't diverge).
     /// This builder then authors only the REGION content around that core (island/coast/sandbar/clam-holes/
     /// passage/anchor). The dig/walk/gear ACTIONS remain gameplay-systems'.</para>
@@ -47,7 +47,7 @@ namespace HiddenHarbours.App.Editor
     /// <para>FLAG lead-architect (follow-ups, not this PR): (1) the cove (GreyboxBuilder) STILL authors its
     /// own copy of the core because it was the old start — now that St Peters is the start and the cove is a
     /// sail-to region, the cove must be DEMOTED to a plain region (drop its core authoring, give it a
-    /// RegionAnchor like Greywick) before the full sail-home chain is tested. (2) The long-term fix is the
+    /// RegionAnchor like Nine Mile Creek) before the full sail-home chain is tested. (2) The long-term fix is the
     /// dedicated Bootstrap scene (VS-01) carrying the one core that additively loads the start region.</para>
     /// </summary>
     public static class StPetersBuilder
@@ -96,6 +96,36 @@ namespace HiddenHarbours.App.Editor
         public const float TideAmplitude = 3.5f;
         public const float TidePhaseHours = 1f;
 
+        // --- REGION EXTENT (authored here, PUBLISHED on the RegionDef, read by everyone else) ---------
+        // ⭐ The region's rectangle used to be the literal `new Vector2(160f, 120f)` written out in four
+        // places in this builder and two more in TerrainPaintTool — so the sea plane, the shader's height
+        // bake, the displaced mesh and the painted seabed each carried their own copy of the same
+        // decision, and resizing the region meant finding all six (scene-sizing §6.2). They now all read
+        // ONE authored number, mirrored onto RegionDef.WorldSizeMeters the same way the tide fields are.
+        //
+        // ⚠ This is deliberately still the CURRENT 160 × 120 m greybox extent. Growing St Peters to its
+        // ruled 760 × 520 m (scene-sizing §5, sized by time-to-cross) is the NEXT change, and it is a
+        // re-bake of the seabed and a camera-bounds job — not something to smuggle into the enabler that
+        // makes it possible.
+        public static readonly Vector2 RegionWorldCenter = new Vector2(0f, 0f);
+        public static readonly Vector2 RegionWorldSize   = new Vector2(160f, 120f);
+
+        /// <summary>
+        /// Painted-seabed and shader-height-bake resolution, in TEXELS PER METRE. The old code baked a
+        /// SQUARE 192² over this non-square rect, which is 1.2 px/m across and 1.6 px/m up — different
+        /// densities on the two axes, chosen by nobody. 2 px/m is the ruled inshore figure
+        /// (scene-sizing §6.1): a 0.5 m texel, so the shader's wet edge follows a fine grid rather than
+        /// reading as rectangular steps on the near-flat bar crest.
+        /// </summary>
+        public const float SeabedPixelsPerMetre = 2f;
+
+        /// <summary>The height-bake grid the water shader uses — derived from the extent, never a
+        /// literal. Square, because <c>WaterSurface</c> bakes a square texture.</summary>
+        public static int WaterHeightBakeResolution =>
+            Mathf.Clamp(
+                Mathf.CeilToInt(Mathf.Max(RegionWorldSize.x, RegionWorldSize.y) * SeabedPixelsPerMetre),
+                64, HiddenHarbours.World.RegionDef.MaxSeabedTexels);
+
         // --- TidalTerrain elevation zones (authored geometry; single source of truth shared with the
         // EditMode test). Island plateau is high (always exposed). The sandbar crest sits JUST BELOW high
         // water (covers at high, bares as the tide falls). The channel bed is between crest and deep floor
@@ -106,9 +136,16 @@ namespace HiddenHarbours.App.Editor
         public const float IslandFalloff          = 10f;
         public const float IslandElevation         = 6f;     // dry at every tide
         public static readonly Vector2 SandbarFrom  = new Vector2(-22f, 0f); // toward the island
-        public static readonly Vector2 SandbarTo    = new Vector2(34f, 0f);  // toward Greywick
+        public static readonly Vector2 SandbarTo    = new Vector2(34f, 0f);  // toward Nine Mile Creek
         public const float SandbarHalfWidth        = 9f;
-        public const float SandbarCrestElevation    = 1.6f;   // < high water (~2.5) → covers at high, bares falling
+        // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
+        // envelope drops the swing to NeapAmplitudeFraction (0.45) × 3.5 = 1.575 m, so a 1.6 m crest sits
+        // ABOVE the highest water of a neap week and the bar simply never floods: the tide gate switches
+        // itself off for part of every lunar month, silently, and the region's defining mechanic goes with
+        // it. At 1.4 the gate exists at every point in the month AND gains a gradient — neap is FORGIVING
+        // (long dry bar, brief flood), spring is TENSE. Ruled 2026-07-23 (#280); see
+        // docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap tests in StPetersTerrainTests.
+        public const float SandbarCrestElevation    = 1.4f;   // < neap high water (1.575) → floods at EVERY tide
         public const float ChannelAlong            = 0.62f;
         public const float ChannelHalfWidth        = 4.5f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls
@@ -127,15 +164,15 @@ namespace HiddenHarbours.App.Editor
 
         // Player START spawn (on the island, by the slip). The walk path runs east along the sandbar.
         public static readonly Vector3 StartSpawnPos = new Vector3(-40f, -2f, 0f);
-        // Where the walk path reaches Greywick — a forgiving band at the Greywick (east) end of the bar.
-        public static readonly Vector3 ToGreywickPassagePos = new Vector3(36f, 0f, 0f);
+        // Where the walk path reaches Nine Mile Creek — a forgiving band at the Nine Mile Creek (east) end of the bar.
+        public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(36f, 0f, 0f);
 
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
         // The uncle's dory is moored in the deep water off the island's SOUTH coast (the island plateau sits
         // above (-40,0) radius ~22, so south of ≈ -20 is open water). Board/disembark at this slip once the
         // dory is yours (the opening's first trip is on foot — this is for the sail home). The arrival point
         // sits within DockZoneRadius of the dock zone so the persistent ControlSwitcher's pure-distance
-        // disembark test registers the moment you're home (the cove/Greywick proven pattern — don't regress).
+        // disembark test registers the moment you're home (the cove/Nine Mile Creek proven pattern — don't regress).
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
         public static readonly Vector3 DoryMooredPos  = new Vector3(-40f, -26f, 0f); // off the island's south coast (deep water)
         public static readonly Vector3 DockZonePos    = new Vector3(-40f, -26f, 0f); // the slip head — dock here
@@ -161,6 +198,12 @@ namespace HiddenHarbours.App.Editor
                 r.Id = "region.st_peters"; r.DisplayName = "St Peters Island"; r.SceneName = SceneName;
                 r.IsDeepHarbour = false; r.HarbourDepthMeters = 2f;
                 r.TideMeanLevel = TideMean; r.TideAmplitude = TideAmplitude; r.TidePhaseHours = TidePhaseHours;
+                // ⭐ The region's rectangle, PUBLISHED as data so the sea plane, the painted seabed, the
+                // paint tool and (later) the camera bounds all read one authored number instead of each
+                // carrying a copy of `new Vector2(160f, 120f)` (scene-sizing §6.2).
+                r.WorldCenter = RegionWorldCenter;
+                r.WorldSizeMeters = RegionWorldSize;
+                r.SeabedPixelsPerMetre = SeabedPixelsPerMetre;
                 r.UnlockFlag = "";   // the opening — always reachable, no gate
                 // The region's spawn table: the flats' hand-dug clam PLUS the trap-caught shellfish now that
                 // the lobster/crab are region-tagged for St Peters (their FishSpeciesDef.RegionIds include
@@ -169,13 +212,13 @@ namespace HiddenHarbours.App.Editor
                 r.SpawnFishIds = new[] { "fish.soft_shell_clam", "fish.lobster", "fish.rock_crab" };
                 r.Description = "The home island where the game begins: a tiny weathered coast cut off from " +
                                 "the mainland except when the big tide bares the sandbar. Dig clams on the " +
-                                "flats at low water, walk the bar to Greywick, earn your way to the dory.";
+                                "flats at low water, walk the bar to Nine Mile Creek, earn your way to the dory.";
             });
-            // Greywick + cove regions referenced for the walk passage / loader (created here if absent;
-            // GreyboxBuilder/GreywickBuilder author the canonical versions under the same stable ids).
-            var greywick = LoadOrCreate<RegionDef>(DataRegions + "/PortGreywick.asset", r =>
+            // Nine Mile Creek + cove regions referenced for the walk passage / loader (created here if absent;
+            // GreyboxBuilder/NineMileCreekBuilder author the canonical versions under the same stable ids).
+            var nineMileCreek = LoadOrCreate<RegionDef>(DataRegions + "/NineMileCreek.asset", r =>
             {
-                r.Id = "region.port_greywick"; r.DisplayName = "Port Greywick"; r.SceneName = "Greywick";
+                r.Id = "region.nine_mile_creek"; r.DisplayName = "Nine Mile Creek"; r.SceneName = "NineMileCreek";
                 r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
                 r.TideMeanLevel = 0f; r.TideAmplitude = 0.8f; r.TidePhaseHours = 2f;
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business gets done.";
@@ -223,13 +266,13 @@ namespace HiddenHarbours.App.Editor
             {
                 wsr.sprite = seaTile;
                 wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = new Vector2(160f, 120f);
+                wsr.size = RegionWorldSize;
                 water.transform.localScale = Vector3.one;
             }
             else
             {
                 wsr.sprite = waterSprite; wsr.color = new Color(0.15f, 0.27f, 0.34f);
-                water.transform.localScale = new Vector3(160f, 120f, 1f);
+                water.transform.localScale = new Vector3(RegionWorldSize.x, RegionWorldSize.y, 1f);
             }
 
             // --- LAYERED SIM-DRIVEN WATER SHADER (ADR 0010 / design/water-rendering.md) ------------------
@@ -253,7 +296,8 @@ namespace HiddenHarbours.App.Editor
                 // FINE grid — the wet edge stops reading as ~1.5 m rectangular steps on the near-flat bar
                 // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
                 // available if the crest still facets, but 192 is the ADR's recommended start.
-                ConfigureWaterSurface(surface, new Vector2(0f, 0f), new Vector2(160f, 120f), 192);
+                ConfigureWaterSurface(surface, RegionWorldCenter, RegionWorldSize,
+                                      WaterHeightBakeResolution);
                 // (ADR 0023 arc step 3) The owner's GameConfig: WaterSurface pushes its DisplacedWater
                 // salience knobs (cap salience / envelope threshold / band strength) each tick — the
                 // one asset where the owner tunes how loudly the big wave is marked, no code (rule 6).
@@ -288,7 +332,7 @@ namespace HiddenHarbours.App.Editor
                 // block is the live source, re-read every tick; grid density + the per-coast shore
                 // gradient stay on the component (scene data, not world policy).
                 var displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
-                displaced.Configure(new Vector2(0f, 0f), new Vector2(160f, 120f),
+                displaced.Configure(RegionWorldCenter, RegionWorldSize,
                     AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat), config);
             }
             else
@@ -298,9 +342,9 @@ namespace HiddenHarbours.App.Editor
             }
 
             // Reload data assets from disk before wiring refs (an intervening import can invalidate the
-            // in-memory instances — the gotcha the cove/Greywick builders guard against).
+            // in-memory instances — the gotcha the cove/Nine Mile Creek builders guard against).
             stPeters = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/StPeters.asset");
-            greywick = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/PortGreywick.asset");
+            nineMileCreek = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/NineMileCreek.asset");
             config   = AssetDatabase.LoadAssetAtPath<GameConfig>(DataConfig + "/GameConfig.asset");
             dory     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Dory.asset");
             punt     = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Punt.asset");
@@ -314,7 +358,7 @@ namespace HiddenHarbours.App.Editor
             // cycle order — the iso dory he starts in, the 8-direction fishing boat, the punt on each of her
             // two engines, and the two 7 m skiffs with the twin-outboard sport as its own entry. Roughly the
             // speed ladder, so walking F walks UP it. St Peters is the only builder that spawns the player's
-            // boat, so it is the only one that hands over a roster (Greywick spawns none).
+            // boat, so it is the only one that hands over a roster (Nine Mile Creek spawns none).
             //
             // Nulls are FILTERED, not tolerated: a missing asset would otherwise be a dead rung he cycles
             // into. The picker is NOT the fleet: being on it sells nothing.
@@ -415,7 +459,7 @@ namespace HiddenHarbours.App.Editor
                 DevPickerRoster  = pickerRoster,   // F at the helm cycles the hull in place (dev affordance)
                 // The clam (the flats' dig) + the rod-catchable trio: the persistent controller carries
                 // ALL rod species; each cast filters by the species' RegionIds against the travel-aware
-                // current region, so the same pool serves St Peters' shore, the cove and Greywick.
+                // current region, so the same pool serves St Peters' shore, the cove and Nine Mile Creek.
                 RegionFish       = new[] { clam, codFish, haddockFish, mackerelFish, pollockFish }
                                        .Where(f => f != null).ToArray(),
                 Square           = waterSprite,
@@ -435,7 +479,7 @@ namespace HiddenHarbours.App.Editor
             MakeTiledGround("IslandGround", LoadSpriteAny(ArtGrass), new Vector2(-40f, 0f), new Vector2(20f, 20f), -7, waterSprite, new Color(0.38f, 0.58f, 0.32f));
 
             // The cottage / the hard where the uncle's dory waits (greybox marker — the actual damaged-dory
-            // OFFER lives at the Greywick Shipwright this round; the slip here is set dressing for the opening).
+            // OFFER lives at the Nine Mile Creek Shipwright this round; the slip here is set dressing for the opening).
             var cottageGo = new GameObject("IslandCottage");
             cottageGo.transform.position = new Vector3(-44f, 4f, 0f);
             var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
@@ -479,7 +523,7 @@ namespace HiddenHarbours.App.Editor
             chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
             chimneyGo.AddComponent<ChimneySmoke>();
 
-            // --- SANDBAR (greybox visual of the tide-gated flats running island → Greywick) -------------
+            // --- SANDBAR (greybox visual of the tide-gated flats running island → Nine Mile Creek) -------------
             // A sand strip along the bar centre-line (From (-22,0) → To (34,0)). It is VISUAL only — the
             // walkable/boatable state is decided by the TidalTerrain elevation + the water level, not by this
             // sprite. A subtle channel-coloured patch marks where the boat channel is cut through the bar.
@@ -563,7 +607,7 @@ namespace HiddenHarbours.App.Editor
             // key/click WITH the swell — take line as she lifts, ease as she falls; calm is a quick steady
             // wind-in, a big sea is a fight where holding through the drop strains and slips the rope).
             // On surface it lands Build 3's already-deterministic catch into the boat's hold (sellable at
-            // Greywick like any fish). The buoy is the self-installing TrapBuoyPresenter (Build 1/3). All the
+            // Nine Mile Creek like any fish). The buoy is the self-installing TrapBuoyPresenter (Build 1/3). All the
             // trap/service objects live under one plain root so they never touch authored content.
             //
             // WIRED ON THE BOAT: the DevTrapInput + TrapHaulController sit on the persistent Dory
@@ -591,7 +635,7 @@ namespace HiddenHarbours.App.Editor
                 var startBaitGo = new GameObject("StartingBait");
                 startBaitGo.AddComponent<StartingBait>();
 
-                // THE POT STARTER KIT (pots are OWNED now — bought at the Greywick shipwright): grants
+                // THE POT STARTER KIT (pots are OWNED now — bought at the Nine Mile Creek shipwright): grants
                 // GameConfig.StarterPotKit once per game, flag-guarded — a new game starts with a couple
                 // of pots, and a pre-update save gets the same kit on first load, so nobody is stranded
                 // potless mid-loop. Counts live on the config asset (owner-tunable, rule 6).
@@ -639,7 +683,7 @@ namespace HiddenHarbours.App.Editor
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
             // M2), the self-built dialogue panel, the proximity INTERACT driver, and the light one-line
-            // onboarding nudge that walks the NEW loop: dig clams → cross the bar → Greywick (cod licence +
+            // onboarding nudge that walks the NEW loop: dig clams → cross the bar → Nine Mile Creek (cod licence +
             // rod) → buy + REPAIR the damaged dory → sail home. The dory is EARNED, never inherited.
             //
             // Everything sits UP BY THE COTTAGE (≈ y +3..+6), well clear of the dock zone at (-40,-26), so
@@ -681,32 +725,32 @@ namespace HiddenHarbours.App.Editor
             new GameObject("Onboarding").AddComponent<OnboardingDirector>();
 
             // --- REGION DISPLAY NAME (the world registrar → Core) ---------------------------------------
-            // Register "St Peters Island" / "Port Greywick" so the UI crossing-card resolves them by scene
+            // Register "St Peters Island" / "Nine Mile Creek" so the UI crossing-card resolves them by scene
             // name or id without referencing World (the RegionDisplayNames seam, #59/#54).
             var namesGo = new GameObject("RegionDisplayNames");
             var registrar = namesGo.AddComponent<RegionDisplayNameRegistrar>();
-            SetRefArray(registrar, "_regions", new Object[] { stPeters, greywick });
+            SetRefArray(registrar, "_regions", new Object[] { stPeters, nineMileCreek });
 
-            // --- REGION SCENE-LOAD PATH + the WALK PASSAGE to Greywick ----------------------------------
+            // --- REGION SCENE-LOAD PATH + the WALK PASSAGE to Nine Mile Creek ----------------------------------
             // The persistent travel rig (loader + coordinator) was built with the core; here we fill the
             // loader's region list and wire this region's passage to it. Consistent with the TidalTerrain:
             // the bar is a WALK path at low water (the first trip is on foot). The passage band sits at the
-            // Greywick (east) end of the bar; triggering is forgiving (greybox) — gameplay gates the actual
+            // Nine Mile Creek (east) end of the bar; triggering is forgiving (greybox) — gameplay gates the actual
             // crossing on the bar being EXPOSED (TidalExposure) and on the player being on foot.
             var loader = core.Loader;
-            SetRefArray(loader, "_regions", new Object[] { stPeters, greywick });
+            SetRefArray(loader, "_regions", new Object[] { stPeters, nineMileCreek });
 
-            var passageGo = new GameObject("PassageToPortGreywick");
-            passageGo.transform.position = ToGreywickPassagePos;
+            var passageGo = new GameObject("PassageToNineMileCreek");
+            passageGo.transform.position = ToNineMileCreekPassagePos;
             var trigger = passageGo.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(3f, SandbarHalfWidth * 2f);   // a band across the bar's Greywick end
+            trigger.size = new Vector2(3f, SandbarHalfWidth * 2f);   // a band across the bar's Nine Mile Creek end
             var passage = passageGo.AddComponent<RegionPassage>();
-            SetRef(passage, "_target", greywick);
+            SetRef(passage, "_target", nineMileCreek);
             SetRef(passage, "_loader", loader);
 
             // --- ST PETERS DOCK + ARRIVAL ANCHOR (the persistent rig binds here on the sail home) --------
-            // St Peters' own board/dock geometry, mirroring the cove/Greywick pattern. The persistent
+            // St Peters' own board/dock geometry, mirroring the cove/Nine Mile Creek pattern. The persistent
             // ControlSwitcher starts pointed at this slip so you can board the moored Dory once she's yours;
             // the RegionAnchor lets the RegionTravelCoordinator re-bind the rig here when you sail back from
             // the cove. The arrival sits within DockZoneRadius of the dock zone (the proven disembark
@@ -723,6 +767,10 @@ namespace HiddenHarbours.App.Editor
 
             var anchor = new GameObject("StPetersRegionAnchor").AddComponent<RegionAnchor>();
             anchor.Configure("region.st_peters", arrival.transform, dockZone.transform, disembark.transform);
+            // The camera's bounds clamp reads this on arrival (scene-sizing §6 item 4) — the SAME
+            // authored pair the sea, the backdrop, the height bake and the displaced mesh get above.
+            // At 760 × 520 m an unclamped camera sails clean off the painted map.
+            anchor.ConfigureExtent(RegionWorldCenter, RegionWorldSize);
 
             // --- SAVE & REGISTER ------------------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -735,7 +783,7 @@ namespace HiddenHarbours.App.Editor
                       "fisher at the START spawn (WASD), the camera follows at the on-foot framing, and the " +
                       "clock/tide run (GameServices online → the tide advances + the bar bares/floods). The " +
                       "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
-                      "yours). Island = high (always exposed); the SANDBAR bridges it to Greywick as a " +
+                      "yours). Island = high (always exposed); the SANDBAR bridges it to Nine Mile Creek as a " +
                       "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
                       "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The layered WaterSurface " +
                       "shader VISIBLY reveals the bar/flats from the live water level (smooth depth-graded " +
@@ -743,13 +791,13 @@ namespace HiddenHarbours.App.Editor
                       "the smooth shoreline, no blocky grid overlay (ADR 0012). Up by the " +
                       "cottage, AUNT GINNY (E to talk) teaches the buy-and-repair loop and NED'S LETTER (E " +
                       "to read) frames it — the dory is EARNED, not inherited; a one-line onboarding nudge " +
-                      "walks the loop (clams → cross the bar → Greywick licence+rod → buy+repair the dory → " +
+                      "walks the loop (clams → cross the bar → Nine Mile Creek licence+rod → buy+repair the dory → " +
                       "sail home). Clam-holes on " +
-                      "the flats (fish.soft_shell_clam, gated by exposure). The walk passage at the Greywick " +
+                      "the flats (fish.soft_shell_clam, gated by exposure). The walk passage at the Nine Mile Creek " +
                       "end leads on. NOTE: the tide is SLOW by design (~minutes per high→low); to see the " +
                       "full swing fast, tick 'Enabled' on the DevFastTide object in Play (OFF by default) or " +
                       "use the in-editor Tide Scrubber. StPeters is now BUILD-INDEX-0 (the start scene). " +
-                      "RE-RUN this builder + GreywickBuilder, then open StPeters.unity and press Play.");
+                      "RE-RUN this builder + NineMileCreekBuilder, then open StPeters.unity and press Play.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "St Peters Island built — now a PLAYABLE START scene (greybox).\n\nPress Play:\n• You control " +
                 "the on-foot fisher (WASD / arrows) at the start spawn; the camera follows.\n• The clock + " +
@@ -759,9 +807,9 @@ namespace HiddenHarbours.App.Editor
                 "minutes per high→low). To watch the full swing FAST: tick 'Enabled' on the DevFastTide " +
                 "object in the Hierarchy while in Play (OFF by default), or use Tools ▸ Tide Scrubber.\n• " +
                 "The hand-rowed Dory is moored off the south coast (board at the slip once she's yours).\n• " +
-                "Walk the bared bar east to reach Greywick.\n\nThe dig/walk/gear ACTIONS are " +
+                "Walk the bared bar east to reach Nine Mile Creek.\n\nThe dig/walk/gear ACTIONS are " +
                 "gameplay-systems'. StPeters is now build-index-0 (the start scene). RE-RUN 'Build St Peters " +
-                "Scene' AND 'Build Greywick Scene', then open StPeters.unity and press Play.", "Fair winds");
+                "Scene' AND 'Build Nine Mile Creek Scene', then open StPeters.unity and press Play.", "Fair winds");
         }
 
         // ---- shared config (single source of truth with the EditMode test) -------------------------
@@ -830,7 +878,7 @@ namespace HiddenHarbours.App.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        // ---- helpers (self-contained; mirror GreywickBuilder's) ------------------------------------
+        // ---- helpers (self-contained; mirror NineMileCreekBuilder's) ------------------------------------
 
         static T LoadOrCreate<T>(string path, System.Action<T> init = null) where T : ScriptableObject
         {
