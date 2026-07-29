@@ -19,10 +19,18 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties:
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _LightMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightNormal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -34,13 +42,26 @@ Material:
     - _GustScale: 0.2
     - _GustStrength: 0.6
     - _IdleSway: 0.02
+    - _KeyRelight: 0.75
+    - _LampElevation: 0.12
+    - _LampKeyStrength: 0.18
+    - _LampRimStrength: 0.9
+    - _LightChannels: 0
+    - _LightDepthBias: 0.45
+    - _LightFrontBand: 0.6
+    - _LightResponse: 0
     - _PhaseScale: 0.12
     - _PixelsPerUnit: 32
+    - _RimSteerAmount: 0.8
+    - _SunKeyStrength: 0.16
+    - _SunRimStrength: 0.28
     - _SwayAmount: 0.12
     - _SwaySpeed: 1.1
     - _TrunkAnchor: 0.14
     - _WindLean: 0.35
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _SpriteRootWS: {r: 0, g: 0, b: 0, a: 0}
+    - _SunKeyColor: {r: 0.9098039, g: 0.6901961, b: 0.41960785, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
