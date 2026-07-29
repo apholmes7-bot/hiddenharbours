@@ -373,6 +373,25 @@ Shader "HiddenHarbours/Water"
         _ReflectionSunStreak   ("Reflection sun streak intensity", Range(0,2)) = 0.9
         _ReflectionSunSharp    ("Reflection sun streak sharpness", Float) = 6.0
 
+        [Header(Object reflections (ADR 0027 num 8)   the HHReflect list warped by the wave field)]
+        // Boats, wharf and bankside trees REFLECT in the water. _HHReflectTex is a fourth filtered
+        // renderer list (LightMode HHReflect, gated on ReflectionRegistry.RenderingLayer) drawn
+        // MIRRORED about each renderer's published ground-contact pivot (ADR 0026) by
+        // IsoFacetHullFeature; this shader samples it with the lookup WARPED by the SAME
+        // WaveFieldSample() the hull rides, so a reflection wobbles on the very crests the boat is
+        // riding. No new sim uniform: the warp reuses the shared field (ADR 0018).
+        //   ⚠️ THE LOOKUP SNAPS IN WORLD SPACE, never screen/RT space. The RT is screen-space by
+        //   nature, and with CameraFollow panning behind the boat a screen-snapped lookup CRAWLS on
+        //   every pan — the one artefact that would make this read as a screen filter instead of a
+        //   reflection. Twin: WaterReflectionWarp.WarpedSampleWorld (and ScreenSnappedSampleWorld,
+        //   which exists only so the tests can measure the crawl it causes).
+        //   Sea-state response is INHERITED, not re-invented: ReflectionStrength()/Sharpness() above.
+        //   Zero cost when idle: with no ReflectiveObject alive the feature enqueues no pass, the
+        //   fallback 1x1 clear texture is bound, and the block below is skipped at strength 0.
+        _ObjectReflectStrength ("Object reflection strength (0 = off / today)", Range(0,1)) = 0.0
+        _ObjectReflectWarp     ("Object reflection wave warp (m per unit slope)", Float) = 0.35
+        _ObjectReflectSink     ("Object reflection sink with depth (0 = no fade)", Range(0,1)) = 0.35
+
         [Header(Sky CONTENT reflection (clouds   moon glitter   stars   day night driven))]
         // This is a three-quarter top-down game: the player never sees the sky directly, so the WATER's reflection is the
         // ONLY place the sky appears. On top of the sky-COLOUR mirror + sun glint above, this reflects SKY
@@ -684,6 +703,14 @@ Shader "HiddenHarbours/Water"
             // _HeightTex world rect, so it is sampled by world position (not _PaintScale) with the
             // importer's Point filter + Clamp wrap — pixel art, and no smearing between bottom cells.
             TEXTURE2D(_SeabedTex);    SAMPLER(sampler_SeabedTex);
+            // ADR 0027 #8: the OBJECT REFLECTION target, written by IsoFacetHullFeature's fourth
+            // renderer list and published globally. Read with Load() at integer pixel coordinates —
+            // it is exactly camera-render-resolution, so the map is 1:1 and Load shares SV_POSITION's
+            // coordinate convention, which sidesteps every render-target Y-flip ambiguity a uv fetch
+            // would introduce. ReflectionRegistry binds a 1x1 CLEAR fallback before the pass has ever
+            // run (an unbound sampler's grey placeholder has alpha ~0.5 and would smear a flat
+            // half-mirror over the whole sea on the first frame of every scene).
+            TEXTURE2D(_HHReflectTex);
 
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
@@ -899,6 +926,10 @@ Shader "HiddenHarbours/Water"
                 float  _ReflectionSmear;
                 float  _ReflectionSunStreak;
                 float  _ReflectionSunSharp;
+                // ADR 0027 #8 — object reflections (the HHReflect list, warped by the wave field).
+                float  _ObjectReflectStrength;
+                float  _ObjectReflectWarp;
+                float  _ObjectReflectSink;
                 // Sky-content reflection (clouds + moon glitter + stars; col.rgb-only dressing, day/night-driven).
                 float  _SkyReflectionStrength;
                 float  _CloudStrength;
@@ -1832,6 +1863,90 @@ Shader "HiddenHarbours/Water"
                 float agitation = max(_Chop, 0.0) * max(_ReflectionChopScatter, 0.0)
                                 + saturate(_Roughness) * max(_ReflectionWindScatter, 0.0);
                 return saturate(1.0 - agitation);
+            }
+
+            // ==== ADR 0027 #8 — OBJECT REFLECTIONS: the HHReflect list, warped by the shared wave field ========
+            // IsoFacetHullFeature draws every reflective renderer MIRRORED about its own published
+            // ground-contact pivot (ADR 0026) into _HHReflectTex — a fourth filtered renderer list, one
+            // ARGBHalf target at camera render resolution, zero cost when nothing is reflective. This reads
+            // it back with the lookup displaced by the SAME WaveFieldSample() the hull is riding, so a
+            // reflection wobbles on the very crests the boat rides. No new sim uniform (ADR 0018 reused).
+            //
+            // ⚠️ THE LOOKUP SNAPS IN WORLD SPACE. A render target is screen-space by nature, and that is
+            // exactly the trap: with CameraFollow panning continuously behind the boat, a lookup quantized on
+            // the RT's own grid CRAWLS on every pan — the one artefact that would make this read as a screen
+            // filter rather than a reflection. Snapping the SAMPLE POSITION on the world PPU grid (Pixelize,
+            // the crawl law §3) means a reflection cell belongs to a place on the water and stays there while
+            // the camera moves. Twin: WaterReflectionWarp.WarpedSampleWorld — and its deliberately wrong
+            // sibling ScreenSnappedSampleWorld, which exists only so the tests can MEASURE the crawl.
+            //
+            // ⚠️ Read with Load(), not a uv sample. The target is exactly camera-render-resolution so the map
+            // is 1:1, and Load shares SV_POSITION's coordinate convention — which removes the render-target
+            // Y-flip ambiguity a uv fetch would smuggle in (the class of bug that renders correctly on one
+            // graphics API and upside down on the next).
+            //
+            // Sea-state response is INHERITED from the shipped §11 curves, not re-invented: sharp on glass,
+            // broken in chop, gone in a storm. col.rgb ONLY — never depth/clip()/_WaterLevel/the height read/
+            // the sim (P1 integrity, rule 5). _ObjectReflectStrength = 0 skips the whole block.
+            //
+            // Returns the sample SPLIT (the SkyContentReflection idiom):
+            //   `pre`  — rgb = the PREMULTIPLIED reflected surface, a = its coverage. The caller composites
+            //            it with the premultiplied over-operator BEFORE the palette grade, so a reflected
+            //            hull COVERS the sky mirror under it and dims with the night like the rest of the sea.
+            //   `post` — the PRE-COMPENSATED light content (a lit wheelhouse), ADDED after the grade exactly
+            //            as the moon glitter is; otherwise the day/night multiply crushes it to ~3%.
+            // The split needs no flag channel: an ordinary reflection's premultiplied rgb can never exceed
+            // its coverage, and a compensated one exceeds it by precisely its light content (see
+            // HHReflectPremultiply; twin: WaterReflectionWarp.SplitLitShare).
+            void ObjectReflection(float2 worldXY, float2 waveSlope, float2 screenPx, float depth,
+                                  out float4 pre, out float3 post)
+            {
+                pre = 0.0;
+                post = 0.0;
+                if (_ObjectReflectStrength <= 0.001) return;
+
+                float strength = ReflectionStrength() * saturate(_ObjectReflectStrength);
+                if (strength <= 0.001) return;
+
+                // WHERE on the water this fragment reads its reflection from: displaced by the wave slope,
+                // then snapped on the WORLD grid. Sharpness widens the displacement as the sea breaks up —
+                // the same "a rough sea scatters the mirror" law the sky reflection already follows.
+                float scatter = 2.0 - ReflectionSharpness();          // 1 at glass -> 2 when fully broken
+                float2 sampleWorld = Pixelize(worldXY + waveSlope * _ObjectReflectWarp * scatter);
+
+                // World delta -> PIXEL delta. For this project's unrotated orthographic camera the view
+                // matrix is a pure translation, so the projection's diagonal alone converts metres to clip,
+                // and _ScreenParams turns clip into pixels. _ProjectionParams.x carries the render-target Y
+                // flip (it is -1 when the projection is flipped), which is what keeps the wobble leaning the
+                // same way on every graphics API.
+                float2 pxPerMetre = float2(UNITY_MATRIX_P[0][0] * _ScreenParams.x,
+                                           UNITY_MATRIX_P[1][1] * _ScreenParams.y) * 0.5;
+                float2 dPix = (sampleWorld - worldXY) * pxPerMetre;
+                dPix.y *= _ProjectionParams.x;
+
+                int2 px = int2(screenPx + dPix);
+                // Off-target reads would wrap or clamp a stale edge column across the sea; a reflection that
+                // has left the screen simply is not there.
+                if (any(px < 0) || any(px >= int2(_ScreenParams.xy))) return;
+                float4 refl = LOAD_TEXTURE2D(_HHReflectTex, px);
+
+                // A reflection SINKS as the water deepens under it: a mirrored hull reads crisply against a
+                // shallow bottom and dissolves over the dark. Cheap, optional (0 = no fade), and it keeps the
+                // reflective set from painting hard silhouettes across open water.
+                float sink = 1.0 - saturate(_ObjectReflectSink) * saturate(depth * 0.25);
+
+                // The premultiplied split (twin: WaterReflectionWarp.SplitLitShare). min/max against the
+                // coverage separates ordinary reflected surface from pre-compensated light content with no
+                // flag channel, no second target and no extra uniform. By day the compensation factor is ~1,
+                // so a lit source stays under coverage and the whole sample lands in `pre` — daylight is
+                // unchanged, which is correct rather than a special case.
+                float  cov      = saturate(refl.a);
+                float3 ordinary = min(refl.rgb, cov.xxx);
+                float3 lit      = max(refl.rgb - cov.xxx, 0.0);
+                float  weight   = strength * sink;
+
+                pre  = float4(ordinary * weight, cov * weight);
+                post = lit * weight;
             }
 
             // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
@@ -3087,6 +3202,19 @@ Shader "HiddenHarbours/Water"
                 SkyContentReflection(worldXY, surf, swellCrest, t, skyDayRGB, skyNightRGB);
                 col.rgb += skyDayRGB;
 
+                // ---- OBJECT REFLECTIONS (ADR 0027 #8; col.rgb only) --------------------------------------------
+                // OVER the sky mirror (a boat reads on top of reflected cloud — hence the premultiplied
+                // over-operator here rather than an add) and UNDER the foam below (whitecaps read on top of the
+                // boat). PRE-grade, so it dims with the night like the rest of the sea — except the night-lit
+                // share, which is held back and added AFTER the palette grade with the moon glitter (§11.6).
+                // The lookup is warped by the SAME wave field the hull rides and snapped on the WORLD grid.
+                // Zero cost at the shipped default (_ObjectReflectStrength = 0 returns immediately), and zero
+                // cost even when dialled in until something in the scene carries a ReflectiveObject.
+                float4 objReflPre;
+                float3 objReflPost;
+                ObjectReflection(worldXY, waveSlope, IN.positionCS.xy, depth, objReflPre, objReflPost);
+                col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb;
+
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
                 // GATED to the depth~0 band (full at the wet edge, 0 by ~2x the foam width) and applied ONLY
@@ -3432,7 +3560,14 @@ Shader "HiddenHarbours/Water"
                 // The beam's WARM TINT is the cone weight × _BoatLightColor × _BoatLightTintAmount — a faint warmth
                 // biased to the lit pool, NOT the old colour slab; the REVEAL (multiply-lift) already happened above.
                 float3 beamTint = _BoatLightColor.rgb * (beamW * max(_BoatLightTintAmount, 0.0));
-                float3 lightContent = beamTint + skyNightRGB + RainRings(worldXY, dt, t);
+                // ADR 0027 #8: the NIGHT-LIT share of an object reflection joins this bucket for exactly the
+                // reason the moon glitter does. A lit wheelhouse reflected in black water is LIGHT content;
+                // left in the pre-grade composite the downstream multiply would crush it to ~3% and the boat
+                // would appear to have doused her lamps in her own reflection. Ordinary reflected surfaces
+                // (hull planking, a tree, a wharf pile) are NOT light and stay pre-grade, dimming with the
+                // sea — that split is `post` vs `pre` from ObjectReflection, and it is 0 here by day because
+                // the compensation factor is ~1 then and the whole sample lands in `pre`.
+                float3 lightContent = beamTint + skyNightRGB + objReflPost + RainRings(worldXY, dt, t);
                 col.rgb += (dnSum > 1e-3)
                     ? lightContent / max(_DayNightTint.rgb,
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))
