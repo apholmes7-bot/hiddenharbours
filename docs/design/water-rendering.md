@@ -1535,6 +1535,37 @@ samples are byte-identical, so the sim is provably unchanged. No new C# uniform 
 already-sampled `waveHN`; `WaveFieldSample` / `WaveFieldBridge` / `WaveMath` are untouched. Legacy count-0
 path (edit mode / cycle off) reuses `swellSigned` so the knob still reads there.
 
+### 16.6 Convergence (Jacobian) foam gate (ADR 0027 #3)
+
+Foam was tall-wave only — `_FoamCrestGate` + the §16.3 lifecycle key everything to the crest factor —
+so **crossing trains never foam at their intersections**. Real foam also spawns where the surface
+**pinches**: surface water drifts toward crests (the Gerstner horizontal displacement), and where that
+drift field compresses — its Jacobian determinant dropping below 1, negative when the surface folds —
+the sea whitens. `_FoamConvergenceStrength` (default **0** = today's foam EXACTLY, bit-identical
+composite) adds that term as an **additional placement driver alongside the crest factor, never
+replacing it**: four taps of the same `WaveFieldSample()` (same `waveFreqScale`, each on the pixelized
+world grid) central-difference the field's **analytic slope** into the three second derivatives, and
+`ConvergenceGate` — C#-twinned by `WaterFoam.Convergence`, change one change BOTH in the same PR —
+computes `saturate(1 − J)` with `J = (1 + q·h_xx)(1 + q·h_yy) − (q·h_xy)²`, `q =
+_FoamConvergencePinch` (metres, ≈ the Gerstner `Q/k`). Curvature is negative at a crest so a crest
+converges; `h_xy` is the cross term two crossing trains write. The output is **textured by the same
+thresholded cap field** (`capMilkyT` — already banded/dithered), so it feeds the existing foam
+threshold and inherits the existing quantization — no new one. Still inside `waveGate` (glass = zero
+foam, automatically) and the cap shore fade; trains-live path only (the legacy count-0 path has no
+field to difference and is untouched). `col.rgb`-only dressing — never `depth` / `clip()` /
+`_WaterLevel` / the height read / the sim (P1 integrity, rule 5). Twin tests
+(`WaterFoamTests`): flat sea ⇒ 0, zero pinch ⇒ 0, crest converges / trough does not, crossing crests
+out-converge either train alone and follow the determinant (not a plain sum), the cross term adds
+exactly `q²·h_xy²`, and a golden value pins the arithmetic. Deliberately NOT added to
+`WaterSurface.MoodFloatNames`; whether the strength should be mood-eased is an open question for the
+owner.
+
+| Property | Default | Effect |
+|---|---|---|
+| `_FoamConvergenceStrength` | `0` (**OFF**) | Master; 0 = today's foam exactly. The owner's dial. |
+| `_FoamConvergencePinch` | `4` m | How far surface water is drawn toward a crest (≈ Gerstner Q/k); higher = more of the sea pinches past the gate. |
+| `_FoamConvergenceStep` | `0.5` m | Finite-difference step of the four slope taps. |
+
 ## 17. See-through shallows + day-gated caustics (Arc C water visuals)
 
 Two owner-opt-in shallow-water effects, both shipping **OFF** (their strength = 0), so the shipped `Water.mat`
