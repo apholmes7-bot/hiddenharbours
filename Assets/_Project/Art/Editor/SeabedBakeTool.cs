@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art.Editor
 {
@@ -46,6 +47,26 @@ namespace HiddenHarbours.Art.Editor
     {
         private const string DataDir = "Assets/_Project/Data/Terrain";
 
+        /// <summary>
+        /// Where the bottom's colour comes from.
+        ///
+        /// <para><b>Why there are two.</b> The tilemap source is the honest one where a bottom has
+        /// been PAINTED. It bakes nothing at all where none has — and the cove, the current playable
+        /// region, has no tilemap in its committed scene, so a tilemap bake there is a fully
+        /// transparent texture and absorption stays invisible. The terrain source needs no painting:
+        /// it colours the bottom from the elevation the region ALREADY authors, through
+        /// <see cref="SeabedPalette"/>. Use it to make a region judgeable now and re-bake from a
+        /// tilemap once the owner has painted one.</para>
+        /// </summary>
+        public enum Source
+        {
+            /// <summary>The ground tilemap's painted pixels; no tile = no bottom (coverage 0).</summary>
+            GroundTilemap,
+            /// <summary>The scene's authored elevation through the seabed ramp; always covered.</summary>
+            TerrainElevation,
+        }
+
+        [SerializeField] private Source _source = Source.TerrainElevation;
         [SerializeField] private Tilemap _groundTilemap;
         [SerializeField] private Vector2 _worldMin = new Vector2(-80f, -60f);
         [SerializeField] private Vector2 _worldSize = new Vector2(160f, 120f);
@@ -73,12 +94,20 @@ namespace HiddenHarbours.Art.Editor
                 "per channel (ADR 0027 #7). Cells with no ground tile bake COVERAGE 0 — the sea " +
                 "is unchanged there.", MessageType.Info);
 
-            using (new EditorGUILayout.HorizontalScope())
+            _source = (Source)EditorGUILayout.EnumPopup("Source", _source);
+            if (_source == Source.GroundTilemap)
             {
-                _groundTilemap = (Tilemap)EditorGUILayout.ObjectField(
-                    "Ground Tilemap", _groundTilemap, typeof(Tilemap), true);
-                if (GUILayout.Button("Find", GUILayout.Width(48f)))
-                    _groundTilemap = FindGroundTilemap();
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    _groundTilemap = (Tilemap)EditorGUILayout.ObjectField(
+                        "Ground Tilemap", _groundTilemap, typeof(Tilemap), true);
+                    if (GUILayout.Button("Find", GUILayout.Width(48f)))
+                        _groundTilemap = FindGroundTilemap();
+                }
+            }
+            else
+            {
+                EditorGUILayout.LabelField(" ", TerrainSourceLabel(), EditorStyles.miniLabel);
             }
 
             EditorGUILayout.Space(4f);
@@ -100,12 +129,16 @@ namespace HiddenHarbours.Art.Editor
                                        EditorStyles.miniLabel);
 
             EditorGUILayout.Space(8f);
-            using (new EditorGUI.DisabledScope(_groundTilemap == null))
+            bool ready = _source == Source.TerrainElevation ? FindTerrain() != null : _groundTilemap != null;
+            using (new EditorGUI.DisabledScope(!ready))
                 if (GUILayout.Button("Bake", GUILayout.Height(26f)))
                     Bake();
-            if (_groundTilemap == null)
-                EditorGUILayout.HelpBox("No ground tilemap. Click Find, or open the region scene.",
-                                        MessageType.Warning);
+            if (!ready)
+                EditorGUILayout.HelpBox(
+                    _source == Source.TerrainElevation
+                        ? "No ITidalTerrain in the open scene. Open the region scene first."
+                        : "No ground tilemap. Click Find, or open the region scene.",
+                    MessageType.Warning);
 
             EditorGUILayout.Space(8f);
             EditorGUILayout.LabelField("Adopt (explicit — mutates the material asset)",
@@ -144,6 +177,28 @@ namespace HiddenHarbours.Art.Editor
             if (_groundTilemap == null) _groundTilemap = FindGroundTilemap();
         }
 
+        /// <summary>
+        /// The open scene's authored terrain, found through the CORE interface rather than a concrete
+        /// World type — so this art-lane tool never references the World assembly (rule 4). Every
+        /// region's terrain component implements it (the analytic rect ones and the painted one alike),
+        /// which is exactly why the interface is the right handle here.
+        /// </summary>
+        private static ITidalTerrain FindTerrain()
+        {
+            var all = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+            foreach (var mb in all)
+                if (mb is ITidalTerrain terrain && mb.isActiveAndEnabled) return terrain;
+            return null;
+        }
+
+        private static string TerrainSourceLabel()
+        {
+            var terrain = FindTerrain();
+            return terrain == null
+                ? "no ITidalTerrain in the open scene"
+                : $"reading {(terrain as MonoBehaviour)?.GetType().Name} through SeabedPalette";
+        }
+
         /// <summary>Prefer the tilemap "Add Paintable Tilemap" creates ("TerrainTilemap"), else any
         /// tilemap in the open scene — the same discovery the Terrain Paint Tool uses.</summary>
         private static Tilemap FindGroundTilemap()
@@ -156,19 +211,64 @@ namespace HiddenHarbours.Art.Editor
             return all.Length > 0 ? all[0] : null;
         }
 
+
+        // ============================ THE HEADLESS BAKE (reproducible, not hand-made) ============================
+
+        /// <summary>
+        /// Bake a region's seabed from its authored ELEVATION, with no window and no owner in the loop —
+        /// so a committed bake can be regenerated by anyone, byte-for-byte, instead of being a texture
+        /// somebody once made and nobody can reproduce. The window's Bake button and this share one path.
+        ///
+        /// <para>Requires the region's scene to be OPEN (the terrain is a scene component). Returns the
+        /// imported texture, or null when no <c>ITidalTerrain</c> is present.</para>
+        /// </summary>
+        public static Texture2D BakeFromTerrain(Vector2 worldMin, Vector2 worldSize, int resolution,
+                                                string baseName)
+            => BakeFromTerrain(FindTerrain(), worldMin, worldSize, resolution, baseName);
+
+        /// <summary>
+        /// The same bake against an EXPLICIT terrain — for a region whose terrain is builder-authored
+        /// rather than scene-authored. The cove is exactly that: its committed scene carries no logic
+        /// tree, so its builder hands us the terrain it would have built.
+        /// </summary>
+        public static Texture2D BakeFromTerrain(ITidalTerrain terrain, Vector2 worldMin,
+                                                Vector2 worldSize, int resolution, string baseName)
+        {
+            if (terrain == null)
+            {
+                Debug.LogError("[SeabedBakeTool] No ITidalTerrain to bake from. Open the region's " +
+                               "scene, or hand this overload the builder's terrain.");
+                return null;
+            }
+            int res = Mathf.Clamp(resolution, 16, 2048);
+            Color32[] pixels = SeabedBake.Build(res, res, worldMin, worldSize,
+                                                w => SeabedPalette.Sample(terrain.ElevationAt(w)),
+                                                new Color(0f, 0f, 0f, 0f));
+            Texture2D baked = WritePng(pixels, res, baseName);
+            Debug.Log($"[SeabedBakeTool] Baked {res}x{res} _SeabedTex (TerrainElevation) over min {worldMin} " +
+                      $"size {worldSize} -> {AssetDatabase.GetAssetPath(baked)}");
+            return baked;
+        }
+
         // ============================ THE BAKE ============================
 
         private void Bake()
         {
-            if (_groundTilemap == null) return;
             int res = Mathf.Clamp(_resolution, 16, 2048);
             var readable = new Dictionary<Texture2D, Texture2D>();
+            ITidalTerrain terrain = _source == Source.TerrainElevation ? FindTerrain() : null;
+            if (_source == Source.TerrainElevation && terrain == null) return;
+            if (_source == Source.GroundTilemap && _groundTilemap == null) return;
 
             try
             {
-                EditorUtility.DisplayProgressBar("Bake seabed", "Sampling the ground tilemap…", 0.1f);
-                Color32[] pixels = SeabedBake.Build(res, res, _worldMin, _worldSize,
-                                                    w => SampleTilemap(w, readable), _fill);
+                EditorUtility.DisplayProgressBar("Bake seabed",
+                    _source == Source.TerrainElevation
+                        ? "Sampling the authored elevation…" : "Sampling the ground tilemap…", 0.1f);
+                System.Func<Vector2, Color> sampler = _source == Source.TerrainElevation
+                    ? (w => SeabedPalette.Sample(terrain.ElevationAt(w)))
+                    : (System.Func<Vector2, Color>)(w => SampleTilemap(w, readable));
+                Color32[] pixels = SeabedBake.Build(res, res, _worldMin, _worldSize, sampler, _fill);
 
                 EditorUtility.DisplayProgressBar("Bake seabed", "Writing the PNG…", 0.8f);
                 _lastBake = WritePng(pixels, res, _baseName);
@@ -183,7 +283,7 @@ namespace HiddenHarbours.Art.Editor
             if (_lastBake != null)
             {
                 EditorGUIUtility.PingObject(_lastBake);
-                Debug.Log($"[SeabedBakeTool] Baked {res}×{res} _SeabedTex over " +
+                Debug.Log($"[SeabedBakeTool] Baked {res}×{res} _SeabedTex ({_source}) over " +
                           $"min {_worldMin} size {_worldSize} → " +
                           AssetDatabase.GetAssetPath(_lastBake) +
                           ". Assign it + tick Use Seabed Texture on the water material, then dial " +

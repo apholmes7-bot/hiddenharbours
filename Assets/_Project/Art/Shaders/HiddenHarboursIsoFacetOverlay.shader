@@ -70,5 +70,96 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             }
             ENDHLSL
         }
+
+        // ================================================================================================
+        // HHReflect — this hull's REFLECTION in the water (ADR 0027 #8)
+        // ================================================================================================
+        // Recorded by IsoFacetHullFeature into _HHReflectTex and sampled by the water shader, which warps
+        // the lookup by the SAME wave field the hull rides.
+        //
+        // ⚠️ THE REFLECTION IS THE OVERLAY'S JOB, NOT THE FACET PASS'S. A mesh hull's visible image is not
+        // what the facet MRT holds — it is what the KEYLINE RESOLVE made of it, which this quad re-composes
+        // from _HHHullScreenTex. Mirroring the facet pass would reflect raw facet colour with no keyline,
+        // no darkening and no hull-id filter: recognisably the wrong boat. So the reflection mirrors THIS
+        // quad and re-composes from the SAME resolved texture.
+        //
+        // ⚠️ …which means the quad rasterises MIRRORED but must SAMPLE UNMIRRORED. _HHHullScreenTex holds
+        // the hull where the hull actually is; there is nothing at the reflection's screen position. The
+        // mirror is a vertical flip about the pivot's screen row, so the fetch flips back about that same
+        // row: sampleY = 2*pivotRow - fragmentY. The pivot's row is computed ONCE in the vertex stage
+        // through ComputeScreenPos (which carries the render target's Y-flip convention) and is constant
+        // across the quad under this project's unrotated orthographic camera.
+        //
+        // ⚠️ MEMBERSHIP IS THE RENDERING-LAYER BIT, NOT THIS TAG — every mesh hull shares this shader.
+        // Only hulls carrying ReflectionRegistry.RenderingLayer (i.e. those a ReflectiveObject was put on)
+        // are in the filtered list.
+        Pass
+        {
+            Name "HHHullReflect"
+            Tags { "LightMode" = "HHReflect" }
+
+            Blend One OneMinusSrcAlpha   // premultiplied: overlapping reflectors composite in ONE target
+            ZWrite Off
+            ZTest Always
+            Cull Off
+
+            HLSLPROGRAM
+            #pragma vertex reflectVert
+            #pragma fragment reflectFrag
+            #pragma target 3.5
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/ReflectMirror.hlsl"
+
+            Texture2D<float4> _HHHullScreenTex;
+
+            float  _HullId;
+            float4 _HHReflectOrigin;   // xy = the published ground-contact pivot, w = 1 when published
+            float  _HHReflectLit;      // 1 = night light content (rides the post-grade bucket, §11.6)
+            float4 _DayNightTint;      // GLOBAL (DayNightController) — the overlay this pass compensates for
+
+            struct ReflectAttributes { float4 positionOS : POSITION; };
+
+            struct ReflectVaryings
+            {
+                float4 positionCS : SV_POSITION;
+                // The screen ROW of the mirror axis, in the same pixel space as SV_POSITION. One scalar,
+                // constant across the quad — the fetch flips back about it.
+                float  pivotRow   : TEXCOORD0;
+            };
+
+            ReflectVaryings reflectVert (ReflectAttributes v)
+            {
+                ReflectVaryings o;
+                float3 wp = TransformObjectToWorld(v.positionOS.xyz);
+                o.positionCS = HHReflectPositionCS(wp, _HHReflectOrigin);
+
+                // The axis, projected. ComputeScreenPos carries the render-target Y flip, so this stays
+                // the same row on every graphics API.
+                float4 axisCS = TransformWorldToHClip(float3(_HHReflectOrigin.xy, wp.z));
+                float4 axisSP = ComputeScreenPos(axisCS);
+                o.pivotRow = (axisSP.y / max(axisSP.w, 1e-6)) * _ScreenParams.y;
+                return o;
+            }
+
+            float4 reflectFrag (ReflectVaryings i) : SV_Target
+            {
+                // Flip the fetch back about the axis row: this fragment is drawing the reflection of the
+                // hull pixel that sits as far ABOVE the waterline as this one is below it.
+                int2 px = int2(i.positionCS.x, 2.0 * i.pivotRow - i.positionCS.y);
+                if (any(px < 0) || any(px >= int2(_ScreenParams.xy))) discard;
+
+                float4 c = _HHHullScreenTex.Load(int3(px, 0));
+                // Only THIS hull's pixels — the same id filter the in-scene pass uses, for the same
+                // reason: two overlapping hulls must not reflect each other's image.
+                clip(0.5 - abs(c.a - _HullId) * 255.0);
+                clip(c.a - 0.5 / 255.0);
+
+                // The resolved texture stores the hull OPAQUE (the in-scene pass returns alpha 1), so the
+                // reflection's coverage is 1 wherever the id matched.
+                return HHReflectPremultiply(c.rgb, 1.0, _HHReflectLit, _DayNightTint.rgb);
+            }
+            ENDHLSL
+        }
     }
 }
