@@ -28,6 +28,26 @@ namespace HiddenHarbours.Boats
         [Tooltip("Player-facing name, e.g. \"Fish tray\". Flavor for future tooltips/merchant talk.")]
         public string DisplayName = "Fish tray";
 
+        [Header("Ice & lid (M1 §7.3 — the portable cold chain; tunables here, rule 6)")]
+        [Min(0f)]
+        [Tooltip("In-game HOURS of full protection ONE unit of ice buys in this container, lid OFF. " +
+                 "Protection is a DURATION, not a state (the sleep-skip guarantee rides on that): ice " +
+                 "arrests rot completely until it runs out, then the catch is ambient again. Keep it " +
+                 "short enough that ice extends a trip, never erases the clock (§7.3). PLACEHOLDER " +
+                 "pacing — §7.4 (economy-sim) owns the real number.")]
+        public float IceHoursPerUnit = 6f;
+
+        [Min(1f)]
+        [Tooltip("How much further the same ice stretches with the LID on (duration multiplier ≥ 1). " +
+                 "The lid is the cheap one-off buy against ice's recurring cost — 2 = ice lasts twice " +
+                 "as long under a lid. PLACEHOLDER pacing (§7.4).")]
+        public float LidMeltFactor = 2f;
+
+        [Min(0)]
+        [Tooltip("Most ice units this container can usefully hold at once (caps banked protection so " +
+                 "one big buy can't stop the clock for days). 0 = this container can't take ice at all.")]
+        public int MaxIceUnits = 4;
+
         [Header("Fill states (owner canon, 'important': the sprite VISIBLY changes with contents)")]
         [Tooltip("The painted fill states, ordered EMPTY first → BRIM-FULL last (any count ≥ 2). The " +
                  "presenter maps hold fullness onto them: the FIRST sprite is pinned to an empty hold, " +

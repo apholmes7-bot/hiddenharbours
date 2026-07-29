@@ -27,6 +27,10 @@ namespace HiddenHarbours.Boats
             // re-run; play mode only (EditMode tests add ShipHolds freely and must stay presentation-free).
             if (Application.isPlaying && GetComponent<DeckContainerPresenter>() == null)
                 gameObject.AddComponent<DeckContainerPresenter>();
+            // The hold's cold chain (M1 §7.3): ice + lid state and the melt maths ride the same
+            // runtime-spawn pattern, so every boat with a hold can take ice with no builder re-run.
+            if (Application.isPlaying && GetComponent<DeckIceBox>() == null)
+                gameObject.AddComponent<DeckIceBox>();
         }
 
         public int CapacityUnits => _hull != null ? _hull.HoldUnits : 0;
@@ -41,6 +45,20 @@ namespace HiddenHarbours.Boats
         }
 
         public void Clear() => _items.Clear();
+
+        /// <summary>
+        /// SURGICAL replace of the hold's contents — the freshness restamp / save-restore write
+        /// (M1 §7.3). Deliberately capacity-EXEMPT: callers replace like-for-like (a mode restamp of
+        /// the same units) or restore a hold that was legal when saved, so refusing here could only
+        /// lose catch. Never a gameplay "add" path — new catch still lands through <see cref="TryAdd"/>.
+        /// </summary>
+        public void ReplaceAll(IReadOnlyList<CatchItem> items)
+        {
+            _items.Clear();
+            if (items != null)
+                for (int i = 0; i < items.Count; i++)
+                    _items.Add(items[i]);
+        }
 
         /// <summary>
         /// Swap the hull so capacity tracks the active boat (VS-16, driven by OwnedFleet). Any catch
