@@ -8,6 +8,9 @@
 >
 > **Pillars:** **P1** The Sea Has Moods · **P2** From Dory to Dynasty · **P3** A Living Working Coast ·
 > **P4** Earn It, Then Automate It · **P5** Cozy, but with Teeth.
+>
+> **Closing out M1?** [`plan-to-m1.md`](plan-to-m1.md) is the current audit + route to the vertical-slice
+> sign-off, including the owner decisions that gate it and the M2/M3 feature freeze it recommends.
 
 ---
 
@@ -109,7 +112,7 @@
 ### Epic M1-B — Economy & the first boat (`economy-sim` / `gameplay-systems`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
 |---|---|---|---|---|---|
-| M1-05 | Greywick market basics + Shipwright buy flow | economy-sim + gameplay-systems | Greywick spot price + buy the **Punt** (~1,800 ₲); switch active boat | Sell at a different price than the cove; buying Punt deducts coin, persists; low-funds blocked gracefully | VS-16 |
+| M1-05 | Nine Mile Creek market basics + Shipwright buy flow | economy-sim + gameplay-systems | Nine Mile Creek spot price + buy the **Punt** (~1,800 ₲); switch active boat | Sell at a different price than the cove; buying Punt deducts coin, persists; low-funds blocked gracefully | VS-16 |
 | M1-06 | Sell screen diegetic skin (chalkboard) | ui-ux | M1 polish of the sell flow (marginal price + total) | Diegetic skin; live total matches coin received; sell-all works | VS-18 |
 
 ### Epic M1-C — HUD v1 (read the sea) (`ui-ux`)
@@ -121,7 +124,7 @@
 | ID | Title | Owner | One-liner | Key AC | Maps to |
 |---|---|---|---|---|---|
 | M1-08 | Uncle Ned + onboarding flow | world-content + ui-ux | late Uncle Ned (brief prologue + his logbook); inherit the dory; teach-the-loop; 1–2 neighbours; dialogue panel | First-timer guided through one full loop; flags saved; warm/bittersweet Maritime tone | VS-21 |
-| M1-09 | Minimal Port Greywick scene | world-content | Short hop to a wharf with Fish Buyer + Shipwright + flavour buildings | Sail/transition cove→Greywick; sell + buy Punt; harbour workable at any tide; clean load | VS-22 |
+| M1-09 | Minimal Nine Mile Creek scene | world-content | Short hop to a wharf with Fish Buyer + Shipwright + flavour buildings | Sail/transition cove→Nine Mile Creek; sell + buy Punt; harbour workable at any tide; clean load | VS-22 |
 
 ### Epic M1-E — Art pass (`art-pipeline`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
@@ -173,7 +176,7 @@
 | M2-10 | The Sunkers (reef field, grounding teeth) | world-content | Submerged rocks; tide-gauge landmarks; channels | Reefs surface at low water (safe forage) / hide at high (holing risk); teaches grounding cheaply |
 | M2-11 | The Drownded Lands (walkable seabed) | world-content | Flats drain to walkable seabed at low water; returning-tide clock | On-foot seabed at low water; spring lows expose the rarest; flood is a lethal-but-survivable clock |
 | M2-12 | Fundy Rips (tide-as-a-wall) | world-content | Narrows; current gated; slack-water transit window | Peak current a wall; only slack is safe; spring tides far worse |
-| M2-13 | Port Greywick — full town | world-content | Auction house, shops, shipwright, harbourmaster, named cast | Real town with services + named NPCs; the breathing-coast hub |
+| M2-13 | Nine Mile Creek — full town | world-content | Auction house, shops, shipwright, harbourmaster, named cast | Real town with services + named NPCs; the breathing-coast hub. **This is M1's wharf grown up, not a second settlement** — Nine Mile Creek was renamed to Nine Mile Creek (plan §7.10), so the coast has ONE mainland port |
 | M2-14 | Seabed heightfields + tide-revealed geography tooling | tools-editor + world-content | Per-region tidal-height thresholds drive walkable/visual state | Same `WaterLevel` drives sim + visuals; authoring tool for thresholds |
 
 ### Epic M2-D — Boats, gear & upgrades (P2) (`gameplay-systems` / `economy-sim`)
@@ -189,7 +192,7 @@
 | M2-18 | Full supply/demand market sim | economy-sim | Hourly+daily tick; demandMood walk; event shocks | Prices breathe over days; deterministic from `(seed, tick)`; cheap on mobile |
 | M2-19 | NPC-fleet landings model | economy-sim | Aggregate supply curve lands fish without the player (P3) | Gluts/scarcity happen ashore; keyed to season/weather; not a full agent sim |
 | M2-20 | Auction house + multiple buyers + first contracts | economy-sim | Consignment auction; specialty buyers; standing contracts | Different channels absorb gluts differently; a contract trades upside for stability |
-| M2-21 | Storage (ice/well, cold storage) + perishability | economy-sim | Time-the-market + spoilage buffer | Freshness as timestamp survives save/time-skip; storage slows/arrests spoilage |
+| M2-21 | Storage (ice/well, cold storage) + perishability | economy-sim | Time-the-market + spoilage buffer | Freshness as timestamp survives save/time-skip; storage slows/arrests spoilage. **The terminus of M1's cold ladder** (bucket → ice → Ginny's freezer): **industrial freezing arrives as a purchasable building** sited on M2-J wharf frontage, and is what finally makes *holding stock to time the market* a strategy rather than a stopgap |
 | M2-22 | First processing facilities (salt house, smokehouse) | economy-sim | Convert volatile raw → stable value-add (run by hand first) | Salt cod / smoked herring recipes; processing raises value + lowers elasticity + cuts spoilage |
 
 ### Epic M2-F — NPC routines & relationships (P3) (`world-content`)
@@ -208,8 +211,8 @@
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
 | M2-27 | Map / chart UI + fog-of-war + tide-table tiers | ui-ux | Nautical chart, discovered-by-presence reveal, buyable charts, table tiers | Locked regions fogged; charts pre-reveal authored hazards; table horizon grows with tier |
-| M2-28 | Region art passes (Sunkers / Drownded / Rips / Greywick) | art-pipeline | Per-region grade + tide-driven visuals + bigger boats | Each region reads as its own mood; tide visuals match sim; metric scale holds |
-| M2-29 | Weather/danger audio + town hum | audio | Storm/fog/region beds; danger cues; inhabited town | Storm/fog beds; aground/lost cues; Greywick sounds populated |
+| M2-28 | Region art passes (Sunkers / Drownded / Rips / Nine Mile Creek) | art-pipeline | Per-region grade + tide-driven visuals + bigger boats | Each region reads as its own mood; tide visuals match sim; metric scale holds |
+| M2-29 | Weather/danger audio + town hum | audio | Storm/fog/region beds; danger cues; inhabited town | Storm/fog beds; aground/lost cues; Nine Mile Creek sounds populated |
 | M2-30 | Streaming-at-passages + perf pass + save migration | qa-test + lead-architect | Stream clusters at passages; profile; migrate M1 saves | One/two regions resident; hits budget; old saves migrate |
 
 ### Epic M2-I — Owner-ratified 2026 additions (St Peters opening · lobster gear · weather/winter · wet tide)
@@ -220,13 +223,13 @@
 > **Core seams already landed for this batch (ADR 0009):** the **tidal-exposure query**
 > (`IEnvironmentService.WaterLevelAt` + `Core.TidalExposure.IsExposed/WaterDepth`) the world terrain and the
 > on-foot walkability sim share for the falling-tide sandbar, and **`Core.RegionDisplayNames`** so the crossing
-> fade card reads "Coddle Cove"/"Port Greywick". Build M2-31/31b/31c against these; do not re-invent them.
+> fade card reads "Coddle Cove"/"Nine Mile Creek". Build M2-31/31b/31c against these; do not re-invent them.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig at low water; **walk the tide-gated sandbar to Greywick** | New starter region; **tide-gated SANDBAR to Greywick** (low-water walking path; channels narrow as the tide falls) reads + works via the Core tidal-exposure seam; **clam-dig → walk sandbar → Greywick** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
+| M2-31 | St Peters Island opening (prologue region) | world-content | Tide-gated home island — 3 houses + school + general store; clam-dig at low water; **walk the tide-gated sandbar to Nine Mile Creek** | New starter region; **tide-gated SANDBAR to Nine Mile Creek** (low-water walking path; channels narrow as the tide falls) reads + works via the Core tidal-exposure seam; **clam-dig → walk sandbar → Nine Mile Creek** arc playable; **start + onboarding relocate here, reusing the dialogue/onboarding system** (`vision` §5.8, `world-and-regions` §6.0) |
 | M2-32 | St Peters clam-dig (shovel + "two squirting holes") | gameplay-systems + world-content | Read the tell on bared flats, dig with a shovel; clam-licence gate (licence system = economy) | Passive "tend" dig (no tension fight); **licence-gated** (licence system owned by economy); the **first catch, before any rod**; reconcile shovel vs `ClamFork` tag (new tag = review-gated) (`fish-and-content` §3.5a) |
-| M2-31b | Greywick early-progression: cod licence + rod + **buy & repair a damaged dory** | economy-sim (+ gameplay-systems) | At Greywick: buy a **cod fishing licence** + a **rod**; sell clams; **buy the damaged dory lying at the Nine Mile Creek wharf and have her put right**, then sail her home | Minimal **licence system** (clam + cod licences) lands in economy; a **damaged** dory is sold at the wharf + made usable; arc completes by **sailing the repaired dory home** (`vision` §5.8, `progression-and-housing` §2.2/§3). ⚠️ **BLOCKED on two owner calls (2026-07-25 ruling: no shipwright in the region):** who sells her, and who repairs her — recommendation is *the player, by hand*. See `design/nine-mile-creek-wharf.md` §1 |
+| M2-31b | Nine Mile Creek early-progression: cod licence + rod + **buy & repair a damaged dory** | economy-sim (+ gameplay-systems) | At Nine Mile Creek: buy a **cod fishing licence** + a **rod**; sell clams; **buy the damaged dory lying at the wharf and have her put right**, then sail her home | Minimal **licence system** (clam + cod licences) lands in economy; a **damaged** dory is sold at the wharf + made usable; arc completes by **sailing the repaired dory home** (`vision` §5.8, `progression-and-housing` §2.2/§3). ⚠️ **BLOCKED on two owner calls (2026-07-25 ruling: no shipwright in the region):** who sells her, and who repairs her — recommendation is *the player, by hand*. See `design/nine-mile-creek-wharf.md` §1 |
 | M2-31c | Rework VS-21 onboarding: inherited dory → **earned + repaired** dory | world-content | The built M1 onboarding (`VS-21`: Ned's logbook + "inherit the dory" at the Cove) is **partly invalidated** by the dropped inherited-dory framing — rework the inherited-dory beat into a buy-and-repair beat | Cottage + Ned's memory stay inherited; the **dory beat becomes buy-and-repair**; dialogue/onboarding **reused, not rebuilt**; flagged in canon §5.8 + `npcs-and-routines` §3.1 (do **not** silently drop) |
 | M2-33 | Lobster gear loop (trap+buoy, leave-helm gaff-haul, winch) | gameplay-systems | Set baited trap+buoy; lay alongside, **leave the helm to gaff & haul** (boat drifts); powered-winch upgrade | Hand-haul is a stamina action; winch automates it (P4); approach/drift reads as seamanship (P1/P5) (`boats-and-navigation` §6.3, `fish-and-content` §3.5b) |
 | M2-34 | Weather v2: waves-push + traveling gusts | gameplay-systems | Wave-push force shoves the hull; moving gust cells you see coming | Wave-push adds to drift + broach (new FORCES field, save-compat bump); gust cells propagate + telegraph; deterministic (`time-tides-weather` §4.8) |
@@ -235,6 +238,53 @@
 | M2-39 | Diegetic interact highlight (shader, no UI) | art-pipeline + gameplay-systems | Facing-aware `IInteractable` candidate gets a subtle outline/rim shader; one bound input acts (pick up / place / grab) | Exactly one candidate highlighted; **no screen-space UI**; input via `InputService` intent; no per-frame alloc; **build first — M2-37/38 consume this verb** (`deck-boarding-cleats-and-interact-capture` §3) |
 | M2-37 | Deck & washboard boarding (Space to climb) | gameplay-systems + art-pipeline | Walkable `DECK`/`WASHBOARD` polygons come from the **rig export** (ADR 0022 mechanism); Space climbs on/off where the hull supports it | Rig-data → Def, no hand transcription; deck rides the wave field under the player; no prompt on hulls without washboards (`deck-boarding-cleats-and-interact-capture` §2–3) |
 | M2-38 | Cleats, ropes & toss-a-line mooring | gameplay-systems + world-content | Per-hull named `CLEATS` (rig data) + shore cleats; grab a line and **toss it with the fishing-cast verb**; made fast = the boat holds | Toss reuses the cast verb; a made-fast line constrains tide/wind drift (sim keeps computing); cozy fail = slipped loop, coil and retry (`deck-boarding-cleats-and-interact-capture` §3) |
+
+### Epic M2-J — Wharf buildings & the built waterfront (P2/P4) (`art-pipeline` / `gameplay-systems` / `economy-sim`)
+> The owner's 2026 directive: **the wharf-building rig's elements become gameplay**, and industrial
+> freezing arrives when the player starts buying buildings.
+>
+> **`docs/art/rigs/wharfBuildingRig.js` is a parametric building generator, and its presets are already the
+> business ladder:** `netShed` / `redShed` / `tealShack` (**shack**) → `gambrelBarn` / **`iceHouse`**
+> (**storage**) → `fishPlant` / `cannery` (**processing**). That is net shed → cold store → cannery: P4's
+> whole arc, pre-authored. It is **not in `RigCatalog` and has never been baked** — no building rig is
+> (`houseIsoRig`, `lighthouseIso` likewise); every building in the game today is a hand-made sprite.
+>
+> **Its builder surface is the building's data schema, not art options.** `type`, `shape`, `size`, `siding`,
+> `base`, `body`, `roof`, `door`, `windows`, `cupola`, `dock`, `hvac`, `stacks`, `vents`, `sign`, `boom`,
+> `weather`, `night`. Several of those are *already gameplay state*:
+> - **`size` 0..1** → capacity / throughput. The upgrade axis.
+> - **`weather` 0..1** → **condition**. Buildings decay and want maintenance — and `RepairLedger` already
+>   does exactly this for the damaged dory.
+> - **`night` + lit windows** → is it **running**? A dark plant is idle; a lit one is working.
+> - **`stacks` 0..3 + smoke** → **visible production**. Smoke from your own stack is the best "the business
+>   runs without me" tell there is (P3 + P4 in one image).
+> - **`dock`** (raised loading dock + roll-up bays) and **`boom`** (roof hoist) → where boats unload; the
+>   winch line M2-33 already opened.
+> - **`sign`** — the rig ships a *blank* gable sign board, "letter it separately". **The player names their
+>   business.**
+> - **`body`** → livery: your buildings match each other.
+>
+> **The runtime seam is pre-built.** `anchors(dir, opts)` returns `{stacks[], door, ridge, Wd, Ln}` in cell
+> px — attachment points for the smoke, glow and label layers. So smoke emitters and door interactables are
+> **read from rig data, never hand-placed**: the same rule ADR 0022 set for hull props and M2-37 for deck
+> polygons. **Rig data → Def, no hand transcription.**
+>
+> **And the two wharf rigs compose:** `wharfBuildingRig`'s own header says *"Buildings sit true on the Wharf
+> tile kit."* So decking-as-frontage (M2-45) is an art-side invariant already, not something to invent.
+>
+> **Persistence is precedented:** ADR 0020 (`PlacedTraps`) established *store only irreducible facts,
+> recompute the rest*. A sited building is `(defId, cell, region)` + its mutable state (condition, running);
+> its **appearance is recomputed from the Def**, never saved.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M2-40 | Bake the wharf-building rig | art-pipeline | Add `wharfBuildingRig` to `RigCatalog`; bake the preset ladder across all 8 facings; export `anchors` alongside the sheets | All 7 presets bake at PPU=32 on the shared ¾ camera; **`anchors` ships as data** (stacks/door/ridge), not transcribed by hand; a building sits true on wharf-kit decking |
+| M2-41 | `WharfBuildingDef` — the rig surface as data | lead-architect + economy-sim | One SO per building mirroring the rig axes (`type`/`size`/`body`/`sign`/`dock`/`stacks`…), plus cost, capacity and what it *does* | Authoring a new building = a new asset, no code (ADR 0003); the visual axes and the gameplay axes are **one** schema, so a bigger `size` really is more capacity; ids append-only |
+| M2-42 | Buy & site a building (the ownership beat) | gameplay-systems + economy-sim | Purchase from the ladder, site it on wharf frontage, **name it** (the rig's blank sign) | Siting uses the M2-39 interact verb; persists on the ADR 0020 pattern (`defId`, cell, region + state; appearance recomputed); insufficient funds blocks gracefully; the sign carries the player's name for it |
+| M2-43 | Buildings run, and wear | gameplay-systems + economy-sim | **Running** state drives lit windows + stack smoke; `weather` accrues as condition; maintenance restores it | You can tell at a glance across the harbour which of your buildings are working; condition decays deterministically and is repaired through the `RepairLedger` pattern; neglect costs throughput, never the building |
+| M2-44 | The ladder's rungs do their jobs | economy-sim | **shack** = gear/net store · **storage/`iceHouse`** = the industrial cold store (M2-21's terminus) · **processing/`fishPlant`,`cannery`** = M2-22's salt house/smokehouse home | Each type unlocks the function its preset promises; the ice house is what finally makes holding stock to time the market a strategy; recipes/capacity are data |
+| M2-45 | Player-built wharf decking | gameplay-systems + economy-sim | Buy and place `wharfKitRig` tiles over water; edges/corners autotile from neighbours; the deck is the **frontage** buildings site onto | Material **gated by water depth + tidal range** (P1 — a float where it's deep, a quay only where dredged; `Core.TidalExposure`/`WaterLevelAt`, ADR 0009/0014); occupancy saved, **edge flags recomputed at load, never stored** (rule 5); a built wharf is a real dock — boats moor and sell there |
+| M2-46 | Bake the wharf tile kit | art-pipeline | Add `wharfKitRig` to `RigCatalog`; bake four materials × edge configurations; retire the flat `WharfDeck` tile | Every material/edge/corner variant bakes; **authored** wharves rebuild from the kit so the player-built version later is the same tiles, not a second system; waterline foam holds |
 
 ---
 

@@ -115,13 +115,13 @@ the almanac UI.
 
 | Category | Identity | Typical regions | Gear that takes it | Default elasticity | Default perish |
 |---|---|---|---|---|---|
-| **Inshore Groundfish** | Bread-and-butter bottom fish near home | Coddle Cove, Sunkers, Greywick approaches | Handline, Jigging, Longline, Gillnet | 0.45 (steady demand, floods if overfished) | Standard |
+| **Inshore Groundfish** | Bread-and-butter bottom fish near home | Coddle Cove, Sunkers, Nine Mile Creek approaches | Handline, Jigging, Longline, Gillnet | 0.45 (steady demand, floods if overfished) | Standard |
 | **Shellfish & Crustaceans** | Traps, dredges, hand-digging; counted by piece | Sunkers, Drownded Lands, Coddle Cove | Trap, Pots, Dredge, ClamFork | 0.35 (premium, sticky demand) | Perishable (often sold/kept alive) |
 | **Pelagic** | Fast, schooling, mid/surface; runs & migrations | Fundy Rips, Banks, Coddle Cove (seasonal) | Jigging, Gillnet, Rod, DipNet | 0.60 (gluts hard during runs) | HighlyPerishable (oily) |
 | **Tidepool & Flats** | Small, tide-gated, hand-gathered; bait & curios | Sunkers (pools), Drownded Lands (flats) | DipNet, ClamFork, Handline | 0.50 | Perishable |
 | **Deepwater / Banks** | Big offshore groundfish & deep species | The Banks, Ironbound | Trawl, Longline, Jigging | 0.40 | Standard |
 | **Storm-grounds / Ironbound** | Cold-water, rough-weather, high-value rarities | Ironbound, The Banks (edges) | Trawl, Longline, Jigging | 0.30 (rare, holds value) | Standard |
-| **Estuary / Brackish** | River-mouth & migratory species | Drownded Lands, Coddle Cove rivers, Greywick estuary | Rod, Gillnet, Trap, DipNet | 0.55 | Perishable |
+| **Estuary / Brackish** | River-mouth & migratory species | Drownded Lands, Coddle Cove rivers, Nine Mile Creek estuary | Rod, Gillnet, Trap, DipNet | 0.55 | Perishable |
 | **Legendary / Cryptid** | Named, gated, story/ambience catches | Ironbound, The Smother, special spots | Varies (often special gear/instruments) | 0.10 (one-off; minimal market effect) | Hardy (kept as trophy/quest item) |
 
 ### 2.2 Rarity tiers (`Rarity`)
@@ -249,14 +249,14 @@ the player reads the tell, **digs with a shovel**, and pulls the clam. Mechanica
 **passive "tend" beat** of §3.4 (read-the-spot + dig, no tension fight), tuned cozy. It is
 **licence-gated** by a **clam licence** bought at the St Peters general store. *Ownership note (this
 wave):* the licence system itself — including the clam licence and the **cod fishing licence** bought
-later at Greywick (the gate on rod-fishing) — is a **real, minimal licence system owned by
+later at Nine Mile Creek (the gate on rod-fishing) — is a **real, minimal licence system owned by
 [`economy-and-business.md`](economy-and-business.md)** (not authored here, and not the
 `progression-and-housing.md` currency table's job to implement); this doc only declares that clams are
 **gated** behind it. *Data note:* clam content already exists (`soft-shell-clam`, `blue-mussel`; gear
 tag `ClamFork`). The **shovel** is the St Peters flavour of the `ClamFork` / hand-dig method —
 **reconcile at M2** whether to add a distinct `Shovel`/`ClamRake` `GearTag` or treat the shovel as the
 `ClamFork` tag's presentation (a new tag touches the enum and is review-gated — §6.1). The **rod** (and
-the cod licence that gates rod finfishing) is bought at **Greywick**, after the sandbar walk — so St
+the cod licence that gates rod finfishing) is bought at **Nine Mile Creek**, after the sandbar walk — so St
 Peters' economy is clams-by-hand only. The "two squirting holes" is a **spot tell** (a hotspot cue,
 §3.3), not a new system.
 
@@ -337,7 +337,7 @@ for content agents authoring the rest. Real Atlantic-Canada species are tuned to
 behavior; the four legendaries are invented Maritime cryptids. Values are reference coin (the economy
 re-prices live). "Tide/Time" abbreviates the windows; full structs live in the assets.
 
-> Notation — Rarity: C/U/R/P/L. Region ids: CC=Coddle Cove, SK=The Sunkers, PG=Port Greywick (approaches/estuary),
+> Notation — Rarity: C/U/R/P/L. Region ids: CC=Coddle Cove, SK=The Sunkers, PG=Nine Mile Creek (approaches/estuary),
 > DL=The Drownded Lands, FR=Fundy Rips, BK=The Banks, IB=Ironbound, SM=The Smother. `PerKg` unless noted `/unit`.
 
 ### 4.1 Inshore Groundfish
@@ -447,7 +447,7 @@ home is here," and overlap is expected.)
 |---|---|---|---|
 | **Coddle Cove** | Inshore Groundfish, Shellfish, Tidepool, some Pelagic | ~16 | Beginner-safe. Heavy tide/time gating teaches P1. Seasonal pelagic runs visit. |
 | **The Sunkers** | Tidepool & Flats, Shellfish, Inshore | ~16 | Low-water access gating (height bands). Grounding hazard pairs with shellfish reward. |
-| **Port Greywick** (estuary/approaches) | Estuary/Brackish, some Inshore | ~8 | River-mouth & brackish species; gentle, social hub waters. |
+| **Nine Mile Creek** (estuary/approaches) | Estuary/Brackish, some Inshore | ~8 | River-mouth & brackish species; gentle, social hub waters. |
 | **The Drownded Lands** | Tidepool & Flats, Estuary, Shellfish | ~14 | Strong low-tide gating (walkable seabed). Clams/smelt/eel; wreck-tied rarities. |
 | **Fundy Rips** | Pelagic, some Deepwater | ~10 | Spring/neap and moving-water gating. Fast pelagics; bluefin; Grey Mare legendary. |
 | **The Banks** | Deepwater/Banks, Pelagic, offshore Shellfish | ~18 | Dragger-class gate. Big groundfish, snow crab, scallop, tuna, halibut. |

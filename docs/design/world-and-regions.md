@@ -71,17 +71,17 @@ lobster traps, working wharves.
 
 > **St Peters Island is the owner-ratified prologue (phased M2, built as a greybox prototype — see
 > `../roadmap.md`).** The arc is now **DECIDED** (owner-ratified 2026): **St Peters → [walk the
-> tide-gated sandbar] → Port Greywick (buy cod licence + rod; buy + repair a damaged dory) → Coddle
+> tide-gated sandbar] → Nine Mile Creek (buy cod licence + rod; buy + repair a damaged dory) → Coddle
 > Cove (sail the repaired dory home; it becomes the home base).** St Peters **prepends** the arc
 > **without deleting** the Coddle Cove opening — Coddle Cove stays central and **everything built for
 > it is reused**; it is simply **reordered** to be the home you *arrive at* once the dory is yours
 > (it remains the **M1 vertical-slice** start). St Peters links to the mainland **only across a
-> tide-gated SANDBAR at low water** (pure P1): the **first crossing is on foot to Greywick**, before
+> tide-gated SANDBAR at low water** (pure P1): the **first crossing is on foot to Nine Mile Creek**, before
 > you own any boat. Its full brief is §6.0; everything about it below is **future (M2)**, captured
 > here so the world stays a single source of truth. (Canon: `../vision-and-pillars.md` §5.8.)
 
 The deliberate design gradient runs **bottom-left to top-right**: from sheltered, shallow,
-forgiving, populated inshore water (Coddle Cove, Greywick) outward and upward to open, deep,
+forgiving, populated inshore water (Coddle Cove, Nine Mile Creek) outward and upward to open, deep,
 lonely, lethal water (The Banks, Ironbound, The Smother). This gradient is the spine of
 progression (P2) and of escalating danger (P5). The player literally sails *up the difficulty
 curve* as they sail away from home.
@@ -122,16 +122,16 @@ single most important structural decision in this doc, so it is spelled out full
 
 | From | Reachable directly via | Transition type |
 |------|------------------------|-----------------|
-| St Peters Island *(prologue, M2)* | **Port Greywick** (the mainland) | **Tide-gated SANDBAR** — bares as a **walking path** near **low water** (boat-crossable channels narrow as the tide falls); cut off at high tide (P1). The opening's **first crossing is on foot to Greywick** before any boat is owned. |
-| Coddle Cove | The Sunkers, Port Greywick | Contiguous (inshore cluster). *(In the full arc, Coddle Cove is **first reached by sailing the repaired dory from Greywick**, then it is the home base — `../vision-and-pillars.md` §5.8.)* |
+| St Peters Island *(prologue, M2)* | **Nine Mile Creek** (the mainland) | **Tide-gated SANDBAR** — bares as a **walking path** near **low water** (boat-crossable channels narrow as the tide falls); cut off at high tide (P1). The opening's **first crossing is on foot to Nine Mile Creek** before any boat is owned. |
+| Coddle Cove | The Sunkers, Nine Mile Creek | Contiguous (inshore cluster). *(In the full arc, Coddle Cove is **first reached by sailing the repaired dory from Nine Mile Creek**, then it is the home base — `../vision-and-pillars.md` §5.8.)* |
 | The Sunkers | Coddle Cove, The Drownded Lands | Contiguous |
-| The Drownded Lands | The Sunkers, Port Greywick, Fundy Rips | Contiguous inshore / passage to Rips |
-| Port Greywick | Coddle Cove, The Drownded Lands, The Shipping Lanes, **St Peters Island** *(tide-gated sandbar, M2)* | Contiguous harbour + lane buoys; St Peters via the tide-gated sandbar (on foot at low water) |
+| The Drownded Lands | The Sunkers, Nine Mile Creek, Fundy Rips | Contiguous inshore / passage to Rips |
+| Nine Mile Creek | Coddle Cove, The Drownded Lands, The Shipping Lanes, **St Peters Island** *(tide-gated sandbar, M2)* | Contiguous harbour + lane buoys; St Peters via the tide-gated sandbar (on foot at low water) |
 | Fundy Rips | The Drownded Lands, The Banks | Timed passage (tide-gated strait) |
 | The Banks | Fundy Rips, Ironbound, The Smother, The Shipping Lanes | Open-water passages / set-a-course |
 | Ironbound | The Banks | Open-water passage (weather-gated) |
 | The Smother | The Banks | Instrument-gated passage |
-| The Shipping Lanes | Port Greywick, The Banks, → mainland | Lane network (freight) |
+| The Shipping Lanes | Nine Mile Creek, The Banks, → mainland | Lane network (freight) |
 
 `MapGraph` (a ScriptableObject, see §8) holds these edges; each edge carries its gate
 requirement and transition type. The graph is the single source of truth for "where can I go
@@ -151,7 +151,7 @@ variety live."** Applied to the world:
   (the bathymetry that drives grounding), and which tiles are land/water/intertidal.
 - All **landmarks**: the lighthouse, the wreck on the flats, the auction house, named sunkers,
   the gut of the Rips.
-- **Town and buildings** in Port Greywick and the home wharf in Coddle Cove.
+- **Town and buildings** in Nine Mile Creek and the home wharf in Coddle Cove.
 - The placement of **named NPCs** and their home/work anchors (see `npcs-and-routines.md`).
 - **Quest geography** — where story beats happen.
 
@@ -209,7 +209,7 @@ system in itself, layering three mechanisms:
    discovered. What you have personally seen is drawn; what you haven't is grey. This rewards
    exploration directly and makes the first transit of anywhere meaningful.
 
-2. **Charts you buy or earn.** The **chart shop / chandlery in Port Greywick** sells regional
+2. **Charts you buy or earn.** The **chart shop / chandlery in Nine Mile Creek** sells regional
    **sea charts** that pre-reveal the safe channels, marked sunkers, and depth contours of a
    region *before* you go — at a price. A chart is the difference between groping blind and
    knowing where the rocks are. Some charts are gated behind story or NPC relationships rather
@@ -233,10 +233,10 @@ system in itself, layering three mechanisms:
 
 | # | Region | Cluster | Identity (one line) | Unlock gate (canon) |
 |---|--------|---------|---------------------|---------------------|
-| 0 | **St Peters Island** *(prologue, M2)* | Inshore (home island) | Tide-gated home island; the opening — clam-dig at low water, **walk the sandbar to Greywick** | The opening (no gate; built M2) |
-| 1 | **Coddle Cove** | Inshore | Home harbour; sheltered tutorial water | Start zone (M1 slice); in the full arc, **home base sailed to after the dory is bought + repaired at Greywick** |
+| 0 | **St Peters Island** *(prologue, M2)* | Inshore (home island) | Tide-gated home island; the opening — clam-dig at low water, **walk the sandbar to Nine Mile Creek** | The opening (no gate; built M2) |
+| 1 | **Coddle Cove** | Inshore | Home harbour; sheltered tutorial water | Start zone (M1 slice); in the full arc, **home base sailed to after the dory is bought + repaired at Nine Mile Creek** |
 | 2 | **The Sunkers** | Inshore | Tidal reef field; shellfish & grounding hazard | Basic boat + reading tide |
-| 3 | **Port Greywick** | Inshore | The market town; shops, auction, most NPCs | Story unlock (early) |
+| 3 | **Nine Mile Creek** | Inshore | The market town; shops, auction, most NPCs | Story unlock (early) |
 | 4 | **The Drownded Lands** | Inshore→mid | Tidal flats that become walkable seabed at low water | Tide mastery + tide table |
 | 5 | **Fundy Rips** | Mid | Narrows with ferocious tidal current; time the tide | Capable hull + navigation skill |
 | 6 | **The Banks** | Offshore | Open offshore grounds; deepwater & big pelagics | Seaworthy offshore boat (dragger-class) |
@@ -262,9 +262,9 @@ present · Authored vs simulated · Role in progression.**
 > base sailed to later). Everything in this brief is **future work** captured now so the world stays
 > consistent. The Ginny/Ned onboarding **relocates** here at M2 and the **dialogue/onboarding system
 > is reused, not rebuilt**. **The decided arc:** St Peters → **walk the tide-gated sandbar to
-> Greywick** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine
+> Nine Mile Creek** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine
 > Mile Creek wharf and have her put right** → **sail the dory home to Coddle Cove** (canon §5.8).
-> *(Owner ruling 2026-07-25: the wharf is Greywick's, one region two zones; **no shipwright stands
+> *(Owner ruling 2026-07-25: the wharf is the town's own, one region two zones; **no shipwright stands
 > there**, so the seller is someone else on the wharf and who repairs her is open —
 > [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)*
 
@@ -277,13 +277,13 @@ you ever leave home. Cozy, safe, formative.
 **Physical layout & landmarks.** A small island holding: the **village** (3 houses + the **school**
 where the aunt teaches the compass and hand skills + the **general store** for basic gear); **clam
 flats** that bare at low water; and the **tide-gated SANDBAR** (a cobble-and-sand bar) that bares as
-a **walking path to Port Greywick** only near low water. Everything within an easy walk; shallow,
+a **walking path to Nine Mile Creek** only near low water. Everything within an easy walk; shallow,
 soft, forgiving water all around. *(No dory here — your first boat is bought damaged **at the Nine
 Mile Creek wharf** (§6.3) and put right there; the earlier "uncle's broken dory on the slip" framing
 is retired, canon §5.8.)*
 
 **Hazards.** Deliberately minimal — the gentlest tutorial of all. The one teeth-of-tide lesson: **the
-sandbar floods.** Walk across toward Greywick and dawdle past the turn of the tide and you are **cut
+sandbar floods.** Walk across toward Nine Mile Creek and dawdle past the turn of the tide and you are **cut
 off until the next low water** (lost time, never worse — P5 at its kindest). Soft mud can briefly
 mire a careless step. No rocks, no current, no weather of consequence.
 
@@ -291,11 +291,11 @@ mire a careless step. No rocks, no current, no weather of consequence.
 shellfish digging** on the bared flats — the **shovel** and the **"two squirting holes"** tell (see
 `fish-and-content.md`) — **licence-gated** (the **clam licence** is owned by the licence system in
 `economy-and-business.md`, not authored here). This by-hand income is what funds the **dory** you buy
-and repair at Greywick (P4 in miniature: do the humblest job by hand to earn your way up). St Peters
-offers no rod-fishing of consequence — the **rod** is bought at **Greywick**, after the walk.
+and repair at Nine Mile Creek (P4 in miniature: do the humblest job by hand to earn your way up). St Peters
+offers no rod-fishing of consequence — the **rod** is bought at **Nine Mile Creek**, after the walk.
 
 **Tide behaviour.** Tide is the island's defining force from minute one (the purest P1 primer): low
-water bares the clam flats **and** opens the **sandbar** to Greywick; high water drowns the flats and
+water bares the clam flats **and** opens the **sandbar** to Nine Mile Creek; high water drowns the flats and
 **seals the island off**. Before anything else, the player learns that the sea's clock decides *what
 they can do* and *where they can go* — the ideal warm-up for the Sunkers, the Drownded Lands, and the
 Rips. **Spring lows** bare the most flat (best digging) and the widest sandbar window; neaps the
@@ -306,7 +306,7 @@ Ginny; see `../vision-and-pillars.md` §5.8 and `npcs-and-routines.md` — inten
 placed to serve the arc*); a handful of island **neighbours**; the **storekeeper** (sells basic
 gear). The departed **Uncle Ned** is felt here through the cottage he left (in the Cove), the aunt's
 stories, and his logbook — **not** through an inherited dory (the boat is now earned + repaired at
-Greywick, canon §5.8). A small cast by design — intimacy over bustle.
+Nine Mile Creek, canon §5.8). A small cast by design — intimacy over bustle.
 
 **Authored vs simulated.** *Authored:* island layout, the village (houses/school/store), the
 clam-flat and **sandbar** geography, the opening quest beats. *Simulated:* which clams/flotsam are
@@ -314,7 +314,7 @@ exposed this tide (scaled by spring/neap), tide/weather, and the **sandbar windo
 
 **Role in progression.** The **prologue / the cradle before the cradle.** It teaches, at the smallest
 possible scale, the spine of the whole game: **read the tide → work by hand (dig clams) → earn →
-walk the sandbar → spend (cod licence + rod, then buy + repair the dory at Greywick) → sail home.**
+walk the sandbar → spend (cod licence + rod, then buy + repair the dory at Nine Mile Creek) → sail home.**
 Completing it (owning the repaired dory and sailing to the cove) **graduates the player to Coddle
 Cove** as the home base and the rest of the arc. Because it is **M2**, the M1 slice still *starts* at
 Coddle Cove; when St Peters lands, the start and onboarding move here and Coddle Cove is reused as
@@ -332,7 +332,7 @@ inherited very little and a lot of weather. This is the cozy heart the whole gam
 from (P5).
 
 **Physical layout & landmarks.** A horseshoe cove with a narrow mouth opening seaward toward
-The Sunkers, and an inshore passage hugging the coast toward Port Greywick. Landmarks: the
+The Sunkers, and an inshore passage hugging the coast toward Nine Mile Creek. Landmarks: the
 **uncle's cottage & wharf** (your home base, save/rest, basic storage, the dory's mooring); a
 small **stony beach** for beachcombing; a **fish shack / bait stand**; a couple of neighbour
 cottages; a leaning **cove marker beacon** at the mouth. Shallow, soft-bottomed, forgiving
@@ -364,7 +364,7 @@ weather/tide, the odd passing boat.
 
 **Role in progression.** The cradle. Tutorialises the full core loop — fish → store → sell —
 at the smallest, safest scale, and is the vertical-slice region (canon §7). In the **full arc** it
-is the **home base you sail your newly-repaired dory home to** after St Peters + Greywick (canon
+is the **home base you sail your newly-repaired dory home to** after St Peters + Nine Mile Creek (canon
 §5.8), and remains a cozy home base forever; you return to it to rest, to the cottage, and
 eventually to *miss* it as you spend your days at the edge of the world.
 
@@ -412,7 +412,7 @@ the gateway from the safe cove to the wider inshore cluster.
 
 ---
 
-### 6.3 Port Greywick — *the market town*
+### 6.3 Nine Mile Creek — *the market town*
 
 **Identity & mood.** The beating commercial and social heart of the Banks. A larger working
 harbour town of weathered clapboard, a stone breakwater, a busy public wharf, and the
@@ -431,12 +431,12 @@ the **marine-supply / processing plant** (value-add, `economy-and-business.md`),
 **housing/commercial property** for sale (`progression-and-housing.md`). A small **lighthouse**
 on the point. This is the densest authored content in the game.
 
-**Hazards.** Minimal on the water (sheltered harbour) — Greywick is a *safe haven*, the place
+**Hazards.** Minimal on the water (sheltered harbour) — Nine Mile Creek is a *safe haven*, the place
 you run *to*. The "hazards" here are economic and social: market timing, prices, reputation.
 
-**Catch & resources (categories).** Greywick is primarily a **services and market** region, not
+**Catch & resources (categories).** Nine Mile Creek is primarily a **services and market** region, not
 a fishing ground. The harbour itself offers only marginal inshore/scavenge fishing; the value
-of Greywick is selling, buying, refining, hiring, and storing — not catching.
+of Nine Mile Creek is selling, buying, refining, hiring, and storing — not catching.
 
 **Tide behaviour.** The harbour is dredged/deep enough to stay workable across the tide (a
 deliberate gameplay convenience — your home market should not strand you), but tide still shows:
@@ -456,7 +456,7 @@ traffic, weather/tide ambiance.
 **Role in progression.** The hub that turns fish into money into capability. **Story-unlocked
 early** (canon) — opening it is the moment the game expands from "subsistence in the cove" to
 "a player in the coast's economy." Every other progression system (boats, business, housing,
-staff, relationships) routes through Greywick.
+staff, relationships) routes through Nine Mile Creek.
 
 ---
 
@@ -714,9 +714,9 @@ magnate* — big ships, bulk hauls, contracts, schedules, and a fleet you comman
 crew. The "Dynasty" end of "From Dory to Dynasty" (P2), realised as logistics.
 
 **Physical layout & landmarks.** Not a fishing ground but a **network**: marked **sea-lanes**
-(buoyed shipping routes) radiating from Port Greywick out past the Banks toward off-map
+(buoyed shipping routes) radiating from Nine Mile Creek out past the Banks toward off-map
 **mainland ports** and distant markets. Landmarks: **lane buoys / sea-marks** defining the
-routes, **traffic separation** zones, the **Greywick freight wharf / bulk terminal**, and
+routes, **traffic separation** zones, the **Nine Mile Creek freight wharf / bulk terminal**, and
 **off-map port nodes** (represented as destinations on the chart / map graph rather than fully
 explorable places). The big ships (freighter/tanker tiers) operate here.
 
@@ -737,7 +737,7 @@ harbours), and the Fundy Rips remain a tide-timed choke point on any route that 
 Tide thus stays relevant even at the top of the ladder (P1).
 
 **NPCs present.** Freight **brokers / contract-givers** and **port agents** (likely a mix of named
-NPCs at the Greywick freight office and procedural contacts at off-map ports). Your own **hired
+NPCs at the Nine Mile Creek freight office and procedural contacts at off-map ports). Your own **hired
 crew/captains** run the fleet (staff, owned by `economy-and-business.md`). Other shipping traffic
 as procedural extras.
 
@@ -759,9 +759,9 @@ from the cottage in Coddle Cove.
 Tide is the world's defining force (P1), and several regions are *literally reshaped* by it. This
 section gathers the cross-cutting rules; the simulation lives in `time-tides-weather.md`.
 
-- **St Peters Island — the tide-gated SANDBAR to Greywick** *(prologue, M2)*. As the deterministic
+- **St Peters Island — the tide-gated SANDBAR to Nine Mile Creek** *(prologue, M2)*. As the deterministic
   tide **falls**, exposed seabed becomes **walkable** and a **sandbar between St Peters and Port
-  Greywick bares as a walking path at low water** (with **boat-crossable channels that narrow as the
+  Nine Mile Creek bares as a walking path at low water** (with **boat-crossable channels that narrow as the
   tide falls**); the flood **covers it and seals the island off**. It is the **first way to reach the
   mainland — on foot, before any boat is owned**. Mechanically identical to the Drownded Lands cutoff
   (a `seabedElevation`/terrain-elevation threshold compared against the deterministic water level —
@@ -805,7 +805,7 @@ ordering is good pacing* and how the gates combine.
 
 Regions are gated by one or more of:
 
-- **Story** — a narrative beat opens it (Greywick).
+- **Story** — a narrative beat opens it (Nine Mile Creek).
 - **Boat capability** — your hull must be physically capable (draught for shallows, hull
   strength/seaworthiness for current and weather, range for distance). Owned by
   `boats-and-navigation.md`.
@@ -821,10 +821,10 @@ bought with one currency (P2, P4).
 
 | Order | Region | Gate (canon) | Why here / what it teaches |
 |-------|--------|--------------|----------------------------|
-| 0 | St Peters Island *(prologue, M2)* | The opening (no gate) | The pre-cradle: read the tide, dig clams by hand, **walk the tide-gated sandbar to Greywick**, buy a cod licence + rod, **earn a damaged dory and pay to repair it**, sail home. The whole game's spine, in miniature. |
+| 0 | St Peters Island *(prologue, M2)* | The opening (no gate) | The pre-cradle: read the tide, dig clams by hand, **walk the tide-gated sandbar to Nine Mile Creek**, buy a cod licence + rod, **earn a damaged dory and pay to repair it**, sail home. The whole game's spine, in miniature. |
 | 1 | Coddle Cove | Start (M1 slice) | Cradle: learn the core loop safely. |
 | 2 | The Sunkers | Basic boat + reading tide | First teeth; learn grounding & tide-reading cheaply. |
-| 3 | Port Greywick | Story (early) | Open the economy/social hub once you have something to sell. |
+| 3 | Nine Mile Creek | Story (early) | Open the economy/social hub once you have something to sell. |
 | 4 | The Drownded Lands | Tide mastery + tide table | First region requiring a *tool*; deepen tide mastery. |
 | 5 | Fundy Rips | Capable hull + nav skill | Graduation gate: timing slack water; door to offshore. |
 | 6 | The Banks | Offshore dragger-class boat | Industry scale; laborer→owner; bankrolls commerce. |
@@ -872,7 +872,7 @@ and none is a flat repeat of the last.
 > own-scene proposal (owner ask, 2026-07-23).
 
 - **One Unity scene per region** (additively loaded), e.g. `Scene_CoddleCove`,
-  `Scene_TheSunkers`, `Scene_PortGreywick`, `Scene_DrowndedLands`, `Scene_FundyRips`,
+  `Scene_TheSunkers`, `Scene_PortNine Mile Creek`, `Scene_DrowndedLands`, `Scene_FundyRips`,
   `Scene_TheBanks`, `Scene_Ironbound`, `Scene_TheSmother`, plus the lane network for
   `Scene_ShippingLanes`. A **persistent core scene** (player, boat, time/tide/weather sim, UI,
   audio, save) stays loaded across all of them; regions load/unload additively around it.
@@ -946,7 +946,7 @@ and none is a flat repeat of the last.
   or the Banks in winter, seasonal fish runs through the Rips. Canon has four seasons; how strongly
   they reshape *geography* (vs just fish availability) is open. Coordinate with
   `time-tides-weather.md` and `fish-and-content.md`.
-- **Greywick harbour tide convenience.** Confirmed-deliberate that the home market never strands
+- **Nine Mile Creek harbour tide convenience.** Confirmed-deliberate that the home market never strands
   you (§6.3), but should *extreme* spring lows still mildly inconvenience deep-draught freighters
   at the bulk terminal (tying P1 to the commerce tier)? Likely yes; confirm with
   `economy-and-business.md`. (§6.9)

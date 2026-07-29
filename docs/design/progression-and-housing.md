@@ -70,7 +70,7 @@ do X" coincide.
 ### 2.2 Licenses & permits
 
 Licenses are the *explicit gate* — the thing that makes a region or capability "click" open. They
-are issued by named authorities (the Harbourmaster at **Port Greywick**, the regional
+are issued by named authorities (the Harbourmaster at **Nine Mile Creek**, the regional
 Lighthouse-Keepers, the **Banks** fisheries board), so unlocking is a *social/world* act, not a
 silent flag (P3). Each license has: **fee (money)**, **eligibility (proficiency + sometimes
 reputation)**, and occasionally a **processing time (days)**.
@@ -80,10 +80,10 @@ Representative licenses (full list lives with the data; see §6):
 | License | Eligibility (typical) | Unlocks |
 |---|---|---|
 | **Clam Licence** *(St Peters opening, M2)* | none (small fee at the St Peters general store) | **Clam digging** on the bared low-water flats — the gentlest first instance of the licence gate, and the player's first earned income |
-| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee at **Port Greywick** | **Rod finfishing for cod** — bought after walking the sandbar to Greywick, alongside the first **rod**; the gate that turns hand-digging into real fishing |
+| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee at **Nine Mile Creek** | **Rod finfishing for cod** — bought after walking the sandbar to Nine Mile Creek, alongside the first **rod**; the gate that turns hand-digging into real fishing |
 | **Inshore Handline** | none (granted in tutorial) | Hand-fishing in Coddle Cove |
 | **Tide-Reader's Note** | Navigation: Coaster + a Sunkers run | Safer Sunkers reef work; tide-table tool upgrade |
-| **Port Greywick Trade Seal** | Story (early) | Use the auction house; rent storage |
+| **Nine Mile Creek Trade Seal** | Story (early) | Use the auction house; rent storage |
 | **Flats Permit** | Navigation: Pilot + tide table | Walk the seabed in **The Drownded Lands** at low water |
 | **Rips Transit Endorsement** | Seamanship: Mate + Navigation: Pilot | Legal/safe transit of **Fundy Rips** |
 | **Offshore Groundfish License** | Seamanship: Mate + dragger-class hull | Fish **The Banks** |
@@ -105,7 +105,7 @@ Reputation is **per-faction**, not a single global number, so the working coast 
 alive (P3). Starting factions:
 
 - **Coddle Cove neighbours** (your uncle's old friends) — warm start; small early favours.
-- **Port Greywick townsfolk / Harbourmaster** — gates the Trade Seal, berth quality, some licenses.
+- **Nine Mile Creek townsfolk / Harbourmaster** — gates the Trade Seal, berth quality, some licenses.
 - **The Banks fishing fleet** — respect earned offshore; better grounds intel, crew recruits.
 - **Mainland shippers / brokers** — the freight tier; reliability raises contract value.
 
@@ -127,10 +127,10 @@ section only describes *how the currencies move you between them*.
 
 | Stage | Identity | Boat (tier) | Region(s) opened | Primary gate to *leave* this stage |
 |---|---|---|---|---|
-| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island → Port Greywick (on foot) | Dig clams → **clam licence** → **walk the tide-gated sandbar to Greywick** → buy a **cod licence + rod** → **save for + buy a damaged dory and pay the shipwright to repair it** → sail it home to Coddle Cove |
+| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island → Nine Mile Creek (on foot) | Dig clams → **clam licence** → **walk the tide-gated sandbar to Nine Mile Creek** → buy a **cod licence + rod** → **save for + buy a damaged dory and pay the shipwright to repair it** → sail it home to Coddle Cove |
 | **0. Handline** | "By hand, in the dory you earned" | The Dory (T0) | Coddle Cove | Earn first stake + Fishing→Hauler |
 | **1. First boat & first reef** | Owning a hull, reading tide | Punt/Skiff (T1) | + The Sunkers | Money for a Cape Islander + Seamanship→Deckhand + Tide-Reader's Note |
-| **2. Town & market** | Trading, not just catching | Cape Islander (T2) *or* Lobster Boat (T3) | + Port Greywick, + Drownded Lands (with Flats Permit) | Business→Trader + Offshore License eligibility |
+| **2. Town & market** | Trading, not just catching | Cape Islander (T2) *or* Lobster Boat (T3) | + Nine Mile Creek, + Drownded Lands (with Flats Permit) | Business→Trader + Offshore License eligibility |
 | **3. Offshore** | Working the open grounds | Side Dragger (T4) → Stern Trawler (T5) | + Fundy Rips, + The Banks, + Ironbound | Business→Manager + Freight Carrier's License |
 | **4. Freight & fleet** | Owner, not laborer | Coastal Packet (T6) → Tanker (T7) | + The Shipping Lanes, (+ The Smother, optional) | End-game: a self-running dynasty |
 
@@ -140,9 +140,9 @@ section only describes *how the currencies move you between them*.
 greybox prototype — canon `../vision-and-pillars.md` §5.8.)* Before the cove and the dory, you start
 on **St Peters Island** with nothing but your hands and the tide. You buy a **clam licence** and
 **dig clams at low water** with a shovel — your very first earned income, the humblest job, done by
-hand (the purest P4 on-ramp). As the tide **falls**, a **sandbar to Port Greywick** bares; you **walk
+hand (the purest P4 on-ramp). As the tide **falls**, a **sandbar to Nine Mile Creek** bares; you **walk
 it to the mainland** at low water (and learn the tide-gate the kind way — dawdle and you wait for the
-next low). At Greywick you buy a **cod fishing licence + a rod**, sell your clams, and **save to buy a
+next low). At Nine Mile Creek you buy a **cod fishing licence + a rod**, sell your clams, and **save to buy a
 damaged dory at the shipwright — then pay to repair it**. The boat is *earned*, not inherited. With a
 seaworthy dory you **sail home to Coddle Cove**, where the rest of the arc begins. *(This prologue
 **reorders and reuses** the Coddle Cove onboarding, which remains the M1 start — see §5.8; the
@@ -156,12 +156,12 @@ Handliner toward Hauler. This is the whole game in one cove — short, complete,
 by hand first*).
 
 **The first boat and the first reef.** With a small stake you buy the **Punt/Skiff (T1)** from the
-Greywick shipwright. A little hold, a little reach — enough to nose into **The Sunkers**. Now tide
+Nine Mile Creek shipwright. A little hold, a little reach — enough to nose into **The Sunkers**. Now tide
 *bites*: the Sunkers ground a careless hull at low water (P1/P5). Earning the **Tide-Reader's
 Note** (Navigation: Coaster + one Sunkers run) upgrades your tide tool and makes the reef workable.
 Seamanship begins to matter as wind shoves your light hull around.
 
-**The town and the market.** The story opens **Port Greywick** (the Trade Seal). Suddenly catching
+**The town and the market.** The story opens **Nine Mile Creek** (the Trade Seal). Suddenly catching
 is only half the game: you can *store to time sales*, watch supply/demand, and start trading
 (Business proficiency begins). Here the ladder forks: commit to the **Lobster Boat (T3)** trap
 specialist branch, or the all-rounder **Cape Islander (T2)** — both are real workboats with real
@@ -223,7 +223,7 @@ portfolio of residences.
 |---|---|---|---|---|
 | **R0** | **Uncle's Cottage** | Coddle Cove (on the home wharf) | Inherited (start) | Small, weathered, a few decor slots, a sea-chest for storage. Sentimental anchor. |
 | **R1** | **Cottage refit** | Coddle Cove | Buy upgrades | Expand rooms, better bed, more storage, workshop nook |
-| **R2** | **Greywick Townhouse** | Port Greywick | Buy | In-town, close to market; more decor & storage; status |
+| **R2** | **Nine Mile Creek Townhouse** | Nine Mile Creek | Buy | In-town, close to market; more decor & storage; status |
 | **R3** | **Outport / coastal homes** | various unlocked regions | Buy | Multiple residences; a base near distant grounds |
 | **R4** | **Captain's House / Estate** | premium lot | Buy + Business: Magnate | End-game flex; large decor canvas; trophy room for legendary fish |
 
@@ -237,7 +237,7 @@ Three layers, in order of importance:
 1. **Customize (the main fun).** Place and arrange furniture and decor on a tile grid (PPU=32, so
    furniture footprints are honest metres — a table is ~1×2 tiles). Wallpaper/flooring swaps,
    exterior touches (paint the trim, a buoy on the wall, nets on the rail), and a **trophy display**
-   for record catches and legendary fish. Decor is bought from Greywick shops, found, crafted, or
+   for record catches and legendary fish. Decor is bought from Nine Mile Creek shops, found, crafted, or
    awarded.
 2. **Storage (utility).** Homes hold a **sea-chest / lockers** — your at-home stash (separate from
    the boat hold and from commercial warehouses). Bigger/upgraded homes = more home storage. This
@@ -276,7 +276,7 @@ effects, staffing economics) lives in `economy-and-business.md`.
 | **Berths / slips** | Buy/lease a berth; upgrade size (to fit bigger hulls), add a crane, a fuel point | Name it, paint it, signage | Faster turnaround, fleet basing (`economy-and-business.md`) |
 | **Warehouses** | Buy/build; upgrade capacity tier & climate (cold storage); add loading docks | Shelving layout, signage, your mark | Bulk storage to time sales; logistics hub |
 | **Processing plants** | Buy/build; upgrade processing lines & quality; add machines | Floor layout of stations | Refine raw catch → value-add goods |
-| **Shops / market stalls** | Buy a Greywick storefront; upgrade frontage & shelf count | Window dressing, sign, stock display | Sell direct; passive retail income |
+| **Shops / market stalls** | Buy a Nine Mile Creek storefront; upgrade frontage & shelf count | Window dressing, sign, stock display | Sell direct; passive retail income |
 
 **Ownership mechanics shared by all commercial property:**
 
