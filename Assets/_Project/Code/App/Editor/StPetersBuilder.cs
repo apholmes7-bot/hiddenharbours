@@ -444,6 +444,30 @@ namespace HiddenHarbours.App.Editor
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
 
+            // --- THE COLD CHAIN, ashore (M1 §7.3 — gameplay-systems) --------------------------------
+            // Ginny's FREEZER by the cottage (Frozen: time ashore, free but only at home) and the
+            // WET-BUCKET spot at the water's edge (Live: free, shellfish only). Both are proximity
+            // interactables on the stall pattern (StallReach resolves the player itself — no wiring);
+            // greybox colour markers until art lands. Ice for the boat rides the DeckIceBox on the
+            // hold (runtime-spawned) — nothing to place here.
+            var freezerGo = new GameObject("GinnyFreezer");
+            freezerGo.transform.position = new Vector3(-42f, 2.2f, 0f);
+            var freezerSr = freezerGo.AddComponent<SpriteRenderer>();
+            freezerSr.sprite = waterSprite;
+            freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
+            freezerSr.sortingOrder = 3;
+            freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
+            freezerGo.AddComponent<GinnyFreezer>();
+
+            var wetGo = new GameObject("WetBucketSpot");
+            wetGo.transform.position = new Vector3(-30f, -6f, 0f);   // the sand rim, at the water
+            var wetSr = wetGo.AddComponent<SpriteRenderer>();
+            wetSr.sprite = waterSprite;
+            wetSr.color = new Color(0.25f, 0.45f, 0.60f);   // a seawater barrel, reads wet
+            wetSr.sortingOrder = 3;
+            wetGo.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            wetGo.AddComponent<WetBucketPoint>();
+
             // NIGHT WINDOWS — the cottage's lit-window SPRITE SWAP (CottageDayNight): swap to the lit-window
             // night sprite after dusk (through the Core clock only). Complements the window GLOW below: the swap
             // shows lit panes, the glow makes the cottage actually CAST warm light onto the ground. Both are
