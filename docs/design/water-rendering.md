@@ -1596,6 +1596,34 @@ sit **before** the palette guard-rail grade (§13, `col.rgb`-only) and the post-
 (§11.6), which are left untouched, so they compose cleanly. The shipped `Water.mat` variant is force-compiled by
 `WaterShaderCompileGuardTests`, so any HLSL slip fails CI red (not magenta-in-build).
 
+### 17.6 Field-driven caustics (ADR 0027 #2)
+
+The `_Caustic*` layer scrolled an independent noise, so the seabed shimmer had no relationship to the
+swell visibly rolling over it. `_CausticCurvatureBlend` (default **0** = today's independent noise
+EXACTLY) re-derives the caustic brightness from the local **curvature** of the SAME `WaveFieldSample()`
+the swell bands / whitecaps / hull ride (§16): a finite-difference Laplacian over 4 axis taps at
+`_CausticCurvatureStep` metres around the already-sampled centre height, on the same pixelized world
+grid (the crawl law, §3) — brightest where the surface is locally **convex toward the sun** (a dome
+focuses light; `−lap × _CausticCurvatureGain`, saturated). Composition unchanged: the curvature signal
+replaces only the vein VALUE inside the existing `_CausticDepth` gate, the `_CausticDayGate` sun gate
+(§17.2), `_CausticAmount` and `_CausticColor` — every downstream multiplier intact, and the painted
+`_CausticTex` blend still applies before it at its own strength. Gated by the field's amplitude (the
+`swellLive` idiom, `saturate(_WaveFieldParams.z × 40)`): with no live trains (edit mode / a bare art
+scene) or on dead glass the blend eases back to the independent noise, so a bare scene never loses its
+dapple — and physically a flat surface focuses nothing. No new C# uniform (the curvature needs no new
+sim-pushed data — the ADR 0027 "no new uniform" ruling; the three knobs are material properties,
+rule 6). `col.rgb` only — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim
+(P1 integrity, CLAUDE.md rule 5). Cost: 4 extra `WaveFieldSample` calls inside
+`if (_CausticCurvatureBlend > 0.001)` — zero at the shipped default. Deliberately NOT added to
+`WaterSurface.MoodFloatNames` (no double-drive); whether the blend should be mood-eased is an open
+question for the owner.
+
+| Property | Default | Effect |
+|---|---|---|
+| `_CausticCurvatureBlend` | `0` (**OFF**) | 0 = today's independent noise exactly; 1 = fully field-driven. The owner's dial. |
+| `_CausticCurvatureStep` | `0.5` m | Finite-difference step of the curvature taps (bigger = broader, softer light nets). |
+| `_CausticCurvatureGain` | `12` | Contrast of the field-driven veins (scales the raw Laplacian into 0..1). |
+
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 
 Faint foam **streaks aligned with the tidal current** so the player can **read which way the sea is setting**

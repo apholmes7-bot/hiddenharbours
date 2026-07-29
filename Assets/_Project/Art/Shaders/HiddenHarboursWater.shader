@@ -478,6 +478,19 @@ Shader "HiddenHarbours/Water"
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
 
+        // ---- ADR 0027 #2: caustics DRIVEN BY THE SHARED WAVE FIELD (default OFF = today) ---------------
+        // The seabed shimmer derives from the local CURVATURE of WaveFieldSample() — brightest where the
+        // surface is locally CONVEX toward the sun (a dome focuses light) — instead of scrolling an
+        // independent noise, so the dapple finally belongs to the swell rolling above it. The blend
+        // replaces only the vein VALUE inside the existing _CausticDepth gate, _CausticDayGate sun gate,
+        // _CausticAmount/_CausticColor multipliers and the pixelized world grid (all kept). Gated by the
+        // field's amplitude (the swellLive idiom): no live trains (edit mode / bare art scene) or dead
+        // glass eases back to the noise, so a bare scene never loses its dapple. NO new sim-pushed
+        // uniform — the curvature needs no new data; these three are material props (rule 6).
+        _CausticCurvatureBlend ("Caustic curvature blend (0 = independent noise / today, 1 = wave-field driven)", Range(0,1)) = 0.0
+        _CausticCurvatureStep  ("Caustic curvature sample step (m)", Float) = 0.5
+        _CausticCurvatureGain  ("Caustic curvature gain (contrast of the field-driven veins)", Float) = 12.0
+
         [Header(Current drift lines (Arc C   col.rgb only   reads the tidal set   default OFF))]
         // Faint foam STREAKS aligned with the tidal CURRENT so the player can READ which way the sea is
         // setting (P1 Sea Has Moods). Built from the SAME _FlowDir/_Flow the surface scroll uses — those are
@@ -858,6 +871,10 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowMinAlpha;
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
+                // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
+                float  _CausticCurvatureBlend;
+                float  _CausticCurvatureStep;
+                float  _CausticCurvatureGain;
                 // Current drift lines (col.rgb; keyed to _FlowDir/_Flow — the tidal set) — Arc C, default OFF.
                 float  _DriftLineStrength;
                 float  _DriftLineSpeed;
@@ -2658,6 +2675,43 @@ Shader "HiddenHarbours/Water"
                                    worldXY, _PaintScale * 2.0, -cScroll * 1.3, _UntileStrength).r;
                     caustic = lerp(caustic, ct * 2.0, _CausticTexStrength);   // *2: counter-mul darkens, restore range
                 #endif
+                    // ---- ADR 0027 #2: FIELD-DRIVEN caustics (default OFF = the independent noise above) ----
+                    // Caustics are focused light: brightest where the surface is locally CONVEX toward the
+                    // sun (a dome focuses). The local curvature is the finite-difference LAPLACIAN of the
+                    // SAME WaveFieldSample() the swell bands/whitecaps/hull ride — 4 axis taps at
+                    // _CausticCurvatureStep metres around the centre height already sampled above
+                    // (waveHeight, at Pixelize(worldXY) and the SAME waveFreqScale), each tap itself on the
+                    // pixelized world grid (the crawl law, §3) — so the seabed shimmer finally belongs to
+                    // the swell rolling over it. The curvature signal replaces only the vein VALUE via the
+                    // blend: the _CausticDepth gate, the _CausticDayGate sun gate below, _CausticAmount,
+                    // _CausticColor and the painted-tex blend above all keep their exact roles. Gated by
+                    // the field's amplitude (the swellLive idiom): no live trains (edit mode / a bare art
+                    // scene) or a dead-glass sea eases the blend back to the noise — a bare scene never
+                    // loses its dapple, and physically a flat surface focuses nothing. col.rgb only —
+                    // never depth/clip()/_WaterLevel/the height read/the sim (P1 integrity, rule 5). NO
+                    // new sim-pushed uniform (ADR 0027's "no new uniform": the curvature needs no new
+                    // data; the three knobs are material props, rule 6). Cost at the shipped default: the
+                    // whole block is unreachable (_CausticCurvatureBlend = 0) — exact passthrough.
+                    if (_CausticCurvatureBlend > 0.001)
+                    {
+                        float ce = max(_CausticCurvatureStep, 1e-3);
+                        float chx1, chx0, chy1, chy0, ccrestT, cprimT;
+                        float2 cslopeT;
+                        WaveFieldSample(Pixelize(worldXY + float2(ce, 0.0)), waveFreqScale,
+                                        chx1, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY - float2(ce, 0.0)), waveFreqScale,
+                                        chx0, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY + float2(0.0, ce)), waveFreqScale,
+                                        chy1, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale,
+                                        chy0, cslopeT, ccrestT, cprimT);
+                        // Laplacian < 0 = locally convex UP (a dome toward the sun) -> focused light.
+                        float lap = (chx1 + chx0 + chy1 + chy0 - 4.0 * waveHeight) / (ce * ce);
+                        float curvBright = saturate(-lap * max(_CausticCurvatureGain, 0.0));
+                        float fieldLive = saturate(_WaveFieldParams.z * 40.0);
+                        caustic = lerp(caustic, curvBright,
+                                       saturate(_CausticCurvatureBlend) * fieldLive);
+                    }
                     // DAY GATE (Arc C, default OFF): fade the sun-dappled caustic add out at night so the light
                     // nets only show when the sun is UP. Driver is saturate(_SunElevation) — 1 at noon, 0 below
                     // the horizon (the RIGHT curve; NOT SunGlitterGate, which peaks at golden hour and is 0 by
