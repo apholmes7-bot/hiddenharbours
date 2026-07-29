@@ -432,6 +432,16 @@ We use a Beaufort-flavored, **Maritime-named** scale. `seaState` is driven mostl
     killed the owner-reported "sudden shader change between weather states" pop — the enum used to
     jump every consumer 1/7 in a single tick whenever wind noise crossed a threshold.
 
+- **Dev sea-state override (ADR 0027 P0; editor/dev builds only).** M1 clamps the wind into the
+  calm band (`WindProfile.CalmMaxStrength`), so a storm never occurs naturally — yet the ADR 0027
+  P0 tuning pass requires the owner to **view the sea in a storm** first. `EnvironmentService`
+  carries a dev-only Inspector toggle ("Dev sea-state override": force ON + a 0..1 sea-state dial)
+  that rescales the sampled wind to `WeatherModel.WindStrengthFor(dial)` — the exact piecewise
+  inverse of `SeaState01` — keeping the deterministic wind *direction*, then re-derives the enum
+  from the same thresholds, so every consumer (chop, mood palette, wave trains, `_Roughness`)
+  reads one internally consistent forced sea. Default OFF; byte-identical to the pure sim when off;
+  compiled out of release builds; never saved (rule 5). Tide, current and fog stay the pure sim.
+
 ### 4.4 Fog, rain, storms
 
 - **Fog** (`fogDensity`): the Sablewick signature. Two flavors: **advection fog** (warm air over cold water — High Summer afternoons; rolls in fast) and **sea fog / mist** (calm, damp). Fog **caps `visibility_m`** (e.g. dense fog → 40–80 m), which:
