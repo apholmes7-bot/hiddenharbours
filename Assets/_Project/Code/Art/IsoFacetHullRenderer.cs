@@ -428,14 +428,12 @@ namespace HiddenHarbours.Art
                 float zHeaveMeters = heaveMeters;
                 if (!clampSuperseded && _setup.WatertightDeckHeightMeters > 0f)
                 {
-                    WaveFieldBridge.ReadPublishedField(out Vector4 t0, out Vector4 t1,
-                                                       out Vector4 t2, out Vector4 t3,
-                                                       out Vector4 ph, out Vector4 fp);
+                    PackedWaveField field = WaveFieldBridge.ReadPublishedField();
                     zHeaveMeters = DisplacedWaterMath.WatertightZHeaveMeters(
                         heaveMeters, _setup.WatertightDeckHeightMeters,
                         _setup.WatertightHalfBeamMeters,
                         new Vector2(root.x, root.y), _footprintRadiusMeters,
-                        in t0, in t1, in t2, in t3, in ph, in fp, in isoFrame);
+                        in field, in isoFrame);
                 }
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            - root.z;

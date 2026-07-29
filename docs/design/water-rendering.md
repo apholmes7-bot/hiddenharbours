@@ -1404,8 +1404,10 @@ the water **inside the water's own fragment** — the same idiom the water alrea
 
 The swell layer's next life. §5.8's `SwellField` was **paint** — value-noise brightness bands that existed
 only in HLSL, so the whitecap lifecycle (§5.11) gated on noise: the owner's verdict, *"unconvincing… a foggy
-white soup."* ADR 0018 replaced the truth: **one deterministic directional wave field** (3–4 wave trains,
-`Core/Environment/WaveMath.cs`) that BOTH the boat (B2 rocking, `BoatWaveMotion`) and the water shader sample.
+white soup."* ADR 0018 replaced the truth: **one deterministic directional wave field** (up to
+`WaveTrains.MaxTrains` = **8** wave trains since the ADR 0027 P2 widening; `TrainsFrom` still derives 4 until
+the spectrum re-weights them — `Core/Environment/WaveMath.cs`) that BOTH the boat (B2 rocking,
+`BoatWaveMotion`) and the water shader sample.
 B1 is the shader side: the trains become the water's **primary swell brightness source**, and the whitecaps are
 re-keyed to **form → break → streak → fade on real, advancing crests** — foam that visibly **travels with the
 wave**, which is what kills the static-soup read.
@@ -1419,11 +1421,27 @@ parameters chasing the weather-derived `WaveMath.TrainsFrom` targets, dispersion
 train's `PhaseOffset` — then publishes the trains as **global vectors** (outside every CBUFFER; `Water.mat`
 untouched):
 
-> `_WaveTrain0..3` — `xy` = unit travel direction, `z` = wave number `k = 2π/λ` (precomputed; the shader never
+> `_WaveTrain0..7` — `xy` = unit travel direction, `z` = wave number `k = 2π/λ` (precomputed; the shader never
 > divides by a wavelength), `w` = amplitude (m). Dead slots publish zero.
-> `_WavePhases` — per-train phase (radians, wrapped to `[0, 2π)` in C# **double** before the float cast).
+> `_WavePhases` / `_WavePhases2` — per-train phase for trains 0–3 and 4–7 (radians, wrapped to `[0, 2π)` in C#
+> **double** before the float cast).
 > `_WaveFieldParams` — `x` = live train count (**0 = nothing published → the LEGACY §5.8 path holds**),
-> `y` = crest sharpening p, `z` = total amplitude (the crest normalizer), `w` reserved.
+> `y` = crest sharpening p, `z` = total amplitude (the crest normalizer), `w` = the **dominant (spectral-peak)
+> slot index**.
+
+⚠️ **The width is a seam (ADR 0018 amendment, 2026-07-29).** `WaveTrains.MaxTrains`,
+`PackedWaveField.MaxTrains`, the bridge's uniform push, the shader's `WAVE_MAX_TRAINS` loop bound and the
+shore-seam proof shader must all agree. Widening some of them is **not a compile error** — it is a reader
+quietly sampling a narrower sea than the shader draws. The whole payload therefore travels as one
+`PackedWaveField` (so no signature knows the width), publishing goes through the single
+`WaveFieldBridge.PublishGlobals` (so the uniform names live in one place), and `WaveFieldSeamWidthTests`
+asserts the width structurally — including by reading both shader sources as text, the only way a C# test can
+hold the HLSL half of a twin.
+
+⚠️ **`_WaveFieldParams.w` was `reserved` and always 0.** It now carries the spectral-peak slot, which is what
+the whitecap lifecycle keys its face sign on and what the rocking consumers read the phase of. Under the flat
+weighting the peak IS slot 0, so the published bytes are unchanged — but "the dominant train" stopped being
+"whichever one is first" the moment a spectrum could re-weight it.
 
 **No time uniform exists**: the shader evaluates `θ = k·(dir·worldPos) + φ` — the advancing time lives entirely
 in the phase the animator accumulates, so the unbounded game time never touches float trig on the GPU, and the

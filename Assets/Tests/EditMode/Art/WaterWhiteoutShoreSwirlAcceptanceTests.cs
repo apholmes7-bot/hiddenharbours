@@ -89,12 +89,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // The harness pushes the sim/day-night globals directly; never leak them into
             // other tests (the bridge convention: zero = unset).
-            Shader.SetGlobalVector("_WaveTrain0", Vector4.zero);
-            Shader.SetGlobalVector("_WaveTrain1", Vector4.zero);
-            Shader.SetGlobalVector("_WaveTrain2", Vector4.zero);
-            Shader.SetGlobalVector("_WaveTrain3", Vector4.zero);
-            Shader.SetGlobalVector("_WavePhases", Vector4.zero);
-            Shader.SetGlobalVector("_WaveFieldParams", Vector4.zero);
+            // ⚠ Through the bridge's publisher, so the teardown clears the WHOLE field. Zeroing a
+            // hand-written list of slot names would have left every slot the list did not mention
+            // holding the last scenario's trains — a leak that only shows up as another test's
+            // rendering drifting for no reason it can see.
+            WaveFieldBridge.PublishGlobals(PackedWaveField.Empty);
             Shader.SetGlobalColor("_DayNightTint", new Color(0, 0, 0, 0));
             Shader.SetGlobalVector("_SunDir", Vector4.zero);
             Shader.SetGlobalFloat("_SunElevation", 0f);
@@ -123,18 +122,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
 
             int n = trains.Count;
-            var shifted = new WaveTrains(
-                n > 0 ? Shifted(0) : default, n > 1 ? Shifted(1) : default,
-                n > 2 ? Shifted(2) : default, n > 3 ? Shifted(3) : default,
-                n, trains.CrestSharpening);
-            WaveFieldBridge.Pack(in shifted, out Vector4 t0, out Vector4 t1, out Vector4 t2,
-                                 out Vector4 t3, out Vector4 phases, out Vector4 fieldParams);
-            Shader.SetGlobalVector("_WaveTrain0", t0);
-            Shader.SetGlobalVector("_WaveTrain1", t1);
-            Shader.SetGlobalVector("_WaveTrain2", t2);
-            Shader.SetGlobalVector("_WaveTrain3", t3);
-            Shader.SetGlobalVector("_WavePhases", phases);
-            Shader.SetGlobalVector("_WaveFieldParams", fieldParams);
+            var buffer = new WaveTrain[WaveTrains.MaxTrains];
+            for (int i = 0; i < n; i++) buffer[i] = Shifted(i);
+            var shifted = WaveTrains.From(buffer, n, trains.CrestSharpening, trains.DominantIndex);
+            // Through the bridge's own publisher — never a hand-written copy of the uniform names,
+            // or this harness starts driving a narrower field than the shipped shader reads.
+            WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in shifted));
         }
 
         // ------------------------------------------------------------- conditions

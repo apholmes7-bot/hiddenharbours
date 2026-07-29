@@ -187,18 +187,12 @@ namespace HiddenHarbours.Tests.RigBaking
             }
 
             int n = trains.Count;
-            var shifted = new WaveTrains(
-                n > 0 ? Shifted(0) : default, n > 1 ? Shifted(1) : default,
-                n > 2 ? Shifted(2) : default, n > 3 ? Shifted(3) : default,
-                n, trains.CrestSharpening);
-            WaveFieldBridge.Pack(in shifted, out Vector4 t0, out Vector4 t1, out Vector4 t2,
-                                 out Vector4 t3, out Vector4 phases, out Vector4 fieldParams);
-            Shader.SetGlobalVector("_WaveTrain0", t0);
-            Shader.SetGlobalVector("_WaveTrain1", t1);
-            Shader.SetGlobalVector("_WaveTrain2", t2);
-            Shader.SetGlobalVector("_WaveTrain3", t3);
-            Shader.SetGlobalVector("_WavePhases", phases);
-            Shader.SetGlobalVector("_WaveFieldParams", fieldParams);
+            var buffer = new WaveTrain[WaveTrains.MaxTrains];
+            for (int i = 0; i < n; i++) buffer[i] = Shifted(i);
+            var shifted = WaveTrains.From(buffer, n, trains.CrestSharpening, trains.DominantIndex);
+            // Through the bridge's own publisher — never a hand-written copy of the uniform names,
+            // or this harness starts driving a narrower field than the shipped shader reads.
+            WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in shifted));
         }
 
         // ------------------------------------------------------------- headless (CI-safe)
@@ -266,8 +260,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             WaveTrains trains = WaveMath.TrainsFrom(ReferenceWind, ReferenceSeaState,
                                                     WaveFieldSettings.Default);
-            WaveFieldBridge.Pack(in trains, out Vector4 t0, out Vector4 t1, out Vector4 t2,
-                                 out Vector4 t3, out Vector4 ph, out Vector4 fp);
+            PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
             // Both frequency scales, because the clamp must guard the sea that is DRAWN. 1 is the
             // shader's shipped default; 2.8 is what every one of the owner's water presets actually
@@ -296,7 +289,7 @@ namespace HiddenHarbours.Tests.RigBaking
                         float dy = DisplacedWaterMath.FootprintScanHalfHeightMeters * iy / (float)ny;
                         var p = new Vector2(center.x + halfWidth * ix / (float)nx, center.y + dy);
                         float lift = 1.5f * WaveFieldBridge.ShaderTwinSample(
-                            p, t0, t1, t2, t3, ph, fp, freqScale).Height;
+                            p, in field, freqScale).Height;
                         float foughtR = (dy + lift - H) / c;
                         if (foughtR < deckH) continue;
                         float ryStar = Mathf.Min(halfBeam, (foughtR - deckH) / tan);
@@ -313,8 +306,7 @@ namespace HiddenHarbours.Tests.RigBaking
                                              * (demand - H));
 
                     float actual = DisplacedWaterMath.WatertightZHeaveMeters(
-                        H, deckH, halfBeam, center, halfWidth,
-                        in t0, in t1, in t2, in t3, in ph, in fp, in frame);
+                        H, deckH, halfBeam, center, halfWidth, in field, in frame);
                     Assert.AreEqual(expected, actual, 1e-4f,
                         $"WatertightZHeaveMeters at {center} halfWidth={halfWidth} deckH={deckH} " +
                         $"halfBeam={halfBeam} freqScale={freqScale} must be the per-point footprint " +
@@ -333,21 +325,18 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var frame = new WaterIsoDepthFrame(referenceY: -60f, cosElev: 0.766f,
                                                sinElev: 0.643f, baseZ: 0.25f, exaggeration: 1.5f);
-            Vector4 zero = Vector4.zero;
+            PackedWaveField silent = PackedWaveField.Empty;
 
             WaveTrains trains = WaveMath.TrainsFrom(ReferenceWind, ReferenceSeaState,
                                                     WaveFieldSettings.Default);
-            WaveFieldBridge.Pack(in trains, out Vector4 t0, out Vector4 t1, out Vector4 t2,
-                                 out Vector4 t3, out Vector4 ph, out Vector4 fp);
+            PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
             Assert.AreEqual(-1.1f, DisplacedWaterMath.WatertightZHeaveMeters(
-                -1.1f, 0f, 2.2f, Vector2.zero, 7f, in t0, in t1, in t2, in t3, in ph, in fp,
-                in frame),
+                -1.1f, 0f, 2.2f, Vector2.zero, 7f, in field, in frame),
                 "deck height 0 must disable the clamp exactly — an unset def must render " +
                 "byte-identically to before this fix.");
             Assert.AreEqual(-1.1f, DisplacedWaterMath.WatertightZHeaveMeters(
-                -1.1f, 2.05f, 3.5f, Vector2.zero, 7f, in zero, in zero, in zero, in zero,
-                in zero, in zero, in frame),
+                -1.1f, 2.05f, 3.5f, Vector2.zero, 7f, in silent, in frame),
                 "a silent field (every height 0) must demand nothing — the clamp stays inert " +
                 "in edit mode and bridge-less scenes.");
         }

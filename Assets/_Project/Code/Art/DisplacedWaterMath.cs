@@ -226,15 +226,13 @@ namespace HiddenHarbours.Art
         /// <para><paramref name="deckHeightMeters"/> ≤ 0 disables the clamp entirely (the
         /// pre-fix render, byte-identical — the safety of an unset def). A silent field (no
         /// bridge — every height 0) demands nothing. Allocation-free (rule 7): ≤ ~15×13 ≈ 200
-        /// four-train evaluations per hull per pose push — microseconds on the desktop
+        /// field evaluations per hull per pose push — microseconds on the desktop
         /// baseline.</para>
         /// </summary>
         public static float WatertightZHeaveMeters(float heaveMeters, float deckHeightMeters,
                                                    float halfBeamMeters,
                                                    Vector2 centerWorld, float halfWidthMeters,
-                                                   in Vector4 train0, in Vector4 train1,
-                                                   in Vector4 train2, in Vector4 train3,
-                                                   in Vector4 phases, in Vector4 fieldParams,
+                                                   in PackedWaveField field,
                                                    in WaterIsoDepthFrame frame)
         {
             if (deckHeightMeters <= 0f) return heaveMeters;
@@ -254,7 +252,8 @@ namespace HiddenHarbours.Art
             // near-full-amplitude miss, not the ~2 % of amplitude the fixed step was chosen for.
             // That is the second half of why the clamp under-protected every hull. Refining both
             // axes keeps samples-per-wavelength invariant; cost stays trivial (the dragger's worst
-            // case goes ~375 → ~2.8 k four-train evaluations per pose push, i.e. tens of
+            // case goes ~375 → ~2.8 k field evaluations per pose push (each now up to
+            // WaveTrains.MaxTrains trains rather than four — ADR 0027 P2), i.e. tens of
             // microseconds on the desktop baseline — rule 7 is comfortable).
             float scan = Mathf.Max(1f, frame.FreqScale);
             int nx = Mathf.Max(1, Mathf.CeilToInt(halfWidthMeters * scan / FootprintScanStepMeters));
@@ -273,8 +272,7 @@ namespace HiddenHarbours.Art
                     // at 2.8x frequency. Scanning at 1 hunted crests 2.8x too far apart, under-
                     // demanded, and let the real ones board every hull (owner playtest 2026-07-25).
                     float lift = exaggeration * WaveFieldBridge.ShaderTwinSample(
-                        new Vector2(x, centerWorld.y + dy), train0, train1, train2, train3,
-                        phases, fieldParams, frame.FreqScale).Height;
+                        new Vector2(x, centerWorld.y + dy), in field, frame.FreqScale).Height;
                     // ⚠️ THE HULL'S OWN SCREEN HEAVE IS PART OF THE FIGHT (owner playtest
                     // 2026-07-25, "water is in the hulls still" — on EVERY hull, including the two
                     // whose clamp data was already proven green).
