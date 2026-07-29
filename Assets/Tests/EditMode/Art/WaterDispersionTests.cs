@@ -24,8 +24,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// bunch·λ, and 0 at zero bunch/master.</item>
     /// </list>
     ///
-    /// Sabotage MEASURED (2026-07-28, headless runs — see the PR):
-    /// SABOTAGE_PLACEHOLDER
+    /// Sabotage MEASURED (2026-07-28, headless runs — see the PR), three arms, each targeted:
+    /// <list type="number">
+    /// <item>inverting the tanh depth direction (<c>tanh(k/d)</c> — the swapped deep/shallow
+    /// behaviour): 3 of 11 fail — the shallow branch SPEEDS UP as depth falls (first trip at d = 2),
+    /// the limit-agreement envelope breaks, and the shoal shift loses its monotonicity;</item>
+    /// <item>flipping the lerp endpoints in <c>BandSpeed</c>: 3 of 11 fail — the BIT-exact scale-0
+    /// contract catches 0.0896080 in place of 0.0900000 (a 0.4% error the anchor makes nearly
+    /// invisible — exactly why the contract is exact equality, not a tolerance), plus the
+    /// full-dispersion pin and the ordering test;</item>
+    /// <item>offsetting the band multiplier by +0.01 inside <c>BandSpeed</c>: EXACTLY 1 of 11 fails —
+    /// the full-dispersion pin, 0.10454 vs 0.08961 (17% off).</item>
+    /// </list>
     /// </summary>
     public class WaterDispersionTests
     {
@@ -110,12 +120,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Less(Mathf.Abs(deep - cDeep) / cDeep, 0.001f,
                 $"deep-water limit broken: full {deep:F4} vs deep {cDeep:F4}.");
 
-            // One continuous formula — no branch seam anywhere between the limits.
-            float prev = WaterDispersion.PhaseSpeed(12f, 0.05f);
-            for (float d = 0.1f; d <= 24f; d += 0.05f)
+            // One continuous formula — between the limits the curve must hug the smooth tanh
+            // envelope: never ABOVE min(√(g·d), c_deep) (tanh(x) ≤ min(x, 1)), and never more than
+            // 15% BELOW it (tanh's maximum sag vs that min-envelope is ~13%, at k·d ≈ 1 — the
+            // transition itself). A per-step Δc bound is deliberately NOT used: √(g·d) has unbounded
+            // slope at d → 0, so a legitimate depth-limited curve fails any fixed step bound there.
+            float cDeep12 = WaterDispersion.DeepPhaseSpeed(12f);
+            float prev = 0f;
+            for (float d = 0.05f; d <= 24f; d += 0.05f)
             {
                 float c = WaterDispersion.PhaseSpeed(12f, d);
-                Assert.Less(c - prev, 0.15f, $"a jump at depth {d} — a branch seam has appeared.");
+                float envelope = Mathf.Min(Mathf.Sqrt(WaterDispersion.Gravity * d), cDeep12);
+                Assert.LessOrEqual(c, envelope + 1e-4f,
+                    $"above the limiting envelope at depth {d} — not the tanh relation.");
+                Assert.GreaterOrEqual(c, 0.85f * envelope,
+                    $"sagging below the smooth tanh transition at depth {d} — a seam or a wrong branch.");
                 Assert.GreaterOrEqual(c, prev, $"speed regressed at depth {d}.");
                 prev = c;
             }
@@ -170,6 +189,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float derived = 0.06f * WaterDispersion.DeepPhaseSpeed(ChopLambda);
             Assert.Less(Mathf.Abs(derived - LegacyChopSpeed) / LegacyChopSpeed, 0.005f,
                 $"the anchor broke: 0.06·c_deep(1/0.7) = {derived:F4} vs legacy 0.09.");
+            // and BandSpeed at full dispersion must land EXACTLY on bandMult·c_deep — the pin a
+            // band-multiplier offset inside BandSpeed cannot slip past.
+            Assert.AreEqual(derived,
+                WaterDispersion.BandSpeed(LegacyChopSpeed, 0.06f, ChopLambda, 1f), 1e-6f,
+                "full dispersion must return bandMult·c_deep(λ), nothing else.");
         }
 
         // ===== the shoal shift ===========================================================
