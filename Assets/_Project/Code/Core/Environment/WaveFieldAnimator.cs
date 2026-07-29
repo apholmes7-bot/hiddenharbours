@@ -89,6 +89,11 @@ namespace HiddenHarbours.Core
         private WaveTrains _current = WaveTrains.None;
         private bool _initialized;
 
+        /// <summary>How many slots have ever been snapped to a target. Slots at or above this index
+        /// hold no meaningful eased state, so they must be SNAPPED rather than eased the first time
+        /// the field grows into them (see <see cref="Tick"/>).</summary>
+        private int _initializedCount;
+
         /// <summary>The trains the last <see cref="Tick"/> produced — phase-continuous, to be
         /// sampled at <c>timeSeconds = 0</c> (the accumulated phase rides in each train's
         /// <see cref="WaveTrain.PhaseOffset"/>). <see cref="WaveTrains.None"/> before the first tick.</summary>
@@ -100,6 +105,7 @@ namespace HiddenHarbours.Core
         public void Reset()
         {
             _initialized = false;
+            _initializedCount = 0;
             _current = WaveTrains.None;
         }
 
@@ -119,9 +125,18 @@ namespace HiddenHarbours.Core
             float dt = Mathf.Max(0f, deltaSeconds);
             float glassFloor = Mathf.Max(0f, animatorSettings.GlassSnapAmplitudeMeters);
 
-            if (!_initialized)
+            // Snap any slot that has never been eased before — on the first tick that is all of them,
+            // and thereafter it is any slot the field has just GROWN into.
+            //
+            // ⚠️ The growth case is not hypothetical: turning the ADR 0027 spectrum blend off zero
+            // takes the live count from 4 to 8, and that is exactly the dial the owner turns to judge
+            // the feel. Easing a never-initialized slot would start it from a ZERO wavelength — which
+            // the WaveTrain floor turns into λ = 1 cm, i.e. k ≈ 628 — so the new trains would arrive
+            // as a burst of shrieking high-frequency slope before settling. Their amplitude eases in
+            // from zero, so it would look like noise appearing out of nowhere rather than a train.
+            if (!_initialized || count > _initializedCount)
             {
-                for (int i = 0; i < count; i++)
+                for (int i = _initialized ? _initializedCount : 0; i < count; i++)
                 {
                     WaveTrain target = targets[i];
                     _direction[i] = target.Direction;
@@ -130,6 +145,7 @@ namespace HiddenHarbours.Core
                     _phase[i] = 0.0; // travel starts here; the hash offset φ still de-syncs the trains
                 }
                 _initialized = true;
+                _initializedCount = Mathf.Max(_initializedCount, count);
             }
 
             float alpha = SmoothingAlpha(dt, animatorSettings.ParameterSmoothingSeconds);

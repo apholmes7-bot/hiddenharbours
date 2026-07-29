@@ -389,9 +389,32 @@ spectrum lands).
   `DerivedSecondaryTrainSlots` rather than `MaxTrains - 1` (they were the same number by coincidence;
   following `MaxTrains` would publish underived slots as live).
 
+### (e) The spectrum that the width exists for (PR B)
+
+`WaveSpectrum` + `WaveFieldSettings.Spectrum*` land in the follow-up PR: JONSWAP amplitudes,
+`cos^2s` directional spreading, and wave grouping as the beat between neighbouring frequencies.
+**No shader change was needed** — the widened seam already carries the trains, which is what the
+two-PR split was for.
+
+`SpectrumBlend` ships at **0**, so the sea is unchanged until the owner dials it in. Every slot lerps
+from its legacy self toward its spectral self and slots 4–7 fade in from exactly zero amplitude, so
+the field is continuous even though the live count jumps 4 → 8 the instant the dial leaves zero.
+
+⚠️ **`Σ amplitudes` is preserved, not `Σ amplitudes²`.** Energy is the more physical normalization,
+but Σ A is the crest-factor normalizer the whitecap lifecycle divides by AND the bound the watertight
+hull clamp scans against — growing it would quietly reduce foam and raise every hull. Preserving the
+envelope means the spectrum's peaks reach the height the hand-authored sea reached and what it adds is
+the **lulls between them**, which is the ask, at no risk to two calibrated systems.
+
+⚠️ **The settings are serialized in TWO places** (the `WaveFieldBridge` host and `BoatWaveMotion`),
+per §(3) and the addendum. `SpectrumBlend` makes that hazard much easier to trip: set it on one and
+not the other and the water and the hull ride different seas — the exact failure this ADR exists to
+prevent. The GameConfig unification §(5) defers to "a later Arc B PR" should probably land **before**
+the owner tunes.
+
 ### The cost stated plainly
 
-This changes what the hulls physically ride the moment PR B dials the spectrum in. The C# twins,
+This changes what the hulls physically ride the moment `SpectrumBlend` leaves 0. The C# twins,
 headless determinism tests and passthrough proofs are the technical gate; **the owner's feel verdict
 is the real one**, and per ADR 0027 it should be taken against the same hull set as the ADR 0023
 verdict so the comparison is honest.
