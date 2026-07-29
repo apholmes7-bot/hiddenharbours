@@ -72,6 +72,11 @@ namespace HiddenHarbours.Fishing
         public float MaxWeightKg = 8f;
         [Tooltip("Value in ₲ at a neutral market.")]
         public int BaseValue = 12;
+        [Min(0f)]
+        [Tooltip("Freshness (M1 §7.3): spoil accrued per in-game day left IN THE OPEN (1 = ruined in " +
+                 "one day; 0 = never rots). Fast for oily fish (mackerel), slow for hardy shellfish. " +
+                 "PLACEHOLDER pacing — §7.4's pacing model (economy-sim) owns the real numbers.")]
+        public float SpoilPerDay = 0.75f;
         [Range(0f, 1f)] [Tooltip("How much landing it depresses the price (perishables higher).")]
         public float SupplyElasticity = 0.2f;
         [Tooltip("Relative likelihood among matching fish (rarer = lower).")]

@@ -255,9 +255,19 @@ namespace HiddenHarbours.Fishing
         {
             banded = NextOnDeck();
             if (banded == null) return BandOutcome.None;
-            if (hold == null || !hold.TryAdd(banded.Item)) return BandOutcome.NoRoom;
+            // Stamp the freshness clock at banding (M1 §7.3) — stowing is when it becomes held catch.
+            // Species/weight/value stay EXACTLY the resolver's (the zero-economy-change promise).
+            if (hold == null || !hold.TryAdd(Stamped(banded.Item))) return BandOutcome.NoRoom;
             banded.Fate = DeckAnimalFate.Banded;
             return BandOutcome.Banded;
+        }
+
+        /// <summary>The item with its freshness clock stamped NOW (the Core clock; 0 with no clock
+        /// wired, e.g. EditMode — harmless, tests build clock-free items with SpoilPerDay 0).</summary>
+        private static CatchItem Stamped(in CatchItem item)
+        {
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            return item.WithFreshness(Freshness.Landed(now));
         }
 
         /// <summary>Mark the pot re-baited (the controller has already consumed one bait from stock).
@@ -290,10 +300,11 @@ namespace HiddenHarbours.Fishing
                     returned++;
                     continue;
                 }
-                if (hold != null && hold.TryAdd(a.Item))
+                CatchItem stamped = Stamped(a.Item);   // same stamp-at-stow as TryBandNext
+                if (hold != null && hold.TryAdd(stamped))
                 {
                     a.Fate = DeckAnimalFate.Banded;
-                    landed?.Add(a.Item);
+                    landed?.Add(stamped);
                     kept++;
                 }
                 else

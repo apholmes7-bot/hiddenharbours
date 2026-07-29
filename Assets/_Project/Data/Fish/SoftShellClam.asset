@@ -33,5 +33,6 @@ MonoBehaviour:
   MinWeightKg: 0.05
   MaxWeightKg: 0.2
   BaseValue: 2
+  SpoilPerDay: 0.5
   SupplyElasticity: 0.45
   SpawnWeight: 1

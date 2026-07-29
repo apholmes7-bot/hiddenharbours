@@ -215,7 +215,9 @@ namespace HiddenHarbours.Fishing
 
             for (int i = 0; i < count; i++)
             {
-                CatchItem catchItem = _haulScratch[i];
+                // Stamp the freshness clock at the haul (M1 §7.3): the resolver is pure and clock-free,
+                // so the catch goes on the clock HERE — the instant it comes out of the water.
+                CatchItem catchItem = _haulScratch[i].WithFreshness(Freshness.Landed(now));
                 if (!hold.TryAdd(catchItem))
                 {
                     // Can't happen under the 1-unit convention the pre-check assumes; honest if it ever does.
