@@ -249,6 +249,18 @@ Shader "HiddenHarbours/Water"
         //       glass = zero amplitude = zero foam, automatically; a gale = full marching whitecaps.
         _WhitecapOnsetAmp ("Whitecap onset amplitude (m of total wave amplitude for full caps)", Float) = 0.5
 
+        // ---- ADR 0027 #3: CONVERGENCE (Jacobian) foam gate (default OFF = today) ----------------------
+        // Foam today is tall-wave only (_FoamCrestGate + the whitecap lifecycle above), so CROSSING
+        // trains never foam at their intersections. Where the surface PINCHES — the Jacobian of the
+        // Gerstner-style drift toward crests dropping below 1 — an ADDITIONAL placement driver opens
+        // ALONGSIDE the crest factor, never replacing it (the confused-sea read). The convergence term
+        // is finite differences of the SAME WaveFieldSample the crests ride (C# twin:
+        // WaterFoam.Convergence — change one, change BOTH in the same PR); its output is textured by
+        // the existing thresholded/banded cap field, so it inherits the existing quantization.
+        _FoamConvergenceStrength ("Convergence foam strength (0 = off / today)", Range(0,1)) = 0.0
+        _FoamConvergencePinch    ("Convergence pinch (m; ~Gerstner Q/k — drift toward crests)", Float) = 4.0
+        _FoamConvergenceStep     ("Convergence sample step (m)", Float) = 0.5
+
         [Header(Shoreward swell and foam bias (waves roll IN near the coast))]
         // The rolling swell + the foam drift used to follow ONLY the wandering WIND (and the tidal current),
         // and the wind blows OFFSHORE part of the time — so near the beach the wave trains and foam streamed
@@ -774,6 +786,10 @@ Shader "HiddenHarbours/Water"
                 float  _FoamClumpStretch;
                 // Shared wave field (ADR 0018 B1): the whitecap sea-state onset over total train amplitude.
                 float  _WhitecapOnsetAmp;
+                // ADR 0027 #3 — convergence (Jacobian) foam gate (default OFF).
+                float  _FoamConvergenceStrength;
+                float  _FoamConvergencePinch;
+                float  _FoamConvergenceStep;
                 // Shoreward swell/foam bias (near-coast roll-in; visual direction only).
                 float  _ShorewardBias;
                 float  _ShorewardFalloff;
@@ -1441,6 +1457,24 @@ Shader "HiddenHarbours/Water"
                 // FADE: behind the crest the cap ages to milky residual, dying at the collapse rate.
                 residual = saturate(pow(max(c, 1e-4), max(_WhitecapCollapseRate, 0.05))
                                     * passed * saturate(density));
+            }
+
+            // ---- ADR 0027 #3: the CONVERGENCE (Jacobian) gate ------------------------------------------------
+            // C#-twinned by WaterFoam.Convergence (change one, change BOTH in the same PR). Approximates
+            // the Gerstner horizontal drift toward crests as D = pinch * (grad-derived), whose Jacobian is
+            //   J = (1 + q*hxx)(1 + q*hyy) - (q*hxy)^2
+            // — curvature is NEGATIVE at a crest, so a crest CONVERGES (J < 1); hxy is the cross term two
+            // CROSSING trains write (it enters squared). saturate(1 - J): 0 on a flat sea, 0 at zero
+            // pinch, positive where the surface pinches, saturating as it folds. Visual-only downstream
+            // (feeds the existing thresholded cap field; never depth/clip()/_WaterLevel/the sim — rule 5).
+            float ConvergenceGate(float hxx, float hyy, float hxy, float pinch)
+            {
+                float q = max(pinch, 0.0);
+                float jxx = 1.0 + q * hxx;
+                float jyy = 1.0 + q * hyy;
+                float jxy = q * hxy;
+                float J = jxx * jyy - jxy * jxy;
+                return saturate(1.0 - J);
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -2923,7 +2957,44 @@ Shader "HiddenHarbours/Water"
                                           * lerp(1.0, envGate, saturate(_CapSalienceStrength));
                         // RESIDUAL: milky, trailing BEHIND the crest, streaked downwind by the aniso coord.
                         float milkyPart = capMilkyT * residualLife * lerp(0.45, capPeak, capDens);
-                        capOpacity = saturate(max(solidPart, milkyPart)) * crestGate * waveGate * saturate(dt);
+                        // ---- ADR 0027 #3: CONVERGENCE (Jacobian) FOAM — an ADDITIONAL placement driver
+                        // ALONGSIDE the crest-keyed lifecycle, never replacing it. Where crossing trains
+                        // PINCH the surface (J < 1) foam may now appear even off the primary crest — the
+                        // confused-sea read the tall-wave-only gate could not produce. Four taps of the
+                        // SAME WaveFieldSample (at the same waveFreqScale, each on the pixelized world
+                        // grid) central-difference the field's ANALYTIC slope into the three second
+                        // derivatives; ConvergenceGate (C#-twinned by WaterFoam.Convergence) turns them
+                        // into the 0..1 pinch term. The term is TEXTURED by the same thresholded cap
+                        // field (capMilkyT — already banded/dithered), so it feeds the existing foam
+                        // threshold and inherits the existing quantization (no new one). Still inside
+                        // waveGate (glass = zero foam) and the shore fade below; col.rgb-only dressing
+                        // (rule 5). At the shipped default (_FoamConvergenceStrength = 0) the branch is
+                        // unreachable and the composite below is BIT-IDENTICAL to the pre-#3 line
+                        // (same left-to-right multiply order).
+                        float lifecyclePart = saturate(max(solidPart, milkyPart)) * crestGate;
+                        if (_FoamConvergenceStrength > 0.001)
+                        {
+                            float fe = max(_FoamConvergenceStep, 1e-3);
+                            float chpx, chmx, chpy, chmy, ccrF, cprF;
+                            float2 cspx, csmx, cspy, csmy;
+                            WaveFieldSample(Pixelize(worldXY + float2(fe, 0.0)), waveFreqScale,
+                                            chpx, cspx, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY - float2(fe, 0.0)), waveFreqScale,
+                                            chmx, csmx, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY + float2(0.0, fe)), waveFreqScale,
+                                            chpy, cspy, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY - float2(0.0, fe)), waveFreqScale,
+                                            chmy, csmy, ccrF, cprF);
+                            // central differences of the ANALYTIC slope -> the second derivatives
+                            // (hxy averaged from its two estimates — symmetric by construction).
+                            float convHxx = (cspx.x - csmx.x) / (2.0 * fe);
+                            float convHyy = (cspy.y - csmy.y) / (2.0 * fe);
+                            float convHxy = ((cspx.y - csmx.y) + (cspy.x - csmy.x)) / (4.0 * fe);
+                            float conv = ConvergenceGate(convHxx, convHyy, convHxy, _FoamConvergencePinch)
+                                       * saturate(_FoamConvergenceStrength);
+                            lifecyclePart = max(lifecyclePart, capMilkyT * conv);
+                        }
+                        capOpacity = lifecyclePart * waveGate * saturate(dt);
                     }
                     else
                     {
