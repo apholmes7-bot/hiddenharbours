@@ -113,6 +113,12 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<HiddenHarbours.Environment.EnvironmentService>(), "an EnvironmentService for the tide");
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<PlayerWallet>(), "a wallet");
             Assert.IsNotNull(_core.ServicesRoot.GetComponent<HiddenHarbours.UI.HudController>(), "the glanceable HUD");
+
+            // The builder must wire GameRoot._config, or a builder re-run silently reverts every wave
+            // consumer to WaveFieldSettings.Default — the unreachable-copy failure ADR 0018 §(f) closes.
+            var gameRootSo = new UnityEditor.SerializedObject(_core.ServicesRoot.GetComponent<GameRoot>());
+            Assert.AreSame(_config, gameRootSo.FindProperty("_config").objectReferenceValue,
+                "GameRoot._config is wired by the builder (it publishes GameServices.Config)");
         }
 
         // ---- the camera follows the player on foot ------------------------------------------

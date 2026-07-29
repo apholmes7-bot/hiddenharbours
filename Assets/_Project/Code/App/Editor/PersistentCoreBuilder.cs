@@ -185,6 +185,10 @@ namespace HiddenHarbours.App.Editor
             SetRef(gameRoot, "_clock", clock);
             SetRef(gameRoot, "_environment", env);
             SetRef(gameRoot, "_wallet", wallet);
+            // GameRoot publishes this to GameServices.Config (ADR 0018 §(f)) — without it a builder
+            // re-run silently reverts every wave consumer to WaveFieldSettings.Default, the exact
+            // unreachable-copy failure the unification exists to close.
+            SetRef(gameRoot, "_config", p.Config);
 
             // The glanceable HUD (VS-17, ui-ux): self-contained, reads only through Core; _config gives it
             // SecondsPerHour for the tide time-to-turn. Mirrored from the cove (the one ui-ux touch).
