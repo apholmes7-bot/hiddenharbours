@@ -121,7 +121,7 @@ namespace HiddenHarbours.App.Editor
             new TerrainTypePreset { name = "Deep",    elevation = StPetersBuilder.DeepHarbourElevation,   clearTile = true },   // -4, no tile
             new TerrainTypePreset { name = "Channel", elevation = StPetersBuilder.ChannelBedElevation,    clearTile = true },   // -0.6, no tile
             new TerrainTypePreset { name = "Beach",   elevation = 0.3f },                                                       // sand
-            new TerrainTypePreset { name = "Sandbar", elevation = StPetersBuilder.SandbarCrestElevation },                      // 1.6, wet-sand-ish
+            new TerrainTypePreset { name = "Sandbar", elevation = StPetersBuilder.SandbarCrestElevation },                      // 1.4, wet-sand-ish
             new TerrainTypePreset { name = "Grass",   elevation = StPetersBuilder.IslandElevation },                            // 6, grass
             new TerrainTypePreset { name = "Cliff",   elevation = 8f },                                                         // rock
         };
