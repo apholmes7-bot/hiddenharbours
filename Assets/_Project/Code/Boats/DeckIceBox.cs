@@ -69,15 +69,7 @@ namespace HiddenHarbours.Boats
 
         private void Update()
         {
-            // The one event of the piecewise model: the ice giving out. A per-frame double compare
-            // (rule 7 — no allocation, no maths until it fires), and because the settle runs THROUGH
-            // the protection instant, a sleep-skip that jumps past it lands on the exact number.
-            if (_protectionEndsAt > 0d)
-            {
-                SpoilContext spoil = SpoilContext.Capture();
-                if (spoil.NowGameSeconds >= _protectionEndsAt)
-                    SettleThroughExpiry(in spoil);
-            }
+            TickProtection();
 
             if (!_devKeys) return;
             var kb = Keyboard.current;   // New Input System only — legacy Input throws here
@@ -96,6 +88,20 @@ namespace HiddenHarbours.Boats
                     ? $"Lid ON — the ice stretches ({DescribeRemaining()})."
                     : $"Lid OFF ({DescribeRemaining()})."));
             }
+        }
+
+        /// <summary>
+        /// The one event of the piecewise model: the ice giving out. A per-frame double compare
+        /// (rule 7 — no allocation, no maths until it fires), and because the settle runs THROUGH the
+        /// protection instant, a sleep-skip that jumps past it lands on the exact number an unbroken
+        /// session would. Public so EditMode tests drive it without the play loop.
+        /// </summary>
+        public void TickProtection()
+        {
+            if (_protectionEndsAt <= 0d) return;
+            SpoilContext spoil = SpoilContext.Capture();
+            if (spoil.NowGameSeconds >= _protectionEndsAt)
+                SettleThroughExpiry(in spoil);
         }
 
         /// <summary>
