@@ -108,7 +108,14 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector2 SandbarFrom  = new Vector2(-22f, 0f); // toward the island
         public static readonly Vector2 SandbarTo    = new Vector2(34f, 0f);  // toward Greywick
         public const float SandbarHalfWidth        = 9f;
-        public const float SandbarCrestElevation    = 1.6f;   // < high water (~2.5) → covers at high, bares falling
+        // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
+        // envelope drops the swing to NeapAmplitudeFraction (0.45) × 3.5 = 1.575 m, so a 1.6 m crest sits
+        // ABOVE the highest water of a neap week and the bar simply never floods: the tide gate switches
+        // itself off for part of every lunar month, silently, and the region's defining mechanic goes with
+        // it. At 1.4 the gate exists at every point in the month AND gains a gradient — neap is FORGIVING
+        // (long dry bar, brief flood), spring is TENSE. Ruled 2026-07-23 (#280); see
+        // docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap tests in StPetersTerrainTests.
+        public const float SandbarCrestElevation    = 1.4f;   // < neap high water (1.575) → floods at EVERY tide
         public const float ChannelAlong            = 0.62f;
         public const float ChannelHalfWidth        = 4.5f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls

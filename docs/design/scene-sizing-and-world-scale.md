@@ -226,7 +226,8 @@ floats where `waterLevel − bedElevation > draught`):
 The owner asked for the bar to be a whole scene. It should be. But its length is not a comfort
 decision — **it is set by the tide window**, so here is that window computed from the live config
 rather than estimated (`GameConfig`: `SecondsPerDay 1200`, `TidalPeriodHours 12.4206`,
-`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m):
+`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m **as
+this was written — now 1.4, see the ratified box below**):
 
 - One game hour = **50 real seconds**, so a full tide cycle = 12.42 × 50 = **10 min 21 s real**.
 - At **spring**, the bar is dry whenever the water is under its 1.6 m crest — i.e. `sin θ < 0.457`,
@@ -250,6 +251,13 @@ inverse-over-the-tide relationship the greybox already models in `StPetersBuilde
 `SandbarCrestElevation` / `ChannelBedElevation`.
 
 > **✅ RATIFIED (owner, 2026-07-23) — the neap gap is fixed: `SandbarCrestElevation` 1.6 m → 1.4 m.**
+> **✅ APPLIED IN CODE 2026-07-29.** `StPetersBuilder.SandbarCrestElevation` now reads `1.4f`, and two
+> EditMode tests hold it there: one walks a whole lunar month of the real `TideModel` and asserts the
+> crest clears the *weakest* high water it produces (derived from `GameConfig`, not from the 1.575
+> below, so re-tuning the neap fraction re-checks the gate); the other is the measured sabotage —
+> it asserts the old 1.6 m **would** strand the bar, so the guard is shown firing on exactly the
+> value it replaced.
+>
 > As shipped, neap amplitude (1.575 m) sits *just* under the 1.6 m crest, so for part of every lunar
 > month the bar never floods and the prologue's one tide gate silently switches itself off. Putting the
 > crest below neap high water means **the island is cut off twice a day, every day of the month** — the
@@ -259,8 +267,8 @@ inverse-over-the-tide relationship the greybox already models in `StPetersBuilde
 >
 > | Crest | Spring: exposed / flooded | Neap: exposed / flooded |
 > |---|---|---|
-> | 1.6 m (today) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
-> | **1.4 m (ratified)** | **6:31** / 3:49 | **8:46** / 1:34 |
+> | 1.6 m (the old value) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
+> | **1.4 m (ratified · shipped)** | **6:31** / 3:49 | **8:46** / 1:34 |
 >
 > **The gate now exists at every point in the month**, which is the whole purpose. The spring window
 > barely moves (6:44 → 6:31).
@@ -320,11 +328,11 @@ Ordered, with the blocker first. None of it is done in this document.
    noticed; at 760 m the camera will sail off the painted map. *(`ui-ux`/`gameplay-systems`)*
 5. **Then, and only then, author.** Island → bar → the rest, in that order.
 
-**One change is ready to make now and depends on none of the above:**
-`StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified). It is a one-line edit to a
-value the EditMode terrain test already shares as its single source of truth, so it can land ahead of
-everything else — and it should, because the current value means the tide gate is off for part of every
-month in whatever anyone playtests next.
+~~**One change is ready to make now and depends on none of the above:**
+`StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified).~~ **✅ DONE 2026-07-29** — it
+landed ahead of everything else, as it should have: the old value meant the tide gate was off for part
+of every month in whatever anyone playtested next. Now guarded by the neap-gap tests in
+`StPetersTerrainTests`.
 
 **Also worth doing while the coast is authored, but not blocking:** stand up ISO ground/fringe
 rule-tiles and the road blob-47 autotiler from the kits imported today. They are sliced and catalogued
