@@ -292,10 +292,97 @@ frame rates ease along different paths; nothing is saved). The sim contract abov
 `WaveMath.TrainsFrom` + `Sample(pos, gameTime)` path** — pointing the sim at the animator requires
 a lead-architect decision first.
 
+## Amendment (2026-07-29) — the field widens to **8 trains**, and the dominant train stops being an accident
+
+**Status: proposed with the ADR 0027 P2 PR-A code; `lead-architect` reviews it there.** This ADR
+fixed the model at "3–4 directional wave trains" (§(1)). ADR 0027 decision (6) — the JONSWAP
+spectrum, pulled up to P2 after the owner ruled the sea reads as *"a rigid pattern"* at every
+non-storm weather he has seen — cannot be built inside that number. This amendment raises the
+ceiling and names the one contract that was previously implicit.
+
+### (a) `MaxTrains` 4 → 8
+
+Four trains are enough to hand-author *a primary plus cross-chop*, which is exactly what §(1)
+describes and exactly what shipped. They are **not** enough to carry a spectrum, for two independent
+reasons:
+
+- **A shape needs samples.** A JONSWAP amplitude distribution across four frequencies is four points
+  on a curve — a peak and not much else. "Variance in sizes" is the owner's ask, and four sizes,
+  three of them fixed fractions of the first, is what he is already looking at.
+- **Groups are a beat between NEIGHBOURS.** Wave grouping — three big ones then a lull — is not a new
+  oscillator; it falls out of closely-spaced frequencies interfering. Four trains spaced at ratios
+  0.55 / 0.38 / 0.22 of the dominant are not neighbours in any sense that beats at a readable period.
+  Widening is what makes grouping available *for free* rather than faked.
+
+**8, not 12 or 16.** The cost is linear in train count and it is paid in the fragment shader
+`WAVE_MAX_TRAINS` times per `WaveFieldSample()` call, at up to nine call sites per pixel (the main
+sample, four caustic-curvature taps, four foam-convergence taps) — and the loop is `[unroll]`ed with
+the live count masked *inside*, so **dead slots still cost ALU**. See the PR for the measured numbers
+from `Hidden Harbours/Water/Wave-field cost report`. 8 doubles a cost that was comfortable; 12 would
+be the first number where the water's wave term rivals the rest of the shader, and the spectrum's
+readable payoff is already saturating by then.
+
+⚠️ **The width is a SEAM, and it is load-bearing in five places at once**: `WaveTrains.MaxTrains`,
+`PackedWaveField.MaxTrains`, the bridge's uniform push, the production shader's `WAVE_MAX_TRAINS`
+loop bound, and the shore-seam proof shader that mirrors it. Widening four of the five is **not a
+compile error** — it is a reader quietly sampling a narrower sea than the shader draws, which is this
+ADR's core invariant failing silently. `WaveFieldSeamWidthTests` asserts the width structurally,
+including by reading both shader sources as text, because that is the only way a C# test can hold the
+HLSL half of a twin.
+
+### (b) The payload becomes one value: `PackedWaveField`
+
+§(3) described the bridge publishing "packed globals"; in practice that meant six loose `Vector4`s
+threaded through every signature that reads the sea. At eight trains that is eleven, and the hull
+clamp would have taken sixteen parameters. They are now one `readonly struct` passed by `in`
+(allocation-free, rule 7). The point is not brevity: it is that **the width now lives in one place**,
+so a future widening cannot leave a reader behind. For the same reason `WaveFieldBridge.PublishGlobals`
+is public — the rendering acceptance suites and the shore-seam proof harness each used to spell the
+`SetGlobalVector` calls out by hand, which is three copies of a seam to forget.
+
+### (c) `DominantIndex` — the spectral peak, named
+
+§(2) and the 2026-07-03 addendum have consumers reading "the dominant train": `BoatWaveMotion`, the
+buoys, the drift weed and `WaveFieldAnimator.DominantPhaseDegrees` all read its phase **forward**
+(never `atan2` — see `WaveMath.TrainPhaseDegrees` for what reconstruction cost in measured stutter),
+and the shader's whitecap lifecycle keys on its face sign. Every one of them took **slot 0**, and
+every one of them was right — because under a flat weighting the biggest train is always the downwind
+primary.
+
+A JONSWAP re-weighting moves the peak. The convention would then have the hull rocking to one train
+while the foam broke on another, silently, with nothing red. `WaveTrains.DominantIndex` makes the
+choice explicit and publishes it in `_WaveFieldParams.w` (formerly `reserved`, formerly always 0 —
+which is what the flat weighting still publishes, so the payload stays byte-identical until the
+spectrum lands).
+
+### (d) What is NOT amended
+
+- **Dispersion stays canon.** `WaveTrain.PhaseSpeed` is still derived from wavelength in the
+  constructor; there is still no way to build a train with a free-standing speed. ADR 0027 #9's
+  `_DispersionScale` governs the **visual octaves** only and is deliberately *not* applied to the
+  field's trains — they already disperse, and applying it there would double-apply the law and move
+  drawn geometry the interior-mask/clamp stack guards (`WaterDispersion`'s class doc, PR #310).
+- **Glass is still sacred.** Amplitudes are still exactly 0 at `SeaState01 = 0`. A spectral *floor* is
+  the obvious way to get "variance in sizes" wrong, so `WaveSpectrumPassthroughTests` asserts the
+  ruling by name.
+- **Nothing is saved.** The field is still recomputed from `(worldSeed, gameTime)`; no save change.
+- **The 3–4-train model is not deprecated.** `TrainsFrom` still derives exactly four trains at the
+  shipped settings, bit-for-bit — PR A is the seam, not the sea. `WaveFieldSettings` still describes
+  a primary plus three secondaries, and `SecondaryTrainCount` now clamps against
+  `DerivedSecondaryTrainSlots` rather than `MaxTrains - 1` (they were the same number by coincidence;
+  following `MaxTrains` would publish underived slots as live).
+
+### The cost stated plainly
+
+This changes what the hulls physically ride the moment PR B dials the spectrum in. The C# twins,
+headless determinism tests and passthrough proofs are the technical gate; **the owner's feel verdict
+is the real one**, and per ADR 0027 it should be taken against the same hull set as the ADR 0023
+verdict so the comparison is honest.
+
 ## Open questions (for Arc B, with the look in front of us)
 
-- **Train count: 3 or 4?** Both fit the budget; 4 reads richer cross-chop, 3 is cheaper on mobile.
-  Decide in B1.
+- ~~**Train count: 3 or 4?**~~ **Superseded by the 2026-07-29 amendment:** the ceiling is 8, and
+  `TrainsFrom` derives 4 until the P2 spectrum re-weights them.
 - **How long does the legacy noise-swell path live?** Proposed: through Arc B as the fallback, removed
   once the owner signs off the reworked look — its tunables then become the mapped train scales.
 - **The exact v1 exposure model** (B3): painted-height-map shoaling signal vs a distance-to-land

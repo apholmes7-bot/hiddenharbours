@@ -741,9 +741,19 @@ Shader "HiddenHarbours/Water"
             float4 _WaveTrain1;
             float4 _WaveTrain2;
             float4 _WaveTrain3;
-            float4 _WavePhases;      // per-train phase (rad), accumulated in C# DOUBLE + wrapped to [0, 2pi)
+            // ADR 0027 P2 widened the field 4 -> 8 (the ADR 0018 amendment): a JONSWAP spectrum needs
+            // enough frequencies to carry a SHAPE and to let neighbours beat into wave GROUPS. Slots
+            // beyond the live count publish zero, so a pre-P2 bridge (or none) still reads silent.
+            float4 _WaveTrain4;
+            float4 _WaveTrain5;
+            float4 _WaveTrain6;
+            float4 _WaveTrain7;
+            float4 _WavePhases;      // per-train phase (rad) for trains 0-3, accumulated in C# DOUBLE + wrapped
+            float4 _WavePhases2;     // ... and for trains 4-7
             float4 _WaveFieldParams; // x = live train count (0 = not published), y = crest sharpening p,
-                                     // z = total amplitude (m; the crest normalizer), w = reserved
+                                     // z = total amplitude (m; the crest normalizer),
+                                     // w = the DOMINANT (spectral-peak) slot index -- was `reserved`,
+                                     //     published as 0, which is what the flat weighting still sends
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -1510,14 +1520,22 @@ Shader "HiddenHarbours/Water"
             //               tilt reads the C# side of this same formula).
             //   crestF    — 0..1, the crest factor (height normalized by the amplitude envelope, sharpened):
             //               the whitecap driver. 0 through the troughs and on dead glass.
-            //   primaryCos— cos(theta) of the PRIMARY train: NEGATIVE on the wave's FRONT face (this point
-            //               crests next — foam FORMS), POSITIVE behind the crest (it just passed — foam
-            //               FADES). The fore/aft asymmetry the whitecap lifecycle keys on.
+            //   primaryCos— cos(theta) of the DOMINANT (spectral-peak) train, whose slot arrives in
+            //               _WaveFieldParams.w: NEGATIVE on the wave's FRONT face (this point crests next —
+            //               foam FORMS), POSITIVE behind the crest (it just passed — foam FADES). The
+            //               fore/aft asymmetry the whitecap lifecycle keys on.
+            //               ⚠️ It used to be slot 0 unconditionally, which was right only because a flat
+            //               weighting always puts the biggest train there. A spectrum moves the peak, and
+            //               foam breaking on the face of a train that is no longer the big one is a defect
+            //               with nothing red to show for it.
             // HLSL discipline: a FIXED [unroll] bound of WAVE_MAX_TRAINS with the live count masked INSIDE
             // (NEVER [unroll] a runtime count — the #96 magenta trap); pow bases floored at 1e-6 because
             // HLSL pow(0, 0) is NaN on some GPUs (the deviation lives where cos(theta) ~ 0 — invisible).
             // ====================================================================================================
-            #define WAVE_MAX_TRAINS 4
+            // ⚠️ WAVE_MAX_TRAINS is ONE HALF OF A SEAM. Its C# counterparts are
+            // WaveTrains.MaxTrains, PackedWaveField.MaxTrains and the bridge's uniform push; they
+            // move together in one commit or the hull rides a sea the shader is not drawing.
+            #define WAVE_MAX_TRAINS 8
             void WaveFieldSample(float2 worldXY, float freqScale,
                                  out float height, out float2 slopeXY, out float crestF, out float primaryCos)
             {
@@ -1526,11 +1544,17 @@ Shader "HiddenHarbours/Water"
                 crestF = 0.0;
                 primaryCos = 0.0;
 
-                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3 };
-                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x, _WavePhases.y, _WavePhases.z, _WavePhases.w };
+                float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                   _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
                 int count = (int)(_WaveFieldParams.x + 0.5);
                 float p = max(_WaveFieldParams.y, 1.0);            // crest sharpening (>= 1, like the C# clamp)
                 float totalAmp = _WaveFieldParams.z;
+                // The SPECTRAL PEAK's slot, not slot 0. Under the flat weighting these are the same
+                // train and .w publishes 0; once JONSWAP re-weights, the whitecap lifecycle must key
+                // on the face of the biggest wave, not on whichever train happens to sit first.
+                int dominant = (int)(_WaveFieldParams.w + 0.5);
                 float fs = max(freqScale, 1e-3);
 
                 [unroll]
@@ -1552,7 +1576,7 @@ Shader "HiddenHarbours/Water"
                         float slopeMag = amplitude * p * pow(max(s, 1e-6), p - 1.0) * cosT * k;
                         slopeXY += slopeMag * trains[i].xy;
 
-                        if (i == 0) primaryCos = cosT;             // the primary train's face sign (see doc)
+                        if (i == dominant) primaryCos = cosT;      // the DOMINANT train's face sign (see doc)
                     }
                 }
 

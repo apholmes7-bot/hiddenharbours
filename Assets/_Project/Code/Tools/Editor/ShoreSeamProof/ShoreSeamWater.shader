@@ -68,8 +68,14 @@ Shader "Hidden/HH/ShoreSeamProof/Water"
         float4 _WaveTrain1;
         float4 _WaveTrain2;
         float4 _WaveTrain3;
-        float4 _WavePhases;      // per-train phase (rad), wrapped in C# double
-        float4 _WaveFieldParams; // x = count, y = crest sharpening p, z = total amplitude
+        float4 _WaveTrain4;      // ADR 0027 P2 widened the field 4 -> 8; this proof harness reads the
+        float4 _WaveTrain5;      // SAME globals as the production shader, so it widens with it or it
+        float4 _WaveTrain6;      // starts proving a seam that is not the one that ships.
+        float4 _WaveTrain7;
+        float4 _WavePhases;      // per-train phase (rad) for trains 0-3, wrapped in C# double
+        float4 _WavePhases2;     // ... and for trains 4-7
+        float4 _WaveFieldParams; // x = count, y = crest sharpening p, z = total amplitude,
+                                 // w = dominant (spectral-peak) slot
 
         CBUFFER_START(UnityPerMaterial)
             float4 _ColDeep, _ColMid, _ColShallow, _ColFoam, _ColSandDry, _ColSandWet;
@@ -94,10 +100,12 @@ Shader "Hidden/HH/ShoreSeamProof/Water"
             float sharp = max(_WaveFieldParams.y, 1.0);
             totalAmp = _WaveFieldParams.z;
 
-            float4 trains[4] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3 };
-            float  phases[4] = { _WavePhases.x, _WavePhases.y, _WavePhases.z, _WavePhases.w };
+            float4 trains[8] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                 _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+            float  phases[8] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                 _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
 
-            for (int i = 0; i < 4; i++)   // fixed bound, count-masked (the twin's own shape)
+            for (int i = 0; i < 8; i++)   // fixed bound, count-masked (the twin's own shape)
             {
                 float4 tr = trains[i];
                 float amp = tr.w;

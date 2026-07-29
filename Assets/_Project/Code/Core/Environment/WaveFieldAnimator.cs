@@ -82,6 +82,10 @@ namespace HiddenHarbours.Core
         // never grinds the wrap through float precision.
         private readonly double[] _phase = new double[WaveTrains.MaxTrains];
 
+        /// <summary>Scratch for the eased trains of the tick in progress — reused every tick so the
+        /// per-frame path stays allocation-free (rule 7). Only [0, count) is meaningful.</summary>
+        private readonly WaveTrain[] _eased = new WaveTrain[WaveTrains.MaxTrains];
+
         private WaveTrains _current = WaveTrains.None;
         private bool _initialized;
 
@@ -130,7 +134,6 @@ namespace HiddenHarbours.Core
 
             float alpha = SmoothingAlpha(dt, animatorSettings.ParameterSmoothingSeconds);
 
-            WaveTrain eased0 = default, eased1 = default, eased2 = default, eased3 = default;
             for (int i = 0; i < count; i++)
             {
                 WaveTrain target = targets[i];
@@ -161,19 +164,18 @@ namespace HiddenHarbours.Core
                 _phase[i] = Wrap(_phase[i] + waveNumber * train.PhaseSpeed * dt);
                 float phaseOffset = (float)Wrap(target.PhaseOffset - _phase[i]);
 
-                var easedTrain = new WaveTrain(train.Direction, train.Wavelength, train.Amplitude,
-                                               phaseOffset, fieldSettings.Gravity);
-                switch (i)
-                {
-                    case 0: eased0 = easedTrain; break;
-                    case 1: eased1 = easedTrain; break;
-                    case 2: eased2 = easedTrain; break;
-                    default: eased3 = easedTrain; break;
-                }
+                // ⚠️ Written into the slot it BELONGS to. This was a four-way switch whose `default`
+                // arm caught slot 3; at MaxTrains = 4 that was correct, but it silently made every
+                // slot from 3 up land on top of each other the moment the field could be wider —
+                // the eased sea would then have lost trains the derived sea still had, and only the
+                // hull-vs-water parity test would ever have noticed.
+                _eased[i] = new WaveTrain(train.Direction, train.Wavelength, train.Amplitude,
+                                          phaseOffset, fieldSettings.Gravity);
             }
 
-            _current = new WaveTrains(eased0, eased1, eased2, eased3,
-                                      count, targets.CrestSharpening);
+            // The peak rides through the easing untouched: the animator changes WHEN a train is,
+            // never WHICH train is the biggest (it eases each slot toward its own target).
+            _current = WaveTrains.From(_eased, count, targets.CrestSharpening, targets.DominantIndex);
             return _current;
         }
 
@@ -185,7 +187,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// The DOMINANT train's own phase at a world position (degrees; crest 90°, trough 270°) —
-        /// <see cref="WaveMath.TrainPhaseDegrees"/> against <c>Current[0]</c> at time 0, the same
+        /// <see cref="WaveMath.TrainPhaseDegrees"/> against <c>Current.Dominant</c> — the SPECTRAL
+        /// PEAK, deliberately, not slot 0 by convention (see <see cref="WaveTrains.DominantIndex"/>:
+        /// a re-weighting moves the peak, and this consumer must follow it) — at time 0, the same
         /// "the accumulated travel already rides in PhaseOffset" sugar as <see cref="Sample"/>.
         ///
         /// <para><b>The smooth rock channel (ADR 0022 phase 5).</b> This class already guarantees the
@@ -197,7 +201,7 @@ namespace HiddenHarbours.Core
         /// on <see cref="WaveTrains.TotalAmplitude"/>, exactly as they already do.</para>
         /// </summary>
         public float DominantPhaseDegrees(Vector2 worldPos) =>
-            _current.Count > 0 ? WaveMath.TrainPhaseDegrees(_current[0], worldPos, 0.0) : 0f;
+            _current.Count > 0 ? WaveMath.TrainPhaseDegrees(_current.Dominant, worldPos, 0.0) : 0f;
 
         // ---- shared fps-independent smoothing (used here and by the motion consumers) ------------
 

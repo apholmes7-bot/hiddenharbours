@@ -72,7 +72,11 @@ namespace HiddenHarbours.Tools.Editor
 
         // ---- wave globals (the ONE shared field, packed exactly like production) ----------------
 
-        /// <summary>Pack the field for a game time into the six shader globals via the production
+        /// <summary>Scratch for the phase-shifted trains — reused so the harness does not allocate
+        /// per publish. Editor-only, single-threaded by construction.</summary>
+        private static readonly WaveTrain[] _shiftedBuffer = new WaveTrain[WaveTrains.MaxTrains];
+
+        /// <summary>Pack the field for a game time into the shader globals via the production
         /// packing (WaveFieldBridge.Pack), baking the closed-form travel into each train's phase in
         /// DOUBLE — the WaveFieldBridge discipline, copied from the spike's SpikeWaveScenario.</summary>
         public static void PublishGlobals(in WaveTrains trains, double timeSeconds)
@@ -90,18 +94,14 @@ namespace HiddenHarbours.Tools.Editor
             }
 
             int n = trains.Count;
-            var shifted = new WaveTrains(
-                n > 0 ? Shifted(0) : default, n > 1 ? Shifted(1) : default,
-                n > 2 ? Shifted(2) : default, n > 3 ? Shifted(3) : default,
-                n, trains.CrestSharpening);
-            WaveFieldBridge.Pack(in shifted, out Vector4 t0, out Vector4 t1, out Vector4 t2,
-                                 out Vector4 t3, out Vector4 phases, out Vector4 fieldParams);
-            Shader.SetGlobalVector("_WaveTrain0", t0);
-            Shader.SetGlobalVector("_WaveTrain1", t1);
-            Shader.SetGlobalVector("_WaveTrain2", t2);
-            Shader.SetGlobalVector("_WaveTrain3", t3);
-            Shader.SetGlobalVector("_WavePhases", phases);
-            Shader.SetGlobalVector("_WaveFieldParams", fieldParams);
+            for (int i = 0; i < _shiftedBuffer.Length; i++)
+                _shiftedBuffer[i] = i < n ? Shifted(i) : default;
+            var shifted = WaveTrains.From(_shiftedBuffer, n, trains.CrestSharpening,
+                                          trains.DominantIndex);
+
+            // Through the bridge's own publisher — never a hand-written copy of the uniform names,
+            // or this harness starts proving a narrower field than the shipped shader reads.
+            WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in shifted));
         }
 
         // ---- depth-convention calibration (the boats/water-spike lesson: never assume; measure) --

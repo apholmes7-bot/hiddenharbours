@@ -77,14 +77,31 @@ namespace HiddenHarbours.Core
     /// </summary>
     public readonly struct WaveTrains
     {
-        /// <summary>Hard capacity of the container (and of the shader-global arrays the HLSL twin
-        /// reads). ADR 0018 fixes the model at 3–4 trains; 4 is the ceiling on both sides.</summary>
-        public const int MaxTrains = 4;
+        /// <summary>
+        /// Hard capacity of the container (and of the shader-global arrays the HLSL twin reads).
+        ///
+        /// <para><b>Widened 4 → 8 for ADR 0027 P2</b> (the ADR 0018 amendment). ADR 0018 fixed the
+        /// model at 3–4 trains because a hand-authored cross-chop is all four slots can express; a
+        /// JONSWAP-shaped <em>spectrum</em> needs enough frequencies to carry a shape AND to let
+        /// neighbouring ones beat into wave GROUPS, and four cannot do both. 8 is a measured choice
+        /// — see the cost report in the PR and the amendment.</para>
+        ///
+        /// <para>⚠️ <b>This constant is the seam's width, and it is load-bearing in four places at
+        /// once</b>: this container, <c>WaveFieldBridge</c>'s uniform push, the shader's
+        /// <c>WAVE_MAX_TRAINS</c> fixed loop bound, and <c>DisplacedWaterMath</c>'s clamp scan. They
+        /// widen together, in one commit, or the sea the hull rides stops being the sea the shader
+        /// draws.</para>
+        /// </summary>
+        public const int MaxTrains = 8;
 
         private readonly WaveTrain _train0;
         private readonly WaveTrain _train1;
         private readonly WaveTrain _train2;
         private readonly WaveTrain _train3;
+        private readonly WaveTrain _train4;
+        private readonly WaveTrain _train5;
+        private readonly WaveTrain _train6;
+        private readonly WaveTrain _train7;
 
         /// <summary>How many of the slots are live, in [0, <see cref="MaxTrains"/>]. Slots at or
         /// beyond this index are undefined and must not be read.</summary>
@@ -95,18 +112,70 @@ namespace HiddenHarbours.Core
         /// crests. Also concentrates <see cref="WaveSample.CrestFactor"/> toward the crest tips.</summary>
         public readonly float CrestSharpening;
 
-        /// <summary>Assemble a field. <paramref name="count"/> is clamped into
-        /// [0, <see cref="MaxTrains"/>]; <paramref name="crestSharpening"/> is clamped ≥ 1. Unused
-        /// slots may be passed as <c>default</c>.</summary>
+        /// <summary>
+        /// The slot carrying the <b>spectral peak</b> — the train whose phase the rocking consumers
+        /// read forward (<see cref="WaveMath.TrainPhaseDegrees"/>, <c>BoatWaveMotion</c>, the buoys,
+        /// the drift weed) and whose face sign the shader's whitecap lifecycle keys on. Clamped into
+        /// [0, <see cref="Count"/>).
+        ///
+        /// <para><b>Why this is a field and not "slot 0 by convention".</b> Under the flat weighting
+        /// the biggest train is always the downwind primary in slot 0, so every consumer took
+        /// <c>trains[0]</c> and was right by accident. A JONSWAP re-weighting moves the peak, and the
+        /// accidental convention would then have the hull rocking to one train while the foam broke
+        /// on another — silently, with nothing red. Naming the choice is what stops that; under
+        /// today's flat weighting it is still 0, and a test pins exactly that.</para>
+        /// </summary>
+        public readonly int DominantIndex;
+
+        /// <summary>Assemble a field from all <see cref="MaxTrains"/> slots. <paramref name="count"/>
+        /// is clamped into [0, <see cref="MaxTrains"/>], <paramref name="crestSharpening"/> ≥ 1, and
+        /// <paramref name="dominantIndex"/> into the live range. Unused slots may be
+        /// <c>default</c>.</summary>
         public WaveTrains(in WaveTrain train0, in WaveTrain train1, in WaveTrain train2,
-                          in WaveTrain train3, int count, float crestSharpening)
+                          in WaveTrain train3, in WaveTrain train4, in WaveTrain train5,
+                          in WaveTrain train6, in WaveTrain train7,
+                          int count, float crestSharpening, int dominantIndex)
         {
             _train0 = train0;
             _train1 = train1;
             _train2 = train2;
             _train3 = train3;
+            _train4 = train4;
+            _train5 = train5;
+            _train6 = train6;
+            _train7 = train7;
             Count = Mathf.Clamp(count, 0, MaxTrains);
             CrestSharpening = Mathf.Max(1f, crestSharpening);
+            DominantIndex = Count > 0 ? Mathf.Clamp(dominantIndex, 0, Count - 1) : 0;
+        }
+
+        /// <summary>The narrow assembly — four trains, peak in slot 0. Kept because the hand-authored
+        /// primary + three-secondary field IS four trains and reads clearest that way, and because it
+        /// is the shape every pre-P2 caller was written against.</summary>
+        public WaveTrains(in WaveTrain train0, in WaveTrain train1, in WaveTrain train2,
+                          in WaveTrain train3, int count, float crestSharpening)
+            : this(train0, train1, train2, train3, default, default, default, default,
+                   count, crestSharpening, 0)
+        {
+        }
+
+        /// <summary>
+        /// Assemble from a caller-owned buffer of at least <paramref name="count"/> trains — the
+        /// shape the spectrum derivation and <see cref="WaveFieldAnimator"/> want (both already hold
+        /// per-slot arrays, so this spares them an eight-argument call). Allocation-free: the buffer
+        /// is READ, never retained (rule 7).
+        /// </summary>
+        public static WaveTrains From(WaveTrain[] source, int count, float crestSharpening,
+                                      int dominantIndex)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            int live = Mathf.Clamp(count, 0, Mathf.Min(MaxTrains, source.Length));
+            return new WaveTrains(
+                live > 0 ? source[0] : default, live > 1 ? source[1] : default,
+                live > 2 ? source[2] : default, live > 3 ? source[3] : default,
+                live > 4 ? source[4] : default, live > 5 ? source[5] : default,
+                live > 6 ? source[6] : default, live > 7 ? source[7] : default,
+                live, crestSharpening, dominantIndex);
         }
 
         /// <summary>The train in a live slot (index in [0, <see cref="Count"/>)).</summary>
@@ -116,9 +185,18 @@ namespace HiddenHarbours.Core
             1 => _train1,
             2 => _train2,
             3 => _train3,
+            4 => _train4,
+            5 => _train5,
+            6 => _train6,
+            7 => _train7,
             _ => throw new ArgumentOutOfRangeException(nameof(index), index,
                      "WaveTrains holds at most " + MaxTrains + " trains."),
         };
+
+        /// <summary>The spectral-peak train (<see cref="DominantIndex"/>) — what the phase consumers
+        /// read instead of <c>trains[0]</c>. A silent (zero-amplitude) peak still has a defined
+        /// direction, wavelength and phase; an EMPTY field returns <c>default</c>.</summary>
+        public WaveTrain Dominant => Count > 0 ? this[DominantIndex] : default;
 
         /// <summary>Sum of the live trains' amplitudes (metres) — the field's height envelope: the
         /// tallest possible crest above (and deepest trough below) the tide level. 0 = dead glass.
@@ -181,6 +259,22 @@ namespace HiddenHarbours.Core
     [Serializable]
     public struct WaveFieldSettings
     {
+        /// <summary>
+        /// How many secondary trains this struct can actually DESCRIBE — the three
+        /// <c>SecondaryN*</c> triples below. <see cref="SecondaryTrainCount"/> clamps against this,
+        /// <b>not</b> against <see cref="WaveTrains.MaxTrains"/>.
+        ///
+        /// <para>⚠️ <b>The subtlest edge of the P2 widening.</b> The clamp used to read
+        /// <c>MaxTrains - 1</c>, which was the same number by coincidence: the container held four
+        /// slots and the settings described four trains. Widening the container to 8 without pinning
+        /// this would let an over-set <c>SecondaryTrainCount</c> report live slots that were never
+        /// derived — the shader would read <c>default</c> (all-zero) trains as live, and
+        /// <see cref="WaveTrains.TotalAmplitude"/>, the crest-factor normalizer the whitecaps and the
+        /// hull clamp both divide by, would be summed over trains that do not exist. Pinned by
+        /// <c>WaveSpectrumPassthroughTests</c>.</para>
+        /// </summary>
+        public const int DerivedSecondaryTrainSlots = 3;
+
         [Tooltip("Gravitational acceleration g (m/s²) for the deep-water dispersion relation c = √(g·λ/2π). Earth = 9.81. Not a style knob — change only if the sea should read heavier/lighter wholesale.")]
         public float Gravity;
 
@@ -363,7 +457,12 @@ namespace HiddenHarbours.Core
                 primaryAmplitude * Mathf.Max(0f, settings.Secondary3AmplitudeRatio),
                 PhaseOffsetRadians(3, settings.PhaseSeed), gravity);
 
-            int count = 1 + Mathf.Clamp(settings.SecondaryTrainCount, 0, WaveTrains.MaxTrains - 1);
+            // ⚠️ Clamped against what the SETTINGS can describe (three secondaries), never against
+            // WaveTrains.MaxTrains — those were the same number before P2 widened the container, and
+            // following MaxTrains here would publish underived slots as live. See
+            // WaveFieldSettings.DerivedSecondaryTrainSlots.
+            int count = 1 + Mathf.Clamp(settings.SecondaryTrainCount, 0,
+                                        WaveFieldSettings.DerivedSecondaryTrainSlots);
             return new WaveTrains(primary, secondary1, secondary2, secondary3, count, settings.CrestSharpening);
         }
 

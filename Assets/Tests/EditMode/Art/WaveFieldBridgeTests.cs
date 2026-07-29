@@ -45,62 +45,62 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var settings = WaveFieldSettings.Default;
             var trains = WaveMath.TrainsFrom(new Vector2(5f, 2f), 0.6f, in settings);
-            WaveFieldBridge.Pack(in trains,
-                out Vector4 t0, out Vector4 t1, out Vector4 t2, out Vector4 t3,
-                out Vector4 phases, out Vector4 fieldParams);
+            PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
-            var packed = new[] { t0, t1, t2, t3 };
-            var packedPhases = new[] { phases.x, phases.y, phases.z, phases.w };
             for (int i = 0; i < trains.Count; i++)
             {
-                Assert.AreEqual(trains[i].Direction.x, packed[i].x, 1e-6f, $"train {i}: dir.x in .x");
-                Assert.AreEqual(trains[i].Direction.y, packed[i].y, 1e-6f, $"train {i}: dir.y in .y");
-                Assert.AreEqual((2f * Mathf.PI) / trains[i].Wavelength, packed[i].z, 1e-5f,
+                Vector4 slot = field.Train(i);
+                Assert.AreEqual(trains[i].Direction.x, slot.x, 1e-6f, $"train {i}: dir.x in .x");
+                Assert.AreEqual(trains[i].Direction.y, slot.y, 1e-6f, $"train {i}: dir.y in .y");
+                Assert.AreEqual((2f * Mathf.PI) / trains[i].Wavelength, slot.z, 1e-5f,
                     $"train {i}: .z is the wave number k = 2π/λ (precomputed — the shader never divides)");
-                Assert.AreEqual(trains[i].Amplitude, packed[i].w, 1e-6f, $"train {i}: amplitude in .w");
-                Assert.GreaterOrEqual(packedPhases[i], 0f, $"train {i}: phase wrapped ≥ 0");
-                Assert.Less(packedPhases[i], 2f * Mathf.PI + 1e-4f, $"train {i}: phase wrapped < 2π");
+                Assert.AreEqual(trains[i].Amplitude, slot.w, 1e-6f, $"train {i}: amplitude in .w");
+                Assert.GreaterOrEqual(field.Phase(i), 0f, $"train {i}: phase wrapped ≥ 0");
+                Assert.Less(field.Phase(i), 2f * Mathf.PI + 1e-4f, $"train {i}: phase wrapped < 2π");
             }
 
-            Assert.AreEqual(trains.Count, fieldParams.x, 1e-6f, "params.x = live train count");
-            Assert.AreEqual(trains.CrestSharpening, fieldParams.y, 1e-6f, "params.y = crest sharpening p");
-            Assert.AreEqual(trains.TotalAmplitude, fieldParams.z, 1e-5f,
+            Assert.AreEqual(trains.Count, field.Params.x, 1e-6f, "params.x = live train count");
+            Assert.AreEqual(trains.CrestSharpening, field.Params.y, 1e-6f, "params.y = crest sharpening p");
+            Assert.AreEqual(trains.TotalAmplitude, field.Params.z, 1e-5f,
                 "params.z = total amplitude (the crest-factor normalizer)");
+            Assert.AreEqual(trains.DominantIndex, field.DominantIndex,
+                "params.w = the dominant (spectral-peak) slot — was `reserved`");
         }
 
         [Test]
         public void Pack_EmptyField_PublishesAllZeros_TheLegacyLookConvention()
         {
             WaveTrains none = WaveTrains.None;
-            WaveFieldBridge.Pack(in none,
-                out Vector4 t0, out Vector4 t1, out Vector4 t2, out Vector4 t3,
-                out Vector4 phases, out Vector4 fieldParams);
+            PackedWaveField field = WaveFieldBridge.Pack(in none);
 
-            Assert.AreEqual(Vector4.zero, t0, "an empty field publishes silence (count 0 → legacy path)");
-            Assert.AreEqual(Vector4.zero, t1);
-            Assert.AreEqual(Vector4.zero, t2);
-            Assert.AreEqual(Vector4.zero, t3);
-            Assert.AreEqual(Vector4.zero, phases);
-            Assert.AreEqual(Vector4.zero, fieldParams);
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)
+                Assert.AreEqual(Vector4.zero, field.Train(i),
+                    $"an empty field publishes silence in slot {i} (count 0 → legacy path)");
+            Assert.AreEqual(Vector4.zero, field.PhasesLow);
+            Assert.AreEqual(Vector4.zero, field.PhasesHigh);
+            Assert.AreEqual(Vector4.zero, field.Params);
         }
 
         [Test]
         public void Pack_DeadSlots_PublishZero_NeverUndefinedContents()
         {
             var settings = WaveFieldSettings.Default;
-            settings.SecondaryTrainCount = 1;               // 2 live trains, slots 2/3 undefined
+            settings.SecondaryTrainCount = 1;               // 2 live trains, the rest undefined
             var trains = WaveMath.TrainsFrom(new Vector2(5f, 2f), 0.6f, in settings);
             Assert.AreEqual(2, trains.Count, "sanity: two live trains");
 
-            WaveFieldBridge.Pack(in trains,
-                out _, out _, out Vector4 t2, out Vector4 t3,
-                out Vector4 phases, out Vector4 fieldParams);
+            PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
-            Assert.AreEqual(Vector4.zero, t2, "slot 2 is dead — packed as zero");
-            Assert.AreEqual(Vector4.zero, t3, "slot 3 is dead — packed as zero");
-            Assert.AreEqual(0f, phases.z, "dead slot phase is zero");
-            Assert.AreEqual(0f, phases.w, "dead slot phase is zero");
-            Assert.AreEqual(2f, fieldParams.x, 1e-6f, "count says 2");
+            // ⚠ Every slot above the count, all the way to the WIDENED capacity. Before P2 this
+            // checked slots 2 and 3 because those were the only ones that existed; the widening adds
+            // four more, and an unpacked slot full of stale globals would be read as a live train by
+            // any shader whose count came from a different frame.
+            for (int i = trains.Count; i < PackedWaveField.MaxTrains; i++)
+            {
+                Assert.AreEqual(Vector4.zero, field.Train(i), $"slot {i} is dead — packed as zero");
+                Assert.AreEqual(0f, field.Phase(i), $"slot {i} dead phase is zero");
+            }
+            Assert.AreEqual(2f, field.Params.x, 1e-6f, "count says 2");
         }
 
         [Test]
@@ -108,12 +108,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             var settings = WaveFieldSettings.Default;
             var trains = WaveMath.TrainsFrom(new Vector2(-6f, 4f), 0.8f, in settings);
-            WaveFieldBridge.Pack(in trains, out Vector4 a0, out Vector4 a1, out Vector4 a2,
-                                 out Vector4 a3, out Vector4 aPhases, out Vector4 aParams);
-            WaveFieldBridge.Pack(in trains, out Vector4 b0, out Vector4 b1, out Vector4 b2,
-                                 out Vector4 b3, out Vector4 bPhases, out Vector4 bParams);
-            Assert.AreEqual(a0, b0); Assert.AreEqual(a1, b1); Assert.AreEqual(a2, b2);
-            Assert.AreEqual(a3, b3); Assert.AreEqual(aPhases, bPhases); Assert.AreEqual(aParams, bParams);
+            PackedWaveField a = WaveFieldBridge.Pack(in trains);
+            PackedWaveField b = WaveFieldBridge.Pack(in trains);
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)
+                Assert.AreEqual(a.Train(i), b.Train(i), $"slot {i}");
+            Assert.AreEqual(a.PhasesLow, b.PhasesLow);
+            Assert.AreEqual(a.PhasesHigh, b.PhasesHigh);
+            Assert.AreEqual(a.Params, b.Params);
         }
 
         // ===== (2) TWIN PARITY — the packed field reconstructs the reference surface ======================
@@ -126,9 +127,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (var sea in SeaStates)
             {
                 var trains = WaveMath.TrainsFrom(wind, sea, in settings);
-                WaveFieldBridge.Pack(in trains,
-                    out Vector4 t0, out Vector4 t1, out Vector4 t2, out Vector4 t3,
-                    out Vector4 phases, out Vector4 fieldParams);
+                PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
                 foreach (var x in GridCoords)
                 foreach (var y in GridCoords)
@@ -136,8 +135,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     var pos = new Vector2(x, y);
                     // TrainsFrom offsets are the t = 0 phases, so the reference frame is t = 0.
                     WaveSample reference = WaveMath.Sample(pos, 0.0, in trains);
-                    WaveSample twin = WaveFieldBridge.ShaderTwinSample(pos, t0, t1, t2, t3,
-                                                                       phases, fieldParams);
+                    WaveSample twin = WaveFieldBridge.ShaderTwinSample(pos, in field);
                     Assert.AreEqual(reference.Height, twin.Height, ParityTolerance,
                         $"height parity at ({x},{y}) wind {wind} sea {sea}");
                     Assert.AreEqual(reference.Slope.x, twin.Slope.x, ParityTolerance,
@@ -168,17 +166,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                               in fieldSettings, in animatorSettings);
 
             WaveTrains eased = animator.Current;
-            WaveFieldBridge.Pack(in eased,
-                out Vector4 t0, out Vector4 t1, out Vector4 t2, out Vector4 t3,
-                out Vector4 phases, out Vector4 fieldParams);
+            PackedWaveField field = WaveFieldBridge.Pack(in eased);
 
             foreach (var x in GridCoords)
             foreach (var y in GridCoords)
             {
                 var pos = new Vector2(x, y);
                 WaveSample hull = animator.Sample(pos);   // what BoatWaveMotion reads
-                WaveSample water = WaveFieldBridge.ShaderTwinSample(pos, t0, t1, t2, t3,
-                                                                    phases, fieldParams);
+                WaveSample water = WaveFieldBridge.ShaderTwinSample(pos, in field);
                 Assert.AreEqual(hull.Height, water.Height, ParityTolerance,
                     $"the water pixel and the hull must ride the same sea at ({x},{y})");
                 Assert.AreEqual(hull.Slope.x, water.Slope.x, ParityTolerance, "slope.x");
@@ -187,10 +182,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
 
             // And the published phases stayed wrapped — the double-accumulate discipline held.
-            foreach (float phase in new[] { phases.x, phases.y, phases.z, phases.w })
+            for (int i = 0; i < PackedWaveField.MaxTrains; i++)
             {
-                Assert.GreaterOrEqual(phase, 0f, "phase wrapped ≥ 0 after a long session");
-                Assert.LessOrEqual(phase, 2f * Mathf.PI + 1e-4f, "phase wrapped ≤ 2π after a long session");
+                Assert.GreaterOrEqual(field.Phase(i), 0f, $"slot {i} phase wrapped ≥ 0 after a long session");
+                Assert.LessOrEqual(field.Phase(i), 2f * Mathf.PI + 1e-4f,
+                    $"slot {i} phase wrapped ≤ 2π after a long session");
             }
         }
 
@@ -201,16 +197,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // flat surface with crest factor 0 — no swell brightness, no foam, the full mirror.
             var settings = WaveFieldSettings.Default;
             var trains = WaveMath.TrainsFrom(new Vector2(4f, -3f), 0f, in settings);
-            WaveFieldBridge.Pack(in trains,
-                out Vector4 t0, out Vector4 t1, out Vector4 t2, out Vector4 t3,
-                out Vector4 phases, out Vector4 fieldParams);
+            PackedWaveField field = WaveFieldBridge.Pack(in trains);
 
-            Assert.AreEqual(0f, fieldParams.z, 1e-7f, "total amplitude is exactly 0 at glass");
+            Assert.AreEqual(0f, field.Params.z, 1e-7f, "total amplitude is exactly 0 at glass");
             foreach (var x in GridCoords)
             foreach (var y in GridCoords)
             {
-                WaveSample s = WaveFieldBridge.ShaderTwinSample(new Vector2(x, y),
-                                                                t0, t1, t2, t3, phases, fieldParams);
+                WaveSample s = WaveFieldBridge.ShaderTwinSample(new Vector2(x, y), in field);
                 Assert.AreEqual(0f, s.Height, "glass means glass: height exactly 0");
                 Assert.AreEqual(0f, s.CrestFactor, "crest factor exactly 0 — nothing for foam to ride");
             }
