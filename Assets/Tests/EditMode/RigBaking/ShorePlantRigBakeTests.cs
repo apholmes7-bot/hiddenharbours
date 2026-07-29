@@ -38,10 +38,19 @@ namespace HiddenHarbours.Tests.RigBaking
         private static ShorePlantCatalog.Contract _contract;
 
         /// <summary>One species per tidal zone — fringe algae, mid-intertidal wrack, low-marsh
-        /// grass, high-marsh rush and a dune plant that never wets. The pixel scans run on these,
-        /// because the zone is what the tide rulings vary along.</summary>
+        /// cordgrass, high-marsh cattail and dune marram that never wets. The pixel scans run on
+        /// these, because the zone is what the tide rulings vary along. All five are strapped
+        /// families; <see cref="WoodyProbe"/> covers the other case.</summary>
         static readonly string[] ZoneProbes =
-            { "SugarKelp", "KnottedWrack", "Cordgrass", "Cattail", "Bayberry" };
+            { "SugarKelp", "KnottedWrack", "Cordgrass", "Cattail", "MarramGrass" };
+
+        /// <summary>
+        /// A woody upland shrub — body, wood and single-pixel FLECK berries, and <b>no strap at
+        /// all</b>. It is the control for the strap scan: if <c>state.B</c> were painted everywhere
+        /// (or nowhere) rather than tracking the material, this species and the five above could not
+        /// disagree.
+        /// </summary>
+        const string WoodyProbe = "Bayberry";
 
         const string Season = "summer";
         const string Stage = "full";
@@ -286,6 +295,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var report = new StringBuilder(
                 "[plant-bake] strap-rim scan (light.G where state.B == 255):\n");
+            long totalStrapPx = 0;
 
             foreach (string key in ZoneProbes)
             foreach (string tide in new[] { "low", "half", "high" })
@@ -320,12 +330,39 @@ namespace HiddenHarbours.Tests.RigBaking
                                   $"{bodyRim,6} body/wood px DO carry rim");
 
                 // …and the scan must be looking at something. A cell with no strap pixels at all
-                // would pass the leak assert vacuously.
+                // would pass the leak assert vacuously — and every ZoneProbe is a strapped family
+                // (blades, fronds, culms), so a zero here means the flag stopped being written.
                 Assert.Greater(strapPx, 0,
-                    $"{key} @ {tide}: no strap pixels found — the scan proved nothing. Either the " +
-                    "state.B flag stopped being written or this species has no straps, and both " +
-                    "are contract violations.");
+                    $"{key} @ {tide}: no strap pixels found, but this is a strapped family — the " +
+                    "scan proved nothing. state.B has stopped tracking the material.");
+                totalStrapPx += strapPx;
             }
+
+            // ⭐ The control. A woody shrub is legitimately strap-FREE, so it must report zero
+            // straps while still carrying rim — which is what proves state.B tracks the material
+            // rather than being painted on (or off) wholesale. Without this, "0 leaks" everywhere
+            // would be equally consistent with a flag nobody writes.
+            var woody = Render(WoodyProbe, variant: 0, tide: "half", frame: 0);
+            int woodyStrap = 0, woodyRim = 0, woodyInk = 0;
+            for (int i = 0; i < woody.State.Length; i += 4)
+            {
+                if (woody.State[i + 3] == 0) continue;
+                woodyInk++;
+                if (woody.State[i + 2] == 255) woodyStrap++;
+                if (woody.Light[i + 1] > 0) woodyRim++;
+            }
+
+            Assert.AreEqual(0, woodyStrap,
+                $"{WoodyProbe} is a woody shrub — body, wood and fleck berries, no strap. " +
+                $"{woodyStrap} strap pixel(s) means state.B is being painted where no strap is.");
+            Assert.Greater(woodyRim, 0,
+                $"{WoodyProbe} carries no rim at all — a strap-free species must still rim, or the " +
+                "scan cannot tell 'no straps' from 'no light mask'.");
+
+            report.AppendLine(
+                $"  {WoodyProbe,-16} @ half  {woodyStrap,6} strap px (CONTROL: woody, expected 0), " +
+                $"{woodyRim} rim px of {woodyInk} ink — state.B tracks the material, it is not painted on.");
+            report.AppendLine($"  ── {totalStrapPx} strap pixels scanned across 15 cells, 0 leaks.");
 
             Debug.Log(report.ToString());
         }
@@ -373,26 +410,39 @@ namespace HiddenHarbours.Tests.RigBaking
         /// depth — because the live sprite-light shader's caustics are swell-driven, and a baked
         /// dapple would put two uncorrelated patterns on the same frond.
         ///
-        /// <para><b>What a dapple actually looks like, and therefore what this measures.</b> A
-        /// caustic is a high-frequency LUMINANCE OSCILLATION across the surface: bright ripple lines
-        /// alternating with darker gaps, at a spatial period of a few pixels, independent of the
-        /// plant's own geometry. A depth ramp is monotone and produces none. So the metric is
-        /// direction changes in luminance along each submerged scanline, per 100 submerged pixels —
-        /// and the sabotage below proves the metric separates a real bake from an injected dapple by
-        /// a wide margin.</para>
+        /// <para><b>What this measures, and why it is not a scanline scan.</b> The first version of
+        /// this test counted luminance direction changes along each submerged scanline — the obvious
+        /// "is it rippled?" measure. It does not work here, and the numbers say so: a <i>clump</i>
+        /// species is many separate blades side by side, so a scanline crosses genuine
+        /// blade-to-blade steps. Cordgrass scored 21.1 honest against 30.6 with an injected dapple —
+        /// a 1.45× separation, which is not a test. <b>A horizontal scan cannot tell a row of thin
+        /// blades from a ripple.</b>
+        ///
+        /// <para>So measure the contract's actual claim instead: submergence is a <b>colour ramp
+        /// applied per pixel</b> — "darker, cooler, contrast falling monotonically with depth". A
+        /// ramp maps a quantised palette onto another quantised palette, so a submerged region holds
+        /// a BOUNDED SET OF DISTINCT COLOURS however many blades it contains. A dapple is a spatial
+        /// term added on top, which multiplies that palette by its own amplitude.</para>
+        ///
+        /// <para><b>⚠ And the threshold is per-sprite, not a constant.</b> The species' palettes
+        /// differ by an order of magnitude honestly — a single broad kelp blade holds ~8 distinct
+        /// submerged colours, a cordgrass clump 84 — so any global ceiling either waves the simple
+        /// species through or fails the complex one. This test therefore <b>carries its own
+        /// control</b>: it dapples each sprite and requires the honest bake to sit a multiple below
+        /// what a caustic would have produced <i>on that same sprite</i>. Nothing is tuned.</para>
         /// </summary>
         [Test]
         public void ASubmergedPlantIsTINTED_NotDAPPLED_SoNoCausticIsEverBaked()
         {
             var report = new StringBuilder(
-                "[plant-bake] submerged-cell caustic scan (luminance direction changes per 100 px):\n");
+                "[plant-bake] submerged-cell caustic scan (distinct colours per 100 submerged px):\n");
 
             foreach (string key in ZoneProbes)
             {
                 // 'high' floods every zone that the tide can reach at all; the upland probe is
                 // expected to stay dry and is reported as such rather than skipped silently.
                 var cell = Render(key, variant: 0, tide: "high", frame: 0);
-                var scan = Ripple(cell);
+                var scan = Scan(cell);
 
                 if (scan.SubmergedPx == 0)
                 {
@@ -409,26 +459,63 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.Greater(scan.SubmergedPx, 20,
                     $"{key}: only {scan.SubmergedPx} submerged pixels — too few to scan.");
 
-                Assert.Less(scan.RipplePer100, MaxRipplePer100,
-                    $"{key}: {scan.RipplePer100:F1} luminance direction changes per 100 submerged " +
-                    "pixels — that is the signature of a baked dapple. The live shader owns the " +
-                    "caustics (ADR 0010/0012/0023).");
+                // …and it must actually be tinted, or "no dapple" is trivially true of a sprite the
+                // tide never touched.
+                Assert.AreNotEqual(0f, scan.MeanLuma, $"{key}: submerged pixels are black");
+
+                // ⭐ The control, computed on this very sprite: what its submerged palette WOULD
+                // look like with a caustic in it.
+                var dappled = Scan(Dapple(cell, (int)_host.EvaluateNumber($"{Res}.w")));
+                float headroom = dappled.DistinctColours / (float)Mathf.Max(1, scan.DistinctColours);
+
+                Assert.GreaterOrEqual(headroom, MinDappleHeadroom,
+                    $"{key}: {scan.DistinctColours} distinct submerged colours against " +
+                    $"{dappled.DistinctColours} for the same sprite WITH a caustic — only " +
+                    $"{headroom:F1}× apart. Either a spatial term is already baked in, or the " +
+                    "palette is too rich for this measure to separate them. The live shader owns " +
+                    "the caustics (ADR 0010/0012/0023).");
 
                 report.AppendLine(
                     $"  {key,-16} {scan.SubmergedPx,6} submerged px  " +
-                    $"{scan.RipplePer100,6:F1} dir-changes/100  " +
-                    $"mean luma {scan.MeanLuma,5:F1}  (dry mean {scan.DryLuma:F1})");
+                    $"{scan.DistinctColours,4} distinct colours ({scan.DistinctPer100,5:F1}/100)  " +
+                    $"mean luma {scan.MeanLuma,5:F1} (dry {scan.DryLuma,5:F1})  " +
+                    $"— a caustic would make it {dappled.DistinctColours,4} ({headroom:F1}×)");
             }
 
             Debug.Log(report.ToString());
         }
 
         /// <summary>
-        /// The ceiling the honest bake must clear. Set well below the injected-dapple rate measured
-        /// by the sabotage below, and above the direction-changes a plant's own geometry produces
-        /// (fronds overlap; a scanline crosses several of them).
+        /// How far below "the same sprite with a caustic in it" the honest bake must sit.
+        ///
+        /// <para>The injected ripple takes exactly five distinct values at a 5 px integer period, so
+        /// a clean ramp multiplies its palette by at most 5×, less whatever the two palettes already
+        /// share. <b>Measured across the four submerged probes: SugarKelp 7→32 (4.6×),
+        /// KnottedWrack 56→167 (3.0×), Cordgrass 84→283 (3.4×), Cattail 48→153 (3.2×).</b> A bake
+        /// that already carried a dapple would score near 1× — adding a second ripple to a rippled
+        /// palette mostly collides. 2.5 sits between the two with room on both sides rather than
+        /// being tuned to the tightest observation.</para>
         /// </summary>
-        const float MaxRipplePer100 = 22f;
+        const float MinDappleHeadroom = 2.5f;
+
+        /// <summary>
+        /// A 5 px-period brightness ripple over the submerged pixels — the coarsest a caustic would
+        /// ever be at 32 px/m, and therefore the easiest for a scan to MISS. A finer one would only
+        /// be more obvious.
+        /// </summary>
+        static Cell Dapple(Cell cell, int w)
+        {
+            var rgba = (byte[])cell.Rgba.Clone();
+            for (int i = 0, p = 0; i < rgba.Length; i += 4, p++)
+            {
+                if (cell.State[i + 3] == 0 || cell.State[i + 1] != 255) continue;
+                int x = p % w, y = p / w;
+                float ripple = 40f * Mathf.Sin((x + y) * 2f * Mathf.PI / 5f);
+                for (int ch = 0; ch < 3; ch++)
+                    rgba[i + ch] = (byte)Mathf.Clamp(rgba[i + ch] + ripple, 0, 255);
+            }
+            return new Cell { Rgba = rgba, Light = cell.Light, State = cell.State };
+        }
 
         /// <summary>
         /// SABOTAGE, MEASURED — the reason the ceiling above is not decoration. Inject a synthetic
@@ -439,101 +526,90 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void Sabotage_AnInjectedDapple_IsSeparatedFromTheHonestBakeByAWideMargin()
         {
-            var cell = Render("SugarKelp", variant: 0, tide: "high", frame: 0);
-            var honest = Ripple(cell);
-            Assert.Greater(honest.SubmergedPx, 100, "need a properly submerged cell to sabotage");
+            // Both ends of the honest range: the quietest submerged probe (a single broad kelp
+            // blade) and the noisiest (a clump of many separate cordgrass blades, whose real
+            // geometry produces the most direction changes of any species measured). Proving the
+            // separation only on the easy one would leave the tight case untested.
+            var report = new StringBuilder("[plant-bake] SABOTAGE — caustic scan:\n");
 
-            // A 5 px-period brightness ripple — the coarsest a caustic would ever be at 32 px/m, so
-            // the easiest for a scan to MISS. A finer one would only be more obvious.
-            var dappled = (byte[])cell.Rgba.Clone();
-            int w = (int)_host.EvaluateNumber($"{Res}.w");
-            for (int i = 0, p = 0; i < dappled.Length; i += 4, p++)
+            foreach (string key in new[] { "SugarKelp", "Cordgrass" })
             {
-                if (cell.State[i + 3] == 0 || cell.State[i + 1] != 255) continue;
-                int x = p % w, y = p / w;
-                float ripple = 40f * Mathf.Sin((x + y) * 2f * Mathf.PI / 5f);
-                for (int ch = 0; ch < 3; ch++)
-                    dappled[i + ch] = (byte)Mathf.Clamp(dappled[i + ch] + ripple, 0, 255);
+                var cell = Render(key, variant: 0, tide: "high", frame: 0);
+                int w = (int)_host.EvaluateNumber($"{Res}.w");
+                var honest = Scan(cell);
+                Assert.Greater(honest.SubmergedPx, 100,
+                               $"{key}: need a properly submerged cell to sabotage");
+
+                var sabotaged = Scan(Dapple(cell, w));
+
+                Assert.GreaterOrEqual(sabotaged.DistinctColours,
+                                      honest.DistinctColours * MinDappleHeadroom,
+                    $"SABOTAGE NOT DETECTED — on {key} an injected 5 px dapple produced " +
+                    $"{sabotaged.DistinctColours} distinct submerged colours against the honest " +
+                    $"bake's {honest.DistinctColours}. The scan cannot tell a caustic from a colour " +
+                    "ramp, so the ruling-3 assert is decoration.");
+
+                // ⚠ The per-100 ratio is reported but NOT asserted on: distinct-colour count
+                // saturates at the palette while the pixel count does not, so dividing by area
+                // measures how big the sprite is, not how dappled it is. Measured: a dappled
+                // SugarKelp scores 4.1/100 — LOWER than an honest Cordgrass at 13.1 — which is why
+                // the assert above compares a sprite only against itself.
+                report.AppendLine(
+                    $"  {key,-12} honest {honest.DistinctColours,4} distinct " +
+                    $"({honest.DistinctPer100,5:F1}/100) → dappled {sabotaged.DistinctColours,4} " +
+                    $"({sabotaged.DistinctPer100,5:F1}/100) — " +
+                    $"{sabotaged.DistinctColours / (float)Mathf.Max(1, honest.DistinctColours):F1}× " +
+                    $"separation, floor {MinDappleHeadroom}×");
             }
 
-            var sabotaged = Ripple(new Cell { Rgba = dappled, Light = cell.Light, State = cell.State },
-                                   w);
-
-            Assert.Greater(sabotaged.RipplePer100, honest.RipplePer100 * 3f,
-                $"SABOTAGE NOT DETECTED — an injected 5 px dapple scored " +
-                $"{sabotaged.RipplePer100:F1} against the honest bake's {honest.RipplePer100:F1}. " +
-                "The scan cannot tell a caustic from a colour ramp, so the ruling-3 assert is " +
-                "decoration.");
-
-            Assert.Greater(sabotaged.RipplePer100, MaxRipplePer100,
-                "the injected dapple must break the ceiling the honest bake passes under, or the " +
-                "ceiling is set too high to catch anything.");
-
-            Debug.Log($"[plant-bake] SABOTAGE — caustic scan: honest bake " +
-                      $"{honest.RipplePer100:F1} dir-changes/100 px, injected 5 px dapple " +
-                      $"{sabotaged.RipplePer100:F1} (ceiling {MaxRipplePer100}). Separation " +
-                      $"{sabotaged.RipplePer100 / Mathf.Max(0.01f, honest.RipplePer100):F1}×.");
+            Debug.Log(report.ToString());
         }
 
-        readonly struct RippleScan
+        readonly struct SubmergedScan
         {
-            public readonly int SubmergedPx;
-            public readonly float RipplePer100, MeanLuma, DryLuma;
+            public readonly int SubmergedPx, DistinctColours;
+            public readonly float DistinctPer100, MeanLuma, DryLuma;
 
-            public RippleScan(int submerged, float ripple, float mean, float dry)
+            public SubmergedScan(int submerged, int distinct, float mean, float dry)
             {
-                SubmergedPx = submerged; RipplePer100 = ripple; MeanLuma = mean; DryLuma = dry;
+                SubmergedPx = submerged;
+                DistinctColours = distinct;
+                DistinctPer100 = submerged == 0 ? 0f : distinct * 100f / submerged;
+                MeanLuma = mean;
+                DryLuma = dry;
             }
         }
 
-        RippleScan Ripple(Cell cell, int width = -1)
+        /// <summary>
+        /// Distinct RGB values among the SUBMERGED pixels of a cell. Geometry-blind by
+        /// construction: a thousand blades that all take the same water ramp still produce the same
+        /// handful of colours, while a spatial term added on top multiplies them.
+        /// </summary>
+        static SubmergedScan Scan(Cell cell)
         {
-            int w = width > 0 ? width : (int)_host.EvaluateNumber($"{Res}.w");
-            int n = cell.Rgba.Length / 4;
-            int h = n / w;
-
-            int submerged = 0, changes = 0, dryPx = 0;
+            var colours = new HashSet<int>();
+            int submerged = 0, dryPx = 0;
             double lumaSum = 0, drySum = 0;
 
-            for (int y = 0; y < h; y++)
+            for (int i = 0; i < cell.Rgba.Length; i += 4)
             {
-                int lastDir = 0;
-                float prev = -1f;
-                for (int x = 0; x < w; x++)
+                if (cell.State[i + 3] == 0) continue;                  // no coverage
+
+                float luma = 0.299f * cell.Rgba[i] + 0.587f * cell.Rgba[i + 1] +
+                             0.114f * cell.Rgba[i + 2];
+
+                if (cell.State[i + 1] != 255)                          // above the waterline
                 {
-                    int i = (y * w + x) * 4;
-                    if (cell.State[i + 3] == 0) { prev = -1f; lastDir = 0; continue; }
-
-                    float luma = 0.299f * cell.Rgba[i] + 0.587f * cell.Rgba[i + 1] +
-                                 0.114f * cell.Rgba[i + 2];
-
-                    if (cell.State[i + 1] != 255)                     // above the waterline
-                    {
-                        dryPx++; drySum += luma;
-                        prev = -1f; lastDir = 0;
-                        continue;
-                    }
-
-                    submerged++; lumaSum += luma;
-
-                    if (prev >= 0f)
-                    {
-                        // Only a move worth more than the palette's own quantisation counts, so a
-                        // smooth ramp's ±1 wobble is not mistaken for a ripple.
-                        int dir = luma > prev + 6f ? 1 : luma < prev - 6f ? -1 : 0;
-                        if (dir != 0)
-                        {
-                            if (lastDir != 0 && dir != lastDir) changes++;
-                            lastDir = dir;
-                        }
-                    }
-                    prev = luma;
+                    dryPx++; drySum += luma;
+                    continue;
                 }
+
+                submerged++; lumaSum += luma;
+                colours.Add((cell.Rgba[i] << 16) | (cell.Rgba[i + 1] << 8) | cell.Rgba[i + 2]);
             }
 
-            return new RippleScan(
-                submerged,
-                submerged == 0 ? 0f : changes * 100f / submerged,
+            return new SubmergedScan(
+                submerged, colours.Count,
                 submerged == 0 ? 0f : (float)(lumaSum / submerged),
                 dryPx == 0 ? 0f : (float)(drySum / dryPx));
         }

@@ -288,7 +288,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // 🔴 The branch. If this clause ever softens, the include has licence to reinterpret G.
             StringAssert.Contains("BODY AND WOOD ONLY", _c.Light.G.ToUpperInvariant(),
                 "light.G must be declared for body and wood ONLY");
-            StringAssert.Contains("identically 0 on strap", _c.Light.G,
+            StringAssert.Contains("identically 0 on strap", _c.Light.G.ToLowerInvariant(),
                 "light.G must be declared identically zero on strap pixels");
             StringAssert.Contains("state.B", _c.Light.G,
                 "light.G's declaration must name the flag that gates it");
@@ -384,11 +384,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.Greater(_c.Zones[i].BaseM, _c.Zones[i - 1].BaseM,
                     $"the staircase must climb: {_c.Zones[i].Key} is not above {_c.Zones[i - 1].Key}");
 
-            // Every zone base must lie inside the nominal range, or a plant's whole tide axis is
-            // degenerate (always drowned or never wetted).
-            foreach (var z in _c.Zones)
+            // ⭐ The four WETTED zones must lie inside the nominal range, or their tide axis is
+            // degenerate (always drowned or never wetted). Upland is the deliberate exception: it
+            // sits ABOVE mean high water, which is precisely why an upland plant is never wet "with
+            // no special case" — the tide simply never reaches its ground. Pinning it as an assert
+            // rather than an exemption is what stops someone "fixing" it down into the range and
+            // quietly making the dune wet at every spring high.
+            foreach (var z in _c.Zones.Where(z => z.Key != "upland"))
                 Assert.That(z.BaseM, Is.InRange(0f, _c.Tide.RangeM),
                             $"{z.Key} sits outside the 0–{_c.Tide.RangeM} m nominal range");
+
+            var upland = _c.Zone("upland");
+            Assert.Greater(upland.BaseM, _c.Tide.RangeM,
+                "upland must sit ABOVE mean high water — that is what makes 'upland plants are " +
+                "never wet' fall out of the arithmetic instead of needing a special case.");
 
             foreach (var s in _c.Species)
             {
@@ -605,10 +614,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "SABOTAGE NOT DETECTED — a 1 px pivot shift left the rects identical, so the " +
                     "slicer's pivot assert could not tell a drifted contract from a good one.");
 
+            // ⚠ The sign is the point. `pivot.y` is a TOP-LEFT row index, so +1 px moves the ground
+            // contact DOWN the cell — and the bottom-origin normalised pivot therefore FALLS.
             float deltaM = 1f / ShorePlantCatalog.Ppu;
-            Assert.AreEqual(1f / real.CellH, b[0].pivot.y - a[0].pivot.y, 1e-5f);
-            Debug.Log($"[shore-plants] SABOTAGE — pivot: +1 px on Cattail moves all 20 rects by " +
-                      $"{1f / real.CellH:F4} of the cell = {deltaM:F4} m at PPU " +
+            Assert.AreEqual(-1f / real.CellH, b[0].pivot.y - a[0].pivot.y, 1e-5f,
+                "a +1 px contract pivot must LOWER the normalised pivot by exactly one row");
+            Debug.Log($"[shore-plants] SABOTAGE — pivot: +1 px on Cattail's top-left pivot row moves " +
+                      $"all 20 rects DOWN by {1f / real.CellH:F4} of the cell = {deltaM:F4} m at PPU " +
                       $"{ShorePlantCatalog.Ppu}. Every rect changed.");
         }
 
