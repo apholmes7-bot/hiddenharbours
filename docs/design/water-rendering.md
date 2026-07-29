@@ -1522,6 +1522,40 @@ WaveMathTests sweep, AND through the full runtime path (5 000 uneven animator ti
 rate, wind widens the breaking population, zero density/troughs = nothing). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so a broken twin fails CI red, not magenta-in-build.
 
+### 16.4b The JONSWAP spectrum — variance, a fan, and GROUPS (ADR 0027 #5, P2)
+
+The owner's P0 verdict was that the sea reads as *"a rigid pattern"* at every non-storm weather. The
+hand-authored field is a primary plus three shorter cross-chop trains at fixed fractions (1 / 0.55 / 0.38 /
+0.22) — four sizes, three discrete axes, forever. `WaveSpectrum` replaces the weighting with a spectrum:
+
+| Symptom | Mechanism | Where |
+|---|---|---|
+| no variance in sizes | JONSWAP amplitudes `√S(ω)`, `S = r⁻⁵e^(−1.25r⁻⁴)γ^…` | `WaveSpectrum.JonswapShape` |
+| three discrete directions | `cos^2s(θ−θ_wind)` over a stratified, hash-jittered fan | `DirectionalWeight` + `AngleOffsetRadians` |
+| nothing builds or dies | neighbouring frequencies **beat** — that IS a wave group | `FrequencyRatio` (spacing = the group dial) |
+
+**Grouping is not code.** There is no group oscillator; it falls out of the frequency spacing, and
+`BeatPeriodSeconds` = `2π/(ω_p·spacing)` exists so a test can prove the period is readable (≈25 s calm to
+≈60 s gale at the shipped 0.08 — tens of seconds, not minutes).
+
+**`SpectrumBlend` is a continuous morph, not a switch.** Every slot lerps from its legacy self toward its
+spectral self; slots 4–7 have no legacy counterpart so they fade in from **exactly zero amplitude**, which is
+why the field is continuous even though the live count jumps 4 → 8 the instant the dial leaves 0. It ships at
+**0** (the ADR 0027 passthrough discipline), so the sea is byte-identical until the owner dials it in.
+
+⚠️ **The amplitude ENVELOPE (Σ A) is preserved, deliberately.** Preserving *energy* (Σ A²) is the more
+physical normalization, but Σ A is the crest-factor normalizer the whitecap lifecycle divides by AND the bound
+the watertight hull clamp scans against — growing it would quietly reduce foam and raise every hull. Preserving
+the envelope instead means the spectrum's peaks reach the height the hand-authored sea reached, and what it
+adds is **the lulls between them**: exactly *"building and collapsing"*, at no risk to two calibrated systems.
+
+⚠️ **Measuring grouping: run length, not variance.** The obvious metric — coefficient of variation of crest
+heights — separates the two fields by only 17 % (0.53 → 0.63) and reads as "the spectrum barely helps". It
+does not: the hand-authored field's four trains sit at frequency ratios 1 / 1.35 / 1.62 / 2.13, so they beat
+FAST and irregularly. Big and small alternate almost every wave — high variance, and still a rigid pattern.
+What the spectrum changes is the **timescale**, so the measure is the mean **run length** of consecutive
+above-average crests ("three big ones then a lull" is literally a run of three). `WaveSpectrumTests` pins it.
+
 ### 16.5 Swell READ legibility — the passing swell you can SEE (`_SwellReadStrength`)
 
 **Owner playtest (2026-07-08):** working the trap-haul minigame — which times a heave against the passing
