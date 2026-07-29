@@ -103,12 +103,12 @@ namespace HiddenHarbours.App.Editor
         // decision, and resizing the region meant finding all six (scene-sizing §6.2). They now all read
         // ONE authored number, mirrored onto RegionDef.WorldSizeMeters the same way the tide fields are.
         //
-        // ⚠ This is deliberately still the CURRENT 160 × 120 m greybox extent. Growing St Peters to its
-        // ruled 760 × 520 m (scene-sizing §5, sized by time-to-cross) is the NEXT change, and it is a
-        // re-bake of the seabed and a camera-bounds job — not something to smuggle into the enabler that
-        // makes it possible.
+        // ⭐ 760 × 520 m — the RULED size (scene-sizing §5.1/§7.1, owner 2026-07-23), sized by
+        // TIME-TO-CROSS rather than by feel: the island's ~450 × 260 m landmass is a ~2:30 walk end to
+        // end and a ~1.1 km coastline. It replaces a 160 × 120 m greybox whose whole island was a 44 m
+        // disc — smaller than the sandbar it is gated by.
         public static readonly Vector2 RegionWorldCenter = new Vector2(0f, 0f);
-        public static readonly Vector2 RegionWorldSize   = new Vector2(160f, 120f);
+        public static readonly Vector2 RegionWorldSize   = new Vector2(760f, 520f);
 
         /// <summary>
         /// Painted-seabed and shader-height-bake resolution, in TEXELS PER METRE. The old code baked a
@@ -131,13 +131,29 @@ namespace HiddenHarbours.App.Editor
         // water (covers at high, bares as the tide falls). The channel bed is between crest and deep floor
         // (a gut a boat crosses at higher tide). Deep harbour is the low floor everywhere else. ---
         public const float DeepHarbourElevation   = -4f;
-        public static readonly Vector2 IslandCenter = new Vector2(-40f, 0f);
-        public const float IslandRadius            = 22f;
-        public const float IslandFalloff          = 10f;
+
+        // ⭐ THE ISLAND SITS EAST OF CENTRE AND THE BAR LEAVES THE WEST END — this FLIPS the old greybox,
+        // where the island sat at x = −40 and the bar ran east to +34 (scene-sizing §5.1). The dock is
+        // then on the EAST end, the far side from the crossing, which is also right dramatically: you
+        // walk out the west and you come home under power to the east (§5.1a, ruled).
+        public static readonly Vector2 IslandCenter = new Vector2(70f, 0f);
+        // ⚠ An ELLIPSE, not a disc: ~450 × 260 m of landmass is the RULED scale (§7.1), a ~1:5 linear
+        // compression of the real island's 2.4 × 1.1 km. rx 225 + ry 130 gives exactly that, which is
+        // why TidalTerrain gained a Y radius — a disc big enough to be 450 m long would be 450 m wide
+        // and would not fit inside a 520 m scene.
+        public const float IslandRadius            = 225f;   // semi-axis along X → 450 m end to end
+        public const float IslandRadiusY           = 130f;   // semi-axis along Y → 260 m across
+        // The beach/shelf band, in METRES of shore — not a fraction of the island. A 30 m band drops the
+        // 10 m from plateau to deep floor at about 1:3, which reads as the brief's steep red-sandstone
+        // coast. ⚠ It is NOT the ruled reef shelf: §5.1a's −1.0 to −1.5 m ring and the dock's −1.0 m
+        // berth are AUTHORED terrain (the follow-up pass), not a falloff.
+        public const float IslandFalloff          = 30f;
         public const float IslandElevation         = 6f;     // dry at every tide
-        public static readonly Vector2 SandbarFrom  = new Vector2(-22f, 0f); // toward the island
-        public static readonly Vector2 SandbarTo    = new Vector2(34f, 0f);  // toward Nine Mile Creek
-        public const float SandbarHalfWidth        = 9f;
+        // West end of the island's land → west toward the passage. (From is ON the island so the bar
+        // actually joins it; To is short of the scene edge so the passage band has room.)
+        public static readonly Vector2 SandbarFrom  = new Vector2(-150f, 0f); // toward the island
+        public static readonly Vector2 SandbarTo    = new Vector2(-350f, 0f); // toward Nine Mile Creek
+        public const float SandbarHalfWidth        = 30f;
         // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
         // envelope drops the swing to NeapAmplitudeFraction (0.45) × 3.5 = 1.575 m, so a 1.6 m crest sits
         // ABOVE the highest water of a neap week and the bar simply never floods: the tide gate switches
@@ -147,7 +163,7 @@ namespace HiddenHarbours.App.Editor
         // docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap tests in StPetersTerrainTests.
         public const float SandbarCrestElevation    = 1.4f;   // < neap high water (1.575) → floods at EVERY tide
         public const float ChannelAlong            = 0.62f;
-        public const float ChannelHalfWidth        = 4.5f;
+        public const float ChannelHalfWidth        = 15f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls
 
         // --- CLAM-HOLE scatter (deterministic; single source of truth shared with the EditMode test) ------
@@ -156,28 +172,40 @@ namespace HiddenHarbours.App.Editor
         // as the tide falls and floods as it rises. ClamScatterStep = grid spacing; ClamScatterJitter = the
         // max deterministic offset (hashed off the cell, no RNG) that breaks the grid look. The band is the
         // tide swing inset by a small margin so a hole isn't perpetually at the very waterline edge.
-        public const float ClamScatterStep   = 6f;     // one candidate hole per ~6×6 m cell over the bar
-        public const float ClamScatterJitter = 2.0f;   // ± world units of stable hash jitter per cell
+        // ⚠ Scaled WITH the bar. At 6 m over the old 56 × 34 m footprint this was ~54 candidate cells;
+        // left alone over the new 240 × 100 m footprint it would be ~670, i.e. ~670 GameObjects with
+        // sprites and colliders in one scene (rule 7). 14 m keeps the field at a comparable ~130 and
+        // still reads as scattered rather than gridded once the jitter is applied.
+        public const float ClamScatterStep   = 14f;    // one candidate hole per ~14×14 m cell over the bar
+        public const float ClamScatterJitter = 4.5f;   // ± world units of stable hash jitter per cell
         public const float ClamBandMargin     = 0.4f;   // inset (m) from the extreme water levels (kindness band)
         // The bar footprint to scatter over (a margin around the bar so the flats either side are covered).
-        public const float ClamScatterMargin = 8f;
+        public const float ClamScatterMargin = 20f;
 
-        // Player START spawn (on the island, by the slip). The walk path runs east along the sandbar.
-        public static readonly Vector3 StartSpawnPos = new Vector3(-40f, -2f, 0f);
-        // Where the walk path reaches Nine Mile Creek — a forgiving band at the Nine Mile Creek (east) end of the bar.
-        public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(36f, 0f, 0f);
+        // Player START spawn — on the island's WEST half, so the bar head is in sight and the opening's
+        // first walk reads as leaving home. (Where the village actually stands is the authoring pass;
+        // this is the same functional spawn the greybox had, moved onto the new landmass.)
+        public static readonly Vector3 StartSpawnPos = new Vector3(-100f, 0f, 0f);
+        // Where the walk path reaches Nine Mile Creek — a forgiving band at the WEST end of the bar,
+        // past its far tip and short of the scene edge.
+        public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-356f, 0f, 0f);
 
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
-        // The uncle's dory is moored in the deep water off the island's SOUTH coast (the island plateau sits
-        // above (-40,0) radius ~22, so south of ≈ -20 is open water). Board/disembark at this slip once the
-        // dory is yours (the opening's first trip is on foot — this is for the sail home). The arrival point
-        // sits within DockZoneRadius of the dock zone so the persistent ControlSwitcher's pure-distance
-        // disembark test registers the moment you're home (the cove/Nine Mile Creek proven pattern — don't regress).
+        // ⭐ THE DOCK IS ON THE EAST END, opposite the sandbar (§5.1a, ruled 2026-07-23): you walk out the
+        // west and you come home under power to the east. The arrival point sits within DockZoneRadius of
+        // the dock zone so the persistent ControlSwitcher's pure-distance disembark test registers the
+        // moment you're home (the cove/Nine Mile Creek proven pattern — don't regress).
+        //
+        // ⚠ THE OLD MOORING WAS AGROUND, and only the rescale made it obvious. It sat at (−40, −26) with
+        // the island at (−40, 0) r 22 falloff 10 — a comment saying "deep water" over ground the falloff
+        // actually puts at +2.48 m, so a 0.30 m dory floated there only above +2.78 m, i.e. near high
+        // water and nowhere else. These positions are now checked against the authored terrain by
+        // StPetersTerrainTests rather than asserted in a comment.
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
-        public static readonly Vector3 DoryMooredPos  = new Vector3(-40f, -26f, 0f); // off the island's south coast (deep water)
-        public static readonly Vector3 DockZonePos    = new Vector3(-40f, -26f, 0f); // the slip head — dock here
-        public static readonly Vector3 DisembarkPos   = new Vector3(-40f, -21f, 0f); // step onto the island's south shore
-        public static readonly Vector3 ArrivalPos     = new Vector3(-40f, -25f, 0f); // sail home: park just off the slip, in range
+        public static readonly Vector3 DoryMooredPos  = new Vector3(330f, 0f, 0f); // east of the island, past the beach toe — genuinely afloat
+        public static readonly Vector3 DockZonePos    = new Vector3(330f, 0f, 0f); // the slip head — dock here
+        public static readonly Vector3 DisembarkPos   = new Vector3(328f, 0f, 0f); // step ashore up the slip (the cove's 1.5 m pattern)
+        public static readonly Vector3 ArrivalPos     = new Vector3(332f, 0f, 0f); // sail home: park just off the slip, in range
 
         [MenuItem("Hidden Harbours/Build St Peters Scene")]
         public static void Build()
@@ -214,6 +242,22 @@ namespace HiddenHarbours.App.Editor
                                 "the mainland except when the big tide bares the sandbar. Dig clams on the " +
                                 "flats at low water, walk the bar to Nine Mile Creek, earn your way to the dory.";
             });
+
+            // ⚠ RE-APPLY the extent and tide on EVERY run. LoadOrCreate's initialiser fires only when the
+            // asset is CREATED, so an existing StPeters.asset never picked up a changed constant — which
+            // is exactly how the committed def came to publish a 160 × 120 m extent while this builder
+            // authored 760 × 520, with nothing to say so. These four are DERIVED design numbers (the
+            // ruled scale and the tide profile), not owner-tuned fields, so refreshing them is the
+            // non-destructive Refresh model (ADR 0019) doing its job rather than clobbering hand edits.
+            // A test holds the def to the builder (StPetersLayoutTests).
+            stPeters.WorldCenter = RegionWorldCenter;
+            stPeters.WorldSizeMeters = RegionWorldSize;
+            stPeters.SeabedPixelsPerMetre = SeabedPixelsPerMetre;
+            stPeters.TideMeanLevel = TideMean;
+            stPeters.TideAmplitude = TideAmplitude;
+            stPeters.TidePhaseHours = TidePhaseHours;
+            EditorUtility.SetDirty(stPeters);
+
             // Nine Mile Creek + cove regions referenced for the walk passage / loader (created here if absent;
             // GreyboxBuilder/NineMileCreekBuilder author the canonical versions under the same stable ids).
             var nineMileCreek = LoadOrCreate<RegionDef>(DataRegions + "/NineMileCreek.asset", r =>
@@ -866,6 +910,7 @@ namespace HiddenHarbours.App.Editor
             SetF(so, "_deepHarbourElevation", DeepHarbourElevation);
             SetV2(so, "_islandCenter", IslandCenter);
             SetF(so, "_islandRadius", IslandRadius);
+            SetF(so, "_islandRadiusY", IslandRadiusY);
             SetF(so, "_islandFalloff", IslandFalloff);
             SetF(so, "_islandElevation", IslandElevation);
             SetV2(so, "_sandbarFrom", SandbarFrom);

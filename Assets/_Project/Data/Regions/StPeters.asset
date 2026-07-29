@@ -19,6 +19,9 @@ MonoBehaviour:
     flats at low water, walk the bar to Nine Mile Creek, earn your way to the dory.'
   SceneName: StPeters
   UnlockFlag:
+  WorldCenter: {x: 0, y: 0}
+  WorldSizeMeters: {x: 760, y: 520}
+  SeabedPixelsPerMetre: 2
   IsDeepHarbour: 0
   HarbourDepthMeters: 2
   TideMeanLevel: 0

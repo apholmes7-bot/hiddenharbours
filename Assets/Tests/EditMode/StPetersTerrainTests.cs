@@ -72,8 +72,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void DeepHarbour_IsAlwaysSubmerged_EvenAtLowWater()
         {
-            // A point well off the bar and the island — open water.
-            var openWater = new Vector2(0f, 40f);
+            // A point well off the bar and the island — open water. ⚠ Must be outside the island's
+            // ELLIPSE, which now reaches y = ±130 with a 30 m beach beyond it (scene-sizing §5.1);
+            // the old (0, 40) sample sits on dry land at the ruled scale.
+            var openWater = new Vector2(0f, 230f);
             float elev = _terrain.ElevationAt(openWater);
             Assert.Less(elev, LowWater,
                 "the deep harbour seabed must stay below the lowest water — it never bares");
