@@ -64,6 +64,31 @@ Shader "HiddenHarbours/Water"
         _Octave2Weight  ("Octave 2 (wind chop) mix weight", Range(0,1)) = 0.35
         _Octave3Weight  ("Octave 3 (cross swell) mix weight", Range(0,1)) = 0.3
 
+        // ---- ADR 0027 #4 + #9: band wavelengths scale with SEA STATE; speeds DERIVED by dispersion ----
+        // (both default OFF = today's fixed wavelengths + hand-set speeds EXACTLY — the passthrough
+        // contract; C# twin: WaterDispersion, change one change BOTH in the same PR).
+        // #4 — real seas grow in WAVELENGTH as they build, not only amplitude: each visual noise band's
+        // spatial frequency divides by (1 + response * _Chop), so its wavelength grows linearly in the
+        // already-pushed sea state. Applies to the VISUAL octaves only (_NoiseScale / _WindChopScale /
+        // _CrossSwellScale and the legacy _OceanSwellScale band): the wave-field trains already carry
+        // this law at the sim level (WaveMath grows the dominant wavelength with wind), and the field's
+        // freqScale mapping moves drawn geometry the interior-mask/clamp stack guards — deliberately
+        // untouched (see the PR's consumer audit + the _OceanSwellScale incident).
+        _BandScaleResponse ("Band wavelength growth with sea state (0 = fixed / today)", Float) = 0.0
+        // #9 — each octave carried an independent hand-tuned speed with NO relation to its wavelength
+        // (the legacy set is ANTI-dispersive: the 40 m swell band scrolls slower than the 1.4 m chop) —
+        // a large part of why the sea reads as stacked layers sliding over each other. The master blends
+        // each band from its legacy speed toward bandMult * sqrt(g*lambda/2pi); the per-band multipliers
+        // keep the owner's art direction (their 0.06 default anchors the WIND-CHOP band on its legacy
+        // 0.09 m/s at full dispersion, so the master re-ties the slower bands to physics around an
+        // unchanged fastest band). Shallow water: the bounded static shoal drift below bunches + slows
+        // wavefronts off the SAME read-only depth every other layer consumes.
+        _DispersionScale     ("Dispersion blend (0 = today's hand-set speeds EXACTLY, 1 = derived)", Range(0,1)) = 0.0
+        _DispersionChopMult  ("Dispersion feel mult: wind chop band", Float) = 0.06
+        _DispersionCrossMult ("Dispersion feel mult: cross-swell band", Float) = 0.06
+        _DispersionSwellMult ("Dispersion feel mult: legacy ocean-swell band", Float) = 0.06
+        _DispersionShoalBunch ("Shoal bunching (x wavelength of drift at zero depth)", Range(0,4)) = 1.0
+
         [Header(FBM low freq variance (organic patches and sparkle scatter))]
         // A big-scale, slow-drifting fractal field that breaks the even grid two ways (both col.rgb-only,
         // never touching depth/clip/the gameplay waterline): a soft brightness/tint patchwork, and a GATE
@@ -718,6 +743,13 @@ Shader "HiddenHarbours/Water"
                 float  _WindChop;
                 float  _WindChopScale;
                 float  _WindChopSpeed;
+                // ADR 0027 #4 + #9 — band scaling with sea state + dispersion-derived speeds (default OFF).
+                float  _BandScaleResponse;
+                float  _DispersionScale;
+                float  _DispersionChopMult;
+                float  _DispersionCrossMult;
+                float  _DispersionSwellMult;
+                float  _DispersionShoalBunch;
                 float4 _CrossSwellDir;
                 float  _CrossSwellSpeed;
                 float  _CrossSwellScale;
@@ -904,6 +936,69 @@ Shader "HiddenHarbours/Water"
                 return floor(p * ppu) / ppu;
             }
 
+            // ==== ADR 0027 #4 + #9 — band scaling with sea state + dispersion-derived speeds ==================
+            // C#-twinned by WaterDispersion (BandFrequencyFactor / DeepPhaseSpeed / PhaseSpeed / BandSpeed /
+            // SwellPhaseRate / ShoalShift — change one, change BOTH in the same PR). Everything here drives
+            // the VISUAL noise octaves only — never depth/clip()/_WaterLevel/the height read/_WaveFieldParams/
+            // anything the hulls ride (P1 integrity, rule 5; the promotion into the field is P2, gated on an
+            // ADR 0018 amendment).
+            #define WATER_GRAVITY 9.81   // standard gravity (m/s^2) — the dispersion relation's ONE physical
+                                         // constant (twin: WaterDispersion.Gravity). Not a tunable: feel
+                                         // lives in _DispersionScale + the per-band multipliers (rule 6).
+
+            // #4 — a band's EFFECTIVE spatial frequency: its authored scale over (1 + response * chop), so
+            // its wavelength grows linearly in the already-pushed sea state (_Chop is sim-pushed — read
+            // here, never authored in a material, §12.1). Response 0 divides by EXACTLY 1.0 — today's
+            // fixed wavelengths bit-for-bit (the passthrough contract).
+            float BandFreq(float scale)
+            {
+                return scale / (1.0 + max(_BandScaleResponse, 0.0) * saturate(_Chop));
+            }
+
+            // #9 — deep-water phase speed c = sqrt(g * lambda / 2pi) (m/s).
+            float DispersionDeepSpeed(float lambda)
+            {
+                float l = max(lambda, 1e-3);
+                return sqrt(WATER_GRAVITY * l / 6.2831853);
+            }
+
+            // #9 — the finite-depth dispersion relation c = sqrt(g*lambda/2pi * tanh(2pi*d/lambda)): the
+            // deep-water form when d >> lambda, sqrt(g*d) as d -> 0, ONE continuous formula (deep and
+            // shallow agree at the transition by construction — no branch seam).
+            float DispersionPhaseSpeed(float lambda, float depth)
+            {
+                float l = max(lambda, 1e-3);
+                float k = 6.2831853 / l;
+                return DispersionDeepSpeed(l) * sqrt(saturate(tanh(k * max(depth, 0.0))));
+            }
+
+            // #9 — a world-speed band's scroll rate: the legacy hand-set speed blended toward
+            // bandMult * c_deep(lambda) by the master. _DispersionScale = 0 returns the legacy speed
+            // EXACTLY (the lerp's 0 endpoint — the passthrough contract). The temporal rate is
+            // depth-UNIFORM by design: a per-pixel rate on an absolute-world-coordinate band accumulates
+            // UNBOUNDED domain shear (pattern offset between two depths differs by dc*t — on the legacy
+            // swell band ~26x the base wavenumber of spurious frequency after 600 s at a typical shoal;
+            // the arithmetic is in the twin's doc). The shallow physics enters via the bounded STATIC
+            // DispersionShoalShift below instead.
+            float DispersionBandSpeed(float legacySpeed, float bandMult, float lambda)
+            {
+                float target = max(bandMult, 0.0) * DispersionDeepSpeed(lambda);
+                return lerp(legacySpeed, target, saturate(_DispersionScale));
+            }
+
+            // #9 (shallow) — the bounded, STATIC along-travel drift (m) that bunches a band's wavefronts
+            // over a shoal: saturate(master) * bunch * lambda * (1 - c(lambda, d)/c_deep). Where its
+            // along-travel gradient compresses the domain by a factor m, the band's local wavelength AND
+            // its apparent phase speed both drop by m — waves genuinely slow and bunch approaching shore,
+            // off the SAME read-only depth every other layer consumes, with zero time-accumulating
+            // artefacts. 0 in deep water; bounded by bunch*lambda at the wet edge; 0 at master 0.
+            float DispersionShoalShift(float lambda, float depth)
+            {
+                float l = max(lambda, 1e-3);
+                float slow = 1.0 - DispersionPhaseSpeed(l, depth) / DispersionDeepSpeed(l);
+                return saturate(_DispersionScale) * max(_DispersionShoalBunch, 0.0) * l * saturate(slow);
+            }
+
             // ---- world-locked ordered dither (the rigs' own 4x4 Bayer; ADR 0023 §(3) style law) -------------
             // Thresholds are (v + 0.5)/16 exactly as the boat rigs and the facet pass hold them, indexed by
             // the PPU-quantised WORLD cell — world-derived dither cannot crawl under camera translation
@@ -990,12 +1085,21 @@ Shader "HiddenHarbours/Water"
             // OWN rate (_WindChopSpeed) and scale (_WindChopScale) — NOT along _FlowDir. This is what lets the
             // surface follow the wind (which the sim varies over time) instead of marching down the fixed
             // current axis. Pixelized like every other octave so it reads as pixel art. Returns 0..1.
-            float WindChop(float2 worldXY, float t)
+            // ADR 0027 #4 + #9: the band's frequency scales with sea state (BandFreq) and its speed derives
+            // from its wavelength (lambda = 1/scale_eff — the noise cell size in metres) through the
+            // dispersion blend; the bounded static shoal drift bunches + slows it over the shallows
+            // (shoalDepth = the STILL unwarped depth the caller reads once, guarded — 1e5 = deep = no-op).
+            // At the shipped defaults every term is bit-exact passthrough (response 0 divides by exactly
+            // 1.0; the dispersion lerp's 0 endpoint; a zero shift adds exactly 0).
+            float WindChop(float2 worldXY, float t, float shoalDepth)
             {
                 float2 dir = normalize(_WindDir.xy + float2(0, 1e-4));   // +Y fallback on a zero wind dir
-                float2 scroll = dir * (_WindChopSpeed * t);
-                float2 p1 = Pixelize((worldXY + scroll) * _WindChopScale);
-                float2 p2 = Pixelize((worldXY + scroll * 1.7) * _WindChopScale * 2.3);
+                float scaleEff = BandFreq(_WindChopScale);
+                float lambda = 1.0 / max(scaleEff, 1e-4);
+                float speed = DispersionBandSpeed(_WindChopSpeed, _DispersionChopMult, lambda);
+                float2 scroll = dir * (speed * t + DispersionShoalShift(lambda, shoalDepth));
+                float2 p1 = Pixelize((worldXY + scroll) * scaleEff);
+                float2 p2 = Pixelize((worldXY + scroll * 1.7) * scaleEff * 2.3);
                 return ValueNoise(p1) * 0.6 + ValueNoise(p2) * 0.4;
             }
 
@@ -1080,26 +1184,35 @@ Shader "HiddenHarbours/Water"
             //   C = a SLOW cross-swell on a perpendicular axis @ _CrossSwellSpeed, big _CrossSwellScale
             // Octaves B and C are folded in by per-octave weights (_Octave2Weight / _Octave3Weight) so the
             // owner can dial the syncopation. Still pure value-noise + pixelize — no textures, ~no extra cost.
-            float SurfaceNoise(float2 worldXY, float t)
+            // shoalDepth: the STILL (unwarped) depth at this pixel, read ONCE by the fragment when the
+            // dispersion shoal terms are dialed in (1e5 = deep = every shift is a no-op; ADR 0027 #9).
+            float SurfaceNoise(float2 worldXY, float t, float shoalDepth)
             {
-                // A — current swell along the tidal set (the existing octave; the foundation).
+                // A — current swell along the tidal set (the existing octave; the foundation). Its scroll
+                // rate is _Flow — the sim-pushed TIDAL CURRENT, not a wave phase speed — so #9 leaves it
+                // alone; #4 still scales its spatial frequency with the sea state like every band.
                 float2 flowDir = normalize(_FlowDir.xy + float2(1e-4, 0));
                 float2 scrollA = flowDir * (_Flow * t);
-                float2 pA1 = Pixelize((worldXY + scrollA) * _NoiseScale);
-                float2 pA2 = Pixelize((worldXY - scrollA * 0.6) * _NoiseScale * 2.0);
+                float2 pA1 = Pixelize((worldXY + scrollA) * BandFreq(_NoiseScale));
+                float2 pA2 = Pixelize((worldXY - scrollA * 0.6) * BandFreq(_NoiseScale) * 2.0);
                 float octaveA = ValueNoise(pA1) * 0.65 + ValueNoise(pA2) * 0.35;
 
                 // B — wind chop along the wind direction at its own rate (raw 0..1 octave).
-                float octaveB = WindChop(worldXY, t);
+                float octaveB = WindChop(worldXY, t, shoalDepth);
 
                 // C — slow cross-swell on a perpendicular axis: either the explicit _CrossSwellDir, or (when
                 // that's near-zero) the perpendicular of the average of flow & wind, so it crosses the grain.
+                // ADR 0027 #4 + #9: sea-state-scaled frequency, dispersion-derived speed, shoal drift —
+                // the same law as the wind-chop band (bit-exact passthrough at the defaults).
                 float2 avgDir = normalize(flowDir + normalize(_WindDir.xy + float2(0, 1e-4)) + float2(1e-4, 0));
                 float2 autoCross = float2(-avgDir.y, avgDir.x);                  // rotate 90 deg
                 float2 crossDir = (dot(_CrossSwellDir.xy, _CrossSwellDir.xy) > 1e-6)
                                     ? normalize(_CrossSwellDir.xy) : autoCross;
-                float2 scrollC = crossDir * (_CrossSwellSpeed * t);
-                float octaveC = ValueNoise(Pixelize((worldXY + scrollC) * _CrossSwellScale));
+                float scaleEffC = BandFreq(_CrossSwellScale);
+                float lambdaC = 1.0 / max(scaleEffC, 1e-4);
+                float speedC = DispersionBandSpeed(_CrossSwellSpeed, _DispersionCrossMult, lambdaC);
+                float2 scrollC = crossDir * (speedC * t + DispersionShoalShift(lambdaC, shoalDepth));
+                float octaveC = ValueNoise(Pixelize((worldXY + scrollC) * scaleEffC));
 
                 // Weighted blend, normalized so the result stays ~0..1 regardless of the syncopation weights.
                 // Each octave has ONE clear effective weight (no double-counting): the wind chop's mix weight
@@ -1252,11 +1365,24 @@ Shader "HiddenHarbours/Water"
             float SwellField(float2 worldXY, float depth, float t)
             {
                 float2 dir = SwellDir(worldXY, depth);
+                // ADR 0027 #4 + #9 (the LEGACY band — trains-dead path only): sea-state-scaled frequency
+                // (BandFreq), a NATIVE-rate dispersion blend (the phase is dot(p*scale, dir) - t*rate, so
+                // world speed = rate/scale; blending at the native level keeps scale 0 reproducing the
+                // hand-set 0.018 BIT-for-bit — twin: WaterDispersion.SwellPhaseRate), and the bounded
+                // static shoal drift (depth here is the fragment's READ-ONLY depth key — rule 5). Every
+                // read of _OceanSwellScale/_OceanSwellSpeed in this band carries the same effective
+                // values (the wander line included) — one uniform, one meaning.
+                float scaleEff = BandFreq(_OceanSwellScale);
+                float lambda = 1.0 / max(scaleEff, 1e-4);
+                float rate = lerp(_OceanSwellSpeed,
+                                  max(_DispersionSwellMult, 0.0) * DispersionDeepSpeed(lambda) * scaleEff,
+                                  saturate(_DispersionScale));
+                float2 shoaled = worldXY + dir * DispersionShoalShift(lambda, depth);
                 // distance projected ALONG the swell axis, advanced slowly with time (long rolling wave).
-                float phase = dot(Pixelize(worldXY) * _OceanSwellScale, dir) - t * _OceanSwellSpeed;
+                float phase = dot(Pixelize(shoaled) * scaleEff, dir) - t * rate;
                 // base sine wave (0..1), plus a slow value-noise wander so the bands read organic, not ruled.
                 float wave = sin(phase * 6.2831853) * 0.5 + 0.5;
-                float wander = ValueNoise(Pixelize(worldXY * _OceanSwellScale * 1.3) + t * _OceanSwellSpeed * 0.5);
+                float wander = ValueNoise(Pixelize(worldXY * scaleEff * 1.3) + t * rate * 0.5);
                 float crest = saturate(wave * 0.75 + wander * 0.25);
                 // sharpen the crest so the light bands read as crests sitting above broad troughs (1 = round).
                 return pow(crest, max(_OceanSwellSharpness, 0.05));
@@ -1468,10 +1594,13 @@ Shader "HiddenHarbours/Water"
                 // (1) domain warp: a small world-space nudge from the surface noise, scaled by strength.
                 // Two warp octaves (low-freq bend + a finer ripple) read more organic than one straight nudge;
                 // both still dialed by _UntileStrength (no new knob) so 0 strength = the raw grid unchanged.
-                float2 warpLo = float2(ValueNoise(worldXY * _NoiseScale * 0.5 + 3.1),
-                                       ValueNoise(worldXY * _NoiseScale * 0.5 + 8.7)) - 0.5;
-                float2 warpHi = float2(ValueNoise(worldXY * _NoiseScale * 1.7 + 17.3),
-                                       ValueNoise(worldXY * _NoiseScale * 1.7 + 42.9)) - 0.5;
+                // ADR 0027 #4: the untile warp fields read the surface band's EFFECTIVE frequency
+                // (BandFreq) so the painted-texture break-up coarsens with the same growing sea —
+                // one uniform, one meaning (bit-exact at response 0: division by exactly 1.0).
+                float2 warpLo = float2(ValueNoise(worldXY * BandFreq(_NoiseScale) * 0.5 + 3.1),
+                                       ValueNoise(worldXY * BandFreq(_NoiseScale) * 0.5 + 8.7)) - 0.5;
+                float2 warpHi = float2(ValueNoise(worldXY * BandFreq(_NoiseScale) * 1.7 + 17.3),
+                                       ValueNoise(worldXY * BandFreq(_NoiseScale) * 1.7 + 42.9)) - 0.5;
                 float2 warpN = warpLo + warpHi * 0.4;
                 float2 warped = worldXY + warpN * (s * 1.5);
 
@@ -2331,7 +2460,15 @@ Shader "HiddenHarbours/Water"
                 float2 worldXY = IN.worldXY;
 
                 // ---- layer 2 surface (computed first; warps the coords every other layer reads) -------------
-                float surf = SurfaceNoise(worldXY, t);             // 0..1
+                // ADR 0027 #9: the octaves' shoal depth — ONE guarded, STILL (unwarped) seabed read. The
+                // surf warp below feeds the depth read, so the octaves cannot consume the fragment's own
+                // depth (circular); the shoal drift keys the still read instead. Free at the shipped
+                // defaults (the branch never runs; 1e5 = deep = every shift term is exactly 0). READ-only
+                // use of the height map — the clip()/waterline read below is untouched (rule 5).
+                float dispShoalDepth = 1e5;
+                if (_DispersionScale > 0.001 && _DispersionShoalBunch > 0.001)
+                    dispShoalDepth = max(_WaterLevel - SeabedElevation(worldXY), 0.0);
+                float surf = SurfaceNoise(worldXY, t, dispShoalDepth);   // 0..1
             #if defined(_USE_SURFACETEX)
                 // Painted ripple/detail (grayscale) scrolled with the current; blend over the procedural
                 // noise. At strength 1 it fully replaces the procedural surface; at 0 it's pure procedural.
@@ -2343,6 +2480,10 @@ Shader "HiddenHarbours/Water"
             #endif
                 float swell = (surf - 0.5) * 2.0;                  // -1..1
                 // chop pushes a small world-space warp into the depth read so the waterline shimmers with swell
+                // ⚠️ ADR 0027 #4 deliberately does NOT scale THIS _NoiseScale read: the warp feeds
+                // SeabedElevation -> depth -> clip() — the gameplay waterline. Changing its frequency with
+                // sea state would move where the waterline shimmers, and Tier A must never touch the
+                // height read/clip (the consumer audit's one excluded read; see the PR).
                 float2 warp = float2(swell, ValueNoise(Pixelize(worldXY * _NoiseScale + 7.3)) - 0.5)
                               * _Chop * 0.5;
 
@@ -2680,7 +2821,9 @@ Shader "HiddenHarbours/Water"
                     float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                     float2 ld = normalize(sunXY + float2(1e-4, 0));
                     // a cheap surface "normal tilt" from the noise gradient, facing the implied light
-                    float2 gp = Pixelize(worldXY * _NoiseScale);
+                    // ADR 0027 #4: the spec's normal-tilt read follows the surface band's effective
+                    // frequency (BandFreq) — glints coarsen with the same growing sea, one meaning.
+                    float2 gp = Pixelize(worldXY * BandFreq(_NoiseScale));
                     float nx = ValueNoise(gp + float2(0.05, 0)) - ValueNoise(gp - float2(0.05, 0));
                     float ny = ValueNoise(gp + float2(0, 0.05)) - ValueNoise(gp - float2(0, 0.05));
                     float facing = saturate(dot(normalize(float2(nx, ny) + 1e-4), ld) * 0.5 + 0.5);
@@ -2824,7 +2967,9 @@ Shader "HiddenHarbours/Water"
                     // shapes never change" the owner saw. Built on the wind-streaked aniso coord so the streaks
                     // are preserved while the whitecaps morph (appear/grow/drift/shrink/vanish). drift=0 here
                     // because it is already baked into wp above (avoids double-drifting the coord).
-                    float cap = EvolvingField(aniso, float2(0, 0), _NoiseScale * 3.0 * _FoamBlobScale,
+                    // ADR 0027 #4: the cap field's blob scale follows the surface band's effective
+                    // frequency (BandFreq) — storm foam blobs grow with the same growing sea.
+                    float cap = EvolvingField(aniso, float2(0, 0), BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale,
                                               _FoamEvolveSpeed, t);
                     // SOFT-THRESHOLD (metaball merge/separate) instead of the hard step(): smoothstep around a
                     // threshold lowered by wind (rougher => more sea is above the threshold => more caps). As the
