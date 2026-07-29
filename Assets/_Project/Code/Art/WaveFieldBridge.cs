@@ -63,11 +63,16 @@ namespace HiddenHarbours.Art
     /// class (the sim contract — B3 forces — keeps reading the pure <see cref="WaveMath"/> path).
     /// Visual-only: the sim never touches this bridge.</para>
     ///
-    /// <para><b>Tuning (rule 6) — settings parity (ADR 0018 §(4)).</b> <see cref="_settings"/> and
-    /// <see cref="_animatorSettings"/> start from the same <c>Default</c>s <c>BoatWaveMotion</c> uses,
-    /// so the hull rocks on the same waves the player sees. B3/GameConfig will unify the settings
-    /// instances into ONE owner-tunable source; until then tune the field's shape identically in both
-    /// places (they are serialized on this hidden host and on the boat).</para>
+    /// <para><b>Tuning (rule 6) — ONE settings instance (ADR 0018 §(5)).</b> The derivation constants
+    /// and the smoothing come from <c>GameConfig.WaveField</c> / <c>.WaveFieldAnimator</c> through
+    /// <see cref="GameServices"/>, which is the same instance <c>BoatWaveMotion</c>, the seakeeping
+    /// forces, the wake, the buoys, the trap haul and the drift weed read. The hull therefore rocks on
+    /// the waves the player sees because there is only one set of numbers — not because two copies
+    /// were kept in step by hand.</para>
+    ///
+    /// <para>⚠️ This host is created at runtime with <c>HideAndDontSave</c>, so it has no inspector.
+    /// Its old serialized copy was the one the owner could NEVER reach: a tuned config would have
+    /// moved the hull, the wake and the buoys while the drawn sea stayed at <c>Default</c>.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class WaveFieldBridge : MonoBehaviour
@@ -89,16 +94,11 @@ namespace HiddenHarbours.Art
 
         private const double TwoPi = Math.PI * 2.0;
 
-        [Tooltip("The wind + sea-state -> wave-train derivation constants (ADR 0018 §(1)). Starts at " +
-                 "WaveFieldSettings.Default — keep IDENTICAL to BoatWaveMotion's field settings so the " +
-                 "hull rocks on the waves the player sees. GameConfig unification comes with a later " +
-                 "Arc B PR.")]
-        [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
-
-        [Tooltip("The shared presentation smoother's tunables (ADR 0018 addendum): how languidly the " +
-                 "train parameters chase the drifting weather, and the glass snap floor (glass is " +
-                 "sacred). Keep in step with BoatWaveMotion's animator settings.")]
-        [SerializeField] private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
+        // The derivation constants come from GameConfig.WaveField via GameServices (ADR 0018 §(5)).
+        // ⚠️ This host is created at runtime with HideAndDontSave, so it has no inspector and nothing
+        // could ever have been wired on it — its serialized copy was permanently stuck at Default
+        // while a tuned GameConfig sat unread. That is the sharpest edge of the old eight-copies
+        // design: the WATER's settings were the one copy the owner could not reach.
 
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
         private bool _hasLastTime;
@@ -170,8 +170,10 @@ namespace HiddenHarbours.Art
             // the same inputs — the identical eased sea) and publish it. The accumulated phase rides in
             // each train's PhaseOffset, so the packed field is the t = 0 evaluation frame.
             EnvironmentSample sample = env.Sample();
+            WaveFieldSettings field = GameServices.WaveField;
+            WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
-                                               in _settings, in _animatorSettings);
+                                               in field, in smoothing);
             PublishGlobals(Pack(in trains));
         }
 

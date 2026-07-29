@@ -1522,6 +1522,28 @@ WaveMathTests sweep, AND through the full runtime path (5 000 uneven animator ti
 rate, wind widens the breaking population, zero density/troughs = nothing). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so a broken twin fails CI red, not magenta-in-build.
 
+### 16.1b Where the settings live — `GameConfig.WaveField`, and nowhere else (ADR 0018 §(5))
+
+The derivation constants and the smoothing are on **`GameConfig`**, read through
+`GameServices.WaveField` / `.WaveFieldAnimator`, wired once by `GameRoot`. Unwired (EditMode, a bare
+art scene, any test rig) falls back to `Default`, so nothing breaks.
+
+**There used to be eight copies** — the bridge, `BoatWaveMotion`, `BoatController`'s sim path,
+`BoatWakeEmitter`, `BuoyWaveVisual`, `TrapHaulController` and `SeaweedPresenter` — each annotated
+*"keep identical to the others"*, which is a comment, not a mechanism. They agreed only for as long
+as nobody tuned anything, and ADR 0027's `SpectrumBlend` made divergence a one-slider mistake.
+
+⚠️ **The sharpest edge this closed:** `WaveFieldBridge` is a runtime-created `HideAndDontSave` host
+with no inspector, so **the water's copy was the one the owner could never reach**. A tuned config
+would have moved the hull, the wake and the buoys while the drawn sea stayed at `Default` — the
+see/feel split ADR 0018 exists to prevent, arriving through the tuning surface itself.
+
+⚠️ **`Config != null`, never `?.`/`??`** — `GameConfig` is a `UnityEngine.Object` and the
+null-propagating operators bypass its overloaded `==`, so a destroyed asset reads as alive and throws.
+Resolved per read rather than cached, so dragging a slider during play moves the sea live.
+`WaveFieldSettingsUnificationTests` scans the assemblies and fails if any type outside `GameConfig`
+declares one of these structs as a field.
+
 ### 16.4b The JONSWAP spectrum — variance, a fan, and GROUPS (ADR 0027 #5, P2)
 
 The owner's P0 verdict was that the sea reads as *"a rigid pattern"* at every non-storm weather. The

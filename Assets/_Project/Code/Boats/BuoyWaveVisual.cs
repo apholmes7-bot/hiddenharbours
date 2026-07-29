@@ -116,9 +116,8 @@ namespace HiddenHarbours.Boats
         [Tooltip("The CHILD visual transform the BOB offsets in world +Y (like the boat's visual child). NEVER the root the field samples at — that would move the sample point with the bob. Null → the renderer's transform is used (the buoy bobs about its own origin).")]
         [SerializeField] private Transform _visual;
 
-        [Header("Wave field (parity: keep identical to BoatWaveMotion / WaveFieldBridge until GameConfig unifies them)")]
-        [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
-        [SerializeField] private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
+        // Wave field: GameConfig.WaveField via GameServices (ADR 0018 §(5)) — a buoy bobbing on a
+        // different sea from the boat beside it was always the most visible way this could go wrong.
 
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
         private bool _hasLastTime;
@@ -233,7 +232,9 @@ namespace HiddenHarbours.Boats
             if (env != null)
             {
                 EnvironmentSample sample = env.Sample();
-                WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01, in _settings, in _animatorSettings);
+                WaveFieldSettings field = GameServices.WaveField;
+                WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
+                WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
                 wave = _animator.Sample((Vector2)transform.position);   // sample at the ROOT, not the bobbing visual
                 totalAmplitude = trains.TotalAmplitude;
             }

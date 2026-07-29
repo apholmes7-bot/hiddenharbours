@@ -406,11 +406,30 @@ hull clamp scans against — growing it would quietly reduce foam and raise ever
 envelope means the spectrum's peaks reach the height the hand-authored sea reached and what it adds is
 the **lulls between them**, which is the ask, at no risk to two calibrated systems.
 
-⚠️ **The settings are serialized in TWO places** (the `WaveFieldBridge` host and `BoatWaveMotion`),
-per §(3) and the addendum. `SpectrumBlend` makes that hazard much easier to trip: set it on one and
-not the other and the water and the hull ride different seas — the exact failure this ADR exists to
-prevent. The GameConfig unification §(5) defers to "a later Arc B PR" should probably land **before**
-the owner tunes.
+### (f) The settings unify onto `GameConfig` — the "later Arc B PR" is this one
+
+§(5) deferred a GameConfig unification to "a later Arc B PR", and every consumer carried a
+`// keep identical to the others` comment in the meantime. **There were eight copies**, not the two
+the spectrum PR reported: `WaveFieldBridge`, `BoatWaveMotion`, `BoatController` (the sim path),
+`BoatWakeEmitter`, `BuoyWaveVisual`, `TrapHaulController`, `SeaweedPresenter` — and each of them
+began at `WaveFieldSettings.Default`, so they agreed only for as long as nobody tuned anything.
+`SpectrumBlend` turned that into a one-slider mistake.
+
+- **`GameConfig.WaveField` / `GameConfig.WaveFieldAnimator`** are now the only instances.
+- **`GameServices.WaveField` / `.WaveFieldAnimator`** are the reads; `GameRoot` wires the asset.
+  Unwired (EditMode, a bare art scene, any test rig) falls back to `Default`, so nothing breaks.
+- **Resolved per read, not cached at `Awake`**, so dragging a slider during play moves the sea —
+  which is how the owner will actually judge the spectrum.
+- ⚠️ **`Config != null`, never `?.`/`??`.** `GameConfig` is a `UnityEngine.Object`; the
+  null-propagating operators bypass its overloaded `==`, so a destroyed asset would read as alive and
+  throw. Pinned by a test that destroys one.
+
+⚠️ **The sharpest edge this closes:** `WaveFieldBridge` is a runtime-created `HideAndDontSave` host.
+It has no inspector, so *the water's copy was the one the owner could never reach* — a tuned
+`GameConfig` would have moved the hull, the wake and the buoys while the drawn sea stayed at Default.
+
+`WaveFieldSettingsUnificationTests` scans the assemblies and fails if any type outside `GameConfig`
+declares one of these structs as a field, so the eight copies cannot come back.
 
 ### The cost stated plainly
 
@@ -423,6 +442,8 @@ verdict so the comparison is honest.
 
 - ~~**Train count: 3 or 4?**~~ **Superseded by the 2026-07-29 amendment:** the ceiling is 8, and
   `TrainsFrom` derives 4 until the P2 spectrum re-weights them.
+- ~~**How the settings get unified onto GameConfig**~~ **DONE (2026-07-29 amendment (f)):** eight
+  per-component copies collapsed onto `GameConfig.WaveField`, read through `GameServices`.
 - **How long does the legacy noise-swell path live?** Proposed: through Arc B as the fallback, removed
   once the owner signs off the reworked look — its tunables then become the mapped train scales.
 - **The exact v1 exposure model** (B3): painted-height-map shoaling signal vs a distance-to-land
