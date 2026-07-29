@@ -126,8 +126,13 @@ namespace HiddenHarbours.Art
             // recording (its own colour target + the SAME private depth buffer). Active only when
             // a DisplacedWaterSurface is toggled on — the A/B's OFF side records nothing extra.
             bool water = DisplacedWaterRegistry.Count > 0;
-            if (!hulls && !water)
-                return;   // the zero-cost guarantee — scenes without mesh hulls or displaced water pay nothing
+            // ADR 0027 #8: object REFLECTIONS join as a fourth filtered renderer list, on the same
+            // zero-cost-when-idle contract. Nothing in the shipped scenes carries a ReflectiveObject,
+            // so Count is 0, nothing is enqueued, and that IS this feature's passthrough proof —
+            // there is no "reflections off" branch to keep byte-identical, only an absent pass.
+            bool reflect = ReflectionRegistry.Count > 0;
+            if (!hulls && !water && !reflect)
+                return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water or reflectors pay nothing
             // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
             // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
             // legitimately keep a live mesh hull while other fixtures own cameras. Never enqueue
@@ -157,6 +162,7 @@ namespace HiddenHarbours.Art
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
             _pass.DrawGuard = _interiorMask;
+            _pass.DrawReflections = reflect;
             renderer.EnqueuePass(_pass);
         }
 
@@ -194,6 +200,9 @@ namespace HiddenHarbours.Art
             private static readonly ShaderTagId s_WaterTag = new ShaderTagId("HHWater");
             // The per-face interior mask's guard pass (ADR 0023) — the facet shader's second pass.
             private static readonly ShaderTagId s_GuardTag = new ShaderTagId("HHHullGuard");
+            // ADR 0027 #8: object reflections. The tag says "this renderer KNOWS how to draw a
+            // reflection"; ReflectionRegistry.RenderingLayer says "…and it should" (see below).
+            private static readonly ShaderTagId s_ReflectTag = new ShaderTagId("HHReflect");
 
             public Material ResolveMaterial;
             /// <summary>Record the interior-guard pass (the per-face mask)? Only meaningful with
@@ -203,6 +212,8 @@ namespace HiddenHarbours.Art
             public bool DrawHulls;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
             public bool DrawWater;
+            /// <summary>Record the object-reflection pass this frame (any live ReflectiveObject)?</summary>
+            public bool DrawReflections;
 
             // One persistent resolve target per camera: game view, scene view and any inset view
             // differ in size, and thrashing a single handle between sizes would reallocate every
@@ -214,6 +225,11 @@ namespace HiddenHarbours.Art
             // this texture (an 8-bit sRGB target would clamp it and the moon/beam would dim on
             // displaced water only). Alpha carries the water's own translucency.
             private readonly Dictionary<EntityId, RTHandle> _waterTargets = new Dictionary<EntityId, RTHandle>();
+            // ADR 0027 #8's persistent per-camera reflection target (same lifetime rules). ARGBHalf
+            // for the same reason the water target is: a NIGHT-LIT source writes its colour already
+            // divided by the day/night tint (far above 1) so the §11.6 post-grade compensation can
+            // recover it, and an 8-bit target would clamp that to nothing.
+            private readonly Dictionary<EntityId, RTHandle> _reflectTargets = new Dictionary<EntityId, RTHandle>();
 
             public HullPass()
             {
@@ -236,6 +252,11 @@ namespace HiddenHarbours.Art
                 public RendererListHandle Renderers;
             }
 
+            private class ReflectPassData
+            {
+                public RendererListHandle Renderers;
+            }
+
             private class ResolvePassData
             {
                 public Material Material;
@@ -251,7 +272,56 @@ namespace HiddenHarbours.Art
                 int w = desc.width, h = desc.height;
                 if (w <= 0 || h <= 0) return;
                 bool drawHulls = DrawHulls && ResolveMaterial != null;
-                if (!drawHulls && !DrawWater) return;
+                if (!drawHulls && !DrawWater && !DrawReflections) return;
+
+                // ---- OBJECT REFLECTIONS (ADR 0027 #8) ------------------------------------------
+                // A fourth filtered renderer list: every renderer that BOTH has an HHReflect pass
+                // AND carries ReflectionRegistry.RenderingLayer, drawn mirrored about its own
+                // published ground-contact pivot (ADR 0026) into one ARGBHalf target. The water
+                // shader then samples it with the lookup warped by the SAME WaveFieldSample() the
+                // hull rides — one place to do the warp, which is the whole reason this beats
+                // per-object mirrored duplicates.
+                //
+                // ⚠️ MEMBERSHIP IS THE LAYER BIT, NOT THE TAG ALONE. The tree shader carries an
+                // HHReflect pass, so filtering on the tag alone would sweep EVERY tree in the scene
+                // into this list — the exact trap the displaced water hit when the flat Sea sprite
+                // shared the water shader. The layer is what keeps the set bounded and deliberate.
+                //
+                // NO depth buffer and no interior mask: this is the flat mirrored silhouette the
+                // ADR's fidelity probe found sufficient at PPU 32. Premultiplied blending inside the
+                // pass means overlapping reflectors composite correctly with no sorting contract.
+                if (DrawReflections)
+                {
+                    RTHandle reflectTarget = GetReflectTarget(cameraData.camera.GetEntityId(), w, h);
+                    var reflectImport = new ImportResourceParams
+                    {
+                        clearOnFirstUse = true,
+                        clearColor = Color.clear,
+                        discardOnLastUse = false,
+                    };
+                    TextureHandle reflectTex = renderGraph.ImportTexture(reflectTarget, reflectImport);
+
+                    using var builder = renderGraph.AddRasterRenderPass<ReflectPassData>(
+                        "HH Object Reflections", out ReflectPassData passData, profilingSampler);
+                    var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
+                    var drawing = new DrawingSettings(s_ReflectTag, sorting) { perObjectData = PerObjectData.None };
+                    var filtering = new FilteringSettings(RenderQueueRange.all, -1,
+                                                          ReflectionRegistry.RenderingLayer);
+                    passData.Renderers = renderGraph.CreateRendererList(
+                        new RendererListParams(renderingData.cullResults, drawing, filtering));
+
+                    builder.UseRendererList(passData.Renderers);
+                    builder.SetRenderAttachment(reflectTex, 0);
+                    // The consumer is the in-scene water quad, whose read the graph cannot see —
+                    // never cull, and publish the result.
+                    builder.AllowPassCulling(false);
+                    builder.SetGlobalTextureAfterPass(reflectTex, ReflectionShaderIds.ReflectTex);
+                    builder.SetRenderFunc((ReflectPassData data, RasterGraphContext ctx) =>
+                    {
+                        ctx.cmd.DrawRendererList(data.Renderers);
+                    });
+                }
+                if (!drawHulls && !DrawWater) return;   // reflection-only frames need nothing below
 
                 // ---- the PRIVATE depth buffer (shared by hulls, deck occupants AND the displaced
                 // water — ADR 0023 §(6): one z-buffer in the iso frame is what makes the phase-3
@@ -526,6 +596,25 @@ namespace HiddenHarbours.Art
                 return handle;
             }
 
+            private RTHandle GetReflectTarget(EntityId cameraId, int w, int h)
+            {
+                _reflectTargets.TryGetValue(cameraId, out RTHandle handle);
+                // ARGBHalf: a night-lit reflector writes PRE-COMPENSATED colour (divided by the
+                // day/night tint) far above 1, exactly as the moon glitter does, and an 8-bit target
+                // would clamp it — the lit wheelhouse would go out on the way to the water shader.
+                // Camera render resolution + POINT filtering: the RT inherits the pixel grid, and the
+                // WORLD-space snap in the water's lookup is what stops it crawling on a pan.
+                var descriptor = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGBHalf, 0)
+                {
+                    sRGB = false,
+                    msaaSamples = 1,
+                };
+                RenderingUtils.ReAllocateHandleIfNeeded(ref handle, descriptor,
+                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHReflectTex");
+                _reflectTargets[cameraId] = handle;
+                return handle;
+            }
+
             public void Dispose()
             {
                 foreach (var kv in _resolveTargets)
@@ -534,6 +623,9 @@ namespace HiddenHarbours.Art
                 foreach (var kv in _waterTargets)
                     kv.Value?.Release();
                 _waterTargets.Clear();
+                foreach (var kv in _reflectTargets)
+                    kv.Value?.Release();
+                _reflectTargets.Clear();
             }
         }
     }

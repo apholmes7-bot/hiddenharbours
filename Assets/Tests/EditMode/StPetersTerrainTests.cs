@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
+using HiddenHarbours.Environment;
 using HiddenHarbours.App.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -71,8 +72,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void DeepHarbour_IsAlwaysSubmerged_EvenAtLowWater()
         {
-            // A point well off the bar and the island — open water.
-            var openWater = new Vector2(0f, 40f);
+            // A point well off the bar and the island — open water. ⚠ Must be outside the island's
+            // ELLIPSE, which now reaches y = ±130 with a 30 m beach beyond it (scene-sizing §5.1);
+            // the old (0, 40) sample sits on dry land at the ruled scale.
+            var openWater = new Vector2(0f, 230f);
             float elev = _terrain.ElevationAt(openWater);
             Assert.Less(elev, LowWater,
                 "the deep harbour seabed must stay below the lowest water — it never bares");
@@ -160,6 +163,122 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreSame(_terrain, GameServices.TidalTerrain, "round-trips through the Core accessor");
             Assert.AreEqual(_terrain.ElevationAt(pos), GameServices.TidalTerrain.ElevationAt(pos), 1e-6f,
                 "reading through Core yields the same authored elevation as the component");
+        }
+
+        // ---- ⭐ THE NEAP GAP: the gate must exist at EVERY point in the lunar month ----------------
+
+        /// <summary>
+        /// The tide gate is St Peters' whole reason to exist, and it was possible to switch it off by
+        /// accident with one constant.
+        ///
+        /// <para><b>How.</b> <see cref="TideModel"/> puts a spring/neap envelope on the semidiurnal
+        /// carrier: at neap the swing collapses to <c>NeapAmplitudeFraction</c> of the region's
+        /// amplitude. St Peters runs ±3.5 m, and 0.45 × 3.5 = <b>1.575 m</b> — so a sandbar crest at
+        /// the old <b>1.6 m</b> sat ABOVE the highest water of a neap week and the bar never flooded
+        /// at all. For part of every lunar month the region's defining mechanic simply was not there,
+        /// and nothing said so: the bar looks right, the tide still moves, and a playtester just
+        /// never gets cut off.</para>
+        ///
+        /// <para>This walks a whole lunar month of the REAL tide function and holds the crest under
+        /// the weakest high water it produces. Deliberately computed from <see cref="GameConfig"/> +
+        /// <see cref="TideModel"/> rather than from the 1.575 above, so re-tuning the neap fraction
+        /// or the amplitude re-checks the gate instead of quietly reopening the hole.</para>
+        /// </summary>
+        [Test]
+        public void TheSandbarFloodsAtEveryPointInTheLunarMonth_IncludingNeaps()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                float weakestHigh = WeakestHighWaterOverALunarMonth(cfg, out double atSeconds);
+
+                Assert.Less(StPetersBuilder.SandbarCrestElevation, weakestHigh,
+                    $"the sandbar crest ({StPetersBuilder.SandbarCrestElevation} m) is at or above " +
+                    $"the weakest high water of the lunar month ({weakestHigh:F3} m, at t = " +
+                    $"{atSeconds:F0} s) — so around neaps the bar NEVER floods and the tide gate " +
+                    "switches itself off for part of every month. Lower the crest; do not lower the " +
+                    "region's amplitude, which is what makes the bar read as a big-tide place.");
+
+                Debug.Log(
+                    $"[st-peters] neap gap: crest {StPetersBuilder.SandbarCrestElevation} m vs the " +
+                    $"weakest high water {weakestHigh:F3} m over a {cfg.LunarMonthDays}-day month " +
+                    $"(amplitude {StPetersBuilder.TideAmplitude} m × neap fraction " +
+                    $"{cfg.NeapAmplitudeFraction}) — " +
+                    $"{weakestHigh - StPetersBuilder.SandbarCrestElevation:F3} m of clearance, so " +
+                    "the bar floods on every tide of every week.");
+            }
+            finally { Object.DestroyImmediate(cfg); }
+        }
+
+        /// <summary>
+        /// SABOTAGE, MEASURED. The value this replaced was 1.6, and it shipped — so the test that
+        /// forbids it has to be shown firing on exactly that number, or the new crest is a constant
+        /// nobody can defend and the next tuning pass puts the old one straight back.
+        /// </summary>
+        [Test]
+        public void Sabotage_TheOldCrestOf1Point6_WouldStrandTheBarAboveNeapHighWater()
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                float weakestHigh = WeakestHighWaterOverALunarMonth(cfg, out _);
+
+                const float oldCrest = 1.6f;
+                Assert.GreaterOrEqual(oldCrest, weakestHigh,
+                    "SABOTAGE NOT DETECTED — the old 1.6 m crest now clears neap high water, so " +
+                    "either the amplitude or the neap fraction has changed and this test is " +
+                    "measuring nothing. Re-derive the crest rather than deleting the guard.");
+
+                Assert.Less(StPetersBuilder.SandbarCrestElevation, oldCrest,
+                    "the shipped crest must be below the value that caused the gap");
+
+                Debug.Log(
+                    $"[st-peters] SABOTAGE — neap gap: the old crest 1.6 m sits " +
+                    $"{oldCrest - weakestHigh:F3} m ABOVE the weakest high water ({weakestHigh:F3} m) " +
+                    $"— the bar would stay dry through neaps. The shipped " +
+                    $"{StPetersBuilder.SandbarCrestElevation} m clears it.");
+            }
+            finally { Object.DestroyImmediate(cfg); }
+        }
+
+        /// <summary>
+        /// The lowest peak the tide reaches across a full lunar month — high water at the neapest
+        /// neap. Sampled off the real <see cref="TideModel"/> rather than solved analytically, so it
+        /// keeps working if the envelope's shape is ever changed.
+        /// </summary>
+        private static float WeakestHighWaterOverALunarMonth(GameConfig cfg, out double atSeconds)
+        {
+            var profile = new TideProfile
+            {
+                MeanLevel = StPetersBuilder.TideMean,
+                Amplitude = StPetersBuilder.TideAmplitude,
+                PhaseHours = StPetersBuilder.TidePhaseHours,
+            };
+
+            double month = cfg.LunarMonthDays * cfg.SecondsPerDay;
+            // ~40 samples per tidal cycle across the whole month — fine enough that a sampled peak
+            // lands within a millimetre or two of the true one, far below the clearance asserted.
+            double step = (cfg.TidalPeriodHours * cfg.SecondsPerHour) / 40.0;
+
+            float weakest = float.MaxValue;
+            atSeconds = 0.0;
+
+            float prev = TideModel.Height(0.0, profile, cfg);
+            float cur = TideModel.Height(step, profile, cfg);
+            for (double t = step; t < month; t += step)
+            {
+                float next = TideModel.Height(t + step, profile, cfg);
+                if (cur >= prev && cur >= next && cur < weakest)   // a local maximum: one high water
+                {
+                    weakest = cur;
+                    atSeconds = t;
+                }
+                prev = cur;
+                cur = next;
+            }
+
+            Assert.Less(weakest, float.MaxValue, "no high water found — the tide is not oscillating");
+            return weakest;
         }
 
         // ---- region.st_peters RegionDef validity (the authored asset) ------------------------------

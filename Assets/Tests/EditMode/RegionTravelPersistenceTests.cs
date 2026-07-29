@@ -9,7 +9,7 @@ using HiddenHarbours.Player;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// VS-22 travel persistence: the pieces that let the player cross a Cove↔Greywick hop with the SAME
+    /// VS-22 travel persistence: the pieces that let the player cross a Cove↔Nine Mile Creek hop with the SAME
     /// boat, hold and coin. The additive scene load + root toggling is play-mode glue (verified in Unity);
     /// these guard the pure wiring the slice rests on:
     ///   • the wallet/hold PROXIES a region's wharf resolves forward to the live PERSISTENT services, so
@@ -105,25 +105,25 @@ namespace HiddenHarbours.Tests.EditMode
             var boat = boatGo.AddComponent<BoatController>();                 // + Rigidbody2D + CapsuleCollider2D
             var switcher = New("Switcher").AddComponent<ControlSwitcher>();
 
-            // Two region anchors (cove + Greywick), far apart so the dock test is unambiguous.
+            // Two region anchors (cove + Nine Mile Creek), far apart so the dock test is unambiguous.
             var coveAnchor = New("CoveAnchor").AddComponent<RegionAnchor>();
             coveAnchor.Configure("region.coddle_cove", At("CoveArr", new Vector3(0f, -13f, 0f)),
                                  At("CoveDock", new Vector3(0f, -12f, 0f)), At("CoveDis", new Vector3(0f, -10.5f, 0f)));
             var gwAnchor = New("GwAnchor").AddComponent<RegionAnchor>();
-            gwAnchor.Configure("region.port_greywick", At("GwArr", new Vector3(100f, -5f, 0f)),
+            gwAnchor.Configure("region.nine_mile_creek", At("GwArr", new Vector3(100f, -5f, 0f)),
                                At("GwDock", new Vector3(100f, -1f, 0f)), At("GwDis", new Vector3(100f, 1.5f, 0f)));
 
             // Start moored in the cove.
             switcher.Configure(player, boat, null, coveAnchor.DockZone, 3.5f, coveAnchor.DisembarkPoint);
 
-            // --- Sail to Greywick: bind the rig to the Greywick anchor. ---
+            // --- Sail to Nine Mile Creek: bind the rig to the Nine Mile Creek anchor. ---
             RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, gwAnchor);
-            Assert.AreEqual(gwAnchor.ArrivalPoint.position, boatGo.transform.position, "the boat arrives at the Greywick anchor");
-            Assert.AreEqual(gwAnchor.DisembarkPoint.position, player.transform.position, "the player is set at the Greywick wharf");
-            boatGo.transform.position = gwAnchor.DockZone.position;          // dock at the Greywick wharf
-            Assert.IsTrue(switcher.InDockZone(), "disembark registers at the GREYWICK wharf (dock re-pointed)");
+            Assert.AreEqual(gwAnchor.ArrivalPoint.position, boatGo.transform.position, "the boat arrives at the Nine Mile Creek anchor");
+            Assert.AreEqual(gwAnchor.DisembarkPoint.position, player.transform.position, "the player is set at the Nine Mile Creek wharf");
+            boatGo.transform.position = gwAnchor.DockZone.position;          // dock at the Nine Mile Creek wharf
+            Assert.IsTrue(switcher.InDockZone(), "disembark registers at the NINE MILE CREEK wharf (dock re-pointed)");
             Assert.Greater(Vector2.Distance(boatGo.transform.position, coveAnchor.DockZone.position), 3.5f,
-                           "and it's the Greywick dock, not the (far) cove dock");
+                           "and it's the Nine Mile Creek dock, not the (far) cove dock");
 
             // --- Sail back to the cove: SAME rig, re-bound to the cove anchor. ---
             RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, coveAnchor);

@@ -77,15 +77,15 @@ namespace HiddenHarbours.Art.Editor
                 // Trees auto-layer by Y (YSort) so the player walks behind a tree up-screen and in front of one
                 // down-screen, and sway their canopy off the shared wind (the TreeWind material) — both automatic.
                 if (BuildDecorPrefab(name, sprite, $"{PrefabRoot}/Trees/{name}.prefab", TreeSortingOrder,
-                                     ySort: true, material: treeMaterial)) n++;
+                                     ySort: true, material: treeMaterial, reflective: true)) n++;
             }
 
-            // --- Buildings (centre pivot). Cottage day/night, Greywick houses, shipwright, buyer stall. ---
+            // --- Buildings (centre pivot). Cottage day/night, Nine Mile Creek houses, shipwright, buyer stall. ---
             EnsureFolder($"{PrefabRoot}/Buildings");
             string[] buildings =
             {
                 "Cottage", "CottageNight", "ShipwrightShed", "FishBuyerStall",
-                "GreywickHouseRed", "GreywickHouseTeal",
+                "NineMileCreekHouseRed", "NineMileCreekHouseTeal",
             };
             foreach (var b in buildings)
                 if (BuildDecorPrefab(b, $"{ArtSprites}/Buildings/{b}.png", $"{PrefabRoot}/Buildings/{b}.prefab", BuildingSortingOrder)) n++;
@@ -429,7 +429,8 @@ namespace HiddenHarbours.Art.Editor
         /// what it can.
         /// </summary>
         static bool BuildDecorPrefab(string name, string spritePath, string prefabPath, int sortingOrder,
-                                     bool ySort = false, Material material = null)
+                                     bool ySort = false, Material material = null,
+                                     bool reflective = false)
         {
             var sprite = TileAssetBuilder.LoadSpriteAny(spritePath);
             if (sprite == null) { Debug.LogWarning($"[DecorPrefabBuilder] missing sprite {spritePath} — {name} skipped."); return false; }
@@ -443,6 +444,12 @@ namespace HiddenHarbours.Art.Editor
                 go.transform.localScale = Vector3.one;   // honest metric size — never scale a real sprite
                 if (material != null) sr.sharedMaterial = material;   // e.g. the TreeWind canopy-sway material
                 if (ySort) go.AddComponent<YSortSprite>();   // auto-layer by world Y (static decor: computed once)
+                // (ADR 0027 #8) Reflect in the water. Only for art whose material carries the
+                // HHReflect pass — the trees' TreeWind material does; the default sprite material the
+                // props and buildings use does NOT, and a ReflectiveObject on one of those would join
+                // the filtered list and draw nothing. No pivot override: these import BottomCenter,
+                // which is the ground contact the mirror axis wants (ADR 0026).
+                if (reflective) go.AddComponent<HiddenHarbours.Art.ReflectiveObject>();
 
                 SavePrefabReplacing(go, prefabPath);
                 return true;

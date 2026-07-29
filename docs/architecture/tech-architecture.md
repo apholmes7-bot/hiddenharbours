@@ -99,7 +99,7 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 
 **`Core.RegionDisplayNames`** — a tiny static registry mapping a scene name / region id → player-facing
-display name ("Coddle Cove", "Port Greywick"). The **world** (owner of `RegionDef`) registers at boot;
+display name ("Coddle Cove", "Nine Mile Creek"). The **world** (owner of `RegionDef`) registers at boot;
 the **UI** (Core-only) reads `Resolve(key, fallback)` so the crossing fade card titles correctly
 (closes the ui-ux #54 follow-up) without a UI→World reference. Presentation metadata: unsaved, no
 determinism concern.

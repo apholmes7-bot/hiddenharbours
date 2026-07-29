@@ -259,6 +259,18 @@ namespace HiddenHarbours.Art.Editor
             var (mask, normal) = LoadLightSheets(placement);
             anchor.SetLightSheets(mask, normal);
 
+            // (ADR 0027 #8) A tree standing at the water's edge REFLECTS in it. Added HERE and not
+            // in the prefab builder because this method is the ONE place an Acadian tree is
+            // configured — the Tree Paint Tool comes through it too, so a painted treeline reflects
+            // without the owner touching a component.
+            //
+            // No pivot override: the rig's pivot is the TRUNK FOOT, which already IS the
+            // ground-contact point the mirror axis wants (ADR 0026). And the component's own
+            // distance gate is what keeps an inland forest out of the reflective set — every tree may
+            // carry this, only the ones standing near the water join the pass.
+            if (go.GetComponent<HiddenHarbours.Art.ReflectiveObject>() == null)
+                go.AddComponent<HiddenHarbours.Art.ReflectiveObject>();
+
             return sr;
         }
 

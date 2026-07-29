@@ -1,172 +1,219 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using UnityEngine;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// SaveData v4 → v5 (M1 §7.3 — held catch persists). Pins the migration contract (an older save
-    /// gets empty hold lists and NOTHING else changes — never a crash), the codec's round-trip
-    /// (grouping only ever merges EXACTLY-identical freshness), and the arc's exit criterion through
-    /// the REAL serialization path: a settled FreshnessState written to JSON and read back yields the
-    /// bit-same spoil at any later read — <c>FreshnessTests.SaveAndReload_RestoresExactly</c>, but
-    /// through <see cref="SaveSerialization"/> + <see cref="HoldCatchCodec"/> instead of a copy.
+    /// Save schema v5 — the <b>Port Greywick → Nine Mile Creek</b> region rename (plan-to-m1 D1/§7.10).
+    ///
+    /// <para><c>PlacedTrapDto.Region</c> is the only save field that stores a region id as a STRING
+    /// (scene-per-region, ADR 0004), so a trap dropped before the rename would name a region no def
+    /// claims: it loads, sits in a region that never resolves, and is never haulable again. The v4→v5
+    /// step rewrites exactly that id.</para>
+    ///
+    /// <para><b>⚠ This is the first migration step that REINTERPRETS a value rather than only adding
+    /// one</b>, so these tests are deliberately fussy about how narrow it is: one field, one id, every
+    /// other region string left alone, and no effect on a save that already knows the new name.</para>
     /// </summary>
     public class SaveMigrationV5Tests
     {
-        private const float SecondsPerDay = GameConfig.DefaultSecondsPerDay;
-
-        // A factory over two known species — what the Fishing-side registry factory does, minus Unity.
-        private sealed class FakeFactory : ICatchItemFactory
+        [Test]
+        public void CurrentVersion_IsAtLeastV5()
         {
-            public bool TryCreate(string speciesId, out CatchItem item)
-            {
-                switch (speciesId)
-                {
-                    case "fish.cod":
-                        item = new CatchItem("fish.cod", "Cod", FishCategory.InshoreGroundfish,
-                                             4f, 20, 0.3f, 1f, default);
-                        return true;
-                    case "fish.clam":
-                        item = new CatchItem("fish.clam", "Clam", FishCategory.Shellfish,
-                                             0.1f, 2, 0.45f, 0.5f, default);
-                        return true;
-                    default:
-                        item = default;
-                        return false;
-                }
-            }
+            Assert.GreaterOrEqual(SaveMigration.CurrentVersion, 5,
+                "the region rename lands at schema v5");
         }
 
-        // ---- the migration ---------------------------------------------------------------------
-
-        private static SaveData V4Blob()
+        private static PlacedTrapDto Trap(string instance, string region) => new PlacedTrapDto
         {
-            var d = new SaveData
+            InstanceId = instance,
+            TrapDefId = "trap.lobster_pot",
+            PosX = 3f, PosY = -1f,
+            BaitId = "bait.herring",
+            PlacementGameTimeSeconds = 4200.5,
+            Region = region,
+        };
+
+        // ---- the rename itself --------------------------------------------------------------------
+
+        [Test]
+        public void APreRenameTrap_IsMovedToTheNewRegionId_WithEverythingElseIntact()
+        {
+            var v4 = new SaveData
             {
                 SchemaVersion = 4,
-                WorldSeed = 1234,
-                GameTimeSeconds = 5678.25,
-                Money = 321,
-                ActiveHullId = "boat.dory",
+                WorldSeed = 777,
+                GameTimeSeconds = 123.5,
+                Money = 42,
+                PlacedTraps = new List<PlacedTrapDto> { Trap("t1", SaveMigration.RenamedRegionFrom) },
             };
-            d.OwnedBoats.Add("boat.dory");
-            d.BoatHoldCatch = null;   // a true v4 blob never had the lists — JsonUtility leaves null
-            d.BucketCatch = null;
-            d.FreezerCatch = null;
-            return d;
+
+            SaveData up = SaveMigration.Migrate(v4);
+
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
+            Assert.AreEqual(1, up.PlacedTraps.Count, "the trap must survive, not be dropped");
+
+            PlacedTrapDto t = up.PlacedTraps[0];
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, t.Region,
+                "the trap must land in the renamed region — otherwise it sits in a region no def " +
+                "claims and can never be hauled again");
+
+            // Everything else about the trap is a placement FACT and must be untouched: the soak and
+            // its contents recompute from these (rule 5), so a nudged position or timestamp silently
+            // changes what the player pulls up.
+            Assert.AreEqual("t1", t.InstanceId);
+            Assert.AreEqual("trap.lobster_pot", t.TrapDefId);
+            Assert.AreEqual("bait.herring", t.BaitId);
+            Assert.AreEqual(3f, t.PosX, 1e-6f);
+            Assert.AreEqual(-1f, t.PosY, 1e-6f);
+            Assert.AreEqual(4200.5, t.PlacementGameTimeSeconds, 1e-9);
+
+            Assert.AreEqual(777, up.WorldSeed);
+            Assert.AreEqual(123.5, up.GameTimeSeconds, 1e-9);
+            Assert.AreEqual(42, up.Money);
         }
 
         [Test]
-        public void V4_MigratesTo5_WithEmptyHolds_AndNothingElseTouched()
+        public void EveryPreRenameTrap_IsMoved_NotJustTheFirst()
         {
-            SaveData d = SaveMigration.Migrate(V4Blob());
-
-            Assert.AreEqual(5, d.SchemaVersion);
-            Assert.IsNotNull(d.BoatHoldCatch); Assert.IsEmpty(d.BoatHoldCatch);
-            Assert.IsNotNull(d.BucketCatch);   Assert.IsEmpty(d.BucketCatch);
-            Assert.IsNotNull(d.FreezerCatch);  Assert.IsEmpty(d.FreezerCatch);
-
-            Assert.AreEqual(1234, d.WorldSeed);
-            Assert.AreEqual(5678.25, d.GameTimeSeconds, 1e-9);
-            Assert.AreEqual(321, d.Money);
-            Assert.AreEqual("boat.dory", d.ActiveHullId);
-        }
-
-        [Test]
-        public void CurrentVersion_Is5_AndNewGameStartsThere()
-        {
-            Assert.AreEqual(5, SaveMigration.CurrentVersion);
-            SaveData fresh = SaveMigration.NewGame();
-            Assert.AreEqual(5, fresh.SchemaVersion);
-            Assert.IsNotNull(fresh.BoatHoldCatch);
-        }
-
-        [Test]
-        public void V4Json_LoadsThroughTheRealPath_NeverACrash()
-        {
-            // The genuine on-disk shape: serialize a v4 blob (fields absent from the JSON entirely
-            // would need a hand-written string; null lists serialize as empty — both land safely).
-            string json = SaveSerialization.ToJson(V4Blob());
-            SaveData d = SaveMigration.Migrate(SaveSerialization.FromJson(json));
-
-            Assert.IsNotNull(d);
-            Assert.AreEqual(5, d.SchemaVersion);
-            Assert.IsNotNull(d.BoatHoldCatch);
-        }
-
-        // ---- the codec -------------------------------------------------------------------------
-
-        [Test]
-        public void Capture_GroupsOnlyExactlyIdenticalFreshness()
-        {
-            var sameClock = Freshness.Landed(100d);
-            var items = new List<CatchItem>
+            var v4 = new SaveData
             {
-                new CatchItem("fish.cod", "Cod", FishCategory.InshoreGroundfish, 4f, 20, 0.3f, 1f, sameClock),
-                new CatchItem("fish.cod", "Cod", FishCategory.InshoreGroundfish, 4f, 20, 0.3f, 1f, sameClock),
-                new CatchItem("fish.cod", "Cod", FishCategory.InshoreGroundfish, 4f, 20, 0.3f, 1f,
-                              Freshness.Landed(200d)),   // a later landing — its own clock
+                SchemaVersion = 4,
+                PlacedTraps = new List<PlacedTrapDto>
+                {
+                    Trap("a", SaveMigration.RenamedRegionFrom),
+                    Trap("b", "region.st_peters"),
+                    Trap("c", SaveMigration.RenamedRegionFrom),
+                },
             };
-            var records = new List<HeldCatchDto>();
-            HoldCatchCodec.Capture(items, records);
 
-            Assert.AreEqual(2, records.Count, "same haul compresses; a different clock never merges");
-            Assert.AreEqual(2, records[0].Quantity);
-            Assert.AreEqual(1, records[1].Quantity);
-            Assert.AreEqual(200d, records[1].LastSettleGameSeconds, 1e-9);
+            SaveData up = SaveMigration.Migrate(v4);
+
+            Assert.AreEqual(3, up.PlacedTraps.Count);
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, up.PlacedTraps[0].Region);
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, up.PlacedTraps[2].Region);
+            Assert.IsFalse(up.PlacedTraps.Any(t => t.Region == SaveMigration.RenamedRegionFrom),
+                "no trap may still name the old id after the migration");
+        }
+
+        // ---- ⚠ SABOTAGE-SHAPED: the step must be NARROW ------------------------------------------
+
+        /// <summary>
+        /// A struct in a <c>List&lt;T&gt;</c> is a copy on read. Mutating <c>list[i].Field</c> is a
+        /// compile error in C#, but the near-miss — reading into a local, mutating it and forgetting to
+        /// write it back — compiles and silently does nothing. This test is what catches that, because
+        /// the migration would otherwise "pass" by bumping the version alone.
+        /// </summary>
+        [Test]
+        public void TheRewriteActuallyPersists_NotJustOnACopyOfTheStruct()
+        {
+            var v4 = new SaveData
+            {
+                SchemaVersion = 4,
+                PlacedTraps = new List<PlacedTrapDto> { Trap("t1", SaveMigration.RenamedRegionFrom) },
+            };
+
+            SaveData up = SaveMigration.Migrate(v4);
+
+            Assert.AreNotEqual(SaveMigration.RenamedRegionFrom, up.PlacedTraps[0].Region,
+                "SABOTAGE — PlacedTrapDto is a STRUCT, so a migration that mutated a local copy and " +
+                "never wrote it back would leave the old id here while still bumping to v5.");
         }
 
         [Test]
-        public void Restore_SkipsUnknownSpecies_NeverCrashes()
+        public void OtherRegions_AreLeftAlone()
         {
-            var records = new List<HeldCatchDto>
+            var v4 = new SaveData
             {
-                new HeldCatchDto("fish.cod", 2, 0.25f, 300d, (int)StorageMode.Frozen),
-                new HeldCatchDto("fish.retired_species", 3, 0f, 0d, 0),
+                SchemaVersion = 4,
+                PlacedTraps = new List<PlacedTrapDto>
+                {
+                    Trap("a", "region.st_peters"),
+                    Trap("b", "region.coddle_cove"),
+                    Trap("c", ""),
+                    Trap("d", null),
+                },
             };
-            var items = new List<CatchItem>();
-            int restored = HoldCatchCodec.Restore(records, new FakeFactory(), items);
 
-            Assert.AreEqual(2, restored, "the unknown id is skipped, the rest lands");
-            Assert.AreEqual(2, items.Count);
-            Assert.AreEqual(StorageMode.Frozen, items[0].Freshness.Mode);
-            Assert.AreEqual(0.25f, items[0].Freshness.SpoilAccrued, 1e-6f);
+            SaveData up = SaveMigration.Migrate(v4);
+
+            Assert.AreEqual("region.st_peters", up.PlacedTraps[0].Region);
+            Assert.AreEqual("region.coddle_cove", up.PlacedTraps[1].Region);
+            Assert.AreEqual("", up.PlacedTraps[2].Region, "an empty region is not the renamed one");
+            Assert.IsNull(up.PlacedTraps[3].Region, "…and neither is a null one — no NRE, no rewrite");
         }
 
-        // ---- the exit criterion: freshness survives the REAL save path exactly ------------------
-
         [Test]
-        public void FreshnessSurvivesSaveAndReload_Exactly_ThroughTheRealPath()
+        public void ASaveThatAlreadyKnowsTheNewName_IsUnchanged()
         {
-            // A cod landed at t0, settled once at three-quarters of a day (the FreshnessTests case).
-            FreshnessState before = Freshness.Settle(Freshness.Landed(0d), SecondsPerDay * 0.75d,
-                                                     1f, SecondsPerDay, SpoilPolicy.Default);
-            var held = new List<CatchItem>
+            var current = new SaveData
             {
-                new CatchItem("fish.cod", "Cod", FishCategory.InshoreGroundfish, 4f, 20, 0.3f, 1f, before),
+                SchemaVersion = SaveMigration.CurrentVersion,
+                PlacedTraps = new List<PlacedTrapDto> { Trap("t1", SaveMigration.RenamedRegionTo) },
             };
 
-            // Save: capture into the blob, serialize to JSON (the on-disk format), read back, migrate.
-            var save = SaveMigration.NewGame();
-            HoldCatchCodec.Capture(held, save.BoatHoldCatch);
-            SaveData reloaded = SaveMigration.Migrate(SaveSerialization.FromJson(SaveSerialization.ToJson(save)));
+            SaveData up = SaveMigration.Migrate(current);
 
-            // Load: rebuild the items and read spoil at a later instant on both sides.
-            var restored = new List<CatchItem>();
-            Assert.AreEqual(1, HoldCatchCodec.Restore(reloaded.BoatHoldCatch, new FakeFactory(), restored));
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, up.PlacedTraps[0].Region);
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
+        }
 
-            double later = SecondsPerDay * 2d;
-            float beforeSpoil = Freshness.SpoilAt(before, later, 1f, SecondsPerDay, SpoilPolicy.Default);
-            float afterSpoil = Freshness.SpoilAt(restored[0].Freshness, later, 1f,
-                                                 SecondsPerDay, SpoilPolicy.Default);
+        [Test]
+        public void AnOldSaveWithNoTraps_UpgradesCleanly()
+        {
+            // The common case by far — the step must not require the list to exist.
+            var v4 = new SaveData { SchemaVersion = 4, PlacedTraps = null };
 
-            Assert.AreEqual(beforeSpoil, afterSpoil, 1e-6f,
-                            "a reload lands on exactly the number an unbroken session would");
-            Assert.AreEqual(before.SpoilAccrued, restored[0].Freshness.SpoilAccrued,
-                            "the banked spoil round-trips bit-exact through JSON");
-            Assert.AreEqual(before.LastSettleGameSeconds, restored[0].Freshness.LastSettleGameSeconds,
-                            "and so does the settle stamp (double precision)");
+            SaveData up = SaveMigration.Migrate(v4);
+
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
+            Assert.IsNotNull(up.PlacedTraps, "the null-repair still gives it an empty list");
+            Assert.IsEmpty(up.PlacedTraps);
+        }
+
+        [Test]
+        public void TheWholeChain_V0ToV5_StillRuns_AndRenamesOnTheWayThrough()
+        {
+            // A save from before ANY of the steps, with a trap in the old region. Every step must run
+            // in order and the rename must still happen at the end of the chain.
+            var v0 = new SaveData
+            {
+                SchemaVersion = 0,
+                OwnedBoats = new List<string> { "boat.dory" },
+                PlacedTraps = new List<PlacedTrapDto> { Trap("t1", SaveMigration.RenamedRegionFrom) },
+            };
+
+            SaveData up = SaveMigration.Migrate(v0);
+
+            Assert.AreEqual(SaveMigration.CurrentVersion, up.SchemaVersion);
+            Assert.Contains("boat.dory", up.RepairedBoats, "v1→v2 still marks owned boats repaired");
+            Assert.AreEqual(1, up.PotStock.Count, "v3→v4 still adopts the deployed pot into owned");
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, up.PlacedTraps[0].Region,
+                "…and v4→v5 still renames its region");
+        }
+
+        // ---- the id pair itself -------------------------------------------------------------------
+
+        [Test]
+        public void TheRenamedIds_AreTheOnesTheRegionDefActuallyUses()
+        {
+            Assert.AreEqual("region.port_greywick", SaveMigration.RenamedRegionFrom,
+                "the id every pre-rename save was written with");
+            Assert.AreEqual("region.nine_mile_creek", SaveMigration.RenamedRegionTo,
+                "…and the id the region carries now. If these ever drift from the RegionDef the " +
+                "migration moves traps to a region that does not exist.");
+
+            var region = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.RegionDef>(
+                "Assets/_Project/Data/Regions/NineMileCreek.asset");
+            Assert.IsNotNull(region, "the renamed region asset must exist at its new path");
+            Assert.AreEqual(SaveMigration.RenamedRegionTo, region.Id,
+                "the migration's target must be the id the shipped def actually carries");
+            Assert.AreEqual("Nine Mile Creek", region.DisplayName);
+            Assert.AreEqual("NineMileCreek", region.SceneName,
+                "the SCENE name is an identifier, not the display name — it must not gain spaces");
         }
     }
 }

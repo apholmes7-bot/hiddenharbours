@@ -19,7 +19,7 @@ namespace HiddenHarbours.World
     /// <list type="bullet">
     /// <item><description><b>Island</b> — a high plateau (always exposed; you can't tide it under).</description></item>
     /// <item><description><b>Sandbar</b> — a ridge crest just BELOW high water that bridges the island to
-    /// Greywick: covered at high tide, exposing as the tide falls (widest walkable flat at low water). The
+    /// Nine Mile Creek: covered at high tide, exposing as the tide falls (widest walkable flat at low water). The
     /// showcase's walker path.</description></item>
     /// <item><description><b>Channel</b> — a deeper trough cut THROUGH the sandbar: boat-crossable at higher
     /// tide, narrowing as the tide falls. The showcase's boat passage — inverse of the flats over the tide.</description></item>
@@ -43,18 +43,23 @@ namespace HiddenHarbours.World
         [Header("Island (the high home ground)")]
         [Tooltip("Centre of the island plateau (world XY).")]
         [SerializeField] private Vector2 _islandCenter = new Vector2(-40f, 0f);
-        [Tooltip("Radius (m) of the flat island plateau (inside this it sits at the plateau height).")]
+        [Tooltip("Radius (m) of the flat island plateau along X (inside this it sits at the plateau height).")]
         [SerializeField] private float _islandRadius = 22f;
+        [Tooltip("Radius (m) along Y. 0 = circular (use the X radius on both axes) — the original " +
+                 "greybox shape. Set it to make the island an ELLIPSE: a real island is longer than it " +
+                 "is wide, and St Peters is ruled at ~450 × 260 m (scene-sizing §5.1), which no disc " +
+                 "can express.")]
+        [SerializeField] private float _islandRadiusY = 0f;
         [Tooltip("How far (m) the island's beach slopes down from the plateau edge into the sea.")]
         [SerializeField] private float _islandFalloff = 10f;
         [Tooltip("Island plateau elevation, metres above chart datum. High enough to stay dry at every " +
                  "tide (always exposed).")]
         [SerializeField] private float _islandElevation = 6f;
 
-        [Header("Sandbar ridge (the tide-gated walking path to Greywick)")]
+        [Header("Sandbar ridge (the tide-gated walking path to Nine Mile Creek)")]
         [Tooltip("One end of the sandbar's centre-line (world XY) — toward the island.")]
         [SerializeField] private Vector2 _sandbarFrom = new Vector2(-22f, 0f);
-        [Tooltip("Other end of the sandbar's centre-line (world XY) — toward Greywick.")]
+        [Tooltip("Other end of the sandbar's centre-line (world XY) — toward Nine Mile Creek.")]
         [SerializeField] private Vector2 _sandbarTo = new Vector2(34f, 0f);
         [Tooltip("Half-width (m) of the sandbar either side of its centre-line — the flats bare out to here.")]
         [SerializeField] private float _sandbarHalfWidth = 9f;
@@ -99,7 +104,7 @@ namespace HiddenHarbours.World
             float e = _deepHarbourElevation;
 
             // Island: a flat plateau inside the radius, sloping down to the deep floor across the falloff.
-            float dIsland = Vector2.Distance(worldPos, _islandCenter);
+            float dIsland = IslandDistance(worldPos, _islandCenter, _islandRadius, _islandRadiusY);
             float island = Lerped(dIsland, _islandRadius, _islandFalloff, _islandElevation, _deepHarbourElevation);
             if (island > e) e = island;
 
@@ -125,6 +130,23 @@ namespace HiddenHarbours.World
         }
 
         // --- pure helpers (static, testable) ----------------------------------------------------------
+
+        /// <summary>
+        /// Distance from an island centre, in units of the X radius — so the same
+        /// <see cref="Lerped"/> plateau/falloff profile draws an ELLIPSE rather than only a disc.
+        ///
+        /// <para>The Y offset is scaled by <c>radiusX / radiusY</c> before the magnitude is taken, so a
+        /// point exactly on the ellipse returns <paramref name="radiusX"/> and the beach falloff beyond
+        /// it is measured in the same units on both axes. <paramref name="radiusY"/> ≤ 0 means
+        /// "circular" and returns the plain distance — byte-identical to the original greybox
+        /// behaviour, so no existing scene or test moves.</para>
+        /// </summary>
+        public static float IslandDistance(Vector2 worldPos, Vector2 center, float radiusX, float radiusY)
+        {
+            Vector2 d = worldPos - center;
+            if (radiusY <= 0f || radiusX <= 0f) return d.magnitude;
+            return new Vector2(d.x, d.y * (radiusX / radiusY)).magnitude;
+        }
 
         /// <summary>
         /// A plateau-with-falloff profile by distance: <paramref name="inner"/> at/inside

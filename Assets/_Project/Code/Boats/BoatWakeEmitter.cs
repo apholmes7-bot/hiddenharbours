@@ -108,13 +108,10 @@ namespace HiddenHarbours.Boats
                  "SPRAY config above — this only animates it.")]
         [SerializeField] private BowWaveConfig _bowWave = BowWaveConfig.Default;
 
-        [Header("Displaced sea (ADR 0023 — the wake rides the same sea the boat rides)")]
-        [Tooltip("The wave field the wake's displaced-sea ride samples. PARITY: keep identical to " +
-                 "BoatWaveMotion / WaveFieldBridge until GameConfig unifies them (ADR 0018 §(4)) — the foam " +
-                 "must ride the same swell the hull and the drawn surface ride. The exaggeration + shore " +
-                 "band are NEVER tuned here: they arrive live from the Core DisplacedSea seam.")]
-        [SerializeField] private WaveFieldSettings _waveSettings = WaveFieldSettings.Default;
-        [SerializeField] private WaveFieldAnimatorSettings _waveAnimatorSettings = WaveFieldAnimatorSettings.Default;
+        // Displaced sea (ADR 0023 — the wake rides the same sea the boat rides): the wave field comes
+        // from GameConfig.WaveField via GameServices (ADR 0018 §(5)), so the foam rides the same swell
+        // as the hull and the drawn surface BY CONSTRUCTION, not by a parity comment. The exaggeration
+        // + shore band were never tuned here either — they arrive live from the Core DisplacedSea seam.
 
         [Header("Pool & render")]
         [Tooltip("Max live foam puffs PER BOAT. The pool is fixed and recycled — zero per-frame allocation.")]
@@ -315,7 +312,9 @@ namespace HiddenHarbours.Boats
             bool displaced = DisplacedSea.TryGet(out DisplacedSeaState sea);
             if (env != null)
             {
-                _seaAnimator.Tick(dt, s.WindVector, s.SeaState01, in _waveSettings, in _waveAnimatorSettings);
+                WaveFieldSettings waveField = GameServices.WaveField;
+                WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
+                _seaAnimator.Tick(dt, s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
                 if (displaced)
                     lift = new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
                                        sea.ShoreFadeBandMeters, sea.Exaggeration);

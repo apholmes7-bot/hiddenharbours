@@ -66,33 +66,64 @@ namespace HiddenHarbours.Core
         public static string CurrentRegionId { get; set; }
 
         /// <summary>
-        /// The shared <see cref="GameConfig"/> asset (the owner's tunables) — the travel-free read for
-        /// systems that have no serialized config reference (the code-built SellScreen, runtime-spawned
-        /// components). The composition root wires it at boot from the clock's own config, so no scene
-        /// re-wiring is needed. OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode / before
-        /// boot — consumers must null-check and fall back to the settings-struct <c>Default</c>s (which
-        /// are pinned equal to the shipped asset's values).
-        /// FLAG lead-architect: new Core contract (the freshness wiring's config seam, M1 §7.3).
+        /// The world rectangle the CURRENT region occupies — <c>RegionDef.WorldCenter</c> /
+        /// <c>WorldSizeMeters</c>, the one authored extent the sea sprite, the flat backdrop, the
+        /// shader's height bake and the displaced mesh all already read. Same writer and same
+        /// lifetime as <see cref="CurrentRegionId"/>: the active region's anchor reports it on enable
+        /// (which covers BOOT as well as a hop), and clears it on disable only if it still owns it.
+        ///
+        /// <para>Read by the camera's bounds clamp (<c>CameraFollow</c>), which lives on the
+        /// PERSISTENT core and therefore cannot carry a baked rectangle of its own — it would be the
+        /// start region's extent forever. OPTIONAL and NOT part of <see cref="Ready"/>: a zero-size
+        /// rect is "no region has reported", under which the clamp is inert.</para>
+        ///
+        /// <para>⚠️ Deliberately NOT a second place to author an extent. Anything that needs the
+        /// region's rectangle reads it from the <c>RegionDef</c> like everyone else; this is the
+        /// travel-aware relay for consumers that outlive the region scene, nothing more.</para>
+        /// FLAG lead-architect: new Core contract (sibling of the travel-aware region seam above).
+        /// </summary>
+        public static UnityEngine.Rect CurrentRegionBounds { get; set; }
+
+        /// <summary>
+        /// The owner's tuning asset, wired once by <c>GameRoot</c>. OPTIONAL and deliberately NOT part
+        /// of <see cref="Ready"/>: EditMode, a bare art scene and every test rig run without it, and
+        /// each derived read below falls back to its own <c>Default</c>, so nothing breaks unwired.
+        ///
+        /// <para><b>Read the derived policies, not this.</b> Exposed because <c>GameRoot</c> must set
+        /// it and the wave lane must reach it, but a consumer poking at arbitrary config blocks
+        /// through a global is how a service locator turns into a bag of globals. New blocks get their
+        /// own accessor, as <see cref="WaveField"/> did.</para>
+        /// FLAG lead-architect: new Core contract (the ADR 0018 §(5) settings unification).
         /// </summary>
         public static GameConfig Config { get; set; }
 
         /// <summary>
-        /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
-        /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).
-        /// Registered by the Fishing module's registrar bootstrap; OPTIONAL and NOT part of
-        /// <see cref="Ready"/> (null in EditMode / a stripped build) — consumers skip unresolvable
-        /// records rather than throwing.
-        /// FLAG lead-architect: new Core contract (the hold-persistence species seam, M1 §7.3).
+        /// The ONE wind → wave-train derivation every consumer reads (ADR 0018 §(5)): the shader
+        /// bridge, the hull rocking, the seakeeping forces, the wake, the buoys, the trap haul and the
+        /// drift weed. Falls back to <see cref="WaveFieldSettings.Default"/> with no config wired.
+        ///
+        /// <para>⚠️ <c>Config != null</c>, never <c>?.</c> or <c>??</c> — <see cref="GameConfig"/> is a
+        /// <c>UnityEngine.Object</c>, and the null-propagating operators bypass its overloaded
+        /// <c>==</c>, so a DESTROYED asset would read as non-null and throw. Compile-clean,
+        /// runtime-red.</para>
+        ///
+        /// <para>Resolved on every read rather than cached, so dragging a slider in the GameConfig
+        /// inspector during play moves the sea live — which is exactly how the owner judges it.</para>
         /// </summary>
-        public static ICatchItemFactory CatchFactory { get; set; }
+        public static WaveFieldSettings WaveField =>
+            Config != null ? Config.WaveField : WaveFieldSettings.Default;
+
+        /// <summary>The shared presentation smoother's tunables (ADR 0018 addendum), same contract as
+        /// <see cref="WaveField"/>. The SIM path does not ease — it reads the pure <c>WaveMath</c> at
+        /// game time — so this governs LOOK consumers only.</summary>
+        public static WaveFieldAnimatorSettings WaveFieldAnimator =>
+            Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
         public static void Reset()
         {
-            Config = null;
-            CatchFactory = null;
             Clock = null;
             Environment = null;
             Wallet = null;
@@ -101,6 +132,8 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
+            CurrentRegionBounds = default;
+            Config = null;
         }
     }
 }

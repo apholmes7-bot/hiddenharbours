@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>
         /// The houses. St Peters wants four farmsteads and a one-room school reverting to forest;
-        /// Nine Mile Creek and Greywick want a working village. Five presets covers both.
+        /// Nine Mile Creek and Nine Mile Creek want a working village. Five presets covers both.
         /// </summary>
         public static readonly string[] HousePresets =
         {

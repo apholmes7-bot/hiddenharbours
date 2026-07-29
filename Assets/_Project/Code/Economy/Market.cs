@@ -10,7 +10,7 @@ namespace HiddenHarbours.Economy
     /// (the price recovers). <b>Demand D is per-FishCategory</b> (a buyer can want cod more than
     /// mackerel), so supply AND demand are isolated per category — glutting cod never moves mackerel's
     /// price. A category with no override falls back to the market's baseline demand (from
-    /// <see cref="GameConfig"/> by <see cref="MarketId"/>: the cove vs Port Greywick — a reason to
+    /// <see cref="GameConfig"/> by <see cref="MarketId"/>: the cove vs Nine Mile Creek — a reason to
     /// choose where to sell, VS-16). A fuller sim (NPC fleet landings, contracts) is M2 — see
     /// design/economy-and-business.md §1.2–§1.4.
     /// </summary>
@@ -47,7 +47,7 @@ namespace HiddenHarbours.Economy
             get
             {
                 if (_config == null) return 1f;
-                return _marketId == MarketId.Greywick ? _config.MarketDemandGreywick : _config.MarketDemandCove;
+                return _marketId == MarketId.NineMileCreek ? _config.MarketDemandNineMileCreek : _config.MarketDemandCove;
             }
         }
 
@@ -121,7 +121,7 @@ namespace HiddenHarbours.Economy
         }
 
         /// <summary>Wire the market in one call (tests / editor). Mirrors the Configure pattern used
-        /// across the codebase so a Greywick market is a data choice, not a code branch.</summary>
+        /// across the codebase so a Nine Mile Creek market is a data choice, not a code branch.</summary>
         public void Configure(GameConfig config, MarketId marketId, float supplyPerSale = 1f)
         {
             _config = config;

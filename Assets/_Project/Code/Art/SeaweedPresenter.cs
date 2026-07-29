@@ -79,10 +79,10 @@ namespace HiddenHarbours.Art
         private ITidalTerrain _tickTerrain;
         private float _tickWaterLevel;
 
-        // The shared eased field (⚠ parity: keep both settings at the shared Defaults — see class doc).
+        // The shared eased field. Its settings come from GameConfig.WaveField via GameServices
+        // (ADR 0018 §(5)) — the weed drifts on the same sea the water is drawn from, by construction
+        // rather than by a comment asking two copies to be kept in step.
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
-        private WaveFieldSettings _settings = WaveFieldSettings.Default;
-        private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
 
         private Sprite _greyboxBlob;
 
@@ -191,8 +191,10 @@ namespace HiddenHarbours.Art
             }
 
             EnvironmentSample sample = env.Sample();
+            WaveFieldSettings field = GameServices.WaveField;
+            WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
-                                               in _settings, in _animatorSettings);
+                                               in field, in smoothing);
 
             Vector2 flow = sample.CurrentVector;
             Vector2 wind = AmbientGlobals.Wind;

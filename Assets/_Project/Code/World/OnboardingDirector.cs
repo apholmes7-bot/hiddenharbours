@@ -10,7 +10,7 @@ namespace HiddenHarbours.World
     /// <list type="number">
     ///   <item>meet Aunt Ginny (she teaches the loop),</item>
     ///   <item>dig CLAMS on the bared low-water flats,</item>
-    ///   <item>walk the sandbar to Greywick + buy a COD LICENCE,</item>
+    ///   <item>walk the sandbar to Nine Mile Creek + buy a COD LICENCE,</item>
     ///   <item>buy a ROD,</item>
     ///   <item>save and BUY the damaged dory at the shipwright,</item>
     ///   <item>pay to REPAIR her,</item>

@@ -373,6 +373,25 @@ Shader "HiddenHarbours/Water"
         _ReflectionSunStreak   ("Reflection sun streak intensity", Range(0,2)) = 0.9
         _ReflectionSunSharp    ("Reflection sun streak sharpness", Float) = 6.0
 
+        [Header(Object reflections (ADR 0027 num 8)   the HHReflect list warped by the wave field)]
+        // Boats, wharf and bankside trees REFLECT in the water. _HHReflectTex is a fourth filtered
+        // renderer list (LightMode HHReflect, gated on ReflectionRegistry.RenderingLayer) drawn
+        // MIRRORED about each renderer's published ground-contact pivot (ADR 0026) by
+        // IsoFacetHullFeature; this shader samples it with the lookup WARPED by the SAME
+        // WaveFieldSample() the hull rides, so a reflection wobbles on the very crests the boat is
+        // riding. No new sim uniform: the warp reuses the shared field (ADR 0018).
+        //   ⚠️ THE LOOKUP SNAPS IN WORLD SPACE, never screen/RT space. The RT is screen-space by
+        //   nature, and with CameraFollow panning behind the boat a screen-snapped lookup CRAWLS on
+        //   every pan — the one artefact that would make this read as a screen filter instead of a
+        //   reflection. Twin: WaterReflectionWarp.WarpedSampleWorld (and ScreenSnappedSampleWorld,
+        //   which exists only so the tests can measure the crawl it causes).
+        //   Sea-state response is INHERITED, not re-invented: ReflectionStrength()/Sharpness() above.
+        //   Zero cost when idle: with no ReflectiveObject alive the feature enqueues no pass, the
+        //   fallback 1x1 clear texture is bound, and the block below is skipped at strength 0.
+        _ObjectReflectStrength ("Object reflection strength (0 = off / today)", Range(0,1)) = 0.0
+        _ObjectReflectWarp     ("Object reflection wave warp (m per unit slope)", Float) = 0.35
+        _ObjectReflectSink     ("Object reflection sink with depth (0 = no fade)", Range(0,1)) = 0.35
+
         [Header(Sky CONTENT reflection (clouds   moon glitter   stars   day night driven))]
         // This is a three-quarter top-down game: the player never sees the sky directly, so the WATER's reflection is the
         // ONLY place the sky appears. On top of the sky-COLOUR mirror + sun glint above, this reflects SKY
@@ -495,25 +514,44 @@ Shader "HiddenHarbours/Water"
         _PaletteShallow ("Palette anchor   shallow", Color) = (0.34, 0.60, 0.62, 1)
         _PaletteFoam    ("Palette anchor   foam", Color)    = (0.92, 0.96, 0.98, 1)
 
-        [Header(See through shallows and day gated caustics (Arc C   col.a plus col.rgb only))]
-        // TWO owner-opt-in shallow-water effects, both default OFF (today's look byte-identical):
-        //  (1) SEE-THROUGH SHALLOWS lowers col.a in a thin band right at the shore so the SEABED sprite
-        //      drawn behind (lower sorting) BLEEDS THROUGH the transparent water (Blend SrcAlpha
-        //      OneMinusSrcAlpha). Only col.a is touched, and only AFTER the depth-colour block settles alpha
-        //      and BEFORE the shoreline foam re-opacifies it — never depth/clip/_WaterLevel/the sim (P1, rule 5).
-        //  (2) DAY-GATED CAUSTICS multiplies the existing shallow caustic add by a DAY factor
-        //      (saturate(_SunElevation): peaks at noon, naturally 0 at night) so the sun-dappled light nets
-        //      only show by day. When the day/night cycle is NOT running (_DayNightTint sum ~ 0: editor /
-        //      bare art scene) it treats the world as full day — the same "unset" convention NightFactor /
-        //      the palette grade use (NOT _SunElevation == 0, which is a real horizon value at sunrise/sunset).
-        // Because see-through lowers alpha in the SAME shallow band the caustics live in, the lowered alpha
-        // partly FADES the caustic-lit water under the blend — keep _ShallowMinAlpha conservative (> 0.5: the
-        // seabed shows UNGRADED so it must read as a HINT, not a hole) and optionally bias caustics deeper.
-        _ShallowTranslucency  ("Shallow see-through amount (0 = off / today)", Range(0,1)) = 0.0
-        _ShallowSeeThroughDepth("Shallow see-through band depth (m)", Float) = 0.6
-        _ShallowMinAlpha      ("Shallow min alpha at the waterline (keep above 0.5)", Range(0,1)) = 0.65
+        [Header(Day gated caustics (Arc C   col.rgb only))]
+        // DAY-GATED CAUSTICS multiplies the existing shallow caustic add by a DAY factor
+        // (saturate(_SunElevation): peaks at noon, naturally 0 at night) so the sun-dappled light nets
+        // only show by day. When the day/night cycle is NOT running (_DayNightTint sum ~ 0: editor /
+        // bare art scene) it treats the world as full day — the same "unset" convention NightFactor /
+        // the palette grade use (NOT _SunElevation == 0, which is a real horizon value at sunrise/sunset).
+        // NOTE (ADR 0027 num 7): the Arc C SEE-THROUGH SHALLOWS that used to sit here are RETIRED, not
+        // revived. _ShallowTranslucency / _ShallowSeeThroughDepth / _ShallowMinAlpha faked the bottom by
+        // LOWERING col.a so an ungraded sprite bled through the alpha blend; a scalar alpha cannot carry
+        // per-channel transmission, and the lowered alpha partly CANCELLED these caustics (the old §17.3
+        // tune-around). Seabed absorption below composites the bottom in the shader instead, so col.a
+        // stays opaque and that cancellation is gone BY CONSTRUCTION.
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+
+        [Header(Seabed absorption (ADR 0027 num 7)   the bottom seen THROUGH the column   col.rgb only)]
+        // The painted _DepthRamp stays the colour authority for the WATER BODY (ADR 0027 finding 1: a
+        // hand-painted LUT is strictly more general than any closed-form e^(-sigma d), and
+        // _DeepBlueStrength 0.45 is standing evidence the physical answer was already overridden by hand).
+        // Absorption applies ONLY to the bottom seen through the column, which the LUT cannot express at
+        // all (finding 3). Hand the shader the bottom's ALBEDO in _SeabedTex, baked over the SAME world
+        // rect as _HeightTex (_HeightWorldMin / _HeightWorldSize, ADR 0014's pattern, so NO new uniform),
+        // then transmit it by per-channel Beer-Lambert T = exp(-sigma_rgb * 2d) — path 2d because light
+        // descends and returns. Red dies first, so the depth-colour shift comes free.
+        //   PASSTHROUGH, twice over: the toggle is OFF (the whole block compiles out = byte-identical), and
+        //   inside it _Turbidity = 0 skips the block anyway. sigma = 0 means "no absorption model", NOT
+        //   "perfectly clear water" (which would show the bottom at full strength everywhere) — clear water
+        //   is not a sea state; useful sigma starts near 0.05 (design doc §17.7).
+        //   _Turbidity is MOOD-EASED (ADR 0017), so its per-weather values live in the eight
+        //   Art/Materials/WaterPresets materials, not here — that is what makes a murky sea a DERIVED
+        //   state instead of a hand-picked colour. The per-channel RATIO stays authored art here.
+        // Twin: WaterAbsorption (Sigma / Transmission / BandTransmission / Composite) — change one,
+        // change BOTH in the same PR. col.rgb only, never depth/clip/_WaterLevel/the height read/the sim.
+        [Toggle(_USE_SEABEDTEX)] _UseSeabedTex ("Use baked seabed texture", Float) = 0
+        [NoScaleOffset] _SeabedTex ("Seabed albedo over the height world rect (A equals coverage)", 2D) = "black" {}
+        _Turbidity        ("Turbidity sigma (1 per m; 0 = off / today)", Range(0,5)) = 0.0
+        _AbsorptionRatio  ("Per channel extinction ratio (rgb, red = 1)", Vector) = (1, 0.18, 0.08, 0)
+        _AbsorptionBands  ("Transmission posterize bands (0 = smooth; ON by default)", Range(0,32)) = 6
 
         // ---- ADR 0027 #2: caustics DRIVEN BY THE SHARED WAVE FIELD (default OFF = today) ---------------
         // The seabed shimmer derives from the local CURVATURE of WaveFieldSample() — brightest where the
@@ -661,6 +699,18 @@ Shader "HiddenHarbours/Water"
             TEXTURE2D(_SparkleTex);   SAMPLER(sampler_SparkleTex);
             TEXTURE2D(_DepthRamp);    SAMPLER(sampler_DepthRamp);
             TEXTURE2D(_WhitecapTex);  SAMPLER(sampler_WhitecapTex);
+            // The BAKED SEABED (ADR 0027 #7). NOT a tiling painted slot: it is baked ONCE over the
+            // _HeightTex world rect, so it is sampled by world position (not _PaintScale) with the
+            // importer's Point filter + Clamp wrap — pixel art, and no smearing between bottom cells.
+            TEXTURE2D(_SeabedTex);    SAMPLER(sampler_SeabedTex);
+            // ADR 0027 #8: the OBJECT REFLECTION target, written by IsoFacetHullFeature's fourth
+            // renderer list and published globally. Read with Load() at integer pixel coordinates —
+            // it is exactly camera-render-resolution, so the map is 1:1 and Load shares SV_POSITION's
+            // coordinate convention, which sidesteps every render-target Y-flip ambiguity a uv fetch
+            // would introduce. ReflectionRegistry binds a 1x1 CLEAR fallback before the pass has ever
+            // run (an unbound sampler's grey placeholder has alpha ~0.5 and would smear a flat
+            // half-mirror over the whole sea on the first frame of every scene).
+            TEXTURE2D(_HHReflectTex);
 
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
@@ -876,6 +926,10 @@ Shader "HiddenHarbours/Water"
                 float  _ReflectionSmear;
                 float  _ReflectionSunStreak;
                 float  _ReflectionSunSharp;
+                // ADR 0027 #8 — object reflections (the HHReflect list, warped by the wave field).
+                float  _ObjectReflectStrength;
+                float  _ObjectReflectWarp;
+                float  _ObjectReflectSink;
                 // Sky-content reflection (clouds + moon glitter + stars; col.rgb-only dressing, day/night-driven).
                 float  _SkyReflectionStrength;
                 float  _CloudStrength;
@@ -923,16 +977,19 @@ Shader "HiddenHarbours/Water"
                 float4 _PaletteMid;
                 float4 _PaletteShallow;
                 float4 _PaletteFoam;
-                // See-through shallows (col.a) + day-gated caustics (col.rgb) — Arc C, all default OFF.
-                float  _ShallowTranslucency;
-                float  _ShallowSeeThroughDepth;
-                float  _ShallowMinAlpha;
+                // Day-gated caustics (col.rgb) — Arc C, default OFF. (The Arc C see-through-shallows
+                // props that sat here are RETIRED by ADR 0027 #7's seabed absorption below.)
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
                 // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
                 float  _CausticCurvatureBlend;
                 float  _CausticCurvatureStep;
                 float  _CausticCurvatureGain;
+                // ADR 0027 #7 — seabed absorption. sigma = _Turbidity (mood-eased, 1/m) x
+                // _AbsorptionRatio.rgb (fixed per-channel character). Twin: WaterAbsorption.
+                float  _Turbidity;
+                float4 _AbsorptionRatio;
+                float  _AbsorptionBands;
                 // Current drift lines (col.rgb; keyed to _FlowDir/_Flow — the tidal set) — Arc C, default OFF.
                 float  _DriftLineStrength;
                 float  _DriftLineSpeed;
@@ -977,6 +1034,45 @@ Shader "HiddenHarbours/Water"
             {
                 float ppu = max(_PixelsPerUnit, 1.0);
                 return floor(p * ppu) / ppu;
+            }
+
+            // ==== ADR 0027 #7 — seabed absorption (per-channel Beer-Lambert on the TRANSMITTED bottom) ========
+            // C#-twinned by WaterAbsorption (Sigma / Transmission / BandTransmission / Composite — change
+            // one, change BOTH in the same PR). col.rgb ONLY: it never touches depth / clip() / _WaterLevel /
+            // the height read / the sim (P1 integrity, rule 5), and it never touches the WATER's own colour —
+            // the painted _DepthRamp keeps that authority (ADR 0027 finding 1).
+            #define ABSORPTION_PATH 2.0   // light descends the column AND returns: the path is 2d, not d
+                                          // (twin: WaterAbsorption.DownAndBack). Not a tunable — turbidity
+                                          // is the dial (rule 6).
+            #define ABSORPTION_EPS  1e-4  // below this TOTAL sigma the block is skipped: the exact
+                                          // sigma = 0 passthrough (twin: WaterAbsorption.MinSigmaSum).
+
+            // sigma (1/m, per channel) = ONE mood-eased turbidity scalar x the fixed per-channel ratio.
+            // Factoring it this way is what lets ADR 0017 ease turbidity per weather through a FLOAT in
+            // WaterSurface.MoodFloatNames while the per-channel character stays authored art (rule 6).
+            float3 AbsorptionSigma()
+            {
+                return max(_Turbidity, 0.0) * max(_AbsorptionRatio.rgb, 0.0);
+            }
+
+            // T = exp(-sigma * 2d): monotone DECREASING in depth on every channel, 1 at the waterline
+            // (zero water = you see the ground, which is what §17.1 was faking), and -> 0 with depth in the
+            // per-channel order sigma dictates (red first at the default ratio, so the depth-colour shift
+            // comes free). `depth` is READ-ONLY here.
+            float3 AbsorptionTransmission(float3 sigma, float depth)
+            {
+                return exp(-sigma * (ABSORPTION_PATH * max(depth, 0.0)));
+            }
+
+            // Posterize transmission into N discrete steps (the shader's existing _DepthBands/_SpecBands
+            // idiom), DEFAULT ON — the ADR's "every layer carries its own quantization control", which
+            // matters here precisely because _DepthBands is 0 so the base ramp contributes no pixel
+            // character of its own. Quantizing T (not depth) makes the steps crowd where the bottom is
+            // actually fading. bands < 1 = smooth.
+            float3 AbsorptionBand(float3 t, float bands)
+            {
+                if (bands < 1.0) return t;
+                return floor(saturate(t) * bands + 0.5) / bands;
             }
 
             // ==== ADR 0027 #4 + #9 — band scaling with sea state + dispersion-derived speeds ==================
@@ -1767,6 +1863,90 @@ Shader "HiddenHarbours/Water"
                 float agitation = max(_Chop, 0.0) * max(_ReflectionChopScatter, 0.0)
                                 + saturate(_Roughness) * max(_ReflectionWindScatter, 0.0);
                 return saturate(1.0 - agitation);
+            }
+
+            // ==== ADR 0027 #8 — OBJECT REFLECTIONS: the HHReflect list, warped by the shared wave field ========
+            // IsoFacetHullFeature draws every reflective renderer MIRRORED about its own published
+            // ground-contact pivot (ADR 0026) into _HHReflectTex — a fourth filtered renderer list, one
+            // ARGBHalf target at camera render resolution, zero cost when nothing is reflective. This reads
+            // it back with the lookup displaced by the SAME WaveFieldSample() the hull is riding, so a
+            // reflection wobbles on the very crests the boat rides. No new sim uniform (ADR 0018 reused).
+            //
+            // ⚠️ THE LOOKUP SNAPS IN WORLD SPACE. A render target is screen-space by nature, and that is
+            // exactly the trap: with CameraFollow panning continuously behind the boat, a lookup quantized on
+            // the RT's own grid CRAWLS on every pan — the one artefact that would make this read as a screen
+            // filter rather than a reflection. Snapping the SAMPLE POSITION on the world PPU grid (Pixelize,
+            // the crawl law §3) means a reflection cell belongs to a place on the water and stays there while
+            // the camera moves. Twin: WaterReflectionWarp.WarpedSampleWorld — and its deliberately wrong
+            // sibling ScreenSnappedSampleWorld, which exists only so the tests can MEASURE the crawl.
+            //
+            // ⚠️ Read with Load(), not a uv sample. The target is exactly camera-render-resolution so the map
+            // is 1:1, and Load shares SV_POSITION's coordinate convention — which removes the render-target
+            // Y-flip ambiguity a uv fetch would smuggle in (the class of bug that renders correctly on one
+            // graphics API and upside down on the next).
+            //
+            // Sea-state response is INHERITED from the shipped §11 curves, not re-invented: sharp on glass,
+            // broken in chop, gone in a storm. col.rgb ONLY — never depth/clip()/_WaterLevel/the height read/
+            // the sim (P1 integrity, rule 5). _ObjectReflectStrength = 0 skips the whole block.
+            //
+            // Returns the sample SPLIT (the SkyContentReflection idiom):
+            //   `pre`  — rgb = the PREMULTIPLIED reflected surface, a = its coverage. The caller composites
+            //            it with the premultiplied over-operator BEFORE the palette grade, so a reflected
+            //            hull COVERS the sky mirror under it and dims with the night like the rest of the sea.
+            //   `post` — the PRE-COMPENSATED light content (a lit wheelhouse), ADDED after the grade exactly
+            //            as the moon glitter is; otherwise the day/night multiply crushes it to ~3%.
+            // The split needs no flag channel: an ordinary reflection's premultiplied rgb can never exceed
+            // its coverage, and a compensated one exceeds it by precisely its light content (see
+            // HHReflectPremultiply; twin: WaterReflectionWarp.SplitLitShare).
+            void ObjectReflection(float2 worldXY, float2 waveSlope, float2 screenPx, float depth,
+                                  out float4 pre, out float3 post)
+            {
+                pre = 0.0;
+                post = 0.0;
+                if (_ObjectReflectStrength <= 0.001) return;
+
+                float strength = ReflectionStrength() * saturate(_ObjectReflectStrength);
+                if (strength <= 0.001) return;
+
+                // WHERE on the water this fragment reads its reflection from: displaced by the wave slope,
+                // then snapped on the WORLD grid. Sharpness widens the displacement as the sea breaks up —
+                // the same "a rough sea scatters the mirror" law the sky reflection already follows.
+                float scatter = 2.0 - ReflectionSharpness();          // 1 at glass -> 2 when fully broken
+                float2 sampleWorld = Pixelize(worldXY + waveSlope * _ObjectReflectWarp * scatter);
+
+                // World delta -> PIXEL delta. For this project's unrotated orthographic camera the view
+                // matrix is a pure translation, so the projection's diagonal alone converts metres to clip,
+                // and _ScreenParams turns clip into pixels. _ProjectionParams.x carries the render-target Y
+                // flip (it is -1 when the projection is flipped), which is what keeps the wobble leaning the
+                // same way on every graphics API.
+                float2 pxPerMetre = float2(UNITY_MATRIX_P[0][0] * _ScreenParams.x,
+                                           UNITY_MATRIX_P[1][1] * _ScreenParams.y) * 0.5;
+                float2 dPix = (sampleWorld - worldXY) * pxPerMetre;
+                dPix.y *= _ProjectionParams.x;
+
+                int2 px = int2(screenPx + dPix);
+                // Off-target reads would wrap or clamp a stale edge column across the sea; a reflection that
+                // has left the screen simply is not there.
+                if (any(px < 0) || any(px >= int2(_ScreenParams.xy))) return;
+                float4 refl = LOAD_TEXTURE2D(_HHReflectTex, px);
+
+                // A reflection SINKS as the water deepens under it: a mirrored hull reads crisply against a
+                // shallow bottom and dissolves over the dark. Cheap, optional (0 = no fade), and it keeps the
+                // reflective set from painting hard silhouettes across open water.
+                float sink = 1.0 - saturate(_ObjectReflectSink) * saturate(depth * 0.25);
+
+                // The premultiplied split (twin: WaterReflectionWarp.SplitLitShare). min/max against the
+                // coverage separates ordinary reflected surface from pre-compensated light content with no
+                // flag channel, no second target and no extra uniform. By day the compensation factor is ~1,
+                // so a lit source stays under coverage and the whole sample lands in `pre` — daylight is
+                // unchanged, which is correct rather than a special case.
+                float  cov      = saturate(refl.a);
+                float3 ordinary = min(refl.rgb, cov.xxx);
+                float3 lit      = max(refl.rgb - cov.xxx, 0.0);
+                float  weight   = strength * sink;
+
+                pre  = float4(ordinary * weight, cov * weight);
+                post = lit * weight;
             }
 
             // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
@@ -2631,21 +2811,48 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _DeepBlueColor.rgb, deepT * saturate(_DeepBlueStrength));
                 }
 
-                // ---- SEE-THROUGH SHALLOWS (col.a ONLY; Arc C, default OFF) -------------------------------------
-                // Lower the water's ALPHA in a thin band right at the shore so the SEABED sprite drawn behind
-                // the Sea plane (lower sorting) bleeds through under the Blend SrcAlpha OneMinusSrcAlpha above.
-                // Applied HERE — after whatever alpha the depth block settled (the _USE_DEPTHRAMP sample OR the
-                // _ShallowColor/_DeepColor lerp), and BEFORE the shoreline foam re-opacifies col.a (the max()
-                // below) so the wet foam edge stays solid. `depth` is READ-ONLY here (the sim waterline is
+            #if defined(_USE_SEABEDTEX)
+                // ---- SEABED ABSORPTION (col.rgb ONLY; ADR 0027 #7 — SUPERSEDES the Arc C see-through) --------
+                // The bottom is composited HERE by the shader itself, so col.a stays OPAQUE and the alpha-blend
+                // dependency §17.1 relied on is gone. That is what dissolves §17.3's caustic/see-through
+                // cancellation BY CONSTRUCTION: the caustic add below is no longer faded by a lowered alpha.
+                //
+                // _SeabedTex is baked over the SAME world rect as _HeightTex (ADR 0014's _HeightWorldMin /
+                // _HeightWorldSize), so the bottom is registered to the elevation that decides how deep it is
+                // and NO new uniform is needed. Its ALPHA is COVERAGE, not opacity: where the owner's terrain
+                // painted no ground tile (the Deep / Channel types deliberately CLEAR theirs) coverage is 0 and
+                // nothing is composited — open water with no baked bed is unchanged by construction.
+                //
+                // The sample coordinate is snapped on the WORLD PPU grid (Pixelize — the crawl law, §3), so a
+                // bottom cell belongs to a place on the seabed and stays there while the camera pans; the
+                // texture itself is imported Point + Clamp so nothing smears between cells.
+                //
+                // Applied AFTER the depth block settles the base colour (the _USE_DEPTHRAMP sample OR the
+                // _ShallowColor/_DeepColor lerp) and after the deep-blue enrichment, and BEFORE every additive
+                // layer — so swell tint, fbm, spec, caustics and foam all ride ON TOP of the composited bottom,
+                // which is where they physically belong. depth/depthC are READ-ONLY (the sim waterline is
                 // untouched — never depth/clip/_WaterLevel/the height read; P1 integrity, CLAUDE.md rule 5).
-                // _ShallowTranslucency = 0 is an EXACT passthrough (col.a unchanged = today's opaque look).
-                if (_ShallowTranslucency > 0.001)
+                // _Turbidity = 0 skips the whole block — the EXACT passthrough (and the toggle above compiles
+                // it out entirely on the shipped material).
+                float3 absSigma = AbsorptionSigma();
+                if (dot(absSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
                 {
-                    // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the
-                    // see-through band wiggles WITH the visible shore instead of following the clean iso-contour.
-                    float shallowT = 1.0 - saturate(depthC / max(_ShallowSeeThroughDepth, 1e-3));  // 1 at edge -> 0 deep
-                    col.a *= lerp(1.0, _ShallowMinAlpha, shallowT * saturate(_ShallowTranslucency));
+                    // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the bottom
+                    // fades WITH the visible shore instead of following the clean iso-contour.
+                    float2 bedP  = Pixelize(worldXY);
+                    float2 bedUV = (bedP - _HeightWorldMin.xy)
+                                 / max(abs(_HeightWorldSize.xy), float2(1e-3, 1e-3));
+                    // Off-rect reads would smear the Clamp edge texel across the whole sea — zero the coverage
+                    // instead, so a region larger than its bake simply has no bottom outside it.
+                    float bedIn = (bedUV.x >= 0.0 && bedUV.x <= 1.0 &&
+                                   bedUV.y >= 0.0 && bedUV.y <= 1.0) ? 1.0 : 0.0;
+                    half4 bed = SAMPLE_TEXTURE2D(_SeabedTex, sampler_SeabedTex, bedUV);
+
+                    float3 bedT = AbsorptionTransmission(absSigma, max(depthC, 0.0));
+                    bedT = AbsorptionBand(bedT, _AbsorptionBands);
+                    col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }
+            #endif
 
                 // Tint the base by the surface so the swell is visible even in flat light.
                 col.rgb += swell * _SurfaceTint * 0.15;
@@ -2995,6 +3202,19 @@ Shader "HiddenHarbours/Water"
                 SkyContentReflection(worldXY, surf, swellCrest, t, skyDayRGB, skyNightRGB);
                 col.rgb += skyDayRGB;
 
+                // ---- OBJECT REFLECTIONS (ADR 0027 #8; col.rgb only) --------------------------------------------
+                // OVER the sky mirror (a boat reads on top of reflected cloud — hence the premultiplied
+                // over-operator here rather than an add) and UNDER the foam below (whitecaps read on top of the
+                // boat). PRE-grade, so it dims with the night like the rest of the sea — except the night-lit
+                // share, which is held back and added AFTER the palette grade with the moon glitter (§11.6).
+                // The lookup is warped by the SAME wave field the hull rides and snapped on the WORLD grid.
+                // Zero cost at the shipped default (_ObjectReflectStrength = 0 returns immediately), and zero
+                // cost even when dialled in until something in the scene carries a ReflectiveObject.
+                float4 objReflPre;
+                float3 objReflPost;
+                ObjectReflection(worldXY, waveSlope, IN.positionCS.xy, depth, objReflPre, objReflPost);
+                col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb;
+
                 // ---- layer 3 foam fringe (depth ~ 0 band that hugs the moving waterline) ----------------------
                 // ALWAYS-ON swash: a cosmetic, _Time-driven depth offset that advances/recedes the wet edge.
                 // GATED to the depth~0 band (full at the wet edge, 0 by ~2x the foam width) and applied ONLY
@@ -3340,7 +3560,14 @@ Shader "HiddenHarbours/Water"
                 // The beam's WARM TINT is the cone weight × _BoatLightColor × _BoatLightTintAmount — a faint warmth
                 // biased to the lit pool, NOT the old colour slab; the REVEAL (multiply-lift) already happened above.
                 float3 beamTint = _BoatLightColor.rgb * (beamW * max(_BoatLightTintAmount, 0.0));
-                float3 lightContent = beamTint + skyNightRGB + RainRings(worldXY, dt, t);
+                // ADR 0027 #8: the NIGHT-LIT share of an object reflection joins this bucket for exactly the
+                // reason the moon glitter does. A lit wheelhouse reflected in black water is LIGHT content;
+                // left in the pre-grade composite the downstream multiply would crush it to ~3% and the boat
+                // would appear to have doused her lamps in her own reflection. Ordinary reflected surfaces
+                // (hull planking, a tree, a wharf pile) are NOT light and stay pre-grade, dimming with the
+                // sea — that split is `post` vs `pre` from ObjectReflection, and it is 0 here by day because
+                // the compensation factor is ~1 then and the whole sample lands in `pre`.
+                float3 lightContent = beamTint + skyNightRGB + objReflPost + RainRings(worldXY, dt, t);
                 col.rgb += (dnSum > 1e-3)
                     ? lightContent / max(_DayNightTint.rgb,
                                          float3(DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL, DN_COMP_MIN_CHANNEL))
@@ -3372,6 +3599,7 @@ Shader "HiddenHarbours/Water"
             #pragma shader_feature_local _ _USE_SPARKLETEX
             #pragma shader_feature_local _ _USE_DEPTHRAMP
             #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma shader_feature_local _ _USE_SEABEDTEX
             #pragma multi_compile_instancing
             ENDHLSL
         }
@@ -3416,6 +3644,7 @@ Shader "HiddenHarbours/Water"
             #pragma shader_feature_local _ _USE_SPARKLETEX
             #pragma shader_feature_local _ _USE_DEPTHRAMP
             #pragma shader_feature_local _ _USE_WHITECAPTEX
+            #pragma shader_feature_local _ _USE_SEABEDTEX
             #pragma multi_compile_instancing
 
             // ==== THE DISPLACED VERTEX STAGE (ADR 0023) ===============================================

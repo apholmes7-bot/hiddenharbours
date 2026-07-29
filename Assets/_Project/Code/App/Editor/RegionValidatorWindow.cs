@@ -27,7 +27,7 @@ namespace HiddenHarbours.App.Editor
     /// <c>SerializedObject</c> is used only to READ private fields (never Apply); no scene is marked
     /// dirty, no asset written.</para>
     ///
-    /// <para><b>What it checks</b> (each derived from how the converged St Peters/Greywick region model
+    /// <para><b>What it checks</b> (each derived from how the converged St Peters/Nine Mile Creek region model
     /// actually wires — the builders are the reference):
     /// region data (a <see cref="RegionDef"/> naming this scene, registered in Build Settings) ·
     /// the tidal seabed (an <see cref="ITidalTerrain"/> present — else walkability/boat-grounding are
@@ -45,7 +45,7 @@ namespace HiddenHarbours.App.Editor
     ///
     /// <para>The tide swing is read from the region's own authored profile WIDENED by the start
     /// region's (the live tide is the start scene's until per-region re-pointing lands — the
-    /// GreywickBuilder caveat). No thresholds are invented: wet/dry is the sim's rule over authored
+    /// NineMileCreekBuilder caveat). No thresholds are invented: wet/dry is the sim's rule over authored
     /// values; the few layout tolerances are named editor-slack constants below.</para>
     /// </summary>
     public sealed class RegionValidatorWindow : EditorWindow
@@ -383,7 +383,7 @@ namespace HiddenHarbours.App.Editor
                         "Without a TidalTerrain / RectTidalTerrain / PaintedTidalTerrain, on-foot " +
                         "walkability and boat grounding are switched OFF while the shader still draws " +
                         "moving water — what you see stops matching what you can walk/sail (the exact gap " +
-                        "the Greywick/Cove convergence closed). Add one, or re-run this region's builder.",
+                        "the Nine Mile Creek/Cove convergence closed). Add one, or re-run this region's builder.",
                         water);
                 else
                     Add(Verdict.Warn, SecTide,
@@ -587,7 +587,7 @@ namespace HiddenHarbours.App.Editor
 
             // Creation-order sanity (the known toggle-return quirk): the terrain root should sit ABOVE
             // the Sea root so, when a visited region's scene is toggled back on, the terrain registers
-            // BEFORE the Sea re-bakes its seabed (scene roots activate in order — the Greywick builder
+            // BEFORE the Sea re-bakes its seabed (scene roots activate in order — the Nine Mile Creek builder
             // creates them terrain-first for exactly this reason).
             if (terrain != null && bakes &&
                 (source == WaterSurface.DepthSource.Auto || source == WaterSurface.DepthSource.TidalTerrain))

@@ -130,9 +130,8 @@ namespace HiddenHarbours.Fishing
                  "rope leaves on that side), Y straight up. Tune to land the rope in the drawn fists.")]
         [SerializeField] private Vector2 _ropeHandOffset = new Vector2(0.35f, 0.9f);
 
-        [Header("Wave field (parity: keep identical to the shader bridge / BoatWaveMotion — see BoatWaveMotion)")]
-        [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
-        [SerializeField] private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
+        // Wave field: GameConfig.WaveField via GameServices (ADR 0018 §(5)) — the hauled pot rides the
+        // same sea as the boat it is being hauled onto.
 
         [Header("Keys (dev only — replaced by the InputService later, ui-ux)")]
         [Tooltip("Start hauling the nearest ready trap in reach.")]
@@ -488,7 +487,9 @@ namespace HiddenHarbours.Fishing
             _hasLastTime = true;
 
             EnvironmentSample sample = env.Sample();
-            WaveTrains trains = _animator.Tick(gameDt, sample.WindVector, sample.SeaState01, in _settings, in _animatorSettings);
+            WaveFieldSettings field = GameServices.WaveField;
+            WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
+            WaveTrains trains = _animator.Tick(gameDt, sample.WindVector, sample.SeaState01, in field, in smoothing);
             WaveSample wave = _animator.Sample((Vector2)_hauling.transform.position);
             float height = wave.Height;
 

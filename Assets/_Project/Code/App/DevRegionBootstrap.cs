@@ -4,9 +4,9 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.App
 {
     /// <summary>
-    /// DEV-ONLY bootstrap for pressing Play directly in a REGION scene (Greywick etc. — scenes that
+    /// DEV-ONLY bootstrap for pressing Play directly in a REGION scene (Nine Mile Creek etc. — scenes that
     /// normally receive the persistent core from the origin/start scene and therefore contain no
-    /// player). The owner's iteration bug: "when building the greywick scene and starting there no
+    /// player). The owner's iteration bug: "when building the Nine Mile Creek scene and starting there no
     /// character loads". The scene builder bakes a minimal, self-contained DEV CORE (services + camera
     /// + a walkable, fishing-capable player at a sensible spawn) as an <b>inactive</b> root and points
     /// this component at it; on Play this component decides its fate:

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9c4fb6be8dd46eba08510dde87bace3, type: 3}
-  m_Name: PortGreywick
+  m_Name: NineMileCreek
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
-  Id: region.port_greywick
-  DisplayName: Port Greywick
+  Id: region.nine_mile_creek
+  DisplayName: Nine Mile Creek
   Description: 'The market town: a deep, sheltered harbour of weathered clapboard behind a stone breakwater. Where you sell your catch, buy a bigger boat, and the coast''s business gets done - services, not a fishing ground.'
-  SceneName: Greywick
+  SceneName: NineMileCreek
   UnlockFlag:
   IsDeepHarbour: 1
   HarbourDepthMeters: 6

@@ -28,6 +28,12 @@ namespace HiddenHarbours.App
         [SerializeField] private EnvironmentService _environment;
         [SerializeField] private PlayerWallet _wallet;
 
+        [Tooltip("The owner's tuning asset. Optional — every block falls back to its own Default when " +
+                 "unwired — but it is what carries GameConfig.WaveField to the sea, so the shader " +
+                 "bridge, the hull rocking and the seakeeping forces all read the ONE derivation " +
+                 "(ADR 0018 §(5)).")]
+        [SerializeField] private GameConfig _config;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -35,10 +41,11 @@ namespace HiddenHarbours.App
             GameServices.Clock = _clock;
             GameServices.Environment = _environment;
             GameServices.Wallet = _wallet;   // optional in the greybox
-            // The shared tunables asset, borrowed from the clock's own reference so existing scenes need
-            // no re-wiring (the clock cannot run without it). Read by config-less consumers (the
-            // freshness clock's sell gate, runtime-spawned components) through GameServices.Config.
-            GameServices.Config = _clock != null ? _clock.Config : null;
+            // The explicit reference wins; an unwired scene borrows the clock's own config (the clock
+            // cannot run without one), so a stale scene still reaches the owner's tunables rather than
+            // silently running every block on its C# Default. Unity fake-null: `!= null`, never `??`.
+            GameServices.Config = _config != null ? _config
+                                : _clock != null ? _clock.Config : null;
 
             if (!GameServices.Ready)
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +
