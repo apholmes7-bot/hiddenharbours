@@ -10,9 +10,13 @@ namespace HiddenHarbours.Core
     [CreateAssetMenu(menuName = "Hidden Harbours/Game Config", fileName = "GameConfig")]
     public class GameConfig : ScriptableObject
     {
+        /// <summary>The day length the clock ships with — the single fallback consumers use when no
+        /// config asset is wired (EditMode, a bare test rig). One constant, never a scattered 1200.</summary>
+        public const float DefaultSecondsPerDay = 1200f;
+
         [Header("Clock")]
         [Tooltip("Real seconds per in-game day. 1200 = a 20-minute day.")]
-        public float SecondsPerDay = 1200f;
+        public float SecondsPerDay = DefaultSecondsPerDay;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = 28;
         [Tooltip("Which weekday is Market Day at Greywick (0 = Monday).")]
@@ -142,6 +146,12 @@ namespace HiddenHarbours.Core
                  "factor to 0 to go back to weather-blind fishing, where a gale plays exactly like a " +
                  "flat calm.")]
         public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
+
+        [Header("Freshness & rot (M1 §7.3 — the clock on every catch)")]
+        [Tooltip("How fast each storage mode rots a landed catch, and how far gone a catch can be " +
+                 "before no buyer will take it. The per-species base rate lives on each " +
+                 "FishSpeciesDef.SpoilPerDay; these are the world-policy dials on top of it.")]
+        public FreshnessSettings Freshness = FreshnessSettings.Default;
 
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
@@ -539,6 +549,59 @@ namespace HiddenHarbours.Core
             InBandAffinity = 2.0f,
             OffBandAffinity = 0.5f,
             BottomWindowAffinity = 2.5f,
+        };
+    }
+
+    /// <summary>
+    /// FRESHNESS &amp; ROT (<see cref="GameConfig.Freshness"/> — M1 §7.3), the owner-tunable dials of
+    /// the freshness clock, named and serializable so rot is tuned on the config asset with no code
+    /// (rule 6). The same Core-policy / feature-consumer split as <see cref="RodFightSettings"/>: the
+    /// pure maths that consumes them is <see cref="Freshness"/> (Core), fed a <see cref="SpoilPolicy"/>
+    /// built from these fields via <see cref="Policy"/>.
+    ///
+    /// <para><b><see cref="Default"/> must mirror <see cref="SpoilPolicy.Default"/></b> — the shipped
+    /// GameConfig.asset predates this block, so the C# defaults here ARE the live game until the owner
+    /// re-saves the asset; keeping them equal to the Core policy default means the maths and the config
+    /// can never disagree silently (test-pinned).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FreshnessSettings
+    {
+        [Tooltip("Rate scale while a catch sits IN THE OPEN (a bucket on the wharf, a bare hold). " +
+                 "1 = the species' own SpoilPerDay; this is the reference rate the cold modes beat.")]
+        [Min(0f)] public float AmbientRateMultiplier;
+
+        [Tooltip("Rate scale while KEPT ALIVE (shellfish in a wet bucket). 0 = fully arrested — the " +
+                 "M1 default; raise it later to give live holding a slow attrition without touching code.")]
+        [Min(0f)] public float LiveRateMultiplier;
+
+        [Tooltip("Rate scale while FROZEN (Ginny's freezer). 0 = fully arrested; the freezer never " +
+                 "runs out — its limit is WHERE it is (home), not how long it holds.")]
+        [Min(0f)] public float FrozenRateMultiplier;
+
+        [Tooltip("Rate scale while ON ICE and the ice still holds. 0 = ice stops rot dead while it " +
+                 "lasts; raise it slightly to make ice a strong slow rather than a stop. What makes ice " +
+                 "interesting either way is that it RUNS OUT — the melt lives on the container Def.")]
+        [Min(0f)] public float IcedRateMultiplier;
+
+        [Tooltip("The spoil (0..1) at which NO buyer will take a catch at any price — it is rubbish, " +
+                 "still occupying hold space until dumped. 0.9 = refused while visibly off but before " +
+                 "liquid; 1 = sellable right up to the instant it is gone.")]
+        [Range(0f, 1f)] public float UnsellableSpoil;
+
+        /// <summary>These dials as the Core <see cref="SpoilPolicy"/> the freshness maths consumes.</summary>
+        public SpoilPolicy Policy => new SpoilPolicy(AmbientRateMultiplier, LiveRateMultiplier,
+                                                     FrozenRateMultiplier, IcedRateMultiplier,
+                                                     UnsellableSpoil);
+
+        /// <summary>Mirrors <see cref="SpoilPolicy.Default"/> exactly (see the struct remarks).</summary>
+        public static FreshnessSettings Default => new FreshnessSettings
+        {
+            AmbientRateMultiplier = 1f,
+            LiveRateMultiplier    = 0f,
+            FrozenRateMultiplier  = 0f,
+            IcedRateMultiplier    = 0f,
+            UnsellableSpoil       = 0.9f,
         };
     }
 

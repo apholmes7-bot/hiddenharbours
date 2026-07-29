@@ -65,11 +65,23 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static string CurrentRegionId { get; set; }
 
+        /// <summary>
+        /// The shared <see cref="GameConfig"/> asset (the owner's tunables) — the travel-free read for
+        /// systems that have no serialized config reference (the code-built SellScreen, runtime-spawned
+        /// components). The composition root wires it at boot from the clock's own config, so no scene
+        /// re-wiring is needed. OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode / before
+        /// boot — consumers must null-check and fall back to the settings-struct <c>Default</c>s (which
+        /// are pinned equal to the shipped asset's values).
+        /// FLAG lead-architect: new Core contract (the freshness wiring's config seam, M1 §7.3).
+        /// </summary>
+        public static GameConfig Config { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
         public static void Reset()
         {
+            Config = null;
             Clock = null;
             Environment = null;
             Wallet = null;

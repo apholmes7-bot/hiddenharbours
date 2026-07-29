@@ -24,7 +24,17 @@ namespace HiddenHarbours.Economy
         /// <summary>₲ a single unit fetches at a given category supply AND per-category demand D
         /// (≥1, mirrors FishBuyer's rounding). Higher D holds the price up at the same supply.</summary>
         public static int UnitPrice(int baseValue, float elasticity, float supply, float demand)
-            => Mathf.Max(1, Mathf.RoundToInt(baseValue * MarketMath.PriceMultiplier(supply, elasticity, demand)));
+            => UnitPrice(baseValue, elasticity, supply, demand, 1f);
+
+        /// <summary>₲ a single unit fetches with the FRESHNESS value multiplier folded in (M1 §7.3:
+        /// fresh pays full, value falls linearly toward nothing). At multiplier 1 this is bit-identical
+        /// to the freshness-blind price. ⚠ The ≥1 floor means this multiplier alone can NEVER make a
+        /// unit worthless — refusal is a hard gate the caller applies BEFORE pricing
+        /// (<c>SpoilContext.IsSellable</c>); an unsellable unit must never reach this method.</summary>
+        public static int UnitPrice(int baseValue, float elasticity, float supply, float demand,
+                                    float valueMultiplier01)
+            => Mathf.Max(1, Mathf.RoundToInt(baseValue * MarketMath.PriceMultiplier(supply, elasticity, demand)
+                                             * Mathf.Clamp01(valueMultiplier01)));
 
         /// <summary>₲ the <paramref name="unitIndex"/>-th *additional* unit fetches (0-based), each prior
         /// unit having already glutted the market — i.e. the marginal price as you drag the slider.</summary>
@@ -34,7 +44,16 @@ namespace HiddenHarbours.Economy
         /// <summary>The marginal price of the <paramref name="unitIndex"/>-th additional unit at the
         /// category's demand D — what the demand-aware sell path charges.</summary>
         public static int MarginalPrice(int baseValue, float elasticity, float supplyBefore, int unitIndex, float demand)
-            => UnitPrice(baseValue, elasticity, supplyBefore + Mathf.Max(0, unitIndex) * SupplyPerUnit, demand);
+            => MarginalPrice(baseValue, elasticity, supplyBefore, unitIndex, demand, 1f);
+
+        /// <summary>The marginal price of one specific unit with ITS OWN freshness multiplier — two
+        /// units of the same species can carry different spoil, so the multiplier is per-unit, not
+        /// per-species. See the freshness <see cref="UnitPrice(int,float,float,float,float)"/> overload
+        /// for the floor/refusal contract.</summary>
+        public static int MarginalPrice(int baseValue, float elasticity, float supplyBefore, int unitIndex,
+                                        float demand, float valueMultiplier01)
+            => UnitPrice(baseValue, elasticity, supplyBefore + Mathf.Max(0, unitIndex) * SupplyPerUnit,
+                         demand, valueMultiplier01);
 
         /// <summary>₲ for selling <paramref name="quantity"/> units into the current supply — the running
         /// total the screen shows, summing each unit's self-glutted marginal price. This is exactly what

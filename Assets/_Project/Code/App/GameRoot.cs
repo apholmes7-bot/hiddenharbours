@@ -35,6 +35,10 @@ namespace HiddenHarbours.App
             GameServices.Clock = _clock;
             GameServices.Environment = _environment;
             GameServices.Wallet = _wallet;   // optional in the greybox
+            // The shared tunables asset, borrowed from the clock's own reference so existing scenes need
+            // no re-wiring (the clock cannot run without it). Read by config-less consumers (the
+            // freshness clock's sell gate, runtime-spawned components) through GameServices.Config.
+            GameServices.Config = _clock != null ? _clock.Config : null;
 
             if (!GameServices.Ready)
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +

@@ -18,6 +18,10 @@ namespace HiddenHarbours.Environment
         private int _lastTotalDays = -1;
         private Season _lastSeason;
 
+        /// <summary>The shared config this clock runs on — read by the composition root to wire
+        /// <see cref="GameServices.Config"/> (the clock always has it; no scene re-wiring needed).</summary>
+        public GameConfig Config => _config;
+
         public double TotalSeconds => _t;
         public GameTime Now => new GameTime(_t);
         public bool IsPaused { get; set; }
