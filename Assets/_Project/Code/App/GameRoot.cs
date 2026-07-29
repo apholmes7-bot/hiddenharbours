@@ -28,6 +28,12 @@ namespace HiddenHarbours.App
         [SerializeField] private EnvironmentService _environment;
         [SerializeField] private PlayerWallet _wallet;
 
+        [Tooltip("The owner's tuning asset. Optional — every block falls back to its own Default when " +
+                 "unwired — but it is what carries GameConfig.WaveField to the sea, so the shader " +
+                 "bridge, the hull rocking and the seakeeping forces all read the ONE derivation " +
+                 "(ADR 0018 §(5)).")]
+        [SerializeField] private GameConfig _config;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -35,6 +41,7 @@ namespace HiddenHarbours.App
             GameServices.Clock = _clock;
             GameServices.Environment = _environment;
             GameServices.Wallet = _wallet;   // optional in the greybox
+            GameServices.Config = _config;   // optional; unwired = every block on its own Default
 
             if (!GameServices.Ready)
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +

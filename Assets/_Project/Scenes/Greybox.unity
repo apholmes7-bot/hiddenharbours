@@ -1513,6 +1513,7 @@ MonoBehaviour:
   _clock: {fileID: 871937865}
   _environment: {fileID: 871937864}
   _wallet: {fileID: 871937863}
+  _config: {fileID: 11400000, guid: b5e714f27a4ccce4f869add9ff981ff8, type: 2}
 --- !u!114 &871937863
 MonoBehaviour:
   m_ObjectHideFlags: 0

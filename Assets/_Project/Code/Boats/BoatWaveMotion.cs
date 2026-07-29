@@ -51,12 +51,11 @@ namespace HiddenHarbours.Boats
     /// one field tick + one <see cref="WaveMath.Sample"/> per frame (rule 7); reads the sim only
     /// through <see cref="GameServices"/> (rule 4 — Boats references Core only).</para>
     ///
-    /// <para>⚠ <b>Settings parity (ADR 0018 §(4)).</b> <see cref="_settings"/> starts from
-    /// <see cref="WaveFieldSettings.Default"/> — the SAME defaults the Art-side WaveFieldBridge (B1)
-    /// publishes to the water shader, so the hull rocks on the same waves the player sees because
-    /// both sides derive from the same (wind, seaState01, settings). B3/GameConfig will unify the
-    /// two settings instances into ONE owner-tunable source; until then, tune the FIELD's shape
-    /// there (or identically in both places), and only the RESPONSE amplitudes here.</para>
+    /// <para><b>ONE settings instance (ADR 0018 §(5)).</b> The field's shape comes from
+    /// <c>GameConfig.WaveField</c> through <see cref="GameServices"/> — the very instance the Art-side
+    /// <c>WaveFieldBridge</c> publishes to the water shader — so the hull rocks on the waves the
+    /// player sees by construction. Tune the FIELD on the config; only the RESPONSE amplitudes (how
+    /// hard this hull answers) live here.</para>
     /// </summary>
     [DisallowMultipleComponent]
     // THE WRITER of DirectionalBoatSprite.RockFrame, so it runs FIRST of the boat's visual chain
@@ -120,8 +119,9 @@ namespace HiddenHarbours.Boats
         [Header("Smoothing (the owner's 'smooth rock, especially in calm seas')")]
         [Tooltip("Output damping (seconds, exponential time constant) on the roll/pitch/bob reads — fps-independent. ~0.2 velvets residual noise without the boat feeling laggy; 0 = raw samples.")]
         [SerializeField] private float _motionSmoothingSeconds = 0.2f;
-        [Tooltip("The wave-field animator's own smoothing: how languidly the train parameters chase the drifting weather, and the glass snap floor (glass is sacred — see WaveFieldAnimator).")]
-        [SerializeField] private WaveFieldAnimatorSettings _animatorSettings = WaveFieldAnimatorSettings.Default;
+        // The wave-field animator's smoothing comes from GameConfig.WaveFieldAnimator via GameServices
+        // (ADR 0018 §(5)). _motionSmoothingSeconds above stays per-component: it is this component's
+        // OUTPUT damping on the roll/pitch/bob read, not a property of the sea.
 
         [Header("Wiring (the builder sets these)")]
         [Tooltip("The child VISUAL transform the motion is applied to (e.g. the FishingBoatVisual sprite child). NEVER the physics root — this is visual-only; the body and colliders must not move. Null = the component idles.")]
@@ -138,8 +138,9 @@ namespace HiddenHarbours.Boats
         // scene-serialised component lazily wraps its legacy _directionalSprite field instead.
         private IBoatHullPresenter _presenter;
 
-        [Header("Wave field (parity: keep identical to the shader bridge until GameConfig unifies them — see class doc)")]
-        [SerializeField] private WaveFieldSettings _settings = WaveFieldSettings.Default;
+        // Wave field: GameConfig.WaveField via GameServices (ADR 0018 §(5)) — the hull now rocks on the
+        // shader bridge's sea by construction, which is what the old "keep identical" header asked for
+        // and could not enforce.
 
         private readonly WaveFieldAnimator _animator = new WaveFieldAnimator();
         private bool _hasLastTime;
@@ -251,7 +252,9 @@ namespace HiddenHarbours.Boats
             if (env != null)
             {
                 EnvironmentSample sample = env.Sample();
-                _animator.Tick(dt, sample.WindVector, sample.SeaState01, in _settings, in _animatorSettings);
+                WaveFieldSettings field = GameServices.WaveField;
+                WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
+                _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
                 wave = _animator.Sample((Vector2)transform.position);
             }
             else

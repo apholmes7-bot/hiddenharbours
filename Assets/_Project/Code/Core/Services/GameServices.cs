@@ -65,6 +65,41 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static string CurrentRegionId { get; set; }
 
+        /// <summary>
+        /// The owner's tuning asset, wired once by <c>GameRoot</c>. OPTIONAL and deliberately NOT part
+        /// of <see cref="Ready"/>: EditMode, a bare art scene and every test rig run without it, and
+        /// each derived read below falls back to its own <c>Default</c>, so nothing breaks unwired.
+        ///
+        /// <para><b>Read the derived policies, not this.</b> Exposed because <c>GameRoot</c> must set
+        /// it and the wave lane must reach it, but a consumer poking at arbitrary config blocks
+        /// through a global is how a service locator turns into a bag of globals. New blocks get their
+        /// own accessor, as <see cref="WaveField"/> did.</para>
+        /// FLAG lead-architect: new Core contract (the ADR 0018 §(5) settings unification).
+        /// </summary>
+        public static GameConfig Config { get; set; }
+
+        /// <summary>
+        /// The ONE wind → wave-train derivation every consumer reads (ADR 0018 §(5)): the shader
+        /// bridge, the hull rocking, the seakeeping forces, the wake, the buoys, the trap haul and the
+        /// drift weed. Falls back to <see cref="WaveFieldSettings.Default"/> with no config wired.
+        ///
+        /// <para>⚠️ <c>Config != null</c>, never <c>?.</c> or <c>??</c> — <see cref="GameConfig"/> is a
+        /// <c>UnityEngine.Object</c>, and the null-propagating operators bypass its overloaded
+        /// <c>==</c>, so a DESTROYED asset would read as non-null and throw. Compile-clean,
+        /// runtime-red.</para>
+        ///
+        /// <para>Resolved on every read rather than cached, so dragging a slider in the GameConfig
+        /// inspector during play moves the sea live — which is exactly how the owner judges it.</para>
+        /// </summary>
+        public static WaveFieldSettings WaveField =>
+            Config != null ? Config.WaveField : WaveFieldSettings.Default;
+
+        /// <summary>The shared presentation smoother's tunables (ADR 0018 addendum), same contract as
+        /// <see cref="WaveField"/>. The SIM path does not ease — it reads the pure <c>WaveMath</c> at
+        /// game time — so this governs LOOK consumers only.</summary>
+        public static WaveFieldAnimatorSettings WaveFieldAnimator =>
+            Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -78,6 +113,7 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
+            Config = null;
         }
     }
 }

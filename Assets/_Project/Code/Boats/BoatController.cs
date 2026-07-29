@@ -52,10 +52,10 @@ namespace HiddenHarbours.Boats
                  "The FIELD shape is the same WaveFieldSettings the visual rock (BoatWaveMotion) and the shader " +
                  "bridge use — keep them identical until GameConfig unifies them (ADR 0018 note).")]
         [SerializeField] private SeakeepingSettings _seakeeping = SeakeepingSettings.Default;
-        [Tooltip("The shared deterministic wave field's shape (ADR 0018). SIM path — the pure WaveMath the boat " +
-                 "is pushed by, NOT the presentation animator (addendum). Keep identical to BoatWaveMotion's copy " +
-                 "so the hull is shoved by the same waves it visibly rocks on, until GameConfig unifies them.")]
-        [SerializeField] private WaveFieldSettings _waveField = WaveFieldSettings.Default;
+        // The wave field's shape now comes from GameConfig.WaveField via GameServices (ADR 0018 §(5)),
+        // so the hull is shoved by the same waves it visibly rocks on and the shader draws — no longer
+        // "keep three copies identical" by hand. This is still the SIM path: the pure WaveMath at game
+        // time, NOT the presentation animator (the addendum's contract is unchanged).
         [Tooltip("Shallows SLOW the boat — they never cut the helm. When the hull is aground/touching " +
                  "bottom this design-unit drag opposes its motion through the water, so the boat feels " +
                  "heavy and sluggish (the desired 'teeth'), but throttle, oars and rudder stay FULLY " +
@@ -491,7 +491,8 @@ namespace HiddenHarbours.Boats
             Vector2 pos = _rb.position;
 
             // The field this tick (SIM path — pure function of the deterministic wind + sea state).
-            WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in _waveField);
+            WaveFieldSettings waveField = GameServices.WaveField;
+            WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
             WaveSample wave = WaveMath.Sample(pos, now, in trains);
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the

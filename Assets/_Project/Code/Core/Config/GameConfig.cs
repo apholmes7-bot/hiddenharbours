@@ -64,6 +64,24 @@ namespace HiddenHarbours.Core
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
 
+        [Header("The shared wave field (ADR 0018 — ONE sea, every consumer)")]
+        [Tooltip("The wind + sea-state → wave-train derivation: how many trains, their wavelengths and " +
+                 "amplitudes, the crest sharpening, and the ADR 0027 JONSWAP spectrum (SpectrumBlend 0 = " +
+                 "the hand-authored 4-train sea; dial it up for variance in sizes, a fan of directions, " +
+                 "and waves that arrive in SETS).\n\n" +
+                 "⚠️ THIS IS THE ONLY PLACE THESE LIVE. Eight components used to carry their own copy — " +
+                 "the water shader's bridge, the hull rocking, the seakeeping forces, the wake, the " +
+                 "buoys, the trap haul and the drift weed — and tuning one without the others meant the " +
+                 "hull rode a sea the shader was not drawing, which is the one thing ADR 0018 exists to " +
+                 "prevent.")]
+        public WaveFieldSettings WaveField = WaveFieldSettings.Default;
+
+        [Tooltip("The presentation smoother shared by every LOOK consumer (ADR 0018 addendum): how " +
+                 "languidly the train parameters chase the drifting weather, and the glass snap floor " +
+                 "(glass is sacred). The SIM path — seakeeping forces — deliberately does NOT ease; it " +
+                 "reads the pure WaveMath at game time, so gameplay never depends on frame rate.")]
+        public WaveFieldAnimatorSettings WaveFieldAnimator = WaveFieldAnimatorSettings.Default;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
