@@ -255,7 +255,7 @@ namespace HiddenHarbours.Boats
                 WaveFieldSettings field = GameServices.WaveField;
                 WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
                 _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
-                wave = _animator.Sample((Vector2)transform.position);
+                wave = SampleTheDrawnSea((Vector2)transform.position);
             }
             else
             {
@@ -294,6 +294,38 @@ namespace HiddenHarbours.Boats
 
             Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob),
                   rideMeters, rideActive);
+        }
+
+        /// <summary>
+        /// Sample the wave field <b>as the surface DRAWS it</b> — at the displaced sea's published
+        /// frequency scale, not at 1.
+        ///
+        /// <para>⚠️ <b>This is the "boats are nearly submerged" fix</b> (owner, 2026-07-27). The
+        /// surface's vertex stage samples the field at <c>_OceanSwellScale / 0.025</c> — <b>2.8</b> at
+        /// the owner's tuned materials. This read was at 1. Same amplitude envelope, wavelengths 2.8×
+        /// shorter: the hull was riding a <em>different wave</em> from the one drawn around it, so the
+        /// two agreed only by coincidence and the drawn water routinely stood at a crest while the
+        /// hull sat in a trough — and climbed over it. It is the same <c>_OceanSwellScale</c> incident
+        /// that already bit the watertight clamp (fixed there in ADR 0023 phase 3, scanning at
+        /// <c>WaterIsoDepthFrame.FreqScale</c>); the RIDE was the half that was never closed, because
+        /// its only route to the value is the Core seam and the seam did not carry it until now.</para>
+        ///
+        /// <para><b>Why scale the POSITION rather than pass a scale.</b> The phase is
+        /// <c>θ = k·s·(dir·pos) + φ</c>, which is identically <c>θ</c> at <c>pos·s</c> — so sampling
+        /// the field at a scaled position gives the drawn wave exactly, with no change to
+        /// <c>WaveMath</c> (a shared water file this lane must not touch). The HEIGHT and the crest
+        /// factor come out exact; only the SLOPE needs the chain-rule factor <c>s</c> put back, since
+        /// <c>d/dpos</c> of a scaled argument loses it.</para>
+        ///
+        /// <para>Displaced sea off ⇒ scale 1 ⇒ byte-identical to before (the A/B contract).</para>
+        /// </summary>
+        private WaveSample SampleTheDrawnSea(Vector2 worldPos)
+        {
+            float s = DisplacedSea.TryGet(out DisplacedSeaState sea) ? sea.FreqScale : 1f;
+            if (s == 1f) return _animator.Sample(worldPos);
+
+            WaveSample raw = _animator.Sample(worldPos * s);
+            return new WaveSample(raw.Height, raw.Slope * s, raw.CrestFactor);
         }
 
         /// <summary>
