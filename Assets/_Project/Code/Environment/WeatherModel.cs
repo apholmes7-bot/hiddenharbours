@@ -125,6 +125,28 @@ namespace HiddenHarbours.Environment
             return 1f;   // unreachable (the >= top edge case returned above); keeps the compiler happy
         }
 
+        /// <summary>
+        /// The exact piecewise-linear INVERSE of <see cref="SeaState01"/>: the wind strength (m/s) that
+        /// produces a given continuous sea-state. Because both directions walk the same
+        /// <c>SeaBandEdges</c> table, <c>SeaState01(WindStrengthFor(s)) == s</c> for any s in [0, 1]
+        /// (and the round trip is exact at every band edge). Added for the ADR 0027 P0 dev sea-state
+        /// override — the owner must be able to view the sea in a STORM, which the M1 calm-band clamp
+        /// (<see cref="WindProfile.CalmMaxStrength"/>) never produces naturally. Pure and stateless:
+        /// no RNG, no save impact (CLAUDE.md rule 5).
+        /// </summary>
+        /// <param name="seaState01">Target continuous sea-state (0 = glass .. 1 = the Storm edge).</param>
+        /// <returns>Wind strength in m/s; 0 at or below 0, the Storm edge (<c>SeaBandEdges</c> top) at or above 1.</returns>
+        public static float WindStrengthFor(float seaState01)
+        {
+            int top = SeaBandEdges.Length - 1;                      // 7 — the Storm edge index
+            if (seaState01 <= 0f) return 0f;
+            if (seaState01 >= 1f) return SeaBandEdges[top];
+            float pos = seaState01 * top;                           // 0..7 — fractional band position
+            int k = Mathf.Min(Mathf.FloorToInt(pos), top - 1);      // band k .. k+1
+            float t = pos - k;
+            return Mathf.Lerp(SeaBandEdges[k], SeaBandEdges[k + 1], t);
+        }
+
         // --- deterministic 1D value noise in [-1, 1] ---
         // Internal so sibling Environment sims (the tidal-current wander, CurrentModel) reuse the
         // EXACT same hash/value-noise — one deterministic noise source for the whole module, no new

@@ -274,6 +274,18 @@ Shader "HiddenHarbours/Water"
         //       glass = zero amplitude = zero foam, automatically; a gale = full marching whitecaps.
         _WhitecapOnsetAmp ("Whitecap onset amplitude (m of total wave amplitude for full caps)", Float) = 0.5
 
+        // ---- ADR 0027 #3: CONVERGENCE (Jacobian) foam gate (default OFF = today) ----------------------
+        // Foam today is tall-wave only (_FoamCrestGate + the whitecap lifecycle above), so CROSSING
+        // trains never foam at their intersections. Where the surface PINCHES — the Jacobian of the
+        // Gerstner-style drift toward crests dropping below 1 — an ADDITIONAL placement driver opens
+        // ALONGSIDE the crest factor, never replacing it (the confused-sea read). The convergence term
+        // is finite differences of the SAME WaveFieldSample the crests ride (C# twin:
+        // WaterFoam.Convergence — change one, change BOTH in the same PR); its output is textured by
+        // the existing thresholded/banded cap field, so it inherits the existing quantization.
+        _FoamConvergenceStrength ("Convergence foam strength (0 = off / today)", Range(0,1)) = 0.0
+        _FoamConvergencePinch    ("Convergence pinch (m; ~Gerstner Q/k — drift toward crests)", Float) = 4.0
+        _FoamConvergenceStep     ("Convergence sample step (m)", Float) = 0.5
+
         [Header(Shoreward swell and foam bias (waves roll IN near the coast))]
         // The rolling swell + the foam drift used to follow ONLY the wandering WIND (and the tidal current),
         // and the wind blows OFFSHORE part of the time — so near the beach the wave trains and foam streamed
@@ -502,6 +514,19 @@ Shader "HiddenHarbours/Water"
         _ShallowMinAlpha      ("Shallow min alpha at the waterline (keep above 0.5)", Range(0,1)) = 0.65
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+
+        // ---- ADR 0027 #2: caustics DRIVEN BY THE SHARED WAVE FIELD (default OFF = today) ---------------
+        // The seabed shimmer derives from the local CURVATURE of WaveFieldSample() — brightest where the
+        // surface is locally CONVEX toward the sun (a dome focuses light) — instead of scrolling an
+        // independent noise, so the dapple finally belongs to the swell rolling above it. The blend
+        // replaces only the vein VALUE inside the existing _CausticDepth gate, _CausticDayGate sun gate,
+        // _CausticAmount/_CausticColor multipliers and the pixelized world grid (all kept). Gated by the
+        // field's amplitude (the swellLive idiom): no live trains (edit mode / bare art scene) or dead
+        // glass eases back to the noise, so a bare scene never loses its dapple. NO new sim-pushed
+        // uniform — the curvature needs no new data; these three are material props (rule 6).
+        _CausticCurvatureBlend ("Caustic curvature blend (0 = independent noise / today, 1 = wave-field driven)", Range(0,1)) = 0.0
+        _CausticCurvatureStep  ("Caustic curvature sample step (m)", Float) = 0.5
+        _CausticCurvatureGain  ("Caustic curvature gain (contrast of the field-driven veins)", Float) = 12.0
 
         [Header(Current drift lines (Arc C   col.rgb only   reads the tidal set   default OFF))]
         // Faint foam STREAKS aligned with the tidal CURRENT so the player can READ which way the sea is
@@ -806,6 +831,10 @@ Shader "HiddenHarbours/Water"
                 float  _FoamClumpStretch;
                 // Shared wave field (ADR 0018 B1): the whitecap sea-state onset over total train amplitude.
                 float  _WhitecapOnsetAmp;
+                // ADR 0027 #3 — convergence (Jacobian) foam gate (default OFF).
+                float  _FoamConvergenceStrength;
+                float  _FoamConvergencePinch;
+                float  _FoamConvergenceStep;
                 // Shoreward swell/foam bias (near-coast roll-in; visual direction only).
                 float  _ShorewardBias;
                 float  _ShorewardFalloff;
@@ -890,6 +919,10 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowMinAlpha;
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
+                // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
+                float  _CausticCurvatureBlend;
+                float  _CausticCurvatureStep;
+                float  _CausticCurvatureGain;
                 // Current drift lines (col.rgb; keyed to _FlowDir/_Flow — the tidal set) — Arc C, default OFF.
                 float  _DriftLineStrength;
                 float  _DriftLineSpeed;
@@ -1567,6 +1600,24 @@ Shader "HiddenHarbours/Water"
                 // FADE: behind the crest the cap ages to milky residual, dying at the collapse rate.
                 residual = saturate(pow(max(c, 1e-4), max(_WhitecapCollapseRate, 0.05))
                                     * passed * saturate(density));
+            }
+
+            // ---- ADR 0027 #3: the CONVERGENCE (Jacobian) gate ------------------------------------------------
+            // C#-twinned by WaterFoam.Convergence (change one, change BOTH in the same PR). Approximates
+            // the Gerstner horizontal drift toward crests as D = pinch * (grad-derived), whose Jacobian is
+            //   J = (1 + q*hxx)(1 + q*hyy) - (q*hxy)^2
+            // — curvature is NEGATIVE at a crest, so a crest CONVERGES (J < 1); hxy is the cross term two
+            // CROSSING trains write (it enters squared). saturate(1 - J): 0 on a flat sea, 0 at zero
+            // pinch, positive where the surface pinches, saturating as it folds. Visual-only downstream
+            // (feeds the existing thresholded cap field; never depth/clip()/_WaterLevel/the sim — rule 5).
+            float ConvergenceGate(float hxx, float hyy, float hxy, float pinch)
+            {
+                float q = max(pinch, 0.0);
+                float jxx = 1.0 + q * hxx;
+                float jyy = 1.0 + q * hyy;
+                float jxy = q * hxy;
+                float J = jxx * jyy - jxy * jxy;
+                return saturate(1.0 - J);
             }
 
             // Painted-texture UV: pixelize the world position to the PPU grid, then scale to tiles/unit.
@@ -2799,6 +2850,43 @@ Shader "HiddenHarbours/Water"
                                    worldXY, _PaintScale * 2.0, -cScroll * 1.3, _UntileStrength).r;
                     caustic = lerp(caustic, ct * 2.0, _CausticTexStrength);   // *2: counter-mul darkens, restore range
                 #endif
+                    // ---- ADR 0027 #2: FIELD-DRIVEN caustics (default OFF = the independent noise above) ----
+                    // Caustics are focused light: brightest where the surface is locally CONVEX toward the
+                    // sun (a dome focuses). The local curvature is the finite-difference LAPLACIAN of the
+                    // SAME WaveFieldSample() the swell bands/whitecaps/hull ride — 4 axis taps at
+                    // _CausticCurvatureStep metres around the centre height already sampled above
+                    // (waveHeight, at Pixelize(worldXY) and the SAME waveFreqScale), each tap itself on the
+                    // pixelized world grid (the crawl law, §3) — so the seabed shimmer finally belongs to
+                    // the swell rolling over it. The curvature signal replaces only the vein VALUE via the
+                    // blend: the _CausticDepth gate, the _CausticDayGate sun gate below, _CausticAmount,
+                    // _CausticColor and the painted-tex blend above all keep their exact roles. Gated by
+                    // the field's amplitude (the swellLive idiom): no live trains (edit mode / a bare art
+                    // scene) or a dead-glass sea eases the blend back to the noise — a bare scene never
+                    // loses its dapple, and physically a flat surface focuses nothing. col.rgb only —
+                    // never depth/clip()/_WaterLevel/the height read/the sim (P1 integrity, rule 5). NO
+                    // new sim-pushed uniform (ADR 0027's "no new uniform": the curvature needs no new
+                    // data; the three knobs are material props, rule 6). Cost at the shipped default: the
+                    // whole block is unreachable (_CausticCurvatureBlend = 0) — exact passthrough.
+                    if (_CausticCurvatureBlend > 0.001)
+                    {
+                        float ce = max(_CausticCurvatureStep, 1e-3);
+                        float chx1, chx0, chy1, chy0, ccrestT, cprimT;
+                        float2 cslopeT;
+                        WaveFieldSample(Pixelize(worldXY + float2(ce, 0.0)), waveFreqScale,
+                                        chx1, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY - float2(ce, 0.0)), waveFreqScale,
+                                        chx0, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY + float2(0.0, ce)), waveFreqScale,
+                                        chy1, cslopeT, ccrestT, cprimT);
+                        WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale,
+                                        chy0, cslopeT, ccrestT, cprimT);
+                        // Laplacian < 0 = locally convex UP (a dome toward the sun) -> focused light.
+                        float lap = (chx1 + chx0 + chy1 + chy0 - 4.0 * waveHeight) / (ce * ce);
+                        float curvBright = saturate(-lap * max(_CausticCurvatureGain, 0.0));
+                        float fieldLive = saturate(_WaveFieldParams.z * 40.0);
+                        caustic = lerp(caustic, curvBright,
+                                       saturate(_CausticCurvatureBlend) * fieldLive);
+                    }
                     // DAY GATE (Arc C, default OFF): fade the sun-dappled caustic add out at night so the light
                     // nets only show when the sun is UP. Driver is saturate(_SunElevation) — 1 at noon, 0 below
                     // the horizon (the RIGHT curve; NOT SunGlitterGate, which peaks at golden hour and is 0 by
@@ -3068,7 +3156,44 @@ Shader "HiddenHarbours/Water"
                                           * lerp(1.0, envGate, saturate(_CapSalienceStrength));
                         // RESIDUAL: milky, trailing BEHIND the crest, streaked downwind by the aniso coord.
                         float milkyPart = capMilkyT * residualLife * lerp(0.45, capPeak, capDens);
-                        capOpacity = saturate(max(solidPart, milkyPart)) * crestGate * waveGate * saturate(dt);
+                        // ---- ADR 0027 #3: CONVERGENCE (Jacobian) FOAM — an ADDITIONAL placement driver
+                        // ALONGSIDE the crest-keyed lifecycle, never replacing it. Where crossing trains
+                        // PINCH the surface (J < 1) foam may now appear even off the primary crest — the
+                        // confused-sea read the tall-wave-only gate could not produce. Four taps of the
+                        // SAME WaveFieldSample (at the same waveFreqScale, each on the pixelized world
+                        // grid) central-difference the field's ANALYTIC slope into the three second
+                        // derivatives; ConvergenceGate (C#-twinned by WaterFoam.Convergence) turns them
+                        // into the 0..1 pinch term. The term is TEXTURED by the same thresholded cap
+                        // field (capMilkyT — already banded/dithered), so it feeds the existing foam
+                        // threshold and inherits the existing quantization (no new one). Still inside
+                        // waveGate (glass = zero foam) and the shore fade below; col.rgb-only dressing
+                        // (rule 5). At the shipped default (_FoamConvergenceStrength = 0) the branch is
+                        // unreachable and the composite below is BIT-IDENTICAL to the pre-#3 line
+                        // (same left-to-right multiply order).
+                        float lifecyclePart = saturate(max(solidPart, milkyPart)) * crestGate;
+                        if (_FoamConvergenceStrength > 0.001)
+                        {
+                            float fe = max(_FoamConvergenceStep, 1e-3);
+                            float chpx, chmx, chpy, chmy, ccrF, cprF;
+                            float2 cspx, csmx, cspy, csmy;
+                            WaveFieldSample(Pixelize(worldXY + float2(fe, 0.0)), waveFreqScale,
+                                            chpx, cspx, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY - float2(fe, 0.0)), waveFreqScale,
+                                            chmx, csmx, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY + float2(0.0, fe)), waveFreqScale,
+                                            chpy, cspy, ccrF, cprF);
+                            WaveFieldSample(Pixelize(worldXY - float2(0.0, fe)), waveFreqScale,
+                                            chmy, csmy, ccrF, cprF);
+                            // central differences of the ANALYTIC slope -> the second derivatives
+                            // (hxy averaged from its two estimates — symmetric by construction).
+                            float convHxx = (cspx.x - csmx.x) / (2.0 * fe);
+                            float convHyy = (cspy.y - csmy.y) / (2.0 * fe);
+                            float convHxy = ((cspx.y - csmx.y) + (cspy.x - csmy.x)) / (4.0 * fe);
+                            float conv = ConvergenceGate(convHxx, convHyy, convHxy, _FoamConvergencePinch)
+                                       * saturate(_FoamConvergenceStrength);
+                            lifecyclePart = max(lifecyclePart, capMilkyT * conv);
+                        }
+                        capOpacity = lifecyclePart * waveGate * saturate(dt);
                     }
                     else
                     {

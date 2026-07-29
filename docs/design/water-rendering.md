@@ -1535,6 +1535,37 @@ samples are byte-identical, so the sim is provably unchanged. No new C# uniform 
 already-sampled `waveHN`; `WaveFieldSample` / `WaveFieldBridge` / `WaveMath` are untouched. Legacy count-0
 path (edit mode / cycle off) reuses `swellSigned` so the knob still reads there.
 
+### 16.6 Convergence (Jacobian) foam gate (ADR 0027 #3)
+
+Foam was tall-wave only — `_FoamCrestGate` + the §16.3 lifecycle key everything to the crest factor —
+so **crossing trains never foam at their intersections**. Real foam also spawns where the surface
+**pinches**: surface water drifts toward crests (the Gerstner horizontal displacement), and where that
+drift field compresses — its Jacobian determinant dropping below 1, negative when the surface folds —
+the sea whitens. `_FoamConvergenceStrength` (default **0** = today's foam EXACTLY, bit-identical
+composite) adds that term as an **additional placement driver alongside the crest factor, never
+replacing it**: four taps of the same `WaveFieldSample()` (same `waveFreqScale`, each on the pixelized
+world grid) central-difference the field's **analytic slope** into the three second derivatives, and
+`ConvergenceGate` — C#-twinned by `WaterFoam.Convergence`, change one change BOTH in the same PR —
+computes `saturate(1 − J)` with `J = (1 + q·h_xx)(1 + q·h_yy) − (q·h_xy)²`, `q =
+_FoamConvergencePinch` (metres, ≈ the Gerstner `Q/k`). Curvature is negative at a crest so a crest
+converges; `h_xy` is the cross term two crossing trains write. The output is **textured by the same
+thresholded cap field** (`capMilkyT` — already banded/dithered), so it feeds the existing foam
+threshold and inherits the existing quantization — no new one. Still inside `waveGate` (glass = zero
+foam, automatically) and the cap shore fade; trains-live path only (the legacy count-0 path has no
+field to difference and is untouched). `col.rgb`-only dressing — never `depth` / `clip()` /
+`_WaterLevel` / the height read / the sim (P1 integrity, rule 5). Twin tests
+(`WaterFoamTests`): flat sea ⇒ 0, zero pinch ⇒ 0, crest converges / trough does not, crossing crests
+out-converge either train alone and follow the determinant (not a plain sum), the cross term adds
+exactly `q²·h_xy²`, and a golden value pins the arithmetic. Deliberately NOT added to
+`WaterSurface.MoodFloatNames`; whether the strength should be mood-eased is an open question for the
+owner.
+
+| Property | Default | Effect |
+|---|---|---|
+| `_FoamConvergenceStrength` | `0` (**OFF**) | Master; 0 = today's foam exactly. The owner's dial. |
+| `_FoamConvergencePinch` | `4` m | How far surface water is drawn toward a crest (≈ Gerstner Q/k); higher = more of the sea pinches past the gate. |
+| `_FoamConvergenceStep` | `0.5` m | Finite-difference step of the four slope taps. |
+
 ## 17. See-through shallows + day-gated caustics (Arc C water visuals)
 
 Two owner-opt-in shallow-water effects, both shipping **OFF** (their strength = 0), so the shipped `Water.mat`
@@ -1595,6 +1626,34 @@ The alpha multiply is `col.a`-only and the caustic day gate rides the pre-existi
 sit **before** the palette guard-rail grade (§13, `col.rgb`-only) and the post-grade compensated light content
 (§11.6), which are left untouched, so they compose cleanly. The shipped `Water.mat` variant is force-compiled by
 `WaterShaderCompileGuardTests`, so any HLSL slip fails CI red (not magenta-in-build).
+
+### 17.6 Field-driven caustics (ADR 0027 #2)
+
+The `_Caustic*` layer scrolled an independent noise, so the seabed shimmer had no relationship to the
+swell visibly rolling over it. `_CausticCurvatureBlend` (default **0** = today's independent noise
+EXACTLY) re-derives the caustic brightness from the local **curvature** of the SAME `WaveFieldSample()`
+the swell bands / whitecaps / hull ride (§16): a finite-difference Laplacian over 4 axis taps at
+`_CausticCurvatureStep` metres around the already-sampled centre height, on the same pixelized world
+grid (the crawl law, §3) — brightest where the surface is locally **convex toward the sun** (a dome
+focuses light; `−lap × _CausticCurvatureGain`, saturated). Composition unchanged: the curvature signal
+replaces only the vein VALUE inside the existing `_CausticDepth` gate, the `_CausticDayGate` sun gate
+(§17.2), `_CausticAmount` and `_CausticColor` — every downstream multiplier intact, and the painted
+`_CausticTex` blend still applies before it at its own strength. Gated by the field's amplitude (the
+`swellLive` idiom, `saturate(_WaveFieldParams.z × 40)`): with no live trains (edit mode / a bare art
+scene) or on dead glass the blend eases back to the independent noise, so a bare scene never loses its
+dapple — and physically a flat surface focuses nothing. No new C# uniform (the curvature needs no new
+sim-pushed data — the ADR 0027 "no new uniform" ruling; the three knobs are material properties,
+rule 6). `col.rgb` only — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim
+(P1 integrity, CLAUDE.md rule 5). Cost: 4 extra `WaveFieldSample` calls inside
+`if (_CausticCurvatureBlend > 0.001)` — zero at the shipped default. Deliberately NOT added to
+`WaterSurface.MoodFloatNames` (no double-drive); whether the blend should be mood-eased is an open
+question for the owner.
+
+| Property | Default | Effect |
+|---|---|---|
+| `_CausticCurvatureBlend` | `0` (**OFF**) | 0 = today's independent noise exactly; 1 = fully field-driven. The owner's dial. |
+| `_CausticCurvatureStep` | `0.5` m | Finite-difference step of the curvature taps (bigger = broader, softer light nets). |
+| `_CausticCurvatureGain` | `12` | Contrast of the field-driven veins (scales the raw Laplacian into 0..1). |
 
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 
