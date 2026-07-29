@@ -84,6 +84,13 @@ Shader "HiddenHarbours/TreeWind"
         // this tree stands in world space and w is 1 once a renderer has said so. See the rootWS varying:
         // a SpriteRenderer's unity_ObjectToWorld is IDENTITY, so the shader cannot work this out itself.
         [HideInInspector] _SpriteRootWS ("Sprite root world xy (published per renderer)", Vector) = (0, 0, 0, 0)
+        // ADR 0027 num 8 — the HHReflect pass's per-renderer MIRROR AXIS and light flag. PUBLISHED by
+        // ReflectiveObject, never tuned, and hidden for the same reason _SpriteRootWS is: a
+        // SpriteRenderer's unity_ObjectToWorld is IDENTITY, so the shader cannot derive the pivot and
+        // the owner has nothing to set here. w of 0 means nobody published one and the mirror REFUSES
+        // to run (a reflection pinned to the world origin is worse than no reflection).
+        [HideInInspector] _HHReflectOrigin ("Reflection mirror axis (published per renderer)", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _HHReflectLit ("Reflection is night light content", Range(0, 1)) = 0
 
         [Header(Response shape)]
         // 0 = brighten where the rig's fixed key already put light. 1 = recompute the catch for the LIVE
@@ -220,6 +227,11 @@ Shader "HiddenHarbours/TreeWind"
                 // from unity_ObjectToWorld); the material-level default (0,0,0,0) means "nobody published
                 // one" and the shader falls back to the fragment's world position.
                 float4 _SpriteRootWS;
+                // ADR 0027 #8 — the reflection pass's per-renderer mirror axis + light flag.
+                // Declared HERE too so both passes share ONE UnityPerMaterial layout (the SRP
+                // Batcher requires it to be identical across a shader's passes); unused by this pass.
+                float4 _HHReflectOrigin;
+                float  _HHReflectLit;
             CBUFFER_END
 
             // ---- helpers (declared BEFORE use) ----------------------------------------------------------------
@@ -356,6 +368,121 @@ Shader "HiddenHarbours/TreeWind"
                 }
 
                 return col;
+            }
+            ENDHLSL
+        }
+
+        // ================================================================================================
+        // HHReflect — this tree's REFLECTION in the water (ADR 0027 #8)
+        // ================================================================================================
+        // Recorded by IsoFacetHullFeature into _HHReflectTex and sampled by the water shader, which warps
+        // the lookup by the SAME wave field the hull rides. This pass draws the CHEAPEST correct thing —
+        // a flat mirrored silhouette, no interior mask, no self-occlusion — which is what the ADR's
+        // fidelity probe found sufficient at PPU 32 (see the PR).
+        //
+        // 🔴 The mirror axis is PUBLISHED per renderer (_HHReflectOrigin), never derived from
+        // unity_ObjectToWorld, which is IDENTITY for a SpriteRenderer. See Include/ReflectMirror.hlsl.
+        //
+        // ⚠️ MEMBERSHIP IS THE RENDERING-LAYER BIT, NOT THIS TAG. Every tree in the scene shares this
+        // shader; only those carrying ReflectionRegistry.RenderingLayer (i.e. those someone put a
+        // ReflectiveObject on) are in the filtered list. Same discipline as the displaced water's layer.
+        //
+        // The tree deliberately does NOT sway in its reflection: the wind offset is a per-vertex screen
+        // displacement that would have to be mirrored too, and at PPU 32 a reflection is a few dozen
+        // pixels of broken-up colour under a wave warp. Cheapest correct answer wins.
+        Pass
+        {
+            Name "HHTreeReflect"
+            Tags { "LightMode" = "HHReflect" }
+            Blend One OneMinusSrcAlpha      // premultiplied: overlapping reflectors composite in ONE target
+            Cull Off
+            ZWrite Off
+            ZTest Always                    // no depth buffer here; the water sorts the result, not this pass
+
+            HLSLPROGRAM
+            #pragma vertex reflectVert
+            #pragma fragment reflectFrag
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/ReflectMirror.hlsl"
+
+            struct ReflectAttributes
+            {
+                float3 positionOS : POSITION;
+                float4 color      : COLOR;
+                float2 uv         : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct ReflectVaryings
+            {
+                float4 positionCS : SV_POSITION;
+                float4 color      : COLOR;
+                float2 uv         : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            float4 _DayNightTint;   // GLOBAL (DayNightController) — the overlay this pass compensates for
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float  _AlphaClip;
+                float  _PixelsPerUnit;
+                float  _TrunkAnchor;
+                float  _SwayAmount;
+                float  _IdleSway;
+                float  _WindLean;
+                float  _SwaySpeed;
+                float  _GustScale;
+                float  _GustStrength;
+                float  _PhaseScale;
+                float  _BendY;
+                float  _LightResponse;
+                float  _LightChannels;
+                float  _KeyRelight;
+                float  _RimSteerAmount;
+                float  _LightFrontBand;
+                float  _LightDepthBias;
+                float4 _SunKeyColor;
+                float  _SunKeyStrength;
+                float  _SunRimStrength;
+                float  _LampKeyStrength;
+                float  _LampRimStrength;
+                float  _LampElevation;
+                // xy = where this sprite stands in world space, w = 1 when a renderer published it.
+                // Per-RENDERER via MaterialPropertyBlock (see the rootWS varying for why it cannot be read
+                // from unity_ObjectToWorld); the material-level default (0,0,0,0) means "nobody published
+                // one" and the shader falls back to the fragment's world position.
+                float4 _SpriteRootWS;
+                // ADR 0027 #8 — the reflection pass's per-renderer mirror axis + light flag.
+                // Declared HERE too so both passes share ONE UnityPerMaterial layout (the SRP
+                // Batcher requires it to be identical across a shader's passes); unused by this pass.
+                float4 _HHReflectOrigin;
+                float  _HHReflectLit;
+            CBUFFER_END
+
+            ReflectVaryings reflectVert(ReflectAttributes IN)
+            {
+                ReflectVaryings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+                float3 wp = GetVertexPositionInputs(IN.positionOS).positionWS;
+                OUT.positionCS = HHReflectPositionCS(wp, _HHReflectOrigin);
+                OUT.color = IN.color * _Color;
+                OUT.uv = IN.uv;
+                return OUT;
+            }
+
+            half4 reflectFrag(ReflectVaryings IN) : SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(IN);
+                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv) * IN.color;
+                clip(col.a - _AlphaClip);
+                return HHReflectPremultiply(col.rgb, col.a, _HHReflectLit, _DayNightTint.rgb);
             }
             ENDHLSL
         }
