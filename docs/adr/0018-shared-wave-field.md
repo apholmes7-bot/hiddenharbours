@@ -314,13 +314,30 @@ reasons:
   0.55 / 0.38 / 0.22 of the dominant are not neighbours in any sense that beats at a readable period.
   Widening is what makes grouping available *for free* rather than faked.
 
-**8, not 12 or 16.** The cost is linear in train count and it is paid in the fragment shader
-`WAVE_MAX_TRAINS` times per `WaveFieldSample()` call, at up to nine call sites per pixel (the main
-sample, four caustic-curvature taps, four foam-convergence taps) — and the loop is `[unroll]`ed with
-the live count masked *inside*, so **dead slots still cost ALU**. See the PR for the measured numbers
-from `Hidden Harbours/Water/Wave-field cost report`. 8 doubles a cost that was comfortable; 12 would
-be the first number where the water's wave term rivals the rest of the shader, and the spectrum's
-readable payoff is already saturating by then.
+**8, not 12 or 16 — measured, not assumed.** The cost is linear in train count and it is paid in the
+fragment shader `WAVE_MAX_TRAINS` times per `WaveFieldSample()` call, at up to nine call sites per
+pixel (the main sample, four caustic-curvature taps, four foam-convergence taps) — and the loop is
+`[unroll]`ed with the live count masked *inside*, so **dead slots still cost ALU**. Measured with
+`Hidden Harbours/Water/Wave-field cost report` (compiled D3D11 fragment bytecode, both water passes,
+same machine, shader-only difference):
+
+| | N = 4 | N = 8 | Δ |
+|---|---|---|---|
+| Compiled fragment bytecode | 242,540 B | 273,188 B | **+30,648 B (+12.6 %)** |
+| Worst-case train evaluations / pixel | 36 | 72 | ×2 |
+
+The two rows disagree, and that disagreement is the argument: the train evaluations double, but the
+whole fragment program grows 12.6 % — the wave sum is one term in a 3,300-line shader. Equivalently
+the wave field is **~12.6 % of the fragment program at 4 trains, ~22 % at 8**, and each further
+step of 4 costs another flat ~30.6 kB: **N = 12 is +25.3 %, N = 16 is +37.9 %**. Twelve is about
+where the wave term stops being one cost among many and becomes the shader's largest single item,
+while the spectrum's readable payoff is already saturating. 8 is the last number that buys a real
+spectrum without changing what the water shader mostly is.
+
+⚠️ Program size is a proxy for ALU, **not** a frame-time measurement — reproducible and
+machine-independent where a wall-clock number on one GPU would not be, but it is not the same claim.
+And 72/pixel is the worst case: eight of the nine fragment call sites sit behind the caustic and
+convergence gates, so a pixel with both off pays 8.
 
 ⚠️ **The width is a SEAM, and it is load-bearing in five places at once**: `WaveTrains.MaxTrains`,
 `PackedWaveField.MaxTrains`, the bridge's uniform push, the production shader's `WAVE_MAX_TRAINS`
