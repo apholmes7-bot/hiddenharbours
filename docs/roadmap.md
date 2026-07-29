@@ -109,7 +109,7 @@ minutes. **No town, no physics-based wind, no grounding, no NPCs.**
 | Greybox playtest harness + the M0 acceptance pass | `qa-test` |
 | (Light) an in-editor tide/clock inspector so designers can scrub time | `tools-editor` |
 
-**Explicitly deferred.** Port Greywick and *all* town/economy depth; the boat **force model** (wind/current as
+**Explicitly deferred.** Nine Mile Creek and *all* town/economy depth; the boat **force model** (wind/current as
 physical forces) — M0 uses simple movement; grounding/capsize/rescue; weather fronts/fog/storms; auction,
 contracts, processing, storage; NPCs and dialogue; the Punt and the rest of the boat ladder; real art; the other
 8 regions; map/charts; licenses/proficiencies/reputation; offline accrual.
@@ -138,11 +138,11 @@ and the first boat purchase (the **Punt**).
 slap. You arrive to your late **Uncle Ned's** cottage and his inherited dory; his dog-eared logbook (the
 *"Ned's Unfinished Lines"* framing) and **Aunt Ginny** teach the loop through a gentle, bittersweet-but-warm
 onboarding. *(M2 note: the owner has since **dropped the inherited-dory framing** — in the full arc the dory is
-**earned and repaired** at Greywick — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
+**earned and repaired** at Nine Mile Creek — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
 Peters lands; the cottage stays inherited. Canon §5.8.)* Out on the water the dory now feels like a *boat*: wind pushes you, the tide sets you, you carry way
 and you crab into a breeze — the [`boats-and-navigation.md`](design/boats-and-navigation.md) force model is live
 (at the inshore, forgiving end). The **tide table** is a readable tool and the HUD tide/wind widgets are
-first-class. You can make a short hop to **Port Greywick** where market basics work (the Fish Buyer/auction spot
+first-class. You can make a short hop to **Nine Mile Creek** where market basics work (the Fish Buyer/auction spot
 price, a chalkboard of prices that move), and once you've earned a stake you buy your first boat, the **Punt**,
 from the shipwright — the "I'm a real fisher now" beat. The whole thing is tuned for **3-minute and 30-minute**
 sessions and saves/resumes anywhere.
@@ -156,10 +156,10 @@ sessions and saves/resumes anywhere.
 | Boat as composable components (Hull/Engine/Hold/Gear) — minimal, to support Dory→Punt | `lead-architect` + `gameplay-systems` |
 | The **Punt** as the first purchasable boat; a minimal **Shipwright** buy flow | `gameplay-systems` + `economy-sim` |
 | Coddle Cove **art pass** (tile-aware shoreline, water shader/anim, day-night grade, cottage, wharf, dory & Punt sprites at true metric scale) | `art-pipeline` |
-| A first, small **Port Greywick** scene (wharf, buyer, shipwright, a couple of buildings) — services, not a full town | `world-content` |
+| A first, small **Nine Mile Creek** scene (wharf, buyer, shipwright, a couple of buildings) — services, not a full town | `world-content` |
 | **Uncle Ned** + 1–2 other named NPCs: static or lightly-anchored, with dialogue + the onboarding flow | `world-content` + `ui-ux` |
 | HUD v1: bespoke **tide gauge + wind widget + compass**, conditions cluster, market chalkboard, sell screen (marginal-price slider) | `ui-ux` |
-| Market basics: Fish Buyer + a simple auction/spot price at Greywick; per-commodity demand & recovery over days | `economy-sim` |
+| Market basics: Fish Buyer + a simple auction/spot price at Nine Mile Creek; per-commodity demand & recovery over days | `economy-sim` |
 | Reactive ambient + adaptive music v1 (region beds, rising-wind tell, catch sting, "made it home" warmth) | `audio` |
 | Save schema v1 (boat owned + components, money, day, Ned/onboarding flags) | `lead-architect` |
 | Tide-table / environment editor tooling; placeholder→real art swap workflow | `tools-editor` + `art-pipeline` |
@@ -173,7 +173,7 @@ proficiencies, reputation as systems (M2 — onboarding may *fake* the first lic
 
 **Pillars advanced.** **P1** in full inshore form (wind + tide as forces you read, the tide table as a tool) ·
 **P2** (the first rung of the boat ladder — Dory→Punt — visible on screen) · the warm opening of **P3** (Ned, a
-glimpse of Greywick) · **P5** as gentle seasoning (the cove still won't kill you, but spray, wind, and spoilage
+glimpse of Nine Mile Creek) · **P5** as gentle seasoning (the cove still won't kill you, but spray, wind, and spoilage
 give the coziness stakes).
 
 **Shippable?** **Yes — this is the soft-launch candidate (a Steam / itch.io closed playtest; mobile = later port).**
@@ -196,7 +196,7 @@ the first real **danger** — grounding, capsize, stranding, and rescue.
 **Player experience at end of phase.** The inshore cluster opens up: **The Sunkers** (reef field, the first
 grounding teeth — read the tide or hole your hull), then **The Drownded Lands** (the walkable-seabed wonder,
 gated behind owning and reading a tide table) and the **Fundy Rips** as a tide-timed graduation gate. **Port
-Greywick** becomes a real town — auction house, shops, the shipwright, the harbourmaster, named NPCs keeping
+Nine Mile Creek** becomes a real town — auction house, shops, the shipwright, the harbourmaster, named NPCs keeping
 **daily routines**. The market now genuinely *breathes*: an NPC fleet lands fish, gluts and scarcity happen
 without you, prices recover over days, and you learn not to dump your whole catch at once. You can **store** to
 time sales, run a **first refining** step (salt cod / smoked herring) to beat spoilage, **upgrade the cottage**
@@ -207,13 +207,13 @@ break down, and call (or wait for) a tow. The teeth arrive, kindly.
 **Systems built (by role).** Danger model — grounding (draught vs water depth), broach/capsize (sea-state vs
 seaworthiness vs load), taking-on-water, breakdown/fuel, and the **rescue/tow** set-piece (`gameplay-systems`).
 Weather & wind v2 — fronts, fog, storms, the forecast tools: barometer, harbourmaster, radio (`gameplay-systems`).
-Regions: The Sunkers, The Drownded Lands (tide-driven walkable seabed), Fundy Rips, and a built-out Port Greywick
+Regions: The Sunkers, The Drownded Lands (tide-driven walkable seabed), Fundy Rips, and a built-out Nine Mile Creek
 (`world-content`). Tide-revealed geography + per-region seabed heightfields (`world-content` + `tools-editor`).
 Boat ladder to Cape Islander + Lobster Boat branch; boat upgrades/instruments/safety as component swaps at the
 shipwright (`gameplay-systems` + `economy-sim`). Full supply/demand market sim, auction house, NPC-fleet landings,
 multiple buyers, first standing contracts (`economy-sim`). Storage (ice/well, cold storage) + perishability +
 **first processing facilities** (salt house, smokehouse) (`economy-sim`). NPC routines + relationships + named
-core cast for Greywick; dialogue system v2 (`world-content`). Housing: cottage refit + decor/Comfort + storage;
+core cast for Nine Mile Creek; dialogue system v2 (`world-content`). Housing: cottage refit + decor/Comfort + storage;
 the licenses/proficiencies/reputation currency systems come online here (`world-content` + `ui-ux`). Art passes
 for each new region + the danger/weather VFX + bigger boats (`art-pipeline`). Audio: storm/fog/region beds, danger
 cues, town hum (`audio`). Map/chart UI + fog-of-war reveal + the tide table tiers (`ui-ux`). Save migration from
@@ -221,9 +221,9 @@ M1; performance pass for scene streaming at passages (`lead-architect` + `qa-tes
 
 **Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
 and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue, **built first as a
-greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Greywick at low
+greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Nine Mile Creek at low
 water** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine Mile Creek wharf and
-have her put right** → **sail it home to Coddle Cove**. *(Owner ruling 2026-07-25: the wharf is Greywick's own,
+have her put right** → **sail it home to Coddle Cove**. *(Owner ruling 2026-07-25: the wharf is the town's own,
 one region two zones; no shipwright stands there — seller and repairer are open.)* The start and the Ned/Ginny onboarding **relocate** here from the M1
 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it. **Note:** the owner has
 **dropped the "inherit Uncle Ned's dory" framing** — the dory is now *earned and repaired*, which **partly

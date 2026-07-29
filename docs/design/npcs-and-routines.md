@@ -91,7 +91,7 @@ These are the conditions schedules switch on (P1 made social):
 - **Season.** Different fisheries are in season (`fish-and-content.md`), so working NPCs target
   different grounds; winter shortens daylight and drives more tavern time; some routines (festivals,
   certain services) are seasonal.
-- **Day-of-week.** **Market day** packs Port Greywick — the auctioneer runs a full auction, the
+- **Day-of-week.** **Market day** packs Nine Mile Creek — the auctioneer runs a full auction, the
   town is busy, more "extras" spawn. **Rest day** quiets the working waterfront and fills the
   church/tavern. Tavern nights draw the regulars.
 - **Story / relationship.** Story flags can override routines (an NPC is "away" during a quest, or
@@ -221,7 +221,7 @@ animation.
 ## 3. The handcrafted core cast
 
 Fourteen named characters, sized and placed to match `world-and-regions.md` (the bulk live and work
-in **Port Greywick**; the **uncle** anchors the opening in **Coddle Cove**; the **lighthouse keeper**
+in **Nine Mile Creek**; the **uncle** anchors the opening in **Coddle Cove**; the **lighthouse keeper**
 holds the lonely end of the world at **Ironbound**). They are warm, weathered, North-Atlantic
 working people — not quirky cartoons. Each entry gives **role · personality · daily-routine sketch ·
 relationship to the player · questline/service hook.**
@@ -233,7 +233,7 @@ relationship to the player · questline/service hook.**
 >
 > **St Peters opening + dropped inherited-dory (owner-ratified 2026, DECIDED — `../vision-and-pillars.md`
 > §5.8, `world-and-regions.md` §6.0).** The arc is now **St Peters Island → [walk the tide-gated
-> sandbar] → Port Greywick (buy cod licence + rod; buy + repair a damaged dory) → Coddle Cove (sail
+> sandbar] → Nine Mile Creek (buy cod licence + rod; buy + repair a damaged dory) → Coddle Cove (sail
 > the repaired dory home; home base).** The M1 opening described below (Aunt Ginny + Ned's logbook at
 > Coddle Cove) is the **stand-in**; when St Peters is built (M2), the **start and onboarding relocate**
 > to the island's **school**, and the **dialogue/onboarding system is reused, not rebuilt** — **no NPC
@@ -249,7 +249,7 @@ relationship to the player · questline/service hook.**
 > the St Peters island start (anchored by the cottage — no routine yet, that's M2) teaching the new loop,
 > and **Ned is now a remembered presence** — his **letter** on the island, *no inherited dory* — read in
 > place of the old Coddle-Cove logbook. The onboarding nudge walks the new arc end-to-end (dig clams →
-> cross the bar → Greywick cod-licence + rod → buy + **repair** the dory → sail home). Content is **data**:
+> cross the bar → Nine Mile Creek cod-licence + rod → buy + **repair** the dory → sail home). Content is **data**:
 > the cast is authored as `NpcDef` + `DialogueDef` assets under `Data/NPCs` (one entity per file, stable
 > ids `npc.aunt_ginny` / `npc.ned_letter`, `dialogue.ginny_first` / `dialogue.ned_letter`). The cottage +
 > memory remain inherited. *(The legacy Coddle-Cove `WorldStrings` conversations are kept as a fallback —
@@ -263,7 +263,7 @@ relationship to the player · questline/service hook.**
 
 - **Role:** Your late uncle; the man whose **cottage** (and memory) you inherit. The emotional origin
   of the game. Present in the opening hours (the handover / tutorial), then gone. *(The dory is no
-  longer inherited — it is bought damaged and repaired at Greywick; canon §5.8 and the reconciliation
+  longer inherited — it is bought damaged and repaired at Nine Mile Creek; canon §5.8 and the reconciliation
   block above.)*
 - **Personality:** Gruff, dry-humoured, endlessly capable; loved this coast more than he ever said.
   Taught by doing, not telling. The kind of man the whole harbour quietly respected.
@@ -279,7 +279,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.2 Marguerite Faye — *the auctioneer*
 
-- **Role:** Runs the **fish auction** at Port Greywick — the human face of the market
+- **Role:** Runs the **fish auction** at Nine Mile Creek — the human face of the market
   (`economy-and-business.md`).
 - **Personality:** Quick, sharp-tongued, fair to a fault, misses nothing. Has called every catch on
   this wharf for thirty years and can read a hold at a glance.
@@ -294,7 +294,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.3 Captain Reuben Stout — *the harbourmaster*
 
-- **Role:** **Harbourmaster** of Port Greywick — berths, port rules, forecasts, safety.
+- **Role:** **Harbourmaster** of Nine Mile Creek — berths, port rules, forecasts, safety.
 - **Personality:** Steady, weather-beaten, paternal; a former offshore skipper who's seen men not
   come back and takes the sea's danger seriously (P5). Slow to spook, impossible to bluff.
 - **Daily routine:** Office at dawn, walks the wharf assigning berths and checking lines, posts the
@@ -330,7 +330,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.5 Silas Boyne — *the shipwright*
 
-- **Role:** Runs the **shipwright's yard** in Port Greywick — boat purchase, repair, and upgrades
+- **Role:** Runs the **shipwright's yard** in Nine Mile Creek — boat purchase, repair, and upgrades
   (`boats-and-navigation.md`); the gatekeeper of the boat ladder (P2).
 - **Personality:** Taciturn, perfectionist, talks more easily to hulls than to people; deeply proud,
   a little lonely. Will not sell you a boat you can't handle yet, and says so plainly.
@@ -345,7 +345,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.6 Odette Tranchemontagne — *the gear-shop owner / chandler*
 
-- **Role:** Runs the **chandlery / gear shop** in Port Greywick — rods, lines, traps, nets, bait,
+- **Role:** Runs the **chandlery / gear shop** in Nine Mile Creek — rods, lines, traps, nets, bait,
   charts, and small equipment.
 - **Personality:** Bright, chatty, mercantile in the friendliest way; knows what everyone bought and
   why; a magpie for new gear and gossip. The town's unofficial information exchange.
@@ -376,7 +376,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.8 Bram Tiller — *the tavern keeper*
 
-- **Role:** Keeps the **tavern** in Port Greywick — the town's social hub and the night-time heart of
+- **Role:** Keeps the **tavern** in Nine Mile Creek — the town's social hub and the night-time heart of
   the living coast (P3).
 - **Personality:** Warm, unflappable, a good listener with a long memory; everyone's confessor.
   Keeps the peace, knows everyone's troubles, never repeats them to the wrong person.
@@ -407,7 +407,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.10 Harlan Boudreau — *the processing-plant owner*
 
-- **Role:** Owns the **marine-supply / fish-processing plant** in Port Greywick — the value-add /
+- **Role:** Owns the **marine-supply / fish-processing plant** in Nine Mile Creek — the value-add /
   refining gateway (`economy-and-business.md`); the canon's "marine-supply/processing-plant owner."
 - **Personality:** Shrewd, smooth, ambitious; a legitimate businessman who plays hardball and respects
   anyone who plays it well. Not crooked — just relentlessly commercial.
@@ -427,7 +427,7 @@ relationship to the player · questline/service hook.**
   her personality, routine, and bond: here.)*
 - **Personality:** Keen, capable, a touch reckless; desperate to prove herself and get off the wharf
   and onto the water. Knew and idolised Ned. Loyal once you earn it.
-- **Daily routine (before hire):** Hangs around the Coddle Cove / Greywick wharves looking for a
+- **Daily routine (before hire):** Hangs around the Coddle Cove / Nine Mile Creek wharves looking for a
   site, helps mend gear for coppers, watches the boats come in, tavern's quiet corner at night. After
   hire, her routine merges into your operation.
 - **Relationship to player:** Your **first step from laborer toward owner** (P4) — the first person
@@ -439,7 +439,7 @@ relationship to the player · questline/service hook.**
 
 ### 3.12 Father Tomas Le Bris — *the parson / community keeper*
 
-- **Role:** Keeps the **church/meeting house** in Port Greywick and tends the town's spiritual and
+- **Role:** Keeps the **church/meeting house** in Nine Mile Creek and tends the town's spiritual and
   communal life — weddings, funerals, festivals, the rest-day gathering.
 - **Personality:** Gentle, wise, quietly funny; carries the town's griefs (he buried Ned). A
   steadying presence who knows everyone's history and judges no one.
@@ -494,19 +494,19 @@ relationship to the player · questline/service hook.**
 | # | Name | Role | Home region | Primary hook |
 |---|------|------|-------------|--------------|
 | 1 | Uncle Ned Coddle | Departed uncle / origin | Coddle Cove (opening) | "Ned's Unfinished Lines" (framing) |
-| 2 | Marguerite Faye | Auctioneer | Port Greywick | Selling + market intel |
-| 3 | Capt. Reuben Stout | Harbourmaster | Port Greywick | Forecasts, berths, rescue |
+| 2 | Marguerite Faye | Auctioneer | Nine Mile Creek | Selling + market intel |
+| 3 | Capt. Reuben Stout | Harbourmaster | Nine Mile Creek | Forecasts, berths, rescue |
 | 4 | Aunt Ginny Coddle | Home keeper (family) | Coddle Cove | Home base + Ned's memory |
-| 5 | Silas Boyne | Shipwright | Port Greywick | Boat ladder (buy/upgrade) |
-| 6 | Odette Tranchemontagne | Chandler / gear shop | Port Greywick | Gear/bait/charts + rumours |
-| 7 | Wallace "Wally" Pike | Rival skipper | Port Greywick / at sea | "The Same Water" rivalry |
-| 8 | Bram Tiller | Tavern keeper | Port Greywick | Social/quest hub |
+| 5 | Silas Boyne | Shipwright | Nine Mile Creek | Boat ladder (buy/upgrade) |
+| 6 | Odette Tranchemontagne | Chandler / gear shop | Nine Mile Creek | Gear/bait/charts + rumours |
+| 7 | Wallace "Wally" Pike | Rival skipper | Nine Mile Creek / at sea | "The Same Water" rivalry |
+| 8 | Bram Tiller | Tavern keeper | Nine Mile Creek | Social/quest hub |
 | 9 | Mother Edie Vance | Lighthouse keeper | Ironbound | Outer-water charts (Ironbound/Smother) |
-| 10 | Harlan Boudreau | Processing-plant owner | Port Greywick | Value-add + contracts |
+| 10 | Harlan Boudreau | Processing-plant owner | Nine Mile Creek | Value-add + contracts |
 | 11 | Pearl Tobin | First deckhand (hireable) | Coddle Cove | First crew (→ economy doc) |
-| 12 | Father Tomas Le Bris | Parson / community | Port Greywick | Festivals + closure on Ned |
-| 13 | Iris Halloran | Buoy-tender / coast-tech | Port Greywick / Banks | Instruments + route to Smother |
-| 14 | Old Joachim Furey | Retired master / lorekeeper | Port Greywick | Legendary-fish leads |
+| 12 | Father Tomas Le Bris | Parson / community | Nine Mile Creek | Festivals + closure on Ned |
+| 13 | Iris Halloran | Buoy-tender / coast-tech | Nine Mile Creek / Banks | Instruments + route to Smother |
+| 14 | Old Joachim Furey | Retired master / lorekeeper | Nine Mile Creek | Legendary-fish leads |
 
 That is **14 named NPCs**: family (Ned, Ginny, plus Pearl as near-family), the town services
 (auctioneer, harbourmaster, shipwright, chandler, tavern, parson, processor, coast-tech), the social
@@ -532,7 +532,7 @@ mostly non-interactive or shallowly interactive.
 
 ### 4.1 What the generator produces
 
-- **Background townsfolk** wandering Port Greywick (shoppers, gossipers, kids, churchgoers).
+- **Background townsfolk** wandering Nine Mile Creek (shoppers, gossipers, kids, churchgoers).
 - **Dock/wharf workers** loading, unloading, mending nets, pushing barrows on the public wharf.
 - **Other skippers & working boats** — ambient boat traffic on the water (entering/leaving harbour,
   working the grounds, transiting the Rips at slack) that makes the *sea* feel inhabited too, not
