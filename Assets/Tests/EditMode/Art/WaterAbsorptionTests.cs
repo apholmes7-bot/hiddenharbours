@@ -24,17 +24,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// (coverage 0) or fully absorbed (T → 0) — absorption applies to the TRANSMITTED SEABED only.</item>
     /// </list>
     ///
-    /// Sabotage MEASURED (2026-07-29, headless runs — see the PR), two arms, each targeted:
+    /// Sabotage MEASURED (2026-07-29, headless runs over BOTH absorption fixtures, 22 tests — see
+    /// the PR), two arms, each targeted:
     /// <list type="number">
     /// <item>dropping the down-and-back path (<c>DownAndBack</c> 2 → 1, i.e. absorbing over d
-    /// instead of 2d): EXACTLY 1 of 14 fails — <c>Transmission_AppliesTheDownAndBackPath</c>,
-    /// 0.7788008 in place of 0.6065307 at σ = 0.5, d = 0.5 (a 28% over-bright bottom that every
-    /// monotonicity/ordering/passthrough test happily accepts, which is exactly why the path gets
-    /// its own independently-computed pin);</item>
-    /// <item>swapping the red and blue channels inside <see cref="WaterAbsorption.Sigma"/>: 2 of 14
-    /// fail — <c>Transmission_RedExtinguishesBeforeBlue</c> (red 0.9231 vs blue 0.3829 at d = 1:
-    /// the sea would go RED with depth) and <c>Sigma_ScalesTheRatioByTurbidity</c>. The monotone,
-    /// path, banding and passthrough arms all stay green under it.</item>
+    /// instead of 2d): <b>3 of 22 fail</b> —
+    /// <c>Transmission_AppliesTheDownAndBackPath</c> (0.7788008 in place of 0.6065307 at σ = 0.5,
+    /// d = 0.5 — a 28% over-bright bottom), <c>Transmission_MonotoneDecreasingInDepth</c> (red not
+    /// gone by 16 m: 2.76e-6 against the 1e-6 pin) and
+    /// <c>Composite_DeepWaterReturnsTheWaterColour_ShallowReturnsTheBottom</c> (0.5000462 against
+    /// the water's own 0.5 — the BLUE channel still leaking bottom at 80 m). The ordering, banding
+    /// and passthrough arms all stay green: halving the path is invisible to every property except
+    /// how FAR the bottom reaches, which is why that gets three independent pins;</item>
+    /// <item>swapping the red and blue channels inside <see cref="WaterAbsorption.Sigma"/>:
+    /// <b>3 of 22 fail</b> — <c>Sigma_ScalesTheRatioByTurbidity</c> (0.16 where 2.0 was expected),
+    /// <c>Transmission_RedExtinguishesBeforeBlue</c> (red transmitting 0.9873 against green's
+    /// 0.9716 at d = 0.1 — the sea would go RED with depth) and
+    /// <c>Transmission_MonotoneDecreasingInDepth</c> (red at 0.1290 after 16 m instead of gone).
+    /// The path, banding, composite and passthrough arms stay green.</item>
     /// </list>
     /// </summary>
     public class WaterAbsorptionTests

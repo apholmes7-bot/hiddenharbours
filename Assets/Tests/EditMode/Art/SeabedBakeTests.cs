@@ -16,14 +16,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// cleanly. Only the pure mapping lives in <see cref="SeabedBake"/>, and that is what runs
     /// here.</para>
     ///
-    /// Sabotage MEASURED (2026-07-29, headless run — see the PR): dropping the half-texel centre
-    /// offset in <see cref="SeabedBake.TexelCenterWorld"/> (<c>(x + 0.5f)</c> → <c>x</c>, the
-    /// classic off-by-half that shifts the whole bottom by half a texel — 0.16 m at the shipped
-    /// 512² over 160 m) fails EXACTLY 2 of 8: <c>TexelCentre_IsTheShaderSampleThatFetchesIt</c>
-    /// (uv 0.0000 for texel 0, which the shader's point fetch resolves to texel 0 only by the
-    /// clamp — and uv 0.9980 for the last texel, still inside it, so the round trip survives at one
-    /// end and not the other) and <c>TexelCentre_SpansTheRectSymmetrically</c> (first centre at
-    /// world −80.00 instead of −79.84: the bake hangs half a texel off the rect's low edge).
+    /// Sabotage MEASURED (2026-07-29, headless runs over both absorption fixtures, 22 tests — see
+    /// the PR): dropping the half-texel centre offset in <see cref="SeabedBake.TexelCenterWorld"/>
+    /// (<c>(x + 0.5f)</c> → <c>x</c> — the classic off-by-half, which shifts the whole bottom by
+    /// half a texel, 0.16 m at the shipped 512² over 160 m) fails <b>2 of 22</b>:
+    /// <c>TexelCentre_SpansTheRectSymmetrically</c> (first centre at world −80.00 instead of
+    /// −79.84 — the bake hangs half a texel off the rect's low edge) and
+    /// <c>TexelCentre_IsTheShaderSampleThatFetchesIt</c> (uv 0.0000 for texel 0).
+    ///
+    /// <para><b>What the first measurement of that sabotage taught us, and what changed because of
+    /// it.</b> As first written the round-trip test did NOT catch the off-by-half — only 1 of 22
+    /// failed. Sampling at <c>x/res</c> puts the sample exactly on the texel's LOW edge, and
+    /// <c>floor(uv·res)</c> still returns <c>x</c>, so the round trip "passed" while the whole bake
+    /// was misplaced. The test now also asserts the sample lands STRICTLY INSIDE its texel: a
+    /// sample on a texel boundary fetches itself only by luck, because one ULP the other way and
+    /// the shader's point filter takes the neighbour. That is a real property of a correct bake,
+    /// not a patch to catch this sabotage — and with it the sabotage fails 2.</para>
     /// </summary>
     public class SeabedBakeTests
     {
@@ -44,6 +52,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"texel {i} must fetch itself back (uv.x = {uv.x})");
                 Assert.AreEqual(i, Mathf.FloorToInt(uv.y * res),
                     $"texel {i} must fetch itself back (uv.y = {uv.y})");
+                // ...and land STRICTLY INSIDE the texel, not on its boundary. A sample sitting on a
+                // texel edge fetches itself only by luck: one ULP the other way and the point filter
+                // takes the neighbour. This is the assertion that makes the round trip mean
+                // something — see the off-by-half sabotage in the class doc.
+                Assert.That(uv.x * res - i, Is.InRange(0.05f, 0.95f),
+                    $"texel {i} must be sampled at its CENTRE, not its edge (uv.x = {uv.x})");
+                Assert.That(uv.y * res - i, Is.InRange(0.05f, 0.95f),
+                    $"texel {i} must be sampled at its CENTRE, not its edge (uv.y = {uv.y})");
             }
         }
 
