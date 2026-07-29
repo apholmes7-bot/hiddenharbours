@@ -1,16 +1,24 @@
-# ADR 0027 — The realness pass: eight physically-grounded water upgrades, every one pixelized
+# ADR 0027 — The realness pass: ten physically-grounded water upgrades, every one pixelized
 
 - **Status:** **Proposed** — awaiting `lead-architect` sign-off (renderer-feature plumbing is a cross-cutting
   architectural call, CLAUDE.md rule 4 / `coordination.md` §1.1) and owner ratification of the phase order.
   This change is **docs only**: it ships no shader, no C#, no scene, no material change.
 - **Date:** 2026-07-28
+- **Revision (2026-07-28, same day, PR #305 → follow-up):** the owner asked whether the plan delivers *"waves
+  more variability, moving in different directions, ripples, variance in sizes, speed, building and collapsing."*
+  Auditing each ask against the shipped shader exposed **two genuine gaps in the original eight** — nothing in the
+  plan linked **wave speed to wavelength** (dispersion), and nothing added a **ripple/capillary band** at all. Both
+  are now items **#9** and **#10**. The audit also found the shipped variability layers **dialled down 4–6× from
+  their design defaults**, which adds a **zero-code tuning phase (P0)** ahead of everything, and **pulls #5 (the
+  spectrum) up from last to second** because it is the keystone for what the owner actually asked for.
 - **Decision owner:** `lead-architect` (render plumbing, the wave-field seam, the ADR-0018/0023 impact);
   `art-pipeline` owns the look (σ, colour, thresholds, all tunables).
 - **Flagged from:** the owner (2026-07-28), reviewing which techniques from Unity's HDRP Water System are worth
   taking after we ruled out adopting the system itself (it is HDRP-only; we are URP 17.5 on the 2D Renderer):
   *"i maybe want that effect, as long as the end look gets pixelated, i can appreciate realness attributes …
   i think i want reflections too"*, then: *"make sure the plan includes all 8 elements."* This ADR records all
-  eight, tiered by what they touch.
+  eight, tiered by what they touch — plus **#9 and #10**, added the same day when the owner's variability
+  question exposed them as gaps (see Revision above).
 - **Related:** `0010-water-rendering.md` (the layered shader + nine shipped addenda — **this ADR revisits its
   eighth addendum's rejection of reflections**), `0018-shared-wave-field.md` (the field hulls ride),
   `0023-displaced-water-surface.md` (`DisplacedSea`, the calibrated iso-depth convention),
@@ -28,7 +36,8 @@ Unity's Water System is not adoptable here — it ships in HDRP, and `Packages/m
 `com.unity.render-pipelines.universal` 17.5.0 on the 2D Renderer. Adopting it would mean an HDRP conversion that
 takes out Light2D, the sprite shadows, `HiddenHarboursDayNight`, and the whole iso-facet hull stack. What *is*
 worth taking is the physics it embodies. Eight candidates were identified against the shipped shader (3,209 lines,
-nine addenda); this ADR decides all eight.
+nine addenda); #9 and #10 were added when the owner's variability question exposed them as gaps. This ADR decides
+all ten.
 
 ### Three findings from the live material that shape the decision
 
@@ -47,6 +56,33 @@ Read from `Assets/_Project/Art/Materials/Water.mat`, not assumed:
    This is also why §17.3 documents see-through and caustics as partly cancelling, to be tuned around.
 
 Finding 1 kills the obvious version of absorption. Finding 3 is where the physics does work no existing knob does.
+
+### Finding 4 — the variability layers are already built, and dialled down 4–6× (added with #9/#10)
+
+The owner asked for *"more variability, moving in different directions, ripples, variance in sizes, speed, building
+and collapsing."* Most of that is **shipped and turned down**. `Water.mat` against the ADR-0010 design defaults:
+
+| Property | Design default | Live | Effect of the gap |
+|---|---|---|---|
+| `_WindChop` | 0.4 | **0.07** | the wind-chop octave at ~1/6 strength |
+| `_Octave3Weight` | 0.3 | **0.108** | the cross-swell (the second direction) at ~1/3 |
+| `_FbmStrength` | 0.18 | **0.045** | the organic large-scale variance at ~1/4 |
+| `_FoamEvolveSpeed` | 0.25 | **0.1** | foam morphs 2.5× slower than designed |
+| `_OceanSwellSharpness` | 1.4 | **6** | crests narrow and peaked, not broad rolling bands |
+| `_FbmScale` | 0.05 | **3.26** | ⚠️ **inverted** — see below |
+
+`_FbmScale` is the one that looks like a defect rather than a taste call: **smaller = longer wavelength** for that
+control, so at 3.26 the layer ADR 0010 §5.7 describes as producing *"broad slow patches"* is producing fine speckle
+at roughly 65× the intended frequency. With its strength also at a quarter, **the large-scale variance layer is not
+doing its job.** Confirm with the owner before changing it — it may be deliberate — but it should be a decision.
+
+⚠️ `_Chop`, `_Roughness` and `_Flow` in the material are **sim-pushed at runtime** (`WaterSurface.PushUniforms`);
+their serialized values are last-write artefacts and must **not** be tuned there (`design/water-rendering.md`
+§12.1, the sim-override caveat).
+
+**This is why P0 exists.** Turning the existing knobs back up is free, and it is the only way to learn what is
+genuinely missing versus merely dialled out — which makes the #5 decision (the highest-risk item here) far better
+informed. Same lesson as `_ShallowTranslucency: 0` and `_DepthBands: 0`: **audit what is enabled before building.**
 
 ### The determinism tax (this sets the tiering, not visual impact)
 
@@ -102,6 +138,41 @@ and feed it as an **additional** gate alongside the existing crest factor. This 
 as they build, not only in amplitude, so today a storm reads as the same-sized water moving harder. Scale each
 band's spatial frequency by a curve in the already-pushed `_Chop`. **Visual octaves first (Tier A);** promoting the
 same law into `_WaveFieldParams` is Tier B and is deliberately deferred to (6).
+
+**(4b) #9 — Wave speed is DERIVED from wavelength (dispersion), not hand-set per octave.**
+Today each octave carries an independent, hand-tuned speed — `_WindChopSpeed` 0.09, `_CrossSwellSpeed` 0.025,
+`_OceanSwellSpeed` 0.018 — with **no relationship to its wavelength**. Real water disperses: long waves travel
+faster than short ones, `c = √(gλ/2π)` in deep water. Unrelated rates are a large part of why a multi-scale sea
+reads as **stacked layers sliding over each other** rather than one body of water.
+
+- **Derive each band's speed from its own wavelength**, through a single master `_DispersionScale` (a game-feel
+  scalar — true ocean speeds at our world scale would read wrong), keeping a per-band multiplier so the owner
+  retains art direction (rule 6). Setting `_DispersionScale = 0` falls back to today's independent speeds exactly.
+- **Shallow water uses the depth-limited form** `c = √(g·d)` off the **same read-only `depth`** every other layer
+  already consumes. Waves therefore **slow and bunch as they approach shore** — which is the physical *cause* of
+  the effect §5.12's shoreward bias hand-builds. Dispersion does not replace that bias; it earns part of it.
+- **Pairs with #4** — #4 sets each band's wavelength, #9 then sets its speed. Building #4 without #9 leaves the
+  sea-state response half-wired: waves that grow longer but do not speed up.
+- **Tier A while it drives the visual octaves; Tier B when promoted into `_WaveFieldParams`** — same discipline as
+  #1 and #4, and the promotion rides with (6).
+
+**(4c) #10 — A capillary RIPPLE band, gated by wind and by wave steepness.**
+The finest band in the shader is `_WindChopScale` at 0.7 — that is **chop, not ripples**, and nothing in the
+original eight adds one. Ripples are what makes water read as *water* close up. Add a short-wavelength octave
+(~0.08–0.15 m) riding **on** the larger waves:
+
+- **Gated by wind** (`_Roughness`) — no wind, no ripples, glass stays glass — and by **local wave steepness**, so
+  ripples sit on the **windward faces** of larger waves and are absent in their lee, which is what wind ripples
+  actually do. The steepness term is the slope of the existing field; no new uniform.
+- **Amplitude-capped to read as surface TEXTURE, not displacement.** This band must never enter the field hulls
+  ride — a ripple is not a force. Tier A, permanently.
+
+> ⚠️ **This is the most alias-prone layer in the shader, and the pixel grid is why.** At PPU=32 one pixel ≈ 3.1 cm,
+> so a 0.10 m ripple is ~3 px — resolvable, but barely. It must be quantized on the **world** grid (the crawl law)
+> and dithered at its threshold, or it degenerates into shimmer. **And it must fade out with camera zoom:** at a
+> wider zoom tier a ripple falls below one pixel and becomes pure aliasing, so its amplitude scales down per
+> discrete zoom tier. Prototype the zoom fade before committing to the band — if it cannot be made stable across
+> the zoom tiers, this item is not worth shipping.
 
 ### Tier B — the shared wave field (C# twin + headless tests mandatory)
 
@@ -225,6 +296,8 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #4 band scaling | Scales frequency only — the pixelize step is downstream and unchanged |
 | #1 fetch | Fixed-step march on pixelized coords; `_FetchBands` quantizes the result |
 | #5 spectrum | Field is quantized where it is read, exactly as today |
+| #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
+| #10 ripples | ⚠️ The hard one: world-grid quantized **and** dithered at threshold, **and** amplitude faded per discrete zoom tier or it aliases into shimmer |
 | #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
 | #6 wake buffer | Cells anchored to the **world** PPU grid; camera-relative addressing only, scrolled in whole world cells |
 
@@ -232,25 +305,38 @@ decisions above). This is the one place where "pixelate at the end" would have s
 
 ## Phasing
 
+**Re-ordered 2026-07-28** after the owner named wave variability as the priority. #5 moves from last to second,
+because it is the keystone for *variance in sizes*, *directions* and *building and collapsing*. A new **P0** goes
+ahead of everything, because it is free and it tells us how much of the ask is already paid for.
+
 | Phase | Items | Tier | Why here |
 |---|---|---|---|
-| **P1** | #2 caustics, #3 convergence foam, #4 band scaling (visual) | A | Cheapest, no sim risk, no plumbing. Immediate legibility win. |
-| **P2** | #7 absorption + `_SeabedTex` bake | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. |
-| **P3** | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) | C | The owner's second explicit ask; depends on nothing above. |
-| **P4** | #6 advected foam buffer | C | **Sequenced against the in-flight wake PRs** — decide before they land. |
-| **P5** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
-| **P6** | #5 spectrum + grouping; #4 promoted into `_WaveFieldParams` | B | Largest payoff, largest risk. Changes boat feel — owner verdict required. |
+| **P0** | **Tuning pass — no code.** Restore `_WindChop`, `_Octave3Weight`, `_FbmStrength`, `_FoamEvolveSpeed` toward defaults; resolve the inverted `_FbmScale`; owner ruling on `_OceanSwellSharpness` | — | **Free.** Finding 4: the variability layers are built and dialled down 4–6×. Separates "missing" from "turned off" **before** committing to the riskiest item. |
+| **P1** | #2 caustics, #3 convergence foam, #4 band scaling, **#9 dispersion** (all visual) | A | Cheapest, no sim risk, no plumbing. #9 pairs with #4 — wavelength and speed must land together. |
+| **P2** | **#5 spectrum + grouping** ⬆ (was P6); #4/#9 promoted into `_WaveFieldParams` | B | **Pulled up.** JONSWAP weighting = variance in sizes; directional spreading = a continuous spread, not 3 discrete axes; **grouping = crests that grow and die.** |
+| **P3** | **#10 ripples** | A | After #5 deliberately — the ripple band should ride the *spectrum's* waves, not the octaves it replaces. |
+| **P4** | #7 absorption + `_SeabedTex` bake | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. |
+| **P5** | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) | C | The owner's second explicit ask; depends on nothing above. |
+| **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
+| **⏱ Parallel** | #6 advected foam buffer | C | **Not phase-ordered — externally clocked.** Must be decided against the **in-flight wake PRs** whatever else is running; retrofitting after they land is materially more expensive. |
 
-P1–P4 are independent and can proceed in parallel across lanes. P5–P6 are serial and gated on ADR 0018 amendment.
+**The cost of this re-order, stated plainly.** Pulling #5 to P2 brings the Tier B risk forward: it changes what the
+hulls ride, so the ADR 0018 amendment, the C# twins and the **owner feel verdict** all land *before* absorption and
+reflections do. That is the right trade if wave variability is the priority — but it means the visible payoff of
+P4/P5 arrives later, and a bad feel verdict at P2 stalls the queue behind it. P0 exists partly to de-risk exactly
+that: if the knobs deliver most of the ask, #5 can be scoped smaller or deferred again on evidence.
+
+P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial and gated on the ADR 0018 amendment.
 
 ---
 
 ## Determinism, save & performance (the invariants held)
 
-- **Every item is visual-only except P5-promotion and P6.** #2/#3/#4/#7/#8/#6 touch `col.rgb` / `col.a` (and, for
-  #6/#8, their own render targets) and **never** `depth`, `clip()`, `_WaterLevel`, the height read, or the sim.
-  Nothing enters the save (rule 5 / ADR 0008).
-- **#1-promoted and #5 do change the field hulls ride.** They are deterministic functions of
+- **Every item is visual-only except P2 and the P6 promotion.** #2/#3/#4/#7/#8/#6/#9/#10 touch `col.rgb` / `col.a`
+  (and, for #6/#8, their own render targets) and **never** `depth`, `clip()`, `_WaterLevel`, the height read, or
+  the sim. Nothing enters the save (rule 5 / ADR 0008). **#10 is Tier A permanently** — a ripple is surface
+  texture, not a force, and must never enter the field hulls ride.
+- **#5, plus the #4/#9 promotions and #1-promoted, do change the field hulls ride.** They are deterministic functions of
   `(worldSeed, gameTime)` + authored height, recomputed and never saved — but they require C# twins, headless
   determinism tests, and an **ADR 0018 amendment**. This is stated as a gate, not a footnote.
 - **Rule 6 throughout:** every new constant is a material property. Every item defaults to **passthrough**
@@ -263,7 +349,13 @@ P1–P4 are independent and can proceed in parallel across lanes. P5–P6 are se
 
 - **New pure twins, headless:** `WaterAbsorption.Transmission(σ, depth)` / `BandTransmission` (monotone decreasing;
   per-channel ordering — red extinguishes before blue; σ = 0 exact passthrough; the 2× path applied; banding
-  quantizes). `WaterFoam.Convergence`. `WaterFetch.Fetch01`. Spectrum weighting + grouping twins for P6.
+  quantizes). `WaterFoam.Convergence`. `WaterFetch.Fetch01`. Spectrum weighting + grouping twins for **P2**.
+  **`WaterDispersion.PhaseSpeed(λ, depth)`** — monotone increasing in wavelength (long waves outrun short ones),
+  the shallow branch slows toward zero depth, deep and shallow forms agree at the transition, and
+  `_DispersionScale = 0` reproduces today's independent per-octave speeds exactly.
+  **`WaterRipple.SteepnessGate` + the per-zoom-tier amplitude fade** — ripples present on windward faces and absent
+  in the lee, zero at zero wind, and **amplitude → 0 as the zoom tier makes the band sub-pixel** (the anti-aliasing
+  guard; this is the test that decides whether #10 ships at all).
 - **`WaterShaderCompileGuardTests` continues to force-compile the shipped variant** — no `+` in any `[Header]` or
   property string, **no `[unroll]` over a runtime bound** (directly relevant to #1's march). The magenta class stays
   guarded.
@@ -304,5 +396,15 @@ P1–P4 are independent and can proceed in parallel across lanes. P5–P6 are se
   so the answer does not block this plan — but it is the owner's call and worth making deliberately.
 - **`_ShallowTranslucency: 0`** — the Arc C see-through has been dark since it shipped. P2 supersedes it; confirm
   that is the intent rather than reviving it first.
-- **Boat feel under P6.** The spectrum changes what hulls ride. The owner owes a feel verdict, and it should be
-  taken against the same hull set as the ADR 0023 verdict so the comparison is honest.
+- **Boat feel under P2 (was P6).** The spectrum changes what hulls ride. The owner owes a feel verdict, and it
+  should be taken against the same hull set as the ADR 0023 verdict so the comparison is honest. Now arrives
+  earlier in the queue — see "the cost of this re-order".
+- **Does P0 shrink #5?** If restoring the dialled-down layers delivers most of the variability ask, #5 can be
+  scoped down or deferred again. Decide this **on the evidence from P0**, not in advance.
+- **`_FbmScale` — defect or taste?** 65× off its design intent on the control that produces broad patches. Needs
+  an explicit owner ruling before it is touched; it is the one P0 change that is not obviously safe.
+- **Can #10 survive the zoom tiers?** A ~3 px ripple is sub-pixel at wider zoom. If the per-tier amplitude fade
+  cannot be made stable, **drop the item** rather than ship a shimmer source — prototype before committing.
+- **Does #9 subsume part of §5.12's shoreward bias?** Depth-limited dispersion slows and bunches waves near shore,
+  which is what the hand-built bias approximates. If so, `_ShorewardBias` may want reducing rather than removing —
+  measure, don't assume.
