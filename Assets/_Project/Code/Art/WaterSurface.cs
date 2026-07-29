@@ -305,8 +305,14 @@ namespace HiddenHarbours.Art
             "_SpecAmount", "_SpecSharpness", "_SpecSwellBias",
             // caustics (+ the Arc C day gate, so a FoggySmother preset can kill the sun-dapple)
             "_CausticAmount", "_CausticScale", "_CausticDepth", "_CausticTexStrength", "_CausticDayGate",
-            // shallows see-through (Arc C — how much the seabed hints through the water per mood)
-            "_ShallowTranslucency",
+            // seabed absorption (ADR 0027 #7) — ONE turbidity scalar in 1/m, so the weather blend
+            // makes a MURKY sea a DERIVED state (Water_StirredBrown is no longer a hand-picked
+            // colour: it is high sigma over the same painted ramp). Supersedes the retired
+            // "_ShallowTranslucency", which could only fade a SCALAR alpha and never carried
+            // per-channel transmission. The per-channel character lives in the fixed
+            // _AbsorptionRatio VECTOR (authored art, not eased), which is why the mood-eased half
+            // is a single float and fits here (rule 6; twin: WaterAbsorption.Sigma).
+            "_Turbidity",
             // aesthetic pass (owner mandate 2026-07-08): deep-blue enrichment, foam clumping, face shading —
             // all look/mood props (a fog preset kills the navy pull + the lit faces; a storm mood can gather
             // the foam harder), never physics.
@@ -724,6 +730,15 @@ namespace HiddenHarbours.Art
                 if (wsum > 1e-6f) mpb.SetColor(id, sum / wsum);
             }
         }
+
+        /// <summary>
+        /// The world-space rectangle the height map covers — the SAME rect the shader receives as
+        /// <c>_HeightWorldMin</c> / <c>_HeightWorldSize</c>. Exposed read-only so the ADR 0027 #7
+        /// seabed bake can be authored over exactly that frame (a bottom baked over a different
+        /// rect would slide against the coast whose depth decides how much of it shows).
+        /// </summary>
+        public Rect HeightWorldRect =>
+            new Rect(_heightWorldCenter - _heightWorldSize * 0.5f, _heightWorldSize);
 
         /// <summary>
         /// (ADR 0014) Point this surface at a hand-painted height map: set the painted texture + its world

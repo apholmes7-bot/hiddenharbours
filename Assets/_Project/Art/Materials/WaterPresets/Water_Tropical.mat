@@ -91,6 +91,7 @@ Material:
     - _SwashAmplitude: 1
     - _SwashScale: 0.2
     - _SwashSpeed: 0.08
+    - _Turbidity: 0.12
     - _UntileStrength: 0.644
     - _UseCausticTex: 1
     - _UseDepthRamp: 1
