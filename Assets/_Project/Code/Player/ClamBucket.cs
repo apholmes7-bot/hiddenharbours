@@ -32,6 +32,16 @@ namespace HiddenHarbours.Player
 
         private readonly List<CatchItem> _items = new();
 
+        private void Awake()
+        {
+            // The dump verb rides in with the player's hand-carried hold (M1 §7.3): one global
+            // CatchDumpInput per scene, runtime-spawned so no builder re-run is needed — the same
+            // self-install pattern ShipHold uses for its DeckContainerPresenter. Play mode only
+            // (EditMode tests add ClamBuckets freely and must stay input-free).
+            if (Application.isPlaying && FindAnyObjectByType<CatchDumpInput>() == null)
+                gameObject.AddComponent<CatchDumpInput>();
+        }
+
         /// <summary>The pail's clam capacity (0 when the player doesn't own a bucket and ownership is required).</summary>
         public int Capacity => _capacity;
 

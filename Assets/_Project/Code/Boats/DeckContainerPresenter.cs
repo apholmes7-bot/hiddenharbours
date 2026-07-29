@@ -105,6 +105,7 @@ namespace HiddenHarbours.Boats
             // a landed catch, a sale, a load-restore, and a bought hull (capacity + container change).
             EventBus.Subscribe<FishCaught>(OnFishCaught);
             EventBus.Subscribe<CatchSold>(OnCatchSold);
+            EventBus.Subscribe<CatchDumped>(OnCatchDumped);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
             EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
             Refresh();
@@ -114,12 +115,14 @@ namespace HiddenHarbours.Boats
         {
             EventBus.Unsubscribe<FishCaught>(OnFishCaught);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
+            EventBus.Unsubscribe<CatchDumped>(OnCatchDumped);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
         }
 
         private void OnFishCaught(FishCaught _) => Refresh();
         private void OnCatchSold(CatchSold _) => Refresh();
+        private void OnCatchDumped(CatchDumped _) => Refresh();   // dumped rubbish empties the tray too
         private void OnGameLoaded(GameLoaded _) => Refresh();
         private void OnBoatPurchased(BoatPurchased _) => Refresh();
 
