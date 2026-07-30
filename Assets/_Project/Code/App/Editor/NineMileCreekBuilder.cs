@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -59,6 +60,8 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
+        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
+        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtShipwright = "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png";
         const string ArtFishStall  = "Assets/_Project/Art/Sprites/Buildings/FishBuyerStall.png";
         const string ArtHouseRed   = "Assets/_Project/Art/Sprites/Buildings/NineMileCreekHouseRed.png";
@@ -88,6 +91,70 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 DockZonePos  = new Vector3(4f, 0f, 0f);  // the wharf's seaward (EAST) HEAD — dock here
         public static readonly Vector3 DisembarkPos = new Vector3(2f, 0f, 0f);  // on the public wharf deck planks (west of the head)
         public static readonly Vector3 ToCovePassagePos = new Vector3(14f, 0f, 0f); // return passage: EAST edge → sail east back to the cove
+
+        // --- CREEKSIDE SITES (named, because other things are derived FROM them) ---------------------
+        // These were inline literals in Build(). They are constants now for two reasons: rule 6, and
+        // because the people, the dory's sightline and the tests all have to be able to ask where a
+        // building IS without a second copy of the number (the island's #345 lesson). Every one is on the
+        // WEST land (x < -4, the shoreline fence); the harbour is open to the EAST.
+        //
+        // ⚠️ The rows at x = -8 and x = -12 are also what the tree scatter at the bottom of this file is
+        // authored around, so moving one means checking the trees with it.
+
+        /// <summary>
+        /// The fish buyer's truck, off the quay's south-west corner where the planks meet the yard. THE
+        /// beat of §7.2's exit — you arrive and you SELL — so it is inside a stall's reach of the deck
+        /// rather than back among the buildings where it used to sit (it was at (-8, -3), a walk).
+        ///
+        /// <para>South rather than north for two reasons: it is the side the mooring edge and the fleet
+        /// are on, which is where fish actually come ashore, and it keeps the truck out of the line
+        /// between the arrival point and the derelict dory — see <see cref="NineMileCreekDory"/>, whose
+        /// sightline test is what would fail if this moved into it.</para>
+        /// </summary>
+        public static readonly Vector3 FishBuyerPos = new Vector3(-6.5f, -3.5f, 0f);
+
+        /// <summary>The shed that sells the Punt and the pots.</summary>
+        public static readonly Vector3 ShipwrightShedPos = new Vector3(-8f, 3f, 0f);
+
+        /// <summary>The yard the damaged dory is bought from — and where the used-outboard man stands.</summary>
+        public static readonly Vector3 DoryYardPos = new Vector3(-8f, 8f, 0f);
+
+        /// <summary>The harbourmaster's office: the cod licence.</summary>
+        public static readonly Vector3 HarbourmasterPos = new Vector3(-12f, 9f, 0f);
+
+        /// <summary>The chandlery: the rod.</summary>
+        public static readonly Vector3 ChandleryPos = new Vector3(-12f, -9f, 0f);
+
+        /// <summary>Flavour, north.</summary>
+        public static readonly Vector3 FlavourHouseRedPos = new Vector3(-12f, 5f, 0f);
+
+        /// <summary>Flavour, south.</summary>
+        public static readonly Vector3 FlavourHouseTealPos = new Vector3(-12f, -5f, 0f);
+
+        /// <summary>
+        /// The ground a creekside building reserves, as a RADIUS. These are still greybox 5 × 5 m squares
+        /// (the village kit dresses them in a later pass), so this is that square's half-diagonal — a
+        /// circle for the same reason the island's village reserves one: it is the same claim at every
+        /// facing, and a facing is the first thing that changes.
+        /// </summary>
+        public static readonly float CreeksideBuildingRadius = Mathf.Sqrt(2f) * 2.5f;
+
+        /// <summary>Every creekside building site, for anything that has to ask "is one of these in the
+        /// way?" — the dory's arrival sightline, for one.</summary>
+        public static IReadOnlyList<Vector3> CreeksideBuildingSites => new[]
+        {
+            FishBuyerPos, ShipwrightShedPos, DoryYardPos,
+            HarbourmasterPos, ChandleryPos, FlavourHouseRedPos, FlavourHouseTealPos,
+        };
+
+        /// <summary>
+        /// Which market the creek's buyer IS. It has to be said out loud: <see cref="Market"/> defaults to
+        /// <see cref="MarketId.Cove"/>, and a Market left at its default here quietly reads the HOME
+        /// COVE's demand and price level — so the island store's "deliberately worse prices" (§7.5) would
+        /// be measured against the wrong outlet and the whole reason to cross would evaporate with
+        /// nothing failing.
+        /// </summary>
+        public const MarketId CreekMarket = MarketId.NineMileCreek;
 
         // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
         // Nine Mile Creek now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain —
@@ -312,10 +379,14 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekWharf.Place(terrain);
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
-            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), new Vector2(-8f,  3f), waterSprite, new Color(0.50f, 0.42f, 0.34f));
-            var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  new Vector2(-8f, -3f), waterSprite, new Color(0.42f, 0.50f, 0.52f));
-            MakeBuilding("NineMileCreekHouseRed",  LoadSpriteAny(ArtHouseRed),  new Vector2(-12f,  5f), waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
-            MakeBuilding("NineMileCreekHouseTeal", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -5f), waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
+            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), ShipwrightShedPos, waterSprite, new Color(0.50f, 0.42f, 0.34f));
+            // The buyer's truck stands at the HEAD of the quay now, not back in the building row: §7.2's
+            // exit is "you arrive off the sandbar, SELL", and a till four buildings inland is a walk
+            // before it is a beat. StallGate's reach is 4 m from the stall, so from here you sell with
+            // your feet still on the concrete.
+            var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  FishBuyerPos, waterSprite, new Color(0.42f, 0.50f, 0.52f));
+            MakeBuilding("NineMileCreekHouseRed",  LoadSpriteAny(ArtHouseRed),  FlavourHouseRedPos, waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
+            MakeBuilding("NineMileCreekHouseTeal", LoadSpriteAny(ArtHouseTeal), FlavourHouseTealPos, waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
 
             // --- SHORELINE BOUNDARY ---------------------------------------------------------
             // Mirror the cove's ShoreEdge (an EdgeCollider2D fence dividing land from water) so the boat
@@ -337,6 +408,13 @@ namespace HiddenHarbours.App.Editor
             var sell   = fishStall.AddComponent<WharfSellPoint>();
             fishStall.AddComponent<DevSellInput>();          // RequireComponent(WharfSellPoint) — present
             SetRef(market, "_config", config);
+            // ⭐ AND SAY WHICH MARKET IT IS. This was missing, and it was silent: Market defaults to
+            // MarketId.Cove, so the creek's buyer has been quoting the HOME COVE's demand and price level.
+            // Everything downstream of it read as if it worked — a sale paid out, a glut depressed a price
+            // — while the one thing the outlet exists to be (the better price you cross for, §7.2/§7.5)
+            // was not true. No new economy code: the channel, the levels and the arithmetic all shipped in
+            // #356; this is the one line of PLACEMENT that connects the creek to them.
+            SetEnum(market, "_marketId", CreekMarket);
             SetRef(buyer, "_market", market);
             SetRef(sell, "_buyer", buyer);
 
@@ -380,13 +458,13 @@ namespace HiddenHarbours.App.Editor
 
             // Harbourmaster's office: sells the cod licence (LicenseVendor → license.cod). Reuse a flavour
             // house sprite (no new art — art-pipeline's lane); it sits north on the WEST land.
-            var harbourOffice = MakeBuilding("HarbourmasterOffice", LoadSpriteAny(ArtHouseRed), new Vector2(-12f, 9f), waterSprite, new Color(0.46f, 0.40f, 0.52f));
+            var harbourOffice = MakeBuilding("HarbourmasterOffice", LoadSpriteAny(ArtHouseRed), HarbourmasterPos, waterSprite, new Color(0.46f, 0.40f, 0.52f));
             var licenseVendor = harbourOffice.AddComponent<LicenseVendor>();
             SetRef(licenseVendor, "_license", codLicense);
             SetRef(licenseVendor, "_walletProvider", providersGo);
 
             // General store / chandlery: sells the rod (GearShop → gear.rod). South on the WEST land.
-            var store = MakeBuilding("GeneralStore", LoadSpriteAny(ArtHouseTeal), new Vector2(-12f, -9f), waterSprite, new Color(0.40f, 0.50f, 0.40f));
+            var store = MakeBuilding("GeneralStore", LoadSpriteAny(ArtHouseTeal), ChandleryPos, waterSprite, new Color(0.40f, 0.50f, 0.40f));
             var gearShop = store.AddComponent<GearShop>();
             SetRef(gearShop, "_offer", rodOffer);
             SetRef(gearShop, "_walletProvider", providersGo);
@@ -395,10 +473,25 @@ namespace HiddenHarbours.App.Editor
             // the damaged-dory offer (buy → owned-but-unusable; pay TryRepair → usable). Its own GO so it
             // doesn't fight the Punt shipwright's offer; west land, beside the shed. Buy/repair screens are
             // ui-ux's, so no dev-input is added here (P already buys the Punt next door).
-            var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), new Vector2(-8f, 8f), waterSprite, new Color(0.46f, 0.40f, 0.32f));
+            var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), DoryYardPos, waterSprite, new Color(0.46f, 0.40f, 0.32f));
             var doryShipwright = doryYard.AddComponent<Shipwright>();
             SetRef(doryShipwright, "_offer", damagedDoryOffer);
             SetRef(doryShipwright, "_walletProvider", providersGo);
+
+            // --- THE USED-OUTBOARD SELLER (presence + the flagged wiring point) ------------------------
+            // §7.2 asks for the used-outboard seller's PRESENCE here. His purchase and his mechanics are
+            // gameplay-systems' lane and are running concurrently, so this is the stall he attaches to and
+            // nothing more: an empty, named GameObject in the dory yard beside the hull he also sells.
+            //
+            // ⭐ THE SEAM, spelled out so nobody has to guess it: the outboard rides the EXISTING
+            // shipwright-offer path. Add the vendor component here (a GearShop over a GearOffer for a
+            // straight purchase, or a Shipwright over a ShipwrightOffer if it turns out to be an upgrade
+            // with a fitting cost), point it at the offer asset economy-sim authors under Data/Gear or
+            // Data/Shipwright, and wire its "_walletProvider" to the PersistentWalletProxy that is already
+            // in this scene ("PersistentProviders") — the same provider every other till here uses. No
+            // dev-input is attached, deliberately: 'P' already buys the Punt next door.
+            var outboardStall = new GameObject("UsedOutboardSeller");
+            outboardStall.transform.position = new Vector3(DoryYardPos.x + 2f, DoryYardPos.y - 2f, 0f);
 
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------
             var loaderGo = new GameObject("RegionSceneLoader");
@@ -444,6 +537,16 @@ namespace HiddenHarbours.App.Editor
             // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
             gwAnchor.ConfigureExtent(NineMileCreekSeaCenter, NineMileCreekSeaSize);
 
+            // --- THE DERELICT DORY (§7.2's exit condition, and the template DoD rung) --------------------
+            // She lies at the wharf, hauled out on the quay's landward end — canon's own words (the
+            // nine-mile-creek-wharf doc's second owner rider) and the only place the on-foot camera can
+            // actually promise you see her from where you land. Dressing, not a boat: buying her is the
+            // DamagedDoryOffer wired above.
+            NineMileCreekDory.Place();
+
+            // --- THE TWO PEOPLE (anchored, unscheduled — §7.1's rule) ------------------------------------
+            var creekPeople = NineMileCreekPeople.Place(waterSprite);
+
             // --- DEV BOOTSTRAP (owner iteration: press Play IN NINE MILE CREEK and walk/fish immediately) ------
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,
             // so playing this scene directly used to give "no character loads" (the owner's report). The
@@ -451,7 +554,7 @@ namespace HiddenHarbours.App.Editor
             // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
             // that activates it ONLY when the scene is played directly in the editor and destroys it
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
-            BuildDevBootstrap(config, cam, DisembarkPos);
+            BuildDevBootstrap(config, cam, DisembarkPos, creekPeople);
 
             // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
             // A sparse-to-moderate scatter of cold-coast trees on the WEST quay land only — the far-west
@@ -507,7 +610,8 @@ namespace HiddenHarbours.App.Editor
         /// Null-safe on art/data (the greybox rule): missing sheets/defs leave pieces inert, never break
         /// the build.
         /// </summary>
-        static void BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn)
+        static void BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn,
+                                      List<Interactable> creekPeople)
         {
             var devCore = new GameObject("DevCore");
 
@@ -601,6 +705,33 @@ namespace HiddenHarbours.App.Editor
             var toastGo = new GameObject("DevToast");
             toastGo.transform.SetParent(devCore.transform, false);
             toastGo.AddComponent<DevToast>();
+
+            // The proximity INTERACT driver + the dialogue panel, so the creek's two people actually
+            // SPEAK when the owner presses Play here. It lives INSIDE the dev core because a
+            // WorldInteractor needs a serialize-reference to the on-foot player, and the only player that
+            // exists in this scene at build time is the dev one — the real player arrives from the
+            // persistent core, a different scene.
+            //
+            // ⚠️ TODO (the same shape as the hold/wallet TODO at the top of this file, and the same
+            // owner): when the real core travels in, nothing binds it to these interactables, so Wendell
+            // and Hector are mute on a live arrival. The fix belongs with the travel rig — a runtime bind
+            // on arrival, like RegionTravelCoordinator already does for the hold — not with a second copy
+            // of the cast. The people, their words and their spots are correct either way.
+            if (creekPeople != null && creekPeople.Count > 0)
+            {
+                var dialogueGo = new GameObject("DialoguePresenter");
+                dialogueGo.transform.SetParent(devCore.transform, false);
+                var presenter = dialogueGo.AddComponent<DialoguePresenter>();
+                SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
+                SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+
+                var interactorGo = new GameObject("WorldInteractor");
+                interactorGo.transform.SetParent(devCore.transform, false);
+                var interactor = interactorGo.AddComponent<WorldInteractor>();
+                SetRef(interactor, "_player", playerGo.transform);
+                SetRef(interactor, "_presenter", presenter);
+                SetRefArray(interactor, "_interactables", creekPeople.ToArray());
+            }
 
             // Baked INACTIVE — the bootstrap below is the only thing that may ever activate it.
             devCore.SetActive(false);
@@ -722,6 +853,32 @@ namespace HiddenHarbours.App.Editor
             var p = so.FindProperty(field);
             if (p != null && p.propertyType == SerializedPropertyType.ObjectReference)
             { p.objectReferenceValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
+        }
+
+        /// <summary>
+        /// Persist an ENUM field by NAME, not by ordinal. <c>SerializedProperty.enumValueIndex</c> is an
+        /// index into <c>enumNames</c> rather than the enum's value, so writing <c>(int)someEnum</c> into
+        /// it is only right while the enum happens to be contiguous from zero — a silent wrong-value the
+        /// day somebody assigns an explicit number. Looking the name up is exact whatever the values are.
+        /// </summary>
+        static void SetEnum<TEnum>(Component c, string field, TEnum value) where TEnum : System.Enum
+        {
+            var so = new SerializedObject(c);
+            var p = so.FindProperty(field);
+            if (p == null || p.propertyType != SerializedPropertyType.Enum)
+            {
+                Debug.LogWarning($"[NineMileCreekBuilder] no enum field '{field}' on {c.GetType().Name}.");
+                return;
+            }
+            int i = System.Array.IndexOf(p.enumNames, value.ToString());
+            if (i < 0)
+            {
+                Debug.LogWarning($"[NineMileCreekBuilder] '{value}' is not a member of '{field}' on " +
+                                 $"{c.GetType().Name} — left at its default.");
+                return;
+            }
+            p.enumValueIndex = i;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static void SetString(Component c, string field, string value)
