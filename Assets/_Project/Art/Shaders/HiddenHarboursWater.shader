@@ -582,6 +582,23 @@ Shader "HiddenHarbours/Water"
         _DriftLineSpeed      ("Drift line downstream speed (x _Flow)", Float) = 0.5
         _DriftLineStretch    ("Drift line along-flow stretch (thin lanes)", Float) = 5.0
         _DriftLineScale      ("Drift line scale (lanes/unit)", Float) = 0.3
+        // ---- the Arc C UPGRADE: the lines join the SHARED drift + the SHARED field ------------------
+        // Three knobs, each defaulting to the SHIPPED behaviour bit-for-bit. Twin: WaterDriftLines.
+        //  (1) _DriftLineFoamDrift  — the streak basis, dialled from today's raw current toward the
+        //      SAME FoamDriftDir() the foam and whitecaps already drift along (a wind/current blend
+        //      that also carries the shoreward bias). §18.1 keyed this to the current ALONE and said so
+        //      deliberately; that was right about wind-vs-current and still left the lines reading a
+        //      different direction from the foam they are made of. Now a dial, not a hard choice.
+        //  (2) _DriftLineConvergence — a drift line is floating material COLLECTED on a convergence
+        //      line, which is why real ones sit in bands with clean water between them. Reuses ADR
+        //      0027 num 3's ConvergenceGate off the shared field — no second opinion about the same
+        //      physics. Costs 4 WaveFieldSample taps, and only above 0.
+        //  (3) _DriftLineGrid — the layer's own pixel cell, as a multiple of the PPU cell (ADR 0027's
+        //      scale-hierarchy note: deliberately DIFFERENT grids, not one shared lattice). A drift
+        //      lane is metres long, so a coarser cell reads as lane texture rather than pixel noise.
+        _DriftLineFoamDrift  ("Drift line follows shared foam drift (0 = current only / today)", Range(0,1)) = 0.0
+        _DriftLineConvergence("Drift line gathers on convergence lines (0 = off / today)", Range(0,1)) = 0.0
+        _DriftLineGrid       ("Drift line pixel grid (multiples of the PPU cell; 1 = today)", Range(1,8)) = 1.0
         _DriftLineSeaStateLo ("Drift line sea-state rise (_Chop; 0 = glass has none)", Range(0,1)) = 0.05
         _DriftLineSeaStateHi ("Drift line sea-state gone (_Chop; storm has none)", Range(0,1)) = 0.6
         _DriftLineColor      ("Drift line colour (a=0 reuses foam colour)", Color) = (0.92, 0.96, 0.98, 0.0)
@@ -995,6 +1012,9 @@ Shader "HiddenHarbours/Water"
                 float  _DriftLineSpeed;
                 float  _DriftLineStretch;
                 float  _DriftLineScale;
+                float  _DriftLineFoamDrift;
+                float  _DriftLineConvergence;
+                float  _DriftLineGrid;
                 float  _DriftLineSeaStateLo;
                 float  _DriftLineSeaStateHi;
                 float4 _DriftLineColor;
@@ -1033,6 +1053,15 @@ Shader "HiddenHarbours/Water"
             float2 Pixelize(float2 p)
             {
                 float ppu = max(_PixelsPerUnit, 1.0);
+                return floor(p * ppu) / ppu;
+            }
+
+            // ---- a layer's OWN pixel grid: the PPU cell times a divisor (ADR 0027's scale hierarchy) ----
+            // Divisor 1 is bit-identical to Pixelize above — the passthrough every consumer defaults to.
+            // Twin: WaterDriftLines.PixelizeGrid.
+            float2 PixelizeGrid(float2 p, float divisor)
+            {
+                float ppu = max(_PixelsPerUnit, 1.0) / max(divisor, 1.0);
                 return floor(p * ppu) / ppu;
             }
 
@@ -2651,7 +2680,7 @@ Shader "HiddenHarbours/Water"
             //   * DEPTH: fade out at the very shore (dt) so the lines live on open, navigable water, not the wet
             //     foam edge. All coords Pixelized (pixel-art faithful); noise is the shader's own ValueNoise
             //     (deterministic — no new RNG). Returns the additive RGB (faint, tinted toward the foam colour).
-            float3 DriftLines(float2 worldXY, float dt, float t)
+            float3 DriftLines(float2 worldXY, float dt, float depth, float t, float waveFreqScale)
             {
                 if (_DriftLineStrength <= 0.001)
                     return float3(0, 0, 0);                 // EXACT passthrough — opt-in (rule 6): today's look
@@ -2666,13 +2695,31 @@ Shader "HiddenHarbours/Water"
                 if (seaState <= 0.001)
                     return float3(0, 0, 0);                 // dead glass or full storm => no lines
 
-                // (2) the flow (CURRENT) aniso basis — the wind-aniso idiom keyed to _FlowDir, not _WindDir.
+                // (2) the aniso basis. TODAY: the raw CURRENT (_FlowDir) — §18.1's deliberate correction
+                // against using _WindDir. THE UPGRADE: dial toward the SHARED FoamDriftDir(), the same
+                // wind/current blend (plus shoreward bias) that the foam and whitecaps on this very
+                // surface already drift along. §18.1 was right that the wind is not the answer, and
+                // incomplete in that neither is the current alone: a real windrow follows the blend, and
+                // until now the lines and the foam they are MADE of read two different directions.
+                // Blend 0 returns the normalized current EXACTLY (twin: WaterDriftLines.DriftDirection).
                 float2 flowdir = normalize(_FlowDir.xy + float2(1e-4, 0));  // safe axis on a zero flow
+                if (_DriftLineFoamDrift > 0.001)
+                {
+                    float2 sharedDrift = FoamDriftDir(worldXY, depth);
+                    flowdir = normalize(lerp(flowdir, sharedDrift, saturate(_DriftLineFoamDrift))
+                                        + float2(1e-4, 0));
+                }
                 float2 flowperp = float2(-flowdir.y, flowdir.x);
-                float2 pp = Pixelize(worldXY * _DriftLineScale);
+                // (2b) THIS LAYER'S GRID. Divisor 1 = the shipped grid bit-for-bit. Note what the shipped
+                // numbers already were: the pixelize runs on the SCALED coord, so the world cell is
+                // 1/(ppu x _DriftLineScale) = 10.4 cm at PPU 32 and scale 0.3 — already 3.3x coarser than
+                // the caustics' 3.1 cm raw-world cell. That hierarchy partly existed by accident; the
+                // divisor makes it a choice (twin: WaterDriftLines.WorldCellMetres).
+                float2 pp = PixelizeGrid(worldXY * _DriftLineScale, _DriftLineGrid);
 
                 // WANDER: a slow low-freq noise nudge along the flow so the lanes drift/bend, not a ruler grid.
-                float wander = (ValueNoise(Pixelize(worldXY * _DriftLineScale * 0.35)) - 0.5) * 2.0;
+                float wander = (ValueNoise(PixelizeGrid(worldXY * _DriftLineScale * 0.35,
+                                                        _DriftLineGrid)) - 0.5) * 2.0;
 
                 // (3) advance ALONG the flow over time; stretch the along-axis so lanes read long + thin.
                 float stretch = max(_DriftLineStretch, 1.0);
@@ -2682,9 +2729,37 @@ Shader "HiddenHarbours/Water"
                 float2 lineUV = float2(along, across);
 
                 // (4) THIN RIDGED-NOISE LANES across the flow (the pow(saturate(1-|g1-g2|k)) streak idiom).
-                float g1 = ValueNoise(Pixelize(lineUV));
-                float g2 = ValueNoise(Pixelize(lineUV * 1.7 + 3.3));
+                float g1 = ValueNoise(PixelizeGrid(lineUV, _DriftLineGrid));
+                float g2 = ValueNoise(PixelizeGrid(lineUV * 1.7 + 3.3, _DriftLineGrid));
                 float lanes = pow(saturate(1.0 - abs(g1 - g2) * 2.4), 3.0);   // bright thin veins => streaks
+
+                // (4b) SCUM GATHERS WHERE THE SURFACE CONVERGES. A drift line is not a long texture — it
+                // is floating material COLLECTED on a convergence line, which is why real ones sit in
+                // bands with clean water between them. Reuse ADR 0027 num 3 ConvergenceGate off the SAME
+                // WaveFieldSample the foam's convergence term reads (four taps, central-differenced into
+                // the second derivatives) so the lines and the convergence FOAM agree about where the
+                // surface folds, instead of holding two opinions about one piece of physics. Weight 0
+                // returns exactly 1 = today (twin: WaterDriftLines.ConvergenceWeight); the whole branch
+                // is unreachable at the shipped default.
+                if (_DriftLineConvergence > 0.001)
+                {
+                    float de = max(_FoamConvergenceStep, 1e-3);
+                    float dhpx, dhmx, dhpy, dhmy, dcrF, dprF;
+                    float2 dspx, dsmx, dspy, dsmy;
+                    WaveFieldSample(Pixelize(worldXY + float2(de, 0.0)), waveFreqScale,
+                                    dhpx, dspx, dcrF, dprF);
+                    WaveFieldSample(Pixelize(worldXY - float2(de, 0.0)), waveFreqScale,
+                                    dhmx, dsmx, dcrF, dprF);
+                    WaveFieldSample(Pixelize(worldXY + float2(0.0, de)), waveFreqScale,
+                                    dhpy, dspy, dcrF, dprF);
+                    WaveFieldSample(Pixelize(worldXY - float2(0.0, de)), waveFreqScale,
+                                    dhmy, dsmy, dcrF, dprF);
+                    float dHxx = (dspx.x - dsmx.x) / (2.0 * de);
+                    float dHyy = (dspy.y - dsmy.y) / (2.0 * de);
+                    float dHxy = ((dspx.y - dsmx.y) + (dspy.x - dsmy.x)) / (4.0 * de);
+                    float conv = ConvergenceGate(dHxx, dHyy, dHxy, _FoamConvergencePinch);
+                    lanes *= lerp(1.0, conv, saturate(_DriftLineConvergence));
+                }
 
                 // (5) gates: sea-state bell * foam-dodge (fade down as wind rises) * open-water (fade at shore).
                 float windDodge = 1.0 - saturate(_Roughness) * 0.7;          // ease off so they don't fight foam
@@ -3491,7 +3566,7 @@ Shader "HiddenHarbours/Water"
                 // below bounds them. Reads the CURRENT (_FlowDir/_Flow — the SMOOTHED tidal set) so the lines
                 // "read the tide" for free; a BELL over _Chop keeps them off dead glass AND out of a storm.
                 // dt (the depth key) is READ-ONLY here (never depth/clip/_WaterLevel/the sim — P1, rule 5).
-                col.rgb += DriftLines(worldXY, dt, t);
+                col.rgb += DriftLines(worldXY, dt, depth, t, waveFreqScale);
 
                 // ---- PALETTE GUARD-RAIL: the final soft grade of the SEA itself (col.rgb ONLY; ADR 0015) -------
                 // Bound + gently pull the composited colour into the art-directed palette so it never washes out

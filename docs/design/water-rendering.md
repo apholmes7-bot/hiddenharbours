@@ -1986,6 +1986,82 @@ foam + whitecaps occupy, so the guard-rail bounds it and it composes cleanly wit
 `WaterSurface.cs` change is needed (it reuses `_FlowDir` / `_Flow`). The shipped `Water.mat` variant is
 force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not magenta-in-build).
 
+
+### 18.6 The Arc C upgrade — the lines join the SHARED drift and the SHARED field
+
+§18 shipped drift lines that read the current on their own and knew nothing about the wave field
+underneath them. Three knobs join it, each defaulting to the shipped behaviour **bit-for-bit**. Nothing
+here duplicates the streak build, the bell, the wander or the tint — **this is an upgrade of §18, not a
+second drift-line layer.** A parallel copy is exactly the mistake #323 spent a PR undoing.
+
+#### (1) The basis follows the SHARED foam drift (`_DriftLineFoamDrift`)
+
+§18.1 keyed the streak basis to `_FlowDir` and recorded that as a deliberate correction against using
+`_WindDir` — *"the wind drives roughness / whitecaps, the current drives where the water is going."*
+That reasoning was right about wind-vs-current and **still incomplete**: the foam on this very surface
+already drifts along `FoamDriftDir()`, a wind/current blend that also carries the shoreward bias, so the
+lines and the foam they are *made of* were reading two different directions. A real windrow follows the
+blend, not either force alone.
+
+So the choice becomes a dial: `0` = today's raw current, `1` = the shared `FoamDriftDir()`. It reuses
+the shared function rather than re-deriving a blend, so it cannot drift out of step with the foam.
+
+#### (2) Scum GATHERS where the surface converges (`_DriftLineConvergence`)
+
+A drift line is not a texture that happens to be long — it is floating material **collected on a
+convergence line**, which is why real ones sit in bands with clean water between them. The shared field
+already exposes that term: ADR 0027 #3's `ConvergenceGate` (twinned by `WaterFoam.Convergence`). The
+lanes multiply by it, so the drift lines and the convergence **foam** agree about where the surface is
+folding instead of holding two opinions about one piece of physics. Four `WaveFieldSample` taps, inside
+`if (_DriftLineConvergence > 0.001)` — unreachable at the default.
+
+**Measured:** at full weight the gate retains **11.6%** of the lane energy — the lanes really are
+confined to bands rather than merely dimmed.
+
+#### (3) The grid is chosen, not inherited (`_DriftLineGrid`)
+
+ADR 0027's Pixelation section asks for deliberately **different** grids per layer rather than every
+feature edge snapping to one shared lattice. `PixelizeGrid(p, divisor)` gives this layer its own cell as
+a multiple of the PPU cell; divisor 1 is bit-identical to `Pixelize`.
+
+> ⚠️ **The finding worth recording: the drift lines were ALREADY coarser than the caustics, by
+> accident.** `DriftLines` pixelizes the *scaled* coordinate (`Pixelize(worldXY · _DriftLineScale)`), so
+> its quantum is `1/ppu` in scaled space and `1/(ppu·scale)` in world metres — at PPU 32 and the shipped
+> `_DriftLineScale` 0.3 that is **10.4 cm**, against the caustics' **3.1 cm** on the raw world grid. The
+> hierarchy the ADR asks for partly existed before anyone chose it. The divisor makes it deliberate and
+> tunable; `WaterDriftLines.WorldCellMetres` is where the arithmetic lives, and a test pins it.
+
+**Recommended: `_DriftLineGrid` = 3** (≈ 31 cm cells) when the layer is dialled in. A drift lane is
+*metres* long, so a cell that size reads as lane texture; the 10.4 cm default reads closer to pixel
+noise at lane scale. Left at 1 so the default is the passthrough — this is a recommendation for the
+preset, not a new default.
+
+#### Passthrough — what proves what
+
+| Claim | Proved by |
+|---|---|
+| The **shipped** look is untouched | Inspection: `_DriftLineStrength` is 0, so `DriftLines()` returns before it reaches any new code. |
+| The three defaults are **bit-exact** identities | `WaterDriftLinesTests`, with **exact** equality (no tolerance) — blend 0 short-circuits before the lerp, convergence 0 returns literally 1, divisor 1 lands on `Pixelize`'s lattice. Plus the two unreachable `if` guards. |
+| No **visible** change at the defaults, on a GPU, through the real material | `DriftLineProbeTests`, against a **measured temporal floor** (see below). |
+
+> ⚠️ **Why the probe measures a floor instead of asserting byte-identity.** This water is time-driven and
+> `_Time` advances between `Camera.Render()` calls, so two frames of the *same* material differ —
+> **9366 px** on that test's first draft, which a naive byte-comparison reported as a broken passthrough.
+> The probe now measures the floor first (**6505 px**) and states each claim against it: the knobs at
+> their defaults move **4993 px** (inside the floor), while swinging the basis onto the shared drift
+> moves **26 230 px** (4× the floor).
+
+#### Tunables (rule 6; all default to today's look)
+
+| Property | Default | Recommended when dialled in | Effect |
+|---|---|---|---|
+| `_DriftLineFoamDrift` | `0` (today's current) | `1` | Swing the streak basis onto the shared `FoamDriftDir()`. |
+| `_DriftLineConvergence` | `0` (**OFF**) | `0.6` – `1` | Confine lanes to convergence lines (bands with clean water between). |
+| `_DriftLineGrid` | `1` (today's grid) | `3` | This layer's pixel cell, in multiples of the PPU cell. |
+
+`col.rgb` only — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim (P1 integrity,
+rule 5; the interior-mask clamp stack never notices). Twin: `WaterDriftLines`.
+
 ## 19. Surface rain rings (night-visible) + storm foam lanes (Arc C water visuals — final piece)
 
 The closing Arc C shader pass adds two opt-in `col.rgb`-only dressings that read the live sea mood: **surface
