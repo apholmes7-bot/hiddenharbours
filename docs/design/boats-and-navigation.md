@@ -781,6 +781,31 @@ the dev key-cycle already sails those hulls, which is exactly how the defect was
 serves canon §5.2's scale fantasy from the other side: constant PPU makes a tanker dwarf a dory —
 the camera has to step back far enough to let it.)*
 
+**BUILT 2026-07-30 — and the ruling's two constraints turned out to CONFLICT.** Two findings:
+
+1. **The defect was a silent CAP, not a missing derivation.** The step search ran integer UPSCALE only
+   (zoom ×1..×8) and `PixelPerfectCamera`'s own zoom clamps at ≥ 1, so the widest framing expressible
+   at all was `screenH / ppu` = **33.75 m** at 1080p. The defs *already* ask for 40 / 60 / 90 / 160 m
+   for dragger → tanker; every one was quietly served 33.75 and rendered at the **same** framing as
+   the others. The per-hull data was right all along and was being thrown away.
+2. ⚠️ **"Whole vessel visible" + "an integer pixel-perfect step" are unsatisfiable above ~37.5 m of
+   hull** at the locked PPU 32 (VS-23): a 110 m tanker is 3,520 asset pixels on a 1,920 px screen.
+   **Resolved by the coordinator (2026-07-30):** the ladder continues OUTWARD by integer **downscale**
+   (2:1, 3:1 …) — still a clean pixel ratio, 2×2 asset pixels to one screen pixel, no blur or shimmer,
+   unlike an arbitrary ortho size. Big hulls therefore lose pixel **detail** rather than being cropped.
+   A downscale step bypasses `PixelPerfectCamera` (which cannot express it) and drives the ortho.
+
+The derivation is a **floor, not a replacement**: `max(authored framing, hull footprint × margin)`, so
+everything up to the lobster boat keeps the intimate framing the owner is happy with and only big
+vessels move. The footprint is `length × max(sin(isoElevation), 1/aspect)` — **not** raw length: bow-on
+a hull is foreshortened into the short axis, and measuring against length would zoom out ~55 % further
+than any heading needs. Margin and elevation are serialized dials; length rides on `ActiveBoatChanged`.
+
+⚠️ **This interacts with the camera bounds clamp (scene-sizing §6 item 4).** A tanker framing is ~135 m
+tall / 240 m wide — wider than plenty of regions — so the per-axis *centre* path in `CameraBounds`
+stops being an edge case and becomes the normal state for big vessels in small waters.
+`HelmFramingTests` exercises framing × bounds together for exactly that reason.
+
 ### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
 
 Owner ask (2026-07-08): *"a few npc fishers… 3-5 boats sailing that can place their own buoys and haul
