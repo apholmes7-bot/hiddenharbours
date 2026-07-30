@@ -35,4 +35,5 @@ MonoBehaviour:
   SupplyElasticity: 0.2
   SpawnWeight: 0.9
   FavoredLures: 4
+  Bite: {fileID: 11400000, guid: 3e0c590048a64706959336f5fbe44ced, type: 2}
   RodFight: {fileID: 11400000, guid: 0d156b1bd93346e1b56b17898007ef3a, type: 2}

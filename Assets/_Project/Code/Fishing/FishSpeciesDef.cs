@@ -60,6 +60,14 @@ namespace HiddenHarbours.Fishing
         public bool LureFavored(LureTag lure)
             => lure != LureTag.None && (FavoredLures & lure) != 0;
 
+        [Header("Bite (owner drop §10 — opt-in, append-only)")]
+        [Tooltip("This species' BITE personality (BiteDef, data not code — brainstorm §10.2: how many " +
+                 "teasing false nibbles, how wide the true take's strike window, how readily she " +
+                 "returns after a miss). Leave EMPTY and the species keeps today's forgiving auto-hook " +
+                 "bite exactly — the same opt-in shape as RodFight below. Shipped values are " +
+                 "placeholder personalities the owner tunes in play.")]
+        public BiteDef Bite;
+
         [Header("Rod fight (Rod Fishing v2 — opt-in, append-only)")]
         [Tooltip("The v2 fight personality this species opts into (RodFightDef, data not code — design/" +
                  "rod-fishing-v2-brainstorm.md §5). Leave EMPTY and the species keeps the simple/legacy " +
