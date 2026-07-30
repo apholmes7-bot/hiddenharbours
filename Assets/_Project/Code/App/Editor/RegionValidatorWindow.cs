@@ -787,18 +787,25 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- gameplay points that must stay DRY at spring high water -------------------------
+            // ⚠ These are FEET points, so they are judged against the ON-FOOT standing surface: a
+            // registered standable structure's deck wins over the seabed beneath it (Core's
+            // StandableSurfaces seam). Collected from the scene rather than off the live registry, because
+            // in edit mode a component's OnEnable may or may not have run.
+            var surfaces = SceneStandableSurfaces(scene);
+
             foreach (var p in FindInScene<PlayerWalkController>(scene))
-                CheckDryPoint(terrain, swing, p.transform.position, p.gameObject,
+                CheckDryPoint(terrain, surfaces, swing, p.transform.position, p.gameObject,
                     "The player spawn", "you'd start the game standing in the sea");
             foreach (var i in FindInScene<Interactable>(scene))
-                CheckDryPoint(terrain, swing, i.transform.position, i.gameObject,
+                CheckDryPoint(terrain, surfaces, swing, i.transform.position, i.gameObject,
                     $"'{i.gameObject.name}' (NPC / interaction point)", "talking to them means wading at high tide");
 
             var anchors = FindInScene<RegionAnchor>(scene);
             foreach (var anchor in anchors)
             {
                 if (anchor.DisembarkPoint != null)
-                    CheckDryPoint(terrain, swing, anchor.DisembarkPoint.position, anchor.DisembarkPoint.gameObject,
+                    CheckDryPoint(terrain, surfaces, swing, anchor.DisembarkPoint.position,
+                        anchor.DisembarkPoint.gameObject,
                         "The disembark spot", "stepping off the boat would drop you into the water");
 
                 // --- and the boat side: the arrival must be afloat -------------------------------
@@ -837,19 +844,27 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        private void CheckDryPoint(ITidalTerrain terrain, RegionValidation.TideSwing swing,
+        /// <summary>Every standable structure authored in this scene — the decks the on-foot dryness checks
+        /// must stand on. Found by interface (like the terrain above) so a future moving/rotating
+        /// implementation is picked up without touching this window.</summary>
+        private static List<IStandableSurface> SceneStandableSurfaces(Scene scene)
+            => FindInScene<MonoBehaviour>(scene).OfType<IStandableSurface>().ToList();
+
+        private void CheckDryPoint(ITidalTerrain terrain, List<IStandableSurface> surfaces,
+                                   RegionValidation.TideSwing swing,
                                    Vector3 pos, Object ping, string what, string consequence)
         {
             var p = new Vector2(pos.x, pos.y);
-            if (RegionValidation.IsDryAt(terrain, p, swing.High))
+            if (RegionValidation.IsOnFootDryAt(terrain, surfaces, p, swing.High))
                 Add(Verdict.Pass, SecDry, $"{what} stays dry at spring high water.", null, ping);
             else
             {
-                float depth = RegionValidation.DepthAt(terrain, p, swing.High);
+                float depth = RegionValidation.OnFootDepthAt(terrain, surfaces, p, swing.High);
                 Add(Verdict.Fail, SecDry,
                     $"{what} at ({pos.x:0.#}, {pos.y:0.#}) FLOODS at high water — {consequence}.",
                     $"Water is {depth:0.##} m deep there at spring high ({swing.High:0.##} m). Move it onto " +
-                    "higher ground, or raise the ground under it.", ping);
+                    "higher ground, raise the ground under it, or build something standable over it " +
+                    "(a StandablePlatform deck, like the St Peters wharf).", ping);
             }
         }
 

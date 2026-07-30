@@ -644,6 +644,18 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   **"shallow-but-submerged depth" allowance is gone** (owner playtest): merely-shallow water that's still
   submerged, with no dock or land under you, is *not* a step-off — you can't disembark onto water. At the
   dock you land tidily on the planks; away from the dock you step off at the boat onto the bared land.
+- **…and the planks you land on are now FLOOR.** `InDockZone()` always let you off at an authored wharf, but
+  the *walk* that followed read the seabed under the deck: St Peters' one dock stands over a **dredged −1.0 m
+  slip** in a **±3.5 m** tide, so the on-foot sim measured **4.5 m of water at spring high** over the ratified
+  disembark point and the fisher swam across her own pier (never blocked — the never-trap rule lifts the wall
+  once you are already deep — just a slow-swim crawl with the submerge shader at the neck cap). A built deck
+  now registers as a **standable structure** through the Core `IStandableSurface` / `StandableSurfaces` seam,
+  so a person's standing height over it is the **deck**, not the bed
+  (`architecture/tech-architecture.md` §4.1, `time-tides-weather.md` §3.5). **The seabed is untouched** —
+  `BoatCrossing.DepthAt` and `OnLand()` still read the water the terrain authored, because the slip is dredged
+  by design and the hull needs that depth. This is also the contract the **M2 walkable deck / washboards**
+  (the deck/cleats/interact vision) need: the footprint is a *query*, so a deck that moves and rotates with
+  the hull is a later implementation, not a change to the seam.
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)

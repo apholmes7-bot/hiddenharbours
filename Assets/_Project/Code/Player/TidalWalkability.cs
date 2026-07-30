@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.Core;
 
@@ -28,44 +29,64 @@ namespace HiddenHarbours.Player
     /// tide service"</b>. In either case there is no falling-tide shoreline to enforce, so the gate is
     /// <b>disabled</b> (everywhere walkable) rather than locking the player in place — the safe default for
     /// a region that simply isn't tide-gated (e.g. a normal land scene, or EditMode before wiring).</para>
+    ///
+    /// <para><b>Standable structures come FIRST (the pier fix).</b> Before the elevation-vs-water answer,
+    /// every read here resolves the on-foot <em>standing</em> elevation through
+    /// <see cref="StandableSurfaces"/>: on a registered deck your feet are on the DECK, not on the seabed
+    /// under it. Without this the St Peters wharf — 246 planks over a dredged −1.0 m slip in a tide-gated
+    /// region — read as 4.5 m of open water at the ratified disembark point, so sailing home meant arriving
+    /// at your own island and swimming across your own pier. It is a substitution of one number, not a
+    /// second rule: the depth is still <c>waterLevel − standingElevation</c>, so a deck clear of the
+    /// highest water is dry at every tide, and away from any registered surface the answer is bit-identical
+    /// to what it was before the seam existed.</para>
     /// </summary>
     public static class TidalWalkability
     {
         /// <summary>
         /// True when the on-foot player may stand at <paramref name="worldPos"/> right now. Resolves the
-        /// authored ground elevation from <paramref name="terrain"/> and the deterministic water surface
-        /// from <paramref name="environment"/> at <paramref name="totalSeconds"/>, then asks
+        /// on-foot standing elevation (a registered <see cref="IStandableSurface"/>'s deck, else the
+        /// authored ground from <paramref name="terrain"/>) and the deterministic water surface from
+        /// <paramref name="environment"/> at <paramref name="totalSeconds"/>, then asks
         /// <see cref="TidalExposure.IsExposed(float,float)"/>. When either service is absent the region
         /// isn't tide-gated, so this returns <c>true</c> (the gate is off — never trap the walker).
         /// </summary>
         public static bool IsWalkable(ITidalTerrain terrain, IEnvironmentService environment,
+                                      IReadOnlyList<IStandableSurface> surfaces,
                                       double totalSeconds, Vector2 worldPos)
         {
             // No height map or no tide service → this region has no falling-tide shoreline to enforce.
             if (terrain == null || environment == null) return true;
 
             float waterLevel = environment.WaterLevelAt(totalSeconds);
-            float ground = terrain.ElevationAt(worldPos);
-            return TidalExposure.IsExposed(waterLevel, ground);
+            float standing = StandableSurfaces.StandingElevation(terrain.ElevationAt(worldPos), surfaces, worldPos);
+            return TidalExposure.IsExposed(waterLevel, standing);
         }
+
+        /// <summary>The no-structures overload — the pre-seam behaviour, kept so every existing call site
+        /// and test means exactly what it meant (a region with no standable surfaces).</summary>
+        public static bool IsWalkable(ITidalTerrain terrain, IEnvironmentService environment,
+                                      double totalSeconds, Vector2 worldPos)
+            => IsWalkable(terrain, environment, null, totalSeconds, worldPos);
 
         /// <summary>
         /// The water <b>depth</b> (m) over a position — the number the wade model scales feel and gates on
-        /// (≤ 0 dry; &gt; 0 is metres of water over the ground). Composes the deterministic water level
-        /// (<see cref="IEnvironmentService.WaterLevelAt"/>) with the authored ground
-        /// (<see cref="ITidalTerrain.ElevationAt"/>) via <see cref="TidalExposure.WaterDepth"/>. When either
-        /// service is absent the region isn't tide-gated, so it returns <see cref="float.NegativeInfinity"/>
+        /// (≤ 0 dry; &gt; 0 is metres of water over the standing surface). Delegates to the ONE on-foot
+        /// composition, <see cref="StandableSurfaces.OnFootDepth"/>: the deterministic water level
+        /// (<see cref="IEnvironmentService.WaterLevelAt"/>) over the standing elevation (a registered deck,
+        /// else the authored ground from <see cref="ITidalTerrain.ElevationAt"/>). When either service is
+        /// absent the region isn't tide-gated, so it returns <see cref="float.NegativeInfinity"/>
         /// ("as dry as can be" — everywhere fully walkable, gate off, never trap the walker — the depth
         /// analogue of <see cref="IsWalkable"/> returning <c>true</c>).
         /// </summary>
         public static float DepthAt(ITidalTerrain terrain, IEnvironmentService environment,
+                                    IReadOnlyList<IStandableSurface> surfaces,
                                     double totalSeconds, Vector2 worldPos)
-        {
-            if (terrain == null || environment == null) return float.NegativeInfinity;
-            float waterLevel = environment.WaterLevelAt(totalSeconds);
-            float ground = terrain.ElevationAt(worldPos);
-            return TidalExposure.WaterDepth(waterLevel, ground);
-        }
+            => StandableSurfaces.OnFootDepth(terrain, environment, surfaces, totalSeconds, worldPos);
+
+        /// <summary>The no-structures overload of <see cref="DepthAt"/> — the pre-seam read, unchanged.</summary>
+        public static float DepthAt(ITidalTerrain terrain, IEnvironmentService environment,
+                                    double totalSeconds, Vector2 worldPos)
+            => StandableSurfaces.OnFootDepth(terrain, environment, null, totalSeconds, worldPos);
 
         /// <summary>
         /// The on-foot <see cref="DepthBand"/> at a position (Dry/Wade/Swim/Deep) from the two owner
@@ -74,29 +95,35 @@ namespace HiddenHarbours.Player
         /// <see cref="DepthBand.Dry"/> (everywhere walkable at full speed).
         /// </summary>
         public static DepthBand BandAt(ITidalTerrain terrain, IEnvironmentService environment,
+                                       IReadOnlyList<IStandableSurface> surfaces,
                                        double totalSeconds, Vector2 worldPos, float wadeDepth, float swimLimit)
-            => TidalExposure.BandForDepth(DepthAt(terrain, environment, totalSeconds, worldPos), wadeDepth, swimLimit);
+            => TidalExposure.BandForDepth(DepthAt(terrain, environment, surfaces, totalSeconds, worldPos),
+                                          wadeDepth, swimLimit);
+
+        /// <summary>The no-structures overload of <see cref="BandAt"/> — the pre-seam read, unchanged.</summary>
+        public static DepthBand BandAt(ITidalTerrain terrain, IEnvironmentService environment,
+                                       double totalSeconds, Vector2 worldPos, float wadeDepth, float swimLimit)
+            => BandAt(terrain, environment, null, totalSeconds, worldPos, wadeDepth, swimLimit);
 
         /// <summary>
         /// Convenience over the live Core services (<see cref="GameServices.TidalTerrain"/> /
-        /// <see cref="GameServices.Environment"/> at the current <see cref="IGameClock.TotalSeconds"/>).
-        /// Used by <see cref="PlayerWalkController"/>; tests drive the explicit overload with doubles.
+        /// <see cref="GameServices.Environment"/> at the current <see cref="IGameClock.TotalSeconds"/>) and
+        /// the live <see cref="StandableSurfaces"/> registry. Used by <see cref="PlayerWalkController"/>;
+        /// tests drive the explicit overloads with doubles.
         /// </summary>
         public static bool IsWalkableNow(Vector2 worldPos)
         {
             IGameClock clock = GameServices.Clock;
             double now = clock != null ? clock.TotalSeconds : 0.0;
-            return IsWalkable(GameServices.TidalTerrain, GameServices.Environment, now, worldPos);
+            return IsWalkable(GameServices.TidalTerrain, GameServices.Environment,
+                              StandableSurfaces.Active, now, worldPos);
         }
 
-        /// <summary>Live water depth (m) over a position, over the current Core services + clock. Used by
-        /// <see cref="PlayerWalkController"/> to scale wade feel and gate the boat-only soft wall; tests drive
-        /// the explicit <see cref="DepthAt(ITidalTerrain,IEnvironmentService,double,Vector2)"/> overload.</summary>
-        public static float DepthNow(Vector2 worldPos)
-        {
-            IGameClock clock = GameServices.Clock;
-            double now = clock != null ? clock.TotalSeconds : 0.0;
-            return DepthAt(GameServices.TidalTerrain, GameServices.Environment, now, worldPos);
-        }
+        /// <summary>Live water depth (m) over a position, over the current Core services + clock + surface
+        /// registry. Used by <see cref="PlayerWalkController"/> to scale wade feel and gate the boat-only
+        /// soft wall; tests drive the explicit
+        /// <see cref="DepthAt(ITidalTerrain,IEnvironmentService,IReadOnlyList{IStandableSurface},double,Vector2)"/>
+        /// overload.</summary>
+        public static float DepthNow(Vector2 worldPos) => StandableSurfaces.OnFootDepthNow(worldPos);
     }
 }

@@ -247,6 +247,20 @@ This single rule produces *every* tidal gameplay consequence:
 
 > **Hard rule for tide-sensitive regions:** the region's authored seabed heightfield + the global tide is the **single source of truth** for "is this passable / walkable / a hazard right now." Boats query `waterDepth` for grounding (next doc); the player-on-foot query the same field for walkability on the flats.
 
+> **The one exception, and it is on foot only: things you BUILD over the water.** A wharf deck, a jetty,
+> a boardwalk — and in M2 a boat's own deck and washboards — are **standable structures**: the water under
+> them is exactly as deep as the heightfield says (a pier does not shoal the berth it stands in, and a hull
+> must still float there), but a *person's* standing height is the **deck**, not the seabed. Gameplay
+> resolves this through the Core `IStandableSurface` / `StandableSurfaces` seam
+> (`architecture/tech-architecture.md` §4.1), which substitutes ONE number — the highest registered deck
+> over the position, else the ground — into the same `waterDepth` rule above. So it is not a second rule
+> that could disagree with the first: a deck authored clear of the highest water is dry at every tide, and a
+> deck the sea genuinely reaches (a float near low water, an awash washboard) floods honestly through the
+> ordinary wade bands. **Away from any registered structure the answer is bit-identical to the rule above.**
+> This is what makes St Peters' one dock usable: it stands over a **dredged −1.0 m slip** in a region with a
+> **±3.5 m** tide, so without the seam the sim read **4.5 m of open sea at spring high water** over the
+> ratified disembark point and sailing home meant swimming across your own pier.
+
 > **Tide range & the wet-reveal tell (owner-ratified vision; art lands M2/M3).** Sablewick's working
 > harbours run a **big tide** — author **marina/wharf tide ranges of ~3–4 m** so the water visibly
 > *walks up and down the walls*. As the tide **falls**, wet pilings, harbour walls, slip ramps,

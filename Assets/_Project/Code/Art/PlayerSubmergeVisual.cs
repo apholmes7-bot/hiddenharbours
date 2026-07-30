@@ -303,24 +303,18 @@ namespace HiddenHarbours.Art
         public float WaterlineFrac => _waterlineFrac;
 
         /// <summary>
-        /// Water depth (m) over a world position, composed from the live Core services exactly as
-        /// <c>TidalWalkability.DepthNow</c> does — but WITHOUT referencing the Player module (rule 4): read the
-        /// tidal terrain + environment + clock straight off <see cref="GameServices"/> and combine with
-        /// <see cref="TidalExposure.WaterDepth"/>. Returns <see cref="float.NegativeInfinity"/> (fully dry →
-        /// passthrough) when the region isn't tide-gated (no terrain / no environment).
+        /// Water depth (m) over a world position — the SAME single on-foot composition the walk gate reads
+        /// (<see cref="StandableSurfaces.OnFootDepthNow"/>, which <c>TidalWalkability.DepthNow</c> also
+        /// delegates to), so the waterline on the body and the band the controller enforces are one number
+        /// and cannot diverge. Seam-clean: Core only, no Player-module reference (rule 4). Returns
+        /// <see cref="float.NegativeInfinity"/> (fully dry → passthrough) when the region isn't tide-gated.
+        ///
+        /// <para>⚠ This used to compose (water level − terrain elevation) itself, which was the same rule
+        /// spelled out twice — and the moment the standable-structure seam arrived the two disagreed: the
+        /// walk gate stood the fisher on the St Peters pier while this still read the −1.0 m slip beneath it
+        /// and painted her neck-deep on dry planks. One composition, one answer.</para>
         /// </summary>
-        private static float DepthOverFeet(Vector2 worldPos)
-        {
-            ITidalTerrain terrain = GameServices.TidalTerrain;
-            IEnvironmentService env = GameServices.Environment;
-            if (terrain == null || env == null) return float.NegativeInfinity;
-
-            IGameClock clock = GameServices.Clock;
-            double now = clock != null ? clock.TotalSeconds : 0.0;
-            float waterLevel = env.WaterLevelAt(now);
-            float ground = terrain.ElevationAt(worldPos);
-            return TidalExposure.WaterDepth(waterLevel, ground);
-        }
+        private static float DepthOverFeet(Vector2 worldPos) => StandableSurfaces.OnFootDepthNow(worldPos);
 
         // ==== self-install (mirrors WadeSplashEmitter) ====================================================
 

@@ -95,6 +95,20 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   and the future **water depth-gradient shader** read it through Core, never referencing World. **Null =
   open water** (everywhere submerged / no walkable ground) — callers null-check rather than throw. Closes
   ADR 0009's "within-region elevation source" open question; world + gameplay can now build in parallel.
+- **`Core.IStandableSurface` + `Core.StandableSurfaces`** — the **standable-structure** seam: things
+  BUILT (a wharf deck today; boat decks and washboards in M2) that a person stands *on*, whose standing
+  height is their own rather than the seabed's. `TryGetDeckElevation(worldPos, out deck)` answers "am I
+  over you, and how high is your deck" in **one** call — a query, not a `Rect` property, so a deck that
+  MOVES and ROTATES is a later *implementation* rather than a contract change. Registrants add themselves
+  to the static `StandableSurfaces` registry (many at once, so it mirrors `EventBus` rather than the
+  single-slot `TidalTerrain` accessor) and relinquish on disable; **an empty registry is bit-identical to
+  the pre-seam terrain-vs-water answer**. The whole rule is one substitution — `StandingElevation` picks
+  the highest deck over a position, else the ground — feeding the existing `TidalExposure` maths, so
+  `StandableSurfaces.OnFootDepth` is the **single composition** the walk gate, the sprint gate, the wade
+  bands and the body's waterline all read. ⚠ **On-foot only:** never the water render, the
+  boat-cross/grounding depth, the clam-baring or the seabed bake — a pier does not shoal the berth
+  beneath it. Added because the St Peters wharf stands over a dredged −1.0 m slip in a tide-gated region,
+  so the sim called the ratified disembark point 4.5 m of open sea at high water.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 

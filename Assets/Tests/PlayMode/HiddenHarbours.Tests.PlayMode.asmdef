@@ -12,6 +12,7 @@
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",
+        "HiddenHarbours.World",
         "HiddenHarbours.Environment",
         "HiddenHarbours.Art",
         "Unity.InputSystem"
