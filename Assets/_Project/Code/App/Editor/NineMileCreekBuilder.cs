@@ -125,11 +125,35 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The chandlery: the rod.</summary>
         public static readonly Vector3 ChandleryPos = new Vector3(-12f, -9f, 0f);
 
-        /// <summary>Flavour, north.</summary>
-        public static readonly Vector3 FlavourHouseRedPos = new Vector3(-12f, 5f, 0f);
+        /// <summary>
+        /// The two flavour houses, set well BACK from the working rows in the empty western half of the
+        /// land. They moved out there when they stopped being 5 m greybox squares: the village kit's
+        /// houses measure 6.6 × 8.1 m and 7.0 × 8.7 m in its own contract — half-diagonals of 5.2 and
+        /// 5.6 m against the 3.5 m the sprites reserved — so at their old x = −12 they would have been
+        /// standing in the harbourmaster's office. Sixteen metres apart, which is two footprints and a
+        /// lane; the tests re-derive both numbers from the contract rather than trusting this comment.
+        /// </summary>
+        public static readonly Vector3 FlavourHouseRedPos = new Vector3(-22f, 8f, 0f);
 
-        /// <summary>Flavour, south.</summary>
-        public static readonly Vector3 FlavourHouseTealPos = new Vector3(-12f, -5f, 0f);
+        /// <summary>Flavour, south. See the north one.</summary>
+        public static readonly Vector3 FlavourHouseTealPos = new Vector3(-22f, -8f, 0f);
+
+        // --- THE REGION'S OWN TIDE PROFILE (was three literals in two places) ------------------------
+        // Nine Mile Creek is the gentle market harbour: a small swing so business is never stranded.
+        // ⚠ It is NOT what actually runs here yet — nothing re-points the tide per region, so the START
+        // scene's profile is live everywhere (see the water-model note below). Anything that must clear
+        // high water is therefore checked against the WIDEST of the two, which is what
+        // RegionValidation.WidestSwing exists for and names this builder as the reason for.
+        public const float TideMean = 0f;
+        public const float TideAmplitude = 0.8f;
+        public const float TidePhaseHours = 2f;
+
+        /// <summary>The highest water that can actually reach this region — the region's own spring high
+        /// folded with the start scene's, which is the one that is really running.</summary>
+        public static float SpringHighWater =>
+            RegionValidation.WidestSwing(
+                RegionValidation.SwingOf(TideMean, TideAmplitude),
+                RegionValidation.SwingOf(StPetersBuilder.TideMean, StPetersBuilder.TideAmplitude)).High;
 
         /// <summary>
         /// The ground a creekside building reserves, as a RADIUS. These are still greybox 5 × 5 m squares
@@ -139,12 +163,18 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly float CreeksideBuildingRadius = Mathf.Sqrt(2f) * 2.5f;
 
-        /// <summary>Every creekside building site, for anything that has to ask "is one of these in the
-        /// way?" — the dory's arrival sightline, for one.</summary>
+        /// <summary>
+        /// Every WORKING building site — the ones still placed as loose sprites with
+        /// <see cref="CreeksideBuildingRadius"/> for a footprint, for anything that has to ask "is one of
+        /// these in the way?" (the dory's arrival sightline, for one).
+        ///
+        /// <para>The two flavour houses are deliberately NOT here: they come from the village kit now, so
+        /// their footprints are published numbers rather than a stand-in radius, and anything asking
+        /// about them should ask the contract. <see cref="NineMileCreekFlavour"/> is where they live.</para>
+        /// </summary>
         public static IReadOnlyList<Vector3> CreeksideBuildingSites => new[]
         {
-            FishBuyerPos, ShipwrightShedPos, DoryYardPos,
-            HarbourmasterPos, ChandleryPos, FlavourHouseRedPos, FlavourHouseTealPos,
+            FishBuyerPos, ShipwrightShedPos, DoryYardPos, HarbourmasterPos, ChandleryPos,
         };
 
         /// <summary>
@@ -203,7 +233,7 @@ namespace HiddenHarbours.App.Editor
             {
                 r.Id = "region.nine_mile_creek"; r.DisplayName = "Nine Mile Creek"; r.SceneName = SceneName;
                 r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
-                r.TideMeanLevel = 0f; r.TideAmplitude = 0.8f; r.TidePhaseHours = 2f;
+                r.TideMeanLevel = TideMean; r.TideAmplitude = TideAmplitude; r.TidePhaseHours = TidePhaseHours;
                 r.Description = "The market town: a deep, sheltered harbour where the coast's business " +
                                 "gets done — selling, buying, hiring. Services, not a fishing ground.";
             });
@@ -363,8 +393,14 @@ namespace HiddenHarbours.App.Editor
             // --- QUAY (the land the town sits on, along the WEST) ---------------------------
             // Nine Mile Creek lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
             // public wharf is a peninsula reaching EAST into the deep harbour (open water is to the east).
-            MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     new Vector2(-10f, 0f), new Vector2(10f, 30f), -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
-            MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, 30f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
+            // ⭐ The DRAWN ground is now the AUTHORED ground: the grass covers exactly the terrain's land
+            // zone (x ∈ [-28,-4], y ∈ [-20,20]) instead of a smaller rectangle guessed beside it. It used
+            // to stop at x = -15, which was fine while everything stood in the middle — and stopped being
+            // fine the moment the flavour houses moved out to the empty western land, where they would
+            // have been standing on walkable terrain with the sea plane drawn under them. One rule, one
+            // shape: the same convergence the water model already follows.
+            MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     NineMileCreekLandCenter, NineMileCreekLandHalfSize * 2f, -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
+            MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, NineMileCreekLandHalfSize.y * 2f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
 
             // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
             // The public wharf reaching EAST out into the deep harbour (head = the east tip, x=4) is now
@@ -385,8 +421,12 @@ namespace HiddenHarbours.App.Editor
             // before it is a beat. StallGate's reach is 4 m from the stall, so from here you sell with
             // your feet still on the concrete.
             var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  FishBuyerPos, waterSprite, new Color(0.42f, 0.50f, 0.52f));
-            MakeBuilding("NineMileCreekHouseRed",  LoadSpriteAny(ArtHouseRed),  FlavourHouseRedPos, waterSprite, new Color(0.55f, 0.34f, 0.30f)); // flavour
-            MakeBuilding("NineMileCreekHouseTeal", LoadSpriteAny(ArtHouseTeal), FlavourHouseTealPos, waterSprite, new Color(0.30f, 0.48f, 0.48f)); // flavour
+
+            // The two FLAVOUR houses are no longer loose sprites — they come from the baked village
+            // building kit (NineMileCreekFlavour), which is what §7.2 means by replacing the region's
+            // outdated art from the rigs rather than repainting it. The WORKING buildings above and below
+            // keep theirs on purpose: their kit (wharfBuildingRig's sheds) has never been baked.
+            NineMileCreekFlavour.Place(terrain, SpringHighWater);
 
             // --- SHORELINE BOUNDARY ---------------------------------------------------------
             // Mirror the cove's ShoreEdge (an EdgeCollider2D fence dividing land from water) so the boat
@@ -583,7 +623,11 @@ namespace HiddenHarbours.App.Editor
                       "retired for the baked wharf tile kit (NineMileCreekWharf) — 'quay' concrete drawn " +
                       "back to front, bollards/tyres/ladder/pileheads on the mooring edge, a 'crib' " +
                       "breakwater arm to the south, and the deck registered as a StandablePlatform so you " +
-                      "stand ON the planks over the dredged harbour. " +
+                      "stand ON the planks over the dredged harbour. A WORKING CREEK: the buyer's truck " +
+                      "is at the head of the quay (and its Market finally says it is Nine Mile Creek, not " +
+                      "the Cove), the DERELICT DORY lies on the quay in plain sight of where you land, " +
+                      "Wendell and Hector stand at their own counters, and the two flavour houses come " +
+                      "from the baked village kit. " +
                       "Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
                       "the harbour now runs the St Peters tide-driven model — a RectTidalTerrain (dredged -6 m " +
                       "floor, steep quay edge) + the layered WaterSurface shader on the Sea plane; the waterline " +
@@ -626,7 +670,7 @@ namespace HiddenHarbours.App.Editor
             var gameRoot = root.AddComponent<GameRoot>();
             SetRef(clock, "_config", config);
             SetRef(env, "_config", config);
-            SetTideProfile(env, 0f, 0.8f, 2f);
+            SetTideProfile(env, TideMean, TideAmplitude, TidePhaseHours);
             SetRef(gameRoot, "_clock", clock);
             SetRef(gameRoot, "_environment", env);
             SetRef(gameRoot, "_wallet", wallet);
