@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79d2f238f264cf693c28a24a4ab73df, type: 3}
+  m_Name: AtlanticCodBite
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.BiteDef
+  Id: bite.atlantic_cod
+  DisplayName: Atlantic Cod — Steady Taker
+  FalseNibblesMin: 1
+  FalseNibblesMax: 2
+  NibbleGapMinSeconds: 0.8
+  NibbleGapMaxSeconds: 2.0
+  NibbleDipSeconds: 0.35
+  TakeWindowSeconds: 0.8
+  ReturnChance01: 0.6
+  ReturnDelayMinSeconds: 1.5
+  ReturnDelayMaxSeconds: 3.5
+  MaxPasses: 3
