@@ -454,7 +454,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// caught anything the first missed. Over the cap Unity imports SILENTLY DOWNSCALED with a
         /// matching sprite count, so only a pivot or cell-size assert much later would catch it.
         /// </summary>
-        static void AssertFits(string species, string stage, in SheetSpec spec)
+        public static void AssertFits(string species, string stage, in SheetSpec spec)
         {
             if (!spec.RigFits)
                 throw new InvalidOperationException(

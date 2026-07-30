@@ -84,6 +84,23 @@ namespace HiddenHarbours.Tools.RigStudio
         public RigStudioAxis[] Axes;
     }
 
+    /// <summary>
+    /// A horizontal guide line over a preview, in cell px (top-left origin) — for kit facts that are
+    /// TRUE OF THE CELL but not baked into its pixels, like the shrub kit's snow surface ("snow CLIPS,
+    /// it never floods": the sheets bake snow-free and the scene removes rows below this line at
+    /// placement). Guides are annotation, deliberately: pixels below a guide are still the baked
+    /// pixels, so the preview==bake bit-identity holds at every parameter point, and the studio never
+    /// grows a second render path to show a placement-time effect.
+    /// </summary>
+    public sealed class RigStudioGuide
+    {
+        /// <summary>Row in cell px from the cell's TOP-LEFT.</summary>
+        public double Y;
+
+        /// <summary>The kit's own words for what this line is.</summary>
+        public string Label;
+    }
+
     /// <summary>One rendered cell at one parameter point — the actual pixels, straight off the kit's
     /// own render path.</summary>
     public sealed class RigStudioPreview
@@ -101,6 +118,10 @@ namespace HiddenHarbours.Tools.RigStudio
         /// <summary>One line of the kit's own numbers about this cell (footprint metres, cell size,
         /// measured convention) — measured, never restated.</summary>
         public string Caption;
+
+        /// <summary>Annotation lines over the pixels (may be null). See <see cref="RigStudioGuide"/>
+        /// for why these exist and why they are never pixels.</summary>
+        public RigStudioGuide[] Guides;
     }
 
     /// <summary>What a bake wrote and where the owner can now place it.</summary>
