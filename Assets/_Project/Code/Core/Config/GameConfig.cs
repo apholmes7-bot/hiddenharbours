@@ -111,6 +111,13 @@ namespace HiddenHarbours.Core
                  "ThrottleDetentModel; owner-tunable, no code (rule 6).")]
         public HelmThrottleSettings HelmThrottle = HelmThrottleSettings.Default;
 
+        [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
+        [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
+                 "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
+                 "alone. The strike is judged by the same bite sequence the tells render from; these " +
+                 "dials only decide what counts as the player striking.")]
+        public StrikeSettings Strike = StrikeSettings.Default;
+
         [Header("Bait economy (owner drop §10.2 — a TENTATIVE ruling behind a flag)")]
         [Tooltip("OFF (default): bait is spent at the BITE — something ate it, landed or not (the " +
                  "2026-07-25 ruling; today's live behaviour). ON: bait is spent only on a LANDED " +
@@ -581,6 +588,54 @@ namespace HiddenHarbours.Core
             InBandAffinity = 2.0f,
             OffBandAffinity = 0.5f,
             BottomWindowAffinity = 2.5f,
+        };
+    }
+
+    /// <summary>
+    /// THE STRIKE (<see cref="GameConfig.Strike"/> — owner drop §10.2). His words were "pull back and
+    /// press maybe?", explicitly tentative — so BOTH candidates ship, each behind its own toggle, and
+    /// he picks (or keeps both) by feel with no code change (rule 6). The press is the plain action
+    /// edge; the pull-back is a committed haul of the pointer AWAY from the bobber — the mirror of
+    /// the flick-cast's forward sweep. Consumed by the Fishing-side <c>StrikeYank</c>/<c>
+    /// StrikeGestureMath</c> (the Core-policy / feature-consumer split, the RodFightSettings shape).
+    /// </summary>
+    [System.Serializable]
+    public struct StrikeSettings
+    {
+        [Tooltip("The PRESS candidate: the action press strikes (today's input, and the gamepad-safe " +
+                 "one). Turn off to feel the pull-back alone.")]
+        public bool PressStrikes;
+
+        [Tooltip("The PULL-BACK candidate: hauling the pointer away from the bobber strikes — cast " +
+                 "forward, strike back. Turn off to feel the press alone.")]
+        public bool PullBackStrikes;
+
+        [Min(0f)]
+        [Tooltip("How fast (m/s, world) the pointer must move AWAY from the bobber for the motion to " +
+                 "count as hauling. Below this it's repositioning, not striking. The on-foot view is " +
+                 "~16 m wide — 6 m/s is a deliberate wrist-snap, not a drift.")]
+        public float YankMinSpeedMps;
+
+        [Min(0f)]
+        [Tooltip("Backward travel (m, world) the haul must bank at qualifying speed before it fires. " +
+                 "Bigger = a fuller arm movement; smaller = a flick of the wrist.")]
+        public float YankMinMetres;
+
+        [Range(0f, 1f)]
+        [Tooltip("Below this fraction of the qualifying speed the haul STALLS and its banked travel " +
+                 "is forfeit — a yank is one committed motion, not a slow wander that eventually " +
+                 "adds up.")]
+        public float YankStallFraction01;
+
+        /// <summary>Both candidates on (the owner picks in play); a brisk 6 m/s haul, 0.8 m of it,
+        /// breaking below a quarter of qualifying speed.</summary>
+        public static StrikeSettings Default => new StrikeSettings
+        {
+            PressStrikes = true,
+            PullBackStrikes = true,
+            YankMinSpeedMps = 6f,
+            YankMinMetres = 0.8f,
+            YankStallFraction01 = 0.25f,
         };
     }
 
