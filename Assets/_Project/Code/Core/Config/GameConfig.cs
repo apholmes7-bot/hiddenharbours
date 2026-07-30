@@ -30,6 +30,12 @@ namespace HiddenHarbours.Core
         [Tooltip("At neap, amplitude is this fraction of spring amplitude (0..1).")]
         [Range(0f, 1f)] public float NeapAmplitudeFraction = 0.45f;
 
+        [Tooltip("The tide TABLE the player reads to plan a crossing (VS-06): how many days the almanac " +
+                 "page covers and how finely it hunts each high and low water. Defaults reproduce the " +
+                 "step sizes the HUD gauge and the editor tool already used, so the shipped page reads " +
+                 "exactly as before.")]
+        public TideTableSettings TideTable = TideTableSettings.Default;
+
         [Tooltip("The masthead pennant (VS-19) — the boat's own wind instrument. Where the burgee gives " +
                  "up and hangs, the apparent wind at which it flies board-stiff, and how quickly it " +
                  "chases a veering gust. This is the read that replaces squinting at a HUD line.")]

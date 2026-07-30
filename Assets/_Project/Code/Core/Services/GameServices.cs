@@ -119,6 +119,14 @@ namespace HiddenHarbours.Core
         public static WaveFieldAnimatorSettings WaveFieldAnimator =>
             Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
+        /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
+        /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
+        /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).
+        /// Falls back to <see cref="TideTableSettings.Default"/>, which reproduces the step sizes the
+        /// HUD gauge and the editor tool already used.</summary>
+        public static TideTableSettings TideTable =>
+            Config != null ? Config.TideTable : TideTableSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to

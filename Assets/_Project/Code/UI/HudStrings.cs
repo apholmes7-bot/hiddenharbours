@@ -58,5 +58,39 @@ namespace HiddenHarbours.UI
 
         /// <summary>Tide arrow glyph for a rising/falling state.</summary>
         public static string TideArrow(bool rising) => rising ? TideRisingArrow : TideFallingArrow;
+
+        // ---- the tide table (VS-06) ---------------------------------------------------------
+        // The almanac page's words, on the same loc seam as everything above. The ones that take an
+        // argument DO allocate; the page is built once on open (time is frozen while it is read), so
+        // none of them are ever called per frame.
+
+        /// <summary>The mark for where "now" falls among the day's turns — a pencil line on the page.</summary>
+        public const string TideTableNowMarker = "◀ now";
+
+        public const string TideTableTitle        = "Tide Table";
+        public const string TideTableNowLabel     = "Now";
+        public const string TideTableClose        = "Close";
+        public const string TideTableCloseHint    = "Esc or N to put the table away. Time is stopped while you read.";
+        public const string TideTableNoTurnsToday = "(no turn this day)";
+        public const string TideTableNoTurn       = "No turn found within a tidal period.";
+        public const string TideTableUnavailable  = "No tide to read here yet.";
+
+        /// <summary>"High water" / "Low water", with the shape glyph that carries it without colour (§8).</summary>
+        public static string TideTurnLabel(bool high)
+            => high ? TideRisingArrow + " High water" : TideFallingArrow + " Low water";
+
+        /// <summary>The word for which way the water is going — "making" floods, "ebbing" falls.</summary>
+        public static string TideDirection(bool rising) => rising ? "making (flood)" : "ebbing";
+
+        /// <summary>"Next high water in" / "Next low water in" — the lead-in to a duration.</summary>
+        public static string TideTableNextTurn(bool rising)
+            => rising ? "Next high water in" : "Next low water in";
+
+        /// <summary>A column heading: "Today" / "Tomorrow", else the absolute day for a wider page.</summary>
+        public static string TideTableDayHeading(bool isToday, int dayIndex)
+            => isToday ? "Today" : "Tomorrow — day " + dayIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        /// <summary>Which place the page is for — a tide table is always local.</summary>
+        public static string TideTableForRegion(string regionId) => "for " + regionId;
     }
 }

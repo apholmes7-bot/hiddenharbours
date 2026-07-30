@@ -20,6 +20,10 @@ namespace HiddenHarbours.UI
     /// Budget (CLAUDE.md rule 7): updates every frame but allocates nothing per frame — strings are
     /// cached and only rebuilt when their displayed value actually changes; environment is sampled
     /// at ~4 Hz (matches VS-05); money is event-driven, not polled.
+    ///
+    /// <para>It also carries the tide table's opener (<see cref="TidePanelInput"/>, VS-06) — the deeper
+    /// read the glanceable tide line here can't give you. The band stays a band; the table is paper you
+    /// take out.</para>
     /// </summary>
     [DefaultExecutionOrder(-50)]
     public sealed class HudController : MonoBehaviour
@@ -99,8 +103,19 @@ namespace HiddenHarbours.UI
         private void Awake()
         {
             BuildHud();
+            EnsureTidePanelInput();
             if (_persistAcrossScenes)
                 DontDestroyOnLoad(gameObject);
+        }
+
+        // The tide table's opener rides along with the always-on HUD (VS-06). Installing it here rather
+        // than in the scene builders means it exists wherever the HUD does — the persistent core, the
+        // dev cores, and any scene a builder assembles later — without a cross-lane edit to App/Editor.
+        // Idempotent: a builder or prefab that adds its own (to rebind the key) is left alone.
+        private void EnsureTidePanelInput()
+        {
+            if (GetComponent<TidePanelInput>() == null)
+                gameObject.AddComponent<TidePanelInput>();
         }
 
         private void OnEnable()  => Subscribe();

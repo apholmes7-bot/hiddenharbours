@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;        // GameConfig, TideProfile
 using HiddenHarbours.Environment; // TideModel
-using HiddenHarbours.UI;          // TideReadout / TideState — the HUD's own derivation (no fork)
+using HiddenHarbours.UI;          // TideAlmanac / TideReadout / HudStrings — the shipped derivation (no fork)
 
 namespace HiddenHarbours.Tools.Editor
 {
@@ -14,9 +14,12 @@ namespace HiddenHarbours.Tools.Editor
     /// "now" marker, and the 48-hour tide curve. EDITOR-ONLY and read-only.
     ///
     /// It does NOT fork the tide derivation. Heights come straight from <see cref="TideModel.Height"/>,
-    /// and every high/low turn is found by walking <see cref="TideReadout.Derive"/> — the SAME
-    /// rising/turn logic the HUD uses — so the table, the HUD and the Tide Scrubber can never disagree.
-    /// It mirrors the Scrubber's GameConfig/TideProfile resolution so the two tools feel of-a-piece.
+    /// and every high/low turn comes from <see cref="TideAlmanac.FindTurns"/> — the SAME finder the
+    /// player's in-game tide table (<c>TidePanel</c>) draws, which in turn walks the HUD's own
+    /// <see cref="TideReadout.Derive"/>. So the owner's tool, the player's page, the HUD gauge and the
+    /// Tide Scrubber can never disagree, and this window is a preview of what the player will read
+    /// rather than a second opinion. It mirrors the Scrubber's GameConfig/TideProfile resolution so the
+    /// two tools feel of-a-piece; its window/step sizes are the owner's <c>GameConfig.TideTable</c>.
     ///
     /// Menu: <b>Hidden Harbours ▸ Tools ▸ Tide Table</b>.
     /// </summary>
@@ -40,7 +43,8 @@ namespace HiddenHarbours.Tools.Editor
         private static readonly Color LowColor   = new Color(1f, 0.55f, 0.45f);
         private static readonly Color PanelColor = new Color(0.16f, 0.18f, 0.20f);
 
-        private struct TideEvent { public double Seconds; public float Height; public bool High; }
+        // Reused across repaints so an OnGUI pass allocates no list (OnGUI runs a lot).
+        private readonly List<TideTurn> _events = new();
 
         [MenuItem("Hidden Harbours/Tools/Tide Table")]
         public static void Open()
@@ -77,7 +81,7 @@ namespace HiddenHarbours.Tools.Editor
             EditorGUILayout.Space();
 
             TideProfile profile = BuildProfile();
-            List<TideEvent> events = FindEvents(profile);
+            List<TideTurn> events = FindEvents(profile);
 
             DrawNowReadout(profile);
             EditorGUILayout.Space();
@@ -176,42 +180,36 @@ namespace HiddenHarbours.Tools.Editor
         // ------------------------------------------------------------------ event finding (reuses TideReadout)
 
         /// <summary>
-        /// All high/low turns across the 48 h window [start-of-today, +2 days), located by walking the
-        /// HUD's own <see cref="TideReadout.Derive"/> turn-finder forward — no separate extrema maths.
+        /// All high/low turns across the page's window, delegated to <see cref="TideAlmanac.FindTurns"/>
+        /// — the SAME finder the in-game tide table draws from, which in turn walks the HUD's own
+        /// <see cref="TideReadout.Derive"/>. One turn-finder, three readers; the owner's tool cannot
+        /// show the player a different tide from the one they'll sail.
         /// </summary>
-        private List<TideEvent> FindEvents(TideProfile profile)
+        private List<TideTurn> FindEvents(TideProfile profile)
         {
-            var list = new List<TideEvent>();
+            TideTableSettings settings = _config.TideTable;
             double secPerDay = _config.SecondsPerDay;
-            double dayStart = Math.Floor(_totalSeconds / secPerDay) * secPerDay;
-            double windowEnd = dayStart + 2.0 * secPerDay;
+            double dayStart = TideAlmanac.DayStartSeconds(_totalSeconds, secPerDay);
+            double windowEnd = dayStart + Mathf.Max(1, settings.WindowDays) * secPerDay;
 
-            double risingDt = _config.SecondsPerHour * 0.05;  // mirror TideModel/TideReadout (~3 in-game min)
-            double scanStep = _config.SecondsPerHour * 0.10;
-            double horizon  = _config.SecondsPerHour * _config.TidalPeriodHours;
-            Func<double, float> heightAt = s => TideModel.Height(s, profile, _config);
-
-            double t = dayStart;
-            int guard = 0;
-            while (t < windowEnd && guard++ < 64)
-            {
-                TideState st = TideReadout.Derive(heightAt, t, risingDt, scanStep, horizon);
-                if (!st.HasTurn) break;                       // no turn within a period (shouldn't happen)
-                double turnT = t + st.SecondsToTurn;
-                if (turnT >= windowEnd) break;
-                // Rising into the turn ⇒ it's a high water; falling ⇒ a low.
-                list.Add(new TideEvent { Seconds = turnT, Height = heightAt(turnT), High = st.Rising });
-                t = turnT + risingDt * 4.0;                   // step just past the turn to find the next
-            }
-            return list;
+            TideAlmanac.FindTurns(
+                s => TideModel.Height(s, profile, _config),
+                dayStart, windowEnd,
+                _config.SecondsPerHour * settings.SlopeStepHours,
+                _config.SecondsPerHour * settings.ScanStepHours,
+                _config.SecondsPerHour * _config.TidalPeriodHours,
+                Mathf.Max(1, settings.MaxTurns),
+                _events);
+            return _events;
         }
 
         // ------------------------------------------------------------------ readouts & tables
 
         private void DrawNowReadout(TideProfile profile)
         {
-            double risingDt = _config.SecondsPerHour * 0.05;
-            double scanStep = _config.SecondsPerHour * 0.10;
+            TideTableSettings settings = _config.TideTable;
+            double risingDt = _config.SecondsPerHour * settings.SlopeStepHours;
+            double scanStep = _config.SecondsPerHour * settings.ScanStepHours;
             double horizon  = _config.SecondsPerHour * _config.TidalPeriodHours;
             TideState st = TideReadout.Derive(s => TideModel.Height(s, profile, _config), _totalSeconds,
                                               risingDt, scanStep, horizon);
@@ -231,14 +229,14 @@ namespace HiddenHarbours.Tools.Editor
             }
         }
 
-        private void DrawDayTables(List<TideEvent> events)
+        private void DrawDayTables(List<TideTurn> events)
         {
             int day0 = DayOf(_totalSeconds);
             DrawOneDay($"Today — Day {day0}", events, day0);
             DrawOneDay($"Tomorrow — Day {day0 + 1}", events, day0 + 1);
         }
 
-        private void DrawOneDay(string title, List<TideEvent> events, int dayIndex)
+        private void DrawOneDay(string title, List<TideTurn> events, int dayIndex)
         {
             double secPerDay = _config.SecondsPerDay;
             bool nowOnThisDay = DayOf(_totalSeconds) == dayIndex;
@@ -264,16 +262,18 @@ namespace HiddenHarbours.Tools.Editor
             }
         }
 
-        private void DrawEventRow(TideEvent e)
+        private void DrawEventRow(TideTurn e)
         {
             using (new EditorGUILayout.HorizontalScope())
             {
                 Color prev = GUI.color;
-                GUI.color = e.High ? HighColor : LowColor;
-                EditorGUILayout.LabelField(e.High ? "  ▲ High water" : "  ▼ Low water", GUILayout.Width(140f));
+                GUI.color = e.IsHigh ? HighColor : LowColor;
+                // Same wording the player's page uses, from the shared loc seam — the owner's tool and
+                // the almanac page should never call the same event two different things.
+                EditorGUILayout.LabelField("  " + HudStrings.TideTurnLabel(e.IsHigh), GUILayout.Width(140f));
                 GUI.color = prev;
                 EditorGUILayout.LabelField(FormatClock(ClockOf(e.Seconds)), GUILayout.Width(64f));
-                EditorGUILayout.LabelField($"{e.Height:+0.00;-0.00;0.00} m", GUILayout.Width(80f));
+                EditorGUILayout.LabelField($"{e.HeightMeters:+0.00;-0.00;0.00} m", GUILayout.Width(80f));
                 GUILayout.FlexibleSpace();
             }
         }
@@ -293,7 +293,7 @@ namespace HiddenHarbours.Tools.Editor
 
         // ------------------------------------------------------------------ 48 h curve
 
-        private void DrawCurve(TideProfile profile, List<TideEvent> events)
+        private void DrawCurve(TideProfile profile, List<TideTurn> events)
         {
             EditorGUILayout.LabelField("Tide curve — 48 h from start of today", EditorStyles.boldLabel);
 
@@ -352,11 +352,11 @@ namespace HiddenHarbours.Tools.Editor
             {
                 double frac = (e.Seconds - dayStart) / windowSeconds;
                 if (frac < 0.0 || frac > 1.0) continue;
-                float x = Xfrac(frac), y = Y(e.Height);
-                Handles.color = e.High ? HighColor : LowColor;
+                float x = Xfrac(frac), y = Y(e.HeightMeters);
+                Handles.color = e.IsHigh ? HighColor : LowColor;
                 Handles.DrawSolidDisc(new Vector3(x, y, 0f), Vector3.forward, 3f);
-                GUI.Label(new Rect(x - 18f, y + (e.High ? -16f : 4f), 64f, 14f),
-                    $"{(e.High ? "H" : "L")} {FormatClock(ClockOf(e.Seconds))}", EditorStyles.miniLabel);
+                GUI.Label(new Rect(x - 18f, y + (e.IsHigh ? -16f : 4f), 64f, 14f),
+                    $"{(e.IsHigh ? "H" : "L")} {FormatClock(ClockOf(e.Seconds))}", EditorStyles.miniLabel);
             }
 
             // "Now" marker at its real position + current-height dot.
