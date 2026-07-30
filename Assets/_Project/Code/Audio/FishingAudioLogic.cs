@@ -68,6 +68,10 @@ namespace HiddenHarbours.Audio
             {
                 case FishingPhase.Cast:    return FishingCue.CastWhoosh;
                 case FishingPhase.Bite:    return next.Depth01 > 0f ? FishingCue.RodKnock : FishingCue.BobberPlop;
+                // The tease (§10.2) borrows the bite's own cue family for now — audio-lane polish can
+                // give the false nibble a lighter tick later without touching this mapping's shape.
+                case FishingPhase.BiteNibble:
+                    return next.Depth01 > 0f ? FishingCue.RodKnock : FishingCue.BobberPlop;
                 case FishingPhase.Snapped: return FishingCue.SnapSting;
                 case FishingPhase.Landed:  return FishingCue.LandedFlourish;
                 default:

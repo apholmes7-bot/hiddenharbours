@@ -115,6 +115,9 @@ namespace HiddenHarbours.Fishing
         private float _pendingWeight;
         private FishingState _state = FishingState.Idle;
 
+        // ---- the bite sequence (owner drop §10.2; the sim is BiteSequenceSim) -----------------
+        private BiteSequenceSim _biteSim;       // non-null only while a nibble/take sequence runs
+
         // ---- rod fight v2 state (the deep→surface arc; the sim is RodFightSim) ---------------
         private RodFightSim _rodFight;          // non-null only while a v2 fight runs
         private float _lastSteerAlignment;      // this tick's steer read, for the RodBend01 publish
@@ -224,6 +227,12 @@ namespace HiddenHarbours.Fishing
                     break;
 
                 case FishingPhase.Waiting:
+                    // A LIVE BITE SEQUENCE parks the wire phase on Waiting through her quiet stretches
+                    // (approach / circling back after a miss) — the sequence owns the beat, not the
+                    // bite-delay clock, so it must tick FIRST or the old wait would re-fire OnBite
+                    // underneath a fish that is already working the hook.
+                    if (_biteSim != null) { TickBiteSequence(dt, pressed); break; }
+
                     if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
                     else Emit(FishingPhase.Waiting, 0f, 0f);         // cast path: the aim tracks a walking angler
 
@@ -239,7 +248,17 @@ namespace HiddenHarbours.Fishing
                     TickSinking(dt, pressed);                        // the depth drop (§2.3)
                     break;
 
+                case FishingPhase.BiteNibble:
+                    TickBiteSequence(dt, pressed);                   // a tease is showing (§10.2)
+                    break;
+
                 case FishingPhase.Bite:
+                    // A species with a BiteDef runs the owner's §10.2 moment: Bite now means the TRUE
+                    // take, and the strike is judged by the sequence sim — the same state the tells
+                    // render from (one quantity, one computation; the flick-cast lesson).
+                    if (_biteSim != null) { TickBiteSequence(dt, pressed); break; }
+
+                    // Legacy (no BiteDef): the forgiving auto-hook beat, exactly as shipped.
                     _phaseTimer -= dt;
                     if (pressed || _phaseTimer <= 0f) BeginFight(); // press hooks early; else auto-hook (forgiving)
                     else Emit(FishingPhase.Bite, 0f, 0f);           // the bobber tell anchors on the live publish
@@ -294,6 +313,7 @@ namespace HiddenHarbours.Fishing
             _castFlightSeconds = 0f;
             _lastCast = FlickCastResult.NoCast;
             _fight = null;
+            _biteSim = null;
             EndRodFight();
             ResetDepthGame();
         }
@@ -490,7 +510,10 @@ namespace HiddenHarbours.Fishing
 
             // Something ate it — the bait is gone whether or not this fish is landed (owner's ruling
             // 2026-07-25). Spent HERE rather than at the cast so water nothing looked at costs nothing.
-            SpendBaitOnBite();
+            // ⚠ TENTATIVE §10.2 reversal behind a flag: with BaitSpentOnCatchOnly the spend moves to
+            // the LANDED catch instead ("perhaps bait is only lost after catching a fish") — teases,
+            // missed strikes and lost fights then cost time only. Defaults OFF = today's behaviour.
+            if (!(_config != null && _config.BaitSpentOnCatchOnly)) SpendBait();
 
             _pendingFish = fish;
             // The sea leans the size roll up — a blow brings the better fish up to feed (the other half
@@ -498,8 +521,49 @@ namespace HiddenHarbours.Fishing
             SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
             _pendingWeight = CatchResolver.RollWeight(
                 fish, _rng, SeaFightMath.WeightBias01(SeaState01(), sea.SeaBigFishBias01));
+
+            // A species with a BITE personality runs the §10.2 nibble/take sequence (opt-in, the
+            // RodFightDef shape); everything else keeps the forgiving auto-hook window exactly.
+            if (fish.Bite != null)
+            {
+                _biteSim = new BiteSequenceSim(fish.Bite.ToProfile(), _rng);
+                Emit(BitePhases.ToFishingPhase(_biteSim.Phase), 0f, 0f);
+                return;
+            }
+
             _phaseTimer = _hookWindow;
             Emit(FishingPhase.Bite, 0f, 0f);
+        }
+
+        /// <summary>
+        /// Advance a live §10.2 bite sequence: the sim owns the beat (teases, the true take, her
+        /// returns after a miss); this maps its state onto the Core wire phases and hands the
+        /// terminals off — <see cref="BitePhase.Hooked"/> to the fight, <see cref="BitePhase.Gone"/>
+        /// to the NoBite result. The strike edge is the same press that hooks the legacy bite; WHICH
+        /// gesture makes a strike grows in the strike slice.
+        /// </summary>
+        private void TickBiteSequence(float dt, bool strikePressed)
+        {
+            _biteSim.Tick(dt, strikePressed);
+
+            if (_biteSim.Phase == BitePhase.Hooked)
+            {
+                _biteSim = null;
+                BeginFight();
+                return;
+            }
+            if (_biteSim.Phase == BitePhase.Gone)
+            {
+                bool late = _biteSim.LastMiss == BiteMiss.Late;
+                _biteSim = null;
+                _phaseTimer = _resultDisplay;
+                Debug.Log(late ? "[Fishing] She spat it and moved on."
+                               : "[Fishing] She's off — struck at a tease once too often.");
+                Emit(FishingPhase.NoBite, 0f, 0f);   // ToIdle clears the pending fish after the beat
+                return;
+            }
+
+            Emit(BitePhases.ToFishingPhase(_biteSim.Phase), 0f, 0f);
         }
 
         /// <summary>The strike: the hook is set and the fight begins. A species that OPTED INTO a
@@ -585,6 +649,11 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
+            // The TENTATIVE §10.2 bait economy: under the flag, bait is spent only NOW — the fish is
+            // truly caught (an unlicensed release above spends nothing; neither did her teases or a
+            // lost fight). Flag off (the default) = the spend already happened at the bite.
+            if (_config != null && _config.BaitSpentOnCatchOnly) SpendBait();
+
             // Stamp the freshness clock at landing (M1 §7.3): the moment it leaves the water it is on
             // the clock. Time comes from the Core clock, never Time.deltaTime (rule 5).
             double landedAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
@@ -621,6 +690,7 @@ namespace HiddenHarbours.Fishing
             _pendingFish = null;
             _pendingWeight = 0f;
             _fight = null;
+            _biteSim = null;
             EndRodFight();
             ResetDepthGame();
             Emit(FishingPhase.Idle, 0f, 0f);
@@ -1067,11 +1137,12 @@ namespace HiddenHarbours.Fishing
             || (_bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id));
 
         /// <summary>
-        /// A fish took the bait — spend one. Called on the BITE rather than the cast, deliberately: a
-        /// cast nothing looked at costs you nothing, and bait is only gone once something has actually
-        /// eaten it. Silent no-op when fishing a bare lure.
+        /// Spend one bait. WHEN it is called is the economy ruling: at the BITE by default (a cast
+        /// nothing looked at costs nothing; bait is gone once something has eaten it — owner 2026-07-25),
+        /// or at the LANDED CATCH under <c>GameConfig.BaitSpentOnCatchOnly</c> (the TENTATIVE §10.2
+        /// reversal: "perhaps bait is only lost after catching a fish"). Silent no-op on a bare lure.
         /// </summary>
-        private void SpendBaitOnBite()
+        private void SpendBait()
         {
             if (_bait == null) return;
             TackleBox.TrySpendBait(GameServices.Save?.Current, _bait.Id);

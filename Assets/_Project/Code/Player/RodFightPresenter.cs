@@ -233,7 +233,8 @@ namespace HiddenHarbours.Player
             if (next.Phase != prev.Phase)
             {
                 _stateClock = 0f;
-                if (next.Phase == FishingPhase.Bite || next.Phase == FishingPhase.Cast) _bobberClock = 0f;
+                if (next.Phase == FishingPhase.Bite || next.Phase == FishingPhase.BiteNibble
+                    || next.Phase == FishingPhase.Cast) _bobberClock = 0f;
                 if (next.Phase == FishingPhase.FightDeep) _shadowTheta = 0f;
 
                 // The splash flourishes — surface breaks on the beats that break the surface.
@@ -340,7 +341,8 @@ namespace HiddenHarbours.Player
             // The weighted path's line runs straight down to the entry point.
             if ((show & RodElements.Line) != 0 && !castPath
                 && (_s.Phase == FishingPhase.Waiting || _s.Phase == FishingPhase.Sinking
-                    || _s.Phase == FishingPhase.Bite || _s.Phase == FishingPhase.Fighting))
+                    || _s.Phase == FishingPhase.Bite || _s.Phase == FishingPhase.BiteNibble
+                    || _s.Phase == FishingPhase.Fighting))
                 far = tip + Vector2.down * _entryDropM;
 
             // THE ROD IS THE GAUGE (owner's ruling 2026-07-23 — the fight's HUD bars are gone). Now that
@@ -452,8 +454,14 @@ namespace HiddenHarbours.Player
 
             int stateIdx = _s.Phase switch
             {
+                // §10.2 split: BiteNibble is the TEASE (the small dip you must not strike on); Bite is
+                // the TRUE TAKE — the strike art plays once and the bobber stays gone: pulled under IS
+                // the read. A legacy no-BiteDef species publishes Bite for its whole forgiving window,
+                // so its bobber now reads taken-under rather than nibbling — the honest picture, since
+                // that bite always hooks.
                 FishingPhase.Cast => BobFly,
-                FishingPhase.Bite => BobNibble,
+                FishingPhase.BiteNibble => BobNibble,
+                FishingPhase.Bite => BobStrike,
                 FishingPhase.Fighting => BobStrike,
                 _ => BobFloat,
             };
@@ -479,7 +487,7 @@ namespace HiddenHarbours.Player
             Vector2 pos = angler + castAim;
             if (_s.Phase == FishingPhase.Cast)
                 pos.y += RodPresenterMath.ArcLift(_s.CastCharge01, _castArcHeightM);
-            if (_s.Phase == FishingPhase.Bite)
+            if (_s.Phase == FishingPhase.BiteNibble)   // the tease's small dip (§10.2)
             {
                 float loopSeconds = Mathf.Max(1e-3f, state.SecondsPerFrame * state.Frames.Length);
                 pos.y -= _bobberDipM * RodLineMath.BobberDip01(_bobberClock / loopSeconds);

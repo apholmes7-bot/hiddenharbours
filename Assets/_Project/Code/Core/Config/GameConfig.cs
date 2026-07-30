@@ -111,6 +111,15 @@ namespace HiddenHarbours.Core
                  "ThrottleDetentModel; owner-tunable, no code (rule 6).")]
         public HelmThrottleSettings HelmThrottle = HelmThrottleSettings.Default;
 
+        [Header("Bait economy (owner drop §10.2 — a TENTATIVE ruling behind a flag)")]
+        [Tooltip("OFF (default): bait is spent at the BITE — something ate it, landed or not (the " +
+                 "2026-07-25 ruling; today's live behaviour). ON: bait is spent only on a LANDED " +
+                 "catch — the owner's tentative §10.2 reversal ('perhaps bait is only lost after " +
+                 "catching a fish'): teases, missed strikes, lost fights and unlicensed releases " +
+                 "cost time only. ⚠ Flagged to economy-sim — flipping this changes bait's real cost " +
+                 "per fish, which is a pacing dial (§7.4/§7.5).")]
+        public bool BaitSpentOnCatchOnly = false;
+
         [Header("Rod fight (Rod Fishing v2 — the deep→surface fight, cove defaults)")]
         [Tooltip("Fight-wide DEFAULT tuning for the v2 rod fight (pull-on-slack / maintain-on-run + " +
                  "counter-steer + the deep→surface arc). These are the forgiving cove baselines the owner " +
