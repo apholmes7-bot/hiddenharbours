@@ -29,6 +29,14 @@ namespace HiddenHarbours.Boats
     /// gunwale). A mesh fitting is parented to the hull's posed mesh child, so it inherits roll, pitch
     /// and heave exactly, for nothing. None of that is transcribed below, on purpose.</para>
     ///
+    /// <para><b>The one thing it decides that the sprite layer does not: whether the boat is under
+    /// POWER</b> (§7.7). The dory is the first hull to carry oars and an outboard at once — a mesh
+    /// fitting is posed by rotation rather than indexed by facing, so it can share a hull with the
+    /// oars where the sprite sheets' sorting bands cannot — and a boat with a running prop stows her
+    /// oars rather than trailing them beside it. That is the existing SHIPPED state, wired to the
+    /// engine (see <see cref="ColumnForOar"/>), not a fourth pose; cut the motor and the rowing
+    /// machine takes over again, unchanged, from where it left off.</para>
+    ///
     /// <para>Visual-only, allocation-free per frame, and it never writes to the sim (rule 5): it READS
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
     /// </summary>
@@ -56,6 +64,11 @@ namespace HiddenHarbours.Boats
                  "strokes. Read only while the controller is enabled — a dropped helm ships the oars.")]
         [SerializeField] private BoatController _boat;
 
+        [Tooltip("This boat's OUTBOARD, when she has one. While it runs the oars are SHIPPED — stowed " +
+                 "fore along the gunwale — and cutting it brings them straight back out. Null on a " +
+                 "rowed hull, which is the dory before she buys her kicker.")]
+        [SerializeField] private OutboardMotorMeshLayer _motor;
+
         // Set through Configure. Interfaces, so they are never serialized — a scene-serialised layer
         // idles until the skinner re-wires it, which is the same contract the mesh HULL driver has.
         private IHullPropRenderer _port, _star;
@@ -74,22 +87,43 @@ namespace HiddenHarbours.Boats
         public DoryOarMeshPose.Pose StarboardPose { get; private set; } = DoryOarMeshPose.Resting;
 
         /// <summary>Wire the layer from the skinner. Idempotent — a re-skin re-points it rather than
-        /// stacking a second layer (the component is <see cref="DisallowMultipleComponent"/>).</summary>
-        public void Configure(IHullPropRenderer port, IHullPropRenderer star, BoatController boat)
+        /// stacking a second layer (the component is <see cref="DisallowMultipleComponent"/>).
+        ///
+        /// <para><paramref name="motor"/> is this boat's outboard, or null on a rowed hull. It is a
+        /// LIVE reference, not a flag copied at install: an engine that stops — because the layer was
+        /// disabled, or because the skinner took it off on a hull swap — brings the oars back out on
+        /// the next tick, which is what "cutting the motor" has to mean.</para></summary>
+        public void Configure(IHullPropRenderer port, IHullPropRenderer star, BoatController boat,
+                              OutboardMotorMeshLayer motor = null)
         {
             _port = port;
             _star = star;
             _boat = boat;
+            _motor = motor;
             _portPhase = 0f;
             _starPhase = 0f;
             _bothIdleSeconds = 0f;
         }
+
+        /// <summary>
+        /// <b>True while this boat is under her own power</b> — the state that ships the oars.
+        ///
+        /// <para>An outboard that is WIRED is an outboard that is running: M1 has no ignition, no
+        /// fuel and no kill switch (those questions are the owner's, and open), so the honest signal
+        /// available is whether the engine the skinner bolted on is there and live. That is exactly
+        /// the D8 shape — the engine is a purchase, so <c>boat.dory_outboard</c> has one and
+        /// <c>boat.dory</c> does not — and it is why this reads the layer every tick instead of
+        /// caching a bool: the day a kill switch exists, disabling the motor layer is already the
+        /// whole of "cut the engine, ship the oars back out".</para>
+        /// </summary>
+        public bool MotorIsRunning => _motor != null && _motor.isActiveAndEnabled && _motor.IsWired;
 
         private void LateUpdate()
         {
             if (!IsWired) return;
 
             float dt = Time.deltaTime;
+            bool underPower = MotorIsRunning;
 
             // NOBODY AT THE HELM = NOBODY ROWING — the same gate the sprite layer uses, and for the
             // same reason: BoatController.Stop() is not called on every helm-drop path, so trusting
@@ -101,23 +135,30 @@ namespace HiddenHarbours.Boats
 
             bool portWorking = DoryOarMath.IsWorking(portState, _oarDeadzone);
             bool starWorking = DoryOarMath.IsWorking(starState, _oarDeadzone);
-            _bothIdleSeconds = (portWorking || starWorking) ? 0f : _bothIdleSeconds + dt;
 
-            _portPhase = DoryOarMath.AdvanceStrokePhase(
-                _portPhase, DoryOarMath.StrokeDirection(portState, _oarDeadzone),
-                DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, portState, _effortInfluence),
-                dt, DoryOarMath.StrokeColumns);
-            _starPhase = DoryOarMath.AdvanceStrokePhase(
-                _starPhase, DoryOarMath.StrokeDirection(starState, _oarDeadzone),
-                DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, starState, _effortInfluence),
-                dt, DoryOarMath.StrokeColumns);
+            // THE ACCUMULATORS FREEZE UNDER POWER. Stowed oars are not stroking and not resting-up
+            // toward anything, so neither the phase nor the grace advances — cutting the motor puts
+            // the oars back in the hands that left them, mid-sweep, instead of at the top of a cycle.
+            if (!underPower)
+            {
+                _bothIdleSeconds = (portWorking || starWorking) ? 0f : _bothIdleSeconds + dt;
 
-            PortPose = PoseFor(DoryOarMath.ColumnForOar(portWorking, _portPhase, starWorking,
-                                                        _bothIdleSeconds, _restGraceSeconds,
-                                                        DoryOarMath.StrokeColumns), _portPhase);
-            StarboardPose = PoseFor(DoryOarMath.ColumnForOar(starWorking, _starPhase, portWorking,
-                                                             _bothIdleSeconds, _restGraceSeconds,
-                                                             DoryOarMath.StrokeColumns), _starPhase);
+                _portPhase = DoryOarMath.AdvanceStrokePhase(
+                    _portPhase, DoryOarMath.StrokeDirection(portState, _oarDeadzone),
+                    DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, portState, _effortInfluence),
+                    dt, DoryOarMath.StrokeColumns);
+                _starPhase = DoryOarMath.AdvanceStrokePhase(
+                    _starPhase, DoryOarMath.StrokeDirection(starState, _oarDeadzone),
+                    DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, starState, _effortInfluence),
+                    dt, DoryOarMath.StrokeColumns);
+            }
+
+            PortPose = PoseFor(ColumnForOar(underPower, portWorking, _portPhase, starWorking,
+                                            _bothIdleSeconds, _restGraceSeconds,
+                                            DoryOarMath.StrokeColumns), _portPhase);
+            StarboardPose = PoseFor(ColumnForOar(underPower, starWorking, _starPhase, portWorking,
+                                                 _bothIdleSeconds, _restGraceSeconds,
+                                                 DoryOarMath.StrokeColumns), _starPhase);
 
             _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, PortPose);
             _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, StarboardPose);
@@ -137,6 +178,26 @@ namespace HiddenHarbours.Boats
         /// the rig's own fixed poses (<c>oarPose('resting')</c> / <c>('trailing')</c>), so they are the
         /// same on both paths by construction.</para>
         /// </summary>
+        /// <summary>
+        /// <b>Which column an oar draws, once the boat's ENGINE gets a say.</b> Under power the
+        /// answer is <see cref="DoryOarMath.RestingColumn"/> — shipped, at once, with no grace to
+        /// wait out — and otherwise it is <see cref="DoryOarMath.ColumnForOar"/>, unchanged and
+        /// untouched.
+        ///
+        /// <para>That is the whole of "ship the oars when the motor runs" (§7.7): the shipped state
+        /// already existed and is the rig's own <c>oarPose('resting')</c>, so this wires it rather
+        /// than inventing a fourth state. Written as a pure static, like everything else this layer
+        /// decides, so the rule is provable without a scene — and so the sprite path can borrow it
+        /// unchanged the day a sprite hull ever wears both.</para>
+        /// </summary>
+        public static int ColumnForOar(bool motorRunning, bool thisOarWorking, float phase,
+                                       bool otherOarWorking, float bothIdleSeconds,
+                                       float restGraceSeconds, int strokeColumns)
+            => motorRunning
+                ? DoryOarMath.RestingColumn
+                : DoryOarMath.ColumnForOar(thisOarWorking, phase, otherOarWorking, bothIdleSeconds,
+                                           restGraceSeconds, strokeColumns);
+
         public static DoryOarMeshPose.Pose PoseFor(int column, float phase)
         {
             if (column == DoryOarMath.RestingColumn) return DoryOarMeshPose.Resting;

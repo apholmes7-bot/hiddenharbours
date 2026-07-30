@@ -58,7 +58,8 @@ namespace HiddenHarbours.App.Editor
             public float MotorRockRollDegrees;
             public float MotorRockPitchDegrees;      // the rigs' pitchA, in DEGREES — a rotation, not an offset
             public float MotorRockHeavePixels;
-            public Vector3 MotorMountLocalMeters;    // the rigs' MOUNT (at motorMount's y - 0.03), boat-local m
+            public Vector3 MotorMountLocalMeters;    // the rigs' MOUNT (at the point motorMount projects), boat-local m
+            public Vector3 MotorMeshFitmentOffsetMeters;  // BORROWED fitting only: the shift onto THIS hull's transom
             public float ArtBakeElevationDegrees;    // the rigs' DEFAULT_ELEV; 90 = not a bake, do not foreshorten
             public int SortingOrder;
             public bool FacingsAreCounterClockwise;
@@ -111,6 +112,14 @@ namespace HiddenHarbours.App.Editor
         // 0.48. This is the lever arm the whole rock pose turns on — it is not a nudge knob.
         static readonly Vector3 SkiffMotorMount = new Vector3(0f, -3.53f, 0.72f);   // consoleIsoRig / sportSkiffIsoRig
         static readonly Vector3 PuntMotorMount  = new Vector3(0f, -2.63f, 0.56f);   // puntIsoRig
+        // THE DORY'S OWN CLAMP, and the correction of a default she never earned. doryIsoRig builds a
+        // transom MOTOR BOARD across her narrow stern — `MOUNT = { x:0, y:TR.y - 2·BOARD.t, z:TR.zTop
+        // + BOARD.rise }` — which at TR.y = -L/2 = -2.25, BOARD.t = 0.045 and TR.zTop = T[0][3] +
+        // T[0][2] = 0.14 + 0.56 = 0.70 with BOARD.rise = 0.10 is (0, -2.34, 0.80); her motorMount()
+        // projects MOUNT.y - 0.01, which is the point this field states. She carried the SKIFFS'
+        // (0, -3.53, 0.72) until now — the field's own initialiser, inherited by every visual that
+        // never had an engine — and that is 1.18 m astern of her actual transom on a 4.5 m boat.
+        static readonly Vector3 DoryMotorMount  = new Vector3(0f, -2.35f, 0.80f);   // doryIsoRig MOUNT + BOARD
 
         // The camera every iso rig bakes at (their DEFAULT_ELEV). It squashes along-heading distance on screen-Y
         // by sin(40°) ~ 0.643 and leaves screen-X alone — which is why anything pinned to a point ON the drawn
@@ -128,6 +137,32 @@ namespace HiddenHarbours.App.Editor
         // skiffs: her rig is angle(f) = −32 + 64·f/8 (8° steps) where theirs is −30 + 60·f/8 (7.5° steps).
         const float SkiffMaxSteer = 30f;
         const float PuntMaxSteer  = 32f;
+        // The dory's kicker bakes ±32 too (doryMotorRig MOTOR.maxSteer), which is the one lucky part of
+        // the loan below: the borrowed punt engine swings exactly as far as her own will.
+        const float DoryMaxSteer  = 32f;
+
+        // ═══ THE DORY'S BORROWED ENGINE — how far to move somebody else's outboard onto her transom ═══
+        // Her own kicker is written (docs/art/rigs/doryMotorRig.js — a little tiller two-stroke, 0.23 m
+        // cowl, 76 mm prop) and NOT baked, so she wears the punt's starter engine until it is. A fitting
+        // is baked in its hull's rig space with that rig's mount already injected, so a loan needs a
+        // shift, and BOTH numbers below are read off the two rigs rather than nudged into place:
+        //
+        //   y  +0.28 = doryMotorRig YA (−2.38, her kicker's swivel line, 0.13 m aft of her transom
+        //              plane) − puntIsoRig YA (−2.66). Her boat is 0.7 m shorter; her clamp is that
+        //              much further forward.
+        //   z  +0.055 = hang it by the part that has to be in the WATER. The punt's prop sits 0.475 m
+        //              under her clamp (prop box z 0.085, ZT 0.56); the dory's own kicker puts hers at
+        //              z 0.140, level with her stern keel (T[0][3] = 0.14). So the borrowed swivel goes
+        //              at 0.140 + 0.475 = 0.615, i.e. 0.055 above the punt's.
+        //
+        // ⚠️ THE COST, STATED: the punt's leg is 0.185 m SHORTER than the reach the dory's high transom
+        // needs (her board is 0.24 m above the punt's), so fitting the prop leaves the clamp that far
+        // below her motor board — the engine reads as clamped to the transom rather than to the board on
+        // top of it. The alternative — hanging it on the board — puts the prop 0.185 m clear of the
+        // water, which is not an outboard at all. Neither is a scale away: shrinking the engine to dory
+        // size (≈0.78, by cowl and prop) lifts the prop further still. THIS IS WHAT THE PURPOSE BAKE
+        // FIXES, and both numbers go to zero the day it lands.
+        static readonly Vector3 DoryBorrowedMotorFitment = new Vector3(0f, 0.28f, 0.055f);
 
         // The 8 compass points in the project's canonical order: element 0 = North, then CLOCKWISE. The
         // FishingBoat art ships as one file per heading rather than a sheet, so the ORDER lives here — and
@@ -139,7 +174,18 @@ namespace HiddenHarbours.App.Editor
             // The player's iso dory (#202 hull + rock, #204 independent oars). 8 static headings; a 64-frame
             // heading×rock grid; two 80-cell oar sheets (10 columns per heading: 0..7 the stroke cycle, 8
             // resting/shipped, 9 trailing). Every layer shares the 160×156 cell + waterline pivot, so the
-            // overlays register pixel-perfect on the hull at localPosition zero. ROWED — no motor.
+            // overlays register pixel-perfect on the hull at localPosition zero.
+            //
+            // ROWED — AND, SINCE §7.7, POWERED TOO, on the MESH path only. There are still no motor SHEETS
+            // here and there must not be: the sprite dory is a rowing boat, her oar sheets take the sorting
+            // band an engine would need (HasConflictingOverlays), and nobody has drawn her an outboard
+            // compass. What she now carries is a motor MESH — a fitting, posed by rotation rather than
+            // indexed by facing, which is why it can share a hull with the oars where a sheet cannot. It is
+            // bound by the fitting baker (HullPropFleet), not here; what this entry owns is the three facts
+            // the layer reads off the visual — her real clamp, the borrowed engine's shift, and its swing.
+            //
+            // The engine is drawn ONLY on the hull that bought it (D8: boat.dory_outboard, Propulsion =
+            // Engine, same visual as boat.dory) — BoatHullSkinner.EngineIsFitted is that gate.
             new Sheet
             {
                 AssetName = "DoryIso", FacingsAreCounterClockwise = IsoSheetsAreCounterClockwise, Id = "visual.dory_iso",
@@ -148,7 +194,16 @@ namespace HiddenHarbours.App.Editor
                 OarPortPath = $"{ArtBoats}/DoryOarPort.png",
                 OarStarPath = $"{ArtBoats}/DoryOarStar.png",
                 HeadingCount = 8, RockFrames = 8, OarColumns = 10, SortingOrder = 1,
-                // The dory is an iso bake like the rest. She has no motor, but her WAKE is anchored on her
+                // No sheets, but the STEER COLUMNS still matter: OutboardMotorMeshLayer runs its
+                // accumulator in column units off this number (it is the tuned cadence, shared with the
+                // sprite path so both representations swivel alike), and a hull left at 1 column would
+                // pin her engine dead ahead at every helm.
+                MotorColumns = OutboardMotorMath.SteerColumns, MotorMaxSteerDegrees = DoryMaxSteer,
+                MotorVariant = OutboardMotorLayer.MotorVariant.Basic,   // identity: it IS the punt's starter engine
+                MotorFit = OutboardMotorLayer.MotorFit.Single,
+                MotorMountLocalMeters = DoryMotorMount,
+                MotorMeshFitmentOffsetMeters = DoryBorrowedMotorFitment,
+                // The dory is an iso bake like the rest, and her WAKE is anchored on her
                 // drawn transom and so is foreshortened exactly the same way — which is the owner's "the wake
                 // from the rowboat still doesnt ALWAYS seem accurate". Always: it was only ever right on the
                 // E/W axis, where the ¾ camera happens not to squash the along-heading distance at all.
@@ -417,6 +472,10 @@ namespace HiddenHarbours.App.Editor
             if (sheet.MotorRockHeavePixels > 0f) def.MotorRockHeavePixels = sheet.MotorRockHeavePixels;
             if (sheet.MotorMountLocalMeters.sqrMagnitude > 1e-6f)
                 def.MotorMountLocalMeters = sheet.MotorMountLocalMeters;
+            // Written UNCONDITIONALLY, and zero is the meaningful answer: "this hull wears her own
+            // engine, where its rig already put it". Only a BORROWED fitting is shifted, only the dory
+            // borrows one, and the day her kicker is baked this line writes her back to zero too.
+            def.MotorMeshFitmentOffsetMeters = sheet.MotorMeshFitmentOffsetMeters;
             // Written UNCONDITIONALLY, unlike the motor block above: every sheet either has a camera or is
             // declaring at 90 that it has none, and a silent 0 would foreshorten every anchor on that hull
             // onto the boat's own middle.

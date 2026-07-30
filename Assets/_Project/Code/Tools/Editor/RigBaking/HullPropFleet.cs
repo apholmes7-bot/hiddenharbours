@@ -159,7 +159,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>The punt's tiller outboard. Her rig owns it (own cell 212×168, own ±32° authority,
         /// own <c>basic</c>/<c>upgraded</c> builds) — it is not the skiffs' engine at another size.</summary>
-        static FleetProp PuntMotor(string variant, string name, string wornBy) => Motor(
+        static FleetProp PuntMotor(string variant, string name, params string[] wornBy) => Motor(
             key: $"puntMotor{name}",
             rig: "puntIsoRig.js", global: "PuntIso",
             assetName: $"PuntMotor{name}PropMesh",
@@ -194,7 +194,17 @@ namespace HiddenHarbours.Tools.RigBaking
             Oar(-1, "Port", "OarPort"),
             Oar(+1, "Star", "OarStar"),
 
-            PuntMotor("basic", "Basic", "PuntIsoBasic"),
+            // ONE bake, TWO boats — and the second one is a LOAN. The dory's own kicker rig exists
+            // (docs/art/rigs/doryMotorRig.js: a little tiller two-stroke, 0.23 m cowl against this
+            // engine's 0.30) but has never been baked, and the M1 slice closes on her wearing an
+            // outboard. So she borrows the punt's starter engine, shifted onto her own transom by
+            // BoatVisualDef.MotorMeshFitmentOffsetMeters — the one hull in the game wearing somebody
+            // else's fitting.
+            //
+            // ⚠️ WHEN THE DORY'S KICKER IS BAKED, take DoryIso off this line — do not leave her
+            // wearing two engines' worth of wiring — and zero her fitment offset. Both are asserted
+            // in DoryOutboardContentTests, which fails loudly with those instructions in it.
+            PuntMotor("basic", "Basic", "PuntIsoBasic", "DoryIso"),
             PuntMotor("upgraded", "Upgraded", "PuntIsoUpgraded"),
 
             SkiffMotor("work", "Work", "ConsoleSkiff"),

@@ -353,19 +353,32 @@ sprite oars needed five hand-tuned rock-coupling knobs to keep an overlay on the
   `SkiffMotorWork`.
 - **`BoatVisualDef` gained a `MotorMesh` field**, and the dory's asset now carries the slot.
 
-**What is actually left — much smaller than it was:**
-1. **A motor mesh suited to the dory.** All four baked motors are punt/skiff four-strokes; a 4.5 m dory
-   wants a small **kicker**, which also reads right for something bought secondhand off a wharf. (Reusing a
-   punt motor at reduced scale is the cheap fallback if the owner would rather not bake a fifth.)
-2. **Assign it** — `DoryIso.asset` has `MotorMesh: {fileID: 0}`, i.e. the slot is there and empty.
-3. **A real transom mount.** `MotorMountLocalMeters` is still the skiff default `(0, -3.53, 0.72)` that 12
-   of 14 visuals carry unchanged; only the Punt's is genuinely authored.
-4. **Ship the oars when the motor runs.** `DoryOarMath` already carries a shipped state — wire it, don't
-   rebuild it.
+**All four items landed — with one art ask left over:**
+1. ~~A motor mesh suited to the dory.~~ **Her own kicker rig already existed and nobody had noticed**:
+   `docs/art/rigs/doryMotorRig.js` is a complete little tiller two-stroke (0.23 m cowl against the punt's
+   0.30, 76 mm prop, registered to her transom board). It has never been **baked**, and an agent cannot bake
+   — so she wears the **punt's basic outboard on loan** meanwhile, shifted onto her own transom. **THE ART
+   ASK is one menu item in the owner's editor**, not a drawing job: give the kicker a `HullPropFleet` entry
+   and run *3D Hulls ▸ Bake ALL hull fittings*. Until then the loan's cost is a short leg — see below.
+2. ~~Assign it.~~ `DoryIso.asset` carries the fitting, wired through the **prop catalog** (so a re-bake
+   cannot quietly un-wire it) and pinned by `DoryOutboardContentTests` / `HullPropFleetWearerTests`.
+3. ~~A real transom mount.~~ Measured off `doryIsoRig`'s own MOTOR BOARD: **`(0, -2.35, 0.80)`**
+   (`MOUNT = TR.y − 2·BOARD.t, TR.zTop + BOARD.rise`, projected at `y − 0.01`). The skiff default she used
+   to carry was **1.18 m astern and 0.08 m low** on a 4.5 m boat.
+4. ~~Ship the oars when the motor runs.~~ `DoryOarMath.RestingColumn` wired to the engine — immediately, no
+   rest-grace to wait out — with the stroke accumulators frozen, so cutting the motor puts the oars back
+   mid-sweep instead of at the top of a cycle.
 
-This is the **visual half of D8**: `boat.dory_outboard` flips `Propulsion` Oars→Engine, and the visual swap
-is "bind the motor mesh, ship the oars."
+This is the **visual half of D8**, and the gameplay half came with it: `boat.dory_outboard` (Propulsion =
+Engine, every other stat copied from `boat.dory` so the pair cannot drift) wears the **same visual**, and
+`BoatHullSkinner` draws the engine only on the hull that has one. She is a picker rung and a fleet-registry
+hull; **no `ShipwrightOffer` — what she costs and who sells her is the Nine Mile Creek purchase beat.**
 
+- **⚠️ The loan's one cost, stated:** the punt's leg is 0.185 m shorter than the reach the dory's high
+  transom needs, so the borrowed engine is hung by its **prop** (which lands exactly where her own kicker's
+  does) and its clamp therefore sits a hand's breadth below her motor board. Reducing its scale — §7.7's
+  original suggestion — makes this worse, not better: it lifts the prop clear of the water. The purpose bake
+  fixes both, and zeroes the fitment offset.
 - **Exit:** the repaired dory wears a secondhand kicker that swivels with the helm and rides the wave field
   with the hull; cutting the motor ships the oars back out; the sprite path is untouched.
 

@@ -95,6 +95,23 @@ namespace HiddenHarbours.Boats
             /// would. Never persisted — assets are not mutated at runtime.
             /// </summary>
             public BoatHullVariant? VariantOverride;
+
+            /// <summary>
+            /// <b>How the HULL being worn is driven</b> — set by <see cref="ApplyHull"/> from
+            /// <see cref="BoatHullDef.Propulsion"/>, and the gate on whether her outboard is drawn.
+            ///
+            /// <para>It exists because the dory is the first boat whose ENGINE IS AN UPGRADE. D8's
+            /// answer for M1 is a second hull asset (<c>boat.dory_outboard</c>, Propulsion = Engine)
+            /// wearing the SAME visual, so the visual says what she CAN wear and the hull says
+            /// whether she is wearing it. Without this, buying the outboard would change nothing and
+            /// the rowed dory would tow an engine she has not bought.</para>
+            ///
+            /// <para>Null (the default) = the caller has no hull to speak for — the ambient fleet,
+            /// the rotation rig — and the VISUAL decides, exactly as it did before this field
+            /// existed. Every powered hull in the game carries an engine in its own visual, so no
+            /// existing boat changes.</para>
+            /// </summary>
+            public PropulsionType? Propulsion;
         }
 
         /// <summary>
@@ -176,6 +193,10 @@ namespace HiddenHarbours.Boats
             // Hide the plain hull PICTURE only — never clear its sprite ref, so falling back to it later
             // (an unskinned hull) still has something to draw.
             if (baseRenderer != null) baseRenderer.enabled = false;
+            // The hull speaks for herself about her own propulsion: an engine that is an UPGRADE
+            // (the dory's) is drawn only on the hull that bought it. Callers with no hull in hand
+            // (Apply, below) leave it null and the visual decides, as it always did.
+            options.Propulsion = hull.Propulsion;
             return Apply(root, visual, boat, options);
         }
 
@@ -347,7 +368,7 @@ namespace HiddenHarbours.Boats
             // so only warn about the sheets a mesh really cannot wear. The oars crossed over first,
             // the outboards followed, and between them that is every sprite overlay in the game.
             bool oarsGoMesh = visual.HasOarMeshes();
-            bool motorGoesMesh = visual.HasMotorMesh();
+            bool motorGoesMesh = visual.HasMotorMesh() && EngineIsFitted(options);
             if ((visual.HasOarSheets() && !oarsGoMesh) || (visual.HasMotor() && !motorGoesMesh))
                 Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor SHEETS but is " +
                                  "presented as a MESH hull — sprite overlays are baked per facing cell and " +
@@ -386,13 +407,18 @@ namespace HiddenHarbours.Boats
             // The fittings (ADR 0022 phase 7). Attached AFTER the hull, because a fitting is parented
             // to the hull's posed mesh child and inherits heading, rock and heave from it — which is
             // what makes the sprite path's rock coupling, part split and draw-order rules unnecessary.
-            if (!options.SkipOars && boat != null && oarsGoMesh) WireOarMeshes(root, child, visual, boat);
-            else RemoveOarMeshes(root, child);
-
+            //
+            // THE ENGINE GOES ON FIRST, and the order is load-bearing now: a boat that is under power
+            // ships her oars (§7.7 — "bind the motor mesh, ship the oars"), so the oar layer is handed
+            // the motor layer and must be able to find it already standing.
+            OutboardMotorMeshLayer motorLayer = null;
             // The outboard needs no controller to INSTALL — an unmanned boat still shows her engine,
             // dead ahead — exactly as on the sprite path. The layer's own manned-helm gate drives it.
-            if (motorGoesMesh) WireMotorMeshes(root, child, visual, boat);
+            if (motorGoesMesh) motorLayer = WireMotorMeshes(root, child, visual, boat);
             else RemoveMotorMeshes(root, child);
+
+            if (!options.SkipOars && boat != null && oarsGoMesh) WireOarMeshes(root, child, visual, boat, motorLayer);
+            else RemoveOarMeshes(root, child);
 
             // The hull rides the SAME shared wave field as every sprite hull — the presenter's
             // continuous-rock capability just stops the phase being quantised to frames.
@@ -415,13 +441,31 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// True when the hull being skinned actually HAS the engine her visual can draw.
+        ///
+        /// <para>The dory is the first boat where those differ: her outboard is a purchase (D8), so
+        /// <c>visual.dory_iso</c> carries a motor fitting that only <c>boat.dory_outboard</c> wears.
+        /// A caller that names no propulsion (the ambient fleet, the rotation rig) gets the old
+        /// answer — the visual decides — because every other powered hull in the game carries her
+        /// engine in her own visual and nothing about her changes.</para>
+        /// </summary>
+        private static bool EngineIsFitted(Options options) =>
+            !options.Propulsion.HasValue ||
+            BoatController.UsesEngineHelm(options.Propulsion.Value);
+
+        /// <summary>
         /// Bolt both oar meshes to an installed mesh hull and hand them to
         /// <see cref="DoryOarMeshLayer"/>, which poses them from the same per-oar state the sprite
         /// oars animate from. Both or neither: if either fitting is refused by the service, the layer
         /// is removed rather than left rowing with one oar.
+        ///
+        /// <para><paramref name="motor"/> is this boat's outboard, when she has one: a dory under
+        /// power stows her oars along the gunwale rather than trailing them, and cutting the engine
+        /// brings them back out. Null on a rowed hull, which is every hull that reaches here today
+        /// except the dory with her kicker.</para>
         /// </summary>
         private static void WireOarMeshes(GameObject root, Transform child, BoatVisualDef visual,
-                                          BoatController boat)
+                                          BoatController boat, OutboardMotorMeshLayer motor = null)
         {
             var service = HullMeshPresentation.Service;
             IHullPropRenderer port = service?.AttachProp(child.gameObject, visual.OarPortMesh, PortOarChildName);
@@ -439,7 +483,7 @@ namespace HiddenHarbours.Boats
 
             var layer = root.GetComponent<DoryOarMeshLayer>();
             if (layer == null) layer = root.AddComponent<DoryOarMeshLayer>();
-            layer.Configure(port, star, boat);
+            layer.Configure(port, star, boat, motor);
         }
 
         /// <summary>
@@ -453,8 +497,8 @@ namespace HiddenHarbours.Boats
         /// the hull's depth buffer. A visual asking for a twin whose def declares no mounts falls back
         /// to one centreline engine and says so, rather than silently stacking two in the same place.</para>
         /// </summary>
-        private static void WireMotorMeshes(GameObject root, Transform child, BoatVisualDef visual,
-                                            BoatController boat)
+        private static OutboardMotorMeshLayer WireMotorMeshes(GameObject root, Transform child,
+                                                              BoatVisualDef visual, BoatController boat)
         {
             var service = HullMeshPresentation.Service;
             bool twin = visual.MotorFit == OutboardMotorLayer.MotorFit.Twin;
@@ -474,7 +518,7 @@ namespace HiddenHarbours.Boats
                                $"only {MotorMeshSlotNames.Length} slots are named. Add slot names " +
                                "rather than reusing one — two engines in one slot is one engine.");
                 RemoveMotorMeshes(root, child);
-                return;
+                return null;
             }
 
             var engines = new IHullPropRenderer[mounts.Length];
@@ -489,8 +533,15 @@ namespace HiddenHarbours.Boats
                                "the engine — a boat with half a twin is worse than the honest failure. " +
                                "Re-bake the fitting and check the def loads.");
                 RemoveMotorMeshes(root, child);
-                return;
+                return null;
             }
+
+            // THE BORROWED-FITTING SHIFT, written once at install (rule 7 — it is a fact of the fit,
+            // not of the frame). Zero for every hull wearing her own engine; the dory's own kicker is
+            // written but not yet baked, so she hangs the punt's and this is what puts it on HER
+            // transom instead of leaving it where the punt's rig injected it.
+            for (int i = 0; i < engines.Length; i++)
+                engines[i].FitmentOffsetMeters = visual.MotorMeshFitmentOffsetMeters;
 
             // Any slot beyond this fit's engine count is a leftover from a TWIN hull worn before.
             for (int i = mounts.Length; i < MotorMeshSlotNames.Length; i++)
@@ -500,6 +551,7 @@ namespace HiddenHarbours.Boats
             if (layer == null) layer = root.AddComponent<OutboardMotorMeshLayer>();
             layer.Configure(engines, mounts, boat, visual.MotorColumnCount,
                             visual.MotorMaxSteerDegrees, visual.MotorMesh.MaxTiltDegrees);
+            return layer;
         }
 
         /// <summary>A hull that wears no oar meshes must not keep the previous hull's — and must not

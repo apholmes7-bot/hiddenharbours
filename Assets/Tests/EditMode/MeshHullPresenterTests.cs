@@ -52,6 +52,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             public Quaternion LocalRotation { get; set; } = Quaternion.identity;
             public float LateralOffsetMeters { get; set; }
+            public Vector3 FitmentOffsetMeters { get; set; }
             public bool Visible { get; set; } = true;
             public bool IsConfigured => true;
         }
@@ -450,6 +451,82 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(root.GetComponent<DoryOarMeshLayer>().IsWired,
                 "…and still attached after the motor branch decided she has no engine");
             Assert.IsNull(root.GetComponent<OutboardMotorMeshLayer>());
+        }
+
+        /// <summary>
+        /// <b>The dory's engine is a PURCHASE, and the skin has to know it.</b> Both her hulls wear
+        /// the same visual (D8's variant-asset answer for M1), so the fitting is on the visual and the
+        /// permission is on the hull: <c>boat.dory</c> rows, <c>boat.dory_outboard</c> motors. Without
+        /// this gate the rowed dory tows an outboard she has not bought, and buying it changes nothing
+        /// you can see — which would be the whole §7.7 rung, silently missing.
+        /// </summary>
+        [Test]
+        public void Skinner_ARowedHull_DoesNotWearTheEngineHerVisualCarries()
+        {
+            var service = new FakeService();
+            HullMeshPresentation.Service = service;
+
+            var visual = MakeMeshVisual(MakeUsableDef());
+            visual.MotorMesh = MakeUsableProp();
+            visual.OarPortMesh = MakeUsableProp();
+            visual.OarStarMesh = MakeUsableProp();
+
+            var rowed = ScriptableObject.CreateInstance<BoatHullDef>();
+            _spawned.Add(rowed);
+            rowed.Id = "boat.test_dory";
+            rowed.Visual = visual;
+            rowed.Propulsion = PropulsionType.Oars;
+
+            var root = MakeRoot();
+            var boat = root.AddComponent<BoatController>();
+            BoatHullSkinner.ApplyHull(root, baseRenderer: null, hull: rowed, boat: boat);
+
+            Assert.IsNull(root.GetComponent<OutboardMotorMeshLayer>(),
+                "a hull whose Propulsion is Oars must not wear the engine her visual can draw — the " +
+                "outboard is the upgrade, and this is the only thing that makes buying it mean anything.");
+            Assert.IsTrue(root.GetComponent<DoryOarMeshLayer>().IsWired,
+                "…and she still rows, obviously.");
+        }
+
+        /// <summary>The other half of the same gate: flip Propulsion and the engine appears — same
+        /// visual, same fitting, same boat. That IS the D8 upgrade.</summary>
+        [Test]
+        public void Skinner_TheSameVisualUnderAnEngineHull_WearsTheOutboard_AndShipsTheOars()
+        {
+            var service = new FakeService();
+            HullMeshPresentation.Service = service;
+
+            var visual = MakeMeshVisual(MakeUsableDef());
+            visual.MotorMesh = MakeUsableProp();
+            visual.OarPortMesh = MakeUsableProp();
+            visual.OarStarMesh = MakeUsableProp();
+            visual.MotorMeshFitmentOffsetMeters = new Vector3(0f, 0.28f, 0.055f);
+
+            var powered = ScriptableObject.CreateInstance<BoatHullDef>();
+            _spawned.Add(powered);
+            powered.Id = "boat.test_dory_outboard";
+            powered.Visual = visual;
+            powered.Propulsion = PropulsionType.Engine;
+
+            var root = MakeRoot();
+            var boat = root.AddComponent<BoatController>();
+            BoatHullSkinner.ApplyHull(root, baseRenderer: null, hull: powered, boat: boat);
+
+            var motor = root.GetComponent<OutboardMotorMeshLayer>();
+            Assert.IsNotNull(motor, "the hull that bought the engine wears it.");
+            Assert.IsTrue(motor.IsWired);
+
+            var oars = root.GetComponent<DoryOarMeshLayer>();
+            Assert.IsNotNull(oars, "her oars stay in the boat — a dory always carries them.");
+            Assert.IsTrue(oars.MotorIsRunning,
+                "…but they are SHIPPED while the engine runs: the oar layer must have been handed the " +
+                "motor layer, which is why the skinner wires the engine BEFORE the oars.");
+
+            // The borrowed-fitting shift reaches the renderer, once, at install.
+            Assert.AreEqual(new Vector3(0f, 0.28f, 0.055f),
+                            service.Props[BoatHullSkinner.MotorMeshSlotNames[0]].FitmentOffsetMeters,
+                "a borrowed engine is hung by the visual's fitment offset — without it the dory wears " +
+                "the punt's outboard where the PUNT's rig put it, over a metre astern of her transom.");
         }
 
         // ---- the wave-motion channel ----------------------------------------------------------
