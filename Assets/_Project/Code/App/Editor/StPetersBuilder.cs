@@ -687,6 +687,18 @@ namespace HiddenHarbours.App.Editor
             // (ADR 0010/0012). The kit bakes ZERO water for exactly that reason.
             var coast = StPetersShorePainter.Paint(terrain, RegionWorldCenter, RegionWorldSize);
 
+            // --- THE WOODS AND THE MEADOW (§5.1: "the reverting interior") -----------------------------
+            // Stands of Acadian trees with meadow between them and wildflowers through both, all chosen by
+            // HABITAT off the same terrain: exposure (how much salt and wind this ground takes, and which
+            // way its coast faces) and wetness (hollows hold water). Black spruce and fir take the blasted
+            // fringe, red spruce and cedar the middle, the hardwoods only the sheltered core. The village,
+            // the spawn, the crossing's approach and the dock are left clear — a village stands IN a
+            // clearing, and you must be able to see the bar from the island.
+            //
+            // ⚠ NINE species: tamarack is held back by ruling and absent from Trees.json. The planter only
+            // ever plants what AcadianTreeCatalog.Scan() returns, so it cannot be reached by accident.
+            var woods = StPetersWoodsPlanter.Plant(terrain);
+
             // --- TIDE-REVEAL: now owned by the smooth WaterSurface shader (ADR 0012) --------------------
             // The falling-tide reveal (the bar VISIBLY baring/covering) is rendered by the layered WaterSurface
             // shader on the Sea plane above — it reads the SAME deterministic tide + TidalTerrain the
@@ -923,6 +935,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
+            Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Flowers} " +
+                      "wildflowers by habitat, the one dock at the east berth, and the village re-sited " +
+                      "beside the start spawn.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
                       $"({coast.MaterialSummary()}). The island has ground everywhere for the first time " +
