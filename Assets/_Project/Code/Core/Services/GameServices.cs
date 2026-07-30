@@ -119,6 +119,16 @@ namespace HiddenHarbours.Core
         public static WaveFieldAnimatorSettings WaveFieldAnimator =>
             Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
+        /// <summary>
+        /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
+        /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).
+        /// Registered by the Fishing module's registrar bootstrap; OPTIONAL and NOT part of
+        /// <see cref="Ready"/> (null in EditMode / a stripped build) — consumers skip unresolvable
+        /// records rather than throwing.
+        /// FLAG lead-architect: new Core contract (the hold-persistence species seam, M1 §7.3).
+        /// </summary>
+        public static ICatchItemFactory CatchFactory { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -134,6 +144,7 @@ namespace HiddenHarbours.Core
             CurrentRegionId = null;
             CurrentRegionBounds = default;
             Config = null;
+            CatchFactory = null;
         }
     }
 }

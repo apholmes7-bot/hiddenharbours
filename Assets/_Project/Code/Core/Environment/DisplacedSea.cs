@@ -28,10 +28,30 @@ namespace HiddenHarbours.Core
         /// into the shallows settles exactly as the water under it does.</summary>
         public readonly float ShoreFadeBandMeters;
 
-        public DisplacedSeaState(float exaggeration, float shoreFadeBandMeters)
+        /// <summary>
+        /// The FREQUENCY scale the surface's vertex stage samples the shared wave field at —
+        /// <c>_OceanSwellScale / 0.025</c>, which is <b>2.8</b> at the owner's tuned materials, not 1.
+        ///
+        /// <para>⚠️ <b>The third number, and it was the missing one.</b> A rider sampling the field
+        /// at scale 1 while the surface DRAWS it at 2.8 is not riding a slightly different sea — it
+        /// is riding a different WAVE: the same amplitude envelope at wavelengths 2.8× shorter. The
+        /// two coincide only by accident, so the drawn water stands at a crest where the hull sits in
+        /// a trough and climbs straight over it. That is the "boats are nearly submerged" defect
+        /// (owner, 2026-07-27), and it is the same <c>_OceanSwellScale</c> incident that already bit
+        /// the watertight clamp — fixed there (it scans at <c>WaterIsoDepthFrame.FreqScale</c>) and
+        /// never fixed for the RIDE, because the ride's only route to the value is this seam and this
+        /// seam did not carry it.</para>
+        ///
+        /// <para>1 means "sample the field as-is": the value for a surface at the shipped default
+        /// scale, and the safe reading for any state constructed without one.</para>
+        /// </summary>
+        public readonly float FreqScale;
+
+        public DisplacedSeaState(float exaggeration, float shoreFadeBandMeters, float freqScale = 1f)
         {
             Exaggeration = exaggeration;
             ShoreFadeBandMeters = shoreFadeBandMeters;
+            FreqScale = UnityEngine.Mathf.Max(freqScale, 1e-3f);
         }
     }
 

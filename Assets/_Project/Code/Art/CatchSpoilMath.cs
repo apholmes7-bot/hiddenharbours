@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -14,18 +15,20 @@ namespace HiddenHarbours.Art
     /// the recipe's UNIFORM term only — the Bayer mottle (and the green rot MOTES of
     /// <c>CatchKit.particles</c>) are deferred, flagged in the storage PR.</para>
     ///
-    /// <para><b>Who sets spoil:</b> nobody yet. Spoil is a published VISUAL INPUT
-    /// (<c>CatchFillRenderer.SetSpoil</c>); the gameplay freshness clock that will feed it is a
-    /// gameplay-systems seam, wired later.</para>
+    /// <para><b>Who sets spoil:</b> the freshness clock (M1 §7.3) — <c>HoldCatchFillSource</c> reads
+    /// the hold's settled state and feeds <c>CatchFillRenderer.SetSpoil</c>; the Boats deck tray
+    /// tints from the same Core <see cref="RotTint"/> the uniform term now lives in.</para>
     /// </summary>
     public static class CatchSpoilMath
     {
-        /// <summary>The rot green — catchKit.js <c>SPOIL</c> / <c>SPRGB</c> (#7d9a46).</summary>
-        public static readonly Color32 SpoilColor = new Color32(125, 154, 70, 255);
+        /// <summary>The rot green — catchKit.js <c>SPOIL</c> / <c>SPRGB</c> (#7d9a46). Sourced from
+        /// the Core <see cref="RotTint"/> so every module tints from one constant.</summary>
+        public static readonly Color32 SpoilColor = RotTint.SpoilColor;
 
-        // Recipe constants (catchKit.js tintSpoil) — parity-tested, not balance dials.
+        // Recipe constants (catchKit.js tintSpoil) — parity-tested, not balance dials. The uniform
+        // term lives in Core (RotTint.UniformMix) so the tray tint can never drift from the recipe.
         private const int KeylineLumFloor = 70;          // r+g+b below this = keyline, stays dark
-        private const double BaseTint = 0.40;            // the uniform green-shift term
+        private const double BaseTint = RotTint.UniformMix;   // the uniform green-shift term
         private const double MottleBonus = 0.28;         // extra shift on dither-selected pixels
         private const double MottleThresholdScale = 0.55;
 
@@ -91,17 +94,10 @@ namespace HiddenHarbours.Art
         /// The runtime APPROXIMATION: a multiply colour for a whole SpriteRenderer carrying the
         /// recipe's uniform term only (<c>m = spoil·0.40</c>, each channel scaled toward the rot
         /// green as a bright pixel would lerp). Reads as the same sickly green from arm's length;
-        /// the per-pixel mottle needs a shader or baked spoil variants and is deferred.
+        /// the per-pixel mottle needs a shader or baked spoil variants and is deferred. Delegates to
+        /// the Core <see cref="RotTint"/> (the one shared formula) — kept as the Art-side name so
+        /// existing callers and the parity tests are untouched.
         /// </summary>
-        public static Color RendererTint(double spoil01)
-        {
-            double s = spoil01 < 0 ? 0 : spoil01 > 1 ? 1 : spoil01;
-            double m = s * BaseTint;
-            return new Color(
-                (float)(1 - m + SpoilColor.r / 255.0 * m),
-                (float)(1 - m + SpoilColor.g / 255.0 * m),
-                (float)(1 - m + SpoilColor.b / 255.0 * m),
-                1f);
-        }
+        public static Color RendererTint(double spoil01) => RotTint.Uniform(spoil01);
     }
 }

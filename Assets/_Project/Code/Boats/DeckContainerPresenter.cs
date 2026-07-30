@@ -53,6 +53,14 @@ namespace HiddenHarbours.Boats
         private SpriteRenderer _renderer;             // the tray child (created once, reused)
         private BoatHullDef _lastHull;                // ref-compare guard so a hull swap re-reads the Def
 
+        // The hold's minimal glanceable FRESHNESS read (M1 §7.3): the tray itself green-shifts with
+        // the WORST item's settled spoil (Core RotTint — the same formula the tote fill uses, so the
+        // two reads can never disagree). Spoil accrues continuously, so this rides a slow realtime
+        // tick rather than the event edges; display only, throttled (rules 5/7). ui-ux owns the
+        // eventual richer read (§7.6) — this is the diegetic floor: a rotting tray LOOKS rotting.
+        private const float SpoilTickSeconds = 2f;
+        private float _nextSpoilTick;
+
         // ---- pure logic (unit-testable, deterministic) --------------------------------------
 
         /// <summary>
@@ -147,6 +155,12 @@ namespace HiddenHarbours.Boats
                 (Vector2)transform.position + DeckOffsetToWorld(_lastHull.DeckContainerOffset, heading);
             if (_renderer.transform.rotation != Quaternion.identity)
                 _renderer.transform.rotation = Quaternion.identity;
+
+            if (Time.unscaledTime >= _nextSpoilTick)
+            {
+                _nextSpoilTick = Time.unscaledTime + SpoilTickSeconds;
+                UpdateSpoilTint();
+            }
         }
 
         // ---- the fill read (event-time only) ----------------------------------------------------
@@ -168,6 +182,25 @@ namespace HiddenHarbours.Boats
             Sprite s = SpriteForFill(def, _hold.UsedUnits, _hold.CapacityUnits);
             if (_renderer.sprite != s) _renderer.sprite = s;
             _renderer.enabled = true;
+            UpdateSpoilTint();
+        }
+
+        /// <summary>Tint the tray by the worst item's settled spoil (white when empty/fresh). Reads
+        /// through the Core maths only; no allocation on the warm path.</summary>
+        private void UpdateSpoilTint()
+        {
+            if (_renderer == null || !_renderer.enabled || _hold == null) return;
+
+            SpoilContext spoil = SpoilContext.Capture();
+            float worst = 0f;
+            var items = _hold.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                float sp = spoil.SpoilOf(items[i]);
+                if (sp > worst) worst = sp;
+            }
+            Color tint = RotTint.Uniform(worst);
+            if (_renderer.color != tint) _renderer.color = tint;
         }
 
         /// <summary>The sprite for a hold fill: the Def's authored fill states when present (the owner's

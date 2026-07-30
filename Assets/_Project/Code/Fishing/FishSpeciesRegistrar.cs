@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Fishing
 {
@@ -25,6 +26,11 @@ namespace HiddenHarbours.Fishing
         {
             var lib = Resources.Load<FishSpeciesLibrary>(ResourcesPath);
             if (lib != null) lib.RegisterAll();
+
+            // The save-restore's species resolver (M1 §7.3 hold persistence): registered here, at the
+            // same boot edge the registry itself fills, so the GameLoaded restore can always resolve.
+            // First-wins like the registry; degrades to null-factory (restore skips) if never set.
+            GameServices.CatchFactory ??= new SpeciesCatchItemFactory();
         }
     }
 }
