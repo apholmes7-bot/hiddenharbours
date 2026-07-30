@@ -13,6 +13,7 @@
         "HiddenHarbours.UI",
         "HiddenHarbours.Art",
         "HiddenHarbours.Art.Editor",
+        "HiddenHarbours.Tools.RigBaking.Editor",
         "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "includePlatforms": ["Editor"],

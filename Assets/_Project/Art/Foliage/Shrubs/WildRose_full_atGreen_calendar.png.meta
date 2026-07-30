@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 4ba8f2b4410251a439d1c3e6f76efd40
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3567704385007650901
+    second: WildRose_full_atGreen_calendar_0
+  - first:
+      213: 4900700996919471045
+    second: WildRose_full_atGreen_calendar_1
+  - first:
+      213: -3407100935659545561
+    second: WildRose_full_atGreen_calendar_2
+  - first:
+      213: -7393254614351735068
+    second: WildRose_full_atGreen_calendar_3
+  - first:
+      213: 3410405250976040422
+    second: WildRose_full_atGreen_calendar_4
+  - first:
+      213: -2142123624530061190
+    second: WildRose_full_atGreen_calendar_5
+  - first:
+      213: -1662242944393144527
+    second: WildRose_full_atGreen_calendar_6
+  - first:
+      213: -2050803340729826217
+    second: WildRose_full_atGreen_calendar_7
+  - first:
+      213: -9203302052427750176
+    second: WildRose_full_atGreen_calendar_8
+  - first:
+      213: -124391705040715124
+    second: WildRose_full_atGreen_calendar_9
+  - first:
+      213: 5106815424172723152
+    second: WildRose_full_atGreen_calendar_10
+  - first:
+      213: -80063136640234295
+    second: WildRose_full_atGreen_calendar_11
+  - first:
+      213: 6858611374857773046
+    second: WildRose_full_atGreen_calendar_12
+  - first:
+      213: -6073175883098063582
+    second: WildRose_full_atGreen_calendar_13
+  - first:
+      213: 8603507588432414183
+    second: WildRose_full_atGreen_calendar_14
+  - first:
+      213: -923173273593535579
+    second: WildRose_full_atGreen_calendar_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e58d386076e7b545a1c85bfdb029806
+      internalID: 1768428011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 380343e4865d6364d86042a162edde55
+      internalID: -1065390704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77bcbd0b3cc871245b630a0b9733abd8
+      internalID: -2034505856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1e238522ff5f9f48a4e2a65e884f254
+      internalID: -610337966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff182e7f7628e7f4b84572d84002879e
+      internalID: 126885575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a7dec9d94840fc4b9fed9655ba9980d
+      internalID: 1731664491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c78ff6b99d03804c9de8b0e3e5222e8
+      internalID: 1688453672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8714cff0b336f64a80a4db74a652abe
+      internalID: -1050265561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 221ba1d796ed3454ba77f6adc57f9f57
+      internalID: 2108759472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72d2cd5259848df4bb44f652663f64ed
+      internalID: -1071521489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6d4f926566fddd41a6ea5435689e1b9
+      internalID: 904081819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 107d79699610a6141bea8557be579d55
+      internalID: 1867864202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee8e13a466fe9744481db11d2a5b690f
+      internalID: -160868602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1711636a07e55d42b7b4c9da93e5534
+      internalID: -1299950004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77af6721489ad124885872f3115e0ca6
+      internalID: -990602018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_calendar_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aae97f7bba7281d4e9ab8d0faed6e5bf
+      internalID: 1634982661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1fd3ab6ea59d062469efd051cf252f74
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WildRose_full_atGreen_calendar_c0_f0: 1768428011
+      WildRose_full_atGreen_calendar_c0_f1: 126885575
+      WildRose_full_atGreen_calendar_c0_f2: 2108759472
+      WildRose_full_atGreen_calendar_c0_f3: -160868602
+      WildRose_full_atGreen_calendar_c1_f0: -1065390704
+      WildRose_full_atGreen_calendar_c1_f1: 1731664491
+      WildRose_full_atGreen_calendar_c1_f2: -1071521489
+      WildRose_full_atGreen_calendar_c1_f3: -1299950004
+      WildRose_full_atGreen_calendar_c2_f0: -2034505856
+      WildRose_full_atGreen_calendar_c2_f1: 1688453672
+      WildRose_full_atGreen_calendar_c2_f2: 904081819
+      WildRose_full_atGreen_calendar_c2_f3: -990602018
+      WildRose_full_atGreen_calendar_c3_f0: -610337966
+      WildRose_full_atGreen_calendar_c3_f1: -1050265561
+      WildRose_full_atGreen_calendar_c3_f2: 1867864202
+      WildRose_full_atGreen_calendar_c3_f3: 1634982661
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

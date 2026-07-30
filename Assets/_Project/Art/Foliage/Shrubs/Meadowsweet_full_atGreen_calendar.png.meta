@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 63a93fd8a3c86484e80c0197d2e23cdb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3925150923973492057
+    second: Meadowsweet_full_atGreen_calendar_0
+  - first:
+      213: 3819817190319690784
+    second: Meadowsweet_full_atGreen_calendar_1
+  - first:
+      213: 1340753613586897743
+    second: Meadowsweet_full_atGreen_calendar_2
+  - first:
+      213: 5973485690856753639
+    second: Meadowsweet_full_atGreen_calendar_3
+  - first:
+      213: -4006137312884797978
+    second: Meadowsweet_full_atGreen_calendar_4
+  - first:
+      213: -2556035719500385063
+    second: Meadowsweet_full_atGreen_calendar_5
+  - first:
+      213: 6842500676300057313
+    second: Meadowsweet_full_atGreen_calendar_6
+  - first:
+      213: 5345446354366274476
+    second: Meadowsweet_full_atGreen_calendar_7
+  - first:
+      213: 5484759826754770377
+    second: Meadowsweet_full_atGreen_calendar_8
+  - first:
+      213: 4847815891015385048
+    second: Meadowsweet_full_atGreen_calendar_9
+  - first:
+      213: -2145665068060569138
+    second: Meadowsweet_full_atGreen_calendar_10
+  - first:
+      213: -329936181228846775
+    second: Meadowsweet_full_atGreen_calendar_11
+  - first:
+      213: 7704744289329701878
+    second: Meadowsweet_full_atGreen_calendar_12
+  - first:
+      213: 8183279962012607663
+    second: Meadowsweet_full_atGreen_calendar_13
+  - first:
+      213: -7012469846839067247
+    second: Meadowsweet_full_atGreen_calendar_14
+  - first:
+      213: -3586947556569308229
+    second: Meadowsweet_full_atGreen_calendar_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8039005122459cb41bc7947c671387a1
+      internalID: -1551831519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3fc1f4d869d1b641b2f031744542546
+      internalID: 2070708440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b395a75a2bfc1ff43a3a27544265f833
+      internalID: -1835315226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b0b6960ad1017b408159cbb17ff3b38
+      internalID: -833377842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a2bb31f3a84f804ead968a7d9dc72bc
+      internalID: 902733305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50c824c830370f84987041827047bc41
+      internalID: -784299088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a886807f3437cb349b7c2bdb607ae8c1
+      internalID: 609743586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4b85e19c7d4c9d4fa81008919e9dba9
+      internalID: 2138444504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05dde8ea47044bc4a82ad835abc08d6e
+      internalID: -1703622724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a8733129d9803f498ae01c3f4099c80
+      internalID: 887622744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6e80b40de4c45f4b8011447a6ce87cd
+      internalID: 1734859316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c71318a145a722c4b9f42ad87e7f07be
+      internalID: 621496352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3768356be0cee1f45a81dbc69f59bdbe
+      internalID: 1390734297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cbe15a524de8e84b899ddf7620dfb2a
+      internalID: -314953349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 581686ec63bacc345b318907921ea1df
+      internalID: -700981745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_calendar_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ae9572e3b1cfb6449a004309f0cd7df
+      internalID: -419967850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0b9388d4832c7f64fa961f93512d9708
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Meadowsweet_full_atGreen_calendar_c0_f0: -1551831519
+      Meadowsweet_full_atGreen_calendar_c0_f1: 902733305
+      Meadowsweet_full_atGreen_calendar_c0_f2: -1703622724
+      Meadowsweet_full_atGreen_calendar_c0_f3: 1390734297
+      Meadowsweet_full_atGreen_calendar_c1_f0: 2070708440
+      Meadowsweet_full_atGreen_calendar_c1_f1: -784299088
+      Meadowsweet_full_atGreen_calendar_c1_f2: 887622744
+      Meadowsweet_full_atGreen_calendar_c1_f3: -314953349
+      Meadowsweet_full_atGreen_calendar_c2_f0: -1835315226
+      Meadowsweet_full_atGreen_calendar_c2_f1: 609743586
+      Meadowsweet_full_atGreen_calendar_c2_f2: 1734859316
+      Meadowsweet_full_atGreen_calendar_c2_f3: -700981745
+      Meadowsweet_full_atGreen_calendar_c3_f0: -833377842
+      Meadowsweet_full_atGreen_calendar_c3_f1: 2138444504
+      Meadowsweet_full_atGreen_calendar_c3_f2: 621496352
+      Meadowsweet_full_atGreen_calendar_c3_f3: -419967850
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

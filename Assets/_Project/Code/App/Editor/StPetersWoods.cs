@@ -282,10 +282,16 @@ namespace HiddenHarbours.App.Editor
         /// Ground a tree may stand on: dry meadow, clear of the village, the spawn, the crossing's approach
         /// and the dock. Public so the flower scatter can share the same clearings — a lupin in the middle
         /// of the pier would be as wrong as a spruce.
+        ///
+        /// <para><paramref name="floorElevation"/> defaults to the TREE line, which is what trees and
+        /// flowers want. ⚠️ A caller with a lower floor of its own must pass it: the shrub layer reaches
+        /// a metre further down the beach than the woods do (that is what a heath IS — the ground the
+        /// forest gives up), and for one milestone its own floor was dead code because this function
+        /// re-rejected everything below the tree line a moment later.</para>
         /// </summary>
-        public static bool IsPlantable(ITidalTerrain terrain, Vector2 p)
+        public static bool IsPlantable(ITidalTerrain terrain, Vector2 p, float? floorElevation = null)
         {
-            if (terrain.ElevationAt(p) < TreeLineElevation) return false;
+            if (terrain.ElevationAt(p) < (floorElevation ?? TreeLineElevation)) return false;
 
             if (Vector2.Distance(p, StPetersBuilder.CottagePos) < VillageClearingRadius) return false;
             if (Vector2.Distance(p, StPetersBuilder.StartSpawnPos) < SpawnClearingRadius) return false;

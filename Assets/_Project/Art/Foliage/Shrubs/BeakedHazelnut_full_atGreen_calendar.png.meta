@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: dc5467fb6ce61d648a2ed94fd2178093
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6520134405311505176
+    second: BeakedHazelnut_full_atGreen_calendar_0
+  - first:
+      213: -6814149422359401514
+    second: BeakedHazelnut_full_atGreen_calendar_1
+  - first:
+      213: -7074259488713871460
+    second: BeakedHazelnut_full_atGreen_calendar_2
+  - first:
+      213: -4981901586863833477
+    second: BeakedHazelnut_full_atGreen_calendar_3
+  - first:
+      213: -6962419378471146498
+    second: BeakedHazelnut_full_atGreen_calendar_4
+  - first:
+      213: 2796213093691992723
+    second: BeakedHazelnut_full_atGreen_calendar_5
+  - first:
+      213: -8669348932515617523
+    second: BeakedHazelnut_full_atGreen_calendar_6
+  - first:
+      213: -2226014786041822633
+    second: BeakedHazelnut_full_atGreen_calendar_7
+  - first:
+      213: 3466612116635584094
+    second: BeakedHazelnut_full_atGreen_calendar_8
+  - first:
+      213: 9149343033924203139
+    second: BeakedHazelnut_full_atGreen_calendar_9
+  - first:
+      213: -6011539364568835279
+    second: BeakedHazelnut_full_atGreen_calendar_10
+  - first:
+      213: 6889595824067639149
+    second: BeakedHazelnut_full_atGreen_calendar_11
+  - first:
+      213: -4768274149357814013
+    second: BeakedHazelnut_full_atGreen_calendar_12
+  - first:
+      213: 7675153384301835896
+    second: BeakedHazelnut_full_atGreen_calendar_13
+  - first:
+      213: -30548915404783866
+    second: BeakedHazelnut_full_atGreen_calendar_14
+  - first:
+      213: -7842218412770293945
+    second: BeakedHazelnut_full_atGreen_calendar_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 375
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0c96ae80f43eb54e83e13122bcddc59
+      internalID: -616389178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 375
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0a370ca840468f4d80591e01dd97302
+      internalID: 422380242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 375
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b16d80403af0c643a9ba7c463508cf2
+      internalID: 1845643854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 375
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd110a43531764144807615f2f6882b6
+      internalID: -108558308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 250
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22b45555647346847b4e66bb3f1d708c
+      internalID: 482829644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 250
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cc35ce9ff2e80c4e9780572654b12d3
+      internalID: -1280603765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 250
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87f4340147ce2684293fcf8c58e9335c
+      internalID: 127738515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 250
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d727cee5a7471746976e4c533d5c46a
+      internalID: 115812493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 125
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4146ed9a329dbd54cb04ac52ab6362fa
+      internalID: -677655519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 125
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 683fecf1500e0e346ac7ab1b088dbff1
+      internalID: 1902255701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 125
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ba70bd495fb94d46b1842e06ef4da92
+      internalID: 1368639526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 125
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e4a55344922fa74bbe8f6324cc86ae9
+      internalID: 1195954498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e0ede2b1c9d9244fb9c3b9b8f900120
+      internalID: -246782933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 0
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cdcab13f7f07ff4385d00ad490fdbf2
+      internalID: 1720479541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 0
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e2fe314b3e90804e922b04010a30337
+      internalID: 1970518104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_full_atGreen_calendar_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 88
+        height: 125
+      alignment: 9
+      pivot: {x: 0.48863637, y: 0.064}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb141b7dcd978d2459587032fb543aba
+      internalID: 1023324484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 23fc2cd53009e9c4790439cd2ac89cf6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BeakedHazelnut_full_atGreen_calendar_c0_f0: -616389178
+      BeakedHazelnut_full_atGreen_calendar_c0_f1: 482829644
+      BeakedHazelnut_full_atGreen_calendar_c0_f2: -677655519
+      BeakedHazelnut_full_atGreen_calendar_c0_f3: -246782933
+      BeakedHazelnut_full_atGreen_calendar_c1_f0: 422380242
+      BeakedHazelnut_full_atGreen_calendar_c1_f1: -1280603765
+      BeakedHazelnut_full_atGreen_calendar_c1_f2: 1902255701
+      BeakedHazelnut_full_atGreen_calendar_c1_f3: 1720479541
+      BeakedHazelnut_full_atGreen_calendar_c2_f0: 1845643854
+      BeakedHazelnut_full_atGreen_calendar_c2_f1: 127738515
+      BeakedHazelnut_full_atGreen_calendar_c2_f2: 1368639526
+      BeakedHazelnut_full_atGreen_calendar_c2_f3: 1970518104
+      BeakedHazelnut_full_atGreen_calendar_c3_f0: -108558308
+      BeakedHazelnut_full_atGreen_calendar_c3_f1: 115812493
+      BeakedHazelnut_full_atGreen_calendar_c3_f2: 1195954498
+      BeakedHazelnut_full_atGreen_calendar_c3_f3: 1023324484
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
