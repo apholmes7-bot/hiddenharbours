@@ -225,19 +225,27 @@ namespace HiddenHarbours.Tools.RigBaking
                 SheetSpec spec = specs[key];
                 progress?.Invoke($"{key}_{stage} ({axis})", (float)done++ / plan);
 
-                var cells = new Dictionary<ShrubCatalog.Channel, byte[][]>();
+                // ACROSS = the axis (calendar station or variant), DOWN = the sway frame, always —
+                // the same layout as the shore-plant sheets, and the layout the contract's own
+                // dimensions describe.
+                var cells = new Dictionary<ShrubCatalog.Channel, byte[][][]>();
                 foreach (var channel in ShrubCatalog.Channels)
-                    cells[channel] = new byte[spec.Cols][];
+                {
+                    cells[channel] = new byte[spec.SwayRows][][];
+                    for (int r = 0; r < spec.SwayRows; r++)
+                        cells[channel][r] = new byte[spec.Cols][];
+                }
 
+                for (int r = 0; r < spec.SwayRows; r++)
                 for (int c = 0; c < spec.Cols; c++)
                 {
                     // On the phase axis the column IS the phase and the variant is fixed; on the
-                    // variant axis it is the other way round.
+                    // variant axis it is the other way round. The ROW is the sway frame on both.
                     string cellPhase = axis == PhaseAxis ? ShrubCatalog.PhaseKeys[c] : phase;
                     int cellVariant = axis == PhaseAxis ? variant : c;
 
-                    string expr = ResultExpr(key, stage, cellPhase, cellVariant, frame: 0);
-                    RenderCell(host, expr, spec, renderClock, result, cells, c);
+                    string expr = ResultExpr(key, stage, cellPhase, cellVariant, frame: r);
+                    RenderCell(host, expr, spec, renderClock, result, cells, row: r, col: c);
                 }
 
                 string stem = axis == PhaseAxis
@@ -249,7 +257,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     Stem = stem, Species = key, Stage = stage, Axis = axis,
                     Fixed = axis == PhaseAxis ? $"v{variant}" : phase,
                     Width = spec.SheetW, Height = spec.SheetH,
-                    Cols = spec.Cols, Rows = SwayRowsBaked,
+                    Cols = spec.Cols, Rows = spec.SwayRows,
                 };
                 foreach (var channel in ShrubCatalog.Channels)
                     bake.AssetPaths.Add(
@@ -264,18 +272,33 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// <b>ONE sway row. The shader owns the swaying</b> — the same ruling as
-        /// <c>TreeRigBaker.SwayRowsBaked</c>, and for the same measured reasons: the wind shader reads
-        /// the shared deterministic <c>_WindWorld</c> so one gust moves grass, trees, shrubs and water
-        /// together, and because the shader passes <c>uv</c> through untouched the three channels stay
-        /// co-registered by construction. Four rows is 4× the sheet area for motion we already have a
-        /// better version of.
+        /// <b>ALL FOUR sway rows — because on this kit the contract has no way to say otherwise.</b>
         ///
-        /// <para>⚠️ The rig can make 4 (<c>SWAY</c>), and its sway is pinned at the pivot row AND at
-        /// the snow line — so if a later wave DOES want baked sway, the snow interaction is the reason
-        /// it might.</para>
+        /// <para>🔴 This used to be 1, copied across from <c>TreeRigBaker.SwayRowsBaked</c> ("the shader
+        /// owns the swaying"), and it made the kit unable to produce a usable sprite. The tree kit gets
+        /// to bake one row because <b>its</b> contract records the difference on purpose — it publishes
+        /// <c>sheet.rows</c> (what was baked) alongside <c>sheet.rigSwayRows</c> (what the rig can
+        /// make), so its slicer knows a one-row sheet is the intended shape. <b>This kit's contract is
+        /// serialised straight out of the rig</b> (<see cref="ExportContract"/>): it publishes exactly
+        /// one pair of numbers per axis, <c>cols × cellW</c> by <c>SWAY × cellH</c>, and it has no field
+        /// in which to record a baker that laid out fewer rows. So a one-row sheet was not a leaner
+        /// bake — it was a sheet its own oracle rejects, and <see cref="ShrubSheetSlicer"/> refused all
+        /// eighteen of them ("Sliced 0, FAILED 18"), correctly.</para>
+        ///
+        /// <para>The sibling to follow is the shore-plant kit (#318), whose contract is serialised the
+        /// same way and whose baker lays out all four rows for the same reason. It is also the better
+        /// art call here: this rig's sway is pinned at the pivot row AND <b>at the snow line</b>, so a
+        /// shrub half-buried in pack sways about the drift rather than about its root crown — motion no
+        /// uv-space wind shader reading <c>_WindWorld</c> can reproduce, because the shader does not
+        /// know where the snow cut the sprite.</para>
+        ///
+        /// <para>⚠️ This is the count this baker EXPECTS; the count it USES is the rig's live
+        /// <c>sheetSpec().rows</c> (see <see cref="SheetSpec.SwayRows"/>), cross-checked against this
+        /// in <see cref="ReadSheetSpec"/>. Four rows is 4× the sheet area of one — and that is already
+        /// the arithmetic <see cref="SummariseBudget"/> prints, because the rig's own
+        /// <c>sheetAudit()</c> has always measured the full four-row sheet.</para>
         /// </summary>
-        public const int SwayRowsBaked = 1;
+        public const int SwayRowsBaked = ShrubCatalog.SwayFrames;
 
         // =====================================================================================
         // the rig
@@ -346,28 +369,33 @@ namespace HiddenHarbours.Tools.RigBaking
                     string.Join(", ", ReadPhaseKeys(host)) + ".");
         }
 
-        /// <summary>The rig's own <c>sheetSpec()</c> for a species at a stage on an axis, plus the
-        /// dimensions of the sheet WE lay out (<see cref="SwayRowsBaked"/> rows, not the rig's
-        /// four).</summary>
+        /// <summary>The rig's own <c>sheetSpec()</c> for a species at a stage on an axis. The sheet we
+        /// lay out is the sheet the rig describes: <see cref="Cols"/> across by
+        /// <see cref="SwayRows"/> down.</summary>
         public readonly struct SheetSpec
         {
             public readonly int CellW, CellH, PivotX, PivotY, Pad, Cols;
-            /// <summary>What the rig reports for the FULL 4-row sheet, and its 2048 verdict.</summary>
+            /// <summary>The rig's live <c>rows</c> — its <c>SWAY</c> frame count, and the number of
+            /// rows this bake lays out. Read, never assumed; cross-checked against
+            /// <see cref="SwayRowsBaked"/> in <see cref="ReadSheetSpec"/>.</summary>
+            public readonly int SwayRows;
+            /// <summary>What the rig reports for the whole sheet, and its 2048 verdict.</summary>
             public readonly int RigSheetW, RigSheetH;
             public readonly bool RigFits, Wrap;
             public readonly float Metres;
 
             public SheetSpec(int cellW, int cellH, int pivotX, int pivotY, int pad, int cols,
-                             int rigSheetW, int rigSheetH, bool rigFits, bool wrap, float metres)
+                             int swayRows, int rigSheetW, int rigSheetH, bool rigFits, bool wrap,
+                             float metres)
             {
                 CellW = cellW; CellH = cellH; PivotX = pivotX; PivotY = pivotY; Pad = pad;
-                Cols = cols;
+                Cols = cols; SwayRows = swayRows;
                 RigSheetW = rigSheetW; RigSheetH = rigSheetH; RigFits = rigFits; Wrap = wrap;
                 Metres = metres;
             }
 
             public int SheetW => Cols * CellW;
-            public int SheetH => SwayRowsBaked * CellH;
+            public int SheetH => SwayRows * CellH;
         }
 
         public static SheetSpec ReadSheetSpec(IRigScriptHost host, string species, string stage,
@@ -380,6 +408,7 @@ namespace HiddenHarbours.Tools.RigBaking
             int cellH = (int)host.EvaluateNumber($"{sp}.cell[1]");
             int pivotY = (int)host.EvaluateNumber($"{sp}.pivot[1]");
             int pad = (int)host.EvaluateNumber($"{sp}.pad");
+            int swayRows = (int)host.EvaluateNumber($"{sp}.rows");
 
             // The rig defines pad = cellH − 1 − pivotY. Cross-check rather than trust: if the two ever
             // disagree, the pivot convention changed under us and every sheet this bake writes would
@@ -390,6 +419,18 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{cellH - 1 - pivotY}. The pivot convention changed — stop and read cellOf() " +
                     "before baking.");
 
+            // 🔴 The row count is READ, and then cross-checked — the same discipline as the pad above,
+            // and for a sharper reason. A baker that laid out fewer rows than the rig publishes writes
+            // a sheet whose own contract rejects it, and the failure surfaces a whole stage later as
+            // "Sliced 0, FAILED 18" rather than here. See SwayRowsBaked.
+            if (swayRows != SwayRowsBaked)
+                throw new InvalidOperationException(
+                    $"{species}/{stage}: the rig publishes {swayRows} sway row(s) but this baker " +
+                    $"expects {SwayRowsBaked}. The contract is serialised straight out of the rig and " +
+                    "cannot record a bake with fewer rows, so a sheet laid out to the other number is " +
+                    "one the slicer will refuse. Re-export the contract and update SwayRowsBaked " +
+                    "together, deliberately.");
+
             return new SheetSpec(
                 cellW: (int)host.EvaluateNumber($"{sp}.cell[0]"),
                 cellH: cellH,
@@ -397,6 +438,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 pivotY: pivotY,
                 pad: pad,
                 cols: (int)host.EvaluateNumber($"{sp}.cols"),
+                swayRows: swayRows,
                 rigSheetW: (int)host.EvaluateNumber($"{sp}.w"),
                 rigSheetH: (int)host.EvaluateNumber($"{sp}.h"),
                 rigFits: host.EvaluateBool($"{sp}.fits"),
@@ -406,19 +448,20 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>
         /// The 2048 guard, asserted TWICE and never inferred: once via the rig's own
-        /// <c>sheetSpec().fits</c> (its verdict on the full 4-row sheet) and once on the sheet we
-        /// actually lay out. Over the cap Unity imports SILENTLY DOWNSCALED with a matching sprite
-        /// count, so only a pivot or cell-size assert much later would catch it.
+        /// <c>sheetSpec().fits</c> and once on the sheet we actually lay out. The two now describe the
+        /// same sheet, which is the point — while this baker wrote one row the second check was
+        /// measuring a sheet a quarter the height of the one the contract promised, and could not have
+        /// caught anything the first missed. Over the cap Unity imports SILENTLY DOWNSCALED with a
+        /// matching sprite count, so only a pivot or cell-size assert much later would catch it.
         /// </summary>
         static void AssertFits(string species, string stage, in SheetSpec spec)
         {
             if (!spec.RigFits)
                 throw new InvalidOperationException(
-                    $"{species}/{stage}: the rig's own sheetSpec().fits is FALSE — its full " +
+                    $"{species}/{stage}: the rig's own sheetSpec().fits is FALSE — its " +
                     $"{spec.RigSheetW}×{spec.RigSheetH} sheet is over Unity's " +
-                    $"{ShrubCatalog.ImportSizeCap} px cap. We bake {SwayRowsBaked} sway row, so this " +
-                    "bake would still fit, but the rig is telling you the recipe outgrew the " +
-                    "importer — decide that deliberately rather than past a refusal.");
+                    $"{ShrubCatalog.ImportSizeCap} px cap. The recipe outgrew the importer: page the " +
+                    "sheet or bake a smaller stage, deliberately rather than past a refusal.");
 
             if (spec.SheetW > ShrubCatalog.ImportSizeCap || spec.SheetH > ShrubCatalog.ImportSizeCap)
                 throw new InvalidOperationException(
@@ -434,8 +477,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// once. <b>This refuses; it does not rewrite.</b> Regenerating the contract is
         /// <see cref="ExportContract"/>'s deliberate job.
         /// </summary>
-        static void AssertMatchesContract(string species, in SheetSpec spec, string axis,
-                                          ShrubCatalog.Contract contract)
+        public static void AssertMatchesContract(string species, in SheetSpec spec, string axis,
+                                                 ShrubCatalog.Contract contract)
         {
             var entry = contract.Find(species);
             if (entry == null)
@@ -458,21 +501,35 @@ namespace HiddenHarbours.Tools.RigBaking
                     "would be planted wrong by the difference.");
 
             int expectedW = axis == PhaseAxis ? entry.PhaseSheetW : entry.VariantSheetW;
-            if (spec.Cols * spec.CellW != expectedW)
+            if (spec.SheetW != expectedW)
                 throw new InvalidOperationException(
-                    $"{species}: the rig lays out {spec.Cols}×{spec.CellW} = " +
-                    $"{spec.Cols * spec.CellW} px on the {axis}-axis sheet but the contract says " +
-                    $"{expectedW}. The column count changed — re-export the contract.");
+                    $"{species}: the rig lays out {spec.Cols}×{spec.CellW} = {spec.SheetW} px on the " +
+                    $"{axis}-axis sheet but the contract says {expectedW}. The column count changed — " +
+                    "re-export the contract.");
+
+            // 🔴 THE HEIGHT, AND THIS IS THE CHECK THAT WAS MISSING. Only the width was compared, so
+            // this guard was blind to the one axis the baker got wrong: it waved through sheets a
+            // quarter of their contracted height for as long as their columns lined up, and the
+            // refusal landed on ShrubSheetSlicer instead — a stage later, in the consumer's lap,
+            // reading as a slicer problem. Both dimensions or neither.
+            int expectedH = axis == PhaseAxis ? entry.PhaseSheetH : entry.VariantSheetH;
+            if (spec.SheetH != expectedH)
+                throw new InvalidOperationException(
+                    $"{species}: the rig lays out {spec.SwayRows} sway row(s) × {spec.CellH} = " +
+                    $"{spec.SheetH} px down the {axis}-axis sheet but the contract says {expectedH} " +
+                    $"({expectedH / spec.CellH} row(s)). A sheet of the wrong height is one the " +
+                    "slicer refuses — it matches neither published axis, and every rect it would cut " +
+                    "is numbered against rows that are not there.");
         }
 
         // =====================================================================================
         // the pixels
         // =====================================================================================
 
-        /// <summary>One <c>render()</c> call, as a JS expression. Frame 0 always — see
-        /// <see cref="SwayRowsBaked"/>. <b>No <c>snow</c> argument:</b> snow only ever CLIPS, so it is
-        /// outside the union cell by construction and a snow-laden sheet is a separate, deliberate
-        /// bake rather than an axis of this one.</summary>
+        /// <summary>One <c>render()</c> call, as a JS expression. <paramref name="frame"/> is the sway
+        /// frame and therefore the sheet ROW — 0..<see cref="SwayRowsBaked"/>−1. <b>No <c>snow</c>
+        /// argument:</b> snow only ever CLIPS, so it is outside the union cell by construction and a
+        /// snow-laden sheet is a separate, deliberate bake rather than an axis of this one.</summary>
         public static string ResultExpr(string species, string stage, string phase, int variant,
                                         int frame) =>
             $"{ShrubCatalog.RigGlobalName}.render({Js(species)},{{variant:{variant}," +
@@ -480,7 +537,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static void RenderCell(IRigScriptHost host, string expr, in SheetSpec spec,
                                Stopwatch renderClock, ShrubBakeResult result,
-                               Dictionary<ShrubCatalog.Channel, byte[][]> cells, int col)
+                               Dictionary<ShrubCatalog.Channel, byte[][][]> cells, int row, int col)
         {
             string g = ShrubCatalog.RigGlobalName;
             renderClock.Start();
@@ -505,24 +562,25 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"{spec.CellW}×{spec.CellH} RGBA. The cell the rig rendered does not match " +
                         "the cell sheetSpec() promised — do not blit it into a grid.");
 
-            cells[ShrubCatalog.Channel.Albedo][col] = rgba;
-            cells[ShrubCatalog.Channel.Light][col] = light;
-            cells[ShrubCatalog.Channel.State][col] = state;
+            cells[ShrubCatalog.Channel.Albedo][row][col] = rgba;
+            cells[ShrubCatalog.Channel.Light][row][col] = light;
+            cells[ShrubCatalog.Channel.State][row][col] = state;
         }
 
         /// <summary>
-        /// Lays the cells out left-to-right in one row and writes the PNG. <c>RigBaker.Blit</c> does
+        /// Lays the cells out axis-across × sway-down and writes the PNG. <c>RigBaker.Blit</c> does
         /// the cell copy, so the row/col convention (row-major from the TOP-LEFT, matching every
         /// slicer in the repo) exists in exactly one place.
         /// </summary>
         static string WriteSheet(string outputFolder, string stem, ShrubCatalog.Channel channel,
-                                 in SheetSpec spec, byte[][] cells, ShrubBakeResult result)
+                                 in SheetSpec spec, byte[][][] cells, ShrubBakeResult result)
         {
             int pw = spec.SheetW, ph = spec.SheetH;
             var pixels = new Color32[pw * ph];
+            for (int r = 0; r < spec.SwayRows; r++)
             for (int c = 0; c < spec.Cols; c++)
-                RigBaker.Blit(cells[c], spec.CellW, spec.CellH, pixels, pw, ph,
-                              col: c, rowFromTop: 0);
+                RigBaker.Blit(cells[r][c], spec.CellW, spec.CellH, pixels, pw, ph,
+                              col: c, rowFromTop: r);
 
             string assetPath = $"{outputFolder}/{stem}{ShrubCatalog.SuffixFor(channel)}.png";
 
