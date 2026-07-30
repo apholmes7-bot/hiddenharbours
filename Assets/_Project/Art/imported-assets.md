@@ -1254,3 +1254,192 @@ So the bake is **27 sheets, not 30**:
 `_LightResponse` dial-in (owner's pending verdict), no tree scale/style redesign, and the other three
 stages (`sapling/young/pole`) and two seasons (`autumn/winter`) are still un-baked — the same
 deliberate hundreds-of-MB decision as pass 1.
+
+---
+
+## Batch — Acadian Shrubs (`Shrubs`), the rig and the contract (owner drop 2026-07-29)
+
+`docs/art/rigs/shrubIsoRig.js` — twenty woody, waist-high, multi-stemmed species across five habitats,
+from lowbush blueberry on the barren to speckled alder in the swale. Imported to the standard of the
+Rock Iso (#312) and Shore Plant (#318) kits: rig source verbatim, a generated contract, a catalog, an
+in-engine baker, a slicer with the 2048 assert, and a contract test suite. **No pixels.**
+
+### The gap this kit fills
+
+The tree rig owns anything with a leader, `shorePlantRig` owns anything the tide reaches, the flower
+rig owns anything herbaceous. Everything woody and waist-high — the alder swale, the blueberry barren,
+the dogwood on the creek bank — was hand-drawn per season, which is why the same alder had a summer
+sprite twice the width of its winter one.
+
+The tree rig's own floor now points here: under ~1.06 m `treeIsoRig2`'s `report.underFloor` fires, and
+its README says to use `shrubIsoRig` for those, "which is authored for the scale rather than shrunk
+into it". Grain is re-measured for it — the tree's `broad` leaf cell is 8.4 × 5.6 px and a sheep-laurel
+canopy is only 20 px across, so every grain here is 2.2–6.2 px.
+
+**Bayberry and Sweet Fern are deliberately NOT here** — `shorePlantRig` owns both as dune/upland units,
+and a species living in two rigs is how two silhouettes happen. Pinned by a test that also checks they
+are still in `ShorePlantCatalog.SpeciesKeys`.
+
+### ⭐ This kit ships NO pixels — it bakes to order
+
+20 species × 8 phases × 5 snow steps × 4 variants × 3 growth stages is a matrix an import has no
+business choosing from. The contract ships anyway because **the cell and the pivot are phase- and
+snow-independent by construction**, so one entry serves every state and the engine can be wired
+against it before a PNG exists.
+
+`ShrubBakeMenu` therefore leads with **Report Shrub Sheet Budget**, not a bake. Measured at `full`
+stage, both axes, **albedo only: 24.14 MiB** — and a full three-channel bake is 3× = **72.41 MiB**.
+Every sheet fits 2048 with room to spare; the tightest is Serviceberry at 968×520, **1080 px of
+headroom**. The atlas call is the owner's, on these numbers.
+
+| species | habitat | form/unit | h (m) | union cell | pivot | worst ink | variant sheet | phase sheet | head | KiB |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `LowbushBlueberry` | barren | mat/mat wrap | 0.38 | 46x39 | 23,24 | 44% (catkin) | 184x156 | 368x156 | 1680 | 336 |
+| `SheepLaurel` | barren | clump/clump | 0.81 | 48x46 | 24,35 | 43% (fruit) | 192x184 | 384x184 | 1664 | 414 |
+| `Rhodora` | barren | plant/plant | 1.00 | 44x48 | 21,40 | 36% (dormant) | 176x192 | 352x192 | 1696 | 396 |
+| `BlackHuckleberry` | barren | clump/clump | 0.91 | 50x54 | 24,41 | 21% (catkin) | 200x216 | 400x216 | 1648 | 506 |
+| `CommonJuniper` | barren | mat/mat wrap | 0.63 | 52x54 | 26,36 | 56% (dormant) | 208x216 | 416x216 | 1632 | 526 |
+| `Leatherleaf` | bog | thicket/mat wrap | 0.84 | 44x52 | 22,39 | 48% (catkin) | 176x208 | 352x208 | 1696 | 429 |
+| `SweetGale` | bog | thicket/mat wrap | 1.06 | 46x59 | 23,44 | 49% (dormant) | 184x236 | 368x236 | 1680 | 508 |
+| `WinterberryHolly` | bog | plant/plant | 2.44 | 90x93 | 45,85 | 41% (turn) | 360x372 | 720x372 | 1328 | 1569 |
+| `SpeckledAlder` | swale | thicket/mat wrap | 4.00 | 62x148 | 31,134 | 69% (leaf) | 248x592 | 496x592 | 1456 | 1720 |
+| `PussyWillow` | swale | clump/clump | 3.38 | 91x131 | 45,122 | 43% (dormant) | 364x524 | 728x524 | 1320 | 2235 |
+| `RedOsierDogwood` | swale | clump/clump | 2.19 | 82x92 | 40,80 | 36% (catkin) | 328x368 | 656x368 | 1392 | 1414 |
+| `Meadowsweet` | swale | clump/clump | 1.25 | 55x59 | 27,49 | 31% (dormant) | 220x236 | 440x236 | 1608 | 608 |
+| `Steeplebush` | swale | clump/clump | 1.06 | 51x54 | 25,43 | 31% (dormant) | 204x216 | 408x216 | 1640 | 516 |
+| `Raspberry` | edge | thicket/mat wrap | 1.44 | 54x72 | 27,57 | 60% (green) | 216x288 | 432x288 | 1616 | 729 |
+| `WildRose` | edge | clump/clump | 1.31 | 60x68 | 30,57 | 28% (dormant) | 240x272 | 480x272 | 1568 | 765 |
+| `StaghornSumac` | edge | plant/plant | 3.44 | 118x131 | 59,122 | 41% (green) | 472x524 | 944x524 | 1104 | 2898 |
+| `Serviceberry` | edge | plant/plant | 3.69 | 121x130 | 60,121 | 42% (green) | 484x520 | 968x520 | 1080 | 2949 |
+| `BeakedHazelnut` | woods | clump/clump | 2.88 | 88x125 | 43,117 | 32% (catkin) | 352x500 | 704x500 | 1344 | 2062 |
+| `WildRaisin` | woods | plant/plant | 2.63 | 95x105 | 47,96 | 41% (green) | 380x420 | 760x420 | 1288 | 1870 |
+| `RedElderberry` | woods | plant/plant | 3.00 | 107x113 | 53,104 | 40% (turn) | 428x452 | 856x452 | 1192 | 2267 |
+
+Worst ink is **Black Huckleberry at 21% (catkin)** — that is what the union cell costs it. Sheet waste
+is only memory; a state hop is an artefact.
+
+### ⚠️ The drop shipped NO contract JSON, so the baker SERIALISES it out of the live rig
+
+This is the one real divergence from #312/#318, where the owner downloaded a contract from the handoff
+page. The shrub kit's README is explicit that the contract is *"serialised out of the live rig on that
+page — download it from there rather than hand-writing one"*, and no JSON came with the drop. So
+`ShrubBaker.ExportContract` calls `Shrubs.contract(size)` in the V8 host and writes it. That is
+strictly better than a hand-copy: it cannot drift from the bake, and nothing in it was typed twice.
+
+Two deliberate choices:
+
+* **The `generated` ISO timestamp is replaced** with a provenance string, so the committed file is
+  diff-stable — the same divergence the shore-plant contract records, and why the tests compare
+  **fields**, not bytes. A test rejects an ISO timestamp landing in the repo.
+* **Export is NOT part of the bake.** The contract is the oracle `AssertMatchesContract` refuses
+  against; a baker that rewrote it on the way past could never refuse.
+
+### 🔴 The VEIL flag is a DECLARATION, and a shader must branch on it from data
+
+A leafless alder is two hundred twigs 1 px wide. Draw them as limbs and you get chicken wire; drop them
+and the shrub vanishes for four months. So bare twig volume is its own material — `M.VEIL`, resolved as
+**strands along a direction field** radiating from the root crown, not an ordered dither. It is exempt
+from the mass floor and, in exchange, **forbidden both a rim AND a keyline** — the only material in the
+world with the second rule, because an outline round every strand is mush.
+
+The consequence a shader cannot guess:
+
+* `light.R` is key light for **all** materials.
+* `light.G` is the back rim for **body and wood only** — identically 0 on veil, fleck and bloom.
+* `state.R` is 255 on veil pixels: **gate every read of `light.G` on it, never infer veil-vs-mass from
+  the sprite.**
+
+Measured across five species in the `bare` phase: `state.R` agrees with `masks.veil` on **every** pixel
+(0 mismatches), and **0 veil pixels carry a non-zero `light.G`**. The sabotage half matters as much —
+the veil is not empty, so the assert is not vacuous.
+
+`state.G` is the ornament hook (255 bloom · 170 fruit · 0 otherwise), a hue shift for berry variation
+without a re-bake. Also rim-forbidden, also measured at 0 leak.
+
+### Six materials, and only BODY is policed by the floor
+
+Rule 1 with **declared** exemptions: no body mass leaves the emitter under `MIN_R` (5 px) in any axis,
+clamped at the emitter rather than trusted to twenty author sites. `wood`, `edge`, `veil`, `fleck` and
+`bloom` are linear or sub-pixel and are exempt **by declaration** — which is what makes the exemption
+auditable rather than a fudge. `carriesRim` is a genuine tri-state (`true` / `false` /
+`"thickness-gated"`) and the parser keeps the RAW form: collapsing `"thickness-gated"` to a bool is how
+a stem silently stops being lit.
+
+### ⭐ Cells stay UNIONED over the phases — and snow is not in the union at all
+
+ONE union cell and ONE pivot per species per growth stage, unioned over 4 variants × 8 phases. **Snow
+is excluded by construction**: it only ever CLIPS rows, so it cannot change the cell. Proved by
+rendering 5 species × 8 phases × 5 snow steps = **200 states** and asserting the root-crown pivot never
+moves by a pixel. Every rect on a sliced sheet therefore carries the same pivot — the union cell's
+entire purchase.
+
+Pivot normalisation is ADR 0026's `(x/W, (H−y)/H)`. **Not** the tree kit's `pad/cellH`: the tree's
+fraction has to double as the wind shader's `_TrunkAnchor` and a shrub's does not. The rig does compute
+a `pad` internally, and the baker cross-checks `pad == cellH − 1 − pivotY` rather than trusting it.
+
+### 🔴 Snow CLIPS, it never floods — and deep enough snow means DRAW A DRIFT
+
+One number decides four things: `depth = step.m × habitat.snowK`. Rows below the surface are removed,
+never flooded (the same ruling as the rock rig's `awash` sheets), no sprite bakes ground, and `snowRow`
+is reported so the scene can line its own drift tile up with the bake.
+
+The kit's headline example, asserted through the catalog's own helpers because those are what a scene
+will call: at the `deep` step, **Lowbush Blueberry (0.38 m) is 103% buried — do not draw it, draw a
+drift** — while **Speckled Alder (4.00 m) is 22% and barely notices**. The rig's own `buriedOut` flag
+is checked against that arithmetic, so the two cannot disagree and leave a shrub standing in a drift.
+
+### Phenology, not season — eight states, and two facts that fall out of one table
+
+`dormant` Feb · `catkin` early Apr · `bloom` late May · `leaf` Jun · `green` Jul · `fruit` Aug ·
+`turn` early Oct · `bare` Nov. At 32 px/m a blueberry leaf is 1 px and a rhodora leaf is 1 px and they
+are the same 1 px — what tells them apart is that one is magenta in late May before it has any leaves
+and the other is scarlet in October.
+
+ONE table maps (phase, species) → leaf / bloom / fruit / catkin / veil / colour / bright stem, so two
+things come free and cannot disagree: `bloomFirst` species flower on naked wood (Rhodora carries 0.12
+of leaf at bloom against 1.00 at leaf), and `holds` species carry fruit through the dormant frame
+(Winterberry 0.62) — which is the whole reason to draw them. ⚠️ These are **fractions 0..1, not
+booleans**; a truthiness test on them means nothing. Sabotaged with a non-holder, which must reach 0.
+
+### ⚠ Thickets tile, and a shrub is a hollow basket
+
+Six species ship as `wrap` units (blueberry, juniper, leatherleaf, sweet gale, alder, raspberry): every
+emitter is modulo the tile width, so a row butt-joins with no seam by construction. What is measured is
+`report.crossings` — a tile that never crosses tiles *perfectly* and reads as a fence of separate
+bushes. All six cross.
+
+Rule 2 counts enclosed sky holes: a tree crown is a solid cap seen from below, a shrub is open and you
+look INTO it. **⚠️ The phase matters and the contract's `minWindows` is the wrong number for this** —
+it is the minimum across all eight phases, and a dormant or bare shrub legitimately has none (it is
+filaments, not a basket, for four months). The rig's own assert is windows > 0 **in leaf at full
+stage**, so the test renders that phase and gates on the rig's own `windowsApply` flag. Asserting the
+min would have failed Sheep Laurel — a clump with `minWindows` 0 — for having a solid dormant frame the
+rig never claimed was wrong.
+
+### ⚠ Two species KEYS differ from their display names
+
+`Wild Raspberry` is `Raspberry` and `Winterberry` is `WinterberryHolly`. Reading the README's species
+table and camel-casing the labels produces two keys the rig has never heard of, and the failure is
+silent until a sheet stem cannot be matched to a species. `ShrubCatalog.SpeciesKeys` exists only as a
+cross-check that a species has not silently vanished from the contract; all geometry comes from the
+contract.
+
+### Where it lives, and what is NOT wired
+
+Sheets bake to `Assets/_Project/Art/Foliage/Shrubs/` — a **sibling of `Foliage/Trees/`**, not under
+`Sprites/Shore/`: a shrub is foliage, and only three of the five habitats are anywhere near water.
+
+`ShrubSheetSlicer` exists rather than a `SpriteSheetSlicer` manifest row because the manifest knows
+nothing about a three-channel sheet family with per-channel colour space. Sheets import **FullRect**,
+not Tight: this kit is a hollow basket on purpose, its interior is mostly transparent, and the two data
+channels are sampled through the albedo's geometry — a tight mesh per channel would give the 1 px veil
+a different outline in each.
+
+**No baked water, no baked caustics, no baked moving light** (ADR 0010/0012/0023) — the live shader owns
+all three. The key light leans toward the camera, asserted: **the sun never goes behind** (the
+tree-light rule).
+
+**WIRE-IN (NOT done here):** no sheets baked, nothing placed in a scene, no prefab, spawner, paint tool
+or Def reads this contract yet, `DecorPrefabBuilder` has no shrub path, and `SpriteLightResponse.hlsl`
+is **not** branched on `state.R`. No `_WindWorld` bridge either — when a consumer wants sway it adopts
+the SHARED include, never a private copy.
