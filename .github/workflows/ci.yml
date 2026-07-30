@@ -20,6 +20,22 @@
 # The third-party Buildalon actions are pinned to commit SHAs (supply-chain hygiene) because
 # they receive the Unity credentials. To bump one, update the SHA *and* its trailing
 # `# vX` comment together.
+#
+# WHY THE HUB IS PINNED (`hub-version: 3.19.5`) — do not remove without re-testing.
+# Unity Hub 3.20.0 (in the apt repo from 2026-07-29 ~22:00Z) stopped installing the
+# executable at `/opt/unityhub/unityhub`. Every run repo-wide then died at "Set up Unity" with
+#     Error: ENOENT: no such file or directory, access '/opt/unityhub/unityhub'
+# including re-runs of commits that had been green — so it was the action's environment, not our
+# code. That path is hard-coded in THREE places across the toolchain, which is why nothing
+# smaller fixes it: `unity-setup` asserts it exists; the `/usr/bin/unity-hub` xvfb wrapper the
+# action writes execs it by absolute path (so `UNITY_HUB_PATH` alone cannot help); and
+# `activate-unity-license` reaches for `/opt/unityhub/UnityLicensingClient_V1/…`.
+# 3.19.5 is the last version whose postinst does `update-alternatives: using
+# /opt/unityhub/unityhub` — it is the exact version the last green run (2026-07-29 19:32Z)
+# installed, so this pin restores a proven-good environment rather than guessing at one.
+# `hub-version` is a first-class input of the pinned action and auto-disables `auto-update-hub`,
+# so the SHA pin above is untouched. When upstream teaches the toolchain the 3.20+ layout, drop
+# this line and let the hub float again.
 
 name: CI
 
@@ -59,6 +75,7 @@ jobs:
           version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1
           build-targets: StandaloneLinux64
           cache-installation: true                             # cache the multi-GB editor between runs
+          hub-version: '3.19.5'                                # see "WHY THE HUB IS PINNED" above
 
       - name: Activate Unity license (Personal)
         uses: buildalon/activate-unity-license@e0d245d0787b7b9931b56ccbde3b508f6b70f1af # v2
