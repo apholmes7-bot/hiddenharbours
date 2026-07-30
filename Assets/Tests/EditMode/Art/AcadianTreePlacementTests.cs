@@ -230,21 +230,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// re-bake that changes the flare cannot slip through. If this ever collapses toward zero the
         /// trap has genuinely gone away and the warnings can be relaxed; if it grows, they matter
         /// more.
+        ///
+        /// <para><b>⚠️ RE-DERIVED FOR THE PASS-2 RIG (2026-07-29), and this test firing is exactly
+        /// what it was built to do.</b> Pass 1 gave every species a broad root skirt: 13–23 px of
+        /// flare, 0.406–0.719 m. Pass 2 draws the root flare as <b>three splayed buttresses with dark
+        /// splits</b> instead, which is a narrower footprint by design, so the pads dropped to
+        /// <b>8–13 px = 0.250–0.406 m</b> — measured, not estimated.</para>
+        ///
+        /// <para>The trap has NOT gone away, which is the only question that decides whether these
+        /// bounds move or the warnings do: 8 px at PPU 32 is a quarter of a metre of visible sink on
+        /// the shallowest species, and the tree that used to be worst (23 px) is now the best case
+        /// (13 px). So the range is re-measured against the new bake and the bounds keep their
+        /// original job — refuse a flare that has collapsed to nothing, and refuse one that has
+        /// grown, either of which means the bake moved under the placement code.</para>
         /// </summary>
         [Test]
-        public void BottomCentre_WouldSinkEverySpecies_ByBetweenAboutFourAndSevenTenthsOfAMetre()
+        public void BottomCentre_WouldSinkEverySpecies_ByBetweenAQuarterAndFourTenthsOfAMetre()
         {
             var drops = _trees.Select(p => AcadianTreeCatalog.FlareDropMetres(p.Entry, Ppu)).ToList();
             float min = drops.Min(), max = drops.Max();
 
             Debug.Log($"[tree-place] bottom-centre sabotage: sinks the ten species by " +
                       $"{min:F3}–{max:F3} m ({_trees.Min(p => p.Entry.nearFlarePad)}–" +
-                      $"{_trees.Max(p => p.Entry.nearFlarePad)} px at PPU {Ppu}).");
+                      $"{_trees.Max(p => p.Entry.nearFlarePad)} px at PPU {Ppu}). " +
+                      "Pass 2 measured 2026-07-29: 0.250–0.406 m (8–13 px). Pass 1 was 0.406–0.719 m " +
+                      "(13–23 px) — the buttressed root flare is a narrower footprint by design.");
 
-            Assert.Greater(min, 0.35f,
+            // 0.20 m = 6.4 px. Below that a bottom-centre pivot stops being a visible error and the
+            // warnings this suite exists to justify would genuinely be noise.
+            Assert.Greater(min, 0.20f,
                 "Even the shallowest flare must be a visible error, or this whole warning is noise.");
-            Assert.That(max, Is.InRange(0.6f, 0.85f),
-                "The worst species used to sink 23 px = 0.719 m. If that moved, the bake changed.");
+            Assert.That(max, Is.InRange(0.35f, 0.5f),
+                "The worst species sinks 13 px = 0.406 m under the pass-2 rig (it was 23 px = " +
+                "0.719 m under pass 1). If that moved again, the bake changed — re-measure before " +
+                "touching this bound.");
         }
 
         // =================================================================================
@@ -276,7 +295,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"  {e.species,-16} {e.metres:F1} m tall -> draws {drawn:F2} m " +
                     $"({e.pivotY} px), foreshortened expectation {expected:F2} m, ratio {ratio:F3}");
 
-                Assert.That(ratio, Is.InRange(0.92f, 1.08f),
+                // The upper bound is 1.12, re-derived for the pass-2 rig (2026-07-29). Two things
+                // legitimately push a DRAWN height above the pure foreshortening of the TRUNK, and
+                // neither is an error:
+                //   • Crown depth. The cell's top row is set by the crown's silhouette, not the
+                //     leader, and the crown extends toward the camera — that projection adds rows
+                //     the trunk's own height×0.766 does not predict. Pass 2's serrated outline and
+                //     hanging masses under the branch line extend it further than pass 1's smooth
+                //     ellipsoid did.
+                //   • The rig ROUNDS `metres` to one decimal, so `expected` carries up to ±1% of
+                //     quantisation on its own (±1.04% on the 4.8 m cedar).
+                // Measured span 2026-07-29: 0.998 (RedMaple) to 1.081 (WhiteBirch) — the old 1.08
+                // cap clipped WhiteBirch by 0.0007. 1.12 keeps the assert's real job, which is to
+                // catch a wrong PPU or a wrong camera constant: scaling to raw metres instead is
+                // +30.5%, rejected with 18 points to spare.
+                Assert.That(ratio, Is.InRange(0.92f, 1.12f),
                     $"{e.species} draws {drawn:F2} m above its trunk foot but a {e.metres:F1} m tree " +
                     $"under a {heightScale:F3} foreshortening should draw about {expected:F2} m. " +
                     "Either the PPU is wrong or the camera constant is (crown depth accounts for a " +

@@ -1,5 +1,5 @@
 /* Hidden Harbours — TREE BAKE harness.  run_script recipe:
-     (0,eval)(await readFile('Art/treeIsoRig.js'));
+     (0,eval)(await readFile('Art/treeIsoRig2.js'));
      (0,eval)(await readFile('Art/_treeBake.js'));
      await TREE_BAKE({ createCanvas, saveFile, log });
 
@@ -16,8 +16,8 @@
 
    opts: { dir, species[], stages[], seasons[], channels[], createCanvas, saveFile, log } */
 globalThis.TREE_BAKE = async function (o) {
-  const R = globalThis.TreeRig;
-  if (!R) throw new Error('TREE_BAKE: load Art/treeIsoRig.js first');
+  const R = globalThis.TreeRig2 || globalThis.TreeRig;   // pass 2 if loaded, else pass 1
+  if (!R) throw new Error('TREE_BAKE: load treeIsoRig2.js (or treeIsoRig.js) first');
   const createCanvas = o.createCanvas, saveFile = o.saveFile, log = o.log || (() => {});
   const dir = (o.dir || 'Art/Foliage/Trees/').replace(/\/?$/, '/');
   const species = o.species || R.SPECIES.map(s => s.key);
@@ -33,7 +33,7 @@ globalThis.TREE_BAKE = async function (o) {
   };
 
   const contract = {
-    _note: 'Baked by Art/_treeBake.js from Art/treeIsoRig.js. Regenerate rather than hand-edit.',
+    _note: 'Baked by _treeBake.js from the loaded tree rig. Regenerate rather than hand-edit.',
     ppu: R.PPU,
     camera: { name: 'ADR-0006/0022', view: '3/4 from S', elevDeg: R.ELEV, heightScale: +R.CE.toFixed(4), depthScale: +R.SE.toFixed(4) },
     light: { key: R.LIGHT.key, rim: R.LIGHT.rim, note: 'fixed upper-left key + back rim, screen space (art bible §1)' },

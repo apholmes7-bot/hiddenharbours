@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 78
-        height: 138
+        width: 79
+        height: 141
       alignment: 9
-      pivot: {x: 0.525641, y: 0.0942029}
+      pivot: {x: 0.51898736, y: 0.09219858}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: WhiteCedar_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 78
+        x: 79
         y: 0
-        width: 78
-        height: 138
+        width: 79
+        height: 141
       alignment: 9
-      pivot: {x: 0.525641, y: 0.0942029}
+      pivot: {x: 0.51898736, y: 0.09219858}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: WhiteCedar_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 156
+        x: 158
         y: 0
-        width: 78
-        height: 138
+        width: 79
+        height: 141
       alignment: 9
-      pivot: {x: 0.525641, y: 0.0942029}
+      pivot: {x: 0.51898736, y: 0.09219858}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: WhiteCedar_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 234
+        x: 237
         y: 0
-        width: 78
-        height: 138
+        width: 79
+        height: 141
       alignment: 9
-      pivot: {x: 0.525641, y: 0.0942029}
+      pivot: {x: 0.51898736, y: 0.09219858}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

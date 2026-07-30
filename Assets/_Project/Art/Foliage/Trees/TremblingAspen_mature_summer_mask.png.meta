@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 88
-        height: 156
+        width: 95
+        height: 154
       alignment: 9
-      pivot: {x: 0.5, y: 0.09615385}
+      pivot: {x: 0.49473685, y: 0.051948052}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: TremblingAspen_mature_summer_mask_v1
       rect:
         serializedVersion: 2
-        x: 88
+        x: 95
         y: 0
-        width: 88
-        height: 156
+        width: 95
+        height: 154
       alignment: 9
-      pivot: {x: 0.5, y: 0.09615385}
+      pivot: {x: 0.49473685, y: 0.051948052}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: TremblingAspen_mature_summer_mask_v2
       rect:
         serializedVersion: 2
-        x: 176
+        x: 190
         y: 0
-        width: 88
-        height: 156
+        width: 95
+        height: 154
       alignment: 9
-      pivot: {x: 0.5, y: 0.09615385}
+      pivot: {x: 0.49473685, y: 0.051948052}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: TremblingAspen_mature_summer_mask_v3
       rect:
         serializedVersion: 2
-        x: 264
+        x: 285
         y: 0
-        width: 88
-        height: 156
+        width: 95
+        height: 154
       alignment: 9
-      pivot: {x: 0.5, y: 0.09615385}
+      pivot: {x: 0.49473685, y: 0.051948052}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

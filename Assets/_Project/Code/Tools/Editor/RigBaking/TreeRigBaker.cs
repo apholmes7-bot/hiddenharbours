@@ -57,7 +57,9 @@ namespace HiddenHarbours.Tools.RigBaking
     ///
     /// <para>⚠️ <b>THE PIVOT IS THE TRUNK FOOT, NOT THE BOTTOM OF THE CELL.</b> The near-root flare
     /// projects BELOW the trunk foot under the 40° camera, so every cell carries <c>pad</c> rows
-    /// underneath the pivot (Red Spruce mature: cell 110×166, pivot (54,145), 20 px of flare below).
+    /// underneath the pivot (Red Spruce mature, pass-2 rig: cell 126×159, pivot (63,148), 10 px of
+    /// flare below — pass 1 measured 110×166, (54,145), 20 px, the pads halving because pass 2 draws
+    /// three splayed buttresses where pass 1 drew a broad skirt).
     /// Every other tree sprite in this repo pivots bottom-centre, and <c>ArtImportPipeline</c> even
     /// defaults <c>/foliage/</c> to <c>BottomCenter</c> — which would sink all ten species into the
     /// ground by their own <c>pad</c> and read as an art bug rather than an import bug. The value is
@@ -125,7 +127,27 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var result = new TreeBakeResult { EngineName = host.EngineName };
 
-            species ??= ReadSpeciesKeys(host);
+            // 🔴 The default recipe is every species the rig declares MINUS the held-back ones. A
+            // held-back species is one whose pass-2 output fails the RIG'S OWN rule audit, so baking it
+            // would put art the rig itself rejects into the kit — see TreeKitCatalog.HeldBackSpecies for
+            // the measurement and the ruling. An explicit `species` list is honoured as given, so a
+            // deliberate one-off bake of a held-back species is still possible.
+            if (species == null)
+            {
+                var all = ReadSpeciesKeys(host);
+                var kept = new List<string>(all.Count);
+                var held = new List<string>();
+                foreach (string key in all)
+                    (TreeKitCatalog.IsHeldBack(key) ? held : kept).Add(key);
+                species = kept;
+
+                if (held.Count > 0)
+                    Debug.LogWarning(
+                        $"[rig-baker] HOLDING BACK {held.Count} species: {string.Join(", ", held)}. " +
+                        "Their committed sheets stay at the previous pass because the current rig's own " +
+                        "rule audit rejects them — see TreeKitCatalog.HeldBackSpecies. Baking " +
+                        $"{kept.Count} of {all.Count}.");
+            }
             AssertStage(host, stage);
             AssertSeason(host, season);
 
@@ -339,8 +361,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// front, blue = rim", so anyone porting a snippet will swap two channels and get something
         /// that looks subtly wrong rather than obviously broken. The order is pinned by
         /// <c>TreeRigBakeTests.MaskChannels_AreKeyRimDepthCoverage_NotTheReferenceTechniquesOrder</c>,
-        /// with a measured sabotage: swapping R and G changes 5,405 px = 29.60% of a Red Spruce
-        /// cell.</para>
+        /// with a measured sabotage: swapping R and G changes 4,907 px = 24.49% of a Red Spruce cell
+        /// on the pass-2 rig (5,405 px = 29.60% on pass 1).</para>
         /// </summary>
         public static string ChannelExpr(string resultExpr, TreeKitCatalog.Channel channel)
         {
@@ -537,11 +559,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     albedo = "RGBA, binary alpha, no AA, keyline included",
                     mask = "R=key light, G=back rim, B=depth, A=coverage",
                     normal = "view-space normal, R=x, G=y-up, B=toward camera",
-                    coverageNote = "albedo and mask cover the same pixels; the NORMAL is 8% " +
+                    coverageNote = "albedo and mask cover the same pixels; the NORMAL is 11% " +
                                    "smaller because the rig's 1 px keyline ring is composited " +
                                    "into rgba (and so into the mask's A) but carries no surface " +
-                                   "normal. Measured on Red Spruce mature: albedo/mask 7601 px, " +
-                                   "normal 6990 px, difference 611 px = exactly the keyline. " +
+                                   "normal. Measured on Red Spruce mature (pass-2 rig): albedo/" +
+                                   "mask 6570 px, normal 5848 px, difference 722 px = exactly the " +
+                                   "keyline (pass 1: 7601 / 6990 / 611 px = 8%; the serrated " +
+                                   "pass-2 outline has more perimeter per unit area, so the ring " +
+                                   "is a larger share). " +
                                    "Light the keyline from the mask, never from the normal — and " +
                                    "note the three sheets import Tight, so the NORMAL's own mesh " +
                                    "is slightly smaller too: sample all three through the ALBEDO's " +

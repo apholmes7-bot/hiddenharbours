@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 138
-        height: 193
+        width: 153
+        height: 191
       alignment: 9
-      pivot: {x: 0.5, y: 0.0880829}
+      pivot: {x: 0.49673203, y: 0.057591625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: WhitePine_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 138
+        x: 153
         y: 0
-        width: 138
-        height: 193
+        width: 153
+        height: 191
       alignment: 9
-      pivot: {x: 0.5, y: 0.0880829}
+      pivot: {x: 0.49673203, y: 0.057591625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: WhitePine_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 276
+        x: 306
         y: 0
-        width: 138
-        height: 193
+        width: 153
+        height: 191
       alignment: 9
-      pivot: {x: 0.5, y: 0.0880829}
+      pivot: {x: 0.49673203, y: 0.057591625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: WhitePine_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 414
+        x: 459
         y: 0
-        width: 138
-        height: 193
+        width: 153
+        height: 191
       alignment: 9
-      pivot: {x: 0.5, y: 0.0880829}
+      pivot: {x: 0.49673203, y: 0.057591625}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
