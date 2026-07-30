@@ -302,6 +302,26 @@ now with real money on the line. Licence one is taught; licence two is earned.
 > signs you off…"*. Retargeted as part of the rename (§7.10). The `id` (`license.cod`) is stable and does
 > **not** change.
 
+**LANDED — the economy half.** `MarketId.StPetersStore`, the clam licence, and the store's stock all ship;
+what is left is *placement*, which is the NPC/world-content lane's this wave (the components exist and are
+wired to their Defs; nobody has stood them on the counter yet).
+
+One finding worth carrying forward, because this item's own framing was slightly wrong. *"`MarketId` already
+supports channels; add the island as one"* is true but **not sufficient**: demand `D` only ever appears as
+`S/D` inside `1/(1+e·S/D)`, so at zero supply that term is `1` for **every** value of `D`. On a market nobody
+has sold into yet — which is exactly the state of the world for the player's first bucket of clams — a
+low-demand village counter and a high-demand wharf quote the *same coin*. Demand is a glut-*absorption*
+lever; "deliberately worse prices" is a price-*level* difference. So the channel gained a **`PriceLevel`**
+beside its demand, which is the `demandMood`/`P0` level term the canon formula already has
+(`economy-and-business` §1.2) — the island store now pays a tunable fraction of dockside from the very first
+unit, and the M2 demand random-walk multiplies onto it rather than replacing it.
+
+The second finding is a **balance** one and belongs to §7.4, not here: every unit is floored at ₲1
+(`SellPricing.UnitPrice`), so on a **2₲ clam** the level has barely 2₲ of room to move. The mechanism is
+right and tunable, but the gap a player can actually *read* on a bucket of clams is bounded by the clam's
+base value, not by the multiplier. If the crossing is meant to *feel* worth walking on day five, that is a
+`FishSpeciesDef.BaseValue` question for the pacing model to answer with the whole ladder in view.
+
 ### 7.6 · The reads the player needs — `ui-ux` + `gameplay-systems`
 Cut to what the new arc actually requires, in priority order:
 
