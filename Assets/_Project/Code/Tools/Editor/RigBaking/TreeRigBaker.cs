@@ -127,7 +127,27 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var result = new TreeBakeResult { EngineName = host.EngineName };
 
-            species ??= ReadSpeciesKeys(host);
+            // 🔴 The default recipe is every species the rig declares MINUS the held-back ones. A
+            // held-back species is one whose pass-2 output fails the RIG'S OWN rule audit, so baking it
+            // would put art the rig itself rejects into the kit — see TreeKitCatalog.HeldBackSpecies for
+            // the measurement and the ruling. An explicit `species` list is honoured as given, so a
+            // deliberate one-off bake of a held-back species is still possible.
+            if (species == null)
+            {
+                var all = ReadSpeciesKeys(host);
+                var kept = new List<string>(all.Count);
+                var held = new List<string>();
+                foreach (string key in all)
+                    (TreeKitCatalog.IsHeldBack(key) ? held : kept).Add(key);
+                species = kept;
+
+                if (held.Count > 0)
+                    Debug.LogWarning(
+                        $"[rig-baker] HOLDING BACK {held.Count} species: {string.Join(", ", held)}. " +
+                        "Their committed sheets stay at the previous pass because the current rig's own " +
+                        "rule audit rejects them — see TreeKitCatalog.HeldBackSpecies. Baking " +
+                        $"{kept.Count} of {all.Count}.");
+            }
             AssertStage(host, stage);
             AssertSeason(host, season);
 

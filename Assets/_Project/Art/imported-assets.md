@@ -1161,13 +1161,13 @@ per-species wiring, and the prefab-shape and reflection pins stayed green throug
 | `BalsamFir` | 108x150 -> **125x142** | (54,128) -> **(62,132)** | 21 -> **9** | 0.1400 -> **0.0634** | 0.4% -> **0.4%** | 5.0 |
 | `WhitePine` | 138x193 -> **153x191** | (69,175) -> **(76,179)** | 17 -> **11** | 0.0881 -> **0.0576** | 1.4% -> **0.2%** | 6.9 |
 | `WhiteCedar` | 78x138 -> **79x141** | (41,124) -> **(41,127)** | 13 -> **13** | 0.0942 -> **0.0922** | 0.2% -> **0.4%** | 4.8 |
-| `Tamarack` | 104x149 -> **91x144** | (51,132) -> **(46,134)** | 16 -> **9** | 0.1074 -> **0.0625** | 1.1% -> **5.4%** | 5.3 |
+| `Tamarack` | 104x149 -> **HELD at pass 1** | (51,132) | 16 | 0.1074 | 1.1% -> **5.4% 🔴 FAILS** | 5.3 |
 | `WhiteBirch` | 114x165 -> **117x161** | (57,146) -> **(58,151)** | 18 -> **9** | 0.1091 -> **0.0559** | 0.0% -> **0.0%** | 5.7 |
 | `RedMaple` | 137x156 -> **149x150** | (68,134) -> **(74,137)** | 21 -> **12** | 0.1346 -> **0.0800** | 0.0% -> **0.1%** | 5.6 |
 | `RedOak` | 169x159 -> **165x145** | (84,135) -> **(82,131)** | 23 -> **13** | 0.1447 -> **0.0897** | 0.0% -> **0.1%** | 5.3 |
 | `TremblingAspen` | 88x156 -> **95x154** | (44,140) -> **(47,145)** | 15 -> **8** | 0.0962 -> **0.0519** | 0.0% -> **0.3%** | 5.6 |
 
-30 sheets (10 species × mature/summer × albedo+mask+normal), **1544 KiB of PNG**, one sway row —
+27 sheets (**9** species × mature/summer × albedo+mask+normal — Tamarack held back, see below), **1438 KiB of PNG**, one sway row —
 `TreeRigBaker.SwayRowsBaked` is still 1 because the shader owns the swaying off the shared
 `_WindWorld`. Widest sheet is Red Oak at **660 px**, so **1388 px of headroom** under the 2048 cap;
 the guard is still asserted twice (the rig's own `sheetSpec().fits` for the full 4-row sheet, and the
@@ -1209,26 +1209,46 @@ the case for the per-renderer anchor `TreeKitCatalog.TrunkAnchorFor` already sup
 * Sway frame 1 vs 0 differs by **5.18% (Balsam Fir) to 20.37% (Trembling Aspen)** — "we committed
   frame 0" stays falsifiable.
 
-### 🔴 Flagged to the art director, not patched — **Tamarack fails the rig's own rule 1**
+### 🔴 Tamarack is HELD BACK at its pass-1 bake — the kit ships NINE species
 
-The pass-2 rig gates rule 1 on `audit.pass && thinPct <= 4%` — **its own threshold, read out of
-`treeIsoRig2.js`**. Nine species clear it with room to spare (worst: Red Spruce 0.6%) and pass 2
-IMPROVED most of them. **Tamarack alone regressed, 1.1% → 5.4%** — a 35% overshoot, not a rounding
-miss. Its `bodyRatio` also fell 80 → 66.
+The pass-2 rig gates rule 1 on `audit.pass && thinPct <= 4%` — **its own threshold, spelled inline in
+`treeIsoRig2.js` as `sh.thin / sh.tot <= 0.04`**. Nine species clear it with room to spare (worst: Red
+Spruce 0.6%) and pass 2 IMPROVED most of them. **Tamarack alone regressed, 1.1% → 5.4%** — a 35%
+overshoot, not a rounding miss. Its `bodyRatio` also fell 80 → 66.
 
 Tamarack is the larch, the one deciduous conifer in the family, with the thinnest needle grain in
 `GRAINS`. The plausible mechanism is that pass 2's Worley leaf-cell partition subdivides an
 already-wispy tuft below the 5 px clump floor — but **which** is the art director's call, and the fix
-belongs in the rig (`docs/art/rigs/**`, not this lane), never in the bake or in the assert.
+belongs in the rig (`docs/art/rigs/**`, not this lane).
 
-Handled as the `SkerryD` flag from the Rock Iso import (#312): the species is named in
-`TreeSheetImportTests.RigRuleFailures` and pinned by
-`TamarackFailsTheRigsOwnRuleOne_AFlaggedRegressionNotAnExemption`, a **canary that goes red when the
-rig is FIXED** (delete it then) and also red if Tamarack climbs past 6%. The main per-species
-`audit.pass` assert still covers the other nine.
+**Coordinator ruling 2026-07-29:** ship the nine improved species, **hold Tamarack at its pass-1
+bake**, do not touch the rig file and do not loosen the gate. The rig fix is a separate
+art-director-lane PR — the coordinator is putting the *thicken-at-the-emitter vs
+declare-a-floor-exempt-rimless-material* choice (the strap-material precedent) to the owner.
 
-**OWNER RULING NEEDED:** ship Tamarack out of spec pending a rig fix (current state), or hold it out
-of the kit until pass 3.
+So the bake is **27 sheets, not 30**:
+
+* `TreeKitCatalog.HeldBackSpecies` = `{ "Tamarack" }`, carrying the measurement and the ruling.
+  `TreeRigBaker.Bake` filters the default recipe and logs `HOLDING BACK 1 species … Baking 9 of 10`.
+  An explicit `species` list is still honoured, so a deliberate one-off bake stays possible.
+* **The rule-1 gate is UNCONDITIONAL over the committed set** — there is no exemption list. A species
+  the rig rejects leaves the contract entirely, so the gate never has to make an exception for it.
+* **Tamarack's three pass-1 sheets and their `.meta` stay committed, byte-identical to `origin/main`.**
+  Held back means held, not deleted — that art is still the best version of the species we have.
+* ⚠️ `TreeSheetSlicer` **skips** a held-back stem with an informational log rather than erroring. Its
+  refusal on an unclaimed sheet exists because "no contract entry ⇒ no cell and no pivot, and guessing
+  either is how a tree ends up planted in the wrong place" — and declining to re-slice a sheet against
+  a cell that is not its own is the *correct* answer to that, not a relaxed one. Those sheets were
+  already sliced and pivoted by the pass that wrote them.
+* ⚠️ **Consequence to know:** Tamarack is absent from `Trees.json`, so it is absent from
+  `AcadianTreeCatalog`'s placeable set and no tool will place it until the rig clears its own gate.
+  The kit is nine placeable species this wave.
+* Pinned by `TheHeldBackSpecies_IsExcludedByMeasurement_AndItsSheetsAreStillThePreviousPass`, which is
+  falsifiable in three directions at once: the species is absent from the contract, the rig **still**
+  rejects it (re-measured live, so the test goes red the day the rig is fixed and tells you to un-hold
+  it), and its committed sheets are still 416×149 — the pass-1 cell — where pass 2 would bake 364×144.
+  `TheKit_IsTheRigsSpeciesMinusTheHeldBackOnes_TimesThreeChannels` expresses the count structurally,
+  so holding one back or releasing one moves the assert with it instead of breaking it.
 
 **WIRE-IN (NOT done here):** no scene placement (world-content's lane), no `Tree.mat`
 `_LightResponse` dial-in (owner's pending verdict), no tree scale/style redesign, and the other three

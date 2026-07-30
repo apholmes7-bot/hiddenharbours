@@ -68,6 +68,53 @@ namespace HiddenHarbours.Art.Editor
         public const string PreviousRigGlobalName = "TreeRig";
 
         /// <summary>
+        /// 🔴 <b>SPECIES HELD BACK FROM THE CURRENT PASS — their committed sheets are PASS-1 PIXELS.</b>
+        ///
+        /// <para><b>Tamarack</b> fails the pass-2 rig's OWN rule-1 gate
+        /// (<c>audit.pass &amp;&amp; thinPct &lt;= 4%</c>): it measures <b>5.4%</b>, a 35% overshoot,
+        /// against 1.1% under pass 1, and its <c>bodyRatio</c> fell 80 → 66. The other nine species
+        /// improved. It is the larch — the thinnest needle grain in the rig's <c>GRAINS</c> — so pass
+        /// 2's Worley leaf-cell partition most likely subdivides an already-wispy tuft below the 5 px
+        /// clump floor.</para>
+        ///
+        /// <para><b>Coordinator ruling 2026-07-29:</b> ship the nine improved species, hold Tamarack at
+        /// its pass-1 bake, do NOT touch the rig file and do NOT loosen the gate. The rig fix is a
+        /// separate art-director-lane PR (the choice between thickening at the emitter and declaring a
+        /// floor-exempt rimless material, on the strap-material precedent, is with the owner).</para>
+        ///
+        /// <para>⚠️ <b>What being held back MEANS, concretely:</b> a held-back species is absent from
+        /// <c>Trees.json</c>, so it is absent from <see cref="AcadianTreeCatalog"/>'s placeable set and
+        /// no tool will place it. Its three pass-1 sheets and their <c>.meta</c> files stay committed
+        /// and <b>untouched</b> — already sliced, already pivoted, by the pass-1 bake that wrote them.
+        /// <see cref="TreeSheetSlicer"/> therefore SKIPS them rather than erroring: it cannot re-slice
+        /// a sheet with no contract entry (no cell, no pivot), and it does not need to.</para>
+        ///
+        /// <para>Delete the entry — do not edit around it — the day the rig clears its own gate and the
+        /// species re-enters the bake.</para>
+        /// </summary>
+        public static readonly string[] HeldBackSpecies = { "Tamarack" };
+
+        /// <summary>Whether a species is held back at a previous pass — see
+        /// <see cref="HeldBackSpecies"/>.</summary>
+        public static bool IsHeldBack(string species) =>
+            Array.IndexOf(HeldBackSpecies, species) >= 0;
+
+        /// <summary>
+        /// Whether a sheet stem belongs to a held-back species. Matches on the leading key with a
+        /// separator required, so a hypothetical <c>TamarackHybrid</c> could never be claimed by
+        /// <c>Tamarack</c>'s prefix and skipped by accident.
+        /// </summary>
+        public static bool IsHeldBackStem(string stem)
+        {
+            if (string.IsNullOrEmpty(stem)) return false;
+            foreach (string key in HeldBackSpecies)
+                if (stem.StartsWith(key, StringComparison.Ordinal) &&
+                    stem.Length > key.Length && stem[key.Length] == '_')
+                    return true;
+            return false;
+        }
+
+        /// <summary>
         /// The DEFAULT importer texture cap. Over this Unity imports SILENTLY DOWNSCALED and the
         /// sprite COUNT still matches, so only a cell-size/pivot assert catches it. The tree
         /// slicer deliberately does NOT lift the cap the way <c>SpriteSheetSlicer</c> does for the
