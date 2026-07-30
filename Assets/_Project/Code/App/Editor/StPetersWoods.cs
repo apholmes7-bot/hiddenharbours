@@ -44,11 +44,38 @@ namespace HiddenHarbours.App.Editor
         public const float TreeLineElevation = 4.6f;
 
         /// <summary>
-        /// Radius (m) of the clearing the village stands in. A village in a forest is a village in a
-        /// clearing; without this the cottage would be planted through. 34 m clears the whole village
-        /// (nothing in it is more than 40 m from anything else) with room to walk out of.
+        /// Radius (m) of the clearing the village stands in, measured from
+        /// <see cref="StPetersBuilder.CottagePos"/>. A village in a forest is a village in a clearing;
+        /// without this the cottage would be planted through.
+        ///
+        /// <para>⭐ <b>THIS FOLLOWS THE VILLAGE, AND THE VILLAGE JUST GREW.</b> 34 m was right when the
+        /// village WAS the cottage and three props (#345). §5.1 says the village is three clapboard
+        /// houses, a one-room school and a general store, and those five buildings are now actually
+        /// placed (<see cref="StPetersVillage"/>) — footprints 6.4–7.7 m across, sited in an arc around
+        /// the hearth and the green. At 34 m the outermost of them stood 7 m OUTSIDE the clearing, which
+        /// means trees and shrubs planted right up to and through its walls. 44 m contains every one of
+        /// them with room to walk between.</para>
+        ///
+        /// <para>⚠️ Do not re-tune this by eye. <c>StPetersVillageTests</c> derives the requirement from
+        /// the building contract's own footprints — <see cref="StPetersVillage.RequiredClearingRadius"/>
+        /// — and fails with the number to use if a site moves or a re-bake changes a footprint. It stays
+        /// a <c>const</c> rather than a computed property on purpose: <see cref="IsPlantable"/> is called
+        /// tens of thousands of times per build and must not read a JSON contract to answer.</para>
         /// </summary>
-        public const float VillageClearingRadius = 34f;
+        public const float VillageClearingRadius = 44f;
+
+        /// <summary>
+        /// Radius (m) within which the meadow reads as DISTURBED ground — dooryards, old gardens gone
+        /// over, the edges of a path — and grows the weedy flowers rather than the open-meadow mix.
+        ///
+        /// <para>⚠️ This used to be written <c>VillageClearingRadius * 2.2f</c>, which quietly made the
+        /// flower bands a function of how big the village's no-plant clearing happened to be. They are
+        /// different questions: the clearing is "how much ground do the buildings occupy", the dooryard
+        /// is "how far out does human disturbance read". Widening the clearing for the five houses would
+        /// have pushed this band out 22 m and re-planted a ring of the island for no reason, so the value
+        /// is now its own — pinned at what <c>34 × 2.2</c> produced, the band as it was tuned.</para>
+        /// </summary>
+        public const float DooryardRadius = 74.8f;
 
         /// <summary>Radius (m) kept clear around the START spawn on top of the village clearing, so the
         /// first thing the player sees is not a trunk.</summary>
@@ -350,7 +377,7 @@ namespace HiddenHarbours.App.Editor
                 // belongs INSIDE a stand rather than in the field beside it.
                 return new[] { "LadySlipper", "BlueFlag", "Fireweed" };
 
-            if (distanceToVillage < VillageClearingRadius * 2.2f)
+            if (distanceToVillage < DooryardRadius)
                 // Disturbed ground: dooryards, old gardens gone over, the edges of a path.
                 return new[] { "Fireweed", "LupinPink", "LupinPurple", "QueenAnne", "Buttercup" };
 
