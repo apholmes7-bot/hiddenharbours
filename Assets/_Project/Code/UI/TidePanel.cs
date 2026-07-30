@@ -128,7 +128,20 @@ namespace HiddenHarbours.UI
                 Close();
         }
 
-        private void Close() => Destroy(gameObject);
+        /// <summary>
+        /// Put the page away. Time is given back and the slot released <b>now</b>, not at end of frame:
+        /// <see cref="Object.Destroy"/> only resolves when the frame does, so until then a closed page
+        /// would still answer <see cref="IsOpen"/> and a fresh <see cref="Open"/> in the same frame
+        /// would hand back the page that is on its way out — which would silently skip freezing the
+        /// clock. <see cref="OnDestroy"/> still runs and is idempotent, so a page destroyed by any
+        /// other route (a scene unload) is cleaned up exactly the same way.
+        /// </summary>
+        private void Close()
+        {
+            ThawClock();
+            if (_instance == this) _instance = null;
+            Destroy(gameObject);
+        }
 
         // ---- the frozen clock ------------------------------------------------------------------
 
@@ -457,7 +470,13 @@ namespace HiddenHarbours.UI
             // default actions the market screens install (new Input System — the project's backend).
             var es = new GameObject("EventSystem", typeof(EventSystem));
             var module = es.AddComponent<InputSystemUIInputModule>();
-            module.AssignDefaultActions();
+
+            // Wiring the default action asset can fail in a headless/stripped context. The page is a
+            // READ — it must still open and be closable by key even if pointer navigation cannot be
+            // set up, so a failure here degrades the input, never the panel.
+            try { module.AssignDefaultActions(); }
+            catch (System.Exception e) { Debug.LogWarning("[TidePanel] No default UI actions: " + e.Message); }
+
             DontDestroyOnLoad(es);
         }
 

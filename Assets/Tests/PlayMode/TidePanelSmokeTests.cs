@@ -65,6 +65,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [SetUp]
         public void SetUp()
         {
+            // A page left over from the previous test would still answer IsOpen until its Destroy
+            // resolves. Close it here as well as in TearDown so each test starts from a clean slate
+            // regardless of when the frame boundary falls between them.
+            TidePanel.CloseIfOpen();
             GameServices.Reset();
             _clock = new FakeClock { TotalSeconds = 0.25 * SecondsPerDay };  // 06:00 on day 0
             _env = new FakeEnv();
@@ -172,6 +176,28 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreEqual(afterBuild, _env.HeightQueries,
                 "the page is built once on open — a frozen world cannot change under it (rule 7)");
+        }
+
+        [UnityTest]
+        public IEnumerator ClosingReleasesTheSlotImmediately_SoReopeningFreezesTheClockAgain()
+        {
+            // Regression: Destroy() only resolves at end of frame. If closing left the outgoing page in
+            // the static slot, a reopen in the same frame would hand back the page on its way out — and
+            // silently skip freezing the clock, because that only happens in Awake.
+            TidePanel first = TidePanel.Open();
+            Assert.IsTrue(_clock.IsPaused);
+
+            TidePanel.CloseIfOpen();
+            Assert.IsFalse(TidePanel.IsOpen, "a closed page is closed now, not at end of frame");
+            Assert.IsFalse(_clock.IsPaused, "and time is given back now, too");
+
+            TidePanel second = TidePanel.Open();          // same frame, no yield
+            Assert.AreNotSame(first, second, "reopening deals a fresh page");
+            Assert.IsTrue(_clock.IsPaused, "which freezes the clock again");
+
+            TidePanel.CloseIfOpen();
+            yield return null;
+            Assert.IsFalse(_clock.IsPaused);
         }
 
         [UnityTest]
