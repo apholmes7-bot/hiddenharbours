@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;                // ITidalTerrain — the deck height is MEASURED off the terrain
 using HiddenHarbours.Art.Editor;          // WharfKitCatalog — the kit's published semantic map
 
 namespace HiddenHarbours.App.Editor
@@ -26,10 +27,14 @@ namespace HiddenHarbours.App.Editor
     /// would sink every wharf tile 12 px into the water — consistently enough to read as an art bug rather
     /// than a placement one. The kit's own importer sets it; this class places against it.</para>
     ///
-    /// <para><b>⚠ The deck is DRESSING, not floor.</b> <c>TidalWalkability</c> answers purely from
-    /// (terrain elevation vs water level) — there is no standable-structure seam in the project — so the
-    /// simulation still sees the dredged −1.0 m slip under these planks. That is a pre-existing gap at the
-    /// ratified disembark point, not one this pier introduces; flagged at PR-open for gameplay-systems.</para>
+    /// <para><b>The deck is FLOOR, not dressing.</b> It used to be dressing only: <c>TidalWalkability</c>
+    /// answered purely from (terrain elevation vs water level), so the simulation saw 4.5 m of open water
+    /// over the dredged −1.0 m slip at the ratified disembark point for most of every tide, and sailing home
+    /// meant swimming across your own pier. The deck now registers a <see cref="StandablePlatform"/> — the
+    /// Core standable-structure seam — so the on-foot sim reads the PLANKS as the standing surface
+    /// (<see cref="DeckFootprint"/> + <see cref="DeckElevationFrom"/>). The seabed under the pier is
+    /// untouched: the slip is dredged BY DESIGN and a boat still floats in exactly the water the terrain
+    /// authored.</para>
     /// </summary>
     public static class StPetersWharf
     {
@@ -129,6 +134,35 @@ namespace HiddenHarbours.App.Editor
                 yield return new Vector2Int(x, y);
         }
 
+        // --- THE DECK AS FLOOR (the standable-structure registration) ----------------------------------
+
+        /// <summary>Stable id of the structure this pier registers as a standable surface.</summary>
+        public const string SurfaceId = "wharf.st_peters";
+
+        /// <summary>
+        /// The deck's world-space footprint — the rectangle of planks the on-foot sim treats as floor.
+        /// Derived from the same cell constants the sprites are placed from (never a second copy of the
+        /// geometry): cells <c>[RootCellX, HeadCellX]</c> × <c>[MinCellY, MaxCellY]</c>, each one metre, so
+        /// the rect spans <c>HeadCellX + 1</c> and <c>MaxCellY + 1</c> at its far edges.
+        /// </summary>
+        public static Rect DeckFootprint() => new Rect(
+            RootCellX, MinCellY,
+            LengthCells, WidthCells);
+
+        /// <summary>
+        /// The deck's standing height (m above chart datum), <b>MEASURED off the terrain</b> at the pier
+        /// root — never a literal. A wharf's planks are level with the ground they launch from, so the deck
+        /// is exactly the elevation at the root cell (+5.35 m: see the root's own note above, and the
+        /// berth carve is still pulling the ground down there, which is why this is measured). That puts it
+        /// ~1.85 m clear of spring high water (+3.5 m), so the pier is dry at every tide — and if a terrain
+        /// edit ever lowered the root, the deck follows it instead of silently lying.
+        ///
+        /// <para>One number for the whole deck because a deck is LEVEL. The root centre-line is the sample
+        /// point because it is the one place where the planks meet walkable ground.</para>
+        /// </summary>
+        public static float DeckElevationFrom(ITidalTerrain terrain)
+            => terrain.ElevationAt(new Vector2(RootCellX + 0.5f, 0f));
+
         // --- FITTINGS ---------------------------------------------------------------------------------
         // Modest, and each one earns its place: you moor to the bollards, you climb the ladder from a
         // dinghy at low water, the tyres are what stops a hull rubbing, the pileheads are the pier's own
@@ -192,7 +226,10 @@ namespace HiddenHarbours.App.Editor
         /// Build the pier into the open scene. Returns the number of deck tiles placed (0 if the kit is not
         /// imported — it warns and places nothing rather than half a wharf).
         /// </summary>
-        public static int Place()
+        /// <param name="terrain">The region's authored terrain, used to MEASURE the deck height at the pier
+        /// root (<see cref="DeckElevationFrom"/>). Required: a wharf whose deck height was guessed rather
+        /// than measured is a wharf that floods without anything failing.</param>
+        public static int Place(ITidalTerrain terrain)
         {
             var deck = LoadSheet(WharfKitCatalog.AtlasPath, "WharfAtlas");
             if (deck.Count == 0)
@@ -205,6 +242,13 @@ namespace HiddenHarbours.App.Editor
             var root = new GameObject(RootName);
             var deckRoot = new GameObject("Deck");
             deckRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            // THE DECK IS FLOOR: register the planks as a standable surface so the on-foot sim stands on
+            // them rather than in the dredged slip beneath (Core's StandableSurfaces seam). This goes on the
+            // pier's own root, so it lives and dies with the pier and needs no builder wiring elsewhere.
+            var floor = root.AddComponent<HiddenHarbours.World.StandablePlatform>();
+            float deckElevation = DeckElevationFrom(terrain);
+            floor.Configure(SurfaceId, DeckFootprint(), deckElevation);
 
             int placed = 0;
             foreach (var cell in DeckCellsBackToFront())
@@ -251,8 +295,9 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log($"[StPetersWharf] Built the one dock: {placed} '{DeckMaterial}' deck tiles over " +
                       $"{LengthCells} x {WidthCells} m at the ratified berth, drawn back to front, plus " +
-                      $"{Fittings().Count} fittings. NOTE the deck is DRESSING — TidalWalkability still " +
-                      "reads the -1.0 m slip bed beneath it.");
+                      $"{Fittings().Count} fittings. The deck is FLOOR: registered as standable surface " +
+                      $"'{SurfaceId}' with its deck measured at {deckElevation:0.00} m above datum, so the " +
+                      "on-foot sim stands on the planks and not in the -1.0 m slip beneath them.");
             return placed;
         }
 

@@ -830,11 +830,14 @@ namespace HiddenHarbours.App.Editor
             // strictly back to front, because a wharf cell is 32 x 56 px whose bottom 24 rows of vertical
             // face overhang the cell below (StPetersWharf carries the whole contract).
             //
-            // ⚠ The deck is DRESSING, not floor. TidalWalkability answers purely from (elevation vs water
-            // level) and the project has no standable-structure seam, so the simulation still sees the
-            // -1.0 m dredged slip beneath these planks. That gap sits at the RATIFIED disembark point and
-            // predates this pier — the pier only makes it visible. Flagged for gameplay-systems.
-            StPetersWharf.Place();
+            // ⭐ The deck is FLOOR now, not dressing. TidalWalkability used to answer purely from (elevation
+            // vs water level), so the sim saw 4.5 m of open water over the dredged -1.0 m slip at the
+            // RATIFIED disembark point for most of every tide: you sailed home to your own island and swam
+            // across your own pier. The pier registers a StandablePlatform (Core's standable-structure seam),
+            // and its deck height is MEASURED off `terrain` at the pier root rather than picked — so a
+            // terrain edit can never leave the planks floating. The seabed is untouched: the slip stays
+            // dredged (boats need the depth) and only the ON-FOOT reads consult the deck.
+            StPetersWharf.Place(terrain);
 
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's

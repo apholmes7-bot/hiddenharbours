@@ -93,6 +93,35 @@ namespace HiddenHarbours.App.Editor
                                : TidalExposure.WaterDepth(waterLevel, terrain.ElevationAt(worldPos));
 
         /// <summary>
+        /// Water depth (m) over <paramref name="worldPos"/> <b>as the ON-FOOT sim sees it</b>: over a
+        /// registered standable structure the standing surface is the DECK, not the seabed under it
+        /// (<see cref="StandableSurfaces.StandingElevation"/>). This is what the "must stay dry" point
+        /// checks ask, because those points are where a PERSON'S feet go — the St Peters disembark spot
+        /// stands on 246 planks over a dredged −1.0 m slip, and judging it by the seabed reports the
+        /// region's own wharf as a drowning hazard.
+        ///
+        /// <para>Deliberately a separate read from <see cref="DepthAt"/>: the boat-side checks (the arrival
+        /// must float, a moored hull must not sit on dry ground) must keep asking about the WATER, which a
+        /// pier over it does not change.</para>
+        /// </summary>
+        public static float OnFootDepthAt(ITidalTerrain terrain,
+                                          System.Collections.Generic.IReadOnlyList<IStandableSurface> surfaces,
+                                          Vector2 worldPos, float waterLevel)
+            => terrain == null
+                ? float.PositiveInfinity
+                : TidalExposure.WaterDepth(
+                      waterLevel,
+                      StandableSurfaces.StandingElevation(terrain.ElevationAt(worldPos), surfaces, worldPos));
+
+        /// <summary>The on-foot twin of <see cref="IsDryAt"/>: is the standing surface at
+        /// <paramref name="worldPos"/> (a registered deck, else the ground) exposed at
+        /// <paramref name="waterLevel"/>?</summary>
+        public static bool IsOnFootDryAt(ITidalTerrain terrain,
+                                         System.Collections.Generic.IReadOnlyList<IStandableSurface> surfaces,
+                                         Vector2 worldPos, float waterLevel)
+            => terrain != null && OnFootDepthAt(terrain, surfaces, worldPos, waterLevel) <= 0f;
+
+        /// <summary>
         /// True when an authored elevation sits strictly INSIDE the tide swing — ground that both
         /// bares (as the tide falls below it) and floods (as it rises above it). This is what a
         /// tide-gated feature (the St Peters sandbar crest) must satisfy: at or above the high mark it
