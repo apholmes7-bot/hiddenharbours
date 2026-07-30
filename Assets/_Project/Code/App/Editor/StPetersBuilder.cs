@@ -79,8 +79,8 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
         const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
-        const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
-        const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
+        // (The single Grass.png / Sand.png fills are gone with the greybox ground patches — the island's
+        // ground is painted from the shoreline-ISO v8 kit now; see StPetersShorePainter.)
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
         const string ArtCottageNight = "Assets/_Project/Art/Sprites/Buildings/CottageNight.png";  // lit-window night swap
         const string ArtClamHole   = "Assets/_Project/Art/Sprites/ClamHole.png";    // the still dig-spot sprite
@@ -550,10 +550,17 @@ namespace HiddenHarbours.App.Editor
                 TidePhaseHours   = TidePhaseHours,
             });
 
-            // --- ISLAND (the high home ground; greybox grass + sand beach) ------------------------------
-            // Tiled ground patches over the island plateau (centre (-40,0), radius ~22). Sand rim under grass.
-            MakeTiledGround("IslandBeach",  LoadSpriteAny(ArtSand),  new Vector2(-40f, 0f), new Vector2(26f, 26f), -8, waterSprite, new Color(0.86f, 0.79f, 0.55f));
-            MakeTiledGround("IslandGround", LoadSpriteAny(ArtGrass), new Vector2(-40f, 0f), new Vector2(20f, 20f), -7, waterSprite, new Color(0.38f, 0.58f, 0.32f));
+            // --- ISLAND GROUND: PAINTED now, by StPetersShorePainter further down -----------------------
+            // ⭐ RETIRED HERE: two tiled greybox patches — a 26 m sand rim under a 20 m grass disc, both at
+            // (-40, 0) — used to stand in for the island's ground. They were authored for the 160 × 120 m
+            // greybox, whose whole island WAS a 44 m disc at that centre; the rescale to 760 × 520 (#328)
+            // moved the island to (70, 0) with 450 × 260 m of landmass and did not move them. So the island
+            // had a 26 m patch of ground adrift inside it and NO ground at all over the other ~91,000 m²:
+            // the water shader clips itself transparent over dry land, so walking inland was walking on the
+            // camera's background colour. The shoreline-ISO v8 kit now paints the whole landmass and its
+            // intertidal — grass / marram / sand / shingle / ripple / shelf, chosen by elevation crossed with
+            // which way the coast faces (scene-sizing §5.1) — so the patches have nothing left to stand in
+            // for. The paint runs after the TidalTerrain is authored below, because the terrain IS the map.
 
             // The cottage / the hard where the uncle's dory waits (greybox marker — the actual damaged-dory
             // OFFER lives at the Nine Mile Creek Shipwright this round; the slip here is set dressing for the opening).
@@ -624,20 +631,16 @@ namespace HiddenHarbours.App.Editor
             chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
             chimneyGo.AddComponent<ChimneySmoke>();
 
-            // --- SANDBAR (greybox visual of the tide-gated flats running island → Nine Mile Creek) -------------
-            // A sand strip along the bar centre-line (From (-22,0) → To (34,0)). It is VISUAL only — the
-            // walkable/boatable state is decided by the TidalTerrain elevation + the water level, not by this
-            // sprite. A subtle channel-coloured patch marks where the boat channel is cut through the bar.
-            Vector2 barMid = (SandbarFrom + SandbarTo) * 0.5f;
-            float barLen = Vector2.Distance(SandbarFrom, SandbarTo);
-            MakeTiledGround("Sandbar", LoadSpriteAny(ArtSand), barMid, new Vector2(barLen, SandbarHalfWidth * 2f), -9, waterSprite, new Color(0.80f, 0.74f, 0.56f));
-
-            Vector2 channelPos = Vector2.Lerp(SandbarFrom, SandbarTo, ChannelAlong);
-            var channelGo = new GameObject("BoatChannelMarker");
-            channelGo.transform.position = new Vector3(channelPos.x, channelPos.y, 0f);
-            var chSr = channelGo.AddComponent<SpriteRenderer>();
-            chSr.sprite = waterSprite; chSr.color = new Color(0.20f, 0.36f, 0.44f, 0.85f); chSr.sortingOrder = -8;
-            channelGo.transform.localScale = new Vector3(ChannelHalfWidth * 2f, SandbarHalfWidth * 2f + 2f, 1f);
+            // --- SANDBAR + CHANNEL: PAINTED now too -----------------------------------------------------
+            // ⭐ RETIRED HERE: a flat sand strip down the bar's centre-line and a teal rectangle marking
+            // where the channel cuts it. Both were greybox stand-ins from before the coast had real ground,
+            // and both now LIE about the terrain they sit on: the strip drew the bar as a uniform rectangle
+            // when the authored ridge falls away smoothly to the deep floor at its half-width, and the teal
+            // patch drew the channel as a hard-edged box over a smoothly carved gut. The painter reads the
+            // same TidalTerrain the walk gate reads, so the bar now comes out as the docs describe it — "a
+            // cobble-and-sand bar" (§6.0), a shingle spine you can see to walk with sand and then rippled
+            // flats either side where the clams are — and the channel reads as the ripple gut it is,
+            // narrowing as the tide falls, with no rectangle anywhere.
 
             // --- TIDAL TERRAIN (THE SHOWCASE — authored elevation zones) --------------------------------
             // The world's height map for the region: island high (always exposed), sandbar crest just below
@@ -648,6 +651,19 @@ namespace HiddenHarbours.App.Editor
             var terrainGo = new GameObject("TidalTerrain");
             var terrain = terrainGo.AddComponent<TidalTerrain>();
             ConfigureTidalTerrain(terrain);
+
+            // --- THE PAINTED COAST (shoreline-ISO v8) ---------------------------------------------------
+            // Now that the height map exists, paint the ground it implies: the whole landmass and its
+            // intertidal, in the kit's six materials, plus the ragged fringe where one laps onto another and
+            // the reef's rock tells on the shelf. Everything is a pure function of THIS terrain
+            // (StPetersShoreMap), so the picture and the walk gate can never disagree, and a rebuild
+            // reproduces the coast to the tile (rule 5).
+            //
+            // The layers sort at -20..-18 — BELOW the Sea plane at -5 — which is the whole tide reveal: the
+            // WaterSurface shader clips itself transparent wherever the ground is above the live water level,
+            // so the painting shows through on dry ground and depth-graded water covers it as the tide floods
+            // (ADR 0010/0012). The kit bakes ZERO water for exactly that reason.
+            var coast = StPetersShorePainter.Paint(terrain, RegionWorldCenter, RegionWorldSize);
 
             // --- TIDE-REVEAL: now owned by the smooth WaterSurface shader (ADR 0012) --------------------
             // The falling-tide reveal (the bar VISIBLY baring/covering) is rendered by the layered WaterSurface
@@ -879,6 +895,10 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
+            Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
+                      $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
+                      $"({coast.MaterialSummary()}). The island has ground everywhere for the first time " +
+                      "since it was scaled to 450 x 260 m.");
             Debug.Log("[StPetersBuilder] Built StPeters.unity — the OPENING + START region (greybox), now " +
                       "with the PERSISTENT CORE so it's playable: press Play and you control the on-foot " +
                       "fisher at the START spawn (WASD), the camera follows at the on-foot framing, and the " +
@@ -1111,16 +1131,8 @@ namespace HiddenHarbours.App.Editor
                                  "Data/NPCs assets import (the opening NPC will show no dialogue otherwise).");
         }
 
-        static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,
-                                    Sprite fallback, Color fallbackColor)
-        {
-            var go = new GameObject(name);
-            go.transform.position = new Vector3(center.x, center.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = order;
-            if (sprite != null) { sr.sprite = sprite; sr.drawMode = SpriteDrawMode.Tiled; sr.size = size; }
-            else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); }
-        }
+        // (MakeTiledGround retired with the greybox ground patches it drew — StPetersShorePainter now lays
+        // the island's ground as painted shoreline-ISO tiles. Nothing else in this builder tiled a sprite.)
 
         /// <summary>
         /// DETERMINISTIC clam-hole field: a hash-jittered grid over the bar footprint, keeping only the
