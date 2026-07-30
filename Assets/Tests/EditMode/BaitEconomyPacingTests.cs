@@ -392,14 +392,17 @@ namespace HiddenHarbours.Tests.EditMode
             // was half the fish — which is the defect §7.4 found and recommended a re-price for. That
             // re-price has now LANDED (bait.capelin 5₲ → 2₲, plan-to-m1 §7.5's store pass), so the ON list
             // is empty: 2/10 = 20% and 2/11 = 18% both sit under the 35% ceiling, and capelin is now also
-            // cod's cheapest favouring bait at 2/14 = 14%. Under OFF EVERY species still breaches for a new
-            // hand, because the multiplier is the reciprocal of a land rate — that one IS the flag, and it
-            // is still the open recommendation.
-            // Either list changing means the doc's §7 table is stale; regenerate it, don't patch this.
+            // cod's cheapest favouring bait at 2/14 = 14%. Under OFF the multiplier is the reciprocal of a
+            // land rate, so it stays far worse — that one IS the flag, and it is still the open
+            // recommendation. It no longer catches quite EVERY species though: at 2₲ mackerel lands at
+            // 32.9% and slips under, which is why the OFF check below asserts the property rather than a
+            // membership list. Either finding changing means §7's table is stale; regenerate it.
             List<BaitDef> baits = AuthoredBaits();
             var breachOn = new List<string>();
             var breachOffNewHand = new List<string>();
             var priced = new List<string>();
+            var shareOn = new Dictionary<string, float>();
+            var shareOff = new Dictionary<string, float>();
 
             foreach (FishSpeciesDef fish in RodSpeciesWithBites())
             {
@@ -408,21 +411,49 @@ namespace HiddenHarbours.Tests.EditMode
                 priced.Add(fish.Id);
                 float value = Mathf.Max(1, fish.BaseValue);
 
-                if (BaitPerLandedFish_SpendOnCatch(1f) * baitPrice / value > BaitShareCeiling01)
-                    breachOn.Add(fish.Id);
+                float on = BaitPerLandedFish_SpendOnCatch(1f) * baitPrice / value;
+                shareOn[fish.Id] = on;
+                if (on > BaitShareCeiling01) breachOn.Add(fish.Id);
 
                 float landNew = Play(fish.Bite.ToProfile(), in NewPlayer, Trials).HookRate01 * NewPlayer.FightWin01;
-                if (BaitPerLandedFish_SpendAtBite(landNew) * baitPrice / value > BaitShareCeiling01)
-                    breachOffNewHand.Add(fish.Id);
+                float off = BaitPerLandedFish_SpendAtBite(landNew) * baitPrice / value;
+                shareOff[fish.Id] = off;
+                if (off > BaitShareCeiling01) breachOffNewHand.Add(fish.Id);
             }
+
+            foreach (string id in priced)
+                Debug.Log($"[bait-economy] {id}: share of base value — ON {shareOn[id]:P1}, " +
+                          $"OFF (new hand) {shareOff[id]:P1}, ceiling {BaitShareCeiling01:P0}.");
 
             CollectionAssert.IsEmpty(breachOn,
                 $"after the capelin re-price NO rod species breaches the {BaitShareCeiling01:P0} ceiling " +
                 "under spend-on-catch — the bait PRICE defect §7.4 found is closed. A species reappearing " +
                 "here means a bait or a base value was re-tuned back into the red");
-            CollectionAssert.AreEquivalent(priced, breachOffNewHand,
-                $"spend-at-bite breaches the {BaitShareCeiling01:P0} ceiling for EVERY rod species a new " +
-                "hand fishes — the finding m1-progression-pacing §7 rests on");
+
+            // ⚠ THE OFF LIST IS NO LONGER PINNED BY MEMBERSHIP, and that is a deliberate downgrade.
+            // It used to assert EVERY priced species breaches under spend-at-bite. That was true at capelin
+            // 5₲; at 2₲ mackerel lands at 32.9 % and drops out, while cod (37.5 %) and pollock (35.3 %) clear
+            // the 35 % ceiling by under three points. A membership list balanced that finely is a tripwire
+            // for the next legitimate re-price, not a finding — so what is asserted now is the PROPERTY §7
+            // actually rests on, which no re-price can flip: spend-at-bite is strictly worse than
+            // spend-on-catch for every species, unboundedly so where the land rate is low. The live shares
+            // are logged above; regenerate §7's table from them rather than re-pinning a list here.
+            foreach (string id in priced)
+                Assert.Greater(shareOff[id], shareOn[id],
+                    $"{id}: spend-at-bite must cost a new hand strictly more of the fish's value than " +
+                    "spend-on-catch — that is the regressive shape, and it holds at any bait price");
+
+            Assert.IsNotEmpty(breachOffNewHand,
+                $"spend-at-bite still puts rod species over the {BaitShareCeiling01:P0} ceiling for a new " +
+                "hand — the finding m1-progression-pacing §7 rests on");
+            Assert.Greater(breachOffNewHand.Count, breachOn.Count,
+                "and it breaches for strictly more species than the price-only mode does — the flag is the " +
+                "bigger lever, which is why §7 recommends it rather than another re-price");
+            CollectionAssert.Contains(breachOffNewHand, "fish.haddock",
+                "haddock is the pathological case and must always be in this list: a new hand hooks it once " +
+                "in eleven bites, so under spend-at-bite its bait bill runs to multiples of the whole fish. " +
+                "It clears the ceiling by an order of magnitude — if even haddock has dropped out, the bite " +
+                "sim or the hand model moved, not the prices");
         }
 
         [Test]

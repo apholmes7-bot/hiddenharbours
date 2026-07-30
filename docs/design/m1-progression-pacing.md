@@ -287,6 +287,23 @@ real cost against cod. Noted alongside it, for a later pass: a 10₲ mackerel of
 > ceiling under spend-on-catch, and `WhoBreachesTheBaitShareCeiling_IsPinnedUnderBothModes` asserts that list
 > is **empty** — a species reappearing in it means a bait or a base value was re-tuned back into the red.
 >
+> The **spend-at-bite (OFF) shares moved too**, and one crossed back over the line. Measured against the
+> shipped assets after the re-price:
+>
+> | Species | bait ₲ | base ₲ | P(land), new hand | **ON share** | **OFF share** |
+> |---|---|---|---|---|---|
+> | Cod | 2 (capelin) | 14 | 0.381 | 14.3 % | **37.5 %** ⚠ |
+> | Haddock | 3 (shucked clam) | 16 | 0.060 | 18.8 % | **313 %** ⚠ |
+> | Mackerel | 2 (capelin) | 10 | 0.607 | 20.0 % | 32.9 % — *now under* |
+> | Pollock | 2 (capelin) | 11 | 0.515 | 18.2 % | **35.3 %** ⚠ |
+>
+> So OFF no longer breaches for *every* rod species — mackerel slips under, and cod and pollock clear the
+> ceiling by under three points. A membership list balanced that finely is a tripwire for the next
+> re-price rather than a finding, so the test now asserts the **property** instead: OFF is strictly worse
+> than ON for every species, it still breaches for more of them than ON does, and haddock — which clears
+> the ceiling by an order of magnitude — is always in the list. **The recommendation is unaffected:**
+> haddock at 313 % of the fish's own value is the argument, and no bait price fixes a reciprocal.
+>
 > ⚠ **The §7 table below is now partly stale, and re-pinning it needs a CI run.** The re-price moved which
 > bait a coin-short player ties on: the cheapest bait touching the rod pool used to be **shucked clam (3₲**,
 > favouring cod and haddock — a licence-gated fish and one a new hand almost never lands, so the boost went
