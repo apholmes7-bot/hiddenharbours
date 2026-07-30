@@ -106,6 +106,23 @@ Nine Mile Creek is the hub, but it is **not one price**:
 - **Specialty buyers (shops/restaurants):** the restaurant pays a premium for fresh prize fish and
   live lobster but in small quantity; the cannery buys herring/mackerel cheap in bulk; the apothecary
   wants fish oil; etc. Each has its own `D`/elasticity — different buyers absorb gluts differently.
+- **The island general store (St Peters):** the first outlet the player ever meets, and deliberately the
+  **worst** — the economic reason to walk the tide-gated sandbar to Nine Mile Creek, and how "where you sell
+  matters" is taught in the first hour (`plan-to-m1` §7.5).
+
+> ⚠ **Demand is not a price-level lever — read this before adding an outlet.** `D` only ever appears as
+> `S/D` inside `priceMult = 1/(1 + e·S/D)`, so **at zero supply `priceMult` is exactly `1` for every value of
+> `D`**. Two buyers with wildly different demand quote the *same price* for the first unit anyone sells them.
+> Demand decides how well an outlet **absorbs a glut**; it cannot decide what the outlet **pays in the first
+> place**. That is the `demandMood`/`P0` term of §1.2's formula, and it ships today as a per-market
+> **`Market.PriceLevel`** (a multiplier on base value, `GameConfig.MarketPriceLevel*`) held deliberately
+> separate from the supply curve so the two stay independently tunable. When the M2 sim gives `demandMood`
+> its random walk it **multiplies onto** this rather than replacing it. A new outlet that is meant to pay
+> better or worse needs a level, not just a demand.
+>
+> Second caveat, for balance rather than architecture: `SellPricing.UnitPrice` floors **every unit at ₲1**, so
+> on a low-base-value species the level has very little room to move the number. The price gap a player can
+> actually read is bounded by the species' `BaseValue`, not by the multiplier.
 - **Standing contracts:** a buyer (local or mainland) offers **fixed price × quantity × cadence** for a
   term (e.g., "200 kg haddock/week for the season at a locked rate"). Contracts **trade upside for
   stability** — they're immune to gluts but penalize non-delivery (reputation + fee). The backbone of

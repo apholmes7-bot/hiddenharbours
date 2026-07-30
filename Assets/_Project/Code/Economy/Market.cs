@@ -47,7 +47,38 @@ namespace HiddenHarbours.Economy
             get
             {
                 if (_config == null) return 1f;
-                return _marketId == MarketId.NineMileCreek ? _config.MarketDemandNineMileCreek : _config.MarketDemandCove;
+                return _marketId switch
+                {
+                    MarketId.NineMileCreek => _config.MarketDemandNineMileCreek,
+                    MarketId.StPetersStore => _config.MarketDemandStPetersStore,
+                    _                      => _config.MarketDemandCove,   // Cove is the neutral baseline
+                };
+            }
+        }
+
+        /// <summary>
+        /// What this outlet pays per unit BEFORE any glut, as a multiplier on the species' base value —
+        /// the price LEVEL, read from <see cref="GameConfig"/> by <see cref="MarketId"/> (1 if unconfigured).
+        ///
+        /// <para><b>Why this is separate from <see cref="DemandFactor"/>.</b> Demand only enters pricing as
+        /// <c>S/D</c>, so at zero supply it cannot move the price at all: an un-glutted low-demand counter
+        /// and an un-glutted high-demand wharf quote the same coin. Demand decides how well an outlet
+        /// ABSORBS a glut; this decides what it pays in the first place. The island general store is
+        /// deliberately worse on BOTH (plan-to-m1 §7.5), and it is this one that the player feels on their
+        /// first sale. Corresponds to the <c>demandMood</c>/<c>P0</c> level term in the canon price formula
+        /// (economy-and-business §1.2); the M2 random walk will multiply onto it, not replace it.</para>
+        /// </summary>
+        public float PriceLevel
+        {
+            get
+            {
+                if (_config == null) return 1f;
+                return _marketId switch
+                {
+                    MarketId.NineMileCreek => _config.MarketPriceLevelNineMileCreek,
+                    MarketId.StPetersStore => _config.MarketPriceLevelStPetersStore,
+                    _                      => _config.MarketPriceLevelCove,
+                };
             }
         }
 
@@ -76,10 +107,14 @@ namespace HiddenHarbours.Economy
 
         /// <summary>
         /// The ₲ price the NEXT unit of this category would fetch right now (current supply + per-category
-        /// demand). The sell screen calls this per slider step, projecting supply up by <see cref="SupplyPerSale"/>.
+        /// demand + this outlet's <see cref="PriceLevel"/>). The sell screen calls this per slider step,
+        /// projecting supply up by <see cref="SupplyPerSale"/>. Routed through <see cref="SellPricing"/> —
+        /// the same helper the till uses — so a quote can never disagree with the coin paid. At a neutral
+        /// price level this is bit-identical to the old <see cref="MarketMath.MarginalPrice"/> call.
         /// </summary>
         public int NextUnitPrice(FishCategory category, int baseValue, float elasticity)
-            => MarketMath.MarginalPrice(baseValue, SupplyOf(category), elasticity, DemandFor(category));
+            => SellPricing.UnitPrice(baseValue, elasticity, SupplyOf(category), DemandFor(category),
+                                     valueMultiplier01: 1f, priceLevel: PriceLevel);
 
         public void RegisterSale(FishCategory category, int count = 1)
             => _supply[category] = SupplyOf(category) + _supplyPerSale * count;
