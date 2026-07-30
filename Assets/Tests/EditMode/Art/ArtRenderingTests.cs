@@ -347,6 +347,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // toward the beach instead of sweeping around the island — PR #170), and — the P1 integrity invariant —
         // is CONFINED to the foam band by the gate (zero in deep water), so the cosmetic wash can never move
         // deep water or the gameplay waterline.
+        //
+        // The twin is a term-for-term mirror of the shader's BeachSwash, so the three tests below pin the
+        // parts of the FORMULA that "the phase depends on depth" alone does not: the DIRECTION and rate of
+        // the shoreward march (a sign flip would roll the crests out to sea and still vary with depth), the
+        // half-rate SECOND beat, and the (sample − 0.5)·vary·2π along-shore desync mapping. The two GPU-only
+        // inputs (the value-noise sample along the shore tangent, and ShoreDir's haveShore) are parameters
+        // here — they cannot be evaluated headless — so those are the only places the twin can drift.
 
         [Test]
         public void SwashOffset_OscillatesInTime_WithinAmplitude()
@@ -391,6 +398,92 @@ namespace HiddenHarbours.Tests.Art.EditMode
             float flatA = WaterSurface.SwashOffset(t, speed, amp, 0.1f, wavelength, vary, noise, haveShore: false);
             float flatB = WaterSurface.SwashOffset(t, speed, amp, 1.3f, wavelength, vary, noise, haveShore: false);
             Assert.AreEqual(flatA, flatB, 1e-6f, "flat seabed falls back to a depth-independent time-only pulse");
+
+            // ...but it is still a PULSE: only the travelling term drops out, so the wet edge keeps animating.
+            float flatLater = WaterSurface.SwashOffset(t + 0.7f, speed, amp, 0.1f, wavelength, vary, noise,
+                                                       haveShore: false);
+            Assert.AreNotEqual(flatA, flatLater,
+                "the fallback still moves in time — a flat seabed is not a frozen fringe");
+        }
+
+        [Test]
+        public void SwashOffset_CrestMarchesToShallowerWater_TheShorewardCharacteristic()
+        {
+            // The defining property of the mirrored formula (shader BeachSwash, PR #170): a crest sits at a
+            // CONSTANT total phase  θ = t·speed·2π + depth·wavelength.  Hold θ while time advances and the
+            // depth carrying it must SHRINK — every crest marches to ever-shallower water, i.e. IN toward the
+            // beach, the same radial run-up everywhere on the ring. Follow that characteristic and the wash
+            // value must come back EXACTLY; this pins the sign AND the rate of the shoreward term, neither of
+            // which mere depth-dependence would catch.
+            const float speed = 0.5f, amp = 0.3f, wavelength = 1.2f, vary = 0.35f, noise = 0.62f;
+            const float t0 = 0.4f, depth0 = 1.6f, dt = 0.4f;
+
+            // dθ from the time step = dt·speed·2π, cancelled by moving this much SHALLOWER.
+            float dDepth = dt * speed * 2f * Mathf.PI / wavelength;    // ≈ 1.05 m
+            Assert.Greater(depth0 - dDepth, 0f, "setup: the tracked crest stays in real water (depth > 0)");
+
+            float atT0     = WaterSurface.SwashOffset(t0, speed, amp, depth0, wavelength, vary, noise,
+                                                      haveShore: true);
+            float rolledIn = WaterSurface.SwashOffset(t0 + dt, speed, amp, depth0 - dDepth, wavelength, vary,
+                                                      noise, haveShore: true);
+            Assert.AreEqual(atT0, rolledIn, 1e-4f,
+                "the crest travels SHOREWARD: the same wash is found at shallower depth as time advances");
+
+            // ...and NOT out to sea. A sign flip on depth·wavelength would satisfy the mirror-image shift
+            // instead — the "foam rotating off the island" family of bug. Pin that it does not.
+            float rolledOut = WaterSurface.SwashOffset(t0 + dt, speed, amp, depth0 + dDepth, wavelength, vary,
+                                                       noise, haveShore: true);
+            Assert.Greater(Mathf.Abs(rolledOut - atT0), 1e-3f,
+                "the crest does NOT track seaward — the run-up rolls in, never out");
+        }
+
+        [Test]
+        public void SwashOffset_CarriesTheHalfRateSecondBeat_SoTwoBeatsCloseTheCycle()
+        {
+            // The mirror is a TWO-beat sine — sin(θ)·0.7 + sin(θ/2)·0.3 — which is what reads as overlapping
+            // run-up and backwash rather than a metronome. The half-rate beat doubles the period: after ONE
+            // full beat (1/speed seconds, 2π of base phase) the slow term has inverted, so the wash does NOT
+            // repeat; only two beats bring it back. A single-sine wash would repeat at one beat.
+            const float speed = 0.5f, amp = 0.3f, depth = 0.5f, wavelength = 1.2f, vary = 0.35f, noise = 0.5f;
+            const float t = 0.4f, beat = 1f / speed;   // 2 s carries the base phase through 2π
+
+            float now      = WaterSurface.SwashOffset(t, speed, amp, depth, wavelength, vary, noise, haveShore: true);
+            float oneBeat  = WaterSurface.SwashOffset(t + beat, speed, amp, depth, wavelength, vary, noise,
+                                                      haveShore: true);
+            float twoBeats = WaterSurface.SwashOffset(t + 2f * beat, speed, amp, depth, wavelength, vary, noise,
+                                                      haveShore: true);
+
+            Assert.AreEqual(now, twoBeats, 1e-4f, "two beats close the cycle — the wash comes back the same");
+            Assert.Greater(Mathf.Abs(oneBeat - now), 1e-2f,
+                "one beat does NOT repeat: the half-rate second beat has inverted");
+        }
+
+        [Test]
+        public void SwashOffset_AlongShoreDesync_IsCentredOnTheMidSample_AndScaledByVary()
+        {
+            // The desync mirrors the shader's (sample − 0.5)·_SwashAlongShoreVary·2π, where `sample` is the
+            // 0..1 value-noise the GPU draws along the shore TANGENT (passed in here — GPU-only). It nudges
+            // neighbouring stretches of coast out of sync WITHOUT a travel direction, so it can never re-form
+            // a wave circling the island. Two pins: the mid sample is the zero point, and vary = 0 is the
+            // perfectly in-phase ring the doc describes — whatever the noise says.
+            const float t = 0.4f, speed = 0.5f, amp = 0.3f, depth = 0.5f, wavelength = 1.2f;
+
+            float midSample = WaterSurface.SwashOffset(t, speed, amp, depth, wavelength, 0.35f, 0.5f,
+                                                       haveShore: true);
+            float noVary    = WaterSurface.SwashOffset(t, speed, amp, depth, wavelength, 0f, 0.9f,
+                                                       haveShore: true);
+            Assert.AreEqual(noVary, midSample, 1e-6f,
+                "the mid noise sample carries NO phase offset — the desync is centred on 0.5");
+
+            float noVaryOther = WaterSurface.SwashOffset(t, speed, amp, depth, wavelength, 0f, 0.1f,
+                                                         haveShore: true);
+            Assert.AreEqual(noVary, noVaryOther, 1e-6f,
+                "vary = 0 puts the whole ring in phase, whatever the noise sample");
+
+            float desynced = WaterSurface.SwashOffset(t, speed, amp, depth, wavelength, 0.35f, 0.9f,
+                                                      haveShore: true);
+            Assert.Greater(Mathf.Abs(desynced - midSample), 1e-3f,
+                "a non-mid sample at vary > 0 DOES shift that stretch of coast out of phase");
         }
 
         [Test]
