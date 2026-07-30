@@ -89,9 +89,16 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_config != null) Object.DestroyImmediate(_config);
         }
 
-        /// <summary>Every string the open page is currently showing.</summary>
+        /// <summary>
+        /// Every string the open page is currently showing. Sorted, because
+        /// <see cref="FindObjectsSortMode.None"/> means exactly that — the traversal order is not
+        /// guaranteed to repeat, so an order-sensitive comparison would flake on its own.
+        /// </summary>
         private static string[] PageText()
-            => Object.FindObjectsByType<Text>(FindObjectsSortMode.None).Select(t => t.text).ToArray();
+            => Object.FindObjectsByType<Text>(FindObjectsSortMode.None)
+                     .Select(t => t.text)
+                     .OrderBy(s => s, System.StringComparer.Ordinal)
+                     .ToArray();
 
         private static bool PageShows(string fragment)
             => PageText().Any(s => !string.IsNullOrEmpty(s) && s.Contains(fragment));
@@ -165,17 +172,24 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator Page_DoesNoPerFrameWork_BecauseTimeIsFrozen()
+        public IEnumerator Page_IsBuiltOnce_AndDoesNotRepaintWhileItIsRead()
         {
+            // The page is built on open and never rebuilt: a frozen world cannot change under it, so
+            // there is nothing to repaint (rule 7). Assert that on the PAGE's own content rather than
+            // on a count of environment samples — the sample count is a property of the whole scene
+            // (anything else alive, an always-on HUD included, samples at its own cadence), so it
+            // would be measuring the test run rather than this panel.
             TidePanel.Open();
             yield return null;
 
-            int afterBuild = _env.HeightQueries;
+            string[] afterBuild = PageText();
+            Assert.IsNotEmpty(afterBuild, "the page drew something to compare");
+
             yield return null;
             yield return null;
 
-            Assert.AreEqual(afterBuild, _env.HeightQueries,
-                "the page is built once on open — a frozen world cannot change under it (rule 7)");
+            CollectionAssert.AreEqual(afterBuild, PageText(),
+                "nothing on the page moves while it is being read");
         }
 
         [UnityTest]

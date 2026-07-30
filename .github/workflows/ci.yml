@@ -98,6 +98,49 @@ jobs:
           log-name: playmode-tests
           args: -batchmode -runTests -testPlatform PlayMode -testResults ${{ github.workspace }}/artifacts/playmode-results.xml
 
+      - name: Report failed tests
+        # The Unity run's own log is ~1 MB, and in PlayMode >90% of it is one repeated
+        # "no audio listeners" warning per frame per test — so a failing assertion is
+        # effectively unreadable from the job log. The results XML has it exactly; print
+        # the failures (and the run tallies) into the job summary and the log so a red
+        # check says WHAT broke without anyone downloading the artifact.
+        if: always()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          any=0
+          for xml in artifacts/*-results.xml; do
+            any=1
+            python3 - "$xml" <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import sys, xml.etree.ElementTree as ET
+          path = sys.argv[1]
+          try:
+              root = ET.parse(path).getroot()
+          except Exception as e:
+              print(f"### {path}\n\nCould not parse results: {e}\n")
+              raise SystemExit(0)
+
+          tallies = {k: root.get(k, "?") for k in ("total", "passed", "failed", "skipped", "inconclusive")}
+          print(f"### {path}")
+          print("`" + "  ".join(f"{k}={v}" for k, v in tallies.items()) + "`\n")
+
+          failures = [tc for tc in root.iter("test-case") if tc.get("result") == "Failed"]
+          if not failures:
+              print("No failed tests.\n")
+              raise SystemExit(0)
+
+          for tc in failures:
+              print(f"<details><summary><b>{tc.get('fullname')}</b></summary>\n")
+              print("```")
+              for tag in ("message", "stack-trace"):
+                  node = tc.find(f"failure/{tag}")
+                  if node is not None and node.text:
+                      print(node.text.strip())
+              print("```\n</details>\n")
+          PY
+          done
+          [ "$any" = 1 ] || echo "No results XML was produced — the Unity run died before writing one."
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
