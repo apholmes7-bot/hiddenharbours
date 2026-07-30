@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: JuniorFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.junior_first
+  FirstLines:
+  - 'Two squirts in the sand, that''s a clam. One squirt''s a worm, and you''ll wreck
+    your back learning the difference.'
+  - 'Junior Poirier. Everybody on this island wants an engine. I''ve made more this month
+    bent over these flats than half the fellas who''ve got one to feed.'
+  - 'Four hours she''s down, then she''s the sea''s again. Be off the bar before that.'
+  RepeatLines:
+  - 'Dig while she''s down. That''s the whole trick.'
