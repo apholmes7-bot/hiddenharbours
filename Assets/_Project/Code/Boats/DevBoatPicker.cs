@@ -203,7 +203,7 @@ namespace HiddenHarbours.Boats
             // here — unlike OwnedFleet, which keys framing on being aboard because a purchase happens on
             // foot at the wharf. The picker only ever runs AT THE HELM, so the player is aboard by
             // construction and the reframe is always wanted.
-            EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters));
+            EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters, hull.LengthMeters));
 
             // The owner's read that the swap landed. Toasts go through the Core DevNotice signal the
             // greybox DevToast already listens to — no HUD reach-in (ui-ux owns the HUD, rule 4), no new

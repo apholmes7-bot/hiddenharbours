@@ -100,9 +100,21 @@ namespace HiddenHarbours.Core
     {
         public readonly string BoatId;
         public readonly float CameraWorldHeightMeters;
-        public ActiveBoatChanged(string boatId, float cameraWorldHeightMeters)
+
+        /// <summary>The hull's length (m) — <c>BoatHullDef.LengthMeters</c>. The camera FLOORS the
+        /// authored framing above by what it takes to actually show a vessel this long (the owner's
+        /// 2026-07-29 "whole vessel visible" ruling, §9.8). Carried on the signal because the
+        /// derivation belongs to the camera's own pure policy and App cannot reach a
+        /// <c>BoatHullDef</c>; 0 (a publisher that does not know the length) simply leaves the
+        /// authored framing standing, which is the pre-ruling behaviour.</summary>
+        public readonly float HullLengthMeters;
+
+        public ActiveBoatChanged(string boatId, float cameraWorldHeightMeters,
+                                 float hullLengthMeters = 0f)
         {
-            BoatId = boatId; CameraWorldHeightMeters = cameraWorldHeightMeters;
+            BoatId = boatId;
+            CameraWorldHeightMeters = cameraWorldHeightMeters;
+            HullLengthMeters = hullLengthMeters;
         }
     }
 

@@ -125,6 +125,19 @@ namespace HiddenHarbours.App
                  "0 = hard-cut straight to the pixel-perfect step.")]
         [SerializeField] private float _framingTweenSeconds = 0.4f;
 
+        [Tooltip("HELM framing margin (owner ruling 2026-07-29 §9.8, 'the whole vessel visible, WITH " +
+                 "margin'): how much more than the hull's own footprint the view must show. 1 = the " +
+                 "hull exactly fills the short axis at its worst heading; 1.4 leaves a comfortable " +
+                 "band of water around it. Only ever pushes the framing OUT — a small boat keeps its " +
+                 "authored intimate framing.")]
+        [Min(1f)] [SerializeField] private float _helmFitMarginFactor = 1.4f;
+
+        [Tooltip("The fleet's iso elevation (degrees) — the rigs bake at 40. Bow-on, a hull is " +
+                 "foreshortened into sin(elevation) of the screen's SHORT axis, which is what makes " +
+                 "the fit requirement 0.64x the hull's length rather than 1x. Matches " +
+                 "HullMeshDef.ElevationDeg; change both together or the framing over-zooms.")]
+        [SerializeField] private float _isoElevationDegrees = 40f;
+
         // ---- deck zoom (control-mode-keyed; owner playtest 2026-07-08) ------------------------
 
         [Header("Deck Zoom")]
@@ -232,7 +245,11 @@ namespace HiddenHarbours.App
         // Public so EditMode tests can drive the flow without the play-mode lifecycle (OwnedFleet pattern).
         public void OnActiveBoatChanged(ActiveBoatChanged e)
         {
-            _boatWorldHeightMeters = e.CameraWorldHeightMeters;
+            // The owner's §9.8 ruling: the authored framing is FLOORED by what it takes to show the
+            // whole vessel. A floor, not a replacement — small boats keep their intimate framing.
+            _boatWorldHeightMeters = CameraZoomPolicy.HelmWorldHeightMeters(
+                e.CameraWorldHeightMeters, e.HullLengthMeters,
+                _helmFitMarginFactor, _isoElevationDegrees, CurrentAspect());
             if (_zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Boat)
                 SetFraming(_boatWorldHeightMeters, _framingTweenSeconds);
         }
@@ -299,17 +316,55 @@ namespace HiddenHarbours.App
             if (_cam == null) _cam = GetComponent<Camera>();
             if (_ppc == null) _ppc = GetComponent<PixelPerfectCamera>();
 
-            ReferenceResolutionForWorldHeight(worldHeightMeters, out int rw, out int rh, CurrentPpu());
+            // Land on a LADDER STEP — never an arbitrary ortho size (the ruling's standing constraint).
+            int ppu = CurrentPpu();
+            int step = CameraZoomPolicy.StepForWorldHeight(worldHeightMeters, ppu, DesignScreenHeightPx);
+            float stepHeight = CameraZoomPolicy.WorldHeightForStep(step, ppu, DesignScreenHeightPx);
+
+            if (CameraZoomPolicy.StepIsPixelPerfectUpscale(step))
+            {
+                // ⚠️ UNCHANGED PATH, deliberately byte-for-byte. Every framing that fits inside the
+                // 1:1 pivot — on foot, on deck, hauling, and every hull up to the dragger — goes
+                // through exactly the code it always did, including setting the ortho from the RAW
+                // request rather than the snapped step (PixelPerfectCamera re-imposes the step at
+                // runtime anyway). The ruling is the HELM only; snapping the ortho here as well
+                // looked tidier and moved the on-foot and deck framings, which two existing tests
+                // caught immediately.
+                ReferenceResolutionForWorldHeight(worldHeightMeters, out int rw, out int rh, ppu);
+                if (_ppc != null)
+                {
+                    _ppc.refResolutionX = rw;
+                    _ppc.refResolutionY = rh;
+                    _ppc.enabled = true;
+                }
+                if (_cam != null) _cam.orthographicSize = OrthoSizeForWorldHeight(worldHeightMeters);
+                return;
+            }
+
             if (_ppc != null)
             {
-                _ppc.refResolutionX = rw;
-                _ppc.refResolutionY = rh;
-                _ppc.enabled = true;
+                // ⚠️ A DOWNSCALE step cannot go through PixelPerfectCamera: its zoom is
+                // max(1, min(screen/ref)), so a reference LARGER than the screen still renders 1:1 and
+                // the framing would silently snap back to 33.75 m — the exact cap this work exists to
+                // remove. Drive the ortho directly instead; the ratio is still a clean integer (2x2
+                // asset px to one screen px), shrinking rather than magnifying.
+                _ppc.enabled = false;
             }
-            if (_cam != null) _cam.orthographicSize = OrthoSizeForWorldHeight(worldHeightMeters);
+
+            if (_cam != null) _cam.orthographicSize = OrthoSizeForWorldHeight(stepHeight);
         }
 
         private int CurrentPpu() => (_ppc != null && _ppc.assetsPPU > 0) ? _ppc.assetsPPU : AssetsPPU;
+
+        /// <summary>The live viewport aspect, falling back to the 16:9 design reference before a
+        /// camera exists (EditMode, a test rig). An ultrawide window shows more world WIDTH at the
+        /// same zoom, so a beam-on hull needs less height there — the fit derivation reads it.</summary>
+        private float CurrentAspect()
+        {
+            if (_cam == null) _cam = GetComponent<Camera>();
+            return (_cam != null && _cam.aspect > 0f)
+                ? _cam.aspect : ReferenceWidthPx / (float)ReferenceHeightPx;
+        }
 
         private void LateUpdate()
         {
