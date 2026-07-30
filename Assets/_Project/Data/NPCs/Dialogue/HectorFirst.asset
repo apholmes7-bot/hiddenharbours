@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: HectorFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.hector_first
+  FirstLines:
+  - 'Hector Bernard. No, I''m not a shipwright — there isn''t one this side of the creek and there hasn''t been since the yard closed. I just end up with what people leave behind.'
+  - 'That dory on the blocks is one of mine now. She''s sound under the paint. She wants a plank and a season''s work and she''ll outlive the pair of us.'
+  - 'And when you''ve got her floating, come back. I''ve three outboards on that barrel and every one of them ran last summer for somebody.'
+  RepeatLines:
+  - 'She''s still there. Nobody else is fool enough, and I mean that kindly.'
