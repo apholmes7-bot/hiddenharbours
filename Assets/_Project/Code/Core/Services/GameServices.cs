@@ -119,6 +119,13 @@ namespace HiddenHarbours.Core
         public static WaveFieldAnimatorSettings WaveFieldAnimator =>
             Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
+        /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
+        /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
+        /// <see cref="TelltaleSettings.Default"/> so an unwired art scene still flies a burgee.</summary>
+        public static TelltaleSettings Telltale =>
+            Config != null ? Config.Telltale : TelltaleSettings.Default;
+
         /// <summary>
         /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
         /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).

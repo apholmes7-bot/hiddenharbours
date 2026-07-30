@@ -30,6 +30,11 @@ namespace HiddenHarbours.Core
         [Tooltip("At neap, amplitude is this fraction of spring amplitude (0..1).")]
         [Range(0f, 1f)] public float NeapAmplitudeFraction = 0.45f;
 
+        [Tooltip("The masthead pennant (VS-19) — the boat's own wind instrument. Where the burgee gives " +
+                 "up and hangs, the apparent wind at which it flies board-stiff, and how quickly it " +
+                 "chases a veering gust. This is the read that replaces squinting at a HUD line.")]
+        public TelltaleSettings Telltale = TelltaleSettings.Default;
+
         [Header("Weather")]
         [Tooltip("Baseline wind strength (m/s) before regional/temporal variation.")]
         public float BaseWindStrength = 4f;
