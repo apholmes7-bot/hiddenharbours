@@ -31,6 +31,11 @@ namespace HiddenHarbours.Boats
             // runtime-spawn pattern, so every boat with a hold can take ice with no builder re-run.
             if (Application.isPlaying && GetComponent<DeckIceBox>() == null)
                 gameObject.AddComponent<DeckIceBox>();
+            // The hold's freshness READ (M1 §7.3): the tray says how much and how far gone, but a tint
+            // cannot say WHEN — the tag adds the countdown to a buyer's refusal, and stays hidden until
+            // the catch actually starts to turn. Same runtime-spawn pattern, same no-builder-re-run rule.
+            if (Application.isPlaying && GetComponent<DeckFreshnessTag>() == null)
+                gameObject.AddComponent<DeckFreshnessTag>();
         }
 
         // The hold's catch persists (M1 §7.3, SaveData v5): every mutation pushes a snapshot into the

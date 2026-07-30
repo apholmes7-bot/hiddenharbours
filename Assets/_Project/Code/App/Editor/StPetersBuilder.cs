@@ -913,12 +913,21 @@ namespace HiddenHarbours.App.Editor
             var letterIt = letterGo.AddComponent<Interactable>();
             ConfigureInteractableNpc(letterIt, nedNpc, LoadSpriteAny(ArtPortraitNed));
 
+            // --- THE ISLAND'S OWN PEOPLE (M1 §7.1) -------------------------------------------------------
+            // Ginny and the letter are the OPENING; these five are the PLACE. §7.1 asks for "4–6 named
+            // inhabitants with a line of dialogue with an opinion and a fixed spot", and its exit condition
+            // is that you can walk the island in two minutes, meet everyone, and know what each building is
+            // for — so the storekeeper stands at the store and the teacher at the school. #353 built the
+            // doors; this is who answers them. Anchored, NOT scheduled: routines are M2.
+            var islanders = StPetersInhabitants.Place(terrain, waterSprite);
+
             // The proximity INTERACT driver: shows "E: …" near an interactable and runs its conversation.
             var interactorGo = new GameObject("WorldInteractor");
             var interactor = interactorGo.AddComponent<WorldInteractor>();
             SetRef(interactor, "_player", core.PlayerGo.transform);
             SetRef(interactor, "_presenter", presenter);
-            SetRefArray(interactor, "_interactables", new Object[] { ginnyIt, letterIt });
+            SetRefArray(interactor, "_interactables",
+                        new Object[] { ginnyIt, letterIt }.Concat(islanders).ToArray());
 
             // Light onboarding: one nudge per beat of the new earned-dory loop, then it bows out and persists
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
