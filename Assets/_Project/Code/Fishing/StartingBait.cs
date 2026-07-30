@@ -34,7 +34,9 @@ namespace HiddenHarbours.Fishing
                  "Stable, append-only key.")]
         [SerializeField] private string _grantedFlagKey = "trap_starting_bait_granted";
 
-        private void Start() => GrantOnce();
+        // Deferred to the moment the loaded save is authoritative (M1 §7.8's shell) — at the title the
+        // blob is still the outgoing game's, so its grant flag says nothing about the new one.
+        private void Start() => SaveReady.Run(this, () => GrantOnce());
 
         /// <summary>Seed the starting bait into the live save once. Public + returns the number of records
         /// touched so EditMode tests can drive it without the scene lifecycle. Re-granting is a no-op.</summary>

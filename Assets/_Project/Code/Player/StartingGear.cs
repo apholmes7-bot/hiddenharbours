@@ -32,7 +32,10 @@ namespace HiddenHarbours.Player
                  "every scene load. Stable, append-only key.")]
         [SerializeField] private string _grantedFlagKey = "st_peters_starting_gear_granted";
 
-        private void Start() => GrantOnce();
+        // Wait until the loaded save is the truth (M1 §7.8's shell): at the title the blob still belongs
+        // to the game the player may be about to write over, and reading the grant flag there would
+        // decline to grant into the NEW game. SaveReady runs this now if the world is already entered.
+        private void Start() => SaveReady.Run(this, () => GrantOnce());
 
         /// <summary>
         /// Grant the starting gear into the live save once. Public + returns the count newly granted so

@@ -39,12 +39,36 @@ namespace HiddenHarbours.Economy
             _instance = go.AddComponent<LicenseService>();
         }
 
-        private void OnEnable() => Register();
+        private void OnEnable()
+        {
+            Register();
+            // Re-seed when the loaded save becomes authoritative (M1 §7.8's shell). The seed in Register()
+            // happens at AfterSceneLoad — which, with a title state in front of play, is BEFORE the player
+            // has chosen. Without this, a new game would carry the abandoned game's licences for the whole
+            // session, and a tester's "second first-impression" would skip the licence beat entirely.
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+        }
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
             if (ReferenceEquals(GameServices.Licenses, this)) GameServices.Licenses = null;
             if (_instance == this) _instance = null;
+        }
+
+        private void OnGameLoaded(GameLoaded _) => ReloadFromSave();
+
+        /// <summary>
+        /// Rebuild the in-memory set from the save, discarding anything not in it. The one place that
+        /// CLEARS — <see cref="LoadFromSave"/> unions on purpose, which is right at boot and wrong on the
+        /// <see cref="GameLoaded"/> edge, where the blob is the whole truth about what is held. Safe on a
+        /// resumed game too: the restore grants the saved licences before publishing, so this rebuilds the
+        /// identical set. Public so tests can drive it without the play lifecycle.
+        /// </summary>
+        public void ReloadFromSave()
+        {
+            _held.Clear();
+            LoadFromSave();
         }
 
         /// <summary>Load the held licences from the save and publish this as <see cref="GameServices.Licenses"/>.

@@ -33,5 +33,23 @@ namespace HiddenHarbours.Core
 
         /// <summary>Snapshot the live services into <see cref="Current"/> and write it to disk now.</summary>
         void Save();
+
+        /// <summary>
+        /// Discard the loaded game and start over: <see cref="Current"/> becomes a fresh
+        /// <see cref="SaveMigration.NewGame"/> blob, <see cref="LoadedExistingSave"/> goes false, and the
+        /// new blob is written to disk immediately — so "I started a new game" survives a crash in the
+        /// next second rather than resurrecting the old one on relaunch (M1 §7.8's New Game).
+        ///
+        /// <para><b>Destructive and unguarded.</b> The one slot is overwritten with no undo; the CONFIRM
+        /// belongs to the surface that offers the button (the title page), not to the service. Nothing
+        /// is snapshotted from the live services on the way out — a new game starts from the blob's own
+        /// defaults, not from whatever the previous session had in its wallet.</para>
+        ///
+        /// <para><b>Additive &amp; non-breaking:</b> a default interface method (a no-op) so existing
+        /// test fakes implementing <see cref="ISaveService"/> compile unchanged; the real
+        /// <c>SaveService</c> overrides it. A context with no real save service has no save to
+        /// overwrite, which is exactly what the no-op means.</para>
+        /// </summary>
+        void BeginNewGame() { }
     }
 }
