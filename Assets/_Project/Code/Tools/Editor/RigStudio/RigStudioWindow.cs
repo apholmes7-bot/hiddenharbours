@@ -64,6 +64,7 @@ namespace HiddenHarbours.Tools.RigStudio
             public string Caption;
             public bool HasPivot;
             public double PivotX, PivotY;
+            public RigStudioGuide[] Guides;
 
             /// <summary>Last PREVIEW failure, verbatim — the kit refused to render this point.</summary>
             public string Error;
@@ -341,6 +342,7 @@ namespace HiddenHarbours.Tools.RigStudio
 
             if (_showPivot && tab.HasPivot)
                 DrawPivotCross(tab, fit);
+            DrawGuides(tab, fit);
         }
 
         void DrawOneToOne(Tab tab, Rect area)
@@ -357,9 +359,32 @@ namespace HiddenHarbours.Tools.RigStudio
 
             if (_showPivot && tab.HasPivot)
                 DrawPivotCross(tab, at);
+            DrawGuides(tab, at);
 
             GUI.EndScrollView();
             GUI.EndGroup();
+        }
+
+        /// <summary>
+        /// A kit's annotation lines — placement-time facts about the cell (the shrub kit's snow
+        /// surface) drawn OVER the pixels, never into them: the pixels stay bit-identical to the
+        /// bake at every parameter point, which is the studio's whole promise.
+        /// </summary>
+        void DrawGuides(Tab tab, Rect fit)
+        {
+            if (tab.Guides == null) return;
+
+            var line = new Color(0.55f, 0.75f, 1f, 0.9f);
+            foreach (var guide in tab.Guides)
+            {
+                if (guide == null) continue;
+                float gy = fit.y + fit.height * (float)(guide.Y / tab.Preview.height);
+                EditorGUI.DrawRect(new Rect(fit.x, gy - 0.5f, fit.width, 1), line);
+
+                if (!string.IsNullOrEmpty(guide.Label))
+                    GUI.Label(new Rect(fit.x + 2, gy - 16, fit.width - 4, 14), guide.Label,
+                              EditorStyles.miniLabel);
+            }
         }
 
         void DrawPivotCross(Tab tab, Rect fit)
@@ -396,6 +421,7 @@ namespace HiddenHarbours.Tools.RigStudio
                 tab.HasPivot = preview.HasPivot;
                 tab.PivotX = preview.PivotX;
                 tab.PivotY = preview.PivotY;
+                tab.Guides = preview.Guides;
 
                 if (tab.Preview != null) DestroyImmediate(tab.Preview);
                 tab.Preview = ToTexture(preview);
