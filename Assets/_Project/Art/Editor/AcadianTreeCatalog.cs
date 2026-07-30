@@ -22,14 +22,19 @@ namespace HiddenHarbours.Art.Editor
     /// <list type="bullet">
     ///   <item><b>It does not pivot bottom-centre.</b> The near-root flare projects BELOW the trunk
     ///   foot under the 40° camera, so each cell carries <c>nearFlarePad</c> rows under the pivot
-    ///   (13–23 px = 0.41–0.72 m). The pivot is already baked into the sliced sub-sprite, so nothing
+    ///   (8–13 px = 0.25–0.41 m on the pass-2 rig; 13–23 px = 0.41–0.72 m on pass 1, which drew a
+    ///   broad skirt where pass 2 draws three splayed buttresses). The pivot is already baked into
+    ///   the sliced sub-sprite, so nothing
     ///   here re-derives it — but anything that "corrects" a tree to <c>{0.5, 0}</c> sinks it into
     ///   the ground by that much, and it reads as an art bug.</item>
     ///   <item><b>Its trunk anchor is per species.</b> See <see cref="TreeTrunkAnchor"/>.</item>
     ///   <item><b>Its drawn height is NOT its height in metres.</b> The rig bakes the tree already
     ///   foreshortened by the camera (<c>heightScale = sin 40° = 0.766</c>), so a 5.7 m Red Spruce
-    ///   draws 4.53 m tall at PPU 32 and <c>localScale</c> stays 1. Scaling a tree up to its
-    ///   <c>metres</c> would make it ~31% too tall and break the pixel grid.</item>
+    ///   draws 4.63 m tall at PPU 32 and <c>localScale</c> stays 1. Scaling a tree up to its
+    ///   <c>metres</c> would make it ~31% too tall and break the pixel grid. (The drawn height runs
+    ///   a little ABOVE a flat height×0.766 — 0.998–1.081 of it across the ten — because the cell's
+    ///   top row is set by the crown's silhouette, not by the leader, and the crown projects toward
+    ///   the camera.)</item>
     /// </list>
     /// </summary>
     public static class AcadianTreeCatalog

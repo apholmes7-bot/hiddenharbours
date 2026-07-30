@@ -38,6 +38,16 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         static TreeKitCatalog.Contract _contract;
 
+        /// <summary>
+        /// The pass-2 rig's own rule-1 tolerance, as a percentage of foliage pixels too thin to carry a
+        /// rim. ⚠️ <b>Not an exported constant</b> — <c>treeIsoRig2.js</c> spells it inline in
+        /// <c>report.pass</c> as <c>sh.thin / sh.tot &lt;= 0.04</c>, so it is restated here WITH that
+        /// provenance rather than silently invented, and
+        /// <see cref="TheHeldBackSpecies_IsExcludedByMeasurement_AndItsSheetsAreStillThePreviousPass"/>
+        /// is what catches the two drifting apart.
+        /// </summary>
+        const double RuleOneGatePct = 4.0;
+
         [SetUp]
         public void LoadContract()
         {
@@ -70,15 +80,37 @@ namespace HiddenHarbours.Tests.RigBaking
             return imp;
         }
 
+        /// <summary>A V8 host with the CURRENT rig installed — needed only by the held-back test, which
+        /// has to re-measure the rig's own verdict rather than trust a number typed in here.</summary>
+        static IRigScriptHost CreateTreeHost()
+        {
+            var host = RigScriptHostFactory.Create();
+            TreeRigBaker.InstallRig(host);
+            return host;
+        }
+
         // =================================================================================
 
         [Test]
-        public void TheKit_Is30Sheets_TenSpeciesByThreeChannels()
+        public void TheKit_IsTheRigsSpeciesMinusTheHeldBackOnes_TimesThreeChannels()
         {
-            Assert.AreEqual(10, _contract.trees.Length,
-                "The rig declares 10 species and this wave bakes all of them at mature/summer.");
+            // Expressed STRUCTURALLY rather than as a literal 10 or 9: the committed set is exactly
+            // "every species the rig declares, minus the ones held back at a previous pass", so
+            // holding one back or releasing one moves this assert with it instead of breaking it.
+            using var host = CreateTreeHost();
+            var declared = TreeRigBaker.ReadSpeciesKeys(host);
+            int expectedSpecies = declared.Count(k => !TreeKitCatalog.IsHeldBack(k));
+
+            Assert.AreEqual(expectedSpecies, _contract.trees.Length,
+                $"The rig declares {declared.Count} species and {TreeKitCatalog.HeldBackSpecies.Length} " +
+                $"are held back, so this wave bakes {expectedSpecies} at mature/summer. Held back: " +
+                string.Join(", ", TreeKitCatalog.HeldBackSpecies) + ".");
+            foreach (string held in TreeKitCatalog.HeldBackSpecies)
+                Assert.IsFalse(_contract.trees.Any(t => t.species == held),
+                    $"{held} is held back but reached the contract.");
+
             var sheets = Sheets();
-            Assert.AreEqual(30, sheets.Length);
+            Assert.AreEqual(expectedSpecies * TreeKitCatalog.Channels.Length, sheets.Length);
 
             foreach (var (path, _, _, _) in sheets)
                 Assert.IsTrue(File.Exists(path), $"Missing committed sheet: {path}");
@@ -293,15 +325,151 @@ namespace HiddenHarbours.Tests.RigBaking
 
             foreach (var e in _contract.trees)
             {
+                // 🔴 UNCONDITIONAL, over the COMMITTED SET. There is no exemption list: a species whose
+                // pass-2 output the rig itself rejects is HELD BACK from the bake entirely
+                // (TreeKitCatalog.HeldBackSpecies), so it never reaches this contract and this gate
+                // never has to make an exception for it. Coordinator ruling 2026-07-29 — do not loosen
+                // this into a per-species allowance.
                 Assert.IsTrue(e.audit.pass,
                     $"{e.species}: the rig's own rule audit FAILED (thinPct {e.audit.thinPct}). " +
-                    "That is an art-director rig matter, not something to bake past.");
+                    "That is an art-director rig matter, not something to bake past. If this species " +
+                    "must not ship, hold it back in TreeKitCatalog.HeldBackSpecies so it leaves the " +
+                    "contract — never wave it through here.");
                 Assert.IsFalse(e.audit.underFloor,
                     $"{e.species}: under the mass floor — a shrub, not a tree, at this PPU.");
                 Assert.Greater(e.metres, 1.0f, $"{e.species}: implausible true height.");
                 Assert.AreEqual(TreeRigBaker.DefaultStage, e.stage);
                 Assert.AreEqual(new[] { TreeRigBaker.DefaultSeason }, e.seasons);
             }
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE HELD-BACK SPECIES IS EXCLUDED BY MEASUREMENT, AND THIS PROVES ALL THREE HALVES OF
+        /// THAT.</b> Coordinator ruling 2026-07-29: ship the nine improved species, hold Tamarack at its
+        /// pass-1 bake, do not touch the rig and do not loosen the gate.
+        ///
+        /// <para>So the exclusion has to be falsifiable in three directions at once, or it decays into
+        /// "a species quietly went missing":</para>
+        /// <list type="number">
+        ///   <item>it is <b>absent from the contract</b>, which is what keeps the rule-1 gate above
+        ///   unconditional;</item>
+        ///   <item>the rig <b>still rejects it</b> — re-measured live, so the day the rig is fixed this
+        ///   test fails and tells you to un-hold it;</item>
+        ///   <item>its <b>sheets are still committed and are still the PREVIOUS pass's pixels</b>, so
+        ///   "held back" means held, not deleted and not silently re-baked.</item>
+        /// </list>
+        /// </summary>
+        [Test]
+        public void TheHeldBackSpecies_IsExcludedByMeasurement_AndItsSheetsAreStillThePreviousPass()
+        {
+            Assert.IsNotEmpty(TreeKitCatalog.HeldBackSpecies,
+                "Nothing is held back. If the rig now clears its own gate for every species, delete " +
+                "this test and the HeldBackSpecies entry together.");
+
+            using var host = CreateTreeHost();
+
+            foreach (string species in TreeKitCatalog.HeldBackSpecies)
+            {
+                // (1) ABSENT from the contract — the reason the gate above needs no exemption.
+                Assert.IsNull(TreeKitCatalog.Find(_contract, species, TreeRigBaker.DefaultStage),
+                    $"{species} is held back but IS in the contract. Then the rule-1 gate has to make " +
+                    "an exception for it, which is exactly what the ruling forbids.");
+
+                // (2) The rig STILL rejects it — re-measured live rather than read off the contract,
+                // because the contract no longer mentions this species at all.
+                //
+                // ⚠️ ACROSS ALL FOUR VARIANTS, exactly as TreeRigBaker.BuildEntry computes the audit it
+                // writes into the contract (worst thinPct, `pass` ANDed over the variants). Tamarack's
+                // VARIANT 0 PASSES at 1.2% — the 5.4% failure is a different individual tree on the
+                // same sheet. Measuring only variant 0 reports "fixed" on a species that is not, which
+                // is precisely the false green this test exists to prevent.
+                int variants = (int)host.EvaluateNumber($"{TreeKitCatalog.RigGlobalName}.VARIANTS");
+                bool pass = true;
+                double thinPct = 0;
+                int bodyRatio = 0, worstVariant = -1;
+                for (int v = 0; v < variants; v++)
+                {
+                    string r = TreeRigBaker.ResultExpr(species, TreeRigBaker.DefaultStage,
+                                                       TreeRigBaker.DefaultSeason, variant: v, frame: 0);
+                    pass &= host.EvaluateBool($"{r}.report.pass");
+                    double t = host.EvaluateNumber($"{r}.report.thinPct");
+                    if (t > thinPct)
+                    {
+                        thinPct = t;
+                        bodyRatio = (int)host.EvaluateNumber($"{r}.report.bodyRatio");
+                        worstVariant = v;
+                    }
+                }
+                string res = TreeRigBaker.ResultExpr(species, TreeRigBaker.DefaultStage,
+                                                     TreeRigBaker.DefaultSeason,
+                                                     variant: Mathf.Max(0, worstVariant), frame: 0);
+
+                Assert.IsFalse(pass,
+                    $"🎉 {species} now PASSES the rig's own rule audit on ALL {variants} variants " +
+                    $"(worst thinPct {thinPct}%). The regression that held it back is FIXED — remove " +
+                    "it from TreeKitCatalog.HeldBackSpecies, re-bake so it rejoins the contract, and " +
+                    "delete this test.");
+
+                // RuleOneGatePct is the rig's own tolerance. It is NOT an exported constant — the rig
+                // spells it inline in `report.pass` as `sh.thin / sh.tot <= 0.04` — so it is restated
+                // here with that provenance rather than silently invented, and this assert is what
+                // catches the two drifting apart.
+                Assert.Greater(thinPct, RuleOneGatePct,
+                    $"{species} is under the rig's {RuleOneGatePct}% rule-1 tolerance but report.pass " +
+                    "is still false, so something OTHER than thinPct is failing (a mass under the " +
+                    "floor — read report.failed). Re-read the rig before changing anything here.");
+
+                Debug.Log($"[tree-held] 🔴 {species}/{TreeRigBaker.DefaultStage}/" +
+                          $"{TreeRigBaker.DefaultSeason} still fails the pass-2 rig's rule 1: worst " +
+                          $"thinPct {thinPct}% on VARIANT {worstVariant} of {variants}, against the " +
+                          $"rig's own {RuleOneGatePct}% gate (bodyRatio {bodyRatio}). Pass 1 measured " +
+                          "1.1% / 80. ⚠️ Variant 0 passes at 1.2% — the failure is one individual tree " +
+                          "on the sheet, which is why this is measured across all variants the way " +
+                          "TreeRigBaker.BuildEntry does. HELD at its pass-1 bake by coordinator " +
+                          "ruling; the rig fix is a separate art-director-lane PR.");
+
+                // (3) Its sheets are STILL COMMITTED, and are NOT the current pass's pixels.
+                foreach (var channel in TreeKitCatalog.Channels)
+                    Assert.IsTrue(
+                        File.Exists(TreeKitCatalog.SheetPath(species, TreeRigBaker.DefaultStage,
+                                                             TreeRigBaker.DefaultSeason, channel)),
+                        $"{species}'s {channel} sheet is missing. Held back means HELD at the previous " +
+                        "pass, not deleted — that art is still the best version of this species we have.");
+
+                // The committed CELL must not be the current pass's: that is what makes "held at pass 1"
+                // a checkable claim rather than a note in a commit message. Pass 1 baked Tamarack at
+                // 104×149; pass 2 would render 91×144.
+                string albedoPath = TreeKitCatalog.SheetPath(species, TreeRigBaker.DefaultStage,
+                                                             TreeRigBaker.DefaultSeason,
+                                                             TreeKitCatalog.Channel.Albedo);
+                var spec = TreeRigBaker.ReadSheetSpec(host, species, TreeRigBaker.DefaultStage);
+                var tex = Decode(File.ReadAllBytes(albedoPath));
+                try
+                {
+                    Assert.AreNotEqual(spec.Cols * spec.CellW, tex.width,
+                        $"{species}'s committed sheet is {tex.width} px wide, which is exactly what the " +
+                        "CURRENT rig would bake. Either it was re-baked after all (it must not be) or " +
+                        "the two passes now agree on its cell — re-read this whole test before " +
+                        "trusting it either way.");
+                    Debug.Log($"[tree-held] {species} committed sheet {tex.width}×{tex.height} " +
+                              $"(pass-1 cell {tex.width / TreeRigBaker.SwayRowsBaked / 4}×{tex.height}) " +
+                              $"vs the {spec.CellW}×{spec.CellH} cell pass 2 would bake — the pixels on " +
+                              "disk are demonstrably NOT this pass's.");
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(tex);
+                }
+            }
+        }
+
+        /// <summary>Loading a committed PNG into a throwaway Texture2D reads its pixels without
+        /// flipping <c>isReadable</c> on the shipped asset.</summary>
+        static Texture2D Decode(byte[] png)
+        {
+            var t = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
+            Assert.IsTrue(t.LoadImage(png, markNonReadable: false), "Failed to decode PNG.");
+            return t;
         }
     }
 }

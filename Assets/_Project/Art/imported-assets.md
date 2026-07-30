@@ -1116,3 +1116,330 @@ ISO timestamp. That makes the file diff-stable, and is why the tests compare **f
 tool or Def reads this contract yet, and `SpriteLightResponse.hlsl` is **not** branched on `state.B`.
 The older hand-drawn `Sprites/Shore/SeaweedClump.png`, `SeaweedMat.png` and `SeaweedWisp.png` are
 untouched.
+
+---
+
+## Batch — Acadian trees, **PASS 2** re-import (owner drop 2026-07-29)
+
+`docs/art/rigs/treeIsoRig2.js` (`globalThis.TreeRig2`) supersedes `treeIsoRig.js`. Pass 1 built real
+volume and lit it correctly, but every crown came out of one soft-ellipsoid cloud with per-pixel value
+noise on top, so the family read as artichokes. Pass 2 rebuilds **what gets built and how the surface
+is quantised**: crowns are 5–9 identified leaf MASSES with a hard edge where two meet (not one blended
+green wall), the foliage surface is partitioned into per-species jittered Worley **leaf cells** shaded
+flat from their own mean, `blob()` adds a triangular **tooth wave** over the low-order lobing with a
+tooth-aware de-speckle, and broadleaves get primaries → secondaries → twigs with banded bark.
+
+Both generations stay committed, the way `shoreIsoKitRig2.js` sits beside `shoreIsoKitRig.js`.
+`_treeBake.js` is updated to the drop's version, which resolves `TreeRig2 || TreeRig` — so the art
+director's harness still runs against either pass.
+
+### ⭐ The swap was TWO CONSTANTS and a re-bake, and that is a claim with a test behind it
+
+`TreeKitCatalog.RigScriptPath` and `.RigGlobalName` are the entire code change. Everything else —
+cell, pivot, flare pad, trunk anchor, metres, the audit numbers — is read from the live rig at bake
+time and was never restated in C#, which is exactly what made a whole-family art revision a two-line
+diff.
+
+`PassTwoRig_KeepsEveryContractConstant_SoTheSwapWasAReBakeAndNotAReDesign` loads **both** passes into
+one V8 host (they install different globals, so they cannot collide) and asserts `PPU`, `RIM_PX`,
+`MIN_BODY`, `MIN_R`, `SWAY`, `VARIANTS`, `ELEV`, `CE`, `SE`, both `LIGHT` vectors, `SEASONS`,
+`STAGE_KEYS`, `STAGES` and the ten species keys **in order** are identical — then sabotages itself by
+rendering Red Spruce from both and requiring the pixels to DIFFER (18,260 px → 20,034 px of coverage),
+so the test cannot pass by `RigScriptPath` still pointing at pass 1.
+
+That identity is why the sprite-light mask contract, `_TrunkAnchor` and the reflection wiring all
+survived untouched. **The revised set comes through `AcadianTreeCatalog.Configure`**, so it inherits
+sprite-light response (#314) and `ReflectiveObject` (#330, ADR 0027 #8) by construction — no
+per-species wiring, and the prefab-shape and reflection pins stayed green through the swap.
+
+### The geometry moved — every number below is measured off the bake, none is authored
+
+| species | cell 1 -> 2 | trunk foot 1 -> 2 | pad | _TrunkAnchor | thinPct | m |
+|---|---|---|---|---|---|---|
+| `RedSpruce` | 110x166 -> **126x159** | (54,145) -> **(63,148)** | 20 -> **10** | 0.1205 -> **0.0629** | 0.6% -> **0.6%** | 5.7 |
+| `BlackSpruce` | 84x156 -> **86x155** | (43,142) -> **(44,145)** | 13 -> **9** | 0.0833 -> **0.0581** | 0.4% -> **0.5%** | 5.6 |
+| `BalsamFir` | 108x150 -> **125x142** | (54,128) -> **(62,132)** | 21 -> **9** | 0.1400 -> **0.0634** | 0.4% -> **0.4%** | 5.0 |
+| `WhitePine` | 138x193 -> **153x191** | (69,175) -> **(76,179)** | 17 -> **11** | 0.0881 -> **0.0576** | 1.4% -> **0.2%** | 6.9 |
+| `WhiteCedar` | 78x138 -> **79x141** | (41,124) -> **(41,127)** | 13 -> **13** | 0.0942 -> **0.0922** | 0.2% -> **0.4%** | 4.8 |
+| `Tamarack` | 104x149 -> **HELD at pass 1** | (51,132) | 16 | 0.1074 | 1.1% -> **5.4% 🔴 FAILS** | 5.3 |
+| `WhiteBirch` | 114x165 -> **117x161** | (57,146) -> **(58,151)** | 18 -> **9** | 0.1091 -> **0.0559** | 0.0% -> **0.0%** | 5.7 |
+| `RedMaple` | 137x156 -> **149x150** | (68,134) -> **(74,137)** | 21 -> **12** | 0.1346 -> **0.0800** | 0.0% -> **0.1%** | 5.6 |
+| `RedOak` | 169x159 -> **165x145** | (84,135) -> **(82,131)** | 23 -> **13** | 0.1447 -> **0.0897** | 0.0% -> **0.1%** | 5.3 |
+| `TremblingAspen` | 88x156 -> **95x154** | (44,140) -> **(47,145)** | 15 -> **8** | 0.0962 -> **0.0519** | 0.0% -> **0.3%** | 5.6 |
+
+27 sheets (**9** species × mature/summer × albedo+mask+normal — Tamarack held back, see below), **1438 KiB of PNG**, one sway row —
+`TreeRigBaker.SwayRowsBaked` is still 1 because the shader owns the swaying off the shared
+`_WindWorld`. Widest sheet is Red Oak at **660 px**, so **1388 px of headroom** under the 2048 cap;
+the guard is still asserted twice (the rig's own `sheetSpec().fits` for the full 4-row sheet, and the
+sheet we actually lay out).
+
+### ⚠ The root flare HALVED, so two calibrated tests were re-derived
+
+Pass 1 drew a broad root skirt; pass 2 draws **three splayed buttresses with dark splits**. That is a
+narrower footprint by design, and it moved the pad from 13–23 px to **8–13 px** — so the trunk-foot
+pivot band dropped from 0.0833–0.1447 to **0.0519–0.0922**.
+
+Two tests carried pass-1 magnitudes and were re-measured against the new bake. **Neither assertion's
+job changed**, and both are still falsifiable:
+
+* `BottomCentre_WouldSinkEverySpecies_…` — renamed for the new range. Its own docstring anticipated
+  this ("stated as a range so a re-bake that changes the flare cannot slip through"). The trap has
+  NOT gone away: 8 px at PPU 32 is still a quarter-metre of visible sink, and the species that used
+  to be worst (23 px) is now the best case (13 px).
+* `TheDrawnHeight_…` — upper ratio bound 1.08 → 1.12. The measured span is **0.998 (Red Maple) to
+  1.081 (White Birch)**, and the old cap clipped White Birch by 0.0007. A drawn height runs slightly
+  above a flat height×0.766 because the cell's top row is set by the crown's SILHOUETTE, not the
+  leader, and pass 2's serrated outline and hanging masses extend it further; the rig also rounds
+  `metres` to 0.1 m, which is ±1% on its own. The bound still rejects the error it exists for —
+  scaling to raw metres is +30.5%, refused with 18 points to spare.
+
+⚠️ **`Tree.mat`'s single `_TrunkAnchor` 0.14 now sits ABOVE the whole band** (it was above eight of
+the ten). One material-wide value over-anchors all ten species, freezing canopy that should move —
+the case for the per-renderer anchor `TreeKitCatalog.TrunkAnchorFor` already supplies got stronger.
+
+### Re-measured sabotage curves (the bake's own proof, all still green)
+
+* **30 sheets / 120 cells are BIT-EXACT** against a fresh `TreeRig2` render. A 1-row shift breaks
+  18.63% of the Red Spruce cell, so the exact comparison is not blind.
+* Mask channel order **R = key · G = rim · B = depth · A = coverage** holds. An R↔G swap moves
+  4,907 px = **24.49%** of a Red Spruce cell (pass 1: 5,405 px / 29.60%).
+* Coverage: albedo/mask 6570 px, normal 5848 px, **keyline-only 722 px = 11.0%** (pass 1: 8.0%). The
+  serrated outline has more perimeter per unit area, so the 1 px keyline ring is a larger share.
+  Unchanged rule: light the keyline from the MASK, never from the normal.
+* Sway frame 1 vs 0 differs by **5.18% (Balsam Fir) to 20.37% (Trembling Aspen)** — "we committed
+  frame 0" stays falsifiable.
+
+### 🔴 Tamarack is HELD BACK at its pass-1 bake — the kit ships NINE species
+
+The pass-2 rig gates rule 1 on `audit.pass && thinPct <= 4%` — **its own threshold, spelled inline in
+`treeIsoRig2.js` as `sh.thin / sh.tot <= 0.04`**. Nine species clear it with room to spare (worst: Red
+Spruce 0.6%) and pass 2 IMPROVED most of them. **Tamarack alone regressed, 1.1% → 5.4%** — a 35%
+overshoot, not a rounding miss. Its `bodyRatio` also fell 80 → 66.
+
+Tamarack is the larch, the one deciduous conifer in the family, with the thinnest needle grain in
+`GRAINS`. The plausible mechanism is that pass 2's Worley leaf-cell partition subdivides an
+already-wispy tuft below the 5 px clump floor — but **which** is the art director's call, and the fix
+belongs in the rig (`docs/art/rigs/**`, not this lane).
+
+**Coordinator ruling 2026-07-29:** ship the nine improved species, **hold Tamarack at its pass-1
+bake**, do not touch the rig file and do not loosen the gate. The rig fix is a separate
+art-director-lane PR — the coordinator is putting the *thicken-at-the-emitter vs
+declare-a-floor-exempt-rimless-material* choice (the strap-material precedent) to the owner.
+
+So the bake is **27 sheets, not 30**:
+
+* `TreeKitCatalog.HeldBackSpecies` = `{ "Tamarack" }`, carrying the measurement and the ruling.
+  `TreeRigBaker.Bake` filters the default recipe and logs `HOLDING BACK 1 species … Baking 9 of 10`.
+  An explicit `species` list is still honoured, so a deliberate one-off bake stays possible.
+* **The rule-1 gate is UNCONDITIONAL over the committed set** — there is no exemption list. A species
+  the rig rejects leaves the contract entirely, so the gate never has to make an exception for it.
+* **Tamarack's three pass-1 sheets and their `.meta` stay committed, byte-identical to `origin/main`.**
+  Held back means held, not deleted — that art is still the best version of the species we have.
+* ⚠️ `TreeSheetSlicer` **skips** a held-back stem with an informational log rather than erroring. Its
+  refusal on an unclaimed sheet exists because "no contract entry ⇒ no cell and no pivot, and guessing
+  either is how a tree ends up planted in the wrong place" — and declining to re-slice a sheet against
+  a cell that is not its own is the *correct* answer to that, not a relaxed one. Those sheets were
+  already sliced and pivoted by the pass that wrote them.
+* ⚠️ **Consequence to know:** Tamarack is absent from `Trees.json`, so it is absent from
+  `AcadianTreeCatalog`'s placeable set and no tool will place it until the rig clears its own gate.
+  The kit is nine placeable species this wave.
+* Pinned by `TheHeldBackSpecies_IsExcludedByMeasurement_AndItsSheetsAreStillThePreviousPass`, which is
+  falsifiable in three directions at once: the species is absent from the contract, the rig **still**
+  rejects it (re-measured live, so the test goes red the day the rig is fixed and tells you to un-hold
+  it), and its committed sheets are still 416×149 — the pass-1 cell — where pass 2 would bake 364×144.
+  `TheKit_IsTheRigsSpeciesMinusTheHeldBackOnes_TimesThreeChannels` expresses the count structurally,
+  so holding one back or releasing one moves the assert with it instead of breaking it.
+
+**WIRE-IN (NOT done here):** no scene placement (world-content's lane), no `Tree.mat`
+`_LightResponse` dial-in (owner's pending verdict), no tree scale/style redesign, and the other three
+stages (`sapling/young/pole`) and two seasons (`autumn/winter`) are still un-baked — the same
+deliberate hundreds-of-MB decision as pass 1.
+
+---
+
+## Batch — Acadian Shrubs (`Shrubs`), the rig and the contract (owner drop 2026-07-29)
+
+`docs/art/rigs/shrubIsoRig.js` — twenty woody, waist-high, multi-stemmed species across five habitats,
+from lowbush blueberry on the barren to speckled alder in the swale. Imported to the standard of the
+Rock Iso (#312) and Shore Plant (#318) kits: rig source verbatim, a generated contract, a catalog, an
+in-engine baker, a slicer with the 2048 assert, and a contract test suite. **No pixels.**
+
+### The gap this kit fills
+
+The tree rig owns anything with a leader, `shorePlantRig` owns anything the tide reaches, the flower
+rig owns anything herbaceous. Everything woody and waist-high — the alder swale, the blueberry barren,
+the dogwood on the creek bank — was hand-drawn per season, which is why the same alder had a summer
+sprite twice the width of its winter one.
+
+The tree rig's own floor now points here: under ~1.06 m `treeIsoRig2`'s `report.underFloor` fires, and
+its README says to use `shrubIsoRig` for those, "which is authored for the scale rather than shrunk
+into it". Grain is re-measured for it — the tree's `broad` leaf cell is 8.4 × 5.6 px and a sheep-laurel
+canopy is only 20 px across, so every grain here is 2.2–6.2 px.
+
+**Bayberry and Sweet Fern are deliberately NOT here** — `shorePlantRig` owns both as dune/upland units,
+and a species living in two rigs is how two silhouettes happen. Pinned by a test that also checks they
+are still in `ShorePlantCatalog.SpeciesKeys`.
+
+### ⭐ This kit ships NO pixels — it bakes to order
+
+20 species × 8 phases × 5 snow steps × 4 variants × 3 growth stages is a matrix an import has no
+business choosing from. The contract ships anyway because **the cell and the pivot are phase- and
+snow-independent by construction**, so one entry serves every state and the engine can be wired
+against it before a PNG exists.
+
+`ShrubBakeMenu` therefore leads with **Report Shrub Sheet Budget**, not a bake. Measured at `full`
+stage, both axes, **albedo only: 24.14 MiB** — and a full three-channel bake is 3× = **72.41 MiB**.
+Every sheet fits 2048 with room to spare; the tightest is Serviceberry at 968×520, **1080 px of
+headroom**. The atlas call is the owner's, on these numbers.
+
+| species | habitat | form/unit | h (m) | union cell | pivot | worst ink | variant sheet | phase sheet | head | KiB |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `LowbushBlueberry` | barren | mat/mat wrap | 0.38 | 46x39 | 23,24 | 44% (catkin) | 184x156 | 368x156 | 1680 | 336 |
+| `SheepLaurel` | barren | clump/clump | 0.81 | 48x46 | 24,35 | 43% (fruit) | 192x184 | 384x184 | 1664 | 414 |
+| `Rhodora` | barren | plant/plant | 1.00 | 44x48 | 21,40 | 36% (dormant) | 176x192 | 352x192 | 1696 | 396 |
+| `BlackHuckleberry` | barren | clump/clump | 0.91 | 50x54 | 24,41 | 21% (catkin) | 200x216 | 400x216 | 1648 | 506 |
+| `CommonJuniper` | barren | mat/mat wrap | 0.63 | 52x54 | 26,36 | 56% (dormant) | 208x216 | 416x216 | 1632 | 526 |
+| `Leatherleaf` | bog | thicket/mat wrap | 0.84 | 44x52 | 22,39 | 48% (catkin) | 176x208 | 352x208 | 1696 | 429 |
+| `SweetGale` | bog | thicket/mat wrap | 1.06 | 46x59 | 23,44 | 49% (dormant) | 184x236 | 368x236 | 1680 | 508 |
+| `WinterberryHolly` | bog | plant/plant | 2.44 | 90x93 | 45,85 | 41% (turn) | 360x372 | 720x372 | 1328 | 1569 |
+| `SpeckledAlder` | swale | thicket/mat wrap | 4.00 | 62x148 | 31,134 | 69% (leaf) | 248x592 | 496x592 | 1456 | 1720 |
+| `PussyWillow` | swale | clump/clump | 3.38 | 91x131 | 45,122 | 43% (dormant) | 364x524 | 728x524 | 1320 | 2235 |
+| `RedOsierDogwood` | swale | clump/clump | 2.19 | 82x92 | 40,80 | 36% (catkin) | 328x368 | 656x368 | 1392 | 1414 |
+| `Meadowsweet` | swale | clump/clump | 1.25 | 55x59 | 27,49 | 31% (dormant) | 220x236 | 440x236 | 1608 | 608 |
+| `Steeplebush` | swale | clump/clump | 1.06 | 51x54 | 25,43 | 31% (dormant) | 204x216 | 408x216 | 1640 | 516 |
+| `Raspberry` | edge | thicket/mat wrap | 1.44 | 54x72 | 27,57 | 60% (green) | 216x288 | 432x288 | 1616 | 729 |
+| `WildRose` | edge | clump/clump | 1.31 | 60x68 | 30,57 | 28% (dormant) | 240x272 | 480x272 | 1568 | 765 |
+| `StaghornSumac` | edge | plant/plant | 3.44 | 118x131 | 59,122 | 41% (green) | 472x524 | 944x524 | 1104 | 2898 |
+| `Serviceberry` | edge | plant/plant | 3.69 | 121x130 | 60,121 | 42% (green) | 484x520 | 968x520 | 1080 | 2949 |
+| `BeakedHazelnut` | woods | clump/clump | 2.88 | 88x125 | 43,117 | 32% (catkin) | 352x500 | 704x500 | 1344 | 2062 |
+| `WildRaisin` | woods | plant/plant | 2.63 | 95x105 | 47,96 | 41% (green) | 380x420 | 760x420 | 1288 | 1870 |
+| `RedElderberry` | woods | plant/plant | 3.00 | 107x113 | 53,104 | 40% (turn) | 428x452 | 856x452 | 1192 | 2267 |
+
+Worst ink is **Black Huckleberry at 21% (catkin)** — that is what the union cell costs it. Sheet waste
+is only memory; a state hop is an artefact.
+
+### ⚠️ The drop shipped NO contract JSON, so the baker SERIALISES it out of the live rig
+
+This is the one real divergence from #312/#318, where the owner downloaded a contract from the handoff
+page. The shrub kit's README is explicit that the contract is *"serialised out of the live rig on that
+page — download it from there rather than hand-writing one"*, and no JSON came with the drop. So
+`ShrubBaker.ExportContract` calls `Shrubs.contract(size)` in the V8 host and writes it. That is
+strictly better than a hand-copy: it cannot drift from the bake, and nothing in it was typed twice.
+
+Two deliberate choices:
+
+* **The `generated` ISO timestamp is replaced** with a provenance string, so the committed file is
+  diff-stable — the same divergence the shore-plant contract records, and why the tests compare
+  **fields**, not bytes. A test rejects an ISO timestamp landing in the repo.
+* **Export is NOT part of the bake.** The contract is the oracle `AssertMatchesContract` refuses
+  against; a baker that rewrote it on the way past could never refuse.
+
+### 🔴 The VEIL flag is a DECLARATION, and a shader must branch on it from data
+
+A leafless alder is two hundred twigs 1 px wide. Draw them as limbs and you get chicken wire; drop them
+and the shrub vanishes for four months. So bare twig volume is its own material — `M.VEIL`, resolved as
+**strands along a direction field** radiating from the root crown, not an ordered dither. It is exempt
+from the mass floor and, in exchange, **forbidden both a rim AND a keyline** — the only material in the
+world with the second rule, because an outline round every strand is mush.
+
+The consequence a shader cannot guess:
+
+* `light.R` is key light for **all** materials.
+* `light.G` is the back rim for **body and wood only** — identically 0 on veil, fleck and bloom.
+* `state.R` is 255 on veil pixels: **gate every read of `light.G` on it, never infer veil-vs-mass from
+  the sprite.**
+
+Measured across five species in the `bare` phase: `state.R` agrees with `masks.veil` on **every** pixel
+(0 mismatches), and **0 veil pixels carry a non-zero `light.G`**. The sabotage half matters as much —
+the veil is not empty, so the assert is not vacuous.
+
+`state.G` is the ornament hook (255 bloom · 170 fruit · 0 otherwise), a hue shift for berry variation
+without a re-bake. Also rim-forbidden, also measured at 0 leak.
+
+### Six materials, and only BODY is policed by the floor
+
+Rule 1 with **declared** exemptions: no body mass leaves the emitter under `MIN_R` (5 px) in any axis,
+clamped at the emitter rather than trusted to twenty author sites. `wood`, `edge`, `veil`, `fleck` and
+`bloom` are linear or sub-pixel and are exempt **by declaration** — which is what makes the exemption
+auditable rather than a fudge. `carriesRim` is a genuine tri-state (`true` / `false` /
+`"thickness-gated"`) and the parser keeps the RAW form: collapsing `"thickness-gated"` to a bool is how
+a stem silently stops being lit.
+
+### ⭐ Cells stay UNIONED over the phases — and snow is not in the union at all
+
+ONE union cell and ONE pivot per species per growth stage, unioned over 4 variants × 8 phases. **Snow
+is excluded by construction**: it only ever CLIPS rows, so it cannot change the cell. Proved by
+rendering 5 species × 8 phases × 5 snow steps = **200 states** and asserting the root-crown pivot never
+moves by a pixel. Every rect on a sliced sheet therefore carries the same pivot — the union cell's
+entire purchase.
+
+Pivot normalisation is ADR 0026's `(x/W, (H−y)/H)`. **Not** the tree kit's `pad/cellH`: the tree's
+fraction has to double as the wind shader's `_TrunkAnchor` and a shrub's does not. The rig does compute
+a `pad` internally, and the baker cross-checks `pad == cellH − 1 − pivotY` rather than trusting it.
+
+### 🔴 Snow CLIPS, it never floods — and deep enough snow means DRAW A DRIFT
+
+One number decides four things: `depth = step.m × habitat.snowK`. Rows below the surface are removed,
+never flooded (the same ruling as the rock rig's `awash` sheets), no sprite bakes ground, and `snowRow`
+is reported so the scene can line its own drift tile up with the bake.
+
+The kit's headline example, asserted through the catalog's own helpers because those are what a scene
+will call: at the `deep` step, **Lowbush Blueberry (0.38 m) is 103% buried — do not draw it, draw a
+drift** — while **Speckled Alder (4.00 m) is 22% and barely notices**. The rig's own `buriedOut` flag
+is checked against that arithmetic, so the two cannot disagree and leave a shrub standing in a drift.
+
+### Phenology, not season — eight states, and two facts that fall out of one table
+
+`dormant` Feb · `catkin` early Apr · `bloom` late May · `leaf` Jun · `green` Jul · `fruit` Aug ·
+`turn` early Oct · `bare` Nov. At 32 px/m a blueberry leaf is 1 px and a rhodora leaf is 1 px and they
+are the same 1 px — what tells them apart is that one is magenta in late May before it has any leaves
+and the other is scarlet in October.
+
+ONE table maps (phase, species) → leaf / bloom / fruit / catkin / veil / colour / bright stem, so two
+things come free and cannot disagree: `bloomFirst` species flower on naked wood (Rhodora carries 0.12
+of leaf at bloom against 1.00 at leaf), and `holds` species carry fruit through the dormant frame
+(Winterberry 0.62) — which is the whole reason to draw them. ⚠️ These are **fractions 0..1, not
+booleans**; a truthiness test on them means nothing. Sabotaged with a non-holder, which must reach 0.
+
+### ⚠ Thickets tile, and a shrub is a hollow basket
+
+Six species ship as `wrap` units (blueberry, juniper, leatherleaf, sweet gale, alder, raspberry): every
+emitter is modulo the tile width, so a row butt-joins with no seam by construction. What is measured is
+`report.crossings` — a tile that never crosses tiles *perfectly* and reads as a fence of separate
+bushes. All six cross.
+
+Rule 2 counts enclosed sky holes: a tree crown is a solid cap seen from below, a shrub is open and you
+look INTO it. **⚠️ The phase matters and the contract's `minWindows` is the wrong number for this** —
+it is the minimum across all eight phases, and a dormant or bare shrub legitimately has none (it is
+filaments, not a basket, for four months). The rig's own assert is windows > 0 **in leaf at full
+stage**, so the test renders that phase and gates on the rig's own `windowsApply` flag. Asserting the
+min would have failed Sheep Laurel — a clump with `minWindows` 0 — for having a solid dormant frame the
+rig never claimed was wrong.
+
+### ⚠ Two species KEYS differ from their display names
+
+`Wild Raspberry` is `Raspberry` and `Winterberry` is `WinterberryHolly`. Reading the README's species
+table and camel-casing the labels produces two keys the rig has never heard of, and the failure is
+silent until a sheet stem cannot be matched to a species. `ShrubCatalog.SpeciesKeys` exists only as a
+cross-check that a species has not silently vanished from the contract; all geometry comes from the
+contract.
+
+### Where it lives, and what is NOT wired
+
+Sheets bake to `Assets/_Project/Art/Foliage/Shrubs/` — a **sibling of `Foliage/Trees/`**, not under
+`Sprites/Shore/`: a shrub is foliage, and only three of the five habitats are anywhere near water.
+
+`ShrubSheetSlicer` exists rather than a `SpriteSheetSlicer` manifest row because the manifest knows
+nothing about a three-channel sheet family with per-channel colour space. Sheets import **FullRect**,
+not Tight: this kit is a hollow basket on purpose, its interior is mostly transparent, and the two data
+channels are sampled through the albedo's geometry — a tight mesh per channel would give the 1 px veil
+a different outline in each.
+
+**No baked water, no baked caustics, no baked moving light** (ADR 0010/0012/0023) — the live shader owns
+all three. The key light leans toward the camera, asserted: **the sun never goes behind** (the
+tree-light rule).
+
+**WIRE-IN (NOT done here):** no sheets baked, nothing placed in a scene, no prefab, spawner, paint tool
+or Def reads this contract yet, `DecorPrefabBuilder` has no shrub path, and `SpriteLightResponse.hlsl`
+is **not** branched on `state.R`. No `_WindWorld` bridge either — when a consumer wants sway it adopts
+the SHARED include, never a private copy.

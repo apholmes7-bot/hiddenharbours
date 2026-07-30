@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 137
-        height: 156
+        width: 149
+        height: 150
       alignment: 9
-      pivot: {x: 0.49635038, y: 0.13461539}
+      pivot: {x: 0.4966443, y: 0.08}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: RedMaple_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 137
+        x: 149
         y: 0
-        width: 137
-        height: 156
+        width: 149
+        height: 150
       alignment: 9
-      pivot: {x: 0.49635038, y: 0.13461539}
+      pivot: {x: 0.4966443, y: 0.08}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: RedMaple_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 274
+        x: 298
         y: 0
-        width: 137
-        height: 156
+        width: 149
+        height: 150
       alignment: 9
-      pivot: {x: 0.49635038, y: 0.13461539}
+      pivot: {x: 0.4966443, y: 0.08}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: RedMaple_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 411
+        x: 447
         y: 0
-        width: 137
-        height: 156
+        width: 149
+        height: 150
       alignment: 9
-      pivot: {x: 0.49635038, y: 0.13461539}
+      pivot: {x: 0.4966443, y: 0.08}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

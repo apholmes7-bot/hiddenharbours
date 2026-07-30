@@ -113,6 +113,22 @@ namespace HiddenHarbours.Art.Editor
                 TreeKitCatalog.Entry entry = TreeKitCatalog.EntryForStem(contract, stem);
                 if (entry == null)
                 {
+                    // 🔴 A HELD-BACK species is not an orphan — it is a deliberate exclusion. Its
+                    // sheets are the PREVIOUS pass's pixels, already sliced and already pivoted by the
+                    // bake that wrote them, and their .meta is committed. We skip rather than error for
+                    // the same reason the error below exists: with no contract entry there is no cell
+                    // and no pivot, so re-slicing would have to GUESS. Declining to touch it is the
+                    // correct answer, not a relaxed one. See TreeKitCatalog.HeldBackSpecies.
+                    if (TreeKitCatalog.IsHeldBackStem(stem))
+                    {
+                        Debug.Log(
+                            $"[TreeSheetSlicer] SKIPPING '{stem}' — held back at a previous rig pass, " +
+                            $"so it has no entry in {TreeKitCatalog.ContractFileName} and must not be " +
+                            "re-sliced against a cell that is not its own. Its committed .meta is the " +
+                            "one the pass that baked it wrote.");
+                        continue;
+                    }
+
                     Debug.LogError(
                         $"[TreeSheetSlicer] '{stem}' is under {TreesRoot} but no entry in " +
                         $"{TreeKitCatalog.ContractFileName} claims it. Not slicing — a sheet with " +

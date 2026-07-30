@@ -1,0 +1,956 @@
+{
+  "rig": "shrubIsoRig",
+  "version": 1,
+  "generated": "serialised out of docs/art/rigs/shrubIsoRig.js by ShrubBaker.ExportContract at full growth stage (the rig's ISO timestamp is deliberately replaced so the committed file is diff-stable)",
+  "projection": {
+    "ppu": 32,
+    "elev": 40,
+    "heightScale": 0.766,
+    "depthScale": 0.6428,
+    "pivot": "ground contact (root crown), bottom-centre of the union cell",
+    "antialias": false,
+    "alpha": "binary",
+    "keyline": "#101d21"
+  },
+  "materials": {
+    "body": {
+      "id": 1,
+      "linear": false,
+      "massFloorPx": 5,
+      "carriesRim": true,
+      "keyline": true,
+      "note": "foliage masses. Obeys the mass floor — no radius under MIN_R in any axis, clamped at the emitter."
+    },
+    "wood": {
+      "id": 2,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": "thickness-gated",
+      "keyline": true,
+      "note": "stems, canes, root crown. Linear, so not policed by the floor; the rim gate decides per pixel."
+    },
+    "edge": {
+      "id": 7,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": "thickness-gated",
+      "keyline": true,
+      "note": "foliage thinner than the floor — a canopy fringe or an occluded crescent — reclassified after z-resolution. Same ramp as body, but linear: rule 1 is about interior body, and a fringe is not trying to hold a rim. Read `edged` for the count."
+    },
+    "veil": {
+      "id": 3,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": false,
+      "keyline": false,
+      "note": "bare twig volume drawn as FILAMENTS along the branch direction field — no dither. Exempt from the floor, forbidden a rim, and forbidden a KEYLINE — an outline round every strand collapses it into a solid."
+    },
+    "fleck": {
+      "id": 4,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": false,
+      "keyline": false,
+      "note": "fruit and buds, 1-5 px, carried in per-species clusters, each cluster ripening unevenly across four ramps. Only emitted where PRESENTED (frontmost at that pixel). Keyline-exempt but given a single dark SEAT pixel below, which is what makes a berry read as sitting in front of the canopy rather than as a hole in it."
+    },
+    "bloom": {
+      "id": 5,
+      "linear": true,
+      "massFloorPx": null,
+      "carriesRim": false,
+      "keyline": true,
+      "note": "flower clusters and catkins, 3-8 px. No leaf-cell quantisation: at this size the cluster IS one cell."
+    }
+  },
+  "bakes": {
+    "light": {
+      "file": "<key>_light.png",
+      "R": "key light · N·L from the fixed upper-left key · all materials",
+      "G": "back rim · DEFINED FOR BODY AND WOOD ONLY. Identically 0 on veil, fleck and bloom. Gate every read on state.R.",
+      "B": "surface depth, normalised per sprite",
+      "A": "coverage"
+    },
+    "state": {
+      "file": "<key>_calendar.png",
+      "R": "255 on VEIL pixels — the no-rim / no-keyline flag. This is the branch. Read it, do not infer it.",
+      "G": "ornament: 255 bloom · 170 fruit · 0 otherwise (a hue-shift hook for berry variation without a rebake)",
+      "B": "snow load 0-255",
+      "A": "coverage"
+    }
+  },
+  "calendar": {
+    "phases": [
+      {
+        "key": "dormant",
+        "label": "DORMANT",
+        "when": "Feb"
+      },
+      {
+        "key": "catkin",
+        "label": "CATKIN",
+        "when": "early Apr"
+      },
+      {
+        "key": "bloom",
+        "label": "BLOOM",
+        "when": "late May"
+      },
+      {
+        "key": "leaf",
+        "label": "LEAF",
+        "when": "Jun"
+      },
+      {
+        "key": "green",
+        "label": "GREEN",
+        "when": "Jul"
+      },
+      {
+        "key": "fruit",
+        "label": "FRUIT",
+        "when": "Aug"
+      },
+      {
+        "key": "turn",
+        "label": "TURN",
+        "when": "early Oct"
+      },
+      {
+        "key": "bare",
+        "label": "BARE",
+        "when": "Nov"
+      }
+    ],
+    "derives": [
+      "leaf",
+      "bloom",
+      "fruit",
+      "catkin",
+      "veil",
+      "colour",
+      "brightStem"
+    ],
+    "note": "ONE table maps (phase, species) -> all six. bloomFirst species flower on naked wood; holds species carry fruit through dormant. A shrub cannot end up in flower and full leaf in the same frame."
+  },
+  "snow": {
+    "nominalM": 1.2,
+    "steps": [
+      {
+        "key": "none",
+        "m": 0
+      },
+      {
+        "key": "dust",
+        "m": 0.1
+      },
+      {
+        "key": "pack",
+        "m": 0.3
+      },
+      {
+        "key": "deep",
+        "m": 0.65
+      },
+      {
+        "key": "drift",
+        "m": 1.2
+      }
+    ],
+    "habitatK": [
+      {
+        "key": "barren",
+        "snowK": 0.6
+      },
+      {
+        "key": "bog",
+        "snowK": 1.05
+      },
+      {
+        "key": "swale",
+        "snowK": 1.35
+      },
+      {
+        "key": "edge",
+        "snowK": 1
+      },
+      {
+        "key": "woods",
+        "snowK": 0.72
+      }
+    ],
+    "derives": [
+      "clipped rows",
+      "crust",
+      "sway damping",
+      "legality"
+    ],
+    "clipsNotFloods": true,
+    "note": "depth = step.m * habitat.snowK. Rows below the surface are CLIPPED, never flooded — the drift itself is the scene’s tile (same ruling as the rock rig’s awash sheets). buried >= 0.95 means DO NOT DRAW the shrub; draw a drift.",
+    "snowRow": "row index in sprite space where the surface crosses. null when it is outside the sprite — read `buriedOut` to tell which side."
+  },
+  "habitats": [
+    {
+      "key": "barren",
+      "name": "Blueberry barren",
+      "snowK": 0.6,
+      "substrate": "till · bedrock"
+    },
+    {
+      "key": "bog",
+      "name": "Bog & fen margin",
+      "snowK": 1.05,
+      "substrate": "sphagnum · peat"
+    },
+    {
+      "key": "swale",
+      "name": "Alder swale",
+      "snowK": 1.35,
+      "substrate": "alluvium · seep"
+    },
+    {
+      "key": "edge",
+      "name": "Old field edge",
+      "snowK": 1,
+      "substrate": "loam · fencerow"
+    },
+    {
+      "key": "woods",
+      "name": "Forest understorey",
+      "snowK": 0.72,
+      "substrate": "duff · shade"
+    }
+  ],
+  "sway": {
+    "frames": 4,
+    "note": "pinned at the pivot row AND at the snow line; amplitude scales with (1 - buried)."
+  },
+  "sheets": {
+    "axisA": "variant × sway",
+    "axisB": "phase × sway",
+    "cap": 2048,
+    "cellPolicy": "ONE union cell and ONE pivot per species per growth stage, unioned over 4 variants x 8 phases. Snow is NOT in the union: it only clips. Runtime phase swaps are pivot-stable by construction.",
+    "wrapUnits": [
+      {
+        "key": "LowbushBlueberry",
+        "tileW": 46
+      },
+      {
+        "key": "CommonJuniper",
+        "tileW": 52
+      },
+      {
+        "key": "Leatherleaf",
+        "tileW": 44
+      },
+      {
+        "key": "SweetGale",
+        "tileW": 46
+      },
+      {
+        "key": "SpeckledAlder",
+        "tileW": 62
+      },
+      {
+        "key": "Raspberry",
+        "tileW": 54
+      }
+    ],
+    "totalMb": 24.14,
+    "allFit": true
+  },
+  "species": [
+    {
+      "key": "LowbushBlueberry",
+      "name": "Lowbush Blueberry",
+      "latin": "Vaccinium angustifolium",
+      "habitat": "barren",
+      "form": "mat",
+      "unit": "mat",
+      "heightM": 0.38,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "heathSmall",
+      "wrap": true,
+      "cell": [
+        46,
+        39
+      ],
+      "pivot": [
+        23,
+        24
+      ],
+      "variantSheet": [
+        184,
+        156
+      ],
+      "phaseSheet": [
+        368,
+        156
+      ],
+      "worstInkPct": 44,
+      "worstInkPhase": "catkin",
+      "minWindows": 0,
+      "fits2048": true
+    },
+    {
+      "key": "SheepLaurel",
+      "name": "Sheep Laurel",
+      "latin": "Kalmia angustifolia",
+      "habitat": "barren",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 0.81,
+      "evergreen": true,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "heathSmall",
+      "wrap": false,
+      "cell": [
+        48,
+        46
+      ],
+      "pivot": [
+        24,
+        35
+      ],
+      "variantSheet": [
+        192,
+        184
+      ],
+      "phaseSheet": [
+        384,
+        184
+      ],
+      "worstInkPct": 43,
+      "worstInkPhase": "fruit",
+      "minWindows": 0,
+      "fits2048": true
+    },
+    {
+      "key": "Rhodora",
+      "name": "Rhodora",
+      "latin": "Rhododendron canadense",
+      "habitat": "barren",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 1,
+      "evergreen": false,
+      "bloomFirst": true,
+      "holdsFruit": false,
+      "grain": "heathSmall",
+      "wrap": false,
+      "cell": [
+        44,
+        48
+      ],
+      "pivot": [
+        21,
+        40
+      ],
+      "variantSheet": [
+        176,
+        192
+      ],
+      "phaseSheet": [
+        352,
+        192
+      ],
+      "worstInkPct": 36,
+      "worstInkPhase": "dormant",
+      "minWindows": 1,
+      "fits2048": true
+    },
+    {
+      "key": "BlackHuckleberry",
+      "name": "Black Huckleberry",
+      "latin": "Gaylussacia baccata",
+      "habitat": "barren",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 0.91,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "heathSmall",
+      "wrap": false,
+      "cell": [
+        50,
+        54
+      ],
+      "pivot": [
+        24,
+        41
+      ],
+      "variantSheet": [
+        200,
+        216
+      ],
+      "phaseSheet": [
+        400,
+        216
+      ],
+      "worstInkPct": 21,
+      "worstInkPhase": "catkin",
+      "minWindows": 1,
+      "fits2048": true
+    },
+    {
+      "key": "CommonJuniper",
+      "name": "Common Juniper",
+      "latin": "Juniperus communis",
+      "habitat": "barren",
+      "form": "mat",
+      "unit": "mat",
+      "heightM": 0.63,
+      "evergreen": true,
+      "bloomFirst": false,
+      "holdsFruit": true,
+      "grain": "needleScale",
+      "wrap": true,
+      "cell": [
+        52,
+        54
+      ],
+      "pivot": [
+        26,
+        36
+      ],
+      "variantSheet": [
+        208,
+        216
+      ],
+      "phaseSheet": [
+        416,
+        216
+      ],
+      "worstInkPct": 56,
+      "worstInkPhase": "dormant",
+      "minWindows": 0,
+      "fits2048": true
+    },
+    {
+      "key": "Leatherleaf",
+      "name": "Leatherleaf",
+      "latin": "Chamaedaphne calyculata",
+      "habitat": "bog",
+      "form": "thicket",
+      "unit": "mat",
+      "heightM": 0.84,
+      "evergreen": true,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "heathSmall",
+      "wrap": true,
+      "cell": [
+        44,
+        52
+      ],
+      "pivot": [
+        22,
+        39
+      ],
+      "variantSheet": [
+        176,
+        208
+      ],
+      "phaseSheet": [
+        352,
+        208
+      ],
+      "worstInkPct": 48,
+      "worstInkPhase": "catkin",
+      "minWindows": 0,
+      "fits2048": true
+    },
+    {
+      "key": "SweetGale",
+      "name": "Sweet Gale",
+      "latin": "Myrica gale",
+      "habitat": "bog",
+      "form": "thicket",
+      "unit": "mat",
+      "heightM": 1.06,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "willowLance",
+      "wrap": true,
+      "cell": [
+        46,
+        59
+      ],
+      "pivot": [
+        23,
+        44
+      ],
+      "variantSheet": [
+        184,
+        236
+      ],
+      "phaseSheet": [
+        368,
+        236
+      ],
+      "worstInkPct": 49,
+      "worstInkPhase": "dormant",
+      "minWindows": 0,
+      "fits2048": true
+    },
+    {
+      "key": "WinterberryHolly",
+      "name": "Winterberry",
+      "latin": "Ilex verticillata",
+      "habitat": "bog",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 2.44,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": true,
+      "grain": "broadSmall",
+      "wrap": false,
+      "cell": [
+        90,
+        93
+      ],
+      "pivot": [
+        45,
+        85
+      ],
+      "variantSheet": [
+        360,
+        372
+      ],
+      "phaseSheet": [
+        720,
+        372
+      ],
+      "worstInkPct": 41,
+      "worstInkPhase": "turn",
+      "minWindows": 7,
+      "fits2048": true
+    },
+    {
+      "key": "SpeckledAlder",
+      "name": "Speckled Alder",
+      "latin": "Alnus incana rugosa",
+      "habitat": "swale",
+      "form": "thicket",
+      "unit": "mat",
+      "heightM": 4,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "serrate",
+      "wrap": true,
+      "cell": [
+        62,
+        148
+      ],
+      "pivot": [
+        31,
+        134
+      ],
+      "variantSheet": [
+        248,
+        592
+      ],
+      "phaseSheet": [
+        496,
+        592
+      ],
+      "worstInkPct": 69,
+      "worstInkPhase": "leaf",
+      "minWindows": 18,
+      "fits2048": true
+    },
+    {
+      "key": "PussyWillow",
+      "name": "Pussy Willow",
+      "latin": "Salix discolor",
+      "habitat": "swale",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 3.38,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "willowLance",
+      "wrap": false,
+      "cell": [
+        91,
+        131
+      ],
+      "pivot": [
+        45,
+        122
+      ],
+      "variantSheet": [
+        364,
+        524
+      ],
+      "phaseSheet": [
+        728,
+        524
+      ],
+      "worstInkPct": 43,
+      "worstInkPhase": "dormant",
+      "minWindows": 3,
+      "fits2048": true
+    },
+    {
+      "key": "RedOsierDogwood",
+      "name": "Red Osier Dogwood",
+      "latin": "Cornus sericea",
+      "habitat": "swale",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 2.19,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "broadSmall",
+      "wrap": false,
+      "cell": [
+        82,
+        92
+      ],
+      "pivot": [
+        40,
+        80
+      ],
+      "variantSheet": [
+        328,
+        368
+      ],
+      "phaseSheet": [
+        656,
+        368
+      ],
+      "worstInkPct": 36,
+      "worstInkPhase": "catkin",
+      "minWindows": 5,
+      "fits2048": true
+    },
+    {
+      "key": "Meadowsweet",
+      "name": "Meadowsweet",
+      "latin": "Spiraea alba",
+      "habitat": "swale",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 1.25,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "serrate",
+      "wrap": false,
+      "cell": [
+        55,
+        59
+      ],
+      "pivot": [
+        27,
+        49
+      ],
+      "variantSheet": [
+        220,
+        236
+      ],
+      "phaseSheet": [
+        440,
+        236
+      ],
+      "worstInkPct": 31,
+      "worstInkPhase": "dormant",
+      "minWindows": 1,
+      "fits2048": true
+    },
+    {
+      "key": "Steeplebush",
+      "name": "Steeplebush",
+      "latin": "Spiraea tomentosa",
+      "habitat": "swale",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 1.06,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "serrate",
+      "wrap": false,
+      "cell": [
+        51,
+        54
+      ],
+      "pivot": [
+        25,
+        43
+      ],
+      "variantSheet": [
+        204,
+        216
+      ],
+      "phaseSheet": [
+        408,
+        216
+      ],
+      "worstInkPct": 31,
+      "worstInkPhase": "dormant",
+      "minWindows": 1,
+      "fits2048": true
+    },
+    {
+      "key": "Raspberry",
+      "name": "Wild Raspberry",
+      "latin": "Rubus idaeus",
+      "habitat": "edge",
+      "form": "thicket",
+      "unit": "mat",
+      "heightM": 1.44,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "pinnate",
+      "wrap": true,
+      "cell": [
+        54,
+        72
+      ],
+      "pivot": [
+        27,
+        57
+      ],
+      "variantSheet": [
+        216,
+        288
+      ],
+      "phaseSheet": [
+        432,
+        288
+      ],
+      "worstInkPct": 60,
+      "worstInkPhase": "green",
+      "minWindows": 7,
+      "fits2048": true
+    },
+    {
+      "key": "WildRose",
+      "name": "Wild Rose",
+      "latin": "Rosa virginiana",
+      "habitat": "edge",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 1.31,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": true,
+      "grain": "pinnate",
+      "wrap": false,
+      "cell": [
+        60,
+        68
+      ],
+      "pivot": [
+        30,
+        57
+      ],
+      "variantSheet": [
+        240,
+        272
+      ],
+      "phaseSheet": [
+        480,
+        272
+      ],
+      "worstInkPct": 28,
+      "worstInkPhase": "dormant",
+      "minWindows": 2,
+      "fits2048": true
+    },
+    {
+      "key": "StaghornSumac",
+      "name": "Staghorn Sumac",
+      "latin": "Rhus typhina",
+      "habitat": "edge",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 3.44,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": true,
+      "grain": "pinnate",
+      "wrap": false,
+      "cell": [
+        118,
+        131
+      ],
+      "pivot": [
+        59,
+        122
+      ],
+      "variantSheet": [
+        472,
+        524
+      ],
+      "phaseSheet": [
+        944,
+        524
+      ],
+      "worstInkPct": 41,
+      "worstInkPhase": "green",
+      "minWindows": 2,
+      "fits2048": true
+    },
+    {
+      "key": "Serviceberry",
+      "name": "Serviceberry",
+      "latin": "Amelanchier canadensis",
+      "habitat": "edge",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 3.69,
+      "evergreen": false,
+      "bloomFirst": true,
+      "holdsFruit": false,
+      "grain": "broadSmall",
+      "wrap": false,
+      "cell": [
+        121,
+        130
+      ],
+      "pivot": [
+        60,
+        121
+      ],
+      "variantSheet": [
+        484,
+        520
+      ],
+      "phaseSheet": [
+        968,
+        520
+      ],
+      "worstInkPct": 42,
+      "worstInkPhase": "green",
+      "minWindows": 6,
+      "fits2048": true
+    },
+    {
+      "key": "BeakedHazelnut",
+      "name": "Beaked Hazelnut",
+      "latin": "Corylus cornuta",
+      "habitat": "woods",
+      "form": "clump",
+      "unit": "clump",
+      "heightM": 2.88,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "serrate",
+      "wrap": false,
+      "cell": [
+        88,
+        125
+      ],
+      "pivot": [
+        43,
+        117
+      ],
+      "variantSheet": [
+        352,
+        500
+      ],
+      "phaseSheet": [
+        704,
+        500
+      ],
+      "worstInkPct": 32,
+      "worstInkPhase": "catkin",
+      "minWindows": 4,
+      "fits2048": true
+    },
+    {
+      "key": "WildRaisin",
+      "name": "Wild Raisin",
+      "latin": "Viburnum nudum cassinoides",
+      "habitat": "woods",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 2.63,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "broadSmall",
+      "wrap": false,
+      "cell": [
+        95,
+        105
+      ],
+      "pivot": [
+        47,
+        96
+      ],
+      "variantSheet": [
+        380,
+        420
+      ],
+      "phaseSheet": [
+        760,
+        420
+      ],
+      "worstInkPct": 41,
+      "worstInkPhase": "green",
+      "minWindows": 5,
+      "fits2048": true
+    },
+    {
+      "key": "RedElderberry",
+      "name": "Red Elderberry",
+      "latin": "Sambucus racemosa",
+      "habitat": "woods",
+      "form": "plant",
+      "unit": "plant",
+      "heightM": 3,
+      "evergreen": false,
+      "bloomFirst": false,
+      "holdsFruit": false,
+      "grain": "pinnate",
+      "wrap": false,
+      "cell": [
+        107,
+        113
+      ],
+      "pivot": [
+        53,
+        104
+      ],
+      "variantSheet": [
+        428,
+        452
+      ],
+      "phaseSheet": [
+        856,
+        452
+      ],
+      "worstInkPct": 40,
+      "worstInkPhase": "turn",
+      "minWindows": 2,
+      "fits2048": true
+    }
+  ],
+  "asserts": [
+    "every sheet axis <= 2048 (Unity downscales silently; only a pivot assert catches it)",
+    "state.R (veil flag) must gate every read of light.G",
+    "no veil pixel carries light.G > 0, and no veil pixel is keylined",
+    "pivot is identical across all phases and snow depths of a species (union cell invariant)",
+    "every wrap unit has crossings > 0 — a tile whose stems never cross the join reads as a row of pots",
+    "every non-mat species has windows > 0 in leaf at FULL stage: a shrub you cannot see into is a bush-shaped rock. Mats are exempt by form (you do not look into a carpet) and young stages by scale (below the mass floor a shrub is legitimately one solid tuft)."
+  ],
+  "notInThisRig": [
+    "Bayberry",
+    "SweetFern",
+    "— shorePlantRig owns both as dune/upland units"
+  ]
+}

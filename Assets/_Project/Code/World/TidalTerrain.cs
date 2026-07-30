@@ -56,6 +56,31 @@ namespace HiddenHarbours.World
                  "tide (always exposed).")]
         [SerializeField] private float _islandElevation = 6f;
 
+        [Header("Reef shelf (the ring that makes landing hard for all but shallow draught)")]
+        [Tooltip("Width (m) of the shallow shelf that rings the island beyond its beach. 0 = ABSENT — the " +
+                 "beach drops straight to the deep floor, the original greybox profile. A shelf turns " +
+                 "'reefs make landing hard' into authored terrain instead of decoration: draught is " +
+                 "already real data and the tide already decides depth, so the ring gates hulls for free.")]
+        [SerializeField] private float _reefShelfWidth = 0f;
+        [Tooltip("Shelf bed at its INNER edge (m above datum) — the shallow side, against the beach.")]
+        [SerializeField] private float _reefShelfInnerElevation = -1.0f;
+        [Tooltip("Shelf bed at its OUTER edge (m above datum), where it drops away to the deep floor.")]
+        [SerializeField] private float _reefShelfOuterElevation = -1.5f;
+
+        [Header("Berth (the ONE door in the reef — a dredged slip a boat comes home through)")]
+        [Tooltip("Half-width (m) of the berth channel. 0 = ABSENT. This is a LOCAL DEPRESSION carved from " +
+                 "deep water to the shore, so it cuts a door through the reef ring; without it a ringed " +
+                 "island has no way in for anything that floats.")]
+        [SerializeField] private float _berthHalfWidth = 0f;
+        [Tooltip("Seaward end of the berth channel's centre-line (world XY) — out in deep water.")]
+        [SerializeField] private Vector2 _berthFrom = Vector2.zero;
+        [Tooltip("Shoreward end of the berth channel's centre-line (world XY) — at the shoreline.")]
+        [SerializeField] private Vector2 _berthTo = Vector2.zero;
+        [Tooltip("Berth bed elevation (m above datum). Shallow ENOUGH that the slip dries near spring low — " +
+                 "the dock keeps its own gentle tide gate, so even coming home under power means reading " +
+                 "the tide — and deep enough to clear the skiff/punt tier for most of the cycle.")]
+        [SerializeField] private float _berthBedElevation = -1.0f;
+
         [Header("Sandbar ridge (the tide-gated walking path to Nine Mile Creek)")]
         [Tooltip("One end of the sandbar's centre-line (world XY) — toward the island.")]
         [SerializeField] private Vector2 _sandbarFrom = new Vector2(-22f, 0f);
@@ -103,9 +128,9 @@ namespace HiddenHarbours.World
             // Deep harbour is the floor; the island and sandbar raise the ground above it where present.
             float e = _deepHarbourElevation;
 
-            // Island: a flat plateau inside the radius, sloping down to the deep floor across the falloff.
+            // Island: plateau → beach → (reef shelf → drop-off, if a shelf is authored) → deep floor.
             float dIsland = IslandDistance(worldPos, _islandCenter, _islandRadius, _islandRadiusY);
-            float island = Lerped(dIsland, _islandRadius, _islandFalloff, _islandElevation, _deepHarbourElevation);
+            float island = IslandProfile(dIsland);
             if (island > e) e = island;
 
             // Sandbar: a ridge along the From→To segment. Raise toward the crest near the centre-line,
@@ -126,7 +151,58 @@ namespace HiddenHarbours.World
                 e = Mathf.Max(carved, _deepHarbourElevation);
             }
 
+            // Berth: the ONE door in the reef. A local depression along a short centre-line running from
+            // deep water to the shore, carved the same way the channel is — so a hull can reach the slip
+            // without crossing the shelf, while everywhere else the ring still gates it. Only ever cuts
+            // DOWN (Mathf.Min), so it cannot raise the seabed anywhere, and never below the deep floor.
+            if (_berthHalfWidth > 0f)
+            {
+                float dBerth = DistanceToSegment(worldPos, _berthFrom, _berthTo);
+                if (dBerth < _berthHalfWidth && e > _berthBedElevation)
+                {
+                    float carve = SmoothFalloff(dBerth, _berthHalfWidth);
+                    float carved = Mathf.Lerp(e, _berthBedElevation, carve);
+                    e = Mathf.Max(Mathf.Min(e, carved), _deepHarbourElevation);
+                }
+            }
+
             return e;
+        }
+
+        /// <summary>
+        /// The island's cross-section as one explicit chain of bands, by elliptical distance from the
+        /// centre: <b>plateau → beach → reef shelf → drop-off → deep floor</b>. With no shelf authored
+        /// (<c>_reefShelfWidth</c> = 0) the chain collapses to plateau → beach → floor, byte-identical to
+        /// the original greybox profile.
+        ///
+        /// <para><b>⚠ Why a chain and not a set of <see cref="Lerped"/> calls combined with min/max.</b>
+        /// <c>Lerped</c> holds its OUTER value for every distance past its band, so each band's term is a
+        /// constant across the whole rest of the sea. Combining them with <c>max</c> then pins the entire
+        /// seabed at the beach's outer value — the reef shelf's −1.0 m spread to the horizon in the first
+        /// version of this method, and every hull in the game could suddenly cross anywhere. <c>min</c>
+        /// fails the mirror-image way, flattening the apron. The bands are disjoint, so the composition
+        /// has to be too.</para>
+        /// </summary>
+        public float IslandProfile(float dIsland)
+        {
+            if (dIsland <= _islandRadius) return _islandElevation;
+
+            float beachEnd = _islandRadius + _islandFalloff;
+            bool hasShelf = _reefShelfWidth > 0f;
+            float beachOuter = hasShelf ? _reefShelfInnerElevation : _deepHarbourElevation;
+
+            if (dIsland <= beachEnd || !hasShelf)
+                return Lerped(dIsland, _islandRadius, _islandFalloff, _islandElevation, beachOuter);
+
+            // §5.1a: "≈ −1.0 to −1.5 m around the rest of the coast, shallowing to the beaches."
+            float shelfEnd = beachEnd + _reefShelfWidth;
+            if (dIsland <= shelfEnd)
+                return Lerped(dIsland, beachEnd, _reefShelfWidth,
+                              _reefShelfInnerElevation, _reefShelfOuterElevation);
+
+            // The drop-off, over the beach's own width so it reads as a slope rather than a cliff.
+            return Lerped(dIsland, shelfEnd, Mathf.Max(1f, _islandFalloff),
+                          _reefShelfOuterElevation, _deepHarbourElevation);
         }
 
         // --- pure helpers (static, testable) ----------------------------------------------------------

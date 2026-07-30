@@ -224,6 +224,14 @@ floats where `waterLevel − bedElevation > draught`):
 > *sometimes* band, not a *never* band. That is the more interesting answer — but it means the
 > "you've outgrown home" beat arrives as a nagging tide constraint rather than a clean door closing.
 > If it should land harder, raise the shelf rather than lowering the boats.
+>
+> **⚠ MEASURED, 2026-07-29 — and it is a *sometimes* band, wider than the table above suggests.**
+> Against a −1.0 m berth the fleet lands like this, as a fraction of the semidiurnal cycle afloat:
+> dory **56.9%**, punt/skiff tier **54.6–56.4%**, **lobster boat 47.7%**, **Cape Islander 46.8%**. So the working hulls are not *"❌ except near high water"* as the table puts it —
+> they are gated for a little under half the cycle, which is a nagging constraint rather than a door
+> closing. The ordering is right (every skiff beats every working hull) and the ruled numbers are
+> implemented exactly; **whether it should land harder is the owner's call**, and this section already
+> says which lever to pull. Deferred until he plays at size.
 
 ### 5.2 The sandbar as its own scene — sized by the tide, and the tide is generous
 
@@ -383,7 +391,14 @@ rule-tiles and the road blob-47 autotiler from the kits imported today. They are
    month. §5.2. *(Bonus: the gate gains a spring-tense / neap-forgiving gradient, at no cost.)*
 3. **The reef ring — in, with one modest dock on the east end**, opposite the sandbar, taking
    powerboats. §5.1a. *(Lands as a 0.6 m draught gate: skiff/punt tier home, working hulls tide-gated,
-   dragger never.)*
+   dragger never.)* **✅ BUILT 2026-07-29** — a 25 m shelf from −1.0 m at the beach toe to −1.5 m at
+   the drop-off, ringing the island, with a −1.0 m berth channel cutting the one door through it on
+   the east end. The ring has **two** crossings by design: the berth (boats, east) and the sandbar
+   riding over it (feet, west) — the two halves of the opening arc. ⚠ Two numbers were NOT in the
+   ruling and are mine: the shelf's **25 m width** and the berth's **8 m half-width**. The width is
+   not a taste call — it is what the scene has room for, exactly: from the island's centre to the east
+   edge is 380 − 70 = 310 m, less 225 of island, 30 of beach and 30 of drop-off. See the note in §5.1a
+   on where the working hulls actually landed.
 
 ### Still open
 

@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 110
-        height: 166
+        width: 126
+        height: 159
       alignment: 9
-      pivot: {x: 0.4909091, y: 0.12048193}
+      pivot: {x: 0.5, y: 0.062893085}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_v1
       rect:
         serializedVersion: 2
-        x: 110
+        x: 126
         y: 0
-        width: 110
-        height: 166
+        width: 126
+        height: 159
       alignment: 9
-      pivot: {x: 0.4909091, y: 0.12048193}
+      pivot: {x: 0.5, y: 0.062893085}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_v2
       rect:
         serializedVersion: 2
-        x: 220
+        x: 252
         y: 0
-        width: 110
-        height: 166
+        width: 126
+        height: 159
       alignment: 9
-      pivot: {x: 0.4909091, y: 0.12048193}
+      pivot: {x: 0.5, y: 0.062893085}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_v3
       rect:
         serializedVersion: 2
-        x: 330
+        x: 378
         y: 0
-        width: 110
-        height: 166
+        width: 126
+        height: 159
       alignment: 9
-      pivot: {x: 0.4909091, y: 0.12048193}
+      pivot: {x: 0.5, y: 0.062893085}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

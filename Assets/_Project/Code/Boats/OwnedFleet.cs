@@ -113,7 +113,7 @@ namespace HiddenHarbours.Boats
             // foot, this likewise stays quiet — boarding will frame the restored hull. The App's
             // CameraFollow listens via Core, so Boats never references it; bigger boat → more water.
             if (_aboard)
-                EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters));
+                EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters, hull.LengthMeters));
         }
 
         /// <summary>Find a hull in the registry by its stable Id. No DisplayName/name special-casing.</summary>

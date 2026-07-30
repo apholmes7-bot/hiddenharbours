@@ -61,22 +61,111 @@ namespace HiddenHarbours.Tests.RigBaking
         // the rig runs unmodified, and exposes exactly what this baker calls
         // =================================================================================
 
+        /// <summary>The five entry points the baker calls straight off the rig's global.</summary>
+        static readonly string[] BakerEntryPoints =
+        {
+            "render", "packMask", "normalView", "sheetSpec", "cellOf",
+        };
+
         [Test]
         public void TreeRig_RunsUnmodified_AndNeedsNoShim()
         {
             // No canvas mailbox, no string widening, no globals patched in first: the difference
             // between this rig and every other one in the repo, and the reason the baker calls its
             // public API directly.
+            //
+            // ⚠️ The rig FILE and the rig GLOBAL are both read from TreeKitCatalog, never spelled
+            // out here. They were hardcoded as treeIsoRig.js/TreeRig until the pass-2 swap
+            // (2026-07-29), which is precisely the shape of test that keeps passing against the OLD
+            // rig after the pipeline has moved on.
             using var host = RigScriptHostFactory.Create();
-            string source = File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.RigScriptPath));
+            string rig = TreeKitCatalog.RigScriptPath, g = TreeKitCatalog.RigGlobalName;
+            string source = File.ReadAllText(Path.Combine(RepoRoot, rig));
             Assert.DoesNotThrow(() => host.Execute(source),
-                "treeIsoRig.js must run in a BARE host. If this throws, something in the rig now " +
+                $"{rig} must run in a BARE host. If this throws, something in the rig now " +
                 "needs an environment global — and the shim belongs in host code, never in the " +
                 "art director's file (ADR 0021 §5).");
 
-            foreach (string fn in new[] { "render", "packMask", "normalView", "sheetSpec", "cellOf" })
-                Assert.IsTrue(host.EvaluateBool($"typeof TreeRig.{fn} === 'function'"),
-                    $"TreeRig.{fn}() is missing — the baker calls it directly.");
+            Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
+                $"{rig} ran but did not install globalThis.{g}.");
+
+            foreach (string fn in BakerEntryPoints)
+                Assert.IsTrue(host.EvaluateBool($"typeof {g}.{fn} === 'function'"),
+                    $"{g}.{fn}() is missing — the baker calls it directly.");
+        }
+
+        [Test]
+        public void PassTwoRig_KeepsEveryContractConstant_SoTheSwapWasAReBakeAndNotAReDesign()
+        {
+            // ⭐ THE PROOF BEHIND THE PASS-2 SWAP BEING TWO CONSTANTS AND A RE-BAKE.
+            //
+            // treeIsoRig2.js changed what gets BUILT (masses instead of one cloud, Worley leaf cells
+            // instead of per-pixel noise, a serrated outline, visible branches) and therefore every
+            // species' measured cell and pivot. It changed NOTHING that Trees.json records as a
+            // world constant. That distinction is the whole reason the sprite-light mask contract,
+            // the wind shader's _TrunkAnchor and the reflection wiring all survived the swap
+            // untouched — so it is asserted rather than asserted-in-a-commit-message.
+            //
+            // Both passes are loaded into ONE host on purpose: they install different globals
+            // (TreeRig vs TreeRig2), so they cannot collide, and comparing them in-process beats
+            // comparing either against a number typed in here.
+            using var host = RigScriptHostFactory.Create();
+            host.Execute(File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.PreviousRigScriptPath)));
+            host.Execute(File.ReadAllText(Path.Combine(RepoRoot, TreeKitCatalog.RigScriptPath)));
+
+            string p1 = TreeKitCatalog.PreviousRigGlobalName, p2 = TreeKitCatalog.RigGlobalName;
+            Assert.AreNotEqual(p1, p2, "The two passes must install DIFFERENT globals.");
+            foreach (string g in new[] { p1, p2 })
+                Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
+                    $"globalThis.{g} did not install — this test needs both passes side by side.");
+
+            // Every scalar the contract carries as a world constant.
+            foreach (string k in new[] { "PPU", "RIM_PX", "MIN_BODY", "MIN_R", "SWAY", "VARIANTS",
+                                         "ELEV", "CE", "SE" })
+            {
+                double a = host.EvaluateNumber($"{p1}.{k}"), b = host.EvaluateNumber($"{p2}.{k}");
+                Assert.AreEqual(a, b, 1e-12,
+                    $"{k} differs between the two passes ({a} vs {b}). Trees.json publishes this as " +
+                    "a constant the pixels were built under — if a pass really changed it, the " +
+                    "consumers of that number (Tree.mat, the wind shader, SpriteLightMath) all need " +
+                    "re-deriving, and that is not a re-bake.");
+            }
+
+            // The light vectors — the mask's whole meaning.
+            foreach (string vec in new[] { "key", "rim" })
+            for (int i = 0; i < 3; i++)
+                Assert.AreEqual(host.EvaluateNumber($"{p1}.LIGHT.{vec}[{i}]"),
+                                host.EvaluateNumber($"{p2}.LIGHT.{vec}[{i}]"), 1e-12,
+                    $"LIGHT.{vec}[{i}] moved between passes — every baked mask byte means something " +
+                    "different than the last bake's did.");
+
+            // The axes, the species SET in the rig's own order (a re-ordering would silently
+            // re-point every prefab and paint-tool index) and the stage multipliers. Compared as
+            // JSON so ORDER is part of the assertion, not just membership.
+            foreach (string expr in new[]
+                     {
+                         "SEASONS",
+                         "STAGE_KEYS",
+                         "SPECIES.map(function(s){return s.key;})",
+                         "STAGES",
+                     })
+                Assert.AreEqual(host.EvaluateString($"JSON.stringify({p1}.{expr})"),
+                                host.EvaluateString($"JSON.stringify({p2}.{expr})"),
+                    $"{expr} differs between the two passes. Species keys are the sheet stems and " +
+                    "the prefab names, their ORDER is what AcadianTreeCatalog.Scan publishes to the " +
+                    "paint tool, and a stage's multiplier is what 'mature' MEANS.");
+
+            // ---- MEASURED SABOTAGE: the pixels DID change, or the swap was a no-op ----------
+            // Without this the test above would also pass if someone pointed RigScriptPath back at
+            // pass 1 — identical constants AND identical pixels.
+            string res1 = $"{p1}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
+            string res2 = $"{p2}.render('RedSpruce',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
+            byte[] a1 = host.EvaluateBytes($"{res1}.rgba"), a2 = host.EvaluateBytes($"{res2}.rgba");
+            Debug.Log($"[tree-pass2] RedSpruce/{Stage}/{Season} albedo: pass 1 is {a1.Length / 4} px, " +
+                      $"pass 2 is {a2.Length / 4} px.");
+            Assert.AreNotEqual(a1, a2,
+                "Pass 1 and pass 2 rendered the SAME Red Spruce. Either RigScriptPath is still " +
+                "pointing at pass 1, or the drop was not the revised rig.");
         }
 
         [Test]
@@ -200,7 +289,8 @@ namespace HiddenHarbours.Tests.RigBaking
             // ---- MEASURED SABOTAGE: swap R and G --------------------------------------------
             double pct = 100.0 * swapWouldChange / n;
             Debug.Log($"[tree-mask] {Species}: R↔G swap would change {swapWouldChange} of {n} px " +
-                      $"= {pct:F2}% of the cell. Measured 2026-07-26: 5405 px / 29.60%.");
+                      $"= {pct:F2}% of the cell. Measured 2026-07-29 (pass-2 rig): 4907 px / " +
+                      "24.49%; pass 1 was 5405 px / 29.60%.");
             Assert.Greater(pct, 10.0,
                 "An R↔G swap must change a LOT of the cell, or this assert is decoration — the key " +
                 "and rim channels would be nearly interchangeable and the order would not matter.");
@@ -257,7 +347,9 @@ namespace HiddenHarbours.Tests.RigBaking
             Debug.Log($"[tree-coverage] {Species}: albedo/mask {albedoCov} px, normal {normalCov} px, " +
                       $"keyline-only {inMaskNotNormal} px ({100.0 * inMaskNotNormal / maskCov:F1}% of " +
                       $"coverage). Decoded |n| ∈ [{minLen:F4}, {maxLen:F4}]. " +
-                      "Measured 2026-07-26: 7601 / 6990 / 611 px.");
+                      "Measured 2026-07-29 (pass-2 rig): 6570 / 5848 / 722 px = 11.0%; pass 1 was " +
+                      "7601 / 6990 / 611 px = 8.0%. The serrated pass-2 outline has more perimeter " +
+                      "per unit area, so the 1 px keyline ring is a larger share of coverage.");
         }
 
         // =================================================================================
@@ -301,8 +393,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 "Even the stiffest species must shift by more than 3% of its cell between sway " +
                 "frames, or 'we committed frame 0' would be unfalsifiable.");
             Debug.Log($"[tree-sway] Committing frame 1 by mistake would change between " +
-                      $"{worstPct:F2}% and {bestPct:F2}% of a cell. Measured 2026-07-26: " +
-                      "5.04% (Red Spruce) to 18.56% (Trembling Aspen).");
+                      $"{worstPct:F2}% and {bestPct:F2}% of a cell. Measured 2026-07-29 (pass-2 " +
+                      "rig): 5.18% (Balsam Fir) to 20.37% (Trembling Aspen); pass 1 was 5.04% " +
+                      "(Red Spruce) to 18.56% (Trembling Aspen).");
         }
 
         // =================================================================================
@@ -360,8 +453,12 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Debug.Log($"[tree-anchor] per-species _TrunkAnchor spans {lo:F4} ({loKey}) to " +
                       $"{hi:F4} ({hiKey}); the shipped Tree.mat constant is " +
-                      $"{ShippedMaterialTrunkAnchor}. Measured 2026-07-26: 0.0833 (BlackSpruce) to " +
-                      "0.1447 (RedOak).");
+                      $"{ShippedMaterialTrunkAnchor}. Measured 2026-07-29 (pass-2 rig): 0.0519 " +
+                      "(TremblingAspen) to 0.0922 (WhiteCedar); pass 1 was 0.0833 (BlackSpruce) to " +
+                      "0.1447 (RedOak). ⚠️ The pass-2 band sits ENTIRELY below the shipped 0.14, so " +
+                      "the single material value now over-anchors all ten species rather than " +
+                      "eight of the ten — the case for the per-renderer anchor got stronger, not " +
+                      "weaker.");
 
             // The whole justification for making this per species: the spread is bigger than any
             // sane tolerance, and the one shipped constant is not even inside the middle of it.

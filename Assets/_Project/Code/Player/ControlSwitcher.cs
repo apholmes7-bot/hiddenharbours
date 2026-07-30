@@ -329,8 +329,9 @@ namespace HiddenHarbours.Player
             // Camera: zoom to the boat's framing (#17 ActiveBoatChanged) + retarget to it (ControlModeChanged).
             BoatHullDef hull = _boatController != null ? _boatController.Hull : null;
             float height = hull != null ? hull.CameraWorldHeightMeters : 14f;
+            float hullLength = hull != null ? hull.LengthMeters : 0f;   // the camera floors the framing by it (§9.8)
             string id = hull != null ? hull.Id : null;
-            EventBus.Publish(new ActiveBoatChanged(id, height));
+            EventBus.Publish(new ActiveBoatChanged(id, height, hullLength));
             EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
         }
 
@@ -405,8 +406,9 @@ namespace HiddenHarbours.Player
 
                 BoatHullDef hull = _boatController != null ? _boatController.Hull : null;
                 float height = hull != null ? hull.CameraWorldHeightMeters : 14f;
+            float hullLength = hull != null ? hull.LengthMeters : 0f;   // the camera floors the framing by it (§9.8)
                 string id = hull != null ? hull.Id : null;
-                EventBus.Publish(new ActiveBoatChanged(id, height));
+                EventBus.Publish(new ActiveBoatChanged(id, height, hullLength));
                 EventBus.Publish(new ControlModeChanged(ControlMode.Aboard));
             }
             else if (Mode == ControlMode.OnDeck)
