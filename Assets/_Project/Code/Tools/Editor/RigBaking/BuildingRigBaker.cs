@@ -161,6 +161,63 @@ namespace HiddenHarbours.Tools.RigBaking
     }
 
     /// <summary>
+    /// The rendered-and-cropped state of one build — every facing's native cell, plus the union crop
+    /// and the pivot that moved with it. What <see cref="BuildingRigBaker.RenderCells"/> returns.
+    ///
+    /// <para><b>This type exists so a PREVIEW and a BAKE cannot disagree.</b> The Rig Studio shows the
+    /// owner one cell of this set; the bake packs the same set into a sheet. Both come from ONE call
+    /// path — <see cref="BuildingRigBaker.RenderCells"/> — so the pixels the owner approves are, by
+    /// construction, the pixels a bake writes (the flick-cast lesson: a second renderer that can
+    /// disagree with the bake means the owner approves art that never ships). A test pins the
+    /// bit-identity anyway, so a refactor that splits the paths fails loudly.</para>
+    /// </summary>
+    public sealed class BuildingCellSet
+    {
+        public string RigKey;
+        public RigGeometry Geometry;
+        public BuildingRigAzimuthProbe.Result Probe;
+
+        /// <summary>The rig's own <c>PX</c> (pixels per metre).</summary>
+        public int PixelsPerMetre;
+
+        /// <summary>One NATIVE cell per facing — RGBA, top-left-origin rows, exactly as the rig's
+        /// <c>render()</c> returned them. Cell <c>i</c> depicts +45°·i (the measured convention is
+        /// already applied via <see cref="RigBaker.DirForCell"/>).</summary>
+        public byte[][] Cells;
+
+        /// <summary>The union crop over all facings, padded by <see cref="BuildingRigBaker.Padding"/> —
+        /// ONE rect for the whole set, so every facing shares a cell size and a pivot.</summary>
+        public int CropX, CropY, CellWidth, CellHeight;
+
+        /// <summary>Pivot in the CROPPED cell, top-left origin px — the ground centre.</summary>
+        public double PivotX, PivotY;
+
+        public double RenderMilliseconds;
+
+        /// <summary>
+        /// One facing, cropped — RGBA, top-left-origin rows, <see cref="CellWidth"/>×<see cref="CellHeight"/>.
+        /// The exact bytes the bake blits into that facing's cell of the sheet.
+        /// </summary>
+        public byte[] CroppedCell(int facing)
+        {
+            if (facing < 0 || facing >= Cells.Length)
+                throw new ArgumentOutOfRangeException(nameof(facing),
+                    $"facing {facing} of a {Cells.Length}-facing set.");
+
+            byte[] src = Cells[facing];
+            int srcW = Geometry.Width;
+            var dst = new byte[CellWidth * CellHeight * 4];
+
+            for (int y = 0; y < CellHeight; y++)
+            {
+                int srcRow = ((CropY + y) * srcW + CropX) * 4;
+                Buffer.BlockCopy(src, srcRow, dst, y * CellWidth * 4, CellWidth * 4);
+            }
+            return dst;
+        }
+    }
+
+    /// <summary>
     /// Bakes the two BUILDING rigs — <c>houseIsoRig</c> and <c>wharfBuildingRig</c> — through the shared
     /// ¾ turntable, and <b>tight-crops the result</b>.
     ///
@@ -207,17 +264,13 @@ namespace HiddenHarbours.Tools.RigBaking
         public static BuildingBakeResult Bake(BuildingBakeRequest req)
         {
             var total = Stopwatch.StartNew();
-            var entry = RigCatalog.Get(req.RigKey);
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            var geo = RigCatalog.Install(host, entry);
-            string g = entry.GlobalName;
+            BuildingCellSet set = RenderCells(req, host);
 
-            // The options expression comes from the request — a spread of the rig's own PRESETS table,
-            // or a build the owner dialled in the Building Studio. BuildingBakeRequest.FromPreset owns
-            // the spelling of the preset case, including the {preset:'name'} trap documented there.
+            var geo = set.Geometry;
+            string g = RigCatalog.Get(req.RigKey).GlobalName;
             string optsJs = req.OptsJs;
-            if (req.IsPreset) AssertPresetExists(host, g, req.Label);
 
             var result = new BuildingBakeResult
             {
@@ -227,8 +280,83 @@ namespace HiddenHarbours.Tools.RigBaking
                 NativeCellWidth = geo.Width,
                 NativeCellHeight = geo.Height,
                 Facings = req.Facings,
-                PixelsPerMetre = (int)host.EvaluateNumber($"{g}.PX"),
+                PixelsPerMetre = set.PixelsPerMetre,
+                MeasuredConvention = set.Probe.Convention,
+                ConventionReport = set.Probe.Report,
+                FootprintWidthMeters = set.Probe.WidthMeters,
+                FootprintLengthMeters = set.Probe.LengthMeters,
+                CropX = set.CropX,
+                CropY = set.CropY,
+                CellWidth = set.CellWidth,
+                CellHeight = set.CellHeight,
+                PivotX = set.PivotX,
+                PivotY = set.PivotY,
             };
+
+            int cw = set.CellWidth, ch = set.CellHeight;
+
+            // ---- Pack ------------------------------------------------------------------------------
+            ChooseGrid(cw, ch, req.Facings, out int cols, out int rows, req.MaxSheetDimension);
+            result.Columns = cols; result.Rows = rows;
+
+            int pw = cols * cw, ph = rows * ch;
+            result.SheetWidth = pw; result.SheetHeight = ph;
+
+            var pixels = new Color32[pw * ph];
+            for (int cell = 0; cell < req.Facings; cell++)
+                BlitCropped(set.Cells[cell], geo.Width, geo.Height, set.CropX, set.CropY, cw, ch,
+                            pixels, pw, ph, col: cell % cols, rowFromTop: cell / cols);
+
+            string fileName = $"{req.BaseName}.png";
+            result.AssetPath = $"{req.OutputFolder}/{fileName}";
+
+            string outAbs = Path.Combine(RigCatalog.RepoRoot, req.OutputFolder);
+            Directory.CreateDirectory(outAbs);
+
+            var tex = new Texture2D(pw, ph, TextureFormat.RGBA32, mipChain: false, linear: false);
+            try
+            {
+                tex.SetPixels32(pixels);
+                tex.Apply(false, false);
+                byte[] png = tex.EncodeToPNG();
+                File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, result.AssetPath), png);
+                result.PngBytes = png.Length;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+
+            result.SidecarPath = WriteSidecar(host, g, optsJs, req, result, set.Probe);
+
+            result.RenderMilliseconds = set.RenderMilliseconds;
+            total.Stop();
+            result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
+            return result;
+        }
+
+        /// <summary>
+        /// <b>THE render path</b> — install the rig, run every guard, MEASURE the convention, render
+        /// all facings and compute the union crop. <see cref="Bake"/> packs this into a sheet; the Rig
+        /// Studio's preview shows one cell of it. There is deliberately no second way to render a
+        /// building: a preview renderer that could disagree with the bake means the owner approves art
+        /// that never ships, so both callers share this method and a test pins the bit-identity.
+        ///
+        /// <para><paramref name="host"/> is caller-owned (the studio keeps one alive across previews;
+        /// the bake creates and disposes its own). The rig source is (re)executed into it here, so a
+        /// host that last held a different rig is fine.</para>
+        /// </summary>
+        public static BuildingCellSet RenderCells(BuildingBakeRequest req, IRigScriptHost host)
+        {
+            var entry = RigCatalog.Get(req.RigKey);
+            var geo = RigCatalog.Install(host, entry);
+            string g = entry.GlobalName;
+
+            // The options expression comes from the request — a spread of the rig's own PRESETS table,
+            // or a build the owner dialled in the Rig Studio. BuildingBakeRequest.FromPreset owns
+            // the spelling of the preset case, including the {preset:'name'} trap documented there.
+            string optsJs = req.OptsJs;
+            if (req.IsPreset) AssertPresetExists(host, g, req.Label);
 
             // The geometry guard runs for EVERY build, so the probe and the crop can both assume the
             // render came back at the rig's declared cell size.
@@ -242,10 +370,6 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // ---- MEASURE the convention, then cross-check the catalog's declaration ---------------
             var probe = BuildingRigAzimuthProbe.Measure(host, g, optsJs, geo.Width, geo.Height, geo.PivotX);
-            result.MeasuredConvention = probe.Convention;
-            result.ConventionReport = probe.Report;
-            result.FootprintWidthMeters = probe.WidthMeters;
-            result.FootprintLengthMeters = probe.LengthMeters;
 
             if (probe.Convention != entry.DeclaredConvention)
                 throw new InvalidOperationException(
@@ -293,57 +417,25 @@ namespace HiddenHarbours.Tools.RigBaking
             xMax = Mathf.Min(geo.Width - 1, xMax + Padding);
             yMax = Mathf.Min(geo.Height - 1, yMax + Padding);
 
-            int cw = xMax - xMin + 1;
-            int ch = yMax - yMin + 1;
-
-            result.CropX = xMin; result.CropY = yMin;
-            result.CellWidth = cw; result.CellHeight = ch;
-
             // THE PIVOT MOVES WITH THE CROP. The rig reports it in native-cell top-left space; after
             // cropping, the same world point sits (cropX, cropY) closer to the origin. Getting this
             // wrong does not fail loudly — every building simply stands in the wrong place, by the
             // crop offset, consistently enough to look like a placement bug rather than a bake one.
-            result.PivotX = geo.PivotX - xMin;
-            result.PivotY = geo.PivotY - yMin;
-
-            // ---- Pack ------------------------------------------------------------------------------
-            ChooseGrid(cw, ch, req.Facings, out int cols, out int rows, req.MaxSheetDimension);
-            result.Columns = cols; result.Rows = rows;
-
-            int pw = cols * cw, ph = rows * ch;
-            result.SheetWidth = pw; result.SheetHeight = ph;
-
-            var pixels = new Color32[pw * ph];
-            for (int cell = 0; cell < req.Facings; cell++)
-                BlitCropped(cells[cell], geo.Width, geo.Height, xMin, yMin, cw, ch,
-                            pixels, pw, ph, col: cell % cols, rowFromTop: cell / cols);
-
-            string fileName = $"{req.BaseName}.png";
-            result.AssetPath = $"{req.OutputFolder}/{fileName}";
-
-            string outAbs = Path.Combine(RigCatalog.RepoRoot, req.OutputFolder);
-            Directory.CreateDirectory(outAbs);
-
-            var tex = new Texture2D(pw, ph, TextureFormat.RGBA32, mipChain: false, linear: false);
-            try
+            return new BuildingCellSet
             {
-                tex.SetPixels32(pixels);
-                tex.Apply(false, false);
-                byte[] png = tex.EncodeToPNG();
-                File.WriteAllBytes(Path.Combine(RigCatalog.RepoRoot, result.AssetPath), png);
-                result.PngBytes = png.Length;
-            }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(tex);
-            }
-
-            result.SidecarPath = WriteSidecar(host, g, optsJs, req, result, probe);
-
-            result.RenderMilliseconds = renderClock.Elapsed.TotalMilliseconds;
-            total.Stop();
-            result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
-            return result;
+                RigKey = req.RigKey,
+                Geometry = geo,
+                Probe = probe,
+                PixelsPerMetre = (int)host.EvaluateNumber($"{g}.PX"),
+                Cells = cells,
+                CropX = xMin,
+                CropY = yMin,
+                CellWidth = xMax - xMin + 1,
+                CellHeight = yMax - yMin + 1,
+                PivotX = geo.PivotX - xMin,
+                PivotY = geo.PivotY - yMin,
+                RenderMilliseconds = renderClock.Elapsed.TotalMilliseconds,
+            };
         }
 
         // ---- the crop ------------------------------------------------------------------------------
