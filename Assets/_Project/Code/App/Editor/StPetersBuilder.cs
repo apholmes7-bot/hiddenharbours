@@ -143,12 +143,45 @@ namespace HiddenHarbours.App.Editor
         // and would not fit inside a 520 m scene.
         public const float IslandRadius            = 225f;   // semi-axis along X → 450 m end to end
         public const float IslandRadiusY           = 130f;   // semi-axis along Y → 260 m across
-        // The beach/shelf band, in METRES of shore — not a fraction of the island. A 30 m band drops the
-        // 10 m from plateau to deep floor at about 1:3, which reads as the brief's steep red-sandstone
-        // coast. ⚠ It is NOT the ruled reef shelf: §5.1a's −1.0 to −1.5 m ring and the dock's −1.0 m
-        // berth are AUTHORED terrain (the follow-up pass), not a falloff.
+        // The beach band, in METRES of shore — not a fraction of the island. 30 m carries the plateau
+        // down to the reef shelf below at about 1:4, which reads as the brief's steep red-sandstone coast.
         public const float IslandFalloff          = 30f;
         public const float IslandElevation         = 6f;     // dry at every tide
+
+        // --- ⭐ THE REEF RING AND THE ONE DOCK (§5.1a, RULED by the owner 2026-07-23) ------------------
+        // "Reefs make landing hard for all but shallow draft" is a GAMEPLAY RULE, not decoration — and it
+        // costs no new systems, because draught is already real data on every hull and the painted seabed
+        // already decides depth per tide. So the whole thing is authored terrain: a shallow apron rings
+        // the island, and exactly ONE dredged slip cuts a door through it.
+        //
+        // The cut lands where the boat ladder does. Every skiff/punt-tier hull draws ≤ 0.6 m; the first
+        // two WORKING hulls are 1.3–1.4 m; the dragger is 2.9 m. So the island you start on becomes the
+        // island your big boat can never come home to — P2 and P5 in one piece of geography.
+        public const float ReefShelfInnerElevation = -1.0f;   // against the beach — the shallow side
+        public const float ReefShelfOuterElevation = -1.5f;   // where it drops away to the floor
+        // ⚠ Width is NOT in the ruling — it is what the scene has room for, and the budget is exact.
+        // The island sits 70 m east of centre, so from its centre to the east scene edge there is
+        // 380 − 70 = 310 m; the island itself takes 225 and the beach 30, and the drop-off past the
+        // shelf needs another 30, which leaves exactly 25 m of apron. A first attempt at 60 m ran the
+        // ring 5 m off the east edge of the map AND left the berth channel stopping short of deep
+        // water — a slip you could not actually enter. The DEPTH numbers are the ruled ones and are
+        // untouched by this; the width only decides how far you cross at that depth.
+        public const float ReefShelfWidth          = 25f;
+
+        // The berth: §5.1a's "dock approach / berth bed ≈ −1.0 m", which clears the 0.6 m tier whenever
+        // the water is above −0.4 m and DRIES near spring low — so the dock keeps its own gentle tide
+        // gate, and even coming home under power means reading the tide.
+        public const float BerthBedElevation       = -1.0f;
+        // ⚠ Also not in the ruling: a slip wide enough for the skiff tier to enter without threading a
+        // needle, narrow enough to read as one door in the ring rather than a gap in it.
+        public const float BerthHalfWidth          = 8f;
+        // ⚠ The seaward end must reach PAST the shelf's outer edge into the drop-off, or the slip is a
+        // dead-end pocket inside the reef that nothing can enter — which is exactly what the first
+        // version was, and what the ring test caught. The shelf ends 280 m from the island centre, so
+        // the mouth sits at 285. The shoreward end is AT the land edge (IslandRadius), so the slip
+        // reaches the beach; the carve's own falloff ramps it up onto the shore from there.
+        public static readonly Vector2 BerthFrom    = new Vector2(355f, 0f);   // 285 m out — past the reef
+        public static readonly Vector2 BerthTo      = new Vector2(295f, 0f);   // 225 m out — the shoreline
         // West end of the island's land → west toward the passage. (From is ON the island so the bar
         // actually joins it; To is short of the scene edge so the passage band has room.)
         public static readonly Vector2 SandbarFrom  = new Vector2(-150f, 0f); // toward the island
@@ -532,6 +565,30 @@ namespace HiddenHarbours.App.Editor
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
 
+            // --- THE COLD CHAIN, ashore (M1 §7.3 — gameplay-systems) --------------------------------
+            // Ginny's FREEZER by the cottage (Frozen: time ashore, free but only at home) and the
+            // WET-BUCKET spot at the water's edge (Live: free, shellfish only). Both are proximity
+            // interactables on the stall pattern (StallReach resolves the player itself — no wiring);
+            // greybox colour markers until art lands. Ice for the boat rides the DeckIceBox on the
+            // hold (runtime-spawned) — nothing to place here.
+            var freezerGo = new GameObject("GinnyFreezer");
+            freezerGo.transform.position = new Vector3(-42f, 2.2f, 0f);
+            var freezerSr = freezerGo.AddComponent<SpriteRenderer>();
+            freezerSr.sprite = waterSprite;
+            freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
+            freezerSr.sortingOrder = 3;
+            freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
+            freezerGo.AddComponent<GinnyFreezer>();
+
+            var wetGo = new GameObject("WetBucketSpot");
+            wetGo.transform.position = new Vector3(-30f, -6f, 0f);   // the sand rim, at the water
+            var wetSr = wetGo.AddComponent<SpriteRenderer>();
+            wetSr.sprite = waterSprite;
+            wetSr.color = new Color(0.25f, 0.45f, 0.60f);   // a seawater barrel, reads wet
+            wetSr.sortingOrder = 3;
+            wetGo.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            wetGo.AddComponent<WetBucketPoint>();
+
             // NIGHT WINDOWS — the cottage's lit-window SPRITE SWAP (CottageDayNight): swap to the lit-window
             // night sprite after dusk (through the Core clock only). Complements the window GLOW below: the swap
             // shows lit panes, the glow makes the cottage actually CAST warm light onto the ground. Both are
@@ -911,6 +968,13 @@ namespace HiddenHarbours.App.Editor
             SetV2(so, "_islandCenter", IslandCenter);
             SetF(so, "_islandRadius", IslandRadius);
             SetF(so, "_islandRadiusY", IslandRadiusY);
+            SetF(so, "_reefShelfWidth", ReefShelfWidth);
+            SetF(so, "_reefShelfInnerElevation", ReefShelfInnerElevation);
+            SetF(so, "_reefShelfOuterElevation", ReefShelfOuterElevation);
+            SetF(so, "_berthHalfWidth", BerthHalfWidth);
+            SetV2(so, "_berthFrom", BerthFrom);
+            SetV2(so, "_berthTo", BerthTo);
+            SetF(so, "_berthBedElevation", BerthBedElevation);
             SetF(so, "_islandFalloff", IslandFalloff);
             SetF(so, "_islandElevation", IslandElevation);
             SetV2(so, "_sandbarFrom", SandbarFrom);

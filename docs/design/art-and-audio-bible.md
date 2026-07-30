@@ -356,6 +356,13 @@ Recommended: **2D URP Lights + a global colour-grade**, with **fog as a layered 
 > hold the LOCKED rules (§2 one perspective, §3 one scale / PPU) and the desktop perf budget
 > (mobile-portable).
 
+> **Owner-shared rendering references are captured as targets.** [`advanced-rendering-targets.md`](advanced-rendering-targets.md)
+> indexes three: an **organic seabed/terrain** look, **per-sprite colour-light response**, and a
+> screen-space **fog/sky/cloud/rain** layer — each mapped onto systems we already have, restrained to the
+> master palette, and phased **M2/M3**. The fog capture ([`weather-rendering.md`](weather-rendering.md))
+> elaborates the **fog** in §6 and the **cloud shadows** bullet below; the sprite-light capture extends the
+> §6 lights; the seabed capture extends §2.2 and the shallow-water preview above.
+
 > **The hero water look has a dedicated plan.** The owner picked a target: a **layered URP Shader
 > Graph** (a main water shader assembled from **caustic / specular / sea-foam subgraphs** over a
 > depth-driven base, à la the referenced Unity tutorial), **pixelized** to read as PPU=32 pixel art,

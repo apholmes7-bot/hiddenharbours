@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PaintedHeightMap
   _heightTexture: {fileID: 2800000, guid: 4b7e2c9a1d6f4e3aa8c50f2b9d71e6c4, type: 3}
   _worldCenter: {x: 0, y: 0}
-  _worldSize: {x: 160, y: 120}
+  _worldSize: {x: 760, y: 520}
   _minElevation: -4
   _maxElevation: 6

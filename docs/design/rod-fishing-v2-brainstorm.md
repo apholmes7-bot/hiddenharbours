@@ -327,3 +327,98 @@ Everything else is tuning existing weights, not new systems.
 
 > Stay in phase (CLAUDE.md rule 8): none of this is M0/M1. Capture, discuss, then slot into the
 > roadmap deliberately.
+
+---
+
+## 10. Owner drop — the bite & hook moment (2026-07-29, owner-led session)
+
+> Captured live, owner's words quoted verbatim (typos kept). Context: the freshness lane
+> (#322/#325) had just merged; the owner opened with *"the hook, portion, some other stuff."*
+> This section records what he actually ruled. **Scope: the coordinator reviews this capture
+> before any build slice starts.**
+
+### 10.1 The verdict that gates everything: the v2 fight stays
+
+Asked for his overdue feel verdict on the #281 fight (pull-on-slack / maintain-on-run /
+counter-steer, no HUD, only-the-reel-lands):
+
+> **"the fight does feel good"**
+
+The v2 fight is a **foundation**, not a rework target. New bite/hook work leads *into* the
+existing fight; nothing behind the hookup gets rebuilt.
+
+### 10.2 The bite & hook — his picture
+
+**The tells.** Offered the candidate tell family — the float (a nibble-dip vs. the real
+take-under), the line (twitch / tightening / running sideways), the rod tip knocking, the water
+itself (a swirl, a flash) — plus a false-nibble game of teasing dips you must not strike on:
+
+> **"i like all the suggesstions you offered with a false nibble as well."**
+
+So: the full diegetic tell family, and **false nibbles are in** — reading which dip is the true
+take IS the skill of the moment.
+
+**The strike.** What the hand does at the take:
+
+> **"pull back and press maybe?"**
+
+Tentative — both candidates held for prototyping: a **pull-back mouse gesture** (the mirror of
+the flick-cast's forward sweep — cast forward, strike back) and/or a **press**. The owner tunes
+which (or both, e.g. press for the cozy strike, pull-back for a committed one) once it's in his
+hands. Not a spec yet; a feel decision to be made live.
+
+**The cost of a miss (bait).** On what a failed strike costs:
+
+> **"perhaps bait is only lost after catching a fish."**
+
+Tentative ruling, and it **reverses today's code**: the shipped controller spends bait at the
+*bite* (`SpendBaitOnBite`). Under this ruling bait is spent only on a **landed catch** — false
+nibbles, missed strikes and lost fights never eat bait; time is their only cost (P5's cozy
+default).
+
+**The cost of a miss (the fish).** Structured pin-down; he chose:
+
+> **"It keeps nibbling"** — a missed strike isn't fatal; the fish may come back for another
+> pass, so one bite can offer more than one chance.
+
+No spooked-spot punishment, no hard fish-gone on a first mistake.
+
+**Species personality.** Does the window change per fish?
+
+> **"yes should be different by species"**
+
+Some fish hit hard and hold on (wide window), some mouth the bait (tight window) — authored
+**per species as data** (rule 2: fields on `FishSpeciesDef` or a `BiteDef` sibling of
+`RodFightDef`, the established opt-in shape).
+
+### 10.3 Phasing
+
+> **"M1 — St Peters/cove loop"** (structured answer)
+
+The bite/hook rework — tells + false nibbles + the strike — is **M1 work**, next in the fishing
+lane. (§9's old "none of this is M0/M1" note predates this ruling and the shipped v2 loop; this
+drop supersedes it for the bite/hook specifically.)
+
+### 10.4 Also banked this session (not the bite lane)
+
+- **Baits & lures need diegetic choosing:** *"we will need digetic design solutions for choosing
+  baits and lures"* — picking bait/tackle must live in the world (the tote-is-the-readout taste,
+  no menu). Open design item; coordinate with ui-ux before building.
+- **"Portion" was NOT captured.** The owner chose to focus on the bite/hook first; what he means
+  by "portion" (size roll? the banked culling-table work surface? a portion of the school? bait
+  portions?) remains **unasked-and-unanswered**. Do not guess it into features — it needs its own
+  session.
+
+### 10.5 Build notes for the slices (after this capture merges)
+
+- Grow `FishingPhase` **append-only** (Core contract): the Bite phase becomes a nibble/take
+  sequence; ui-ux and audio consume the same struct unchanged.
+- The nibble/take timing and the strike judgement want a **pure, deterministic, EditMode-testable
+  POCO** (the `RodFightMath` discipline): seeded streams, no wall-clock, no per-frame drift.
+- Tunables: window widths, false-nibble cadence, strike-gesture thresholds → `GameConfig` block +
+  per-species data (rule 6; the owner will tune constantly). ⚠ GameConfig.asset is behind the
+  code — C# defaults are the live game.
+- The flick-cast lesson applies directly to the strike gesture: the tell preview and the strike
+  resolver must never compute the same quantity two ways.
+- Moving bait-spend from bite-time to catch-time touches the catch path → run the exact-payout
+  PlayMode tests; any new landing path still stamps `Freshness.Landed` (#322).

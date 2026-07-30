@@ -154,28 +154,52 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         /// <summary>
-        /// ⭐ THE ASSERT THAT WOULD HAVE CAUGHT THE OLD MOORING. Before the rescale the dory was moored
-        /// at (−40, −26) under a comment reading *"off the island's south coast (deep water)"*. It was
-        /// not deep water: the island's beach falloff puts that ground at <b>+2.48 m</b>, so a 0.30 m
-        /// dory floated there only when the tide was above +2.78 m — near high water and nowhere else.
-        /// Nothing said so, because nothing ever checked the comment against the terrain.
+        /// ⭐ THE BERTH'S OWN TIDE GATE, which is a RULING and not a bug.
+        ///
+        /// <para>§5.1a: *"Dock approach / berth bed ≈ −1.0 m. Clears 0.6 m draught whenever the water is
+        /// above −0.4 m — most of the cycle — and dries near spring low, so the dock has its own gentle
+        /// tide gate rather than being a permanent open door. Deliberate: even coming home under power
+        /// should mean reading the tide."*</para>
+        ///
+        /// <para>⚠ This test previously demanded the dory float at EVERY tide, which was right while the
+        /// mooring sat on the bare −4 m floor and is wrong now: it would forbid the very gate the owner
+        /// ruled in. What it holds instead is both halves of the ruling — the skiff tier clears the slip
+        /// for MOST of the cycle, AND the slip dries near spring low. The old assertion would have
+        /// passed a berth dredged to −4 m, which is exactly the "permanent open door" §5.1a rejects.</para>
         /// </summary>
         [Test]
-        public void TheDoryFloatsAtHerMooring_AtEveryPointInTheTide()
+        public void TheBerthClearsTheSkiffTierForMostOfTheCycle_AndStillDriesNearSpringLow()
         {
             float bed = _terrain.ElevationAt(
                 new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y));
 
+            // ⚠ At or a little BELOW the berth bed, not exactly on it. The carve only ever cuts DOWN
+            // (it must never raise the seabed), so where the reef already lies deeper than −1.0 m the
+            // slip simply keeps the reef's own depth — measured −1.05 m at the mooring. What must not
+            // happen is the mooring sitting on the shallow beach above the slip, or out on the −4 m
+            // floor beyond it; both would mean the dock geometry and the terrain had come apart.
+            Assert.LessOrEqual(bed, StPetersBuilder.BerthBedElevation + 0.05f,
+                "the mooring sits ABOVE the berth bed — the carve has not reached it, so the boat is " +
+                "parked on the reef instead of in the slip");
+            Assert.Greater(bed, StPetersBuilder.ReefShelfOuterElevation - 0.5f,
+                "the mooring has fallen past the reef into open water — the slip is supposed to hold " +
+                "her against the shore, and a dock zone out on the harbour floor cannot be stepped off");
+
             float draught = DoryDraughtMetres();
-            float springLow = Water(-1f);
-            float depthAtSpringLow = springLow - bed;
 
-            Assert.Greater(depthAtSpringLow, draught,
-                $"the dory ({draught:F2} m draught) is AGROUND at her own mooring at spring low: the " +
-                $"bed there is {bed:F2} m and the water only reaches {springLow:F2} m. Move the " +
-                "mooring into water that is deep at every tide, or author the dock's berth.");
+            // Half the ruling: usable for most of the cycle.
+            float fraction = FractionOfCycleAfloat(bed, draught);
+            Assert.Greater(fraction, 0.5f,
+                $"the dory ({draught:F2} m) floats at the slip for only {fraction:P0} of the cycle — " +
+                "§5.1a wants the skiff tier in and out for MOST of it, with the gate as seasoning.");
 
-            // And she must not be *so* far out that the arrival point misses the dock zone.
+            // The other half: it is a GATE, not an open door.
+            Assert.Less(Water(-1f) - bed, draught,
+                $"the slip does NOT dry at spring low (bed {bed:F2} m against {Water(-1f):F2} m of " +
+                "water) — that is a permanent open door, and §5.1a rules the dock keeps its own gentle " +
+                "tide gate so that coming home under power still means reading the tide.");
+
+            // …and she must not be so far out that the arrival point misses the dock zone.
             float arrivalToDock = Vector2.Distance(
                 new Vector2(StPetersBuilder.ArrivalPos.x, StPetersBuilder.ArrivalPos.y),
                 new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y));
@@ -183,10 +207,26 @@ namespace HiddenHarbours.Tests.EditMode
                 "the sail-home arrival must land INSIDE the dock zone — ControlSwitcher.InDockZone() " +
                 "is a pure distance test, so a metre too far and you can never step ashore (#52).");
 
-            Debug.Log($"[st-peters] mooring bed {bed:F2} m; dory draught {draught:F2} m → " +
-                      $"{depthAtSpringLow:F2} m of water at spring low, {Water(0f) - bed:F2} m at mean, " +
+            Debug.Log($"[st-peters] berth bed {bed:F2} m; dory draught {draught:F2} m → afloat " +
+                      $"{fraction:P1} of the cycle, needs the water above {bed + draught:F2} m; " +
+                      $"{Water(-1f) - bed:F2} m of water at spring low (dries), " +
                       $"{Water(1f) - bed:F2} m at spring high. Arrival is {arrivalToDock:F2} m from the " +
                       $"dock zone (radius {StPetersBuilder.DockZoneRadius}).");
+        }
+
+        /// <summary>
+        /// Fraction of one semidiurnal cycle a hull of <paramref name="draught"/> floats over a bed at
+        /// <paramref name="bed"/>. Closed form on the sine carrier, so it is the same number the doc's
+        /// own "most of the cycle" arithmetic produces rather than a sampled approximation.
+        /// </summary>
+        private static float FractionOfCycleAfloat(float bed, float draught)
+        {
+            float need = bed + draught;                  // the water level at which she lifts
+            float amp = StPetersBuilder.TideAmplitude;
+            float rel = (need - StPetersBuilder.TideMean) / amp;
+            if (rel <= -1f) return 1f;
+            if (rel >= 1f) return 0f;
+            return (Mathf.PI - 2f * Mathf.Asin(rel)) / (2f * Mathf.PI);
         }
 
         /// <summary>
@@ -219,7 +259,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Debug.Log($"[st-peters] SABOTAGE — old mooring: bed {bed:F2} m, so a {draught:F2} m dory " +
                       $"needed the tide above {floatsAbove:F2} m — the top {(1f - fractionOfSwing) * 100f:F0}% " +
-                      $"of the swing. The new mooring floats at every tide.");
+                      $"of the swing. The berth it was replaced by floats her for 57% of the cycle.");
         }
 
         private static float DoryDraughtMetres()
@@ -333,6 +373,290 @@ namespace HiddenHarbours.Tests.EditMode
                       $"{Vector2.Distance(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo):F0} m × " +
                       $"{StPetersBuilder.SandbarHalfWidth * 2f:F0} m footprint at a " +
                       $"{StPetersBuilder.ClamScatterStep} m grid — all intertidal.");
+        }
+
+        // =========================================================================================
+        // 6. ⭐ the COMMITTED painted seabed must describe THIS island
+        // =========================================================================================
+
+        // =========================================================================================
+        // 5b. ⭐ THE REEF RING AND THE ONE DOOR (§5.1a, ruled)
+        // =========================================================================================
+
+        /// <summary>
+        /// The ring must be a ring — shallow all the way round, not just where somebody sampled it. Any
+        /// gap in it and "reefs make landing hard for all but shallow draft" stops being true from one
+        /// bearing, which is the kind of hole a player finds in a minute and a test never does unless it
+        /// walks the whole circle.
+        ///
+        /// <para>⭐ <b>The ring has exactly TWO crossings, and that IS the region.</b> The berth cuts the
+        /// east door for boats; the SANDBAR rides over the shelf on the west, because the walking path
+        /// has to reach the island somehow. You leave home on foot to the west and come back under
+        /// power to the east — the two ways through the reef are the two halves of the opening arc.
+        /// (The bar was not in the first version of this test and it failed on it, which is the right
+        /// way round: a ring that had no foot crossing would have been the real bug.)</para>
+        /// </summary>
+        [Test]
+        public void TheReefShelfRingsTheWholeIsland_ExceptItsTwoCrossings()
+        {
+            Assert.Greater(StPetersBuilder.ReefShelfWidth, 0f, "the ring is ruled in (§5.1a)");
+
+            // Sample the shelf band all the way round, on the ellipse's own metric.
+            float shelfMid = StPetersBuilder.IslandRadius + StPetersBuilder.IslandFalloff
+                           + StPetersBuilder.ReefShelfWidth * 0.5f;
+            float aspect = StPetersBuilder.IslandRadiusY / StPetersBuilder.IslandRadius;
+
+            int onShelf = 0, throughBerth = 0, overTheBar = 0;
+            float shallowest = float.MinValue, deepest = float.MaxValue;
+            for (int i = 0; i < 180; i++)
+            {
+                float a = i * Mathf.PI * 2f / 180f;
+                var p = StPetersBuilder.IslandCenter +
+                        new Vector2(Mathf.Cos(a) * shelfMid, Mathf.Sin(a) * shelfMid * aspect);
+                float e = _terrain.ElevationAt(p);
+
+                // Inside the berth's carve the ground is the slip, not the reef — the boat door.
+                if (DistanceToBerth(p) < StPetersBuilder.BerthHalfWidth) { throughBerth++; continue; }
+
+                // …and where the sandbar rides over the shelf, the ground is the walking path — the
+                // foot door. Both are crossings BY DESIGN, not holes in the ring.
+                if (DistanceToSandbar(p) < StPetersBuilder.SandbarHalfWidth) { overTheBar++; continue; }
+
+                onShelf++;
+                Assert.Less(e, 0f, $"the shelf at {p} is above datum — that is beach, not reef");
+                Assert.Greater(e, StPetersBuilder.DeepHarbourElevation + 0.5f,
+                    $"the shelf at {p} has fallen to the deep floor — the ring has a HOLE there, and a " +
+                    "hull that cannot cross the reef anywhere else can simply come in on this bearing.");
+                shallowest = Mathf.Max(shallowest, e);
+                deepest = Mathf.Min(deepest, e);
+            }
+
+            Assert.Greater(onShelf, 140, "most of the circle must be reef, not crossing");
+            Assert.Greater(throughBerth, 0, "the berth must actually cut its door through the ring");
+            Assert.Greater(overTheBar, 0, "…and the sandbar must actually reach the island over it");
+
+            Debug.Log($"[st-peters] reef ring: {onShelf}/180 bearings on the shelf between " +
+                      $"{deepest:F2} and {shallowest:F2} m; {throughBerth} through the berth (the boat " +
+                      $"door, east), {overTheBar} over the sandbar (the foot door, west).");
+        }
+
+        private static float DistanceToSandbar(Vector2 p)
+        {
+            Vector2 a = StPetersBuilder.SandbarFrom, b = StPetersBuilder.SandbarTo;
+            Vector2 ab = b - a;
+            float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(1e-6f, ab.sqrMagnitude));
+            return Vector2.Distance(p, a + t * ab);
+        }
+
+        private static float DistanceToBerth(Vector2 p)
+        {
+            Vector2 a = StPetersBuilder.BerthFrom, b = StPetersBuilder.BerthTo;
+            Vector2 ab = b - a;
+            float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(1e-6f, ab.sqrMagnitude));
+            return Vector2.Distance(p, a + t * ab);
+        }
+
+        /// <summary>
+        /// ⭐ The gate the ring exists to be, measured against the real hull ladder rather than asserted
+        /// in prose. §5.1a: every skiff/punt-tier hull is ≤ 0.6 m, the first two WORKING hulls are
+        /// 1.3–1.4 m, the dragger is 2.9 m — *"the island you start on becomes the island your big boat
+        /// can never come home to."*
+        ///
+        /// <para>⚠ This test reports the band each hull lands in and asserts only the ORDERING plus the
+        /// two ends, because §5.1a itself flags the middle as a thing to look at once authored: *"the
+        /// lobster boat and Cape Islander land in a sometimes band, not a never band… If it should land
+        /// harder, raise the shelf rather than lowering the boats."* Pinning a percentage here would
+        /// freeze a number the owner has explicitly reserved.</para>
+        /// </summary>
+        [Test]
+        public void TheBerthGatesTheHullLadder_SkiffTierHomeWorkingHullsTideGatedDraggerNever()
+        {
+            float bed = _terrain.ElevationAt(
+                new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y));
+
+            var hulls = new[] { "Dory", "FishingSkiff", "Punt", "PuntUpgraded", "SportSkiff",
+                                "SportSkiffTwin", "ConsoleSkiff", "LobsterBoat", "CapeIslander" };
+
+            var report = new System.Text.StringBuilder(
+                $"[st-peters] the berth at {bed:F2} m against the fleet:\n");
+            float skiffTierWorst = 1f, workingHullBest = 0f;
+
+            foreach (string name in hulls)
+            {
+                var hull = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatHullDef>(
+                    $"Assets/_Project/Data/Boats/{name}.asset");
+                if (hull == null) continue;
+
+                float f = FractionOfCycleAfloat(bed, hull.DraughtMeters);
+                bool skiffTier = hull.DraughtMeters <= 0.6f;
+                if (skiffTier) skiffTierWorst = Mathf.Min(skiffTierWorst, f);
+                else workingHullBest = Mathf.Max(workingHullBest, f);
+
+                report.AppendLine($"  {name,-15} draught {hull.DraughtMeters:F2} m → afloat {f,6:P1} " +
+                                  $"of the cycle (needs the water above {bed + hull.DraughtMeters:F2} m)" +
+                                  (skiffTier ? "   [skiff tier]" : "   [working hull]"));
+            }
+
+            Assert.Greater(skiffTierWorst, 0.5f,
+                "every hull in the ≤ 0.6 m tier must get in and out for most of the cycle — that tier " +
+                "is the one you learn on, and home has to be usable");
+            Assert.Less(workingHullBest, skiffTierWorst,
+                "a working hull must be gated HARDER than every skiff — otherwise the geography does " +
+                "not separate the tier you learn on from the tier you graduate to, and the whole point " +
+                "of §5.1a's 0.6 m cut is lost");
+
+            Debug.Log(report.ToString());
+        }
+
+        /// <summary>
+        /// SABOTAGE, MEASURED — and this one is a bug I actually shipped into the working tree before the
+        /// tests caught it. <see cref="TidalTerrain.IslandProfile"/> composes four disjoint bands, and the
+        /// tempting way to write it is a set of <c>Lerped</c> calls combined with <c>Mathf.Max</c>. That
+        /// is wrong, because <c>Lerped</c> HOLDS its outer value for every distance past its own band: the
+        /// beach term reads −1.0 m from its toe to the horizon, so <c>max</c> pins the ENTIRE seabed at
+        /// the reef's inner depth and every hull in the game can cross anywhere.
+        /// </summary>
+        [Test]
+        public void Sabotage_ComposingTheIslandBandsWithMax_FloodsTheWholeSeabedToShelfDepth()
+        {
+            float rx = StPetersBuilder.IslandRadius, fall = StPetersBuilder.IslandFalloff;
+            float shelfEnd = rx + fall + StPetersBuilder.ReefShelfWidth;
+            float wayOut = shelfEnd + 400f;      // open sea, far past the drop-off
+
+            // What the shipped chain says out there…
+            float correct = _terrain.IslandProfile(wayOut);
+            Assert.AreEqual(StPetersBuilder.DeepHarbourElevation, correct, 0.01f,
+                "far from the island the ground must be the deep floor");
+
+            // …versus what a max() composition would have said. Each band's Lerped, evaluated out here:
+            float beachTerm = StPetersBuilder.ReefShelfInnerElevation;   // Lerped holds its outer value
+            float shelfTerm = StPetersBuilder.ReefShelfOuterElevation;   // …and so does the shelf's
+            float dropTerm = StPetersBuilder.DeepHarbourElevation;
+            float naive = Mathf.Max(beachTerm, Mathf.Max(shelfTerm, dropTerm));
+
+            Assert.AreNotEqual(correct, naive,
+                "SABOTAGE NOT DETECTED — if max() gave the same answer as the chain there would be no " +
+                "reason to write the chain, and this test should go.");
+            Assert.AreEqual(StPetersBuilder.ReefShelfInnerElevation, naive, 0.01f,
+                "the naive composition should pin the open sea at the reef's INNER depth — that is the " +
+                "failure mode, and it is worth stating exactly");
+
+            float draught = DoryDraughtMetres();
+            Assert.Greater(FractionOfCycleAfloat(naive, 2.9f), 0f,
+                "…and the consequence: even a 2.9 m dragger would float over open sea it should never " +
+                "reach, because the whole seabed had risen to the shelf");
+
+            Debug.Log($"[st-peters] SABOTAGE — band composition: at {wayOut:F0} m from the centre the " +
+                      $"chain gives {correct:F2} m (the floor); a max() of the three band terms gives " +
+                      $"{naive:F2} m — the reef's inner depth, spread to the horizon. Dory draught " +
+                      $"{draught:F2} m would then float everywhere, and so would the dragger.");
+        }
+
+        private static PaintedHeightMap Seabed() =>
+            UnityEditor.AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
+                "Assets/_Project/Data/Terrain/StPetersSeabed.asset");
+
+        /// <summary>
+        /// ⭐ THE GUARD AGAINST THE DRIFT THAT ALREADY HAPPENED ONCE. The painted seabed is the shipped
+        /// coast — <b>paint = sail</b> (ADR 0014), so the same map decides what the water draws AND where
+        /// the player can wade. When the region grew to 760 × 520 m the committed map went on describing
+        /// a 160 × 120 m world, and nothing said so: it decodes fine, it just describes somewhere else.
+        ///
+        /// <para>Checking the map's own rect against the <see cref="RegionDef"/> is the cheap half.
+        /// Checking the TEXTURE's dimensions against the region's derived texel grid is the half that
+        /// also catches Unity <b>silently downscaling</b> an oversized import — the failure mode where
+        /// every count still matches and only a dimension assert notices.</para>
+        /// </summary>
+        [Test]
+        public void TheCommittedSeabed_CoversTheRegion_AtTheRegionsOwnResolution()
+        {
+            var map = Seabed();
+            Assert.IsNotNull(map, "the committed StPetersSeabed seed must exist (ADR 0014)");
+            var region = AssetDatabase();
+
+            Assert.AreEqual(region.WorldCenter.x, map.WorldCenter.x, 0.01f, "seabed centre x vs the region");
+            Assert.AreEqual(region.WorldCenter.y, map.WorldCenter.y, 0.01f, "seabed centre y vs the region");
+            Assert.AreEqual(region.WorldSizeMeters.x, map.WorldSize.x, 0.01f,
+                "the seabed must cover the WHOLE region — a smaller rect means the coast the player " +
+                "sails is not the coast the region is");
+            Assert.AreEqual(region.WorldSizeMeters.y, map.WorldSize.y, 0.01f);
+
+            var tex = map.HeightTexture;
+            Assert.IsNotNull(tex, "the seed must reference its external height PNG");
+            Assert.IsTrue(tex.isReadable,
+                "the height texture must be CPU-readable or the sim cannot decode it at all (ADR 0014)");
+
+            Assert.AreEqual(region.SeabedTexels.x, tex.width,
+                $"the committed PNG is {tex.width} px wide but the region derives " +
+                $"{region.SeabedTexels.x} — either the bake is stale, or Unity DOWNSCALED an oversized " +
+                "import and the only thing that would ever notice is this assert.");
+            Assert.AreEqual(region.SeabedTexels.y, tex.height, "…and its height");
+
+            Assert.LessOrEqual(Mathf.Max(tex.width, tex.height), RegionDef.MaxSeabedTexels,
+                "over the cap the import is downscaled behind your back");
+
+            // The encoding range must BRACKET the terrain, or the deepest water and the highest land are
+            // both clipped to the same value and the coast flattens at its extremes.
+            Assert.LessOrEqual(map.MinElevation, StPetersBuilder.DeepHarbourElevation,
+                "R=0 must reach at least the deep-harbour floor");
+            Assert.GreaterOrEqual(map.MaxElevation, StPetersBuilder.IslandElevation,
+                "R=1 must reach at least the island plateau");
+
+            float texelX = map.WorldSize.x / tex.width, texelY = map.WorldSize.y / tex.height;
+            Assert.AreEqual(texelX, texelY, 0.01f,
+                "the texels must be SQUARE — a stretched grid samples the two axes at different " +
+                "densities, which is the bug #320 removed");
+
+            Debug.Log($"[st-peters] committed seabed: {tex.width} × {tex.height} texels over " +
+                      $"{map.WorldSize.x} × {map.WorldSize.y} m = {texelX:F2} m/texel, elevation " +
+                      $"{map.MinElevation}..{map.MaxElevation} m, readable={tex.isReadable}, " +
+                      $"{tex.width * tex.height / 1024} KiB R8.");
+        }
+
+        /// <summary>
+        /// …and it must be a bake of THIS coast, not merely a correctly-sized one. Decoded elevations are
+        /// compared against the analytic terrain at points chosen to sit in FLAT interiors — island,
+        /// bar crest, channel bed, open floor — where bilinear sampling is exact and only the R8
+        /// quantisation contributes error.
+        /// </summary>
+        [Test]
+        public void TheCommittedSeabed_DecodesToTheAnalyticCoastItWasBakedFrom()
+        {
+            var map = Seabed();
+            Assert.IsNotNull(map);
+            PaintedHeightField field = map.Field;
+            Assert.IsNotNull(field, "the height texture must decode (readable + linear)");
+
+            // One R8 step over the encoded range, plus a hair for the round-trip.
+            float tolerance = (map.MaxElevation - map.MinElevation) / 255f + 0.02f;
+
+            var probes = new (string what, Vector2 p)[]
+            {
+                ("island interior", StPetersBuilder.IslandCenter),
+                ("bar crest", Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo, 0.3f)),
+                ("channel bed", Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo,
+                                             StPetersBuilder.ChannelAlong)),
+                ("open floor N", new Vector2(0f, 230f)),
+                ("open floor E", new Vector2(360f, 0f)),
+                ("the mooring", new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y)),
+            };
+
+            var report = new System.Text.StringBuilder(
+                "[st-peters] committed seabed vs the analytic coast it was baked from:\n");
+            foreach (var (what, p) in probes)
+            {
+                float analytic = _terrain.ElevationAtZones(p);
+                float painted = field.ElevationAt(p);
+                report.AppendLine($"  {what,-16} {p}  analytic {analytic,6:F2} m  painted {painted,6:F2} m " +
+                                  $" Δ {Mathf.Abs(painted - analytic):F3} m");
+                Assert.AreEqual(analytic, painted, tolerance,
+                    $"{what}: the committed seabed disagrees with the analytic terrain by more than one " +
+                    "quantisation step — the bake is of a different coast, so what the shader draws is " +
+                    "not what the tide bares (paint = sail, ADR 0014).");
+            }
+
+            Debug.Log(report + $"  tolerance {tolerance:F3} m (one R8 step over " +
+                      $"{map.MaxElevation - map.MinElevation} m + round-trip).");
         }
     }
 }
