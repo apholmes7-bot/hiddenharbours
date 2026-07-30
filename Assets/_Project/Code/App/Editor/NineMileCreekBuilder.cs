@@ -27,6 +27,11 @@ namespace HiddenHarbours.App.Editor
     /// scene that the <see cref="RegionSceneLoader"/> loads additively (CLAUDE.md §3), and it adds the
     /// Nine Mile Creek + Coddle Cove <see cref="RegionDef"/> assets and a return passage.
     ///
+    /// <para>The wharf itself lives in <see cref="NineMileCreekWharf"/> — the deck, its fittings and the
+    /// breakwater arm, built from the baked wharf tile kit and registered as standable floor. It is a
+    /// separate file for the same reason the island's dock is: the geometry is pure and public so a test
+    /// can assert the quay against the fence and the dock zone without opening a scene.</para>
+    ///
     /// SCOPE / TODO: this scene currently carries its own Main Camera + AudioListener so it can be
     /// opened and reviewed standalone. When the additive Cove↔Nine Mile Creek transition is fully wired (player
     /// persistence + unloading the origin region — a bootstrap/GreyboxBuilder change, out of scope here),
@@ -54,8 +59,6 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
-        const string ArtWharfDeck= "Assets/_Project/Art/Tilesets/WharfDeck.png";
-        const string ArtWharfPost= "Assets/_Project/Art/Sprites/WharfPost.png";
         const string ArtShipwright = "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png";
         const string ArtFishStall  = "Assets/_Project/Art/Sprites/Buildings/FishBuyerStall.png";
         const string ArtHouseRed   = "Assets/_Project/Art/Sprites/Buildings/NineMileCreekHouseRed.png";
@@ -229,15 +232,18 @@ namespace HiddenHarbours.App.Editor
             // The harbour plane now carries Water.mat + a WaterSurface baking the terrain above, so the
             // depth gradient / foam / wet-dry clip follow the live deterministic tide against the quay.
             // The old static look (a tinted flat tile + a drifting-marker scatter) is RETIRED — the shader
-            // surface moves for real. Sorting -4: ABOVE the floodable ground strips (Quay -7 / QuayEdge -6
-            // / PublicWharf -5, whose always-dry parts show through the shader's clip) and BELOW the
-            // posts (3) / buildings (2) / player (10).
+            // surface moves for real. Sorting -5 (the island's number): ABOVE the floodable ground strips
+            // (Quay -7 / QuayEdge -6, whose always-dry parts show through the shader's clip) and BELOW
+            // everything that STANDS OVER the water — the wharf deck's band (-4..1, see
+            // NineMileCreekWharf), the buildings (2) and the player (10). The Sea used to sit at -4
+            // because the wharf was a floodable ground strip beneath it; now it is a structure on piles,
+            // so the water goes under it.
             var waterSprite = MakeSquareSprite(ArtSprites + "/Square.png");
             var seaTile = LoadSpriteAny(ArtSea);
             var water = new GameObject("Sea");
             water.transform.position = new Vector3(NineMileCreekSeaCenter.x, NineMileCreekSeaCenter.y, 0f);
             var wsr = water.AddComponent<SpriteRenderer>();
-            wsr.sortingOrder = -4;
+            wsr.sortingOrder = -5;
             if (seaTile != null)
             {
                 wsr.sprite = seaTile;
@@ -292,17 +298,18 @@ namespace HiddenHarbours.App.Editor
             // public wharf is a peninsula reaching EAST into the deep harbour (open water is to the east).
             MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     new Vector2(-10f, 0f), new Vector2(10f, 30f), -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
             MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, 30f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
-            // The public wharf deck reaching EAST out into the deep harbour (head = the east tip, x=4).
-            MakeTiledGround("PublicWharf", LoadSpriteAny(ArtWharfDeck), new Vector2(0f, 0f), new Vector2(8f, 6f), -5, waterSprite, new Color(0.55f, 0.40f, 0.24f));
 
-            // Pilings along the wharf's north & south edges, out toward the EAST head (fenders at the head).
-            var postSprite = LoadSpriteAny(ArtWharfPost);
-            for (int i = 0; i < 3; i++)
-            {
-                float px = i * 2f; // 0, 2, 4 (out toward the east head)
-                MakePost(postSprite, new Vector2(px,  3f), waterSprite);
-                MakePost(postSprite, new Vector2(px, -3f), waterSprite);
-            }
+            // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
+            // The public wharf reaching EAST out into the deep harbour (head = the east tip, x=4) is now
+            // built from the BAKED kit: 48 'quay' cells drawn back to front with one sorting order per
+            // row, the kit's own fittings on the mooring edge, a 'crib' breakwater arm sheltering the
+            // basin from the south, and — the part that is not dressing — the deck registered as a
+            // StandablePlatform so the on-foot sim stands on the concrete instead of in the dredged -6 m
+            // harbour under it. Same rectangle as before (x∈[-4,4], y∈[-3,3]): the shoreline dip, the
+            // dock zone and the arrival park are all authored around it, so it is re-dressed, not
+            // re-sited. Null-tolerant — an unimported kit warns and leaves the quay unbuilt rather than
+            // half-built.
+            NineMileCreekWharf.Place(terrain);
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
             var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), new Vector2(-8f,  3f), waterSprite, new Color(0.50f, 0.42f, 0.34f));
@@ -469,7 +476,12 @@ namespace HiddenHarbours.App.Editor
                       "General Store (rod), and a Shipwright DORY YARD with the DAMAGED dory (buy + repair) — " +
                       "data-wired to the persistent wallet proxy; their buy/repair screens are ui-ux/gameplay's. " +
                       "Clams sell at the Fish Buyer (baseline Shellfish demand). The return passage heads EAST " +
-                      "back to Coddle Cove. Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
+                      "back to Coddle Cove. THE WHARF IS NOW A WHARF: the flat WharfDeck.png rectangle is " +
+                      "retired for the baked wharf tile kit (NineMileCreekWharf) — 'quay' concrete drawn " +
+                      "back to front, bollards/tyres/ladder/pileheads on the mooring edge, a 'crib' " +
+                      "breakwater arm to the south, and the deck registered as a StandablePlatform so you " +
+                      "stand ON the planks over the dredged harbour. " +
+                      "Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
                       "the harbour now runs the St Peters tide-driven model — a RectTidalTerrain (dredged -6 m " +
                       "floor, steep quay edge) + the layered WaterSurface shader on the Sea plane; the waterline " +
                       "rises/falls against the quay off the live deterministic tide and the SAME height gates " +
@@ -758,18 +770,11 @@ namespace HiddenHarbours.App.Editor
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); }
         }
 
-        static void MakePost(Sprite sprite, Vector2 pos, Sprite fallback)
-        {
-            var go = new GameObject("WharfPost");
-            go.transform.position = new Vector3(pos.x, pos.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 3;
-            if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
-            else { sr.sprite = fallback; sr.color = new Color(0.45f, 0.32f, 0.20f); go.transform.localScale = new Vector3(0.5f, 1.5f, 1f); }
-            // Solid piling so the boat bumps the pilings (cozy, no damage), mirroring the cove's MakePost.
-            var col = go.AddComponent<CircleCollider2D>();
-            col.radius = 0.3f;   // slim piling
-        }
+        // (The loose WharfPost.png pilings that used to line the deck edges are retired: the kit draws the
+        // quay's own structure — pileheads at the exposed corners, tyres down the face — and doubling them
+        // with a second set of hand-made posts read as two wharves in one place. Nothing is lost in
+        // collision terms: the Shoreline fence below is what makes the wharf solid to a boat, and it
+        // already traces the same rectangle.)
 
         // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the WEST land
         // waterline (x=-4) and dipping EAST around the public wharf deck so the wharf reads as a solid
