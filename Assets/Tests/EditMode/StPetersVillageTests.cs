@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -363,6 +364,350 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(a[i].Name, b[i].Name);
                 Assert.AreEqual(a[i].Position, b[i].Position);
             }
+        }
+
+        // =================================================================================
+        //  THE FIVE BUILDINGS — §5.1's three houses, the school and the general store
+        //
+        //  These are AUTHORED sites, so a test that re-stated the constants would prove nothing.
+        //  Every clearance below is re-derived from the BUILDING CONTRACT'S OWN FOOTPRINTS, so a
+        //  re-bake that changes a footprint, or a site nudged by hand, fails here with the number
+        //  to use — and the reasons the arc has the shape it does are each pinned separately.
+        // =================================================================================
+
+        static IReadOnlyList<StPetersVillage.Site> Sites => StPetersVillage.Sites;
+
+        /// <summary>The footprint radius of a site's building, from the contract. Fails the test rather
+        /// than returning 0 for an unbaked one — an unbaked village is a missing village.</summary>
+        static float Radius(StPetersVillage.Site site)
+        {
+            var p = VillageBuildingCatalog.Find(site.Key);
+            Assert.IsTrue(p.IsValid,
+                $"'{site.Key}' is not in the building contract. The five M1 builds ship baked (#352) — " +
+                "if this fired, the contract is stale or the key was camel-cased from a label.");
+            return StPetersVillage.FootprintRadiusMetres(p);
+        }
+
+        [Test]
+        public void TheVillageIsTheFiveBuildingsTheDocsAskFor_AndTheyAreAllBaked()
+        {
+            // §5.1: "three clapboard houses, a one-room school, and a general store."
+            Assert.AreEqual(5, Sites.Count, "five buildings: three houses, a school, a store");
+            CollectionAssert.AreEquivalent(
+                new[] { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage" },
+                Sites.Select(s => s.Key).ToArray(),
+                "the village's buildings drifted from the kit's M1 set");
+
+            foreach (var site in Sites)
+            {
+                var p = VillageBuildingCatalog.Find(site.Key);
+                Assert.IsTrue(p.IsValid, $"{site.Key} is not baked");
+                Assert.IsFalse(string.IsNullOrWhiteSpace(site.Reason),
+                    $"{site.Key} has no authoring reason. These sites are hand-placed identity, not a " +
+                    "scatter — if there is no reason for one, it should have been hashed.");
+            }
+            Debug.Log("[stpeters-village] " +
+                      VillageBuildingCatalog.Summary(VillageBuildingCatalog.Scan()));
+        }
+
+        [Test]
+        public void EveryBuildingStandsOnGroundThatIsDryAtEveryTide()
+        {
+            foreach (var site in Sites)
+            {
+                float e = _terrain.ElevationAt(site.Position);
+                Assert.Greater(e, SpringHighWater,
+                    $"{site.Key} at {site.Position} sits at {e:0.00} m — at or below spring high water. " +
+                    "A house does not flood.");
+
+                float d = TidalTerrain.IslandDistance(site.Position, StPetersBuilder.IslandCenter,
+                                                     StPetersBuilder.IslandRadius,
+                                                     StPetersBuilder.IslandRadiusY);
+                Assert.LessOrEqual(d, StPetersBuilder.IslandRadius,
+                    $"{site.Key} is past the plateau edge — a house belongs on the island, not its beach");
+            }
+        }
+
+        [Test]
+        public void NoTwoBuildingsOverlap_AndThereIsALaneBetweenThem()
+        {
+            // Footprints as CIRCLES (the half-diagonal), because the facing is derived and a quarter-turned
+            // building presents its diagonal — see StPetersVillage's remarks.
+            for (int i = 0; i < Sites.Count; i++)
+            for (int j = i + 1; j < Sites.Count; j++)
+            {
+                float gap = Vector2.Distance(Sites[i].Position, Sites[j].Position)
+                            - Radius(Sites[i]) - Radius(Sites[j]);
+                Assert.GreaterOrEqual(gap, StPetersVillage.LaneGap,
+                    $"{Sites[i].Key} and {Sites[j].Key} are {gap:0.00} m apart at their footprint edges — " +
+                    $"under the {StPetersVillage.LaneGap} m lane. Two buildings closer than that read as " +
+                    "one building with a seam.");
+            }
+        }
+
+        [Test]
+        public void NoBuildingCrowdsTheHearth_TheGreen_OrTheProps()
+        {
+            Vector2 cottage = StPetersBuilder.CottagePos;
+            Vector2 spawn = StPetersBuilder.StartSpawnPos;
+            var props = new[]
+            {
+                ("Ginny", (Vector2)StPetersBuilder.GinnyPos),
+                ("Ned's letter", (Vector2)StPetersBuilder.NedsLetterPos),
+                ("the freezer", (Vector2)StPetersBuilder.FreezerPos),
+            };
+
+            foreach (var site in Sites)
+            {
+                float r = Radius(site);
+
+                Assert.GreaterOrEqual(Vector2.Distance(site.Position, cottage),
+                                      r + StPetersVillage.CottageFootprintRadius,
+                    $"{site.Key} is inside Ginny's cottage. The hearth is the middle of the village and " +
+                    "nothing may crowd it.");
+
+                // §6.0: "you wake up IN the village" — the spawn is the green, and it stays open ground.
+                Assert.GreaterOrEqual(Vector2.Distance(site.Position, spawn),
+                                      r + StPetersWoods.SpawnClearingRadius,
+                    $"{site.Key} is inside the start spawn's clearing. The first thing the player sees " +
+                    "should be the village, not a wall.");
+
+                foreach (var (name, p) in props)
+                    Assert.GreaterOrEqual(Vector2.Distance(site.Position, p),
+                                          r + StPetersVillage.PropClearance,
+                        $"{site.Key} has {name} inside its footprint");
+            }
+        }
+
+        [Test]
+        public void NoBuildingBlocksTheViewOfTheBar_BecauseTheCrossingIsTheRegionsOneLesson()
+        {
+            // The same clearance the trees keep, and it matters MORE for a building: §6.0's single teeth-
+            // of-tide lesson is the bar, and you have to be able to SEE it from the island. This is the
+            // constraint that decides the village's whole shape — it rules out the entire west side, which
+            // is why the arc opens south-east instead of ringing the green evenly.
+            foreach (var site in Sites)
+            {
+                float d = StPetersShoreMap.DistanceToSegment(
+                    site.Position, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
+                Assert.GreaterOrEqual(d, Radius(site) + StPetersWoods.CrossingClearance,
+                    $"{site.Key} stands {d:0.0} m from the bar's centre-line, inside the " +
+                    $"{StPetersWoods.CrossingClearance} m the crossing keeps clear. A house across the " +
+                    "approach hides the one thing this island has to teach.");
+            }
+
+            // …and the sabotage: prove the constraint BITES rather than being satisfied by accident. A
+            // house on the natural west side of the green would fail it.
+            var westOfTheGreen = new Vector2(-125f, 8f);
+            float wd = StPetersShoreMap.DistanceToSegment(
+                westOfTheGreen, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
+            Assert.Less(wd, StPetersWoods.CrossingClearance,
+                "a site west of the green was supposed to be inside the bar's clearance — if it is not, " +
+                "this test is not actually constraining the layout and the arc's shape is unexplained.");
+        }
+
+        [Test]
+        public void TheClearingContainsEveryFootprint_SoNothingIsPlantedThroughAWall()
+        {
+            // 🔴 THE ONE THAT MADE THIS PR EDIT StPetersWoods. Trees, shrubs and flowers all skip the
+            // village clearing, so containment is what keeps vegetation out of the buildings — and at the
+            // 34 m the clearing was authored at (#345, when the village WAS the cottage and three props)
+            // the outermost house stood 7 m outside it. Derived from the contract, so a re-bake with bigger
+            // footprints fails here with the number to use.
+            float need = StPetersVillage.RequiredClearingRadius();
+            Assert.Greater(need, 0f, "nothing baked — this assert would be vacuous");
+            Assert.LessOrEqual(need, StPetersWoods.VillageClearingRadius,
+                $"the village's furthest footprint reaches {need:0.00} m from the cottage but the clearing " +
+                $"is {StPetersWoods.VillageClearingRadius:0.00} m. Widen " +
+                "StPetersWoods.VillageClearingRadius to at least that, or bring the site in — as it " +
+                "stands, trees and shrubs plant through that building's walls.");
+
+            // Per building, so the failure names the one that is out rather than just the worst.
+            foreach (var site in Sites)
+                Assert.LessOrEqual(
+                    Vector2.Distance(site.Position, StPetersBuilder.CottagePos) + Radius(site),
+                    StPetersWoods.VillageClearingRadius,
+                    $"{site.Key}'s footprint reaches outside the village clearing");
+
+            Debug.Log($"[stpeters-village] furthest footprint reaches {need:0.00} m from the cottage; " +
+                      $"clearing is {StPetersWoods.VillageClearingRadius:0.0} m " +
+                      $"({StPetersWoods.VillageClearingRadius - need:0.00} m of headroom).");
+        }
+
+        [Test]
+        public void NothingIsPlantedInsideABuilding()
+        {
+            // The empirical other half of the containment argument above: plant the real layers and check
+            // no tree, shrub or flower actually lands in a wall. Containment says it CANNOT happen; this
+            // says it DIDN'T. Both, because the structural argument is only as good as its premise that
+            // every planter routes through IsPlantable.
+            var species = new List<string>
+            {
+                "RedSpruce", "BlackSpruce", "BalsamFir", "WhitePine", "WhiteCedar",
+                "WhiteBirch", "RedMaple", "RedOak", "TremblingAspen",
+            };
+            var contract = ShrubCatalog.Load();
+            Assert.IsNotNull(contract);
+            var habitatOf = contract.Species.ToDictionary(e => e.Key, e => e.Habitat);
+
+            var planted = new List<(string what, Vector2 at)>();
+            planted.AddRange(StPetersWoods.ScatterTrees(_terrain, species, _ => 4)
+                                          .Select(t => (t.Species, t.Position)));
+            planted.AddRange(StPetersWoods.ScatterFlowers(
+                                 _terrain, new List<string> { "Buttercup", "LupinBlue", "BlueFlag" })
+                                          .Select(f => (f.Species, f.Position)));
+            planted.AddRange(StPetersShrubs.Scatter(
+                                 _terrain,
+                                 new List<string> { "LowbushBlueberry", "SweetGale", "Meadowsweet",
+                                                    "BeakedHazelnut", "WildRose", "Raspberry" },
+                                 s => habitatOf.TryGetValue(s, out string h) ? h : null,
+                                 ShrubCatalog.Variants)
+                                          .Select(s => (s.Species, s.Position)));
+
+            Assert.IsNotEmpty(planted, "nothing was planted at all — this check would be vacuous");
+
+            foreach (var site in Sites)
+            {
+                float r = Radius(site);
+                foreach (var (what, at) in planted)
+                    Assert.Greater(Vector2.Distance(at, site.Position), r,
+                        $"a {what} at {at} is standing inside {site.Key}'s footprint");
+            }
+            Debug.Log($"[stpeters-village] {planted.Count} planted trees/shrubs/flowers checked against " +
+                      $"{Sites.Count} footprints — none inside a wall.");
+        }
+
+        [Test]
+        public void EveryDoorFacesTheGreen_AndTheDerivationSurvivesAReBakeWithFewerFacings()
+        {
+            // ⭐ The facing is DERIVED from the green, never a hard-coded cell index, because the kit ships
+            // 8 facings today and the owner may halve that — a re-bake, not a code change. So the real
+            // assert is not "which cell" but "whichever cell points the door closest to the green", at any
+            // facing count.
+            Vector2 green = StPetersBuilder.VillageGreen;
+            var used = new List<int>();
+
+            foreach (var site in Sites)
+            {
+                var p = VillageBuildingCatalog.Find(site.Key);
+                int facing = StPetersVillage.FacingFor(p, site);
+                Assert.That(facing, Is.InRange(0, p.Entry.facings - 1),
+                    $"{site.Key} was given facing {facing} of {p.Entry.facings}");
+                used.Add(facing);
+
+                // No other facing may point the door closer to the green than the chosen one.
+                float chosen = DoorErrorDegrees(p, site.Position, green, facing);
+                for (int f = 0; f < p.Entry.facings; f++)
+                    Assert.LessOrEqual(chosen, DoorErrorDegrees(p, site.Position, green, f) + 1e-3f,
+                        $"{site.Key} faces {facing} but {f} points its door closer to the green");
+
+                // Half a cell is the worst a nearest-cell rounding can be off by.
+                Assert.LessOrEqual(chosen, 180f / p.Entry.facings + 1e-3f,
+                    $"{site.Key}'s door is {chosen:0.0}° off the green — worse than the " +
+                    $"{180f / p.Entry.facings:0.0}° a nearest-of-{p.Entry.facings} rounding allows");
+            }
+
+            // A village where every door happened to land on the same cell would satisfy everything above
+            // and would mean the derivation is not actually reading the geometry.
+            Assert.Greater(used.Distinct().Count(), 2,
+                "every door landed on one of two facings — the buildings stand in an arc, so their doors " +
+                "must point in genuinely different directions: " + string.Join(",", used));
+
+            // And the derivation must degrade rather than break at a coarser bake. Re-derive at 4 facings
+            // with a stub and check each still lands within half a cell.
+            foreach (var site in Sites)
+            {
+                var real = VillageBuildingCatalog.Find(site.Key).Entry;
+                var coarse = new VillageBuildingKit.Entry
+                {
+                    key = real.key, facings = 4,
+                    doorY = new[] { 0f, 0f, 1f, 0f },      // front = cell 2 at this count
+                    footprintWidthMetres = real.footprintWidthMetres,
+                    footprintLengthMetres = real.footprintLengthMetres,
+                };
+                int f4 = StPetersVillage.FacingToward(coarse, site.Position, green);
+                Assert.That(f4, Is.InRange(0, 3),
+                    $"{site.Key} at 4 facings resolved to {f4} — the derivation assumed 8 somewhere");
+            }
+
+            Debug.Log($"[stpeters-village] doors: " +
+                      string.Join(", ", Sites.Select((s, i) => $"{s.Key} d{used[i]}")) +
+                      $" — all turned toward the green at {green}.");
+        }
+
+        /// <summary>How far off, in degrees, a facing points a building's door from the target.</summary>
+        static float DoorErrorDegrees(VillageBuildingCatalog.Placement p, Vector2 from, Vector2 target,
+                                      int facing)
+        {
+            float perCell = 360f / p.Entry.facings;
+            // Inverse of StPetersVillage.FacingToward: the front facing points at the camera (−90°).
+            float doorDegrees = -90f + (facing - VillageBuildingKit.FrontFacing(p.Entry)) * perCell;
+            Vector2 d = target - from;
+            return Mathf.Abs(Mathf.DeltaAngle(doorDegrees, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg));
+        }
+
+        [Test]
+        public void EveryBuildingSpriteThePlacerAsksFor_ExistsOnTheCommittedSheet_OnTheContractsPivot()
+        {
+            // 🔴 THE SILENT ONE, and the pattern this lane now reaches for every time it places baked art:
+            // Place() looks its sprite up BY NAME and SKIPS on a miss, so a naming mismatch does not throw
+            // — it builds a village with no buildings in it. The two ends of the name come from different
+            // places (the slicer writes them; the catalog composes them), and there is no way to catch it
+            // with a scene build: RegionBuildGuard.ConfirmOverwrite cancels in batch mode and still exits 0.
+            foreach (var site in Sites)
+            {
+                var p = VillageBuildingCatalog.Find(site.Key);
+                Assert.IsTrue(p.IsValid);
+
+                int facing = StPetersVillage.FacingFor(p, site);
+                var sprite = VillageBuildingCatalog.LoadFacing(p, facing);
+                Assert.IsNotNull(sprite,
+                    $"the placer would ask for facing {facing} of {site.Key} and " +
+                    $"{p.SheetPath} does not have it. A miss here places NOTHING and logs a warning " +
+                    "nobody reads.");
+                Assert.AreEqual(VillageBuildingKit.SpriteNameFor(site.Key, facing), sprite.name);
+
+                // The pivot is the ground CENTRE — which is why Place() applies no offset. Bottom-centre
+                // would sink this building metres into the dirt, and the contract says how many.
+                Vector2 want = VillageBuildingKit.NormalizedPivot(p.Entry);
+                var got = new Vector2(sprite.pivot.x / sprite.rect.width,
+                                      sprite.pivot.y / sprite.rect.height);
+                Assert.AreEqual(want.x, got.x, 1e-3f, $"{sprite.name}: pivot.x vs the contract");
+                Assert.AreEqual(want.y, got.y, 1e-3f,
+                    $"{sprite.name}: pivot.y vs the contract. Bottom-centre would sink it " +
+                    $"{VillageBuildingCatalog.BelowGroundMetres(p.Entry, VillageBuildingCatalog.PixelsPerUnit()):0.00} m.");
+
+                // Every OTHER facing has to exist too — the owner can re-face a placed building in the
+                // scene, and SetFacing returning false would silently leave it pointing the old way.
+                Assert.AreEqual(p.Entry.facings, VillageBuildingCatalog.LoadAllFacings(p).Count,
+                    $"{site.Key} is missing at least one facing's sprite");
+            }
+            Debug.Log("[stpeters-village] every sprite the placer asks for exists on the committed sheets, " +
+                      "on the contract's ground-centre pivot, with all facings present.");
+        }
+
+        [Test]
+        public void TheVillageIsDeterministic_AndItsSitesAreAuthoredNotHashed()
+        {
+            var a = StPetersVillage.Sites;
+            var b = StPetersVillage.Sites;
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+            {
+                Assert.AreEqual(a[i].Key, b[i].Key);
+                Assert.AreEqual(a[i].Position, b[i].Position);
+            }
+
+            // The village must read as ONE small place — §6.0's "the whole world the size of a low-tide
+            // walk". Measured across the buildings themselves rather than the props.
+            float widest = 0f;
+            for (int i = 0; i < a.Count; i++)
+            for (int j = i + 1; j < a.Count; j++)
+                widest = Mathf.Max(widest, Vector2.Distance(a[i].Position, a[j].Position));
+            Assert.Less(widest, 80f,
+                $"the village's two furthest buildings are {widest:0.0} m apart — that is a hamlet strung " +
+                "along a road, not a low-tide walk");
+            Debug.Log($"[stpeters-village] widest span between two buildings: {widest:0.0} m.");
         }
     }
 }

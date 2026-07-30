@@ -245,6 +245,38 @@ namespace HiddenHarbours.App.Editor
         // itself floods twice a day. It is exactly where you come off the flats with a bucket of clams.
         public static readonly Vector3 WetBucketPos  = new Vector3(-164f, 0f, 0f);
 
+        // --- THE FIVE BUILDINGS (§5.1: "three clapboard houses, a one-room school, a general store") ----
+        // ⭐ AUTHORED, NOT SCATTERED (ADR 0002: author identity, simulate variety). A village is the one
+        // thing on this island that must not come out of a hash — its shape is its identity.
+        //
+        // They stand in an ARC around the hearth and the green, opening south-east, because that is the
+        // only shape the site allows and it happens to be the shape a real one takes. Four things bind at
+        // once and the arc is what is left: the cottage sits in the middle (nothing may crowd it), the
+        // start spawn's own clearing is the green (§6.0's "you wake up IN the village"), the whole west
+        // side is inside the sandbar's 40 m sightline — the bar is the region's ONE lesson and you must be
+        // able to see it from the island — and each footprint needs its own diagonal of clearance because
+        // the owner may re-bake with fewer facings and a quarter-turned building is deeper than a face-on
+        // one. Solved against all four rather than eyeballed; StPetersVillageTests re-derives every margin
+        // from the building contract's own footprints, so it fails with the number to use if a site moves.
+        //
+        // The lane runs east–west north of the cottage: SCHOOL at its west end (a schoolhouse stands a
+        // little apart), the STORE at its centre where the path from the spawn meets it, the FARMHOUSE —
+        // the biggest of them — closing the east end. Then the two smaller houses come round the green:
+        // the SALTBOX on the east side and the SAGE COTTAGE on the south, the last house before the shore.
+        public static readonly Vector3 SchoolPos         = new Vector3(-117f,  33f, 0f);
+        public static readonly Vector3 GeneralStorePos   = new Vector3(-101f,  31f, 0f);
+        public static readonly Vector3 WhiteFarmhousePos = new Vector3( -84f,  26f, 0f);
+        public static readonly Vector3 RedSaltboxPos     = new Vector3( -80f,   8f, 0f);
+        public static readonly Vector3 SageCottagePos    = new Vector3( -95f, -20f, 0f);
+
+        // Where the village LOOKS. Every door is turned toward this point rather than given a hard-coded
+        // facing index, so the village faces itself — and so a re-bake with four facings instead of eight
+        // re-derives the nearest cell instead of silently pointing five doors at a wall (the kit's own
+        // warning: nothing in placement may assume a facing count). It is the ground between the hearth
+        // and the green: the midpoint of the cottage and the start spawn, which is where the life is.
+        public static Vector2 VillageGreen =>
+            (new Vector2(CottagePos.x, CottagePos.y) + new Vector2(StartSpawnPos.x, StartSpawnPos.y)) * 0.5f;
+
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
         // ⭐ THE DOCK IS ON THE EAST END, opposite the sandbar (§5.1a, ruled 2026-07-23): you walk out the
         // west and you come home under power to the east. The arrival point sits within DockZoneRadius of
@@ -839,6 +871,14 @@ namespace HiddenHarbours.App.Editor
             // dredged (boats need the depth) and only the ON-FOOT reads consult the deck.
             StPetersWharf.Place(terrain);
 
+            // --- THE VILLAGE, at last (§5.1's three houses + the school + the general store) --------------
+            // The last item on the owner's dressing list. #345 relocated the village's PROPS but deferred
+            // the buildings themselves because the building kit had no consumer; #352 built one, so the
+            // school, the store and the three clapboard houses can finally stand where the docs put them.
+            // AUTHORED sites, one facing derived per building so every door turns toward the green — see
+            // StPetersVillage for why the arc is the only shape the site allows.
+            int villageBuildings = StPetersVillage.Place(terrain);
+
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
             // M2), the self-built dialogue panel, the proximity INTERACT driver, and the light one-line
@@ -939,8 +979,9 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
 
             Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Shrubs} shrubs + " +
-                      $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and the village re-sited " +
-                      "beside the start spawn.");
+                      $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and a village " +
+                      $"of {villageBuildings} buildings — the school, the store and the houses — standing " +
+                      "round the green beside the start spawn.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
                       $"({coast.MaterialSummary()}). The island has ground everywhere for the first time " +
