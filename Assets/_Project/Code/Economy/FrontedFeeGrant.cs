@@ -48,7 +48,10 @@ namespace HiddenHarbours.Economy
         /// <summary>The stable, append-only default flag key for the fronted clam-licence fee.</summary>
         public const string DefaultGrantKey = "ginny_fronted_clam_fee";
 
-        private void Start() => GrantOnce();
+        // Deferred to the moment the loaded save is authoritative (M1 §7.8's shell) — at the title the
+        // blob is still the outgoing game's, so its grant flag says nothing about the new one. It also
+        // means the money lands in a wallet the restore has already brought to its saved balance.
+        private void Start() => SaveReady.Run(this, () => GrantOnce());
 
         /// <summary>
         /// Front the fee into the live wallet once. Returns the ₲ actually granted (0 if it had already been

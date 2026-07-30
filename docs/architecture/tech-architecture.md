@@ -210,9 +210,9 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
 - **Load-restore (VS-08, shipped).** Loading a save no longer just fills `Current` — it is **re-applied to
   the live game** so a save resumes exactly where it was saved. `SaveService` exposes
   `ISaveService.LoadedExistingSave` (true only for a resumed game, so a *new* game keeps its authored start
-  hour). The composition root's `GameRoot.Start()` runs `Core.SaveRestore.ApplyToLiveServices(...)` — the
-  inverse of `SaveService.SnapshotLiveState` — which pushes the loaded blob back through the **same Core
-  service APIs** gameplay uses (CLAUDE.md rule 4):
+  hour). The composition root hands to `Core.ShellFlow`, whose "enter the world" step runs
+  `Core.SaveRestore.ApplyToLiveServices(...)` — the inverse of `SaveService.SnapshotLiveState` — which
+  pushes the loaded blob back through the **same Core service APIs** gameplay uses (CLAUDE.md rule 4):
   - **Clock** → `IGameClock.SeekTo(double)` (additive, default-no-op interface method; `GameClock` seeks its
     backing time and re-baselines its rollover guards so it does **not** replay the skipped days).
   - **Money** → brought to the saved balance via `IWallet.Add(delta)` (so `MoneyChanged` fires for the HUD).
@@ -226,6 +226,22 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
   drives them is, and the environment is recomputed from `(worldSeed, restored gameTime)`. Restore is
   service-injected + static, so the mapping is fully headless-testable (`SaveRestoreTests`), with a PlayMode
   round-trip + tide-determinism guard (`SaveLoadRestorePlayTests`).
+- **The shell (M1 §7.8) — one boot path, two phases.** Boot does **not** land in the world. `GameRoot.Start()`
+  calls `Core.ShellFlow.EnterTitle()`, which stops the clock (`IGameClock.IsPaused` — the project's ONE pause
+  path, no second clock) and publishes `ShellPhaseChanged`; the save stays **unapplied** until the player picks
+  **Continue** (`ShellFlow.ContinueGame()` → the restore above) or **New game**
+  (`ISaveService.BeginNewGame()` → a fresh blob written to disk immediately, then the same restore with a null
+  blob). The title is a **state of the persistent core, not a second scene**, so the persistent-core +
+  additive-region contract (ADR 0004) does not fork; `GameRoot._bootToTitle` turns it off for the dev
+  region-iteration cores. The UI side (`UI.ShellPresenter`, self-installing like `SaveService`) renders the
+  phase, so App never references UI.
+  - Two consequences worth knowing before you add boot code: **`SaveService` refuses to write while at the
+    title** (`SaveService.WritesAllowed`) — the live services still hold boot defaults, so an
+    autosave-on-quit there would overwrite a real save with an empty one; and **anything that seeds itself
+    from the save must do so on the `GameLoaded` edge, not in `Start()`** — at the title the loaded blob is
+    the *outgoing* game's. `Core.SaveReady.Run(host, action)` is the one-liner for that (used by
+    `StartingGear` / `StartingBait` / `StartingPots` / `FrontedFeeGrant`); `LicenseService` rebuilds its held
+    set on the same edge.
 
 ## 7. Tick & performance model
 

@@ -27,7 +27,9 @@ namespace HiddenHarbours.Economy
                  "Stable, append-only key.")]
         [SerializeField] private string _grantedFlagKey = "pot_starter_kit_granted";
 
-        private void Start() => GrantOnce();
+        // Deferred to the moment the loaded save is authoritative (M1 §7.8's shell) — at the title the
+        // blob is still the outgoing game's, so its grant flag says nothing about the new one.
+        private void Start() => SaveReady.Run(this, () => GrantOnce());
 
         /// <summary>Grant the starter pot kit into the live save once. Public + returns the number of
         /// kit entries applied so EditMode tests can drive it without the scene lifecycle. Re-granting

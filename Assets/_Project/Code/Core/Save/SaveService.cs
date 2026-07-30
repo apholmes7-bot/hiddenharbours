@@ -83,10 +83,41 @@ namespace HiddenHarbours.Core
 
         // ---- ISaveService ----------------------------------------------------------------------
 
+        /// <summary>
+        /// May a snapshot-and-write happen right now? NO while the shell is at the title (M1 §7.8):
+        /// until the world is entered, the live services still hold boot defaults — clock at the authored
+        /// start hour, an empty wallet — while <see cref="Current"/> holds the player's real, loaded game.
+        /// Snapshotting that and writing it would quietly overwrite a real save with an empty one, and
+        /// quitting from the title is a perfectly normal thing to do.
+        ///
+        /// <para>New Game is deliberately NOT gated by this: <see cref="BeginNewGame"/> writes its fresh
+        /// blob straight to the store, because starting over is the one write that must land while the
+        /// player is still standing at the title.</para>
+        /// </summary>
+        public static bool WritesAllowed => !ShellFlow.AtTitle;
+
         public void Save()
         {
+            if (!WritesAllowed) return;
+
             if (Current == null) Current = SaveMigration.NewGame();
             SnapshotLiveState();
+            SaveStore.Write(Current, _path);
+        }
+
+        /// <summary>
+        /// Start over on the one slot (M1 §7.8). The in-memory blob is replaced by a fresh one and the
+        /// file is overwritten NOW — a new game that only existed in memory would be undone by the next
+        /// autosave-on-quit, or worse, resurrected whole on the next launch.
+        ///
+        /// <para>Deliberately no <see cref="SnapshotLiveState"/> on the way out: this is not a save of
+        /// the session being abandoned, it is the erasure of it. The live services are then brought to
+        /// the fresh blob's state by the shell's restore, not the other way round.</para>
+        /// </summary>
+        public void BeginNewGame()
+        {
+            Current = SaveMigration.NewGame();
+            LoadedExistingSave = false;
             SaveStore.Write(Current, _path);
         }
 

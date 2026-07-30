@@ -45,6 +45,7 @@ namespace HiddenHarbours.UI
         [SerializeField] private bool _persistAcrossScenes = true;
 
         // ---- runtime labels (built in Awake) ------------------------------------------------
+        private GameObject _canvasGo;       // the whole band, hidden while the shell's title page is up
         private Text _clockLabel;
         private Text _tideLabel;
         private Text _windLabel;
@@ -106,6 +107,11 @@ namespace HiddenHarbours.UI
             EnsureTidePanelInput();
             if (_persistAcrossScenes)
                 DontDestroyOnLoad(gameObject);
+
+            // A HUD band across the top of the title page would read as a broken screen, not a game that
+            // hasn't started. The shell's phase decides (M1 §7.8); on a rig with no shell running the
+            // phase is Playing, so the band is up exactly as it always was.
+            ApplyShellPhase(ShellFlow.Phase);
         }
 
         // The tide table's opener rides along with the always-on HUD (VS-06). Installing it here rather
@@ -128,6 +134,7 @@ namespace HiddenHarbours.UI
             EventBus.Subscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Subscribe<CatchSold>(OnCatchSold);
             EventBus.Subscribe<FishCaught>(OnFishCaught);
+            EventBus.Subscribe<ShellPhaseChanged>(OnShellPhaseChanged);
             _subscribed = true;
         }
 
@@ -137,7 +144,20 @@ namespace HiddenHarbours.UI
             EventBus.Unsubscribe<MoneyChanged>(OnMoneyChanged);
             EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             EventBus.Unsubscribe<FishCaught>(OnFishCaught);
+            EventBus.Unsubscribe<ShellPhaseChanged>(OnShellPhaseChanged);
             _subscribed = false;
+        }
+
+        private void OnShellPhaseChanged(ShellPhaseChanged e) => ApplyShellPhase(e.Phase);
+
+        /// <summary>Show the band in the world, hide it at the title. Toggling the CANVAS (not this
+        /// component) keeps every label, cache and subscription intact, so coming back out of the shell
+        /// costs nothing and rebuilds nothing.</summary>
+        private void ApplyShellPhase(ShellPhase phase)
+        {
+            if (_canvasGo == null) return;
+            bool show = phase != ShellPhase.Title;
+            if (_canvasGo.activeSelf != show) _canvasGo.SetActive(show);
         }
 
         private void Update()
@@ -484,6 +504,7 @@ namespace HiddenHarbours.UI
             var canvasGo = new GameObject("HUD_Canvas",
                 typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             canvasGo.transform.SetParent(transform, false);
+            _canvasGo = canvasGo;   // the handle the shell hides the band by
 
             var canvas = canvasGo.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;

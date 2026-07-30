@@ -13,13 +13,21 @@ namespace HiddenHarbours.App
     /// Setup: put this on a "GameRoot" object in Bootstrap.unity with a GameClock and an
     /// EnvironmentService component, and (optionally) a PlayerWallet, then assign them below.
     ///
-    /// <para><b>Load-restore (VS-08).</b> <see cref="Awake"/> wires the services; <see cref="Start"/> then
-    /// re-applies the loaded save through <see cref="SaveRestore"/> (clock seeked to the saved instant,
-    /// wallet brought to the saved balance, licences granted) and publishes <see cref="GameLoaded"/> so the
-    /// owned fleet re-grants its hull. Restore runs in <c>Start</c> — not <c>Awake</c> — so it lands AFTER
-    /// every scene object's <c>Awake</c> (the fleet has subscribed) and after the self-installing
-    /// <c>LicenseService</c> registers (AfterSceneLoad). It runs once at launch (GameRoot is persistent), not
-    /// on a region hop.</para>
+    /// <para><b>Load-restore (VS-08).</b> <see cref="Awake"/> wires the services; the save is then
+    /// re-applied through <see cref="SaveRestore"/> (clock seeked to the saved instant, wallet brought to
+    /// the saved balance, licences granted) and <see cref="GameLoaded"/> published so the owned fleet
+    /// re-grants its hull. That restore is now the last step of <see cref="ShellFlow"/>'s "enter the
+    /// world", so the title page and this root drive one identical sequence. It is triggered from
+    /// <c>Start</c> — not <c>Awake</c> — so it lands AFTER every scene object's <c>Awake</c> (the fleet has
+    /// subscribed) and after the self-installing <c>LicenseService</c> registers (AfterSceneLoad). It runs
+    /// once at launch (GameRoot is persistent), not on a region hop.</para>
+    ///
+    /// <para><b>The shell (M1 §7.8).</b> Boot ends at the TITLE, not in the world: <c>Start</c> hands to
+    /// <see cref="ShellFlow.EnterTitle"/>, which stops the clock and leaves the save unapplied until the
+    /// player picks New Game or Continue. This is ONE boot path — the title is a state of the existing
+    /// persistent core, never a second scene, so the persistent-core + additive-region contract
+    /// (ADR 0004) does not fork. <see cref="_bootToTitle"/> turns it off for a core that must land
+    /// straight in the world (the dev/region iteration cores), which is exactly the pre-shell behaviour.</para>
     /// </summary>
     [DefaultExecutionOrder(-1000)]
     public class GameRoot : MonoBehaviour
@@ -33,6 +41,12 @@ namespace HiddenHarbours.App
                  "bridge, the hull rocking and the seakeeping forces all read the ONE derivation " +
                  "(ADR 0018 §(5)).")]
         [SerializeField] private GameConfig _config;
+
+        [Tooltip("Boot to the TITLE (New Game / Continue / Quit) instead of straight into play — the " +
+                 "M1 §7.8 shell. Untick for a core that must land in the world immediately (the dev " +
+                 "region-iteration cores): the save is then applied at Start exactly as it was before " +
+                 "the shell existed.")]
+        [SerializeField] private bool _bootToTitle = true;
 
         private void Awake()
         {
@@ -56,20 +70,17 @@ namespace HiddenHarbours.App
 
         private void Start()
         {
-            // Re-apply the loaded save into the live services, then announce GameLoaded (VS-08 load-restore).
-            // Only a RESUMED game (an existing save on disk) feeds its blob in — a new game passes null so its
-            // authored start hour stands (a fresh blob's gameTime is 0; seeking to it would reset to midnight).
-            // Either way GameLoaded fires, so subscribers (the owned fleet) have one code path.
-            bool resumed = GameServices.Save != null && GameServices.Save.LoadedExistingSave;
-            SaveData data = resumed ? GameServices.Save.Current : null;
-
-            SaveRestore.ApplyToLiveServices(
-                data,
-                GameServices.Clock,
-                GameServices.Wallet,
-                GameServices.Licenses);
+            // The shell decides when the world is entered. At the title the clock stops and the save is
+            // held unapplied until the player chooses; ContinueGame() is the same load-restore this method
+            // used to run inline (resumed blob or null for a fresh game, then GameLoaded either way).
+            if (_bootToTitle) ShellFlow.EnterTitle();
+            else ShellFlow.ContinueGame();
         }
 
-        private void OnDestroy() => GameServices.Reset();
+        private void OnDestroy()
+        {
+            GameServices.Reset();
+            ShellFlow.Reset();   // the shell belongs to this boot; don't leave a phase behind for the next
+        }
     }
 }
