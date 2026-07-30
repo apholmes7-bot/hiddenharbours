@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: bait.capelin
   DisplayName: Capelin
   Flavor: Small, silver and oily. When they roll ashore in their thousands the cod come in behind them - so a netful of capelin is a netful of cod, one step removed.
-  Price: 5
+  Price: 2
   FavorsSpeciesIds:
   - fish.atlantic_cod
   - fish.mackerel

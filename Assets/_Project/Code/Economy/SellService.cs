@@ -22,6 +22,12 @@ namespace HiddenHarbours.Economy
     /// context overloads exist so tests pin exact numbers without wiring services. Legacy items
     /// (SpoilPerDay 0) price bit-identically to the pre-freshness path.</para>
     ///
+    /// <para><b>Where you sell matters (plan-to-m1 §7.5).</b> Every price also carries the outlet's
+    /// <see cref="Market.PriceLevel"/> — what this buyer pays per unit before any glut. It is read once per
+    /// sale (it is per-market, not per-category) and is the lever that makes the island general store pay
+    /// less than Nine Mile Creek for the same bucket, from the very first unit. Demand alone could not do
+    /// that: at zero supply the <c>S/D</c> term is 1 for every D.</para>
+    ///
     /// <para>Distinct from <see cref="FishBuyer.SellAll"/>, which prices a whole batch at one pre-glut
     /// price (instant "sell the lot"). This path glutts within the sale so the player sees the price
     /// fall per unit — the wharf now opens this screen instead of the instant sale.</para>
@@ -76,6 +82,8 @@ namespace HiddenHarbours.Economy
             var items = hold.Items;
             float supply = 0f, demand = 1f;
             bool marketRead = false;
+            // The outlet's price level is per-MARKET, not per-category, so it is read once (§7.5).
+            float priceLevel = market != null ? market.PriceLevel : 1f;
 
             int total = 0;
             int taken = 0;
@@ -90,7 +98,7 @@ namespace HiddenHarbours.Economy
                     marketRead = true;
                 }
                 total += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, supply, taken,
-                                                   demand, spoil.ValueMultiplier(it));
+                                                   demand, spoil.ValueMultiplier(it), priceLevel);
                 taken++;
             }
             return total;
@@ -113,6 +121,7 @@ namespace HiddenHarbours.Economy
             var keep = new List<CatchItem>(items.Count);
             float supply = 0f, demand = 1f;
             bool marketRead = false;
+            float priceLevel = market != null ? market.PriceLevel : 1f;   // per-outlet, not per-category
             FishCategory soldCategory = default;   // read off the first sold unit (one species = one category)
 
             int total = 0;
@@ -133,7 +142,7 @@ namespace HiddenHarbours.Economy
                     marketRead = true;
                 }
                 total += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, supply, sold,
-                                                   demand, spoil.ValueMultiplier(it));
+                                                   demand, spoil.ValueMultiplier(it), priceLevel);
                 sold++;
             }
             if (sold == 0) return 0;
@@ -163,6 +172,7 @@ namespace HiddenHarbours.Economy
             var keep = new List<CatchItem>(hold.Items.Count);
             int grandTotal = 0;
             int soldCount = 0;
+            float priceLevel = market != null ? market.PriceLevel : 1f;   // per-outlet, not per-category
             var items = hold.Items;
             for (int i = 0; i < items.Count; i++)
             {
@@ -173,7 +183,7 @@ namespace HiddenHarbours.Economy
                 float demand = market != null ? market.DemandFor(it.Category) : 1f;
                 int already = soldPerCategory.TryGetValue(it.Category, out int s) ? s : 0;
                 grandTotal += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, baseSupply,
-                                                        already, demand, spoil.ValueMultiplier(it));
+                                                        already, demand, spoil.ValueMultiplier(it), priceLevel);
                 soldPerCategory[it.Category] = already + 1;
                 soldCount++;
             }

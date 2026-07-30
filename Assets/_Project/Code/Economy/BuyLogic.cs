@@ -13,7 +13,13 @@ namespace HiddenHarbours.Economy
         License,
         /// <summary>A pot purchase (<see cref="PotShop"/>.TryBuy) — counted stock, always re-buyable.
         /// Appended (the enum is a shipped contract; earlier values never shift).</summary>
-        Pot
+        Pot,
+        /// <summary>A bait purchase by the lot (<see cref="BaitShop"/>.TryBuy) — counted, always re-buyable.
+        /// Appended (the enum is a shipped contract; earlier values never shift).</summary>
+        Bait,
+        /// <summary>A consumable supply purchase (<see cref="SupplyShop"/>.TryBuy) — ice today, §7.3's lids
+        /// next; counted, always re-buyable. Appended.</summary>
+        Supply
     }
 
     /// <summary>
@@ -60,6 +66,16 @@ namespace HiddenHarbours.Economy
         /// (you can always buy another), so the only gate is money.</summary>
         public static BuyQuote Pot(int price, int money)
             => new BuyQuote(BuyRowKind.Pot, price, owned: false, affordable: money >= price);
+
+        /// <summary>Quote a bait lot: bait is consumable, counted stock — never "owned out", so the only
+        /// gate is money. <paramref name="lotPrice"/> is the whole lot (unit price × lot size).</summary>
+        public static BuyQuote Bait(int lotPrice, int money)
+            => new BuyQuote(BuyRowKind.Bait, lotPrice, owned: false, affordable: money >= lotPrice);
+
+        /// <summary>Quote a consumable supply (ice): counted stock, never "owned out" — the only gate is
+        /// money. Buying more ice when you already have some is the normal case, not a refusal.</summary>
+        public static BuyQuote Supply(int price, int money)
+            => new BuyQuote(BuyRowKind.Supply, price, owned: false, affordable: money >= price);
 
         /// <summary>
         /// Quote a boat offer through its whole life:

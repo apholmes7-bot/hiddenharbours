@@ -269,6 +269,8 @@ namespace HiddenHarbours.Economy
                 case BuyRowKind.Gear:       ((GearShop)row.Vendor).TryBuy();        break;
                 case BuyRowKind.License:    ((LicenseVendor)row.Vendor).TryBuy();   break;
                 case BuyRowKind.Pot:        ((PotShop)row.Vendor).TryBuy();         break;
+                case BuyRowKind.Bait:       ((BaitShop)row.Vendor).TryBuy();       break;
+                case BuyRowKind.Supply:     ((SupplyShop)row.Vendor).TryBuy();     break;
             }
             Refresh();   // ownership/affordability changed → rows, states, money all re-read
         }

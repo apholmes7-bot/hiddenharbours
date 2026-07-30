@@ -35,8 +35,11 @@ namespace HiddenHarbours.Economy
 
     /// <summary>
     /// Builds the buy screen's rows from whatever vendor components sit on a stall GameObject
-    /// (VS-16): every <see cref="Shipwright"/>, <see cref="GearShop"/>, <see cref="PotShop"/>, and
-    /// <see cref="LicenseVendor"/> contributes one row from its wired Def asset. Ownership is read through the Core seams the
+    /// (VS-16): every <see cref="Shipwright"/>, <see cref="GearShop"/>, <see cref="PotShop"/>,
+    /// <see cref="BaitShop"/>, <see cref="SupplyShop"/>, and <see cref="LicenseVendor"/> contributes one row
+    /// from its wired Def asset. That is what lets ONE counter be a whole general store (plan-to-m1 §7.5):
+    /// stack a gear shop, a bait shop, a supply shop and a licence vendor on a single stall and the screen
+    /// lists the rod, the bait, the ice and the clam licence together, with no new UI. Ownership is read through the Core seams the
     /// vendors themselves use (<see cref="SaveData"/>.OwnedBoats/OwnedGear, <see cref="RepairLedger"/>,
     /// <see cref="ILicenseService"/>) so the screen and the purchase can never disagree. Runs only when
     /// the screen opens or refreshes after a purchase — never per frame.
@@ -85,6 +88,24 @@ namespace HiddenHarbours.Economy
                     BuyLogic.Pot(o.Price, money)));
             }
 
+            foreach (var bs in stall.GetComponents<BaitShop>())
+            {
+                BaitDef b = bs.Bait;
+                if (b == null) continue;
+                // Bait is counted, repeatable stock like pots — never "owned out". The row prices the whole
+                // LOT (nobody buys a single capelin) and the Note carries how many are already in the box.
+                into.Add(new BuyRow(bs, b.Id, BaitRowNameFor(b), b.Flavor, BaitNoteFor(save, b),
+                    BuyLogic.Bait(BaitShop.LotPriceOf(b), money)));
+            }
+
+            foreach (var ss in stall.GetComponents<SupplyShop>())
+            {
+                SupplyDef s = ss.Supply;
+                if (s == null) continue;
+                into.Add(new BuyRow(ss, s.Id, s.DisplayName, s.Flavor, SupplyNoteFor(save, s),
+                    BuyLogic.Supply(s.Price, money)));
+            }
+
             foreach (var lv in stall.GetComponents<LicenseVendor>())
             {
                 LicenseDef l = lv.License;
@@ -110,6 +131,35 @@ namespace HiddenHarbours.Economy
             return wet > 0
                 ? "You own " + owned.ToString(ci) + " - " + wet.ToString(ci) + " in the water."
                 : "You own " + owned.ToString(ci) + ".";
+        }
+
+        // "Capelin ×10" — the row name says what a purchase actually gets you, so the lot price beside it
+        // is not mistaken for the unit price. (Loc-seam literals, HudStrings convention.)
+        private static string BaitRowNameFor(BaitDef b)
+        {
+            int lot = BaitShop.LotSizeOf(b);
+            return lot > 1
+                ? b.DisplayName + " x" + lot.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                : b.DisplayName;
+        }
+
+        // Stock note for a bait row: how many are already in the tackle box, read through the same Core
+        // wallet the purchase writes (TackleBox), so screen and stock can never disagree.
+        private static string BaitNoteFor(SaveData save, BaitDef b)
+        {
+            int have = TackleBox.BaitCount(save, b.Id);
+            return have <= 0
+                ? ""
+                : "You have " + have.ToString(System.Globalization.CultureInfo.InvariantCulture) + " in the box.";
+        }
+
+        // Stock note for a supply row (ice), read through SupplyLocker — the same locker the purchase writes.
+        private static string SupplyNoteFor(SaveData save, SupplyDef s)
+        {
+            int have = SupplyLocker.Count(save, s.Id);
+            return have <= 0
+                ? ""
+                : "You have " + have.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".";
         }
 
         // Condition note for a boat row (loc-seam literals, same convention as HudStrings: centralise

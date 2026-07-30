@@ -101,6 +101,17 @@ namespace HiddenHarbours.Core
         /// <summary>Ginny's FREEZER's catch (the third hold the §7.3 slice created — banked catch
         /// must not evaporate on reload). Same record shape. Added in v5.</summary>
         public List<HeldCatchDto> FreezerCatch = new();
+
+        /// <summary>Consumable SUPPLIES the player owns, as counted stock keyed by a stable SupplyDef id
+        /// (e.g. "supply.ice") — the third counted wallet beside <see cref="BaitStock"/> and
+        /// <see cref="PotStock"/>, read and written only through <see cref="SupplyLocker"/>.
+        ///
+        /// <para><b>Why its own list and not more gear.</b> <see cref="OwnedGear"/> is presence-only ("you
+        /// have a rod or you don't"); a bag of ice is spent. Bait's list is species-facing and keyed by
+        /// BaitId, so ice does not belong in it either. This one list is deliberately GENERIC so the rest of
+        /// the §7.3 cold chain (lids, and later fuel cans) lands as new Def assets rather than new save
+        /// fields — one schema bump for the shape, none for the content. Added in v7 (plan-to-m1 §7.5).</para></summary>
+        public List<SupplyStock> SupplyStock = new();
     }
 
     /// <summary>
@@ -228,6 +239,29 @@ namespace HiddenHarbours.Core
         public PotStock(string trapDefId, int count)
         {
             TrapDefId = trapDefId;
+            Count = count;
+        }
+    }
+
+    /// <summary>
+    /// One consumable supply the player owns, with a quantity — the generic counted-stock sibling of
+    /// <see cref="BaitStock"/>/<see cref="PotStock"/>, keyed by the stable SupplyDef id (e.g. "supply.ice").
+    /// Generic on purpose: ice is the first, lids are next (§7.3's cold chain), and each is a Def asset, not
+    /// another save field. A list of these is JsonUtility-friendly where a Dictionary is not (the
+    /// <see cref="SaveFlag"/> reason).
+    /// </summary>
+    [Serializable]
+    public struct SupplyStock
+    {
+        /// <summary>Stable supply Def id (e.g. "supply.ice").</summary>
+        public string SupplyId;
+
+        /// <summary>How many of this supply the player holds.</summary>
+        public int Count;
+
+        public SupplyStock(string supplyId, int count)
+        {
+            SupplyId = supplyId;
             Count = count;
         }
     }
