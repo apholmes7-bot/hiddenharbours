@@ -416,6 +416,7 @@ namespace HiddenHarbours.UI
             rt.sizeDelta = new Vector2(w, h);
 
             var t = go.GetComponent<Text>();
+            t.text = text;                 // the whole point of the label — see the note below
             t.font = DefaultFont();
             t.fontSize = fontSize;
             t.alignment = align;

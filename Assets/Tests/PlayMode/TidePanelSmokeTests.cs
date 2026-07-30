@@ -136,6 +136,22 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Page_IsNotBlank()
+        {
+            // The bluntest possible guard, and it earned its place: the first build of this panel wired
+            // every label's position, size, font and colour but never assigned its TEXT, so the page
+            // rendered as a blank sheet of paper while every structural assertion still passed. A label
+            // that exists but says nothing is worse than no label — it looks like the feature works.
+            TidePanel.Open();
+            yield return null;
+
+            string[] labels = PageText();
+            Assert.IsNotEmpty(labels, "the page built some labels");
+            Assert.IsTrue(labels.Any(s => !string.IsNullOrWhiteSpace(s)),
+                "at least one of them has words on it — a page of empty labels is a blank sheet");
+        }
+
+        [UnityTest]
         public IEnumerator Page_PrintsTodayAndTomorrowWithHighAndLowWaters()
         {
             TidePanel.Open();
@@ -183,7 +199,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             string[] afterBuild = PageText();
-            Assert.IsNotEmpty(afterBuild, "the page drew something to compare");
+            Assert.IsTrue(afterBuild.Any(s => !string.IsNullOrWhiteSpace(s)),
+                "the page drew something with words on it to compare");
 
             yield return null;
             yield return null;
