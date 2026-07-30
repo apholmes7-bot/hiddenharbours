@@ -40,17 +40,42 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly int Facings;
 
         /// <summary>
-        /// True when <see cref="OptsJs"/> came from the rig's PRESETS table, so the bake can run the
-        /// "did the preset actually apply?" tripwire. A hand-dialled build has nothing to compare
-        /// against — matching the default is a legitimate thing for the owner to ask for.
+        /// True when <see cref="OptsJs"/> came from the rig's PRESETS table, so the bake can check the
+        /// name exists and the table entry is not empty.
         /// </summary>
         public readonly bool IsPreset;
 
+        /// <summary>
+        /// Refuse the bake if this build renders byte-identical to the rig's DEFAULT.
+        ///
+        /// <para>Always on for a preset (see <see cref="FromPreset"/> for the bug it exists to catch).
+        /// OFF by default for a hand-dialled build, because the Building Studio's owner may legitimately
+        /// bake the default — but a build that is <i>committed to a kit</i> should opt in: a dialled set
+        /// that resolves to the default means every key in it was silently ignored, which is the same
+        /// failure wearing different clothes.</para>
+        /// </summary>
+        public readonly bool RequireDistinctFromDefault;
+
+        /// <summary>
+        /// Largest sheet dimension the pack may produce, or 0 for
+        /// <see cref="BuildingRigBaker.MaxTextureSize"/> (4096 — Unity's hard cap).
+        ///
+        /// <para>A kit that means to import at Unity's DEFAULT 2048 cap must say 2048 here, because the
+        /// two limits fail in opposite directions: over 4096 the bake refuses, but between 2048 and 4096
+        /// the bake succeeds and the IMPORT silently downscales — with the sprite count still coming out
+        /// right. Choosing the grid against the number the consumer will actually import at is the only
+        /// way the two cannot disagree.</para>
+        /// </summary>
+        public readonly int MaxSheetDimension;
+
         public BuildingBakeRequest(string rigKey, string optsJs, string label, string outputFolder,
-                                   string baseName, int facings = 8, bool isPreset = false)
+                                   string baseName, int facings = 8, bool isPreset = false,
+                                   bool requireDistinctFromDefault = false, int maxSheetDimension = 0)
         {
             RigKey = rigKey; OptsJs = optsJs; Label = label; OutputFolder = outputFolder;
             BaseName = baseName; Facings = facings; IsPreset = isPreset;
+            RequireDistinctFromDefault = requireDistinctFromDefault;
+            MaxSheetDimension = maxSheetDimension;
         }
 
         /// <summary>
@@ -61,17 +86,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// the DEFAULT build with no error at all. This is the one place that spelling is decided.</para>
         /// </summary>
         public static BuildingBakeRequest FromPreset(string rigKey, string preset, string globalName,
-                                                     string outputFolder, string baseName, int facings = 8)
+                                                     string outputFolder, string baseName, int facings = 8,
+                                                     int maxSheetDimension = 0)
             => new BuildingBakeRequest(
                 rigKey,
                 $"Object.assign({{}},{globalName}.PRESETS['{preset.Replace("'", "\\'")}'])",
-                preset, outputFolder, baseName, facings, isPreset: true);
+                preset, outputFolder, baseName, facings, isPreset: true,
+                requireDistinctFromDefault: true, maxSheetDimension: maxSheetDimension);
 
-        /// <summary>Bake a hand-dialled build (the Building Studio's "Bake this build").</summary>
+        /// <summary>
+        /// Bake a hand-dialled build (the Building Studio's "Bake this build", or a kit's committed
+        /// build table). <paramref name="requireDistinctFromDefault"/> opts into the
+        /// did-the-options-actually-apply tripwire — a kit should pass true, the studio should not.
+        /// </summary>
         public static BuildingBakeRequest FromOptions(string rigKey, string optsJs, string label,
-                                                      string outputFolder, string baseName, int facings = 8)
+                                                      string outputFolder, string baseName,
+                                                      int facings = 8,
+                                                      bool requireDistinctFromDefault = false,
+                                                      int maxSheetDimension = 0)
             => new BuildingBakeRequest(rigKey, optsJs, label, outputFolder, baseName, facings,
-                                       isPreset: false);
+                                       isPreset: false,
+                                       requireDistinctFromDefault: requireDistinctFromDefault,
+                                       maxSheetDimension: maxSheetDimension);
     }
 
     public sealed class BuildingBakeResult
@@ -96,6 +132,22 @@ namespace HiddenHarbours.Tools.RigBaking
         public int SheetWidth, SheetHeight;
         public long PngBytes;
         public double RenderMilliseconds, TotalMilliseconds;
+
+        /// <summary>Building footprint the rig reports, in metres — the honest-scale number a
+        /// consumer checks its placement against.</summary>
+        public double FootprintWidthMeters, FootprintLengthMeters;
+
+        /// <summary>The rig's own <c>PX</c> (pixels per metre). Read from the rig rather than taken
+        /// from <c>ArtImportPipeline.PixelsPerUnit</c>, so a kit contract records the scale the sheet
+        /// was actually drawn at instead of the scale we hope it was.</summary>
+        public int PixelsPerMetre;
+
+        /// <summary>
+        /// Per-facing door anchor in CROPPED cell px, top-left origin — the same values the sidecar
+        /// carries, surfaced on the result so a kit contract can be written from one bake call without
+        /// re-parsing the JSON it just wrote.
+        /// </summary>
+        public double[] DoorX, DoorY;
 
         /// <summary>Pixels the crop saved, as a fraction of the native cell area.</summary>
         public double CropSaving =>
@@ -175,17 +227,25 @@ namespace HiddenHarbours.Tools.RigBaking
                 NativeCellWidth = geo.Width,
                 NativeCellHeight = geo.Height,
                 Facings = req.Facings,
+                PixelsPerMetre = (int)host.EvaluateNumber($"{g}.PX"),
             };
 
-            // The did-it-actually-apply tripwire only makes sense for a preset: a hand-dialled build
-            // that happens to match the rig default is a legitimate thing for the owner to ask for.
-            if (req.IsPreset) AssertPresetApplies(host, g, optsJs, req.Label, geo.Width, geo.Height);
-            else AssertRenders(host, g, optsJs, req.Label, geo.Width, geo.Height);
+            // The geometry guard runs for EVERY build, so the probe and the crop can both assume the
+            // render came back at the rig's declared cell size.
+            AssertRenders(host, g, optsJs, req.Label, geo.Width, geo.Height);
+
+            // The did-it-actually-apply tripwire. Always on for a preset; opt-in for a dialled build,
+            // because the Studio may legitimately bake the rig default (see the request's docs).
+            if (req.IsPreset) AssertPresetIsNotEmpty(host, g, req.Label);
+            if (req.RequireDistinctFromDefault)
+                AssertDiffersFromDefault(host, g, optsJs, req.Label, req.IsPreset);
 
             // ---- MEASURE the convention, then cross-check the catalog's declaration ---------------
             var probe = BuildingRigAzimuthProbe.Measure(host, g, optsJs, geo.Width, geo.Height, geo.PivotX);
             result.MeasuredConvention = probe.Convention;
             result.ConventionReport = probe.Report;
+            result.FootprintWidthMeters = probe.WidthMeters;
+            result.FootprintLengthMeters = probe.LengthMeters;
 
             if (probe.Convention != entry.DeclaredConvention)
                 throw new InvalidOperationException(
@@ -247,7 +307,7 @@ namespace HiddenHarbours.Tools.RigBaking
             result.PivotY = geo.PivotY - yMin;
 
             // ---- Pack ------------------------------------------------------------------------------
-            ChooseGrid(cw, ch, req.Facings, out int cols, out int rows);
+            ChooseGrid(cw, ch, req.Facings, out int cols, out int rows, req.MaxSheetDimension);
             result.Columns = cols; result.Rows = rows;
 
             int pw = cols * cw, ph = rows * ch;
@@ -310,19 +370,26 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// Widest grid that keeps both sheet dimensions under the texture cap, preferring FEWER rows so
-        /// the sheet stays wide and short (which is how every other turntable sheet in the repo reads).
-        /// Throws if even one column per row is too big — silently emitting an over-cap sheet is the
-        /// failure this whole baker exists to avoid.
+        /// Widest grid that keeps both sheet dimensions under the cap, preferring FEWER rows so the sheet
+        /// stays wide and short (which is how every other turntable sheet in the repo reads). Throws if
+        /// even one column per row is too big — silently emitting an over-cap sheet is the failure this
+        /// whole baker exists to avoid.
+        ///
+        /// <para><paramref name="maxDimension"/> defaults to <see cref="MaxTextureSize"/> (4096, Unity's
+        /// hard limit). A kit whose consumer imports at the DEFAULT 2048 cap must pass 2048 —
+        /// see <see cref="BuildingBakeRequest.MaxSheetDimension"/> for why the two numbers cannot be
+        /// allowed to differ.</para>
         /// </summary>
-        public static void ChooseGrid(int cellW, int cellH, int cells, out int cols, out int rows)
+        public static void ChooseGrid(int cellW, int cellH, int cells, out int cols, out int rows,
+                                      int maxDimension = 0)
         {
-            int maxCols = Mathf.Max(1, MaxTextureSize / Mathf.Max(1, cellW));
+            int cap = maxDimension > 0 ? Mathf.Min(maxDimension, MaxTextureSize) : MaxTextureSize;
+            int maxCols = Mathf.Max(1, cap / Mathf.Max(1, cellW));
 
             for (int c = Mathf.Min(cells, maxCols); c >= 1; c--)
             {
                 int r = Mathf.CeilToInt(cells / (float)c);
-                if (r * cellH <= MaxTextureSize)
+                if (r * cellH <= cap && c * cellW <= cap)
                 {
                     cols = c; rows = r;
                     return;
@@ -330,9 +397,10 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             throw new InvalidOperationException(
-                $"A {cellW}×{cellH} cell cannot hold {cells} facings under the {MaxTextureSize} px cap " +
-                "in any grid. The crop did not shrink this build enough — check the preset actually " +
-                "resolved, since an uncropped cell means the silhouette filled the frame.");
+                $"A {cellW}×{cellH} cell cannot hold {cells} facings under the {cap} px cap in any grid. " +
+                "Either the crop did not shrink this build enough (check the options actually resolved — " +
+                "an uncropped cell means the silhouette filled the frame), or the kit is asking for more " +
+                "facings than one texture of this cell size can carry.");
         }
 
         static void BlitCropped(byte[] src, int srcW, int srcH, int cropX, int cropY, int cw, int ch,
@@ -380,6 +448,11 @@ namespace HiddenHarbours.Tools.RigBaking
             bool hasStacks = host.EvaluateBool($"Array.isArray({g}.anchors(0,{optsJs}).stacks)");
             string stackKey = hasStacks ? "stacks" : "chimneys";
 
+            // Surfaced on the result as well as written to the sidecar, so a kit contract can be built
+            // from one bake call instead of re-parsing the JSON this method has just written.
+            r.DoorX = new double[req.Facings];
+            r.DoorY = new double[req.Facings];
+
             var sb = new StringBuilder();
             sb.AppendLine("{");
             sb.AppendLine($"  \"sheet\": \"{Path.GetFileName(r.AssetPath)}\",");
@@ -414,6 +487,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 double doorX = host.EvaluateNumber($"{a}.door.x") - r.CropX;
                 double doorY = host.EvaluateNumber($"{a}.door.y") - r.CropY;
+                r.DoorX[cell] = doorX;
+                r.DoorY[cell] = doorY;
                 double ridgeX = host.EvaluateNumber($"{a}.ridge.x") - r.CropX;
                 double ridgeY = host.EvaluateNumber($"{a}.ridge.y") - r.CropY;
                 int stackCount = (int)host.EvaluateNumber($"{a}.{stackKey}.length");
@@ -443,49 +518,58 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- helpers -------------------------------------------------------------------------------
 
+        /// <summary>An empty PRESETS entry cannot describe a build, and would pass the
+        /// differs-from-default check only by accident.</summary>
+        static void AssertPresetIsNotEmpty(IRigScriptHost host, string g, string preset)
+        {
+            if (host.EvaluateNumber($"Object.keys({g}.PRESETS['{Escape(preset)}']).length") <= 0)
+                throw new InvalidOperationException(
+                    $"Preset '{preset}' of {g} is an EMPTY options object — it cannot describe a build.");
+        }
+
         /// <summary>
-        /// Assert the preset actually CHANGED the render.
+        /// Assert the options actually CHANGED the render.
         ///
         /// <para>This exists for one specific, already-made mistake: <c>render(dir,{preset:'netShed'})</c>
         /// looks exactly like the right call and is silently wrong, because <c>resolve()</c> has no
         /// <c>preset</c> key and quietly falls through to the default build. Nothing throws; you just get
         /// seven identical sheds under seven different names, and the only way to notice is to look at
-        /// all seven side by side.</para>
+        /// all seven side by side. A dialled build has the same failure through a different door: both
+        /// rigs read options as <c>opts[k] != null ? opts[k] : fallback</c>, so a misspelled KEY is
+        /// ignored in silence too.</para>
         ///
         /// <para>The check is a byte comparison of one facing against the rig's default. It is not a
-        /// proof that every field applied — a preset differing from the default in some field this
-        /// facing does not show would still pass — but it catches the whole-preset-ignored case, which
-        /// is the one that has teeth. All twelve shipped presets differ from the default in size and
-        /// body colour, so a pass here is meaningful for every build we actually bake.</para>
+        /// proof that every field applied — a build differing from the default only in some field this
+        /// facing does not show would still pass — but it catches the whole-options-ignored case, which
+        /// is the one that has teeth. Per-KEY coverage is a separate matter, and it is handled where it
+        /// belongs: every key a kit dials is a <c>BuildingAxes</c> key, and <c>BuildingAxesTests</c>
+        /// greps each of those out of the rig source.</para>
         /// </summary>
-        static void AssertPresetApplies(IRigScriptHost host, string g, string optsJs, string preset,
-                                        int width, int height)
+        static void AssertDiffersFromDefault(IRigScriptHost host, string g, string optsJs, string label,
+                                             bool isPreset)
         {
-            if (host.EvaluateNumber($"Object.keys({g}.PRESETS['{Escape(preset)}']).length") <= 0)
-                throw new InvalidOperationException(
-                    $"Preset '{preset}' of {g} is an EMPTY options object — it cannot describe a build.");
-
-            byte[] withPreset = host.EvaluateBytes($"{g}.render(0,{optsJs})");
+            byte[] dialled = host.EvaluateBytes($"{g}.render(0,{optsJs})");
             byte[] plain = host.EvaluateBytes($"{g}.render(0,{{}})");
 
-            if (withPreset.Length == plain.Length && BytesEqual(withPreset, plain))
-                throw new InvalidOperationException(
-                    $"Preset '{preset}' rendered byte-identical to the rig's DEFAULT build.\n\n" +
-                    "That almost certainly means the options are not reaching resolve() — the classic " +
-                    "form of this bug is passing {preset:'name'}, which no building rig reads, instead " +
-                    "of spreading PRESETS['name'] into the options. Refusing rather than baking seven " +
-                    "identical sheds under seven different names.");
+            if (dialled.Length != plain.Length || !BytesEqual(dialled, plain)) return;
 
-            // Guard the geometry once, here, so the probe and the crop can both assume it.
-            if (withPreset.Length != width * height * 4)
-                throw new InvalidOperationException(
-                    $"Preset '{preset}' rendered {withPreset.Length} bytes, expected " +
-                    $"{width * height * 4} for {width}×{height} RGBA.");
+            throw new InvalidOperationException(
+                $"Build '{label}' rendered byte-identical to the rig's DEFAULT build.\n\n" +
+                (isPreset
+                    ? "That almost certainly means the options are not reaching resolve() — the classic " +
+                      "form of this bug is passing {preset:'name'}, which no building rig reads, instead " +
+                      "of spreading PRESETS['name'] into the options. Refusing rather than baking seven " +
+                      "identical sheds under seven different names."
+                    : "Every dialled key was therefore ignored. These rigs resolve options as " +
+                      "opts[k] != null ? opts[k] : fallback, so an unknown KEY is accepted in silence — " +
+                      "the recorded worked example is winD (the rig's internal field) versus winDensity " +
+                      "(the option it actually reads). Check the keys against BuildingAxes, which is " +
+                      "grep-verified against the rig source."));
         }
 
         /// <summary>
-        /// The geometry guard a hand-dialled build still needs: the preset tripwire is skipped for it,
-        /// but the crop and the probe both assume the render came back at the rig's declared cell size.
+        /// The geometry guard every build needs: the crop and the probe both assume the render came back
+        /// at the rig's declared cell size.
         /// </summary>
         static void AssertRenders(IRigScriptHost host, string g, string optsJs, string label,
                                   int width, int height)

@@ -1,0 +1,32 @@
+{
+  "sheet": "Village_generalStore.png",
+  "rig": "house",
+  "build": "generalStore",
+  "facings": 8,
+  "cols": 5,
+  "rows": 2,
+  "cellW": 394,
+  "cellH": 416,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 197,
+  "pivotY": 297,
+  "nativeCellW": 992,
+  "nativeCellH": 1060,
+  "cropX": 299,
+  "cropY": 379,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 7.08,
+  "footprintLn": 8.89,
+  "stackKey": "chimneys",
+  "anchors": [
+    { "cell": 0, "door": {"x": 197, "y": 167.5741}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 197, "y": 115.1027}] },
+    { "cell": 1, "door": {"x": 297.5789, "y": 194.3533}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 140.6758, "y": 100.1063}] },
+    { "cell": 2, "door": {"x": 339.24, "y": 259.0042}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 117.3456, "y": 63.9019}] },
+    { "cell": 3, "door": {"x": 297.5789, "y": 323.655}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 140.6758, "y": 27.6974}] },
+    { "cell": 4, "door": {"x": 197, "y": 350.4343}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 197, "y": 12.701}] },
+    { "cell": 5, "door": {"x": 96.4211, "y": 323.655}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 253.3242, "y": 27.6974}] },
+    { "cell": 6, "door": {"x": 54.76, "y": 259.0042}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 276.6544, "y": 63.9019}] },
+    { "cell": 7, "door": {"x": 96.4211, "y": 194.3533}, "ridge": {"x": 197, "y": 99.4463}, "chimneys": [{"x": 253.3242, "y": 100.1063}] }
+  ]
+}

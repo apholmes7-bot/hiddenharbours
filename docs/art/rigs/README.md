@@ -76,14 +76,22 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > live in one place, `ShorelineIsoCatalog`, precisely so a wrong label is a one-line fix and not a
 > re-slice. Treat those bearings as a prior, exactly like every list on this page.
 
-**The two BUILDING rigs (`houseIsoRig`, `wharfBuildingRig`) now have a probe, but are still UNMEASURED
-until a bake actually runs.** `BuildingRigAzimuthProbe` reads the **door** anchor rather than a bow taper,
+**The BUILDING rigs.** `BuildingRigAzimuthProbe` reads the **door** anchor rather than a bow taper,
 because a building has no bow for PCA to bite on and that probe would return noise dressed as an answer.
-It runs at bake time and refuses on a mismatch, exactly like every sibling — so their listing above stays
-a prior until someone runs *Art ▸ Bake Buildings* and the bake either passes or refuses. Note the honest
-limit, recorded in that file too: the door anchor is the same `projVert` arithmetic that draws the
-pixels (so it is measurement, not a declaration), but it is **not** the independent pixel re-derivation
-the punt's byte-identical golden master was.
+It runs at bake time and refuses on a mismatch, exactly like every sibling. Note the honest limit,
+recorded in that file too: the door anchor is the same `projVert` arithmetic that draws the pixels (so it
+is measurement, not a declaration), but it is **not** the independent pixel re-derivation the punt's
+byte-identical golden master was.
+
+- **`houseIsoRig` — MEASURED counter-clockwise (2026-07-30).** The first real building bake ran (*Art ▸
+  Bake Village Buildings (M1 set)*, the M1 village kit) and the probe **agreed with the prior** on all
+  five builds: the door lands screen-**west** at the cell labelled `'E'`, and the silhouette-vs-`Wd`/`Ln`
+  cross-check passed, so the reading is evidence rather than a coin flip. Its listing above is no longer
+  a prior. ⚠️ The correction is applied **in the bake**, so the shipped sheets' cell `i` genuinely depicts
+  +45°·i — do not re-mirror them.
+- **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Art ▸ Bake Buildings
+  (houses + wharf)* runs and the bake either passes or refuses. Nothing consumes it yet (the shed/barn/
+  cannery family is M2).
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
