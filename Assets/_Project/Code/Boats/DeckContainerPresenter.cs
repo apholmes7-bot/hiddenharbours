@@ -41,7 +41,9 @@ namespace HiddenHarbours.Boats
     {
         // Draw-order constant, not balance: above the water/rope band and the hull facing (1), below the
         // worked deck pot (51) and its animals (52) so a pot landed near the tray reads on top of it.
-        private const int ContainerSortingOrder = 50;
+        // INTERNAL so the freshness tag that rides just above the tray (DeckFreshnessTag) can sort
+        // against it by name rather than repeating the number.
+        internal const int ContainerSortingOrder = 50;
         // Greybox-art constants, not balance numbers (the PotDeckWorkController silhouette convention) —
         // the pixels-per-unit of the code-built tray states and how many states the built set has. The
         // owner's painted sprites replace both via DeckContainerDef.FillSprites.
@@ -133,6 +135,16 @@ namespace HiddenHarbours.Boats
         private void OnCatchDumped(CatchDumped _) => Refresh();   // dumped rubbish empties the tray too
         private void OnGameLoaded(GameLoaded _) => Refresh();
         private void OnBoatPurchased(BoatPurchased _) => Refresh();
+
+        /// <summary>
+        /// Where the tray is drawn RIGHT NOW, in world space — the anchor anything riding the container
+        /// must use, because the tray jumps with the pictured deck each LateUpdate rather than sitting at
+        /// a fixed local offset. Falls back to the physics root before the tray exists (no hull Def, or
+        /// an empty hold), so a caller never reads a stale or zero position. Read-only; the tray owns its
+        /// own placement.
+        /// </summary>
+        public Vector3 ContainerWorldPosition =>
+            _renderer != null ? _renderer.transform.position : transform.position;
 
         private void LateUpdate()
         {
