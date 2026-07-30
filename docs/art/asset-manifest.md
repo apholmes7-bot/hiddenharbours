@@ -227,17 +227,32 @@ Drawn with front faces + rooflines (¾ view), sized to metric footprint, pivot *
 | Fish-buyer stall (`FishBuyerStall`, Nine Mile Creek) | 128×160 | feet | Single | **IMPORTED** | P1 |
 | Nine Mile Creek house — red (`Nine Mile CreekHouseRed`) | 144×184 | feet | Single | **IMPORTED** | P1 |
 | Nine Mile Creek house — teal (`Nine Mile CreekHouseTeal`) | 160×176 | feet | Single | **IMPORTED** | P1 |
-| **St Peters — school** (one-room, the opening's teaching anchor) | ~160×192 | feet | Single | **NEEDED** | P1 |
-| **St Peters — general store** (basic gear / licence point) | ~160×192 | feet | Single | **NEEDED** | P1 |
-| **St Peters — 3 clapboard houses** (village) | ~128–160 wide | feet | Single (can reuse/recolour cottage) | **NEEDED** | P1 |
+| **St Peters — school** (`Village_school`) | 350×366 cell × 8 | **ground centre** | Multiple (8 facings) | **IMPORTED** | P1 |
+| **St Peters — general store** (`Village_generalStore`) | 394×416 cell × 8 | **ground centre** | Multiple (8 facings) | **IMPORTED** | P1 |
+| **St Peters — clapboard house 1** (`Village_whiteFarmhouse`) | 646×578 cell × 8 | **ground centre** | Multiple (8 facings) | **IMPORTED** | P1 |
+| **St Peters — clapboard house 2** (`Village_redSaltbox`) | 386×404 cell × 8 | **ground centre** | Multiple (8 facings) | **IMPORTED** | P1 |
+| **St Peters — clapboard house 3** (`Village_sageCottage`) | 440×414 cell × 8 | **ground centre** | Multiple (8 facings) | **IMPORTED** | P1 |
 | Nine Mile Creek — auction house / fish market | ~256 wide | feet | Single | **NEEDED** | P2 |
 | Nine Mile Creek — chandlery, tavern, harbourmaster office, chart shop, processing plant, church, lighthouse | varies | feet | Single each | **NEEDED** | P2 |
 | Outer-region structures (Ironbound lighthouse, wrecks, Smother foghorn structure, freight terminal) | varies | feet | Single each | **NEEDED** | P2 |
 
-> **Slice gap:** St Peters' **school**, **general store**, and **3 houses** are the P1 buildings not
-> yet drawn (the houses can recolour the existing cottage to save art). Nine Mile Creek's two houses +
-> shipwright shed + buyer stall are done; the cove cottage is done. Nine Mile Creek's *fuller* service
-> buildings (tavern, auction house, etc.) are P2.
+> **Slice gap: CLOSED for P1.** St Peters' **school**, **general store** and **3 clapboard houses** are
+> baked from `houseIsoRig` by *Art ▸ Bake Village Buildings (M1 set)*, sliced by *▸ Slice Village
+> Building Sheets*, and placed through `VillageBuildingCatalog.Configure`. Nine Mile Creek's two houses +
+> shipwright shed + buyer stall were already done; so is the cove cottage. Nine Mile Creek's *fuller*
+> service buildings (tavern, auction house, etc.) are P2.
+>
+> ⚠️ **Three ways these five differ from every hand-drawn building above.** (1) **The pivot is the ground
+> CENTRE, not feet/BottomCenter, and the gap is metres** — the pivot is the middle of the footprint, and
+> the ¾ camera projects the whole near half of that footprint below it: a measured **104–209 px, 3.3–6.5 m**
+> across these five. Bottom-centre stands the building that far into the ground, silently, and it reads as
+> an art bug. The value is per build and lives in `Village/Buildings.json`; nothing restates it.
+> (2) **Eight facings,
+> and turning one means swapping the sub-sprite** — never rotating the transform, which would tip the
+> baked projection (`VillageBuildingCatalog.SetFacing`). (3) **They are much bigger in pixels than the
+> ~160 px hand-drawn cottage** because they are honest metres (a 6.4 × 7.6 m school is ~350 px across the
+> union of its eight facings at 32 px = 1 m), which is also why they cost real texture memory — see the
+> per-building figures in `Buildings.json`.
 
 ---
 
@@ -366,7 +381,7 @@ fishing UI, the clamming kit, and the tree pack are imported and (mostly) wired.
 
 Everything needed to finish **St Peters → sandbar → Nine Mile Creek → Cove**. Short and concrete:
 
-1. **St Peters buildings** — the one-room **school**, the **general store**, and **3 clapboard houses** (houses can recolour the existing cottage). *(§6)*
+1. ~~**St Peters buildings** — the one-room **school**, the **general store**, and **3 clapboard houses**.~~ **DONE** — baked from `houseIsoRig` rather than drawn, so no hand art was needed; see §6 for the three ways they behave unlike the drawn buildings. *(§6)*
 2. **St Peters NPCs** — the **storekeeper** walk sheet + portrait. *(§1)*
 3. **Nine Mile Creek buy/sell faces** — the **shipwright (Silas)** and the **fish buyer/auctioneer** walk sheets + portraits. *(§1)*
 4. **Two terrain tiles** — **wet sand / mud-flat** (the bared sandbar + clam flats) and a **town road / cobble** tile. *(§4)*

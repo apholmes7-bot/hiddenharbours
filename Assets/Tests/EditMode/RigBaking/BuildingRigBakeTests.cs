@@ -202,6 +202,36 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
+        public void ChooseGrid_SolvesForTheCallersCap_NotJustUnitysHardLimit()
+        {
+            // The baker's own limit is Unity's HARD cap (4096); a kit that imports at Unity's DEFAULT
+            // cap (2048) has to be solved for THAT number, because the two fail in opposite directions:
+            // over 4096 the bake refuses, but between 2048 and 4096 the bake succeeds and the IMPORT
+            // silently downscales — with the sprite count still coming out right.
+            //
+            // These are the village kit's real measured cells. At 4096 the school packs 8×1 = 2800 px
+            // wide, which imports downscaled at a 2048 cap; at 2048 it packs 5×2 and fits.
+            BuildingRigBaker.ChooseGrid(350, 366, 8, out int wideCols, out _);
+            Assert.AreEqual(8, wideCols, "against the hard cap, eight 350 px cells fit on one row");
+            Assert.Greater(8 * 350, 2048, "…and that row is over Unity's DEFAULT cap");
+
+            BuildingRigBaker.ChooseGrid(350, 366, 8, out int cols, out int rows, maxDimension: 2048);
+            Assert.LessOrEqual(cols * 350, 2048, "width must respect the caller's cap");
+            Assert.LessOrEqual(rows * 366, 2048, "height must respect the caller's cap");
+            Assert.GreaterOrEqual(cols * rows, 8, "the grid must still hold every facing");
+        }
+
+        [Test]
+        public void ChooseGrid_RefusesACellWiderThanTheCap_RatherThanEmittingOneColumn()
+        {
+            // The latent hole in "widest grid that fits": when the cell is WIDER than the cap, the
+            // column count floors to 1 and a single column is still over-cap. Emitting it would produce
+            // exactly the silent downscale everything else here exists to prevent.
+            Assert.Throws<InvalidOperationException>(
+                () => BuildingRigBaker.ChooseGrid(3000, 200, 8, out _, out _, maxDimension: 2048));
+        }
+
+        [Test]
         public void ChooseGrid_ThrowsWhenACellCannotFitAtAll()
         {
             // One 3000×3000 cell fits, but 8 of them need 3 rows = 9000 px. No grid works.

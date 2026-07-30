@@ -113,7 +113,10 @@ region scenes should use the same helper.
 ```
 Art/
 ├── Sprites/      general sprites + the greybox unit square
-│   └── Environment/Trees/  discrete tree decor (64×64, pivot = base/BottomCenter, Clamp)
+│   ├── Environment/Trees/  discrete tree decor (64×64, pivot = base/BottomCenter, Clamp)
+│   ├── Buildings/          hand-drawn greybox buildings (Single, pivot = feet/BottomCenter)
+│   └── Buildings/Village/  the M1 village kit — baked from houseIsoRig, 8 facings, ⚠ pivot = GROUND
+│                           CENTRE from Buildings.json, NOT BottomCenter (see the warning below)
 ├── Tilesets/     32×32 modular terrain tiles, Rule Tiles (Water/ → tiling/Repeat)
 ├── Characters/   player + NPC sheets (pivot = feet)
 ├── Boats/        hull/wake/crew layers (pivot = centre)
@@ -128,6 +131,19 @@ Art/
 [`docs/art/skiff-fleet-rigs/`](../../../docs/art/skiff-fleet-rigs/) (the two 7 m centre-console skiffs +
 their shared remote-steer outboard) and [`docs/art/punt-iso-rig/`](../../../docs/art/punt-iso-rig/) (the
 ~5.2 m tiller punt + her two-build tiller outboard). Drop log: `imported-assets.md`.
+
+⚠️ **`Sprites/Buildings/Village/` does NOT pivot on its feet, and the difference is metres.** The five M1
+village buildings (school, general store, 3 clapboard houses) are **baked** from
+[`docs/art/rigs/houseIsoRig.js`](../../../docs/art/rigs/houseIsoRig.js) rather than drawn — *Art ▸ Bake
+Village Buildings (M1 set)* → *▸ Slice Village Building Sheets* → *▸ Build Village Building Prefabs*. Each
+sheet holds **8 facings** sharing **one cell and one pivot** (that identity is what stops a building
+shifting as it turns), and the pivot is the **ground CENTRE** — the middle of the footprint. Under the ¾
+camera the whole near half of the footprint projects *below* that centre: a measured **104–209 px
+(3.3–6.5 m)**. `ArtImportPipeline` defaults `/buildings/` to `BottomCenter`, which is right for the
+hand-drawn cottage next door and would stand each of these several metres into the ground —
+`VillageBuildingSheetSlicer` overrides it per sheet from the bake's own `Buildings.json`. **Turning one
+means swapping the sub-sprite (`VillageBuildingCatalog.SetFacing`), never rotating the transform**, which
+would tip the baked projection.
 
 ⚠️ **The iso boat kits do NOT share a pivot.** Each derives the same *concept* — the boat origin
 (amidships, keel bottom, centreline) — from its own cell size, so each keeps its own const in
