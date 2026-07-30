@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 6;
+        public const int CurrentVersion = 7;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -132,6 +132,18 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 6;
             }
 
+            // ---- v6 → v7: consumable SUPPLIES become counted stock (plan-to-m1 §7.5 — the island general
+            // store stocks ice, and §7.3's cold chain adds lids after it). One generic list keyed by stable
+            // SupplyDef id, so every further consumable is a Def asset rather than another schema bump. A
+            // pre-v7 save simply owned no supplies: it gets an empty list and everything else carries
+            // through. Nothing is reinterpreted. (The Ginny fronted-fee beat that ships alongside needed no
+            // field at all — it rides the existing OnboardingFlags store, the StartingPots precedent.)
+            if (data.SchemaVersion < 7)
+            {
+                data.SupplyStock ??= new System.Collections.Generic.List<SupplyStock>();
+                data.SchemaVersion = 7;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -146,6 +158,7 @@ namespace HiddenHarbours.Core
             data.BoatHoldCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.BucketCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.FreezerCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
+            data.SupplyStock ??= new System.Collections.Generic.List<SupplyStock>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).

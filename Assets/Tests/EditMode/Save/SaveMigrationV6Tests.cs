@@ -58,11 +58,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void V4_MigratesTo5_WithEmptyHolds_AndNothingElseTouched()
+        public void V4_MigratesToCurrent_WithEmptyHolds_AndNothingElseTouched()
         {
             SaveData d = SaveMigration.Migrate(V4Blob());
 
-            Assert.AreEqual(6, d.SchemaVersion);
+            // ⚠ VERSION-AGNOSTIC ON PURPOSE (the SaveMigrationV3Tests rule). What this test owns is the
+            // v6 CONTRACT — a pre-v6 save comes out with empty hold lists and nothing else disturbed —
+            // not the value of the counter, which every later lane bumps. Pinning the literal made three
+            // tests here fail the moment v7 landed, none of which had anything to do with held catch.
+            Assert.AreEqual(SaveMigration.CurrentVersion, d.SchemaVersion,
+                "a v4 blob climbs the whole chain to the current schema");
+            Assert.GreaterOrEqual(d.SchemaVersion, 6, "and v6's hold lists exist from that climb");
             Assert.IsNotNull(d.BoatHoldCatch); Assert.IsEmpty(d.BoatHoldCatch);
             Assert.IsNotNull(d.BucketCatch);   Assert.IsEmpty(d.BucketCatch);
             Assert.IsNotNull(d.FreezerCatch);  Assert.IsEmpty(d.FreezerCatch);
@@ -74,11 +80,12 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void CurrentVersion_Is5_AndNewGameStartsThere()
+        public void ANewGame_StartsAtTheCurrentVersion_WithTheHoldListsReady()
         {
-            Assert.AreEqual(6, SaveMigration.CurrentVersion);
+            Assert.GreaterOrEqual(SaveMigration.CurrentVersion, 6,
+                "v6 (held catch) has shipped, and the counter only ever goes up");
             SaveData fresh = SaveMigration.NewGame();
-            Assert.AreEqual(6, fresh.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, fresh.SchemaVersion);
             Assert.IsNotNull(fresh.BoatHoldCatch);
         }
 
@@ -91,7 +98,8 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData d = SaveMigration.Migrate(SaveSerialization.FromJson(json));
 
             Assert.IsNotNull(d);
-            Assert.AreEqual(6, d.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, d.SchemaVersion);
+            Assert.GreaterOrEqual(d.SchemaVersion, 6);
             Assert.IsNotNull(d.BoatHoldCatch);
         }
 

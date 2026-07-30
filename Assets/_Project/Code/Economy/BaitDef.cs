@@ -27,10 +27,18 @@ namespace HiddenHarbours.Economy
         public string DisplayName = "Herring";
         [TextArea] public string Flavor = "Oily, cheap, and irresistible to a lobster. The pot-fisher's staple.";
 
-        [Header("Cost (greybox placeholder — flag for economy-sim tuning)")]
+        [Header("Cost")]
         [Min(0)]
-        [Tooltip("Price in ₲ at a neutral market. PLACEHOLDER — economy-sim owns the real balance.")]
+        [Tooltip("Price in ₲ of ONE bait at a neutral market. Per-bait, not per-lot: the pacing model " +
+                 "divides by it (m1-progression-pacing §7), so it must stay the unit price.")]
         public int Price = 3;
+
+        [Min(1)]
+        [Tooltip("How many baits one purchase at a counter buys (nobody buys a single capelin). The lot " +
+                 "costs Price × LotSize. A shop convenience only — it never changes the unit price the " +
+                 "pacing model reads. Clamped to at least 1 at read time, so an old asset that predates " +
+                 "this field still sells singly rather than nothing.")]
+        public int LotSize = 10;
 
         [Header("What it draws")]
         [Tooltip("Stable FishSpeciesDef ids this bait favours (each must name a real FishSpeciesDef — " +

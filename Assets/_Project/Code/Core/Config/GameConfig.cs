@@ -109,10 +109,59 @@ namespace HiddenHarbours.Core
         // tuning to the 1.4 default and nothing would say so.
         [UnityEngine.Serialization.FormerlySerializedAs("MarketDemandGreywick")]
         [Min(0.01f)] public float MarketDemandNineMileCreek = 1.4f;
+        [Tooltip("Demand D at the ISLAND GENERAL STORE on St Peters (plan-to-m1 §7.5) — the first market the " +
+                 "player meets, and deliberately the WORST. Keep this BELOW MarketDemandNineMileCreek: the " +
+                 "gap IS the economic reason to walk the tide-gated sandbar, and it is what teaches 'where " +
+                 "you sell matters' in the first hour. A village shop buying clams over the counter is not " +
+                 "competing with a wharf that ships to the mainland — the default is a little under the cove " +
+                 "baseline, so the store pays worst, the cove middling, Nine Mile Creek best.")]
+        [Min(0.01f)] public float MarketDemandStPetersStore = 0.7f;
+
+        // ---- what each outlet PAYS, before any glut (the price LEVEL) ----------------------------
+        // ⚠ WHY THIS EXISTS AND DEMAND ALONE WAS NOT ENOUGH. Demand D only ever appears as S/D inside
+        // priceMult = 1/(1+e·S/D). At zero supply that term is 1 for EVERY value of D — so on a market
+        // nobody has sold into yet, a low-demand outlet and a high-demand one quote the *same* price, and
+        // the first clam of the game fetches the same coin at the village counter as on the Creek's wharf.
+        // Demand is a GLUT-ABSORPTION lever, not a price-level one, and plan-to-m1 §7.5's "deliberately
+        // worse prices" is a level difference. So this is the level term the canon formula already has:
+        // effPrice = P0 · demandMood · seasonDemand · priceMult (economy-and-business §1.2). These are the
+        // static seed of that `demandMood` — a per-market multiplier on base value, kept SEPARATE from the
+        // supply curve so the two stay independently tunable. When the M2 sim gives demandMood its random
+        // walk, it multiplies onto this rather than replacing it.
+        [Tooltip("What the home cove pays per unit before any glut, as a multiplier on the species' base " +
+                 "value. 1 = pays the book price (the neutral baseline).")]
+        [Min(0.01f)] public float MarketPriceLevelCove = 1f;
+        [Tooltip("What Nine Mile Creek pays per unit before any glut. 1 = the book price; it is the BEST " +
+                 "outlet in M1 by virtue of also having the highest demand (it absorbs a glut better).")]
+        [Min(0.01f)] public float MarketPriceLevelNineMileCreek = 1f;
+        [Tooltip("What the ISLAND GENERAL STORE pays per unit before any glut — the ONE number that makes " +
+                 "the crossing pay (plan-to-m1 §7.5). Keep it BELOW MarketPriceLevelNineMileCreek: this is " +
+                 "the gap the player feels on their first bucket of clams, and the whole 'where you sell " +
+                 "matters' lesson. 0.6 = the village counter pays 60% of dockside. ⚠ Every unit is floored " +
+                 "at ₲1 (SellPricing.UnitPrice), so on a 2₲ clam this lever has only 2₲ of room to move — " +
+                 "see the note on FishSpeciesDef base values in m1-progression-pacing §5.")]
+        [Min(0.01f)] public float MarketPriceLevelStPetersStore = 0.6f;
+
         [Tooltip("Fraction of a category's accumulated supply (glut) cleared at each daily settle (0..1). " +
                  "Higher = faster price recovery over days (economy-and-business §1.3). Deterministic — fired " +
                  "on day rollover, not per frame.")]
         [Range(0f, 1f)] public float MarketDailyRecovery = 0.5f;
+
+        [Header("The fronted licence fee (plan-to-m1 §7.5 — the Aunt Ginny beat)")]
+        // ⚠ THIS NUMBER EXISTS TO PREVENT A DEADLOCK, not for flavour. CatchLicensePolicy.MayLand FAILS
+        // CLOSED: a species some licence gates cannot be landed without that licence. The clam licence gates
+        // clams, and clams are the player's only income on day one — so "buy the clam licence with clam
+        // money" is a hard soft-lock the moment the dig starts consulting the gate. §7.5's ruled fix is a
+        // character beat rather than a mechanic: Ginny FRONTS the fee, and the player still walks to the
+        // store and buys the licence themselves (they meet the vendor, they learn licences gate species, and
+        // it plants a small warm debt). This is the mechanism half of that beat; her words are world-content's.
+        // GUARD-RAIL: keep this ≥ the clam licence's Price. StPetersContentValidationTests enforces it, so a
+        // reprice of the licence cannot silently re-open the deadlock.
+        [Min(0)]
+        [Tooltip("₲ Aunt Ginny fronts the player once, so the clam licence can be bought before there is any " +
+                 "clam money. Must stay ≥ the clam licence fee (content validation enforces it). Granted " +
+                 "once per game, flag-guarded — see FrontedFeeGrant.")]
+        public int FrontedLicenceFee = 20;
 
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +

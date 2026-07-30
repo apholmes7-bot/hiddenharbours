@@ -82,6 +82,99 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        [Test]
+        public void ClamLicense_Exists_AndPermitsTheClam_WithoutDisturbingTheCodLicense()
+        {
+            LicenseDef clam = null, cod = null;
+            foreach (var l in LoadAll<LicenseDef>())
+            {
+                if (l.Id == "license.clam") clam = l;
+                if (l.Id == "license.cod") cod = l;
+            }
+
+            Assert.IsNotNull(clam, "the clam licence (license.clam) must exist — the first licence the " +
+                                   "player buys, at the island general store (plan-to-m1 §7.5)");
+            CollectionAssert.Contains(clam.PermittedSpeciesIds, "fish.soft_shell_clam",
+                "the clam licence must permit the soft-shell clam (the flats gate)");
+
+            Assert.IsNotNull(cod, "and license.cod is untouched — it stays the one you EARN later at " +
+                                  "Nine Mile Creek, out of your own money");
+            CollectionAssert.DoesNotContain(clam.PermittedSpeciesIds, "fish.atlantic_cod",
+                "the clam licence must not quietly unlock cod as well — licence two is the earned one");
+        }
+
+        /// <summary>
+        /// ⭐ THE DEADLOCK GUARD, and the reason this is a test rather than a comment.
+        /// <c>CatchLicensePolicy.MayLand</c> FAILS CLOSED, so once the clam dig consults the gate, a player
+        /// who cannot afford the clam licence has no income at all — clams are day one's only earner. §7.5's
+        /// ruled fix is that Aunt Ginny FRONTS the fee. If someone reprices the licence above what she
+        /// fronts, the opening soft-locks and nothing else in the suite would notice.
+        /// </summary>
+        [Test]
+        public void TheFrontedFee_AlwaysCoversTheClamLicence()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(
+                "Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(config, "the shared GameConfig asset exists");
+
+            LicenseDef clam = null;
+            foreach (var l in LoadAll<LicenseDef>())
+                if (l.Id == "license.clam") clam = l;
+            Assert.IsNotNull(clam, "the clam licence must exist");
+
+            Assert.GreaterOrEqual(config.FrontedLicenceFee, clam.Price,
+                $"Ginny fronts ₲{config.FrontedLicenceFee} but the clam licence costs ₲{clam.Price} — the " +
+                "player could not buy it, and with the catch gate failing closed that is a soft-locked " +
+                "opening. Raise GameConfig.FrontedLicenceFee or lower the licence fee (§7.5).");
+        }
+
+        // ---- supplies (the consumable cold chain) ----------------------------------------------
+
+        [Test]
+        public void Supplies_Exist_AndHaveNonEmptyUniqueIds_AndSanePrices()
+        {
+            var supplies = LoadAll<SupplyDef>();
+            Assert.IsNotEmpty(supplies, "the island store stocks at least ice (supply.ice)");
+
+            var seen = new Dictionary<string, string>();
+            foreach (var s in supplies)
+            {
+                string path = AssetDatabase.GetAssetPath(s);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(s.Id), $"{path}: SupplyDef has an empty id");
+                Assert.IsFalse(seen.ContainsKey(s.Id),
+                    $"duplicate SupplyDef id '{s.Id}' in '{path}' and '{(seen.TryGetValue(s.Id, out var o) ? o : "?")}'");
+                seen[s.Id] = path;
+                Assert.Greater(s.Price, 0, $"{path}: a consumable must cost something, or it is not a sink");
+                Assert.IsFalse(string.IsNullOrWhiteSpace(s.DisplayName), $"{path}: needs a player-facing name");
+            }
+
+            Assert.IsTrue(seen.ContainsKey("supply.ice"),
+                "ice must exist — it is what makes cold carriable away from Ginny's freezer (§7.3)");
+        }
+
+        // ---- bait (prices and lot sizes) -------------------------------------------------------
+
+        [Test]
+        public void Baits_SellInSaneLots_AndCapelinCarriesTheRepricedValue()
+        {
+            BaitDef capelin = null;
+            foreach (var b in LoadAll<BaitDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(b);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(b.Id), $"{path}: BaitDef has an empty id");
+                Assert.Greater(b.Price, 0, $"{path}: bait that costs nothing is not a running cost");
+                Assert.GreaterOrEqual(b.LotSize, 1,
+                    $"{path}: a lot must be at least one bait, or a purchase charges for nothing");
+                if (b.Id == "bait.capelin") capelin = b;
+            }
+
+            Assert.IsNotNull(capelin, "bait.capelin must exist");
+            Assert.AreEqual(2, capelin.Price,
+                "capelin is repriced to 2₲ (m1-progression-pacing §7.4's own recommendation, landed with " +
+                "the §7.5 store pass): at 5₲ it was half a 10₲ mackerel, which put two shipped species " +
+                "over the bait-share ceiling before a single miss");
+        }
+
         // ---- gear offers ----------------------------------------------------------------------
 
         [Test]

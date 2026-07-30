@@ -147,3 +147,69 @@ jobs:
         with:
           name: test-results
           path: artifacts
+
+      # WHY THIS EXISTS: without it, a red CI run is effectively undiagnosable from outside GitHub's web
+      # UI. Unity's batchmode runner prints each failure inline in the middle of a ~1 MB log and never
+      # summarises at the end, the check-run's output.text comes back empty, and the results XML is only
+      # reachable as an artifact behind an authenticated download. So an agent (or anyone on a phone) can
+      # see "EditMode failed" and not which test. Parsing the XML into the LAST thing the log prints puts
+      # the failure list where the log tail always reaches it, for every future run.
+      #
+      # Runs on always() and never changes the job's outcome — it is a reporter, not a gate. The suite
+      # steps above have already decided pass/fail.
+      - name: Summarise test failures
+        if: always()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(artifacts/*-results.xml)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No results XML found — the suites did not get as far as writing one."
+            exit 0
+          fi
+          python3 - "${files[@]}" <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import sys, xml.etree.ElementTree as ET
+
+          MAX_FAILURES = 40       # a wall of failures is a compile break; the first 40 tell that story
+          MAX_MESSAGE_CHARS = 800 # NUnit messages carry the expected/actual block, which is the useful part
+
+          any_failed = False
+          for path in sys.argv[1:]:
+              try:
+                  root = ET.parse(path).getroot()
+              except Exception as e:                      # a truncated XML means Unity died mid-run
+                  print(f"### {path}: could not be parsed ({e}) — the editor probably crashed")
+                  any_failed = True
+                  continue
+
+              total  = root.get("total")    or root.get("testcasecount") or "?"
+              passed = root.get("passed")   or "?"
+              failed = root.get("failed")   or "0"
+              skipped= root.get("skipped")  or "0"
+              print(f"\n### {path} — {passed}/{total} passed, {failed} failed, {skipped} skipped")
+
+              cases = [c for c in root.iter("test-case") if c.get("result") == "Failed"]
+              if not cases:
+                  continue
+              any_failed = True
+              for case in cases[:MAX_FAILURES]:
+                  print(f"\nFAILED: {case.get('fullname') or case.get('name')}")
+                  failure = case.find("failure")
+                  if failure is None:
+                      continue
+                  for tag in ("message", "stack-trace"):
+                      node = failure.find(tag)
+                      text = (node.text or "").strip() if node is not None else ""
+                      if not text:
+                          continue
+                      if tag == "stack-trace":
+                          text = "\n".join(text.splitlines()[:4])   # the assert site, not the whole frame
+                      elif len(text) > MAX_MESSAGE_CHARS:
+                          text = text[:MAX_MESSAGE_CHARS] + " …[truncated]"
+                      print(f"  {tag}: {text}")
+              if len(cases) > MAX_FAILURES:
+                  print(f"\n…and {len(cases) - MAX_FAILURES} more failures (showing the first {MAX_FAILURES}).")
+
+          if not any_failed:
+              print("\nNo failing test cases in any results file.")
+          PY

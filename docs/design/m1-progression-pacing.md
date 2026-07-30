@@ -77,8 +77,10 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 |---|---|---|
 | Clam base value | `FishSpeciesDef.BaseValue` | |
 | Fish base values | `FishSpeciesDef.BaseValue` | |
-| Island store demand D | `GameConfig` | **deliberately worse than the wharf** |
-| Nine Mile Creek demand D | `GameConfig` | the reason to cross |
+| Island store **price level** | `GameConfig.MarketPriceLevelStPetersStore` | **the number that makes the crossing pay** — what the counter gives per unit before any glut (0.6 = 60 % of dockside). ⚠ Demand D *cannot* do this job: at zero supply `1/(1+e·S/D)` is 1 for every D, so the first sale of the game is identical at both outlets unless the level differs |
+| Island store demand D | `GameConfig.MarketDemandStPetersStore` | how badly the counter takes a glut — a second-order effect, felt only once you have sold into it |
+| Nine Mile Creek demand D + level | `GameConfig` | the reason to cross |
+| ⚠ **The ₲1 unit floor** | `SellPricing.UnitPrice` | every unit floors at ₲1, so on a **2₲ clam** the level has ~2₲ of room. The gap a player can *read* on a bucket is bounded by `BaseValue`, not by the multiplier — if the crossing must *feel* worth walking, that is a clam-base-value decision for this model |
 | Elasticity per species | `FishSpeciesDef` | gluts crash faster |
 | Refusal threshold | `SpoilPolicy.UnsellableSpoil` | past it, **no sale at any price** |
 | Perishability per species | `FishSpeciesDef` (to author) | mackerel fast, shellfish hardy |
@@ -86,14 +88,15 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 **Costs — buy side**
 | Input | Where | Note |
 |---|---|---|
-| Clam licence fee | `LicenseDef.Price` | fronted by Ginny; small |
+| Clam licence fee | `LicenseDef.Price` (`license.clam`, 15₲) | fronted by Ginny; small. **Guard-rail:** `GameConfig.FrontedLicenceFee` must stay ≥ this or the opening soft-locks (the catch gate fails closed) — content validation enforces it |
+| Ginny's fronted fee | `GameConfig.FrontedLicenceFee` | granted once per game, flag-guarded (`FrontedFeeGrant`) |
 | Used rod | `GearOffer` | first real purchase |
 | Damaged dory | `ShipwrightOffer` | the big save-up |
 | Dory repair | `RepairLedger` | paid separately — two beats, not one |
 | Traps / pots | `PotOffer` | |
-| **Ice** (per load) | store `GearOffer` / consumable | **recurring** — a running cost, per trip |
-| **Bait / tackle** | `Data/Bait`, `Data/Tackle` (landed #291) | **recurring** — and it *targets* species, not just enables them |
-| **Lid** (one-off) | store `GearOffer` | slows the melt; "spend once to stop spending" |
+| **Ice** (per load) | `SupplyDef` (`supply.ice`, 6₲) → `SupplyShop` | **recurring** — a running cost, per trip. Counted stock in `SaveData.SupplyStock` (save v7); the *melt* is still §7.3's to build |
+| **Bait / tackle** | `Data/Bait`, `Data/Tackle` (landed #291) → `BaitShop` | **recurring** — and it *targets* species, not just enables them. Sold by the lot (`BaitDef.LotSize`); `Price` stays the UNIT price this model divides by |
+| **Lid** (one-off) | a further `SupplyDef` | slows the melt; "spend once to stop spending" — appends as data now the supply shape exists, no schema bump |
 | **Used outboard** | new `ShipwrightOffer` | the closing rung |
 
 ---
@@ -277,9 +280,41 @@ two breach any sane share-of-value ceiling (the test uses 35 %); cod and haddock
 are fine.
 
 **Recommendation:** re-price `bait.capelin` to **2₲** — 20 % of a mackerel, 18 % of a pollock, and still a
-real cost against cod. `Data/Bait/` is **gameplay-systems'** under the ownership map, so this is filed as
-a request, not done here. Noted alongside it, for a later pass: a 10₲ mackerel of 0.3–1.5 kg against a
+real cost against cod. Noted alongside it, for a later pass: a 10₲ mackerel of 0.3–1.5 kg against a
 14₲ cod of 2–12 kg is its own balance question.
+
+> ✅ **DONE** (with the §7.5 island-store pass). `bait.capelin` is 2₲. No rod species now breaches the 35 %
+> ceiling under spend-on-catch, and `WhoBreachesTheBaitShareCeiling_IsPinnedUnderBothModes` asserts that list
+> is **empty** — a species reappearing in it means a bait or a base value was re-tuned back into the red.
+>
+> The **spend-at-bite (OFF) shares moved too**, and one crossed back over the line. Measured against the
+> shipped assets after the re-price:
+>
+> | Species | bait ₲ | base ₲ | P(land), new hand | **ON share** | **OFF share** |
+> |---|---|---|---|---|---|
+> | Cod | 2 (capelin) | 14 | 0.381 | 14.3 % | **37.5 %** ⚠ |
+> | Haddock | 3 (shucked clam) | 16 | 0.060 | 18.8 % | **313 %** ⚠ |
+> | Mackerel | 2 (capelin) | 10 | 0.607 | 20.0 % | 32.9 % — *now under* |
+> | Pollock | 2 (capelin) | 11 | 0.515 | 18.2 % | **35.3 %** ⚠ |
+>
+> So OFF no longer breaches for *every* rod species — mackerel slips under, and cod and pollock clear the
+> ceiling by under three points. A membership list balanced that finely is a tripwire for the next
+> re-price rather than a finding, so the test now asserts the **property** instead: OFF is strictly worse
+> than ON for every species, it still breaches for more of them than ON does, and haddock — which clears
+> the ceiling by an order of magnitude — is always in the list. **The recommendation is unaffected:**
+> haddock at 313 % of the fish's own value is the argument, and no bait price fixes a reciprocal.
+>
+> ⚠ **The §7 table below is now partly stale, and re-pinning it needs a CI run.** The re-price moved which
+> bait a coin-short player ties on: the cheapest bait touching the rod pool used to be **shucked clam (3₲**,
+> favouring cod and haddock — a licence-gated fish and one a new hand almost never lands, so the boost went
+> where nothing came back). It is now **capelin (2₲**, favouring mackerel and pollock, which a new hand *does*
+> land). The opening-day blend therefore improved for a real and intended reason, and the measured
+> "38.7₲ / 10-baits-per-fish" figures in §7.3 no longer describe the shipped assets.
+> `ASessionsBlendedBaitCost_IsWorstExactlyWhereTheNewPlayerStarts` now asserts the **shape** the finding
+> rests on (a new hand still blends worse than a competent licensed one) rather than a magnitude the next
+> legitimate re-price would stale again; it logs the live numbers, so regenerate this table from a CI run
+> rather than re-pinning it in the test. **The recommendation itself is unaffected** — the OFF-mode
+> reciprocal is unbounded in a new hand's hands whatever the bait costs, which is the whole point of §7.
 
 ### 7.5 What flipping ON gives up — stated fairly
 
