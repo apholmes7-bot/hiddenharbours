@@ -334,5 +334,116 @@ namespace HiddenHarbours.Tests.EditMode
                       $"{StPetersBuilder.SandbarHalfWidth * 2f:F0} m footprint at a " +
                       $"{StPetersBuilder.ClamScatterStep} m grid — all intertidal.");
         }
+
+        // =========================================================================================
+        // 6. ⭐ the COMMITTED painted seabed must describe THIS island
+        // =========================================================================================
+
+        private static PaintedHeightMap Seabed() =>
+            UnityEditor.AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
+                "Assets/_Project/Data/Terrain/StPetersSeabed.asset");
+
+        /// <summary>
+        /// ⭐ THE GUARD AGAINST THE DRIFT THAT ALREADY HAPPENED ONCE. The painted seabed is the shipped
+        /// coast — <b>paint = sail</b> (ADR 0014), so the same map decides what the water draws AND where
+        /// the player can wade. When the region grew to 760 × 520 m the committed map went on describing
+        /// a 160 × 120 m world, and nothing said so: it decodes fine, it just describes somewhere else.
+        ///
+        /// <para>Checking the map's own rect against the <see cref="RegionDef"/> is the cheap half.
+        /// Checking the TEXTURE's dimensions against the region's derived texel grid is the half that
+        /// also catches Unity <b>silently downscaling</b> an oversized import — the failure mode where
+        /// every count still matches and only a dimension assert notices.</para>
+        /// </summary>
+        [Test]
+        public void TheCommittedSeabed_CoversTheRegion_AtTheRegionsOwnResolution()
+        {
+            var map = Seabed();
+            Assert.IsNotNull(map, "the committed StPetersSeabed seed must exist (ADR 0014)");
+            var region = AssetDatabase();
+
+            Assert.AreEqual(region.WorldCenter.x, map.WorldCenter.x, 0.01f, "seabed centre x vs the region");
+            Assert.AreEqual(region.WorldCenter.y, map.WorldCenter.y, 0.01f, "seabed centre y vs the region");
+            Assert.AreEqual(region.WorldSizeMeters.x, map.WorldSize.x, 0.01f,
+                "the seabed must cover the WHOLE region — a smaller rect means the coast the player " +
+                "sails is not the coast the region is");
+            Assert.AreEqual(region.WorldSizeMeters.y, map.WorldSize.y, 0.01f);
+
+            var tex = map.HeightTexture;
+            Assert.IsNotNull(tex, "the seed must reference its external height PNG");
+            Assert.IsTrue(tex.isReadable,
+                "the height texture must be CPU-readable or the sim cannot decode it at all (ADR 0014)");
+
+            Assert.AreEqual(region.SeabedTexels.x, tex.width,
+                $"the committed PNG is {tex.width} px wide but the region derives " +
+                $"{region.SeabedTexels.x} — either the bake is stale, or Unity DOWNSCALED an oversized " +
+                "import and the only thing that would ever notice is this assert.");
+            Assert.AreEqual(region.SeabedTexels.y, tex.height, "…and its height");
+
+            Assert.LessOrEqual(Mathf.Max(tex.width, tex.height), RegionDef.MaxSeabedTexels,
+                "over the cap the import is downscaled behind your back");
+
+            // The encoding range must BRACKET the terrain, or the deepest water and the highest land are
+            // both clipped to the same value and the coast flattens at its extremes.
+            Assert.LessOrEqual(map.MinElevation, StPetersBuilder.DeepHarbourElevation,
+                "R=0 must reach at least the deep-harbour floor");
+            Assert.GreaterOrEqual(map.MaxElevation, StPetersBuilder.IslandElevation,
+                "R=1 must reach at least the island plateau");
+
+            float texelX = map.WorldSize.x / tex.width, texelY = map.WorldSize.y / tex.height;
+            Assert.AreEqual(texelX, texelY, 0.01f,
+                "the texels must be SQUARE — a stretched grid samples the two axes at different " +
+                "densities, which is the bug #320 removed");
+
+            Debug.Log($"[st-peters] committed seabed: {tex.width} × {tex.height} texels over " +
+                      $"{map.WorldSize.x} × {map.WorldSize.y} m = {texelX:F2} m/texel, elevation " +
+                      $"{map.MinElevation}..{map.MaxElevation} m, readable={tex.isReadable}, " +
+                      $"{tex.width * tex.height / 1024} KiB R8.");
+        }
+
+        /// <summary>
+        /// …and it must be a bake of THIS coast, not merely a correctly-sized one. Decoded elevations are
+        /// compared against the analytic terrain at points chosen to sit in FLAT interiors — island,
+        /// bar crest, channel bed, open floor — where bilinear sampling is exact and only the R8
+        /// quantisation contributes error.
+        /// </summary>
+        [Test]
+        public void TheCommittedSeabed_DecodesToTheAnalyticCoastItWasBakedFrom()
+        {
+            var map = Seabed();
+            Assert.IsNotNull(map);
+            PaintedHeightField field = map.Field;
+            Assert.IsNotNull(field, "the height texture must decode (readable + linear)");
+
+            // One R8 step over the encoded range, plus a hair for the round-trip.
+            float tolerance = (map.MaxElevation - map.MinElevation) / 255f + 0.02f;
+
+            var probes = new (string what, Vector2 p)[]
+            {
+                ("island interior", StPetersBuilder.IslandCenter),
+                ("bar crest", Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo, 0.3f)),
+                ("channel bed", Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo,
+                                             StPetersBuilder.ChannelAlong)),
+                ("open floor N", new Vector2(0f, 230f)),
+                ("open floor E", new Vector2(360f, 0f)),
+                ("the mooring", new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y)),
+            };
+
+            var report = new System.Text.StringBuilder(
+                "[st-peters] committed seabed vs the analytic coast it was baked from:\n");
+            foreach (var (what, p) in probes)
+            {
+                float analytic = _terrain.ElevationAtZones(p);
+                float painted = field.ElevationAt(p);
+                report.AppendLine($"  {what,-16} {p}  analytic {analytic,6:F2} m  painted {painted,6:F2} m " +
+                                  $" Δ {Mathf.Abs(painted - analytic):F3} m");
+                Assert.AreEqual(analytic, painted, tolerance,
+                    $"{what}: the committed seabed disagrees with the analytic terrain by more than one " +
+                    "quantisation step — the bake is of a different coast, so what the shader draws is " +
+                    "not what the tide bares (paint = sail, ADR 0014).");
+            }
+
+            Debug.Log(report + $"  tolerance {tolerance:F3} m (one R8 step over " +
+                      $"{map.MaxElevation - map.MinElevation} m + round-trip).");
+        }
     }
 }

@@ -882,17 +882,49 @@ namespace HiddenHarbours.App.Editor
         private void ExportStPeters()
         {
             if (!RequireExtent(out Vector2 center, out Vector2 worldSize, out Vector2Int texels)) return;
-            const float min0 = -4f, max0 = 6f;
 
             // (F1) Overwrite the committed seed in place rather than minting a "StPetersSeabed 1.asset"
             // duplicate that would orphan the committed PNG. Confirm before clobbering existing edits.
-            string existing = DataDir + "/StPetersSeabed.asset";
+            string existing = DataDir + "/" + StPetersSeabedName + ".asset";
             if (AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(existing) != null &&
                 !EditorUtility.DisplayDialog("Export analytic St Peters",
-                    "StPetersSeabed already exists. Overwrite it (and its height PNG) with a fresh export " +
-                    "from the analytic coast? Any painting you did on it will be replaced.",
+                    StPetersSeabedName + " already exists. Overwrite it (and its height PNG) with a fresh " +
+                    "export from the analytic coast at " + texels.x + " × " + texels.y + " texels? Any " +
+                    "painting you did on it will be replaced.",
                     "Overwrite", "Cancel"))
                 return;
+
+            var map = BakeStPetersSeabed(center, worldSize, texels);
+            if (map != null)
+            {
+                _map = map; CacheTexture(); _overlayDirty = true;
+                EditorGUIUtility.PingObject(map);
+            }
+        }
+
+        /// <summary>The committed St Peters seed map's asset name (its PNG is that stem + <c>_HeightTex</c>).</summary>
+        public const string StPetersSeabedName = "StPetersSeabed";
+
+        /// <summary>
+        /// The elevation range the R channel maps across. It must stay at or below the deepest seabed and at
+        /// or above the highest land, or the encoding CLIPS — so it is read from the builder's own zones
+        /// rather than restated as a literal, and a deeper harbour floor or a taller island cannot silently
+        /// saturate the map (rule 6).
+        /// </summary>
+        public static float SeabedMinElevation => StPetersBuilder.DeepHarbourElevation;
+
+        /// <inheritdoc cref="SeabedMinElevation"/>
+        public static float SeabedMaxElevation => StPetersBuilder.IslandElevation;
+
+        /// <summary>
+        /// Bake the St Peters painted-height seed from TODAY'S analytic coast — the shipped
+        /// <see cref="TidalTerrain.ElevationAtZones"/> configured with the builder's constants, sampled per
+        /// texel. Static and parameterised so the same code serves the window button and the batch entry
+        /// point below; the window owns only the confirmation dialog.
+        /// </summary>
+        public static PaintedHeightMap BakeStPetersSeabed(Vector2 center, Vector2 worldSize, Vector2Int texels)
+        {
+            float min0 = SeabedMinElevation, max0 = SeabedMaxElevation;
 
             // Build a transient TidalTerrain configured with the canon St Peters zones (single source of
             // truth — the same constants the builder mirrors), sample it per texel, then discard it.
@@ -916,15 +948,65 @@ namespace HiddenHarbours.App.Editor
             }
             Object.DestroyImmediate(go);
 
-            var map = CreatePaintedMapAsset("StPetersSeabed", texels.x, texels.y, center, worldSize,
+            var map = CreatePaintedMapAsset(StPetersSeabedName, texels.x, texels.y, center, worldSize,
                                             min0, max0, pixels: pixels, overwrite: true);
             if (map != null)
-            {
-                _map = map; CacheTexture(); _overlayDirty = true;
                 Debug.Log("[TerrainPaintTool] Exported analytic St Peters → " +
-                          AssetDatabase.GetAssetPath(map) + ". Paint FROM this coast, then 'Adopt this map on " +
-                          "the OPEN scene' (open StPeters.unity first) to make the sim + water read it.");
-                EditorGUIUtility.PingObject(map);
+                          AssetDatabase.GetAssetPath(map) + " at " + texels.x + " × " + texels.y +
+                          " texels (" + (worldSize.x / texels.x).ToString("F2") + " × " +
+                          (worldSize.y / texels.y).ToString("F2") + " m per texel) over " +
+                          worldSize.x + " × " + worldSize.y + " m, elevation " + min0 + ".." + max0 +
+                          " m. Paint FROM this coast, then 'Adopt this map on the OPEN scene' (open " +
+                          "StPeters.unity first) to make the sim + water read it.");
+            return map;
+        }
+
+        /// <summary>
+        /// Batch entry point for <c>-executeMethod</c> — re-bakes the St Peters seed at whatever extent and
+        /// resolution the <see cref="RegionDef"/> currently publishes, with no dialog.
+        ///
+        /// <para>This exists because the seed HAS to be re-baked whenever the region's extent or its
+        /// analytic coast changes, and a menu-only path means the committed map silently describes a world
+        /// that no longer exists — which is exactly what happened when the region grew to 760 × 520 m while
+        /// the map stayed 160 × 120.</para>
+        /// </summary>
+        public static void RebakeStPetersSeabedFromCommandLine()
+        {
+            try
+            {
+                AssetDatabase.Refresh();
+
+                RegionDef region = DefaultRegion();
+                if (region == null)
+                {
+                    Debug.LogError("[TerrainPaintTool] (batch) region.st_peters not found — nothing to " +
+                                   "size the bake from.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                if (!region.HasUsableExtent)
+                {
+                    Debug.LogError("[TerrainPaintTool] (batch) '" + region.DisplayName + "' has an " +
+                                   "unusable extent: " + region.WorldSizeMeters.x + " × " +
+                                   region.WorldSizeMeters.y + " m at " + region.SeabedPixelsPerMetre +
+                                   " px/m.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+
+                var map = BakeStPetersSeabed(region.WorldCenter, region.WorldSizeMeters, region.SeabedTexels);
+                if (map == null)
+                {
+                    Debug.LogError("[TerrainPaintTool] (batch) the bake produced no map.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                AssetDatabase.SaveAssets();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[TerrainPaintTool] (batch) seabed re-bake threw: " + e);
+                EditorApplication.Exit(1);
             }
         }
 
