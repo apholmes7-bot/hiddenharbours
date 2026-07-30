@@ -113,6 +113,44 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly Vector2 WeatherCoastFacing = new Vector2(1f, -1f);
 
+        // --- THE LOOK-ONLY WIGGLE (the bullseye fix) ------------------------------------------------
+        // ⚠ The island's terrain is an ANALYTIC profile — a smooth function of elliptical distance — so
+        // every material boundary derived from it straight is a perfect concentric ellipse, and the first
+        // render of this coast came out looking like a target rather than an island. Real shorelines
+        // meander: a dune runs out into a hollow, a cobble tongue reaches up a gully, the marram grows in
+        // patches. So the band LOOKUP is offset by a small coherent noise before it picks a material.
+        //
+        // ⭐ This is LOOK ONLY and it is important that it stays that way. The noise never touches the
+        // terrain, so it never moves the water level, the walkability gate, the clam field, the tide
+        // window or the reef's depth gate — it only changes which of six drawn materials a metre of
+        // already-decided ground gets. Same shape as the shoreline's own #177 wiggle (organic-shoreline):
+        // perturb the picture, never the height. Two consequences held deliberately:
+        //   · the PAINT FLOOR reads the RAW elevation, so the painted footprint (and its budget) is
+        //     unchanged and the outer edge stays clean where it meets the shader's own wiggly waterline;
+        //   · the SANDBAR is exempt entirely — its cobble spine is a path and its channel is a gut, and
+        //     both are things the player reads to decide where to walk. Signage does not get weathered.
+
+        /// <summary>Metres of elevation the coarse octave shifts the band lookup by, at most. On the
+        /// beach's ~0.23 m/m gradient that is about ±3.5 m of boundary movement — a meander you can see
+        /// without any band losing its identity.</summary>
+        public const float BandWiggleMetres = 0.8f;
+
+        /// <summary>Feature size (m) of the coarse octave — the wavelength of the meander.</summary>
+        public const float BandWiggleScale = 16f;
+
+        /// <summary>A finer octave on top, for the metre-scale raggedness that stops a meandering edge
+        /// from reading as a drawn curve.</summary>
+        public const float BandDetailMetres = 0.3f;
+        public const float BandDetailScale  = 6f;
+
+        /// <summary>
+        /// How far the weather/sheltered boundary is feathered, as a fraction of the bearing dot product.
+        /// Without it the two vocabularies meet along a dead-straight diagonal and the band widths step
+        /// visibly where it crosses the coast; ±0.12 interleaves them over roughly ±7° of bearing, which
+        /// is how a real coast changes character — gradually, and in patches.
+        /// </summary>
+        public const float SectorFeather = 0.12f;
+
         // =====================================================================================
         //  MATERIAL VOCABULARY
         // =====================================================================================
@@ -179,7 +217,12 @@ namespace HiddenHarbours.App.Editor
             Vector2 d = worldPos - StPetersBuilder.IslandCenter;
             if (StPetersBuilder.IslandRadiusY > 0f && StPetersBuilder.IslandRadius > 0f)
                 d = new Vector2(d.x, d.y * (StPetersBuilder.IslandRadius / StPetersBuilder.IslandRadiusY));
-            return Vector2.Dot(d, WeatherCoastFacing) > 0f;
+            if (d.sqrMagnitude < 1e-6f) return false;   // dead centre: meadow either way
+
+            // Compare BEARINGS (both normalised) so the threshold is an angle and the feather below is a
+            // constant number of degrees rather than something that shrinks with distance from the centre.
+            float bearing = Vector2.Dot(d.normalized, WeatherCoastFacing.normalized);
+            return bearing > Wiggle(worldPos) * SectorFeather;
         }
 
         /// <summary>
@@ -193,11 +236,19 @@ namespace HiddenHarbours.App.Editor
             if (terrain == null) return ShoreMaterial.None;
 
             float e = terrain.ElevationAt(worldPos);
+
+            // ⭐ The paint floor reads the RAW elevation, never the wiggled one: the footprint is a
+            // budget decision, and the outer edge is where the painting hands off to the shader's own
+            // wiggly waterline — neither wants a second source of raggedness.
             if (e < PaintFloorElevation) return ShoreMaterial.None;
 
             // THE BAR — a cobble walking line with sand flats either side ("a cobble-and-sand bar", §6.0).
             // Tested before the sector split because the bar leaves the island's WEST end and would
             // otherwise just inherit the sheltered table, losing the path read entirely.
+            //
+            // ⭐ EXEMPT FROM THE WIGGLE, on purpose. The spine is a path and the channel is a boat gut:
+            // both are things the player reads off the ground to decide where to put their feet or their
+            // hull. A weathered edge on scenery is atmosphere; a weathered edge on signage is a lie.
             float dBar = DistanceToSegment(worldPos, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
             if (dBar <= StPetersBuilder.SandbarHalfWidth)
             {
@@ -205,7 +256,45 @@ namespace HiddenHarbours.App.Editor
                 return ShelteredBand(e);
             }
 
-            return IsWeatherCoast(worldPos) ? WeatherBand(e) : ShelteredBand(e);
+            // The island's coast: pick the band from a WIGGLED elevation so the rings meander.
+            //
+            // ⚠ CLAMPED to the paint floor, and that clamp is load-bearing. Both band tables carry their
+            // OWN floor guard (they are public and callable on their own), so handing them a wiggled
+            // elevation that dipped below the floor made them answer None — and the footprint quietly lost
+            // 1,239 cells to a ragged hem the paint decision had already ruled in. The wiggle may move a
+            // metre of ground BETWEEN bands; it may never move it out of the painting.
+            float look = Mathf.Max(PaintFloorElevation,
+                                   e + Wiggle(worldPos) * BandWiggleMetres
+                                     + Wiggle(worldPos * (BandWiggleScale / BandDetailScale), 7)
+                                       * BandDetailMetres);
+            return IsWeatherCoast(worldPos) ? WeatherBand(look) : ShelteredBand(look);
+        }
+
+        /// <summary>
+        /// Coherent value noise in [-1, 1] over world position, at <see cref="BandWiggleScale"/> metres per
+        /// lattice cell. Bilinear between hashed lattice corners with a smoothstep ease, so the field
+        /// MEANDERS instead of speckling — per-cell white noise would dither every band boundary into
+        /// salt-and-pepper, which is the opposite of the organic edge this is for.
+        ///
+        /// <para>Pure: a stable hash of the lattice corner, no <c>System.Random</c>, so the coast is the
+        /// same on every machine and every rebuild (rule 5).</para>
+        /// </summary>
+        public static float Wiggle(Vector2 worldPos, int salt = 3)
+        {
+            float fx = worldPos.x / BandWiggleScale;
+            float fy = worldPos.y / BandWiggleScale;
+            int x0 = Mathf.FloorToInt(fx), y0 = Mathf.FloorToInt(fy);
+            float tx = Mathf.SmoothStep(0f, 1f, fx - x0);
+            float ty = Mathf.SmoothStep(0f, 1f, fy - y0);
+
+            float c00 = Hash01(x0,     y0,     salt);
+            float c10 = Hash01(x0 + 1, y0,     salt);
+            float c01 = Hash01(x0,     y0 + 1, salt);
+            float c11 = Hash01(x0 + 1, y0 + 1, salt);
+
+            float bottom = Mathf.Lerp(c00, c10, tx);
+            float top    = Mathf.Lerp(c01, c11, tx);
+            return Mathf.Lerp(bottom, top, ty) * 2f - 1f;
         }
 
         /// <summary>The WEST/NORTH coast: grass meadow, a marram dune band, beach sand, the rippled flats,

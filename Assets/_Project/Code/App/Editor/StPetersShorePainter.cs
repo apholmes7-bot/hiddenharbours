@@ -184,6 +184,13 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The highest-ranked SOFT material among the eight neighbours that outranks this cell — the one
         /// whose tongue laps onto it. <see cref="ShoreMaterial.None"/> for "nothing laps here".
+        ///
+        /// <para><b>One overlay per cell, and the highest material wins.</b> A tilemap holds one tile per
+        /// cell, so where three materials meet at a corner only the topmost tongue is drawn — grass laps
+        /// over sand and the marram/sand seam beside it stays hard for that one metre. Taking the HIGHEST
+        /// is the right tie-break because that is the tongue the eye goes to; a second fringe layer would
+        /// buy the remaining case for another tilemap's worth of cells, which is not a trade worth making
+        /// for a metre.</para>
         /// </summary>
         static ShoreMaterial HighestLappingNeighbour(ShoreMaterial[] materials, int width, int height,
                                                      int ix, int iy, ShoreMaterial mine)

@@ -411,6 +411,108 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =================================================================================
+        //  THE LOOK-ONLY WIGGLE (the bullseye fix)
+        // =================================================================================
+
+        [Test]
+        public void TheWiggleIsCoherent_NotSpeckle_AndStaysInRange()
+        {
+            // Rendering the first version of this classifier produced a TARGET, not an island: the terrain
+            // is an analytic function of elliptical distance, so every band boundary came out a perfect
+            // concentric ellipse. The wiggle breaks that — but only if it MEANDERS. Per-cell white noise
+            // would dither each boundary into salt-and-pepper, which is worse than the rings.
+            int incoherent = 0, samples = 0;
+            for (float x = -200f; x < 200f; x += 1f)
+            for (float y = -100f; y < 100f; y += 7f)
+            {
+                float a = StPetersShoreMap.Wiggle(new Vector2(x, y));
+                float b = StPetersShoreMap.Wiggle(new Vector2(x + 1f, y));
+                Assert.GreaterOrEqual(a, -1.0001f, "the wiggle is a [-1,1] field");
+                Assert.LessOrEqual(a, 1.0001f, "the wiggle is a [-1,1] field");
+                samples++;
+                if (Mathf.Abs(a - b) > 0.5f) incoherent++;   // a metre apart should barely differ
+            }
+
+            Assert.Greater(samples, 5000, "sanity: enough samples to mean something");
+            Assert.Less(incoherent, samples / 100,
+                $"{incoherent}/{samples} one-metre steps jumped more than half the field's range — the " +
+                "noise is speckling rather than meandering, so every band edge would come out dithered");
+        }
+
+        [Test]
+        public void Sabotage_PerCellWhiteNoise_WouldDitherEveryBandEdge()
+        {
+            // The obvious wrong implementation, measured: hash the cell directly instead of interpolating
+            // between lattice corners. This is what the coherence assertion above is protecting against.
+            int incoherent = 0, samples = 0;
+            for (float x = -200f; x < 200f; x += 1f)
+            for (float y = -100f; y < 100f; y += 7f)
+            {
+                float a = StPetersShoreMap.Hash01((int)x, (int)y, 3) * 2f - 1f;
+                float b = StPetersShoreMap.Hash01((int)x + 1, (int)y, 3) * 2f - 1f;
+                samples++;
+                if (Mathf.Abs(a - b) > 0.5f) incoherent++;
+            }
+            Assert.Greater(incoherent, samples / 3,
+                $"white noise jumped on only {incoherent}/{samples} steps — if the sabotage does not " +
+                "misbehave, the coherence test above is not measuring anything");
+        }
+
+        [Test]
+        public void TheWiggleIsLookOnly_ItNeverMovesTheGroundOrPunchesAHoleInIt()
+        {
+            // The load-bearing property. The wiggle offsets which MATERIAL is drawn; it must never change
+            // the terrain (the water level, the walk gate, the clam field and the reef's depth gate all
+            // read TidalTerrain directly), and it must never turn dry land into an unpainted cell.
+            var probe = new GameObject("StPetersTerrain_WiggleProbe");
+            try
+            {
+                var second = probe.AddComponent<TidalTerrain>();
+                StPetersBuilder.ConfigureTidalTerrain(second);
+
+                for (float x = -370f; x < 370f; x += 11f)
+                for (float y = -250f; y < 250f; y += 11f)
+                {
+                    var p = new Vector2(x, y);
+                    Assert.AreEqual(_terrain.ElevationAt(p), second.ElevationAt(p), 1e-6f,
+                        $"the terrain at {p} must be untouched by anything the painter does");
+
+                    // Nothing above the paint floor may come back unpainted: the paint decision reads the
+                    // RAW elevation precisely so the wiggle cannot bite a hole in the coast.
+                    if (_terrain.ElevationAt(p) >= StPetersShoreMap.PaintFloorElevation)
+                        Assert.AreNotEqual(ShoreMaterial.None, StPetersShoreMap.MaterialAt(_terrain, p),
+                            $"{p} is above the paint floor but classified as unpainted — the wiggle has " +
+                            "leaked into the footprint decision");
+                }
+            }
+            finally { Object.DestroyImmediate(probe); }
+        }
+
+        [Test]
+        public void TheCrossingIsExemptFromTheWiggle_BecauseAPathIsSignage()
+        {
+            // The bar's cobble spine is what tells the player where to walk, and the channel is what tells
+            // a boat where it can cross. Both must read cleanly along their whole length — a weathered edge
+            // on scenery is atmosphere, on signage it is a lie. So the spine is continuous end to end.
+            int gaps = 0, steps = 0;
+            for (float t = 0.02f; t <= 0.98f; t += 0.01f, steps++)
+            {
+                Vector2 p = Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo, t);
+
+                // Skip the channel cut itself — it is SUPPOSED to interrupt the path.
+                float alongFromCut = Mathf.Abs(t - StPetersBuilder.ChannelAlong)
+                                     * Vector2.Distance(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
+                if (alongFromCut <= StPetersBuilder.ChannelHalfWidth) continue;
+
+                if (StPetersShoreMap.MaterialAt(_terrain, p) != ShoreMaterial.Shingle) gaps++;
+            }
+            Assert.Greater(steps, 50, "sanity: the walk was actually sampled");
+            Assert.AreEqual(0, gaps,
+                $"{gaps} samples along the bar's crest were not cobble — the walking line has holes in it, " +
+                "which means the wiggle has reached the crossing");
+        }
+
+        // =================================================================================
         //  THE REEF'S ROCK
         // =================================================================================
 
