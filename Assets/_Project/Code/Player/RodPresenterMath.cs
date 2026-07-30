@@ -45,6 +45,7 @@ namespace HiddenHarbours.Player
                     return RodElements.Rod | RodElements.Line | RodElements.Bobber;
                 case FishingPhase.Waiting:
                 case FishingPhase.Bite:
+                case FishingPhase.BiteNibble:   // the tease shows on the same rig the bite does (§10.2)
                     return castPath
                         ? RodElements.Rod | RodElements.Line | RodElements.Bobber
                         : RodElements.Rod | RodElements.Line;

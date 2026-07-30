@@ -36,6 +36,13 @@ namespace HiddenHarbours.Core
         Sinking = 10,      // the weighted rig is sinking through the column — the depth drop (§2.3)
         FightDeep = 11,    // fish unseen, line straight down — pure pull-on-slack timing, no steer yet (§3)
         FightSurface = 12, // fish visible, line moves around the screen — mouse-steer + pull to land (§3)
+
+        // ---- The bite & hook moment — APPENDED (owner drop §10.2, the false-nibble game) -------------
+        /// <summary>A TEASING FALSE NIBBLE is showing — the small dip that is NOT the take; striking on
+        /// it is the mistake the game is about. For a species with a <c>BiteDef</c>, <see cref="Bite"/>
+        /// (=2) now means the TRUE TAKE (the strike window); species without one keep the legacy
+        /// forgiving auto-hook <see cref="Bite"/> exactly as shipped.</summary>
+        BiteNibble = 13,
     }
 
     /// <summary>

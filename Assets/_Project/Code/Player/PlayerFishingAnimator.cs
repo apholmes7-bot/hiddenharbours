@@ -68,7 +68,8 @@ namespace HiddenHarbours.Player
                 case FishingPhase.Sinking:
                     return stationary ? FishingPose.Hold : FishingPose.None;
                 case FishingPhase.Bite:
-                    return FishingPose.Bite;
+                case FishingPhase.BiteNibble:   // the tease plays the same bite tell — a lighter knock
+                    return FishingPose.Bite;    // is the sheet's own business (§10.2 presentation)
                 case FishingPhase.Fighting:
                 case FishingPhase.FightDeep:
                 case FishingPhase.FightSurface:
@@ -303,7 +304,8 @@ namespace HiddenHarbours.Player
             => p == FishingPhase.Fighting || p == FishingPhase.FightDeep || p == FishingPhase.FightSurface;
 
         private static bool IsPosed(FishingPhase p)
-            => p == FishingPhase.Bite || p == FishingPhase.Landed || IsFight(p)
+            => p == FishingPhase.Bite || p == FishingPhase.BiteNibble || p == FishingPhase.Landed
+            || IsFight(p)
             || p == FishingPhase.WindBack || p == FishingPhase.Cast
             || p == FishingPhase.Waiting || p == FishingPhase.Sinking;
 
