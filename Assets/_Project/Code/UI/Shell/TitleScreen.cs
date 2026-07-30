@@ -124,10 +124,10 @@ namespace HiddenHarbours.UI
             bool canContinue = ShellFlow.HasGameToContinue;
             float y = MenuTopY;
 
-            // Up to three lines, built in the order the player should walk them. Continue is offered only
+            // Up to four lines, built in the order the player should walk them. Continue is offered only
             // when there is something behind it — a first launch must not dangle a button that loads
             // nothing (and would silently mean "new game" if it were pressed).
-            var items = new Button[canContinue ? 3 : 2];
+            var items = new Selectable[canContinue ? 4 : 3];
             int n = 0;
 
             if (canContinue)
@@ -144,6 +144,10 @@ namespace HiddenHarbours.UI
             if (!canContinue)
                 PaperUi.MakeText(column, ShellStrings.NoGameYet, 24, TextAnchor.MiddleLeft,
                                  DetailX, y, 420f, MenuItemH, PaperUi.ChalkFaint);
+            y -= MenuStep;
+
+            items[n++] = PaperUi.MakeMenuItem(column, "Settings", ShellStrings.Settings,
+                                              MarginX, y, MenuItemW, MenuItemH, OnSettings);
             y -= MenuStep;
 
             items[n] = PaperUi.MakeMenuItem(column, "Quit", ShellStrings.Quit,
@@ -225,6 +229,25 @@ namespace HiddenHarbours.UI
         }
 
         private void OnConfirmNewGame() => ShellFlow.StartNewGame();
+
+        /// <summary>The settings sheet opens over the page and hides it, so Back lands back on the title
+        /// rather than dumping the player somewhere. A tester must be able to fix the volume BEFORE
+        /// starting, not only after being startled by it.</summary>
+        private void OnSettings()
+        {
+            PaperUi.SetPageVisible(_host, false);
+            SettingsSheet.Open(ReturnFromSettings);
+        }
+
+        private void ReturnFromSettings()
+        {
+            if (_host == null) return;
+            PaperUi.SetPageVisible(_host, true);
+
+            var settings = _host.Find("Menu/Settings");
+            var es = EventSystem.current;
+            if (es != null && settings != null) es.SetSelectedGameObject(settings.gameObject);
+        }
 
         private void OnQuit() => ShellQuit.QuitApplication();
 
