@@ -223,6 +223,28 @@ namespace HiddenHarbours.App.Editor
         // past its far tip and short of the scene edge.
         public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-356f, 0f, 0f);
 
+        // --- THE VILLAGE (the authoring pass StartSpawnPos above was waiting for) ---------------------
+        // ⭐ Every one of these used to sit within a few metres of (-40, 0) — the centre of the 44 m
+        // greybox disc the island WAS before #328 moved it to (70, 0) with 450 x 260 m of landmass. The
+        // rescale did not move them, so the cottage, Aunt Ginny, Ned's letter and the freezer ended up
+        // huddled 60 m east of the player's own spawn in the middle of an empty island, and the WET-BUCKET
+        // spot whose own comment reads "the sand rim, at the water" ended up ~100 m inland, on grass.
+        //
+        // The village now stands where the docs put it: on the island's WEST half beside the start spawn —
+        // "Quiet, close, the whole world the size of a low-tide walk" (§6.0) — tight enough to read as one
+        // small place, and within sight of the bar head the opening walks out across. Every position is on
+        // the plateau (+6 m, dry at every tide), which StPetersVillageTests asserts against the authored
+        // terrain rather than trusting these numbers.
+        public static readonly Vector3 CottagePos    = new Vector3(-105f, 14f, 0f);     // Ginny's — the hearth
+        public static readonly Vector3 GinnyPos      = new Vector3(-101f, 11f, 0f);     // out front, on the path
+        public static readonly Vector3 NedsLetterPos = new Vector3(-107f, 10.5f, 0f);   // on the cottage step
+        public static readonly Vector3 FreezerPos    = new Vector3(-102f, 12.5f, 0f);   // round the side
+        // ⭐ The wet bucket belongs AT THE WATER, and on this island that means the HEAD OF THE FLATS — the
+        // last dry ground before the sandbar's cobble spine runs out west. The ground here is +4.49 m, about
+        // a metre clear of spring high water, so the barrel is never swimming; a few metres west and the bar
+        // itself floods twice a day. It is exactly where you come off the flats with a bucket of clams.
+        public static readonly Vector3 WetBucketPos  = new Vector3(-164f, 0f, 0f);
+
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
         // ⭐ THE DOCK IS ON THE EAST END, opposite the sandbar (§5.1a, ruled 2026-07-23): you walk out the
         // west and you come home under power to the east. The arrival point sits within DockZoneRadius of
@@ -565,7 +587,7 @@ namespace HiddenHarbours.App.Editor
             // The cottage / the hard where the uncle's dory waits (greybox marker — the actual damaged-dory
             // OFFER lives at the Nine Mile Creek Shipwright this round; the slip here is set dressing for the opening).
             var cottageGo = new GameObject("IslandCottage");
-            cottageGo.transform.position = new Vector3(-44f, 4f, 0f);
+            cottageGo.transform.position = CottagePos;
             var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
             cottageSr.sortingOrder = 2;
             var cottageSprite = LoadSpriteAny(ArtCottage);
@@ -579,7 +601,7 @@ namespace HiddenHarbours.App.Editor
             // greybox colour markers until art lands. Ice for the boat rides the DeckIceBox on the
             // hold (runtime-spawned) — nothing to place here.
             var freezerGo = new GameObject("GinnyFreezer");
-            freezerGo.transform.position = new Vector3(-42f, 2.2f, 0f);
+            freezerGo.transform.position = FreezerPos;
             var freezerSr = freezerGo.AddComponent<SpriteRenderer>();
             freezerSr.sprite = waterSprite;
             freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
@@ -588,7 +610,7 @@ namespace HiddenHarbours.App.Editor
             freezerGo.AddComponent<GinnyFreezer>();
 
             var wetGo = new GameObject("WetBucketSpot");
-            wetGo.transform.position = new Vector3(-30f, -6f, 0f);   // the sand rim, at the water
+            wetGo.transform.position = WetBucketPos;   // the head of the flats — the last dry ground
             var wetSr = wetGo.AddComponent<SpriteRenderer>();
             wetSr.sprite = waterSprite;
             wetSr.color = new Color(0.25f, 0.45f, 0.60f);   // a seawater barrel, reads wet
@@ -787,15 +809,20 @@ namespace HiddenHarbours.App.Editor
                                  "trap-haul loop was not wired. Re-run after Data/Traps + Data/Bait import.");
             }
 
-            // --- THE MOORED DORY'S SLIP (set dressing; the persistent Dory floats at DoryMooredPos) ------
-            // The real, controllable Player is now spawned by the PersistentCoreBuilder above at
-            // StartSpawnPos, and the persistent Dory floats off the south coast. This is a small marker on
-            // the south shore showing where the uncle's dory is moored / where you board once she's yours.
-            var slipGo = new GameObject("DorySlipMarker");
-            slipGo.transform.position = new Vector3(DisembarkPos.x, DisembarkPos.y, 0f);
-            var slipSr = slipGo.AddComponent<SpriteRenderer>();
-            slipSr.sprite = waterSprite; slipSr.color = new Color(0.55f, 0.40f, 0.24f, 0.85f); slipSr.sortingOrder = -6;
-            slipGo.transform.localScale = new Vector3(2.5f, 1.2f, 1f);
+            // --- THE ONE DOCK (§5.1a, ruled) — dressed from the wharf tile kit -------------------------
+            // ⭐ RETIRED HERE: a 2.5 x 1.2 m brown rectangle named "DorySlipMarker" that stood in for the
+            // dock, sitting on a shore the island no longer has. St Peters is ruled to have ONE dock, on the
+            // east end opposite the sandbar, "modest, but can take powerboats" — so it gets a real modest
+            // pier: a 39 x 6 m timber finger running out along the dredged slip from the last dry ground to
+            // just short of the mooring, so the ratified disembark at (328, 0) lands ON the planks. Drawn
+            // strictly back to front, because a wharf cell is 32 x 56 px whose bottom 24 rows of vertical
+            // face overhang the cell below (StPetersWharf carries the whole contract).
+            //
+            // ⚠ The deck is DRESSING, not floor. TidalWalkability answers purely from (elevation vs water
+            // level) and the project has no standable-structure seam, so the simulation still sees the
+            // -1.0 m dredged slip beneath these planks. That gap sits at the RATIFIED disembark point and
+            // predates this pier — the pier only makes it visible. Flagged for gameplay-systems.
+            StPetersWharf.Place();
 
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
@@ -803,8 +830,9 @@ namespace HiddenHarbours.App.Editor
             // onboarding nudge that walks the NEW loop: dig clams → cross the bar → Nine Mile Creek (cod licence +
             // rod) → buy + REPAIR the damaged dory → sail home. The dory is EARNED, never inherited.
             //
-            // Everything sits UP BY THE COTTAGE (≈ y +3..+6), well clear of the dock zone at (-40,-26), so
-            // the shared E key never fires both "talk" and "board" (context-aware by proximity). Belt-and-
+            // Everything sits UP BY THE COTTAGE in the village on the island's WEST half — and the dock is
+            // now 430 m away on the EAST end (§5.1a), so the shared E key could not fire both "talk" and
+            // "board" even if it wanted to (it is context-aware by proximity regardless). Belt-and-
             // braces, the open dialogue raises the Core InteractionGate the ControlSwitcher honours. Content
             // is DATA — the Interactables carry NpcDef refs, not strings; the words live in Data/NPCs.
             // Art is greybox (Ginny standee + portraits + panel), null-safe if a sprite isn't imported.
@@ -817,14 +845,14 @@ namespace HiddenHarbours.App.Editor
 
             // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
             // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).
-            var ginnyGo = MakeNpc("AuntGinny", new Vector3(-42f, 1.5f, 0f), LoadSpriteAny(ArtGinny),
+            var ginnyGo = MakeNpc("AuntGinny", GinnyPos, LoadSpriteAny(ArtGinny),
                                   waterSprite, new Color(0.78f, 0.55f, 0.62f));
             var ginnyIt = ginnyGo.AddComponent<Interactable>();
             ConfigureInteractableNpc(ginnyIt, ginnyNpc, LoadSpriteAny(ArtPortraitGinny));
 
             // "Ned's Letter" on the cottage step — the remembered presence (no inherited dory; the boat is
             // bought + mended). Read it to set read_logbook. A small book-sized marker if the art's absent.
-            var letterGo = MakeNpc("NedsLetter", new Vector3(-45.5f, 2.4f, 0f), null,
+            var letterGo = MakeNpc("NedsLetter", NedsLetterPos, null,
                                    waterSprite, new Color(0.62f, 0.47f, 0.30f));
             letterGo.transform.localScale = new Vector3(0.6f, 0.8f, 1f);
             var letterIt = letterGo.AddComponent<Interactable>();
