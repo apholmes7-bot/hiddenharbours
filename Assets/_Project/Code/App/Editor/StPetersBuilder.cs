@@ -935,8 +935,8 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Flowers} " +
-                      "wildflowers by habitat, the one dock at the east berth, and the village re-sited " +
+            Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Shrubs} shrubs + " +
+                      $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and the village re-sited " +
                       "beside the start spawn.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +

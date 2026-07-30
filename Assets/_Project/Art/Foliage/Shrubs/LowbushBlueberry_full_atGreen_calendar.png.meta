@@ -1,0 +1,522 @@
+fileFormatVersion: 2
+guid: 23d6d75eb057f4446bcfbf1e00baed66
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2001440201980944684
+    second: LowbushBlueberry_full_atGreen_calendar_0
+  - first:
+      213: 7645547696707289179
+    second: LowbushBlueberry_full_atGreen_calendar_1
+  - first:
+      213: 6415678333688619643
+    second: LowbushBlueberry_full_atGreen_calendar_2
+  - first:
+      213: 6917780436221499445
+    second: LowbushBlueberry_full_atGreen_calendar_3
+  - first:
+      213: -7197066145805205574
+    second: LowbushBlueberry_full_atGreen_calendar_4
+  - first:
+      213: -6221724906876350728
+    second: LowbushBlueberry_full_atGreen_calendar_5
+  - first:
+      213: 599279262906646976
+    second: LowbushBlueberry_full_atGreen_calendar_6
+  - first:
+      213: 8754616837317214438
+    second: LowbushBlueberry_full_atGreen_calendar_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 117
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50766f4968e295a448901d05daa7f35b
+      internalID: 479070014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 117
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 592f8f2662af4e34d94dbbd5b48c3f28
+      internalID: 314225557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 117
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca42eb445eaf5ae41b97f90c4fbcca20
+      internalID: -114730544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 117
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9af13c19098f59f4e8cb5e9f9e90b33b
+      internalID: -89647638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e46f1a08e5bf844cb9ed2cd46c24578
+      internalID: -2076769603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 78
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19388f30ae234e245bb8a8fba869a6c1
+      internalID: -1343806356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 78
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b5483ed34d4837449b73454c98c6c8e
+      internalID: -14762437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 78
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 437f6ee73b3340c4d886a19ca896e37c
+      internalID: -25261980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 39
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a895875fb3c697d45bcc413d65cbba46
+      internalID: 1232951750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 39
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edaf6120dbdb9e04ca958042f562c3a8
+      internalID: 524680872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 39
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8cdd464fbe9b8c4ab1b922e0d48c02b
+      internalID: 1408968457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 39
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4367052d8f92d4d4e80e6a4c3a2a722e
+      internalID: 1981672217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1700ed365611f7846a373ff3252da8c6
+      internalID: -1475460332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d29034dc10927f340b434d51115a7ada
+      internalID: 1011717545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c0296a1bda4f1c4986dab3a73022fc7
+      internalID: -789719211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_full_atGreen_calendar_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 39
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3846154}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11370416bb11a964eb251147929af337
+      internalID: -484794375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f209c3edc1f2dc0429b55a567d67a25e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LowbushBlueberry_full_atGreen_calendar_c0_f0: 479070014
+      LowbushBlueberry_full_atGreen_calendar_c0_f1: -2076769603
+      LowbushBlueberry_full_atGreen_calendar_c0_f2: 1232951750
+      LowbushBlueberry_full_atGreen_calendar_c0_f3: -1475460332
+      LowbushBlueberry_full_atGreen_calendar_c1_f0: 314225557
+      LowbushBlueberry_full_atGreen_calendar_c1_f1: -1343806356
+      LowbushBlueberry_full_atGreen_calendar_c1_f2: 524680872
+      LowbushBlueberry_full_atGreen_calendar_c1_f3: 1011717545
+      LowbushBlueberry_full_atGreen_calendar_c2_f0: -114730544
+      LowbushBlueberry_full_atGreen_calendar_c2_f1: -14762437
+      LowbushBlueberry_full_atGreen_calendar_c2_f2: 1408968457
+      LowbushBlueberry_full_atGreen_calendar_c2_f3: -789719211
+      LowbushBlueberry_full_atGreen_calendar_c3_f0: -89647638
+      LowbushBlueberry_full_atGreen_calendar_c3_f1: -25261980
+      LowbushBlueberry_full_atGreen_calendar_c3_f2: 1981672217
+      LowbushBlueberry_full_atGreen_calendar_c3_f3: -484794375
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -28,6 +28,21 @@ namespace HiddenHarbours.App.Editor
     {
         public const string TreeRootName = "IslandWoods";
         public const string FlowerRootName = "IslandFlowers";
+        public const string ShrubRootName = "IslandShrubs";
+
+        /// <summary>Shrubs sit between the ground cover and the trees. Like both, this is only the
+        /// pre-sort default — <see cref="YSortSprite"/> owns the order at runtime.</summary>
+        public const int ShrubSortingOrder = 4;
+
+        /// <summary>
+        /// Which sway row a planted shrub is drawn on. <b>Row 0 is the shrub standing still</b> — the rig's
+        /// sway curve is <c>sin(frame/SWAY × 2π)</c>, so rows 1 and 3 are the two extremes of a lean and
+        /// row 2 is the neutral pose again. Nothing here animates (plain sprites, no <c>_WindWorld</c>
+        /// bridge by instruction), so a static shrub has to be one standing still rather than one frozen
+        /// mid-gust. The other three rows are baked and unused for now — they are what a later wind pass
+        /// would read, which is why the slice still bakes the whole sheet the contract describes.
+        /// </summary>
+        public const int RestSwayRow = 0;
 
         /// <summary>Flowers sit with the grass, just above it — the same order the decor prefabs use. They
         /// also carry a <see cref="YSortSprite"/>, which OWNS the order at runtime and recomputes it from
@@ -36,12 +51,14 @@ namespace HiddenHarbours.App.Editor
 
         public sealed class Result
         {
-            public int Trees, Flowers;
+            public int Trees, Flowers, Shrubs;
             public readonly Dictionary<string, int> PerSpecies = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerFlower = new Dictionary<string, int>();
+            public readonly Dictionary<string, int> PerShrub = new Dictionary<string, int>();
 
             public string TreeSummary() => Summarise(PerSpecies);
             public string FlowerSummary() => Summarise(PerFlower);
+            public string ShrubSummary() => Summarise(PerShrub);
 
             static string Summarise(Dictionary<string, int> d)
             {
@@ -61,11 +78,13 @@ namespace HiddenHarbours.App.Editor
             if (terrain == null) return result;
 
             PlantTrees(terrain, result);
+            PlantShrubs(terrain, result);
             PlantFlowers(terrain, result);
 
-            Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees ({result.TreeSummary()}) and " +
-                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}) — stands and meadow by " +
-                      "habitat, with the village, the spawn, the crossing's approach and the dock left clear.");
+            Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees ({result.TreeSummary()}), " +
+                      $"{result.Shrubs} shrubs ({result.ShrubSummary()}) and " +
+                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}) — stands, heath and meadow " +
+                      "by habitat, with the village, the spawn, the crossing's approach and the dock left clear.");
             return result;
         }
 
@@ -128,6 +147,91 @@ namespace HiddenHarbours.App.Editor
                 result.Trees++;
                 result.PerSpecies.TryGetValue(site.Species, out int n);
                 result.PerSpecies[site.Species] = n + 1;
+            }
+        }
+
+        // =====================================================================================
+        //  SHRUBS
+        // =====================================================================================
+
+        /// <summary>
+        /// The shrub layer, as PLAIN SPRITES by instruction: no sprite-light response, nothing branching on
+        /// the state channel's veil flag, no shared-wind bridge. That contract is the art-pipeline lane's
+        /// future work and wiring it from here would be building someone else's seam. Snow is out of scope
+        /// — M1 is not winter.
+        ///
+        /// <para>Only the slice <see cref="StPetersShrubBake"/> baked exists, so every lookup is
+        /// null-tolerant: a species that was not baked simply has no sheet and its habitat goes unplanted
+        /// rather than throwing halfway through a region build.</para>
+        /// </summary>
+        static void PlantShrubs(ITidalTerrain terrain, Result result)
+        {
+            var contract = ShrubCatalog.Load();
+            if (contract?.Species == null || contract.Species.Count == 0)
+            {
+                Debug.LogWarning("[StPetersWoodsPlanter] the shrub contract is unreadable — no shrub layer. " +
+                                 "The kit ships to order; run 'Bake St Peters Shrub Slice' first.");
+                return;
+            }
+
+            // Habitat comes from the CONTRACT, never from a table here.
+            var habitatOf = new Dictionary<string, string>();
+            foreach (var e in contract.Species) habitatOf[e.Key] = e.Habitat;
+
+            // Which of the baked species actually has pixels on disk. The kit ships nothing by default, so
+            // "declared in the contract" and "baked" are different questions, and this asks the second.
+            var sheets = new Dictionary<string, string>();      // species -> sheet stem
+            foreach (string species in StPetersShrubBake.Species)
+            {
+                string stem = ShrubCatalog.VariantSheetStem(species, StPetersShrubBake.Stage,
+                                                            StPetersShrubBake.Phase);
+                string path = ShrubCatalog.SheetPath(stem, ShrubCatalog.Channel.Albedo);
+                if (AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().Any()) sheets[species] = stem;
+            }
+
+            if (sheets.Count == 0)
+            {
+                Debug.LogWarning("[StPetersWoodsPlanter] none of St Peters' shrub sheets are on disk — no " +
+                                 "shrub layer. Run 'Hidden Harbours ▸ Art ▸ Bake St Peters Shrub Slice'.");
+                return;
+            }
+
+            var root = new GameObject(ShrubRootName);
+            var spriteCache = new Dictionary<(string, int), Sprite>();
+
+            foreach (var site in StPetersShrubs.Scatter(
+                         terrain, sheets.Keys.ToList(),
+                         s => habitatOf.TryGetValue(s, out string h) ? h : null,
+                         ShrubCatalog.Variants))
+            {
+                var key = (site.Species, site.Variant);
+                if (!spriteCache.TryGetValue(key, out Sprite sprite))
+                {
+                    // Slices are named <stem>_c<col>_f<row>. On the VARIANT sheet the column is the
+                    // individual — which is what stops a thicket reading as one bush repeated — and the row
+                    // is the sway frame, of which a static planting takes the one at rest.
+                    string want = $"{sheets[site.Species]}_c{site.Variant}_f{RestSwayRow}";
+                    sprite = AssetDatabase
+                        .LoadAllAssetsAtPath(ShrubCatalog.SheetPath(sheets[site.Species],
+                                                                    ShrubCatalog.Channel.Albedo))
+                        .OfType<Sprite>().FirstOrDefault(sp => sp.name == want);
+                    spriteCache[key] = sprite;
+                }
+                if (sprite == null) continue;
+
+                var go = new GameObject($"{site.Species}_{site.Variant}");
+                go.transform.SetParent(root.transform, worldPositionStays: false);
+                // The kit's pivot is the ROOT CROWN — the ground-contact point — so the position IS
+                // where the shrub is planted. No offset, no rescale: the bake is already at metric size.
+                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                sr.sortingOrder = ShrubSortingOrder;
+                go.AddComponent<YSortSprite>();
+
+                result.Shrubs++;
+                result.PerShrub.TryGetValue(site.Species, out int n);
+                result.PerShrub[site.Species] = n + 1;
             }
         }
 

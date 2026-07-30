@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 2b4e2ad505ab4494395c68fd0384b0b6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3159178444054863321
+    second: WildRose_full_atGreen_0
+  - first:
+      213: 6380567745262005385
+    second: WildRose_full_atGreen_1
+  - first:
+      213: -8041359831686119246
+    second: WildRose_full_atGreen_2
+  - first:
+      213: -8114844296217239458
+    second: WildRose_full_atGreen_3
+  - first:
+      213: -5018080597907546094
+    second: WildRose_full_atGreen_4
+  - first:
+      213: -8766428062066189979
+    second: WildRose_full_atGreen_5
+  - first:
+      213: 1899719747400068031
+    second: WildRose_full_atGreen_6
+  - first:
+      213: -5818191458779395483
+    second: WildRose_full_atGreen_7
+  - first:
+      213: 1337273880298320841
+    second: WildRose_full_atGreen_8
+  - first:
+      213: 8846131336231095113
+    second: WildRose_full_atGreen_9
+  - first:
+      213: -1199884138997931537
+    second: WildRose_full_atGreen_10
+  - first:
+      213: -3605467239593931467
+    second: WildRose_full_atGreen_11
+  - first:
+      213: 4475142400624787451
+    second: WildRose_full_atGreen_12
+  - first:
+      213: 4222293515565531297
+    second: WildRose_full_atGreen_13
+  - first:
+      213: -5834368802772734579
+    second: WildRose_full_atGreen_14
+  - first:
+      213: 6903484451790832522
+    second: WildRose_full_atGreen_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1bece3d5bd32ac4eae5f5322be4a25a
+      internalID: 2059110264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97d4d401401687744906669c82c4906f
+      internalID: -691771827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a110448b411e7644f9b14203de3d3510
+      internalID: 2028116656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 204
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50510a53a7b6c1c4499fa2924678a1b6
+      internalID: 610252171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bfdde1d0592ef8409a4406f4107f428
+      internalID: -431873522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8236b6d52a381ba4d97cd2cb3832784d
+      internalID: 141928496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d682cafac7fbd1147b3fa840647f4833
+      internalID: -250667960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 136
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d5ec28c6715076488dc933864fd02da
+      internalID: -1149579450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c863fc822c5e7334184b1040020c0232
+      internalID: 2025853627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c0deba17def9084fac834dee8831978
+      internalID: -1074144596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e3b1d67f58864d4cbe6de34e32803a9
+      internalID: -1506336633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 68
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ea909ece3faf7242a0726db689d5153
+      internalID: 299673071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a452cc48e7376f4ca600be29099b40a
+      internalID: -1873081332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 687a56700905d8147a80159b9d05c96d
+      internalID: 1617679796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8df74e1fdc5ab8f46b04270a95830cef
+      internalID: -94501118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRose_full_atGreen_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 0
+        width: 60
+        height: 68
+      alignment: 9
+      pivot: {x: 0.5, y: 0.16176471}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 293b2a70f6ff6c548a1da2e613cd8aeb
+      internalID: -1182201116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 140a9429771158341b1aee9c175d0777
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WildRose_full_atGreen_c0_f0: 2059110264
+      WildRose_full_atGreen_c0_f1: -431873522
+      WildRose_full_atGreen_c0_f2: 2025853627
+      WildRose_full_atGreen_c0_f3: -1873081332
+      WildRose_full_atGreen_c1_f0: -691771827
+      WildRose_full_atGreen_c1_f1: 141928496
+      WildRose_full_atGreen_c1_f2: -1074144596
+      WildRose_full_atGreen_c1_f3: 1617679796
+      WildRose_full_atGreen_c2_f0: 2028116656
+      WildRose_full_atGreen_c2_f1: -250667960
+      WildRose_full_atGreen_c2_f2: -1506336633
+      WildRose_full_atGreen_c2_f3: -94501118
+      WildRose_full_atGreen_c3_f0: 610252171
+      WildRose_full_atGreen_c3_f1: -1149579450
+      WildRose_full_atGreen_c3_f2: 299673071
+      WildRose_full_atGreen_c3_f3: -1182201116
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

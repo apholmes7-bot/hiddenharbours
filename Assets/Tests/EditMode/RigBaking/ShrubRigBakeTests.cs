@@ -1058,38 +1058,81 @@ namespace HiddenHarbours.Tests.RigBaking
             return diff;
         }
 
+        /// <summary>The one committed slice, named here and nowhere else in this assembly.</summary>
+        static readonly string[] StPetersSliceSpecies =
+        {
+            "BeakedHazelnut", "LowbushBlueberry", "Meadowsweet", "Raspberry", "SweetGale", "WildRose",
+        };
+
+        const string StPetersSliceStem = "_full_atGreen";
+
         [Test]
-        public void TheKitShipsNoPixels_AndThatIsDeliberate()
+        public void TheKitStillBakesToOrder_AndTheOnlyCommittedPixels_AreStPetersNamedSlice()
         {
             // ⭐ 20 species × 8 phases × 5 snow steps × 4 variants × 3 stages is a matrix an import has
             // no business choosing from, so the rig is the deliverable and sheets bake to order — the
-            // call #312 and #318 already made. If a slice is ever committed, that is a deliberate atlas
-            // decision and this test should be updated to say which slice and why.
+            // call #312 and #318 already made. This test used to assert the folder was EMPTY, and said
+            // that if a slice were ever committed it should be updated to name which and why. That
+            // happened: St Peters cannot be built without pixels, so ONE corner is committed —
+            // six species covering the rig's five habitats, VARIANT axis, `full` stage, `green` phase,
+            // three channels each. 0.56 MiB on disk.
+            //
+            // ⚠️ THE SLICE IS SPELLED OUT ABOVE RATHER THAN READ FROM StPetersShrubBake, and not only
+            // because this assembly cannot see HiddenHarbours.App.Editor. This is an ATLAS GUARD: if it
+            // derived the expected set from the code that does the baking it could never fail, and
+            // widening the bake is precisely the thing that has to come back to the owner. A seventh
+            // species, a second phase or the other axis all land here as a failure, which is correct.
             string full = Path.Combine(RepoRoot, ShrubCatalog.ShrubsRoot);
             string[] pngs = Directory.Exists(full)
                 ? Directory.GetFiles(full, "*.png", SearchOption.TopDirectoryOnly)
+                             .Select(Path.GetFileName).OrderBy(n => n, StringComparer.Ordinal).ToArray()
                 : Array.Empty<string>();
 
-            Assert.IsEmpty(pngs,
-                $"{pngs.Length} PNG(s) appeared under {ShrubCatalog.ShrubsRoot}. This kit bakes to " +
-                "order; committing a slice is an atlas-budget decision for the owner. If that decision " +
-                "was made, update this test to name the slice rather than deleting it.");
+            string[] want = StPetersSliceSpecies
+                            .SelectMany(s => ShrubCatalog.Channels.Select(
+                                c => $"{s}{StPetersSliceStem}{ShrubCatalog.SuffixFor(c)}.png"))
+                            .OrderBy(n => n, StringComparer.Ordinal).ToArray();
 
-            // The contract, by contrast, MUST be committed — it is what the engine is wired against
-            // before a single pixel exists.
+            var extra = pngs.Except(want, StringComparer.Ordinal).ToArray();
+            Assert.IsEmpty(extra,
+                $"{extra.Length} undeclared PNG(s) under {ShrubCatalog.ShrubsRoot}: " +
+                string.Join(", ", extra) + ". This kit bakes to order and exactly one slice is ruled " +
+                "in (St Peters', named in this test). Committing more is an atlas-budget decision for " +
+                "the owner — widen this list deliberately rather than deleting the check.");
+
+            var missing = want.Except(pngs, StringComparer.Ordinal).ToArray();
+            Assert.IsEmpty(missing,
+                $"{missing.Length} sheet(s) of St Peters' committed slice are gone: " +
+                string.Join(", ", missing) + ". The region is built from these — re-run " +
+                "Hidden Harbours ▸ Art ▸ Bake St Peters Shrub Slice.");
+
+            Assert.AreEqual(StPetersSliceSpecies.Length * ShrubCatalog.Channels.Length, pngs.Length);
+            foreach (string s in StPetersSliceSpecies)
+                Assert.Contains(s, ShrubCatalog.SpeciesKeys,
+                    $"the committed slice names '{s}', which is not a species key. ⚠️ The README's " +
+                    "display names are NOT the rig's keys (Raspberry, WinterberryHolly).");
+
+            // The contract MUST be committed too — it is what the engine is wired against, and every
+            // rect on those sheets is numbered against its union cell and pivot.
             Assert.IsTrue(File.Exists(Path.Combine(RepoRoot, ShrubCatalog.ContractPath)),
-                $"{ShrubCatalog.ContractPath} must be committed even though the pixels are not.");
+                $"{ShrubCatalog.ContractPath} must be committed alongside the pixels.");
+
+            Debug.Log($"[shrub-slice] {pngs.Length} committed PNG(s) = " +
+                      $"{StPetersSliceSpecies.Length} species × {ShrubCatalog.Channels.Length} channels, " +
+                      $"variant axis at full/green. The other 19/20 of the matrix is still unbaked.");
         }
 
         [Test]
-        public void TheSlicersVerifier_IsHappyWithAnEmptyKit()
+        public void TheSlicersVerifier_IsHappyWithWhateverIsOnDisk()
         {
-            // The same check the bake menu runs. With no sheets on disk it must report success rather
-            // than fail on absence — "nothing to slice" is this kit's normal state.
+            // The same check the bake menu runs, and it has to hold in BOTH of this kit's states: an
+            // empty folder ("nothing to slice" was its normal state for a milestone, and absence must
+            // not read as failure) and the one committed slice, whose every sheet must agree with the
+            // contract on pivot, mesh type, colour space and cell size.
             Assert.IsTrue(ShrubSheetSlicer.VerifyAll(logEachPass: false, out int checkedCount),
                 "ShrubSheetSlicer.VerifyAll reported problems — see the errors above.");
-            Debug.Log($"[shrub-slice] verifier checked {checkedCount} sheet(s) — 0 is correct for a " +
-                      "bake-to-order kit.");
+            Debug.Log($"[shrub-slice] verifier checked {checkedCount} sheet(s) — 0 was correct while the " +
+                      "kit shipped nothing; St Peters' slice makes it 18.");
         }
 
         [Test]

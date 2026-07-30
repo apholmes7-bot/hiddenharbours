@@ -1,0 +1,510 @@
+fileFormatVersion: 2
+guid: 55f2ce10e1825be449c8b5a1362aeebf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6277824403242596552
+    second: SweetGale_full_atGreen_calendar_0
+  - first:
+      213: -8720601031762437600
+    second: SweetGale_full_atGreen_calendar_1
+  - first:
+      213: -8101594912604088768
+    second: SweetGale_full_atGreen_calendar_2
+  - first:
+      213: 370937538424456073
+    second: SweetGale_full_atGreen_calendar_3
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 177
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa9265b84316be042afb83571657cbf5
+      internalID: -339690412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 177
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbf489a23741b2c43a4442be6f0f32b3
+      internalID: -1547230779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 177
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 496e3cc8aef9daa4389e902bf8f02a68
+      internalID: 874941470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 177
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5189e8894f5e0f42947405788483b96
+      internalID: -1765449055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 118
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55dc0bc3faf8115488302492b8d5a620
+      internalID: -1346602083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 118
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f480a5fac1901bf44a46078692746fe7
+      internalID: -1168661150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 118
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c431e1df583c2884bba4eef8b8c15e9d
+      internalID: 152091949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 118
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a4185cb2037bd54d92eede29d5bfe3d
+      internalID: -991047807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 59
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79e071ee996122e449dc85465c4769a2
+      internalID: -1933574973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 59
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9a62585e3e69ae4d856288bde49d4e7
+      internalID: -121545412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 59
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d98206e76a60d24b98b88124c084699
+      internalID: 1962419621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 59
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54a18edd519b4e746b441f17272b5435
+      internalID: -416936584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9380788e9a68fca4b9aef289639780cb
+      internalID: -1521701459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 0
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c9a62d7ec629d14aa9ff77ae6d22779
+      internalID: -1611040328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1aa0beb1935505d4b91914b86a714ab9
+      internalID: -1966225995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_full_atGreen_calendar_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 0
+        width: 46
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2542373}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef3fbb034c5f926419a99167cc654e31
+      internalID: 1653883747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 620b40630e6159647bfafce570ab67ae
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SweetGale_full_atGreen_calendar_c0_f0: -339690412
+      SweetGale_full_atGreen_calendar_c0_f1: -1346602083
+      SweetGale_full_atGreen_calendar_c0_f2: -1933574973
+      SweetGale_full_atGreen_calendar_c0_f3: -1521701459
+      SweetGale_full_atGreen_calendar_c1_f0: -1547230779
+      SweetGale_full_atGreen_calendar_c1_f1: -1168661150
+      SweetGale_full_atGreen_calendar_c1_f2: -121545412
+      SweetGale_full_atGreen_calendar_c1_f3: -1611040328
+      SweetGale_full_atGreen_calendar_c2_f0: 874941470
+      SweetGale_full_atGreen_calendar_c2_f1: 152091949
+      SweetGale_full_atGreen_calendar_c2_f2: 1962419621
+      SweetGale_full_atGreen_calendar_c2_f3: -1966225995
+      SweetGale_full_atGreen_calendar_c3_f0: -1765449055
+      SweetGale_full_atGreen_calendar_c3_f1: -991047807
+      SweetGale_full_atGreen_calendar_c3_f2: -416936584
+      SweetGale_full_atGreen_calendar_c3_f3: 1653883747
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

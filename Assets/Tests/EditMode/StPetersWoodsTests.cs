@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.World;
 using HiddenHarbours.App.Editor;
@@ -508,6 +509,313 @@ namespace HiddenHarbours.Tests.EditMode
             // And a species that ships a single variant must never be asked for a second one.
             foreach (var t in StPetersWoods.ScatterTrees(_terrain, Available(), _ => 1))
                 Assert.AreEqual(0, t.Variant, "a one-variant sheet only has variant 0");
+        }
+
+        // =================================================================================
+        //  THE SHRUB LAYER — heath, gale, meadowsweet, hazel, rose and raspberry
+        //
+        //  The shrubs are planted from the SAME habitat fields as the woods, but by the rig's own
+        //  five-habitat scheme, and every species is placed by the habitat THE CONTRACT gives it.
+        //  So what is asserted here is that this file decides which habitat a patch of island IS,
+        //  and the contract decides what grows in one.
+        // =================================================================================
+
+        /// <summary>The six species St Peters bakes, and the habitat the contract puts each in. Named
+        /// here as the EXPECTATION to check the contract against — the planter reads the contract.</summary>
+        static readonly (string species, string habitat)[] SixShrubs =
+        {
+            ("LowbushBlueberry", "barren"), ("SweetGale", "bog"), ("Meadowsweet", "swale"),
+            ("BeakedHazelnut", "woods"), ("WildRose", "edge"), ("Raspberry", "edge"),
+        };
+
+        static List<string> ShrubsAvailable() => SixShrubs.Select(s => s.species).ToList();
+
+        List<StPetersShrubs.ShrubSite> Shrubs(int variants = 4) =>
+            StPetersShrubs.Scatter(_terrain, ShrubsAvailable(), HabitatFromContract(), variants);
+
+        /// <summary>The species→habitat lookup the planter uses: straight out of the committed
+        /// contract, never a table in this file.</summary>
+        static System.Func<string, string> HabitatFromContract()
+        {
+            var contract = ShrubCatalog.Load();
+            Assert.IsNotNull(contract, $"no readable contract at {ShrubCatalog.ContractPath}");
+            var byKey = contract.Species.ToDictionary(e => e.Key, e => e.Habitat);
+            return s => byKey.TryGetValue(s, out string h) ? h : null;
+        }
+
+        [Test]
+        public void TheSixBakedSpecies_CoverAllFiveHabitats_AndTheContractAgreesWhichIsWhich()
+        {
+            // The slice was chosen to be the SMALLEST bake that can dress the island: five habitats, six
+            // species (edge gets two — §5.1's brief names "wild roses/raspberries" together). If the
+            // contract ever moves a species between habitats, the island changes with no code edit —
+            // so the pairing is asserted against the contract rather than trusted to this list.
+            var habitatOf = HabitatFromContract();
+            foreach (var (species, habitat) in SixShrubs)
+                Assert.AreEqual(habitat, habitatOf(species),
+                    $"the slice places {species} for the '{habitat}' habitat, but the contract calls it " +
+                    $"'{habitatOf(species)}'. Re-pick the slice, or re-read the contract — do not " +
+                    "hard-code the habitat.");
+
+            CollectionAssert.AreEquivalent(ShrubCatalog.HabitatKeys,
+                                           SixShrubs.Select(s => s.habitat).Distinct().ToArray(),
+                "the six-species slice must cover all five of the rig's habitats and invent none");
+        }
+
+        [Test]
+        public void EveryHabitatOnTheIslandGrowsItsOwnShrub_AndNoneGrowsSomewhereElse()
+        {
+            var habitatOf = HabitatFromContract();
+            var perHabitat = new Dictionary<string, int>();
+
+            foreach (var s in Shrubs())
+            {
+                string want = StPetersShrubs.HabitatAt(_terrain, s.Position);
+                Assert.AreEqual(want, habitatOf(s.Species),
+                    $"a {s.Species} ({habitatOf(s.Species)}) is standing on '{want}' ground at " +
+                    $"{s.Position}. Sweet gale in a bog and blueberry on a barren is the whole point — " +
+                    "a species on the wrong ground makes the habitat fields decorative.");
+                perHabitat.TryGetValue(want, out int n);
+                perHabitat[want] = n + 1;
+            }
+
+            // …and the island must actually HAVE most of these grounds, or the assert above is vacuous
+            // because nothing was ever placed on them.
+            Assert.GreaterOrEqual(perHabitat.Count, 4,
+                "fewer than four of the five habitats occur anywhere on the island: " +
+                string.Join(", ", perHabitat.Select(kv => $"{kv.Key} {kv.Value}")) +
+                ". A habitat scheme the terrain cannot express is a scheme that is not doing anything.");
+            Debug.Log("[stpeters-shrubs] by habitat: " +
+                      string.Join(", ", perHabitat.OrderByDescending(kv => kv.Value)
+                                                  .Select(kv => $"{kv.Key} {kv.Value}")));
+        }
+
+        [Test]
+        public void TheShrubLayerIsPatchyHeath_NotASecondCanopy()
+        {
+            // A shrub layer that covered the island would be a second forest, and the interior is
+            // REVERTING (§5.1) — a mosaic. Sabotage-measured the way the woods are: against a fill.
+            var shrubs = Shrubs();
+            Assert.Greater(shrubs.Count, 40, "a shrub layer that barely exists is not a layer");
+
+            float minX = StPetersBuilder.IslandCenter.x - StPetersBuilder.IslandRadius;
+            float minY = StPetersBuilder.IslandCenter.y - StPetersBuilder.IslandRadiusY;
+            int nx = Mathf.Max(1, Mathf.CeilToInt(StPetersBuilder.IslandRadius * 2f / StPetersShrubs.ShrubStep));
+            int ny = Mathf.Max(1, Mathf.CeilToInt(StPetersBuilder.IslandRadiusY * 2f / StPetersShrubs.ShrubStep));
+
+            // How many candidate cells are plantable at all — the honest denominator. A fill would take
+            // every one of them; the layer must take a fraction.
+            int plantable = 0;
+            for (int ix = 0; ix < nx; ix++)
+            for (int iy = 0; iy < ny; iy++)
+            {
+                var p = new Vector2(minX + (ix + 0.5f) * StPetersShrubs.ShrubStep,
+                                    minY + (iy + 0.5f) * StPetersShrubs.ShrubStep);
+                // The shrub floor, not the tree floor — the same distinction the scatter has to make.
+                if (StPetersWoods.IsPlantable(_terrain, p, StPetersShrubs.ShrubLineElevation)) plantable++;
+            }
+
+            Assert.Greater(plantable, shrubs.Count,
+                "the layer took every plantable cell — that is a fill, not a heath");
+            float taken = shrubs.Count / (float)Mathf.Max(1, plantable);
+            Assert.Less(taken, 0.8f, $"the shrub layer covers {taken:P0} of the plantable island");
+            Debug.Log($"[stpeters-shrubs] {shrubs.Count} shrubs on {plantable} plantable cells " +
+                      $"({taken:P0}); a fill would have been {plantable}.");
+        }
+
+        [Test]
+        public void NoShrubGrowsWhereThePlayerHasToBe()
+        {
+            // The same clearings the trees respect. A raspberry thicket across the crossing's approach
+            // would be exactly as wrong as a spruce — worse, being thorny.
+            foreach (var s in Shrubs())
+            {
+                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.CottagePos),
+                               StPetersWoods.VillageClearingRadius - 0.01f,
+                    $"a {s.Species} at {s.Position} is inside the village clearing");
+                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.StartSpawnPos),
+                               StPetersWoods.SpawnClearingRadius - 0.01f,
+                    $"a {s.Species} at {s.Position} is on the start spawn");
+                Assert.Greater(StPetersShoreMap.DistanceToSegment(
+                                   s.Position, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo),
+                               StPetersWoods.CrossingClearance - 0.01f,
+                    $"a {s.Species} at {s.Position} crowds the crossing — the bar is the region's one " +
+                    "lesson and you must be able to SEE it from the island");
+                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.DockZonePos),
+                               StPetersWoods.DockClearance - 0.01f,
+                    $"a {s.Species} at {s.Position} is on the dock");
+            }
+        }
+
+        [Test]
+        public void TheHeathReachesLowerThanTheWoods_BecauseThatIsWhatAHeathIs()
+        {
+            // The point of a shrub layer on an exposed coast: it takes the ground the forest cannot.
+            // If the shrub line sat at or above the tree line the layer would just be understorey.
+            Assert.Less(StPetersShrubs.ShrubLineElevation, StPetersWoods.TreeLineElevation,
+                "the shrub line must sit BELOW the tree line — the heath is what grows where the " +
+                "forest gives up, so a shrub layer that starts higher than the woods is not a heath");
+
+            float lowestShrub = Shrubs().Min(s => _terrain.ElevationAt(s.Position));
+            float lowestTree = Trees().Min(t => _terrain.ElevationAt(t.Position));
+            Assert.Less(lowestShrub, lowestTree,
+                $"the lowest shrub stands at {lowestShrub:0.00} m and the lowest tree at " +
+                $"{lowestTree:0.00} m. The constants allow the heath lower; the terrain has to actually " +
+                "put one there or the rule is theoretical.");
+            Debug.Log($"[stpeters-shrubs] lowest shrub {lowestShrub:0.00} m vs lowest tree " +
+                      $"{lowestTree:0.00} m (shrub line {StPetersShrubs.ShrubLineElevation} m, tree line " +
+                      $"{StPetersWoods.TreeLineElevation} m).");
+        }
+
+        [Test]
+        public void TheEdgeIsMixed_NotOneLongHedge()
+        {
+            // Edge is the one habitat with two species, so a margin must actually alternate. If the
+            // hash always picked the same one, half the slice would never appear on the island.
+            var habitatOf = HabitatFromContract();
+            var onEdge = Shrubs().Where(s => habitatOf(s.Species) == "edge")
+                                 .Select(s => s.Species).ToList();
+            Assert.IsNotEmpty(onEdge, "no edge shrubs at all — the wood margins went unplanted");
+
+            var distinct = onEdge.Distinct().ToArray();
+            Assert.AreEqual(2, distinct.Length,
+                "the edge baked rose AND raspberry, so both must reach the island: got " +
+                string.Join(", ", distinct) + ". One long hedge of the same bush is the failure.");
+
+            int rose = onEdge.Count(s => s == "WildRose");
+            float share = rose / (float)onEdge.Count;
+            Assert.That(share, Is.InRange(0.2f, 0.8f),
+                $"the margins are {share:P0} wild rose — a 50/50 hash has drifted into a monoculture");
+        }
+
+        [Test]
+        public void EveryShrubVariantAskedForExistsOnItsSheet()
+        {
+            // ⭐ THE VARIETY COMES FROM THE VARIANT COLUMN, NOT THE SWAY ROW, and that is load-bearing.
+            // Measured on the committed slice at the rest row: the four variants differ from each other
+            // by 27–54% of the cell, while the four SWAY frames differ by 0–4.8% — and on lowbush
+            // blueberry, a stiff mat, the sway frames are BIT-IDENTICAL (0.0%). An earlier draft of this
+            // layer took its variety from the sway row because ShrubBaker could not bake the variant
+            // axis (fixed in #347); every blueberry on the barren would have been the same sprite.
+            Assert.AreEqual(4, ShrubCatalog.Variants);
+            foreach (var s in Shrubs(ShrubCatalog.Variants))
+            {
+                Assert.GreaterOrEqual(s.Variant, 0, $"{s.Species} got variant {s.Variant}");
+                Assert.Less(s.Variant, ShrubCatalog.Variants,
+                    $"{s.Species} got variant {s.Variant} from a {ShrubCatalog.Variants}-column sheet — " +
+                    "an out-of-range column resolves to no sprite and plants an invisible shrub");
+            }
+
+            // A one-column sheet must never be asked for a second column.
+            foreach (var s in Shrubs(1))
+                Assert.AreEqual(0, s.Variant, "a one-variant sheet only has variant 0");
+
+            // All four columns must actually get used, or the bake is paying for variety it never shows.
+            var used = Shrubs(ShrubCatalog.Variants).Select(s => s.Variant).Distinct().OrderBy(v => v);
+            CollectionAssert.AreEqual(Enumerable.Range(0, ShrubCatalog.Variants).ToArray(), used.ToArray(),
+                "not every variant column reaches the island — the sheet is 4 individuals wide and the " +
+                "hash has to spend all of them");
+        }
+
+        [Test]
+        public void EveryShrubSpriteThePlanterAsksFor_ExistsOnTheCommittedSheet_OnTheContractsPivot()
+        {
+            // 🔴 THE ONE THAT WOULD OTHERWISE FAIL SILENTLY. PlantShrubs looks a sprite up BY NAME and
+            // `continue`s when it misses, so a naming mismatch does not throw — it plants an empty
+            // island. And the two ends of that name come from different places: the slicer writes
+            // `<stem>_c<col>_f<row>` (ShrubSheetSlicer.BuildRects) and the planter composes the same
+            // string from the catalog's stem plus its own column and row. Nothing but this test makes
+            // the two agree, and the full builder cannot be driven headless to catch it — its
+            // RegionBuildGuard refuses in batch mode, correctly, because a rebuild wipes hand-authored
+            // work.
+            var contract = ShrubCatalog.Load();
+            Assert.IsNotNull(contract);
+
+            int checkedSprites = 0;
+            foreach (string species in StPetersShrubBake.Species)
+            {
+                var entry = contract.Find(species);
+                Assert.IsNotNull(entry, $"{species} is not in the contract");
+
+                string stem = ShrubCatalog.VariantSheetStem(species, StPetersShrubBake.Stage,
+                                                            StPetersShrubBake.Phase);
+                string path = ShrubCatalog.SheetPath(stem, ShrubCatalog.Channel.Albedo);
+                var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+
+                // ⚠️ LoadAssetAtPath<Sprite> returns null on a Multiple-mode sheet — LoadAllAssetsAtPath
+                // is the only thing that sees the rects.
+                Assert.IsNotEmpty(sprites,
+                    $"no sprites at {path}. Either the committed slice is missing or the sheet imported " +
+                    "un-sliced — run Hidden Harbours ▸ Art ▸ Bake St Peters Shrub Slice.");
+                Assert.AreEqual(ShrubCatalog.Variants * ShrubCatalog.SwayFrames, sprites.Length,
+                    $"{stem} carries {sprites.Length} sprite(s); the variant sheet is " +
+                    $"{ShrubCatalog.Variants} columns × {ShrubCatalog.SwayFrames} sway rows");
+
+                Vector2 wantPivot = ShrubCatalog.NormalizedPivot(entry);
+                for (int variant = 0; variant < ShrubCatalog.Variants; variant++)
+                {
+                    // Composed exactly as PlantShrubs composes it.
+                    string want = $"{stem}_c{variant}_f{StPetersWoodsPlanter.RestSwayRow}";
+                    var sprite = sprites.FirstOrDefault(sp => sp.name == want);
+                    Assert.IsNotNull(sprite,
+                        $"the planter would ask for '{want}' and the sheet does not have it. Names on " +
+                        $"the sheet: {string.Join(", ", sprites.Take(4).Select(s => s.name))}… A miss " +
+                        "here plants NOTHING and logs nothing.");
+
+                    // The pivot is the ground contact at the root crown, which is why the planter sets
+                    // the position and applies no offset. If it drifted, every shrub would float or sink.
+                    var got = new Vector2(sprite.pivot.x / sprite.rect.width,
+                                          sprite.pivot.y / sprite.rect.height);
+                    Assert.AreEqual(wantPivot.x, got.x, 1e-3f, $"{want}: pivot.x vs the contract");
+                    Assert.AreEqual(wantPivot.y, got.y, 1e-3f, $"{want}: pivot.y vs the contract");
+
+                    Assert.AreEqual(entry.CellW, Mathf.RoundToInt(sprite.rect.width),
+                        $"{want}: cell width vs the contract's union cell");
+                    Assert.AreEqual(entry.CellH, Mathf.RoundToInt(sprite.rect.height),
+                        $"{want}: cell height vs the contract's union cell");
+                    checkedSprites++;
+                }
+            }
+
+            Assert.AreEqual(StPetersShrubBake.Species.Length * ShrubCatalog.Variants, checkedSprites);
+            Debug.Log($"[stpeters-shrubs] all {checkedSprites} sprites the planter asks for exist on the " +
+                      $"committed sheets, each on its species' root-crown pivot at its union cell.");
+        }
+
+        [Test]
+        public void TheShrubLayerIsDeterministic_NoRng()
+        {
+            var a = Shrubs();
+            var b = Shrubs();
+            Assert.AreEqual(a.Count, b.Count, "the heath must reproduce exactly on a rebuild (rule 5)");
+            for (int i = 0; i < a.Count; i++)
+            {
+                Assert.AreEqual(a[i].Species, b[i].Species);
+                Assert.AreEqual(a[i].Variant, b[i].Variant);
+                Assert.AreEqual(a[i].Position, b[i].Position);
+            }
+        }
+
+        [Test]
+        public void AnUnbakedSpeciesLeavesItsHabitatEmpty_RatherThanThrowing()
+        {
+            // The kit is 20 species and St Peters bakes 6, so "declared in the contract" and "on disk"
+            // are different questions and most of the kit is legitimately absent. The scatter must cope
+            // with being offered less than it wants — including nothing at all — halfway through a
+            // region build.
+            var habitatOf = HabitatFromContract();
+
+            Assert.IsEmpty(StPetersShrubs.Scatter(_terrain, new List<string>(), habitatOf, 4),
+                "no species offered must mean no shrubs, not an exception");
+            Assert.IsEmpty(StPetersShrubs.Scatter(_terrain, null, habitatOf, 4));
+
+            // Offer ONLY the bog species: the bogs fill and every other habitat stays bare.
+            var bogOnly = StPetersShrubs.Scatter(_terrain, new List<string> { "SweetGale" }, habitatOf, 4);
+            Assert.IsNotEmpty(bogOnly, "St Peters has bog ground, so sweet gale alone must still plant");
+            foreach (var s in bogOnly)
+                Assert.AreEqual("SweetGale", s.Species);
+            Assert.Less(bogOnly.Count, Shrubs().Count,
+                "one species must plant FEWER shrubs than six — if not, habitat is being ignored");
         }
     }
 }

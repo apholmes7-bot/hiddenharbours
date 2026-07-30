@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: a4da0c8ae099f02489e49aaf355e0e70
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8941689858322939971
+    second: Meadowsweet_full_atGreen_0
+  - first:
+      213: -2852928769200210820
+    second: Meadowsweet_full_atGreen_1
+  - first:
+      213: -706234370610665102
+    second: Meadowsweet_full_atGreen_2
+  - first:
+      213: 7674049878580929280
+    second: Meadowsweet_full_atGreen_3
+  - first:
+      213: 4423458393093303923
+    second: Meadowsweet_full_atGreen_4
+  - first:
+      213: 8797784916767261701
+    second: Meadowsweet_full_atGreen_5
+  - first:
+      213: 8585339100384215733
+    second: Meadowsweet_full_atGreen_6
+  - first:
+      213: 4151304623036851094
+    second: Meadowsweet_full_atGreen_7
+  - first:
+      213: 8554178368500572265
+    second: Meadowsweet_full_atGreen_8
+  - first:
+      213: -3021865440966259352
+    second: Meadowsweet_full_atGreen_9
+  - first:
+      213: -3817347991706988082
+    second: Meadowsweet_full_atGreen_10
+  - first:
+      213: -1880950607171141676
+    second: Meadowsweet_full_atGreen_11
+  - first:
+      213: 3183203491968126576
+    second: Meadowsweet_full_atGreen_12
+  - first:
+      213: -6940097890065612042
+    second: Meadowsweet_full_atGreen_13
+  - first:
+      213: -7363362153550340063
+    second: Meadowsweet_full_atGreen_14
+  - first:
+      213: 278636110407036447
+    second: Meadowsweet_full_atGreen_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb0ab7b6b9e9f1b428b6d4d291d92a70
+      internalID: -1964886905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a81500a980f9d9245b2642da7b2be32c
+      internalID: 679385340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 993c4391161461d47a74811f5bf01af7
+      internalID: -1285391646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 177
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41f3a11e3df34714f82901b0252a096a
+      internalID: -1042712634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f182cc65b0804c42942dcb2d343cc40
+      internalID: -265126908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0a66a48716a4dc46816b6a2f445fbfc
+      internalID: 2116310372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ba3182983f6f5a46af22dc9fe8f4ba2
+      internalID: 864276397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 118
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a194ae50f4977df428b35b96959be021
+      internalID: 1852802278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c16728b8a0ccbaa46bb9135beea357be
+      internalID: -2038856362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 564b2ca6ded6fcc438ae699b60ae516d
+      internalID: -305971883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7048a332ec083c49aef69f3450e10a4
+      internalID: 1605737866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 59
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b395e8c66535aa429bcee37dee34cc1
+      internalID: 1226037448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7306d5da33b3c8c47bee5c267e738ab6
+      internalID: -1055972732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6003c65b94cd05449751c943c54a377
+      internalID: 1484833952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2b00f049c1df1c478822c766bd3226b
+      internalID: 1495505901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Meadowsweet_full_atGreen_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 0
+        width: 55
+        height: 59
+      alignment: 9
+      pivot: {x: 0.4909091, y: 0.16949153}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a39bd13ecb574774da45e2fad1960427
+      internalID: -311759614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5ca8f2f0be169514eac1ba6fbdf50979
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Meadowsweet_full_atGreen_c0_f0: -1964886905
+      Meadowsweet_full_atGreen_c0_f1: -265126908
+      Meadowsweet_full_atGreen_c0_f2: -2038856362
+      Meadowsweet_full_atGreen_c0_f3: -1055972732
+      Meadowsweet_full_atGreen_c1_f0: 679385340
+      Meadowsweet_full_atGreen_c1_f1: 2116310372
+      Meadowsweet_full_atGreen_c1_f2: -305971883
+      Meadowsweet_full_atGreen_c1_f3: 1484833952
+      Meadowsweet_full_atGreen_c2_f0: -1285391646
+      Meadowsweet_full_atGreen_c2_f1: 864276397
+      Meadowsweet_full_atGreen_c2_f2: 1605737866
+      Meadowsweet_full_atGreen_c2_f3: 1495505901
+      Meadowsweet_full_atGreen_c3_f0: -1042712634
+      Meadowsweet_full_atGreen_c3_f1: 1852802278
+      Meadowsweet_full_atGreen_c3_f2: 1226037448
+      Meadowsweet_full_atGreen_c3_f3: -311759614
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
