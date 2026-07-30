@@ -300,10 +300,22 @@ cosmetic** waterline wash — "waves crashing in and out" — driven off `_Time`
 The swash math has a pure-C# twin in `WaterSurface.cs` (`SwashOffset` + `SwashBandGate`) so the
 oscillation, the amplitude bound, and **the band-confinement invariant** are unit-tested headless
 (`Assets/Tests/EditMode/Art/ArtRenderingTests.cs`) without opening Unity — the twin feeds no sim and is
-not pushed to the material; the shader owns the live wash. (The twin's `alongShore` phase parameter is
-now a generic phase seed; the shoreward-phase rework lives in the shader — updating the C# twin's phase
-formula to mirror it is a small gameplay-systems follow-up and does not affect the bounded-oscillation
-contract the tests assert.)
+not pushed to the material; the shader owns the live wash.
+
+> **The twin mirrors the shoreward phase term-for-term** — synced in #172 when the shader's rework
+> landed. (This section used to flag the sync as an open gameplay-systems follow-up; that flag was
+> stale and is retired.) `SwashOffset` carries the same base `θ = t·speed·2π + max(depth,0)·wavelength`,
+> the same two beats (0.7 at full rate + 0.3 at half), the same `(sample − 0.5)·vary·2π` desync and the
+> same flat-seabed fallback as `BeachSwash`; `SwashBandGate` matches the call site's
+> `reach = max(foamWidth,1e-3)·2 + max(|amp|,1e-3)`. The only inputs it takes rather than computes are
+> the two **GPU-only** ones — the value-noise sample along the shore tangent, and `haveShore` from
+> `ShoreDir()` — so those are the only places it can drift. The headless tests pin the shoreward march's
+> **direction and rate** (follow a crest's constant-phase characteristic and the same wash reappears at
+> shallower depth; a sign flip rolling crests out to sea fails), the half-rate second beat (one beat does
+> not repeat, two do), and the desync mapping (the mid sample shifts nothing; `vary = 0` is an in-phase
+> ring). The bounded-oscillation contract is unchanged. **Not twinned:** the `shoreSlope` contour scaling
+> the call site multiplies the offset by — that one is guarded only by the slope-true acceptance test
+> named in the bullet above, which needs a GPU (it `Assert.Ignore`s on a Null device).
 
 > **Retired dial:** `_SwashScale` (the old fixed-diagonal along-shore scale) is replaced by
 > `_SwashWavelength` + `_SwashAlongShoreVary`. Any `_SwashScale` value serialized in `Water.mat` / the
