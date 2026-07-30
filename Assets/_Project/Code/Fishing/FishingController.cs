@@ -117,6 +117,7 @@ namespace HiddenHarbours.Fishing
 
         // ---- the bite sequence (owner drop §10.2; the sim is BiteSequenceSim) -----------------
         private BiteSequenceSim _biteSim;       // non-null only while a nibble/take sequence runs
+        private readonly StrikeYank _strikeYank = new StrikeYank();   // the pull-back candidate's accumulator
 
         // ---- rod fight v2 state (the deep→surface arc; the sim is RodFightSim) ---------------
         private RodFightSim _rodFight;          // non-null only while a v2 fight runs
@@ -231,7 +232,7 @@ namespace HiddenHarbours.Fishing
                     // (approach / circling back after a miss) — the sequence owns the beat, not the
                     // bite-delay clock, so it must tick FIRST or the old wait would re-fire OnBite
                     // underneath a fish that is already working the hook.
-                    if (_biteSim != null) { TickBiteSequence(dt, pressed); break; }
+                    if (_biteSim != null) { TickBiteSequence(dt, pressed, pointerWorld, pointerValid); break; }
 
                     if (_depthGame) TickDepthHold(dt, actionHeld);   // hold = reel up slightly (§2.3 step 4)
                     else Emit(FishingPhase.Waiting, 0f, 0f);         // cast path: the aim tracks a walking angler
@@ -249,14 +250,14 @@ namespace HiddenHarbours.Fishing
                     break;
 
                 case FishingPhase.BiteNibble:
-                    TickBiteSequence(dt, pressed);                   // a tease is showing (§10.2)
+                    TickBiteSequence(dt, pressed, pointerWorld, pointerValid);   // a tease is showing (§10.2)
                     break;
 
                 case FishingPhase.Bite:
                     // A species with a BiteDef runs the owner's §10.2 moment: Bite now means the TRUE
                     // take, and the strike is judged by the sequence sim — the same state the tells
                     // render from (one quantity, one computation; the flick-cast lesson).
-                    if (_biteSim != null) { TickBiteSequence(dt, pressed); break; }
+                    if (_biteSim != null) { TickBiteSequence(dt, pressed, pointerWorld, pointerValid); break; }
 
                     // Legacy (no BiteDef): the forgiving auto-hook beat, exactly as shipped.
                     _phaseTimer -= dt;
@@ -527,6 +528,7 @@ namespace HiddenHarbours.Fishing
             if (fish.Bite != null)
             {
                 _biteSim = new BiteSequenceSim(fish.Bite.ToProfile(), _rng);
+                _strikeYank.Reset();   // a fresh sequence starts with a clean pull-back accumulator
                 Emit(BitePhases.ToFishingPhase(_biteSim.Phase), 0f, 0f);
                 return;
             }
@@ -539,12 +541,30 @@ namespace HiddenHarbours.Fishing
         /// Advance a live §10.2 bite sequence: the sim owns the beat (teases, the true take, her
         /// returns after a miss); this maps its state onto the Core wire phases and hands the
         /// terminals off — <see cref="BitePhase.Hooked"/> to the fight, <see cref="BitePhase.Gone"/>
-        /// to the NoBite result. The strike edge is the same press that hooks the legacy bite; WHICH
-        /// gesture makes a strike grows in the strike slice.
+        /// to the NoBite result.
+        ///
+        /// <para><b>The strike is BOTH §10.2 candidates, each behind its own toggle</b>
+        /// (<c>GameConfig.Strike</c> — "pull back and press maybe?", so the owner picks in play): the
+        /// plain action press, and/or a pull-back yank of the pointer away from the bobber
+        /// (<see cref="StrikeYank"/>). Either fires the ONE strike edge the sim judges — a yank on a
+        /// tease is exactly as early as a press on one; the gesture never gets its own opinion about
+        /// what phase the bite is in (the flick-cast lesson).</para>
         /// </summary>
-        private void TickBiteSequence(float dt, bool strikePressed)
+        private void TickBiteSequence(float dt, bool strikePressed, Vector2 pointerWorld, bool pointerValid)
         {
-            _biteSim.Tick(dt, strikePressed);
+            StrikeSettings strike = _config != null ? _config.Strike : StrikeSettings.Default;
+
+            // The pull-back axis runs from the line's far end back to the angler: the bobber on the
+            // cast path, the water entry at the angler's feet on the depth path (pulling UP-and-back).
+            Vector2 farEnd = !_depthGame && _lastCast.IsCast
+                ? _lastCast.LandingPoint
+                : AnglerPosition + Vector2.down;
+            bool yanked = _strikeYank.Tick(dt, pointerWorld, pointerValid,
+                                           AnglerPosition, farEnd, in strike)
+                          && strike.PullBackStrikes;
+            bool struck = (strike.PressStrikes && strikePressed) || yanked;
+
+            _biteSim.Tick(dt, struck);
 
             if (_biteSim.Phase == BitePhase.Hooked)
             {
