@@ -178,6 +178,20 @@ namespace HiddenHarbours.Boats
                  "A/B covering the whole boat.")]
         public HiddenHarbours.Core.HullPropMeshDef MotorMesh = null;
 
+        [Tooltip("BORROWED-FITTING SHIFT for MotorMesh, in boat-local metres (x = starboard, y = bow, " +
+                 "z = up). ZERO — the default, and the right answer for every hull wearing HER OWN " +
+                 "engine — because a fitting is baked in its hull's rig space with that rig's mount " +
+                 "already injected, so it lands correctly with no shift at all.\n\n" +
+                 "NON-ZERO says: this hull wears SOMEBODY ELSE'S engine, and this is how far to move it " +
+                 "to hang it on her transom. The dory does, and only the dory: her purpose-built kicker " +
+                 "(docs/art/rigs/doryMotorRig.js) is written but not yet baked, so she borrows the " +
+                 "punt's basic outboard meanwhile. The whole fitting moves — pivot included — so the " +
+                 "borrowed engine still swivels about its own clamp at every helm angle.\n\n" +
+                 "⚠️ This goes back to ZERO the day the dory's own kicker is baked and wired. It is a " +
+                 "fallback's fitting, not a nudge knob: it is not the place to correct a mis-baked " +
+                 "engine, and it must never be used to fix a fitting on the boat it belongs to.")]
+        public Vector3 MotorMeshFitmentOffsetMeters = Vector3.zero;
+
         [Header("Motor rock coupling (the motor cells are baked LEVEL — these lean them onto the wave)")]
         [Tooltip("Degrees of lean at the peak of the ROLL (the art rigs' rollA). Console 3.4 (heavier hull, " +
                  "stiffer), Sport 3.8 (light glass hull, livelier), Punt 4.2 (beamier than the dory, so a " +
@@ -201,9 +215,15 @@ namespace HiddenHarbours.Boats
         public float MotorRockHeavePixels = 1.3f;
 
         [Tooltip("Where the engine's clamp actually hangs, in boat-local METRES (x = starboard, y = bow, " +
-                 "z = up) — the rigs' MOUNT, read at motorMount's y − 0.03. Skiffs (0, −3.53, 0.72); punt " +
-                 "(0, −2.63, 0.56). NOT a nudge knob: it is the lever arm the whole rock pose turns on. Moving " +
-                 "it moves where the pose thinks the engine is, not where the engine is drawn.")]
+                 "z = up) — the rigs' MOUNT, read at the point that rig's motorMount() projects. Skiffs " +
+                 "(0, −3.53, 0.72); punt (0, −2.63, 0.56); DORY (0, −2.35, 0.80), off her own transom " +
+                 "MOTOR BOARD (doryIsoRig MOUNT = TR.y − 2·BOARD.t, TR.zTop + BOARD.rise, projected at " +
+                 "y − 0.01). NOT a nudge knob: it is the lever arm the whole rock pose turns on. Moving " +
+                 "it moves where the pose thinks the engine is, not where the engine is drawn.\n\n" +
+                 "⚠️ The skiff triple is this field's INITIALISER, which is why 12 of 14 visuals carry it " +
+                 "whether or not they hang an engine there. Before reading it as an authored fact, check " +
+                 "that hull's rig — the dory's was the skiffs' until her outboard landed, and hers is " +
+                 "1.18 m further forward and 0.08 m higher.")]
         public Vector3 MotorMountLocalMeters = new Vector3(0f, -3.53f, 0.72f);
 
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------

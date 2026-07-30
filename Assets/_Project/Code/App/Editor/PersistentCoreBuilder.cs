@@ -102,6 +102,12 @@ namespace HiddenHarbours.App.Editor
             public GameConfig Config;
             public BoatHullDef StartDory;         // the start hull on the persistent Dory (hand-rowed greybox dory)
             public BoatHullDef PuntHull;          // tier-1 swap hull for the fleet registry (null-safe)
+            // The dory with her outboard (D8) — a fleet-registry hull, null-safe like the Punt. She is
+            // registered rather than merely pickable because the registry is how a hull is REACHED by
+            // id: OwnedFleet.Grant swaps to it, and SaveRestore looks the saved hull up in it. A boat
+            // the save cannot name is a boat you lose on reload. What she COSTS and who sells her is
+            // the Nine Mile Creek purchase beat — no ShipwrightOffer is authored here.
+            public BoatHullDef DoryOutboardHull;
             // DEV BOAT PICKER (null/empty = no picker spawned): every hull F cycles through at the helm, in
             // order. Deliberately SEPARATE from the fleet registry above — this is a workbench for feeling
             // hulls, not a roster of boats you own, and it must not grow into the M2 ladder (rule 8).
@@ -252,12 +258,14 @@ namespace HiddenHarbours.App.Editor
             if (p.RegionFish != null && p.RegionFish.Length > 0)
                 SetRefArray(fishing, "_regionFish", p.RegionFish.Cast<Object>().ToArray());
 
-            // Boat grant (VS-16): OwnedFleet swaps the active hull to a bought boat by id. Registry = {Dory,
-            // Punt} when the Punt exists (null-safe — a region without the Punt offer just registers the Dory).
+            // Boat grant (VS-16): OwnedFleet swaps the active hull to a bought boat by id. Registry =
+            // {Dory, dory+outboard, Punt}, each entry null-safe — a region without the Punt offer just
+            // registers what it has. The dory's outboard variant (D8) is in here for the same reason
+            // the Punt is: this array is how a hull is reachable BY ID, both for the grant and for
+            // save-restore, and a boat the save cannot name is a boat you lose on reload.
             var fleet = doryGo.AddComponent<OwnedFleet>();
-            var registry = p.PuntHull != null
-                ? new Object[] { p.StartDory, p.PuntHull }
-                : new Object[] { p.StartDory };
+            var registry = new[] { p.StartDory, p.DoryOutboardHull, p.PuntHull }
+                .Where(h => h != null).Cast<Object>().ToArray();
             SetRefArray(fleet, "_registry", registry);
             SetRef(fleet, "_boat", boat);
             SetRef(fleet, "_hold", hold);

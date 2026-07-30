@@ -636,6 +636,40 @@ namespace HiddenHarbours.App.Editor
                 ApplyDeckTray(dory);   // small boat → the fish tray (the deck-container ladder, data)
                 EditorUtility.SetDirty(dory);
             }
+
+            // THE DORY WITH HER OUTBOARD (D8) — the M1 slice's last rung: the used kicker, bought
+            // secondhand, hung on the transom, extending her range beyond an afternoon of rowing.
+            //
+            // A SECOND HULL ASSET, NOT A COMPONENT SWAP, and that is the decided answer for M1 (D8):
+            // BoatHullDef.Propulsion is a fixed field, so the cheap route is a variant the purchase
+            // swaps the active hull to — exactly the pattern boat.punt_upgraded already is. M2-17
+            // (component swaps at the shipwright) is the item that splits Hull/Engine/Hold properly,
+            // with a save migration, when there are enough upgrades to pay for it.
+            //
+            // She is the rowed dory with ONE FIELD FLIPPED. Everything else — mass, drag, hold,
+            // camera, and her Visual (they share visual.dory_iso; the skinner draws the engine only
+            // on the hull whose Propulsion says she has one) — is copied from the dory herself rather
+            // than restated, because "two assets to keep in sync" is D8's stated cost and a copy is
+            // how you stop paying it by hand. The two boats therefore CANNOT drift apart on a stat.
+            //
+            // Her speed is the dory's own authored EnginePower (500) through the same force model as
+            // every other hull: ~1.7 m/s against ~2.0 rowing flat out — SLOWER than a hard pull, and
+            // that is not a bug to tune out here. What a kicker buys is that she holds it all day,
+            // into wind and chop, with your hands free; the rower cannot. Tuning is the owner's, in
+            // the Def (rule 6). NO ShipwrightOffer: what she costs and who sells her is the Nine Mile
+            // Creek purchase beat, and it is not this lane's to invent.
+            var doryOutboard = LoadOrCreate<BoatHullDef>(DataBoats + "/DoryOutboard.asset");
+            if (doryOutboard != null && dory != null)
+            {
+                EditorUtility.CopySerialized(dory, doryOutboard);
+                // CopySerialized copies m_Name too, and an asset whose object name disagrees with its
+                // file name is a trap for every AssetDatabase lookup that follows.
+                doryOutboard.name = "DoryOutboard";
+                doryOutboard.Id = "boat.dory_outboard";
+                doryOutboard.DisplayName = "The Dory (outboard)";
+                doryOutboard.Propulsion = PropulsionType.Engine;   // THE one difference
+                EditorUtility.SetDirty(doryOutboard);
+            }
             // The Punt keeps her old flat top-down Sprite as the FALLBACK picture — the one the skinner
             // brings back if her Visual is ever missing. Her stats + her iso skin are applied with the rest
             // of the fleet below (ApplyFleetHull), so there is ONE path that binds a hull to a BoatVisualDef.

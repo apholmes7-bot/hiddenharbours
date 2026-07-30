@@ -123,6 +123,7 @@ namespace HiddenHarbours.Tests
         {
             public Quaternion LocalRotation { get; set; } = Quaternion.identity;
             public float LateralOffsetMeters { get; set; }
+            public Vector3 FitmentOffsetMeters { get; set; }
             public bool Visible { get; set; } = true;
             public bool IsConfigured => true;
         }

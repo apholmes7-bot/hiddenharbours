@@ -88,5 +88,58 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(star.y, port.y, 1e-5f, "…but sweep fore/aft together");
             Assert.AreEqual(star.z, port.z, 1e-5f, "…and dip together");
         }
+
+        // ---- and what the outboard changes (§7.7) ---------------------------------------------
+
+        /// <summary>
+        /// <b>Under power the oars come in — at once, whatever the stroke machine was about to
+        /// say.</b> A dory keeps her oars aboard, but a boat with a running prop does not trail them
+        /// in the water beside it, and she does not wait out the 1.2 s rest grace to decide that.
+        /// </summary>
+        [Test]
+        public void WhileTheMotorRuns_BothOarsAreShipped_WithNoGraceToWaitOut()
+        {
+            // The most awkward moment for this: BOTH oars mid-pull, phase mid-cycle, idle timer at
+            // zero. The rowing machine would draw a stroke frame here.
+            int column = DoryOarMeshLayer.ColumnForOar(
+                motorRunning: true, thisOarWorking: true, phase: 3.4f, otherOarWorking: true,
+                bothIdleSeconds: 0f, restGraceSeconds: DoryOarMath.DefaultRestGraceSeconds,
+                strokeColumns: DoryOarMath.StrokeColumns);
+
+            Assert.AreEqual(DoryOarMath.RestingColumn, column,
+                "an engine that is running ships the oars — DoryOarMath's OWN shipped state, wired, " +
+                "not a fourth pose invented for the occasion.");
+
+            DoryOarMeshPose.Pose pose = DoryOarMeshLayer.PoseFor(column, 3.4f);
+            Assert.AreEqual(DoryOarMeshPose.RestingSweepDegrees, pose.SweepDegrees, 1e-6f,
+                "…stowed fore along the gunwale: the rig's own oarPose('resting'), the same pose the " +
+                "sprite dory's column 8 draws, so the two paths still agree.");
+        }
+
+        /// <summary>The other direction, and the acceptance criterion in one line: cut the motor and
+        /// the oars come straight back out — into exactly the state the rowing machine would have
+        /// chosen, because that is the only thing this rule does when the engine is off.</summary>
+        [Test]
+        public void CutTheMotor_AndTheOarsComeBackOut_ToTheUnchangedRowingMachine()
+        {
+            const float grace = DoryOarMath.DefaultRestGraceSeconds;
+
+            foreach ((bool working, bool otherWorking, float idle) c in new[]
+            {
+                (true, true, 0f),      // pulling
+                (false, true, 0f),     // idle while the other side works → trailing
+                (false, false, 0.2f),  // both just stopped → still trailing
+                (false, false, 5f),    // …and eventually shipped, on the grace
+            })
+            {
+                Assert.AreEqual(
+                    DoryOarMath.ColumnForOar(c.working, 3.4f, c.otherWorking, c.idle, grace,
+                                             DoryOarMath.StrokeColumns),
+                    DoryOarMeshLayer.ColumnForOar(false, c.working, 3.4f, c.otherWorking, c.idle,
+                                                  grace, DoryOarMath.StrokeColumns),
+                    $"with the motor off the answer must be DoryOarMath's, untouched " +
+                    $"(working {c.working}, other {c.otherWorking}, idle {c.idle}s).");
+            }
+        }
     }
 }

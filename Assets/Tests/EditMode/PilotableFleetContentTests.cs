@@ -356,7 +356,12 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var dory = Visual("DoryIso");
             Assert.IsTrue(dory.HasOarSheets(), "the dory rows");
-            Assert.IsFalse(dory.HasMotor(), "…so it has no engine bolted to it");
+            Assert.IsFalse(dory.HasMotor(),
+                "…so no engine is drawn on her SHEETS, and none can be: her oar sheets already own " +
+                "the sorting band an outboard's lower layer needs (HasConflictingOverlays). Since " +
+                "§7.7 she does carry a motor FITTING for the mesh path — posed by rotation rather " +
+                "than indexed by facing, which is exactly why that one can share a hull with the " +
+                "oars — and it is drawn only on boat.dory_outboard. See DoryOutboardContentTests.");
 
             var fishing = Visual("FishingBoat");
             Assert.IsTrue(fishing.HasFullCompass(),

@@ -84,6 +84,22 @@ namespace HiddenHarbours.Core
         /// 0 for anything on the centreline.</summary>
         float LateralOffsetMeters { get; set; }
 
+        /// <summary>
+        /// <b>The BORROWED-fitting shift</b>, in the hull's local metres: how far to move this whole
+        /// fitting — pivot included — to hang it on a boat it was not baked for.
+        ///
+        /// <para><see cref="Vector3.zero"/>, the default and the case for every fitting on its own
+        /// boat, leaves the render byte-identical to before this channel existed. A fitting is baked
+        /// in its hull's rig space with that rig's mount already injected
+        /// (<see cref="HullPropMeshDef.Mesh"/>), so lending one to a second hull means saying where
+        /// that hull's clamp is — and nothing else: the part still swivels about its own pivot after
+        /// the shift, so a borrowed engine stays on its bracket at every helm angle.</para>
+        ///
+        /// <para>Authored per boat as <c>BoatVisualDef.MotorMeshFitmentOffsetMeters</c> and written
+        /// once at install, not per frame — it is a fact of the fit, not of the tick.</para>
+        /// </summary>
+        Vector3 FitmentOffsetMeters { get; set; }
+
         /// <summary>Drawn or not, without tearing the fitting down: a shipped oar and a tilted-clear
         /// engine are states the boat passes through constantly, and rebuilding a renderer per state
         /// would allocate every time the owner trims his engine (rule 7).</summary>

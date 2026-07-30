@@ -546,6 +546,10 @@ namespace HiddenHarbours.App.Editor
             var pickerRoster = new[]
             {
                 dory,
+                // ...and the SAME dory with the used kicker on her transom (D8), next to her rowed
+                // self on purpose: it is the M1 slice's closing rung, and the only way to feel what
+                // the outboard actually buys is to press F once and still be in the same boat.
+                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/DoryOutboard.asset"),
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/FishingSkiff.asset"),
                 punt,
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/PuntUpgraded.asset"),
@@ -561,7 +565,7 @@ namespace HiddenHarbours.App.Editor
                 AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Tanker.asset"),
             }.Where(h => h != null).ToArray();
 
-            const int ExpectedPickerRungs = 14;
+            const int ExpectedPickerRungs = 15;
             if (pickerRoster.Length < ExpectedPickerRungs)
                 Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/" +
                                  $"{ExpectedPickerRungs} hulls — " +
@@ -586,6 +590,7 @@ namespace HiddenHarbours.App.Editor
             {
                 Config           = config,
                 StartDory        = dory,
+                DoryOutboardHull = AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/DoryOutboard.asset"),
                 PuntHull         = punt,
                 DevPickerRoster  = pickerRoster,   // F at the helm cycles the hull in place (dev affordance)
                 // The clam (the flats' dig) + the rod-catchable trio: the persistent controller carries

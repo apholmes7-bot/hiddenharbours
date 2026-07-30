@@ -67,6 +67,7 @@ namespace HiddenHarbours.Art
 
         private Quaternion _rotation = Quaternion.identity;
         private float _lateral;
+        private Vector3 _fitment;
         private bool _dirty = true;
 
         public bool IsConfigured => _setup != null;
@@ -81,6 +82,12 @@ namespace HiddenHarbours.Art
         {
             get => _lateral;
             set { if (!Mathf.Approximately(value, _lateral)) { _lateral = value; _dirty = true; } }
+        }
+
+        public Vector3 FitmentOffsetMeters
+        {
+            get => _fitment;
+            set { if (value != _fitment) { _fitment = value; _dirty = true; } }
         }
 
         public bool Visible
@@ -240,23 +247,23 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Rotate about the pivot, in the hull's frame. A Transform applies rotation THEN translation
-        /// (<c>v' = R·v + t</c>), and what a fitting needs is <c>v' = P + R·(v − P)</c>, so the
-        /// translation is <c>P − R·P</c> — the classic rotate-about-a-point, and the classic place to
-        /// get it wrong. Omitting it rotates the fitting about the hull ORIGIN instead of its own
-        /// mount, which swings an outboard clean through the boat; this project has already shipped
-        /// that exact bug once on the sprite path.
+        /// Rotate about the pivot, in the hull's frame — the arithmetic itself lives in
+        /// <see cref="HullPropFitment"/>, where it is proven headlessly, because this is the classic
+        /// place to get a rotate-about-a-point wrong. Omitting the translation rotates the fitting
+        /// about the hull ORIGIN instead of its own mount, which swings an outboard clean through the
+        /// boat; this project has already shipped that exact bug once on the sprite path.
         /// </summary>
         private void Apply()
         {
             if (!_dirty || _meshChild == null || _setup == null) return;
-            var mount = new Vector3(_lateral, 0f, 0f);
-            Vector3 pivot = _setup.PivotLocalMeters + mount;
-            _meshChild.SetLocalPositionAndRotation(pivot - _rotation * pivot, _rotation);
+            _meshChild.SetLocalPositionAndRotation(
+                HullPropFitment.LocalPosition(_setup.PivotLocalMeters, _lateral, _fitment, _rotation),
+                _rotation);
             // The bolted-down half takes the clamp offset and NOTHING else — it is fixed to the
             // transom, which is the whole reason it is a separate child.
             if (_fixedChild != null)
-                _fixedChild.SetLocalPositionAndRotation(mount, Quaternion.identity);
+                _fixedChild.SetLocalPositionAndRotation(
+                    HullPropFitment.FixedLocalPosition(_lateral, _fitment), Quaternion.identity);
             _dirty = false;
         }
 

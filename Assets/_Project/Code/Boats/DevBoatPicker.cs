@@ -7,8 +7,10 @@ namespace HiddenHarbours.Boats
     /// <summary>
     /// <b>DEV-ONLY: cycle the piloted hull IN PLACE, at the helm.</b> Press <c>F</c> while driving and the
     /// boat re-skins under you — same spot, same heading, same wave — so two hulls can be felt back-to-back
-    /// in the same water, in seconds. Dory → fishing boat → punt → punt (upgraded) → console skiff → sport
-    /// single → sport twin → wrap: roughly the speed ladder, so walking the key walks up it.
+    /// in the same water, in seconds. Dory → dory (outboard) → fishing boat → punt → punt (upgraded) →
+    /// console skiff → sport single → sport twin → wrap: roughly the speed ladder, so walking the key walks
+    /// up it. The dory's two rungs sit together on purpose — the first press of F is the M1 upgrade itself,
+    /// the same boat with a used kicker on her transom and her oars stowed.
     ///
     /// <para><b>What this is NOT.</b> It is not the fleet. Being on this roster sells nothing, owns nothing
     /// and costs nothing: the M2 boat ladder and its economy are a later phase (rule 8) and this deliberately
