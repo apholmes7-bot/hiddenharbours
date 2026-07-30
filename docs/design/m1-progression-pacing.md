@@ -6,9 +6,13 @@
 > **Plan:** [`../../backlog/plan-to-m1.md`](../../backlog/plan-to-m1.md) §3 (the ladder) and §7.4.
 > **Canon:** [`vision-and-pillars.md`](../vision-and-pillars.md) wins on any conflict.
 >
-> **Read this first:** every number below is a **target**, not a measurement. Nothing here has been played.
-> The point of writing it down before the content exists is that re-tuning a spreadsheet is free and
-> re-tuning a built village is not.
+> **Read this first:** every number in §§1–6 is a **target**, not a measurement. Nothing there has been
+> played. The point of writing it down before the content exists is that re-tuning a spreadsheet is free
+> and re-tuning a built village is not.
+>
+> **§7 is the exception** — the one part of this document that is *measured*. It prices the
+> `BaitSpentOnCatchOnly` flag by running the shipped bite sim over the shipped assets, and it ships with
+> the test that regenerates it.
 
 ---
 
@@ -184,3 +188,158 @@ content-validation test already makes for Def integrity.
 3. **Should the island store ever be the better sale?** A market-day swing that occasionally beats the
    wharf would reward reading the calendar — but it also weakens the crossing's pull. Recommend **no** for
    M1; revisit in M2 when there are more channels.
+4. **When is bait spent — at the bite, or only on a landed fish?** Your §10.2 thought, still tentative and
+   still flagged OFF. **§7 below is the check you asked for**, with the numbers: the recommendation is to
+   flip it **ON**, and there is a middle path costed if you want a miss to keep biting.
+
+---
+
+## 7. The bait-spend flag — the check §10.2 was gated on
+
+> **Added 2026-07-30 by `economy-sim`.** `GameConfig.BaitSpentOnCatchOnly` shipped **OFF** in #341 and
+> has not moved; nothing in this PR changes it. The owner's §10.2 thought — *"perhaps bait is only lost
+> after catching a fish"* — was recorded as **tentative** and flagged to this lane because flipping it
+> changes bait's real cost per fish, which is a pacing dial. This is that check.
+>
+> Every figure below comes out of `Assets/Tests/EditMode/BaitEconomyPacingTests.cs`, which drives the
+> **real `BiteSequenceSim` over the real `Data/Bites/*.asset`** and reads prices off the real Defs.
+> Re-run it after any bite or bait re-tune and the table regenerates. It is also a **guard**: the pins
+> in it go red when these numbers stop being true.
+
+### 7.1 The two modes, as arithmetic
+
+Bait leaves the box once per event; *which* event is the whole question.
+
+| Mode | Bait per **landed** fish |
+|---|---|
+| **OFF** (shipped) — spend at the BITE | `1 ÷ P(land \| bite)` |
+| **ON** (§10.2) — spend at the LANDED catch | `1`, always |
+
+`P(land | bite) = P(hook) × P(win the fight) × P(allowed to land it)`. Everything below is the
+consequence of that reciprocal: **OFF multiplies a consumable cost by the player's failure rate.**
+
+### 7.2 What the shipped personalities actually cost
+
+Two modelled hands — the only invented numbers in the study, and named constants in the test.
+**Competent:** strikes 0.30 s ± 0.09 into the take, fooled by 8 % of teases, wins 90 % of fights.
+**New:** 0.55 s ± 0.20, fooled by 35 % of teases, wins 65 %. Reaction is a *choice* reaction — you must
+decide "tease or take?" before moving — which is why both sit above the 0.15 s best-case hand
+`BiteContentValidationTests` already pins. 4 000 seeded sequences per cell.
+
+"Bait ₲" is the **cheapest bait that favours the species** — what a player short of coin ties on.
+
+| Species | Hand | P(hook) | P(land) | bait/fish OFF | bait/fish ON | bait ₲/fish OFF | **net ₲ per landed fish, OFF** | **net ON** |
+|---|---|---|---|---|---|---|---|---|
+| Cod — 14₲, clam 3₲ | competent | 0.92 | 0.82 | 1.21 | 1.00 | 3.6 | **+10.4** | +11 |
+| | new | 0.59 | 0.38 | 2.63 | 1.00 | 7.9 | **+6.1** | +11 |
+| Haddock — 16₲, clam 3₲ | competent | 0.76 | 0.68 | 1.47 | 1.00 | 4.4 | **+11.6** | +13 |
+| | new | **0.09** | 0.06 | **16.68** | 1.00 | **50.0** | **−34.0** | +13 |
+| Mackerel — 10₲, capelin 5₲ | competent | 0.99 | 0.89 | 1.13 | 1.00 | 5.6 | **+4.4** | +5 |
+| | new | 0.93 | 0.61 | 1.65 | 1.00 | 8.2 | **+1.8** | +5 |
+| Pollock — 11₲, capelin 5₲ | competent | 0.95 | 0.86 | 1.17 | 1.00 | 5.8 | **+5.2** | +6 |
+| | new | 0.79 | 0.52 | 1.94 | 1.00 | 9.7 | **+1.3** | +6 |
+
+**The haddock is the shape of the problem.** Tightest window (0.45 s), most teases (2–4) *and* fewest
+passes (2) — so a new hand hooks it once in eleven bites, and under OFF **loses 34₲ on every haddock they
+land**. The same fish pays a competent hand +11.6₲. That is not a difficulty curve; it is a fine for
+being new.
+
+### 7.3 The session blend — the number that actually sets pacing
+
+A cast doesn't choose its fish, so the pacing figure is the blend over the St Peters rod pool (cod,
+haddock, mackerel, pollock — the pool `StPetersBuilder` wires). Taken through the shipped
+`CatchResolver`, never a re-derivation of its weighting:
+
+| Situation | Baits per landed fish, OFF | ON |
+|---|---|---|
+| Competent hand, bare hook, cod licence held | **1.24** | 1.00 |
+| **New hand, cheapest bait tied on, no cod licence** | **12.9** | 1.00 |
+
+That worst case is **38.7₲ of bait per landed fish — and the dearest fish that blend can produce is a
+16₲ haddock.** It lands in precisely the wrong place: hour one, on the home shore, doing the sensible
+thing. Two shipped facts compound it:
+
+- **Every authored rod bait favours cod.** Four of the seven baits touch the rod pool at all (capelin, sea
+  worm, shucked clam, squid strip — the other three are pot bait), and **all four list
+  `fish.atlantic_cod`**. So tying bait on *steers bites toward cod*.
+- **Cod is licence-gated** (`license.cod`, 120₲, bought at Nine Mile Creek around day 5). Before that
+  purchase the cod land rate is exactly **zero** — `CatchLicensePolicy.MayLand` fails closed and the fish
+  slips back. Under OFF every one of those bites still eats a bait.
+
+So the cheap, correct-looking bait choice aims a new player's bites at the one species they cannot land,
+and charges them for each. Under ON that trap cannot exist: an unlicensed release costs nothing.
+
+### 7.4 A finding that is *not* the flag — capelin is mispriced
+
+True under every mode, and worth fixing either way: **capelin (5₲) is the cheapest bait favouring both
+mackerel (10₲) and pollock (11₲)** — half the fish, before a single miss. Even at one bait per fish those
+two breach any sane share-of-value ceiling (the test uses 35 %); cod and haddock sit at 21 % and 19 % and
+are fine.
+
+**Recommendation:** re-price `bait.capelin` to **2₲** — 20 % of a mackerel, 18 % of a pollock, and still a
+real cost against cod. `Data/Bait/` is **gameplay-systems'** under the ownership map, so this is filed as
+a request, not done here. Noted alongside it, for a later pass: a 10₲ mackerel of 0.3–1.5 kg against a
+14₲ cod of 2–12 kg is its own balance question.
+
+### 7.5 What flipping ON gives up — stated fairly
+
+1. **A miss gets cheaper, not free.** Cost of a failed sequence = seconds + (OFF only) one bait. At an
+   estimated ~35 ₲/min rod income (cycle ≈ 18 s — **an estimate; §3's rates are not authored yet**), the
+   1–7 s a failed sequence burns is worth 0.6–4.0₲ against a 3–5₲ bait. So ON **cuts the cost of a miss
+   by roughly 45–85 %** depending on species. It does not remove it. And the reverse claim — "time
+   already prices the miss" — is **false**: today the bait is the *larger* half of the penalty for
+   mackerel and pollock.
+2. **Bait stops being a floor under an outing.** §4 built bait and ice as the two recurring costs that
+   "set a floor under every outing". Under ON a fruitless trip is free and bait becomes a flat commission
+   on income. **Ice still does that job** — ice is spent against *time*, not against fish — so the shape
+   survives on one leg instead of two.
+3. **It is less physically true.** A fish that mouths your bait takes it; real hand-lining means re-baiting
+   after most bites. The 2026-07-25 ruling was the honest model. But P5 puts the teeth in *the sea*, not
+   the tackle box — and the §10.2 rulings around this one (no spooked spot, "It keeps nibbling", no hard
+   fish-gone) all pull the same way.
+
+### 7.6 The middle path, if the owner wants a miss to bite
+
+**Spend at the HOOK-UP.** Teases and missed strikes cost nothing — literally what he said a miss should
+cost — but a fish that got hooked and then broke off keeps the bait, which is what actually happens when
+one does. Bounded by the fight alone:
+
+| | competent | new |
+|---|---|---|
+| Baits per landed fish | **1.11** | **1.54** |
+
+The same for every personality: the bite funnel cannot reach it, so it cannot go regressive. Building it
+is one moved call in `FishingController` behind a third enum value — **gameplay-systems' file, not this
+lane's.** Costed here so the option is on the table with a number against it; not built.
+
+### 7.7 Recommendation
+
+**Flip `BaitSpentOnCatchOnly` ON.** In order of weight:
+
+1. **The reciprocal is the defect, not the principle.** A cost of `1 ÷ P(land)` is unbounded in
+   inexperience — 16.7 baits per haddock, 12.9 per fish on an opening-day blend. The owner deliberately
+   made the bite's failure modes forgiving; OFF quietly re-imposes the punishment as an invoice.
+2. **§4's own guard-rail.** "The casual player must still climb — late but not stuck." A consumable priced
+   by failure is the wrong *shape* for that, whatever the tuning.
+3. **The unlicensed-cod leak is otherwise unfixable** without either pulling cod from the St Peters rod
+   pool or gating bites by licence — both worse changes than a flag flip.
+4. **§5's CI guard needs it.** A projection cannot price bait while its cost is a function of the player.
+   ON is the only mode this document can actually assert against.
+
+**Do first, and independently of the flag:** re-price capelin (§7.4).
+
+**What would change this recommendation:** if a playtest shows a competent hand's real land rate is far
+above the model's — P(hook) > 0.95 across the board — then OFF's competent cost collapses toward 1.05 and
+the argument narrows to the new player alone, at which point §7.6's hook-up compromise beats either
+extreme. The test regenerates the whole table in one run, so re-check rather than re-argue.
+
+### 7.8 One caveat that makes this cheap to decide now
+
+**The flag is currently inert in the live build.** No builder and no scene wires a `BaitDef` to the
+`FishingController` (`_bait` / `_baitBox` are unset everywhere), so `SpendBait()` is a silent no-op and
+the rod costs nothing to fish today. The consequence above lands the moment §7.5's store sells bait and
+the owner's §10.4 diegetic bait-choosing ties one on. Which is exactly why it is worth ruling now:
+deciding is free today and expensive after the store, the prices and the tutorial beats are built
+against the wrong number.
+
+**Still the owner's call, in play, as ruled.** This lane's job was the number; the number is 12.9.
