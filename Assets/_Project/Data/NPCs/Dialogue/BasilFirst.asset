@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: BasilFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.basil_first
+  FirstLines:
+  - 'Basil Samson. Forty-one years I went out that channel, and now I come down of a
+    morning to watch the water do it without me.'
+  - 'They''ll tell you the sea is fair. She isn''t. She''s honest — that''s a different
+    animal. She''ll feed you and drown you the same week and think nothing of either.'
+  - 'So read her yourself. Don''t take my word for it, and don''t take the boat''s. Yours.'
+  RepeatLines:
+  - 'Tide''s doing what it said it would. That''s the only promise you''ll get out here.'
