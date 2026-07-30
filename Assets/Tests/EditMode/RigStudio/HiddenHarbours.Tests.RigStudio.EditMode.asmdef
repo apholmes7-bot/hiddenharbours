@@ -1,0 +1,24 @@
+{
+    "name": "HiddenHarbours.Tests.RigStudio.EditMode",
+    "rootNamespace": "HiddenHarbours.Tests.RigStudio",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Tools.RigStudio.Editor",
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Art",
+        "HiddenHarbours.Art.Editor",
+        "HiddenHarbours.Core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "overrideReferences": true,
+    "autoReferenced": false
+}

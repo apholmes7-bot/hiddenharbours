@@ -1,0 +1,21 @@
+{
+    "name": "HiddenHarbours.Tools.RigStudio.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.RigStudio",
+    "references": [
+        "HiddenHarbours.Tools.RigBaking.Editor",
+        "HiddenHarbours.Art",
+        "HiddenHarbours.Art.Editor",
+        "HiddenHarbours.Core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
