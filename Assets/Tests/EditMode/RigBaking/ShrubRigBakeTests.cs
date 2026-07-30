@@ -769,6 +769,295 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        // =================================================================================
+        // 🔴 THE SWAY ROWS — the bake must FILL the sheet the contract describes
+        //
+        // The kit shipped with a baker that wrote ONE row where the contract declares four, so every
+        // sheet it produced was a quarter of its contracted height and ShrubSheetSlicer refused all
+        // eighteen of them. Nothing caught it: the rig renders sway frames correctly, the contract is
+        // serialised correctly, and the baker's own staleness guard compared sheet WIDTHS only. These
+        // two tests are the fence — one on the geometry the baker plans, one on the pixels it writes.
+        // =================================================================================
+
+        [Test]
+        public void EveryAxis_PlansAllFourSwayRows_AndAShortSheetIsRefusedByTheBakersOwnGuard()
+        {
+            var contract = LoadContract();
+            using var host = CreateHost();
+
+            Assert.AreEqual(ShrubCatalog.SwayFrames, ShrubBaker.SwayRowsBaked,
+                "ShrubBaker.SwayRowsBaked must be the rig's own SWAY. Unlike the tree kit — whose " +
+                "contract publishes sheet.rows AND sheet.rigSwayRows so a one-row bake is describable " +
+                "— this kit's contract is serialised straight out of the rig and carries ONE pair of " +
+                "numbers per axis. A baker that lays out fewer rows writes a sheet its own oracle " +
+                "rejects.");
+            Assert.AreEqual(ShrubCatalog.SwayFrames, contract.Sway.Frames,
+                "the contract's sway.frames vs the catalog's constant");
+
+            foreach (var entry in contract.Species)
+            foreach (string axis in new[] { ShrubBaker.PhaseAxis, ShrubBaker.VariantAxis })
+            {
+                var spec = ShrubBaker.ReadSheetSpec(host, entry.Key, Stage, axis);
+                int wantW = axis == ShrubBaker.PhaseAxis ? entry.PhaseSheetW : entry.VariantSheetW;
+                int wantH = axis == ShrubBaker.PhaseAxis ? entry.PhaseSheetH : entry.VariantSheetH;
+
+                Assert.AreEqual(ShrubCatalog.SwayFrames, spec.SwayRows,
+                    $"{entry.Key}/{axis}: the rig publishes {spec.SwayRows} sway row(s).");
+                Assert.AreEqual(wantW, spec.SheetW, $"{entry.Key}/{axis}: sheet width");
+
+                // ⭐ THE ASSERT THE KIT WAS MISSING. The contracted height is swayRows × cellH, and
+                // the sheet the baker lays out has to BE that — not a factor of it.
+                Assert.AreEqual(wantH, spec.SheetH,
+                    $"{entry.Key}/{axis}: the baker plans a {spec.SheetW}×{spec.SheetH} sheet but the " +
+                    $"contract says {wantW}×{wantH}. A sheet of the wrong height matches neither " +
+                    "published axis, so the slicer refuses it outright.");
+                Assert.AreEqual(wantH, spec.SwayRows * spec.CellH,
+                    $"{entry.Key}/{axis}: the contracted height must be swayRows × cellH.");
+
+                // The rig's whole-sheet numbers and ours now describe the SAME sheet. While the baker
+                // wrote one row these two disagreed by 4× and nothing compared them.
+                Assert.AreEqual(spec.RigSheetH, spec.SheetH,
+                    $"{entry.Key}/{axis}: the rig reports a {spec.RigSheetW}×{spec.RigSheetH} sheet " +
+                    "and we lay out a different one. The 2048 guard asserts both, and it can only be " +
+                    "worth asserting twice if the two are the same sheet.");
+                Assert.AreEqual(spec.RigSheetW, spec.SheetW, $"{entry.Key}/{axis}: rig sheet width");
+            }
+
+            // ---- MEASURED SABOTAGE: the guard must refuse every way the sheet can be short -------
+            const string key = "SpeckledAlder";
+            var real = ShrubBaker.ReadSheetSpec(host, key, Stage, ShrubBaker.VariantAxis);
+            var realEntry = contract.Find(key);
+
+            var cases = new (ShrubBaker.SheetSpec spec, string what)[]
+            {
+                (With(real, swayRows: 1),
+                 "ONE sway row (the shipped defect — a quarter-height sheet)"),
+                (With(real, swayRows: 2), "TWO sway rows (a half-height sheet)"),
+                (With(real, swayRows: real.SwayRows + 1), "an EXTRA sway row"),
+                (With(real, cols: real.Cols - 1), "a DROPPED variant column"),
+                (With(real, cellH: real.CellH + 1), "a union cell one row TALLER"),
+                (With(real, pivotY: real.PivotY - 1), "a ground contact one row HIGHER"),
+            };
+
+            var lines = new List<string>();
+            foreach (var (spec, what) in cases)
+            {
+                Assert.Throws<InvalidOperationException>(
+                    () => ShrubBaker.AssertMatchesContract(key, spec, ShrubBaker.VariantAxis, contract),
+                    $"SABOTAGE NOT DETECTED — {what} passed the staleness guard. This is exactly how " +
+                    "the one-row bake got as far as the slicer.");
+                lines.Add($"  {what,-58} → refused ({spec.SheetW}×{spec.SheetH})");
+            }
+
+            // …and the shipped geometry must still pass, so the guard is strict rather than broken.
+            Assert.DoesNotThrow(
+                () => ShrubBaker.AssertMatchesContract(key, real, ShrubBaker.VariantAxis, contract));
+
+            Debug.Log($"[shrub-sway] {contract.Species.Count} species × 2 axes all plan " +
+                      $"{ShrubCatalog.SwayFrames} sway rows. {key}'s variant sheet is " +
+                      $"{realEntry.VariantSheetW}×{realEntry.VariantSheetH}; the shipped one-row bake " +
+                      $"wrote {realEntry.VariantSheetW}×{real.CellH} — 4× short.\n" +
+                      "[shrub-sway] SABOTAGE — the staleness guard:\n" + string.Join("\n", lines));
+        }
+
+        /// <summary>
+        /// The bake-shaped half: run a real variant-axis bake through <c>ShrubBaker</c>'s own path and
+        /// read the PNG back off disk.
+        ///
+        /// <para>Two claims, and the second is the one a dimension check alone cannot make: the sheet
+        /// is the contract's full size, AND every cell in it is the BIT-IDENTICAL render of
+        /// (variant = column, sway frame = row). Four rows of frame 0 would be the right size and
+        /// four times the bytes for no motion at all — so row 1 is measured against row 0 as well.</para>
+        ///
+        /// <para>Bakes to <c>artifacts/</c> (gitignored) rather than the kit folder: this kit ships no
+        /// pixels, and <see cref="TheKitShipsNoPixels_AndThatIsDeliberate"/> asserts so.</para>
+        /// </summary>
+        [Test]
+        public void AVariantAxisBake_FillsTheContractsSheet_AndEveryRowIsItsOwnSwayFrame()
+        {
+            // ⚠️ THE SPECIES IS A DELIBERATE CHOICE, AND NOT EVERY ONE WOULD DO. Measured at `leaf`,
+            // full stage: alder's sway frame moves 8.5% of its cell, but Rhodora's moves 0.28% (6 px)
+            // and lowbush blueberry and common juniper — the stiff mats — move NOTHING AT ALL, so on
+            // those three the "row 1 is its own frame" claim is either razor-thin or vacuous. Alder is
+            // also the kit's headline species and its veil case.
+            const string key = "SpeckledAlder";
+            const string phase = "leaf";
+            string outFolder = "artifacts/shrub-bake-test";
+            Directory.CreateDirectory(Path.Combine(RepoRoot, outFolder));
+
+            var contract = LoadContract();
+            var entry = contract.Find(key);
+            Assert.IsNotNull(entry);
+
+            var result = ShrubBaker.BakeVariantAxis(new[] { key }, Stage, phase, outFolder);
+
+            Assert.AreEqual(1, result.Sheets.Count);
+            var sheet = result.Sheets[0];
+            Assert.AreEqual(ShrubCatalog.Channels.Length, sheet.AssetPaths.Count,
+                "all three channels — the albedo and the two DATA bakes — come off one render.");
+            Assert.AreEqual(ShrubCatalog.Variants * ShrubCatalog.SwayFrames, result.CellsRendered,
+                $"{ShrubCatalog.Variants} variant columns × {ShrubCatalog.SwayFrames} sway rows. A " +
+                "bake that rendered a quarter of these is the defect this test exists for.");
+            Assert.AreEqual(entry.VariantSheetW, sheet.Width, "sheet width vs the contract");
+            Assert.AreEqual(entry.VariantSheetH, sheet.Height, "sheet height vs the contract");
+
+            // The PNGs on disk, not just the bookkeeping. A reported size and a written size are two
+            // different claims.
+            foreach (string assetPath in sheet.AssetPaths)
+            {
+                var (w, h) = PngSize(assetPath);
+                Assert.AreEqual(entry.VariantSheetW, w, $"{assetPath}: PNG width");
+                Assert.AreEqual(entry.VariantSheetH, h,
+                    $"{assetPath}: PNG height. The contract says {entry.VariantSheetH} " +
+                    $"({ShrubCatalog.SwayFrames} × {entry.CellH}); this file carries " +
+                    $"{h / entry.CellH} row(s), and the slicer matches sheet sizes EXACTLY.");
+            }
+
+            // ---- every cell is the render of (variant = col, frame = row) ------------------------
+            using var host = CreateHost();
+            Color32[] px = ReadPixels(sheet.AssetPaths[0], out int pw, out int ph);
+
+            for (int row = 0; row < ShrubCatalog.SwayFrames; row++)
+            for (int col = 0; col < ShrubCatalog.Variants; col++)
+            {
+                byte[] want = host.EvaluateBytes(
+                    $"{ShrubBaker.ResultExpr(key, Stage, phase, col, row)}.rgba");
+                Assert.AreEqual(entry.CellW * entry.CellH * 4, want.Length);
+
+                int mismatch = CountCellMismatch(px, pw, ph, entry, row, col, want);
+                Assert.AreEqual(0, mismatch,
+                    $"{key} cell (row {row}, col {col}): {mismatch} px differ from a fresh " +
+                    $"render(variant {col}, frame {row}). The grid is variant-ACROSS and sway-DOWN, " +
+                    "row-major from the TOP-LEFT — if this fails, the cells are laid out transposed " +
+                    "or on the wrong frame, and the slicer's rect names would lie.");
+            }
+
+            // ---- MEASURED SABOTAGE: four copies of frame 0 would pass everything above -----------
+            // The rig's sway curve is sin(frame / SWAY × 2π), so the four rows are
+            // neutral · swing · neutral · counter-swing. That STRUCTURE is what gets asserted, rather
+            // than a magnitude fitted to whichever species this test happens to bake: the two swings
+            // must move, and they must move in opposite directions, so they differ from rest AND from
+            // each other. ⚠️ Row 2 is the neutral pose AGAIN by design — a test that demanded every
+            // row differ from row 0 would fail on a perfectly correct bake.
+            int[] fromRest = new int[ShrubCatalog.SwayFrames];
+            for (int row = 1; row < ShrubCatalog.SwayFrames; row++)
+                fromRest[row] = CountRowMismatch(px, pw, ph, entry, 0, row);
+            int swingToSwing = CountRowMismatch(px, pw, ph, entry, 1, 3);
+            int rowPx = entry.CellW * entry.CellH * ShrubCatalog.Variants;
+
+            Assert.Greater(fromRest[1], 0,
+                $"{key}: sway row 1 is pixel-identical to row 0. Four identical rows are 4× the sheet " +
+                "for no motion at all — either the baker is passing frame 0 for every row (the defect " +
+                "in a different disguise) or the rig stopped swaying.");
+            Assert.Greater(fromRest[3], 0,
+                $"{key}: sway row 3 is pixel-identical to row 0, so the counter-swing is missing.");
+            Assert.Greater(swingToSwing, fromRest[1],
+                $"{key}: rows 1 and 3 differ from each other in {swingToSwing} px but each differs " +
+                $"from rest in {fromRest[1]}/{fromRest[3]}. They are the two OPPOSITE swings, so the " +
+                "gap between them must be the widest in the cycle. If it is not, the rows are not " +
+                "carrying frames 0..3 in order.");
+            Assert.Less(fromRest[2], fromRest[1],
+                $"{key}: row 2 differs from rest by {fromRest[2]} px and row 1 by {fromRest[1]}. " +
+                "sin(2/4 × 2π) = 0 and sin(1/4 × 2π) = 1, so row 2 must sit CLOSER to the neutral " +
+                "pose than row 1 does — this is what pins the rows to the rig's own sway curve " +
+                "rather than to some permutation of it.");
+
+            Debug.Log($"[shrub-bake] {key} variant axis at '{phase}': " +
+                      $"{sheet.Width}×{sheet.Height} = {ShrubCatalog.Variants} variant col(s) × " +
+                      $"{sheet.Rows} sway row(s) of {entry.CellW}×{entry.CellH}, " +
+                      $"{result.CellsRendered} renders, {result.TotalPngBytes / 1024} KiB across " +
+                      $"{sheet.AssetPaths.Count} channels. Every one of the " +
+                      $"{ShrubCatalog.Variants * ShrubCatalog.SwayFrames} cells is bit-identical to a " +
+                      $"fresh render(variant = col, frame = row). Of {rowPx} px per row, rows 1/2/3 " +
+                      $"differ from rest in {fromRest[1]}/{fromRest[2]}/{fromRest[3]} px and the two " +
+                      $"swings differ from each other in {swingToSwing} — neutral · swing · neutral · " +
+                      "counter-swing, the rig's sin(frame/SWAY × 2π).");
+        }
+
+        /// <summary>A <see cref="ShrubBaker.SheetSpec"/> with one field replaced — the sabotage
+        /// helper. Every field is passed explicitly so a new one cannot be silently defaulted to
+        /// zero and quietly weaken a refusal.</summary>
+        static ShrubBaker.SheetSpec With(in ShrubBaker.SheetSpec s, int? cellW = null,
+                                         int? cellH = null, int? pivotX = null, int? pivotY = null,
+                                         int? cols = null, int? swayRows = null) =>
+            new ShrubBaker.SheetSpec(
+                cellW: cellW ?? s.CellW, cellH: cellH ?? s.CellH,
+                pivotX: pivotX ?? s.PivotX, pivotY: pivotY ?? s.PivotY,
+                pad: s.Pad, cols: cols ?? s.Cols, swayRows: swayRows ?? s.SwayRows,
+                rigSheetW: s.RigSheetW, rigSheetH: s.RigSheetH, rigFits: s.RigFits,
+                wrap: s.Wrap, metres: s.Metres);
+
+        /// <summary>A PNG's declared size, read straight out of the IHDR chunk — no graphics device
+        /// and no decode, so a size claim can be checked even where a texture upload cannot.</summary>
+        static (int w, int h) PngSize(string assetPath)
+        {
+            byte[] png = File.ReadAllBytes(Path.Combine(RepoRoot, assetPath));
+            Assert.Greater(png.Length, 24, $"{assetPath} is too short to be a PNG.");
+            int Be32(int at) => (png[at] << 24) | (png[at + 1] << 16) | (png[at + 2] << 8) | png[at + 3];
+            return (Be32(16), Be32(20));
+        }
+
+        static Color32[] ReadPixels(string assetPath, out int width, out int height)
+        {
+            byte[] png = File.ReadAllBytes(Path.Combine(RepoRoot, assetPath));
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
+            try
+            {
+                Assert.IsTrue(tex.LoadImage(png, markNonReadable: false),
+                              $"failed to decode {assetPath}");
+                width = tex.width;
+                height = tex.height;
+                return tex.GetPixels32();
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+
+        /// <summary>
+        /// How many pixels of one sheet cell differ from a rig-rendered RGBA cell.
+        ///
+        /// <para>⚠️ Texture pixels are BOTTOM-origin and the rig hands back TOP-origin rows, so sheet
+        /// row 0 is the highest Y — the same flip <c>RigBaker.Blit</c> applies going the other way.
+        /// Getting this backwards is how a transposed sheet passes a test.</para>
+        /// </summary>
+        static int CountCellMismatch(Color32[] px, int pw, int ph, ShrubCatalog.SpeciesEntry entry,
+                                     int row, int col, byte[] want)
+        {
+            int bad = 0;
+            for (int y = 0; y < entry.CellH; y++)
+            {
+                int unityY = ph - 1 - (row * entry.CellH + y);
+                for (int x = 0; x < entry.CellW; x++)
+                {
+                    Color32 got = px[unityY * pw + col * entry.CellW + x];
+                    int s = (y * entry.CellW + x) * 4;
+                    if (got.r != want[s] || got.g != want[s + 1] ||
+                        got.b != want[s + 2] || got.a != want[s + 3]) bad++;
+                }
+            }
+            return bad;
+        }
+
+        /// <summary>How many pixels two whole sway rows differ, across every column.</summary>
+        static int CountRowMismatch(Color32[] px, int pw, int ph, ShrubCatalog.SpeciesEntry entry,
+                                    int rowA, int rowB)
+        {
+            int diff = 0;
+            for (int y = 0; y < entry.CellH; y++)
+            {
+                int ya = ph - 1 - (rowA * entry.CellH + y);
+                int yb = ph - 1 - (rowB * entry.CellH + y);
+                for (int x = 0; x < ShrubCatalog.Variants * entry.CellW; x++)
+                {
+                    Color32 a = px[ya * pw + x], b = px[yb * pw + x];
+                    if (a.r != b.r || a.g != b.g || a.b != b.b || a.a != b.a) diff++;
+                }
+            }
+            return diff;
+        }
+
         [Test]
         public void TheKitShipsNoPixels_AndThatIsDeliberate()
         {

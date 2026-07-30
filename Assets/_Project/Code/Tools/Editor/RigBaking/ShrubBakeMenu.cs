@@ -168,13 +168,14 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.AppendLine($"  rig        : {ShrubCatalog.RigScriptPath}");
             sb.AppendLine($"  contract   : {ShrubCatalog.ContractPath} (the ORACLE — refused against, " +
                           "never rewritten by a bake)");
-            sb.AppendLine($"  sway rows  : {ShrubBaker.SwayRowsBaked} of 4 the rig can make (the " +
-                          "shader owns the swaying — see ShrubBaker.SwayRowsBaked)");
+            sb.AppendLine($"  sway rows  : {ShrubBaker.SwayRowsBaked}, the rig's own SWAY — this kit's " +
+                          "contract is serialised from the rig and cannot describe fewer " +
+                          "(see ShrubBaker.SwayRowsBaked)");
             sb.AppendLine($"  render     : {r.RenderMilliseconds:F0} ms of {r.TotalMilliseconds:F0} ms total");
 
             foreach (var s in r.Sheets)
                 sb.AppendLine($"  {s.Species,-20} {s.Width,4}×{s.Height,-4} " +
-                              $"{s.Cols} {s.Axis} col(s) × {s.Rows} row  [{s.Fixed}]  " +
+                              $"{s.Cols} {s.Axis} col(s) × {s.Rows} sway row(s)  [{s.Fixed}]  " +
                               $"{s.AssetPaths.Count} channel(s)");
             return sb.ToString().TrimEnd();
         }
