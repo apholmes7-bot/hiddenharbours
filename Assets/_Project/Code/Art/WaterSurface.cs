@@ -293,13 +293,18 @@ namespace HiddenHarbours.Art
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
+        // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
+        // property, because it belongs to the camera rather than to this renderer.
+        private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
 
         // ==== Weather-palette MOOD property key set (ADR 0017) ============================================
         // The MOOD/COLOUR properties the weather blend lerps from the anchor presets and pushes via the MPB.
         // This is EXACTLY the non-sim-overridden set the §12 preset library varies (palette grade / colours /
         // foam character / swell / specular / caustics / reflection / fbm tint / surface dressing). It
         // DELIBERATELY EXCLUDES every PHYSICS prop WaterSurface already drives from the sim — _Chop,
-        // _Roughness, _Flow, _FlowDir, _WindDir, _WaterLevel, _HeightTex/_Height* — so the two are disjoint
+        // _Roughness, _Flow, _FlowDir, _WindDir, _WaterLevel, _HeightTex/_Height* — and, for the same
+        // reason, the ADR 0027 #10 camera-framing global _SeaFramingHeight (a derived-physics PUSH; easing
+        // it from the presets would double-drive it) — so the two are disjoint
         // and compose (no double-drive). The blend reads each anchor material's value PER KEY at runtime
         // (HasProperty-guarded), so the set is read from the SHARED keys the presets actually carry and can't
         // drift from the materials. Names are append-only/stable like the shader properties.
@@ -355,6 +360,7 @@ namespace HiddenHarbours.Art
         private Texture2D _heightTex;
         private float _baseFlow = 0.06f;   // the material's authored Flow floor (read once)
         private float _timer;
+        private Camera _framingCam;        // (ADR 0027 #10) cached Camera.main for the ripple framing push
 
         // --- flow-momentum state (the water's MASS): the VISUAL flow eases toward the live sim ----------
         // Persistent SMOOTHED twins of the live EnvironmentSample current/wind vectors. Each push moves these
@@ -441,10 +447,51 @@ namespace HiddenHarbours.Art
 
         private void Update()
         {
+            // Every frame, NOT on the throttled tick: the framing changes on a zoom step and eases over the
+            // CameraFollow tween, so a few-Hz push would visibly step the ripple density through the ease.
+            // One SetGlobalFloat, no allocation (rule 7).
+            PushCameraFraming();
+
             _timer -= Time.deltaTime;
             if (_timer > 0f) return;
             _timer = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
             PushUniforms();
+        }
+
+        /// <summary>
+        /// (ADR 0027 #10) Publish how many METRES of sea the camera currently frames down the screen, as the
+        /// global <c>_SeaFramingHeight</c>. Only the ripple band's density fade reads it.
+        ///
+        /// <para><b>Why the shader needs this at all.</b> The ADR asked #10 for a per-discrete-zoom-tier
+        /// amplitude fade, on the premise that a ripple goes sub-pixel at a wider tier. It does not:
+        /// <c>assetsPPU</c> is locked at 32 and the camera frames a tier by changing its REFERENCE
+        /// RESOLUTION, so a ripple is the same 3.8 px at every framing the game has (pinned by
+        /// <c>RipplePixelFootprintTests</c>). What varies is how many ripple CYCLES are on screen — ~6× more
+        /// at the widest framing than the tightest — so the fade is keyed to the framing instead. See
+        /// <see cref="WaterRipple.FramingFade01"/> and the ADR's #10 amendment.</para>
+        ///
+        /// <para><b>Unset means NO fade, deliberately.</b> Edit mode publishes 0 (rather than leaving a stale
+        /// value from a previous Play session), and the shader's <c>&lt;= 0</c> branch turns that into full
+        /// strength — so the owner authoring in the Scene view sees the band he is tuning, instead of a
+        /// silently blank sea. Same convention as the <c>_WaveFieldParams</c> "count 0 = not published".</para>
+        ///
+        /// <para>A GLOBAL rather than an MPB property because it belongs to the CAMERA, not to this renderer;
+        /// the <c>WaveFieldBridge</c>/<c>GrassWindBridge</c> pattern. Reads the camera only — feeds no sim,
+        /// saves nothing (rule 5).</para>
+        /// </summary>
+        private void PushCameraFraming()
+        {
+            float framingMetres = 0f;
+            if (Application.isPlaying)
+            {
+                if (_framingCam == null) _framingCam = Camera.main;
+                // Orthographic only: the whole framing argument is "half-height × 2 = metres of sea down the
+                // screen", which a perspective camera does not have. A non-ortho (or absent) camera publishes
+                // 0 = no fade, which is the safe end — the band renders, it just does not thin out.
+                if (_framingCam != null && _framingCam.orthographic)
+                    framingMetres = Mathf.Max(0f, _framingCam.orthographicSize * 2f);
+            }
+            Shader.SetGlobalFloat(IdSeaFramingHeight, framingMetres);
         }
 
 #if UNITY_EDITOR

@@ -3285,3 +3285,127 @@ TOP-LEFT and its breakwaters on the CREST.
 > POSITION) from the tide (an ELEVATION in metres above datum) — different quantities, the same
 > conflation the distance gate had. A floating hull needs no such option anyway: her pivot already
 > rides the swell with her.
+
+---
+
+## 27. The capillary ripple band — the finest octave, gated by wind, face and framing (ADR 0027 #10)
+
+The finest thing this shader drew was `_WindChopScale` at 0.7 — a **1.4 m** band, which is *chop*, not
+ripples. §27 adds the ~0.12 m octave riding **on** the larger waves: the thing that makes water read as
+*water* close up. It ships **OFF** (`_RippleStrength` 0 in `Water.mat`), so the owner's tuned sea is
+byte-identical until he dials it in. C# twin: `WaterRipple` — `WindGate01` / `WindwardGate01` /
+`FramingFade01` / `Band01` / `Amplitude01` / `SignedAdd`, mirrored one-for-one by the shader's
+`RippleWindGate` / `RippleWindwardGate` / `RippleFramingFade` / `RippleField` — **change one, change BOTH
+in the same PR** (`WaterRippleTests` pins the laws headless; `RippleBandProbeTests` proves the pixel
+claim on a GPU and skips loudly without one).
+
+**Tier A permanently.** `col.rgb` brightness only — never `depth`, `clip()`, `_WaterLevel`, the height
+read, `_WaveFieldParams`, or anything the hulls ride. The ADR says it in as many words: *a ripple is not
+a force*. Nothing enters the save.
+
+### 27.1 Where it sits in the composite
+
+Drawn **after** the §23 envelope value bands and **before** the caustics/foam/specular. Both sides are
+deliberate: the envelope bands `lerp` `col.rgb` toward the palette anchors, so a ripple added before them
+would be partly washed away — texture belongs on top of shade — while breaking water and glints
+physically belong on top of the ripple. The swing is capped at **±0.10** (`RIPPLE_ADD_CEIL`), below the
+swell-read band's 0.25 and the face shading's 0.15: the finest layer on the sea is the one most able to
+turn into glare. The ADR 0015 palette guard-rail still owns the final colour downstream.
+
+### 27.2 The three gates
+
+| Gate | Reads | Off end | Why |
+|---|---|---|---|
+| **Wind** | `_Roughness` (sim-pushed) between `_RippleWindOnset` and `_RippleWindFull` | exactly 0 at/below the onset | No wind, no ripples — glass stays glass. Monotone and **saturating**: by a gale the whitecaps own the surface. |
+| **Windward face** | `dot(waveSlope, windDir)` — the *shared* field's slope, already sampled for the §20 face shading | `_RippleWindwardGate` 0 returns exactly 1 (ripples everywhere) | Going **downwind** you climb the windward face, so a positive projection *is* that face. Ripples sit there and thin to `_RippleLeeFloor` in the lee — sheltered, never glass. **No new uniform.** |
+| **Framing** | `_SeaFramingHeight` (metres of sea on screen) between `_RippleFadeNear` and `_RippleFadeFar` | `_SeaFramingHeight` ≤ 0 (unset) returns exactly 1 | The anti-**density** guard — see §27.3. |
+
+> ⚠️ **The windward gate is skipped when the trains are not live.** A dead field publishes zero slope,
+> which the gate would read as "not a windward face" and would erase the band on the legacy /
+> edit-mode / bare-art-scene path. The fragment tests `trainsLive` and passes 1 there.
+
+`Amplitude01` composes them as a **product**, so any single gate at zero kills the layer, and
+`_RippleStrength = 0` is the exact passthrough the shipped material sits at.
+
+### 27.3 ⚠️ The fade is keyed to the FRAMING, not to the zoom tier — and that is an ADR amendment
+
+ADR 0027 made #10 conditional on a **per-discrete-zoom-tier amplitude fade**, on the premise that *"at a
+wider zoom tier a ripple falls below one pixel"*, and told the build to drop the item if that fade could
+not be made stable. **That fade does not exist and must not be built.** A report-only spike measured the
+camera instead of assuming it:
+
+- `PixelPerfectCamera.assetsPPU` is **locked at 32** (`ArtCameraSetup`, mirrored by
+  `CameraFollow.AssetsPPU`), and `CameraFollow` frames a tier by changing the **reference resolution**,
+  never world-metres-per-pixel (`upscaleRT` is never set; `gridSnapping = PixelSnapping`).
+- So one pixel is 1/32 m = 3.125 cm at **every framing the game has**, and a 0.12 m ripple is **3.8 px**
+  from the 5.625 m live-haul framing to the 90 m Coastal Packet. It never goes sub-pixel.
+- Pinned by `RipplePixelFootprintTests`, which is a **tripwire**: unlock `assetsPPU`, or let a framing
+  path drive the orthographic size independently of the reference resolution, and #10's original kill
+  condition is live again with the band already shipped.
+
+What **does** vary is the **cycle count**: the widest framing shows 33.75 m of sea against the tightest's
+5.625 m, so ~**6× more ripple cycles** down-screen at the same pixel size. Close in, the band reads as
+texture on the swell; wide open it reads as a dense field competing with the swell bands. Hence a fade
+over *how much sea is on screen*.
+
+`_SeaFramingHeight` is published by `WaterSurface.PushCameraFraming` via `Shader.SetGlobalFloat` — the
+`WaveFieldBridge` / `GrassWindBridge` pattern — **every frame, not on the throttled tick**, because the
+framing eases over the `CameraFollow` zoom tween and a few-Hz push would visibly step the density
+through the ease. It is a **global**, not an MPB property, because it belongs to the *camera* rather than
+to the water renderer.
+
+> ⚠️ **It is a derived-physics PUSH, never a mood float.** `_SeaFramingHeight` must not enter
+> `WaterSurface.MoodFloatNames` — anything in that list is eased from the eight preset materials and
+> would double-drive it, the same trap `_Chop` / `_Roughness` / `_Flow` are kept out of (§12.1).
+
+> **Unset means NO fade, deliberately.** Edit mode publishes 0 (rather than leaving a stale value from a
+> previous Play session) and the shader's `<= 0` branch turns that into full strength — so the owner
+> tuning in the Scene view sees the band he is tuning, instead of a silently blank sea. Same convention
+> as `_WaveFieldParams`' "count 0 = not published".
+
+### 27.4 Pixelation — the crawl law and the layer's own quantization
+
+Both halves of the ADR's pixelation demand for #10 ship, and only the zoom half was retired:
+
+- **World-grid quantization.** `RippleField` snaps the sample position on the **world** PPU grid
+  (`Pixelize(worldXY)`, *then* scales) so a ripple cell belongs to a place on the water and stays there
+  while the camera pans. Never screen space — that is the crawl law §3 states and the shader's Bayer
+  dither, the §26 reflection lookup and the ADR 0022 facet pass all hold.
+- **The layer's own quantization, DEFAULT ON.** `_RippleBands` (3) posterizes the band into solid steps
+  through the shared `BandValue01`, Bayer-dithered only inside `_RippleDitherWin` around each boundary,
+  indexed by the world-locked cell (`bay`, already read for the envelope bands — one dither read). This
+  matters most here because `_DepthBands` is 0, so the base ramp lends no pixel character of its own and
+  a smooth ripple would read as airbrushed shimmer. **Dither at the EDGE only**: full-range dither
+  dissolves the steps back into the gradient this game is not (spike-measured, §3).
+
+The wavefronts are broken out of a ruled grating by a slow pixelized value-noise wander (the §5 swell
+idiom at this band's scale) — `RIPPLE_WANDER_*`, bounded under a half cycle so wavefronts stay
+wavefronts.
+
+### 27.5 Speed, and why it rides the §25 dispersion blend
+
+`_RippleSpeed` is a world speed **along the wind**, defaulting to **0.09 m/s** — the wind-chop band's own
+speed, so the ripple sits in the sea's established (deliberately slow) feel family at ~0.75 wavelengths
+per second. The *physical* deep-water speed for 0.12 m is 0.43 m/s; at 3.8 px per cycle that reads as
+temporal shimmer rather than ripple, which is why the shipped default is the feel value and not the
+physical one.
+
+It still goes through `DispersionBandSpeed` with its own `_DispersionRippleMult` (0.06, the same
+convention as the chop / cross-swell / swell bands), so dialling `_DispersionScale` up does not leave the
+ripple as the one band ignoring the relation. At the shipped `_DispersionScale = 0` this is bit-exact
+`_RippleSpeed`.
+
+### 27.6 Recommended starting values (the owner's dial-in)
+
+`Water.mat` ships every one of these at its property default with **`_RippleStrength` at 0**. To see the
+band, raise the strength; the rest are already at the recommended settings.
+
+| Property | Shipped | Recommended | Note |
+|---|---|---|---|
+| `_RippleStrength` | **0** | **0.45** | The only knob that must move. 0.45 gives a ±0.045 brightness swing. |
+| `_RippleWavelength` | 0.12 | 0.10–0.15 | 3.2–4.8 px at PPU 32. Below ~4 px it starts to moiré against the grid; the ADR's band is 0.08–0.15. |
+| `_RippleSpeed` | 0.09 | 0.06–0.12 | Faster reads as shimmer, slower as a static texture. |
+| `_RippleWindOnset` / `_RippleWindFull` | 0.05 / 0.45 | as shipped | Glass at a whisper, full band by a good breeze. |
+| `_RippleWindwardGate` / `_RippleLeeFloor` | 0.7 / 0.15 | as shipped | 0.7 keeps the face read legible without emptying the lee. |
+| `_RippleBands` / `_RippleDitherWin` | 3 / 0.5 | as shipped | Three solid steps is the pixel-art read; drop to 0 to compare against smooth. |
+| `_RippleFadeNear` / `_RippleFadeFar` / `_RippleFadeFloor` | 16 / 30 / 0.2 | as shipped | Full through every small-boat framing, thinning across the trawler/packet tiers. |
