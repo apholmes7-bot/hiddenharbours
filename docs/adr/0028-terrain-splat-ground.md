@@ -89,20 +89,26 @@ The same move ADR 0010 made for the sea, applied to the land:
 
 ### Art contract (PR 2 input — the owner's ask list)
 
-Six tileable detail textures, **128 × 128 px** (4 × 4 m at PPU 32), KTC palette, authored
-like every other rig source under `docs/art/rigs/` and imported per `.gitattributes`/LFS:
+Six tileable detail textures, KTC palette, authored like every other rig source under
+`docs/art/rigs/` and imported per `.gitattributes`/LFS. **Sizing is set by the world area a
+canvas covers at the locked PPU 32, not by texture-memory thrift** (owner challenge,
+2026-07-30): stochastic offsets stop repeats *aligning* but cannot add variety that is not
+on the canvas, so materials whose features live at the 5–15 m scale get the larger canvas.
+All six together ≈ 2 MB uncompressed — noise against the budget.
 
-| Key | Material | Reads as |
-|---|---|---|
-| `grass` | meadow turf | close mossy turf, not lawn — wind-burned island green |
-| `marram` | dune grass | sparse olive blades over sand showing through |
-| `sand` | beach | pale storm-sifted sand, faint drift lines |
-| `shingle` | cobble | fist-size wave-rounded cobble, the bar's walking line |
-| `ripple` | red flats | iron-red rippled mud, the clam ground (the screenshot star) |
-| `shelf` | scoured rock | wave-planed dark platform with weed stain |
+| Key | Material | Size | Covers | Reads as |
+|---|---|---|---|---|
+| `ripple` | red flats | **512 × 512** | 16 × 16 m | iron-red rippled mud, meandering ridge trains — the clam ground, the hero |
+| `shingle` | cobble | **512 × 512** | 16 × 16 m | wave-rounded cobble with stone-size sorting bands, the bar's walking line |
+| `grass` | meadow turf | 256 × 256 | 8 × 8 m | close mossy turf, not lawn — wind-burned island green |
+| `marram` | dune grass | 256 × 256 | 8 × 8 m | sparse olive blades over sand showing through |
+| `sand` | beach | 256 × 256 | 8 × 8 m | pale storm-sifted sand, faint drift lines |
+| `shelf` | scoured rock | 256 × 256 | 8 × 8 m | wave-planed dark platform with weed stain |
 
 Each must tile seamlessly (the shader's stochastic offsets hide repeats but not seams) and
-stay readable at 1:1 zoom under the day/night grade (ADR 0013).
+stay readable at 1:1 zoom under the day/night grade (ADR 0013). If a material still reads
+flat at 16 m, the fix is a second, larger-scale variation texture layered in the shader —
+not a bigger detail canvas.
 
 ## Consequences
 
