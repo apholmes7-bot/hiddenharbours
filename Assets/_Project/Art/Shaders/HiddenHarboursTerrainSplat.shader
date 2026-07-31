@@ -375,7 +375,12 @@ Shader "HiddenHarbours/TerrainSplat"
 
                 float paintSum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5] + p[6] + p[7] + p[8] + p[9];
                 float paintTotal = saturate(paintSum);
-                float norm = paintSum > 1.0 ? 1.0 / paintSum : 1.0;
+                // The painted share (paintTotal) is distributed by each channel's fraction of the
+                // whole (p / paintSum) — in BOTH regimes, so the weights below always sum to 1.
+                // Normalising only above 1 would leave partial paint summing to
+                // 1 - paintSum + paintSum^2: every feathered stroke edge up to 25% darker than
+                // either source material.
+                float norm = 1.0 / max(paintSum, 1e-4);
 
                 float intensity[10];
                 {
