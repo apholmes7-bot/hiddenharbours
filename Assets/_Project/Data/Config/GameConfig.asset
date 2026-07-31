@@ -23,6 +23,55 @@ MonoBehaviour:
   WindVariability: 5
   WeatherChangeHours: 6
   BaseFogBias: 0.15
+  WadeDepth: 0.5
+  SwimLimit: 2
+  WadeSlowFactor: 0.6
+  SwimSlowFactor: 0.25
+  Seakeeping:
+    Enabled: 1
+    Strength: 220
+    SeaStateExponent: 1.35
+    FullExposureDepthMeters: 6
+    ShelterDepthMeters: 1
+    HeadSeaWeight: 1
+    BeamSeaWeight: 1.3
+    FollowingSeaWeight: 0.7
+    YawFromSlew: 0.9
+  WaveField:
+    Gravity: 9.81
+    SecondaryTrainCount: 3
+    DominantWavelengthBase: 6
+    DominantWavelengthPerWindSpeed: 1.5
+    DominantWavelengthMax: 40
+    PrimaryAmplitude: 0.8
+    SeaStateAmplitudeExponent: 1.5
+    CrestSharpening: 2.6
+    PhaseSeed: 0
+    Secondary1AngleDegrees: 32
+    Secondary1WavelengthRatio: 0.55
+    Secondary1AmplitudeRatio: 0.45
+    Secondary2AngleDegrees: -47
+    Secondary2WavelengthRatio: 0.38
+    Secondary2AmplitudeRatio: 0.3
+    Secondary3AngleDegrees: 11
+    Secondary3WavelengthRatio: 0.22
+    Secondary3AmplitudeRatio: 0.18
+    SpectrumBlend: 0.65
+    SpectrumPeakEnhancement: 3.3
+    SpectrumPeakWidth: 0.08
+    SpectrumFrequencySpacing: 0.08
+    SpectrumSpreadDegrees: 55
+    SpectrumSpreadExponent: 2
+  WaveFieldAnimator:
+    ParameterSmoothingSeconds: 1.5
+    GlassSnapAmplitudeMeters: 0.0001
+  MarketDemandCove: 1
+  MarketDemandNineMileCreek: 1.4
+  MarketDailyRecovery: 0.5
+  HelmThrottle:
+    AheadNotches: 4
+    AsternNotches: 2
+    HoldRepeatPerSec: 0
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7
@@ -31,3 +80,67 @@ MonoBehaviour:
     CounterSteerRelief: 0.45
     SurfaceThreshold01: 0.5
     DeckAngleFactor: 0.15
+  FlickCast:
+    MinWindBackMetres: 0.6
+    MinFlickLengthMetres: 0.4
+    FullRangeWindBackMetres: 4
+    FullSnapFlickSpeed: 12
+    LimpFlickFraction01: 0.25
+    MinCastMetres: 1.5
+    MaxCastDistanceMetres: 12
+    LineFlightMetresPerSec: 18
+  DisplacedWater:
+    WaveExaggeration: 1.6
+    ShoreBandCoefficient: 2
+    CapSalienceStrength: 1
+    CapEnvelopeThreshold: 0.62
+    EnvelopeBandStrength: 0.35
+  DepthDrop:
+    SinkSpeedPerKgMps: 2
+    MinSinkSpeedMps: 0.5
+    MaxSinkSpeedMps: 3.5
+    MaxLineMeters: 60
+    BottomSweetWindowMeters: 1
+    ReelUpMps: 1.5
+    WeightedHandlineMinKg: 0.2
+    TidepoolMaxMeters: 0.6
+    ShallowsMaxMeters: 3
+    InshoreMaxMeters: 10
+    MidwaterMaxMeters: 30
+    DeepMaxMeters: 90
+    InBandAffinity: 2
+    OffBandAffinity: 0.5
+    BottomWindowAffinity: 2.5
+  BaitTackle:
+    BaitFavourBoost: 3
+    WrongBaitDamp01: 0.35
+    LureFavourBoost: 2
+    WrongLureDamp01: 0.65
+  Jigging:
+    LiftAndDropTempo: 0.8
+    LiftAndDropStroke: 1.6
+    QuickJerksTempo: 4
+    QuickJerksStroke: 0.35
+    SteadySweepTempo: 1.2
+    SteadySweepStroke: 1.1
+    SlowCrawlTempo: 0.5
+    SlowCrawlStroke: 0.45
+    FastSteadyTempo: 5
+    FastSteadyStroke: 0.6
+    Tolerance01: 0.5
+    DeadLureFraction01: 0.1
+  SeaFishing:
+    SeaFightFactor: 0.35
+    SeaBoldness01: 0.35
+    SeaBigFishBias01: 0.5
+  Freshness:
+    AmbientRateMultiplier: 1
+    LiveRateMultiplier: 0
+    FrozenRateMultiplier: 0
+    IcedRateMultiplier: 0
+    UnsellableSpoil: 0.9
+  StarterPotKit:
+  - TrapDefId: trap.lobster
+    Count: 2
+  - TrapDefId: trap.crab
+    Count: 1
