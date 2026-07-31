@@ -5,6 +5,12 @@
   `col.rgb`/visual octaves, no new render plumbing, nothing the hulls ride). Flipped from Proposed in the
   first P1 code PR (#2 caustics), as sanctioned by the P1 handoff. The ADR text itself remains docs-only;
   the P1 PRs carry the code.
+- **Revision (2026-07-31, at the P3 #10 build):** the ADR made #10 conditional on a **per-zoom-tier amplitude
+  fade** and told the build to drop the item if that fade could not be made stable. A report-only spike measured
+  the camera instead of assuming it, and the condition **does not arise**: `assetsPPU` is locked, so a ripple's
+  footprint is 3.2 px at *every* framing. What varies is the ripple **count** (6× more sea on screen at the widest
+  framing), so the fade is keyed to the **framing**, not to pixel size. Recorded as an amendment under #10 (the
+  2026-07-30 ruling deferred it to this build) and pinned by `RipplePixelFootprintTests`.
 - **Date:** 2026-07-28
 - **Revision (2026-07-28, same day, PR #305 → follow-up):** the owner asked whether the plan delivers *"waves
   more variability, moving in different directions, ripples, variance in sizes, speed, building and collapsing."*
@@ -179,7 +185,7 @@ reads as **stacked layers sliding over each other** rather than one body of wate
 - **Tier A while it drives the visual octaves; Tier B when promoted into `_WaveFieldParams`** — same discipline as
   #1 and #4, and the promotion rides with (6).
 
-**(4c) #10 — A capillary RIPPLE band, gated by wind and by wave steepness.**
+**(4c) #10 — A capillary RIPPLE band, gated by wind and by wave steepness.** — **SHIPPED (P3, 2026-07-31).**
 The finest band in the shader is `_WindChopScale` at 0.7 — that is **chop, not ripples**, and nothing in the
 original eight adds one. Ripples are what makes water read as *water* close up. Add a short-wavelength octave
 (~0.08–0.15 m) riding **on** the larger waves:
@@ -192,10 +198,41 @@ original eight adds one. Ripples are what makes water read as *water* close up. 
 
 > ⚠️ **This is the most alias-prone layer in the shader, and the pixel grid is why.** At PPU=32 one pixel ≈ 3.1 cm,
 > so a 0.10 m ripple is ~3 px — resolvable, but barely. It must be quantized on the **world** grid (the crawl law)
-> and dithered at its threshold, or it degenerates into shimmer. **And it must fade out with camera zoom:** at a
+> and dithered at its threshold, or it degenerates into shimmer. ~~**And it must fade out with camera zoom:** at a
 > wider zoom tier a ripple falls below one pixel and becomes pure aliasing, so its amplitude scales down per
 > discrete zoom tier. Prototype the zoom fade before committing to the band — if it cannot be made stable across
-> the zoom tiers, this item is not worth shipping.
+> the zoom tiers, this item is not worth shipping.~~ **The zoom half of this warning is RETIRED — see the
+> amendment below.** The world-grid quantization and the threshold dither stand exactly as written; both shipped.
+
+#### Amendment (2026-07-31, at the #10 build) — the kill condition does not arise; a FRAMING fade replaces it
+
+The 2026-07-30 ruling deferred this amendment to the #10 build, on the evidence of a report-only spike
+(`spike/ripples-zoom-fade`, unmerged). Two findings, both now pinned by `RipplePixelFootprintTests`
+(EditMode, headless):
+
+**(1) The sub-pixel kill condition describes a camera this game does not have.**
+`PixelPerfectCamera.assetsPPU` is **locked at 32** (`ArtCameraSetup`, mirrored by `CameraFollow.AssetsPPU`) and
+`CameraFollow` frames a tier by changing the **reference resolution**, never the world-metres-per-pixel ratio
+(`upscaleRT` is never set; `gridSnapping = PixelSnapping`). One pixel is therefore 1/32 m = 3.125 cm at **every
+framing the game has** — the 5.625 m live-haul framing through the 90 m Coastal Packet — and a 0.10 m ripple is
+**3.2 px throughout**. It never goes sub-pixel. **There is no per-tier amplitude fade to build, and #10 is not
+dropped.** The original warning assumed a camera that changes orthographic size at a fixed screen resolution.
+Because the finding rests entirely on `assetsPPU` staying locked, it is **pinned, not merely recorded**: the
+fixture goes red the moment the footprint stops being tier-invariant.
+
+**(2) The real risk is COUNT, not size — so the fade is keyed to the FRAMING.**
+What varies across the tiers is how much sea is on screen: 5.625 m at the tightest, 33.75 m at the widest, so the
+widest frame carries **6× more ripple cycles down-screen** (56 → 338). At the tight framing the band reads as
+texture on the swell; at the wide it reads as a dense field competing with the swell bands. **The constraint that
+replaces the ADR's:** amplitude fades with **how much sea the camera frames**, not with pixel size —
+`_SeaFramingHeight`, a physics-push global (metres of sea on screen), read through
+`WaterRipple.FramingFade01(framing, near, far, floor)`. It is a **push, not a mood float**: it is derived from the
+camera, so it must never enter `WaterSurface.MoodFloatNames` (the double-drive trap). The ADR's threshold dither is
+unaffected and still right.
+
+**What did not change.** #10 stays **Tier A permanently** (`col.rgb` only; never `depth`/`clip()`/`_WaterLevel`/the
+height read/the field hulls ride), world-grid quantized (the crawl law), threshold-dithered, and off by default
+until the owner dials it in.
 
 ### Tier B — the shared wave field (C# twin + headless tests mandatory)
 
@@ -331,7 +368,7 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #1 fetch | Fixed-step march on pixelized coords; `_FetchBands` quantizes the result |
 | #5 spectrum | Field is quantized where it is read, exactly as today |
 | #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
-| #10 ripples | ⚠️ The hard one: world-grid quantized **and** dithered at threshold, **and** amplitude faded per discrete zoom tier or it aliases into shimmer |
+| #10 ripples | World-grid quantized (`Pixelize`) **and** posterized into solid steps with a Bayer-dithered window at each step edge (`_RippleBands` / `_RippleDitherWin`, **default ON**). ~~amplitude faded per discrete zoom tier~~ → **faded by the FRAMING** (`_SeaFramingHeight`): the footprint is tier-invariant, the CYCLE COUNT is not (see the #10 amendment) |
 | #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
 | #6 wake buffer | Cells anchored to the **world** PPU grid; camera-relative addressing only, scrolled in whole world cells |
 
@@ -348,7 +385,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 | **P0** | **Tuning pass — no code.** ① **First: view the sea in a STORM** (finding 4c) — the swell already ramps to its design default there. ② Then, if still wanted: raise `_WindChop` / `_Octave3Weight` / `_FoamEvolveSpeed` in **`Water.mat`**, and `_FbmStrength` / `_OceanSwell*` in the **eight mood materials**. ⛔ `_FbmScale` is ruled deliberate — leave it | — | **Free.** Separates "missing" from "weather-scaled" from "deliberately low" **before** committing to the riskiest item. ⚠️ This **revises the owner’s tuning**, so it is his call, not a fix. |
 | **P1** | #2 caustics, #3 convergence foam, #4 band scaling, **#9 dispersion** (all visual) | A | Cheapest, no sim risk, no plumbing. #9 pairs with #4 — wavelength and speed must land together. |
 | **P2** ✅ | **#5 spectrum + grouping** ⬆ (was P6); ~~#4/#9 promoted into `_WaveFieldParams`~~ | B | **Pulled up, and SHIPPED** — PR A widened the field 4 → 8 trains (the ADR 0018 amendment); PR B added the JONSWAP weighting, the `cos^2s` fan and grouping behind `SpectrumBlend` (**default 0** — the passthrough discipline; the owner dials it in). ⚠️ **The #4/#9 "promotion" turned out to be an AUDIT RESULT, not code**: the field's trains already disperse (`WaveTrain.PhaseSpeed` *is* the relation) and already grow λ with wind, so applying the visual-octave laws there would double-apply them **and** move drawn geometry the interior-mask/clamp stack guards. Recorded in the ADR 0018 amendment so it is not re-litigated. **The owner's feel verdict is pending and gates P3.** |
-| **P3** | **#10 ripples** | A | After #5 deliberately — the ripple band should ride the *spectrum's* waves, not the octaves it replaces. |
+| **P3** ✅ | **#10 ripples** — **SHIPPED 2026-07-31** | A | After #5 deliberately — the ripple band rides the *spectrum's* waves (its windward gate reads `WaveFieldSample`'s slope), not the octaves #5 replaces. Unblocked by the owner's feel verdict on the tuned sea (2026-07-31, the #372 baseline). The item's kill condition was retired on spike evidence, not waived — see the #10 amendment. Ships **OFF** (`_RippleStrength` 0); the owner dials it in. |
 | **P4** ✅ | #7 absorption + `_SeabedTex` bake — **SHIPPED 2026-07-29** | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. Landed out of phase order (P2/P3 still open) precisely because it depends on nothing above — the independence the table already claimed. |
 | **P5** ✅ | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) — **SHIPPED 2026-07-29** | C | The owner's second explicit ask; depends on nothing above — which is why it landed with P2/P3 still open. |
 | **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
@@ -387,9 +424,13 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   **`WaterDispersion.PhaseSpeed(λ, depth)`** — monotone increasing in wavelength (long waves outrun short ones),
   the shallow branch slows toward zero depth, deep and shallow forms agree at the transition, and
   `_DispersionScale = 0` reproduces today's independent per-octave speeds exactly.
-  **`WaterRipple.SteepnessGate` + the per-zoom-tier amplitude fade** — ripples present on windward faces and absent
-  in the lee, zero at zero wind, and **amplitude → 0 as the zoom tier makes the band sub-pixel** (the anti-aliasing
-  guard; this is the test that decides whether #10 ships at all).
+  **`WaterRipple`** — ⚠️ the per-zoom-tier amplitude fade this line originally demanded **does not exist and must
+  not be built** (the #10 amendment: the footprint is tier-invariant, so there is nothing to key it to). What
+  shipped instead: `WindGate01` (zero at/below the onset, monotone, saturating), `WindwardGate01` (ripples on the
+  windward faces, the lee floor behind a crest, gate 0 = everywhere), `FramingFade01` (**the anti-density guard** —
+  full at a tight framing, → the floor at a wide one, and **1 when the global is unset**, so a bare material never
+  silently renders blank), and `Band01`/`RippleValue` (the posterize + edge dither). Plus
+  `RipplePixelFootprintTests`, the tripwire that pins the tier-invariance the whole design rests on.
 - **`WaterShaderCompileGuardTests` continues to force-compile the shipped variant** — no `+` in any `[Header]` or
   property string, **no `[unroll]` over a runtime bound** (directly relevant to #1's march). The magenta class stays
   guarded.
@@ -464,8 +505,11 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   commit `f2574a4` and was nudged to 3.26 in it). Not mood-eased, so 3.26 runs everywhere. **Leave it alone.**
 - **Does the sea just need worse weather?** `_OceanSwellStrength` already reaches its 0.16 design default at storm
   (finding 4c). Check the storm mood **before** spending anything on P0 or #5 — it is one weather override.
-- **Can #10 survive the zoom tiers?** A ~3 px ripple is sub-pixel at wider zoom. If the per-tier amplitude fade
-  cannot be made stable, **drop the item** rather than ship a shimmer source — prototype before committing.
+- ~~**Can #10 survive the zoom tiers?**~~ **ANSWERED at P3: yes, and the question was mis-posed.** A ~3 px ripple
+  is *not* sub-pixel at wider zoom — `assetsPPU` is locked, so the footprint is **3.2 px at every framing** and
+  the premise ("sub-pixel at wider zoom") was never true on this camera. The real risk is the **cycle count**
+  (6× more sea on screen at the widest framing), answered by the framing-keyed fade rather than a per-tier one.
+  Full reasoning in the #10 amendment; pinned by `RipplePixelFootprintTests`.
 - **Does #9 subsume part of §5.12's shoreward bias?** Depth-limited dispersion slows and bunches waves near shore,
   which is what the hand-built bias approximates. If so, `_ShorewardBias` may want reducing rather than removing —
   measure, don't assume.
