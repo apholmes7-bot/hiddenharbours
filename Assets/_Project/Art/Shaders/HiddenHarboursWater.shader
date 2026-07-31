@@ -672,6 +672,54 @@ Shader "HiddenHarbours/Water"
         _EnvelopeBandStrength  ("Envelope band strength (0 = off / today)", Range(0,1)) = 0.35
         _EnvelopeBands         ("Envelope value bands (solid steps)", Float) = 7
         _EnvelopeBandDitherWin ("Envelope band edge dither window (0..1 of a band)", Range(0,1)) = 0.4
+
+        [Header(CAPILLARY RIPPLES (ADR 0027 num 10)   the finest band   col.rgb only   default OFF)]
+        // The finest thing this shader drew was _WindChopScale 0.7 -- a 1.4 m band, which is CHOP, not
+        // ripples. This is the ~0.08-0.15 m octave riding ON the larger waves: what makes water read as
+        // water close up. TIER A PERMANENTLY -- col.rgb only, never depth/clip()/_WaterLevel/the height
+        // read/_WaveFieldParams/anything the hulls ride. A ripple is surface texture, not a force.
+        // C# twin: HiddenHarbours.Art.WaterRipple (change one, change BOTH in the same PR).
+        //
+        // THREE GATES, each with an explicit off end:
+        //   (1) WIND      -- _Roughness (sim-pushed, never authored) between onset and full. No wind, no
+        //                    ripples; glass stays glass.
+        //   (2) WINDWARD  -- the shared field's slope projected on the wind. Going DOWNWIND you climb the
+        //                    windward face, so dot(slope, wind) > 0 IS that face; ripples sit there and
+        //                    thin out in the lee behind a crest. No new uniform (the slope is already
+        //                    sampled). Gate 0 = ripples everywhere.
+        //   (3) FRAMING   -- the anti-DENSITY guard. See the block comment on RippleFramingFade below:
+        //                    the ADR's per-zoom-tier amplitude fade DOES NOT EXIST and must not be built.
+        //
+        // _RippleStrength = 0 is an EXACT passthrough (the whole block is skipped) -- the shipped look is
+        // byte-identical until the owner dials it in, the discipline every ADR-0010 addendum has kept.
+        _RippleStrength      ("Ripple strength (0 = OFF / today exactly)", Range(0,1)) = 0.0
+        // 0.12 m = 3.84 px at PPU 32 -- comfortably inside the ADR's 0.08-0.15 band and a touch coarser
+        // than its 0.10 midpoint, because fewer than ~4 px per cycle starts to moire against the grid.
+        _RippleWavelength    ("Ripple wavelength (m; 0.12 = 3.8 px at PPU 32)", Range(0.04,0.4)) = 0.12
+        // World m/s ALONG the wind. Default 0.09 = the wind-chop band's own speed, so the ripple sits in
+        // the sea's established (deliberately slow) feel family at ~0.75 wavelengths/sec. The PHYSICAL
+        // deep-water speed for 0.12 m is 0.43 m/s -- ~5x this, which at 3.8 px/cycle reads as temporal
+        // shimmer rather than ripple. The dispersion master re-ties it like every other band (below).
+        _RippleSpeed         ("Ripple scroll speed (m per sec along the wind)", Float) = 0.09
+        // The #9 per-band feel multiplier, same 0.06 convention as the chop/cross/swell bands, so
+        // dialling _DispersionScale up does not leave the ripple as the one band ignoring dispersion.
+        // At _DispersionScale = 0 (the shipped value) this is bit-exact _RippleSpeed.
+        _DispersionRippleMult("Dispersion feel mult: ripple band", Float) = 0.06
+        _RippleWindOnset     ("Wind (_Roughness) at or below which there are NO ripples", Range(0,1)) = 0.05
+        _RippleWindFull      ("Wind at or above which the ripple gate is fully open", Range(0,1)) = 0.45
+        _RippleWindwardGate  ("Windward face bias (0 = everywhere, 1 = windward faces only)", Range(0,1)) = 0.7
+        _RippleLeeFloor      ("Lee floor (how much ripple survives behind a crest)", Range(0,1)) = 0.15
+        // The layer's OWN quantization, DEFAULT ON (ADR 0027's condition). Matters most here because
+        // _DepthBands is 0, so the base ramp lends no pixel character and a smooth ripple would read as
+        // airbrushed shimmer. Dither at the band EDGE only -- full-range dither dissolves the steps.
+        _RippleBands         ("Ripple posterize steps (below 2 = smooth)", Float) = 3
+        _RippleDitherWin     ("Ripple step edge dither window (0..1 of a step)", Range(0,1)) = 0.5
+        // The FRAMING fade, in metres of sea on screen (_SeaFramingHeight). The tightest framing the game
+        // has is 5.625 m and the widest 33.75 m; 16 -> 30 holds the band full through the small-boat
+        // tiers and eases it toward the floor as the trawler/packet framings pile on cycles.
+        _RippleFadeNear      ("Framing (m of sea on screen) at or below which ripples are FULL", Float) = 16
+        _RippleFadeFar       ("Framing at or above which ripples reach the floor", Float) = 30
+        _RippleFadeFloor     ("Floor the framing fade never goes below (0 = gone when wide)", Range(0,1)) = 0.2
     }
 
     SubShader
@@ -821,6 +869,18 @@ Shader "HiddenHarbours/Water"
                                      // z = total amplitude (m; the crest normalizer),
                                      // w = the DOMINANT (spectral-peak) slot index -- was `reserved`,
                                      //     published as 0, which is what the flat weighting still sends
+
+            // GLOBAL CAMERA FRAMING (ADR 0027 #10) — how many METRES of sea the camera currently shows down
+            // the screen, published by HiddenHarbours.Art.WaterSurface via Shader.SetGlobalFloat (the
+            // WaveFieldBridge pattern). ONLY the ripple band's density fade reads it. A GLOBAL (outside the
+            // per-material CBUFFER) like _SunDir/_WindWorld/_WaveFieldParams, so an empty material still
+            // compiles; UNSET reads as 0, and the fade's `<= 0` branch turns that into NO fade rather than a
+            // silently blank band (see RippleFramingFade).
+            //
+            // ⚠️ It is a derived-physics PUSH, NOT a mood colour: it must never enter
+            // WaterSurface.MoodFloatNames, which would ease it from the eight preset materials and
+            // double-drive it — the same discipline that keeps _Chop/_Roughness/_Flow out of that list.
+            float _SeaFramingHeight;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -1047,6 +1107,20 @@ Shader "HiddenHarbours/Water"
                 float  _EnvelopeBandStrength;
                 float  _EnvelopeBands;
                 float  _EnvelopeBandDitherWin;
+                // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
+                float  _RippleStrength;
+                float  _RippleWavelength;
+                float  _RippleSpeed;
+                float  _DispersionRippleMult;
+                float  _RippleWindOnset;
+                float  _RippleWindFull;
+                float  _RippleWindwardGate;
+                float  _RippleLeeFloor;
+                float  _RippleBands;
+                float  _RippleDitherWin;
+                float  _RippleFadeNear;
+                float  _RippleFadeFar;
+                float  _RippleFadeFloor;
             CBUFFER_END
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
@@ -1269,6 +1343,97 @@ Shader "HiddenHarbours/Water"
                 float2 p1 = Pixelize((worldXY + scroll) * scaleEff);
                 float2 p2 = Pixelize((worldXY + scroll * 1.7) * scaleEff * 2.3);
                 return ValueNoise(p1) * 0.6 + ValueNoise(p2) * 0.4;
+            }
+
+            // ==== ADR 0027 #10 — the CAPILLARY RIPPLE band ====================================================
+            // C#-twinned by WaterRipple (WindGate01 / WindwardGate01 / FramingFade01 / Band01 / Amplitude01 /
+            // SignedAdd — change one, change BOTH in the same PR). TIER A PERMANENTLY: col.rgb only, never
+            // depth/clip()/_WaterLevel/the height read/_WaveFieldParams/the sim (P1 integrity, rule 5). A
+            // ripple is surface TEXTURE, not a force — it must never enter the field the hulls ride.
+            #define RIPPLE_SLOPE_NORM 2.0     // physical along-wind slope -> a legible 0..1 face signal. The
+                                              // SAME 2.0 the swell FACE SHADING uses on the SAME slope, so the
+                                              // ripples sit on the face the shading draws (twin:
+                                              // WaterRipple.SlopeNormalize). Not a tunable — the dial is
+                                              // _RippleWindwardGate (rule 6).
+            #define RIPPLE_ADD_CEIL   0.10    // brightness-swing ceiling, below the swell-read band's 0.25 and
+                                              // the face shading's 0.15: this is the finest layer on the sea
+                                              // and the one most able to turn into glare (twin: AddCeiling).
+            #define RIPPLE_WANDER_FREQ   0.35 // the wander field's frequency as a fraction of the ripple's own
+                                              // (1/lambda), so one wander cell spans ~3 ripple wavelengths —
+                                              // the SwellField "not ruler-straight" idiom at this band's scale.
+            #define RIPPLE_WANDER_DRIFT  0.05 // how fast that wander crawls (very slow: the crests wobble, the
+                                              // pattern does not boil).
+            #define RIPPLE_WANDER_RAD    2.5  // how far it may push the phase (radians) — under a half cycle, so
+                                              // the wavefronts stay recognisably wavefronts.
+
+            // (1) THE WIND GATE — 0 at/below the onset, 1 at/above full. Monotone and SATURATING: a gale gets no
+            // more ripple than a blow, because by then the whitecaps own the surface. _Roughness is sim-pushed
+            // (read here, never authored in a material, §12.1); at 0 this is EXACTLY 0 — glass stays glass.
+            float RippleWindGate()
+            {
+                float lo = saturate(_RippleWindOnset);
+                float hi = max(_RippleWindFull, lo + 1e-3);   // never a degenerate smoothstep interval
+                return smoothstep(lo, hi, saturate(_Roughness));
+            }
+
+            // (2) THE WINDWARD-FACE GATE. slopeAlongWind = dot(waveSlope, windDir) off the SHARED wave field:
+            // POSITIVE where the surface climbs as you travel downwind (the windward face of the wave ahead),
+            // negative in the lee behind a crest — which is exactly where real wind ripples are and are not.
+            // No new uniform: the slope is already sampled by WaveFieldSample for the face shading.
+            // _RippleWindwardGate = 0 returns EXACTLY 1 (ripples everywhere); the lee floor keeps a sheltered
+            // lee sheltered rather than glass.
+            // ⚠️ A dead field publishes zero slope, which would read as "not a windward face" and erase the
+            // band — the caller therefore skips this gate entirely when the trains are not live.
+            float RippleWindwardGate(float slopeAlongWind)
+            {
+                float steep = saturate(slopeAlongWind * RIPPLE_SLOPE_NORM);
+                return lerp(1.0, max(steep, saturate(_RippleLeeFloor)), saturate(_RippleWindwardGate));
+            }
+
+            // (3) THE FRAMING FADE — the anti-DENSITY guard.
+            //
+            // ⚠️ ADR 0027 asked for a per-DISCRETE-ZOOM-TIER amplitude fade here, on the premise that "at a
+            // wider zoom tier a ripple falls below one pixel". THAT FADE DOES NOT EXIST AND MUST NOT BE BUILT.
+            // PixelPerfectCamera.assetsPPU is LOCKED at 32 and CameraFollow frames a tier by changing the
+            // REFERENCE RESOLUTION, never world-metres-per-pixel — so one pixel is 1/32 m at every framing the
+            // game has and a 0.12 m ripple is 3.8 px from the 5.625 m live-haul framing to the 90 m Coastal
+            // Packet. It never goes sub-pixel (pinned by RipplePixelFootprintTests; the ADR's #10 amendment
+            // carries the ruling).
+            //
+            // What DOES vary is the CYCLE COUNT: the widest framing shows 33.75 m of sea against the tightest's
+            // 5.625 m, so ~6x more ripple cycles at the same pixel size — texture on the swell up close, a dense
+            // field competing with the swell bands wide open. Hence a fade over how much sea is on screen.
+            //
+            // _SeaFramingHeight <= 0 means the global was never published (a bare material, an art scene with no
+            // WaterSurface, an inspector preview) => NO fade. Treating unset as "infinitely wide" would render
+            // the band blank exactly where someone is trying to look at it.
+            float RippleFramingFade()
+            {
+                if (_SeaFramingHeight <= 0.0) return 1.0;
+                float lo = max(_RippleFadeNear, 0.0);
+                float hi = max(_RippleFadeFar, lo + 1e-3);
+                return lerp(1.0, saturate(_RippleFadeFloor), smoothstep(lo, hi, _SeaFramingHeight));
+            }
+
+            // THE BAND ITSELF — fine wavefronts running downwind, broken by a slow pixelized wander so they are
+            // not a ruled grating (the SwellField idiom at this band's scale). Returns 0..1.
+            //
+            // THE CRAWL LAW: the sample position is snapped on the WORLD PPU grid FIRST (Pixelize, then scale),
+            // so a ripple cell belongs to a place on the water and stays there while the camera pans — the
+            // world-derived discipline the Bayer dither and the ADR 0022 facet pass hold. Never screen space.
+            //
+            // Speed rides the #9 dispersion blend like every other band, so dialling _DispersionScale up does
+            // not leave the ripple as the one band ignoring the relation. At _DispersionScale = 0 (shipped)
+            // DispersionBandSpeed returns _RippleSpeed bit-exactly.
+            float RippleField(float2 worldXY, float t, float2 windN)
+            {
+                float lambda = max(_RippleWavelength, 0.01);
+                float k = 6.2831853 / lambda;
+                float speed = DispersionBandSpeed(_RippleSpeed, _DispersionRippleMult, lambda);
+                float2 p = Pixelize(worldXY);
+                float wander = ValueNoise(p * (RIPPLE_WANDER_FREQ / lambda) + t * RIPPLE_WANDER_DRIFT) - 0.5;
+                float phase = (dot(p, windN) - speed * t) * k + wander * RIPPLE_WANDER_RAD;
+                return sin(phase) * 0.5 + 0.5;
             }
 
             // ---- FBM: fractal value-noise (low-frequency organic variance) ----------------------------------
@@ -3129,6 +3294,51 @@ Shader "HiddenHarbours/Water"
                         float bandSeam = ShoreFade01(depth, _ShoreFadeBand);
                         col.rgb = lerp(col.rgb, bandShade,
                                        saturate(_EnvelopeBandStrength) * swellReadGate * bandLive * bandSeam);
+                    }
+                }
+
+                // ---- CAPILLARY RIPPLES (ADR 0027 #10; col.rgb BRIGHTNESS only) --------------------------------
+                // The finest band on the sea: a ~0.12 m octave riding ON the larger waves, which is what makes
+                // water read as WATER close up (the shader's previous finest layer, _WindChopScale 0.7, is a
+                // 1.4 m band — chop, not ripples). Drawn AFTER the envelope value bands deliberately: those
+                // LERP col.rgb toward the palette anchors, so ripples added before them would be partly washed
+                // away — texture belongs on top of shade. Still under the foam/whitecaps/specular below, which
+                // is where breaking water and glints physically belong.
+                //
+                // TIER A PERMANENTLY (ADR 0027's own words): this never touches depth/clip()/_WaterLevel/the
+                // height read/_WaveFieldParams/the sim — a ripple is surface texture, not a force, and must
+                // never enter the field the hulls ride (P1 integrity, CLAUDE.md rule 5). Nothing is saved.
+                // Three gates, each with an explicit off end, all twinned by WaterRipple.
+                // _RippleStrength = 0 is an EXACT passthrough: the whole block is skipped.
+                if (_RippleStrength > 0.001)
+                {
+                    float rWind = RippleWindGate();          // (1) no wind, no ripples — glass stays glass
+                    if (rWind > 0.001)
+                    {
+                        float2 rWindN = normalize(_WindDir.xy + float2(0, 1e-4));
+                        // (2) the windward-face term reads the SHARED field's slope — waveSlope, already
+                        // sampled above for the face shading, so no new uniform and no second opinion about
+                        // the same surface. SKIPPED when the trains are not live: a dead field publishes ZERO
+                        // slope, which the gate would read as "not a windward face" and would erase the band
+                        // on the legacy / edit-mode / bare-art-scene path.
+                        float rFace = trainsLive ? RippleWindwardGate(dot(waveSlope, rWindN)) : 1.0;
+                        // (3) the framing fade — the anti-density guard that REPLACED the ADR's per-zoom-tier
+                        // amplitude fade (see RippleFramingFade: there is nothing sub-pixel to fade).
+                        float rAmp = saturate(_RippleStrength) * rWind * rFace * RippleFramingFade();
+                        if (rAmp > 0.001)
+                        {
+                            float rBand = RippleField(worldXY, t, rWindN);
+                            // The layer's OWN quantization (ADR 0027's condition), DEFAULT ON — it matters
+                            // most here because _DepthBands is 0, so the base ramp lends no pixel character
+                            // and a smooth ripple would read as airbrushed shimmer. Dithered at the step EDGE
+                            // only, on the world-locked Bayer cell already read above (bay) — zero crawl by
+                            // construction. Below 2 steps the band is left smooth (the _DepthBands idiom).
+                            if (_RippleBands >= 2.0)
+                                rBand = BandValue01(rBand, _RippleBands, _RippleDitherWin, bay);
+                            // Remap 0..1 -> -1..1 so troughs darken as well as crests lightening, bounded by
+                            // RIPPLE_ADD_CEIL; the ADR 0015 palette guard-rail still owns the final colour.
+                            col.rgb += (rBand * 2.0 - 1.0) * rAmp * RIPPLE_ADD_CEIL;
+                        }
                     }
                 }
 
