@@ -67,8 +67,12 @@ namespace HiddenHarbours.App.Editor
         /// paints nothing rather than half a coast.
         /// </summary>
         public static Result Paint(ITidalTerrain terrain, Vector2 regionCenter, Vector2 regionSize,
-                                   string style = null)
+                                   string style = null, bool splatGround = false)
         {
+            // ADR 0028: with the splat ground on, the TerrainSplat shader renders the ground/fringe
+            // LOOK and this painter stamps neither layer — but it still classifies (the footprint
+            // stats and the rock/contact placement read the same grid) and still lays the contact
+            // shades and the reef rocks, which remain tile/sprite work on top of the field.
             var result = new Result();
             if (terrain == null)
             {
@@ -134,6 +138,7 @@ namespace HiddenHarbours.App.Editor
 
             var cache = new TileCache(style);
 
+            if (!splatGround)
             for (int by = 0; by < bh; by++)
             for (int bx = 0; bx < bw; bx++)
             {
@@ -164,14 +169,20 @@ namespace HiddenHarbours.App.Editor
             var groundMap  = MakeLayer(root.transform, GroundLayerName,  GroundSortingOrder);
             var fringeMap  = MakeLayer(root.transform, FringeLayerName,  FringeSortingOrder);
             var contactMap = MakeLayer(root.transform, ContactLayerName, ContactSortingOrder);
-            groundMap.SetTilesBlock(bounds, ground);
-            fringeMap.SetTilesBlock(bounds, fringe);
+            if (!splatGround)
+            {
+                groundMap.SetTilesBlock(bounds, ground);
+                fringeMap.SetTilesBlock(bounds, fringe);
+            }
 
             // --- 4. THE REEF'S ROCK, and the contact shade that seats each one. ------------------------
             result.Rocks = PlaceRocks(root.transform, terrain, contactMap, cache);
 
             Debug.Log($"[StPetersShorePainter] Painted the coast in style '{style}': " +
-                      $"{result.GroundTiles:N0} ground tiles + {result.FringeTiles:N0} fringe overlays over " +
+                      (splatGround
+                          ? $"{result.GroundTiles:N0} cells classified (ground/fringe rendered by the " +
+                            "splat shader, ADR 0028) over "
+                          : $"{result.GroundTiles:N0} ground tiles + {result.FringeTiles:N0} fringe overlays over ") +
                       $"{bw} x {bh} m, and {result.Rocks} rocks on the reef. " +
                       $"Materials: {result.MaterialSummary()}.");
             return result;

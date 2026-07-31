@@ -133,6 +133,18 @@
 | M1-11 | Character + NPC sprites (player, Ned, neighbours) | art-pipeline | ¾ 4-facing sheets: idle/walk/fish-haul/row-board/celebrate | Correct metric scale; clean anim, no jitter; atlased | VS-25 |
 | M1-12 | Boat & fish sprites (Dory, Punt, 6 fish) | art-pipeline | Metric hulls + wake/spray + rotation; 6 fish sprites/icons | Punt visibly larger; speed-scaled wake; no shimmer; placeholder→final = ref swap | VS-26 |
 
+### Epic M1-H — Splat-shaded ground (`art-pipeline`, owner-directed 2026-07-30, ADR 0028)
+> The ground stops being a grid of repeated tiles and becomes a shader over the painted height
+> field — the same move ADR 0010 made for the sea. Owner ruling: the tiled ground's visible
+> repetition blocks his inspiration; this arc outranks other art polish.
+
+| ID | Title | Owner | One-liner | Key AC | Maps to |
+|---|---|---|---|---|---|
+| M1-20 | TerrainSplat shader + surface on St Peters | art-pipeline | `HiddenHarbours/TerrainSplat` + full-region mesh; bands from the height field w/ soft meander edges; wet tide band; builder flag replaces ground/fringe tiles | No visible repetition at gameplay zoom; tide reveal (ADR 0012) unchanged; compile-guard + band-pin tests green; flag-off rebuild restores tiled coast | ADR 0028 PR 1 |
+| M1-21 | Ground detail textures (6 materials) | art-pipeline | Hand-painted 128² tileables (grass/marram/sand/shingle/ripple/shelf), stochastic sampling | Seamless tiling; repeats invisible via hashed offsets; reads at 1:1 under day/night grade | ADR 0028 PR 2 |
+| M1-22 | Transition dressing | art-pipeline | Wrack line at high-water mark, shell/pebble scatter at band edges | Scatter is deterministic from seed+position; no per-frame allocs | ADR 0028 PR 3 |
+| M1-23 | Splat ground for Nine Mile Creek + Coddle Cove | art-pipeline | Other regions adopt the surface; retire superseded grids | Both regions read consistently; builders re-runnable (ADR 0019) | ADR 0028 PR 4 |
+
 ### Epic M1-F — Fishing polish & audio v1 (`gameplay-systems` / `ui-ux` / `audio`)
 | ID | Title | Owner | One-liner | Key AC | Maps to |
 |---|---|---|---|---|---|
