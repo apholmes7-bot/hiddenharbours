@@ -69,6 +69,8 @@ namespace HiddenHarbours.App.Editor
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         const string ArtWaterOverlayMat = "Assets/_Project/Art/Materials/WaterOverlay.mat"; // the displaced surface's in-scene face (ADR 0023)
+        const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
+        const string DataTerrain        = "Assets/_Project/Data/Terrain";
         // Weather-driven water palette anchor presets (ADR 0017) — the moods the deterministic weather blends
         // between on the Sea's WaterSurface (calm <-> storm by sea-state, pulled toward fog by low visibility).
         // The BASE / calm anchor is deliberately NOT a preset here: it is left UNWIRED so WaterSurface uses the
@@ -293,6 +295,10 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 DockZonePos    = new Vector3(330f, 0f, 0f); // the slip head — dock here
         public static readonly Vector3 DisembarkPos   = new Vector3(328f, 0f, 0f); // step ashore up the slip (the cove's 1.5 m pattern)
         public static readonly Vector3 ArrivalPos     = new Vector3(332f, 0f, 0f); // sail home: park just off the slip, in range
+
+        /// <summary>ADR 0028: the ground renders as the splat-shaded field and the painter skips the
+        /// ground/fringe tile layers. Flip to false and rebuild for the tiled-coast A/B.</summary>
+        public const bool UseSplatGround = true;
 
         [MenuItem("Hidden Harbours/Build St Peters Scene")]
         public static void Build()
@@ -711,6 +717,48 @@ namespace HiddenHarbours.App.Editor
             var terrain = terrainGo.AddComponent<TidalTerrain>();
             ConfigureTidalTerrain(terrain);
 
+            // --- SPLAT GROUND (ADR 0028) ----------------------------------------------------------------
+            // The ground as a FIELD, not a grid: one full-region quad carrying the TerrainSplat shader,
+            // fed the painted height map, replaces the ground/fringe tile layers (the flag below makes the
+            // painter skip stamping them — flip it and rebuild for the tiled A/B). Every design number is
+            // PUSHED from its owner — the band ladder + meander from StPetersShoreMap (the CPU classifier
+            // stays the single source of truth), the bar/island geometry from this builder's constants —
+            // so the shader re-declares nothing (rule 6). Sorts at -21: below the retained contact/rock
+            // layers (-18) and far below the Sea plane (-5), so the ADR 0012 tide reveal is untouched.
+            if (UseSplatGround)
+            {
+                var splatGo = new GameObject("TerrainSplat");
+                var splat = splatGo.AddComponent<HiddenHarbours.Art.TerrainSplatSurface>();
+                splat.Configure(RegionWorldCenter, RegionWorldSize,
+                    AssetDatabase.LoadAssetAtPath<Material>(ArtTerrainSplatMat),
+                    HiddenHarbours.Art.TerrainSplatSurface.DefaultSortingOrder);
+
+                // The owner's painted seabed if it exists (the paint tool's asset), else a fresh bake of
+                // the analytic terrain — NEVER overwrite an existing paint (ADR 0019: refresh, don't clobber).
+                var heightMap = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
+                    DataTerrain + "/" + TerrainPaintTool.StPetersSeabedName + ".asset");
+                if (heightMap == null)
+                    heightMap = TerrainPaintTool.BakeStPetersSeabed(
+                        RegionWorldCenter, RegionWorldSize, stPeters.SeabedTexels);
+                if (heightMap != null && heightMap.HeightTexture != null)
+                    splat.ConfigureHeightMap(heightMap.HeightTexture,
+                        heightMap.MinElevation, heightMap.MaxElevation);
+                else
+                    Debug.LogWarning("[StPetersBuilder] no painted height map for the splat ground — " +
+                                     "the quad clips itself empty (below the paint floor everywhere).");
+
+                splat.ConfigureBands(
+                    StPetersShoreMap.PaintFloorElevation, StPetersShoreMap.RippleFloorElevation,
+                    StPetersShoreMap.SandFloorElevation, StPetersShoreMap.MarramFloorElevation,
+                    StPetersShoreMap.GrassFloorElevation, StPetersShoreMap.ShingleFloorElevation,
+                    StPetersShoreMap.BandWiggleMetres, StPetersShoreMap.BandWiggleScale,
+                    StPetersShoreMap.BandDetailMetres, StPetersShoreMap.BandDetailScale);
+                splat.ConfigureWeatherSector(IslandCenter, IslandRadius / IslandRadiusY,
+                    StPetersShoreMap.WeatherCoastFacing, StPetersShoreMap.SectorFeather);
+                splat.ConfigureSandbar(SandbarFrom, SandbarTo, SandbarHalfWidth,
+                    StPetersShoreMap.BarSpineHalfWidth, StPetersShoreMap.BarSpineFloorElevation);
+            }
+
             // --- THE PAINTED COAST (shoreline-ISO v8) ---------------------------------------------------
             // Now that the height map exists, paint the ground it implies: the whole landmass and its
             // intertidal, in the kit's six materials, plus the ragged fringe where one laps onto another and
@@ -722,7 +770,8 @@ namespace HiddenHarbours.App.Editor
             // WaterSurface shader clips itself transparent wherever the ground is above the live water level,
             // so the painting shows through on dry ground and depth-graded water covers it as the tide floods
             // (ADR 0010/0012). The kit bakes ZERO water for exactly that reason.
-            var coast = StPetersShorePainter.Paint(terrain, RegionWorldCenter, RegionWorldSize);
+            var coast = StPetersShorePainter.Paint(terrain, RegionWorldCenter, RegionWorldSize,
+                                                   splatGround: UseSplatGround);
 
             // --- THE WOODS AND THE MEADOW (§5.1: "the reverting interior") -----------------------------
             // Stands of Acadian trees with meadow between them and wildflowers through both, all chosen by
