@@ -73,8 +73,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void DeepHarbour_IsAlwaysSubmerged_EvenAtLowWater()
         {
             // A point well off the bar and the island — open water. ⚠ Must be outside the island's
-            // ELLIPSE, which now reaches y = ±130 with a 30 m beach beyond it (scene-sizing §5.1);
-            // the old (0, 40) sample sits on dry land at the ruled scale.
+            // ELLIPSE (y = ±70 with a 20 m beach beyond it since the 2026-07-30 re-ruling; ±130 + 30
+            // before that); the original (0, 40) greybox sample sat on dry land at the ruled scales.
             var openWater = new Vector2(0f, 230f);
             float elev = _terrain.ElevationAt(openWater);
             Assert.Less(elev, LowWater,

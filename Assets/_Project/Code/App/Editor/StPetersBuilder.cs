@@ -106,9 +106,10 @@ namespace HiddenHarbours.App.Editor
         // ONE authored number, mirrored onto RegionDef.WorldSizeMeters the same way the tide fields are.
         //
         // ⭐ 760 × 520 m — the RULED size (scene-sizing §5.1/§7.1, owner 2026-07-23), sized by
-        // TIME-TO-CROSS rather than by feel: the island's ~450 × 260 m landmass is a ~2:30 walk end to
-        // end and a ~1.1 km coastline. It replaces a 160 × 120 m greybox whose whole island was a 44 m
-        // disc — smaller than the sandbar it is gated by.
+        // TIME-TO-CROSS rather than by feel. It replaces a 160 × 120 m greybox whose whole island was
+        // a 44 m disc — smaller than the sandbar it is gated by. ⚠ The 2026-07-30 island re-ruling
+        // (240 × 140 m, ~1/3 the old landmass) changed the ISLAND ONLY: this rectangle is unchanged,
+        // and the difference is open water — which is the ruling's whole point.
         public static readonly Vector2 RegionWorldCenter = new Vector2(0f, 0f);
         public static readonly Vector2 RegionWorldSize   = new Vector2(760f, 520f);
 
@@ -139,15 +140,24 @@ namespace HiddenHarbours.App.Editor
         // then on the EAST end, the far side from the crossing, which is also right dramatically: you
         // walk out the west and you come home under power to the east (§5.1a, ruled).
         public static readonly Vector2 IslandCenter = new Vector2(70f, 0f);
-        // ⚠ An ELLIPSE, not a disc: ~450 × 260 m of landmass is the RULED scale (§7.1), a ~1:5 linear
-        // compression of the real island's 2.4 × 1.1 km. rx 225 + ry 130 gives exactly that, which is
-        // why TidalTerrain gained a Y radius — a disc big enough to be 450 m long would be 450 m wide
-        // and would not fit inside a 520 m scene.
-        public const float IslandRadius            = 225f;   // semi-axis along X → 450 m end to end
-        public const float IslandRadiusY           = 130f;   // semi-axis along Y → 260 m across
-        // The beach band, in METRES of shore — not a fraction of the island. 30 m carries the plateau
-        // down to the reef shelf below at about 1:4, which reads as the brief's steep red-sandstone coast.
-        public const float IslandFalloff          = 30f;
+        // ⚠ An ELLIPSE, not a disc: ~240 × 140 m of landmass is the RULED scale — RE-RULED 2026-07-30
+        // from the earlier 450 × 260 (the owner: the island felt too large; he wants MORE OPEN WATER
+        // around it). The linear span roughly halves, so the AREA lands at ~29% of what it was —
+        // between the 1/3 and 1/4 he asked for — while the surrounding sea/region rectangle stays
+        // exactly 760 × 520 m. TidalTerrain's Y radius still earns its keep: an island is longer than
+        // it is wide, and 240 × 140 is not a disc at any radius.
+        public const float IslandRadius            = 120f;   // semi-axis along X → 240 m end to end
+        public const float IslandRadiusY           = 70f;    // semi-axis along Y → 140 m across
+        // The beach band, in METRES of shore — not a fraction of the island. 20 m carries the plateau
+        // down to the reef shelf below at about 1:3, still reading as the brief's steep red-sandstone
+        // coast, and it keeps the shore-band ladder legible at the smaller scale: against the
+        // StPetersShoreMap floors (grass 4.2 / marram 1.6 / sand −0.4 / ripple −1.7) the smoothstep
+        // profile gives ~6 m of grass lip, ~5.5 m of marram, ~4.5 m of sand and then the flats —
+        // measured off the analytic profile, not eyeballed (elev at radius+6 = 4.49, +10 = 2.50,
+        // +14 = 0.51, +16 = −0.27). The old 30 m band on the old island gave the same rings ~1.5×
+        // wider; shrinking the beach with the island keeps beach:island proportion instead of letting
+        // the falloff eat a third of the new radius.
+        public const float IslandFalloff          = 20f;
         public const float IslandElevation         = 6f;     // dry at every tide
 
         // --- ⭐ THE REEF RING AND THE ONE DOCK (§5.1a, RULED by the owner 2026-07-23) ------------------
@@ -161,13 +171,12 @@ namespace HiddenHarbours.App.Editor
         // island your big boat can never come home to — P2 and P5 in one piece of geography.
         public const float ReefShelfInnerElevation = -1.0f;   // against the beach — the shallow side
         public const float ReefShelfOuterElevation = -1.5f;   // where it drops away to the floor
-        // ⚠ Width is NOT in the ruling — it is what the scene has room for, and the budget is exact.
-        // The island sits 70 m east of centre, so from its centre to the east scene edge there is
-        // 380 − 70 = 310 m; the island itself takes 225 and the beach 30, and the drop-off past the
-        // shelf needs another 30, which leaves exactly 25 m of apron. A first attempt at 60 m ran the
-        // ring 5 m off the east edge of the map AND left the berth channel stopping short of deep
-        // water — a slip you could not actually enter. The DEPTH numbers are the ruled ones and are
-        // untouched by this; the width only decides how far you cross at that depth.
+        // ⚠ Width is NOT in the ruling — it is what the scene has room for. On the old 450 m island
+        // the budget was exact (310 m from centre to the east edge, less 225 island + 30 beach +
+        // 30 drop-off = 25 m of apron); the 2026-07-30 shrink frees ~100 m of sea room, but the
+        // shelf keeps its 25 m: the ring is a DEPTH gate, not a decoration, and widening it would
+        // only stretch the crossing at the same depth while eating the open water the shrink was
+        // ruled to create. The DEPTH numbers are the ruled ones and are untouched.
         public const float ReefShelfWidth          = 25f;
 
         // The berth: §5.1a's "dock approach / berth bed ≈ −1.0 m", which clears the 0.6 m tier whenever
@@ -179,14 +188,19 @@ namespace HiddenHarbours.App.Editor
         public const float BerthHalfWidth          = 8f;
         // ⚠ The seaward end must reach PAST the shelf's outer edge into the drop-off, or the slip is a
         // dead-end pocket inside the reef that nothing can enter — which is exactly what the first
-        // version was, and what the ring test caught. The shelf ends 280 m from the island centre, so
-        // the mouth sits at 285. The shoreward end is AT the land edge (IslandRadius), so the slip
-        // reaches the beach; the carve's own falloff ramps it up onto the shore from there.
-        public static readonly Vector2 BerthFrom    = new Vector2(355f, 0f);   // 285 m out — past the reef
-        public static readonly Vector2 BerthTo      = new Vector2(295f, 0f);   // 225 m out — the shoreline
+        // version was, and what the ring test caught. The shelf ends 165 m from the island centre
+        // (120 island + 20 beach + 25 shelf), so the mouth sits at 170 — measured −1.89 m, genuinely
+        // in the drop-off. The shoreward end is AT the land edge (IslandRadius), so the slip reaches
+        // the beach; the carve's own falloff ramps it up onto the shore from there.
+        public static readonly Vector2 BerthFrom    = new Vector2(240f, 0f);   // 170 m out — past the reef
+        public static readonly Vector2 BerthTo      = new Vector2(190f, 0f);   // 120 m out — the shoreline
         // West end of the island's land → west toward the passage. (From is ON the island so the bar
-        // actually joins it; To is short of the scene edge so the passage band has room.)
-        public static readonly Vector2 SandbarFrom  = new Vector2(-150f, 0f); // toward the island
+        // actually joins it — at (−45, 0) the elliptical distance is 115 against a 120 radius, so the
+        // bar head stands on the plateau; To is short of the scene edge so the passage band has room.
+        // ⭐ To STAYS at −350 through the 2026-07-30 shrink: the Nine Mile Creek walk passage lives at
+        // that end of the region, so the bar GROWS from 200 m to ~305 m as the island's west shore
+        // retreats east — more bar, more flats, more open water, which is the ruling's whole point.)
+        public static readonly Vector2 SandbarFrom  = new Vector2(-45f, 0f);  // toward the island
         public static readonly Vector2 SandbarTo    = new Vector2(-350f, 0f); // toward Nine Mile Creek
         public const float SandbarHalfWidth        = 30f;
         // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
@@ -207,10 +221,12 @@ namespace HiddenHarbours.App.Editor
         // as the tide falls and floods as it rises. ClamScatterStep = grid spacing; ClamScatterJitter = the
         // max deterministic offset (hashed off the cell, no RNG) that breaks the grid look. The band is the
         // tide swing inset by a small margin so a hole isn't perpetually at the very waterline edge.
-        // ⚠ Scaled WITH the bar. At 6 m over the old 56 × 34 m footprint this was ~54 candidate cells;
-        // left alone over the new 240 × 100 m footprint it would be ~670, i.e. ~670 GameObjects with
-        // sprites and colliders in one scene (rule 7). 14 m keeps the field at a comparable ~130 and
-        // still reads as scattered rather than gridded once the jitter is applied.
+        // ⚠ Scaled WITH the bar. At 6 m over the original 56 × 34 m greybox footprint this was ~54
+        // candidate cells; left alone over today's ~345 × 100 m footprint (the bar grew again with the
+        // 2026-07-30 island shrink — the west shore retreated east while the passage end stayed put)
+        // it would be ~960, i.e. ~960 GameObjects with sprites and colliders in one scene (rule 7).
+        // 14 m keeps the kept field at a measured ~85 and still reads as scattered rather than
+        // gridded once the jitter is applied.
         public const float ClamScatterStep   = 14f;    // one candidate hole per ~14×14 m cell over the bar
         public const float ClamScatterJitter = 4.5f;   // ± world units of stable hash jitter per cell
         public const float ClamBandMargin     = 0.4f;   // inset (m) from the extreme water levels (kindness band)
@@ -218,34 +234,37 @@ namespace HiddenHarbours.App.Editor
         public const float ClamScatterMargin = 20f;
 
         // Player START spawn — on the island's WEST half, so the bar head is in sight and the opening's
-        // first walk reads as leaving home. (Where the village actually stands is the authoring pass;
-        // this is the same functional spawn the greybox had, moved onto the new landmass.)
-        public static readonly Vector3 StartSpawnPos = new Vector3(-100f, 0f, 0f);
+        // first walk reads as leaving home. (Moved with the 2026-07-30 shrink: the whole village
+        // cluster translated +105 in X — exactly the distance the bar head moved (−150 → −45) — so
+        // every internal spacing AND every distance-to-the-bar margin is preserved to the metre.)
+        public static readonly Vector3 StartSpawnPos = new Vector3(5f, 0f, 0f);
         // Where the walk path reaches Nine Mile Creek — a forgiving band at the WEST end of the bar,
         // past its far tip and short of the scene edge.
         public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-356f, 0f, 0f);
 
         // --- THE VILLAGE (the authoring pass StartSpawnPos above was waiting for) ---------------------
         // ⭐ Every one of these used to sit within a few metres of (-40, 0) — the centre of the 44 m
-        // greybox disc the island WAS before #328 moved it to (70, 0) with 450 x 260 m of landmass. The
-        // rescale did not move them, so the cottage, Aunt Ginny, Ned's letter and the freezer ended up
-        // huddled 60 m east of the player's own spawn in the middle of an empty island, and the WET-BUCKET
-        // spot whose own comment reads "the sand rim, at the water" ended up ~100 m inland, on grass.
+        // greybox disc the island WAS before #328 rescaled it. #345 moved the village onto the (then
+        // 450 × 260 m) landmass; the 2026-07-30 shrink to 240 × 140 moved the west shore ~105 m east,
+        // so the whole cluster TRANSLATES +105 in X — the same distance the bar head moved — which
+        // preserves every internal spacing, every clearance the village tests derive from the
+        // building contract, and every sightline margin to the bar, all to the metre.
         //
-        // The village now stands where the docs put it: on the island's WEST half beside the start spawn —
+        // The village stands where the docs put it: on the island's WEST half beside the start spawn —
         // "Quiet, close, the whole world the size of a low-tide walk" (§6.0) — tight enough to read as one
         // small place, and within sight of the bar head the opening walks out across. Every position is on
         // the plateau (+6 m, dry at every tide), which StPetersVillageTests asserts against the authored
         // terrain rather than trusting these numbers.
-        public static readonly Vector3 CottagePos    = new Vector3(-105f, 14f, 0f);     // Ginny's — the hearth
-        public static readonly Vector3 GinnyPos      = new Vector3(-101f, 11f, 0f);     // out front, on the path
-        public static readonly Vector3 NedsLetterPos = new Vector3(-107f, 10.5f, 0f);   // on the cottage step
-        public static readonly Vector3 FreezerPos    = new Vector3(-102f, 12.5f, 0f);   // round the side
+        public static readonly Vector3 CottagePos    = new Vector3(0f, 14f, 0f);        // Ginny's — the hearth
+        public static readonly Vector3 GinnyPos      = new Vector3(4f, 11f, 0f);        // out front, on the path
+        public static readonly Vector3 NedsLetterPos = new Vector3(-2f, 10.5f, 0f);     // on the cottage step
+        public static readonly Vector3 FreezerPos    = new Vector3(3f, 12.5f, 0f);      // round the side
         // ⭐ The wet bucket belongs AT THE WATER, and on this island that means the HEAD OF THE FLATS — the
-        // last dry ground before the sandbar's cobble spine runs out west. The ground here is +4.49 m, about
-        // a metre clear of spring high water, so the barrel is never swimming; a few metres west and the bar
-        // itself floods twice a day. It is exactly where you come off the flats with a bucket of clams.
-        public static readonly Vector3 WetBucketPos  = new Vector3(-164f, 0f, 0f);
+        // last dry ground before the sandbar's cobble spine runs out west. The ground here is +4.49 m
+        // (measured off the analytic profile — the same beach-band point the old island had it at), about
+        // a metre clear of spring high water, so the barrel is never swimming; a few metres west and the
+        // bar itself floods twice a day. It is exactly where you come off the flats with a bucket of clams.
+        public static readonly Vector3 WetBucketPos  = new Vector3(-56f, 0f, 0f);
 
         // --- THE FIVE BUILDINGS (§5.1: "three clapboard houses, a one-room school, a general store") ----
         // ⭐ AUTHORED, NOT SCATTERED (ADR 0002: author identity, simulate variety). A village is the one
@@ -265,11 +284,11 @@ namespace HiddenHarbours.App.Editor
         // little apart), the STORE at its centre where the path from the spawn meets it, the FARMHOUSE —
         // the biggest of them — closing the east end. Then the two smaller houses come round the green:
         // the SALTBOX on the east side and the SAGE COTTAGE on the south, the last house before the shore.
-        public static readonly Vector3 SchoolPos         = new Vector3(-117f,  33f, 0f);
-        public static readonly Vector3 GeneralStorePos   = new Vector3(-101f,  31f, 0f);
-        public static readonly Vector3 WhiteFarmhousePos = new Vector3( -84f,  26f, 0f);
-        public static readonly Vector3 RedSaltboxPos     = new Vector3( -80f,   8f, 0f);
-        public static readonly Vector3 SageCottagePos    = new Vector3( -95f, -20f, 0f);
+        public static readonly Vector3 SchoolPos         = new Vector3(-12f,  33f, 0f);
+        public static readonly Vector3 GeneralStorePos   = new Vector3(  4f,  31f, 0f);
+        public static readonly Vector3 WhiteFarmhousePos = new Vector3( 21f,  26f, 0f);
+        public static readonly Vector3 RedSaltboxPos     = new Vector3( 25f,   8f, 0f);
+        public static readonly Vector3 SageCottagePos    = new Vector3( 10f, -20f, 0f);
 
         // Where the village LOOKS. Every door is turned toward this point rather than given a hard-coded
         // facing index, so the village faces itself — and so a re-bake with four facings instead of eight
@@ -289,12 +308,19 @@ namespace HiddenHarbours.App.Editor
         // the island at (−40, 0) r 22 falloff 10 — a comment saying "deep water" over ground the falloff
         // actually puts at +2.48 m, so a 0.30 m dory floated there only above +2.78 m, i.e. near high
         // water and nowhere else. These positions are now checked against the authored terrain by
-        // StPetersTerrainTests rather than asserted in a comment.
+        // StPetersLayoutTests rather than asserted in a comment.
+        //
+        // ⭐ RE-DERIVED for the 2026-07-30 shrink, not shifted by a blind delta: the mooring sits 5 m
+        // past the beach toe onto the reef shelf (elliptical distance = beach end + 5), which is the
+        // SAME profile point the old (330, 0) occupied — so the measured bed is −1.05 m again and the
+        // whole §5.1a gate arithmetic (dory afloat 56.9% of the cycle, dries near spring low, working
+        // hulls gated harder than every skiff) carries over untouched. Beach ends at 140 from the
+        // island centre → mooring at 70 + 145 = 215. Disembark/arrival keep their ∓2 m offsets.
         public const float DockZoneRadius = 3.5f;                                  // ControlSwitcher's default _zoneRadius
-        public static readonly Vector3 DoryMooredPos  = new Vector3(330f, 0f, 0f); // east of the island, past the beach toe — genuinely afloat
-        public static readonly Vector3 DockZonePos    = new Vector3(330f, 0f, 0f); // the slip head — dock here
-        public static readonly Vector3 DisembarkPos   = new Vector3(328f, 0f, 0f); // step ashore up the slip (the cove's 1.5 m pattern)
-        public static readonly Vector3 ArrivalPos     = new Vector3(332f, 0f, 0f); // sail home: park just off the slip, in range
+        public static readonly Vector3 DoryMooredPos  = new Vector3(215f, 0f, 0f); // east of the island, past the beach toe — the slip's own bed
+        public static readonly Vector3 DockZonePos    = new Vector3(215f, 0f, 0f); // the slip head — dock here
+        public static readonly Vector3 DisembarkPos   = new Vector3(213f, 0f, 0f); // step ashore up the slip (the cove's 1.5 m pattern)
+        public static readonly Vector3 ArrivalPos     = new Vector3(217f, 0f, 0f); // sail home: park just off the slip, in range
 
         /// <summary>ADR 0028: the ground renders as the splat-shaded field and the painter skips the
         /// ground/fringe tile layers. Flip to false and rebuild for the tiled-coast A/B.</summary>
@@ -911,8 +937,8 @@ namespace HiddenHarbours.App.Editor
             // ⭐ RETIRED HERE: a 2.5 x 1.2 m brown rectangle named "DorySlipMarker" that stood in for the
             // dock, sitting on a shore the island no longer has. St Peters is ruled to have ONE dock, on the
             // east end opposite the sandbar, "modest, but can take powerboats" — so it gets a real modest
-            // pier: a 39 x 6 m timber finger running out along the dredged slip from the last dry ground to
-            // just short of the mooring, so the ratified disembark at (328, 0) lands ON the planks. Drawn
+            // pier: a 31 x 6 m timber finger running out along the dredged slip from the last dry ground to
+            // just short of the mooring, so the ratified disembark at (213, 0) lands ON the planks. Drawn
             // strictly back to front, because a wharf cell is 32 x 56 px whose bottom 24 rows of vertical
             // face overhang the cell below (StPetersWharf carries the whole contract).
             //
@@ -940,7 +966,7 @@ namespace HiddenHarbours.App.Editor
             // rod) → buy + REPAIR the damaged dory → sail home. The dory is EARNED, never inherited.
             //
             // Everything sits UP BY THE COTTAGE in the village on the island's WEST half — and the dock is
-            // now 430 m away on the EAST end (§5.1a), so the shared E key could not fire both "talk" and
+            // ~215 m away on the EAST end (§5.1a), so the shared E key could not fire both "talk" and
             // "board" even if it wanted to (it is context-aware by proximity regardless). Belt-and-
             // braces, the open dialogue raises the Core InteractionGate the ControlSwitcher honours. Content
             // is DATA — the Interactables carry NpcDef refs, not strings; the words live in Data/NPCs.
@@ -1047,15 +1073,15 @@ namespace HiddenHarbours.App.Editor
                       "round the green beside the start spawn.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
-                      $"({coast.MaterialSummary()}). The island has ground everywhere for the first time " +
-                      "since it was scaled to 450 x 260 m.");
+                      $"({coast.MaterialSummary()}). The island paints at its re-ruled 240 x 140 m " +
+                      "(2026-07-30) inside the unchanged 760 x 520 m sea.");
             Debug.Log("[StPetersBuilder] Built StPeters.unity — the OPENING + START region (greybox), now " +
                       "with the PERSISTENT CORE so it's playable: press Play and you control the on-foot " +
                       "fisher at the START spawn (WASD), the camera follows at the on-foot framing, and the " +
                       "clock/tide run (GameServices online → the tide advances + the bar bares/floods). The " +
                       "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
                       "yours). Island = high (always exposed); the SANDBAR bridges it to Nine Mile Creek as a " +
-                      "tide-gated path: the crest (1.6 m) bares as the BIG tide (±3.5 m) falls, while a " +
+                      "tide-gated path: the crest (1.4 m) bares as the BIG tide (±3.5 m) falls, while a " +
                       "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The layered WaterSurface " +
                       "shader VISIBLY reveals the bar/flats from the live water level (smooth depth-graded " +
                       "water that clips to bare the sand as the tide falls, foam hugging the moving edge) — " +

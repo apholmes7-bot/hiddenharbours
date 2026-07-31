@@ -125,10 +125,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheWoodsAreStandsWithMeadowBetween_NotAFill()
         {
             var trees = Trees();
-            Assert.Greater(trees.Count, 200,
+            // ⚠ Bounds re-pinned 2026-07-30 with the island shrink (240 × 140 m ≈ 29% of the old area):
+            // the old floor of 200 was sized for a 450 × 260 island. Measured ~73 trees at the new
+            // scale with ExposureDepthMetres scaled to 45 — the same trees-per-square-metre the big
+            // island carried, on the small one.
+            Assert.Greater(trees.Count, 40,
                 $"only {trees.Count} trees — §5.1 wants 'forest: interior cover, hiding ruins', which a " +
-                "handful of trees is not");
-            Assert.Less(trees.Count, 1600,
+                "handful of trees is not, even on the re-ruled 240 m island");
+            Assert.Less(trees.Count, 500,
                 $"{trees.Count} trees is a plantation, not a reverting island — and it is a lot of " +
                 "GameObjects for one region (rule 7)");
 
@@ -220,9 +224,13 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Same elevation, opposite coasts. The weather side must come out more exposed, or the §5.1
             // split that the ground already draws stops at the ground.
+            // ⚠ ±55, sized to the re-ruled 70 m Y radius (2026-07-30): the probes must sit ON the
+            // island's collar where the inland fraction is a real fraction — the old ±110 probes fell
+            // into open water at the new size, where BOTH coasts clamp to full exposure and the
+            // comparison measures nothing.
             var c = StPetersBuilder.IslandCenter;
-            var weather = c + new Vector2(0f, -110f);   // south
-            var lee     = c + new Vector2(0f, 110f);    // north
+            var weather = c + new Vector2(0f, -55f);   // south
+            var lee     = c + new Vector2(0f, 55f);    // north
 
             Assert.IsTrue(StPetersShoreMap.IsWeatherCoast(weather), "sanity: south is the weather coast");
             Assert.IsFalse(StPetersShoreMap.IsWeatherCoast(lee), "sanity: north is the lee");
@@ -268,7 +276,10 @@ namespace HiddenHarbours.Tests.EditMode
             // oak, birch, aspen, pine and fir sat second and third on lists whose head was always available
             // and never appeared at all. A nine-species kit that plants four is a kit half wasted.
             var planted = new HashSet<string>(Trees().Select(t => t.Species));
-            Assert.GreaterOrEqual(planted.Count, 7,
+            // ⚠ 6 of 9, not the 7 this held on the 450 m island: the 2026-07-30 shrink leaves ~73
+            // trees, and at that sample size a rare tail species legitimately misses some layouts.
+            // The monoculture bug this guards against planted FOUR.
+            Assert.GreaterOrEqual(planted.Count, 6,
                 $"only {planted.Count} of the kit's 9 species reached the island ({string.Join(", ", planted.OrderBy(s => s))}) " +
                 "— a habitat must plant a MIXED stand, not one species repeated");
         }
@@ -366,12 +377,16 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.GreaterOrEqual(_terrain.ElevationAt(t.Position), StPetersWoods.TreeLineElevation,
                     $"a {t.Species} at {t.Position} stands below the tree line");
 
-            // And the margin is real, not notional: sample the shore band and assert nothing is planted.
+            // And the margin is real, not notional: sample just inside the plateau edge all the way
+            // round. ⚠ On the ellipse's own parametric ring (rx−1, ry−1), not a fixed radius — a
+            // 224 m circle was "just inside" only the OLD island's long axis, and after the
+            // 2026-07-30 shrink it is open sea on every bearing.
             int checkedPoints = 0;
             for (float a = 0f; a < 360f; a += 3f)
             {
-                var dir = new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad));
-                var p = StPetersBuilder.IslandCenter + dir * 224f;   // just inside the plateau edge
+                var p = StPetersBuilder.IslandCenter + new Vector2(
+                    Mathf.Cos(a * Mathf.Deg2Rad) * (StPetersBuilder.IslandRadius - 1f),
+                    Mathf.Sin(a * Mathf.Deg2Rad) * (StPetersBuilder.IslandRadiusY - 1f));
                 if (_terrain.ElevationAt(p) < StPetersWoods.TreeLineElevation) continue;
                 checkedPoints++;
             }
@@ -439,8 +454,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "OxeyeDaisy", "QueenAnne", "WildRose",
             });
 
-            Assert.Greater(flowers.Count, 50, "a meadow in summer has flowers in it");
-            Assert.Less(flowers.Count, 700,
+            // ⚠ Bounds re-pinned 2026-07-30 for the 240 × 140 island (measured ~43 blooms — the same
+            // blooms-per-metre the 450 m island carried at its ~225).
+            Assert.Greater(flowers.Count, 20, "a meadow in summer has flowers in it");
+            Assert.Less(flowers.Count, 350,
                 $"{flowers.Count} blooms is a carpet — flowers read as flowers because the meadow around " +
                 "them is grass (and every one is a GameObject, rule 7)");
 
