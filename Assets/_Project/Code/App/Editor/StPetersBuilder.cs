@@ -783,6 +783,20 @@ namespace HiddenHarbours.App.Editor
                     StPetersShoreMap.WeatherCoastFacing, StPetersShoreMap.SectorFeather);
                 splat.ConfigureSandbar(SandbarFrom, SandbarTo, SandbarHalfWidth,
                     StPetersShoreMap.BarSpineHalfWidth, StPetersShoreMap.BarSpineFloorElevation);
+
+                // The terrain material kit (ADR 0028 PR 2): pack the detail arrays (derived, GUID-
+                // stable) and wire them plus any painted splat maps. Both no-op safely when the kit
+                // or the paint is absent — the shader falls back to flat band colours / bands-only.
+                HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
+                splat.ConfigureDetail(
+                    AssetDatabase.LoadAssetAtPath<Texture2DArray>(
+                        HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
+                    AssetDatabase.LoadAssetAtPath<Texture2DArray>(
+                        HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array512Path));
+                splat.ConfigureSplat(
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatA.png"),
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatB.png"),
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatC.png"));
             }
 
             // --- THE PAINTED COAST (shoreline-ISO v8) ---------------------------------------------------

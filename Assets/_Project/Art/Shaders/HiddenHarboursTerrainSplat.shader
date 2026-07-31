@@ -3,21 +3,28 @@
 // One full-region quad replaces the per-cell ground/fringe tilemaps. The fragment reads the SAME
 // painted height data the water shader and the walk gate read (the _HeightTex vocabulary of
 // HiddenHarboursWater.shader, verbatim), classifies elevation into the StPetersShoreMap band
-// ladder with SOFT metre-scale edges, and colours each band with pixel-grid grain plus a
-// low-frequency macro tint. World-space value noise is aperiodic, so the repetition class of
-// defect that motivated the ADR cannot occur by construction.
+// ladder with SOFT metre-scale edges, and shades each material from the terrain material kit
+// (docs/art/rigs/terrain — 10 plan-projection materials x 3 intensity steps, packed into two
+// Texture2DArrays by TerrainTexArrayBuilder). World-space sampling with per-cell hashed offsets
+// on the kit's offset-allowed materials means repetition cannot align by construction.
+//
+// PAINTED OVERRIDES (PR 2): three splat maps carry ten 0..1 channels, one per material. A
+// channel's value is BOTH the blend weight against the height-derived bands AND the position on
+// that material's intensity ladder (_Lo -> base -> _Hi; the kit designs low intensity to READ
+// sparse — README §2 — so one number does both jobs honestly). Unpainted ground renders the
+// height bands at the ladder's base step. The kit's two FACE-projection materials (Sandstone,
+// Bank — cliff faces) are imported but deliberately not wired here; they await cliff geometry.
 //
 // The band constants are NOT owned here: the builder pushes StPetersShoreMap's numbers through
 // TerrainSplatSurface at build time, and TerrainSplatBandPinTests holds this shader's DEFAULTS to
-// the same constants so the two implementations cannot drift silently. The meander noise matches
-// the CPU classifier's PARAMETERS (0.8 m @ 16 m + 0.3 m @ 6 m, feathered weather sector, the
-// sandbar exempt — signage, not scenery) but is intentionally not bit-identical: the CPU remains
-// authoritative for gameplay and rock/contact placement; this is the look.
+// the same constants so the two implementations cannot drift silently. The material/slice tables
+// below are mirrored by TerrainTexArrayBuilder — the same pin tests hold those together too.
 //
-// Sorts through a SortingGroup (mesh renderers do not compete with sprites on their own — the
-// ADR 0023 pattern) BELOW the Sea plane, so the ADR 0012 tide reveal (the water clipping itself
-// transparent over dry ground) keeps working unchanged. The wet band above the live waterline
-// reads _WaterLevel — the same number the sea clips by.
+// Sorts through a SortingGroup (the ADR 0023 pattern) BELOW the Sea plane, so the ADR 0012 tide
+// reveal keeps working unchanged. The wet band above the live waterline reads _WaterLevel — the
+// same number the sea clips by. With no detail arrays bound (_DetailLoaded = 0) the shader falls
+// back to the PR-1 flat two-tone colours, so a fresh checkout renders sanely before the first
+// array build.
 Shader "HiddenHarbours/TerrainSplat"
 {
     Properties
@@ -29,6 +36,17 @@ Shader "HiddenHarbours/TerrainSplat"
         _HeightWorldMin ("Height map world min xy", Vector) = (-380, -260, 0, 0)
         _HeightWorldSize("Height map world size xy", Vector) = (760, 520, 0, 0)
         _WaterLevel     ("Water level in metres. Sim driven", Float) = 0.5
+
+        [Header(Detail texture arrays. Built by TerrainTexArrayBuilder)]
+        [NoScaleOffset] _DetailArr256 ("Detail array 256 class", 2DArray) = "" {}
+        [NoScaleOffset] _DetailArr512 ("Detail array 512 class", 2DArray) = "" {}
+        _DetailLoaded ("Detail arrays loaded", Float) = 0.0
+        _DetailOffsetCellMetres ("Hashed offset cell in metres", Float) = 32.0
+
+        [Header(Painted splat maps. Ten channels across three textures)]
+        [NoScaleOffset] _SplatA ("Splat A. Grass Marram Sand Shingle", 2D) = "black" {}
+        [NoScaleOffset] _SplatB ("Splat B. Ripple Shelf Silt Dirt", 2D) = "black" {}
+        [NoScaleOffset] _SplatC ("Splat C. Marsh Sedge", 2D) = "black" {}
 
         [Header(Band floors in metres. Builder pushes StPetersShoreMap)]
         _FloorPaint   ("Paint floor", Float) = -2.6
@@ -73,7 +91,7 @@ Shader "HiddenHarbours/TerrainSplat"
         _WetStrength   ("Wet strength", Range(0, 1)) = 0.45
         _WetTint       ("Wet tint", Color) = (0.45, 0.52, 0.58, 1)
 
-        [Header(Material colours. A is base and B is grain)]
+        [Header(Fallback colours when no detail arrays. A base and B grain)]
         _GrassColA   ("Grass A", Color) = (0.30, 0.46, 0.22, 1)
         _GrassColB   ("Grass B", Color) = (0.38, 0.55, 0.27, 1)
         _MarramColA  ("Marram A", Color) = (0.47, 0.52, 0.28, 1)
@@ -109,11 +127,18 @@ Shader "HiddenHarbours/TerrainSplat"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             TEXTURE2D(_HeightTex); SAMPLER(sampler_HeightTex);
+            TEXTURE2D(_SplatA); SAMPLER(sampler_SplatA);
+            TEXTURE2D(_SplatB); SAMPLER(sampler_SplatB);
+            TEXTURE2D(_SplatC); SAMPLER(sampler_SplatC);
+            TEXTURE2D_ARRAY(_DetailArr256); SAMPLER(sampler_DetailArr256);
+            TEXTURE2D_ARRAY(_DetailArr512); SAMPLER(sampler_DetailArr512);
 
             CBUFFER_START(UnityPerMaterial)
                 float  _HeightMin, _HeightMax;
                 float4 _HeightWorldMin, _HeightWorldSize;
                 float  _WaterLevel;
+
+                float _DetailLoaded, _DetailOffsetCellMetres;
 
                 float _FloorPaint, _FloorRipple, _FloorSand, _FloorMarram, _FloorGrass, _FloorShingle;
                 float _BandBlendMetres, _EdgeFadeMetres;
@@ -133,6 +158,21 @@ Shader "HiddenHarbours/TerrainSplat"
                 float4 _GrassColA, _GrassColB, _MarramColA, _MarramColB, _SandColA, _SandColB;
                 float4 _ShingleColA, _ShingleColB, _RippleColA, _RippleColB, _ShelfColA, _ShelfColB;
             CBUFFER_END
+
+            // =========================================================================================
+            //  THE MATERIAL TABLE — canonical order 0..9. Mirrored by TerrainTexArrayBuilder (C#) and
+            //  by the splat channel packing (A.rgba, B.rgba, C.rg). A pin test holds all three together.
+            //    0 grass   1 marram   2 sand   3 shingle   4 ripple
+            //    5 shelf   6 silt     7 dirt   8 marsh     9 sedge
+            //  MAT_ARRAY: 0 = the 256 array (8 m tiles), 1 = the 512 array (16 m tiles).
+            //  MAT_SLICE: base slice (the _Lo step; +1 base, +2 _Hi — the kit ladder, README §2).
+            //  MAT_OFFSET: hashed per-cell UV offset allowed (README §4: NEVER on the directional
+            //  ripple/marram — an offset slices a ripple train or a wind-combed stand apart).
+            // =========================================================================================
+            static const float MAT_ARRAY[10]  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0 };
+            static const float MAT_SLICE[10]  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18 };
+            static const float MAT_METRES[10] = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8 };
+            static const float MAT_OFFSET[10] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1 };
 
             struct Attributes
             {
@@ -201,12 +241,52 @@ Shader "HiddenHarbours/TerrainSplat"
                 return smoothstep(floorM - _BandBlendMetres, floorM + _BandBlendMetres, e);
             }
 
+            // One material from the kit at a given intensity: bracket the ladder (README §2's HLSL,
+            // verbatim in spirit) and lerp two neighbouring steps of the SAME material. The hashed
+            // whole-material offset applies per _DetailOffsetCellMetres cell, all steps together —
+            // offsetting steps apart would cross-fade misaligned images (README §4).
+            //
+            // Takes the world-position screen derivatives EXPLICITLY (SampleGrad): this is called
+            // inside a divergent [branch], where implicit-gradient sampling is illegal — the
+            // derivatives are computed once, outside all flow control, and scaled per material.
+            float3 SampleMat(int i, float2 wp, float intensity, float2 dwx, float2 dwy)
+            {
+                float metres = MAT_METRES[i];
+                float2 uv = wp / metres;
+                if (MAT_OFFSET[i] > 0.5)
+                {
+                    float2 cell = floor(wp / max(_DetailOffsetCellMetres, 1.0));
+                    uv += float2(Hash21(cell), Hash21(cell + 17.0));
+                }
+                float2 duvx = dwx / metres;
+                float2 duvy = dwy / metres;
+
+                float f = saturate(intensity) * 2.0;
+                float a = floor(min(f, 1.999));
+                float k = f - a;
+                float s0 = MAT_SLICE[i] + a;
+                float s1 = min(s0 + 1.0, MAT_SLICE[i] + 2.0);
+
+                float3 cA, cB;
+                if (MAT_ARRAY[i] > 0.5)
+                {
+                    cA = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr512, sampler_DetailArr512, uv, s0, duvx, duvy).rgb;
+                    cB = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr512, sampler_DetailArr512, uv, s1, duvx, duvy).rgb;
+                }
+                else
+                {
+                    cA = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, s0, duvx, duvy).rgb;
+                    cB = SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, s1, duvx, duvy).rgb;
+                }
+                return lerp(cA, cB, k);
+            }
+
             half4 frag (Varyings i) : SV_Target
             {
                 float2 wp = i.worldXY;
 
-                // Quantise the NOISE domain to the art's pixel grid so grain reads as pixel-art
-                // texture, not smooth gradient mist against 32 px/m sprites (the water's Pixelize idiom).
+                // Quantise the NOISE domain to the art's pixel grid so procedural grain reads as
+                // pixel-art texture (the kit itself is sampled Point, already on the grid).
                 float ppm = max(_PixelsPerMetre, 1.0);
                 float2 wpx = floor(wp * ppm) / ppm;
 
@@ -235,27 +315,23 @@ Shader "HiddenHarbours/TerrainSplat"
                                                        _BarHalfWidth + _BarEdgeBlend, dBar));
                 float lookB = lerp(look, max(_FloorPaint, e), barW);
 
-                // Two-tone grain per material, one shared field (two octaves of pixel-grid noise).
-                float grain = saturate(VNoise(wpx / max(_GrainScale, 1e-3), 11.0) * 0.65
-                                     + VNoise(wpx / max(_GrainScale * 3.7, 1e-3), 23.0) * 0.35);
-                float3 grass   = lerp(_GrassColA.rgb,   _GrassColB.rgb,   grain);
-                float3 marram  = lerp(_MarramColA.rgb,  _MarramColB.rgb,  grain);
-                float3 sand    = lerp(_SandColA.rgb,    _SandColB.rgb,    grain);
-                float3 shingle = lerp(_ShingleColA.rgb, _ShingleColB.rgb, grain);
-                float3 ripple  = lerp(_RippleColA.rgb,  _RippleColB.rgb,  grain);
-                float3 shelf   = lerp(_ShelfColA.rgb,   _ShelfColB.rgb,   grain);
+                // --- HEIGHT-DERIVED BAND WEIGHTS (the CPU ladders as products of soft gates) --------
+                float bg = Band(lookB, _FloorGrass);
+                float bm = Band(lookB, _FloorMarram);
+                float bs = Band(lookB, _FloorSand);
+                float br = Band(lookB, _FloorRipple);
+                float bh = Band(lookB, _FloorShingle);
 
-                // The sheltered ladder (west/north): shelf, ripple, sand, marram, grass.
-                float3 colS = shelf;
-                colS = lerp(colS, ripple, Band(lookB, _FloorRipple));
-                colS = lerp(colS, sand,   Band(lookB, _FloorSand));
-                colS = lerp(colS, marram, Band(lookB, _FloorMarram));
-                colS = lerp(colS, grass,  Band(lookB, _FloorGrass));
+                // Sheltered (west/north): shelf, ripple, sand, marram, grass.
+                float sGrass  = bg;
+                float sMarram = bm * (1.0 - bg);
+                float sSand   = bs * (1.0 - bm) * (1.0 - bg);
+                float sRipple = br * (1.0 - bs) * (1.0 - bm) * (1.0 - bg);
+                float sShelf  = (1.0 - br) * (1.0 - bs) * (1.0 - bm) * (1.0 - bg);
 
-                // The weather ladder (south/east): shelf, shingle, grass — no dune, no beach.
-                float3 colW = shelf;
-                colW = lerp(colW, shingle, Band(lookB, _FloorShingle));
-                colW = lerp(colW, grass,   Band(lookB, _FloorGrass));
+                // Weather (south/east): shelf, shingle, grass — no dune, no beach.
+                float wShingle = bh * (1.0 - bg);
+                float wShelf   = (1.0 - bh) * (1.0 - bg);
 
                 // Which coast: bearing against the weather facing, aspect-normalised about the island
                 // centre, feathered by the same meander (StPetersShoreMap.IsWeatherCoast's shape).
@@ -266,21 +342,99 @@ Shader "HiddenHarbours/TerrainSplat"
                 float thresh = wig * _SectorFeather;
                 float ws = smoothstep(thresh - _SectorBlend, thresh + _SectorBlend, bearing);
                 ws *= 1.0 - barW;
-                float3 col = lerp(colS, colW, ws);
 
                 // The bar's cobble spine — the walking line, raw elevation gated like the CPU.
                 float spineW = barOn
                     * (1.0 - smoothstep(_BarSpineHalfWidth - 1.0, _BarSpineHalfWidth + 1.0, dBar))
                     * smoothstep(_BarSpineFloor - _BandBlendMetres, _BarSpineFloor + _BandBlendMetres, e)
                     * barW;
-                col = lerp(col, shingle, spineW);
+
+                // Base weights in canonical material order (only the six band materials are nonzero).
+                float w[10];
+                w[0] = sGrass;                                   // grass — same cap both coasts
+                w[1] = sMarram * (1.0 - ws);
+                w[2] = sSand   * (1.0 - ws);
+                w[3] = wShingle * ws;
+                w[4] = sRipple * (1.0 - ws);
+                w[5] = lerp(sShelf, wShelf, ws);
+                w[6] = 0.0; w[7] = 0.0; w[8] = 0.0; w[9] = 0.0;
+                {
+                    float keep = 1.0 - spineW;
+                    for (int bi = 0; bi < 10; bi++) w[bi] *= keep;
+                    w[3] += spineW;
+                }
+
+                // --- PAINTED OVERRIDES: ten channels, value = weight AND ladder intensity ----------
+                float4 pA = SAMPLE_TEXTURE2D(_SplatA, sampler_SplatA, uv);
+                float4 pB = SAMPLE_TEXTURE2D(_SplatB, sampler_SplatB, uv);
+                float4 pC = SAMPLE_TEXTURE2D(_SplatC, sampler_SplatC, uv);
+                float p[10];
+                p[0] = pA.r; p[1] = pA.g; p[2] = pA.b; p[3] = pA.a;
+                p[4] = pB.r; p[5] = pB.g; p[6] = pB.b; p[7] = pB.a;
+                p[8] = pC.r; p[9] = pC.g;
+
+                float paintSum = p[0] + p[1] + p[2] + p[3] + p[4] + p[5] + p[6] + p[7] + p[8] + p[9];
+                float paintTotal = saturate(paintSum);
+                float norm = paintSum > 1.0 ? 1.0 / paintSum : 1.0;
+
+                float intensity[10];
+                {
+                    float baseKeep = 1.0 - paintTotal;
+                    for (int mi = 0; mi < 10; mi++)
+                    {
+                        float basePart  = w[mi] * baseKeep;          // band ground, ladder base (0.5)
+                        float paintPart = p[mi] * norm * paintTotal; // painted, ladder = channel value
+                        w[mi] = basePart + paintPart;
+                        intensity[mi] = w[mi] > 1e-4
+                            ? (0.5 * basePart + saturate(p[mi]) * paintPart) / w[mi]
+                            : 0.5;
+                    }
+                }
+
+                // --- SHADE ------------------------------------------------------------------------
+                float3 col = float3(0, 0, 0);
+                if (_DetailLoaded > 0.5)
+                {
+                    // The kit path: sample only the materials actually present (paint is spatially
+                    // coherent, so the branch stays cheap — most pixels carry one or two materials).
+                    // Derivatives once, outside all flow control (see SampleMat).
+                    float2 dwx = ddx(wp);
+                    float2 dwy = ddy(wp);
+                    for (int si = 0; si < 10; si++)
+                    {
+                        [branch]
+                        if (w[si] > 0.004)
+                            col += w[si] * SampleMat(si, wp, intensity[si], dwx, dwy);
+                    }
+                }
+                else
+                {
+                    // PR-1 fallback: flat two-tone colours so the ground renders before the first
+                    // array build (fresh checkout, or the guard test's bare material).
+                    float grain = saturate(VNoise(wpx / max(_GrainScale, 1e-3), 11.0) * 0.65
+                                         + VNoise(wpx / max(_GrainScale * 3.7, 1e-3), 23.0) * 0.35);
+                    col += w[0] * lerp(_GrassColA.rgb,   _GrassColB.rgb,   grain);
+                    col += w[1] * lerp(_MarramColA.rgb,  _MarramColB.rgb,  grain);
+                    col += w[2] * lerp(_SandColA.rgb,    _SandColB.rgb,    grain);
+                    col += w[3] * lerp(_ShingleColA.rgb, _ShingleColB.rgb, grain);
+                    col += w[4] * lerp(_RippleColA.rgb,  _RippleColB.rgb,  grain);
+                    col += w[5] * lerp(_ShelfColA.rgb,   _ShelfColB.rgb,   grain);
+                    // The four paint-only materials borrow their nearest band cousin's colours.
+                    col += w[6] * lerp(_RippleColA.rgb,  _RippleColB.rgb,  grain);   // silt
+                    col += w[7] * lerp(_ShelfColA.rgb,   _SandColB.rgb,    grain);   // dirt
+                    col += w[8] * lerp(_GrassColA.rgb,   _MarramColB.rgb,  grain);   // marsh
+                    col += w[9] * lerp(_MarramColA.rgb,  _GrassColB.rgb,   grain);   // sedge
+                }
 
                 // Macro variation: tens-of-metres tint drift that kills any large-scale flatness.
+                // The kit flattens each tile's low-frequency mean on purpose (README §4) — this
+                // layer is the shader's half of that bargain.
                 float m = Fbm3(wp / max(_MacroScale, 1e-3));
                 col *= lerp(1.0, _MacroTint.rgb, saturate(m) * _MacroStrength);
 
                 // The wet band: ground just above the live waterline darkens — the tide line
-                // breathes with the SAME _WaterLevel the sea clips by.
+                // breathes with the SAME _WaterLevel the sea clips by. (Live water/wet effects are
+                // deliberately NOT in the kit's albedo — README §1.)
                 float wet = 1.0 - smoothstep(_WaterLevel, _WaterLevel + max(_WetBandMetres, 1e-3), e);
                 col = lerp(col, col * _WetTint.rgb, wet * _WetStrength);
 

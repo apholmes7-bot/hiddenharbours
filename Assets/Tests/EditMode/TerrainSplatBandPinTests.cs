@@ -1,8 +1,13 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;
+using HiddenHarbours.Art.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -58,6 +63,88 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(StPetersShoreMap.SectorFeather, mat.GetFloat("_SectorFeather"), 1e-4f);
             Assert.AreEqual(StPetersShoreMap.BarSpineHalfWidth, mat.GetFloat("_BarSpineHalfWidth"), 1e-4f);
             Assert.AreEqual(StPetersShoreMap.BarSpineFloorElevation, mat.GetFloat("_BarSpineFloor"), 1e-4f);
+        }
+
+        // =========================================================================================
+        //  ADR 0028 PR 2: the material/slice tables live in THREE places — the shader's static
+        //  arrays, TerrainTexArrayBuilder's pack order, and the kit manifest's offset flags. These
+        //  pins parse the shader source (batch-safe, no compile needed) and hold all three together.
+        // =========================================================================================
+
+        /// <summary>Canonical material order 0..9 — the shader header's list and the splat channel
+        /// packing (A.rgba, B.rgba, C.rg) both follow it.</summary>
+        private static readonly string[] CanonicalOrder =
+            { "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt", "Dirt", "Marsh", "Sedge" };
+
+        private const string SplatShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
+
+        private static float[] ParseShaderTable(string source, string tableName)
+        {
+            var m = Regex.Match(source, tableName + @"\[10\]\s*=\s*\{([^}]*)\}");
+            Assert.IsTrue(m.Success, $"Could not find 'static const float {tableName}[10]' in the shader.");
+            return m.Groups[1].Value.Split(',').Select(s => float.Parse(s.Trim())).ToArray();
+        }
+
+        [Test]
+        public void ShaderMaterialTables_MatchTheArrayBuilderPackOrder()
+        {
+            string src = File.ReadAllText(SplatShaderPath);
+            float[] arr = ParseShaderTable(src, "MAT_ARRAY");
+            float[] slice = ParseShaderTable(src, "MAT_SLICE");
+            float[] metres = ParseShaderTable(src, "MAT_METRES");
+
+            for (int i = 0; i < CanonicalOrder.Length; i++)
+            {
+                string name = CanonicalOrder[i];
+                int i512 = System.Array.IndexOf(TerrainTexArrayBuilder.Order512, name);
+                int i256 = System.Array.IndexOf(TerrainTexArrayBuilder.Order256, name);
+                Assert.IsTrue(i512 >= 0 || i256 >= 0,
+                    $"'{name}' is in neither pack order — the builder cannot supply the shader's slice.");
+
+                float expArr = i512 >= 0 ? 1f : 0f;
+                float expSlice = (i512 >= 0 ? i512 : i256) * TerrainTexArrayBuilder.LadderSteps.Length;
+                float expMetres = i512 >= 0 ? 16f : 8f;   // the kit: 512 px = 16 m, 256 px = 8 m at 32 px/m
+
+                Assert.AreEqual(expArr, arr[i], $"MAT_ARRAY[{i}] ({name}) disagrees with the pack order.");
+                Assert.AreEqual(expSlice, slice[i], $"MAT_SLICE[{i}] ({name}) disagrees with the pack order.");
+                Assert.AreEqual(expMetres, metres[i], $"MAT_METRES[{i}] ({name}) disagrees with the kit sizing.");
+            }
+        }
+
+        [Test]
+        public void ShaderOffsetFlags_MatchTheKitManifest()
+        {
+            // The manifest is the kit's word on which materials tolerate hashed UV offsets
+            // (README §4: never the directional ripple/marram — an offset slices a ripple train).
+            string manifestPath = Path.Combine(Application.dataPath, "../docs/art/rigs/terrain/materials.json");
+            Assert.IsTrue(File.Exists(manifestPath), "Kit manifest missing at docs/art/rigs/terrain/materials.json.");
+            string manifest = File.ReadAllText(manifestPath);
+
+            var allowed = new Dictionary<string, bool>();
+            foreach (Match m in Regex.Matches(manifest,
+                @"""key"":\s*""(\w+)"".*?""chunkOffset"":\s*(true|false)"))
+                allowed[m.Groups[1].Value] = m.Groups[2].Value == "true";
+
+            float[] off = ParseShaderTable(File.ReadAllText(SplatShaderPath), "MAT_OFFSET");
+            for (int i = 0; i < CanonicalOrder.Length; i++)
+            {
+                string key = CanonicalOrder[i].ToLowerInvariant();
+                Assert.IsTrue(allowed.ContainsKey(key), $"Manifest has no entry for '{key}'.");
+                Assert.AreEqual(allowed[key] ? 1f : 0f, off[i],
+                    $"MAT_OFFSET[{i}] ({key}) disagrees with the kit manifest's chunkOffset flag.");
+            }
+        }
+
+        [Test]
+        public void KitTextures_ExistAtTheSizesThePackOrderExpects()
+        {
+            foreach (string name in TerrainTexArrayBuilder.Order256.Concat(TerrainTexArrayBuilder.Order512))
+            foreach (string step in TerrainTexArrayBuilder.LadderSteps)
+            {
+                string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                Assert.IsNotNull(tex, $"Kit texture missing: '{path}' — the array builder would skip the pack.");
+            }
         }
 
         [Test]

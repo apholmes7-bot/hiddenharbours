@@ -40,6 +40,13 @@ namespace HiddenHarbours.Art
         [SerializeField] private float _heightMin = -4f;
         [SerializeField] private float _heightMax = 6f;
 
+        [Header("Detail arrays (derived — TerrainTexArrayBuilder) + painted splat maps")]
+        [SerializeField] private Texture2DArray _detailArray256;
+        [SerializeField] private Texture2DArray _detailArray512;
+        [SerializeField] private Texture2D _splatA;   // r grass, g marram, b sand, a shingle
+        [SerializeField] private Texture2D _splatB;   // r ripple, g shelf, b silt, a dirt
+        [SerializeField] private Texture2D _splatC;   // r marsh, g sedge
+
         [Header("Bands (builder-pushed from StPetersShoreMap — not owned here)")]
         [SerializeField] private float _floorPaint = -2.6f;
         [SerializeField] private float _floorRipple = -1.7f;
@@ -97,6 +104,12 @@ namespace HiddenHarbours.Art
         private static readonly int IdIslandAspect = Shader.PropertyToID("_IslandAspect");
         private static readonly int IdWeatherFacing = Shader.PropertyToID("_WeatherFacing");
         private static readonly int IdSectorFeather = Shader.PropertyToID("_SectorFeather");
+        private static readonly int IdDetailArr256 = Shader.PropertyToID("_DetailArr256");
+        private static readonly int IdDetailArr512 = Shader.PropertyToID("_DetailArr512");
+        private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
+        private static readonly int IdSplatA = Shader.PropertyToID("_SplatA");
+        private static readonly int IdSplatB = Shader.PropertyToID("_SplatB");
+        private static readonly int IdSplatC = Shader.PropertyToID("_SplatC");
         private static readonly int IdBarFrom = Shader.PropertyToID("_BarFrom");
         private static readonly int IdBarTo = Shader.PropertyToID("_BarTo");
         private static readonly int IdBarHalfWidth = Shader.PropertyToID("_BarHalfWidth");
@@ -119,6 +132,25 @@ namespace HiddenHarbours.Art
             _heightTexture = heightTexture;
             _heightMin = minElevation;
             _heightMax = maxElevation;
+        }
+
+        /// <summary>The kit's packed detail arrays (derived assets — TerrainTexArrayBuilder). Null
+        /// leaves the PR-1 flat-colour fallback active (_DetailLoaded stays 0).</summary>
+        public void ConfigureDetail(Texture2DArray array256, Texture2DArray array512)
+        {
+            _detailArray256 = array256;
+            _detailArray512 = array512;
+        }
+
+        /// <summary>The painted splat maps (ten material channels across three RGBA textures, same
+        /// world rect as the height map). Null channels fall back to a transparent 1x1 — painted
+        /// nothing — NOT Unity's default "black" whose alpha of 1 would read as a painted channel
+        /// (the WaterSurface ClearSeabedFallback lesson).</summary>
+        public void ConfigureSplat(Texture2D splatA, Texture2D splatB, Texture2D splatC)
+        {
+            _splatA = splatA;
+            _splatB = splatB;
+            _splatC = splatC;
         }
 
         /// <summary>The band ladder + meander, pushed from the CPU classifier's constants.</summary>
@@ -276,6 +308,17 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdHWorldSize, new Vector4(_worldSize.x, _worldSize.y, 0f, 0f));
             }
 
+            bool detailLoaded = _detailArray256 != null && _detailArray512 != null;
+            if (detailLoaded)
+            {
+                _mpb.SetTexture(IdDetailArr256, _detailArray256);
+                _mpb.SetTexture(IdDetailArr512, _detailArray512);
+            }
+            _mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
+            _mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
+            _mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
+            _mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
+
             _mpb.SetFloat(IdFloorPaint, _floorPaint);
             _mpb.SetFloat(IdFloorRipple, _floorRipple);
             _mpb.SetFloat(IdFloorSand, _floorSand);
@@ -318,6 +361,26 @@ namespace HiddenHarbours.Art
             if (env == null) return 0f;
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             return env.WaterLevelAt(now);
+        }
+
+        private static Texture2D s_clearSplat;
+
+        /// <summary>A shared 1x1 fully-transparent texture — "nothing painted". Unity's built-in
+        /// blackTexture is (0,0,0,1): its alpha channel would read as material 4/8 painted at full
+        /// weight everywhere. Never that.</summary>
+        private static Texture2D ClearSplat()
+        {
+            if (s_clearSplat == null)
+            {
+                s_clearSplat = new Texture2D(1, 1, TextureFormat.RGBA32, false)
+                {
+                    name = "HHTerrainSplatClear",
+                    hideFlags = HideFlags.HideAndDontSave,
+                };
+                s_clearSplat.SetPixel(0, 0, Color.clear);
+                s_clearSplat.Apply(false, false);
+            }
+            return s_clearSplat;
         }
 
         private static Vector3 InverseScale(Vector3 s) => new Vector3(
