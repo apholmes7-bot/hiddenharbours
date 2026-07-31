@@ -145,7 +145,7 @@ Material:
     - _RainRingDensity: 0.35
     - _RainRingScale: 6
     - _RainRingSpeed: 1.5
-    - _RainRingStrength: 0
+    - _RainRingStrength: 0.6
     - _ReflectionChopScatter: 1.5
     - _ReflectionFadeChop: 0.6
     - _ReflectionSkyTint: 0.85

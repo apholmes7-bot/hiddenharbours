@@ -175,7 +175,7 @@ Composition & discipline:
 
 | Phase | What lands | Why here |
 |---|---|---|
-| **M1 (now)** | *Nothing new.* Day/night grade + weather water-mood (ADR 0017) + `RainEmitter` + `SeaMistEmitter` already ship the atmosphere backbone. | Stay in phase; the slice is Coddle Cove polish. |
+| **M1 (now)** | *No new system.* Day/night grade + weather water-mood (ADR 0017) + `RainEmitter` + `SeaMistEmitter` already ship the atmosphere backbone. **Ratified 2026-07-31 → the shipped rain layer was turned ON** (an activation pass: `_RainRingStrength` dialled up on `Water.mat` + the preset library, `RainConfig.Default`'s look knobs dialled in). No shader, scene, Core, sim or save change; the two-onset squall gate is untouched, so clear/light days stay dry. | Stay in phase; the slice is Coddle Cove polish. Ratification gated the activation, not a build. |
 | **M2 — weather wave** (`time-tides-weather.md` §4.8) | **SkyFog v1:** fog fill graded by parallax depth + the sun-positioned sky tint + fog tone from the {sea-state, visibility} axes. Wire **The Smother's** persistent fog and **heavy-rain** visibility. Fog becomes the **P5 navigation hazard**. | This is when fog/rain/storm become *gameplay*, not just look. |
 | **M3 — advanced rendering** (art bible §6.1) | **Cloud layer + cloud shadows**; **many-lights-in-fog** via a light-accumulation texture (a **lit Nine Mile Creek glowing in fog at dusk** — the signature image); optional shader-fog **rain integration**; the profiled layer-count/cost decision. | The heavier, world-scaling rendering, after the slice proved fun. |
 
@@ -188,6 +188,10 @@ No build needed to feel the direction:
 - **Rain and sea-mist are self-installing** — they appear in every scene and already respond to the
   deterministic weather. As the sea-state climbs and **visibility drops**, rain builds and slants
   downwind; the mist drifts under the boats. (Scrub the weather / sea-state to watch it come on.)
+  **Since the 2026-07-31 ratification the rain ships ON**: falling streaks *and* surface dimple rings on the
+  water, both gated by the one derived `RainIntensity` — so rain needs **real murk AND real chop** and a clear
+  or lightly-choppy day still stays dry. Ring strength is the owner's dial: `_RainRingStrength` on
+  `Water.mat` (0 = off, ~0.6 shipped).
 - **The sea already moves through its moods** with the weather (ADR 0017) — a clear calm reads serene, a
   building sea greys and choppens, a smother washes it pale.
 - **The day/night sky already warms and darkens** on the clock, and a boat spotlight already **bleeds its

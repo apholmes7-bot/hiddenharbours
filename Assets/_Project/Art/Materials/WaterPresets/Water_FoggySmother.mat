@@ -126,10 +126,10 @@ Material:
     - _PaletteValueFloor: 0.2
     - _PixelsPerUnit: 24
     - _RainIntensity: 0
-    - _RainRingDensity: 1
-    - _RainRingScale: 0.4
+    - _RainRingDensity: 0.35
+    - _RainRingScale: 6
     - _RainRingSpeed: 1.5
-    - _RainRingStrength: 0
+    - _RainRingStrength: 0.45
     - _ReflectionChopScatter: 2.2
     - _ReflectionFadeChop: 0.6
     - _ReflectionSkyTint: 0.85

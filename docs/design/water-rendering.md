@@ -2149,7 +2149,7 @@ the rain rings, which sit post-grade in the compensated bucket to survive the da
 | Property | Default | Meaning |
 |---|---|---|
 | `_RainIntensity` | `0.0` | **C#-driven** (derived), not hand-tuned; `0` = no rings. |
-| `_RainRingStrength` | `0.0` | Master rain-ring strength; `0` = off / today. |
+| `_RainRingStrength` | `0.6` | Master rain-ring strength; `0` = an exact passthrough (off). **Raised 0 → 0.6 on `Water.mat` by the 2026-07-31 activation pass**, once the owner ratified the weather look-target — the rings had shipped dark since Arc C. Useful band ≈ `0.35` (a whisper) … `0.9` (a hard squall); past ~`1` a heavy squall starts to read as white confetti, because the derived `_RainIntensity` already multiplies in. Deliberately **not** in `MoodFloatNames`: `_RainIntensity` scales the rings by {sea-state, visibility} and the weather blend runs on those *same* two axes, so mood-blending the strength would multiply one signal by itself. Every `WaterPresets/*.mat` therefore carries the key with a per-mood value (fog `0.45`, storm `0.75`, else `0.6`) — not for blending, but because the editor's "Apply water preset" is a wholesale `CopyPropertiesFromMaterial` and a preset missing the key would stamp the shader default `0` onto `Water.mat` and switch the rain off. |
 | `_RainRingScale` | `6.0` | Ring-centre cell scale (**cells/unit — BIGGER = smaller rings**; the label misled: it is cells-per-unit, so a larger value shrinks each ripple). Raised 0.4 → 6.0 (owner playtest, 2026-07-05): at 0.4 one cell was 2.5 world units, so a ripple spanned ~2.5 tiles (a dinner plate); at 6.0 a cell ≈ 0.17 units → fine sub-tile dimples. Pure default change, no math (radius/band are already in cell-units and shrink with the scale). |
 | `_RainRingDensity` | `0.35` | Fraction of cells that host a strike. Dropped 1.0 → 0.35 (owner playtest) so drops **scatter sparsely** instead of striking every cell. |
 | `_RainRingSpeed` | `1.5` | Ring expansion speed (rings/sec). |
@@ -2161,19 +2161,23 @@ the rain rings, which sit post-grade in the compensated bucket to survive the da
 Plus the C#-side shape floats on `WaterSurface`: `_rainBaselineIntensity` `0`, `_rainSeaStateWeight` `1.0`,
 `_rainVisOnset` `0.65`, `_rainVisFull` `0.40`, `_rainSeaOnset` `0.30` (mirror `RainConfig.Default`).
 
-**How the owner steers it:** raise `_RainRingStrength` **and** `_StormFoamLaneStrength`, then sail into a
-building blow. Rain rings dimple the surface and now **read even at night** (per the owner ruling); the storm
-lanes streak **downwind** and **dim with the dark** like the foam they belong to. The surface rings and the
-falling-rain particles share the one derived `_RainIntensity`, so they thicken together.
+**How the owner steers it:** the rain rings are **on** (`_RainRingStrength` `0.6`); raise or lower that one
+number on `Water.mat` to taste, and raise `_StormFoamLaneStrength` (still `0`/off) if you want the storm lanes
+too. Then sail into a building blow. Rain rings dimple the surface and **read even at night** (per the owner
+ruling); the storm lanes streak **downwind** and **dim with the dark** like the foam they belong to. The
+surface rings and the falling-rain particles share the one derived `_RainIntensity`, so they thicken together —
+and both stay **dry** until the weather brings **real murk AND real chop**.
 
 ### 19.5 Composition + guard
 
 `StormFoamLanes` is `col.rgb`-only, added **pre-grade** with the whitecaps (bounded by the §13 guard-rail).
 `RainRings` is `col.rgb`-only, added **post-grade** inside the §11.6 overlay-compensated `lightContent` bucket
 (so it survives the night multiply). `WaterSurface.cs` gains the derived `_RainIntensity` push (reusing the
-shared `AmbientParticleMath.RainIntensity`); `Water.mat` stays **byte-identical OFF**. The shipped `Water.mat`
-variant is force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not
-magenta-in-build).
+shared `AmbientParticleMath.RainIntensity`). Arc C shipped `Water.mat` **byte-identical OFF**; the
+**2026-07-31 activation** turned the rings on there (`_RainRingStrength` `0.6`) and wrote the ring key set into
+the whole preset library, changing **no HLSL** — the shader block was already opt-in by design. The shipped
+`Water.mat` variant is force-compiled by `WaterShaderCompileGuardTests`, so any HLSL slip fails CI **red** (not
+magenta-in-build); `RainActivationTests` pins that the rings stay on and that no preset can silently zero them.
 
 ## 20. Aesthetic pass — clumping foam, deep blues, crest-face shading (owner mandate, 2026-07-08)
 
