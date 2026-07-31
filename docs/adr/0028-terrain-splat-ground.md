@@ -110,6 +110,24 @@ stay readable at 1:1 zoom under the day/night grade (ADR 0013). If a material st
 flat at 16 m, the fix is a second, larger-scale variation texture layered in the shader —
 not a bigger detail canvas.
 
+### PR 2 addendum (2026-07-30, on kit delivery)
+
+The delivered kit (`docs/art/rigs/terrain/` — bake rigs are the source of truth, PNGs are
+derived) exceeded the contract: **12 materials × 3 intensity steps** (_Lo / base / _Hi).
+The ladder replaces "one texture per material": low intensity is *designed* to read sparse
+(pioneer sprigs, planed-off ripple), so a painted channel's value serves as **both** the
+blend weight against the height bands and the ladder position — a footpath or a grazed
+headland is a brush stroke on intensity, not a new material slot. Ten plan-projection
+materials are wired (the contract six + Silt, Dirt, Marsh, Sedge, paint-only); the two
+FACE-projection materials (**Sandstone, Bank** — cliff faces with directional geology) are
+imported but deliberately unwired until cliff geometry exists. Textures are packed into two
+GUID-stable Texture2DArrays (`TerrainTexArrayBuilder`); the kit's rules are honoured in the
+shader: Repeat + Point sampling, hashed per-cell UV offsets only on the manifest's
+offset-allowed materials (never the directional ripple/marram), macro variation stays
+shader-side because the kit flattens each tile's low-frequency mean on purpose. Painting
+lands as three RGBA splat maps (ten channels) authored by the Terrain Paint Tool — the
+"material override brush" this ADR deferred, now owner-directed.
+
 ## Consequences
 
 - ✅ The repetition class of defect is gone structurally, not papered over.

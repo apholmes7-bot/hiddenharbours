@@ -1,0 +1,36 @@
+{
+  "kit": "Hidden Harbours terrain materials",
+  "pxPerMetre": 32,
+  "colorSpace": "sRGB",
+  "alpha": "always 255",
+  "ladder": { "steps": ["_Lo", "", "_Hi"], "intensity": [0.0, 0.5, 1.0] },
+  "baked": ["albedo", "grain", "non-directional cavity/crown"],
+  "notBaked": ["key light", "cast shadow", "sun AO", "water", "pools", "wet/damp bands", "specular"],
+  "materials": [
+    { "key": "ripple",    "name": "Ripple",    "size": 512, "metres": 16, "projection": "plan", "chunkOffset": false, "pass": 2,
+      "steps": ["relict, all but planed off", "working ripple field", "storm-built, gravel lag in the troughs"] },
+    { "key": "shingle",   "name": "Shingle",   "size": 512, "metres": 16, "projection": "plan", "chunkOffset": true,  "pass": 2,
+      "steps": ["pea gravel and coarse grit", "mixed shingle", "cobble lag, big stones proud"] },
+    { "key": "grass",     "name": "Grass",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 2,
+      "steps": ["grazed, trodden thin turf", "sward", "rank meadow with seed heads"] },
+    { "key": "marram",    "name": "Marram",    "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 2,
+      "steps": ["pioneer sprigs on open sand", "stand", "closed hummock, heavy thatch"] },
+    { "key": "sand",      "name": "Sand",      "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 2,
+      "steps": ["hardpack, quiet and fine", "dry sand with lineation", "coarse, shelly, wind-rippled"] },
+    { "key": "shelf",     "name": "Shelf",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 2,
+      "steps": ["intact pavement", "slabs plucked out, second bed showing", "stripped to the third bed"] },
+
+    { "key": "sandstone", "name": "Sandstone", "size": 512, "metres": 16, "projection": "face", "chunkOffset": false, "pass": 3,
+      "steps": ["fresh face, recently collapsed", "weathered — joints open, blocks off", "badly eroded, deep alveolar hollows"] },
+    { "key": "bank",      "name": "Bank",      "size": 512, "metres": 16, "projection": "face", "chunkOffset": false, "pass": 3,
+      "steps": ["firm, faintly rilled", "well rilled, clods loose", "failing — deep gullies, hanging turf"] },
+    { "key": "silt",      "name": "Silt",      "size": 512, "metres": 16, "projection": "plan", "chunkOffset": true,  "pass": 3,
+      "steps": ["soft fresh sheet, barely drained", "drained, burrowed, patchy crust", "crusted, cracked into curled plates"] },
+    { "key": "dirt",      "name": "Dirt",      "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 3,
+      "steps": ["a worn line, stubble and moss holding", "bare compacted earth, pebble lag", "churned — clods, loose tilth, grooves"] },
+    { "key": "marsh",     "name": "Marsh",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 3,
+      "steps": ["pioneer sprigs on open creek mud", "closed cordgrass sward", "high marsh — thatch, wrack, salt pans"] },
+    { "key": "sedge",     "name": "Sedge",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 3,
+      "steps": ["short sedge lawn, peat and moss showing", "tussocks", "rank tussocks, heavy thatch, rush over"] }
+  ]
+}
