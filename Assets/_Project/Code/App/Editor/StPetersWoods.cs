@@ -140,10 +140,16 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// How far inland (in the metres of ELLIPTICAL DISTANCE the terrain measures in) the salt wind
-        /// reaches before the ground counts as sheltered. 80 m on a 225 × 130 m island leaves a genuine
-        /// sheltered core with a broad exposed collar around it.
+        /// reaches before the ground counts as sheltered. 45 m on the re-ruled 120 × 70 m island keeps
+        /// the same core:collar proportion the old 80 m gave the 225 × 130 island (~0.37 of the radius).
+        ///
+        /// <para>⚠ SCALES WITH THE ISLAND, and the 2026-07-30 shrink is why that is written down: left
+        /// at 80 m on a 120 m radius, the collar swallowed the whole interior — measured 21 trees on
+        /// the entire island at a 4.6% wooded fraction, i.e. a bald rock. The salt wind's reach is a
+        /// FRACTION of the island in this model, not a physical constant, because the stand taper and
+        /// the species gradient both key off it and both need a genuine sheltered core to exist.</para>
         /// </summary>
-        public const float ExposureDepthMetres = 80f;
+        public const float ExposureDepthMetres = 45f;
 
         /// <summary>
         /// 0 at the coast, 1 once the ground is <see cref="ExposureDepthMetres"/> inside the plateau edge —

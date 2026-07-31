@@ -8,9 +8,12 @@ using HiddenHarbours.App.Editor;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// ⭐ ST PETERS AT ITS RULED SIZE — 760 × 520 m of scene around a ~450 × 260 m island, with the
+    /// ⭐ ST PETERS AT ITS RULED SIZE — 760 × 520 m of scene around a ~240 × 140 m island, with the
     /// sandbar leaving the WEST end and the dock on the EAST (docs/design/scene-sizing-and-world-scale.md
-    /// §5.1, §5.1a, §7 items 1 and 3; owner-ruled 2026-07-23).
+    /// §5.1, §5.1a, §7 items 1 and 3; scene ruled 2026-07-23, island RE-RULED SMALLER 2026-07-30 —
+    /// the owner: the 450 × 260 island felt too large, and he wants more open water around it; the
+    /// linear span roughly halves, the area lands at ~29% of what it was, and the sea rectangle does
+    /// not move).
     ///
     /// <para>These are the assertions that make the numbers a LAYOUT rather than a pile of constants:
     /// the island is the size it was ruled, it sits on the correct side of the scene, the bar runs the
@@ -50,15 +53,25 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         [Test]
-        public void TheSceneIsTheRuled760x520_AndTheIslandTheRuled450x260()
+        public void TheSceneIsTheRuled760x520_AndTheIslandTheReRuled240x140()
         {
-            Assert.AreEqual(760f, StPetersBuilder.RegionWorldSize.x, 0.01f, "scene width (§5.1)");
+            Assert.AreEqual(760f, StPetersBuilder.RegionWorldSize.x, 0.01f,
+                "scene width (§5.1) — the 2026-07-30 island shrink did NOT touch the sea rectangle");
             Assert.AreEqual(520f, StPetersBuilder.RegionWorldSize.y, 0.01f, "scene height (§5.1)");
 
-            Assert.AreEqual(450f, StPetersBuilder.IslandRadius * 2f, 0.01f,
-                "island landmass along X — the ruled ~450 m, a ~1:5 compression of the real island");
-            Assert.AreEqual(260f, StPetersBuilder.IslandRadiusY * 2f, 0.01f,
-                "island landmass across Y — the ruled ~260 m");
+            Assert.AreEqual(240f, StPetersBuilder.IslandRadius * 2f, 0.01f,
+                "island landmass along X — re-ruled 2026-07-30 (down from 450: the island felt too " +
+                "large, and the owner wants more open water)");
+            Assert.AreEqual(140f, StPetersBuilder.IslandRadiusY * 2f, 0.01f,
+                "island landmass across Y — the re-ruled ~140 m");
+
+            // The ruling was AREA-shaped: 'roughly 1/3 to 1/4 of the current area'. Hold the ratio
+            // against the size it replaced so the numbers stay an implementation of the ruling.
+            float areaRatio = (StPetersBuilder.IslandRadius * StPetersBuilder.IslandRadiusY)
+                              / (225f * 130f);
+            Assert.That(areaRatio, Is.InRange(0.25f, 1f / 3f),
+                $"the island's area is {areaRatio:P0} of the pre-ruling 450 × 260 — the ruling asked " +
+                "for roughly a third to a quarter");
 
             // The def the whole engine reads must carry it too (the #320 contract).
             var region = AssetDatabase().WorldSizeMeters;
@@ -80,35 +93,38 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Data/Regions/StPeters.asset");
 
         /// <summary>
-        /// Why <c>TidalTerrain</c> gained a Y radius at all.
+        /// Why <c>TidalTerrain</c> has a Y radius.
         ///
-        /// <para>The first reason is the plain one: the ruled landmass is <b>450 × 260 m</b>, and a disc
-        /// is as wide as it is long, so a disc cannot be that shape at any radius. The second is what
-        /// makes it more than a nicety — a 450 m disc in a 520 m scene leaves only 35 m of water off
-        /// each long side, which the island's own 30 m beach eats almost entirely. There would be
-        /// nowhere to put the reef shelf the same section rules in, let alone open water.</para>
+        /// <para>At the pre-2026-07-30 450 × 260 m size there were two reasons: the shape (an island is
+        /// longer than it is wide), and the fit (a 450 m disc in a 520 m scene left no water off the long
+        /// sides). The shrink to 240 × 140 retires the fit argument — a 240 m disc would float in this
+        /// scene with 140 m to spare — so the SHAPE alone now carries the ellipse: the re-ruled 240 × 140
+        /// is not a disc at any radius, and a circular island reads as a greybox marker, not a place.</para>
         /// </summary>
         [Test]
-        public void TheIslandIsAnEllipse_BecauseADiscCannotBeTheRuledShape()
+        public void TheIslandIsAnEllipse_BecauseTheRuledShapeIsNotADisc()
         {
             Assert.Less(StPetersBuilder.IslandRadiusY, StPetersBuilder.IslandRadius,
-                "an island is longer than it is wide — and 450 × 260 is not a disc at any radius");
+                "an island is longer than it is wide — and 240 × 140 is not a disc at any radius");
 
-            float discWidth = StPetersBuilder.IslandRadius * 2f;
-            float discWaterPerSide = (StPetersBuilder.RegionWorldSize.y - discWidth) * 0.5f;
-            Assert.Less(discWaterPerSide, StPetersBuilder.IslandFalloff + 10f,
-                "SABOTAGE CHECK — if a disc left comfortably more water than its own beach needs, the " +
-                "shape argument would be the only one and this measurement would be worth deleting.");
+            // The re-ruled proportions: roughly 12:7, the same elongation family as the 450 × 260 it
+            // replaced (~1.73:1 then, ~1.71:1 now) — the island shrank, it did not change character.
+            float aspect = StPetersBuilder.IslandRadius / StPetersBuilder.IslandRadiusY;
+            Assert.That(aspect, Is.InRange(1.4f, 2.2f),
+                $"the island's aspect is {aspect:0.00}:1 — a real island's elongation, neither a disc " +
+                "nor a sliver");
 
             float actualWaterPerSide =
                 (StPetersBuilder.RegionWorldSize.y - StPetersBuilder.IslandRadiusY * 2f) * 0.5f;
             Assert.Greater(actualWaterPerSide, 3f * StPetersBuilder.IslandFalloff,
-                "the ellipse must leave real water north and south — beach, then reef shelf, then sea");
+                "the ellipse must leave real water north and south — beach, then reef shelf, then sea; " +
+                "and after 2026-07-30, MORE of it: open water around the island is what the owner asked " +
+                "the shrink to buy");
 
-            Debug.Log($"[st-peters] a {discWidth} m disc would leave {discWaterPerSide} m of water per " +
-                      $"long side in a {StPetersBuilder.RegionWorldSize.y} m scene, against its own " +
-                      $"{StPetersBuilder.IslandFalloff} m beach — no room for the reef shelf. The " +
-                      $"{StPetersBuilder.IslandRadiusY * 2f} m ellipse leaves {actualWaterPerSide} m.");
+            Debug.Log($"[st-peters] {StPetersBuilder.IslandRadius * 2f} × " +
+                      $"{StPetersBuilder.IslandRadiusY * 2f} m ellipse (aspect {aspect:0.00}:1) leaves " +
+                      $"{actualWaterPerSide} m of water per long side of the " +
+                      $"{StPetersBuilder.RegionWorldSize.y} m scene.");
         }
 
         // =========================================================================================
@@ -557,6 +573,26 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Data/Terrain/StPetersSeabed.asset");
 
         /// <summary>
+        /// ⚠ The committed bake was DELETED with the 2026-07-30 island re-ruling: it was a machine bake
+        /// of the old 450 × 260 m analytic island (confirmed not hand paint), and left in place the splat
+        /// ground and the water would have rendered the old big island while gameplay used the new small
+        /// one. The builder re-bakes automatically when the asset is missing (ADR 0028 wiring), so the
+        /// owner's next "Build St Peters Scene" mints the new-coast bake; committing it re-arms these two
+        /// guards. Until then they SKIP rather than fail — the guard's intent is "any committed bake must
+        /// describe THIS island", not "a bake must exist while the coast is mid-re-ruling".
+        /// </summary>
+        private static PaintedHeightMap SeabedOrIgnore()
+        {
+            var map = Seabed();
+            if (map == null)
+                Assert.Ignore(
+                    "no committed StPetersSeabed — deleted 2026-07-30 with the island re-ruling (it " +
+                    "baked the old 450 × 260 island). Re-run Hidden Harbours ▸ Build St Peters Scene " +
+                    "and commit the fresh bake to re-arm this guard.");
+            return map;
+        }
+
+        /// <summary>
         /// ⭐ THE GUARD AGAINST THE DRIFT THAT ALREADY HAPPENED ONCE. The painted seabed is the shipped
         /// coast — <b>paint = sail</b> (ADR 0014), so the same map decides what the water draws AND where
         /// the player can wade. When the region grew to 760 × 520 m the committed map went on describing
@@ -570,8 +606,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheCommittedSeabed_CoversTheRegion_AtTheRegionsOwnResolution()
         {
-            var map = Seabed();
-            Assert.IsNotNull(map, "the committed StPetersSeabed seed must exist (ADR 0014)");
+            var map = SeabedOrIgnore();
             var region = AssetDatabase();
 
             Assert.AreEqual(region.WorldCenter.x, map.WorldCenter.x, 0.01f, "seabed centre x vs the region");
@@ -622,8 +657,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheCommittedSeabed_DecodesToTheAnalyticCoastItWasBakedFrom()
         {
-            var map = Seabed();
-            Assert.IsNotNull(map);
+            var map = SeabedOrIgnore();
             PaintedHeightField field = map.Field;
             Assert.IsNotNull(field, "the height texture must decode (readable + linear)");
 

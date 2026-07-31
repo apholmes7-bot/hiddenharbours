@@ -42,24 +42,26 @@ namespace HiddenHarbours.App.Editor
         public const string RootName = "StPetersWharf";
 
         // --- THE PIER, sized off the ratified berth (do not re-derive these from feel) ----------------
-        // The berth is a dredged slip along (355, 0) → (295, 0) at half-width 8 and a −1.0 m bed
-        // (StPetersBuilder / §5.1a). Its head stops one metre short of the mooring at (330, 0) so the boat
-        // lies just off the planks, and the ratified disembark at (328, 0) lands ON the deck rather than
-        // beside it.
+        // The berth is a dredged slip along (240, 0) → (190, 0) at half-width 8 and a −1.0 m bed
+        // (StPetersBuilder / §5.1a — re-sited by the 2026-07-30 island shrink; the depths and the whole
+        // arrangement are unchanged). Its head stops one metre short of the mooring at (215, 0) so the
+        // boat lies just off the planks, and the ratified disembark at (213, 0) lands ON the deck rather
+        // than beside it.
         //
         // ⚠ THE ROOT IS MEASURED, NOT ESTIMATED. The carve reaches PAST the slip's shoreward end — it
         // falls off smoothly over the half-width, so it is still pulling the ground down several metres
-        // inland of x = 295. A first attempt rooted the pier at 290, where the bed measures **+3.15 m** and
-        // therefore floods at every spring high water: the shore end of the dock would have been in the sea.
-        // 288 measures +5.35 m, comfortably dry at every tide. The margin is thin enough that this is
-        // asserted against the terrain (StPetersVillageTests) rather than trusted to a comment — which is
-        // exactly how the 290 error was caught.
+        // inland of x = 190. Rooting the pier just two cells further east, at 185, puts the bed at
+        // **+3.15 m** — flooded at every spring high water, the exact failure the pre-shrink pier's first
+        // attempt shipped at its own scale. 183 measures +5.35 m, comfortably dry at every tide (the
+        // carve profile is the same shape as before the shrink, so the measured numbers carry over).
+        // The margin is thin enough that this is asserted against the terrain (StPetersVillageTests)
+        // rather than trusted to a comment — which is exactly how the original error was caught.
 
         /// <summary>Westmost deck column — the pier root, on the last ground that is dry at EVERY tide.</summary>
-        public const int RootCellX = 288;
+        public const int RootCellX = 183;
 
-        /// <summary>Eastmost deck column — the pier head, just short of the mooring at x = 330.</summary>
-        public const int HeadCellX = 328;
+        /// <summary>Eastmost deck column — the pier head, just short of the mooring at x = 215.</summary>
+        public const int HeadCellX = 213;
 
         /// <summary>Half-width in whole metres: cells −3..2, so 6 m of deck centred on the slip's
         /// centre-line. Wide enough to walk two abreast and land a catch, narrow enough to read as the

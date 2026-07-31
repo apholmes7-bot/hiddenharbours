@@ -83,7 +83,8 @@ namespace HiddenHarbours.Tests.EditMode
                 if (StPetersShoreMap.MaterialAt(_terrain, p) == ShoreMaterial.None) bare.Add(p);
             }
 
-            Assert.Greater(sampled, 2000, "sanity: the 450 x 260 m island should give thousands of land samples");
+            Assert.Greater(sampled, 800,
+                "sanity: the 240 x 140 m island (re-ruled 2026-07-30) should give ~1,000 land samples");
             Assert.IsEmpty(bare,
                 $"{bare.Count} of {sampled} land samples came back unpainted (e.g. {(bare.Count > 0 ? bare[0].ToString() : "-")}). " +
                 "Every square metre of dry island must carry a ground material — the water shader clips " +
@@ -96,22 +97,31 @@ namespace HiddenHarbours.Tests.EditMode
             // What the builder used to place: a 26 x 26 m tiled sand patch with a 20 x 20 m grass patch on
             // top, both centred at (-40, 0) — authored when the whole island WAS a 44 m disc at that centre
             // (StPetersBuilder, pre-#328). The rescale moved the island to (70, 0) with semi-axes 225 x 130
-            // and left the patches where they were. This measures how little of the island they actually
+            // and left the patches where they were. This measures how little of THAT island they actually
             // covered, so the fix is shown landing on a real hole and not on a tidy-up.
+            //
+            // ⚠ HISTORICAL semi-axes on purpose (225 x 130, the island as it was when the defect lived),
+            // not the current constants: the 2026-07-30 re-ruling shrank the island to 120 x 70, and this
+            // sabotage documents a defect of the ERA it happened in. Re-deriving it from today's smaller
+            // island would inflate the covered fraction past 1% and quietly turn a fixed measurement into
+            // a moving one.
             const float oldPatchSide = 26f;                       // the larger of the two
             float patchArea = oldPatchSide * oldPatchSide;        // 676 m²
-            float landArea = Mathf.PI * StPetersBuilder.IslandRadius * StPetersBuilder.IslandRadiusY;
+            const float eraRadiusX = 225f, eraRadiusY = 130f;     // the pre-2026-07-30 island
+            float landArea = Mathf.PI * eraRadiusX * eraRadiusY;
 
             float covered = patchArea / landArea;
             Assert.Less(covered, 0.01f,
-                $"the retired greybox patches covered {covered:P2} of the island's {landArea:N0} m² of land — " +
-                "under 1%, which is the defect the painted coast closes. If this ever rises, the patches " +
+                $"the retired greybox patches covered {covered:P2} of that island's {landArea:N0} m² of land " +
+                "— under 1%, which is the defect the painted coast closed. If this ever rises, the patches " +
                 "were resized rather than retired and the comparison is no longer the one being made.");
 
-            // And the patch was not even ON the part of the island the player starts from any more: the
-            // start spawn is at x = -100, sixty metres west of the patch's western edge.
+            // And the patch was not even ON the part of the island the player started from: the spawn of
+            // that era sat at x = -100, sixty metres west of the patch's western edge. (Historical numbers
+            // again — today's spawn moved east with the 2026-07-30 shrink.)
+            const float eraSpawnX = -100f;
             float patchWestEdge = -40f - oldPatchSide * 0.5f;      // -53
-            Assert.Less(StPetersBuilder.StartSpawnPos.x, patchWestEdge,
+            Assert.Less(eraSpawnX, patchWestEdge,
                 "the player spawned WEST of the old ground patch entirely — they never stood on it");
         }
 
@@ -632,13 +642,17 @@ namespace HiddenHarbours.Tests.EditMode
                 if (StPetersShoreMap.MaterialAt(_terrain, new Vector2(x, y)) != ShoreMaterial.None) samples++;
 
             int cells = Mathf.RoundToInt(samples * step * step);
-            Assert.Greater(cells, 100_000,
-                $"only {cells:N0} painted cells — the island alone is ~92,000 m² of land plus its intertidal, " +
-                "so a number this low means whole bands have stopped classifying");
-            Assert.Less(cells, 220_000,
-                $"{cells:N0} painted cells is past the budget. Two thirds of a 760 x 520 m region is deep " +
-                "harbour that must stay unpainted; if the footprint has grown into it, raise " +
-                "StPetersShoreMap.PaintFloorElevation rather than accepting the scene size.");
+            // ⚠ Budget re-pinned 2026-07-30 with the island shrink: measured ~67,000 painted cells —
+            // ~26,000 m² of land plus its (longer) bar and intertidal — against the old island's
+            // ~162,000. MOST of the region is now unpainted deep water, which is the ruling's point.
+            Assert.Greater(cells, 45_000,
+                $"only {cells:N0} painted cells — the island alone is ~26,000 m² of land plus its " +
+                "intertidal and a ~305 m bar, so a number this low means whole bands have stopped " +
+                "classifying");
+            Assert.Less(cells, 110_000,
+                $"{cells:N0} painted cells is past the budget. Well over three quarters of a 760 x 520 m " +
+                "region is deep harbour that must stay unpainted; if the footprint has grown into it, " +
+                "raise StPetersShoreMap.PaintFloorElevation rather than accepting the scene size.");
         }
     }
 }

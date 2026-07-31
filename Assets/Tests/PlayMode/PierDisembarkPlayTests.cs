@@ -45,12 +45,13 @@ namespace HiddenHarbours.Tests.PlayMode
         const float SpringHighWater  = 3.5f;
         const float DeckElevation    = 5.35f;
 
-        // A 41 x 6 m finger of deck running out along the slip, with the disembark point on the planks —
-        // the St Peters pier's proportions.
-        static readonly Rect DeckFootprint = new Rect(288f, -3f, 41f, 6f);
-        static readonly Vector3 MooringPos   = new Vector3(330f, 0f, 0f);   // the boat lies off the head
-        static readonly Vector3 DisembarkPos = new Vector3(328f, 0f, 0f);   // ratified: ON the planks
-        static readonly Vector3 InTheSlipPos = new Vector3(332f, 0f, 0f);   // a metre off the head, in water
+        // A 31 x 6 m finger of deck running out along the slip, with the disembark point on the planks —
+        // the St Peters pier's proportions (as re-sited by the 2026-07-30 island shrink; still a
+        // stand-in per the class note — the wiring under test is identical for any berth shape).
+        static readonly Rect DeckFootprint = new Rect(183f, -3f, 31f, 6f);
+        static readonly Vector3 MooringPos   = new Vector3(215f, 0f, 0f);   // the boat lies off the head
+        static readonly Vector3 DisembarkPos = new Vector3(213f, 0f, 0f);   // ratified: ON the planks
+        static readonly Vector3 InTheSlipPos = new Vector3(217f, 0f, 0f);   // a metre off the head, in water
 
         private sealed class FlatBed : ITidalTerrain
         {
