@@ -454,6 +454,10 @@ namespace HiddenHarbours.Art
                                Vector2 flow, Vector2 wind, Color tint, float totalAmplitude)
         {
             var def = bed.Def;
+            // ONE wind-fetch envelope for the whole bed (ADR 0027 #1): a bed is metres across and the
+            // envelope turns over the fetch scale (tens of metres), so a march per frond would pay 24
+            // height-map samples each for a number that does not change across it.
+            float fetch = bed.Pos.Length > 0 ? GameServices.FetchEnvelopeAt(bed.Pos[0]) : 1f;
             for (int i = 0; i < bed.Pos.Length; i++)
             {
                 var sr = bed.Renderers[i];
@@ -463,7 +467,7 @@ namespace HiddenHarbours.Art
                     continue;
                 }
 
-                WaveSample wave = _animator.Sample(bed.Pos[i]);
+                WaveSample wave = _animator.Sample(bed.Pos[i], fetch);
 
                 if (bed.State[i] == SeaweedMath.StateDrifting && dt > 0f)
                     bed.Pos[i] += SeaweedMath.DriftVelocity(flow, def.FlowResponse, wind, def.WindResponse,

@@ -201,6 +201,15 @@ namespace HiddenHarbours.Core
         /// evaluator on both sides of the HLSL twin.</summary>
         public WaveSample Sample(Vector2 worldPos) => WaveMath.Sample(worldPos, 0.0, in _current);
 
+        /// <summary>The same sugar through the <b>wind-fetch envelope</b> (ADR 0027 #1) — see
+        /// <see cref="WaveMath.Sample(Vector2, double, in WaveTrains, float)"/>. Resolve the envelope
+        /// ONCE per consumer per tick (<see cref="WaveFetch.EnvelopeAt"/> at the hull's centre) and
+        /// pass it to every probe: the envelope turns over the fetch scale, tens of metres, so it does
+        /// not meaningfully vary across a ~5 m hull, and a 24-step march per probe would be paid for
+        /// nothing. Passing 1 is the exact passthrough.</summary>
+        public WaveSample Sample(Vector2 worldPos, float fetchEnvelope01)
+            => WaveMath.Sample(worldPos, 0.0, in _current, fetchEnvelope01);
+
         /// <summary>
         /// The DOMINANT train's own phase at a world position (degrees; crest 90°, trough 270°) —
         /// <see cref="WaveMath.TrainPhaseDegrees"/> against <c>Current.Dominant</c> — the SPECTRAL

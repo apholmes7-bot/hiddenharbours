@@ -119,6 +119,49 @@ namespace HiddenHarbours.Core
         public static WaveFieldAnimatorSettings WaveFieldAnimator =>
             Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
+        /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the
+        /// shader bridge (which publishes them as globals) and every sim consumer that samples the
+        /// field, so the lee the player sees is the lee the hull feels — the one-settings-instance
+        /// rule that makes that true by construction rather than by hand. Falls back to
+        /// <see cref="WaveFetchSettings.Default"/>, which is OFF.</summary>
+        public static WaveFetchSettings WaveFetch =>
+            Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
+
+        /// <summary>
+        /// The wind-fetch amplitude envelope at a world position — the model resolved against the LIVE
+        /// services (<see cref="TidalTerrain"/>, <see cref="Environment"/>, <see cref="WaveFetch"/>).
+        /// Returns 1 (the exact passthrough) when the model is off, when there is no sim, or when no
+        /// height map is wired.
+        ///
+        /// <para><b>Resolve this ONCE per consumer per tick</b> — at a hull's centre, not per probe.
+        /// The march is <see cref="WaveFetch.MarchSteps"/> terrain samples and the envelope does not
+        /// meaningfully vary across a hull (see <see cref="WaveFetch"/>'s slowly-varying-envelope
+        /// note).</para>
+        /// </summary>
+        public static float FetchEnvelopeAt(UnityEngine.Vector2 worldPos)
+        {
+            WaveFetchSettings settings = WaveFetch;
+            if (settings.Strength <= 0f) return 1f;      // cheapest OFF: no service reads at all
+            IEnvironmentService environment = Environment;
+            if (environment == null) return 1f;
+            IGameClock clock = Clock;
+            if (clock == null) return 1f;
+            return WaveFetch_EnvelopeAt(worldPos, environment, clock, in settings);
+        }
+
+        private static float WaveFetch_EnvelopeAt(UnityEngine.Vector2 worldPos,
+                                                  IEnvironmentService environment, IGameClock clock,
+                                                  in WaveFetchSettings settings)
+        {
+            EnvironmentSample sample = environment.Sample();
+            float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);
+            // ⚠️ Fully qualified on purpose: the SETTINGS property above is also called `WaveFetch`,
+            // so the bare name binds to it and `WaveFetchSettings` has no EnvelopeAt.
+            return HiddenHarbours.Core.WaveFetch.EnvelopeAt(worldPos, sample.WindVector, waterLevel,
+                                                            TidalTerrain, in settings);
+        }
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).

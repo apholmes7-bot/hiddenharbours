@@ -92,6 +92,26 @@ namespace HiddenHarbours.Art
         private static readonly int IdWavePhases2     = Shader.PropertyToID("_WavePhases2");
         private static readonly int IdWaveFieldParams = Shader.PropertyToID("_WaveFieldParams");
 
+        /// <summary>The WIND-FETCH model's tunables as the shader receives them (ADR 0027 #1):
+        /// x = strength (<b>0 = OFF</b>, the shipped passthrough — the shader skips the whole march),
+        /// y = march step (metres), z = lee floor, w = response exponent. A second vector carries the
+        /// rest.
+        ///
+        /// <para><b>These are PUSHES, not mood floats.</b> They come from <c>GameConfig.WaveFetch</c>
+        /// through <c>GameServices</c> — the same instance the hull consumers read — so they must
+        /// never enter <c>WaterSurface.MoodFloatNames</c>. Anything in that list is eased from the
+        /// eight preset materials, which would double-drive the model and, worse, would drive the
+        /// DRAWN sea from a source the hull cannot see: the exact seen ≠ felt split this item is
+        /// built to avoid. Same discipline as <c>_Chop</c>/<c>_Roughness</c>/<c>_SeaFramingHeight</c>.</para></summary>
+        private static readonly int IdWaveFetchParams  = Shader.PropertyToID("_WaveFetchParams");
+
+        /// <summary>x = shore band (metres), y = posterize bands (&lt; 2 = smooth), zw = the UPWIND
+        /// unit direction the march runs along (−wind). The direction is published rather than
+        /// re-derived in HLSL from <c>_WindDir</c> so the shader and the C# twin march the identical
+        /// line — <c>_WindDir</c> is a per-material push on a different cadence, and two normalizations
+        /// of a drifting wind is one more place for the two seas to disagree.</summary>
+        private static readonly int IdWaveFetchParams2 = Shader.PropertyToID("_WaveFetchParams2");
+
         private const double TwoPi = Math.PI * 2.0;
 
         // The derivation constants come from GameConfig.WaveField via GameServices (ADR 0018 §(5)).
@@ -175,6 +195,11 @@ namespace HiddenHarbours.Art
             WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
                                                in field, in smoothing);
             PublishGlobals(Pack(in trains));
+
+            // The FETCH model (ADR 0027 #1) travels alongside the trains, from the SAME GameConfig the
+            // hull consumers read — that shared instance is the whole reason the lee the player sees is
+            // the lee the boat feels.
+            PublishFetchGlobals(GameServices.WaveFetch, sample.WindVector);
         }
 
         /// <summary>
@@ -197,7 +222,48 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdWaveFieldParams, field.Params);
         }
 
-        private void PublishEmpty() => PublishGlobals(PackedWaveField.Empty);
+        private void PublishEmpty()
+        {
+            PublishGlobals(PackedWaveField.Empty);
+            PublishFetchOff();
+        }
+
+        /// <summary>
+        /// Push the wind-fetch model to the shader globals (ADR 0027 #1). The upwind direction is
+        /// derived HERE — once, from the same wind vector the trains came from — so the shader never
+        /// normalizes a drifting wind on its own cadence.
+        ///
+        /// <para>Public for the same reason <see cref="PublishGlobals"/> is: this is the only place
+        /// the fetch uniform names live, and the rendering acceptance suites drive the real shader
+        /// with fields of their own.</para>
+        ///
+        /// <para>A dead-calm wind publishes the upwind direction as <b>zero</b>, which the shader
+        /// reads as "no march" and answers with envelope 1 — matching
+        /// <see cref="WaveFetch.Fetch01"/>'s <see cref="WaveFetch.CalmWindSpeed"/> branch exactly.</para>
+        /// </summary>
+        public static void PublishFetchGlobals(in WaveFetchSettings settings, Vector2 windVector)
+        {
+            float windSpeed = Mathf.Sqrt(windVector.x * windVector.x + windVector.y * windVector.y);
+            Vector2 upwind = windSpeed > WaveFetch.CalmWindSpeed
+                ? new Vector2(-windVector.x / windSpeed, -windVector.y / windSpeed)
+                : Vector2.zero;   // no defined direction -> the shader skips the march (envelope 1)
+
+            Shader.SetGlobalVector(IdWaveFetchParams, new Vector4(
+                Mathf.Clamp01(settings.Strength),
+                Mathf.Max(WaveFetch.MinStepMeters, settings.StepMeters),
+                Mathf.Clamp01(settings.LeeFloor),
+                Mathf.Max(0.01f, settings.Exponent)));
+            Shader.SetGlobalVector(IdWaveFetchParams2, new Vector4(
+                Mathf.Max(WaveFetch.MinGateBand, settings.ShoreBandMeters),
+                settings.Bands,
+                upwind.x, upwind.y));
+        }
+
+        /// <summary>The fetch model SILENT — strength 0, the exact passthrough — so a stopped play
+        /// session or a bare art scene can never leave a stale lee painted on the editor's globals
+        /// (the <c>_DayNightTint</c>/<c>_MoonDir</c> "unset" convention).</summary>
+        public static void PublishFetchOff()
+            => PublishFetchGlobals(default(WaveFetchSettings), Vector2.zero);
 
         // ==== PURE packing (testable headless; no Unity scene needed) =====================================
 
@@ -311,6 +377,26 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field,
                                                   float freqScale)
+            => ShaderTwinSample(worldPos, in field, freqScale, 1f);
+
+        /// <summary>
+        /// The same transcription through the <b>wind-fetch envelope</b> (ADR 0027 #1) — the shader's
+        /// <c>FetchEnvelope01()</c> result, applied where the shader applies it: after the train loop,
+        /// scaling height and slope, BEFORE the crest factor (so a lee loses its whitecaps).
+        ///
+        /// <para><b>⚠️ freqScale and the envelope are different axes and must stay so.</b> freqScale
+        /// multiplies every train's wave NUMBER — it is the displaced vertex stage's
+        /// <c>_OceanSwellScale/0.025</c> knob, and getting it wrong here is what let the real crests
+        /// board every hull (see the overload above). The fetch envelope multiplies AMPLITUDE and
+        /// touches no wavelength at all. Neither is a substitute for the other, and the fetch model
+        /// deliberately never scales frequency (<see cref="WaveFetch"/>).</para>
+        ///
+        /// <para><b>Why the watertight clamp stays valid.</b> The envelope is ≤ 1, so this sampler
+        /// can only ever report a SMALLER lift than the unfetched field the clamp was calibrated
+        /// against. Passing 1 (the default overload) is the exact passthrough.</para>
+        /// </summary>
+        public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field,
+                                                  float freqScale, float fetchEnvelope01)
         {
             float height = 0f;
             float slopeX = 0f;
@@ -342,6 +428,17 @@ namespace HiddenHarbours.Art
                                      * cos * waveNumber;
                 slopeX += slopeMagnitude * train.x;
                 slopeY += slopeMagnitude * train.y;
+            }
+
+            // The fetch envelope, exactly where the HLSL twin applies it: height and slope scale,
+            // totalAmplitude deliberately does not (so the crest factor — and the whitecaps with it —
+            // collapse in a lee). WaveMath.Sample carries the identical block.
+            float fetch = Mathf.Clamp01(fetchEnvelope01);
+            if (fetch < 1f)
+            {
+                height *= fetch;
+                slopeX *= fetch;
+                slopeY *= fetch;
             }
 
             float crestFactor = 0f;

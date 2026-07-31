@@ -236,7 +236,14 @@ until the owner dials it in.
 
 ### Tier B — the shared wave field (C# twin + headless tests mandatory)
 
-**(5) #1 — Wind fetch, read from the height map.**
+**(5) #1 — Wind fetch, read from the height map.** — **SHIPPED (P6, 2026-07-31), and TIER B from the
+start.** Built as decided except for the phasing: the visual-first intermediate below was **not built**.
+The ADR 0018 amendment (2026-07-31) carries the reasoning and is the live spec; the short version is that
+a visual-only fetch is the `_OceanSwellScale` incident by construction — glass drawn behind the headland,
+open-water swell still boarding the boat in it — so the envelope landed in the one field both consumers
+read, with every field consumer and both shader stages wired in the same commit. Ships **OFF**
+(`WaveFetchSettings.Strength` 0 = exactly 1 = the byte-identical passthrough); the owner dials it in, and
+**owes a feel verdict** before it goes further, exactly as the spectrum did.
 Fetch — how far wind has blown over open water — sets wavelength and amplitude, and it is the single most
 gameplay-legible item on this list for an island game: **lee shores go calm, exposed shores build**, visible before
 it is felt. Read it in-shader by marching upwind along `−_WindDir` across `_HeightTex`, counting water samples
@@ -365,7 +372,7 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #2 caustics | Curvature sampled on the existing pixelized grid; keeps the current caustic quantization |
 | #3 convergence foam | Feeds the existing foam threshold, which is already banded/dithered |
 | #4 band scaling | Scales frequency only — the pixelize step is downstream and unchanged |
-| #1 fetch | Fixed-step march on pixelized coords; `_FetchBands` quantizes the result |
+| #1 fetch | Fixed-step march on pixelized coords (the crawl law, mirrored by the C# twin so both sides march the same points); the band is carried as `_WaveFetchParams2.y` but **defaults OFF** — see below |
 | #5 spectrum | Field is quantized where it is read, exactly as today |
 | #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
 | #10 ripples | World-grid quantized (`Pixelize`) **and** posterized into solid steps with a Bayer-dithered window at each step edge (`_RippleBands` / `_RippleDitherWin`, **default ON**). ~~amplitude faded per discrete zoom tier~~ → **faded by the FRAMING** (`_SeaFramingHeight`): the footprint is tier-invariant, the CYCLE COUNT is not (see the #10 amendment) |
@@ -388,7 +395,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 | **P3** ✅ | **#10 ripples** — **SHIPPED 2026-07-31** | A | After #5 deliberately — the ripple band rides the *spectrum's* waves (its windward gate reads `WaveFieldSample`'s slope), not the octaves #5 replaces. Unblocked by the owner's feel verdict on the tuned sea (2026-07-31, the #372 baseline). The item's kill condition was retired on spike evidence, not waived — see the #10 amendment. Ships **OFF** (`_RippleStrength` 0); the owner dials it in. |
 | **P4** ✅ | #7 absorption + `_SeabedTex` bake — **SHIPPED 2026-07-29** | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. Landed out of phase order (P2/P3 still open) precisely because it depends on nothing above — the independence the table already claimed. |
 | **P5** ✅ | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) — **SHIPPED 2026-07-29** | C | The owner's second explicit ask; depends on nothing above — which is why it landed with P2/P3 still open. |
-| **P6** | #1 fetch (visual), then into the field | A→B | Visual first; promotion earns a twin. |
+| **P6** ✅ | **#1 fetch** — **SHIPPED 2026-07-31** | ~~A→B~~ **B** | ~~Visual first; promotion earns a twin.~~ **The visual-first step was dropped on evidence** (the `_OceanSwellScale` incident): a shader-only damp IS seen ≠ felt. Landed Tier B in one commit — C# twin, headless tests, ADR 0018 amendment — and ships OFF. |
 | **⏱ Parallel** | #6 advected foam buffer | C | ✅ **RULED 2026-07-29: DEFERRED to the fleet era** (see the item's decision block). The wake PRs it was racing landed and deliver the trail architecture; the buffer re-opens when multiple hulls sail at once. |
 
 **The cost of this re-order, stated plainly.** Pulling #5 to P2 brings the Tier B risk forward: it changes what the
@@ -403,11 +410,11 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
 
 ## Determinism, save & performance (the invariants held)
 
-- **Every item is visual-only except P2 and the P6 promotion.** #2/#3/#4/#7/#8/#6/#9/#10 touch `col.rgb` / `col.a`
+- **Every item is visual-only except P2 (the spectrum) and P6 (fetch).** #2/#3/#4/#7/#8/#6/#9/#10 touch `col.rgb` / `col.a`
   (and, for #6/#8, their own render targets) and **never** `depth`, `clip()`, `_WaterLevel`, the height read, or
   the sim. Nothing enters the save (rule 5 / ADR 0008). **#10 is Tier A permanently** — a ripple is surface
   texture, not a force, and must never enter the field hulls ride.
-- **#5, plus the #4/#9 promotions and #1-promoted, do change the field hulls ride.** They are deterministic functions of
+- **#5 and #1 do change the field hulls ride** (the #4/#9 "promotions" turned out to be an audit result, not code — see P2). They are deterministic functions of
   `(worldSeed, gameTime)` + authored height, recomputed and never saved — but they require C# twins, headless
   determinism tests, and an **ADR 0018 amendment**. This is stated as a gate, not a footnote.
 - **Rule 6 throughout:** every new constant is a material property. Every item defaults to **passthrough**
@@ -420,7 +427,7 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
 
 - **New pure twins, headless:** `WaterAbsorption.Transmission(σ, depth)` / `BandTransmission` (monotone decreasing;
   per-channel ordering — red extinguishes before blue; σ = 0 exact passthrough; the 2× path applied; banding
-  quantizes). `WaterFoam.Convergence`. `WaterFetch.Fetch01`. Spectrum weighting + grouping twins for **P2**.
+  quantizes). `WaterFoam.Convergence`. **`WaveFetch`** (in **Core**, not `Art` — the sim consumers reach it and Boats references only Core; the name below predates the Tier-B ruling): `Fetch01` (open water = 1, land upwind = 0, land SHADOWS the water behind it, monotone as you leave a lee, upwind ≠ downwind, the tide cannot pop the shore gate), `Amplitude01`, `Band01`, `Envelope01` (strength 0 = EXACTLY 1), plus `MarchStepCount_MatchesTheShader` — the tripwire that reads `FETCH_MARCH_STEPS` out of the shader source so the fixed-`[unroll]` seam cannot drift. Spectrum weighting + grouping twins for **P2**.
   **`WaterDispersion.PhaseSpeed(λ, depth)`** — monotone increasing in wavelength (long waves outrun short ones),
   the shallow branch slows toward zero depth, deep and shallow forms agree at the transition, and
   `_DispersionScale = 0` reproduces today's independent per-octave speeds exactly.
@@ -510,6 +517,14 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   the premise ("sub-pixel at wider zoom") was never true on this camera. The real risk is the **cycle count**
   (6× more sea on screen at the widest framing), answered by the framing-keyed fade rather than a per-tier one.
   Full reasoning in the #10 amendment; pinned by `RipplePixelFootprintTests`.
+- ~~**Should #1 ship visual-only first?**~~ **ANSWERED at P6: no, and the question was the wrong shape.**
+  The ADR framed visual-first as a cheaper intermediate. It is not cheaper — it is the `_OceanSwellScale`
+  incident with a new cause: the drawn sea and the sampler behind the hull clamp running different
+  amplitudes. Fetch landed Tier B in one commit. Full reasoning in the ADR 0018 amendment (2026-07-31).
+- **What reach does fetch want per region?** `StepMeters` × the fixed 24 steps sets it globally (96 m at
+  the default), which suits St Peters' 160 × 120 m rect. A big open region and a tight harbour may want
+  different reaches — **measure once the owner has dialled the strength up**, do not add a per-region knob
+  in advance (the `_FbmScale` lesson: find out whether a number is deliberate before "fixing" it).
 - **Does #9 subsume part of §5.12's shoreward bias?** Depth-limited dispersion slows and bunches waves near shore,
   which is what the hand-built bias approximates. If so, `_ShorewardBias` may want reducing rather than removing —
   measure, don't assume.

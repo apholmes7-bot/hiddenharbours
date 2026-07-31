@@ -438,8 +438,83 @@ headless determinism tests and passthrough proofs are the technical gate; **the 
 is the real one**, and per ADR 0027 it should be taken against the same hull set as the ADR 0023
 verdict so the comparison is honest.
 
+## Amendment (2026-07-31) — the field gains a **spatial amplitude envelope**: wind fetch (ADR 0027 #1)
+
+The field was, until now, purely a function of *time*: `TrainsFrom(wind, seaState)` produced one set of
+trains and every position on the sea rode the same ones. **Wind fetch makes it a function of place as
+well** — how far the wind has blown over open water before it reaches you sets how big the waves get
+there, so lee shores go calm and exposed shores build. This is the first thing in the water stack that
+varies the field *across the map*, so it is amended here rather than left to ADR 0027.
+
+### (a) The shape of the change — an envelope, not new trains
+
+`WaveFetch.EnvelopeAt(pos, …)` marches upwind over the authored seabed and returns a scalar in
+(0, 1]. Consumers multiply the field's **height and slope** by it. Nothing about the trains changes:
+same count, same wavelengths, same phases, same `TotalAmplitude`.
+
+**⚠️ Fetch modulates AMPLITUDE only — never wavelength, never speed.** Real fetch sets all three, and
+scaling wavelength here is the obvious next step. It is wrong three times over, and the reasons are
+worth recording because the temptation will recur:
+
+1. **A per-position wavelength is not a wave field.** The analytic slope `A·p·s^(p−1)·cos θ·k·d`, the
+   phase continuity `WaveFieldAnimator` accumulates, and the crest-factor normalizer all assume **one
+   `k` per train across space**. Vary `k` with position and the slope stops being the derivative of
+   the height — and the slope is what the deck tilt, the caustic curvature and #10's windward gate all
+   read. The field would still *look* plausible while being internally inconsistent.
+2. **Speed is not ours to set.** `WaveTrain.PhaseSpeed` **is** the dispersion relation, derived from
+   the wavelength at construction. The ADR 0027 P2 audit already found that applying the visual-octave
+   laws to the field would double-apply what the trains carry; this is the same trap wearing a
+   different hat.
+3. **`freqScale` is off limits.** It is the displaced vertex stage's own knob
+   (`_OceanSwellScale/0.025`), and the watertight clamp scans against it. The `_OceanSwellScale`
+   incident is what happens when something touches it without the clamp following.
+
+Amplitude is the one term that can vary spatially and leave a coherent field behind.
+
+### (b) Why it is Tier B and not the visual-first phasing ADR 0027 wrote
+
+ADR 0027 phased #1 as "fetch modulates the visual layers first, promoted into the field later",
+calling visual-only fetch *"an acceptable intermediate, and an explicit one"*. **That intermediate is
+not built.** A shader-only damp is the `_OceanSwellScale` incident by construction: the drawn sea at
+one amplitude, the sampler behind the hull at another. The player would see glass behind the headland
+and feel the open-water swell in it — and the more the model was dialled up, the wider the gap. The
+envelope therefore lands in the one field both consumers read, or it does not land. Every field
+consumer is wired through it in the same commit (`BoatWaveMotion`, `BoatController`'s seakeeping,
+`BuoyWaveVisual`, `BoatWakeEmitter`, `TrapHaulController`, `SeaweedPresenter`), plus both shader
+stages — fragment and the displaced vertex stage.
+
+### (c) What falls out, and what stays safe
+
+- **A lee loses its whitecaps for free.** The crest factor is `height / TotalAmplitude`; the envelope
+  scales the numerator and deliberately **not** the denominator. This is correct physics arriving
+  without being wired, and it is the reason the envelope must never be folded into the trains.
+- **The watertight hull clamp needs no change.** The envelope is ≤ 1, so the fetched sea is never
+  taller than the unfetched sea the clamp was calibrated against. It stays a valid bound at every
+  strength — it can only over-dry, never flood, the direction ADR 0023 already chose.
+- **The slowly-varying-envelope approximation, stated.** `∇(E·h) = E·∇h + h·∇E`; consumers take the
+  first term only. `E` turns over the fetch scale (tens of metres), `h` over the wavelength (metres),
+  so the dropped term is small by construction. The same approximation licenses evaluating **one
+  envelope per hull** rather than one per probe.
+
+### (d) The seam, and its tripwire
+
+The march is a **fixed** iteration count — `WaveFetch.MarchSteps` in C#, `FETCH_MARCH_STEPS` in HLSL.
+ADR 0027 states this as an implementation constraint, not a preference: `[unroll]` over a runtime
+bound is a known magenta trap (#96). `WaveFetchTests.MarchStepCount_MatchesTheShader` reads the count
+out of the shader source and fails red if the two halves ever drift, the
+`RipplePixelFootprintTests` pattern.
+
+### (e) It ships OFF
+
+`WaveFetchSettings.Strength` is 0, which returns **exactly** 1 — so the sea, drawn *and* ridden, is
+byte-identical until the owner dials it in. **The owner owes a feel verdict before it goes further**,
+for the same reason the spectrum did: this changes what the hulls ride.
+
 ## Open questions (for Arc B, with the look in front of us)
 
+- **Fetch: does it want a per-region reach?** `StepMeters` × 24 sets the upwind reach globally (96 m
+  at the default). A large open region and a tight harbour may want different reaches. Measure once the
+  owner has dialled the strength up — do not add a per-region knob in advance.
 - ~~**Train count: 3 or 4?**~~ **Superseded by the 2026-07-29 amendment:** the ceiling is 8, and
   `TrainsFrom` derives 4 until the P2 spectrum re-weights them.
 - ~~**How the settings get unified onto GameConfig**~~ **DONE (2026-07-29 amendment (f)):** eight

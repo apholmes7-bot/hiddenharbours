@@ -360,7 +360,9 @@ namespace HiddenHarbours.Boats
             public float LiftAt(Vector2 worldPos)
             {
                 if (!Active) return 0f;
-                float height = _animator.Sample(worldPos).Height;
+                // Per-element fetch (ADR 0027 #1): a wake trail spreads over tens of metres — the fetch
+                // scale — so unlike a hull or a weed bed this one genuinely varies along its own length.
+                float height = _animator.Sample(worldPos, GameServices.FetchEnvelopeAt(worldPos)).Height;
                 float depth = BoatCrossing.DepthAt(_terrain, _environment, _totalSeconds, worldPos);
                 return ShoreFadeMath.DisplacedHeight(height, depth, _bandMeters, _exaggeration);
             }
