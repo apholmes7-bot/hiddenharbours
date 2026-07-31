@@ -90,7 +90,7 @@ Material:
     - _DriftLineSeaStateHi: 0.6
     - _DriftLineSeaStateLo: 0.05
     - _DriftLineSpeed: 0.5
-    - _DriftLineStrength: 0
+    - _DriftLineStrength: 0.35
     - _DriftLineStretch: 5
     - _FbmDriftSpeed: -0.12
     - _FbmGateHi: 1
