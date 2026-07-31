@@ -1,8 +1,9 @@
 # Hidden Harbours — Scene Sizing & World Scale
 
 > **Status:** **Sizes RATIFIED by the owner 2026-07-23** (§5.1 island scale · §5.1a the reef ring and
-> its one dock · §5.2 the neap fix). Nothing is BUILT yet — §6 is the ordered work, and §6.1 is the
-> blocker. Remaining open questions are in §7. Subordinate to
+> its one dock · §5.2 the neap fix); **§5.1 island scale RE-RULED SMALLER 2026-07-30** (240 × 140 m —
+> the built 450 × 260 island felt too large; region rectangle unchanged, the difference is open
+> water). §6 is the ordered work. Remaining open questions are in §7. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon) and
 > [`world-and-regions.md`](world-and-regions.md) (which owns *what* each region is; this doc only
 > answers *how big*). Nothing here is built yet — no builder, scene or terrain asset is changed by
@@ -121,7 +122,7 @@ Regions and their gating boats come from [`world-and-regions.md`](world-and-regi
 
 | Region | Scene extent | Gating mode | Cross long axis | Screens | Note |
 |---|---|---|---|---|---|
-| **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~450 × 260 m inside it. |
+| **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~240 × 140 m inside it (re-ruled smaller 2026-07-30 — the crossing, not the island, is the region's long walk). |
 | **St Peters Bar** *(new)* | **640 × 200 m** | on foot | **~3:20** walk / 1:49 sprint | 40 | §5.2. Sized by the tide window (6:43 at spring), not by comfort. |
 | **Nine Mile Creek** *(the town and its wharf)* | 600 × 400 m | on foot | ~3:20 | 37 | Two places in one region — the wharf where fish move, the town where money does. See [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md); 420 × 320 m if the wharf becomes its own region instead. |
 | **Coddle Cove** | 520 × 400 m | dory | ~2:53 | 21 | Home water: small, sheltered, legible in one look. |
@@ -144,16 +145,28 @@ check for any future region: **~20–25 screens across, and time it in the boat 
 
 ### 5.1 The island scene
 
-**Scene 760 × 520 m; island landmass ~450 × 260 m, sitting EAST of centre so the bar exits WEST.**
+**Scene 760 × 520 m; island landmass ~240 × 140 m, sitting EAST of centre so the bar exits WEST.**
 
-The real St Peter's Island is about 400 acres, roughly 2.4 km × 1.1 km. Full scale is a 13-minute
-walk one way and would be mostly empty. **~1:5 linear compression** puts it at 450 × 260 m: a
-2½-minute walk along its length, a perimeter of roughly 1.1 km (about 6 minutes to sail round in the
-dory), and room for every landmark in the owner's brief without any of them touching.
+> **⚠ RE-RULED SMALLER (owner, 2026-07-30).** The first ruled size was **450 × 260 m** (~1:5 linear
+> compression of the real island) and it was built at that size — and once it stood, **the island
+> felt too large**. The owner ruled it down to **roughly 1/3–1/4 of that area** (≈ half the linear
+> span → **240 × 140 m**, area ratio ~29%), with the surrounding **sea/region rectangle unchanged at
+> 760 × 520 m** — the difference is **more open water**, which is the point of the change: St Peters
+> is a small home island in a big tide, and the water, the bar and the crossing are the region's
+> subject, not the meadow. Everything below reflects the re-ruled size; where an old number is worth
+> keeping for the record it is marked as the 2026-07-23 era's.
 
-Density check: ~12–15 points of interest over 117,000 m² is one every ~90 m — **about 5 on-foot
-screens between things**, or 30 seconds of walking. Close enough to keep exploring, far enough that
-arriving somewhere feels like arriving.
+The real St Peter's Island is about 400 acres, roughly 2.4 km × 1.1 km; the shipped island is a
+**~1:10 linear compression** — a ~1:20 walk along its length, a perimeter of roughly 620 m (about
+3–4 minutes to sail round in the dory), and the whole landmass the size of a low-tide walk. The
+region's LONG walk is the **~305 m sandbar** (grown from 200 m by the shrink: the west shore
+retreated east while the Nine Mile Creek passage stayed at the region edge), which is exactly where
+the length belongs — the crossing is the lesson, the island is home.
+
+Density check: the same ~12–15 points of interest now sit over ~26,000 m² — one every ~45 m, **about
+2–3 on-foot screens between things**. Denser than the 450 m island's spacing, and deliberately so:
+a village of five buildings plus a cottage on a 240 m island reads as one small place rather than a
+hamlet strung along a road.
 
 Mapping the owner's brief onto that footprint (placement is `world-content`'s call; this is the
 inventory the size has to hold):
@@ -172,12 +185,16 @@ inventory the size has to hold):
 | **Freshwater springs, ruined tractors/homesteads** | Beachcombing/POI dressing | — |
 | **Rabbits, seals, birds** | Ambient life | `foxRig` pattern |
 
-**The sandbar leaves the WEST end.** This flips today's greybox, where the island sits at x = −40 and
-the bar runs *east* to x = +34. The island moves east of centre and the bar exits west.
-**✅ DONE 2026-07-29** — island centre `(70, 0)` with semi-axes 225 × 130, bar `(−150, 0) → (−350, 0)`,
-dock on the east end. ⚠ The island is now an **ellipse**: a disc long enough to be 450 m end to end
-would be 450 m across a 520 m scene, so `TidalTerrain` gained a Y radius (0 = circular, unchanged for
-every other region).
+**The sandbar leaves the WEST end.** This flips the original greybox, where the island sat at x = −40
+and the bar ran *east* to x = +34. The island moves east of centre and the bar exits west.
+**✅ DONE 2026-07-29** at the 450 × 260 size; **re-sized 2026-07-30** to the shrink ruling — island
+centre `(70, 0)` with semi-axes **120 × 70** (beach falloff 30 → 20 m, keeping the beach:island
+proportion and the readable grass/marram/sand/ripple shore ladder), bar `(−45, 0) → (−350, 0)`, dock
+cluster re-derived on the new east shore (mooring/dock zone `(215, 0)`, disembark `(213, 0)`, arrival
+`(217, 0)`, pier cells 183–213 — the mooring sits at the same *profile point* as before, beach toe
++5 m onto the shelf, so the measured −1.05 m bed and the whole §5.1a gate arithmetic carry over
+unchanged). ⚠ The island stays an **ellipse**: 240 × 140 is not a disc at any radius — the shape
+argument holds even though a 240 m disc would now physically fit the scene.
 
 ### 5.1a The reef ring and the one dock — ✅ RATIFIED (owner, 2026-07-23)
 
@@ -365,10 +382,10 @@ Ordered, with the blocker first. None of it is done in this document.
      covers boot as well as a hop). Unpublished = unclamped, so nothing changes until a region reports.
    - *(HUD/letterboxing for a region smaller than the view remains `ui-ux`'s call — logged, not built.)*
 5. **Then, and only then, author.** Island → bar → the rest, in that order. **⏳ STARTED
-   2026-07-29:** the region now *is* 760 × 520 with the island at its ruled 450 × 260 east of centre
-   and the bar leaving the west end (§5.1), as greybox analytic terrain. What that PR deliberately did
-   NOT do: **bake or commit a seabed** (held until the extent settles), author the **dock berth or the
-   reef ring** (§5.1a's −1.0 / −1.0-to-−1.5 m shelves), or place a single building, tile, plant or NPC.
+   2026-07-29:** the region now *is* 760 × 520 with the island east of centre and the bar leaving the
+   west end (§5.1), as greybox analytic terrain — built first at the ruled 450 × 260, then **re-sized
+   2026-07-30 to the re-ruled 240 × 140** (the committed `StPetersSeabed` bake of the 450 m coast was
+   deleted with that change; the builder re-bakes a fresh one on the next Build St Peters Scene).
 
 ~~**One change is ready to make now and depends on none of the above:**
 `StPetersBuilder.SandbarCrestElevation` **1.6f → 1.4f** (§5.2, ratified).~~ **✅ DONE 2026-07-29** — it
@@ -384,9 +401,12 @@ rule-tiles and the road blob-47 autotiler from the kits imported today. They are
 
 ## 7. Ruled, and still open
 
-### ✅ Ruled by the owner, 2026-07-23
+### ✅ Ruled by the owner, 2026-07-23 (island scale RE-RULED 2026-07-30)
 
-1. **Island scale — ~450 × 260 m** (a ~2:30 walk). §5.1.
+1. **Island scale — ~240 × 140 m** within the unchanged 760 × 520 m region. §5.1. *(Originally ruled
+   ~450 × 260 on 2026-07-23 and built at that size; **re-ruled smaller 2026-07-30** — the built island
+   felt too large, and the owner wants roughly 1/3–1/4 of the area with the freed space as open
+   water. The sea rectangle, the tide profile and the reef/berth depths did not move.)*
 2. **The neap gap — fix it**, crest 1.6 → 1.4 m, so the island is cut off twice a day every day of the
    month. §5.2. *(Bonus: the gate gains a spring-tense / neap-forgiving gradient, at no cost.)*
 3. **The reef ring — in, with one modest dock on the east end**, opposite the sandbar, taking
@@ -395,10 +415,12 @@ rule-tiles and the road blob-47 autotiler from the kits imported today. They are
    the drop-off, ringing the island, with a −1.0 m berth channel cutting the one door through it on
    the east end. The ring has **two** crossings by design: the berth (boats, east) and the sandbar
    riding over it (feet, west) — the two halves of the opening arc. ⚠ Two numbers were NOT in the
-   ruling and are mine: the shelf's **25 m width** and the berth's **8 m half-width**. The width is
-   not a taste call — it is what the scene has room for, exactly: from the island's centre to the east
-   edge is 380 − 70 = 310 m, less 225 of island, 30 of beach and 30 of drop-off. See the note in §5.1a
-   on where the working hulls actually landed.
+   ruling and are mine: the shelf's **25 m width** and the berth's **8 m half-width**. At the original
+   450 m island the width was what the scene had room for, exactly (380 − 70 = 310 m, less 225 of
+   island, 30 of beach and 30 of drop-off); the 2026-07-30 shrink frees ~100 m of sea room but the
+   shelf keeps its 25 m — it is a depth gate, not decoration, and widening it would eat the open
+   water the shrink was ruled to create. See the note in §5.1a on where the working hulls actually
+   landed (the −1.05 m mooring bed carries over unchanged, so the measured percentages hold).
 
 ### Still open
 

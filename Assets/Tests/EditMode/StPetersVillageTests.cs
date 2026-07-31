@@ -100,12 +100,16 @@ namespace HiddenHarbours.Tests.EditMode
             // fix is shown landing on a real dislocation rather than on a tidy-up.
             var oldSite = new Vector2(-40f, 0f);
             float drift = Vector2.Distance(oldSite, StPetersBuilder.StartSpawnPos);
-            Assert.Greater(drift, 55f,
+            // ⚠ 40, not the 55 this pinned before 2026-07-30: the island shrink translated the spawn
+            // east with the village, so today's spawn sits nearer the old greybox site than the 450 m
+            // island's spawn did. The dislocation being measured is unchanged — the old cluster was
+            // placed relative to a disc that no longer existed.
+            Assert.Greater(drift, 40f,
                 $"the old village site sat {drift:0} m from the start spawn — far enough that the player " +
                 "woke up alone on an empty island with the cottage out of sight");
 
-            // It is still ON the island (the island is 450 m long), which is exactly why nothing caught it:
-            // no test failed, no warning fired, the objects were simply in the wrong place.
+            // It is still ON the island (even the re-ruled 240 m one), which is exactly why nothing
+            // caught it: no test failed, no warning fired, the objects were simply in the wrong place.
             float d = TidalTerrain.IslandDistance(oldSite, StPetersBuilder.IslandCenter,
                                                   StPetersBuilder.IslandRadius, StPetersBuilder.IslandRadiusY);
             Assert.Less(d, StPetersBuilder.IslandRadius,
@@ -162,7 +166,10 @@ namespace HiddenHarbours.Tests.EditMode
                 var p = old + new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad)) * r;
                 if (_terrain.ElevationAt(p) < SpringHighWater) { nearest = Mathf.Min(nearest, r); break; }
             }
-            Assert.Greater(nearest, 50f,
+            // ⚠ 20, not the 50 this pinned before 2026-07-30: on the re-ruled 240 × 140 island the sea
+            // is genuinely closer to everything (measured ~28 m from this spot) — but the old spot is
+            // STILL at full plateau height, in the meadow, nowhere near "the sand rim, at the water".
+            Assert.Greater(nearest, 20f,
                 $"the nearest water to the old wet-bucket spot was {nearest:0} m away — that is the size of " +
                 "the drift, and it is why this needed measuring rather than eyeballing");
         }
@@ -497,8 +504,10 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             // …and the sabotage: prove the constraint BITES rather than being satisfied by accident. A
-            // house on the natural west side of the green would fail it.
-            var westOfTheGreen = new Vector2(-125f, 8f);
+            // house on the natural west side of the green would fail it. (Moved with the village on the
+            // 2026-07-30 shrink — a few metres west of today's green, on the plateau, square across the
+            // bar head's approach.)
+            var westOfTheGreen = new Vector2(-48f, 4f);
             float wd = StPetersShoreMap.DistanceToSegment(
                 westOfTheGreen, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
             Assert.Less(wd, StPetersWoods.CrossingClearance,
