@@ -149,6 +149,11 @@ Material:
     - _PaletteSatCap: 0.78
     - _PalettePullStrength: 0.35
     - _PaletteNightFloor: 0
+    - _RainIntensity: 0
+    - _RainRingDensity: 0.35
+    - _RainRingScale: 6
+    - _RainRingSpeed: 1.5
+    - _RainRingStrength: 0.6
     m_Colors:
     - _CausticColor: {r: 0.5, g: 0.85, b: 0.95, a: 1}
     - _DeepColor: {r: 0.02, g: 0.08, b: 0.26, a: 1}
@@ -168,5 +173,6 @@ Material:
     - _PaletteMid: {r: 0.08, g: 0.26, b: 0.5, a: 1}
     - _PaletteShallow: {r: 0.16, g: 0.5, b: 0.72, a: 1}
     - _PaletteFoam: {r: 0.92, g: 0.97, b: 1, a: 1}
+    - _RainRingColor: {r: 0.86, g: 0.92, b: 0.97999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

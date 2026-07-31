@@ -251,22 +251,34 @@ namespace HiddenHarbours.Art
     /// serializes an owner-editable instance. There is NO precipitation signal in the sim, so rain is DERIVED
     /// art-only from sea-state + visibility via <see cref="AmbientParticleMath.RainIntensity"/> (no sim/save
     /// change). Rain is an OCCASIONAL SQUALL: it needs BOTH genuine low visibility (real murk) AND real chop,
-    /// so a clear or lightly-choppy night stays DRY until the owner dials it in. Defaults ship the feature OFF
-    /// (<see cref="BaselineIntensity"/> 0). NOTE: these intensity onsets MUST stay in lockstep with
-    /// <see cref="WaterSurface"/>'s serialized rain-shape floats so the surface RINGS and the falling DROPS
-    /// share the one derivation.
+    /// so a clear or lightly-choppy night stays DRY.
+    ///
+    /// <para><b>Dialled ON (the 2026-07-31 activation pass).</b> The owner ratified the weather look-target
+    /// (<c>docs/design/weather-rendering.md</c>), so the LOOK knobs (<see cref="MaxDrops"/>,
+    /// <see cref="MaxAlpha"/>) now ship at values a squall actually READS at, instead of the placeholder
+    /// dial-it-in-later ones. The INTENSITY MAPPING is untouched: <see cref="BaselineIntensity"/> stays 0 and
+    /// all three onsets keep their shipped values, so the two-onset dryness (the 2026-07-05 owner-playtest fix
+    /// — a rough-but-CLEAR night must NOT rain) is unchanged. Both look knobs scale WITH the derived intensity,
+    /// so they only raise the ceiling at a real squall; they cannot make a clear or calm day wet.</para>
+    ///
+    /// <para>NOTE: these intensity onsets MUST stay in lockstep with <see cref="WaterSurface"/>'s serialized
+    /// rain-shape floats so the surface RINGS and the falling DROPS share the one derivation.</para>
     /// </summary>
     [System.Serializable]
     public struct RainConfig
     {
         [Header("Pool & area")]
-        [Tooltip("Max live rain drops (the pool is fixed and recycled — zero per-frame allocation). Rule 7 budget cap.")]
+        [Tooltip("Max live rain drops (the pool is fixed and recycled — zero per-frame allocation). Rule 7 budget " +
+                 "cap AND the density dial: spawn rate is MaxDrops/Lifetime × intensity, so the pool size IS the " +
+                 "on-screen streak count at a full downpour (and intensity × that at a lesser squall).")]
         [Min(1)] public int MaxDrops;
         [Tooltip("Half-size (m) of the area, centred on the camera, rain falls within (x = across, y = up/down).")]
         public Vector2 AreaHalfSize;
 
         [Header("Intensity (derived — an occasional squall needs murk AND chop)")]
-        [Tooltip("Baseline rain on a clear, glassy day (0..1). DEFAULT 0 = feature OFF until you dial it in.")]
+        [Tooltip("Baseline rain on a clear, glassy day (0..1). KEEP AT 0: any nonzero baseline rains on a clear, " +
+                 "glassy day, which is the exact 2026-07-05 owner complaint. Dial the LOOK (MaxDrops / MaxAlpha), " +
+                 "not this.")]
         [Range(0f, 1f)] public float BaselineIntensity;
         [Tooltip("How much HIGHER sea-state (above the onset) drives the rain — the main knob.")]
         [Range(0f, 2f)] public float SeaStateWeight;
@@ -296,9 +308,12 @@ namespace HiddenHarbours.Art
         [Range(0f, 1f)] public float FadeIn;
         [Tooltip("Fraction of life spent fading OUT (0..1) — drops fade near the bottom.")]
         [Range(0f, 1f)] public float FadeOut;
-        [Tooltip("Rain tint. A cool pale streak reads as rain over the water; alpha is driven by life + intensity + day/night.")]
+        [Tooltip("Rain tint. A cool pale streak reads as rain over the water; alpha is driven by life + intensity " +
+                 "+ day/night. Deliberately DESATURATED (the restrained salt-stained North Atlantic identity, " +
+                 "art bible §4.2) and matched to the water shader's _RainRingColor so streaks and rings agree.")]
         public Color Color;
-        [Tooltip("Peak opacity at full intensity (0..1) before the life envelope + day/night scale it.")]
+        [Tooltip("Peak opacity at FULL intensity (0..1) before the life envelope + day/night scale it. A real " +
+                 "squall runs at ~0.1-0.45 intensity, so the streaks you actually see sit well under this.")]
         [Range(0f, 1f)] public float MaxAlpha;
 
         [Header("Day / night")]
@@ -310,9 +325,16 @@ namespace HiddenHarbours.Art
 
         public static RainConfig Default => new RainConfig
         {
-            MaxDrops          = 64,
+            // LOOK (the 2026-07-31 activation): 160 drops = the on-screen streak count at a full downpour, so a
+            // realistic squall (intensity ~0.27) shows ~43 streaks across the 32x20m field — a rain you can read,
+            // not the ~17 the placeholder 64 gave. One shared sprite + material, fixed pool, no per-frame alloc:
+            // 160 thin streaks are ~1% extra transparent fill over the field (rule 7, mobile-portable).
+            MaxDrops          = 160,
             AreaHalfSize      = new Vector2(16f, 10f),
-            BaselineIntensity = 0f,      // feature OFF by default — no rain until the sea builds AND murks up
+            // INTENSITY MAPPING — UNCHANGED by the activation, deliberately. Baseline 0 + the two onsets are the
+            // 2026-07-05 owner-playtest fix (clear/light days stay DRY). Retune the LOOK, never these; and if
+            // these ever DO move, move WaterSurface's twin rain-shape floats with them (rings <-> drops lockstep).
+            BaselineIntensity = 0f,      // a clear, glassy day rains NOTHING — never dial this up
             SeaStateWeight    = 1.0f,
             VisOnset          = 0.65f,   // clear/lightly-hazy air (vis >= 0.65) → NO rain
             VisFull           = 0.40f,   // murk gate fully open once visibility falls to 0.40
@@ -324,8 +346,10 @@ namespace HiddenHarbours.Art
             Lifetime          = 1.6f,
             FadeIn            = 0.15f,
             FadeOut           = 0.25f,
+            // Kept as shipped: already the restrained desaturated blue-grey the look-target's palette caveat asks
+            // for (NOT the reference demo's saturated look), and it matches the shader's _RainRingColor.
             Color             = new Color(0.78f, 0.85f, 0.92f, 1f),
-            MaxAlpha          = 0.5f,
+            MaxAlpha          = 0.7f,    // peak at a FULL downpour; a real squall lands ~0.07-0.32 after intensity
             NightFade         = 0.25f,
             MoonlightCatch    = 0.1f,
         };

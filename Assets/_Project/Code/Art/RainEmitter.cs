@@ -46,7 +46,8 @@ namespace HiddenHarbours.Art
     public sealed class RainEmitter : MonoBehaviour
     {
         [Tooltip("Every knob of the rain — pool, area, derived intensity, fall speed, wind slant, look, " +
-                 "day/night fade. Defaults ship the feature OFF (baseline 0) until you dial it in.")]
+                 "day/night fade. Defaults are DIALLED ON (2026-07-31): a genuine squall reads as rain, while " +
+                 "the untouched two-onset gate keeps clear/light days DRY.")]
         [SerializeField] private RainConfig _config = RainConfig.Default;
 
         [Tooltip("Sorting order — rain draws ABOVE the water and boats (POSITIVE). A SortingGroup + a small " +

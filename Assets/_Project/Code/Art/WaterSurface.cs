@@ -258,6 +258,12 @@ namespace HiddenHarbours.Art
         // share the one derivation (a future refactor can unify them into one shared config - flagged, not built
         // here). Derived-physics push, NOT a per-mood colour, so it is NOT in MoodFloatNames (that would
         // double-drive it). Visual only; reads the deterministic EnvironmentSample, feeds no sim, saves nothing (rule 5).
+        // WHERE THE RINGS ARE TURNED ON (2026-07-31 activation): the STRENGTH dial is the material's
+        // _RainRingStrength (Water.mat, live everywhere - every scene builder assigns Water.mat to the Sea
+        // renderer). It is deliberately ALSO out of MoodFloatNames: _RainIntensity already scales the rings by
+        // {sea-state, visibility}, and the mood blend runs on those SAME two axes, so mood-blending the strength
+        // would multiply one signal by itself. Kept a single owner knob instead. Every WaterPresets/*.mat carries
+        // the key so the editor's "Apply water preset" (a wholesale CopyPropertiesFromMaterial) can't zero it.
         [Tooltip("Rain on a clear, glassy day (0..1). DEFAULT 0 = the rings are OFF until the sea builds AND murks up (matches RainConfig.Default).")]
         [Range(0f, 1f)] [SerializeField] private float _rainBaselineIntensity = 0f;
         [Tooltip("How much HIGHER sea-state (above the onset) drives the rings - the main knob (matches RainConfig SeaStateWeight).")]
