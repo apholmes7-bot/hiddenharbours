@@ -32,6 +32,15 @@ namespace HiddenHarbours.App.Editor
     /// <see cref="WaterSurface"/> is <c>[ExecuteAlways]</c> with an edit-mode tide preview, the water + coast
     /// also update LIVE.</para>
     ///
+    /// <para><b>The MATERIAL brush (ADR 0028 PR 2 addendum).</b> A sixth brush paints the splat-ground
+    /// MATERIALS (the owner's "layers"): pick one of the ten kit materials and brush its channel in the
+    /// three splat maps — the value is both blend weight and intensity-ladder position (0 sparse ·
+    /// 0.5 base · 1 rank), with flow/falloff/exclusive controls, an eraser, and a live Scene-view
+    /// preview through the open scene's <see cref="TerrainSplatSurface"/> at the current preview tide.
+    /// Commit mirrors the height flow: PNGs re-encoded, reimported LINEAR (weights are data, not
+    /// colour — an sRGB import would gamma-warp every painted value), references re-wired from the
+    /// fresh loads.</para>
+    ///
     /// <para><b>Seed from today's coast.</b> "Export analytic St Peters → painted map" samples the shipped
     /// <see cref="TidalTerrain.ElevationAtZones"/> (the St Peters constants) across the bake rect into a new
     /// painted map, so the owner paints FROM the existing coast — not a blank canvas. It does NOT change the
@@ -51,7 +60,11 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The game's start region — what a freshly-opened tool defaults to.</summary>
         private const string DefaultRegionId = "region.st_peters";
 
-        private enum Brush { TerrainType, Raise, Lower, SetHeight, Smooth }
+        private enum Brush { TerrainType, Raise, Lower, SetHeight, Smooth, Material }
+
+        /// <summary>What a Material-brush stroke does: paint the picked material's channel toward
+        /// the target intensity, erase just that channel, or erase ALL ten (bands-only ground).</summary>
+        private enum MaterialMode { Paint, Erase, EraseAll }
 
         /// <summary>
         /// A TUNABLE terrain TYPE (rule 6 — no magic numbers; the owner edits the list in the tool): a name, the
@@ -90,10 +103,25 @@ namespace HiddenHarbours.App.Editor
         [SerializeField] private bool _showOverlay;         // the edit-mode height colour overlay (off by default)
         [SerializeField] private bool _showPresetEditor;    // fold-out for editing the preset list
 
+        // ---- the MATERIAL brush (ADR 0028 PR 2 addendum — the owner paints the splat ground) --------
+        [SerializeField] private int _materialIndex;                    // 0..9, TerrainSplatBrush order
+        [SerializeField] private MaterialMode _materialMode = MaterialMode.Paint;
+        [SerializeField] private float _materialTarget = 0.5f;   // 0 _Lo sparse · 0.5 base · 1 _Hi rank
+        [SerializeField] private float _materialFlow = 0.35f;    // how fast a dab lerps toward the target
+        [SerializeField] private float _materialFalloff = 0.5f;  // soft-edge fraction of the radius
+        [SerializeField] private bool _materialExclusive = true; // painting fades the other nine channels
+
         private bool _strokeActive;
         private Texture2D _tex;       // cached working texture (the map's), kept readable
         private Color[] _pixels;      // working CPU pixel buffer (R = normalized elevation)
         private Vector2 _presetScroll;
+
+        // Splat working state (never serialized — re-cached from the assets on demand).
+        private readonly Texture2D[] _splatTexs = new Texture2D[TerrainSplatBrush.TextureCount];
+        private readonly Color[][] _splatPixels = new Color[TerrainSplatBrush.TextureCount][];
+        private bool SplatLoaded =>
+            _splatTexs[0] != null && _splatTexs[1] != null && _splatTexs[2] != null &&
+            _splatPixels[0] != null && _splatPixels[1] != null && _splatPixels[2] != null;
 
         // ---- the height overlay's draw resources (edit-mode only; never serialized, never shipped) ----------
         private Texture2D _overlayTex;     // a small false-colour texture drawn over the painted rect
@@ -255,14 +283,18 @@ namespace HiddenHarbours.App.Editor
             DrawGroundTilemapRow();
 
             EditorGUILayout.Space();
+            // The painting toggle, brush picker and radius live OUTSIDE the height-map gate: the
+            // MATERIAL brush paints the splat maps and needs no PaintedHeightMap assigned.
+            _painting = EditorGUILayout.ToggleLeft("Paint in Scene view (hold mouse over the water plane)", _painting);
+            _brush = (Brush)EditorGUILayout.EnumPopup("Brush", _brush);
+            _radius = EditorGUILayout.Slider("Brush radius (m)", _radius, 0.5f, 40f);
+
+            if (_brush == Brush.Material) DrawMaterialBrush();
+
             using (new EditorGUI.DisabledScope(_map == null))
             {
-                _painting = EditorGUILayout.ToggleLeft("Paint in Scene view (hold mouse over the water plane)", _painting);
-                _brush = (Brush)EditorGUILayout.EnumPopup("Brush", _brush);
-
                 if (_brush == Brush.TerrainType) DrawTerrainTypePicker();
 
-                _radius = EditorGUILayout.Slider("Brush radius (m)", _radius, 0.5f, 40f);
                 if (_brush == Brush.Raise || _brush == Brush.Lower || _brush == Brush.Smooth)
                     _strength = EditorGUILayout.Slider("Strength (m/step)", _strength, 0.05f, 5f);
                 if (_brush == Brush.SetHeight)
@@ -334,6 +366,168 @@ namespace HiddenHarbours.App.Editor
                 EditorGUILayout.HelpBox("Some terrain types have no tile yet. Run Hidden Harbours ▸ Art ▸ " +
                     "Build Scene-Painting Toolkit to generate the terrain tiles, then re-open this tool (or " +
                     "assign tiles in the Terrain Types editor below).", MessageType.Warning);
+        }
+
+        // ============================ THE MATERIAL BRUSH (ADR 0028 PR 2 addendum) ============================
+
+        /// <summary>
+        /// The owner's splat-material brush: pick one of the ten kit materials (his "layers") and
+        /// paint its channel in the three splat maps — the value is BOTH blend weight and intensity-
+        /// ladder position (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank), so a footpath or a grazed
+        /// headland is a stroke, not a new material. Live in the Scene view through the open scene's
+        /// <see cref="TerrainSplatSurface"/> at the current preview tide.
+        /// </summary>
+        private void DrawMaterialBrush()
+        {
+            EditorGUILayout.Space(2f);
+            EditorGUILayout.LabelField("Material brush (splat ground — ADR 0028)", EditorStyles.boldLabel);
+
+            string[] names = new string[TerrainSplatBrush.MaterialCount];
+            for (int i = 0; i < names.Length; i++)
+                names[i] = $"{TerrainSplatBrush.MaterialNames[i]}  ({TerrainSplatBrush.ChannelLabel(i)})";
+            _materialIndex = Mathf.Clamp(_materialIndex, 0, TerrainSplatBrush.MaterialCount - 1);
+            _materialIndex = EditorGUILayout.Popup(
+                new GUIContent("Material", "The ten kit materials — each is ONE channel in the three " +
+                               "splat textures (shown in brackets). Painting writes that channel; the " +
+                               "shader blends it over the height bands."),
+                _materialIndex, names);
+
+            _materialMode = (MaterialMode)EditorGUILayout.EnumPopup(
+                new GUIContent("Mode", "Paint = raise the channel toward the target intensity. " +
+                               "Erase = lower just this material. Erase All = every material back " +
+                               "to bands-only ground."),
+                _materialMode);
+
+            if (_materialMode == MaterialMode.Paint)
+            {
+                _materialTarget = EditorGUILayout.Slider(
+                    new GUIContent("Target intensity", "Where on the material's ladder the stroke " +
+                                   "settles: 0 = sparse (_Lo) · 0.5 = base · 1 = rank (_Hi)."),
+                    _materialTarget, 0f, 1f);
+                EditorGUILayout.HelpBox("Intensity is a LADDER, not opacity: 0 = sparse/_Lo (a worn " +
+                    "line, pioneer sprigs) · 0.5 = the base material · 1 = rank/_Hi (cobble lag, heavy " +
+                    "thatch). One value is both blend weight and look.", MessageType.None);
+            }
+            _materialFlow = EditorGUILayout.Slider(
+                new GUIContent("Flow", "How fast a dab moves the channel toward the target — low " +
+                               "flow builds a stroke up gradually over repeated passes."),
+                _materialFlow, 0.05f, 1f);
+            _materialFalloff = EditorGUILayout.Slider(
+                new GUIContent("Falloff", "The soft edge, as a fraction of the radius: 0 = hard " +
+                               "stamp, 1 = soft from the centre out."),
+                _materialFalloff, 0f, 1f);
+            if (_materialMode == MaterialMode.Paint)
+                _materialExclusive = EditorGUILayout.ToggleLeft(
+                    new GUIContent("Exclusive (painting replaces other materials)",
+                        "Each dab fades the OTHER nine channels at the same rate — a stroke of dirt " +
+                        "over silt replaces it, the painter's expectation. Off = materials stack " +
+                        "(the shader renormalises past 1)."),
+                    _materialExclusive);
+
+            if (!SplatLoaded)
+            {
+                EditorGUILayout.HelpBox("Splat maps not loaded. Load (or create blank) " +
+                    $"{TerrainSplatAssets.StPetersBaseName}A/B/C.png to start painting — they cover " +
+                    "the region's rect at the height map's density, all-zero = height bands only.",
+                    MessageType.Info);
+                if (GUILayout.Button("Load / create splat maps")) LoadSplat();
+            }
+            else
+            {
+                EditorGUILayout.LabelField(
+                    $"{TerrainSplatAssets.PathOf(0)} (+B/C) — {_splatTexs[0].width} × {_splatTexs[0].height}",
+                    EditorStyles.miniLabel);
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Revert to last committed")) RevertSplat();
+                    if (GUILayout.Button("Reload from assets")) LoadSplat();
+                }
+            }
+        }
+
+        /// <summary>Cache the three splat textures + working buffers (minting blanks at the
+        /// region's texel grid when absent) and push them to any open splat surface.</summary>
+        private void LoadSplat()
+        {
+            if (!RequireExtent(out _, out _, out Vector2Int texels)) return;
+            if (!TerrainSplatAssets.LoadOrCreate(texels, _splatTexs, _splatPixels)) return;
+            RefreshOpenSplatSurfaces();
+            Repaint();
+        }
+
+        /// <summary>Single-step revert: throw away un-committed splat edits and reload the
+        /// committed PNG bytes (the undo the height brush never had).</summary>
+        private void RevertSplat()
+        {
+            TerrainSplatAssets.RevertToCommitted(_splatTexs, _splatPixels);
+            RefreshOpenSplatSurfaces();
+            SceneView.RepaintAll();
+        }
+
+        /// <summary>The world rect the splat maps cover — the REGION's rect, the same one the
+        /// height map covers (the shader maps both by the identical world→UV).</summary>
+        private bool SplatRect(out Vector2 worldMin, out Vector2 worldSize)
+        {
+            worldMin = default; worldSize = default;
+            if (_region == null || !_region.HasUsableExtent) return false;
+            worldSize = _region.WorldSizeMeters;
+            worldMin = _region.WorldCenter - worldSize * 0.5f;
+            return true;
+        }
+
+        /// <summary>
+        /// One Material-brush dab: run the pure stroke math over the working buffers, upload the
+        /// changed pixels, and re-feed the open scene's <see cref="TerrainSplatSurface"/> so the
+        /// paint lands LIVE at the current preview tide (the RefreshOpenWaterSurfaces pattern).
+        /// </summary>
+        private void SplatDab(Vector2 worldCenter)
+        {
+            if (!SplatLoaded || !SplatRect(out Vector2 worldMin, out Vector2 worldSize)) return;
+
+            int material = _materialMode == MaterialMode.EraseAll
+                ? TerrainSplatBrush.EraseAllMaterials : _materialIndex;
+            float target = _materialMode == MaterialMode.Paint ? _materialTarget : 0f;
+            bool exclusive = _materialMode == MaterialMode.Paint && _materialExclusive;
+
+            TerrainSplatBrush.Dab(_splatPixels[0], _splatPixels[1], _splatPixels[2],
+                _splatTexs[0].width, _splatTexs[0].height, worldMin, worldSize,
+                worldCenter, _radius, _materialFalloff, material, target, _materialFlow, exclusive);
+
+            for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
+            {
+                _splatTexs[i].SetPixels(_splatPixels[i]);
+                _splatTexs[i].Apply(false, false);
+            }
+            RefreshOpenSplatSurfaces();
+        }
+
+        /// <summary>
+        /// Point every open <see cref="TerrainSplatSurface"/> at the working splat textures.
+        /// <c>ConfigureSplat</c> only stores the references — the MPB push happens in the
+        /// surface's OnEnable — so a disable/enable round-trip forces the push without touching
+        /// the runtime component's API (edit-mode only; the surface early-outs when already built).
+        /// </summary>
+        private void RefreshOpenSplatSurfaces()
+        {
+            if (!SplatLoaded) return;
+            foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
+            {
+                if (s == null) continue;
+                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2]);
+                if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }
+            }
+        }
+
+        /// <summary>
+        /// Persist a Material stroke (the CommitTexture mirror): encode all three buffers, write,
+        /// reimport with the LINEAR data importer, then re-cache from the RELOADED assets and
+        /// re-feed the surfaces — the reimport invalidated the old in-memory references.
+        /// </summary>
+        private void CommitSplat()
+        {
+            if (!SplatLoaded) return;
+            TerrainSplatAssets.Commit(_splatTexs, _splatPixels);
+            RefreshOpenSplatSurfaces();
         }
 
         private void DrawOverlaySection()
@@ -447,13 +641,17 @@ namespace HiddenHarbours.App.Editor
         {
             if (_showOverlay) DrawHeightOverlay();
 
-            if (!_painting || _map == null || _tex == null) return;
+            if (!_painting) return;
+            bool materialBrush = _brush == Brush.Material;
+            if (materialBrush) { if (!SplatLoaded) return; }
+            else if (_map == null || _tex == null) return;
 
             Event e = Event.current;
             Vector2 world = WorldUnderMouse(e);
 
             // Draw the brush footprint so the owner sees where it'll land.
-            Handles.color = _brush == Brush.TerrainType ? new Color(0.3f, 0.9f, 1f, 0.9f)
+            Handles.color = materialBrush ? new Color(0.55f, 1f, 0.45f, 0.9f)
+                          : _brush == Brush.TerrainType ? new Color(0.3f, 0.9f, 1f, 0.9f)
                                                          : new Color(1f, 0.85f, 0.2f, 0.9f);
             Handles.DrawWireDisc(new Vector3(world.x, world.y, 0f), Vector3.forward, _radius);
 
@@ -476,7 +674,7 @@ namespace HiddenHarbours.App.Editor
             else if (e.type == EventType.MouseUp && _strokeActive)
             {
                 _strokeActive = false;
-                CommitTexture();
+                if (materialBrush) CommitSplat(); else CommitTexture();
                 e.Use();
             }
 
@@ -500,6 +698,7 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         private void Dab(Vector2 worldCenter)
         {
+            if (_brush == Brush.Material) { SplatDab(worldCenter); return; }
             if (_pixels == null || _tex == null) return;
             int w = _tex.width, h = _tex.height;
             Vector2 size = _map.WorldSize;
@@ -824,7 +1023,7 @@ namespace HiddenHarbours.App.Editor
         /// scene. Null (with the warning above) rather than a literal fallback if it is missing — a
         /// map minted at a size nobody authored is exactly the failure this change removes.
         /// </summary>
-        private static RegionDef DefaultRegion()
+        internal static RegionDef DefaultRegion()   // internal: StPetersStarterSplat sizes its maps from it too
         {
             foreach (string guid in AssetDatabase.FindAssets("t:RegionDef", new[] { RegionDir }))
             {
@@ -1174,9 +1373,27 @@ namespace HiddenHarbours.App.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(painted);
 
+            // 3) The splat GROUND reads it too (ADR 0028): point every TerrainSplatSurface at the
+            //    adopted height data AND the three splat assets (loaded fresh from disk — never a
+            //    stale in-memory reference), so the ground, the water and the sim share one field.
+            //    The builder wires the same assets on rebuild; adopting keeps an un-rebuilt scene
+            //    in step. Missing splat PNGs wire as null — the surface falls back to bands-only.
+            var splatA = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(0));
+            var splatB = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(1));
+            var splatC = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(2));
+            foreach (var surface in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
+            {
+                Undo.RecordObject(surface, "Adopt painted seabed");
+                surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);
+                surface.ConfigureSplat(splatA, splatB, splatC);
+                EditorUtility.SetDirty(surface);
+                if (surface.isActiveAndEnabled) { surface.enabled = false; surface.enabled = true; }
+            }
+
             EditorUtility.DisplayDialog("Terrain Paint",
                 "Adopted the painted map on the open scene:\n• Every WaterSurface now reads it (render).\n• " +
-                "A PaintedTidalTerrain now feeds the sim (walkability / clams / boat-cross).\nThe analytic " +
+                "A PaintedTidalTerrain now feeds the sim (walkability / clams / boat-cross).\n• Every " +
+                "TerrainSplatSurface now reads it + the splat maps (the painted ground).\nThe analytic " +
                 "TidalTerrain was DISABLED (not deleted) so this is reversible.\n\nSave the scene to keep it.",
                 "Fair winds");
         }
