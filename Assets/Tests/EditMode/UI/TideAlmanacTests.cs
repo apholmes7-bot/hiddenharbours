@@ -17,7 +17,10 @@ namespace HiddenHarbours.Tests.UI.EditMode
     /// </summary>
     public class TideAlmanacTests
     {
-        // The shipped clock: a 1200 s day ⇒ 50 s per in-game hour, and the canon semidiurnal period.
+        // A TEST-LOCAL clock scale, deliberately NOT the shipped dial: everything below runs against the
+        // synthetic Sine, so the almanac's turn-finding is proved as pure maths on its own time base. It
+        // keeps the historical 1200 s day (⇒ 50 s per in-game hour) so the numbers in these assertions
+        // stay meaningful; the game itself now ships 1800 (GameConfig.DefaultSecondsPerDay).
         private const double SecondsPerDay = 1200.0;
         private const double SecondsPerHour = SecondsPerDay / 24.0;   // 50
         private const double TidalPeriodHours = 12.4206;

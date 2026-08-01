@@ -18,11 +18,18 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class StPetersTerrainTests
     {
-        // Mirror the region's authored tide (StPetersBuilder constants): mean 0, amplitude 3.5 → the water
-        // swings ≈ -3.5..+3.5 m. We sample a few representative levels rather than the live tide curve.
-        private const float HighWater = 2.5f;   // near the top of the swing — bar covered
-        private const float MidWater  = 0.0f;   // mid tide
-        private const float LowWater  = -2.5f;  // near the bottom — bar well bared
+        // Mirror the region's authored tide (StPetersBuilder constants): mean 0, amplitude 2.2 → the water
+        // swings ≈ -2.2..+2.2 m. We sample a few representative levels rather than the live tide curve.
+        //
+        // ⚠ DERIVED from the amplitude, not written out. These were literal ±2.5 against the old ±3.5
+        // swing; when the 2026-08-01 ruling cut the amplitude to 2.2 they became levels the tide can
+        // never actually reach, and every assertion below would have kept passing while testing water
+        // that does not exist. 0.71 puts them near the top and bottom of the swing without sitting on
+        // the turn itself.
+        private const float SamplePointInSwing = 0.71f;
+        private static readonly float HighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude * SamplePointInSwing;
+        private static readonly float MidWater  = StPetersBuilder.TideMean;
+        private static readonly float LowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude * SamplePointInSwing;
 
         private TidalTerrain _terrain;
         private GameObject _go;
@@ -173,11 +180,18 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para><b>How.</b> <see cref="TideModel"/> puts a spring/neap envelope on the semidiurnal
         /// carrier: at neap the swing collapses to <c>NeapAmplitudeFraction</c> of the region's
-        /// amplitude. St Peters runs ±3.5 m, and 0.45 × 3.5 = <b>1.575 m</b> — so a sandbar crest at
-        /// the old <b>1.6 m</b> sat ABOVE the highest water of a neap week and the bar never flooded
-        /// at all. For part of every lunar month the region's defining mechanic simply was not there,
-        /// and nothing said so: the bar looks right, the tide still moves, and a playtester just
-        /// never gets cut off.</para>
+        /// amplitude. St Peters runs ±2.2 m, and 0.45 × 2.2 = <b>0.99 m</b> — so any sandbar crest at
+        /// or above that sits ABOVE the highest water of a neap week and the bar never floods at all.
+        /// For part of every lunar month the region's defining mechanic simply is not there, and
+        /// nothing says so: the bar looks right, the tide still moves, and a playtester just never
+        /// gets cut off. It shipped that way once (a 1.6 m crest under the old ±3.5 m swing, whose
+        /// neap high was 1.575 m) and was fixed by #280.</para>
+        ///
+        /// <para><b>Why it can happen again, differently.</b> The trap is not one bad number — it is
+        /// that the crest and the amplitude are ONE decision wearing two hats. The 2026-08-01 ruling cut
+        /// the amplitude 3.5 → 2.2, which alone would have re-opened the identical hole with the crest
+        /// untouched at 1.4 (well above the new 0.99 m neap high). That is what the sabotage below now
+        /// measures.</para>
         ///
         /// <para>This walks a whole lunar month of the REAL tide function and holds the crest under
         /// the weakest high water it produces. Deliberately computed from <see cref="GameConfig"/> +
@@ -211,31 +225,40 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// SABOTAGE, MEASURED. The value this replaced was 1.6, and it shipped — so the test that
-        /// forbids it has to be shown firing on exactly that number, or the new crest is a constant
-        /// nobody can defend and the next tuning pass puts the old one straight back.
+        /// SABOTAGE, MEASURED — and re-aimed at the mistake that is actually available NOW.
+        ///
+        /// <para>It used to fire on <b>1.6 m</b>, the crest that shipped the neap gap under the old
+        /// ±3.5 m swing. Against today's ±2.2 m that number is so far above neap high water (0.99 m)
+        /// that the guard proves almost nothing: it would pass with the crest anywhere below 1.6,
+        /// including the 1.4 that was correct only for the OLD amplitude. So the sabotage value is now
+        /// <b>1.4</b> — the pre-ruling crest, i.e. exactly what you get by moving the amplitude and
+        /// forgetting that the crest rides on it. That is the live trap; 1.6 is a museum piece.</para>
         /// </summary>
         [Test]
-        public void Sabotage_TheOldCrestOf1Point6_WouldStrandTheBarAboveNeapHighWater()
+        public void Sabotage_TheUnscaledCrestOf1Point4_WouldStrandTheBarAboveNeapHighWater()
         {
             var cfg = ScriptableObject.CreateInstance<GameConfig>();
             try
             {
                 float weakestHigh = WeakestHighWaterOverALunarMonth(cfg, out _);
 
-                const float oldCrest = 1.6f;
-                Assert.GreaterOrEqual(oldCrest, weakestHigh,
-                    "SABOTAGE NOT DETECTED — the old 1.6 m crest now clears neap high water, so " +
-                    "either the amplitude or the neap fraction has changed and this test is " +
-                    "measuring nothing. Re-derive the crest rather than deleting the guard.");
+                // The crest as it stood before the 2026-08-01 amplitude ruling. Correct at ±3.5 m
+                // (1.575 m neap high); a re-opened neap gap at ±2.2 m (0.99 m neap high).
+                const float unscaledCrest = 1.4f;
+                Assert.GreaterOrEqual(unscaledCrest, weakestHigh,
+                    "SABOTAGE NOT DETECTED — the un-scaled 1.4 m crest now clears neap high water, so " +
+                    "the amplitude or the neap fraction has changed and this test is measuring " +
+                    "nothing. Re-derive the sabotage value from the current swing rather than " +
+                    "deleting the guard.");
 
-                Assert.Less(StPetersBuilder.SandbarCrestElevation, oldCrest,
-                    "the shipped crest must be below the value that caused the gap");
+                Assert.Less(StPetersBuilder.SandbarCrestElevation, unscaledCrest,
+                    "the shipped crest must be below the value that would re-open the gap");
 
                 Debug.Log(
-                    $"[st-peters] SABOTAGE — neap gap: the old crest 1.6 m sits " +
-                    $"{oldCrest - weakestHigh:F3} m ABOVE the weakest high water ({weakestHigh:F3} m) " +
-                    $"— the bar would stay dry through neaps. The shipped " +
+                    $"[st-peters] SABOTAGE — neap gap: leaving the crest at 1.4 m after the amplitude " +
+                    $"fell to {StPetersBuilder.TideAmplitude} m would put it " +
+                    $"{unscaledCrest - weakestHigh:F3} m ABOVE the weakest high water " +
+                    $"({weakestHigh:F3} m) — the bar would stay dry through neaps. The shipped " +
                     $"{StPetersBuilder.SandbarCrestElevation} m clears it.");
             }
             finally { Object.DestroyImmediate(cfg); }
@@ -293,6 +316,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("StPeters", region.SceneName, "names its scene");
             Assert.IsTrue(region.HasScene, "it is a real, reachable region");
             Assert.IsFalse(region.RequiresUnlock, "the opening has no unlock gate");
+            // ⚠ The margin here is thin now. The 2026-08-01 pacing ruling cut the amplitude 3.5 → 2.2,
+            // so "a BIG tide" means 1.4× the cove rather than 2.2× — St Peters is still the biggest
+            // swing in the game (cove 1.6, Nine Mile Creek 0.8) but by much less than it was. Kept at
+            // 2 m so a further cut has to be a deliberate act that fails this test first.
             Assert.Greater(region.TideAmplitude, 2f,
                 "St Peters runs a BIG tide (vs the cove's gentle ~1.6 m) — the bar must visibly bare + flood");
         }

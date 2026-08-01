@@ -123,7 +123,7 @@ Regions and their gating boats come from [`world-and-regions.md`](world-and-regi
 | Region | Scene extent | Gating mode | Cross long axis | Screens | Note |
 |---|---|---|---|---|---|
 | **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~240 × 140 m inside it (re-ruled smaller 2026-07-30 — the crossing, not the island, is the region's long walk). |
-| **St Peters Bar** *(new)* | **640 × 200 m** | on foot | **~3:20** walk / 1:49 sprint | 40 | §5.2. Sized by the tide window (6:43 at spring), not by comfort. |
+| **St Peters Bar** *(built: 305 m)* | proposed 640 × 200 m | on foot | **1:42** walk / 0:55 sprint each way | 40 | §5.2. Meant to be sized by the tide window (**9:48** at spring as shipped); at 305 m it is not — see the slack-teeth box. |
 | **Nine Mile Creek** *(the town and its wharf)* | 600 × 400 m | on foot | ~3:20 | 37 | Two places in one region — the wharf where fish move, the town where money does. See [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md); 420 × 320 m if the wharf becomes its own region instead. |
 | **Coddle Cove** | 520 × 400 m | dory | ~2:53 | 21 | Home water: small, sheltered, legible in one look. |
 | **The Sunkers** | 700 × 700 m | punt/skiff | ~5:02 punt | 23 | A reef field needs room to pick a line through it. |
@@ -254,20 +254,43 @@ floats where `waterLevel − bedElevation > draught`):
 
 The owner asked for the bar to be a whole scene. It should be. But its length is not a comfort
 decision — **it is set by the tide window**, so here is that window computed from the live config
-rather than estimated (`GameConfig`: `SecondsPerDay 1200`, `TidalPeriodHours 12.4206`,
-`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 3.5 m about mean 0, crest at 1.6 m **as
-this was written — now 1.4, see the ratified box below**):
+rather than estimated (`GameConfig`: `SecondsPerDay 1800`, `TidalPeriodHours 12.4206`,
+`NeapAmplitudeFraction 0.45`; `StPetersBuilder`: amplitude 2.2 m about mean 0, crest 0.88 m — **both
+re-ruled 2026-08-01, see the pacing box below**):
 
-- One game hour = **50 real seconds**, so a full tide cycle = 12.42 × 50 = **10 min 21 s real**.
-- At **spring**, the bar is dry whenever the water is under its 1.6 m crest — i.e. `sin θ < 0.457`,
-  which is **65% of the cycle**. **Exposed ≈ 6 min 43 s; flooded ≈ 3 min 38 s.**
-- At **neap**, amplitude falls to 0.45 × 3.5 = **1.575 m — below the 1.6 m crest. The bar never
-  floods at all.**
+- One game hour = **75 real seconds**, so a full tide cycle = 12.42 × 75 = **15 min 32 s real**.
+- At **spring**, the bar is dry whenever the water is under its 0.88 m crest — i.e. `sin θ < 0.4`,
+  which is **63.1% of the cycle**. **Exposed ≈ 9 min 48 s; flooded ≈ 5 min 44 s.**
+- At **neap**, amplitude falls to 0.45 × 2.2 = **0.99 m — still above the 0.88 m crest**, so the bar
+  floods every day of the month. **Exposed ≈ 13 min 10 s; flooded ≈ 2 min 21 s.**
 
-**Recommendation: a 640 × 200 m corridor with a ~600 m bar path.** That is **3:20 on foot each way**
-(1:49 sprinting), so walking it both ways is **6:40 against a ~6:31 spring window** — you are stranded
-if you stroll, and you make it if you sprint the return. That is precisely the teeth canon asks for,
-and it lands *because* the window is over six minutes rather than the four an earlier draft assumed.
+The window is a function of `crest / amplitude` and nothing else (the water is a sinusoid, so the bar
+is dry while `sin θ < crest/amplitude`). **In GAME time it has not changed since the ratified box
+below** — 7 h 50 m of the 12 h 25 m cycle at spring. What changed is how long that takes to live
+through, which is the day-length lever, not the tide.
+
+> ### ⚠️ The crossing's teeth are slack, and this is where to fix it
+>
+> **The bar has been comfortably walkable for a while, and the pacing ruling widened the margin.**
+> The 600 m recommendation below was never built: today's bar is `SandbarFrom (−45,0)` →
+> `SandbarTo (−350,0)` = **305 m**, which at the 3 m/s walk is **1:42 each way, 3:23 both ways**.
+>
+> | | Spring window | Walk both ways | Margin |
+> |---|---|---|---|
+> | 600 m bar, pre-ruling | 6:32 | 6:40 | **−0:08 — you must sprint** |
+> | 305 m bar, pre-ruling | 6:32 | 3:23 | +3:09 |
+> | **305 m bar, as shipped** | **9:48** | **3:23** | **+6:25 — you can dawdle twice over** |
+>
+> So "you are stranded if you stroll" stopped being true when the bar was shortened, and the pacing
+> ruling roughly doubled the slack again. **Nothing here is a bug** — the tide gate still exists at
+> every point in the lunar month, which is the property #280 was about — but the *teeth* canon asks
+> for are currently blunt.
+>
+> **The lever is the bar's length, not the tide.** A ~900 m bar restores the original feel against the
+> new window (900 m = 10:00 both ways vs a 9:48 window — you must sprint the return, exactly as the
+> 600 m/6:32 pairing did). That is a terrain change and an owner call, so it is recorded here rather
+> than taken. Do **not** reach for the tide constants to fix it: he has just
+> ruled on those, and the window is one number while the bar is a scene's worth of terrain.
 
 > **An earlier draft of this section sized the bar at 400 m on an estimated ~4-minute window.** The
 > real window is 65% longer, which is the difference between a bar you can always walk back across and
@@ -279,41 +302,40 @@ with the deeper **channel** cut across it (boat-crossable at higher water) — t
 inverse-over-the-tide relationship the greybox already models in `StPetersBuilder`'s
 `SandbarCrestElevation` / `ChannelBedElevation`.
 
-> **✅ RATIFIED (owner, 2026-07-23) — the neap gap is fixed: `SandbarCrestElevation` 1.6 m → 1.4 m.**
-> **✅ APPLIED IN CODE 2026-07-29.** `StPetersBuilder.SandbarCrestElevation` now reads `1.4f`, and two
-> EditMode tests hold it there: one walks a whole lunar month of the real `TideModel` and asserts the
-> crest clears the *weakest* high water it produces (derived from `GameConfig`, not from the 1.575
-> below, so re-tuning the neap fraction re-checks the gate); the other is the measured sabotage —
-> it asserts the old 1.6 m **would** strand the bar, so the guard is shown firing on exactly the
-> value it replaced.
+> **✅ RATIFIED (owner, 2026-07-23) — the neap gap is fixed: the crest must clear neap high water.**
+> **✅ APPLIED IN CODE 2026-07-29 · RE-SCALED 2026-08-01.** `StPetersBuilder.SandbarCrestElevation`
+> reads `0.88f` (it was 1.4 against the old ±3.5 m swing — the ratio 0.4 is what actually carries the
+> ruling forward). Three EditMode tests hold it: one walks a whole lunar month of the real `TideModel`
+> and asserts the crest clears the *weakest* high water it produces (derived from `GameConfig`, so
+> re-tuning the neap fraction or the amplitude re-checks the gate); one is the measured sabotage,
+> re-aimed at **1.4** — the crest you get by moving the amplitude and forgetting the crest rides on it;
+> and `TidePacingInvariantTests` pins the window's in-game length and the peak rate.
 >
-> As shipped, neap amplitude (1.575 m) sits *just* under the 1.6 m crest, so for part of every lunar
-> month the bar never floods and the prologue's one tide gate silently switches itself off. Putting the
-> crest below neap high water means **the island is cut off twice a day, every day of the month** — the
-> lesson always holds, and the tide is never something you can ignore.
+> Any crest at or above neap high water means that for part of every lunar month the bar never floods
+> and the prologue's one tide gate silently switches itself off. Putting the crest below it means
+> **the island is cut off twice a day, every day of the month** — the lesson always holds, and the
+> tide is never something you can ignore.
 >
-> **What the change actually costs, computed both ways:**
+> **What the change costs, computed both ways** (as shipped: amplitude 2.2 m, 75 s per game hour, so
+> the cycle is 15:32 real):
 >
-> | Crest | Spring: exposed / flooded | Neap: exposed / flooded |
-> |---|---|---|
-> | 1.6 m (the old value) | **6:44** / 3:37 | **10:21 / 0:00 — never floods** |
-> | **1.4 m (ratified · shipped)** | **6:31** / 3:49 | **8:46** / 1:34 |
+> | Crest | crest/amp | Spring: exposed / flooded | Neap: exposed / flooded |
+> |---|---|---|---|
+> | 1.4 m (un-scaled — the trap) | 0.64 | **11:10** / 4:21 | **15:32 / 0:00 — never floods** |
+> | **0.88 m (ratified · shipped)** | **0.40** | **9:48** / 5:44 | **13:10** / 2:21 |
 >
-> **The gate now exists at every point in the month**, which is the whole purpose. The spring window
-> barely moves (6:44 → 6:31).
+> **The gate exists at every point in the month**, which is the whole purpose.
 >
-> **And the mechanic gains a gradient nobody designed but everybody wants:** neap is the *forgiving*
-> end (8:46 of dry bar, and the flood only lasts 1:34, so being caught costs you a short wait), spring
-> is the tense one (6:31, and being caught costs a real 3:49). The sea is kinder some weeks than
-> others, and it is kinder in a way the player can learn to read.
->
-> **Against a 600 m bar** the numbers land exactly where you'd want them: walking it both ways is
-> 6:40, which **just misses** the 6:31 spring window and fits neap comfortably. Sprinting the return
-> (walk out 3:20, sprint back 1:49 = 5:09) always makes it. So the bar reads as *"you can do this, but
-> not at spring, and not if you dawdle"* — and the escape valve is your own legs, not luck.
+> **And the mechanic keeps the gradient nobody designed but everybody wants:** neap is the *forgiving*
+> end (13:10 of dry bar, and the flood only lasts 2:21, so being caught costs you a short wait), spring
+> is the tense one (9:48, and being caught costs a real 5:44). The sea is kinder some weeks than
+> others, and it is kinder in a way the player can learn to read. Those are the same fractions of the
+> cycle as before the pacing ruling — only the clock they are read on is slower.
 
-If the crossing later wants to feel longer or shorter, **move the tide constants before moving the
-bar** — the window is one number, the bar is a scene's worth of terrain.
+If the crossing later wants to feel longer or shorter, **move the bar, not the tide constants** — the
+owner has ruled on the tide twice now, and the ratio that sets the window is load-bearing for the
+neap gate as well. (This line used to say the opposite. It was written when the tide was nobody's
+decision in particular; it is now the owner's, twice.)
 
 ### 5.3 Waves crashing into the island
 

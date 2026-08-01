@@ -14,7 +14,8 @@ namespace HiddenHarbours.Core
     /// here.</para>
     ///
     /// <para><b>Time canon</b> (verified against <c>GameConfig</c>/<c>GameClock</c>): 4 seasons × 28 days,
-    /// Mon-first week, day = 1200 in-game s, new game starts Early Spring · Day 1 · 06:00. Season/Weekday
+    /// Mon-first week, day = <c>GameConfig.SecondsPerDay</c> real seconds (ships at 1800 = 30 real min),
+    /// new game starts Early Spring · Day 1 · 06:00. Season/Weekday
     /// enum orders match the rig's <c>SEASON_ABBR</c>/<c>WEEKDAYS</c> tables.</para>
     /// </summary>
     public readonly struct WatchFaceState

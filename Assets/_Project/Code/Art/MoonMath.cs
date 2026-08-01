@@ -46,7 +46,9 @@ namespace HiddenHarbours.Art
         /// </summary>
         /// <param name="totalSeconds">The master clock (in-game seconds since new game; <c>IGameClock.TotalSeconds</c>).</param>
         /// <param name="lunarMonthDays">The lunar month in in-game days (GameConfig.LunarMonthDays; canon 28).</param>
-        /// <param name="secondsPerDay">In-game seconds per day (GameConfig.SecondsPerDay; default 1200).</param>
+        /// <param name="secondsPerDay">Real seconds per in-game day — pass
+        /// <c>GameServices.SecondsPerDay</c>, never a literal, or the moon runs on a different day length
+        /// from the tide envelope and the alignment below stops holding (ships at 1800 = a 30-min day).</param>
         /// <param name="phaseOffsetDays">Optional offset (days) to set which day the game STARTS on in the
         /// cycle, so a new game can begin on, say, a full moon. 0 = start on a new moon; 14 (half a 28-day month)
         /// = start on a full moon. NOTE the tide envelope above is keyed to the RAW clock (it takes no offset),

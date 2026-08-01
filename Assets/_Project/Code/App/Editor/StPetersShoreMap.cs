@@ -53,29 +53,52 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================
         //  AUTHORED BANDS (single source of truth shared with StPetersShoreMapTests)
         // =====================================================================================
-        // Read against St Peters' tide: mean 0, amplitude 3.5 m, so spring water swings -3.5 .. +3.5 m and
-        // neap only +/-1.575 m (GameConfig.NeapAmplitudeFraction 0.45). Every threshold below is a TIDE
+        // Read against St Peters' tide: mean 0, amplitude 2.2 m, so spring water swings -2.2 .. +2.2 m and
+        // neap only +/-0.99 m (GameConfig.NeapAmplitudeFraction 0.45). Every threshold below is a TIDE
         // STATE stated as an elevation, not a taste: "above the highest water", "washed at spring but not
         // at neap", "bares only in the bottom half".
+        //
+        // ⚠ THE BAND FLOORS DELIBERATELY DID NOT MOVE when the amplitude fell 3.5 -> 2.2 m (owner's
+        // tide-pacing ruling, 2026-08-01) — they were AUDITED instead, and every property each one claims
+        // still holds: grass is still above the highest spring water, marram is still dry all neap week and
+        // washed on the springs, sand is still dry for most of an ordinary tide, ripple still bares only in
+        // the bottom half, and the -4 m harbour floor is still entirely below the paint floor. Only the
+        // BarSpineFloorElevation scaled, because it alone is defined against the CREST rather than against
+        // the tide (see its note). What did change is proportion, not character: with the highest water
+        // 1.3 m lower, the sea-touched part of the marram band narrows and the permanently-dry dune belt
+        // above it widens by ~2 m of elevation (~9 m of shore on the beach's 0.23 m/m gradient). Marram on
+        // a dry dune is still marram, so this reads as a wider dune rather than a wrong one — but it is a
+        // visible change to the painted coast, and the owner should eyeball it after re-running the builder.
 
         /// <summary>
         /// Below this elevation nothing is painted — the cell is left empty and the shader's depth-graded
-        /// water is all you see. At spring low water (−3.5 m) ground here lies under ~0.9 m of water, which
-        /// is about as deep as a painted bottom still reads through the column once absorption is on
-        /// (ADR 0027 num 7); past it the tile would be a tile nobody ever sees, paid for in scene bytes.
-        /// The flat −4.0 m harbour floor is entirely below it, so the deep sea stays unpainted by
-        /// construction rather than by a special case.
+        /// water is all you see. Painted ground is ground that either bares or lies shallow enough to
+        /// read through the column once absorption is on (ADR 0027 num 7); below this a tile would be a
+        /// tile nobody ever sees, paid for in scene bytes. The flat −4.0 m harbour floor is entirely
+        /// below it, so the deep sea stays unpainted by construction rather than by a special case.
+        ///
+        /// <para>⚠ THIS ONE HAD TO MOVE with the 2026-08-01 amplitude ruling, and the test caught it: at
+        /// −2.6 m it sat BELOW the new spring low water (−2.2 m), which
+        /// <c>StPetersShoreMapTests.TheBandsAreOrderedAndEachOneIsATideState</c> forbids — a paint floor
+        /// under the lowest water is paint spent on seabed that is never once uncovered. The value is the
+        /// MIDPOINT between spring low water and the ripple floor, which is exactly where −2.6 sat in the
+        /// old ±3.5 world (−3.5 and −1.7 → −2.6). At ±2.2 that is −1.95. Note it could NOT simply be
+        /// scaled: 0.6286 × −2.6 = −1.63 would have risen ABOVE the ripple floor and broken the ladder.</para>
         /// </summary>
-        public const float PaintFloorElevation = -2.6f;
+        public const float PaintFloorElevation = -1.95f;
 
-        /// <summary>Above the highest water of the biggest spring tide (+3.5 m) with a margin: ground the
+        /// <summary>Above the highest water of the biggest spring tide (+2.2 m) with a margin: ground the
         /// sea never touches, so it carries the reverting meadow §5.1 calls for ("marsh, meadows, wild
-        /// roses/raspberries → the reverting interior").</summary>
+        /// roses/raspberries → the reverting interior"). The margin widened from 0.7 m to 2.0 m when the
+        /// amplitude fell to 2.2 — it is a floor for ground the sea never reaches, so a larger margin only
+        /// makes the claim safer.</summary>
         public const float GrassFloorElevation = 4.2f;
 
-        /// <summary>Marram binds the sand that only the big tides reach. 1.6 m sits just above neap high
-        /// water (1.575 m) and well below spring high (3.5 m), so this band is dry all neap week and washed
-        /// on the springs — which is precisely where marram grows.</summary>
+        /// <summary>Marram binds the sand that only the big tides reach. 1.6 m sits above neap high water
+        /// (0.99 m) and below spring high (2.2 m), so this band is dry all neap week and washed on the
+        /// springs — which is precisely where marram grows. It used to sit hard against neap high (1.575 m)
+        /// and now sits roughly midway between the two, so the washed part of the band is narrower and the
+        /// dry dune above it wider; the property the band is defined by is unchanged.</summary>
         public const float MarramFloorElevation = 1.6f;
 
         /// <summary>The beach proper: dry for most of an ordinary tide, covered near high water. −0.4 m is
@@ -102,8 +125,15 @@ namespace HiddenHarbours.App.Editor
         public const float BarSpineHalfWidth = 8f;
 
         /// <summary>The spine only reads as a path where it is actually the crest. Below this the bar has
-        /// already fallen away into its flanks, so the cobble stops and the sand starts.</summary>
-        public const float BarSpineFloorElevation = 0.6f;
+        /// already fallen away into its flanks, so the cobble stops and the sand starts.
+        ///
+        /// <para>⚠ This is the ONE band floor defined against <c>StPetersBuilder.SandbarCrestElevation</c>
+        /// rather than against the tide, so it is the one that SCALED with the 2026-08-01 amplitude ruling:
+        /// 0.6 → 0.377, holding 0.6/1.4 = 0.4286 of the crest exactly (equivalently 0.6 × 2.2/3.5). Left at
+        /// 0.6 against the new 0.88 m crest the spine would have covered only the top third of the bar's
+        /// rise instead of the top half, and the cobble path down the crossing would have visibly thinned
+        /// for no reason anyone chose.</para></summary>
+        public const float BarSpineFloorElevation = 0.377f;
 
         /// <summary>
         /// The direction the WEATHER coast faces: south-east. Every point whose (ellipse-normalised)

@@ -18,7 +18,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// height drives the water render, the on-foot walkability and the boat grounding (P1: what you see is
     /// what you can sail/walk). These tests drive the terrains from the BUILDERS' authored constants (the
     /// single source of truth each scene is built from — the StPetersTerrainTests convention) against the
-    /// LIVE tide swing (the persistent core's St Peters profile, mean 0 ± 3.5 m), asserting:
+    /// LIVE tide swing (the persistent core's St Peters profile, mean 0 ± 2.2 m), asserting:
     /// the land/planks the player and vendors use stay EXPOSED at the highest water, the water the boat
     /// parks in stays FLOATABLE at the lowest, and each region has a genuinely INTERTIDAL band — the
     /// converged, visibly moving shoreline. Plus the cove logic-tree wiring (terrain + WaterSurface Sea
@@ -29,8 +29,8 @@ namespace HiddenHarbours.Tests.EditMode
         // The LIVE tide both regions run under (the persistent core's, authored by the START scene =
         // St Peters; PersistentCoreBuilder: "nothing re-points it on a region hop yet"). Assert at the
         // EXTREMES of the swing — the strictest case.
-        const float HighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   // +3.5
-        const float LowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -3.5
+        const float HighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   // +2.2
+        const float LowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -2.2
 
         const float DoryDraught = 0.3f;   // the start boat's draught (GreyboxBuilder authors it)
 
@@ -111,7 +111,13 @@ namespace HiddenHarbours.Tests.EditMode
             var t = MakeCove(out var go);
             try
             {
-                float e = t.ElevationAt(new Vector2(5f, -7f));
+                // ⚠ The probe moved half a metre seaward (−7 → −7.5) with the 2026-08-01 amplitude
+                // ruling. The cove's beach is STEEP here — 2.48 m at y = −7, −0.48 m at y = −8 — so the
+                // intertidal band is a metre wide and a smaller swing moves it. At −7 the ground is
+                // 2.48 m, which the old ±3.5 m swing covered and the new ±2.2 m one does not; at −7.5 it
+                // is ~1.0 m, comfortably inside the new swing. The beach is as intertidal as it ever was;
+                // the probe was simply standing on the part of it the tide no longer reaches.
+                float e = t.ElevationAt(new Vector2(5f, -7.5f));
                 Assert.IsFalse(TidalExposure.IsExposed(HighWater, e),
                     "at high water the south beach is covered — the water reaches toward the fence");
                 Assert.IsTrue(TidalExposure.IsExposed(LowWater, e),

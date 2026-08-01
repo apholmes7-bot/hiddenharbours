@@ -49,7 +49,7 @@ Shader "HiddenHarbours/TerrainSplat"
         [NoScaleOffset] _SplatC ("Splat C. Marsh Sedge", 2D) = "black" {}
 
         [Header(Band floors in metres. Builder pushes StPetersShoreMap)]
-        _FloorPaint   ("Paint floor", Float) = -2.6
+        _FloorPaint   ("Paint floor", Float) = -1.95
         _FloorRipple  ("Ripple floor", Float) = -1.7
         _FloorSand    ("Sand floor", Float) = -0.4
         _FloorMarram  ("Marram floor", Float) = 1.6
@@ -76,7 +76,7 @@ Shader "HiddenHarbours/TerrainSplat"
         _BarTo            ("Bar to xy", Vector) = (0, 0, 0, 0)
         _BarHalfWidth     ("Bar half width in metres", Float) = 0.0
         _BarSpineHalfWidth("Spine half width in metres", Float) = 8.0
-        _BarSpineFloor    ("Spine floor in metres", Float) = 0.6
+        _BarSpineFloor    ("Spine floor in metres", Float) = 0.377
         _BarEdgeBlend     ("Bar edge blend in metres", Float) = 2.0
 
         [Header(Grain and macro variation)]

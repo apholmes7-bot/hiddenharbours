@@ -28,8 +28,8 @@ namespace HiddenHarbours.Tests.EditMode
         private GameObject _go;
         private TidalTerrain _terrain;
 
-        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  3.5
-        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -3.5
+        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  2.2
+        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -2.2
 
         [SetUp]
         public void SetUp()
@@ -318,7 +318,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Contains(StPetersWharf.DeckMaterial, WharfKitCatalog.DeckMaterials,
                 "the deck material must be one the kit bakes");
             Assert.AreNotEqual("float", StPetersWharf.DeckMaterial,
-                "the slip DRIES near spring low (§5.1a: the berth bed is -1.0 m against a -3.5 m low), so a " +
+                "the slip DRIES near spring low (§5.1a: the berth bed is -1.0 m against a -2.2 m low), so a " +
                 "floating dock would spend part of every tide aground — and it would need a driver for its " +
                 "four bob frames that nothing here provides");
 

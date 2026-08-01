@@ -27,10 +27,11 @@ namespace HiddenHarbours.Art
     /// (<c>LunarMonthDays/2</c>) or the alignment breaks — a quarter-period offset would put the full moon on a
     /// NEAP. It ships at <b>14</b> (half a 28-day month): a half-period multiple (alignment preserved) that starts
     /// a new game on a FULL moon over a SPRING tide (the biggest low tide, for the clam-digging opening, with the
-    /// moon reflection visible from the first frame). The period is a serialized tunable defaulting to the canon
-    /// 28 days / 1200 s/day — it MIRRORS <c>GameConfig.LunarMonthDays</c>/<c>SecondsPerDay</c>. (GameConfig isn't
-    /// in a Resources folder, so it can't be auto-loaded here without touching the builders/other lanes; if a
-    /// future change exposes it through Core, wire it then. Until then keep these in sync with GameConfig.)</para>
+    /// moon reflection visible from the first frame). The period itself is READ FROM THE OWNER'S CONFIG through
+    /// <c>GameServices.LunarMonthDays</c> / <c>GameServices.SecondsPerDay</c> — the same two numbers the tide
+    /// envelope uses, so the alignment is structural rather than hand-maintained. (It used to be a pair of
+    /// serialized mirrors kept in sync by comment; the 2026-08-01 day-length ruling is exactly the change that
+    /// would have broken them, so Core grew the accessors instead.)</para>
     ///
     /// <para><b>Self-installing (mirrors <see cref="GrassWindBridge"/> / <see cref="DayNightController"/>).</b>
     /// A <see cref="RuntimeInitializeOnLoadMethod"/> spawns one hidden <c>[DontDestroyOnLoad]</c> host before
@@ -46,14 +47,16 @@ namespace HiddenHarbours.Art
         private static readonly int IdMoonDir        = Shader.PropertyToID("_MoonDir");
         private static readonly int IdMoonPhaseState = Shader.PropertyToID("_MoonPhaseState");
 
-        [Header("Lunar period (KEEP IN SYNC with GameConfig — drives phase = tide alignment)")]
-        [Tooltip("Lunar month in in-game DAYS. Mirrors GameConfig.LunarMonthDays (canon 28). The PHASE derives " +
-                 "from this same period as the tide's spring/neap envelope, so full moon ~ spring tide.")]
-        [Min(0.1f)] [SerializeField] private float _lunarMonthDays = 28f;
+        // ⚠ THE LUNAR PERIOD IS NOT MIRRORED HERE ANY MORE (2026-08-01). This host used to carry its own
+        // serialized `_lunarMonthDays = 28f` / `_secondsPerDay = 1200f` because Core exposed no accessor —
+        // and since the host is spawned hidden at runtime, those were unreachable constants pretending to
+        // be tunables. The owner's tide-pacing ruling (SecondsPerDay 1200 → 1800) turned that into a live
+        // defect: the phase would have advanced 1.5× faster than the tide's envelope and full-moon-on-a-
+        // spring would have drifted apart inside the first in-game week. Both now come from
+        // GameServices.LunarMonthDays / .SecondsPerDay, which resolve the owner's GameConfig each read and
+        // fall back to the Core defaults when nothing is wired.
 
-        [Tooltip("In-game SECONDS per day. Mirrors GameConfig.SecondsPerDay (default 1200 = a 20-min day).")]
-        [Min(1f)] [SerializeField] private float _secondsPerDay = 1200f;
-
+        [Header("Phase offset")]
         [Tooltip("Days to offset the start of the cycle, so a new game can begin on a chosen phase. " +
                  "0 = the game starts on a new moon; 14 (half a 28-day month) = starts on a FULL moon. " +
                  "MUST be a multiple of the HALF-lunar period (LunarMonthDays/2): the phase is offset here but " +
@@ -121,8 +124,11 @@ namespace HiddenHarbours.Art
             double totalSeconds = clock.TotalSeconds;
             float dayFraction = clock.DayFraction;
 
+            // ⚠ The lunar period comes from the LIVE config every tick, never a cached or mirrored copy,
+            // or the drawn moon and the tide's spring/neap envelope run on two different day lengths and
+            // the full-moon-on-a-spring alignment quietly drifts apart (see GameServices.SecondsPerDay).
             ComputeState(totalSeconds, dayFraction,
-                         _lunarMonthDays, _secondsPerDay, _phaseOffsetDays,
+                         GameServices.LunarMonthDays, GameServices.SecondsPerDay, _phaseOffsetDays,
                          _moonriseFraction, _moonsetFraction, _phaseDrivesPresence,
                          out Vector2 dir, out Vector4 phaseState);
 

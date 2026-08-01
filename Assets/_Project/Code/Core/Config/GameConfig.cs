@@ -11,11 +11,24 @@ namespace HiddenHarbours.Core
     public class GameConfig : ScriptableObject
     {
         /// <summary>The day length the clock ships with — the single fallback consumers use when no
-        /// config asset is wired (EditMode, a bare test rig). One constant, never a scattered 1200.</summary>
-        public const float DefaultSecondsPerDay = 1200f;
+        /// config asset is wired (EditMode, a bare test rig). One constant, never a scattered literal.
+        ///
+        /// <para>⚠ <b>1800 = a 30-minute day, ruled by the owner 2026-08-01</b> (was 1200 / 20 min). It is
+        /// one of the two levers behind "the tide falls too fast" — this one stretches every in-game hour
+        /// from 50 to 75 real seconds, so EVERY tide window gets 1.5× longer in real minutes without moving
+        /// a single in-game-hour figure. The other lever is St Peters' tide amplitude
+        /// (<c>StPetersBuilder.TideAmplitude</c> 3.5 → 2.2 m). Together the peak water-level rate falls
+        /// ~2.4×, from ~3.5 cm/s to ~1.5 cm/s.</para>
+        ///
+        /// <para>Everything else paced in in-game time — freshness, NPC routines, market ticks, day/night,
+        /// the moon — slows by the same 1.5× in REAL time. That is the sanctioned consequence of the day-
+        /// length ruling, not a regression.</para></summary>
+        public const float DefaultSecondsPerDay = 1800f;
 
         [Header("Clock")]
-        [Tooltip("Real seconds per in-game day. 1200 = a 20-minute day.")]
+        [Tooltip("Real seconds per in-game day. 1800 = a 30-minute day (the owner's 2026-08-01 tide-pacing " +
+                 "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
+                 "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = 28;
@@ -25,8 +38,15 @@ namespace HiddenHarbours.Core
         [Header("Tide")]
         [Tooltip("Principal lunar semidiurnal period in hours (~12.42 = two highs per tidal day).")]
         public float TidalPeriodHours = 12.4206f;
+
+        /// <summary>The canon lunar month — the fallback for consumers with no config wired, and the
+        /// sibling of <see cref="DefaultSecondsPerDay"/>. The DRAWN moon and the tide's spring/neap
+        /// envelope must derive from the SAME period or full moon stops landing on a spring tide
+        /// (vision-and-pillars §5.5), so neither may carry its own copy.</summary>
+        public const float DefaultLunarMonthDays = 28f;
+
         [Tooltip("Moon cycle in in-game days; drives the spring/neap envelope. Canon: 28.")]
-        public float LunarMonthDays = 28f;
+        public float LunarMonthDays = DefaultLunarMonthDays;
         [Tooltip("At neap, amplitude is this fraction of spring amplitude (0..1).")]
         [Range(0f, 1f)] public float NeapAmplitudeFraction = 0.45f;
 

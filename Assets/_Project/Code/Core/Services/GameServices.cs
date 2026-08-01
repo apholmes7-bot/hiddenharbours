@@ -162,6 +162,32 @@ namespace HiddenHarbours.Core
                                                             TidalTerrain, in settings);
         }
 
+        /// <summary>
+        /// The world's day length in REAL seconds — the owner's <see cref="GameConfig.SecondsPerDay"/>
+        /// when a config is wired, else <see cref="GameConfig.DefaultSecondsPerDay"/>. Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c>
+        /// on a <c>UnityEngine.Object</c>).
+        ///
+        /// <para><b>Why this accessor exists (2026-08-01).</b> The day length is the denominator under
+        /// every in-game-hour pace in the game, and two self-installing hosts — <c>MoonCycle</c> and
+        /// <c>DayNightController</c> — each carried their own serialized <c>1200f</c> copy of it because
+        /// Core did not expose one. The moment the owner's tide-pacing ruling moved the dial to 1800 those
+        /// copies became a real defect rather than untidiness: the moon's phase would advance 1.5× faster
+        /// than the tide's spring/neap envelope, so the FULL MOON ON A SPRING TIDE alignment
+        /// (vision-and-pillars §5.5, proved by <c>MoonMath.Phase01</c>) would drift apart within the first
+        /// in-game week. One dial, one reader.</para>
+        /// FLAG lead-architect: new Core contract (the clock-pace seam).
+        /// </summary>
+        public static float SecondsPerDay =>
+            Config != null ? Config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
+
+        /// <summary>The lunar month in in-game DAYS — the other half of the moon/tide alignment, same
+        /// contract as <see cref="SecondsPerDay"/>. The tide's envelope reads
+        /// <see cref="GameConfig.LunarMonthDays"/> directly; every VISUAL moon consumer reads it here, so
+        /// the two can never be tuned apart.</summary>
+        public static float LunarMonthDays =>
+            Config != null ? Config.LunarMonthDays : GameConfig.DefaultLunarMonthDays;
+
         /// <summary>The tide table's owner tunables (VS-06) — how far the almanac page looks ahead and
         /// how finely it hunts each turn. Same contract as <see cref="WaveField"/>, including the
         /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).

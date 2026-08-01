@@ -25,12 +25,17 @@ The world must feel like a place with **moods that you learn to read**, never a 
 ### 1.1 Day length & time scale
 
 - One in-game **day = 24 in-game hours**, mapped to a tunable **real-time day length** `D_real`.
-- **Default `D_real` = 20 real minutes** (canon range 18–24 min). At 20 min/day, **1 in-game hour ≈ 50 real seconds** and **1 in-game minute ≈ 0.83 real seconds**.
+- **Default `D_real` = 30 real minutes** (canon range 20–30 min). At 30 min/day, **1 in-game hour = 75 real seconds** and **1 in-game minute ≈ 1.25 real seconds**.
+  > **Ruled 2026-08-01 (owner):** `D_real` 20 → **30 min** (`GameConfig.SecondsPerDay` 1200 → 1800), one of
+  > the two levers behind "the tide falls too fast" — the other being St Peters' tide amplitude
+  > (3.5 → 2.2 m). Because every pace in the game is clocked in in-game hours, this stretches **all** of
+  > them in real time by ×1.5 — tide windows, rot, NPC routines, market ticks, the moon. That is the
+  > intent, not a side effect: no in-game-hour figure anywhere in these docs changes.
 - Define the master scale factor:
 
   ```
   timeScale = (24 * 3600) / (D_real_seconds)      // in-game seconds per real second
-  // at D_real = 20 min = 1200 s  ->  timeScale = 72
+  // at D_real = 30 min = 1800 s  ->  timeScale = 48
   ```
 
 - **`gameTime`** is the single source of truth: a `double` count of **in-game seconds since world epoch** (day 0, 00:00, Year 1, first day of Early Spring). All derived systems (tide, sun, moon, weather phase) are pure functions of `gameTime`. Store as `double`, not `float` — across a multi-year save, `float` (≈7 sig digits) loses sub-minute precision; `double` does not.

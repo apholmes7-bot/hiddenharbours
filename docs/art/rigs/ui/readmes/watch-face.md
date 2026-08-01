@@ -47,7 +47,7 @@ preview live at `WatchRig.hit.light` and `WatchRig.hit.mode` (rig-local `{x,y,w,
 
 - **4 seasons × 28 days = a 112-day year**; week runs **Mon–Sun**; market day is tunable (preview = Sat).
 - **Night** = `hour < 6 || hour >= 19`.
-- **SecondsPerDay = 1200** → one in-game day = 20 real minutes.
+- **SecondsPerDay = 1800** → one in-game day = 30 real minutes (ruled 2026-08-01; was 1200 / 20 min).
 - Derive weekday & market day from the absolute day index: `di = (year-1)·112 + seasonIdx·28 + (day-1)`.
 - New game starts **Early Spring · Day 1 · 06:00**.
 

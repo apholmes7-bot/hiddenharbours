@@ -519,7 +519,9 @@ month, **tied to the existing tide cycle**. This is the one piece that adds C# b
   alignment inverts (a quarter-cycle offset like 7 would put the full moon on a *neap*). It ships at **14** — a
   half-period multiple that also starts a new game on a **full moon over a spring tide** (the biggest low tide,
   for the clam-digging opening, moon reflection visible from frame one). The period is a serialized tunable
-  defaulting to the canon **28 days / 1200 s/day** (mirroring `GameConfig.LunarMonthDays` / `SecondsPerDay`);
+  reading the canon **28 days / 1800 s/day** through `GameServices.LunarMonthDays` / `GameServices.SecondsPerDay`
+  (they were serialized mirrors of `GameConfig` until 2026-08-01, when the day-length ruling showed a mirror
+  can drift the drawn moon off the tide's spring/neap envelope);
   `GameConfig` isn't in a `Resources` folder so it can't be auto-loaded here without touching the builders —
   keep these in sync, or expose `GameConfig` through Core later (an additive follow-up).
 - **Per-night presence by phase (the night-sailing stakes).** A tunable links the moon's per-night presence to

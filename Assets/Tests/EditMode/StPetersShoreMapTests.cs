@@ -40,10 +40,10 @@ namespace HiddenHarbours.Tests.EditMode
         private GameObject _go;
         private TidalTerrain _terrain;
 
-        // St Peters' tide, from the builder: mean 0, amplitude 3.5 m, neap fraction 0.45 (GameConfig).
-        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  3.5
-        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -3.5
-        const float NeapHighWater   = 0.45f * StPetersBuilder.TideAmplitude;                      //  1.575
+        // St Peters' tide, from the builder: mean 0, amplitude 2.2 m, neap fraction 0.45 (GameConfig).
+        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  2.2
+        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -2.2
+        const float NeapHighWater   = 0.45f * StPetersBuilder.TideAmplitude;                      //  0.99
 
         [SetUp]
         public void SetUp()
@@ -186,7 +186,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Marram is the band that is dry all neap week and washed on the springs. That is where marram
             // actually grows, and it is why the number is 1.6 and not a taste.
             Assert.Greater(StPetersShoreMap.MarramFloorElevation, NeapHighWater,
-                "the dune band must clear NEAP high water (1.575 m) or it is just more beach");
+                "the dune band must clear NEAP high water (0.99 m) or it is just more beach");
             Assert.Less(StPetersShoreMap.MarramFloorElevation, SpringHighWater,
                 "the dune band must be reached by SPRING high water or it is just more meadow");
 

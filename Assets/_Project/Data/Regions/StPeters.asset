@@ -25,7 +25,7 @@ MonoBehaviour:
   IsDeepHarbour: 0
   HarbourDepthMeters: 2
   TideMeanLevel: 0
-  TideAmplitude: 3.5
+  TideAmplitude: 2.2
   TidePhaseHours: 1
   SpawnFishIds:
   - fish.soft_shell_clam

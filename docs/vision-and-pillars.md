@@ -102,7 +102,7 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 > trawler are parallel branches before they converge into the commerce tier.
 
 ### 5.5 Core systems at a glance (each has its own design doc)
-- **Time:** 24-hour clock; one in-game day ≈ 18–24 real minutes (tunable). Four seasons. → `design/time-tides-weather.md`
+- **Time:** 24-hour clock; one in-game day ≈ 20–30 real minutes (tunable; **ships at 30**). Four seasons. → `design/time-tides-weather.md`
 - **Tides:** semidiurnal (two highs / two lows per tidal day), spring/neap cycle on a ~28-day moon. Tide height drives water level, grounding, and seabed access. A readable **tide table** is a core tool. → `design/time-tides-weather.md`
 - **Weather & wind:** wind vector + sea state + fog + storms; wind and tidal current apply *physical forces* to boats. Forecasts exist (barometer, harbourmaster, radio). → `design/time-tides-weather.md`
 - **Fish:** **100 species** as data assets (not hand-coded), spanning inshore, shellfish, pelagic, flats, deepwater, storm-grounds, and legendary. → `design/fish-and-content.md`

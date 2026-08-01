@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -19,8 +20,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class MoonMathTests
     {
-        private const float LunarDays = 28f;     // canon GameConfig.LunarMonthDays
-        private const float SecPerDay = 1200f;   // canon GameConfig.SecondsPerDay
+        // ⚠ READ FROM CORE, not written out. These used to be literal 28f / 1200f "mirroring canon", and
+        // the 2026-08-01 day-length ruling (1200 → 1800) is exactly the change that would have made the
+        // comment a lie while every assertion kept passing — the maths below is scale-invariant, so a
+        // stale scale here is invisible. Bound to the constants, "canon" stays true by construction.
+        private const float LunarDays = GameConfig.DefaultLunarMonthDays;
+        private const float SecPerDay = GameConfig.DefaultSecondsPerDay;
         private static double LunarSeconds => (double)LunarDays * SecPerDay;
 
         // The phase offset the SHIPPED component uses (MoonCycle._phaseOffsetDays). Kept here so the alignment
