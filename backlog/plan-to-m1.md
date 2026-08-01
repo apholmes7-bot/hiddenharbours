@@ -372,7 +372,12 @@ sprite oars needed five hand-tuned rock-coupling knobs to keep an overlay on the
 This is the **visual half of D8**, and the gameplay half came with it: `boat.dory_outboard` (Propulsion =
 Engine, every other stat copied from `boat.dory` so the pair cannot drift) wears the **same visual**, and
 `BoatHullSkinner` draws the engine only on the hull that has one. She is a picker rung and a fleet-registry
-hull; **no `ShipwrightOffer` — what she costs and who sells her is the Nine Mile Creek purchase beat.**
+hull; ~~no `ShipwrightOffer` — what she costs and who sells her is the Nine Mile Creek purchase beat.~~
+**✅ SOLD NOW.** `Data/Shipwright/DoryOutboardOffer.asset` (`boat.dory_outboard`, **₲900**, not damaged) on a
+`Shipwright` at Hector's barrel in the creek's dory yard, paid from the persistent wallet proxy — the same
+offer/`BoatPurchased` path the dory herself uses, so the grant, the save and the transom mount all follow
+with no new system and no save-schema change. Price is the owner's tunable (see
+`docs/design/m1-progression-pacing.md` §3).
 
 - **⚠️ The loan's one cost, stated:** the punt's leg is 0.185 m shorter than the reach the dory's high
   transom needs, so the borrowed engine is hung by its **prop** (which lands exactly where her own kicker's

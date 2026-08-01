@@ -272,6 +272,31 @@ namespace HiddenHarbours.App.Editor
                 o.Price = 400; o.StartsDamaged = true; o.RepairCost = 300;
             });
 
+            // THE USED OUTBOARD — the M1 ladder's CLOSING rung (m1-progression-pacing.md §2, target day
+            // 13–15), and the thing that was missing: boat.dory_outboard has existed as a hull since #366
+            // but nothing sold it, so the player could never legitimately reach it. This is that offer, and
+            // it is the SAME mechanism the dory herself uses — a ShipwrightOffer pointed at a stable boat
+            // id. D8's answer is a hull VARIANT, so buying it swaps the active hull to the dory-with-a-
+            // kicker through the existing BoatPurchased path: no new system, no save-schema change (v7
+            // stands — OwnedBoats/ActiveHullId already carry it).
+            //
+            // ⚠ NOT damaged: unlike the hull, an outboard is bought working, so there is no second repair
+            // beat here. That also matters mechanically — Shipwright.TryBuy marks a non-damaged buy
+            // repaired on grant, which is what keeps ControlSwitcher's boarding gate from locking the
+            // player out of the boat they just upgraded.
+            //
+            // PRICE IS THE OWNER'S TUNABLE (rule 6) and ₲900 is a proposal, not a measurement: it sits
+            // ABOVE the whole dory (₲400 hull + ₲300 repair = ₲700, the day-6–9 big save-up) so the
+            // closing rung still costs a real climb, and at exactly HALF the Punt (₲1800) so hanging a
+            // kicker on the boat you already own is plainly the cheaper rung than buying a bigger boat
+            // (P2 dory-to-dynasty, P4 earn it then automate it). Committed canonical asset (economy-sim
+            // owns Data/Shipwright); created here only if absent so the builder stays self-sufficient.
+            var doryOutboardOffer = LoadOrCreate<ShipwrightOffer>(DataShip + "/DoryOutboardOffer.asset", o =>
+            {
+                o.BoatId = "boat.dory_outboard"; o.DisplayName = "Used Outboard (fitted to your dory)";
+                o.Price = 900; o.StartsDamaged = false; o.RepairCost = 0;
+            });
+
             // Pot offers (pots are BOUGHT, not conjured — the trap loop's P2 money wheel): counted,
             // repeatable stock sold at the shipwright shed. Committed canonical assets (economy-sim);
             // created here only if absent so the builder stays self-sufficient. Prices are the offer
@@ -387,6 +412,7 @@ namespace HiddenHarbours.App.Editor
             codLicense       = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/CodLicense.asset");
             rodOffer         = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
             damagedDoryOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/DamagedDoryOffer.asset");
+            doryOutboardOffer = AssetDatabase.LoadAssetAtPath<ShipwrightOffer>(DataShip + "/DoryOutboardOffer.asset");
             lobsterPotOffer  = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/LobsterPotOffer.asset");
             crabPotOffer     = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/CrabPotOffer.asset");
 
@@ -518,20 +544,32 @@ namespace HiddenHarbours.App.Editor
             SetRef(doryShipwright, "_offer", damagedDoryOffer);
             SetRef(doryShipwright, "_walletProvider", providersGo);
 
-            // --- THE USED-OUTBOARD SELLER (presence + the flagged wiring point) ------------------------
-            // §7.2 asks for the used-outboard seller's PRESENCE here. His purchase and his mechanics are
-            // gameplay-systems' lane and are running concurrently, so this is the stall he attaches to and
-            // nothing more: an empty, named GameObject in the dory yard beside the hull he also sells.
+            // --- HECTOR'S BARREL: THE USED OUTBOARD, NOW ACTUALLY FOR SALE ------------------------------
+            // #364 stood this stall up EMPTY and wrote the seam down so nobody had to guess it: "the
+            // outboard rides the EXISTING shipwright-offer path — add the vendor component here, point it
+            // at the offer asset economy-sim authors, and wire its _walletProvider to the
+            // PersistentWalletProxy every other till here uses." This is that, taken literally. D8 settled
+            // the outboard as a hull VARIANT (boat.dory_outboard), so the vendor is a Shipwright over a
+            // ShipwrightOffer rather than a GearShop — the same component the dory next door uses, at the
+            // same wallet, publishing the same BoatPurchased.
             //
-            // ⭐ THE SEAM, spelled out so nobody has to guess it: the outboard rides the EXISTING
-            // shipwright-offer path. Add the vendor component here (a GearShop over a GearOffer for a
-            // straight purchase, or a Shipwright over a ShipwrightOffer if it turns out to be an upgrade
-            // with a fitting cost), point it at the offer asset economy-sim authors under Data/Gear or
-            // Data/Shipwright, and wire its "_walletProvider" to the PersistentWalletProxy that is already
-            // in this scene ("PersistentProviders") — the same provider every other till here uses. No
-            // dev-input is attached, deliberately: 'P' already buys the Punt next door.
+            // THE MAN, NOT A BUILDING. Canon amended in design/nine-mile-creek-wharf.md: "There is no
+            // shipwright in this region. Not on the wharf, not up the hill" — the dory is "sold by someone
+            // who is not a shipwright". So the till hangs on HECTOR's barrel, not on a shed: he stands
+            // 2.5 m off the dory yard (NineMileCreekPeople.OutboardStallMetres), well inside StallGate's
+            // 4 m reach of this spot, and NineMileCreekPeople says why in his own words — "the man who
+            // sells you the hull is the man who sells you what pushes her". (The two Shipwright BUILDINGS
+            // this scene still draws are pre-existing debt against that same amendment, and the doc leaves
+            // re-siting the yard open for world-content. Not moved here.)
+            //
+            // No dev-input is attached, and it no longer needs one: BuyPointInstaller sweeps every loaded
+            // scene after each load and adds a DevBuyInput (P, on-foot + in reach) to any vendor stall
+            // lacking one — the driver the creek's other flagged tills already run on.
             var outboardStall = new GameObject("UsedOutboardSeller");
             outboardStall.transform.position = new Vector3(DoryYardPos.x + 2f, DoryYardPos.y - 2f, 0f);
+            var outboardSeller = outboardStall.AddComponent<Shipwright>();
+            SetRef(outboardSeller, "_offer", doryOutboardOffer);
+            SetRef(outboardSeller, "_walletProvider", providersGo);
 
             // --- REGION SCENE-LOAD PATH -----------------------------------------------------
             var loaderGo = new GameObject("RegionSceneLoader");
@@ -627,7 +665,10 @@ namespace HiddenHarbours.App.Editor
                       "is at the head of the quay (and its Market finally says it is Nine Mile Creek, not " +
                       "the Cove), the DERELICT DORY lies on the quay in plain sight of where you land, " +
                       "Wendell and Hector stand at their own counters, and the two flavour houses come " +
-                      "from the baked village kit. " +
+                      "from the baked village kit. HECTOR NOW SELLS SOMETHING: his barrel carries a real " +
+                      "Shipwright over the USED OUTBOARD offer (boat.dory_outboard, ₲900 — the owner's " +
+                      "tunable, in Data/Shipwright/DoryOutboardOffer.asset), paid from the same persistent " +
+                      "wallet proxy, so the M1 ladder's closing rung is finally reachable in play. " +
                       "Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
                       "the harbour now runs the St Peters tide-driven model — a RectTidalTerrain (dredged -6 m " +
                       "floor, steep quay edge) + the layered WaterSurface shader on the Sea plane; the waterline " +
