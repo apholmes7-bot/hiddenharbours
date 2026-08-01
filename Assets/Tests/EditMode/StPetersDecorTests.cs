@@ -60,8 +60,9 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheSward_IsAMeadowsWorthOfTufts_NotACarpetAndNotAMange()
         {
             // The renderer budget (rule 7) from above and "the island visibly has grass" from below.
-            // Measured ~900 at the shipped knobs; the band is wide enough to survive tuning, tight
-            // enough that a broken gate (everything rejected, or every cell at 3 tufts) fails.
+            // Measured 593 at the shipped knobs (review-verified by an offline port of the decider);
+            // the band is wide enough to survive tuning, tight enough that a broken gate (everything
+            // rejected, or every cell at 3 tufts) fails.
             var sites = StPetersGrass.Scatter(_terrain);
             Assert.Greater(sites.Count, 400, "the meadow is nearly bare — a gate is rejecting everything");
             Assert.Less(sites.Count, 1800, "the meadow is a solid carpet — the swathe/chance gates are dead");

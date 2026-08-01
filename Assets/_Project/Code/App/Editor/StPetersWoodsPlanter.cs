@@ -122,11 +122,18 @@ namespace HiddenHarbours.App.Editor
             var tufts = new Sprite[GrassTuftPaths.Length];
             for (int i = 0; i < GrassTuftPaths.Length; i++)
             {
-                // Robust to either sprite mode: a Single-mode sheet returns its one sprite, a
-                // Multiple-mode sheet its first (the imported-art trap — LoadAssetAtPath<Sprite> is
-                // null on Multiple).
-                tufts[i] = AssetDatabase.LoadAllAssetsAtPath(GrassTuftPaths[i])
-                                        .OfType<Sprite>().FirstOrDefault();
+                // Robust to either sprite mode, DETERMINISTICALLY: prefer the sprite named for its
+                // file (a Single-mode sheet's one sprite carries the file name), and only fall back
+                // to First — because on a Multiple-mode re-import, sub-sprite enumeration order is
+                // unstable (the sprite-refs trap) and "first" would quietly change the meadow.
+                string stem = System.IO.Path.GetFileNameWithoutExtension(GrassTuftPaths[i]);
+                var all = AssetDatabase.LoadAllAssetsAtPath(GrassTuftPaths[i])
+                                       .OfType<Sprite>().ToArray();
+                // == / != on purpose, never ?? — coalescing skips UnityEngine.Object's overload and
+                // resurrects fake-null (the standing trap), even though a LINQ miss happens to be a
+                // true null today.
+                Sprite named = all.FirstOrDefault(s => s.name == stem);
+                tufts[i] = named != null ? named : (all.Length > 0 ? all[0] : null);
                 if (tufts[i] == null)
                 {
                     Debug.LogWarning($"[StPetersWoodsPlanter] no tuft sprite at {GrassTuftPaths[i]} — " +

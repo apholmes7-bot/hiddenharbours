@@ -26,10 +26,10 @@ namespace HiddenHarbours.App.Editor
     public static class StPetersGrass
     {
         /// <summary>Grid spacing (m) of candidate sites. Fine enough that a swathe reads continuous at
-        /// gameplay zoom, coarse enough that the whole meadow stays around a thousand renderers
-        /// (rule 7: all static, one shared material, so the SRP batcher eats them — but a rebuild and a
-        /// scene load still walk every one) — each accepted site plants 1–3 tufts, see
-        /// <see cref="TuftsAt"/>.</summary>
+        /// gameplay zoom, coarse enough that the whole meadow stays around six hundred renderers
+        /// (measured 593 at the shipped knobs — rule 7: all static, one shared material, so the SRP
+        /// batcher eats them, but a rebuild and a scene load still walk every one) — each accepted
+        /// site plants 1–3 tufts, see <see cref="TuftsAt"/>.</summary>
         public const float GrassStep = 4.0f;
         public const float GrassJitter = 1.5f;
 
