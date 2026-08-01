@@ -123,7 +123,8 @@ namespace HiddenHarbours.App.Editor
             public string CurrentSceneName;       // the loader's home scene (don't rely on Awake vs DDOL order)
             // The START region's live tide (EnvironmentService reads _activeTideProfile directly — nothing
             // re-points it on a region hop yet), so the start scene's authored tide is what RUNS. St Peters
-            // needs its BIG tide (mean 0, amp 3.5) so the bar visibly bares + floods (the showcase).
+            // needs its BIG tide (mean 0, amp 2.2 since the 2026-08-01 pacing ruling; 3.5 before it) so the
+            // bar visibly bares + floods (the showcase).
             public float TideMean;
             public float TideAmplitude;
             public float TidePhaseHours;

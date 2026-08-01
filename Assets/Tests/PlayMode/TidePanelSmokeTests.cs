@@ -20,6 +20,8 @@ namespace HiddenHarbours.Tests.PlayMode
     /// </summary>
     public class TidePanelSmokeTests
     {
+        // A TEST-LOCAL clock scale (the rig sets it on its OWN GameConfig at line ~76), not the shipped
+        // dial — the panel is proved against a clock this test fully controls. The game ships 1800.
         private const double SecondsPerDay = 1200.0;
         private const double SecondsPerHour = SecondsPerDay / 24.0;
         private const float Amplitude = 1.6f;

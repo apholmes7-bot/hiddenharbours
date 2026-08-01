@@ -196,7 +196,7 @@ namespace HiddenHarbours.App.Editor
         // bumps (it is bounds, not the look). Canon holds: Nine Mile Creek is the DEEP, DREDGED harbour
         // (IsDeepHarbour, -6 m floor), so its quay edge is steep and the waterline sweep is modest — the
         // tide reads here as rising/falling against the quay, not a wandering beach (the cove and St
-        // Peters carry the big flats). NOTE the live tide is the persistent core's (St Peters ±3.5 m;
+        // Peters carry the big flats). NOTE the live tide is the persistent core's (St Peters ±2.2 m;
         // nothing re-points it per region yet) — these values are authored against that swing. Public +
         // single-source-of-truth so the EditMode convergence test asserts the same coast the scene is
         // built from (the StPetersBuilder convention). All tunables (rule 6).

@@ -86,7 +86,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private GameConfig MakeConfig()
         {
-            var cfg = ScriptableObject.CreateInstance<GameConfig>();   // sensible defaults (1200 s/day, etc.)
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();   // sensible defaults (1800 s/day, etc.)
             _spawned.Add(cfg);
             return cfg;
         }
@@ -190,9 +190,16 @@ namespace HiddenHarbours.Tests.PlayMode
             const int seed = 4242;
             string path = Path.Combine(_saveDir, "session.json");
 
-            // The state the saved session ends in (clock advanced ~2.6 days into the game, owns+aboard the
+            // The state the saved session ends in (clock advanced ~2.4 days into the game, owns+aboard the
             // Punt, holds the cod licence, bought+repaired the Punt, owns the rod + shovel, 1,375 ₲).
-            double savedTime = 1200.0 * 2 + 803.5;     // 2 days + 803.5 s — sub-minute precision on purpose
+            // ⚠ DERIVED from the day length, not written out. It was `1200.0 * 2 + 803.5` labelled
+            // "2 days + 803.5 s", and the 2026-08-01 pacing ruling (SecondsPerDay → 1800) made that label
+            // false: the same number became 1.8 days. Nothing FAILED — every use of this value is
+            // self-consistent (seek to it, assert it round-trips, feed it to TideModel) — which is exactly
+            // why it was worth deriving: a wrong comment on a passing test is the kind of thing that
+            // misleads the next reader for a year.
+            double savedTime = GameConfig.DefaultSecondsPerDay * 2 + 803.5;   // 2 days + 803.5 s —
+                                                                              // sub-minute precision on purpose
             const int savedMoney = 1375;
 
             // ---------- SESSION 1: live game, drive grants through the real APIs, SAVE ----------

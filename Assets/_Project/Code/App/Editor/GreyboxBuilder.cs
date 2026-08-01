@@ -117,13 +117,19 @@ namespace HiddenHarbours.App.Editor
         // stay walkable at high water while the moored boat floats beside them at low water.
         //
         // NOTE the LIVE tide these values are authored against is the persistent core's (the START scene's,
-        // St Peters: mean 0, amplitude ±3.5 m — PersistentCoreBuilder: "nothing re-points it on a region hop
-        // yet"). The cove RegionDef's gentler 1.6 m amplitude is aspirational data for the future per-region
-        // tide seam (gameplay-systems); until that lands, author against ±3.5. All tunables (rule 6);
-        // public + single-source-of-truth so the EditMode convergence test asserts the same coast the scene
-        // is built from (the StPetersBuilder convention).
-        public const float CoveDeepElevation = -4f;   // open-water floor: never bares at low water (-3.5)
-        public const float CoveLandElevation = 6f;    // the home ground: dry at every tide (high water +3.5)
+        // St Peters: mean 0, amplitude ±2.2 m since the 2026-08-01 pacing ruling, ±3.5 m before it —
+        // PersistentCoreBuilder: "nothing re-points it on a region hop yet"). The cove RegionDef's gentler
+        // 1.6 m amplitude is aspirational data for the future per-region tide seam (gameplay-systems);
+        // until that lands, author against ±2.2. All tunables (rule 6); public + single-source-of-truth so
+        // the EditMode convergence test asserts the same coast the scene is built from (the StPetersBuilder
+        // convention).
+        //
+        // ⚠ The smaller swing NARROWED this cove's intertidal band rather than moving it: the south beach
+        // falls from +2.48 m at y = −7 to −0.48 m at y = −8, so the ground the tide now sweeps is about a
+        // metre of shore instead of two. It still sweeps — ShorelineConvergenceTests probes it at y = −7.5
+        // — but there is less of it, and a further cut to the amplitude would close it.
+        public const float CoveDeepElevation = -4f;   // open-water floor: never bares at low water (-2.2)
+        public const float CoveLandElevation = 6f;    // the home ground: dry at every tide (high water +2.2)
         public const float CoveBeachFalloff  = 5f;    // gentle south beach → the waterline visibly sweeps ~2-3 m
         public const float CoveDockFalloff   = 1f;    // steep-sided dock spur → deep enough to float alongside
         public static readonly Vector2 CoveLandCenter   = new Vector2(0f, 3.5f);

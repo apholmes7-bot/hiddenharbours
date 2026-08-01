@@ -67,16 +67,12 @@ namespace HiddenHarbours.Art
         [Min(1f)] [SerializeField] private float _overlayOversize = 1.1f;
 
         // ---- moonlight (the moon softly lifts the night tint; strength + colour live in the profile) ----
-        // These four mirror MoonCycle's serialized lunar tunables (which mirror GameConfig — see MoonCycle's
-        // header note for why GameConfig can't be auto-loaded here). KEEP THEM IN SYNC with MoonCycle so the
-        // moonlight on the LAND agrees with the moon the player sees reflected in the WATER.
-        [Header("Moon (KEEP IN SYNC with MoonCycle/GameConfig — the lift must match the visible moon)")]
-        [Tooltip("Lunar month in in-game DAYS. Mirrors MoonCycle/GameConfig.LunarMonthDays (canon 28).")]
-        [Min(0.1f)] [SerializeField] private float _lunarMonthDays = 28f;
-
-        [Tooltip("In-game SECONDS per day. Mirrors MoonCycle/GameConfig.SecondsPerDay (default 1200).")]
-        [Min(1f)] [SerializeField] private float _secondsPerDay = 1200f;
-
+        // The lunar PERIOD is no longer mirrored here: it comes from GameServices.LunarMonthDays /
+        // .SecondsPerDay, the same two numbers MoonCycle and the tide envelope read, so the moonlight on
+        // the LAND cannot drift out of step with the moon reflected in the WATER (2026-08-01 — see
+        // MoonCycle's header for the defect this closes). The ARC fractions below stay serialized: they
+        // are a look decision this host shares with MoonCycle by value, not a simulation constant.
+        [Header("Moon (KEEP IN SYNC with MoonCycle — the lift must match the visible moon)")]
         [Tooltip("Days offsetting the start of the lunar cycle. Mirrors MoonCycle (ships at 14 = a new game " +
                  "starts on a FULL moon; must stay a multiple of the HALF-lunar period — see MoonMath.Phase01).")]
         [SerializeField] private float _phaseOffsetDays = 14f;
@@ -159,8 +155,8 @@ namespace HiddenHarbours.Art
             float moonIllumination = 0f, moonElevation = 0f;
             if (clock != null)
             {
-                float phase01 = MoonMath.Phase01(clock.TotalSeconds, _lunarMonthDays, _secondsPerDay,
-                                                 _phaseOffsetDays);
+                float phase01 = MoonMath.Phase01(clock.TotalSeconds, GameServices.LunarMonthDays,
+                                                 GameServices.SecondsPerDay, _phaseOffsetDays);
                 moonIllumination = MoonMath.IlluminatedFraction(phase01);
                 MoonMath.MoonArc(clock.DayFraction, out _, out moonElevation,
                                  _moonriseFraction, _moonsetFraction);

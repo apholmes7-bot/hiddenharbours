@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Boats;
+using HiddenHarbours.App.Editor;   // StPetersBuilder — the authored tide MinWaterLevel derives from
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -15,9 +16,15 @@ namespace HiddenHarbours.Tests.EditMode
     public class AmbientFleetPlanTests
     {
         // A synthetic St-Peters-like seabed: deep floor −4 m, a shoal ridge across the middle rising
-        // to +1.6 m (the "sandbar"), and an island disc at (−30,−30). Spring low −3.5 m ⇒ only the
-        // deep floor (depth 0.5 m at the floor) clears a 0.4 m margin.
-        private const float MinWaterLevel = -3.5f;   // mean 0, amplitude 3.5 — the tide's hard floor
+        // to +1.6 m (the "sandbar"), and an island disc at (−30,−30). At spring low the deep floor
+        // clears the 0.4 m margin and the bar never does — which is the shape the planner has to read.
+        //
+        // ⚠ DERIVED from the region's authored tide rather than written out. It was a literal −3.5 f,
+        // which is a WATER LEVEL the tide can no longer reach after the 2026-08-01 pacing ruling — the
+        // planner would have been proved against a sea that does not exist. At the shipped ±2.2 m the
+        // floor now clears by 1.8 m instead of 0.5 m, so the margin is easier to hold, not harder.
+        private static readonly float MinWaterLevel =
+            StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // spring low water
         private const float Margin = 0.4f;
 
         private static float Elevation(Vector2 p)

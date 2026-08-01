@@ -17,12 +17,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class ClamScatterTests
     {
-        // The TRUE extremes of the region's tide swing (StPetersBuilder constants): mean 0, amplitude 3.5 →
-        // the water peaks at +3.5 (highest astronomical) and troughs at -3.5 (lowest). The scatter keeps a
+        // The TRUE extremes of the region's tide swing (StPetersBuilder constants): mean 0, amplitude 2.2 →
+        // the water peaks at +2.2 (highest astronomical) and troughs at -2.2 (lowest). The scatter keeps a
         // hole only when its ground is intertidal between these extremes, so flooding/baring is asserted at
         // the actual peak/trough the swing reaches — not an arbitrary mid sample.
-        private static readonly float HighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude; // +3.5
-        private static readonly float LowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude; // -3.5
+        private static readonly float HighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude; // +2.2
+        private static readonly float LowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude; // -2.2
 
         private TidalTerrain _terrain;
         private GameObject _go;

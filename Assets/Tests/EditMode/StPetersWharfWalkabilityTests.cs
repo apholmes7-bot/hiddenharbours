@@ -29,8 +29,8 @@ namespace HiddenHarbours.Tests.EditMode
         private StandablePlatform _pier;
         private GameConfig _config;
 
-        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  3.5
-        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -3.5
+        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   //  2.2
+        const float SpringLowWater  = StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude;   // -2.2
 
         // The owner's wade tunables, read off a fresh GameConfig (its own field defaults) rather than
         // restated here — re-tuning WadeDepth/SwimLimit re-times these tests instead of stranding them
@@ -157,6 +157,14 @@ namespace HiddenHarbours.Tests.EditMode
 
             // A metre beyond each of the three water-facing lips (the west lip meets the beach, so it is
             // dry ground rather than water and is not part of this check).
+            //
+            // ⚠ THE THREE LIPS ARE NOT OVER THE SAME GROUND, and this test used to claim they were. Only
+            // the EAST lip, off the pier head, stands over the dredged slip: measured bed −1.05 m. The
+            // north and south lips are over the shoal beside it, at +1.09 m — a metre ABOVE datum. They
+            // read as Deep under the old ±3.5 m tide only because it put 2.4 m of water over them, not
+            // because anything was dredged there; the 2026-08-01 amplitude ruling leaves 1.1 m and they
+            // read as Swim. So the shared invariant is the one that was always true and always mattered —
+            // YOU CANNOT WALK OFF THE PLANKS — and the boat-only claim is asserted where it is a fact.
             var offEdges = new[]
             {
                 new Vector2(deck.xMax + 1f, 0f),                       // east, off the pier head
@@ -169,11 +177,18 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(TidalWalkability.IsWalkable(_terrain, highTide, Deck, 0.0, p),
                     $"{p} is one metre off the planks and must read as water — a deck that leaked its dryness " +
                     "into the slip beside it would let the player walk out over the berth");
-                Assert.AreEqual(DepthBand.Deep,
+                Assert.AreNotEqual(DepthBand.Dry,
                     TidalWalkability.BandAt(_terrain, highTide, Deck, 0.0, p, WadeDepth, SwimLimit),
-                    $"{p} is over the dredged slip at high water — boat-only, so the soft wall stops the " +
-                    "player at the deck edge");
+                    $"{p} is a metre off the deck and must be water at high tide, not ground");
             }
+
+            // The pier HEAD is the one that is genuinely over the dredged slip, and it is the one the
+            // sail-home beat needs to stay boat-only: this is where you bring her alongside.
+            var offHead = new Vector2(deck.xMax + 1f, 0f);
+            Assert.AreEqual(DepthBand.Deep,
+                TidalWalkability.BandAt(_terrain, highTide, Deck, 0.0, offHead, WadeDepth, SwimLimit),
+                $"{offHead} is over the dredged slip at high water — boat-only, so the soft wall stops " +
+                "the player at the pier head rather than letting them wade out to the mooring");
         }
 
         // =================================================================================

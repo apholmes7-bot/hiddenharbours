@@ -37,9 +37,11 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Trees need ground the sea never touches, and then some. 4.6 m is a shade above the meadow's own
-        /// floor (<c>StPetersShoreMap.GrassFloorElevation</c> 4.2) and well above spring high water (3.5),
-        /// which leaves a **treeless margin** all round the island. That margin is not a safety buffer —
-        /// it is what a salt-blasted coast looks like. Trees do not grow to the tideline.
+        /// floor (<c>StPetersShoreMap.GrassFloorElevation</c> 4.2) and well above spring high water (2.2
+        /// since the 2026-08-01 pacing ruling; 3.5 before it), which leaves a **treeless margin** all round
+        /// the island. That margin is not a safety buffer — it is what a salt-blasted coast looks like.
+        /// Trees do not grow to the tideline. The smaller swing only widens the margin, so the treeline is
+        /// unchanged: it is anchored to the meadow floor, not to the tide.
         /// </summary>
         public const float TreeLineElevation = 4.6f;
 

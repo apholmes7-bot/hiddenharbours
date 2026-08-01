@@ -31,7 +31,7 @@ namespace HiddenHarbours.App.Editor
     /// <para><b>The showcase is the TIDE.</b> A <see cref="TidalTerrain"/> authors the elevation zones so the
     /// sandbar is a ridge JUST BELOW high water (covered at high, exposing as the tide falls — widest flat at
     /// low) WITH a deeper CHANNEL cut through it (boat-crossable at higher tide, narrowing as it falls). The
-    /// two are inverse over the tide. St Peters runs a BIG tide amplitude (~3.5 m) vs the cove's gentle one,
+    /// two are inverse over the tide. St Peters runs a BIG tide amplitude (~2.2 m) vs the cove's gentle one,
     /// so the bar visibly bares and floods (P1 at its purest, the kindest tide-gate — being cut off costs
     /// only time). The terrain registers itself into <see cref="GameServices.TidalTerrain"/> at runtime.</para>
     ///
@@ -96,9 +96,20 @@ namespace HiddenHarbours.App.Editor
 
         // --- St Peters region tunables (authored data; mirrored onto the RegionDef + TidalTerrain + Env) ---
         // The opening's defining feature is a BIG tide vs the cove's gentle 1.6 m — the bar must visibly bare
-        // and flood. Mean 0 (chart datum centred), amplitude 3.5 m → water swings ≈ -3.5 .. +3.5 m.
+        // and flood. Mean 0 (chart datum centred), amplitude 2.2 m → water swings ≈ -2.2 .. +2.2 m.
+        //
+        // ⭐ 2.2, NOT 3.5 — the owner's TIDE-PACING ruling (2026-08-01): "the tide falls too fast", fixed
+        // with BOTH offered levers at once. This is the amplitude lever; the other is the day length
+        // (GameConfig.DefaultSecondsPerDay 1200 → 1800). The peak rate of the water level is
+        //     amplitude × 2π / TidalPeriodHours / SecondsPerHour,
+        // so the two levers multiply: 3.5→2.2 is ×0.63 and 50→75 s/in-game-hour is ×0.67, together
+        // ~3.5 cm/s → ~1.5 cm/s of real-time water movement (≈2.4× slower). It is still a BIG tide next
+        // to the cove's 1.6 m, and every elevation whose meaning is a TIDE FRACTION scales with it
+        // (SandbarCrestElevation below, StPetersShoreMap.BarSpineFloorElevation) so no in-game-hour
+        // window the owner tuned moves. Elevations whose meaning is HULL DRAUGHT or WADING DEPTH
+        // deliberately do NOT scale — see the note on ChannelBedElevation / BerthBedElevation below.
         public const float TideMean = 0f;
-        public const float TideAmplitude = 3.5f;
+        public const float TideAmplitude = 2.2f;
         public const float TidePhaseHours = 1f;
 
         // --- REGION EXTENT (authored here, PUBLISHED on the RegionDef, read by everyone else) ---------
@@ -206,17 +217,38 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector2 SandbarFrom  = new Vector2(-45f, 0f);  // toward the island
         public static readonly Vector2 SandbarTo    = new Vector2(-350f, 0f); // toward Nine Mile Creek
         public const float SandbarHalfWidth        = 30f;
-        // ⚠ 1.4, NOT 1.6 — the crest must clear the NEAP amplitude, not just the spring one. At neap the
-        // envelope drops the swing to NeapAmplitudeFraction (0.45) × 3.5 = 1.575 m, so a 1.6 m crest sits
-        // ABOVE the highest water of a neap week and the bar simply never floods: the tide gate switches
-        // itself off for part of every lunar month, silently, and the region's defining mechanic goes with
-        // it. At 1.4 the gate exists at every point in the month AND gains a gradient — neap is FORGIVING
-        // (long dry bar, brief flood), spring is TENSE. Ruled 2026-07-23 (#280); see
-        // docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap tests in StPetersTerrainTests.
-        public const float SandbarCrestElevation    = 1.4f;   // < neap high water (1.575) → floods at EVERY tide
+        // ⚠ THE CREST IS A TIDE FRACTION, NOT A HEIGHT. Everything the owner tuned about the crossing —
+        // that the bar floods at EVERY tide, and how long it is dry at spring vs at neap — depends only on
+        // the RATIO crest/amplitude, because the water is a sinusoid: the bar is dry while sin θ < ratio,
+        // and that set of θ has no other input. So when the amplitude moves, this moves with it or every
+        // window silently changes.
+        //
+        // ⭐ 0.88 = 0.4 × amplitude, holding the ratio the 2026-07-23 ruling (#280) settled at 1.4/3.5.
+        // Under the 2026-08-01 amplitude change (3.5 → 2.2) that keeps BOTH properties exactly:
+        //   · crest 0.88 < neap high water (NeapAmplitudeFraction 0.45 × 2.2 = 0.99) → the bar still
+        //     floods at every point in the lunar month, so the tide gate never switches itself off;
+        //   · the spring dry window keeps its IN-GAME duration to the second (7 h 50 m of game time —
+        //     63.1% of the cycle, unchanged), and its REAL duration grows ×1.5 with the day length,
+        //     6:31 → 9:48, along with everything else the day-length lever stretched.
+        // The gradient survives too: neap is still the FORGIVING end (long dry bar, brief flood), spring
+        // the TENSE one. See docs/design/scene-sizing-and-world-scale.md §5.2 and the neap-gap +
+        // window-invariant tests in StPetersTerrainTests / TidePacingInvariantTests.
+        public const float SandbarCrestElevation    = 0.88f;  // < neap high water (0.99) → floods at EVERY tide
         public const float ChannelAlong            = 0.62f;
         public const float ChannelHalfWidth        = 15f;
         public const float ChannelBedElevation      = -0.6f;  // a gut: boat-crossable high, narrows as tide falls
+
+        // ⚠ THE DEPTH ELEVATIONS ABOVE DO NOT SCALE WITH THE TIDE, and that is deliberate (2026-08-01).
+        // DeepHarbourElevation, ReefShelfInner/Outer, BerthBedElevation and ChannelBedElevation mean
+        // HULL DRAUGHT and WADING DEPTH — a −1.0 m berth bed is "a 0.6 m draught clears it above −0.4 m",
+        // a statement about boats, not about the tide. Scaling them with the amplitude would silently
+        // re-gate the whole boat ladder. What DID change is their EXPOSURE, because spring low water rose
+        // from −3.5 m to −2.2 m: every one of them now bares somewhat less, and two crossed a threshold —
+        // at NEAP the swing is only ±0.99 m, so the reef apron (−1.0) and the berth bed (−1.0) no longer
+        // dry at all during a neap week (they used to bare for ~28% of a neap cycle under ±1.575). They
+        // still dry for ~35% of a SPRING cycle, so "the berth dries near spring low" — the §5.1a gate the
+        // ruling actually cares about — is intact; what is gone is a neap-week drying nobody specified.
+        // The full before/after table is in the PR body; the invariants are pinned by TidePacingInvariantTests.
 
         // --- CLAM-HOLE scatter (deterministic; single source of truth shared with the EditMode test) ------
         // Holes scatter over the bar's footprint on a jittered grid, kept only where the authored ground is
@@ -267,7 +299,13 @@ namespace HiddenHarbours.App.Editor
         // (measured off the analytic profile — the same beach-band point the old island had it at), about
         // a metre clear of spring high water, so the barrel is never swimming; a few metres west and the
         // bar itself floods twice a day. It is exactly where you come off the flats with a bucket of clams.
-        public static readonly Vector3 WetBucketPos  = new Vector3(-56f, 0f, 0f);
+        // ⚠ MOVED 3 m seaward (−56 → −59) with the 2026-08-01 amplitude ruling. The barrel stands at the
+        // HEAD OF THE FLATS — the last dry ground, right at the water. That is a position relative to the
+        // waterline, not a coordinate: with spring high water down from 3.5 m to 2.2 m the old spot
+        // (ground 4.49 m) ended up 2.3 m above the highest tide, i.e. up the beach, and
+        // StPetersVillageTests caught it. At −59 the ground is 3.02 m — 0.8 m clear of spring high, which
+        // is the same "dry, but only just" it had before (it was 0.99 m clear).
+        public static readonly Vector3 WetBucketPos  = new Vector3(-59f, 0f, 0f);
 
         // --- THE FIVE BUILDINGS (§5.1: "three clapboard houses, a one-room school, a general store") ----
         // ⭐ AUTHORED, NOT SCATTERED (ADR 0002: author identity, simulate variety). A village is the one
@@ -678,7 +716,7 @@ namespace HiddenHarbours.App.Editor
                 BoatMooredPos    = DoryMooredPos,
                 TideGatedWalk    = true,
                 CurrentSceneName = SceneName,
-                TideMean         = TideMean,        // St Peters' BIG tide (±3.5 m) so the bar bares + floods
+                TideMean         = TideMean,        // St Peters' BIG tide (±2.2 m) so the bar bares + floods
                 TideAmplitude    = TideAmplitude,
                 TidePhaseHours   = TidePhaseHours,
             });
@@ -1242,7 +1280,7 @@ namespace HiddenHarbours.App.Editor
                       "clock/tide run (GameServices online → the tide advances + the bar bares/floods). The " +
                       "moored hand-rowed Dory floats off the south coast (board at the slip once she's " +
                       "yours). Island = high (always exposed); the SANDBAR bridges it to Nine Mile Creek as a " +
-                      "tide-gated path: the crest (1.4 m) bares as the BIG tide (±3.5 m) falls, while a " +
+                      "tide-gated path: the crest (0.88 m) bares as the BIG tide (±2.2 m) falls, while a " +
                       "deeper CHANNEL (-0.6 m) stays boat-crossable at higher tide. The layered WaterSurface " +
                       "shader VISIBLY reveals the bar/flats from the live water level (smooth depth-graded " +
                       "water that clips to bare the sand as the tide falls, foam hugging the moving edge) — " +
@@ -1260,7 +1298,7 @@ namespace HiddenHarbours.App.Editor
                 "St Peters Island built — now a PLAYABLE START scene (greybox).\n\nPress Play:\n• You control " +
                 "the on-foot fisher (WASD / arrows) at the start spawn; the camera follows.\n• The clock + " +
                 "tide RUN — the smooth WaterSurface shader bares the sandbar/flats (the sand shows through) " +
-                "as the big tide (±3.5 m) falls and covers them with depth-graded water as it floods (the " +
+                "as the big tide (±2.2 m) falls and covers them with depth-graded water as it floods (the " +
                 "tide-reveal is the point).\n• The tide is SLOW by design (~a few " +
                 "minutes per high→low). To watch the full swing FAST: tick 'Enabled' on the DevFastTide " +
                 "object in the Hierarchy while in Play (OFF by default), or use Tools ▸ Tide Scrubber.\n• " +

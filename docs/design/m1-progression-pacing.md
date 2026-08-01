@@ -33,7 +33,10 @@ So the ladder gets modelled first. Three things come out of it:
 
 ## 2. The pacing target
 
-From the plan's §3 ladder. "Day" = one in-game day (`GameConfig.SecondsPerDay`, currently 1200 real seconds).
+From the plan's §3 ladder. "Day" = one in-game day (`GameConfig.SecondsPerDay`, currently **1800** real
+seconds = 30 real minutes, ruled 2026-08-01; it was 1200). Every rung below is counted in in-game days, so
+none of them moved — but a day now takes 1.5× as long to live through, which is the owner's tide-pacing
+ruling reaching the progression ladder as well as the sea.
 
 | Target day | Rung | Gate |
 |---|---|---|
