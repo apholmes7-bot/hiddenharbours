@@ -65,6 +65,13 @@ MonoBehaviour:
   WaveFieldAnimator:
     ParameterSmoothingSeconds: 1.5
     GlassSnapAmplitudeMeters: 0.0001
+  WaveFetch:
+    Strength: 0.8
+    StepMeters: 4
+    LeeFloor: 0.25
+    Exponent: 1.3
+    ShoreBandMeters: 0.5
+    Bands: 0
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDailyRecovery: 0.5
