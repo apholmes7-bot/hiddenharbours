@@ -1,0 +1,28 @@
+{
+  "kit": "Hidden Harbours edge strips",
+  "version": 1,
+  "pxPerMetre": 32,
+  "colorSpace": "sRGB",
+  "alpha": "straight, 0 at both t ends — these are decals, not tiles",
+  "size": { "w": 256, "h": 128 },
+  "metres": { "alongShore": 8, "acrossBoundary": 4 },
+  "wrap": { "s": "repeat", "t": "clamp" },
+  "axes": "s runs ALONG the shore and tiles; t runs ACROSS the boundary. t = 0 landward/upper, t = 1 seaward/lower.",
+  "ladder": { "steps": ["_Lo", "", "_Hi"], "intensity": [0.0, 0.5, 1.0] },
+  "chunkOffset": false,
+  "sample": "s = frac(arc / 8); t = (d - line) / 4 + anchor; if (t < 0 || t > 1) skip; rgb = lerp(bandRGB, strip.rgb, strip.a)",
+  "edges": [
+    { "key": "turf", "name": "Turf lip", "anchor": 0.40, "usualNeighbours": ["grass", "sandstone"],
+      "alsoWorksOver": ["grass|bank", "grass|talus", "grass|ledge"],
+      "steps": ["a stable vegetated brow", "a clean sod lip, tension cracks behind", "failing — gashes, turf hanging, clods on the face"] },
+    { "key": "scarp", "name": "Scarp", "anchor": 0.24, "usualNeighbours": ["grass", "foreshore"],
+      "alsoWorksOver": ["dirt|shingle", "grass|sand", "sedge|silt"],
+      "steps": ["an old scarp, grassing over", "working, with a fan at the toe", "deep gullies, slump blocks, sticks at the foot"] },
+    { "key": "wrack", "name": "Wrack line", "anchor": 0.46, "usualNeighbours": ["sand", "foreshore"],
+      "alsoWorksOver": ["sand|shingle", "shingle|ripple", "marram|sand"],
+      "steps": ["a faint scatter of flecks", "one continuous rope", "a storm line — three berms, driftwood"] },
+    { "key": "weedline", "name": "Weed line", "anchor": 0.34, "usualNeighbours": ["ledge", "rockweed"],
+      "alsoWorksOver": ["shelf|rockweed", "talus|rockweed"],
+      "steps": ["high, thin and hard — an exposed headland", "the normal zonation", "broad and ragged — a sheltered cove"] }
+  ]
+}

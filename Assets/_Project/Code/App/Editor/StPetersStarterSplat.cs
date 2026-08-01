@@ -208,7 +208,7 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Author the starter pass into the three splat PNGs (creating them blank if absent) via
+        /// Author the starter pass into the splat PNGs (creating them blank if absent) via
         /// the shared stroke code, then commit with the linear-data importer. Deterministic and
         /// re-runnable: identical inputs paint identical pixels over whatever is there.
         /// </summary>
@@ -230,7 +230,6 @@ namespace HiddenHarbours.App.Editor
             var pixels = new Color[TerrainSplatBrush.TextureCount][];
             if (!TerrainSplatAssets.LoadOrCreate(texels, textures, pixels)) return false;
             int w = textures[0].width, h = textures[0].height;
-            Color[] a = pixels[0], b = pixels[1], c = pixels[2];
 
             // The authored terrain the marsh finder reads — a transient TidalTerrain configured
             // with the canon St Peters zones (the BakeStPetersSeabed pattern), discarded after.
@@ -244,16 +243,16 @@ namespace HiddenHarbours.App.Editor
                 float pathRadius = PathWidthMetres * 0.5f;
 
                 // 1) The dirt paths — the green to the slip, the green to the bar head.
-                TerrainSplatBrush.PaintPolyline(a, b, c, w, h, worldMin, worldSize,
+                TerrainSplatBrush.PaintPolyline(pixels, w, h, worldMin, worldSize,
                     VillageToSlipPath(), PathDabSpacingMetres, pathRadius, PathFalloff,
                     Dirt, SlipPathIntensity, exclusive: true);
-                TerrainSplatBrush.PaintPolyline(a, b, c, w, h, worldMin, worldSize,
+                TerrainSplatBrush.PaintPolyline(pixels, w, h, worldMin, worldSize,
                     VillageToBarHeadPath(), PathDabSpacingMetres, pathRadius, PathFalloff,
                     Dirt, BarPathIntensity, exclusive: true);
 
                 // 2) Silt hugging the boat channel's edges on the flats.
                 foreach (Blob blob in SiltBlobs())
-                    TerrainSplatBrush.Dab(a, b, c, w, h, worldMin, worldSize, blob.Center,
+                    TerrainSplatBrush.Dab(pixels, w, h, worldMin, worldSize, blob.Center,
                         blob.Radius, SiltFalloff, Silt, blob.Intensity, 1f, exclusive: true);
 
                 // 3) The marsh pocket in the sheltered NW hollow + its sedge fringe (fringe
@@ -261,10 +260,10 @@ namespace HiddenHarbours.App.Editor
                 Vector2 marsh = FindMarshPocket(terrain.ElevationAtZones);
                 if (marsh != StPetersBuilder.IslandCenter)
                 {
-                    TerrainSplatBrush.Dab(a, b, c, w, h, worldMin, worldSize, marsh,
+                    TerrainSplatBrush.Dab(pixels, w, h, worldMin, worldSize, marsh,
                         MarshRadiusMetres, MarshFalloff, Marsh, MarshIntensity, 1f, exclusive: true);
                     foreach (Vector2 p in SedgeFringe(marsh))
-                        TerrainSplatBrush.Dab(a, b, c, w, h, worldMin, worldSize, p,
+                        TerrainSplatBrush.Dab(pixels, w, h, worldMin, worldSize, p,
                             SedgeRadiusMetres, SedgeFalloff, Sedge, SedgeIntensity, 1f, exclusive: true);
                 }
                 else Debug.LogWarning("[StPetersStarterSplat] no NW hollow at the marsh elevation — " +
@@ -281,12 +280,12 @@ namespace HiddenHarbours.App.Editor
             // the old in-memory references are invalid; wire only the fresh loads).
             foreach (var s in Object.FindObjectsByType<HiddenHarbours.Art.TerrainSplatSurface>(FindObjectsSortMode.None))
             {
-                s.ConfigureSplat(textures[0], textures[1], textures[2]);
+                s.ConfigureSplat(textures[0], textures[1], textures[2], textures[3]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }   // OnEnable → MPB push
             }
 
             Debug.Log($"[StPetersStarterSplat] painted the starter pass into {TerrainSplatAssets.PathOf(0)} " +
-                      $"/B/C at {w} × {h} texels: dirt green→slip ({SlipPathIntensity:0.##}) and " +
+                      $"/B/C/D at {w} × {h} texels: dirt green→slip ({SlipPathIntensity:0.##}) and " +
                       $"green→bar head ({BarPathIntensity:0.##}), {SiltBlobs().Length} silt blobs at the " +
                       "channel, a marsh pocket + sedge fringe NW. Subtle by design — repaint it with " +
                       "the Material brush.");

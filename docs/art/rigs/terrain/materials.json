@@ -1,5 +1,6 @@
 {
   "kit": "Hidden Harbours terrain materials",
+  "version": 2,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "always 255",
@@ -31,6 +32,15 @@
     { "key": "marsh",     "name": "Marsh",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 3,
       "steps": ["pioneer sprigs on open creek mud", "closed cordgrass sward", "high marsh — thatch, wrack, salt pans"] },
     { "key": "sedge",     "name": "Sedge",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 3,
-      "steps": ["short sedge lawn, peat and moss showing", "tussocks", "rank tussocks, heavy thatch, rush over"] }
+      "steps": ["short sedge lawn, peat and moss showing", "tussocks", "rank tussocks, heavy thatch, rush over"] },
+
+    { "key": "foreshore", "name": "Foreshore", "size": 512, "metres": 16, "projection": "plan", "chunkOffset": false, "pass": 4,
+      "steps": ["planed — firm quiet sand, runnels only", "a working wave-ripple field", "megaripple, shell and gravel lag in the troughs"] },
+    { "key": "talus",     "name": "Talus",     "size": 512, "metres": 16, "projection": "plan", "chunkOffset": true,  "pass": 4,
+      "steps": ["a scatter of fallen slabs on a gravel floor", "a closed apron", "a deep chaotic blockfield, two-metre blocks"] },
+    { "key": "ledge",     "name": "Ledge",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 4,
+      "steps": ["intact bevelled pavement", "dissected — benches, scour pans, weed in the joints", "stripped to the third bed, cobble on the benches"] },
+    { "key": "rockweed",  "name": "Rockweed",  "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 4,
+      "steps": ["barnacled rock with scattered tufts", "a closed olive canopy", "deep drape, bladders showing, Ulva in the wet"] }
   ]
 }

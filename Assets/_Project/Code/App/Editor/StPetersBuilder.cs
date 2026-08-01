@@ -835,10 +835,13 @@ namespace HiddenHarbours.App.Editor
                         HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
                     AssetDatabase.LoadAssetAtPath<Texture2DArray>(
                         HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array512Path));
-                splat.ConfigureSplat(
-                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatA.png"),
-                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatB.png"),
-                    AssetDatabase.LoadAssetAtPath<Texture2D>(DataTerrain + "/StPetersSplatC.png"));
+                // Paths from TerrainSplatAssets, not literals here: the map count grew from three
+                // to four with kit v2, and a second spelling of the same filenames is exactly the
+                // duplicate that wires null in silence once the two copies drift.
+                var splatMaps = new Texture2D[TerrainSplatBrush.TextureCount];
+                for (int i = 0; i < splatMaps.Length; i++)
+                    splatMaps[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(i));
+                splat.ConfigureSplat(splatMaps[0], splatMaps[1], splatMaps[2], splatMaps[3]);
             }
 
             // --- THE PAINTED COAST (shoreline-ISO v8) ---------------------------------------------------

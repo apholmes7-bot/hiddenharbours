@@ -33,8 +33,8 @@ namespace HiddenHarbours.App.Editor
     /// also update LIVE.</para>
     ///
     /// <para><b>The MATERIAL brush (ADR 0028 PR 2 addendum).</b> A sixth brush paints the splat-ground
-    /// MATERIALS (the owner's "layers"): pick one of the ten kit materials and brush its channel in the
-    /// three splat maps — the value is both blend weight and intensity-ladder position (0 sparse ·
+    /// MATERIALS (the owner's "layers"): pick one of the fourteen kit materials and brush its channel in the
+    /// four splat maps — the value is both blend weight and intensity-ladder position (0 sparse ·
     /// 0.5 base · 1 rank), with flow/falloff/exclusive controls, an eraser, and a live Scene-view
     /// preview through the open scene's <see cref="TerrainSplatSurface"/> at the current preview tide.
     /// Commit mirrors the height flow: PNGs re-encoded, reimported LINEAR (weights are data, not
@@ -371,8 +371,8 @@ namespace HiddenHarbours.App.Editor
         // ============================ THE MATERIAL BRUSH (ADR 0028 PR 2 addendum) ============================
 
         /// <summary>
-        /// The owner's splat-material brush: pick one of the ten kit materials (his "layers") and
-        /// paint its channel in the three splat maps — the value is BOTH blend weight and intensity-
+        /// The owner's splat-material brush: pick one of the fourteen kit materials (his "layers") and
+        /// paint its channel in the four splat maps — the value is BOTH blend weight and intensity-
         /// ladder position (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank), so a footpath or a grazed
         /// headland is a stroke, not a new material. Live in the Scene view through the open scene's
         /// <see cref="TerrainSplatSurface"/> at the current preview tide.
@@ -387,7 +387,7 @@ namespace HiddenHarbours.App.Editor
                 names[i] = $"{TerrainSplatBrush.MaterialNames[i]}  ({TerrainSplatBrush.ChannelLabel(i)})";
             _materialIndex = Mathf.Clamp(_materialIndex, 0, TerrainSplatBrush.MaterialCount - 1);
             _materialIndex = EditorGUILayout.Popup(
-                new GUIContent("Material", "The ten kit materials — each is ONE channel in the three " +
+                new GUIContent("Material", "The fourteen kit materials — each is ONE channel in the four " +
                                "splat textures (shown in brackets). Painting writes that channel; the " +
                                "shader blends it over the height bands."),
                 _materialIndex, names);
@@ -445,7 +445,7 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>Cache the three splat textures + working buffers (minting blanks at the
+        /// <summary>Cache the splat textures + working buffers (minting blanks at the
         /// region's texel grid when absent) and push them to any open splat surface.</summary>
         private void LoadSplat()
         {
@@ -489,7 +489,7 @@ namespace HiddenHarbours.App.Editor
             float target = _materialMode == MaterialMode.Paint ? _materialTarget : 0f;
             bool exclusive = _materialMode == MaterialMode.Paint && _materialExclusive;
 
-            TerrainSplatBrush.Dab(_splatPixels[0], _splatPixels[1], _splatPixels[2],
+            TerrainSplatBrush.Dab(_splatPixels,
                 _splatTexs[0].width, _splatTexs[0].height, worldMin, worldSize,
                 worldCenter, _radius, _materialFalloff, material, target, _materialFlow, exclusive);
 
@@ -513,13 +513,13 @@ namespace HiddenHarbours.App.Editor
             foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
             {
                 if (s == null) continue;
-                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2]);
+                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }
             }
         }
 
         /// <summary>
-        /// Persist a Material stroke (the CommitTexture mirror): encode all three buffers, write,
+        /// Persist a Material stroke (the CommitTexture mirror): encode every buffer, write,
         /// reimport with the LINEAR data importer, then re-cache from the RELOADED assets and
         /// re-feed the surfaces — the reimport invalidated the old in-memory references.
         /// </summary>
@@ -1374,18 +1374,19 @@ namespace HiddenHarbours.App.Editor
             EditorUtility.SetDirty(painted);
 
             // 3) The splat GROUND reads it too (ADR 0028): point every TerrainSplatSurface at the
-            //    adopted height data AND the three splat assets (loaded fresh from disk — never a
+            //    adopted height data AND the four splat assets (loaded fresh from disk — never a
             //    stale in-memory reference), so the ground, the water and the sim share one field.
             //    The builder wires the same assets on rebuild; adopting keeps an un-rebuilt scene
             //    in step. Missing splat PNGs wire as null — the surface falls back to bands-only.
             var splatA = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(0));
             var splatB = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(1));
             var splatC = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(2));
+            var splatD = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(3));
             foreach (var surface in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
             {
                 Undo.RecordObject(surface, "Adopt painted seabed");
                 surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);
-                surface.ConfigureSplat(splatA, splatB, splatC);
+                surface.ConfigureSplat(splatA, splatB, splatC, splatD);
                 EditorUtility.SetDirty(surface);
                 if (surface.isActiveAndEnabled) { surface.enabled = false; surface.enabled = true; }
             }
