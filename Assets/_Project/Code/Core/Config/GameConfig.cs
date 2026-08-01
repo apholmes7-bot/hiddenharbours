@@ -45,10 +45,17 @@ namespace HiddenHarbours.Core
         /// (vision-and-pillars §5.5), so neither may carry its own copy.</summary>
         public const float DefaultLunarMonthDays = 28f;
 
+        /// <summary>The shipping neap fraction, as a const so code that must reason about neap
+        /// water WITHOUT a config asset in hand can read it (the <see cref="DefaultLunarMonthDays"/>
+        /// convention). St Peters' shore paint places its intertidal families against neap high
+        /// water — amplitude × this — and a literal 0.45 there would be a second copy of a number
+        /// the owner tunes here.</summary>
+        public const float DefaultNeapAmplitudeFraction = 0.45f;
+
         [Tooltip("Moon cycle in in-game days; drives the spring/neap envelope. Canon: 28.")]
         public float LunarMonthDays = DefaultLunarMonthDays;
         [Tooltip("At neap, amplitude is this fraction of spring amplitude (0..1).")]
-        [Range(0f, 1f)] public float NeapAmplitudeFraction = 0.45f;
+        [Range(0f, 1f)] public float NeapAmplitudeFraction = DefaultNeapAmplitudeFraction;
 
         [Tooltip("The tide TABLE the player reads to plan a crossing (VS-06): how many days the almanac " +
                  "page covers and how finely it hunts each high and low water. Defaults reproduce the " +
