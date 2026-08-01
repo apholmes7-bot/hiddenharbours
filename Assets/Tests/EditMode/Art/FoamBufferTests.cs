@@ -42,6 +42,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
             return File.ReadAllText(path);
         }
 
+        /// <summary>
+        /// The shader source with comments removed — for guards that must read what the pass DOES,
+        /// not what it says about itself.
+        ///
+        /// <para>⚠️ Learned the hard way: the negative guard below scanned raw source and was tripped
+        /// by the shader's OWN comment explaining why it avoids <c>_PixelsPerUnit</c>. A guard that
+        /// forbids naming the hazard forbids documenting it, which is precisely backwards — the
+        /// comment is the thing that stops the next person reaching for that property.</para>
+        /// </summary>
+        static string StripComments(string source)
+        {
+            string withoutBlocks = Regex.Replace(source, @"/\*.*?\*/", " ", RegexOptions.Singleline);
+            return Regex.Replace(withoutBlocks, @"//[^\n]*", " ");
+        }
+
         // ================= THE CELL LAW =========================================================
 
         [Test]
@@ -494,12 +509,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // cells/m lattice while the C# side — which cannot read a material — stayed on its own.
             // The two would disagree silently and the foam would land off its hull. Same ruling, same
             // reason, as WaveFetch.PixelsPerUnit / FETCH_MARCH_PPU.
-            string source = ReadShaderSource();
-            Assert.IsFalse(source.Contains("_PixelsPerUnit"),
-                "The foam advect pass now references _PixelsPerUnit. That is an ART knob the owner " +
-                "drags (Water.mat ships it at 24, not 32) and the C# twin cannot read a material — " +
-                "quantizing through it makes the two halves of this seam drift silently. The buffer " +
-                "owns FOAM_CELLS_PER_UNIT for exactly this reason.");
+            //
+            // COMMENTS ARE STRIPPED FIRST: this guards what the pass DOES. The shader is expected —
+            // wanted — to NAME _PixelsPerUnit in a comment explaining why it does not use it, and a
+            // guard that made documenting the hazard impossible would be exactly backwards.
+            string code = StripComments(ReadShaderSource());
+            Assert.IsFalse(code.Contains("_PixelsPerUnit"),
+                "The foam advect pass now references _PixelsPerUnit IN CODE. That is an ART knob the " +
+                "owner drags (Water.mat ships it at 24, not 32) and the C# twin cannot read a " +
+                "material — quantizing through it makes the two halves of this seam drift silently. " +
+                "The buffer owns FOAM_CELLS_PER_UNIT for exactly this reason.");
         }
     }
 }
