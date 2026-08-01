@@ -225,10 +225,16 @@ namespace HiddenHarbours.Art
                 SetDisplaced(!_displaced);
 
             if (!_displaced) return;
+
+            // Two tiers, mirroring WaterSurface's. The THROTTLED half is the expensive material tracking
+            // (CopyPropertiesFromMaterial over the whole property set). The per-FRAME half is the block copy
+            // and the two publishes — because WaterSurface now eases its uniforms every frame, and a few-Hz
+            // consumer of a per-frame source re-introduces the exact staircase upstream just removed, on the
+            // displaced chunks AND (through DisplacedSea → BoatWaveMotion) under the hull.
             _timer -= Time.deltaTime;
-            if (_timer > 0f) return;
-            _timer = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
-            SyncUniforms();
+            bool trackMaterialTick = _timer <= 0f;
+            if (trackMaterialTick) _timer = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
+            SyncUniforms(trackMaterialTick);
         }
 
         /// <summary>
@@ -285,15 +291,25 @@ namespace HiddenHarbours.Art
         /// inputs (shared exaggeration + the DERIVED band), and keep the runtime material instance
         /// tracking the owner's live Water.mat so his in-play tuning drives both sides of the A/B.
         /// Allocation-free per tick (the block and lists are cached).
+        ///
+        /// <para><b>Called EVERY FRAME</b> (with <paramref name="trackMaterial"/> false on all but the
+        /// throttled tick). It has to be: the block it copies is now eased per frame by
+        /// <c>WaterSurface</c>, so sampling it a few times a second would re-quantize the very values that
+        /// change smoothed the flat surface — and the chunk block is what the vertex stage lifts by, so the
+        /// staircase would land in GEOMETRY. The same argument covers the <see cref="DisplacedSea"/> publish
+        /// below, which is how <c>BoatWaveMotion</c> learns the frequency scale it rides at.</para>
         /// </summary>
-        private void SyncUniforms()
+        /// <param name="trackMaterial">Re-copy the owner's live <c>Water.mat</c> onto the runtime material
+        /// instance — the throttled half. It only changes when the owner edits the asset, so a few Hz is
+        /// plenty; the copy is the expensive call in this method and is not worth doing per frame.</param>
+        private void SyncUniforms(bool trackMaterial = true)
         {
             if (_flatRenderer == null || !_built) return;
 
             // Track the owner's live material: values first (cheap native copy), then re-disable
             // the in-scene pass (belt and braces — property copies must never re-enable it).
             Material live = _flatRenderer.sharedMaterial;
-            if (live != null && _displacedMaterial != null)
+            if (trackMaterial && live != null && _displacedMaterial != null)
             {
                 _displacedMaterial.CopyPropertiesFromMaterial(live);
                 _displacedMaterial.SetShaderPassEnabled("Universal2D", false);
@@ -306,7 +322,7 @@ namespace HiddenHarbours.Art
             // trains the height is 0 too, so the surface is simply flat). Exaggeration + coefficient
             // resolve through the properties — the wired GameConfig's DisplacedWater block (the
             // owner's live tuning surface, arc step 3) or the serialized fallbacks — re-read EVERY
-            // tick, so an in-Play config edit reaches the sea within one refresh.
+            // FRAME, so an in-Play config edit reaches the sea immediately.
             float exaggeration = Exaggeration;
             float envelope = Shader.GetGlobalVector(IdWaveFieldParams).z;
             float band = DisplacedWaterMath.BandMeters(envelope, exaggeration, _maxShoreGradient,
@@ -318,8 +334,12 @@ namespace HiddenHarbours.Art
 
             // ADR 0023 phase 3 step 2 — the SHARED HEAVE: publish the EXACT values pushed to the
             // vertex stage above through the Core seam, so boat heave rides the same exaggeration
-            // and the same shore fade as the surface it is drawn on (re-published every tick — a
-            // live config edit reaches the boats within one refresh, never a stale copy).
+            // and the same shore fade as the surface it is drawn on (re-published every FRAME — a
+            // live config edit reaches the boats immediately, never a stale copy). The cadence is
+            // load-bearing, not incidental: FreqScale below multiplies every train's wave number, so
+            // publishing it 8×/s made the hull's sampled sea jump by tens of radians of phase per step
+            // at St Peters' distances from the world origin. That is the publish-side half of the
+            // owner's "boat physics still feel jerky".
             // ⚠️ The FREQ SCALE rides along, and it is the term that was missing. The vertex stage
             // above samples the field at _OceanSwellScale/0.025 — 2.8 at the owner's materials — so a
             // rider sampling at 1 rides a different WAVE and the drawn sea climbs over it (the
