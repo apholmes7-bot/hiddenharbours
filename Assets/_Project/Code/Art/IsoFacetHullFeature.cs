@@ -127,9 +127,12 @@ namespace HiddenHarbours.Art
             // a DisplacedWaterSurface is toggled on — the A/B's OFF side records nothing extra.
             bool water = DisplacedWaterRegistry.Count > 0;
             // ADR 0027 #8: object REFLECTIONS join as a fourth filtered renderer list, on the same
-            // zero-cost-when-idle contract. Nothing in the shipped scenes carries a ReflectiveObject,
-            // so Count is 0, nothing is enqueued, and that IS this feature's passthrough proof —
-            // there is no "reflections off" branch to keep byte-identical, only an absent pass.
+            // zero-cost-when-idle contract: Count 0 enqueues nothing, so there is no "reflections
+            // off" branch to keep byte-identical — only an absent pass. ⚠️ That idle case is what a
+            // scene WITHOUT reflectors relies on; it is not a description of the shipped ones.
+            // §26.10's activation opted the fleet in (IsoFacetHullPresentationService.Install) and
+            // the trees in (DecorPrefabBuilder / AcadianTreeCatalog), so a live harbour records this
+            // pass deliberately, and Water.mat ships _ObjectReflectStrength 0.5 to show it.
             bool reflect = ReflectionRegistry.Count > 0;
             if (!hulls && !water && !reflect)
                 return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water or reflectors pay nothing
