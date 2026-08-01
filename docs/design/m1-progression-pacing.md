@@ -97,7 +97,7 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 | **Ice** (per load) | `SupplyDef` (`supply.ice`, 6₲) → `SupplyShop` | **recurring** — a running cost, per trip. Counted stock in `SaveData.SupplyStock` (save v7); the *melt* is still §7.3's to build |
 | **Bait / tackle** | `Data/Bait`, `Data/Tackle` (landed #291) → `BaitShop` | **recurring** — and it *targets* species, not just enables them. Sold by the lot (`BaitDef.LotSize`); `Price` stays the UNIT price this model divides by |
 | **Lid** (one-off) | a further `SupplyDef` | slows the melt; "spend once to stop spending" — appends as data now the supply shape exists, no schema bump |
-| **Used outboard** | new `ShipwrightOffer` | the closing rung |
+| **Used outboard** | `ShipwrightOffer` (`Data/Shipwright/DoryOutboardOffer.asset`, `boat.dory_outboard`, **₲900**) → Hector's barrel at Nine Mile Creek | the closing rung. **Shipped, not yet projected:** ₲900 is placed by ladder position — above the whole dory (₲400 + ₲300 = ₲700, the day-6–9 save-up) and at half the Punt (₲1800), so upgrading the boat you own stays cheaper than replacing her. §4's projection is what should confirm or move it |
 
 ---
 

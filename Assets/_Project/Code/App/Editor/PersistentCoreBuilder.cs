@@ -106,7 +106,9 @@ namespace HiddenHarbours.App.Editor
             // registered rather than merely pickable because the registry is how a hull is REACHED by
             // id: OwnedFleet.Grant swaps to it, and SaveRestore looks the saved hull up in it. A boat
             // the save cannot name is a boat you lose on reload. What she COSTS and who sells her is
-            // the Nine Mile Creek purchase beat — no ShipwrightOffer is authored here.
+            // the Nine Mile Creek purchase beat (Data/Shipwright/DoryOutboardOffer.asset, on Hector's
+            // barrel) — no ShipwrightOffer is authored here, but this registry is what makes that
+            // purchase land: without her entry the grant would be a silent no-op.
             public BoatHullDef DoryOutboardHull;
             // DEV BOAT PICKER (null/empty = no picker spawned): every hull F cycles through at the helm, in
             // order. Deliberately SEPARATE from the fleet registry above — this is a workbench for feeling

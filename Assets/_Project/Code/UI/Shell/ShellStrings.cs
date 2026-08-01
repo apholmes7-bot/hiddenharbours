@@ -25,6 +25,7 @@ namespace HiddenHarbours.UI
 
         public const string Continue = "Continue";
         public const string NewGame  = "New game";
+        public const string Settings = "Settings";
         public const string Quit     = "Quit";
 
         /// <summary>The tick that marks the line the keyboard/gamepad is on — the shape channel that
@@ -37,6 +38,48 @@ namespace HiddenHarbours.UI
         /// <summary>Shown under Continue on a first launch, where there is nothing to go back to.</summary>
         public const string NoGameYet = "No harbour yet — start one.";
 
+        // ---- the build stamp -------------------------------------------------------------------
+        // M1 §7.8's exit criterion ends "...and can tell you which build they were on". A closed playtest
+        // collects reports from several builds at once, and "it broke when I hauled a pot" is worth very
+        // little if nobody can say WHICH build broke. So the page says it, quietly, in the corner.
+
+        /// <summary>Marks the number as a version — "v0.1.0", the way a person writes it.</summary>
+        public const string VersionPrefix = "v";
+
+        /// <summary>Precedes the build id. The word matters: a tester copying "build 4f9c2a1" into a bug
+        /// report has said something unambiguous, where a bare hex string reads like noise.</summary>
+        public const string BuildLabel = "build ";
+
+        /// <summary>Said instead of a build id when there is no build — the editor. Honest: an editor
+        /// session is not a build, and a bug found in one is not attributable to the same thing.</summary>
+        public const string EditorLabel = "editor";
+
+        /// <summary>Marks a Development Build. Worth its four characters: stack traces, the profiler and
+        /// the deep-profile costs all differ, so "is it slow?" has a different answer here.</summary>
+        public const string DevelopmentLabel = "dev";
+
+        /// <summary>
+        /// The corner line: which version, and which build of it. Pure and parameterised so the whole
+        /// thing is testable without a build — <see cref="BuildInfo"/> supplies the live values.
+        /// An empty <paramref name="buildId"/> means "no build was made", i.e. the editor.
+        /// </summary>
+        public static string BuildStamp(string version, string buildId, bool development)
+        {
+            string stamp = string.IsNullOrEmpty(version) ? string.Empty : VersionPrefix + version;
+
+            string which = string.IsNullOrEmpty(buildId) ? EditorLabel : BuildLabel + buildId;
+            stamp = stamp.Length == 0 ? which : stamp + Separator + which;
+
+            // Only in a player: Debug.isDebugBuild is true of every editor session, so saying it there
+            // would be noise on the one line that exists to say something.
+            if (development && !string.IsNullOrEmpty(buildId)) stamp += Separator + DevelopmentLabel;
+            return stamp;
+        }
+
+        /// <summary>The shell's separator between two small facts on one line — the same spacing the
+        /// hints use, so the corner reads in the page's own voice.</summary>
+        public const string Separator = "   ·   ";
+
         // ---- the New Game confirm ------------------------------------------------------------
         // The item M1 §7.8 says actually blocks the playtest. One slot, no undo — so the page states the
         // consequence in full and puts the safe answer under the cursor.
@@ -48,6 +91,39 @@ namespace HiddenHarbours.UI
         public const string ConfirmNewGameYes    = "Write over it";
         public const string ConfirmNewGameNo     = "Keep my harbour";
 
+        // ---- the pause menu ------------------------------------------------------------------
+        // Mid-session, over a stopped world. It says where you are and offers the four things a tester
+        // needs at 11pm: carry on, change the volume, go back to the title, stop playing.
+
+        public const string PauseTitle     = "Ashore for a moment";
+        public const string Resume         = "Back to it";
+        public const string QuitToTitle    = "Quit to title";
+        public const string QuitToDesktop  = "Quit to desktop";
+        public const string PauseHint      = "Esc to carry on   ·   the tide is stopped while you're here";
+
+        /// <summary>Said under the two Quit lines, because both of them save and a player should know
+        /// that before they pick one.</summary>
+        public const string QuitSavesFirst = "Your harbour is saved either way.";
+
+        // ---- settings ------------------------------------------------------------------------
+        // Four independent faders (the M1 DoD's promise, which had no player-facing surface until now)
+        // and the one display choice M1 offers. Graphics presets and key rebinding are deliberately not M1.
+
+        public const string SettingsTitle    = "Settings";
+        public const string VolumeMaster     = "Everything";
+        public const string VolumeAmbience   = "Sea and weather";
+        public const string VolumeSfx        = "Effects";
+        public const string VolumeMusic      = "Music";
+        public const string DisplayLabel     = "Window";
+        public const string DisplayFullscreen = "Fullscreen";
+        public const string DisplayWindowed   = "Windowed";
+        public const string Back             = "Back";
+        public const string SettingsHint     = "← → to set a level   ·   Esc to go back";
+
+        /// <summary>Shown in place of the faders when no audio director is running (EditMode, a stripped
+        /// build). An honest "there is nothing to move here" beats four sliders that do nothing.</summary>
+        public const string AudioUnavailable = "No sound running to set.";
+
         // ---- composed lines ------------------------------------------------------------------
 
         /// <summary>
@@ -58,5 +134,14 @@ namespace HiddenHarbours.UI
         public static string SavedGameSummary(int dayIndex, int money)
             => "Day " + (dayIndex + 1).ToString(CultureInfo.InvariantCulture)
              + "   ·   " + HudStrings.Currency + money.ToString(CultureInfo.InvariantCulture);
+
+        /// <summary>A fader's level as a whole percent. Called only when that whole number changes, never
+        /// per frame of a drag.</summary>
+        public static string VolumePercent(float value01)
+            => System.Math.Round(value01 * 100f).ToString("0", CultureInfo.InvariantCulture) + "%";
+
+        /// <summary>The word for the current display mode — the value half of the Window row.</summary>
+        public static string DisplayMode(bool fullscreen)
+            => fullscreen ? DisplayFullscreen : DisplayWindowed;
     }
 }

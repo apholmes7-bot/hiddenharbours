@@ -147,17 +147,27 @@ namespace HiddenHarbours.Art
             // a DisplacedWaterSurface is toggled on — the A/B's OFF side records nothing extra.
             bool water = DisplacedWaterRegistry.Count > 0;
             // ADR 0027 #8: object REFLECTIONS join as a fourth filtered renderer list, on the same
-            // zero-cost-when-idle contract. Nothing in the shipped scenes carries a ReflectiveObject,
-            // so Count is 0, nothing is enqueued, and that IS this feature's passthrough proof —
-            // there is no "reflections off" branch to keep byte-identical, only an absent pass.
+            // zero-cost-when-idle contract: Count 0 enqueues nothing, so there is no "reflections
+            // off" branch to keep byte-identical — only an absent pass. ⚠️ That idle case is what a
+            // scene WITHOUT reflectors relies on; it is not a description of the shipped ones.
+            // §26.10's activation opted the fleet in (IsoFacetHullPresentationService.Install) and
+            // the trees in (DecorPrefabBuilder / AcadianTreeCatalog), so a live harbour records this
+            // pass deliberately, and Water.mat ships _ObjectReflectStrength 0.5 to show it.
             bool reflect = ReflectionRegistry.Count > 0;
             // ADR 0027 #6: the advected foam buffer joins as one persistent ping-ponged target, on
             // the same zero-cost-when-idle contract and with BOTH halves of it enforced — no hull is
             // churning water (every FoamInjector unregisters the moment it is off the water) OR the
-            // owner has not dialled the look in (_WakeFoamStrength 0, the shipped default), and
-            // nothing is recorded at all. Nothing in the shipped scenes carries a FoamInjector and
-            // the strength ships at 0, so BOTH gates are shut and that IS this item's passthrough
-            // proof — there is no "foam buffer off" branch to keep byte-identical, only an absent pass.
+            // owner has not dialled the look in (_WakeFoamStrength 0), and nothing is recorded at
+            // all. So there is no "foam buffer off" branch to keep byte-identical — only an absent
+            // pass.
+            //
+            // ⚠️ That idle case is what a scene with no churning hull (or the dial at 0) relies on;
+            // it is NOT a description of the shipped state, and must not be rewritten into one. The
+            // reflections comment above was corrected for exactly that drift (#380): it claimed
+            // "nothing in the shipped scenes carries a ReflectiveObject", which was true the day it
+            // was written and false the day §26.10 opted the fleet in. AS OF THIS COMMIT no scene
+            // carries a FoamInjector and Water.mat ships _WakeFoamStrength 0 — but that is a fact
+            // about today's content, not about this gate, and the owner's dial-in will end it.
             bool foam = FoamInjectionRegistry.ShouldRun;
             if (!foam)
                 FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea

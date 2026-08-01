@@ -235,6 +235,24 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
   additive-region contract (ADR 0004) does not fork; `GameRoot._bootToTitle` turns it off for the dev
   region-iteration cores. The UI side (`UI.ShellPresenter`, self-installing like `SaveService`) renders the
   phase, so App never references UI.
+  - **Pause and settings.** `Core.ShellPause` stops the world on the same one path (`IGameClock.IsPaused`,
+    restoring what it found) and `ShellFlow.WorldInputBlocked` — true at the title or under a pause menu —
+    is what the player rig honours so the helm cannot be steered from behind a stopped clock. The four bus
+    volumes come through `Core.IAudioMix` (`GameServices.AudioMix`, registered by `AudioDirector`), and
+    settings persist in **PlayerPrefs** (`Core.GameSettings`), NOT the save: they belong to the machine, must
+    survive New Game, and must not cost a schema version. **Quit to title** saves, then `App.ShellRestart`
+    destroys every `PersistentObject` root and reloads the boot scene — the rebuilt core calls
+    `EnterTitle()` itself, so there is still one path to the title, and a new game can never start on a
+    half-played world.
+  - **Whoever registers a service, unregisters it — and nothing else.** The launch-scoped singletons
+    (`SaveService`, `AudioDirector`, `LicenseService`, the `CatchFactory` registrar) install themselves once
+    per launch and deliberately **survive** the quit-to-title teardown; their bootstraps and their
+    `Awake`/`OnEnable` registrations do not run a second time. So `GameRoot.OnDestroy` takes back only the
+    slots `GameRoot` filled (clock, environment, wallet, config), each guarded on `ReferenceEquals` exactly as
+    the singletons guard their own — never a wholesale `GameServices.Reset()`, which would strip the survivors
+    for the rest of the launch (no save service at all: no Continue, no writes, a settings sheet claiming
+    there is no sound). `GameServices.Reset()` remains for tests, which call it explicitly.
+    Pinned by `ShellRestartPlayTests`.
   - Two consequences worth knowing before you add boot code: **`SaveService` refuses to write while at the
     title** (`SaveService.WritesAllowed`) — the live services still hold boot defaults, so an
     autosave-on-quit there would overwrite a real save with an empty one; and **anything that seeds itself
@@ -242,6 +260,16 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     the *outgoing* game's. `Core.SaveReady.Run(host, action)` is the one-liner for that (used by
     `StartingGear` / `StartingBait` / `StartingPots` / `FrontedFeeGrant`); `LicenseService` rebuilds its held
     set on the same edge.
+  - **The title is a shot of the world, and it says which build it is.** There is no key art: the persistent
+    core is already rendering the harbour behind the page, always at the authored start hour (the save is
+    unapplied until the player chooses, so the light behind the title is always first light). The page is
+    composed over it — a wash that is dense down the type column and thin over the harbour
+    (`PaperUi.MakeWash` + `ShellGradient`, a vertex ramp so a gradient costs no texture) inside a letterbox
+    frame — rather than a flat scrim that would spend the one picture we already have. In the corner,
+    `UI.BuildInfo.StampLine` names the version and **which build** (`Application.buildGUID`, seven
+    characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
+    cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
+    separate, App-lane question — the UI assembly reaches Core only, by design.
 
 ## 7. Tick & performance model
 

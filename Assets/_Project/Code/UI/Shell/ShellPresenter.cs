@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
@@ -58,8 +59,55 @@ namespace HiddenHarbours.UI
 
         private static void Apply(ShellPhase phase)
         {
-            if (phase == ShellPhase.Title) TitleScreen.Open();
-            else TitleScreen.CloseIfOpen();
+            if (phase == ShellPhase.Title)
+            {
+                // Leaving the world (quit to title) must not leave a pause menu hanging over the new one.
+                PauseMenu.CloseIfOpen();
+                TitleScreen.Open();
+            }
+            else
+            {
+                TitleScreen.CloseIfOpen();
+            }
+        }
+
+        /// <summary>
+        /// The pause key. It lives here rather than on its own component because the shell already has
+        /// exactly one persistent host, and a second one would only be another thing to keep alive.
+        ///
+        /// <para><b>Esc is shared</b>, so this deliberately declines rather than fighting for it: not at
+        /// the title (nothing to pause), not while a shell page of its own is up (each closes itself with
+        /// Esc), not under the tide table (whose close would otherwise hand the clock back out from under
+        /// a pause menu), and not while a modal owns interaction (a dialogue mid-sentence).</para>
+        /// </summary>
+        private void Update()
+        {
+            if (!PauseKeyPressed()) return;
+            if (!CanTogglePause()) return;
+            PauseMenu.Toggle();
+        }
+
+        private static bool PauseKeyPressed()
+        {
+            var kb = Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame) return true;
+
+            // Start on a pad — the console/handheld convention, free here because the shell is built on
+            // real Selectables. New Input System only; legacy UnityEngine.Input throws at runtime here.
+            var pad = Gamepad.current;
+            return pad != null && pad.startButton.wasPressedThisFrame;
+        }
+
+        private static bool CanTogglePause()
+        {
+            if (ShellFlow.AtTitle) return false;
+            // The sheet is checked FIRST: opened from the pause menu it sits ON TOP of a menu that is
+            // still open, and Esc there means Back, not "close the menu underneath as well".
+            if (SettingsSheet.IsOpen) return false;
+            if (PauseMenu.IsOpen) return true;          // Esc closes the menu it opened
+            if (TidePanel.IsOpen) return false;         // its Esc puts the page away
+            if (InteractionGate.IsBlocked) return false; // a modal (dialogue) owns the key
+            return true;
         }
     }
 }

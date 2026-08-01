@@ -15,11 +15,15 @@ namespace HiddenHarbours.Core
         /// Never null once the service is running. Consumers may read it to restore their own state.</summary>
         SaveData Current { get; }
 
-        /// <summary>True iff <see cref="Current"/> was read from an existing save file on disk (a resumed
-        /// game), rather than freshly minted for a new game. The load-restore path (<see cref="SaveRestore"/>)
+        /// <summary>True iff there is a real game on disk behind <see cref="Current"/> — read from an existing
+        /// save file at launch, or written there by a <see cref="Save"/> since — rather than a blob that has
+        /// only ever been freshly minted for a new game. The load-restore path (<see cref="SaveRestore"/>)
         /// uses this to decide whether to seek the clock to the saved time: a NEW game must keep its authored
-        /// start hour (its blob's gameTime is 0), so only a resumed game seeks. False until the service has
-        /// loaded (e.g. EditMode before bootstrap).
+        /// start hour (its blob's gameTime is 0), so only a game that has been written seeks. False until the
+        /// service has loaded (e.g. EditMode before bootstrap).
+        /// <para>It is also the shell's "is there anything to Continue?" (<c>ShellFlow.HasGameToContinue</c>),
+        /// which is why a save has to move it: the service outlives quit-to-title, so a launch-time answer
+        /// would go stale the moment a new game was played and quit.</para>
         /// <para><b>Additive &amp; non-breaking:</b> a default interface property (defaults to <c>false</c>)
         /// so existing test fakes implementing <see cref="ISaveService"/> compile unchanged; the real
         /// <c>SaveService</c> overrides it.</para></summary>

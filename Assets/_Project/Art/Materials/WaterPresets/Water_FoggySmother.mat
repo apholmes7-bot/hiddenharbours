@@ -61,7 +61,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _CausticAmount: 0.18
-    - _CausticDayGate: 0
+    - _CausticDayGate: 1
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
     - _CausticShallowBias: 0

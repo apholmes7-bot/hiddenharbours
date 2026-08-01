@@ -656,8 +656,9 @@ namespace HiddenHarbours.App.Editor
             // every other hull: ~1.7 m/s against ~2.0 rowing flat out — SLOWER than a hard pull, and
             // that is not a bug to tune out here. What a kicker buys is that she holds it all day,
             // into wind and chop, with your hands free; the rower cannot. Tuning is the owner's, in
-            // the Def (rule 6). NO ShipwrightOffer: what she costs and who sells her is the Nine Mile
-            // Creek purchase beat, and it is not this lane's to invent.
+            // the Def (rule 6). No ShipwrightOffer is authored HERE: what she costs and who sells her
+            // was the Nine Mile Creek purchase beat, and it has landed there — Data/Shipwright/
+            // DoryOutboardOffer.asset, on Hector's barrel (NineMileCreekBuilder).
             var doryOutboard = LoadOrCreate<BoatHullDef>(DataBoats + "/DoryOutboard.asset");
             if (doryOutboard != null && dory != null)
             {

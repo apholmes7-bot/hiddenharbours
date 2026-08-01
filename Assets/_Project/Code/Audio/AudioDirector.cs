@@ -26,7 +26,7 @@ namespace HiddenHarbours.Audio
     /// EditMode-tested <see cref="AudioDirectorLogic"/>; this class is just the player.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class AudioDirector : MonoBehaviour
+    public sealed class AudioDirector : MonoBehaviour, IAudioMix
     {
         private static AudioDirector _instance;
 
@@ -45,6 +45,22 @@ namespace HiddenHarbours.Audio
         [SerializeField, Range(0f, 1f)] private float _ambienceVolume = 0.8f;
         [SerializeField, Range(0f, 1f)] private float _sfxVolume      = 1f;
         [SerializeField, Range(0f, 1f)] private float _musicVolume    = 0.6f;
+
+        // ---- IAudioMix: the player's faders (M1 §7.8's settings sheet) -----------------------
+        // The settings sliders drive these through the Core seam, so UI never references Audio. They
+        // are the SAME serialized fields the owner tunes in the Inspector — one set of volumes, not a
+        // player copy shadowing an authored one — so a mid-play Inspector drag still works, and the mix
+        // lands on the next pass either way (ApplyMix runs every frame). Clamped at the seam: nothing
+        // outside can push a bus out of range.
+
+        /// <inheritdoc/>
+        public float MasterVolume   { get => _masterVolume;   set => _masterVolume   = Mathf.Clamp01(value); }
+        /// <inheritdoc/>
+        public float AmbienceVolume { get => _ambienceVolume; set => _ambienceVolume = Mathf.Clamp01(value); }
+        /// <inheritdoc/>
+        public float SfxVolume      { get => _sfxVolume;      set => _sfxVolume      = Mathf.Clamp01(value); }
+        /// <inheritdoc/>
+        public float MusicVolume    { get => _musicVolume;    set => _musicVolume    = Mathf.Clamp01(value); }
 
         [Header("Tuning")]
         [Tooltip("Wind/environment poll cadence (Hz). Matches the HUD's 4 Hz sampling — not per frame.")]
@@ -91,13 +107,24 @@ namespace HiddenHarbours.Audio
         {
             if (_instance != null && _instance != this) { Destroy(gameObject); return; }
             _instance = this;
+
+            // The player's stored faders land over the authored defaults (a no-op on a first run), and the
+            // mix is published as the Core seam the settings sheet drives (M1 §7.8).
+            GameSettings.LoadInto(this);
+            GameServices.AudioMix = this;
+
             BuildSources();
             ApplyMix();
         }
 
         private void OnEnable()  => Subscribe();
         private void OnDisable() => Unsubscribe();
-        private void OnDestroy() { Unsubscribe(); if (_instance == this) _instance = null; }
+        private void OnDestroy()
+        {
+            Unsubscribe();
+            if (ReferenceEquals(GameServices.AudioMix, this)) GameServices.AudioMix = null;
+            if (_instance == this) _instance = null;
+        }
 
         private void Subscribe()
         {

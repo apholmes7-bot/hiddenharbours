@@ -306,6 +306,17 @@ now with real money on the line. Licence one is taught; licence two is earned.
 what is left is *placement*, which is the NPC/world-content lane's this wave (the components exist and are
 wired to their Defs; nobody has stood them on the counter yet).
 
+**LANDED — the placement half.** `StPetersBuilder` now stands a `GeneralStoreCounter` in the store's
+dooryard, one stride out past its keeper: four vendors on one GameObject (rod / capelin by the lot / ice /
+the clam licence, listed together by `BuyCatalog`), plus a `Market` **explicitly on the `StPetersStore`
+channel** behind a `FishBuyer`, so a bucket of clams sells here for the worse price the level was built to
+express. The spot is *derived* from the store's own site toward the village green, so moving the building
+moves its counter, its keeper and its door together. `FrontedFeeGrant` is placed too — on Aunt Ginny, where
+the beat belongs — and her `GinnyOpening.asset` gates a two-line acknowledgement on the same authored flag
+key the grant persists, so she mentions the fee only once it has actually been fronted and neither module
+references the other (rule 4). Everything goes through the **builder**: a counter hand-placed in
+`StPeters.unity` would be undone by the next run.
+
 One finding worth carrying forward, because this item's own framing was slightly wrong. *"`MarketId` already
 supports channels; add the island as one"* is true but **not sufficient**: demand `D` only ever appears as
 `S/D` inside `1/(1+e·S/D)`, so at zero supply that term is `1` for **every** value of `D`. On a market nobody
@@ -372,7 +383,12 @@ sprite oars needed five hand-tuned rock-coupling knobs to keep an overlay on the
 This is the **visual half of D8**, and the gameplay half came with it: `boat.dory_outboard` (Propulsion =
 Engine, every other stat copied from `boat.dory` so the pair cannot drift) wears the **same visual**, and
 `BoatHullSkinner` draws the engine only on the hull that has one. She is a picker rung and a fleet-registry
-hull; **no `ShipwrightOffer` — what she costs and who sells her is the Nine Mile Creek purchase beat.**
+hull; ~~no `ShipwrightOffer` — what she costs and who sells her is the Nine Mile Creek purchase beat.~~
+**✅ SOLD NOW.** `Data/Shipwright/DoryOutboardOffer.asset` (`boat.dory_outboard`, **₲900**, not damaged) on a
+`Shipwright` at Hector's barrel in the creek's dory yard, paid from the persistent wallet proxy — the same
+offer/`BoatPurchased` path the dory herself uses, so the grant, the save and the transom mount all follow
+with no new system and no save-schema change. Price is the owner's tunable (see
+`docs/design/m1-progression-pacing.md` §3).
 
 - **⚠️ The loan's one cost, stated:** the punt's leg is 0.185 m shorter than the reach the dory's high
   transom needs, so the borrowed engine is hung by its **prop** (which lands exactly where her own kicker's

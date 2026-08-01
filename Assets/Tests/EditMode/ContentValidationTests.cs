@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -301,6 +302,110 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var bait in LoadAll<BaitDef>())
                 if (!string.IsNullOrWhiteSpace(bait.Id))
                     RegisterUniqueId(seen, bait.Id, AssetDatabase.GetAssetPath(bait), "Def");
+        }
+
+        // ---- the ASSET FILES themselves, not the objects they load into ----------------------
+
+        /// <summary>
+        /// ⭐ THE APOSTROPHE GUARD. Every rule above asks the loaded object a question, which means none of
+        /// them can see a defect in the TEXT the object was loaded from. <c>GinnyOpening.asset</c> shipped
+        /// with <c>- 'He's gone to the deep now…'</c>: inside a single-quoted YAML scalar an apostrophe has
+        /// to be DOUBLED (<c>He''s</c>), so that scalar ends after "He" and the rest of Ginny's line is no
+        /// longer part of the string. A strict parser rejects the whole document; a lenient one keeps some
+        /// fraction of the line. Either way an authored line is silently not what was written, and every
+        /// content rule in this file passed while it was true, because a truncated line is still a
+        /// non-blank, uniquely-identified line.
+        ///
+        /// <para>So this one reads the raw <c>.asset</c> text. It walks each single-quoted scalar the way
+        /// YAML does — <c>''</c> is an escaped apostrophe, a lone <c>'</c> closes — and fails when a scalar
+        /// closes with content still left on its line, which is exactly what an unescaped apostrophe looks
+        /// like and is not something well-formed Unity YAML ever produces. It covers ALL of <c>Data/</c>
+        /// rather than only dialogue: any authored prose field (a licence's Flavor, a supply's
+        /// DisplayName) can carry the same defect, and the whole of Data/ is what this file guards.</para>
+        /// </summary>
+        [Test]
+        public void AuthoredAssetText_EscapesEveryApostrophe_SoNoLineIsSilentlyTruncated()
+        {
+            var offenders = new List<string>();
+            string[] files = Directory.GetFiles(DataRoot, "*.asset", SearchOption.AllDirectories);
+            Assert.IsNotEmpty(files, "there must be authored .asset content under Data/ to validate");
+
+            foreach (string file in files)
+                foreach (string bad in UnescapedQuoteLines(File.ReadAllLines(file)))
+                    offenders.Add($"{file.Replace('\\', '/')}: {bad}");
+
+            Assert.IsEmpty(offenders,
+                "a single-quoted YAML scalar ended early, which means an apostrophe inside it was not " +
+                "doubled — the rest of that line is not in the string the game loads. Double it ('' not ') " +
+                "in:\n  " + string.Join("\n  ", offenders));
+        }
+
+        /// <summary>
+        /// The scan behind <see cref="AuthoredAssetText_EscapesEveryApostrophe_SoNoLineIsSilentlyTruncated"/>:
+        /// returns a description of every line where a single-quoted scalar closes with content still to
+        /// come on that line. A scalar STARTS only at a value position (just after <c>: </c> or <c>- </c>),
+        /// so an apostrophe inside an unquoted scalar (<c>DisplayName: Ginny's Freezer</c> — legal YAML)
+        /// is not mistaken for one; a scalar may run over several lines, which is how Unity wraps long
+        /// prose, so the walk carries across lines until it closes.
+        /// </summary>
+        private static IEnumerable<string> UnescapedQuoteLines(string[] lines)
+        {
+            bool inScalar = false;
+            int cursor = 0;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                int at = inScalar ? 0 : -1;
+
+                while (true)
+                {
+                    if (!inScalar)
+                    {
+                        at = ScalarStart(line, cursor);
+                        if (at < 0) break;
+                        inScalar = true;
+                    }
+
+                    int close = CloseQuote(line, at);
+                    if (close < 0) break;                      // runs on to the next line — legal, keep going
+
+                    inScalar = false;
+                    string rest = line.Substring(close + 1).Trim();
+                    if (rest.Length > 0)
+                    {
+                        yield return $"line {i + 1}: {line.Trim()}";
+                        break;                                 // one report per line is enough to fix it
+                    }
+                    cursor = close + 1;
+                }
+
+                cursor = 0;   // a new line always starts scanning from its beginning
+            }
+        }
+
+        /// <summary>Index just inside the next single-quoted scalar at or after <paramref name="from"/>,
+        /// or -1. A scalar opens only at a value position: right after ": " or "- ".</summary>
+        private static int ScalarStart(string line, int from)
+        {
+            for (int i = Mathf.Max(from, 2); i < line.Length; i++)
+                if (line[i] == '\'' && line[i - 1] == ' ' && (line[i - 2] == ':' || line[i - 2] == '-'))
+                    return i + 1;
+            return -1;
+        }
+
+        /// <summary>Index of the quote that CLOSES a scalar whose content starts at
+        /// <paramref name="from"/>, or -1 if it runs past the end of the line. "''" is an escaped
+        /// apostrophe and never closes.</summary>
+        private static int CloseQuote(string line, int from)
+        {
+            for (int i = from; i < line.Length; i++)
+            {
+                if (line[i] != '\'') continue;
+                if (i + 1 < line.Length && line[i + 1] == '\'') { i++; continue; }
+                return i;
+            }
+            return -1;
         }
     }
 }

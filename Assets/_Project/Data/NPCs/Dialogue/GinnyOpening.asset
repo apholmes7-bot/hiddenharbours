@@ -16,7 +16,7 @@ MonoBehaviour:
   FirstLines:
   - 'Oh, child — you made it out to the island. Your uncle Ned thought the world of
     you, you know.'
-  - 'He's gone to the deep now, rest him. He left you his cottage and his memory —
+  - 'He''s gone to the deep now, rest him. He left you his cottage and his memory —
     but the old dory of his is past mending, and there''s no boat handed to you here.'
   - 'No matter. We earn our way on this coast. When the big tide drops, the flats out
     front bare — get the shovel and dig CLAMS where you see the two little squirts.'
@@ -32,3 +32,9 @@ MonoBehaviour:
     bar to Nine Mile Creek.'
   - 'Sell, licence, rod, then buy and mend that dory. Earn her, and she''ll be yours
     for good.'
+  ConditionalFlag: ginny_fronted_clam_fee
+  ConditionalLines:
+  - 'And your CLAM LICENCE — I''ve put the fee in your hand, so walk up to the store
+    and sign for it yourself. It''s your name that has to go on the paper, not mine.'
+  - 'It''s not a gift, mind. It goes in the book at the counter, and that book keeps
+    better than I do. Square it with me when the flats start paying you.'

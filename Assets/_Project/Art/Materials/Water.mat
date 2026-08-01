@@ -86,11 +86,14 @@ Material:
     - _DeepBlueStrength: 0.45
     - _DeepDepth: 4
     - _DepthBands: 0
+    - _DispersionScale: 0.5
+    - _BandScaleResponse: 0.25
     - _DriftLineScale: 0.3
     - _DriftLineSeaStateHi: 0.6
     - _DriftLineSeaStateLo: 0.05
     - _DriftLineSpeed: 0.5
     - _DriftLineStrength: 0.35
+    - _DriftLineConvergence: 0.5
     - _DriftLineStretch: 5
     - _FbmDriftSpeed: -0.12
     - _FbmGateHi: 1
@@ -102,6 +105,7 @@ Material:
     - _FoamClumpScale: 0.1
     - _FoamClumpStrength: 0.55
     - _FoamClumpStretch: 2.5
+    - _FoamConvergenceStrength: 0.4
     - _FoamCrestGate: 0.88
     - _FoamDensity: 0.5
     - _FoamDensityWind: 0.5
@@ -146,6 +150,7 @@ Material:
     - _RainRingScale: 6
     - _RainRingSpeed: 1.5
     - _RainRingStrength: 0.6
+    - _RippleStrength: 0.45
     - _ReflectionChopScatter: 1.5
     - _ReflectionFadeChop: 0.6
     - _ReflectionSkyTint: 0.85
@@ -174,7 +179,7 @@ Material:
     - _StarStrength: 0.18
     - _StarTwinkleSpeed: 1.4
     - _StormFoamLaneScale: 0.3
-    - _StormFoamLaneStrength: 0
+    - _StormFoamLaneStrength: 0.75
     - _StormFoamLaneStretch: 6
     - _SunGlitterStrength: 0.6
     - _SurfaceTexStrength: 0.169

@@ -3248,9 +3248,11 @@ The shipped `Water.mat` variant is force-compiled by `WaterShaderCompileGuardTes
 by `TreeWindShaderCompileGuardTests`, so an HLSL slip in either `HHReflect` pass fails CI red rather
 than magenta-in-build.
 
-**Nothing ships reflective.** The `HHReflect` pass exists in `HiddenHarboursTreeWind`; no prefab carries
-a `ReflectiveObject`, so no pass is enqueued and `_ObjectReflectStrength` is 0. Opting a boat, a wharf
-or a treeline in is: add the component, then raise the strength.
+**Nothing ships reflective** — ⚠️ **the PRE-ACTIVATION state, as §26 first shipped it; superseded by
+§26.10 below, which opted the fleet and the trees in and raised the strength.** The `HHReflect` pass
+exists in `HiddenHarboursTreeWind`; no prefab carries a `ReflectiveObject`, so no pass is enqueued and
+`_ObjectReflectStrength` is 0. Opting a boat, a wharf or a treeline in is: add the component, then
+raise the strength.
 
 ### 26.10 Activation — what actually reflects, and where each wiring lives
 

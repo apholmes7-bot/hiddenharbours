@@ -550,6 +550,11 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
+            // The SHELL is holding the world — the title page is up, or the pause menu is (M1 §7.8).
+            // Stronger than the interaction gate below: time itself is stopped, so the controls are parked
+            // rather than merely deaf. A pause you can sail through is not a pause.
+            if (ApplyShellInputBlock()) return;
+
             // A modal dialogue (VS-21, world-content) owns the shared Interact key while it's up —
             // don't also board/disembark under it. Gate is a Core contract so neither lane references
             // the other (see InteractionGate). Hide our board/dock hint too while blocked.
@@ -564,6 +569,46 @@ namespace HiddenHarbours.Player
             // Q holds/roots the rope of a moored boat you're standing by (the mooring interaction).
             if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
             UpdateHint();
+        }
+
+        // ---- the shell's hold on the world (M1 §7.8) ----------------------------------------
+
+        private bool _inputParked;
+        private bool _walkWasEnabled;
+        private bool _boatInputWasEnabled;
+
+        /// <summary>
+        /// Park or restore the player's controls to match <see cref="ShellFlow.WorldInputBlocked"/>.
+        /// Edge-triggered — it touches the components only when the answer CHANGES, so a paused game is
+        /// not re-disabling three behaviours every frame — and it restores exactly what it found, so a
+        /// helm that was dead before the pause (nobody aboard) is not woken by resuming.
+        ///
+        /// <para>Deliberately parks the INPUT behaviours only, not <c>BoatController</c>: the hull keeps
+        /// its drag and settles where the player left it, where a disabled controller would let a moving
+        /// boat coast on forever at constant velocity behind the menu.</para>
+        /// </summary>
+        /// <returns>True while the shell holds the world — the caller does nothing else this frame.</returns>
+        private bool ApplyShellInputBlock()
+        {
+            bool blocked = ShellFlow.WorldInputBlocked;
+            if (blocked == _inputParked) return blocked;
+
+            _inputParked = blocked;
+            if (blocked)
+            {
+                _walkWasEnabled = _playerWalk != null && _playerWalk.enabled;
+                _boatInputWasEnabled = _boatInput != null && _boatInput.enabled;
+
+                if (_playerWalk != null) _playerWalk.enabled = false;
+                if (_boatInput != null) _boatInput.enabled = false;
+                if (_hint != null) _hint.enabled = false;   // no "E: Board" prompt under a title page
+            }
+            else
+            {
+                if (_playerWalk != null) _playerWalk.enabled = _walkWasEnabled;
+                if (_boatInput != null) _boatInput.enabled = _boatInputWasEnabled;
+            }
+            return blocked;
         }
 
         private void UpdateHint()
