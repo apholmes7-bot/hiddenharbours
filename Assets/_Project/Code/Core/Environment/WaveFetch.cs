@@ -148,12 +148,21 @@ namespace HiddenHarbours.Core
         /// </summary>
         public const int MarchSteps = 24;
 
-        /// <summary>World pixels per unit for the march's coordinate quantization — the PPU the
-        /// project is locked to (<c>PixelPerfectCamera.assetsPPU</c> = 32, mirrored by
-        /// <c>CameraFollow.AssetsPPU</c> and the shader's <c>_PixelsPerUnit</c> default). The march
-        /// samples on <b>world</b>-quantized coordinates so the shader's fetch cannot crawl under
-        /// camera translation (ADR 0027's crawl law), and the C# twin quantizes identically so the two
-        /// sides march the same points.</summary>
+        /// <summary>
+        /// World pixels per unit for the march's coordinate quantization — the PPU the project is
+        /// actually locked to (<c>PixelPerfectCamera.assetsPPU</c> = 32, mirrored by
+        /// <c>CameraFollow.AssetsPPU</c>). The march samples on <b>world</b>-quantized coordinates so
+        /// the fetch cannot crawl under camera translation (ADR 0027's crawl law).
+        ///
+        /// <para><b>⚠️ This is NOT the shader's <c>_PixelsPerUnit</c>, and must never be wired to it.</b>
+        /// That property is an ART knob — the shipped <c>Water.mat</c> sets it 24 and the presets set 12,
+        /// so its Properties-block default of 32 never ships. Quantizing the march through it would put
+        /// the two sides on grids centimetres apart per step, flip a wet/dry step at a hard painted coast,
+        /// and land the DRAWN lee boundary on a different line than the FELT one — the seen != felt split
+        /// this item exists to close, handed back to a tuning knob. The shader therefore carries its own
+        /// <c>FETCH_MARCH_PPU</c> / <c>FetchPixelize</c>; this constant is the other half of that seam and
+        /// they move together in one commit (pinned by <c>MarchPixelGrid_MatchesTheShader</c>).</para>
+        /// </summary>
         public const float PixelsPerUnit = 32f;
 
         /// <summary>Narrowest band a gate's two edges may collapse to (mirrors the shader's
@@ -164,6 +173,12 @@ namespace HiddenHarbours.Core
         /// <summary>Fewest posterize steps that mean anything (the <c>_DepthBands</c> /
         /// <c>_AbsorptionBands</c> / <c>_RippleBands</c> "0 = off" idiom).</summary>
         public const float MinBands = 2f;
+
+        /// <summary>Floor on the amplitude curve's <c>pow</c> base, mirroring the shader's
+        /// <c>max(saturate(f), 1e-6)</c>. <c>pow(0, e)</c> is undefined in HLSL, so the shader floors it;
+        /// this twin floors it identically rather than diverging in a dead lee. A guard, not a
+        /// tunable.</summary>
+        public const float MinPowBase = 1e-6f;
 
         /// <summary>Floor on the march step (metres) so a zeroed/stale settings struct cannot collapse
         /// the march onto a single point. A guard, not a tunable.</summary>
@@ -265,7 +280,10 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static float Amplitude01(float fetch01, float exponent, float leeFloor)
         {
-            float f = Mathf.Pow(Mathf.Clamp01(fetch01), Mathf.Max(0.01f, exponent));
+            // MinPowBase mirrors the shader's max(saturate(f), 1e-6) — pow(0, e) is a documented
+            // undefined-behaviour corner in HLSL, so the shader floors the base and this twin must too or
+            // the two sides diverge (~1e-8) exactly in a dead lee. Line-for-line means line-for-line.
+            float f = Mathf.Pow(Mathf.Max(Mathf.Clamp01(fetch01), MinPowBase), Mathf.Max(0.01f, exponent));
             return Mathf.Lerp(Mathf.Clamp01(leeFloor), 1f, f);
         }
 
@@ -288,7 +306,11 @@ namespace HiddenHarbours.Core
         {
             if (bands < MinBands) return Mathf.Clamp01(v01);
             float steps = bands - 1f;
-            return Mathf.Round(Mathf.Clamp01(v01) * steps) / steps;
+            // ⚠️ floor(x + 0.5), NOT Mathf.Round: Mathf.Round is BANKER'S rounding (half-to-even) while
+            // HLSL's round() is half-away-from-zero. Exact half-band inputs are reachable — the march
+            // yields exact n/24-class fractions wherever the wetness smoothstep saturates — so the two
+            // sides would pick ADJACENT bands. Spelled identically in the shader's FetchBand01.
+            return Mathf.Floor(Mathf.Clamp01(v01) * steps + 0.5f) / steps;
         }
 
         /// <summary>

@@ -504,6 +504,23 @@ bound is a known magenta trap (#96). `WaveFetchTests.MarchStepCount_MatchesTheSh
 out of the shader source and fails red if the two halves ever drift, the
 `RipplePixelFootprintTests` pattern.
 
+The march's **coordinate grid** is a second half-seam of the same kind — `WaveFetch.PixelsPerUnit` in
+C#, `FETCH_MARCH_PPU`/`FetchPixelize` in HLSL, pinned by `MarchPixelGrid_MatchesTheShader`. It is
+deliberately **not** the material's `_PixelsPerUnit`: that is an art knob (shipped `Water.mat` sets it
+24, the presets 12), and quantizing the march through it would let a pixel-scale tweak move the lee
+the hull rides — the seen ≠ felt split handed back to a tuning slider. A source-text test also asserts
+the march body never calls the material-driven `Pixelize()`, because a value twin cannot see which
+HLSL function the march called.
+
+**The geometry source is exactly parallel on the painted path, and only bake-resolution-approximate on
+the analytic one.** Where a region's seabed is authored as a height map, both marches read the same
+texels and the lee boundary is identical by construction. Where it is analytic, the C# side evaluates
+the exact function while the shader reads the low-resolution baked `_HeightTex`, so the two lee
+boundaries can disagree by up to the bake's cell size. That seam pre-dates this amendment, but the
+envelope makes it **load-bearing** — it is now a difference in what the hull rides, not only in what
+is drawn. Accepted for now (regions in play are painted); if an analytic region ever ships with the
+dial up, raise the bake resolution or move the C# side onto the same baked sampler.
+
 ### (e) It ships OFF
 
 `WaveFetchSettings.Strength` is 0, which returns **exactly** 1 — so the sea, drawn *and* ridden, is

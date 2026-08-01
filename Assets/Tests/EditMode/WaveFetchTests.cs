@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -13,9 +14,12 @@ namespace HiddenHarbours.Tests.EditMode
     ///
     /// <para>What these pin, in order of what would hurt most if it broke:</para>
     /// <list type="number">
-    /// <item><b>The passthrough</b> — strength 0 is EXACTLY 1, and the field sampled through it is
-    /// bit-identical to the field sampled without it. This is what lets the model ship OFF with the
-    /// sea (drawn AND ridden) unchanged.</item>
+    /// <item><b>The passthrough</b> — strength 0 is EXACTLY 1 (not 1±ε), a terrain that fails if
+    /// sampled proves the march is skipped entirely while off, and 1 is the arithmetic identity
+    /// through every term of a sample. This is what lets the model ship OFF with the sea (drawn AND
+    /// ridden) unchanged. <i>Purity</i> of the insertion rests on the guarded early-out plus the
+    /// untouched <c>WaveMathTests</c> goldens — the 3-arg <c>Sample</c> forwards to the 4-arg, so no
+    /// test here can compare "through" against "without".</item>
     /// <item><b>The [unroll] seam</b> — <see cref="WaveFetch.MarchSteps"/> against the shader's
     /// <c>FETCH_MARCH_STEPS</c>, read out of the shader source. ADR 0027 states the fixed iteration
     /// count as an implementation constraint (the #96 magenta trap); this is the tripwire that goes
@@ -101,8 +105,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void EnvelopeOne_LeavesTheFieldBitIdentical()
+        public void EnvelopeOne_IsTheNoOpMultiplier()
         {
+            // ⚠️ Scope, stated honestly: the 3-arg Sample FORWARDS to the 4-arg with 1f, so this cannot
+            // prove the insertion is pure — it would compare f(x) with f(x). What it does pin is that
+            // 1f is the arithmetic identity through the whole sample (height, both slope axes AND the
+            // crest factor, which divides by an UNSCALED TotalAmplitude and so is the one term that
+            // could drift). The purity proof lives elsewhere: the guarded early-out in Envelope01 plus
+            // the untouched WaveMathTests goldens, which never pass an envelope at all.
             WaveTrains trains = WaveMath.TrainsFrom(new Vector2(5f, -3f), 0.7f,
                                                     WaveFieldSettings.Default);
             for (int i = 0; i < 12; i++)
@@ -135,6 +145,48 @@ namespace HiddenHarbours.Tests.EditMode
                 "The C# march and the HLSL march take a different number of steps, so the sea the " +
                 "hull rides is not the sea the shader draws. ⚠️ The count must also stay a COMPILE-TIME " +
                 "constant: ADR 0027 flags [unroll] over a runtime bound as a known magenta trap.");
+        }
+
+        [Test]
+        public void MarchPixelGrid_MatchesTheShader()
+        {
+            string path = Path.Combine(Application.dataPath, "..", ShaderPath);
+            Assert.IsTrue(File.Exists(path), "Water shader not found at " + ShaderPath);
+            string src = File.ReadAllText(path);
+
+            Match m = Regex.Match(src, @"#define\s+FETCH_MARCH_PPU\s+([0-9.]+)");
+            Assert.IsTrue(m.Success,
+                "FETCH_MARCH_PPU is gone from the water shader. It is one half of a seam with " +
+                "WaveFetch.PixelsPerUnit — if the march's grid moved, both halves move in the same commit.");
+            Assert.AreEqual(WaveFetch.PixelsPerUnit,
+                            float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture), 1e-4f,
+                "The C# march and the HLSL march quantize on DIFFERENT world grids, so they sample " +
+                "different points: at a hard painted coast one side's step flips wet/dry where the " +
+                "other's does not, and the drawn lee boundary stops matching the felt one.");
+        }
+
+        [Test]
+        public void TheMarchDoesNotQuantizeThroughTheMaterialPixelsPerUnit()
+        {
+            // ⚠️ THE REGRESSION THIS FILE EXISTS TO PREVENT. Pixelize() divides by _PixelsPerUnit, a
+            // MATERIAL property: the shipped Water.mat sets it 24 and the presets set 12, so its
+            // Properties-block default of 32 never ships. The C# twin cannot read a material at all.
+            // Quantizing the march through it would hand the seen != felt split back to an art knob —
+            // tuning the pixel scale would silently move the lee the hull rides. A twin test cannot see
+            // which HLSL function the march calls, so this reads the source.
+            string path = Path.Combine(Application.dataPath, "..", ShaderPath);
+            string src = File.ReadAllText(path);
+
+            Match body = Regex.Match(src, @"#define\s+FETCH_MARCH_BODY.*?return\s+FetchEnvelopeFrom",
+                                     RegexOptions.Singleline);
+            Assert.IsTrue(body.Success, "FETCH_MARCH_BODY not found in the water shader.");
+
+            StringAssert.Contains("FetchPixelize", body.Value,
+                "The fetch march must quantize through FetchPixelize (its own fixed grid).");
+            Assert.IsFalse(Regex.IsMatch(body.Value, @"[^h]Pixelize\("),
+                "The fetch march calls the MATERIAL-driven Pixelize(). That reintroduces the " +
+                "seen != felt split: _PixelsPerUnit ships at 24/12, the C# twin is fixed at 32, and the " +
+                "two marches would sample points centimetres apart. Use FetchPixelize.");
         }
 
         // ==== (3) THE PHYSICS ========================================================================
@@ -307,6 +359,42 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(a, Is.InRange(floor - 1e-5f, 1f + 1e-5f));
                 previous = a;
             }
+        }
+
+        [Test]
+        public void Band01_RoundsHalfAwayFromZero_NotBankers()
+        {
+            // ⚠️ THE SECOND C#-TWIN TRAP. Mathf.Round is BANKER'S rounding (half-to-EVEN): Mathf.Round(0.5)
+            // is 0 and Mathf.Round(1.5) is 2. HLSL's round() is half-AWAY-from-zero: both go up. Exact
+            // half-band inputs are reachable — the march returns exact n/24-class fractions wherever the
+            // wetness smoothstep saturates — so the two sides would land on ADJACENT bands, and the sea
+            // drawn in a lee would ride a different amplitude step than the sea the hull feels.
+            // Latent while Bands ships 0; pinned so it cannot wake up when the owner dials banding on.
+
+            // 3 bands => steps = 2, so v = 0.25 puts the scaled value on an exact half (0.5).
+            Assert.AreEqual(0.5f, WaveFetch.Band01(0.25f, 3f), 1e-6f,
+                "an exact half must round UP (away from zero), as HLSL round() does");
+            Assert.AreNotEqual(Mathf.Round(0.5f), 1f,
+                "guard on the premise: Mathf.Round(0.5) is 0, which is why Band01 must not use it");
+
+            // 5 bands => steps = 4; v = 0.125 scales to 0.5, v = 0.375 scales to 1.5. Banker's would send
+            // these to 0 and 2 (both even); half-away-from-zero sends them to 1 and 2.
+            Assert.AreEqual(0.25f, WaveFetch.Band01(0.125f, 5f), 1e-6f, "0.5 => 1, not 0");
+            Assert.AreEqual(0.5f, WaveFetch.Band01(0.375f, 5f), 1e-6f, "1.5 => 2");
+        }
+
+        [Test]
+        public void Amplitude01_FloorsThePowBase_LikeTheShader()
+        {
+            // The shader computes pow(max(saturate(f), 1e-6), e) because pow(0, e) is undefined in HLSL.
+            // The twin must floor identically or the two sides diverge exactly where a lee is deadest.
+            // With a fractional exponent the floor is observable: 1e-6^0.5 = 1e-3, not 0.
+            const float floor = 0f, exponent = 0.5f;
+            float atZero = WaveFetch.Amplitude01(0f, exponent, floor);
+
+            Assert.AreEqual(Mathf.Pow(WaveFetch.MinPowBase, exponent), atZero, 1e-9f,
+                "fetch 0 must go through the same 1e-6 pow floor the shader uses");
+            Assert.Greater(atZero, 0f, "the floored base keeps the envelope strictly > 0");
         }
 
         [Test]

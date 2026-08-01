@@ -1861,6 +1861,29 @@ Shader "HiddenHarbours/Water"
             // half of a seam — its C# counterpart is WaveFetch.MarchSteps; they move together in one commit.
             #define FETCH_MARCH_STEPS 24
 
+            // The march's own quantization grid — ⚠️ DELIBERATELY NOT _PixelsPerUnit.
+            //
+            // Pixelize() divides by the MATERIAL property _PixelsPerUnit, which is an ART knob: the shipped
+            // Water.mat sets it 24 and the presets set 12, so the Properties-block default of 32 never ships.
+            // The C# twin cannot read a material, so if the march quantized through Pixelize the two sides
+            // would snap to grids 4-8 cm apart per step. At a hard painted coast one side's step flips
+            // wet->dry where the other's does not, the product accumulator shadows a different step count,
+            // and the DRAWN lee boundary lands on a different line than the FELT one — precisely the
+            // seen != felt split this item exists to close, reintroduced by a tuning knob.
+            //
+            // So the fetch march owns its grid, fixed at the PPU the project is actually locked to
+            // (PixelPerfectCamera.assetsPPU = 32). Tuning the art knob can no longer move the lee.
+            // This constant is one half of a seam: its C# counterpart is WaveFetch.PixelsPerUnit, pinned by
+            // MarchPixelGrid_MatchesTheShader, the FETCH_MARCH_STEPS pattern.
+            #define FETCH_MARCH_PPU 32.0
+
+            // Twin: WaveFetch.Pixelize. floor(p*ppu)/ppu on the WORLD grid, so the fetch cannot crawl under
+            // camera translation (the crawl law) and both sides march the same points.
+            float2 FetchPixelize(float2 p)
+            {
+                return floor(p * FETCH_MARCH_PPU) / FETCH_MARCH_PPU;
+            }
+
             // Fetch -> amplitude multiplier: lerp(leeFloor, 1, fetch^exponent). Exactly the lee floor at fetch
             // 0, exactly 1 at fetch 1 — so a fully exposed shore is untouched and the open sea stays the sea
             // the field was tuned against. Twin: WaveFetch.Amplitude01.
@@ -1881,7 +1904,11 @@ Shader "HiddenHarbours/Water"
                 float bands = _WaveFetchParams2.y;
                 if (bands < 2.0) return saturate(v01);
                 float steps = bands - 1.0;
-                return round(saturate(v01) * steps) / steps;
+                // ⚠️ floor(x + 0.5), NOT round(): HLSL's round() is half-away-from-zero while C#'s
+                // Mathf.Round is banker's rounding (half-to-EVEN), so an exact half-band input — which the
+                // march reaches whenever the smoothstep saturates and the fraction lands on n/24 — would
+                // pick ADJACENT bands on the two sides. Spelled identically in WaveFetch.Band01.
+                return floor(saturate(v01) * steps + 0.5) / steps;
             }
 
             // The finished envelope from an already-marched fetch. strength 0 returns EXACTLY 1 (the shipped
@@ -1903,9 +1930,10 @@ Shader "HiddenHarbours/Water"
             // is also what keeps the loop branch-free with no early exit — the fixed [unroll] contract.
             // The wetness gate is a smoothstep over _WaveFetchParams2.x metres of depth, not a hard cutoff, so
             // the envelope cannot POP as the tide crosses a shoal (a discontinuity in the waves the hull rides,
-            // arriving on the tide's schedule). Sample coords are world-Pixelize'd: the fetch must not crawl
-            // under camera translation (the crawl law), and the C# twin quantizes identically so both sides
-            // march the same points. Twin: WaveFetch.Fetch01.
+            // arriving on the tide's schedule). Sample coords go through FetchPixelize — the march's OWN grid,
+            // not the material's _PixelsPerUnit: the fetch must not crawl under camera translation (the crawl
+            // law), and the C# twin, which cannot read a material, quantizes identically so both sides march
+            // the same points regardless of how the art knob is tuned. Twin: WaveFetch.Fetch01.
             #define FETCH_MARCH_BODY(ELEV_FN)                                                          \
                 float strength = saturate(_WaveFetchParams.x);                                         \
                 if (strength <= 0.0) return 1.0;              /* OFF: not one texture tap */           \
@@ -1918,7 +1946,7 @@ Shader "HiddenHarbours/Water"
                 [unroll]                                                                               \
                 for (int fi = 1; fi <= FETCH_MARCH_STEPS; fi++)   /* FIXED bound — never a variable */ \
                 {                                                                                      \
-                    float2 fp = Pixelize(worldXY + upwind * (stepLen * fi));                           \
+                    float2 fp = FetchPixelize(worldXY + upwind * (stepLen * fi));                       \
                     float fdepth = _WaterLevel - ELEV_FN(fp);                                          \
                     blocked *= smoothstep(0.0, band, fdepth);    /* land shadows everything beyond */  \
                     open += blocked;                                                                   \
