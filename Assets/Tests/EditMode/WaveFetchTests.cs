@@ -185,7 +185,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "The fetch march must quantize through FetchPixelize (its own fixed grid).");
             Assert.IsFalse(Regex.IsMatch(body.Value, @"[^h]Pixelize\("),
                 "The fetch march calls the MATERIAL-driven Pixelize(). That reintroduces the " +
-                "seen != felt split: _PixelsPerUnit ships at 24/12, the C# twin is fixed at 32, and the " +
+                "seen != felt split: _PixelsPerUnit ships at 24 (aligned across every preset since #388), " +
+                "the C# twin is fixed at 32, and the " +
                 "two marches would sample points centimetres apart. Use FetchPixelize.");
         }
 

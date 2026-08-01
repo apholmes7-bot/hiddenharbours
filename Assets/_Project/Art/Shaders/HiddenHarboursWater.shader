@@ -3697,9 +3697,9 @@ Shader "HiddenHarbours/Water"
                         // 0 = full trough .. 0.5 = mean level .. 1 = the full envelope crest.
                         float vN = saturate(waveHeight / max(_WaveFieldParams.z, 1e-5) * 0.5 + 0.5);
                         // ---- DE-REGULARIZE (owner: "the large white bands are too regular like a pattern")
-                        // ONE low-frequency world noise read, used twice. Wind-STRETCHED: patches on a real
-                        // sea are drawn out downwind, and stretching also stops the mask itself reading as a
-                        // second regular grid laid over the first.
+                        // TWO low-frequency world noise reads (patch mask + value warp, different UVs).
+                        // Wind-STRETCHED: patches on a real sea are drawn out downwind, and stretching also
+                        // stops the mask itself reading as a second regular grid laid over the first.
                         float2 patchAxis = normalize(_WindDir.xy + float2(1e-4, 0));
                         float2 patchPerp = float2(-patchAxis.y, patchAxis.x);
                         float patchFreq = max(_EnvelopeBandPatchScale, 1e-4);

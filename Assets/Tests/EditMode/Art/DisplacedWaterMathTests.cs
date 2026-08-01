@@ -204,6 +204,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"edgeSwash\s*=\s*clamp\("),
                 "the drawn-edge swash must be CLAMPED at its cap where it is computed — the bounded " +
                 "SEE-not-FEEL divergence is only acceptable because the bound is structural");
+
+            // The flat pass is still the plain vertex (the A side of the A/B must be today's
+            // water exactly). Whitespace-anchored so "vertDisplaced" cannot satisfy it.
+            // (Restored at coordinator review of #388: an insertion had left this assert as
+            // unreachable code inside BalancedBody, silently disabling the guard.)
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"#pragma vertex vert\s"),
+                "the flat pass must keep its plain (undisplaced) vertex stage");
         }
 
         [Test]
@@ -270,11 +277,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 else if (src[j] == '}' && --depth == 0) return src.Substring(open, j - open + 1);
             }
             return null;
-
-            // The flat pass is still the plain vertex (the A side of the A/B must be today's
-            // water exactly). Whitespace-anchored so "vertDisplaced" cannot satisfy it.
-            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"#pragma vertex vert\s"),
-                "the flat pass must keep its plain (undisplaced) vertex stage");
         }
 
         // ---- component defaults pinned to the ADR --------------------------------------------

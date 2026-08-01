@@ -190,6 +190,11 @@ The finest band in the shader is `_WindChopScale` at 0.7 — that is **chop, not
 original eight adds one. Ripples are what makes water read as *water* close up. Add a short-wavelength octave
 (~0.08–0.15 m) riding **on** the larger waves:
 
+> **Amendment (#388, 2026-08-01):** the shipped wavelength is **0.17 m** — outside the band above, and
+> forced: at the shader's shipped sampling grid (`_PixelsPerUnit` 24 → 4.17 cm cells) *nothing* in
+> 0.08–0.15 m clears the ≥4-cells-per-cycle moiré floor (0.15 m = 3.6 cells). 0.17 m = 4.08 cells is the
+> closest honest value to the band's intent.
+
 - **Gated by wind** (`_Roughness`) — no wind, no ripples, glass stays glass — and by **local wave steepness**, so
   ripples sit on the **windward faces** of larger waves and are absent in their lee, which is what wind ripples
   actually do. The steepness term is the slope of the existing field; no new uniform.

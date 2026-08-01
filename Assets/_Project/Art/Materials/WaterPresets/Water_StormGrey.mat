@@ -69,7 +69,7 @@ Material:
     - _DeepBlueStrength: 0.1
     - _DeepDepth: 4
     - _DepthBands: 0
-    - _EnvelopeBandPatchMin: 0.4
+    - _EnvelopeBandPatchMin: 0.45
     - _EnvelopeBandPatchScale: 0.025
     - _EnvelopeBandWarp: 0.24
     - _Flow: 0.06
