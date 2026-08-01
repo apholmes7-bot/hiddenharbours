@@ -43,7 +43,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GameServices.Reset();
             _clock = new FakeClock();
-            GameServices.Clock = _clock;   // Config stays null → the pinned defaults (1200 s/day)
+            GameServices.Clock = _clock;   // Config stays null → the pinned defaults (1800 s/day)
         }
 
         [TearDown]

@@ -94,7 +94,8 @@ screen; you buy a watch and the time & date appear.**
 **The binding.** Every `WatchRig` param maps 1:1 onto a member `IGameClock` already exposes — no calendar
 math to reimplement (do **not** re-derive the weekday/market from an absolute-day index; `clock.Weekday`
 and `clock.IsMarketDay` already are that). Time canon verified against the code: 4 seasons × 28 days,
-Mon-first week, Friday market, day = 1200 in-game s, new game starts Early Spring · Day 1 · 06:00.
+Mon-first week, Friday market, day = 1800 real s (30 min; ruled 2026-08-01, was 1200), new game starts
+Early Spring · Day 1 · 06:00.
 
 **What landed now:**
 - `WatchFaceState.FromClock(IGameClock, dayStart=6, nightStart=19)` (pure Core mapper) — the 9 clock-derived

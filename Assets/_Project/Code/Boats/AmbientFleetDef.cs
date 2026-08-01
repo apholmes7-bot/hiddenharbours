@@ -59,7 +59,9 @@ namespace HiddenHarbours.Boats
         [Range(1, 4)] public int SpotsPerBoat = 2;
         [Tooltip("Minimum water depth (m) a spot or travel leg must keep at the LOWEST water the tide can " +
                  "ever reach (spring low = mean − amplitude), so a falling tide can never strand a planned " +
-                 "route. St Peters: floor −4 m, spring low −3.5 m → at most ~0.5 m clears; 0.4 floats a punt.")]
+                 "route. St Peters: floor −4 m, spring low −2.2 m → at most ~1.8 m clears; 0.4 floats a punt. " +
+                 "(The 2026-08-01 pacing ruling raised spring low from −3.5 m, so the planner has more room " +
+                 "over the floor than it used to, not less.)")]
         [Min(0.05f)] public float MinDepthMeters = 0.4f;
         [Tooltip("Minimum spacing (m) between any two planned buoy spots, across the whole fleet.")]
         [Min(0f)] public float SpotSpacingMeters = 8f;

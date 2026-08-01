@@ -64,8 +64,10 @@ namespace HiddenHarbours.App.Editor
         /// The widest envelope of two swings — lowest low, highest high. Used to fold the START
         /// region's live tide into a region's own authored profile, because the environment service
         /// runs the start scene's profile everywhere until per-region re-pointing lands (the
-        /// NineMileCreekBuilder caveat): a Nine Mile Creek authored at ±0.8 m still LIVES under St Peters' ±3.5 m,
-        /// so its land must be checked against the wider swing.
+        /// NineMileCreekBuilder caveat): a Nine Mile Creek authored at ±0.8 m still LIVES under St Peters'
+        /// ±2.2 m (±3.5 m before the 2026-08-01 pacing ruling), so its land must be checked against the
+        /// wider swing. Note the widening shrank when the ruling did — which is why this folds the two
+        /// swings rather than naming either.
         /// </summary>
         public static TideSwing WidestSwing(TideSwing a, TideSwing b)
             => new TideSwing(Mathf.Min(a.Low, b.Low), Mathf.Max(a.High, b.High));

@@ -518,10 +518,14 @@ month, **tied to the existing tide cycle**. This is the one piece that adds C# b
   moon's `_phaseOffsetDays` **MUST be a multiple of the HALF-lunar period** (`LunarMonthDays/2 = 14`) or the
   alignment inverts (a quarter-cycle offset like 7 would put the full moon on a *neap*). It ships at **14** — a
   half-period multiple that also starts a new game on a **full moon over a spring tide** (the biggest low tide,
-  for the clam-digging opening, moon reflection visible from frame one). The period is a serialized tunable
-  defaulting to the canon **28 days / 1200 s/day** (mirroring `GameConfig.LunarMonthDays` / `SecondsPerDay`);
-  `GameConfig` isn't in a `Resources` folder so it can't be auto-loaded here without touching the builders —
-  keep these in sync, or expose `GameConfig` through Core later (an additive follow-up).
+  for the clam-digging opening, moon reflection visible from frame one). The period is the canon
+  **28 days / 1800 s/day**, read live through `GameServices.LunarMonthDays` / `GameServices.SecondsPerDay` —
+  the same two numbers the tide's envelope uses, so the alignment is structural rather than hand-maintained.
+  Until 2026-08-01 these were serialized mirrors on `MoonCycle`/`DayNightController` with a "keep them in
+  sync with `GameConfig`" note, because `GameConfig` isn't in a `Resources` folder and could not be
+  auto-loaded here. The day-length ruling (1200 → 1800 s) is exactly the change that would have broken that
+  hand-sync — the drawn moon would have advanced 1.5× faster than the spring/neap envelope — so Core grew
+  the two accessors instead. **Never reintroduce a local copy of either number.**
 - **Per-night presence by phase (the night-sailing stakes).** A tunable links the moon's per-night presence to
   its phase: a **full moon** is bright and up most of the night; a **new moon** barely up — a genuinely dark
   night you need the boat spotlight (ADR 0016) for (P1/P5). Brightness = illuminated-fraction × presence.

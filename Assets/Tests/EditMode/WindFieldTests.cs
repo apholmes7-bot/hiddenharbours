@@ -12,8 +12,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class WindFieldTests
     {
-        // = SecondsPerDay(1200)/24. Passed explicitly so the field is testable without a GameConfig.
-        private const double SecondsPerHour = 50.0;
+        // The shipped hour, DERIVED so it tracks the dial. It was a literal 50.0 labelled
+        // "= SecondsPerDay(1200)/24"; the 2026-08-01 pacing ruling made that arithmetic false while every
+        // assertion here kept passing, because the field maths is scale-invariant. Passed explicitly so
+        // the field stays testable without a GameConfig.
+        private const double SecondsPerHour = GameConfig.DefaultSecondsPerDay / 24.0;   // 75 s
         private static WindProfile Cove => WindProfile.CoddleCove;
 
         [Test]

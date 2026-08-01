@@ -33,7 +33,7 @@ namespace HiddenHarbours.Tests.EditMode
         private GameObject _go;
         private TidalTerrain _terrain;
 
-        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   // 3.5
+        const float SpringHighWater = StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude;   // 2.2
         const string DataNpcs = "Assets/_Project/Data/NPCs";
 
         [SetUp]

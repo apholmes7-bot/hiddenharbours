@@ -156,8 +156,9 @@ namespace HiddenHarbours.App.Editor
         /// root — never a literal. A wharf's planks are level with the ground they launch from, so the deck
         /// is exactly the elevation at the root cell (+5.35 m: see the root's own note above, and the
         /// berth carve is still pulling the ground down there, which is why this is measured). That puts it
-        /// ~1.85 m clear of spring high water (+3.5 m), so the pier is dry at every tide — and if a terrain
-        /// edit ever lowered the root, the deck follows it instead of silently lying.
+        /// ~3.15 m clear of spring high water (+2.2 m since the 2026-08-01 pacing ruling; it was ~1.85 m
+        /// clear of +3.5 m), so the pier is dry at every tide — and if a terrain edit ever lowered the
+        /// root, the deck follows it instead of silently lying.
         ///
         /// <para>One number for the whole deck because a deck is LEVEL. The root centre-line is the sample
         /// point because it is the one place where the planks meet walkable ground.</para>
