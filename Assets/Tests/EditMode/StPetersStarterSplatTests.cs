@@ -598,5 +598,87 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Ignore("No splat maps committed yet — run Hidden Harbours ▸ Tools ▸ " +
                               "Paint St Peters Starter Splat (or paint with the Material brush) first.");
         }
+
+        // ============================ THE SPINE EXEMPTION, ENFORCED ============================
+
+        /// <summary>
+        /// #391 review follow-up F1: the spine skip inside <c>BuildCoverage</c> was only ever tested
+        /// through its PREDICATE — deleting the <c>continue</c> left every test green. This runs the
+        /// real sweep over the crossing and pins the outcome: the walking line carries NONE of the four
+        /// shore families, while its flanks (the trap #391 caught and removed 13,056 texels of) do.
+        /// </summary>
+        [Test]
+        public void TheCoverageSweep_LeavesTheSpineBare_AndDressesTheFlanks()
+        {
+            var go = new GameObject("StPetersTerrain_SpineSweep");
+            try
+            {
+                var terrain = go.AddComponent<TidalTerrain>();
+                StPetersBuilder.ConfigureTidalTerrain(terrain);
+
+                // A coarse texel grid over the bar only — resolution-parametric by design, so the test
+                // does not need the full 1520x1040 sweep to prove the rule.
+                var worldMin = new Vector2(StPetersBuilder.SandbarTo.x - 5f,
+                                           -(StPetersBuilder.SandbarHalfWidth + 8f));
+                var worldSize = new Vector2(
+                    (StPetersBuilder.SandbarFrom.x + 5f) - worldMin.x,
+                    2f * (StPetersBuilder.SandbarHalfWidth + 8f));
+                const int w = 156, h = 38;
+
+                float[][] maps = StPetersStarterSplat.BuildCoverage(terrain, w, h, worldMin, worldSize);
+
+                int spineTexels = 0, dressedFlankTexels = 0;
+                for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    var pos = new Vector2(worldMin.x + (x + 0.5f) / w * worldSize.x,
+                                          worldMin.y + (y + 0.5f) / h * worldSize.y);
+                    float e = terrain.ElevationAt(pos);
+                    int idx = y * w + x;
+
+                    if (StPetersShoreMap.IsBarSpine(pos, e))
+                    {
+                        spineTexels++;
+                        for (int f = 0; f < StPetersStarterSplat.KitV2Families.Length; f++)
+                            Assert.AreEqual(0f, maps[f][idx],
+                                $"{StPetersStarterSplat.KitV2Families[f].Name} paints the bar spine at " +
+                                $"{pos} — the walking line is SIGNAGE, and the BuildCoverage skip that " +
+                                "keeps it bare has been removed or bypassed.");
+                    }
+                    else
+                    {
+                        for (int f = 0; f < StPetersStarterSplat.KitV2Families.Length; f++)
+                            if (maps[f][idx] > 0f) { dressedFlankTexels++; break; }
+                    }
+                }
+
+                Assert.Greater(spineTexels, 50, "sanity: the sweep must actually cross the spine");
+                Assert.Greater(dressedFlankTexels, 50,
+                    "sanity: the flanks must carry SOME shore family, or a bare spine proves nothing " +
+                    "(the whole bar being bare would pass the assert above vacuously)");
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+            }
+        }
+
+        /// <summary>#391 review follow-up F3: the spine predicate is HOISTED — one definition in
+        /// <see cref="StPetersShoreMap.IsBarSpine"/>, drawn by <c>MaterialAt</c> and read back by the
+        /// splat pass. This pins the delegation so the two can never drift again.</summary>
+        [Test]
+        public void TheSpinePredicate_HasOneDefinition()
+        {
+            foreach (var probe in new[]
+            {
+                (pos: new Vector2(-200f, 0f), e: 0.5f),    // mid-bar, on the crest height
+                (pos: new Vector2(-200f, 0f), e: 0.2f),    // mid-bar, below the spine floor
+                (pos: new Vector2(-200f, 20f), e: 0.5f),   // flank sand
+                (pos: new Vector2(70f, 0f), e: 5f),        // the island, nowhere near the bar
+            })
+                Assert.AreEqual(StPetersShoreMap.IsBarSpine(probe.pos, probe.e),
+                                StPetersStarterSplat.IsBarSpine(probe.pos, probe.e),
+                    $"the two IsBarSpine answers disagree at {probe.pos} e={probe.e} — the hoist broke");
+        }
     }
 }

@@ -453,13 +453,12 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The sandbar's cobble spine — <see cref="StPetersShoreMap.MaterialAt"/>'s own test, read
-        /// back so the shore families can stay OFF it.
+        /// The sandbar's cobble spine — delegated to <see cref="StPetersShoreMap.IsBarSpine"/>, the ONE
+        /// definition <see cref="StPetersShoreMap.MaterialAt"/> also draws from (hoisted at #391's
+        /// review: this predicate used to be restated here, and a restated predicate can drift).
         /// </summary>
         public static bool IsBarSpine(Vector2 pos, float elevation) =>
-            StPetersShoreMap.DistanceToSegment(pos, StPetersBuilder.SandbarFrom,
-                StPetersBuilder.SandbarTo) <= StPetersShoreMap.BarSpineHalfWidth
-            && elevation >= StPetersShoreMap.BarSpineFloorElevation;
+            StPetersShoreMap.IsBarSpine(pos, elevation);
 
         /// <summary>
         /// Build one coverage map per v2 family over the splat texel grid, in

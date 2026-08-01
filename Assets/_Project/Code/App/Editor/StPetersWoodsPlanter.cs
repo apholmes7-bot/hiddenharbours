@@ -29,6 +29,22 @@ namespace HiddenHarbours.App.Editor
         public const string TreeRootName = "IslandWoods";
         public const string FlowerRootName = "IslandFlowers";
         public const string ShrubRootName = "IslandShrubs";
+        public const string GrassRootName = "IslandGrass";
+
+        /// <summary>Grass is the lowest decor layer — the same pre-sort default the decor prefabs use
+        /// (<c>DecorPrefabBuilder.GrassSortingOrder</c>); <see cref="YSortSprite"/> owns the final order,
+        /// and its floor of 2 is what keeps a tuft above the sea plane.</summary>
+        public const int GrassSortingOrder = 2;
+
+        /// <summary>The three tuft sprites, in <see cref="StPetersGrass.GrassTuftSite.Variant"/> order.</summary>
+        public static readonly string[] GrassTuftPaths =
+        {
+            "Assets/_Project/Art/Sprites/GrassTuft.png",
+            "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
+            "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
+        };
+
+        public const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
 
         /// <summary>Shrubs sit between the ground cover and the trees. Like both, this is only the
         /// pre-sort default — <see cref="YSortSprite"/> owns the order at runtime.</summary>
@@ -51,7 +67,7 @@ namespace HiddenHarbours.App.Editor
 
         public sealed class Result
         {
-            public int Trees, Flowers, Shrubs;
+            public int Trees, Flowers, Shrubs, GrassTufts;
             public readonly Dictionary<string, int> PerSpecies = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerFlower = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerShrub = new Dictionary<string, int>();
@@ -80,12 +96,75 @@ namespace HiddenHarbours.App.Editor
             PlantTrees(terrain, result);
             PlantShrubs(terrain, result);
             PlantFlowers(terrain, result);
+            PlantGrass(terrain, result);
 
             Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees ({result.TreeSummary()}), " +
-                      $"{result.Shrubs} shrubs ({result.ShrubSummary()}) and " +
-                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}) — stands, heath and meadow " +
-                      "by habitat, with the village, the spawn, the crossing's approach and the dock left clear.");
+                      $"{result.Shrubs} shrubs ({result.ShrubSummary()}), " +
+                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}) and " +
+                      $"{result.GrassTufts} grass tufts — stands, heath, meadow and sward by habitat, " +
+                      "with the village, the spawn, the crossing's approach and the dock left clear.");
             return result;
+        }
+
+        // =====================================================================================
+        //  GRASS
+        // =====================================================================================
+
+        /// <summary>
+        /// The moving meadow: wind-reactive tufts over the ground the splat shader already paints as
+        /// grass. Same object shape as the owner's Grass Paint Tool makes (SpriteRenderer + Grass.mat +
+        /// YSortSprite) so painted and planted grass are the same thing — but every scale, variant and
+        /// tint here is HASHED, never rolled: the builder's grass must reproduce exactly (rule 5),
+        /// where the paint tool's jitter is the owner's live brush.
+        /// </summary>
+        static void PlantGrass(ITidalTerrain terrain, Result result)
+        {
+            var tufts = new Sprite[GrassTuftPaths.Length];
+            for (int i = 0; i < GrassTuftPaths.Length; i++)
+            {
+                // Robust to either sprite mode, DETERMINISTICALLY: prefer the sprite named for its
+                // file (a Single-mode sheet's one sprite carries the file name), and only fall back
+                // to First — because on a Multiple-mode re-import, sub-sprite enumeration order is
+                // unstable (the sprite-refs trap) and "first" would quietly change the meadow.
+                string stem = System.IO.Path.GetFileNameWithoutExtension(GrassTuftPaths[i]);
+                var all = AssetDatabase.LoadAllAssetsAtPath(GrassTuftPaths[i])
+                                       .OfType<Sprite>().ToArray();
+                // == / != on purpose, never ?? — coalescing skips UnityEngine.Object's overload and
+                // resurrects fake-null (the standing trap), even though a LINQ miss happens to be a
+                // true null today.
+                Sprite named = all.FirstOrDefault(s => s.name == stem);
+                tufts[i] = named != null ? named : (all.Length > 0 ? all[0] : null);
+                if (tufts[i] == null)
+                {
+                    Debug.LogWarning($"[StPetersWoodsPlanter] no tuft sprite at {GrassTuftPaths[i]} — " +
+                                     "the meadow ships unmoving (splat ground only). Import the grass art.");
+                    return;
+                }
+            }
+
+            var material = AssetDatabase.LoadAssetAtPath<Material>(GrassMaterialPath);
+            if (material == null)
+                Debug.LogWarning($"[StPetersWoodsPlanter] {GrassMaterialPath} missing — the tufts will " +
+                                 "stand still instead of swaying on the shared wind.");
+
+            var root = new GameObject(GrassRootName);
+            foreach (var site in StPetersGrass.Scatter(terrain))
+            {
+                var go = new GameObject("Tuft");
+                go.transform.SetParent(root.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+                go.transform.localScale = new Vector3(site.Scale, site.Scale, 1f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = tufts[Mathf.Clamp(site.Variant, 0, tufts.Length - 1)];
+                if (material != null) sr.sharedMaterial = material;
+                sr.sortingOrder = GrassSortingOrder;
+                // Multiplied over the sprite's own gradient by the grass shader, so shading survives.
+                sr.color = site.Tint;
+                go.AddComponent<YSortSprite>();
+
+                result.GrassTufts++;
+            }
         }
 
         // =====================================================================================

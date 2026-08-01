@@ -273,25 +273,40 @@ namespace HiddenHarbours.App.Editor
 
             int placed = 0;
             foreach (var site in StPetersShoreMap.ScatterRocks(terrain))
-            {
-                if (!rockSprites.TryGetValue(site.Sprite, out Sprite sprite) || sprite == null) continue;
+                placed += PlaceRock(rocksRoot.transform, contactMap, contactTile, rockSprites,
+                                    site, "Rock");
 
-                var go = new GameObject($"Rock_{site.Sprite}");
-                go.transform.SetParent(rocksRoot.transform, worldPositionStays: false);
-                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = sprite;
-                go.AddComponent<YSortSprite>();
+            // The interior erratics (owner's 2026-08-01 "add rocks"): same sheet, same seating, their
+            // own name prefix so a scene inspector can tell field from shore at a glance.
+            foreach (var site in StPetersShoreMap.ScatterFieldRocks(terrain))
+                placed += PlaceRock(rocksRoot.transform, contactMap, contactTile, rockSprites,
+                                    site, "FieldRock");
 
-                if (contactTile != null)
-                    contactMap.SetTile(
-                        new Vector3Int(Mathf.FloorToInt(site.Position.x),
-                                       Mathf.FloorToInt(site.Position.y) + 1, 0),
-                        contactTile);
-
-                placed++;
-            }
             return placed;
+        }
+
+        /// <summary>One rock, seated: base-pivoted sprite + Y-sort + the contact-shade tile on the ground
+        /// cell to its north — shared by the shore rings and the interior erratics so a rock is a rock.</summary>
+        static int PlaceRock(Transform rocksRoot, Tilemap contactMap, TileBase contactTile,
+                             Dictionary<string, Sprite> rockSprites,
+                             StPetersShoreMap.RockSite site, string namePrefix)
+        {
+            if (!rockSprites.TryGetValue(site.Sprite, out Sprite sprite) || sprite == null) return 0;
+
+            var go = new GameObject($"{namePrefix}_{site.Sprite}");
+            go.transform.SetParent(rocksRoot, worldPositionStays: false);
+            go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            go.AddComponent<YSortSprite>();
+
+            if (contactTile != null)
+                contactMap.SetTile(
+                    new Vector3Int(Mathf.FloorToInt(site.Position.x),
+                                   Mathf.FloorToInt(site.Position.y) + 1, 0),
+                    contactTile);
+
+            return 1;
         }
 
         /// <summary>The rock sheet's named sub-sprites, keyed by the kit's own item name (<c>reef</c>,
