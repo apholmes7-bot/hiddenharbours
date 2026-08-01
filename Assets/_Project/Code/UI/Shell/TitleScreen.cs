@@ -17,8 +17,15 @@ namespace HiddenHarbours.UI
     /// (rule 5, and the tide table's precedent).</para>
     ///
     /// <para><b>The picture is the game.</b> No painted key art — the world is already rendering behind
-    /// this page, so the title is a dusk scrim over the harbour with the wordmark on it. Hand-painted
-    /// title art is not something to spend before the GO/POLISH/PIVOT verdict is in (§7.8).</para>
+    /// this page, so the title is that harbour with the wordmark over it, and it is always at first light:
+    /// the shell holds the save unapplied until the player chooses, so the clock behind the page is at the
+    /// authored start hour whichever game is waiting. The page is COMPOSED over it rather than laid flat on
+    /// top — a wash dense down the type column and thin over the water, inside a letterbox frame — because
+    /// an even scrim would spend the one picture we already have. Hand-painted title art is not something
+    /// to spend before the GO/POLISH/PIVOT verdict is in (§7.8).</para>
+    ///
+    /// <para><b>And it says which build it is</b> (<see cref="BuildInfo"/>), in the corner — §7.8's exit
+    /// criterion. A playtest report that cannot be pinned to a build is worth very little.</para>
     ///
     /// <para>Self-building and code-driven (no prefab), like the HUD, the tide table and the market
     /// screens; reads state only through Core, which the UI assembly's references structurally enforce.
@@ -41,7 +48,13 @@ namespace HiddenHarbours.UI
         private const float MenuStep     = 64f;
         private const float DetailX      = MarginX + MenuItemW + 28f;
         private const float ConfirmBodyW = 660f;
-        private const float HintY        = -664f;
+
+        // The footer line — the hint on the left, the build stamp on the right — sits clear of the lower
+        // letterbox bar rather than on it. 4.2% of 720 is 30px of bar; the footer's 32px box ends 44px up.
+        private const float FooterY          = -644f;
+        private const float FooterH          = 32f;
+        private const float StampW           = 420f;
+        private const float LetterboxFraction = 0.042f;
 
         private RectTransform _host;
         private GameObject _menu;       // the three lines
@@ -104,7 +117,14 @@ namespace HiddenHarbours.UI
         private void Build()
         {
             _host = PaperUi.MakeScreen(transform, "TitleScreen_Canvas", PaperUi.TitleSortingOrder);
-            PaperUi.MakeScrim(_host, PaperUi.Scrim);
+
+            // Not a flat dim over a paused game: a wash that is dense down the left, where the wordmark and
+            // the menu live, and thin by the right-hand side, where the harbour is left to breathe — plus
+            // the bars that make it a picture rather than a stopped screen. What is IN the picture is the
+            // world the core booted into, at the authored start hour, because the shell holds the save
+            // unapplied until the player chooses: the light behind this page is always first light.
+            PaperUi.MakeWash(_host, PaperUi.WashNear, PaperUi.WashFar, horizontal: true);
+            PaperUi.MakeLetterbox(_host, LetterboxFraction, PaperUi.FrameInk);
 
             PaperUi.MakeText(_host, ShellStrings.GameTitle, 82, TextAnchor.UpperLeft,
                              MarginX, WordmarkY, 900f, 108f, PaperUi.Chalk);
@@ -113,7 +133,14 @@ namespace HiddenHarbours.UI
             BuildMenu();
 
             PaperUi.MakeText(_host, ShellStrings.MenuHint, 22, TextAnchor.UpperLeft,
-                             MarginX, HintY, 620f, 32f, PaperUi.ChalkFaint);
+                             MarginX, FooterY, 620f, FooterH, PaperUi.ChalkFaint);
+
+            // Which build this is, in the corner where a version belongs — §7.8's exit criterion. Quiet
+            // enough to ignore while playing, and right there in the first screenshot of any bug report.
+            Text stamp = PaperUi.MakeText(_host, BuildInfo.StampLine, 20, TextAnchor.UpperRight,
+                                          PaperUi.ReferenceResolution.x - MarginX - StampW, FooterY,
+                                          StampW, FooterH, PaperUi.ChalkFaint);
+            stamp.gameObject.name = "BuildStamp";
         }
 
         private void BuildMenu()

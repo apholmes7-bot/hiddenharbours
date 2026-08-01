@@ -260,6 +260,16 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     the *outgoing* game's. `Core.SaveReady.Run(host, action)` is the one-liner for that (used by
     `StartingGear` / `StartingBait` / `StartingPots` / `FrontedFeeGrant`); `LicenseService` rebuilds its held
     set on the same edge.
+  - **The title is a shot of the world, and it says which build it is.** There is no key art: the persistent
+    core is already rendering the harbour behind the page, always at the authored start hour (the save is
+    unapplied until the player chooses, so the light behind the title is always first light). The page is
+    composed over it — a wash that is dense down the type column and thin over the harbour
+    (`PaperUi.MakeWash` + `ShellGradient`, a vertex ramp so a gradient costs no texture) inside a letterbox
+    frame — rather than a flat scrim that would spend the one picture we already have. In the corner,
+    `UI.BuildInfo.StampLine` names the version and **which build** (`Application.buildGUID`, seven
+    characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
+    cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
+    separate, App-lane question — the UI assembly reaches Core only, by design.
 
 ## 7. Tick & performance model
 
