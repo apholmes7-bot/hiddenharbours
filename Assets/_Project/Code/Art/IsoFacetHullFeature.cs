@@ -89,6 +89,25 @@ namespace HiddenHarbours.Art
         [SerializeField, Tooltip("Hidden/HiddenHarbours/IsoFacetResolve (auto-found when null).")]
         private Shader _resolveShader;
 
+        [SerializeField, Tooltip("Hidden/HiddenHarbours/FoamBufferAdvect (auto-found when null) — " +
+                                 "ADR 0027 #6's advected foam buffer.")]
+        private Shader _foamAdvectShader;
+
+        [SerializeField, Tooltip("ADR 0027 #6: how much sea the foam buffer covers, metres square, " +
+                                 "centred on the camera. Must comfortably exceed the widest framing " +
+                                 "(33.75 m down-screen, ~60 m across) or wake scrolls out of the " +
+                                 "window while still on screen. The texel resolution is DERIVED from " +
+                                 "this (extent x FoamBuffer.CellsPerUnit), so one texel is always " +
+                                 "exactly one world cell: 96 m -> 768^2 x R8 x 2 (ping-pong) = 1.1 MB.")]
+        [Range(32f, 192f)]
+        private float _foamWindowMeters = 96f;
+
+        [SerializeField, Tooltip("ADR 0027 #6: seconds for wake foam to fade to half. The trail's " +
+                                 "whole visible lifetime is roughly 4x this. Exponential, so it is " +
+                                 "frame-rate independent.")]
+        [Range(0.25f, 30f)]
+        private float _foamHalfLifeSeconds = 6f;
+
         [SerializeField, Tooltip("The per-face INTERIOR MASK (ADR 0023). On: a guard pass marks " +
                                  "each pixel whose nearest hull surface is an open interior, and " +
                                  "the displaced sea discards there, so water can never draw inside " +
@@ -108,6 +127,7 @@ namespace HiddenHarbours.Art
 
         private HullPass _pass;
         private Material _resolveMaterial;
+        private Material _foamMaterial;
 
         public override void Create()
         {
@@ -134,8 +154,25 @@ namespace HiddenHarbours.Art
             // the trees in (DecorPrefabBuilder / AcadianTreeCatalog), so a live harbour records this
             // pass deliberately, and Water.mat ships _ObjectReflectStrength 0.5 to show it.
             bool reflect = ReflectionRegistry.Count > 0;
-            if (!hulls && !water && !reflect)
-                return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water or reflectors pay nothing
+            // ADR 0027 #6: the advected foam buffer joins as one persistent ping-ponged target, on
+            // the same zero-cost-when-idle contract and with BOTH halves of it enforced — no hull is
+            // churning water (every FoamInjector unregisters the moment it is off the water) OR the
+            // owner has not dialled the look in (_WakeFoamStrength 0), and nothing is recorded at
+            // all. So there is no "foam buffer off" branch to keep byte-identical — only an absent
+            // pass.
+            //
+            // ⚠️ That idle case is what a scene with no churning hull (or the dial at 0) relies on;
+            // it is NOT a description of the shipped state, and must not be rewritten into one. The
+            // reflections comment above was corrected for exactly that drift (#380): it claimed
+            // "nothing in the shipped scenes carries a ReflectiveObject", which was true the day it
+            // was written and false the day §26.10 opted the fleet in. AS OF THIS COMMIT no scene
+            // carries a FoamInjector and Water.mat ships _WakeFoamStrength 0 — but that is a fact
+            // about today's content, not about this gate, and the owner's dial-in will end it.
+            bool foam = FoamInjectionRegistry.ShouldRun;
+            if (!foam)
+                FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea
+            if (!hulls && !water && !reflect && !foam)
+                return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water, reflectors or churn pay nothing
             // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
             // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
             // legitimately keep a live mesh hull while other fixtures own cameras. Never enqueue
@@ -159,6 +196,23 @@ namespace HiddenHarbours.Art
                 _resolveMaterial = CoreUtils.CreateEngineMaterial(shader);
             }
 
+            if (foam && _foamMaterial == null)
+            {
+                var foamShader = _foamAdvectShader != null
+                    ? _foamAdvectShader
+                    : Shader.Find("Hidden/HiddenHarbours/FoamBufferAdvect");
+                if (foamShader == null)
+                {
+                    Debug.LogError("[IsoFacetHullFeature] Foam advect shader missing; the ADR 0027 #6 " +
+                                   "wake buffer will not fill.");
+                    foam = false;
+                }
+                else
+                {
+                    _foamMaterial = CoreUtils.CreateEngineMaterial(foamShader);
+                }
+            }
+
             InteriorMaskEnabled = _interiorMask;
             _pass.renderPassSortingLayerID = LowestSortingLayerId();
             _pass.ResolveMaterial = _resolveMaterial;
@@ -166,6 +220,10 @@ namespace HiddenHarbours.Art
             _pass.DrawWater = water;
             _pass.DrawGuard = _interiorMask;
             _pass.DrawReflections = reflect;
+            _pass.DrawFoam = foam;
+            _pass.FoamMaterial = _foamMaterial;
+            _pass.FoamWindowMeters = _foamWindowMeters;
+            _pass.FoamHalfLifeSeconds = _foamHalfLifeSeconds;
             renderer.EnqueuePass(_pass);
         }
 
@@ -192,6 +250,8 @@ namespace HiddenHarbours.Art
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
             _resolveMaterial = null;
+            CoreUtils.Destroy(_foamMaterial);
+            _foamMaterial = null;
         }
 
         private sealed class HullPass : ScriptableRenderPass2D
@@ -208,6 +268,15 @@ namespace HiddenHarbours.Art
             private static readonly ShaderTagId s_ReflectTag = new ShaderTagId("HHReflect");
 
             public Material ResolveMaterial;
+            /// <summary>ADR 0027 #6's advect/decay/inject blit material.</summary>
+            public Material FoamMaterial;
+            /// <summary>Record the advected foam buffer this frame (a hull churning water AND the
+            /// owner's look dial above 0)?</summary>
+            public bool DrawFoam;
+            /// <summary>Metres of sea the foam buffer window covers (square, camera-centred).</summary>
+            public float FoamWindowMeters;
+            /// <summary>Half-life of buffered foam, seconds.</summary>
+            public float FoamHalfLifeSeconds;
             /// <summary>Record the interior-guard pass (the per-face mask)? Only meaningful with
             /// both hulls and water live — with no sea there is nothing to keep out.</summary>
             public bool DrawGuard;
@@ -233,6 +302,46 @@ namespace HiddenHarbours.Art
             // divided by the day/night tint (far above 1) so the §11.6 post-grade compensation can
             // recover it, and an 8-bit target would clamp that to nothing.
             private readonly Dictionary<EntityId, RTHandle> _reflectTargets = new Dictionary<EntityId, RTHandle>();
+            // ADR 0027 #6's advected foam buffer: a PING-PONG PAIR plus the world window it is
+            // anchored to, per camera. Per camera rather than per world because the game view and the
+            // scene view frame different places and pan independently — one shared buffer would have
+            // them fighting over the window origin every frame.
+            private readonly Dictionary<EntityId, FoamState> _foamStates = new Dictionary<EntityId, FoamState>();
+            // Staging for the registry's collect call, reused every frame so packing the injection
+            // slots allocates nothing (rule 7). The GPU-bound copies live per camera on FoamState.
+            private readonly FoamInjection[] _foamInjections = new FoamInjection[FoamBuffer.MaxInjectors];
+
+            /// <summary>
+            /// One camera's foam buffer: the two targets it ping-pongs between, and — the part that
+            /// matters — the WORLD-CELL-SNAPPED window origin and the sub-cell drift remainder that
+            /// together make the whole thing a mark on the sea rather than a screen filter.
+            /// </summary>
+            private sealed class FoamState
+            {
+                public RTHandle A, B;
+                public bool ReadIsA = true;
+                public Vector2 Origin;          // cell-snapped window corner (world m)
+                public Vector2 DriftResidual;   // sub-cell drift banked for a later whole-cell step
+                public bool Primed;
+                public bool NeedsClear = true;  // only true for the first frame after a (re)allocation
+                public int LastFrame = -1;
+                public int Resolution;
+                // This camera's OWN slot arrays — never shared, so a second camera recording between
+                // this pass's record and its execute cannot overwrite the deposits.
+                public readonly Vector4[] Segments = new Vector4[FoamBuffer.MaxInjectors];
+                public readonly Vector4[] Shapes = new Vector4[FoamBuffer.MaxInjectors];
+
+                public RTHandle Read => ReadIsA ? A : B;
+                public RTHandle Write => ReadIsA ? B : A;
+
+                public void Release()
+                {
+                    A?.Release();
+                    B?.Release();
+                    A = null;
+                    B = null;
+                }
+            }
 
             public HullPass()
             {
@@ -260,6 +369,15 @@ namespace HiddenHarbours.Art
                 public RendererListHandle Renderers;
             }
 
+            private class FoamPassData
+            {
+                public Material Material;
+                public TextureHandle Prev;
+                public Vector4 World, Resolution, Shift;
+                public float DecayFactor;
+                public Vector4[] Segments, Shapes;
+            }
+
             private class ResolvePassData
             {
                 public Material Material;
@@ -275,7 +393,8 @@ namespace HiddenHarbours.Art
                 int w = desc.width, h = desc.height;
                 if (w <= 0 || h <= 0) return;
                 bool drawHulls = DrawHulls && ResolveMaterial != null;
-                if (!drawHulls && !DrawWater && !DrawReflections) return;
+                bool drawFoam = DrawFoam && FoamMaterial != null;
+                if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam) return;
 
                 // ---- OBJECT REFLECTIONS (ADR 0027 #8) ------------------------------------------
                 // A fourth filtered renderer list: every renderer that BOTH has an HHReflect pass
@@ -324,7 +443,126 @@ namespace HiddenHarbours.Art
                         ctx.cmd.DrawRendererList(data.Renderers);
                     });
                 }
-                if (!drawHulls && !DrawWater) return;   // reflection-only frames need nothing below
+                // ---- THE ADVECTED FOAM BUFFER (ADR 0027 #6) -------------------------------------
+                // One persistent single-channel target, ping-ponged: scroll the previous frame by a
+                // WHOLE number of world cells, decay it exponentially, and inject a capsule of foam
+                // along every churning hull's swept segment. The water shader samples the result as a
+                // mask that ADDS to the existing foam — so a wake is a mark left on a PLACE IN THE
+                // SEA, still drifting downwind after the boat has gone, and a hull merely BOBBING at
+                // her mooring churns the water she is working against (the owner's 2026-08-01 ruling).
+                //
+                // 🔴 THE CELL LAW, and it is the whole item. A render target is screen-space by
+                // nature; if these cells were camera-relative the entire trail would crawl under
+                // every pan — the one artefact that would make this read as a screen filter rather
+                // than as foam on water. So the window origin is snapped to a WORLD cell lattice
+                // (FoamBuffer.WorldCellOrigin), and BOTH things that move the content this frame —
+                // the camera's window move and the wind/current drift — are reduced to WHOLE world
+                // cells before the blit sees them. Whole-cell moves are also exact integer copies, so
+                // the wake never blurs into a smudge however long it lives. Twin: FoamBuffer.
+                //
+                // It records BEFORE the displaced-water pass on purpose: that pass's fragment samples
+                // the buffer, so the publish has to have happened.
+                if (drawFoam)
+                {
+                    float extent = Mathf.Clamp(FoamWindowMeters, FoamBuffer.MinExtentMeters, 512f);
+                    int res = FoamBuffer.ResolutionForExtent(extent);
+                    FoamState state = GetFoamState(cameraData.camera.GetEntityId(), res);
+
+                    // dt ONCE per camera per frame. Two cameras each decay their own buffer once; the
+                    // same camera recorded twice in a frame must not decay twice (that would make the
+                    // trail's lifetime depend on how many times Unity happened to render it).
+                    int frame = Time.frameCount;
+                    float dt = state.LastFrame == frame ? 0f : Mathf.Max(0f, Time.deltaTime);
+                    state.LastFrame = frame;
+
+                    Vector3 camPos = cameraData.camera.transform.position;
+                    Vector2 newOrigin = FoamBuffer.WorldCellOrigin(new Vector2(camPos.x, camPos.y), extent);
+                    Vector2Int driftCells = FoamBuffer.AdvectCells(
+                        ref state.DriftResidual, FoamInjectionRegistry.DriftVelocity * dt);
+                    // Before the first frame there is no previous window to move content between.
+                    Vector2Int sourceOffset = state.Primed
+                        ? FoamBuffer.SourceOffsetCells(state.Origin, newOrigin, driftCells)
+                        : Vector2Int.zero;
+                    state.Origin = newOrigin;
+                    state.Primed = true;
+
+                    // Pack this frame's deposits into the camera's OWN slot arrays (never a shared
+                    // one — the render func runs after recording, and a second camera recording in
+                    // between would otherwise overwrite the first camera's slots).
+                    int injected = FoamInjectionRegistry.CollectInjections(_foamInjections);
+                    for (int i = 0; i < FoamBuffer.MaxInjectors; i++)
+                    {
+                        if (i < injected)
+                        {
+                            FoamInjection inj = _foamInjections[i];
+                            state.Segments[i] = new Vector4(inj.From.x, inj.From.y, inj.To.x, inj.To.y);
+                            state.Shapes[i] = new Vector4(inj.Radius, inj.Amount, 0f, 0f);
+                        }
+                        else
+                        {
+                            state.Segments[i] = Vector4.zero;
+                            state.Shapes[i] = Vector4.zero;   // amount 0 = the slot adds exactly nothing
+                        }
+                    }
+
+                    var foamWorld = new Vector4(newOrigin.x, newOrigin.y, extent, 1f / extent);
+                    // Only the FIRST frame after a (re)allocation clears: every later frame the read
+                    // side IS last frame's foam, and clearing it would be the buffer's whole point
+                    // thrown away. The write side never needs a clear — the blit covers every texel.
+                    TextureHandle prevTex = renderGraph.ImportTexture(state.Read, new ImportResourceParams
+                    {
+                        clearOnFirstUse = state.NeedsClear,
+                        clearColor = Color.black,
+                        discardOnLastUse = false,
+                    });
+                    TextureHandle nextTex = renderGraph.ImportTexture(state.Write, new ImportResourceParams
+                    {
+                        clearOnFirstUse = false,
+                        discardOnLastUse = false,
+                    });
+                    state.NeedsClear = false;
+
+                    using (var builder = renderGraph.AddRasterRenderPass<FoamPassData>(
+                               "HH Advected Foam Buffer", out FoamPassData passData, profilingSampler))
+                    {
+                        passData.Material = FoamMaterial;
+                        passData.Prev = prevTex;
+                        passData.World = foamWorld;
+                        passData.Resolution = new Vector4(res, res, 1f / res, 1f / res);
+                        passData.Shift = new Vector4(sourceOffset.x, sourceOffset.y, 0f, 0f);
+                        passData.DecayFactor = FoamBuffer.DecayFactor(FoamHalfLifeSeconds, dt);
+                        passData.Segments = state.Segments;
+                        passData.Shapes = state.Shapes;
+
+                        builder.UseTexture(prevTex, AccessFlags.Read);
+                        builder.SetRenderAttachment(nextTex, 0);
+                        // The consumers are the water passes / the in-scene water quad, whose reads
+                        // the graph cannot see — never cull, and publish the result.
+                        builder.AllowPassCulling(false);
+                        builder.SetGlobalTextureAfterPass(nextTex, FoamShaderIds.BufferTex);
+                        builder.SetRenderFunc((FoamPassData data, RasterGraphContext ctx) =>
+                        {
+                            data.Material.SetTexture(FoamShaderIds.Prev, (RTHandle)data.Prev);
+                            data.Material.SetVector(FoamShaderIds.BufferWorld, data.World);
+                            data.Material.SetVector(FoamShaderIds.Resolution, data.Resolution);
+                            data.Material.SetVector(FoamShaderIds.Shift, data.Shift);
+                            data.Material.SetFloat(FoamShaderIds.Decay, data.DecayFactor);
+                            data.Material.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
+                            data.Material.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
+                            Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
+                        });
+                    }
+
+                    // Where the buffer sits in the world, for every shader that reads it. A plain
+                    // global (the _SeaFramingHeight idiom) rather than a per-renderer property: the
+                    // window belongs to the camera, not to any one water renderer. z = extent > 0 is
+                    // also the "published at all" flag the water shader tests before sampling.
+                    Shader.SetGlobalVector(FoamShaderIds.BufferWorld, foamWorld);
+                    FoamInjectionRegistry.NotePublished();
+                    state.ReadIsA = !state.ReadIsA;   // ping-pong for the next frame
+                }
+
+                if (!drawHulls && !DrawWater) return;   // reflection/foam-only frames need nothing below
 
                 // ---- the PRIVATE depth buffer (shared by hulls, deck occupants AND the displaced
                 // water — ADR 0023 §(6): one z-buffer in the iso frame is what makes the phase-3
@@ -618,6 +856,51 @@ namespace HiddenHarbours.Art
                 return handle;
             }
 
+            /// <summary>
+            /// The camera's foam ping-pong pair, allocated (or re-allocated when the window
+            /// resolution changes) to <paramref name="resolution"/> square.
+            ///
+            /// <para><b>R8, and the resolution is DERIVED, not chosen.</b> One texel is exactly one
+            /// world cell by construction (<see cref="FoamBuffer.ResolutionForExtent"/>), so the
+            /// pixel grid cannot drift away from the cell law by someone typing a different number.
+            /// Point-filtered and clamped: an integer texel move must stay an exact copy. Budget at
+            /// the 96 m default — 768² × R8 × 2 = <b>1.1 MB per camera</b>, against the seabed bake's
+            /// 1.0 MB and the reflection target's ARGBHalf at camera resolution. A single channel is
+            /// all a coverage mask needs, and 256 levels are more than a posterized foam edge can
+            /// show (rule 7 — and it keeps the later mobile port affordable).</para>
+            /// </summary>
+            private FoamState GetFoamState(EntityId cameraId, int resolution)
+            {
+                if (!_foamStates.TryGetValue(cameraId, out FoamState state))
+                {
+                    state = new FoamState();
+                    _foamStates[cameraId] = state;
+                }
+                if (state.A != null && state.B != null && state.Resolution == resolution)
+                    return state;
+
+                state.Release();
+                var descriptor = new RenderTextureDescriptor(resolution, resolution, RenderTextureFormat.R8, 0)
+                {
+                    sRGB = false,
+                    msaaSamples = 1,
+                };
+                RTHandle a = null, b = null;
+                RenderingUtils.ReAllocateHandleIfNeeded(ref a, descriptor,
+                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHFoamBufferA");
+                RenderingUtils.ReAllocateHandleIfNeeded(ref b, descriptor,
+                    FilterMode.Point, TextureWrapMode.Clamp, name: "_HHFoamBufferB");
+                state.A = a;
+                state.B = b;
+                state.Resolution = resolution;
+                // A fresh target's contents are undefined, and the window it was anchored to is gone:
+                // start from clean water rather than from whatever was in memory.
+                state.NeedsClear = true;
+                state.Primed = false;
+                state.DriftResidual = Vector2.zero;
+                return state;
+            }
+
             public void Dispose()
             {
                 foreach (var kv in _resolveTargets)
@@ -629,6 +912,9 @@ namespace HiddenHarbours.Art
                 foreach (var kv in _reflectTargets)
                     kv.Value?.Release();
                 _reflectTargets.Clear();
+                foreach (var kv in _foamStates)
+                    kv.Value?.Release();
+                _foamStates.Clear();
             }
         }
     }

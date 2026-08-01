@@ -296,6 +296,11 @@ namespace HiddenHarbours.Art
         // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
         // property, because it belongs to the camera rather than to this renderer.
         private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
+        // (ADR 0027 #6) The advected foam buffer's two drives, READ from the live material rather than
+        // pushed to it: the owner's look dial (which gates whether the buffer pass runs at all) and the
+        // wind/current blend the buffer advects along.
+        private static readonly int IdWakeFoamStrength = Shader.PropertyToID("_WakeFoamStrength");
+        private static readonly int IdFoamDriftWindVsCurrent = Shader.PropertyToID("_FoamDriftWindVsCurrent");
 
         // ==== Weather-palette MOOD property key set (ADR 0017) ============================================
         // The MOOD/COLOUR properties the weather blend lerps from the anchor presets and pushes via the MPB.
@@ -573,6 +578,32 @@ namespace HiddenHarbours.Art
             Vector2 windDir = WindDirection(_smoothedWind);
             float roughness = Roughness(_smoothedWind, _windForFullRoughness);
             float chop = Choppiness(s.SeaState01);
+
+            // (ADR 0027 #6) Publish the advected foam buffer's two drives to the Art-side registry the
+            // renderer feature consults. Both are READS of the live material, not pushes to it:
+            //
+            //  • the owner's LOOK DIAL (_WakeFoamStrength). This is the "effect off" half of the
+            //    zero-cost-when-idle contract — at 0 (the shipped value) the water shader draws nothing
+            //    from the buffer, so the feature does not bother filling one. It stays OUT of
+            //    MoodFloatNames on purpose: it is owner look policy, not weather mood, and easing it
+            //    from the eight presets would be the same double-drive trap _RainRingStrength documents.
+            //  • the DRIFT AXIS the whole buffer advects along — the same wind/current blend the
+            //    shader's own foam and whitecaps already drift with (FoamDriftDir), off the SMOOTHED
+            //    vectors so the buffer inherits the same momentum as every other wind-driven layer,
+            //    times the pushed flow speed (the shader scrolls foam at exactly _Flow m/s).
+            //    ⚠️ The GLOBAL blend, without FoamDriftDir()'s per-position shoreward bias: a rigid
+            //    buffer scroll is uniform by construction and cannot carry a position-dependent term.
+            Material live = _renderer.sharedMaterial;
+            if (live != null)
+            {
+                float wakeFoamStrength = live.HasProperty(IdWakeFoamStrength)
+                    ? live.GetFloat(IdWakeFoamStrength) : 0f;
+                FoamInjectionRegistry.PublishLookStrength(wakeFoamStrength);
+                float windVsCurrent = live.HasProperty(IdFoamDriftWindVsCurrent)
+                    ? live.GetFloat(IdFoamDriftWindVsCurrent) : 0.5f;
+                FoamInjectionRegistry.PublishDriftVelocity(
+                    FoamDriftDirection(_smoothedWind, _smoothedCurrent, windVsCurrent) * flow);
+            }
 
             _renderer.GetPropertyBlock(_mpb);
             _mpb.SetFloat(IdWaterLevel, waterLevel);

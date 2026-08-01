@@ -102,6 +102,10 @@ Material:
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
+    - _WakeFoamBands: 3
+    - _WakeFoamSoftness: 0.18
+    - _WakeFoamStrength: 0
+    - _WakeFoamThreshold: 0.12
     - _WaterLevel: 0
     - _WhitecapTexStrength: 0.865
     - _WindChop: 0.07
