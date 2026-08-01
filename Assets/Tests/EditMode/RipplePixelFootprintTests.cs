@@ -44,11 +44,24 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class RipplePixelFootprintTests
     {
-        /// <summary>The ADR's band: 0.08–0.15 m. The midpoint stands in for all of it — the claim is
-        /// about the RATIO, so any wavelength in the band gives the same verdict.</summary>
-        const float RippleWavelengthM = 0.10f;
+        /// <summary>
+        /// The SHIPPED ripple wavelength. The claim here is about the RATIO, so any wavelength gives the
+        /// same verdict — but it is kept in step with the material anyway, because a stale copy is how a
+        /// number stops meaning anything.
+        ///
+        /// <para>⚠️ Raised 0.10 → 0.17 on 2026-08-01, and the reason matters more than the number. This
+        /// suite measures the SCREEN footprint against <c>CameraFollow.AssetsPPU</c> (32) — how many screen
+        /// pixels a ripple occupies, which is what decides whether it goes sub-pixel. That is a DIFFERENT
+        /// grid from the shader's own <c>_PixelsPerUnit</c> (24), the cells <c>Pixelize()</c> snaps world
+        /// coordinates to, which is what decides whether the band is adequately SAMPLED. The wavelength had
+        /// been derived against this one instead of that one, so it cleared the sub-pixel test comfortably
+        /// while sitting under the shader's own moiré floor — visible striping on the water. The sampling
+        /// side is pinned by <c>WaterBandRegularityTests</c>; this side is unaffected by the change and
+        /// stays exactly as true as it was.</para>
+        /// </summary>
+        const float RippleWavelengthM = 0.17f;
 
-        const int Ppu = CameraFollow.AssetsPPU;     // 32, locked
+        const int Ppu = CameraFollow.AssetsPPU;     // 32, locked — the SCREEN grid, not _PixelsPerUnit
 
         /// <summary>Every framing the game actually asks for: the live-haul/deck/on-foot steps and each
         /// hull's authored <c>CameraWorldHeightMeters</c>, from the Dory to the Coastal Packet.</summary>

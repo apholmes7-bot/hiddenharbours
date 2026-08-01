@@ -1785,7 +1785,7 @@ namespace HiddenHarbours.Art
         /// meaning. The vertex/displaced pass and the fetch march keep the clean <c>_WaterLevel</c>.</para>
         ///
         /// <para>Pure and bounded by construction — <c>|result| ≤ maxShift</c> for every input, which is what
-        /// <c>WaterSwashEdgeTests</c> pins.</para>
+        /// <c>WaterShoreBandAndSwashTests</c> pins.</para>
         /// </summary>
         public static float SwashEdgeShift(float swashOffset, float edgeShift, float maxShift)
         {
@@ -1829,8 +1829,9 @@ namespace HiddenHarbours.Art
         /// line that foam noise cannot hide, because that noise rides ON the contour rather than across it.
         /// Offsetting the contour per world-locked Bayer cell scatters the crossing depth across the row.</para>
         ///
-        /// <para>The natural dither size is about half a height code; <c>WaterShoreBandDitherTests</c> pins that
-        /// the shipped amount is at least that and that a whole flat texel row no longer crosses together.</para>
+        /// <para>The natural dither size is about half a height code; <c>WaterShoreBandAndSwashTests</c> pins
+        /// that the shipped amount is at least that and that a whole flat texel row no longer crosses
+        /// together.</para>
         /// </summary>
         public static float FoamEdgeDither(float bayer01, float ditherMeters)
         {
