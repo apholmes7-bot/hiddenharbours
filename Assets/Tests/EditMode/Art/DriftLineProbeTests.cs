@@ -24,6 +24,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// byte-comparison would have reported as a broken passthrough. The probe therefore measures the
     /// TEMPORAL FLOOR first and states every claim against it.</para>
     ///
+    /// <para>⚠️⚠️ <b>A CLONE OF <c>Water.mat</c> IS NOT A DEFAULT BASELINE (found 2026-08-01).</b> This
+    /// test failed on <c>main</c> at its PASSTHROUGH end — 19724 px against a 6887 px worst clock frame,
+    /// isolated — and the shader was never at fault. <see cref="BuildSea"/> clones the hero material and
+    /// used to pin only the knobs that FRAME the sea, leaving the three §18 knobs to whatever the material
+    /// happened to carry. #382 ("the dark knobs come on") then dialled <c>_DriftLineConvergence</c> from 0
+    /// to <b>0.5</b> on <c>Water.mat</c> as a deliberate look decision — so this probe's baseline became a
+    /// convergence-GATED sea, and step (1)'s "set the knobs to their defaults" was switching a shipped
+    /// gate OFF. Isolated per knob on this fixture: <c>_DriftLineFoamDrift</c>→0 and
+    /// <c>_DriftLineGrid</c>→1 together moved <b>2258</b> px against an 1860 px floor (i.e. the clock),
+    /// while <c>_DriftLineConvergence</c> 0.5→0 alone moved <b>18789</b>. One knob was the entire failure,
+    /// and it was the MATERIAL that moved, not the shader. The three knobs are therefore pinned in
+    /// <c>BuildSea</c> now: a probe that inherits the very quantity it is testing is measuring the owner's
+    /// tuning, not the code.</para>
+    ///
+    /// <para><b>The capillary ripple band was suspected here and MEASURED INNOCENT.</b> #382 also turned
+    /// <c>_RippleStrength</c> on (0 → 0.45), and that band's wander crawls on a hard-coded
+    /// <c>RIPPLE_WANDER_DRIFT</c> that no speed uniform can reach — the exact trap that had just broken
+    /// <c>WaterWhiteoutShoreSwirlAcceptanceTests</c>' byte-identity preconditions. It is NOT the trap in
+    /// this fixture: zeroing <c>_RippleStrength</c> AND <c>_StormFoamLaneStrength</c> moved the floor only
+    /// 1860 → 1826 px typical, a 2% difference. The reason is this probe's wind — at <c>_Roughness</c> 0.1
+    /// the band's own gate, <c>smoothstep(_RippleWindOnset 0.05, _RippleWindFull 0.45, 0.1)</c>, is 4%
+    /// open. So they are deliberately NOT silenced here, and re-silencing them would buy nothing but a
+    /// less representative sea.</para>
+    ///
     /// <para>⚠️⚠️ <b>Why the floor is SAMPLED, and why the margin is additive (hardened 2026-07-30).</b>
     /// This test cried wolf in four separate full-suite runs over two days — including at
     /// <c>origin/main</c> with no lane code present at all. It was measuring the floor from ONE frame
@@ -86,6 +110,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         /// <summary>How many consecutive frame pairs the temporal floor is measured over.</summary>
         const int FloorSamples = 5;
+
+        /// <summary>
+        /// A blend value just UNDER the shader's own <c>&gt; 0.001</c> branch guards, so the upgrade
+        /// branches must still be cut out — the value step (1) drives the two blend knobs to, precisely
+        /// because it is NOT the pinned default and so cannot pass by uploading an unchanged uniform.
+        /// </summary>
+        const float DeadBand = 0.0009f;
 
         /// <summary>
         /// How far a delta must sit from the measured clock-noise band before it means anything:
@@ -154,6 +185,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _sea.SetFloat("_ObjectReflectStrength", 0f);
             _sea.SetFloat("_DriftLineStrength", 0f);
 
+            // ⚠️⚠️ AND THE THREE KNOBS THIS PROBE IS ABOUT. They are pinned HERE, from the shader's own
+            // declared defaults, because a clone of Water.mat is NOT a default baseline — see the class
+            // note. Assert the declared defaults first: if a future PR changes one, this probe's whole
+            // premise ("these knobs default to today's look") has changed and a human must look, which is
+            // strictly better than quietly re-baselining onto the new value.
+            AssertShaderDefault("_DriftLineFoamDrift", 0f);
+            AssertShaderDefault("_DriftLineConvergence", 0f);
+            AssertShaderDefault("_DriftLineGrid", 1f);
+            _sea.SetFloat("_DriftLineFoamDrift", 0f);
+            _sea.SetFloat("_DriftLineConvergence", 0f);   // Water.mat ships 0.5 since #382
+            _sea.SetFloat("_DriftLineGrid", 1f);
+
             _seaGo = GameObject.CreatePrimitive(PrimitiveType.Quad);
             _seaGo.name = "ProbeSea";
             _seaGo.layer = ProbeLayer;
@@ -177,6 +220,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _rt = new RenderTexture(Size, Size, 24, RenderTextureFormat.ARGBHalf)
             { filterMode = FilterMode.Point };
             _cam.targetTexture = _rt;
+        }
+
+        /// <summary>
+        /// The SHADER's own declared default for a float property — which is what "at their defaults" has
+        /// to mean, and the thing a tuned material can silently disagree with (#382 did).
+        /// </summary>
+        void AssertShaderDefault(string prop, float expected)
+        {
+            int i = _sea.shader.FindPropertyIndex(prop);
+            Assert.GreaterOrEqual(i, 0, $"{prop} must exist on the water shader for this probe to pin it.");
+            Assert.AreEqual(expected, _sea.shader.GetPropertyDefaultFloatValue(i), 1e-6f,
+                $"{prop}'s SHADER default is no longer {expected}. This probe pins the §18 knobs to the " +
+                "shader defaults and states its passthrough claim about them, so a changed default means " +
+                "the claim itself needs re-reading — not a re-baselined probe.");
         }
 
         Color32[] Shoot(string name)
@@ -279,8 +336,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // What this means for the passthrough claim, precisely: BYTE-identity at a fixed clock is
             // established by WaterDriftLinesTests' EXACT-equality assertions plus the two unreachable
             // `if` guards in the shader. This probe proves the weaker but complementary thing a twin
-            // cannot — that at the defaults there is no VISIBLE change beyond the clock, on a GPU,
-            // through the real material.
+            // cannot — that values the shader is REQUIRED to treat as the defaults (step 1) produce no
+            // VISIBLE change beyond the clock, on a GPU, through the real material.
             //
             // The floor is sampled FloorSamples times rather than once, and the two claims below read
             // OPPOSITE ends of that distribution — which is precisely why one number could not serve
@@ -293,24 +350,41 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int floorTypical = Median(floorSamples);
             int floorWorst = Max(floorSamples);
 
-            // (1) the three NEW knobs, set explicitly to their own defaults, one frame later — so the
-            // clock gap matches a floor sample's. Any difference must sit within ClockMarginPx of the
-            // WORST clock frame we saw — and NOT merely at it: this delta is one more draw from the very
-            // distribution those samples came from, so landing a little above their maximum is normal,
-            // not evidence (measured: 3639 against a 3608 max on one run, 7441 against 7186 on the
-            // next). This end is generous on purpose. BYTE-identity at a fixed clock is already
-            // established exactly by WaterDriftLinesTests, so nothing rests on this being tight, while a
-            // real default-changing regression lands out at ~28000 px — far outside either bar.
-            _sea.SetFloat("_DriftLineFoamDrift", 0f);
-            _sea.SetFloat("_DriftLineConvergence", 0f);
-            _sea.SetFloat("_DriftLineGrid", 1f);
-            Color32[] explicitDefaults = Shoot(null);
-            int defaultsDelta = DifferingPixels(again, explicitDefaults);
+            // (1) the three NEW knobs driven to values the shader must TREAT AS THE DEFAULT, one frame
+            // later — so the clock gap matches a floor sample's. Any difference must sit within
+            // ClockMarginPx of the WORST clock frame we saw — and NOT merely at it: this delta is one more
+            // draw from the very distribution those samples came from, so landing a little above their
+            // maximum is normal, not evidence (measured: 3639 against a 3608 max on one run, 7441 against
+            // 7186 on the next). This end is generous on purpose. BYTE-identity at a fixed clock is
+            // already established exactly by WaterDriftLinesTests, so nothing rests on this being tight.
+            //
+            // ⚠️ Note what these values are, and why they are not simply the defaults again. BuildSea now
+            // PINS all three (it must — see the class note), so re-setting them to the pinned value would
+            // upload the same uniform twice and could not fail: a green light wired to nothing. Each knob
+            // is therefore driven OFF its default to a value the shader is required to render identically:
+            //   _DriftLineFoamDrift / _DriftLineConvergence → DeadBand, just under the shader's own
+            //     `> 0.001` branch guards, so BOTH upgrade branches must still be cut out on hardware —
+            //     the GPU complement to WaterDriftLinesTests' text assert on those guards;
+            //   _DriftLineGrid → 0.5, a DEGENERATE divisor that PixelizeGrid's max(divisor, 1.0) must
+            //     clamp back onto the shipped lattice (twin: PixelizeGrid_DegenerateDivisor).
+            _sea.SetFloat("_DriftLineFoamDrift", DeadBand);
+            _sea.SetFloat("_DriftLineConvergence", DeadBand);
+            _sea.SetFloat("_DriftLineGrid", 0.5f);
+            Color32[] inertValues = Shoot(null);
+            int defaultsDelta = DifferingPixels(again, inertValues);
             Assert.LessOrEqual(defaultsDelta, floorWorst + ClockMarginPx,
-                $"the three new knobs at their defaults changed {defaultsDelta} px, more than " +
+                $"the three new knobs at values the shader must treat as their defaults (blends under the " +
+                $"`> 0.001` guards, a grid divisor under the clamp) changed {defaultsDelta} px, more than " +
                 $"{ClockMarginPx} px beyond the worst measured clock frame of {floorWorst} px " +
                 $"(samples: {string.Join(", ", floorSamples)}) — that is more than the clock, so the " +
                 "passthrough is not clean.");
+
+            // …and back to the exact defaults, so (2) and (3) each change ONE thing from a baseline
+            // nobody has to reason about.
+            _sea.SetFloat("_DriftLineFoamDrift", 0f);
+            _sea.SetFloat("_DriftLineConvergence", 0f);
+            _sea.SetFloat("_DriftLineGrid", 1f);
+            Color32[] atDefaults = Shoot(null);
 
             long shippedEnergy = LaneEnergy(shipped, off);
             Assert.Greater(shippedEnergy, 500,
@@ -325,7 +399,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             //     instead of being tripled against a signal that barely moves.
             _sea.SetFloat("_DriftLineFoamDrift", 1f);
             Color32[] sharedDrift = Shoot("2-shared-drift");
-            int basisDelta = DifferingPixels(explicitDefaults, sharedDrift);
+            int basisDelta = DifferingPixels(atDefaults, sharedDrift);
             Assert.Greater(basisDelta, floorTypical + ClockMarginPx,
                 $"swinging the basis from the raw current onto the shared foam drift (90° apart here) " +
                 $"changed {basisDelta} px, which does not clear the {floorTypical} px typical clock " +
@@ -335,6 +409,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _sea.SetFloat("_DriftLineFoamDrift", 0f);
 
             // (3) the CONVERGENCE gate. It is a GATE: it may only ever remove lane energy, never add.
+            //     Note this is now the STRONGEST form of that claim: since BuildSea pins the knob to 0,
+            //     `shipped` is a fully UNGATED sea rather than the half-gated one Water.mat has shipped
+            //     since #382, so the comparison spans the gate's whole range instead of its top half.
             _sea.SetFloat("_DriftLineConvergence", 1f);
             Color32[] gathered = Shoot("3-convergence");
             long gatheredEnergy = LaneEnergy(gathered, off);
