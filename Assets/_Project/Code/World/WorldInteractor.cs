@@ -36,13 +36,17 @@ namespace HiddenHarbours.World
         [SerializeField] private float _radius = 1.8f;
 
         // Onboarding flags, backed by the save file (VS-08) so the 'met before' variants persist across reload.
+        // The STORE itself is kept beside them because a DialogueDef's conditional beat is gated on an
+        // arbitrary authored key, not just the three named onboarding flags — see Begin().
+        private IFlagStore _flagStore;
         private OnboardingFlags _flags;
         private Text _prompt;
         private Interactable _nearest;
 
         private void Awake()
         {
-            _flags = new OnboardingFlags(new SaveFlagStore());   // VS-08: persisted via the save file, not PlayerPrefs
+            _flagStore = new SaveFlagStore();                    // VS-08: persisted via the save file, not PlayerPrefs
+            _flags = new OnboardingFlags(_flagStore);
             BuildPrompt();
         }
 
@@ -90,8 +94,13 @@ namespace HiddenHarbours.World
             // Content as DATA first (CLAUDE.md rule 2): an NpcDef → DialogueDef supplies the lines when
             // wired; only fall back to the legacy WorldStrings table for the older string-driven cove
             // interactables that have no NpcDef.
+            //
+            // The flag store goes in with it so the asset's own conditional beat can fire: the key is
+            // authored in the DialogueDef, and the same save-backed store that remembers 'met before'
+            // answers it. That is how Ginny knows she fronted the licence fee without this module ever
+            // naming the economy component that fronted it (rule 4).
             string[] text = it.HasNpcData
-                ? it.DialogueLines(metBefore)
+                ? it.DialogueLines(metBefore, _flagStore)
                 : WorldStrings.Conversation(it.ConversationId, metBefore);
             if (text == null || text.Length == 0) return;
 
