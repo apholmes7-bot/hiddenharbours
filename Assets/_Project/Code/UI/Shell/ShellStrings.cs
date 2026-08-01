@@ -25,6 +25,7 @@ namespace HiddenHarbours.UI
 
         public const string Continue = "Continue";
         public const string NewGame  = "New game";
+        public const string Settings = "Settings";
         public const string Quit     = "Quit";
 
         /// <summary>The tick that marks the line the keyboard/gamepad is on — the shape channel that
@@ -90,6 +91,39 @@ namespace HiddenHarbours.UI
         public const string ConfirmNewGameYes    = "Write over it";
         public const string ConfirmNewGameNo     = "Keep my harbour";
 
+        // ---- the pause menu ------------------------------------------------------------------
+        // Mid-session, over a stopped world. It says where you are and offers the four things a tester
+        // needs at 11pm: carry on, change the volume, go back to the title, stop playing.
+
+        public const string PauseTitle     = "Ashore for a moment";
+        public const string Resume         = "Back to it";
+        public const string QuitToTitle    = "Quit to title";
+        public const string QuitToDesktop  = "Quit to desktop";
+        public const string PauseHint      = "Esc to carry on   ·   the tide is stopped while you're here";
+
+        /// <summary>Said under the two Quit lines, because both of them save and a player should know
+        /// that before they pick one.</summary>
+        public const string QuitSavesFirst = "Your harbour is saved either way.";
+
+        // ---- settings ------------------------------------------------------------------------
+        // Four independent faders (the M1 DoD's promise, which had no player-facing surface until now)
+        // and the one display choice M1 offers. Graphics presets and key rebinding are deliberately not M1.
+
+        public const string SettingsTitle    = "Settings";
+        public const string VolumeMaster     = "Everything";
+        public const string VolumeAmbience   = "Sea and weather";
+        public const string VolumeSfx        = "Effects";
+        public const string VolumeMusic      = "Music";
+        public const string DisplayLabel     = "Window";
+        public const string DisplayFullscreen = "Fullscreen";
+        public const string DisplayWindowed   = "Windowed";
+        public const string Back             = "Back";
+        public const string SettingsHint     = "← → to set a level   ·   Esc to go back";
+
+        /// <summary>Shown in place of the faders when no audio director is running (EditMode, a stripped
+        /// build). An honest "there is nothing to move here" beats four sliders that do nothing.</summary>
+        public const string AudioUnavailable = "No sound running to set.";
+
         // ---- composed lines ------------------------------------------------------------------
 
         /// <summary>
@@ -100,5 +134,14 @@ namespace HiddenHarbours.UI
         public static string SavedGameSummary(int dayIndex, int money)
             => "Day " + (dayIndex + 1).ToString(CultureInfo.InvariantCulture)
              + "   ·   " + HudStrings.Currency + money.ToString(CultureInfo.InvariantCulture);
+
+        /// <summary>A fader's level as a whole percent. Called only when that whole number changes, never
+        /// per frame of a drag.</summary>
+        public static string VolumePercent(float value01)
+            => System.Math.Round(value01 * 100f).ToString("0", CultureInfo.InvariantCulture) + "%";
+
+        /// <summary>The word for the current display mode — the value half of the Window row.</summary>
+        public static string DisplayMode(bool fullscreen)
+            => fullscreen ? DisplayFullscreen : DisplayWindowed;
     }
 }

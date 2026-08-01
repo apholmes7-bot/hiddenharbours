@@ -17,4 +17,18 @@ namespace HiddenHarbours.Core
 
         public ShellPhaseChanged(ShellPhase phase) => Phase = phase;
     }
+
+    /// <summary>
+    /// The player asked to leave the world and go back to the title (M1 §7.8's pause menu). Published by
+    /// <see cref="ShellFlow.QuitToTitle"/> AFTER the game has been saved.
+    ///
+    /// <para><b>It is a request, not the act.</b> Going back to the title means putting the world back to
+    /// its boot state, and only the App layer can do that — it owns the persistent core and the scenes.
+    /// Core states the intent and App carries it out, the same direction of travel as every other
+    /// cross-module signal (rule 4). A context with no handler (an EditMode rig) simply stays where it
+    /// is, which is the honest outcome of "nobody knows how to rebuild this world".</para>
+    /// </summary>
+    public readonly struct ReturnToTitleRequested
+    {
+    }
 }

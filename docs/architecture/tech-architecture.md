@@ -235,6 +235,24 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
   additive-region contract (ADR 0004) does not fork; `GameRoot._bootToTitle` turns it off for the dev
   region-iteration cores. The UI side (`UI.ShellPresenter`, self-installing like `SaveService`) renders the
   phase, so App never references UI.
+  - **Pause and settings.** `Core.ShellPause` stops the world on the same one path (`IGameClock.IsPaused`,
+    restoring what it found) and `ShellFlow.WorldInputBlocked` — true at the title or under a pause menu —
+    is what the player rig honours so the helm cannot be steered from behind a stopped clock. The four bus
+    volumes come through `Core.IAudioMix` (`GameServices.AudioMix`, registered by `AudioDirector`), and
+    settings persist in **PlayerPrefs** (`Core.GameSettings`), NOT the save: they belong to the machine, must
+    survive New Game, and must not cost a schema version. **Quit to title** saves, then `App.ShellRestart`
+    destroys every `PersistentObject` root and reloads the boot scene — the rebuilt core calls
+    `EnterTitle()` itself, so there is still one path to the title, and a new game can never start on a
+    half-played world.
+  - **Whoever registers a service, unregisters it — and nothing else.** The launch-scoped singletons
+    (`SaveService`, `AudioDirector`, `LicenseService`, the `CatchFactory` registrar) install themselves once
+    per launch and deliberately **survive** the quit-to-title teardown; their bootstraps and their
+    `Awake`/`OnEnable` registrations do not run a second time. So `GameRoot.OnDestroy` takes back only the
+    slots `GameRoot` filled (clock, environment, wallet, config), each guarded on `ReferenceEquals` exactly as
+    the singletons guard their own — never a wholesale `GameServices.Reset()`, which would strip the survivors
+    for the rest of the launch (no save service at all: no Continue, no writes, a settings sheet claiming
+    there is no sound). `GameServices.Reset()` remains for tests, which call it explicitly.
+    Pinned by `ShellRestartPlayTests`.
   - Two consequences worth knowing before you add boot code: **`SaveService` refuses to write while at the
     title** (`SaveService.WritesAllowed`) — the live services still hold boot defaults, so an
     autosave-on-quit there would overwrite a real save with an empty one; and **anything that seeds itself
