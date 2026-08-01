@@ -52,30 +52,46 @@ namespace HiddenHarbours.Tests.PlayMode
         // The settings keys are the MACHINE's real preferences, and putting the sheet away writes them.
         // Snapshot every one of them around each test so a test run can never change the owner's own
         // volume or window mode.
-        private static readonly string[] PrefKeys =
+        //
+        // PlayerPrefs is TYPED PER KEY, and these keys are not all one type: the four volumes are floats,
+        // the display flag is an int (GameSettings.Fullscreen writes SetInt). Reading a key with the wrong
+        // getter yields the getter's default rather than the stored value — so a GetFloat/SetFloat
+        // round-trip over the display key would read a chosen fullscreen (int 1) as 0f and write it back as
+        // float 0, and the owner's game would launch windowed forever after any local PlayMode run. The
+        // snapshot built to protect their settings would be the one thing that broke them. Each key is
+        // therefore saved and put back with the getter/setter that owns it.
+        private static readonly string[] VolumeKeys =
         {
-            GameSettings.MasterKey, GameSettings.AmbienceKey, GameSettings.SfxKey,
-            GameSettings.MusicKey, GameSettings.FullscreenKey,
+            GameSettings.MasterKey, GameSettings.AmbienceKey, GameSettings.SfxKey, GameSettings.MusicKey,
         };
-        private readonly bool[] _hadPref = new bool[PrefKeys.Length];
-        private readonly float[] _prefValue = new float[PrefKeys.Length];
+        private readonly bool[] _hadVolume = new bool[VolumeKeys.Length];
+        private readonly float[] _volume = new float[VolumeKeys.Length];
+        private bool _hadFullscreen;
+        private int _fullscreen;
 
         private void SnapshotPrefs()
         {
-            for (int i = 0; i < PrefKeys.Length; i++)
+            for (int i = 0; i < VolumeKeys.Length; i++)
             {
-                _hadPref[i] = PlayerPrefs.HasKey(PrefKeys[i]);
-                _prefValue[i] = _hadPref[i] ? PlayerPrefs.GetFloat(PrefKeys[i], 0f) : 0f;
+                _hadVolume[i] = PlayerPrefs.HasKey(VolumeKeys[i]);
+                _volume[i] = _hadVolume[i] ? PlayerPrefs.GetFloat(VolumeKeys[i], 0f) : 0f;
             }
+
+            _hadFullscreen = PlayerPrefs.HasKey(GameSettings.FullscreenKey);
+            _fullscreen = _hadFullscreen ? PlayerPrefs.GetInt(GameSettings.FullscreenKey, 0) : 0;
         }
 
         private void RestorePrefs()
         {
-            for (int i = 0; i < PrefKeys.Length; i++)
+            for (int i = 0; i < VolumeKeys.Length; i++)
             {
-                if (_hadPref[i]) PlayerPrefs.SetFloat(PrefKeys[i], _prefValue[i]);
-                else PlayerPrefs.DeleteKey(PrefKeys[i]);
+                if (_hadVolume[i]) PlayerPrefs.SetFloat(VolumeKeys[i], _volume[i]);
+                else PlayerPrefs.DeleteKey(VolumeKeys[i]);
             }
+
+            if (_hadFullscreen) PlayerPrefs.SetInt(GameSettings.FullscreenKey, _fullscreen);
+            else PlayerPrefs.DeleteKey(GameSettings.FullscreenKey);
+
             PlayerPrefs.Save();
         }
 

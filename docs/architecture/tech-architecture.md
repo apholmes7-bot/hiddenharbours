@@ -244,6 +244,15 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     destroys every `PersistentObject` root and reloads the boot scene — the rebuilt core calls
     `EnterTitle()` itself, so there is still one path to the title, and a new game can never start on a
     half-played world.
+  - **Whoever registers a service, unregisters it — and nothing else.** The launch-scoped singletons
+    (`SaveService`, `AudioDirector`, `LicenseService`, the `CatchFactory` registrar) install themselves once
+    per launch and deliberately **survive** the quit-to-title teardown; their bootstraps and their
+    `Awake`/`OnEnable` registrations do not run a second time. So `GameRoot.OnDestroy` takes back only the
+    slots `GameRoot` filled (clock, environment, wallet, config), each guarded on `ReferenceEquals` exactly as
+    the singletons guard their own — never a wholesale `GameServices.Reset()`, which would strip the survivors
+    for the rest of the launch (no save service at all: no Continue, no writes, a settings sheet claiming
+    there is no sound). `GameServices.Reset()` remains for tests, which call it explicitly.
+    Pinned by `ShellRestartPlayTests`.
   - Two consequences worth knowing before you add boot code: **`SaveService` refuses to write while at the
     title** (`SaveService.WritesAllowed`) — the live services still hold boot defaults, so an
     autosave-on-quit there would overwrite a real save with an empty one; and **anything that seeds itself

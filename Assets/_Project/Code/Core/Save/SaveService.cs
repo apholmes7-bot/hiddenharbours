@@ -103,6 +103,15 @@ namespace HiddenHarbours.Core
             if (Current == null) Current = SaveMigration.NewGame();
             SnapshotLiveState();
             SaveStore.Write(Current, _path);
+
+            // The write landed (a failed one throws out of Write rather than reaching here), so there is now
+            // a real game on disk for this blob — say so. Only Awake reads the disk, and Awake does not run
+            // again for a service that SURVIVES quit-to-title, so a session that began at New Game would
+            // otherwise come back to a title insisting there is nothing to continue: no Continue button, the
+            // "no game yet" line under it, and New Game one keypress away with no confirm — erasing the hour
+            // the quit had just written. It is also what the resume needs to be true: the shell only seeks
+            // the clock to the saved instant for a game it believes is on disk.
+            LoadedExistingSave = true;
         }
 
         /// <summary>

@@ -48,6 +48,12 @@ namespace HiddenHarbours.App
                  "the shell existed.")]
         [SerializeField] private bool _bootToTitle = true;
 
+        /// <summary>The config this root actually published — which is not always <see cref="_config"/>
+        /// (an unwired root borrows the clock's). Remembered at <see cref="Awake"/> because
+        /// <see cref="OnDestroy"/> must know what it gave without re-reading <c>_clock.Config</c> off a
+        /// component that is already going away.</summary>
+        private GameConfig _publishedConfig;
+
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -58,8 +64,9 @@ namespace HiddenHarbours.App
             // The explicit reference wins; an unwired scene borrows the clock's own config (the clock
             // cannot run without one), so a stale scene still reaches the owner's tunables rather than
             // silently running every block on its C# Default. Unity fake-null: `!= null`, never `??`.
-            GameServices.Config = _config != null ? _config
-                                : _clock != null ? _clock.Config : null;
+            _publishedConfig = _config != null ? _config
+                             : _clock != null ? _clock.Config : null;
+            GameServices.Config = _publishedConfig;
 
             if (!GameServices.Ready)
                 Debug.LogError("[GameRoot] Services not wired — assign a GameClock and an " +
@@ -77,9 +84,34 @@ namespace HiddenHarbours.App
             else ShellFlow.ContinueGame();
         }
 
+        /// <summary>
+        /// Take back exactly what this root registered — <b>no more</b>.
+        ///
+        /// <para>A wholesale <see cref="GameServices.Reset"/> here would also null the slots this root never
+        /// filled: <see cref="GameServices.Save"/>, <see cref="GameServices.Licenses"/>,
+        /// <see cref="GameServices.AudioMix"/> (the self-installing singletons) and
+        /// <see cref="GameServices.CatchFactory"/> (registered once per launch at
+        /// <c>BeforeSceneLoad</c>). None of them re-register for an object that SURVIVED the teardown —
+        /// their bootstraps run once per launch, and their registrations happen in <c>Awake</c>/<c>OnEnable</c>,
+        /// which do not run again. Quit-to-title (<see cref="ShellRestart"/>) destroys this root and keeps
+        /// those alive on purpose, so a blanket reset would leave the rest of the launch with no save service
+        /// at all — no Continue on the title the player just quit to, nothing able to write to disk again,
+        /// and a settings sheet insisting there is no sound while the director plays on.</para>
+        ///
+        /// <para>So: the same "whoever registers, unregisters" symmetry the singletons already keep for
+        /// themselves, <c>ReferenceEquals</c> and all — never <c>==</c>, which a destroyed
+        /// <c>UnityEngine.Object</c> would satisfy against null and turn into "someone else's registration is
+        /// mine to clear". The guard also means a REPLACEMENT root that has already wired itself is never
+        /// stomped by the outgoing one's teardown. <see cref="GameServices.Reset"/> stays for tests, which
+        /// call it explicitly.</para>
+        /// </summary>
         private void OnDestroy()
         {
-            GameServices.Reset();
+            if (ReferenceEquals(GameServices.Clock, _clock)) GameServices.Clock = null;
+            if (ReferenceEquals(GameServices.Environment, _environment)) GameServices.Environment = null;
+            if (ReferenceEquals(GameServices.Wallet, _wallet)) GameServices.Wallet = null;
+            if (ReferenceEquals(GameServices.Config, _publishedConfig)) GameServices.Config = null;
+
             ShellFlow.Reset();   // the shell belongs to this boot; don't leave a phase behind for the next
         }
     }
