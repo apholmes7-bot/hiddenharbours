@@ -141,6 +141,57 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ContinuousSeaAxis_EasedPerFrame_MovesTheMoodInFarSmallerStepsThanTheOldEightHertzEase()
+        {
+            // The 2026-08-01 judge-pass half of the continuity story. The TARGET weights were already a
+            // continuous function of the axis (the test above) — but the EASE toward them was evaluated on
+            // the throttled 8 Hz push, so the weights, and therefore every mood float blended from them,
+            // still arrived as a staircase. That mattered far beyond colour: _OceanSwellScale is a mood
+            // float AND the displaced vertex stage's waveFreqScale, so an 8 Hz step in the mood blend was
+            // an 8 Hz step in a spatial FREQUENCY — sliding every pattern by a distance proportional to
+            // |worldPos|, and reaching the hull through DisplacedSea.
+            //
+            // The ease now runs per frame with the SAME τ. Same destination, same time constant, and a
+            // per-step move an order of magnitude smaller.
+            // ⚠️ Both runs must start from a VALID weight set, not an all-zero array: EaseWeights
+            // NORMALIZES, and a degenerate all-zero start normalizes straight onto the target however
+            // small the step was. The real transition starts from the calm sea the surface was already
+            // drawing (the first push snaps the smoothed weights to a live target), so start there.
+            const float tau = 8f;              // the shipped _weatherPaletteResponseTime — unchanged
+            const float seconds = 4f;
+            float[] calm = Weights(SeaState.Glass, 1f);
+            float[] target = Weights(SeaState.Storm, 1f);
+
+            float[] perFrame = (float[])calm.Clone();
+            float maxPerFrameStep = 0f;
+            for (int i = 0; i < Mathf.RoundToInt(seconds * 60f); i++)
+            {
+                float before = perFrame[S];
+                WeatherWaterPalette.EaseWeights(perFrame, target, tau, 1f / 60f);
+                maxPerFrameStep = Mathf.Max(maxPerFrameStep, Mathf.Abs(perFrame[S] - before));
+            }
+
+            float[] throttled = (float[])calm.Clone();
+            float maxThrottledStep = 0f;
+            for (int i = 0; i < Mathf.RoundToInt(seconds * 8f); i++)
+            {
+                float before = throttled[S];
+                WeatherWaterPalette.EaseWeights(throttled, target, tau, 1f / 8f);
+                maxThrottledStep = Mathf.Max(maxThrottledStep, Mathf.Abs(throttled[S] - before));
+            }
+
+            Assert.Greater(maxThrottledStep, 1e-4f,
+                "sanity: the throttled ease really does move the storm weight in measurable steps");
+
+            Assert.Less(maxPerFrameStep, maxThrottledStep * 0.2f,
+                "evaluating the SAME ease every frame instead of 8 times a second must shrink the " +
+                "per-step move by roughly the cadence ratio — that shrinkage IS the removed staircase");
+            Assert.AreEqual(throttled[S], perFrame[S], 1e-3f,
+                "and it must arrive in the same place at the same wall-clock moment — the fix changes " +
+                "the CADENCE, never the τ the owner tuned");
+        }
+
+        [Test]
         public void RisingSeaState_GrowsTheStormMood_Monotonically()
         {
             // Clear air, sweep Glass -> Storm: the storm weight only ever grows.

@@ -232,9 +232,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         private static void InvokePushUniforms(WaterSurface surface)
         {
+            // The parameterless overload — the "sample the sim AND snap, then push" entry point the editor
+            // and OnEnable use. Since the push was split into a throttled SAMPLE tier and a per-frame EASE
+            // tier there is also a PushUniforms(bool, float), so the lookup must name the signature or
+            // GetMethod throws AmbiguousMatchException.
             var m = typeof(WaterSurface).GetMethod("PushUniforms",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.IsNotNull(m, "WaterSurface.PushUniforms not found — the push seam moved; " +
+                BindingFlags.NonPublic | BindingFlags.Instance, null, System.Type.EmptyTypes, null);
+            Assert.IsNotNull(m, "WaterSurface.PushUniforms() not found — the push seam moved; " +
                 "update this test with it.");
             m.Invoke(surface, null);
         }

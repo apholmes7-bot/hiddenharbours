@@ -106,7 +106,11 @@ namespace HiddenHarbours.Art
         [Min(0f)] [SerializeField] private float _flowSpeedScale = 0.12f;
 
         [Header("Refresh")]
-        [Tooltip("How often (Hz) the sim → uniform push runs. The sea is slow; a few Hz is plenty and cheap.")]
+        [Tooltip("How often (Hz) the sim SAMPLE runs — reading the tide/weather and re-reading the mood " +
+                 "anchors. The sea is slow; a few Hz is plenty and cheap. NB this is NOT how often the " +
+                 "uniforms are PUSHED: every continuously-varying value is eased and pushed EVERY FRAME " +
+                 "from these sampled targets (see the response times below), because a few-Hz push of a " +
+                 "moving value is a visible staircase.")]
         [Min(0.5f)] [SerializeField] private float _refreshHz = 8f;
 
         [Header("Flow momentum (the water has MASS — rule 6)")]
@@ -119,6 +123,27 @@ namespace HiddenHarbours.Art
                  "still read the real EnvironmentSample directly; this lags only what the player SEES, and saves " +
                  "nothing (rule 5). 0 = no smoothing (instant snap, the old behaviour).")]
         [Min(0f)] [SerializeField] private float _flowResponseTime = 3f;
+
+        [Header("Transition continuity (the sim SAMPLE steps; the SURFACE must not — rule 6)")]
+        [Tooltip("Response time (seconds) for the drawn CHOPPINESS (_Chop) to ease toward the sampled " +
+                 "sea-state. _Chop is not just a look dial: it scales every band's spatial FREQUENCY " +
+                 "(_BandScaleResponse) and, through the dispersion relation, every band's scroll SPEED, so " +
+                 "a stepped _Chop translates the whole pattern by an amount proportional to distance from " +
+                 "the world origin — the 'stuttery on transitions' defect. Keep it near the wave field's " +
+                 "own parameter smoothing (WaveFieldAnimatorSettings, 1.5 s) so the drawn bands and the " +
+                 "field the hull rides change character together. Frame-rate independent; presentation " +
+                 "only (rule 5). 0 = no easing (the old, stepping behaviour).")]
+        [Min(0f)] [SerializeField] private float _chopResponseTime = 2f;
+        [Tooltip("Response time (seconds) for the drawn WATER LEVEL (_WaterLevel) to ease toward the " +
+                 "sampled tide. The tide moves at most ~3.5 cm/s at peak spring, so a sample-and-hold push " +
+                 "marched the waterline in visible jerks across near-flat sand (millimetres of level become " +
+                 "decimetres of horizontal travel on the flats). This melts the staircase without visibly " +
+                 "lagging the tide: an exponential ease trails a steady ramp by exactly rate × τ, so at the " +
+                 "0.5 s default the drawn level trails the real one by ≤ 1.75 cm — under one code of the " +
+                 "8-bit seabed height map, i.e. below the resolution the shore band can even represent. " +
+                 "SEE==FEEL is preserved in substance: the gameplay waterline is unchanged and the drawn " +
+                 "one converges to it. Keep this SMALL.")]
+        [Min(0f)] [SerializeField] private float _waterLevelResponseTime = 0.5f;
 
         [Header("Height map bake (the DEPTH source)")]
         [Tooltip("Bake a height texture so the shader's depth gradient + foam band have a seabed to read. Off → " +
@@ -378,14 +403,40 @@ namespace HiddenHarbours.Art
         private Vector2 _smoothedWind;
         private bool _flowInitialized;     // first push snaps to the live sim (no ease-in from zero on enable)
 
+        // ==== the SAMPLED targets (slow tier) the per-frame ease chases ====================================
+        // The sim read is throttled — the tide and the weather are slow, and re-reading four anchor materials
+        // key-by-key is the expensive part of a push. What is NOT throttled is the EASE: every value below is
+        // a target, and Update eases the drawn value toward it EVERY FRAME. That split is the whole fix for
+        // the owner's "choppy/stuttery when transitioning between states": the sim may step, the surface may
+        // not. Presentation only — nothing here feeds the sim or is saved (rule 5).
+        private bool _targetsValid;              // a slow tick has sampled the sim at least once
+        private EnvironmentSample _sample;       // the last sampled weather (the mood blend + rain read it)
+        private Vector2 _targetCurrent, _targetWind;
+        private float _targetChop;
+        private float _targetWaterLevel;
+        private float _easedChop;
+        private float _easedWaterLevel;
+
         // ==== weather-palette state (ADR 0017) — all cached/preallocated so the per-tick blend never allocs --
         private int[] _moodFloatIds;       // cached Shader.PropertyToID for each MoodFloatNames entry
         private int[] _moodColorIds;       // cached Shader.PropertyToID for each MoodColorNames entry
-        private float[] _weatherTargetWeights;   // freshly computed per tick (over {Base,Calm,Storm,Fog})
-        private float[] _weatherSmoothedWeights; // persistent eased twin the blend reads
+        private float[] _weatherTargetWeights;   // sampled on the slow tick (over {Base,Calm,Storm,Fog})
+        private float[] _weatherSmoothedWeights; // persistent eased twin, stepped EVERY FRAME
+        private float[] _weatherBlendWeights;    // scratch: the smoothed weights after the master strength
         private bool _weatherInitialized;        // first push snaps the smoothed weights (no ease-in from zero)
         private Material[] _anchorMaterials;      // {Base,Calm,Storm,Fog} resolved once, indexed by Anchor
         private bool _anchorsResolved;            // whether _anchorMaterials + the cached ids are ready
+
+        // ---- the anchor VALUE cache: what makes a per-frame mood blend affordable ------------------------
+        // The blend is a weighted sum of the four anchors' value for each key. Reading those values off the
+        // Materials costs a HasProperty + GetFloat per anchor per key (~4 × 60 native calls) — fine at 8 Hz,
+        // wasteful at 60. The values only change when the owner edits a preset, so they are snapshotted on
+        // the slow tick and the per-frame blend is then pure float math over these arrays. An in-Play preset
+        // edit still reaches the sea within one refresh, exactly as before. Layout: [anchor * keyCount + key].
+        private float[] _anchorFloatValues;
+        private bool[] _anchorFloatHas;
+        private Color[] _anchorColorValues;
+        private bool[] _anchorColorHas;
 
         private void Awake()
         {
@@ -457,10 +508,19 @@ namespace HiddenHarbours.Art
             // One SetGlobalFloat, no allocation (rule 7).
             PushCameraFraming();
 
+            // The two tiers. SAMPLING the sim is throttled (the sea is slow, and re-reading the mood anchors
+            // is the expensive half); EASING and PUSHING is not. The old code did both on the same few-Hz
+            // tick and pushed the sampled values RAW, so every state change arrived as a staircase of ~125 ms
+            // steps — the owner's "choppy when transitioning between states, it gets stuttery". Two of the
+            // stepped values were spatial FREQUENCIES (_Chop through _BandScaleResponse, _OceanSwellScale
+            // through the vertex stage), and a frequency step slides every pattern by an amount proportional
+            // to distance from the world origin — at St Peters' ±380 m that is tens of radians of phase in
+            // one step, on the surface AND, through DisplacedSea, under the hull.
             _timer -= Time.deltaTime;
-            if (_timer > 0f) return;
-            _timer = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
-            PushUniforms();
+            bool sampleTick = _timer <= 0f;
+            if (sampleTick) _timer = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
+
+            PushUniforms(sampleTick, Time.deltaTime);
         }
 
         /// <summary>
@@ -523,7 +583,26 @@ namespace HiddenHarbours.Art
         }
 #endif
 
-        private void PushUniforms()
+        /// <summary>
+        /// The editor / on-enable entry point: sample the sim AND snap every eased value to what was
+        /// sampled, then push. A zero <c>dt</c> means "no time has passed", which the ease reads as a snap —
+        /// exactly right for <see cref="OnValidate"/> (the owner scrubs the preview tide slider and expects
+        /// the Scene view to answer immediately, not to ease over half a second) and for the first push
+        /// after enable (no ease-in from a stale zero).
+        /// </summary>
+        private void PushUniforms() => PushUniforms(true, 0f);
+
+        /// <summary>
+        /// Push the sim → shader uniforms, in two tiers.
+        ///
+        /// <para><paramref name="sampleSim"/> (the throttled tick) re-reads the deterministic sim and the
+        /// mood anchor materials into the TARGET fields. <paramref name="dt"/> (every frame) eases the drawn
+        /// values toward those targets and pushes them. Splitting the two is what removes the visible 8 Hz
+        /// staircase: the sample rate no longer sets the motion rate.</para>
+        ///
+        /// <para>A <paramref name="dt"/> of 0 (or the first push) SNAPS — see <see cref="PushUniforms()"/>.</para>
+        /// </summary>
+        private void PushUniforms(bool sampleSim, float dt)
         {
             if (_renderer == null) return;
             var env = GameServices.Environment;
@@ -547,37 +626,25 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            float waterLevel = env.WaterLevelAt(now);
-            EnvironmentSample s = env.Sample();
+            // ---- SLOW TIER: re-read the deterministic sim + the mood anchors into the TARGETS -------------
+            if (sampleSim || !_targetsValid) SampleSimTargets(env);
 
-            // --- ease the VISUAL flow toward the live sim (the water's MASS) ---------------------------------
-            // dt is the push cadence (the throttle interval, the spacing Update enforces between pushes). The
-            // smoothing time-constant is in SECONDS, so the eased look is independent of BOTH frame rate (the
-            // push is throttled, not per-frame) and the chosen refresh rate (a faster cadence just takes more,
-            // smaller steps to the same place — the exponential factor composes). The FIRST push snaps to the
-            // live sim (no ease-in from a stale zero); subsequent pushes ease the smoothed vectors toward the
-            // real current/wind. All the uniforms below are derived from the SMOOTHED vectors, so every
-            // wind/current-driven layer inherits the same momentum (cohesive). The boat physics still read the
-            // real EnvironmentSample directly (rule 5).
-            if (!_flowInitialized)
-            {
-                _smoothedCurrent = s.CurrentVector;
-                _smoothedWind = s.WindVector;
-                _flowInitialized = true;
-            }
-            else
-            {
-                float dt = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;   // the push cadence (Update's throttle)
-                _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, s.CurrentVector, _flowResponseTime, dt);
-                _smoothedWind    = SmoothVectorToward(_smoothedWind,    s.WindVector,    _flowResponseTime, dt);
-            }
+            // ---- FAST TIER: ease every drawn value toward its target, THIS FRAME --------------------------
+            // Frame-rate-independent exponential easing, so a 30 fps machine and a 144 fps machine reach the
+            // same place at the same wall-clock moment (the 1 − exp factors compose under sub-stepping).
+            EaseTowardTargets(dt);
 
+            EnvironmentSample s = _sample;
+            float waterLevel = _easedWaterLevel;
+            float chop = _easedChop;
+
+            // All the direction/speed uniforms come from the SMOOTHED vectors, so every wind/current-driven
+            // layer inherits the same momentum (cohesive). The boat physics still read the real
+            // EnvironmentSample directly (rule 5).
             float flow = FlowSpeed(_smoothedCurrent, _baseFlow, _flowSpeedScale, _currentForFullFlow);
             Vector2 flowDir = FlowDirection(_smoothedCurrent);
             Vector2 windDir = WindDirection(_smoothedWind);
             float roughness = Roughness(_smoothedWind, _windForFullRoughness);
-            float chop = Choppiness(s.SeaState01);
 
             // (ADR 0027 #6) Publish the advected foam buffer's two drives to the Art-side registry the
             // renderer feature consults. Both are READS of the live material, not pushes to it:
@@ -635,12 +702,103 @@ namespace HiddenHarbours.Art
 
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
             // by the eased weather weights and override them on the SAME MPB — composing with the physics props
-            // just pushed (disjoint key sets, no double-drive). Reads the SAME deterministic EnvironmentSample
-            // `s`. The dt is the push cadence (Update's throttle), so the ease is frame-rate independent. Visual
-            // only: the Water.mat asset is never written (all overrides ride the MPB), saves nothing (rule 5).
-            ApplyWeatherPalette(s, _mpb);
+            // just pushed (disjoint key sets, no double-drive). The weights were eased THIS FRAME by
+            // EaseTowardTargets and the anchor values were snapshotted on the sample tick, so this is pure
+            // float math over cached arrays. Visual only: the Water.mat asset is never written (all overrides
+            // ride the MPB), saves nothing (rule 5).
+            ApplyWeatherPalette(_mpb);
 
             _renderer.SetPropertyBlock(_mpb);
+        }
+
+        /// <summary>
+        /// SLOW TIER (the throttled tick): read the deterministic sim and the mood anchor materials into the
+        /// TARGET fields the per-frame ease chases. Everything expensive lives here — the environment sample,
+        /// the tide evaluation, and the four-anchor × ~60-key material read — so the per-frame tier stays
+        /// pure arithmetic over cached arrays (rule 7).
+        ///
+        /// <para>Sampling at a few Hz remains correct: the tide moves ≤ 3.5 cm/s and the weather drifts over
+        /// minutes, so 125 ms of sample latency is invisible. What was NOT correct was letting that cadence
+        /// be the rate the surface MOVES at.</para>
+        /// </summary>
+        private void SampleSimTargets(IEnvironmentService env)
+        {
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            _sample = env.Sample();
+            _targetWaterLevel = env.WaterLevelAt(now);
+            _targetCurrent = _sample.CurrentVector;
+            _targetWind = _sample.WindVector;
+            _targetChop = Choppiness(_sample.SeaState01);
+
+            // The mood blend's two slow halves: the target weights (a pure function of the sample) and the
+            // snapshot of what each anchor material says for each key. Both only need the sample cadence; the
+            // per-frame tier eases the WEIGHTS and re-blends from the snapshot.
+            if (_weatherPaletteEnabled)
+            {
+                ResolveWeatherAnchorsIfNeeded();
+                if (_anchorsResolved)
+                {
+                    WeatherWaterPalette.BlendWeightsNonAlloc(
+                        _weatherTargetWeights, _sample.SeaState01, _sample.Visibility,
+                        _seaStateThreshold, _seaStateCurve, _fogThreshold, _fogCurve, _calmReach);
+                    RefreshAnchorValueCache();
+                }
+            }
+
+            _targetsValid = true;
+        }
+
+        /// <summary>
+        /// FAST TIER (every frame): step every continuously-varying drawn value one exponential step toward
+        /// the sampled target. This is the fix for the owner's "choppy when transitioning between states, it
+        /// gets stuttery" — and, through <c>_OceanSwellScale</c> reaching
+        /// <c>DisplacedSea</c> → <c>BoatWaveMotion</c>, for part of "the boat physics still feel jerky".
+        ///
+        /// <para>A <paramref name="dt"/> ≤ 0, or the first pass, SNAPS: no ease-in from a stale zero on
+        /// enable, and an edit-mode slider scrub answers immediately.</para>
+        ///
+        /// <para>Presentation only — every value here is something the player SEES. The sim is untouched and
+        /// nothing is saved (rule 5).</para>
+        /// </summary>
+        private void EaseTowardTargets(float dt)
+        {
+            bool snap = dt <= 0f || !_flowInitialized;
+            if (snap)
+            {
+                _smoothedCurrent = _targetCurrent;
+                _smoothedWind = _targetWind;
+                _easedChop = _targetChop;
+                _easedWaterLevel = _targetWaterLevel;
+                _flowInitialized = true;
+            }
+            else
+            {
+                _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, _targetCurrent, _flowResponseTime, dt);
+                _smoothedWind    = SmoothVectorToward(_smoothedWind,    _targetWind,    _flowResponseTime, dt);
+                _easedChop       = SmoothScalarToward(_easedChop,       _targetChop,    _chopResponseTime, dt);
+                _easedWaterLevel = SmoothScalarToward(_easedWaterLevel, _targetWaterLevel,
+                                                      _waterLevelResponseTime, dt);
+            }
+
+            // The mood weights ride the same tier. Their τ is unchanged (the 8 s mood response the owner
+            // tuned); what changed is that it is now EVALUATED per frame instead of 8 times a second, which
+            // is what made a weather transition arrive as a staircase in _OceanSwellScale — a spatial
+            // FREQUENCY, so each step slid every pattern by an amount proportional to distance from the
+            // world origin. Same destination, same time constant, continuous path.
+            if (_weatherPaletteEnabled && _anchorsResolved && _weatherSmoothedWeights != null)
+            {
+                if (snap || !_weatherInitialized)
+                {
+                    for (int i = 0; i < _weatherSmoothedWeights.Length; i++)
+                        _weatherSmoothedWeights[i] = _weatherTargetWeights[i];
+                    _weatherInitialized = true;
+                }
+                else
+                {
+                    WeatherWaterPalette.EaseWeights(
+                        _weatherSmoothedWeights, _weatherTargetWeights, _weatherPaletteResponseTime, dt);
+                }
+            }
         }
 
         /// <summary>
@@ -727,8 +885,18 @@ namespace HiddenHarbours.Art
                 _weatherTargetWeights = new float[WeatherWaterPalette.AnchorCount];
             if (_weatherSmoothedWeights == null)
                 _weatherSmoothedWeights = new float[WeatherWaterPalette.AnchorCount];
+            // A THIRD buffer, because the target weights are now sampled on a slower tick than the blend
+            // runs on: the old code borrowed the target array as strength scratch, which was safe only while
+            // the two happened on the same tick. Borrowing it now would corrupt the target the per-frame
+            // ease is chasing.
+            if (_weatherBlendWeights == null)
+                _weatherBlendWeights = new float[WeatherWaterPalette.AnchorCount];
 
             _anchorsResolved = true;
+            // Snapshot the anchors' values immediately, so the cache the per-frame blend reads is never
+            // empty just because a resolve happened between two sample ticks (ConfigureWeatherPalette
+            // re-resolves mid-play). The sample tick refreshes it thereafter.
+            RefreshAnchorValueCache();
         }
 
         /// <summary>
@@ -758,82 +926,116 @@ namespace HiddenHarbours.Art
         /// Visual only: every value goes onto the MPB (the Water.mat asset is never written), saves nothing
         /// (rule 5). Does NOT touch _Chop/_Roughness/_Flow/_FlowDir/_WindDir/_WaterLevel/_HeightTex/_Height*.
         /// </summary>
-        private void ApplyWeatherPalette(in EnvironmentSample s, MaterialPropertyBlock mpb)
+        private void ApplyWeatherPalette(MaterialPropertyBlock mpb)
         {
             if (!_weatherPaletteEnabled) return;
-            ResolveWeatherAnchorsIfNeeded();
             if (!_anchorsResolved || _anchorMaterials == null) return;
-
-            // Target weights from the deterministic weather (pure helper).
-            WeatherWaterPalette.BlendWeightsNonAlloc(
-                _weatherTargetWeights, s.SeaState01, s.Visibility,
-                _seaStateThreshold, _seaStateCurve, _fogThreshold, _fogCurve, _calmReach);
-
-            // Ease the visible weights toward the target (the mood never POPS). First push snaps (no ease-in
-            // from a stale zero on enable); subsequent pushes ease with the push cadence as dt (fps-independent).
-            if (!_weatherInitialized)
-            {
-                for (int i = 0; i < _weatherSmoothedWeights.Length; i++)
-                    _weatherSmoothedWeights[i] = _weatherTargetWeights[i];
-                _weatherInitialized = true;
-            }
-            else
-            {
-                float dt = _refreshHz > 0f ? 1f / _refreshHz : 0.2f;
-                WeatherWaterPalette.EaseWeights(
-                    _weatherSmoothedWeights, _weatherTargetWeights, _weatherPaletteResponseTime, dt);
-            }
+            if (_weatherSmoothedWeights == null || _weatherBlendWeights == null) return;
 
             // Master strength: lerp the whole blend back toward the BASE anchor (strength 0 = base only =
-            // today's look). Apply to a copy so the smoothed (eased) state is unscaled for the next tick.
+            // today's look). Applied to a SEPARATE scratch buffer so the smoothed (eased) state stays
+            // unscaled for the next frame — the sampled targets are no longer free to borrow as scratch,
+            // because they now outlive the push that produced them.
             for (int i = 0; i < _weatherSmoothedWeights.Length; i++)
-                _weatherTargetWeights[i] = _weatherSmoothedWeights[i];   // reuse the target buffer as scratch
-            WeatherWaterPalette.ApplyStrengthInPlace(_weatherTargetWeights, _weatherPaletteStrength);
+                _weatherBlendWeights[i] = _weatherSmoothedWeights[i];
+            WeatherWaterPalette.ApplyStrengthInPlace(_weatherBlendWeights, _weatherPaletteStrength);
 
-            BlendMoodProps(_weatherTargetWeights, mpb);
+            BlendMoodProps(_weatherBlendWeights, mpb);
+        }
+
+        /// <summary>
+        /// Snapshot every anchor material's value for every mood key into the flat caches the per-frame blend
+        /// reads (<c>[anchor * keyCount + key]</c>, with a parallel "has this key" mask so a preset that
+        /// simply does not carry a key still contributes nothing and has its weight redistributed — the
+        /// original <c>HasProperty</c> semantics, preserved exactly).
+        ///
+        /// <para>Called on the SAMPLE tick only. That is what makes a per-frame mood blend affordable: the
+        /// ~240 float + ~44 colour native material reads happen a few times a second, and the 60 fps path is
+        /// pure arithmetic over these arrays (rule 7). An in-Play preset edit still reaches the sea within
+        /// one refresh, exactly as when the blend read the materials directly.</para>
+        /// </summary>
+        private void RefreshAnchorValueCache()
+        {
+            int anchors = _anchorMaterials.Length;
+            int floatKeys = _moodFloatIds.Length;
+            int colorKeys = _moodColorIds.Length;
+
+            if (_anchorFloatValues == null || _anchorFloatValues.Length != anchors * floatKeys)
+            {
+                _anchorFloatValues = new float[anchors * floatKeys];
+                _anchorFloatHas = new bool[anchors * floatKeys];
+            }
+            if (_anchorColorValues == null || _anchorColorValues.Length != anchors * colorKeys)
+            {
+                _anchorColorValues = new Color[anchors * colorKeys];
+                _anchorColorHas = new bool[anchors * colorKeys];
+            }
+
+            for (int a = 0; a < anchors; a++)
+            {
+                Material m = _anchorMaterials[a];
+                int fBase = a * floatKeys;
+                for (int k = 0; k < floatKeys; k++)
+                {
+                    bool has = m != null && m.HasProperty(_moodFloatIds[k]);
+                    _anchorFloatHas[fBase + k] = has;
+                    _anchorFloatValues[fBase + k] = has ? m.GetFloat(_moodFloatIds[k]) : 0f;
+                }
+                int cBase = a * colorKeys;
+                for (int k = 0; k < colorKeys; k++)
+                {
+                    bool has = m != null && m.HasProperty(_moodColorIds[k]);
+                    _anchorColorHas[cBase + k] = has;
+                    _anchorColorValues[cBase + k] = has ? m.GetColor(_moodColorIds[k]) : default;
+                }
+            }
         }
 
         /// <summary>
         /// Override every mood FLOAT + COLOUR key on the MPB with the weighted blend of the anchor materials'
-        /// values for that key. Reads each anchor's value PER KEY (HasProperty-guarded) so the blend uses the
-        /// SHARED keys the presets actually carry (it can't drift from the materials); a missing key on an
-        /// anchor contributes nothing (its weight is redistributed implicitly by skipping it). Allocation-free.
+        /// values for that key, read from the sample-tick snapshot (<see cref="RefreshAnchorValueCache"/>).
+        /// The blend uses the SHARED keys the presets actually carry; a missing key on an anchor contributes
+        /// nothing (its weight is redistributed implicitly by skipping it) — the original semantics, now over
+        /// cached arrays so this can run EVERY FRAME. Allocation-free.
         /// </summary>
         private void BlendMoodProps(float[] weights, MaterialPropertyBlock mpb)
         {
+            if (_anchorFloatValues == null || _anchorColorValues == null) return;
+            int anchors = _anchorMaterials.Length;
+
             // ---- floats ----
-            for (int k = 0; k < _moodFloatIds.Length; k++)
+            int floatKeys = _moodFloatIds.Length;
+            for (int k = 0; k < floatKeys; k++)
             {
-                int id = _moodFloatIds[k];
                 float sum = 0f, wsum = 0f;
-                for (int a = 0; a < _anchorMaterials.Length; a++)
+                for (int a = 0; a < anchors; a++)
                 {
-                    Material m = _anchorMaterials[a];
-                    if (m == null || !m.HasProperty(id)) continue;
                     float w = weights[a];
                     if (w <= 0f) continue;
-                    sum += m.GetFloat(id) * w;
+                    int idx = a * floatKeys + k;
+                    if (!_anchorFloatHas[idx]) continue;
+                    sum += _anchorFloatValues[idx] * w;
                     wsum += w;
                 }
-                if (wsum > 1e-6f) mpb.SetFloat(id, sum / wsum);
+                if (wsum > 1e-6f) mpb.SetFloat(_moodFloatIds[k], sum / wsum);
             }
 
             // ---- colours ----
-            for (int k = 0; k < _moodColorIds.Length; k++)
+            int colorKeys = _moodColorIds.Length;
+            for (int k = 0; k < colorKeys; k++)
             {
-                int id = _moodColorIds[k];
                 Color sum = new Color(0f, 0f, 0f, 0f);
                 float wsum = 0f;
-                for (int a = 0; a < _anchorMaterials.Length; a++)
+                for (int a = 0; a < anchors; a++)
                 {
-                    Material m = _anchorMaterials[a];
-                    if (m == null || !m.HasProperty(id)) continue;
                     float w = weights[a];
                     if (w <= 0f) continue;
-                    sum += m.GetColor(id) * w;
+                    int idx = a * colorKeys + k;
+                    if (!_anchorColorHas[idx]) continue;
+                    sum += _anchorColorValues[idx] * w;
                     wsum += w;
                 }
-                if (wsum > 1e-6f) mpb.SetColor(id, sum / wsum);
+                if (wsum > 1e-6f) mpb.SetColor(_moodColorIds[k], sum / wsum);
             }
         }
 
@@ -1327,6 +1529,31 @@ namespace HiddenHarbours.Art
         public static Vector2 SmoothVectorToward(Vector2 smoothed, Vector2 target, float responseTime, float dt)
         {
             if (responseTime <= 0f || dt < 0f) return target;   // no inertia (snap) / guard a negative dt
+            float alpha = 1f - Mathf.Exp(-dt / responseTime);   // 0 (no move) .. 1 (full move) — fps-independent
+            return smoothed + (target - smoothed) * alpha;
+        }
+
+        /// <summary>
+        /// The SCALAR twin of <see cref="SmoothVectorToward"/> — identical form
+        /// (<c>smoothed += (target − smoothed)·(1 − exp(−dt/τ))</c>), for the continuously-varying scalars the
+        /// per-frame push tier eases: <c>_Chop</c> and <c>_WaterLevel</c>.
+        ///
+        /// <para><b>The two properties the continuity tests pin.</b> (1) <b>Bounded step</b>: a single call can
+        /// move the value by at most <c>|target − smoothed| · (1 − exp(−dt/τ))</c> — at 60 fps and τ = 0.5 s
+        /// that is 3.3% of the remaining gap, where the old raw sample-and-hold push moved 100% of it in one
+        /// go. That bound IS the absence of the staircase. (2) <b>Bounded lag</b>: against a target ramping at
+        /// a constant rate the steady-state trail is exactly <c>rate · τ</c>, which is what lets
+        /// <c>_WaterLevel</c> be smoothed without the drawn waterline drifting away from the gameplay one —
+        /// at the tide's 3.5 cm/s peak and τ = 0.5 s the trail is 1.75 cm, under one code of the 8-bit
+        /// seabed height map.</para>
+        ///
+        /// <para>τ ≤ 0 returns the target unchanged (instant snap — the pre-fix behaviour, kept reachable so
+        /// the easing can be dialled out from the Inspector without a code change). Deterministic; pure;
+        /// presentation only (rule 5).</para>
+        /// </summary>
+        public static float SmoothScalarToward(float smoothed, float target, float responseTime, float dt)
+        {
+            if (responseTime <= 0f || dt < 0f) return target;   // no easing (snap) / guard a negative dt
             float alpha = 1f - Mathf.Exp(-dt / responseTime);   // 0 (no move) .. 1 (full move) — fps-independent
             return smoothed + (target - smoothed) * alpha;
         }
