@@ -187,6 +187,16 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static ICatchItemFactory CatchFactory { get; set; }
 
+        /// <summary>
+        /// The player's four bus volumes (M1 §7.8's settings sheet). Registered by the self-installing
+        /// <c>AudioDirector</c>, which owns the faders; read/written by the settings UI, which references
+        /// only Core and therefore cannot reach the Audio module directly (rule 4). OPTIONAL and NOT part
+        /// of <see cref="Ready"/> — null in EditMode and before the director installs, so the sheet shows
+        /// its rows disabled rather than pretending to move a mix that isn't there.
+        /// FLAG lead-architect: new Core contract (the shell's audio seam).
+        /// </summary>
+        public static IAudioMix AudioMix { get; set; }
+
         public static bool Ready => Clock != null && Environment != null;
 
         /// <summary>Clear references (scene teardown / tests).</summary>
@@ -203,6 +213,7 @@ namespace HiddenHarbours.Core
             CurrentRegionBounds = default;
             Config = null;
             CatchFactory = null;
+            AudioMix = null;
         }
     }
 }

@@ -37,6 +37,17 @@ namespace HiddenHarbours.Core
         public static bool AtTitle => Phase == ShellPhase.Title;
 
         /// <summary>
+        /// Is the shell holding the world — at the title, or under a pause menu? The one question
+        /// gameplay input asks before it drives anything (the player rig honours it in
+        /// <c>ControlSwitcher</c>), so a page that has stopped time cannot be steered from underneath.
+        ///
+        /// <para>Distinct from <see cref="InteractionGate"/>, which is about a modal owning the shared
+        /// INTERACT key while the world keeps running. This is the stronger statement: the world is
+        /// stopped.</para>
+        /// </summary>
+        public static bool WorldInputBlocked => AtTitle || ShellPause.IsPaused;
+
+        /// <summary>
         /// Is there a game on disk to go back to? Drives whether the title page offers Continue at all —
         /// a first launch must not dangle a button that loads nothing.
         /// </summary>
@@ -120,9 +131,34 @@ namespace HiddenHarbours.Core
             EventBus.Publish(new ShellPhaseChanged(ShellPhase.Playing));
         }
 
+        /// <summary>
+        /// Leave the world and go back to the title (M1 §7.8's pause menu). <b>Saves first</b> — quitting
+        /// to the title is a deliberate exit, and the tester who does it must not lose the trip they just
+        /// made — then lets the pause go and asks App to put the world back to its boot state.
+        ///
+        /// <para><b>Why the world has to be rebuilt, not just re-covered.</b> Returning to a title drawn
+        /// over a mid-session world would leave New Game starting on a boat that is three miles out with a
+        /// hold full of fish. The phase is set to <see cref="ShellPhase.Title"/> only when the rebuilt core
+        /// boots and calls <see cref="EnterTitle"/> itself, so there is still exactly ONE path to the
+        /// title.</para>
+        /// </summary>
+        public static void QuitToTitle()
+        {
+            var save = GameServices.Save;
+            if (save != null) save.Save();      // still Playing here, so the write is allowed
+
+            ShellPause.Resume();                // hand the clock back before the core carrying it goes away
+            EventBus.Publish(new ReturnToTitleRequested());
+        }
+
         /// <summary>Back to "no shell is running" (scene teardown / tests), matching
         /// <see cref="GameServices.Reset"/>. Publishes nothing — this is a slate wipe, not a transition
-        /// anyone should react to.</summary>
-        public static void Reset() => Phase = ShellPhase.Playing;
+        /// anyone should react to, and it deliberately does not touch the clock (which is going away with
+        /// the core that owned it).</summary>
+        public static void Reset()
+        {
+            Phase = ShellPhase.Playing;
+            ShellPause.Reset();
+        }
     }
 }
