@@ -207,8 +207,76 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             // The flat pass is still the plain vertex (the A side of the A/B must be today's
             // water exactly). Whitespace-anchored so "vertDisplaced" cannot satisfy it.
+            // (Restored at coordinator review of #388: an insertion had left this assert as
+            // unreachable code inside BalancedBody, silently disabling the guard.)
             Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"#pragma vertex vert\s"),
                 "the flat pass must keep its plain (undisplaced) vertex stage");
+        }
+
+        [Test]
+        public void TheSwash_NeverReachesTheVertexPathOrTheFetchMarch()
+        {
+            // The EXCLUSION half of the SEE≠FEEL bargain, and the half a "does the clip look right?" test
+            // cannot express. The swash is allowed to move the drawn edge in the FRAGMENT and nowhere else:
+            //
+            //   • the VERTEX stages decide real geometry. `vertDisplaced` lifts the mesh the hull rides and
+            //     publishes the iso-depth frame's z convention; a swash term there would put a cosmetic
+            //     wash into the surface the boat physically sits on — SEE≠FEEL stops being bounded and
+            //     becomes a lie.
+            //   • the FETCH MARCH walks real distances over real water to decide the lee. Swash-perturbing
+            //     its depth reads would shelter a hull behind a headland that is not there.
+            //
+            // Both are prohibitions, and a prohibition needs a test that FAILS WHEN VIOLATED, not a comment
+            // that reads well. Scan the bodies and assert the swash symbols are absent from them.
+            string src = File.ReadAllText(ShaderPath);
+
+            string[] swashSymbols =
+            {
+                "BeachSwash", "edgeSwash", "swashEdgeReach", "swashSlope", "swashGate",
+                "_SwashAmplitude", "_SwashEdgeShift", "_SwashMaxEdgeShift", "_SwashSpeed",
+            };
+
+            foreach (string fn in new[] { "Varyings vertDisplaced(Attributes IN)", "Varyings vert(Attributes IN)" })
+            {
+                string body = BalancedBody(src, fn);
+                Assert.IsNotNull(body, $"could not locate '{fn}' — the vertex path moved; re-point this scan " +
+                    "rather than deleting it (an exclusion test that cannot find its target guards nothing).");
+                foreach (string sym in swashSymbols)
+                    StringAssert.DoesNotContain(sym, body,
+                        $"'{sym}' appears in {fn}. The swash may move the DRAWN edge in the fragment only — " +
+                        "in a vertex stage it would move the geometry the hull rides, which is the exact " +
+                        "thing the bounded SEE-not-FEEL divergence promises it does not do.");
+            }
+
+            // The fetch march is a macro body, so it is scanned as text between its #define and the blank
+            // line that ends it — same intent, different shape.
+            int marchStart = src.IndexOf("#define FETCH_MARCH_BODY", System.StringComparison.Ordinal);
+            Assert.Greater(marchStart, 0, "FETCH_MARCH_BODY not found — re-point this scan.");
+            int marchEnd = src.IndexOf("\n\n", marchStart, System.StringComparison.Ordinal);
+            if (marchEnd < 0) marchEnd = System.Math.Min(marchStart + 4000, src.Length);
+            string march = src.Substring(marchStart, marchEnd - marchStart);
+            foreach (string sym in swashSymbols)
+                StringAssert.DoesNotContain(sym, march,
+                    $"'{sym}' appears in the fetch march. The march walks REAL distances over REAL water to " +
+                    "decide the lee the hull feels; a cosmetic wash in it would shelter a boat behind a " +
+                    "headland that is not there.");
+        }
+
+        /// <summary>Extract the brace-balanced body that follows a signature, or null if absent. Used by the
+        /// exclusion scan so it reads a FUNCTION rather than a line range that silently rots.</summary>
+        private static string BalancedBody(string src, string signature)
+        {
+            int i = src.IndexOf(signature, System.StringComparison.Ordinal);
+            if (i < 0) return null;
+            int open = src.IndexOf('{', i);
+            if (open < 0) return null;
+            int depth = 0;
+            for (int j = open; j < src.Length; j++)
+            {
+                if (src[j] == '{') depth++;
+                else if (src[j] == '}' && --depth == 0) return src.Substring(open, j - open + 1);
+            }
+            return null;
         }
 
         // ---- component defaults pinned to the ADR --------------------------------------------

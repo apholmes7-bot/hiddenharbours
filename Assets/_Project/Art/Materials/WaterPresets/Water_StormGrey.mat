@@ -69,6 +69,9 @@ Material:
     - _DeepBlueStrength: 0.1
     - _DeepDepth: 4
     - _DepthBands: 0
+    - _EnvelopeBandPatchMin: 0.45
+    - _EnvelopeBandPatchScale: 0.025
+    - _EnvelopeBandWarp: 0.24
     - _Flow: 0.06
     - _FoamEdgeDither: 0.02
     - _FoamNoise: 0.09
@@ -79,7 +82,8 @@ Material:
     - _HeightMin: -4
     - _NoiseScale: 0.35
     - _PaintScale: 0.25
-    - _PixelsPerUnit: 12
+    - _PixelsPerUnit: 24
+    - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
     - _ShoreSampleStep: 0.4

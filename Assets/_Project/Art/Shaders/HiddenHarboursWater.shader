@@ -83,7 +83,14 @@ Shader "HiddenHarbours/Water"
         // 0.09 m/s at full dispersion, so the master re-ties the slower bands to physics around an
         // unchanged fastest band). Shallow water: the bounded static shoal drift below bunches + slows
         // wavefronts off the SAME read-only depth every other layer consumes.
-        _DispersionScale     ("Dispersion blend (0 = today's hand-set speeds EXACTLY, 1 = derived)", Range(0,1)) = 0.0
+        // ⚠️ The PROPERTY DEFAULT below is 0, but the SHIPPED materials carry 0.5 (#382 turned this on).
+        // Read every "at _DispersionScale = 0" note in this file as describing the PASSTHROUGH CONTRACT,
+        // never the live sea. Three comments used to say "(the shipped value)" beside that 0 and were
+        // simply wrong; the gap cost real time, because it is what silently un-froze three rendering
+        // acceptance guards — they zero the hand-set speeds, which stops mattering the moment this master
+        // blends half of each band's rate toward the derived one (see MakeStatic in
+        // WaterWhiteoutShoreSwirlAcceptanceTests).
+        _DispersionScale     ("Dispersion blend (0 = hand-set speeds EXACTLY, 1 = derived; SHIPPED 0.5)", Range(0,1)) = 0.0
         _DispersionChopMult  ("Dispersion feel mult: wind chop band", Float) = 0.06
         _DispersionCrossMult ("Dispersion feel mult: cross-swell band", Float) = 0.06
         _DispersionSwellMult ("Dispersion feel mult: legacy ocean-swell band", Float) = 0.06
@@ -702,6 +709,33 @@ Shader "HiddenHarbours/Water"
         _EnvelopeBandStrength  ("Envelope band strength (0 = off / today)", Range(0,1)) = 0.35
         _EnvelopeBands         ("Envelope value bands (solid steps)", Float) = 7
         _EnvelopeBandDitherWin ("Envelope band edge dither window (0..1 of a band)", Range(0,1)) = 0.4
+        // ---- DE-REGULARIZING THE BANDS (owner judge pass 2026-08-01: "the large white bands are too
+        // regular like a pattern"). The wave field is <=4 sine trains sharing one downwind axis at FIXED
+        // angular offsets and FIXED wavelength ratios — a deterministic quasi-periodic interference whose
+        // envelope repeats at evenly spaced diagonals. FOUR features read that same envelope and reinforce
+        // into one band set, and the only randomization anywhere in the chain is edge Bayer. #382 raised
+        // the band strength to 0.35, which is what made the ruler legible.
+        //
+        // ⚠️ The FIELD is not touched — the owner locked that spectrum (#372/#382) and the hulls ride it.
+        // De-regularizing happens at the cosmetic band READ, which is why both knobs below are pure
+        // col.rgb and both are exact passthroughs at their off value.
+        //   _EnvelopeBandPatchScale — cycles per metre of the patch mask (0.025 ~ 40 m patches). Bands then
+        //                             surface in PATCHES instead of wall-to-wall, the way a real sea shows
+        //                             its structure in some places and not others.
+        //   _EnvelopeBandPatchMin   — how much band survives BETWEEN patches. 1 = no patchiness (today).
+        //   _EnvelopeBandWarp       — wanders the band VALUE axis by a low-frequency amount, so the band
+        //                             boundaries meander instead of running as parallel rulers. Deliberately
+        //                             a warp of the value axis and NOT a second WaveFieldSample at a warped
+        //                             position: that would double the field cost per pixel to move contours
+        //                             that this moves for one noise read. 0 = today's exact boundaries.
+        _EnvelopeBandPatchScale ("Band patch scale (cycles/m; 0.025 ~ 40 m patches)", Range(0.002,0.2)) = 0.025
+        // ⚠️ The floor is NOT free to go as low as it looks. ShoreSwirl_EnvelopeBands_FadeWithTheSeam
+        // measures that open water still CARRIES its envelope bands (the §23 marked-wave style is owner
+        // approved), and it caught 0.35 taking the open-water imprint under its bar — de-regularizing had
+        // quietly started deleting the feature instead of breaking up its spacing. 0.5 keeps a 2:1 contrast
+        // between patch and gap, which is plenty of irregularity, while the bands stay present everywhere.
+        _EnvelopeBandPatchMin   ("Band patch floor (1 = wall-to-wall, today)", Range(0,1)) = 0.5
+        _EnvelopeBandWarp       ("Band boundary wander (0 = ruler-straight, today)", Range(0,0.5)) = 0.18
 
         [Header(CAPILLARY RIPPLES (ADR 0027 num 10)   the finest band   col.rgb only   default OFF)]
         // The finest thing this shader drew was _WindChopScale 0.7 -- a 1.4 m band, which is CHOP, not
@@ -723,9 +757,18 @@ Shader "HiddenHarbours/Water"
         // _RippleStrength = 0 is an EXACT passthrough (the whole block is skipped) -- the shipped look is
         // byte-identical until the owner dials it in, the discipline every ADR-0010 addendum has kept.
         _RippleStrength      ("Ripple strength (0 = OFF / today exactly)", Range(0,1)) = 0.0
-        // 0.12 m = 3.84 px at PPU 32 -- comfortably inside the ADR's 0.08-0.15 band and a touch coarser
-        // than its 0.10 midpoint, because fewer than ~4 px per cycle starts to moire against the grid.
-        _RippleWavelength    ("Ripple wavelength (m; 0.12 = 3.8 px at PPU 32)", Range(0.04,0.4)) = 0.12
+        // ⚠️ CORRECTED 2026-08-01 (owner: "too regular like a pattern"). The note here used to reason at
+        // PPU 32 and conclude 0.12 m = 3.84 cells per cycle, "comfortably" past the ~4-cells-per-cycle
+        // moire floor. But the GRID THIS BAND IS QUANTIZED TO is the shader's own _PixelsPerUnit, which
+        // SHIPS AT 24, not the camera's assetsPPU 32 (those are different quantities — RipplePixelFootprint
+        // Tests measures the SCREEN footprint against assetsPPU and is unaffected by this). At PPU 24 the
+        // world cell is 4.17 cm, so 0.12 m bought only 2.88 cells per cycle — well UNDER the shader's own
+        // stated floor, and an under-sampled sine beating against a regular grid is textbook moire: extra
+        // striping that reads as exactly the "regular pattern" complaint.
+        // 0.17 m = 4.08 cells per cycle at PPU 24 — back over the floor, still inside the ADR's
+        // 0.08-0.15 m intent at the coarse end. The value now ships on the materials rather than relying
+        // on this default, so applying a preset cannot silently take the band back under the floor.
+        _RippleWavelength    ("Ripple wavelength (m; 0.17 = 4.1 cells at the shipped PPU 24)", Range(0.04,0.4)) = 0.17
         // World m/s ALONG the wind. Default 0.09 = the wind-chop band's own speed, so the ripple sits in
         // the sea's established (deliberately slow) feel family at ~0.75 wavelengths/sec. The PHYSICAL
         // deep-water speed for 0.12 m is 0.43 m/s -- ~5x this, which at 3.8 px/cycle reads as temporal
@@ -733,7 +776,8 @@ Shader "HiddenHarbours/Water"
         _RippleSpeed         ("Ripple scroll speed (m per sec along the wind)", Float) = 0.09
         // The #9 per-band feel multiplier, same 0.06 convention as the chop/cross/swell bands, so
         // dialling _DispersionScale up does not leave the ripple as the one band ignoring dispersion.
-        // At _DispersionScale = 0 (the shipped value) this is bit-exact _RippleSpeed.
+        // At _DispersionScale = 0 this is bit-exact _RippleSpeed — the PASSTHROUGH contract, not the
+            // shipped sea: the materials carry 0.5, so the live ripple speed is already half-derived.
         _DispersionRippleMult("Dispersion feel mult: ripple band", Float) = 0.06
         _RippleWindOnset     ("Wind (_Roughness) at or below which there are NO ripples", Range(0,1)) = 0.05
         _RippleWindFull      ("Wind at or above which the ripple gate is fully open", Range(0,1)) = 0.45
@@ -1218,6 +1262,9 @@ Shader "HiddenHarbours/Water"
                 float  _CapDitherBand;
                 float  _EnvelopeBandStrength;
                 float  _EnvelopeBands;
+                float  _EnvelopeBandPatchScale;
+                float  _EnvelopeBandPatchMin;
+                float  _EnvelopeBandWarp;
                 float  _EnvelopeBandDitherWin;
                 // ADR 0027 #6 — the advected foam buffer's compose (default OFF: _WakeFoamStrength 0).
                 float  _WakeFoamStrength;
@@ -1540,8 +1587,9 @@ Shader "HiddenHarbours/Water"
             // world-derived discipline the Bayer dither and the ADR 0022 facet pass hold. Never screen space.
             //
             // Speed rides the #9 dispersion blend like every other band, so dialling _DispersionScale up does
-            // not leave the ripple as the one band ignoring the relation. At _DispersionScale = 0 (shipped)
-            // DispersionBandSpeed returns _RippleSpeed bit-exactly.
+            // not leave the ripple as the one band ignoring the relation. At _DispersionScale = 0
+            // DispersionBandSpeed returns _RippleSpeed bit-exactly — the PASSTHROUGH contract. The shipped
+            // materials carry 0.5, so the live ripple speed is NOT _RippleSpeed.
             float RippleField(float2 worldXY, float t, float2 windN)
             {
                 float lambda = max(_RippleWavelength, 0.01);
@@ -3648,7 +3696,27 @@ Shader "HiddenHarbours/Water"
                     {
                         // 0 = full trough .. 0.5 = mean level .. 1 = the full envelope crest.
                         float vN = saturate(waveHeight / max(_WaveFieldParams.z, 1e-5) * 0.5 + 0.5);
+                        // ---- DE-REGULARIZE (owner: "the large white bands are too regular like a pattern")
+                        // TWO low-frequency world noise reads (patch mask + value warp, different UVs).
+                        // Wind-STRETCHED: patches on a real sea are drawn out downwind, and stretching also
+                        // stops the mask itself reading as a second regular grid laid over the first.
+                        float2 patchAxis = normalize(_WindDir.xy + float2(1e-4, 0));
+                        float2 patchPerp = float2(-patchAxis.y, patchAxis.x);
+                        float patchFreq = max(_EnvelopeBandPatchScale, 1e-4);
+                        // 0.45 along-wind = patches ~2.2x longer downwind than across it.
+                        float2 patchUV = float2(dot(worldXY, patchAxis) * patchFreq * 0.45,
+                                                dot(worldXY, patchPerp) * patchFreq);
+                        // (a) WANDER the value axis before posterizing. A slowly-varying offset moves where
+                        // each band boundary falls, so the contours meander instead of running parallel.
+                        // The field itself is untouched — bands still mark the real crests, they just stop
+                        // marking them on a ruler.
+                        vN = saturate(vN + (ValueNoise(patchUV * 2.3 + 31.7) - 0.5) * _EnvelopeBandWarp);
                         float q = BandValue01(vN, _EnvelopeBands, _EnvelopeBandDitherWin, bay);
+                        // (b) PATCHINESS of the band's local contribution: full inside a patch, fading to
+                        // _EnvelopeBandPatchMin between them. At patchMin = 1 this is exactly 1 everywhere,
+                        // i.e. today's wall-to-wall banding, bit for bit.
+                        float patchMask = lerp(saturate(_EnvelopeBandPatchMin), 1.0,
+                                               smoothstep(0.35, 0.75, ValueNoise(patchUV)));
                         float3 bandShade = q < 0.5
                             ? lerp(_PaletteDeep.rgb, _PaletteMid.rgb, q * 2.0)
                             : lerp(_PaletteMid.rgb, _PaletteShallow.rgb, (q - 0.5) * 2.0);
@@ -3664,7 +3732,8 @@ Shader "HiddenHarbours/Water"
                         // Depth is READ-ONLY here (P1, rule 5).
                         float bandSeam = ShoreFade01(depth, _ShoreFadeBand);
                         col.rgb = lerp(col.rgb, bandShade,
-                                       saturate(_EnvelopeBandStrength) * swellReadGate * bandLive * bandSeam);
+                                       saturate(_EnvelopeBandStrength) * swellReadGate * bandLive
+                                           * bandSeam * patchMask);
                     }
                 }
 

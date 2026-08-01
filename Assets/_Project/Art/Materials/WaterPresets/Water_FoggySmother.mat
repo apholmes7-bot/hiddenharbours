@@ -82,6 +82,9 @@ Material:
     - _DriftLineSpeed: 0.5
     - _DriftLineStrength: 0
     - _DriftLineStretch: 5
+    - _EnvelopeBandPatchMin: 0.5
+    - _EnvelopeBandPatchScale: 0.025
+    - _EnvelopeBandWarp: 0.18
     - _FbmDriftSpeed: -0.12
     - _FbmGateHi: 1
     - _FbmGateLo: 0.452
@@ -140,6 +143,7 @@ Material:
     - _ReflectionSunStreak: 0.2
     - _ReflectionWindFade: 0.5
     - _ReflectionWindScatter: 1.4
+    - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
     - _ShoreSampleStep: 0.4

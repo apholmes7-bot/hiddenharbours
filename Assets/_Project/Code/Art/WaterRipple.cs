@@ -32,11 +32,24 @@ namespace HiddenHarbours.Art
     /// per-tier fade could not be made stable. Measured rather than assumed (the spike, pinned by
     /// <c>RipplePixelFootprintTests</c>): <c>PixelPerfectCamera.assetsPPU</c> is LOCKED at 32 and the
     /// camera frames a tier by changing its REFERENCE RESOLUTION, so world-metres-per-pixel is 1/32
-    /// everywhere and a 0.10 m ripple is <b>3.2 px at every framing the game has</b>. It never goes
-    /// sub-pixel. <b>There is no per-tier amplitude fade to build, and none must be.</b>
+    /// everywhere and the shipped 0.17 m ripple is <b>5.4 px at every framing the game has</b>. It never
+    /// goes sub-pixel. <b>There is no per-tier amplitude fade to build, and none must be.</b>
     /// What DOES vary is the CYCLE COUNT: the widest framing shows 33.75 m of sea against the tightest's
     /// 5.625 m, so ~6× more ripple cycles at the same pixel size — texture on the swell up close, a dense
     /// competing field wide open. Hence a fade over <i>how much sea is on screen</i>.</para>
+    ///
+    /// <para><b>⚠️ TWO DIFFERENT PIXEL GRIDS, and confusing them cost the owner a visible defect.</b>
+    /// <c>assetsPPU</c> (32) is the CAMERA's screen grid — how many screen pixels a world metre occupies,
+    /// which is what the paragraph above and <c>RipplePixelFootprintTests</c> are about.
+    /// <c>_PixelsPerUnit</c> (shipped <b>24</b>) is the SHADER's own quantization grid — the cells
+    /// <c>Pixelize()</c> snaps world coordinates to before sampling any band, which is what decides whether
+    /// a band is adequately SAMPLED. They are not the same number and they never have been. The ripple
+    /// wavelength note in the shader used to reason at 32, concluding 0.12 m bought 3.84 cells per cycle
+    /// and was safely past the ~4-cells floor; at the real 24 it bought <b>2.88</b>, under the shader's own
+    /// stated floor, and an under-sampled sine beating against a regular grid is moiré — extra striping
+    /// that reads as precisely the "too regular, like a pattern" the owner reported. 0.17 m restores 4.08
+    /// cells per cycle at PPU 24. If either grid is ever retuned, re-derive the wavelength against
+    /// <c>_PixelsPerUnit</c>, never against <c>assetsPPU</c>.</para>
     ///
     /// <para><b>The framing input is a PUSH, not a mood float.</b> <c>_SeaFramingHeight</c> is derived
     /// from the camera (published by <see cref="WaterSurface"/>, the <c>WaveFieldBridge</c> pattern), so
