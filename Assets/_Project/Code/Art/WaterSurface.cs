@@ -1719,8 +1719,14 @@ namespace HiddenHarbours.Art
         /// shader draws along the shore TANGENT (GPU-only, so passed in here, the same way the old twin took its
         /// along-shore term) — mapped to a phase offset scaled by <paramref name="alongShoreVary"/>
         /// (<c>_SwashAlongShoreVary</c>): <c>(sample−0.5)·vary·2π</c>. It nudges neighbouring stretches slightly
-        /// out of phase without a fixed travel direction. Foam-visual only — this twin feeds no sim, is never
-        /// pushed to the material, and never touches the real depth/clip/_WaterLevel/waterline (rule 5).
+        /// out of phase without a fixed travel direction.
+        /// <para>This mirrors the shader's <c>wave · _SwashAmplitude</c>, i.e. the swash BEFORE the calm fade.
+        /// Since 2026-08-01 <c>BeachSwash</c> multiplies that by <see cref="SwashSeaStateGate"/> (glass is
+        /// near-still, a chop washes properly), which is mirrored as its own function so both halves stay
+        /// testable and the amplitude bound below keeps its original meaning.</para>
+        /// <para>No longer foam-ONLY: <see cref="SwashEdgeShift"/> carries a BOUNDED part of this offset to the
+        /// drawn water edge (the owner's "swash in and out of the water"). Still visual — this twin feeds no
+        /// sim, is never pushed to the material, and never touches the gameplay waterline (rule 5).</para>
         /// </summary>
         public static float SwashOffset(float time, float speed, float amplitude,
                                         float depth, float wavelength,
@@ -1746,6 +1752,89 @@ namespace HiddenHarbours.Art
             float reach = Mathf.Max(foamWidth, 1e-3f) * 2f + Mathf.Max(Mathf.Abs(amplitude), 1e-3f);
             float t = Mathf.Clamp01(depth / reach);
             return 1f - Smoothstep01(t);   // 1 at depth 0, 0 at depth >= reach
+        }
+
+        /// <summary>
+        /// (owner judge pass 2026-08-01) The CALM fade the shader's <c>SwashSeaStateGate()</c> applies to the
+        /// swash amplitude: glass should be near-still, a chop should wash properly. Reuses the swell read's
+        /// sea-state axis (<c>_SwellReadSeaStateLo/Hi</c>) rather than a second pair of thresholds — one axis,
+        /// one place to tune. Returns 1 at/above <paramref name="seaStateHi"/> and
+        /// <c>1 − calmGate</c> at/below <paramref name="seaStateLo"/>; <paramref name="calmGate"/> 0 means
+        /// "identical at every sea-state" (the pre-fix behaviour). Pure; presentation only (rule 5).
+        /// </summary>
+        public static float SwashSeaStateGate(float chop, float seaStateLo, float seaStateHi, float calmGate)
+        {
+            float lo = Mathf.Clamp01(seaStateLo);
+            float hi = Mathf.Max(Mathf.Clamp01(seaStateHi), lo + 1e-3f);
+            float sea = Smoothstep(lo, hi, Mathf.Clamp01(chop));
+            return Mathf.Lerp(1f - Mathf.Clamp01(calmGate), 1f, sea);
+        }
+
+        /// <summary>
+        /// (owner judge pass 2026-08-01) The bounded shift the swash applies to the DRAWN water edge — the
+        /// shader's <c>edgeSwash</c>. The owner asked for "the swash in and out of the water along with the
+        /// tides"; until now the swash moved only the FOAM band, so the water's own edge never budged and
+        /// nothing read as water advancing and retreating.
+        ///
+        /// <para><b>⚠️ The one deliberate SEE≠FEEL divergence in this feature, and the reason it is a named,
+        /// clamped function rather than an inline expression.</b> <paramref name="edgeShift"/> (0..1) dials how
+        /// much of the swash reaches the drawn edge — 0 restores the previous edge exactly — and the result is
+        /// HARD-CLAMPED to ±<paramref name="maxShift"/> metres of level. It moves the drawn fragment only:
+        /// gameplay reads <c>ITidalTerrain</c> / the walkability sim, never this, and the cap is meant to sit
+        /// well inside the standing "wade ~0.5 m" tolerance so no ground the player can stand on changes
+        /// meaning. The vertex/displaced pass and the fetch march keep the clean <c>_WaterLevel</c>.</para>
+        ///
+        /// <para>Pure and bounded by construction — <c>|result| ≤ maxShift</c> for every input, which is what
+        /// <c>WaterSwashEdgeTests</c> pins.</para>
+        /// </summary>
+        public static float SwashEdgeShift(float swashOffset, float edgeShift, float maxShift)
+        {
+            float cap = Mathf.Max(Mathf.Clamp01(maxShift), 0f);
+            return Mathf.Clamp(swashOffset * Mathf.Clamp01(edgeShift), -cap, cap);
+        }
+
+        /// <summary>
+        /// (owner judge pass 2026-08-01) The FLOOR under the local seabed slope the shore cosmetics scale by —
+        /// the shader's <c>max(shoreSlopeRaw, _ShoreSlopeFloor)</c>.
+        ///
+        /// <para>The 2026-07-23 swirl fix scaled the fringe/swash depth offsets by the local slope so the
+        /// authored amplitudes read as CONTOUR metres on any coast. Correct — but it assumed a slope that is
+        /// always measurably non-zero. On the sandbar flats the 8-bit height map is literally flat across whole
+        /// texel runs, so the central difference returns 0 and the swash was multiplied to nothing, precisely
+        /// where the owner was standing when he said he could not see it. Flooring the slope makes a flat beach
+        /// behave like a flat beach — long, low run-up — instead of a dead one, while every slope at or above
+        /// the floor is returned unchanged (which is why the swirl guard's 0.18 m/m reference coast is
+        /// untouched by the shipped 0.15 floor).</para>
+        ///
+        /// <para><b>⚠️ The SWASH only.</b> The fringe NOISE deliberately keeps the raw, unfloored slope. That
+        /// term is what painted the 2026-07-23 worm tongues, and on a near-flat bar a floored slope is exactly
+        /// the licence to paint them again. The swash can be floored safely because it is a coherent travelling
+        /// sine — it reads as a wash, never as a swirl. The foam-edge LINES the floor might otherwise have been
+        /// asked to hide are killed by <see cref="FoamEdgeDither"/> instead, which addresses their actual cause
+        /// (texture quantization) rather than drowning them in noise.</para>
+        /// </summary>
+        public static float ShoreCosmeticSlope(float rawSlope, float slopeFloor)
+        {
+            return Mathf.Max(Mathf.Clamp01(rawSlope), Mathf.Clamp01(slopeFloor));
+        }
+
+        /// <summary>
+        /// (owner judge pass 2026-08-01) The Bayer offset applied to the foam band's iso-contour — the shader's
+        /// <c>(bay − 0.5) · _FoamEdgeDither</c>.
+        ///
+        /// <para><b>Why the band drew LINES.</b> <c>foamEdge</c> is an iso-contour of a depth descended from the
+        /// seabed height TEXTURE: 8 bits over a −4…+6 m range = 3.91 cm per code, bilinear at ~2 px/m. Where the
+        /// seabed is near-flat one code step spans METRES of ground, so an entire texel row crosses the
+        /// smoothstep at the same instant and the edge snaps to the texture lattice — a straight, axis-aligned
+        /// line that foam noise cannot hide, because that noise rides ON the contour rather than across it.
+        /// Offsetting the contour per world-locked Bayer cell scatters the crossing depth across the row.</para>
+        ///
+        /// <para>The natural dither size is about half a height code; <c>WaterShoreBandDitherTests</c> pins that
+        /// the shipped amount is at least that and that a whole flat texel row no longer crosses together.</para>
+        /// </summary>
+        public static float FoamEdgeDither(float bayer01, float ditherMeters)
+        {
+            return (bayer01 - 0.5f) * ditherMeters;
         }
 
         // ==== Living foam: the SOFT-THRESHOLD (merge/separate) twin — pure mirror of the shader ==============

@@ -93,6 +93,7 @@ Material:
     - _FoamDensity: 0.3
     - _FoamDensityWind: 0.4
     - _FoamDriftWindVsCurrent: 0.84
+    - _FoamEdgeDither: 0.02
     - _FoamEvolveSpeed: 0.08
     - _FoamNoise: 0.09
     - _FoamSoftness: 0.26
@@ -142,6 +143,7 @@ Material:
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
     - _ShoreSampleStep: 0.4
+    - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
     - _SkyReflectionStrength: 0.7
@@ -161,8 +163,10 @@ Material:
     - _SurfaceTexStrength: 0.169
     - _SurfaceTint: 0.12
     - _SwashAmplitude: 1
-    - _SwashScale: 0.2
-    - _SwashSpeed: 0.08
+    - _SwashCalmGate: 0.7
+    - _SwashEdgeShift: 0.45
+    - _SwashMaxEdgeShift: 0.35
+    - _SwashSpeed: 0.16
     - _SwellFaceShade: 0
     - _Turbidity: 1.2
     - _UntileStrength: 0.644

@@ -306,11 +306,41 @@ Shader "HiddenHarbours/Water"
         _ShorewardFalloff ("Shoreward falloff depth (m, fades to wind out at sea)", Float) = 2.5
         _ShoreSampleStep  ("Shore gradient sample step (m)", Float) = 0.4
 
-        [Header(Beach swash   always on shoreline wash   cosmetic   foam band only)]
-        _SwashAmplitude    ("Swash amplitude (m, foam-band only)", Float)        = 0.3
-        _SwashSpeed        ("Swash speed (run-ups / 2pi sec)", Float)            = 0.5
+        [Header(Beach swash   always on shoreline wash   the water runs IN and OUT)]
+        _SwashAmplitude    ("Swash amplitude (m of contour excursion)", Float)   = 0.3
+        _SwashSpeed        ("Swash speed (run-ups per sec; 0.16 ~ one every 6 s)", Float) = 0.5
         _SwashWavelength   ("Swash shoreward wave spacing (per m depth)", Float) = 1.2
         _SwashAlongShoreVary ("Swash along-shore desync (0..1, subtle)", Range(0,1)) = 0.35
+        // How much of the swash reaches the DRAWN water edge rather than only the foam band.
+        // 0 = the pre-2026-08-01 behaviour exactly (foam moves, the water's edge does not, so nothing
+        // reads as water running in and out — the owner's report). Above 0 the wet edge itself advances
+        // and recedes, BOUNDED by _SwashMaxEdgeShift metres of equivalent level. This is a deliberate,
+        // bounded SEE != FEEL divergence: gameplay never reads the fragment, and the cap sits well inside
+        // the standing "wade ~0.5 m" tolerance, so nowhere the player can stand changes meaning.
+        _SwashEdgeShift    ("Swash moves the DRAWN edge (0 = foam only)", Range(0,1)) = 0.6
+        _SwashMaxEdgeShift ("Swash drawn-edge cap (m of level; keep under the wade tolerance)", Range(0,1)) = 0.35
+        // Glass should be near-still. Fades the swash toward this floor as the sea-state falls, reusing
+        // the swell-read gate's axis (_SwellReadSeaStateLo/Hi) rather than inventing a second one.
+        // 0 = no calm fade (swash identical at every sea-state); 1 = dead-still on glass.
+        _SwashCalmGate     ("Swash calm fade (0 = same at all seas, 1 = still on glass)", Range(0,1)) = 0.7
+
+        [Header(Shore band quantization   the 8 bit height map is why the foam edge draws LINES)]
+        // The foam band's edge is an ISO-CONTOUR of a depth that inherits the seabed height texture's
+        // 8-bit quantization (3.91 cm per code over the -4..+6 m range, bilinear at ~2 px/m). Where the
+        // seabed is near-flat — the sandbar flats, exactly where the owner photographed the defect — one
+        // code step spans METRES, so an entire texel row crosses the smoothstep at once and the edge
+        // snaps to the texel lattice as a straight line. Offsetting the contour per Bayer cell scatters
+        // the crossing depth across the row, which is the same instrument every OTHER band in this shader
+        // already uses. In metres of depth; ~half a height code is the natural size. 0 = the old contour.
+        _FoamEdgeDither    ("Foam edge dither (m of depth; 0 = the old lattice-locked contour)", Float) = 0.02
+        // The shore cosmetics (fringe wiggle + swash) scale their depth offsets by the LOCAL seabed slope
+        // so the authored amplitudes read as CONTOUR metres on any coast (the 2026-07-23 swirl fix). On
+        // the flats the measured gradient is ~0 — the height map is literally flat across whole texel
+        // runs — which multiplied both to nothing precisely where they were needed. This floors the slope
+        // the cosmetics scale by, so a flat beach behaves like a flat beach (long, low run-up) instead of
+        // a dead one. Deliberately below the 0.18 m/m reference coast the swirl guard renders, so every
+        // slope that guard measures is untouched. 0 = the old slope-blind-on-flats behaviour.
+        _ShoreSlopeFloor   ("Shore cosmetic slope floor (m/m; flats keep breakup + swash)", Range(0,1)) = 0.15
 
         [Header(Organic shore fringe (LOOK ONLY prototype   default OFF   ADR 0012))]
         // A revertible, defaults-off COSMETIC prototype (ADR 0012 exploration) so the owner can SEE an
@@ -1056,6 +1086,12 @@ Shader "HiddenHarbours/Water"
                 float  _SwashSpeed;
                 float  _SwashWavelength;
                 float  _SwashAlongShoreVary;
+                float  _SwashEdgeShift;
+                float  _SwashMaxEdgeShift;
+                float  _SwashCalmGate;
+                // Shore band quantization: the foam-edge dither and the cosmetic slope floor.
+                float  _FoamEdgeDither;
+                float  _ShoreSlopeFloor;
                 // Organic shore fringe (LOOK-ONLY prototype; cosmetic, foam/alpha band only — ADR 0012).
                 float  _ShoreNoise;
                 float  _ShoreNoiseScale;
@@ -2206,6 +2242,20 @@ Shader "HiddenHarbours/Water"
             // it NEVER touches the real `depth` that drives clip()/the deep tint/the caustic gate, NEVER moves
             // the gameplay waterline, and saves nothing (the P1 integrity rule, CLAUDE.md rule 5). Visual-only.
             //
+            // The CALM fade for the swash: a mirror-still bay should not have surf running up it, but a
+            // chop should wash properly. Reuses the swell read's sea-state axis (_SwellReadSeaStateLo/Hi)
+            // rather than inventing a second pair of thresholds — one axis, one place to tune. Returns
+            // 1 at/above the "full" threshold and (1 - _SwashCalmGate) at/below the glassy one, so
+            // _SwashCalmGate = 0 is "identical at every sea-state" (the pre-fix behaviour).
+            // Twin: HiddenHarbours.Art.WaterSurface.SwashSeaStateGate.
+            float SwashSeaStateGate()
+            {
+                float lo = saturate(_SwellReadSeaStateLo);
+                float hi = max(saturate(_SwellReadSeaStateHi), lo + 1e-3);
+                float sea = smoothstep(lo, hi, saturate(_Chop));
+                return lerp(1.0 - saturate(_SwashCalmGate), 1.0, sea);
+            }
+
             // SHOREWARD PHASE (the fix): the crest travels IN from the sea toward the beach, not around it.
             // The old phase advanced along a FIXED WORLD DIAGONAL (world X+Y): on the round island's ring-
             // shaped foam band a crest moving in one compass direction sweeps AROUND the ring's circumference
@@ -2241,7 +2291,7 @@ Shader "HiddenHarbours/Water"
                 // two beats slightly out of phase read as overlapping run-up/backwash, not a metronome.
                 float wave = sin(base + desync) * 0.7
                            + sin(base * 0.5 + desync * 1.7) * 0.3;
-                return wave * _SwashAmplitude;
+                return wave * _SwashAmplitude * SwashSeaStateGate();
             }
 
             // ---- REFLECTION sea-state response: how STRONG + how SHARP at this sea-state ---------------------
@@ -3255,9 +3305,19 @@ Shader "HiddenHarbours/Water"
                 float depth = _WaterLevel - elevation;             // metres; <= 0 means dry/exposed
 
                 // Dry ground: the shader hands off to the terrain tiles below (draw nothing).
-                // NOTE the clip() uses the REAL `depth` — the gameplay waterline where the player wades is
-                // NEVER moved by the cosmetic fringe below (P1 integrity, CLAUDE.md rule 5).
-                clip(depth + 1e-4);
+                //
+                // COARSE PRE-CLIP. The swash below may advance the DRAWN wet edge onto ground the real
+                // depth calls dry, by at most _SwashMaxEdgeShift metres of level — so everything beyond
+                // that is unconditionally dry and can be thrown away here, before any shore work. The
+                // EXACT edge is clipped once the swash is known (a few lines down). Splitting it this way
+                // keeps the cheap rejection for the whole dry region and pays for the shore-gradient taps
+                // only inside the narrow band the swash can actually reach.
+                //
+                // NOTE the swash reaches ONLY this fragment's drawn edge. The gameplay waterline —
+                // ITidalTerrain / the walkability sim / _WaterLevel itself — is untouched, and the shift
+                // is capped well inside the standing "wade ~0.5 m" tolerance (P1 integrity, rule 5).
+                float swashEdgeReach = saturate(_SwashMaxEdgeShift) * step(1e-6, saturate(_SwashEdgeShift));
+                clip(depth + swashEdgeReach + 1e-4);
 
                 // ---- ORGANIC SHORE FRINGE (LOOK-ONLY prototype; cosmetic depthC — ADR 0012) ------------------
                 // A revertible, defaults-off wiggle so the visible water-meets-land edge reads like a natural
@@ -3285,7 +3345,50 @@ Shader "HiddenHarbours/Water"
                                                max(_FoamWidth, 1e-3) * 2.0 + abs(_SwashAmplitude));
                 float shoreSlope = (depth < shoreCosmeticReach)
                                        ? saturate(SeabedSlopeMag(worldXY)) : 1.0;
+                // ⚠️ The FRINGE NOISE keeps the RAW slope, deliberately. Flooring it here would put the
+                // 2026-07-23 "swirly shoreline" defect straight back on the flats: that defect was chaotic
+                // noise painting metres-wide worm tongues, and on a near-flat bar a floored slope is exactly
+                // the licence to do it again. The lines are killed by DITHERING the band edge (below), which
+                // addresses the actual cause — texture quantization — instead of drowning it in noise.
                 float depthC = depth + shoreN * _ShoreNoise * shoreSlope * shoreEdge;   // cosmetic; == depth when _ShoreNoise = 0
+
+                // The SWASH, by contrast, does get a floored slope (owner judge pass 2026-08-01). The slope
+                // scaling is right in principle — it makes the authored amplitude read as CONTOUR metres on
+                // any coast — but it assumed a slope that is always measurably non-zero. On the sandbar flats
+                // the 8-bit height map is literally FLAT across whole texel runs, so the central difference
+                // returns 0 and the swash was multiplied to nothing precisely where the owner was standing
+                // when he said he could not see it. A flat beach should get a LONG, LOW run-up, not a dead
+                // one. Unlike the fringe noise this is safe to floor because the swash is a COHERENT
+                // travelling sine, not noise: it reads as a wash, never as worm tongues. The floor sits below
+                // the 0.18 m/m reference coast the swirl guard renders, so nothing that guard measures moves.
+                float swashSlope = max(shoreSlope, saturate(_ShoreSlopeFloor));
+
+                // ---- THE DRAWN WET EDGE runs in and out (owner: "i would like the swash in and out of the
+                // water along with the tides"). Until now the swash moved ONLY the foam band — the water's
+                // own edge never budged, so nothing read as water advancing and retreating. Apply the same
+                // swash offset to the drawn edge, HARD-CAPPED at _SwashMaxEdgeShift metres of level.
+                //
+                // ⚠️ This is the deliberate, bounded SEE != FEEL divergence. It moves the drawn edge only:
+                // gameplay never reads this fragment, the iso-depth frame and WaveFieldAnimator are
+                // untouched, and the vertex/displaced pass and the fetch march keep the clean _WaterLevel.
+                // The cap is well inside the standing "wade ~0.5 m" tolerance, so no ground the player can
+                // stand on changes meaning. _SwashEdgeShift = 0 restores the previous edge exactly.
+                float edgeSwash = 0.0;
+                if (swashEdgeReach > 0.0 && depth < shoreCosmeticReach)
+                {
+                    // Scaled by the SAME floored slope the foam band uses, so the drawn edge and the foam on
+                    // it travel together and the authored amplitude keeps meaning "metres of contour", then
+                    // hard-capped. Without the slope term a steep rock shore and a tidal flat would both get
+                    // the full cap of LEVEL, which on the flat is an unbounded horizontal sweep — the very
+                    // thing the 2026-07-23 guard exists to forbid.
+                    float cap = saturate(_SwashMaxEdgeShift);
+                    edgeSwash = clamp(BeachSwash(worldXY, max(depth, 0.0), t)
+                                          * swashSlope * saturate(_SwashEdgeShift),
+                                      -cap, cap);
+                }
+                // The EXACT edge. Everything past the coarse pre-clip above that the swash has not actually
+                // run up onto is dry after all.
+                clip(depth + edgeSwash + 1e-4);
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
@@ -3781,9 +3884,24 @@ Shader "HiddenHarbours/Water"
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
-                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * shoreSlope * swashGate;  // local, foam-only
+                float foamDepth  = depthC - BeachSwash(worldXY, depthC, t) * swashSlope * swashGate;  // local, foam-only
+                // ---- DITHER the band edge (owner judge pass 2026-08-01: "the shoreline foam sometimes gets
+                // these artifact lines"). foamEdge is an ISO-CONTOUR of foamDepth, and foamDepth descends
+                // from the seabed height TEXTURE — 8 bits over a -4..+6 m range, i.e. 3.91 cm per code,
+                // bilinear at ~2 px/m. Where the seabed is near-flat (the sandbar flats — the exact spot in
+                // his screenshot) a single code step spans METRES of ground, so an entire texel row crosses
+                // the smoothstep at the same instant and the band edge snaps to the texture lattice: a
+                // straight, axis-aligned line that no amount of foam noise hides, because the noise rides
+                // ON the contour rather than across it.
+                //
+                // Offsetting the contour by a world-locked Bayer cell scatters the crossing depth across the
+                // row, so the lattice row breaks into a dithered edge. This is the SAME instrument the
+                // envelope bands, the ripple posterize, the cap gate and the wake coverage already use —
+                // the shore path was the one band in the shader with no dither at all. Reuses the single
+                // `bay` read from above (no second BayerWorld tap). _FoamEdgeDither = 0 = the old contour.
+                float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
-                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth);
+                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);
                 if (foamEdge > 0.001)
                 {
                     // FOAM FLOWS WITH THE BODY: the churn drifts along FoamDriftDir() — a blend of the wind and

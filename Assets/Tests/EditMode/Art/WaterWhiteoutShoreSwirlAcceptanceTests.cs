@@ -868,6 +868,34 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 WaterMat.SetFloat("_RainRingStrength", 0f);
                 WaterMat.SetFloat("_DriftLineStrength", 0f);
                 WaterMat.SetFloat("_StormFoamLaneStrength", 0f);
+                // ⚠️ Added 2026-08-01, after three tests in this class were found FAILING ON MAIN at their
+                // byte-identical-twice precondition — i.e. asserting nothing at all — since before the shore
+                // work in this PR touched them.
+                //
+                // ⭐ THE ROOT CAUSE, and it is worth understanding rather than pattern-matching: zeroing the
+                // hand-set speeds above STOPPED BEING SUFFICIENT. Every band's scroll rate is now
+                //     rate = lerp(<the hand-set speed>, <a speed DERIVED from the dispersion relation>,
+                //                 _DispersionScale)
+                // and while _DispersionScale's own shader default is 0 — its label still reads "0 = today's
+                // hand-set speeds EXACTLY" — #382 shipped it at 0.5 on Water.mat. At 0.5 the derived half of
+                // that lerp is completely independent of the knobs this method zeroes, so the swell and the
+                // cross-chop kept scrolling however hard we set their speeds to 0. Restoring the documented
+                // passthrough is the whole fix; the two knobs below are genuinely-missing extras found while
+                // chasing it.
+                //   _DispersionScale      — THE one: 0 restores "the hand-set speeds are the speeds".
+                //   _RippleSpeed          — the capillary ripple band scrolls with _Time.
+                //   _WhitecapCollapseRate — the whitecap form/collapse lifecycle advances with _Time.
+                // Anything NEW that animates off _Time must be added here, or the guards below silently stop
+                // guarding rather than fail loudly — which is exactly what happened.
+                WaterMat.SetFloat("_DispersionScale", 0f);
+                WaterMat.SetFloat("_RippleSpeed", 0f);
+                WaterMat.SetFloat("_WhitecapCollapseRate", 0f);
+                // …and the ADR 0027 #6 advected foam BUFFER, which is a different animal from everything
+                // else here: not a scroll rate but a render target ADVECTED AND ACCUMULATED across frames,
+                // so it cannot be static by construction no matter what speed it runs at. It ships at 0, but
+                // a scene that turns it on would drift for a reason no "zero the speeds" reading of this
+                // method would ever suggest.
+                WaterMat.SetFloat("_WakeFoamStrength", 0f);
             }
 
             /// <summary>

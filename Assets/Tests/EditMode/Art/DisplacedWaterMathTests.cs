@@ -175,9 +175,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // …and never ZTests the scene's way around (render-graph path is plain LEqual).
             StringAssert.Contains("ZTest LEqual", src);
 
-            // The walkable-waterline contract: the fragment still clips on the REAL depth at the
+            // The walkable-waterline contract: the fragment clips on the REAL depth at the
             // UNDISPLACED ground position — byte-identical to the flat pass (P1 integrity).
-            StringAssert.Contains("clip(depth + 1e-4);", src);
+            //
+            // ⚠️ AMENDED 2026-08-01, deliberately, and the amendment is the point. The owner asked for
+            // "the swash in and out of the water along with the tides", which requires the DRAWN edge to
+            // advance and recede — so the single `clip(depth + 1e-4)` became a coarse pre-clip widened by
+            // the swash's maximum reach, then an exact clip carrying the swash offset. What this test
+            // guards is NOT the literal line; it is the invariant that line stood for, and that invariant
+            // now has to be stated rather than pattern-matched:
+            //
+            //   1. the clip is still driven by the REAL `depth` (never _WaterLevel directly, never a
+            //      displaced or wave-lifted height) — the vertex stage still hands the fragment
+            //      undisplaced ground;
+            //   2. the only thing allowed to move it is the swash, and only by a HARD-CAPPED amount
+            //      (_SwashMaxEdgeShift, shipped 0.35 m, inside the standing "wade ~0.5 m" tolerance);
+            //   3. _SwashEdgeShift = 0 restores the previous edge exactly, so the divergence is revertible
+            //      from the material with no code change.
+            //
+            // The gameplay waterline is untouched either way: nothing in the sim reads this fragment.
+            // WaterShoreBandAndSwashTests pins the bound arithmetically; this pins the shader SHAPE.
+            StringAssert.Contains("clip(depth + swashEdgeReach + 1e-4);", src);
+            StringAssert.Contains("clip(depth + edgeSwash + 1e-4);", src);
+            StringAssert.Contains("float depth = _WaterLevel - elevation;", src);
+            // The cap is applied where the offset is built — a clamp that could be edited away without
+            // failing anything would make the bound above a comment rather than a guarantee.
+            StringAssert.Contains("float cap = saturate(_SwashMaxEdgeShift);", src);
+            Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(src, @"edgeSwash\s*=\s*clamp\("),
+                "the drawn-edge swash must be CLAMPED at its cap where it is computed — the bounded " +
+                "SEE-not-FEEL divergence is only acceptable because the bound is structural");
 
             // The flat pass is still the plain vertex (the A side of the A/B must be today's
             // water exactly). Whitespace-anchored so "vertDisplaced" cannot satisfy it.
