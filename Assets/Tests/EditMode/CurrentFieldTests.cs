@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -14,8 +15,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class CurrentFieldTests
     {
-        // = SecondsPerDay(1200)/24. Passed explicitly so the field is testable without a GameConfig.
-        private const double SecondsPerHour = 50.0;
+        // The shipped hour, DERIVED so it tracks the dial. It was a literal 50.0 labelled
+        // "= SecondsPerDay(1200)/24"; the 2026-08-01 pacing ruling made that arithmetic false while every
+        // assertion here kept passing, because the field maths is scale-invariant. Passed explicitly so
+        // the field stays testable without a GameConfig.
+        private const double SecondsPerHour = GameConfig.DefaultSecondsPerDay / 24.0;   // 75 s
         private static readonly Vector2 ChannelAxis = Vector2.right;   // EnvironmentService default
         private const float CurrentFactor = 25f;                       // EnvironmentService default
         private static CurrentProfile Cove => CurrentProfile.CoddleCove;

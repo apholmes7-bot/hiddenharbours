@@ -38,9 +38,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const float SampleDt = 1f / 8f;
 
         /// <summary>
-        /// Peak vertical tide rate at St Peters: TideAmplitude 3.5 m over a 12.4206 h period gives
-        /// <c>A·2π/T</c> ≈ 3.5 cm/s at mid-tide, the fastest the water level ever moves. The
-        /// <c>_WaterLevel</c> lag bound is stated against THIS, because it is the worst case.
+        /// A DELIBERATE CONSERVATIVE CEILING on the peak vertical tide rate — not the live number, and
+        /// kept at 3.5 cm/s on purpose.
+        ///
+        /// <para>It was the live number when written: TideAmplitude 3.5 m over a 12.4206 h period on a
+        /// 1200 s day gives <c>A·2π/T/SecondsPerHour</c> ≈ 3.5 cm/s. The owner's 2026-08-01 tide-pacing
+        /// ruling (amplitude → 2.2 m, day → 1800 s) cut the real peak to <b>≈ 1.48 cm/s</b>, so this now
+        /// sits 2.4× above the fastest the sea actually moves.</para>
+        ///
+        /// <para><b>Why not re-derive it.</b> Every bound below is <c>rate × τ</c>, so a HIGHER rate makes
+        /// them all STRICTER: at 3.5 cm/s the shipped τ = 0.5 s must keep the trail under 2 cm, which caps
+        /// <c>_waterLevelResponseTime</c> at ~0.57 s; at the real 1.48 cm/s the same bound would permit
+        /// ~1.35 s. Re-deriving would therefore LOOSEN the guard by 2.4× in exchange for a prettier
+        /// number. The headroom also means the guard survives the amplitude being raised again — it stays
+        /// a true worst case for any amplitude up to ~5.2 m at the shipped day length.</para>
+        ///
+        /// <para>⚠ It is a ceiling, so it must never be lowered to track a smaller tide. If the amplitude
+        /// ever goes ABOVE ~5.2 m, this stops being conservative and has to be re-derived.
+        /// (<c>TidePacingInvariantTests</c> owns the live rate and pins it under 1.6 cm/s.)</para>
         /// </summary>
         private const float TidePeakRate = 0.035f;
 
@@ -163,11 +178,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void WaterLevel_AtPeakTidalRate_TrailsBySignificantlyUnderOneSeabedHeightCode()
         {
             // The SEE==FEEL argument for easing the drawn water level at all. An exponential ease
-            // trailing a target that ramps at a constant rate settles at exactly rate × τ. The tide's
-            // worst case is 3.5 cm/s, so at the shipped τ = 0.5 s the drawn level trails the sampled one
-            // by 1.75 cm — under one code of the 8-bit seabed height map, i.e. below the resolution the
-            // shore band can represent. The gameplay waterline is untouched either way; this bounds how
-            // far the DRAWN one may sit from it.
+            // trailing a target that ramps at a constant rate settles at exactly rate × τ. Against the
+            // 3.5 cm/s CEILING (see TidePeakRate — the live tide runs at 1.48 cm/s since the 2026-08-01
+            // pacing ruling) the shipped τ = 0.5 s trails the sampled level by 1.75 cm — under one code
+            // of the 8-bit seabed height map, i.e. below the resolution the shore band can represent. At
+            // the live rate it is 0.74 cm. The gameplay waterline is untouched either way; this bounds
+            // how far the DRAWN one may sit from it.
             float tau = ShippedFloatField("_waterLevelResponseTime");
             float level = 0f, target = 0f;
 
