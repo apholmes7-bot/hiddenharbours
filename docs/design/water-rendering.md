@@ -3409,3 +3409,181 @@ band, raise the strength; the rest are already at the recommended settings.
 | `_RippleWindwardGate` / `_RippleLeeFloor` | 0.7 / 0.15 | as shipped | 0.7 keeps the face read legible without emptying the lee. |
 | `_RippleBands` / `_RippleDitherWin` | 3 / 0.5 | as shipped | Three solid steps is the pixel-art read; drop to 0 to compare against smooth. |
 | `_RippleFadeNear` / `_RippleFadeFar` / `_RippleFadeFloor` | 16 / 30 / 0.2 | as shipped | Full through every small-boat framing, thinning across the trawler/packet tiers. |
+
+---
+
+## 28. The advected foam buffer — a wake as a mark on the sea (ADR 0027 #6)
+
+**Status: SHIPPED 2026-08-01, OFF by default.** The ADR deferred this item to the fleet era on
+2026-07-29; the owner overturned that on 2026-08-01 and, in the same sentence, gave it a look-target
+the original spec never had:
+
+> *"I want foam to move to now as well. The hull doesn't create realistic foam when bobbing etc."*
+
+That second half is the reason this is built now. Everything the ADR's decision text says about #6 is a
+*multi-boat* payoff — trails that merge, unbounded persistence at fixed cost — which is exactly why
+deferring it was defensible. **Bobbing churn is a one-boat defect**, it is visible on a single moored
+dory, and nothing in the project serves it: `BoatWakeEmitter` keys on **speed** (`SpeedOnset` is 0 at
+rest, correctly, because it draws a *wake*), so a boat at her mooring is silent.
+
+### 28.1 What it is
+
+One persistent single-channel render target per camera, ping-ponged each frame, holding *"how much
+churned foam is on this patch of sea"*. Each frame `IsoFacetHullFeature` runs one blit
+(`HiddenHarboursFoamBufferAdvect.shader`) that:
+
+1. **scrolls** the previous buffer by a **whole number of world cells** (the camera window's move plus
+   the wind/current drift);
+2. **decays** it by an exponential half-life factor;
+3. **injects** a capsule of foam along each churning hull's swept segment.
+
+The water shader samples the result as a coverage mask that **ADDS** to the foam already composed
+(`WakeFoamCoverage`, in the same pre-grade dressing zone as the fringe foam and whitecaps, so the ADR
+0015 palette guard-rail bounds it and it dims with the night like every other foam layer).
+
+**`BoatWakeEmitter` stays.** The emitter is the young, bright churn at the stern; the buffer is the
+mark left on the sea that persists and drifts after the boat has gone, plus the bobbing case. They add.
+Whether the emitter's trail should later be *thinned* in favour of the buffer is an **owner look call**
+and is deliberately not pre-empted.
+
+### 28.2 🔴 The cell law — the one thing this can get catastrophically wrong
+
+A render target is screen-space by nature. If the buffer's cells are camera-relative, the whole trail
+**crawls** under every pan — the one artefact that would make this read as a screen filter rather than
+foam on water. So:
+
+- the window's origin is **snapped onto a world cell lattice** (`FoamBuffer.WorldCellOrigin`). It does
+  not move *at all* for a camera pan smaller than one cell, and moves by whole cells otherwise;
+- **the wind drift is quantized the same way** (`FoamBuffer.AdvectCells`), with the sub-cell remainder
+  **banked** into the next frame. This goes further than the ADR's warning asks, and for a second
+  reason beyond crawl: a fractional scroll has to be **resampled**, and resampling a buffer into itself
+  every frame is a blur filter — the wake would smear into a smudge within seconds. Whole-cell moves
+  are exact integer copies. Banking the remainder is what stops the foam travelling slower than the
+  wind that is carrying it;
+- the advect pass reads with `Load()` at integer texels, not a uv sample — no filtering, and no
+  render-target Y-flip ambiguity (the `ObjectReflection` precedent, same reason);
+- the water shader's read is a **world** position mapped through the cell-snapped window
+  (`_HHFoamBufferWorld`) into a point-filtered target. There is no screen-space step anywhere in it.
+
+`FoamBuffer.CameraRelativeOrigin` exists **only** as the wrong answer the tests measure the crawl
+against. Nothing ships calling it. `FoamBufferTests` reports the sabotage as a number: across a camera
+pan of **0.123 m — less than one 0.125 m cell** — camera-relative addressing slides a fixed patch of
+sea **0.969 of a cell** inside its own cell (the boundary sweeps clean across the mark), while
+world-anchored addressing slides **0.000**.
+
+> ⚠️ **The buffer owns its grid constant, and this is not a style preference.** `FOAM_CELLS_PER_UNIT`
+> is **8 cells/m** (0.125 m = **4 screen px** at PPU 32), mirrored by `FoamBuffer.CellsPerUnit` and
+> pinned by a tripwire that reads the shader source. It is deliberately **not** the material's
+> `_PixelsPerUnit`: that is an art knob the owner drags — **`Water.mat` ships it at 24, not 32** — and
+> the C# side cannot read a material, so quantizing through it would let the two halves of the seam
+> disagree silently. Same ruling, same reason, as `FETCH_MARCH_PPU`. It is also deliberately *coarser*
+> than the pixel grid, which is the ADR's own "foam coarser than caustics" scale hierarchy.
+
+### 28.3 Injection — both components of hull-vs-water relative motion
+
+`FoamInjector` (drop it on any hull) reads two channels and adds them:
+
+| Channel | Signal | Why |
+|---|---|---|
+| **Horizontal** | speed **through the water** — world velocity minus the tidal current | A boat carried along by the stream is stationary relative to the water she floats on and leaves no wake in it. |
+| **Vertical** | \|relative heave rate\| — how fast the gap between hull and wave surface is opening or closing | **The owner's ask.** Zero speed, and she still churns. |
+
+**How the bob signal is obtained.** A hull that tracked the surface perfectly would displace nothing and
+churn nothing — **the churn is the hull's inertia losing the race with the wave face**. So the injector
+samples the same displaced sea the ride already samples (`WaveFieldAnimator` + `ShoreFadeMath.DisplacedHeight`
+through the `DisplacedSea` Core seam, at the surface's own `FreqScale` so it reads the sea *as drawn* —
+the documented `_OceanSwellScale` defect class) and models the hull's response as a first-order lag
+(`FoamBuffer.FollowSurface`). `hullResponseSeconds = 0` returns the surface exactly, so the bob channel
+falls identically silent — a real off switch, not an approximation of one, and pinned as a test.
+
+⚠️ **It reads the ride and never writes it.** No force, no pose, no heave goes back to Boats, and the
+component holds no reference to any boat class — so a buoy, a raft or a swimmer can carry one later
+without touching Boats or breaking rule 4 (Art references only Core).
+
+**The slap shaping is super-linear.** `FoamBuffer.Shape01` normalises a rate against a knee and raises
+it to an exponent (default **2.5** for the bob channel, **1.0** for the wake). Above 1 the response is
+super-linear: the gentle end is pushed down toward nothing while a hard slap still reaches full white.
+That is *"a hull slapping at the waterline churns, a hull breathing on a swell does not"* as a curve,
+rather than as a steeper straight line. Every knee, exponent and weight is a tunable (rule 6).
+
+Deposits are **capsules** along the segment swept since the last tick, not points: a boat at 3 m/s
+crosses about a cell and a half per frame at 60 fps and several on a frame hitch, so a point deposit
+would lay a trail that gets dashier the worse the frame rate.
+
+### 28.4 Zero cost when idle — both gates
+
+Nothing is recorded unless **both** are true (the `IsoFacetUrpPassTests` contract, CLAUDE.md rule 7):
+
+- **a hull is churning water** — `FoamInjectionRegistry.Count > 0`. Every `FoamInjector` unregisters the
+  moment it is off the water (hauled out, or over ground that has bared on the ebb), so a boat ashore
+  costs nothing;
+- **the owner has dialled the look in** — `_WakeFoamStrength > 0`, mirrored out of the live material by
+  `WaterSurface` each push. At 0 the water shader draws nothing from the buffer, so filling one is pure
+  waste.
+
+The shipped state has **both gates shut**: `_WakeFoamStrength` is 0 in `Water.mat` and in all eight
+presets, and nothing in any scene carries a `FoamInjector`. So there is no "buffer off" branch to keep
+byte-identical — only an **absent pass**, which *is* the passthrough proof (the #8 shape exactly).
+
+When the pass stops running, `FoamInjectionRegistry.BindIdle()` rebinds a **black 1×1** and zeroes the
+window. Without that, a buffer that stops being filled would leave its last frame bound and a **frozen
+wake** would hang on the sea for the life of the scene. The fallback is black, not grey: the mask is
+read as coverage, and Unity's grey unbound placeholder would wash the entire sea with half-strength
+foam on the first frame of every scene (the interior guard's lesson, verbatim).
+
+### 28.5 Budget (rule 7 — and the later mobile port)
+
+| | |
+|---|---|
+| Format | `R8` — a coverage mask needs one channel, and 256 levels are more than a posterized foam edge can show |
+| Resolution | **Derived**: `extent × FOAM_CELLS_PER_UNIT`. At the 96 m default that is **768²**, so "one texel = one world cell" holds by construction and cannot be broken by typing a different number |
+| Memory | 576 KiB × 2 (ping-pong) = **1.1 MB per camera** — against the `_SeabedTex` bake's 1.0 MB per region |
+| Per frame | **one** fullscreen blit, over a **fixed 8-slot** injection loop (a compile-time bound — `[unroll]` over a runtime bound is a known magenta trap) |
+| Window | 96 m square, camera-centred. Must comfortably exceed the widest framing (33.75 m down-screen, ~60 m across) or wake scrolls out of the window while still on screen |
+
+### 28.6 Determinism boundary — the one knowing exception, and it is bounded
+
+The buffer is **accumulated visual state**. It is **not** a deterministic function of
+`(worldSeed, gameTime)` and **is allowed to differ run-to-run** with frame pacing, exactly as particles
+are. It therefore:
+
+- feeds **no simulation** — nothing in Boats, Fishing, Economy or the wave field may read it;
+- enters **no save** (rule 5 / ADR 0008), and needs none: it is regenerated by sailing;
+- is read by **the water shader's foam compose and nothing else**. That last clause is what contains the
+  exception, and it is the invariant to defend in review.
+
+Every function in the `FoamBuffer` twin is nonetheless pure and deterministic in its own arguments,
+which is what keeps the maths testable headless even though the accumulation is not.
+
+### 28.7 Recommended starting values (the owner's dial-in)
+
+`Water.mat` ships every one of these at its property default with **`_WakeFoamStrength` at 0**, and no
+scene carries a `FoamInjector`. Two steps to see it:
+
+1. add a **Foam Injector** component to the dory (Add Component → Hidden Harbours → Art);
+2. raise `_WakeFoamStrength` on `Water.mat`.
+
+| Property | Shipped | Recommended | Note |
+|---|---|---|---|
+| `_WakeFoamStrength` | **0** | **0.8** | The only material knob that must move. Above ~1.2 the churn goes solid white and stops reading as foam. |
+| `_WakeFoamThreshold` | 0.12 | 0.10–0.20 | Lower shows more of the trail's faint fringe; too low reads as a grey wash rather than churn. |
+| `_WakeFoamSoftness` | 0.18 | as shipped | The soft edge of the band. |
+| `_WakeFoamBands` | 3 | as shipped | Three solid tones is the pixel-art read; drop to 0 to compare against smooth. |
+| Feature: foam window | 96 m | as shipped | Raise only if wake visibly stops at the screen edge at the widest framing. Cost is quadratic. |
+| Feature: foam half-life | 6 s | 4–10 s | Visible lifetime is roughly 4× this. At 6 s a wake is half gone at 6 s and essentially gone by 30 s. |
+| Injector: `strength` | 1 | as shipped | Per-hull scale. |
+| Injector: `radiusMeters` | 0.9 | ≈ the hull's beam | A dory wants ~0.9; a coastal packet several times that. |
+| Injector: `hullResponseSeconds` | 0.2 | as shipped | The hull's vertical inertia (matches `BoatWaveMotion`'s own smoothing). **0 disables the bob channel entirely.** |
+| Injector: `slapExponent` | 2.5 | 2.0–3.5 | Higher = only genuinely hard slaps churn. |
+| Injector: `slapRateKnee` | 0.5 m/s | as shipped | Measured: a 0.2 s hull in a 0.6 m / 0.48 Hz chop peaks at ~0.89 m/s relative heave, so 0.5 saturates on the hard hits and stays quiet on a lazy swell. |
+
+**What to look for.** Moor the dory in chop with the strength up: foam should churn around the
+waterline while she bobs, streak downwind, and fade over seconds. Sail a circle: the wake should stay
+painted on the sea *where the boat went*, drifting with the wind, not glued to the stern. Pan the
+camera with foam on screen: **nothing may crawl.**
+
+> ℹ️ **One stated divergence.** The buffer advects along the **global** wind/current blend
+> (`WaterSurface.FoamDriftDirection` × `_Flow`), without `FoamDriftDir()`'s per-position shoreward bias:
+> a rigid buffer scroll is uniform by construction and cannot carry a position-dependent term. So near a
+> beach, buffered foam drifts on the wind/current axis while the shader's own fringe foam also leans
+> shoreward. Small, and stated rather than discovered.

@@ -319,7 +319,9 @@ mask that **adds** to the existing foam rather than replacing it.
 > land is materially more expensive than deciding it now. This item is sequenced early for that reason alone, not
 > because its visual payoff outranks the others.
 
-> ✅ **RULED (owner, 2026-07-29): DEFERRED to the fleet era.** The dynamic-wake PRs this item was racing landed
+> ~~✅ **RULED (owner, 2026-07-29): DEFERRED to the fleet era.**~~ **SUPERSEDED by the owner's 2026-08-01
+> ruling — see the amendment below. The deferral block is kept for the record; it is no longer in force.**
+> The dynamic-wake PRs this item was racing landed
 > first, and they deliver the architecture goal — the shipped `BoatWakeEmitter` trail is **deposited in the world**
 > where the hull passed, **advects with the current**, and **decays in place** (pooled sprites, not an RT). What a
 > buffer still adds — wakes that **merge** across boats, unbounded persistence at fixed cost, shader-level blending
@@ -329,6 +331,75 @@ mask that **adds** to the existing foam rather than replacing it.
 > so nothing rots while it waits. Options note: `dev/NOTE-2026-07-29-adr0027-item6-wake-buffer.md` (option A taken;
 > option B — the buffer as the trail's persistence medium, sprites keeping only the young churn band — is the
 > recorded shape for the fleet-era build).
+
+#### Amendment (2026-08-01, at the #6 build) — the deferral is overturned, and the ask gained a LOOK-TARGET
+
+**The ruling, verbatim.** The owner reopened this the same day, in these words:
+
+> *"I want foam to move to now as well. The hull doesn't create realistic foam when bobbing etc."*
+
+The first sentence overturns the 2026-07-29 deferral: #6 builds now, in M1, one boat. The second sentence is
+the more consequential half, because **it is a look-target the original decision text never had.** Everything
+above frames #6 as an *architecture* upgrade to a wake — merging trails, unbounded persistence, shader-level
+blending — all of which are multi-boat payoffs, which is exactly why deferring it was defensible. None of that
+is what the owner is looking at. He is looking at a hull **working against the water**: bobbing at anchor,
+rolling in a chop, slapping at the waterline. That case is served by **nothing today**, and it is not a fleet
+problem — it is visible on one moored dory.
+
+**Why `BoatWakeEmitter` cannot cover it, stated precisely.** The emitter keys on **speed**
+(`WakeLineGeometry.SpeedOnset` is 0 at rest, by design and correctly). A moored boat has no speed, so the
+emitter is silent — as it should be, for a *wake*. The missing signal is the hull's **vertical motion relative
+to the local wave surface**, which nothing in the project reads. That is the gap this item now exists to fill,
+and it is why the deferral's "the retrofit already happened, benignly" reasoning does not carry: the emitter
+delivered the *trail* architecture goal, not the *churn* one.
+
+**What was built.** The decision's shape above, unchanged, plus the second injection channel the owner's
+sentence demands:
+
+- **Injection reads BOTH components of hull-vs-water relative motion.** *Horizontal:* speed through the water
+  (world velocity minus the tidal current, so a boat carried along by the stream churns nothing). *Vertical:*
+  |relative heave rate| — the rate at which the gap between hull and wave surface opens or closes. A hull that
+  tracked the surface perfectly would displace nothing, so **the churn is the hull's inertia losing the race
+  with the wave face**; `FoamInjector` samples the same displaced sea the ride already samples (through the
+  `DisplacedSea` Core seam, at the surface's own `FreqScale`) and models the hull's response as a first-order
+  lag. Response time 0 ⇒ perfect tracking ⇒ the bob channel is identically silent, which is a real off switch.
+  ⚠️ It **reads** the ride and never writes to Boats — no force, no pose, no heave — and holds no reference to
+  any boat class, so a buoy or a raft can carry one later.
+- **The slap shaping is super-linear** (`FoamBuffer.Shape01`, exponent default 2.5): a hard slap churns
+  *disproportionately* more than a gentle rise-and-fall, which is the owner's distinction made numeric rather
+  than a steeper straight line. Knees, exponents and weights are tunables (rule 6), never literals.
+- **The cell law was taken further than the warning above asks.** Not only the camera scroll but the **wind
+  drift too** is reduced to whole world cells, with the sub-cell remainder banked. That is not extra rigour for
+  its own sake: a fractional scroll must be *resampled*, and resampling a buffer into itself every frame is a
+  blur filter — the wake would smear into a smudge within seconds. Whole-cell moves are exact integer copies.
+- **Its own grid constant** (`FOAM_CELLS_PER_UNIT` = 8 cells/m = 4 screen px at PPU 32), never the material's
+  `_PixelsPerUnit`. This is not a style preference: **`Water.mat` ships `_PixelsPerUnit` at 24**, not 32 — the
+  owner has dragged that slider — and the C# twin cannot read a material, so quantizing through it would let
+  the two halves of the seam disagree silently. Same ruling, same reason, as `FETCH_MARCH_PPU`. It is also
+  deliberately *coarser* than the pixel grid, which is the Pixelation section's own "foam coarser than
+  caustics" scale hierarchy taken up rather than ignored.
+
+**The determinism boundary, stated honestly (this is new, and it is a real exception).** The buffer is
+**accumulated VISUAL state**. It is *not* a deterministic function of `(worldSeed, gameTime)`, and it is
+**allowed to differ run-to-run** with frame pacing — exactly as particles are. It therefore:
+
+- feeds **no simulation** — nothing in Boats, Fishing, Economy or the wave field may read it;
+- enters **no save** (rule 5 / ADR 0008), and needs none: it is regenerated by sailing;
+- is read by **the water shader's foam compose and nothing else**, which is the invariant that keeps the
+  exception contained. Every function in the `FoamBuffer` twin is nonetheless pure and deterministic in its own
+  arguments — that is what makes the maths testable headless even though the accumulation is not.
+
+This is the first place in the realness pass where "deterministic from seed and time" is knowingly not held,
+so it is recorded as a boundary rather than left to be discovered.
+
+**`BoatWakeEmitter` STAYS, and the two ADD.** The emitter is the young, bright churn at the stern; the buffer
+is the mark left on the sea that persists and drifts after the boat has gone, plus the bobbing case. Whether
+the emitter's trail should later be *thinned* in favour of the buffer is an **owner look call** and is
+deliberately not pre-empted here.
+
+**Ships OFF, both gates.** `_WakeFoamStrength` = 0 in `Water.mat` and all eight presets, and nothing in the
+shipped scenes carries a `FoamInjector` — so there is no "buffer off" branch to keep byte-identical, only an
+absent pass. That absence **is** the passthrough proof, the same shape as #8's.
 
 ---
 
@@ -377,7 +448,7 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
 | #10 ripples | World-grid quantized (`Pixelize`) **and** posterized into solid steps with a Bayer-dithered window at each step edge (`_RippleBands` / `_RippleDitherWin`, **default ON**). ~~amplitude faded per discrete zoom tier~~ → **faded by the FRAMING** (`_SeaFramingHeight`): the footprint is tier-invariant, the CYCLE COUNT is not (see the #10 amendment) |
 | #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
-| #6 wake buffer | Cells anchored to the **world** PPU grid; camera-relative addressing only, scrolled in whole world cells |
+| #6 wake buffer | Cells anchored to a **world** grid; camera-relative addressing only, scrolled in whole world cells — **and so is the wind drift**, remainder banked, because a fractional scroll must be resampled and resampling a buffer into itself every frame is a blur filter. On its **own** constant (`FOAM_CELLS_PER_UNIT` = 8/m = 4 px), deliberately coarser than the pixel grid and deliberately **not** `_PixelsPerUnit` (which ships at 24). Value posterized + edge-dithered on the shared world-locked Bayer cell, **default ON** |
 
 ---
 
@@ -396,7 +467,7 @@ ahead of everything, because it is free and it tells us how much of the ask is a
 | **P4** ✅ | #7 absorption + `_SeabedTex` bake — **SHIPPED 2026-07-29** | A | Self-contained; retires §17.1/§17.3 rather than tuning around them. Landed out of phase order (P2/P3 still open) precisely because it depends on nothing above — the independence the table already claimed. |
 | **P5** ✅ | #8 reflections (`HHReflect` list, pivot mirror, wave warp, composition) — **SHIPPED 2026-07-29** | C | The owner's second explicit ask; depends on nothing above — which is why it landed with P2/P3 still open. |
 | **P6** ✅ | **#1 fetch** — **SHIPPED 2026-07-31** | ~~A→B~~ **B** | ~~Visual first; promotion earns a twin.~~ **The visual-first step was dropped on evidence** (the `_OceanSwellScale` incident): a shader-only damp IS seen ≠ felt. Landed Tier B in one commit — C# twin, headless tests, ADR 0018 amendment — and ships OFF. |
-| **⏱ Parallel** | #6 advected foam buffer | C | ✅ **RULED 2026-07-29: DEFERRED to the fleet era** (see the item's decision block). The wake PRs it was racing landed and deliver the trail architecture; the buffer re-opens when multiple hulls sail at once. |
+| **P7** ✅ | **#6 advected foam buffer** — **SHIPPED 2026-08-01** | C | ~~⏱ Parallel; DEFERRED to the fleet era 2026-07-29~~ → **the owner overturned the deferral on 2026-08-01** and, in doing so, gave the item a look-target it never had: *"the hull doesn't create realistic foam when bobbing."* Bobbing churn is a ONE-boat defect, not a fleet payoff, and nothing serves it — `BoatWakeEmitter` keys on speed and a moored dory has none. Landed after #8 by ruling (both are render targets on the same feature and the same shader region, so they are serial, never parallel). Ships **OFF** (`_WakeFoamStrength` 0 **and** no `FoamInjector` in any scene); the owner dials it in. See the item's amendment. |
 
 **The cost of this re-order, stated plainly.** Pulling #5 to P2 brings the Tier B risk forward: it changes what the
 hulls ride, so the ADR 0018 amendment, the C# twins and the **owner feel verdict** all land *before* absorption and
@@ -414,6 +485,12 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   (and, for #6/#8, their own render targets) and **never** `depth`, `clip()`, `_WaterLevel`, the height read, or
   the sim. Nothing enters the save (rule 5 / ADR 0008). **#10 is Tier A permanently** — a ripple is surface
   texture, not a force, and must never enter the field hulls ride.
+- ⚠️ **#6 is the ONE knowing exception to "deterministic from `(worldSeed, gameTime)`", and it is bounded.**
+  The foam buffer is **accumulated visual state**: it is allowed to differ run-to-run with frame pacing, exactly
+  as particles are. It feeds no sim, saves nothing, and may be read by **the water shader's foam compose and
+  nothing else** — that last clause is what contains the exception. Its maths (`FoamBuffer`) is nonetheless pure
+  and deterministic in its own arguments, which is what keeps it testable headless. Full statement in the #6
+  amendment.
 - **#5 and #1 do change the field hulls ride** (the #4/#9 "promotions" turned out to be an audit result, not code — see P2). They are deterministic functions of
   `(worldSeed, gameTime)` + authored height, recomputed and never saved — but they require C# twins, headless
   determinism tests, and an **ADR 0018 amendment**. This is stated as a gate, not a footnote.
@@ -422,6 +499,13 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   byte-identical until the owner dials each in — the discipline every ADR-0010 addendum has kept.
 - **Rule 7:** #8 and #6 each add one filtered list / one RT, both honouring the existing zero-cost-when-idle
   contract. The `HHReflect` list needs a **distance-or-layer rule** so it stays small (see open questions).
+  #6's budget, measured at its 96 m default: **768² × R8 × 2 (ping-pong) = 1.1 MB per camera**, one fullscreen
+  blit per frame over a fixed 8-slot injection loop — against the seabed bake's 1.0 MB per region. Its
+  resolution is **derived** from the window extent (`extent × cells-per-metre`), so "one texel = one world cell"
+  holds by construction and cannot be broken by typing a different number. A single channel is all a coverage
+  mask needs, which is what keeps the later mobile port affordable. **Both** of its gates are shut when idle:
+  no hull churning water (every `FoamInjector` unregisters off the water) **or** the owner's dial at 0 ⇒ no
+  target, no blit, nothing recorded.
 
 ## Test & CI guards
 
@@ -438,11 +522,30 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   full at a tight framing, → the floor at a wide one, and **1 when the global is unset**, so a bare material never
   silently renders blank), and `Band01`/`RippleValue` (the posterize + edge dither). Plus
   `RipplePixelFootprintTests`, the tripwire that pins the tier-invariance the whole design rests on.
+  **`FoamBuffer`** (#6, shipped) — `WorldCellOrigin` (the cell law: unmoved by a sub-cell pan, whole cells
+  otherwise), `SourceOffsetCells` (a mark stays on its patch of water across a pan, and travels downwind by
+  exactly the cells the drift earned — the sign tripwire), `AdvectCells` (the sub-cell remainder is banked, so
+  no drift is lost in either direction), `DecayFactor` (halves at the half-life, composes so lifetime is
+  frame-rate independent, half-life 0 kills rather than preserves), `Shape01` (zero at rest, monotone,
+  saturating, and **super-linear above exponent 1** — the owner's slap-vs-swell distinction as a number),
+  `Injection01` (either channel alone can churn — the bobbing case is asserted directly), `FollowSurface` /
+  `RelativeHeaveRate` (**response time 0 ⇒ identically zero churn**, the invariant proving the signal is
+  relative motion and not a re-read of wave height; and a short chop churns >2× a lazy swell of the same
+  height). Plus the two **measured sabotages** the item is judged on — drop the world-cell snap and the crawl
+  is reported as cells of slide across a sub-cell pan; break the half-life and the trail is reported as still
+  at full strength after two minutes — and the `FOAM_CELLS_PER_UNIT` / `FOAM_MAX_INJECTORS` tripwires that read
+  the advect shader's source, plus a guard that the pass never reaches for `_PixelsPerUnit` (which ships at
+  **24**, not 32).
 - **`WaterShaderCompileGuardTests` continues to force-compile the shipped variant** — no `+` in any `[Header]` or
   property string, **no `[unroll]` over a runtime bound** (directly relevant to #1's march). The magenta class stays
   guarded.
 - ⚠️ **CI has no graphics device.** Rendering tests crash the editor rather than failing cleanly. Any pass-level test
   for #8/#6 must follow the existing `IsoFacetUrpPassTests` pattern; all new math stays headless.
+- ⚠️ **A runtime-created shader is INVISIBLE to the magenta guard** (found at #6). `WaterShaderCompileGuardTests`
+  discovers shaders through the **materials** that reference them, and the foam advect material is built by
+  `CoreUtils.CreateEngineMaterial` — so no material asset points at it and it would never have been compiled by
+  CI. `FoamBufferPassTests` force-imports it and reads `ShaderUtil.GetShaderMessages` directly. **Any future
+  `Hidden/` pass shader has the same hole and needs the same treatment.**
 
 ## Rejected alternatives
 

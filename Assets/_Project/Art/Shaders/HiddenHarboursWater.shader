@@ -720,6 +720,34 @@ Shader "HiddenHarbours/Water"
         _RippleFadeNear      ("Framing (m of sea on screen) at or below which ripples are FULL", Float) = 16
         _RippleFadeFar       ("Framing at or above which ripples reach the floor", Float) = 30
         _RippleFadeFloor     ("Floor the framing fade never goes below (0 = gone when wide)", Range(0,1)) = 0.2
+
+        [Header(ADVECTED FOAM BUFFER (ADR 0027 num 6)   wake as a mark on the sea   default OFF)]
+        // IsoFacetHullFeature keeps a persistent single-channel buffer of "how much churned foam is on
+        // this patch of sea": scrolled in WHOLE WORLD CELLS, decayed exponentially, and injected
+        // wherever a hull works against the water. This block reads it as a coverage mask that ADDS to
+        // the foam already computed above -- it never replaces the fringe foam, the whitecaps, or the
+        // BoatWakeEmitter's sprite trail.
+        //
+        // What it adds that nothing else can: foam that PERSISTS and DRIFTS after the boat has gone,
+        // and churn around a hull that is merely BOBBING -- the owner's 2026-08-01 ask, which the
+        // emitter has no signal for (it keys on speed, and a moored dory has none).
+        //
+        // ⚠️ Zero crawl BY CONSTRUCTION: the lookup is a WORLD position mapped through the buffer's
+        // own cell-snapped window (_HHFoamBufferWorld), and the target is point-filtered, so a foam
+        // cell belongs to a place on the water and stays there under any pan. There is no screen-space
+        // step anywhere in this read -- see the crawl law in the ADR's Pixelation section.
+        //
+        // _WakeFoamStrength = 0 is an EXACT passthrough (the whole block is skipped) and is the
+        // SHIPPED value -- the owner dials it in, the discipline every ADR-0010 addendum has kept.
+        _WakeFoamStrength  ("Wake foam strength (0 = OFF / today exactly)", Range(0,2)) = 0.0
+        // Coverage below this is bare water: a trail's fringe holds a lot of very faint foam, and
+        // drawing all of it reads as a grey wash rather than as churn.
+        _WakeFoamThreshold ("Wake foam threshold (buffer value where foam begins)", Range(0,1)) = 0.12
+        _WakeFoamSoftness  ("Wake foam edge softness", Range(0.01,1)) = 0.18
+        // The layer's OWN quantization, DEFAULT ON (ADR 0027's condition). The buffer's cells are
+        // already 4 screen px, so this posterizes VALUE rather than position: churn reads as a few
+        // solid tones instead of an airbrushed gradient.
+        _WakeFoamBands     ("Wake foam posterize steps (below 2 = smooth)", Float) = 3
     }
 
     SubShader
@@ -776,6 +804,16 @@ Shader "HiddenHarbours/Water"
             // run (an unbound sampler's grey placeholder has alpha ~0.5 and would smear a flat
             // half-mirror over the whole sea on the first frame of every scene).
             TEXTURE2D(_HHReflectTex);
+
+            // ADR 0027 #6: the ADVECTED FOAM BUFFER, written by IsoFacetHullFeature's ping-ponged
+            // blit and published globally. Single channel; one texel IS one world cell, point
+            // filtered. FoamInjectionRegistry binds a BLACK 1x1 fallback before the pass has ever run
+            // (an unbound sampler's grey placeholder would read as ~0.5 coverage and wash the entire
+            // sea with foam on the first frame of every scene — the same lesson as the interior
+            // guard's black 1x1 and the reflection target's clear one).
+            // Its own sampler (the repo convention above), so the read inherits the target's POINT /
+            // CLAMP state — a bilinear read would blend across cells and undo the crisp world grid.
+            TEXTURE2D(_HHFoamBufferTex); SAMPLER(sampler_HHFoamBufferTex);
 
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
@@ -881,6 +919,23 @@ Shader "HiddenHarbours/Water"
             // WaterSurface.MoodFloatNames, which would ease it from the eight preset materials and
             // double-drive it — the same discipline that keeps _Chop/_Roughness/_Flow out of that list.
             float _SeaFramingHeight;
+
+            // GLOBAL FOAM-BUFFER WINDOW (ADR 0027 #6) — where in the WORLD the advected foam buffer
+            // currently sits, published by IsoFacetHullFeature alongside the target itself:
+            //   xy = the CELL-SNAPPED lower-left corner of the window (world m)
+            //   z  = the window extent (m)   w = 1/extent
+            //
+            // 🔴 This vector IS the crawl law made concrete. Because the origin is snapped to a world
+            // cell lattice on the C# side and the buffer scrolls only in WHOLE cells, mapping a world
+            // position through it always lands on the same texel for the same patch of sea — so a
+            // wake stays painted where the boat went while the camera pans over it. Reading the RT on
+            // its own screen-space grid instead is exactly the artefact the ADR warns about.
+            // Twin: FoamBuffer.SampleUv / FoamBuffer.WorldCellOrigin.
+            //
+            // A GLOBAL (outside the per-material CBUFFER) like _SunDir/_SeaFramingHeight: the window
+            // belongs to the CAMERA, not to any one water renderer. UNSET reads as all-zero, and
+            // z <= 0 is the "never published" branch — no foam, never a grey wash.
+            float4 _HHFoamBufferWorld;
 
             // ---- WIND FETCH (ADR 0027 #1) — globals, published by WaveFieldBridge.PublishFetchGlobals ------
             // How far the wind has blown over open water before it reaches this pixel. Lee shores go calm,
@@ -1128,6 +1183,11 @@ Shader "HiddenHarbours/Water"
                 float  _EnvelopeBandStrength;
                 float  _EnvelopeBands;
                 float  _EnvelopeBandDitherWin;
+                // ADR 0027 #6 — the advected foam buffer's compose (default OFF: _WakeFoamStrength 0).
+                float  _WakeFoamStrength;
+                float  _WakeFoamThreshold;
+                float  _WakeFoamSoftness;
+                float  _WakeFoamBands;
                 // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
                 float  _RippleStrength;
                 float  _RippleWavelength;
@@ -2290,6 +2350,59 @@ Shader "HiddenHarbours/Water"
 
                 pre  = float4(ordinary * weight, cov * weight);
                 post = lit * weight;
+            }
+
+            // ==== ADR 0027 #6 — THE ADVECTED FOAM BUFFER: read the mark left on this patch of sea ==========
+            // IsoFacetHullFeature keeps one persistent single-channel buffer, ping-ponged per frame:
+            // scrolled in WHOLE world cells (camera window + wind/current drift), decayed on a half-life,
+            // and injected wherever a hull works against the water — BOTH horizontally (speed through the
+            // water) and VERTICALLY (the hull's heave rate relative to the local wave surface, which is the
+            // bobbing case the owner asked for on 2026-08-01 and which BoatWakeEmitter has no signal for).
+            //
+            // This returns a COVERAGE the caller ADDS to the foam it has already composed. It never
+            // replaces the fringe foam, the whitecaps, or the emitter's sprite trail — the buffer's job is
+            // the foam none of those can make: marks that PERSIST and DRIFT after the boat has gone.
+            //
+            // 🔴 ZERO CRAWL BY CONSTRUCTION, and it is the reason this item is built the way it is. The
+            // lookup is a WORLD position mapped through the buffer's own CELL-SNAPPED window: the origin
+            // only ever moves in whole world cells, and the target is point-filtered, so a given patch of
+            // sea always resolves to the same texel. There is no screen-space step anywhere in this read.
+            // Sampling the RT on its own camera-relative grid — the natural thing to reach for once a
+            // wake lives in a render target — is precisely the artefact the ADR warns about: the whole
+            // trail would slide under every pan and read as a screen filter.
+            // Twin: FoamBuffer.SampleUv / FoamBuffer.WorldCellOrigin (and its deliberately wrong sibling
+            // CameraRelativeOrigin, which exists only so the tests can MEASURE the crawl).
+            //
+            // The value is POSTERIZED with an edge dither (the ADR's per-layer quantization condition,
+            // default ON) on the SAME world-locked Bayer cell every other banded layer uses.
+            // col.rgb / col.a dressing ONLY — never depth/clip()/_WaterLevel/the height read/the sim
+            // (P1 integrity, rule 5). _WakeFoamStrength = 0 skips the whole block.
+            float WakeFoamCoverage(float2 worldXY, float bayer)
+            {
+                if (_WakeFoamStrength <= 0.001) return 0.0;
+                // z = the window extent; <= 0 means the feature has never published one (no injector, or
+                // the pass disabled), so there is no foam rather than a grey wash from an unbound read.
+                if (_HHFoamBufferWorld.z <= 0.0) return 0.0;
+
+                float2 uv = (worldXY - _HHFoamBufferWorld.xy) * _HHFoamBufferWorld.w;
+                // Outside the window there is simply no record of this water. Clamping instead would
+                // smear the edge texel across the open sea as a hard band.
+                if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
+
+                float stored = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).r;
+
+                // A trail's fringe holds a lot of very faint foam; drawn in full it reads as a grey wash
+                // over the sea rather than as churn. Threshold it, then soften the edge.
+                float thr  = saturate(_WakeFoamThreshold);
+                float soft = max(_WakeFoamSoftness, 1e-3);
+                float cover = smoothstep(thr, min(thr + soft, 1.0), stored);
+
+                // The layer's own quantization (default ON). The cells are already 4 screen px, so this
+                // posterizes VALUE — solid tones of churn instead of an airbrushed gradient.
+                if (_WakeFoamBands >= 2.0)
+                    cover = BandValue01(cover, _WakeFoamBands, 0.5, bayer);
+
+                return saturate(cover * _WakeFoamStrength);
             }
 
             // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
@@ -3917,6 +4030,23 @@ Shader "HiddenHarbours/Water"
                     capOpacity = saturate(capOpacity * clumpGate) * capShoreFade;
                     col.rgb = lerp(col.rgb, _FoamColor.rgb, capOpacity);
                 }
+
+                // ---- ADVECTED FOAM BUFFER (ADR 0027 #6): the wake, as a mark left on the sea ----------------
+                // Added in the SAME pre-grade dressing zone the fringe foam + whitecaps occupy, so the
+                // palette guard-rail below bounds it AND it dims with the night like the rest of the foam.
+                // It is placed AFTER both, deliberately: this layer ADDS foam the field cannot produce
+                // (a trail that persists and drifts after the boat has gone; churn around a hull that is
+                // merely bobbing at her mooring) and must never replace either — see the ADR's #6 note that
+                // BoatWakeEmitter stays. It lerps toward the SAME _FoamColor every other foam layer uses, so
+                // wake foam and sea foam are one material rather than two whites.
+                //
+                // col.rgb ONLY — the whitecap convention, deliberately: never depth/clip()/_WaterLevel/the
+                // height read/the sim (P1 integrity, rule 5), and it leaves col.a's transmission contract
+                // (ADR 0027 #7) untouched. _WakeFoamStrength = 0 makes WakeFoamCoverage return 0 on its
+                // first line, so the shipped look is byte-identical until the owner dials it in.
+                float wakeFoam = WakeFoamCoverage(worldXY, bay);
+                if (wakeFoam > 0.001)
+                    col.rgb = lerp(col.rgb, _FoamColor.rgb, saturate(wakeFoam) * _FoamColor.a);
 
                 // ---- STORM FOAM LANES: long downwind foam streaks in a blow (col.rgb ONLY; Arc C, default OFF)
                 // Added in the SAME pre-grade dressing zone the foam + whitecaps occupy (so the palette
