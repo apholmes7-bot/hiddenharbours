@@ -282,7 +282,7 @@ namespace HiddenHarbours.App.Editor
             float dBar = DistanceToSegment(worldPos, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo);
             if (dBar <= StPetersBuilder.SandbarHalfWidth)
             {
-                if (dBar <= BarSpineHalfWidth && e >= BarSpineFloorElevation) return ShoreMaterial.Shingle;
+                if (IsBarSpine(worldPos, e)) return ShoreMaterial.Shingle;
                 return ShelteredBand(e);
             }
 
@@ -476,6 +476,58 @@ namespace HiddenHarbours.App.Editor
             return sites;
         }
 
+        /// <summary>Interior erratic attempts — most are rejected by the gates below; the survivors are
+        /// the dozen-odd glacial boulders a field coast actually carries.</summary>
+        public const int FieldRockAttempts = 36;
+
+        /// <summary>Exposure above which open ground earns an erratic outright; below it only the
+        /// occasional one (a quarter of rolls) lands, so the barrens read stonier than the meadow.</summary>
+        public const float FieldRockExposure = 0.35f;
+
+        /// <summary>
+        /// The island's INTERIOR rock — glacial erratics on the open high ground, exposure-biased so the
+        /// wind-scoured barrens read stonier than the sheltered meadow (owner's 2026-08-01 "add rocks"
+        /// ask). Pure and hashed like <see cref="ScatterRocks"/>; shares the trees' clearings via
+        /// <see cref="StPetersWoods.IsPlantable"/> so no boulder blocks the village, the spawn, the
+        /// crossing's approach or the dock, and stays out of the stands — an erratic under a closed
+        /// canopy is invisible ground cost.
+        /// </summary>
+        public static List<RockSite> ScatterFieldRocks(ITidalTerrain terrain)
+        {
+            var sites = new List<RockSite>();
+            if (terrain == null) return sites;
+
+            float aspect = StPetersBuilder.IslandRadiusY > 0f
+                ? StPetersBuilder.IslandRadiusY / StPetersBuilder.IslandRadius
+                : 1f;
+
+            for (int i = 0; i < FieldRockAttempts; i++)
+            {
+                // Area-uniform interior sample: sqrt on the radial roll, aspect-corrected — the same
+                // ellipse the terrain measures in, inset from the beach band.
+                float theta = Hash01(i, 199, 1) * 2f * Mathf.PI;
+                float d = Mathf.Sqrt(Hash01(i, 199, 2)) * (StPetersBuilder.IslandRadius - 8f);
+                var pos = StPetersBuilder.IslandCenter
+                          + new Vector2(d * Mathf.Cos(theta), d * Mathf.Sin(theta) * aspect);
+
+                // Open, high, plantable-clear ground only. The grass band's floor: an erratic sits in
+                // the field, not on the beach (the beach already has the boulder ring).
+                if (!StPetersWoods.IsPlantable(terrain, pos, GrassFloorElevation)) continue;
+                float e = terrain.ElevationAt(pos);
+                if (StPetersWoods.InStand(pos, e)) continue;
+
+                // Exposure bias: barrens almost always, meadow only on a low roll.
+                float exposure = StPetersWoods.ExposureAt(pos);
+                if (exposure < FieldRockExposure && Hash01(i, 199, 4) > 0.25f) continue;
+
+                // Small boulders common, big ones rare — the squared roll leans on "bs".
+                float roll = Hash01(i, 199, 3);
+                string sprite = roll * roll < 0.45f ? "bs" : roll * roll < 0.8f ? "bm" : "bl";
+                sites.Add(new RockSite { Position = pos, Sprite = sprite });
+            }
+            return sites;
+        }
+
         /// <summary>
         /// Walk a ring of the island at a hashed elliptical distance and bearing, keeping the sites that
         /// pass the terrain and clearance tests. The bearing→position map is the inverse of
@@ -526,6 +578,18 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================
         //  shared pure helpers
         // =====================================================================================
+
+        /// <summary>
+        /// The sandbar's cobble spine — the low-tide WALKING LINE, signage the player reads to decide
+        /// whether the crossing is on. This is the ONE definition: <see cref="MaterialAt"/> draws it and
+        /// <c>StPetersStarterSplat</c> keeps the shore families off it, both through here, so the drawn
+        /// spine and the exempted spine can never drift apart (hoisted at #391's review — the predicate
+        /// used to live twice).
+        /// </summary>
+        public static bool IsBarSpine(Vector2 worldPos, float elevation) =>
+            DistanceToSegment(worldPos, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo)
+                <= BarSpineHalfWidth
+            && elevation >= BarSpineFloorElevation;
 
         /// <summary>Shortest distance from <paramref name="p"/> to the segment a→b (the same measure
         /// <see cref="HiddenHarbours.World.TidalTerrain"/> uses for the bar and the berth, so a material

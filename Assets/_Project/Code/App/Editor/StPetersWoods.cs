@@ -99,17 +99,24 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// How much of the eligible interior carries woods. The noise field is symmetric about 0, so a
-        /// threshold of 0 would wood half the island; −0.05 tips it a little past half at the core and,
-        /// once the exposure taper below is applied, lands near a third overall. A "reverting" island is
+        /// threshold of 0 would wood half the island; −0.12 tips it past half at the core and, once the
+        /// exposure taper below is applied, lands a little over a third overall. A "reverting" island is
         /// mostly open with woods coming back in patches, not the other way round.
+        ///
+        /// <para>Widened from −0.05 on the owner's 2026-08-01 "add more trees" ask — the stands grow and
+        /// gain a few new ones, but the island stays mostly open; the reverting-interior thesis (§5.1)
+        /// is a design ruling, not a density accident, so "more trees" densifies the mosaic rather than
+        /// closing it. <c>StPetersWoodsTests</c> still pins the wooded fraction under 0.7.</para>
         /// </summary>
-        public const float StandThreshold = -0.05f;
+        public const float StandThreshold = -0.12f;
 
-        /// <summary>Grid spacing (m) of the candidate positions inside a stand, before jitter. A bit over one
-        /// mature crown width at this kit's scale, so a stand reads closed without every trunk touching its
-        /// neighbour — and it is the one knob that trades how dense the woods look against how many
-        /// GameObjects the region carries (rule 7). A whole island of trees is a real cost.</summary>
-        public const float TreeStep = 6.5f;
+        /// <summary>Grid spacing (m) of the candidate positions inside a stand, before jitter. A touch
+        /// under one mature crown width at this kit's scale, so a stand reads closed with the occasional
+        /// crown overlap — and it is the one knob that trades how dense the woods look against how many
+        /// GameObjects the region carries (rule 7). A whole island of trees is a real cost.
+        /// Tightened from 6.5 on the owner's 2026-08-01 "add more trees" ask (~1.4× the trunks per
+        /// stand); the count stays well inside the 40–500 budget the tests pin.</summary>
+        public const float TreeStep = 5.4f;
 
         /// <summary>Max deterministic offset (m) applied to each candidate, so a stand never reads as
         /// a plantation. Just under half the step, which is as far as it can go without letting two
