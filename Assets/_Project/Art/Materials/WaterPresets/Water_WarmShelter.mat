@@ -69,6 +69,7 @@ Material:
     - _DeepDepth: 4
     - _DepthBands: 0
     - _Flow: 0.06
+    - _FoamEdgeDither: 0.02
     - _FoamNoise: 0.09
     - _FoamSoftness: 0.2
     - _FoamTexStrength: 0.6
@@ -81,6 +82,7 @@ Material:
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
     - _ShoreSampleStep: 0.4
+    - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
     - _SpecAmount: 0.24
@@ -90,8 +92,10 @@ Material:
     - _SurfaceTexStrength: 0.169
     - _SurfaceTint: 0.22
     - _SwashAmplitude: 1
-    - _SwashScale: 0.2
-    - _SwashSpeed: 0.08
+    - _SwashCalmGate: 0.7
+    - _SwashEdgeShift: 0.6
+    - _SwashMaxEdgeShift: 0.35
+    - _SwashSpeed: 0.16
     - _Turbidity: 0.5
     - _UntileStrength: 0.644
     - _UseCausticTex: 1

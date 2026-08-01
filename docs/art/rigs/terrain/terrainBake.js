@@ -105,7 +105,10 @@ globalThis.TB = (function () {
     grass: mkRamp([[0, '#1a2412'], [.16, '#26301a'], [.33, '#334020'], [.50, '#45522f'], [.66, '#526237'], [.82, '#667842'], [.93, '#7c8e52'], [1, '#94a06e']]),
     straw: mkRamp([[0, '#8a7748'], [.5, '#b39c60'], [1, '#d4bf86']]),
     soil: mkRamp([[0, '#403427'], [.5, '#6f5c47'], [1, '#96805f']]),
-    sand: mkRamp([[0, '#5b5138'], [.15, '#77694b'], [.33, '#968761'], [.50, '#b8ab8c'], [.68, '#cbbe9d'], [.84, '#ded2b0'], [1, '#f2e8cf']]),
+    /* PEI beach and dune sand: pink-tan, not the grey-cream of a granite coast.
+       Shared by Sand, the Marram substrate and the Shingle grit matrix, which is
+       correct — they are all the same weathered red bed. */
+    sand: mkRamp([[0, '#57402f'], [.15, '#755642'], [.33, '#9a7659'], [.50, '#bd9877'], [.68, '#d2b092'], [.84, '#e4c8ab'], [1, '#f3e0c6']]),
     stoneGrey: mkRamp([[0, '#33353a'], [.25, '#4d4f52'], [.5, '#6b6c6c'], [.75, '#8d8d88'], [1, '#b6b5ac']]),
     stoneWarm: mkRamp([[0, '#4c2c1e'], [.28, '#7b452b'], [.55, '#a3663f'], [.78, '#c28858'], [1, '#deb488']]),
     stoneGreen: mkRamp([[0, '#353f39'], [.5, '#5c6d61'], [1, '#8f9d92']]),

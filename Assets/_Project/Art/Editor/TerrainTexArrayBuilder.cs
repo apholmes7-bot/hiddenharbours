@@ -16,6 +16,11 @@ namespace HiddenHarbours.Art.Editor
     /// <para>⚠ <see cref="Order256"/>/<see cref="Order512"/> and the slice layout are MIRRORED by
     /// the static tables in <c>HiddenHarboursTerrainSplat.shader</c> (MAT_ARRAY/MAT_SLICE/
     /// MAT_METRES/MAT_OFFSET). A pin test holds the two in sync — change one, change both.</para>
+    ///
+    /// <para>Only the kit's PLAN-projection materials are packed here. Sandstone and Bank are cliff
+    /// FACES (their UVs run along and down a wall, not over the ground) and the four edge strips are
+    /// non-square decals laid along the shoreline spline — both are imported but belong to arrays
+    /// this builder does not own.</para>
     /// </summary>
     public static class TerrainTexArrayBuilder
     {
@@ -24,11 +29,14 @@ namespace HiddenHarbours.Art.Editor
         public const string Array256Path = DerivedDir + "/TerrainDetail256.asset";
         public const string Array512Path = DerivedDir + "/TerrainDetail512.asset";
 
-        /// <summary>256-class materials (8 m tiles) in canonical slice order — slice base = index × 3.</summary>
-        public static readonly string[] Order256 = { "Grass", "Marram", "Sand", "Shelf", "Dirt", "Marsh", "Sedge" };
+        /// <summary>256-class materials (8 m tiles) in canonical slice order — slice base = index × 3.
+        /// APPEND ONLY: the shader's MAT_SLICE table reads these positions by number.</summary>
+        public static readonly string[] Order256 =
+            { "Grass", "Marram", "Sand", "Shelf", "Dirt", "Marsh", "Sedge", "Ledge", "Rockweed" };
 
-        /// <summary>512-class materials (16 m tiles) in canonical slice order.</summary>
-        public static readonly string[] Order512 = { "Shingle", "Ripple", "Silt" };
+        /// <summary>512-class materials (16 m tiles) in canonical slice order. Append only.</summary>
+        public static readonly string[] Order512 =
+            { "Shingle", "Ripple", "Silt", "Foreshore", "Talus" };
 
         /// <summary>The ladder suffixes, in slice order (README §2: _Lo = 0, base = 1, _Hi = 2).</summary>
         public static readonly string[] LadderSteps = { "_Lo", "", "_Hi" };

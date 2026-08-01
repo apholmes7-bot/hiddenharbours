@@ -125,23 +125,33 @@ namespace HiddenHarbours.Core
             float dt = Mathf.Max(0f, deltaSeconds);
             float glassFloor = Mathf.Max(0f, animatorSettings.GlassSnapAmplitudeMeters);
 
-            // Snap any slot that has never been eased before — on the first tick that is all of them,
+            // Seed any slot that has never been eased before — on the first tick that is all of them,
             // and thereafter it is any slot the field has just GROWN into.
             //
             // ⚠️ The growth case is not hypothetical: turning the ADR 0027 spectrum blend off zero
             // takes the live count from 4 to 8, and that is exactly the dial the owner turns to judge
             // the feel. Easing a never-initialized slot would start it from a ZERO wavelength — which
             // the WaveTrain floor turns into λ = 1 cm, i.e. k ≈ 628 — so the new trains would arrive
-            // as a burst of shrieking high-frequency slope before settling. Their amplitude eases in
-            // from zero, so it would look like noise appearing out of nowhere rather than a train.
+            // as a burst of shrieking high-frequency slope before settling. Wavelength and direction
+            // therefore SNAP, which is invisible: a train carrying zero amplitude has no shape to see.
+            //
+            // ⚠️ AMPLITUDE is the one that must NOT snap on growth. Seeding it at the target made a
+            // grown train appear at full height in a single tick — a step in the sea's actual SHAPE,
+            // under the boat as much as under the eye, and the sharpest edge of the owner's "choppy
+            // when transitioning between states". So: the FIRST init snaps everything (waking to the
+            // live weather is a legitimate discontinuity — Reset() exists to ask for exactly that),
+            // while GROWTH seeds amplitude at zero and lets the ordinary ease below carry it up over
+            // τ. The comment here used to CLAIM the amplitude already eased in from zero; the line
+            // below said otherwise, and the line is what shipped.
             if (!_initialized || count > _initializedCount)
             {
-                for (int i = _initialized ? _initializedCount : 0; i < count; i++)
+                bool growth = _initialized;
+                for (int i = growth ? _initializedCount : 0; i < count; i++)
                 {
                     WaveTrain target = targets[i];
                     _direction[i] = target.Direction;
                     _wavelength[i] = target.Wavelength;
-                    _amplitude[i] = target.Amplitude;
+                    _amplitude[i] = growth ? 0f : target.Amplitude;
                     _phase[i] = 0.0; // travel starts here; the hash offset φ still de-syncs the trains
                 }
                 _initialized = true;

@@ -82,6 +82,74 @@ namespace HiddenHarbours.Tests.EditMode
                 "physical rate — no refresh pops");
         }
 
+        // ---- (1b) slot GROWTH is continuous too --------------------------------------------------
+
+        [Test]
+        public void FieldGrowsATrain_ItsAmplitudeStartsAtZero_AndEasesIn()
+        {
+            // The other way a field can move discontinuously: not a parameter step but a NEW TRAIN.
+            // When the live count grows (the owner widening SecondaryTrainCount, or turning the ADR
+            // 0027 spectrum blend off zero) the grown slot has no eased history, so it is seeded
+            // rather than eased. Seeding its AMPLITUDE at the target made a full-height train appear
+            // in one tick — a step in the sea's shape, felt by the hull as much as seen. Wavelength
+            // and direction still snap (invisible at zero amplitude, and easing them from zero would
+            // start the train at the λ floor, k ≈ 628: a burst of shrieking slope).
+            var field = Field;
+            field.SecondaryTrainCount = 1;      // a two-train sea
+            var anim = Anim;
+            var animator = new WaveFieldAnimator();
+
+            for (int i = 0; i < 300; i++)
+                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+            Assert.AreEqual(2, animator.Current.Count, "sanity: the field started with two trains");
+
+            // Grow it. The FIRST tick after growth is the one that used to pop.
+            field.SecondaryTrainCount = 3;      // → four trains
+            animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+
+            WaveTrains grown = animator.Current;
+            Assert.AreEqual(4, grown.Count, "sanity: the field grew to four trains");
+            for (int i = 2; i < 4; i++)
+            {
+                Assert.Greater(grown[i].Wavelength, 0.05f,
+                    $"train {i}: wavelength SNAPS on growth — easing it from zero would ring at the " +
+                    "1 cm floor before settling");
+                Assert.Less(grown[i].Amplitude, 0.02f,
+                    $"train {i}: a newly grown train must arrive at (near) ZERO amplitude and ease " +
+                    "up — never at full height in one tick");
+            }
+
+            // ...and it does arrive: given time, the grown trains reach their real amplitude.
+            for (int i = 0; i < 900; i++)       // 15 s ≫ τ
+                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+            WaveTrains settled = animator.Current;
+            for (int i = 2; i < 4; i++)
+                Assert.Greater(settled[i].Amplitude, 0.02f,
+                    $"train {i}: the eased-in amplitude must actually converge, not stay at zero");
+        }
+
+        [Test]
+        public void FieldGrowsATrain_TheSampledHeightDoesNotJump()
+        {
+            // The property that matters at the surface: growing the field must not move the water.
+            var field = Field;
+            field.SecondaryTrainCount = 1;
+            var anim = Anim;
+            var animator = new WaveFieldAnimator();
+
+            for (int i = 0; i < 300; i++)
+                animator.Tick(Dt60, WindA, 0.6f, in field, in anim);
+            float before = Height(animator);
+
+            field.SecondaryTrainCount = 3;
+            animator.Tick(1e-5f, WindA, 0.6f, in field, in anim);   // the field grows, time does not
+            float after = Height(animator);
+
+            Assert.AreEqual(before, after, 1e-3f,
+                "growing the field across a near-zero instant must not move the surface — the new " +
+                "trains enter at zero amplitude and contribute nothing until they have eased in");
+        }
+
         // ---- (2) glass is sacred ----------------------------------------------------------------
 
         [Test]
