@@ -45,7 +45,8 @@ namespace HiddenHarbours.Art
         [SerializeField] private Texture2DArray _detailArray512;
         [SerializeField] private Texture2D _splatA;   // r grass, g marram, b sand, a shingle
         [SerializeField] private Texture2D _splatB;   // r ripple, g shelf, b silt, a dirt
-        [SerializeField] private Texture2D _splatC;   // r marsh, g sedge
+        [SerializeField] private Texture2D _splatC;   // r marsh, g sedge, b foreshore, a talus
+        [SerializeField] private Texture2D _splatD;   // r ledge, g rockweed, b and a free
 
         [Header("Bands (builder-pushed from StPetersShoreMap — not owned here)")]
         [SerializeField] private float _floorPaint = -2.6f;
@@ -110,6 +111,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdSplatA = Shader.PropertyToID("_SplatA");
         private static readonly int IdSplatB = Shader.PropertyToID("_SplatB");
         private static readonly int IdSplatC = Shader.PropertyToID("_SplatC");
+        private static readonly int IdSplatD = Shader.PropertyToID("_SplatD");
         private static readonly int IdBarFrom = Shader.PropertyToID("_BarFrom");
         private static readonly int IdBarTo = Shader.PropertyToID("_BarTo");
         private static readonly int IdBarHalfWidth = Shader.PropertyToID("_BarHalfWidth");
@@ -142,15 +144,18 @@ namespace HiddenHarbours.Art
             _detailArray512 = array512;
         }
 
-        /// <summary>The painted splat maps (ten material channels across three RGBA textures, same
-        /// world rect as the height map). Null channels fall back to a transparent 1x1 — painted
-        /// nothing — NOT Unity's default "black" whose alpha of 1 would read as a painted channel
-        /// (the WaterSurface ClearSeabedFallback lesson).</summary>
-        public void ConfigureSplat(Texture2D splatA, Texture2D splatB, Texture2D splatC)
+        /// <summary>The painted splat maps (fourteen material channels across four RGBA textures,
+        /// same world rect as the height map). Null channels fall back to a transparent 1x1 —
+        /// painted nothing — NOT Unity's default "black" whose alpha of 1 would read as a painted
+        /// channel (the WaterSurface ClearSeabedFallback lesson). D is the kit-v2 map: passing null
+        /// for it is legal and simply means nothing is painted with ledge or rockweed.</summary>
+        public void ConfigureSplat(Texture2D splatA, Texture2D splatB, Texture2D splatC,
+            Texture2D splatD)
         {
             _splatA = splatA;
             _splatB = splatB;
             _splatC = splatC;
+            _splatD = splatD;
         }
 
         /// <summary>The band ladder + meander, pushed from the CPU classifier's constants.</summary>
@@ -318,6 +323,7 @@ namespace HiddenHarbours.Art
             _mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
             _mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
             _mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
+            _mpb.SetTexture(IdSplatD, _splatD != null ? _splatD : ClearSplat());
 
             _mpb.SetFloat(IdFloorPaint, _floorPaint);
             _mpb.SetFloat(IdFloorRipple, _floorRipple);

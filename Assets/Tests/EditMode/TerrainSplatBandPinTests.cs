@@ -71,18 +71,90 @@ namespace HiddenHarbours.Tests.EditMode
         //  pins parse the shader source (batch-safe, no compile needed) and hold all three together.
         // =========================================================================================
 
-        /// <summary>Canonical material order 0..9 — the shader header's list and the splat channel
-        /// packing (A.rgba, B.rgba, C.rg) both follow it.</summary>
+        /// <summary>Canonical material order 0..13 — the shader header's list and the splat channel
+        /// packing (A.rgba, B.rgba, C.rgba, D.rg) both follow it. Written out as a LITERAL on
+        /// purpose: deriving it from the code under test would pin nothing.</summary>
         private static readonly string[] CanonicalOrder =
+        {
+            "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
+            "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
+        };
+
+        /// <summary>The order as SHIPPED before kit v2 — indices 0..9 can never move, because
+        /// committed splat PNGs and the shader's unpack agree on what each index means. A reorder
+        /// would repaint the ground silently rather than fail.</summary>
+        private static readonly string[] FrozenPrefixV1 =
             { "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt", "Dirt", "Marsh", "Sedge" };
+
+        /// <summary>MAT_ARRAY/MAT_SLICE/MAT_METRES/MAT_OFFSET at indices 0..9, as shipped in v1.</summary>
+        private static readonly float[] FrozenArrayV1  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0 };
+        private static readonly float[] FrozenSliceV1  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18 };
+        private static readonly float[] FrozenMetresV1 = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8 };
+        private static readonly float[] FrozenOffsetV1 = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1 };
 
         private const string SplatShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
 
+        /// <summary>Parse one shader table, taking its DECLARED length from the source rather than
+        /// assuming one — then hold that length to the C# material count, so growing the table on
+        /// one side only fails here instead of reading past the end on the GPU.</summary>
         private static float[] ParseShaderTable(string source, string tableName)
         {
-            var m = Regex.Match(source, tableName + @"\[10\]\s*=\s*\{([^}]*)\}");
-            Assert.IsTrue(m.Success, $"Could not find 'static const float {tableName}[10]' in the shader.");
-            return m.Groups[1].Value.Split(',').Select(s => float.Parse(s.Trim())).ToArray();
+            var m = Regex.Match(source, tableName + @"\[(\d+)\]\s*=\s*\{([^}]*)\}");
+            Assert.IsTrue(m.Success, $"Could not find 'static const float {tableName}[N]' in the shader.");
+
+            int declared = int.Parse(m.Groups[1].Value);
+            Assert.AreEqual(TerrainSplatBrush.MaterialCount, declared,
+                $"{tableName} is declared [{declared}] but TerrainSplatBrush.MaterialCount is " +
+                $"{TerrainSplatBrush.MaterialCount} — the shader and the brush disagree on how many " +
+                "materials exist.");
+
+            float[] values = m.Groups[2].Value.Split(',').Select(s => float.Parse(s.Trim())).ToArray();
+            Assert.AreEqual(declared, values.Length,
+                $"{tableName} declares [{declared}] but lists {values.Length} entries.");
+            return values;
+        }
+
+        [Test]
+        public void CanonicalOrder_IsAppendOnly_TheV1PrefixNeverMoves()
+        {
+            // The handoff's hard rule, asserted rather than eyeballed: kit v2 APPENDS.
+            CollectionAssert.AreEqual(FrozenPrefixV1, CanonicalOrder.Take(FrozenPrefixV1.Length).ToArray(),
+                "Canonical material indices 0..9 changed. Every committed splat PNG encodes the old " +
+                "meaning per channel — a reorder repaints St Peters silently. APPEND instead.");
+
+            string src = File.ReadAllText(SplatShaderPath);
+            CollectionAssert.AreEqual(FrozenArrayV1,
+                ParseShaderTable(src, "MAT_ARRAY").Take(10).ToArray(), "MAT_ARRAY[0..9] moved.");
+            CollectionAssert.AreEqual(FrozenSliceV1,
+                ParseShaderTable(src, "MAT_SLICE").Take(10).ToArray(), "MAT_SLICE[0..9] moved.");
+            CollectionAssert.AreEqual(FrozenMetresV1,
+                ParseShaderTable(src, "MAT_METRES").Take(10).ToArray(), "MAT_METRES[0..9] moved.");
+            CollectionAssert.AreEqual(FrozenOffsetV1,
+                ParseShaderTable(src, "MAT_OFFSET").Take(10).ToArray(), "MAT_OFFSET[0..9] moved.");
+        }
+
+        [Test]
+        public void BrushMaterialNames_MatchTheCanonicalOrder()
+        {
+            // The brush names what the owner clicks in the picker; the shader unpacks by index.
+            // If these two lists disagree, the picker paints a material other than the one it says.
+            CollectionAssert.AreEqual(CanonicalOrder, TerrainSplatBrush.MaterialNames,
+                "TerrainSplatBrush.MaterialNames drifted from the canonical order the shader unpacks.");
+            Assert.AreEqual(CanonicalOrder.Length, TerrainSplatBrush.MaterialCount,
+                "MaterialCount disagrees with MaterialNames.Length.");
+        }
+
+        [Test]
+        public void SplatMapCount_CoversEveryMaterialChannel()
+        {
+            // Four RGBA maps = 16 channels for 14 materials. The moment a 17th material is wanted
+            // this fails, which is the point: a fifth map is a deliberate decision, not a surprise.
+            Assert.LessOrEqual(TerrainSplatBrush.MaterialCount, TerrainSplatBrush.TextureCount * 4,
+                $"{TerrainSplatBrush.MaterialCount} materials do not fit " +
+                $"{TerrainSplatBrush.TextureCount} RGBA splat maps — add a map (and its shader " +
+                "sampler, Properties entry, ConfigureSplat argument and asset path) first.");
+            Assert.AreEqual(TerrainSplatBrush.TextureCount, TerrainSplatBrush.TextureSuffixes.Length,
+                "TextureSuffixes must name exactly TextureCount maps.");
         }
 
         [Test]
@@ -138,12 +210,83 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void KitTextures_ExistAtTheSizesThePackOrderExpects()
         {
-            foreach (string name in TerrainTexArrayBuilder.Order256.Concat(TerrainTexArrayBuilder.Order512))
+            foreach (var (order, size) in new[]
+                     { (TerrainTexArrayBuilder.Order256, 256), (TerrainTexArrayBuilder.Order512, 512) })
+            foreach (string name in order)
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
                 string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
                 var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
                 Assert.IsNotNull(tex, $"Kit texture missing: '{path}' — the array builder would skip the pack.");
+
+                // BuildArray hard-rejects any other size and then builds NOTHING ("never half a
+                // kit"), so a wrong-sized import costs the whole ground, not one material.
+                Assert.AreEqual(size, tex.width, $"'{path}' is {tex.width}px wide, not {size}px.");
+                Assert.AreEqual(size, tex.height, $"'{path}' is {tex.height}px tall, not {size}px.");
+            }
+        }
+
+        [Test]
+        public void KitTextures_CarryTheLoadBearingImportSettings()
+        {
+            // These four are not cosmetic. isReadable off makes the array pack fail; sRGB off
+            // gamma-warps every albedo; a compressed or filtered import is DXT blocking and
+            // blur on a kit whose whole contract is "Repeat + Point, exactly periodic".
+            foreach (string name in TerrainTexArrayBuilder.Order256.Concat(TerrainTexArrayBuilder.Order512))
+            foreach (string step in TerrainTexArrayBuilder.LadderSteps)
+            {
+                string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                Assert.IsNotNull(importer, $"No TextureImporter for '{path}'.");
+
+                Assert.IsTrue(importer.isReadable,
+                    $"'{path}' is not readable — TerrainTexArrayBuilder.BuildArray reads its pixels.");
+                Assert.IsTrue(importer.sRGBTexture,
+                    $"'{path}' is not sRGB — the kit is albedo (note this is the OPPOSITE of the " +
+                    "splat weight maps, which are linear data).");
+                Assert.AreEqual(FilterMode.Point, importer.filterMode,
+                    $"'{path}' is filtered — the kit contract is Point (kit README §7).");
+                Assert.AreEqual(TextureWrapMode.Repeat, importer.wrapMode,
+                    $"'{path}' does not Repeat — every kit tile is exactly periodic.");
+                Assert.AreEqual(TextureImporterCompression.Uncompressed,
+                    importer.textureCompression,
+                    $"'{path}' is compressed — DXT blocking is visible on the flats (README §7).");
+                Assert.GreaterOrEqual(importer.maxTextureSize, Mathf.Max(1, LoadedSize(path)),
+                    $"'{path}' has a max size below its native resolution — Unity would import it " +
+                    "DOWNSCALED and the array pack would reject it.");
+            }
+        }
+
+        private static int LoadedSize(string path)
+        {
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            return tex != null ? Mathf.Max(tex.width, tex.height) : 0;
+        }
+
+        [Test]
+        public void EdgeStrips_AreImportedAndCarryTheirDecalSettings()
+        {
+            // Kit v2's edge strips are imported but NOT wired (docs/design/terrain-edge-strips.md).
+            // Pin the settings anyway: they are what makes the strips usable when the feature lands,
+            // and an unwired asset is exactly the kind that drifts unnoticed.
+            foreach (string name in new[] { "Turf", "Scarp", "Wrack", "Weedline" })
+            foreach (string step in TerrainTexArrayBuilder.LadderSteps)
+            {
+                string path = $"{TerrainTexArrayBuilder.TexDir}/Edges/{name}{step}.png";
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                Assert.IsNotNull(tex, $"Edge strip missing: '{path}'.");
+                Assert.AreEqual(256, tex.width, $"'{path}' is not 256 wide (8 m along shore).");
+                Assert.AreEqual(128, tex.height, $"'{path}' is not 128 tall (4 m across the boundary).");
+
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                Assert.IsNotNull(importer, $"No TextureImporter for '{path}'.");
+                Assert.IsTrue(importer.alphaIsTransparency,
+                    $"'{path}' must carry straight alpha — a strip IS its alpha falloff.");
+                Assert.AreEqual(TextureWrapMode.Repeat, importer.wrapModeU,
+                    $"'{path}' must repeat along the shore (s).");
+                Assert.AreEqual(TextureWrapMode.Clamp, importer.wrapModeV,
+                    $"'{path}' must CLAMP across the boundary (t) — repeating t wraps the seaward " +
+                    "edge of the strip back onto its landward edge.");
             }
         }
 

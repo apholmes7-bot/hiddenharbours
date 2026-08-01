@@ -8,7 +8,8 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// Asset plumbing for the three painted splat maps (ADR 0028 PR 2 addendum) — the paths the
+    /// Asset plumbing for the four painted splat maps (ADR 0028 PR 2 addendum; the fourth arrived
+    /// with terrain kit v2) — the paths the
     /// builder wires, blank minting, the DATA-texture importer, and the commit that mirrors the
     /// height brush's <c>CommitTexture()</c> flow (encode → write → reimport → RELOAD from disk
     /// before anything re-wires a reference, because a reimport invalidates the in-memory object).
@@ -23,16 +24,16 @@ namespace HiddenHarbours.App.Editor
     {
         public const string Dir = "Assets/_Project/Data/Terrain";
 
-        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C.png</c>, the EXACT paths
+        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D.png</c>, the EXACT paths
         /// <c>StPetersBuilder</c> loads when it wires <c>TerrainSplatSurface.ConfigureSplat</c>
         /// (a pin test holds the two spellings together).</summary>
         public const string StPetersBaseName = "StPetersSplat";
 
-        /// <summary>The i-th splat texture's asset path (0=A 1=B 2=C).</summary>
+        /// <summary>The i-th splat texture's asset path (0=A 1=B 2=C 3=D).</summary>
         public static string PathOf(int textureIndex) =>
             Dir + "/" + StPetersBaseName + TerrainSplatBrush.TextureSuffixes[textureIndex] + ".png";
 
-        /// <summary>True when all three splat PNGs exist as imported assets.</summary>
+        /// <summary>True when every splat PNG exists as an imported asset.</summary>
         public static bool AllExist()
         {
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
@@ -41,7 +42,7 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Load the three splat textures, MINTING any that are missing as all-zero (fully
+        /// Load the splat textures, MINTING any that are missing as all-zero (fully
         /// transparent black = "nothing painted, height bands only" — the shader's contract) at
         /// <paramref name="texels"/>, the SAME grid as the region's height map. Fills
         /// <paramref name="textures"/> and <paramref name="pixels"/> (working CPU buffers).
@@ -84,7 +85,7 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Persist the working buffers (the height brush's CommitTexture flow, three-fold):
+        /// Persist the working buffers (the height brush's CommitTexture flow, once per splat map):
         /// re-encode each buffer to its source PNG, reimport with the data settings, then RELOAD
         /// the assets from disk into <paramref name="textures"/> — the reimport invalidates the
         /// old in-memory objects, so every downstream reference must be re-wired from the fresh

@@ -125,8 +125,28 @@ GUID-stable Texture2DArrays (`TerrainTexArrayBuilder`); the kit's rules are hono
 shader: Repeat + Point sampling, hashed per-cell UV offsets only on the manifest's
 offset-allowed materials (never the directional ripple/marram), macro variation stays
 shader-side because the kit flattens each tile's low-frequency mean on purpose. Painting
-lands as three RGBA splat maps (ten channels) authored by the Terrain Paint Tool — the
-"material override brush" this ADR deferred, now owner-directed.
+lands as RGBA splat maps (one channel per material) authored by the Terrain Paint Tool —
+the "material override brush" this ADR deferred, now owner-directed.
+
+### PR 3 addendum (2026-08-01, terrain kit v2)
+
+Kit v2 added four shoreline materials — **Foreshore, Talus, Ledge, Rockweed** — taking the
+wired plan-projection set from ten to **fourteen** at canonical indices 10–13. Ten channels
+had already filled three RGBA maps through C.g, so a **fourth splat map (`StPetersSplatD`)**
+joined A/B/C: 16 channels, 14 spoken for, D.b and D.a free. Indices 0–9 are frozen and
+asserted — committed splat PNGs encode what each index *means*, so a reorder would repaint
+painted ground silently instead of failing. Sand was re-ramped to the Island pink-tan in
+this pass; Marram and Shingle share that substrate, so all three were rebaked together and
+must be replaced as a set.
+
+v2 also introduced a new asset TYPE: four **edge strips** (turf lip, scarp, wrack line,
+weed line) — RGBA decals laid *along* a boundary rather than tiled across the ground,
+because a weight blend draws a gradient and a shoreline is made of lines. They are imported
+with their decal import settings pinned, but deliberately **not wired**: sampling one needs
+a signed distance and an along-shore arc length from a shoreline spline, which this
+shader's world-XZ addressing does not provide. Design, and the channel-budget consequence
+that four painted strip intensities do not fit the two remaining slots:
+`docs/design/terrain-edge-strips.md`.
 
 ## Consequences
 

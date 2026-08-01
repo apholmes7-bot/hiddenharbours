@@ -18,10 +18,14 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void MaterialOrder_IsTheCanonicalSplatOrder()
         {
-            // The one order everything shares: the shader's channel unpack (A.rgba B.rgba C.rg),
-            // the pin tests, and every committed splat PNG. Append-only, never reorder.
+            // The one order everything shares: the shader's channel unpack (A.rgba B.rgba C.rgba
+            // D.rg), the pin tests, and every committed splat PNG. Append-only, never reorder.
             CollectionAssert.AreEqual(
-                new[] { "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt", "Dirt", "Marsh", "Sedge" },
+                new[]
+                {
+                    "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
+                    "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
+                },
                 TerrainSplatBrush.MaterialNames,
                 "The brush's material order drifted from the canonical splat channel order.");
         }
@@ -37,20 +41,37 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ChannelPacking_RoundTripsForAllTenMaterials()
+        public void ChannelPacking_RoundTripsForEveryMaterial()
         {
             for (int m = 0; m < TerrainSplatBrush.MaterialCount; m++)
             {
                 int tex = TerrainSplatBrush.TextureOf(m);
                 int ch = TerrainSplatBrush.ChannelOf(m);
-                Assert.That(tex, Is.InRange(0, 2), $"material {m} maps to texture {tex}.");
+                Assert.That(tex, Is.InRange(0, TerrainSplatBrush.TextureCount - 1),
+                    $"material {m} maps to texture {tex}, outside the {TerrainSplatBrush.TextureCount} maps.");
                 Assert.That(ch, Is.InRange(0, 3), $"material {m} maps to channel {ch}.");
                 Assert.AreEqual(m, TerrainSplatBrush.MaterialOf(tex, ch),
                     $"material {m} does not round-trip through (texture, channel).");
             }
-            // Texture C carries only two channels (marsh, sedge) — the last valid material is 9.
-            Assert.AreEqual(2, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
+            // Texture D carries only two channels (ledge, rockweed) — the last valid material is 13.
+            Assert.AreEqual(3, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
             Assert.AreEqual(1, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
+        }
+
+        [Test]
+        public void KitV2Materials_LandOnTheChannelsTheHandoffPromised()
+        {
+            // The four new families' channels, stated as the PR body states them. If the append
+            // order ever shifts, the owner's painted ground changes meaning — fail here first.
+            Assert.AreEqual("SplatC.b", TerrainSplatBrush.ChannelLabel(10), "Foreshore");
+            Assert.AreEqual("SplatC.a", TerrainSplatBrush.ChannelLabel(11), "Talus");
+            Assert.AreEqual("SplatD.r", TerrainSplatBrush.ChannelLabel(12), "Ledge");
+            Assert.AreEqual("SplatD.g", TerrainSplatBrush.ChannelLabel(13), "Rockweed");
+
+            Assert.AreEqual("Foreshore", TerrainSplatBrush.MaterialNames[10]);
+            Assert.AreEqual("Talus", TerrainSplatBrush.MaterialNames[11]);
+            Assert.AreEqual("Ledge", TerrainSplatBrush.MaterialNames[12]);
+            Assert.AreEqual("Rockweed", TerrainSplatBrush.MaterialNames[13]);
         }
 
         [Test]
@@ -65,11 +86,12 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SplatAssetPaths_MatchTheBuilderWiring()
         {
-            // StPetersBuilder loads these EXACT paths when wiring ConfigureSplat — the two
-            // spellings must never drift.
+            // StPetersBuilder loads these EXACT paths when wiring ConfigureSplat (through PathOf,
+            // so the builder cannot spell them a second way) — pin the spelling itself here.
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatA.png", TerrainSplatAssets.PathOf(0));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatB.png", TerrainSplatAssets.PathOf(1));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatC.png", TerrainSplatAssets.PathOf(2));
+            Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatD.png", TerrainSplatAssets.PathOf(3));
         }
 
         // ============================ FALLOFF + FLOW ============================
@@ -116,8 +138,14 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 Min = new Vector2(0f, 0f);
         private static readonly Vector2 Size = new Vector2(16f, 16f);   // 1 m per texel
 
-        private static (Color[] a, Color[] b, Color[] c) Blank()
-            => (new Color[W * H], new Color[W * H], new Color[W * H]);
+        /// <summary>One blank buffer per splat map — sized from TextureCount, so adding a fifth
+        /// map does not quietly leave these tests exercising only the first four.</summary>
+        private static Color[][] Blank()
+        {
+            var layers = new Color[TerrainSplatBrush.TextureCount][];
+            for (int t = 0; t < layers.Length; t++) layers[t] = new Color[W * H];
+            return layers;
+        }
 
         private static int CentreIdx(Vector2 world)
         {
@@ -129,9 +157,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Dab_PaintsTheChannelTowardTheTarget_AtFullFlow()
         {
-            var (a, b, c) = Blank();
+            var L = Blank();
+            Color[] a = L[0], b = L[1], c = L[2];
             var centre = new Vector2(8f, 8f);
-            TerrainSplatBrush.Dab(a, b, c, W, H, Min, Size, centre, 3f, 0.5f,
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
                 material: 7 /* dirt → B.a */, target: 0.35f, flow: 1f, exclusive: true);
 
             Assert.AreEqual(0.35f, b[CentreIdx(centre)].a, 1e-3f, "centre must reach the target");
@@ -144,49 +173,88 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var centre = new Vector2(8f, 8f);
 
-            var (a, b, c) = Blank();
+            var L = Blank();
+            Color[] a = L[0], b = L[1], c = L[2];
             for (int i = 0; i < b.Length; i++) b[i].b = 0.8f;   // pre-painted silt everywhere
-            TerrainSplatBrush.Dab(a, b, c, W, H, Min, Size, centre, 3f, 0.5f,
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
                 material: 7, target: 0.4f, flow: 1f, exclusive: true);
             Assert.AreEqual(0f, b[CentreIdx(centre)].b, 1e-4f,
                 "exclusive painting at full flow must fully replace the other material at the centre");
             Assert.AreEqual(0.8f, b[CentreIdx(new Vector2(1f, 1f))].b, 1e-5f,
                 "silt outside the footprint untouched");
 
-            (a, b, c) = Blank();
+            L = Blank();
+            a = L[0]; b = L[1]; c = L[2];
             for (int i = 0; i < b.Length; i++) b[i].b = 0.8f;
-            TerrainSplatBrush.Dab(a, b, c, W, H, Min, Size, centre, 3f, 0.5f,
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
                 material: 7, target: 0.4f, flow: 1f, exclusive: false);
             Assert.AreEqual(0.8f, b[CentreIdx(centre)].b, 1e-5f,
                 "non-exclusive painting must leave the other material alone (the shader renormalises)");
         }
 
         [Test]
-        public void Dab_EraseAll_FadesEveryChannel()
+        public void Dab_EraseAll_FadesEveryChannel_OnEverySplatMap()
         {
-            var (a, b, c) = Blank();
+            var L = Blank();
             var centre = new Vector2(8f, 8f);
-            for (int i = 0; i < a.Length; i++) { a[i] = new Color(0.5f, 0.4f, 0.3f, 0.2f); c[i].g = 0.6f; }
+            // Prime EVERY map, not just the ones that existed before kit v2: an erase that misses
+            // one map leaves paint the owner believes they removed.
+            for (int t = 0; t < L.Length; t++)
+                for (int i = 0; i < L[t].Length; i++) L[t][i] = new Color(0.5f, 0.4f, 0.3f, 0.2f);
 
-            TerrainSplatBrush.Dab(a, b, c, W, H, Min, Size, centre, 3f, 0.5f,
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
                 TerrainSplatBrush.EraseAllMaterials, target: 0f, flow: 1f, exclusive: false);
 
             int idx = CentreIdx(centre);
-            Assert.AreEqual(0f, a[idx].r, 1e-4f);
-            Assert.AreEqual(0f, a[idx].a, 1e-4f);
-            Assert.AreEqual(0f, c[idx].g, 1e-4f, "erase-all must clear texture C too");
-            Assert.AreEqual(0.6f, c[CentreIdx(new Vector2(1f, 1f))].g, 1e-5f, "outside untouched");
+            int outside = CentreIdx(new Vector2(1f, 1f));
+            for (int t = 0; t < L.Length; t++)
+            {
+                string map = TerrainSplatBrush.TextureSuffixes[t];
+                Assert.AreEqual(0f, L[t][idx].r, 1e-4f, $"erase-all left paint in Splat{map}.r");
+                Assert.AreEqual(0f, L[t][idx].g, 1e-4f, $"erase-all left paint in Splat{map}.g");
+                Assert.AreEqual(0f, L[t][idx].b, 1e-4f, $"erase-all left paint in Splat{map}.b");
+                Assert.AreEqual(0f, L[t][idx].a, 1e-4f, $"erase-all left paint in Splat{map}.a");
+                Assert.AreEqual(0.4f, L[t][outside].g, 1e-5f, $"Splat{map} outside the radius touched");
+            }
+        }
+
+        [Test]
+        public void Dab_PaintsAndReplacesOnTheKitV2Maps()
+        {
+            var L = Blank();
+            var centre = new Vector2(8f, 8f);
+
+            // Rockweed lives on SplatD.g — the map that did not exist before kit v2. Lay grass
+            // (SplatA.r) under it first so the exclusive contract is exercised ACROSS maps.
+            for (int i = 0; i < L[0].Length; i++) L[0][i].r = 0.9f;
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
+                material: 13 /* rockweed → D.g */, target: 0.6f, flow: 1f, exclusive: true);
+
+            int idx = CentreIdx(centre);
+            Assert.AreEqual(0.6f, L[3][idx].g, 1e-3f, "rockweed did not reach its target on SplatD.g");
+            Assert.AreEqual(0f, L[0][idx].r, 1e-4f,
+                "exclusive rockweed must replace the grass beneath it — across splat maps, not just within one");
+
+            // Foreshore is the other new class: SplatC.b, an alpha-adjacent channel on an
+            // already-existing map, where an off-by-one in ChannelOf would land on sedge.
+            var L2 = Blank();
+            TerrainSplatBrush.Dab(L2, W, H, Min, Size, centre, 3f, 0.5f,
+                material: 10 /* foreshore → C.b */, target: 0.5f, flow: 1f, exclusive: true);
+            Assert.AreEqual(0.5f, L2[2][idx].b, 1e-3f, "foreshore did not land on SplatC.b");
+            Assert.AreEqual(0f, L2[2][idx].g, 1e-5f, "foreshore leaked into sedge (SplatC.g)");
+            Assert.AreEqual(0f, L2[2][idx].a, 1e-5f, "foreshore leaked into talus (SplatC.a)");
         }
 
         [Test]
         public void Dab_Erase_LowersOnlyTheSelectedChannel()
         {
-            var (a, b, c) = Blank();
+            var L = Blank();
+            Color[] a = L[0], b = L[1], c = L[2];
             var centre = new Vector2(8f, 8f);
             for (int i = 0; i < a.Length; i++) { a[i].r = 0.7f; a[i].g = 0.5f; }
 
             // Erase = target 0 on the selected channel, exclusive off (the tool's Erase mode).
-            TerrainSplatBrush.Dab(a, b, c, W, H, Min, Size, centre, 3f, 0.5f,
+            TerrainSplatBrush.Dab(L, W, H, Min, Size, centre, 3f, 0.5f,
                 material: 0 /* grass */, target: 0f, flow: 1f, exclusive: false);
 
             int idx = CentreIdx(centre);
@@ -197,11 +265,13 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Dab_IsDeterministic()
         {
-            var (a1, b1, c1) = Blank();
-            var (a2, b2, c2) = Blank();
+            var L1 = Blank();
+            Color[] a1 = L1[0], b1 = L1[1], c1 = L1[2];
+            var L2 = Blank();
+            Color[] a2 = L2[0], b2 = L2[1], c2 = L2[2];
             var centre = new Vector2(7.3f, 9.1f);
-            TerrainSplatBrush.Dab(a1, b1, c1, W, H, Min, Size, centre, 4f, 0.7f, 8, 0.5f, 0.6f, true);
-            TerrainSplatBrush.Dab(a2, b2, c2, W, H, Min, Size, centre, 4f, 0.7f, 8, 0.5f, 0.6f, true);
+            TerrainSplatBrush.Dab(L1, W, H, Min, Size, centre, 4f, 0.7f, 8, 0.5f, 0.6f, true);
+            TerrainSplatBrush.Dab(L2, W, H, Min, Size, centre, 4f, 0.7f, 8, 0.5f, 0.6f, true);
             CollectionAssert.AreEqual(a1, a2);
             CollectionAssert.AreEqual(b1, b2);
             CollectionAssert.AreEqual(c1, c2);
@@ -210,10 +280,11 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void PaintPolyline_CoversTheWholeLine_AndIsDeterministic()
         {
-            var (a1, b1, c1) = Blank();
+            var L1 = Blank();
+            Color[] a1 = L1[0], b1 = L1[1], c1 = L1[2];
             // Vertices on texel CENTRES (x.5) so the coverage asserts sample the line itself.
             var pts = new[] { new Vector2(2.5f, 3.5f), new Vector2(9.5f, 4.5f), new Vector2(13.5f, 11.5f) };
-            TerrainSplatBrush.PaintPolyline(a1, b1, c1, W, H, Min, Size, pts,
+            TerrainSplatBrush.PaintPolyline(L1, W, H, Min, Size, pts,
                 dabSpacingMetres: 0.75f, radiusMetres: 1.25f, falloff01: 0.5f,
                 material: 7, target: 0.35f, exclusive: true);
 
@@ -223,8 +294,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(b1[CentreIdx((pts[0] + pts[1]) * 0.5f)].a, 0.2f, "gap mid-segment 1");
             Assert.Greater(b1[CentreIdx((pts[1] + pts[2]) * 0.5f)].a, 0.2f, "gap mid-segment 2");
 
-            var (a2, b2, c2) = Blank();
-            TerrainSplatBrush.PaintPolyline(a2, b2, c2, W, H, Min, Size, pts,
+            var L2 = Blank();
+            Color[] a2 = L2[0], b2 = L2[1], c2 = L2[2];
+            TerrainSplatBrush.PaintPolyline(L2, W, H, Min, Size, pts,
                 0.75f, 1.25f, 0.5f, 7, 0.35f, true);
             CollectionAssert.AreEqual(b1, b2, "the polyline stroke is not deterministic");
         }
