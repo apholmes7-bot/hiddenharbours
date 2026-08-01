@@ -669,6 +669,31 @@ namespace HiddenHarbours.Core
         /// float trig, so a long-running game never loses the wave to float drift.</param>
         /// <param name="trains">The field to sample — derive it via <see cref="TrainsFrom"/>.</param>
         public static WaveSample Sample(Vector2 worldPos, double timeSeconds, in WaveTrains trains)
+            => Sample(worldPos, timeSeconds, in trains, 1f);
+
+        /// <summary>
+        /// The same sample through the <b>wind-fetch envelope</b> (ADR 0027 #1) — a spatial amplitude
+        /// multiplier in (0, 1] from <see cref="WaveFetch.EnvelopeAt"/>, so waves are smaller in the
+        /// lee of a headland and full-sized on an exposed shore.
+        ///
+        /// <para><b>envelope = 1 is the exact passthrough</b> (and the overload above passes exactly
+        /// that), which is what lets the model ship OFF with the sea byte-identical.</para>
+        ///
+        /// <para><b>It scales the HEIGHT and the SLOPE, never the amplitude envelope.</b> The crest
+        /// factor divides the scaled height by the UNSCALED <c>TotalAmplitude</c>, so a lee shore
+        /// loses its whitecaps for free — correct, deliberate, and the reason the fetch term must not
+        /// be folded into the trains themselves. The slope takes only the <c>E·∇h</c> term of
+        /// <c>∇(E·h)</c>; see <see cref="WaveFetch"/> for why the <c>h·∇E</c> term is negligible by
+        /// construction.</para>
+        ///
+        /// <para>⚠️ The HLSL twin applies the envelope in the SAME place (inside
+        /// <c>WaveFieldSample</c>, after the train loop, before the crest factor). Change one, change
+        /// both in the same PR.</para>
+        /// </summary>
+        /// <param name="fetchEnvelope01">The fetch amplitude multiplier at <paramref name="worldPos"/>.
+        /// Clamped to [0, 1]; 1 = no fetch limiting.</param>
+        public static WaveSample Sample(Vector2 worldPos, double timeSeconds, in WaveTrains trains,
+                                        float fetchEnvelope01)
         {
             float height = 0f;
             float slopeX = 0f;
@@ -706,6 +731,17 @@ namespace HiddenHarbours.Core
                 float slopeMagnitude = amplitude * sharpening * Mathf.Pow(s, sharpening - 1f) * cos * waveNumber;
                 slopeX += slopeMagnitude * train.Direction.x;
                 slopeY += slopeMagnitude * train.Direction.y;
+            }
+
+            // The FETCH envelope (ADR 0027 #1): a spatial amplitude multiplier applied to the summed
+            // field. Height and slope both scale; TotalAmplitude deliberately does NOT, so the crest
+            // factor below collapses in a lee and the whitecaps go with it.
+            float fetch = Mathf.Clamp01(fetchEnvelope01);
+            if (fetch < 1f)
+            {
+                height *= fetch;
+                slopeX *= fetch;
+                slopeY *= fetch;
             }
 
             float crestFactor = 0f;

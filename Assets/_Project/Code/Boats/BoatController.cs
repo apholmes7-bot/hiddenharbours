@@ -500,7 +500,10 @@ namespace HiddenHarbours.Boats
             // The field this tick (SIM path — pure function of the deterministic wind + sea state).
             WaveFieldSettings waveField = GameServices.WaveField;
             WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
-            WaveSample wave = WaveMath.Sample(pos, now, in trains);
+            // The SIM path reads the pure WaveMath at game time (it never eases), through the same
+            // wind-fetch envelope the drawn sea uses — so the seakeeping forces in a lee match the calm
+            // water the player sees there. Exactly 1 while the model is off (ADR 0027 #1).
+            WaveSample wave = WaveMath.Sample(pos, now, in trains, GameServices.FetchEnvelopeAt(pos));
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.

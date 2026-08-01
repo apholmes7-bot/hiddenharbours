@@ -235,7 +235,9 @@ namespace HiddenHarbours.Boats
                 WaveFieldSettings field = GameServices.WaveField;
                 WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
                 WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
-                wave = _animator.Sample((Vector2)transform.position);   // sample at the ROOT, not the bobbing visual
+                // sample at the ROOT, not the bobbing visual; fetch envelope read at the same place
+                Vector2 buoyPos = (Vector2)transform.position;
+                wave = _animator.Sample(buoyPos, GameServices.FetchEnvelopeAt(buoyPos));
                 totalAmplitude = trains.TotalAmplitude;
             }
             else

@@ -97,6 +97,16 @@ namespace HiddenHarbours.Core
                  "reads the pure WaveMath at game time, so gameplay never depends on frame rate.")]
         public WaveFieldAnimatorSettings WaveFieldAnimator = WaveFieldAnimatorSettings.Default;
 
+        [Tooltip("WIND FETCH (ADR 0027 #1): how far the wind has blown over open water before it " +
+                 "reaches a spot, and what that does to the waves there — lee shores go calm, exposed " +
+                 "shores build. SHIPS OFF (Strength 0 = the exact passthrough); turn Strength up to " +
+                 "see it.\n\n" +
+                 "⚠️ This is ONE field, not a look. The envelope scales the waves the HULL rides as " +
+                 "well as the ones the shader draws — deliberately, so the player never sees glass " +
+                 "behind a headland and feels open-water swell in it. Raising Strength changes boat " +
+                 "feel and wants a feel verdict, like the spectrum did.")]
+        public WaveFetchSettings WaveFetch = WaveFetchSettings.Default;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;

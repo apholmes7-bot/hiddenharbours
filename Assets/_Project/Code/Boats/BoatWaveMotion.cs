@@ -322,9 +322,14 @@ namespace HiddenHarbours.Boats
         private WaveSample SampleTheDrawnSea(Vector2 worldPos)
         {
             float s = DisplacedSea.TryGet(out DisplacedSeaState sea) ? sea.FreqScale : 1f;
-            if (s == 1f) return _animator.Sample(worldPos);
+            // The WIND-FETCH envelope (ADR 0027 #1) — read at the TRUE world position, never the
+            // freqScale-scaled one: freqScale is a wavelength trick, fetch is a real distance over real
+            // water, and marching the scaled position would shelter the hull behind a headland that is
+            // not there. Exactly 1 (and no terrain reads at all) while the model is off.
+            float fetch = GameServices.FetchEnvelopeAt(worldPos);
+            if (s == 1f) return _animator.Sample(worldPos, fetch);
 
-            WaveSample raw = _animator.Sample(worldPos * s);
+            WaveSample raw = _animator.Sample(worldPos * s, fetch);
             return new WaveSample(raw.Height, raw.Slope * s, raw.CrestFactor);
         }
 
