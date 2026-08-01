@@ -193,6 +193,22 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Title_SaysWhichBuildThisIs()
+        {
+            // §7.8's exit criterion ends "...and can tell you which build they were on". A closed playtest
+            // takes reports from several builds at once, and one that cannot be pinned to a build is worth
+            // very little — so the page carries it, and carries it where a first screenshot will catch it.
+            GivenSave(existing: false);
+
+            ShellFlow.EnterTitle();
+            yield return null;
+
+            Assert.IsTrue(ScreenShows(BuildInfo.StampLine),
+                "the title page shows the build stamp — in an editor run that reads 'editor', which is " +
+                "the honest answer for a session that was never built");
+        }
+
+        [UnityTest]
         public IEnumerator Continue_ResumesTheSavedInstant_AndStartsTheWorld()
         {
             GivenSave(existing: true);

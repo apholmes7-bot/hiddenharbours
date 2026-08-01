@@ -43,6 +43,27 @@ namespace HiddenHarbours.UI
         /// low water). Always paired with words that say the same thing — never colour alone (§8).</summary>
         public static readonly Color WarnInk    = new Color(0.847f, 0.588f, 0.451f, 1f);
 
+        // ---- the title's wash (§7.8's "the title image is nearly free") ----------------------
+        //
+        // The title page is a COMPOSED SHOT of the harbour it is standing on, not a dimmed pause. The world
+        // is already rendering behind it at the authored start hour — the save is not applied until the
+        // player chooses, so the light behind the title is always first light — and the page's job is to
+        // stay out of its way. So the wash is not flat: it is heavy down the LEFT, where the wordmark and
+        // the menu are and chalk has to read, and nearly gone by the right-hand side, where the harbour is
+        // left alone. Same hue at both ends, deliberately: the dawn is the world's, and a scrim that tinted
+        // it would be painting over the one picture we have.
+
+        /// <summary>The type edge of the title wash — solid enough that chalk reads on it.</summary>
+        public static readonly Color WashNear = new Color(0.035f, 0.055f, 0.082f, 0.90f);
+
+        /// <summary>The far edge, where the harbour is left to breathe. Deliberately thin: "the picture is
+        /// the game", and an opaque page would be a loading screen with a menu on it.</summary>
+        public static readonly Color WashFar  = new Color(0.035f, 0.055f, 0.082f, 0.26f);
+
+        /// <summary>The letterbox bars. Near-black rather than black so they read as a frame around a
+        /// picture rather than as the screen having stopped.</summary>
+        public static readonly Color FrameInk = new Color(0.016f, 0.024f, 0.035f, 0.96f);
+
         // A menu line's strip. White at low alpha, so the Button's ColorBlock carries the whole
         // normal/hover/selected/pressed story in one channel.
         private static readonly Color StripNormal      = new Color(1f, 1f, 1f, 0.05f);
@@ -236,6 +257,58 @@ namespace HiddenHarbours.UI
             var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
+        }
+
+        // ---- framing the shot ----------------------------------------------------------------
+
+        /// <summary>
+        /// The title's wash: <see cref="MakeScrim"/>'s job, done as a ramp instead of a flat tint, so the
+        /// page can be dense under the type and thin over the harbour. <paramref name="horizontal"/> runs
+        /// it left→right (the title's case — the type column is on the left); otherwise bottom→top.
+        /// </summary>
+        public static Image MakeWash(RectTransform host, Color near, Color far, bool horizontal)
+        {
+            Image img = MakeScrim(host, Color.white);   // white, so the ramp carries the whole colour
+            img.gameObject.name = "Wash";
+            img.gameObject.AddComponent<ShellGradient>().Set(near, far, horizontal);
+            return img;
+        }
+
+        /// <summary>
+        /// Two bars across the top and bottom of the screen — the frame that says "this is a picture of the
+        /// harbour" rather than "the game has stopped and here is a menu". Sized as a FRACTION of screen
+        /// height rather than in reference pixels, so the frame is the same shape on every window.
+        ///
+        /// <para>Anchored to the CANVAS, like the scrim, so an odd aspect cannot leave a sliver of
+        /// unframed game outside the 1280x720 reference rectangle. Drawn under the page's content, which
+        /// is why the shell keeps its footer line clear of the lower bar rather than over it.</para>
+        /// </summary>
+        public static void MakeLetterbox(RectTransform host, float heightFraction, Color color)
+        {
+            if (host == null || host.parent == null) return;
+            float f = Mathf.Clamp(heightFraction, 0f, 0.4f);
+            if (f <= 0f) return;
+
+            MakeBand(host.parent, "LetterboxTop", new Vector2(0f, 1f - f), Vector2.one, color);
+            MakeBand(host.parent, "LetterboxBottom", Vector2.zero, new Vector2(1f, f), color);
+        }
+
+        /// <summary>A full-width band pinned by normalised anchors to the canvas — no fixed sizes, so it
+        /// stretches with the window.</summary>
+        private static void MakeBand(Transform canvas, string name, Vector2 anchorMin, Vector2 anchorMax,
+                                     Color color)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(canvas, false);
+            go.transform.SetSiblingIndex(1);   // over the scrim/wash, under the page's content
+
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin; rt.anchorMax = anchorMax;
+            rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+
+            var img = go.GetComponent<Image>();
+            img.color = color;
+            img.raycastTarget = false;   // the bars are decoration; the scrim under them eats the clicks
         }
     }
 }
