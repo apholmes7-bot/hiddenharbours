@@ -125,26 +125,68 @@ namespace HiddenHarbours.App.Editor
                 float k = Mathf.Clamp01(flow * Weight(dist, radiusMetres, falloff01));
                 if (k <= 0f) continue;
 
-                int idx = y * width + x;
-                if (material < 0)
-                {
-                    // Erase ALL materials — every channel back toward "unpainted" (bands-only).
-                    float eraseKeep = 1f - k;
-                    for (int t = 0; t < TextureCount; t++) layers[t][idx] *= eraseKeep;
-                    continue;
-                }
+                WriteTexel(layers, y * width + x, material, target, k, exclusive);
+            }
+        }
 
-                Color[] buf = layers[TextureOf(material)];
-                int ch = ChannelOf(material);
-                float painted = Step(GetChannel(buf[idx], ch), target, k);
+        /// <summary>
+        /// One texel's worth of the painting contract, in ONE place: the erase-all path, the
+        /// exclusive fade, and the flow lerp. <see cref="Dab"/> reaches it through a radial falloff
+        /// and <see cref="PaintField"/> through a per-texel coverage map, but neither owns the rule
+        /// — a second copy is how "exclusive" comes to mean two different things.
+        /// </summary>
+        private static void WriteTexel(Color[][] layers, int idx, int material,
+            float target, float k, bool exclusive)
+        {
+            if (material < 0)
+            {
+                // Erase ALL materials — every channel back toward "unpainted" (bands-only).
+                float eraseKeep = 1f - k;
+                for (int t = 0; t < TextureCount; t++) layers[t][idx] *= eraseKeep;
+                return;
+            }
 
-                if (exclusive && target > 0f)
-                {
-                    // The painter's contract: what this stroke lays down, the others yield to.
-                    float keep = 1f - k;
-                    for (int t = 0; t < TextureCount; t++) layers[t][idx] *= keep;
-                }
-                buf[idx] = WithChannel(buf[idx], ch, painted);
+            Color[] buf = layers[TextureOf(material)];
+            int ch = ChannelOf(material);
+            float painted = Step(GetChannel(buf[idx], ch), target, k);
+
+            if (exclusive && target > 0f)
+            {
+                // The painter's contract: what this stroke lays down, the others yield to.
+                float keep = 1f - k;
+                for (int t = 0; t < TextureCount; t++) layers[t][idx] *= keep;
+            }
+            buf[idx] = WithChannel(buf[idx], ch, painted);
+        }
+
+        /// <summary>
+        /// Paint one material across the WHOLE map from a per-texel coverage map — the band-shaped
+        /// sibling of <see cref="Dab"/>, for ground that is placed by a rule rather than by a
+        /// stroke (St Peters' intertidal families: a foreshore is a zone, not a blob).
+        ///
+        /// <para><paramref name="coverage"/> is width × height in the SAME texel order as the splat
+        /// buffers, and plays exactly the role a dab's falloff weight does: it is the fraction of
+        /// the texel this material takes over, so a coverage that eases to 0 at a band's edge
+        /// feathers the paint AND lets the other materials keep their share there. The painted
+        /// channel value is <paramref name="target"/> × coverage, which is what makes one number
+        /// serve as both blend weight and ladder position (the kit README §2 contract).</para>
+        ///
+        /// <para>Deterministic: no hashing, no ordering subtleties — texel i reads coverage[i].</para>
+        /// </summary>
+        public static void PaintField(Color[][] layers, int width, int height,
+            int material, float target, float[] coverage, bool exclusive)
+        {
+            if (layers == null || layers.Length < TextureCount || width <= 0 || height <= 0) return;
+            for (int t = 0; t < TextureCount; t++)
+                if (layers[t] == null) return;
+            if (coverage == null || coverage.Length < width * height) return;
+
+            int count = width * height;
+            for (int i = 0; i < count; i++)
+            {
+                float k = Mathf.Clamp01(coverage[i]);
+                if (k <= 0f) continue;
+                WriteTexel(layers, i, material, target, k, exclusive);
             }
         }
 

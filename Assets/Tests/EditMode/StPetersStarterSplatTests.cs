@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using Object = UnityEngine.Object;
 
@@ -25,6 +26,413 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("Dirt", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Dirt]);
             Assert.AreEqual("Marsh", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Marsh]);
             Assert.AreEqual("Sedge", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Sedge]);
+            Assert.AreEqual("Foreshore", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Foreshore]);
+            Assert.AreEqual("Talus", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Talus]);
+            Assert.AreEqual("Ledge", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Ledge]);
+            Assert.AreEqual("Rockweed", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Rockweed]);
+        }
+
+        // ============================ THE KIT V2 SHORE BANDS ============================
+        //  Placement is a pure function of a GroundSample, so every invariant below runs headless
+        //  with no terrain, no textures and no editor. Every threshold is read from the LIVE
+        //  constants — a literal here would pass while the shore sat metres out of place.
+
+        private const ShoreMaterial Sand = ShoreMaterial.Sand;
+        private const ShoreMaterial Ripple = ShoreMaterial.Ripple;
+        private const ShoreMaterial Shelf = ShoreMaterial.Shelf;
+        private const ShoreMaterial Shingle = ShoreMaterial.Shingle;
+        private const ShoreMaterial Grass = ShoreMaterial.Grass;
+
+        private static StPetersStarterSplat.GroundSample At(
+            float elevation, ShoreMaterial substrate,
+            float slope = 0f, bool weatherCoast = false) =>
+            new StPetersStarterSplat.GroundSample(elevation, slope, substrate, weatherCoast);
+
+        /// <summary>Mid-tide, the middle of the intertidal — where every band is at its widest.</summary>
+        private static float MeanWater => StPetersBuilder.TideMean;
+
+        [Test]
+        public void TheTideLevels_DeriveFromTheLiveAmplitude_NotFromLiterals()
+        {
+            // If the owner rules a new amplitude, these move with it — that is the whole point.
+            Assert.AreEqual(StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude,
+                StPetersStarterSplat.SpringLowWater, 1e-4f);
+            Assert.AreEqual(StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude,
+                StPetersStarterSplat.SpringHighWater, 1e-4f);
+            Assert.AreEqual(
+                StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude
+                    * GameConfig.DefaultNeapAmplitudeFraction,
+                StPetersStarterSplat.NeapHighWater, 1e-4f);
+
+            // The ladder the bands assume: low < neap high < spring high, and the weed belt's
+            // ceiling is strictly inside the intertidal.
+            Assert.Less(StPetersStarterSplat.SpringLowWater, StPetersStarterSplat.NeapHighWater);
+            Assert.Less(StPetersStarterSplat.NeapHighWater, StPetersStarterSplat.SpringHighWater);
+        }
+
+        [Test]
+        public void Foreshore_IsConfinedToItsTideBand_AndToSand()
+        {
+            // Inside the band on sand: painted.
+            Assert.Greater(StPetersStarterSplat.ForeshoreCoverage(At(MeanWater, Sand)), 0.5f,
+                "foreshore should be strongest at mean water, where the sea spends most of its time");
+            Assert.Greater(StPetersStarterSplat.ForeshoreCoverage(At(MeanWater, Ripple)), 0.5f);
+
+            // Outside the tide band: nothing, at either end.
+            Assert.AreEqual(0f, StPetersStarterSplat.ForeshoreCoverage(
+                At(StPetersStarterSplat.SpringHighWater + 0.01f, Sand)), 1e-6f,
+                "foreshore above the highest water is ground the sea never works");
+            Assert.AreEqual(0f, StPetersStarterSplat.ForeshoreCoverage(
+                At(StPetersStarterSplat.SpringLowWater - 0.01f, Sand)), 1e-6f,
+                "foreshore below the lowest water is permanently drowned seabed");
+
+            // Feathered, not a stripe: the edges must approach zero, not step to it.
+            float nearTop = StPetersStarterSplat.ForeshoreCoverage(
+                At(StPetersStarterSplat.SpringHighWater - 0.05f, Sand));
+            Assert.That(nearTop, Is.GreaterThan(0f).And.LessThan(0.2f),
+                "the band's edge must feather — a hard edge reads as a painted stripe");
+        }
+
+        [Test]
+        public void Rockweed_NeverGrowsOnOpenSand_AndStopsAtTheDryingLine()
+        {
+            // ⭐ The rule the kit is explicit about: a frond needs something to hold.
+            foreach (var e in new[] { StPetersStarterSplat.SpringLowWater + 0.1f, MeanWater,
+                                      StPetersStarterSplat.NeapHighWater - 0.1f })
+            {
+                Assert.AreEqual(0f, StPetersStarterSplat.RockweedCoverage(At(e, Sand)), 1e-6f,
+                    $"rockweed on open sand at {e:0.##} m — nothing there for a holdfast");
+                Assert.AreEqual(0f, StPetersStarterSplat.RockweedCoverage(At(e, Ripple)), 1e-6f,
+                    $"rockweed on rippled sand flats at {e:0.##} m");
+            }
+
+            // On rock, inside the belt: painted.
+            Assert.Greater(StPetersStarterSplat.RockweedCoverage(
+                At(StPetersStarterSplat.NeapHighWater - 0.3f, Shelf)), 0.5f);
+            Assert.Greater(StPetersStarterSplat.RockweedCoverage(At(MeanWater, Shingle)), 0.3f);
+
+            // Above the highest water it is gone entirely, and it is already thinning at neap high
+            // (the belt is densest BELOW its own drying ceiling).
+            Assert.AreEqual(0f, StPetersStarterSplat.RockweedCoverage(
+                At(StPetersStarterSplat.SpringHighWater + 0.01f, Shelf)), 1e-6f,
+                "rockweed above the highest spring water would never be wetted");
+            Assert.Less(
+                StPetersStarterSplat.RockweedCoverage(At(StPetersStarterSplat.NeapHighWater, Shelf)),
+                StPetersStarterSplat.RockweedCoverage(
+                    At(StPetersStarterSplat.NeapHighWater
+                       - (StPetersStarterSplat.NeapHighWater - StPetersBuilder.TideMean)
+                         * StPetersStarterSplat.RockweedPeakDrop, Shelf)),
+                "the canopy must be densest just BELOW neap high, not at it");
+        }
+
+        [Test]
+        public void Ramp_IsHlslSmoothstep_NotMathfSmoothStep()
+        {
+            // ⭐ The bug this pins: Mathf.SmoothStep(a, b, t) INTERPOLATES BETWEEN a and b — it does
+            // not map t from [a,b] onto [0,1]. Used as a gate it never returns 0, so "flat ground"
+            // scored 0.44 scree. A gate must bottom out at exactly zero.
+            Assert.AreEqual(0f, StPetersStarterSplat.Ramp(0.35f, 0.52f, 0f), 1e-6f);
+            Assert.AreEqual(0f, StPetersStarterSplat.Ramp(0.35f, 0.52f, 0.35f), 1e-6f);
+            Assert.AreEqual(1f, StPetersStarterSplat.Ramp(0.35f, 0.52f, 0.52f), 1e-6f);
+            Assert.AreEqual(1f, StPetersStarterSplat.Ramp(0.35f, 0.52f, 99f), 1e-6f);
+            Assert.AreEqual(0.5f, StPetersStarterSplat.Ramp(0f, 1f, 0.5f), 1e-6f);
+
+            // Descending edges (edge1 < edge0) ramp DOWN — the form the band tops use.
+            Assert.AreEqual(1f, StPetersStarterSplat.Ramp(4.2f, 3.2f, 3.2f), 1e-6f);
+            Assert.AreEqual(0f, StPetersStarterSplat.Ramp(4.2f, 3.2f, 4.2f), 1e-6f);
+            Assert.AreEqual(0f, StPetersStarterSplat.Ramp(4.2f, 3.2f, 5f), 1e-6f);
+        }
+
+        [Test]
+        public void TheSlopeSplit_CanActuallyReachFullScree_OnThisIslandsProfile()
+        {
+            // A smoothstep falloff's gradient peaks at exactly 1.5x its mean. If "fully scree" were
+            // set above that, talus could never exceed half strength ANYWHERE on St Peters — which
+            // is precisely what the first cut of this pass shipped.
+            float steepestOnTheIsland = StPetersStarterSplat.BeachGradient * 1.5f;
+            Assert.GreaterOrEqual(steepestOnTheIsland,
+                StPetersStarterSplat.TalusSlopeThreshold * StPetersStarterSplat.TalusSlopeFullFactor,
+                "the scree threshold is set above the steepest ground this island has — talus can " +
+                "never reach full coverage");
+
+            var atSteepest = At(StPetersStarterSplat.SteepestElevation, Shingle,
+                                steepestOnTheIsland, weatherCoast: true);
+            Assert.AreEqual(1f, StPetersStarterSplat.Steepness(atSteepest), 1e-4f);
+            Assert.Greater(StPetersStarterSplat.TalusCoverage(atSteepest), 0.95f,
+                "the steepest metre of the coast should be full scree");
+        }
+
+        [Test]
+        public void Talus_NeedsSteepGround_AndStaysAboveTheHighestWater()
+        {
+            float steep = StPetersStarterSplat.TalusSlopeThreshold
+                          * StPetersStarterSplat.TalusSlopeFullFactor;
+            float apron = StPetersStarterSplat.SteepestElevation;
+
+            Assert.Greater(
+                StPetersStarterSplat.TalusCoverage(At(apron, Shingle, steep, weatherCoast: true)), 0.5f,
+                "steep weather-coast ground above high water is exactly where scree collects");
+
+            // Flat ground gets none, however right the elevation is.
+            Assert.AreEqual(0f,
+                StPetersStarterSplat.TalusCoverage(At(apron, Shingle, 0f, weatherCoast: true)), 1e-6f,
+                "talus on flat ground is not talus — a blockfield needs something to have fallen off");
+
+            // Below the highest water it is gone: a wetted apron is shingle, which the band ladder
+            // already draws for itself.
+            Assert.AreEqual(0f, StPetersStarterSplat.TalusCoverage(
+                At(StPetersStarterSplat.SpringHighWater - 0.01f, Shingle, steep, weatherCoast: true)),
+                1e-6f, "talus below the highest water");
+
+            // The sheltered side is beach and dune — no eroding face to shed slabs.
+            Assert.AreEqual(0f,
+                StPetersStarterSplat.TalusCoverage(At(apron, Shingle, steep, weatherCoast: false)),
+                1e-6f, "talus on the sheltered coast");
+        }
+
+        [Test]
+        public void LedgeAndTalus_SplitTheSameGroundBySlope_AndNeverBothClaimIt()
+        {
+            float mid = (StPetersStarterSplat.NeapHighWater
+                         + StPetersShoreMap.GrassFloorElevation) * 0.5f;
+
+            // Ledge is the FLAT half of the split, talus the steep half. Sampled across the whole
+            // slope range, their coverages never sum past one texel's worth.
+            for (float slope = 0f; slope <= StPetersStarterSplat.TalusSlopeThreshold * 2f; slope += 0.02f)
+            {
+                var g = At(mid, Shingle, slope, weatherCoast: true);
+                float sum = StPetersStarterSplat.LedgeCoverage(g) + StPetersStarterSplat.TalusCoverage(g);
+                Assert.LessOrEqual(sum, 1f + 1e-4f,
+                    $"ledge + talus over-claim at slope {slope:0.###} — the split is not complementary");
+            }
+
+            Assert.Greater(StPetersStarterSplat.LedgeCoverage(At(mid, Shingle, 0f, true)), 0.5f,
+                "flat weather-coast rock is bare pavement");
+            Assert.AreEqual(0f, StPetersStarterSplat.LedgeCoverage(
+                At(mid, Shingle, StPetersStarterSplat.TalusSlopeThreshold
+                                 * StPetersStarterSplat.TalusSlopeFullFactor, true)), 1e-6f,
+                "fully-steep ground is scree, not pavement");
+
+            // Ledge reaches the flat rock PLATFORM below the weed belt — the reef apron, where the
+            // gradient is near zero. A tide-banded ledge could not, and that is why it has no band.
+            Assert.Greater(StPetersStarterSplat.LedgeCoverage(
+                At(StPetersBuilder.ReefShelfInnerElevation, Shelf, 0.02f, true)), 0.5f,
+                "the flat reef platform is exactly where bevelled pavement shows");
+
+            // Ledge is rock-and-weather-coast only, and stops below the meadow.
+            Assert.AreEqual(0f, StPetersStarterSplat.LedgeCoverage(At(mid, Sand, 0f, true)), 1e-6f);
+            Assert.AreEqual(0f, StPetersStarterSplat.LedgeCoverage(At(mid, Shingle, 0f, false)), 1e-6f);
+            Assert.AreEqual(0f, StPetersStarterSplat.LedgeCoverage(
+                At(StPetersShoreMap.GrassFloorElevation + 0.01f, Shingle, 0f, true)), 1e-6f,
+                "ledge must hand off to the meadow at the grass floor");
+        }
+
+        [Test]
+        public void EveryCoverage_StaysInRange_AndIsSilentOnUnpaintedSeabed()
+        {
+            // A coverage is a takeover fraction: outside 0..1 it would either erase more than the
+            // texel holds or read as negative paint.
+            foreach (var fam in StPetersStarterSplat.KitV2Families)
+            for (float e = StPetersShoreMap.PaintFloorElevation - 1f;
+                 e <= StPetersShoreMap.GrassFloorElevation + 1f; e += 0.1f)
+            foreach (var sub in new[] { Sand, Ripple, Shelf, Shingle, Grass })
+            foreach (var slope in new[] { 0f, StPetersStarterSplat.TalusSlopeThreshold, 2f })
+            foreach (var weather in new[] { true, false })
+            {
+                float c = StPetersStarterSplat.CoverageOf(fam.Material, At(e, sub, slope, weather));
+                Assert.That(c, Is.InRange(0f, 1f),
+                    $"{fam.Name} coverage {c} out of range at e={e:0.##} {sub} slope={slope}");
+            }
+
+            // Grass/marram ground is the meadow — none of the four shore families belong on it.
+            foreach (var fam in StPetersStarterSplat.KitV2Families)
+                Assert.AreEqual(0f, StPetersStarterSplat.CoverageOf(fam.Material, At(MeanWater, Grass)),
+                    1e-6f, $"{fam.Name} painted onto meadow ground");
+        }
+
+        [Test]
+        public void CoverageIsDeterministic_AndTheLadderStaysInTheStarterRange()
+        {
+            var g = At(MeanWater, Shelf, 0.3f, weatherCoast: true);
+            foreach (var fam in StPetersStarterSplat.KitV2Families)
+            {
+                Assert.AreEqual(StPetersStarterSplat.CoverageOf(fam.Material, g),
+                                StPetersStarterSplat.CoverageOf(fam.Material, g), 0f,
+                    $"{fam.Name} coverage is not a pure function of the sample");
+
+                // The handoff's restraint: a substrate for the owner to paint over, so the ladder
+                // sits around base (0.5) and never reaches the _Hi rank step.
+                Assert.That(fam.Intensity, Is.InRange(0.4f, 0.6f),
+                    $"{fam.Name} ladder intensity {fam.Intensity} is outside the starter range");
+            }
+        }
+
+        [Test]
+        public void PaintingTheV2BandsFirst_LeavesTheV1FeatureChannelsUntouched()
+        {
+            // ⭐ The ordering claim the pass depends on, tested on the mechanism itself. An
+            // exclusive stroke lerps its OWN channel from whatever is there and fades the rest — so
+            // as long as the bands never touch dirt/silt/marsh/sedge, laying them down first cannot
+            // move where those four land. Reverse the order and the bands would erase the features.
+            const int W = 8, H = 8;
+            var worldMin = new Vector2(0f, 0f);
+            var worldSize = new Vector2(8f, 8f);
+            var centre = new Vector2(4f, 4f);
+
+            Color[][] Blank()
+            {
+                var l = new Color[TerrainSplatBrush.TextureCount][];
+                for (int t = 0; t < l.Length; t++) l[t] = new Color[W * H];
+                return l;
+            }
+
+            // A: the v1 dirt stroke on virgin ground (what the pass produced before this change).
+            var v1Only = Blank();
+            TerrainSplatBrush.Dab(v1Only, W, H, worldMin, worldSize, centre, 3f,
+                StPetersStarterSplat.PathFalloff, StPetersStarterSplat.Dirt,
+                StPetersStarterSplat.SlipPathIntensity, 1f, exclusive: true);
+
+            // B: the v2 bands first — full coverage everywhere, the harshest case — then the same
+            //    stroke. Two families, on both of the maps the bands live on (C and D).
+            var withBands = Blank();
+            var full = new float[W * H];
+            for (int i = 0; i < full.Length; i++) full[i] = 1f;
+            TerrainSplatBrush.PaintField(withBands, W, H, StPetersStarterSplat.Foreshore,
+                StPetersStarterSplat.ForeshoreIntensity, full, exclusive: true);
+            TerrainSplatBrush.PaintField(withBands, W, H, StPetersStarterSplat.Rockweed,
+                StPetersStarterSplat.RockweedIntensity, full, exclusive: true);
+            TerrainSplatBrush.Dab(withBands, W, H, worldMin, worldSize, centre, 3f,
+                StPetersStarterSplat.PathFalloff, StPetersStarterSplat.Dirt,
+                StPetersStarterSplat.SlipPathIntensity, 1f, exclusive: true);
+
+            foreach (int material in new[] { StPetersStarterSplat.Silt, StPetersStarterSplat.Dirt,
+                                             StPetersStarterSplat.Marsh, StPetersStarterSplat.Sedge })
+            {
+                int tex = TerrainSplatBrush.TextureOf(material);
+                int ch = TerrainSplatBrush.ChannelOf(material);
+                for (int i = 0; i < W * H; i++)
+                    Assert.AreEqual(
+                        TerrainSplatBrush.GetChannel(v1Only[tex][i], ch),
+                        TerrainSplatBrush.GetChannel(withBands[tex][i], ch), 1e-6f,
+                        $"{TerrainSplatBrush.MaterialNames[material]} moved at texel {i} because the " +
+                        "v2 bands were painted underneath it");
+            }
+        }
+
+        [Test]
+        public void PaintField_FeathersWithCoverage_AndYieldsTheTexelWhereItIsFull()
+        {
+            const int W = 4, H = 1;
+            var layers = new Color[TerrainSplatBrush.TextureCount][];
+            for (int t = 0; t < layers.Length; t++) layers[t] = new Color[W * H];
+
+            // Pre-existing grass everywhere, so the exclusive takeover is visible.
+            for (int i = 0; i < W * H; i++) layers[0][i].r = 1f;
+
+            var coverage = new[] { 0f, 0.25f, 0.5f, 1f };
+            TerrainSplatBrush.PaintField(layers, W, H, StPetersStarterSplat.Foreshore,
+                StPetersStarterSplat.ForeshoreIntensity, coverage, exclusive: true);
+
+            // The channel value IS intensity x coverage — one number serving as blend weight and
+            // ladder position at once (kit README section 2).
+            for (int i = 0; i < W; i++)
+            {
+                Assert.AreEqual(StPetersStarterSplat.ForeshoreIntensity * coverage[i],
+                    layers[2][i].b, 1e-5f, $"foreshore value wrong at coverage {coverage[i]}");
+                Assert.AreEqual(1f - coverage[i], layers[0][i].r, 1e-5f,
+                    $"grass did not yield in proportion to coverage {coverage[i]}");
+            }
+        }
+
+        [Test]
+        public void TheBarSpine_StaysBareCobble_SoTheCrossingKeepsReading()
+        {
+            // ⭐ Caught by measuring the painted map, not by reasoning: the spine reports as
+            // Shingle (rock), so rockweed drapes the low-tide walking line — the one strip of
+            // ground the player reads to decide whether the crossing is on. StPetersShoreMap
+            // exempts the spine from the band wiggle for exactly this reason.
+            Vector2 crossing = Vector2.Lerp(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo, 0.5f);
+            float onCrest = StPetersShoreMap.BarSpineFloorElevation + 0.1f;
+
+            Assert.IsTrue(StPetersStarterSplat.IsBarSpine(crossing, onCrest),
+                "the midpoint of the bar at crest height should BE the spine");
+            Assert.IsFalse(StPetersStarterSplat.IsBarSpine(crossing,
+                StPetersShoreMap.BarSpineFloorElevation - 0.1f),
+                "below the spine floor the bar has fallen away into its sandy flanks");
+            Assert.IsFalse(StPetersStarterSplat.IsBarSpine(
+                crossing + Vector2.up * (StPetersShoreMap.BarSpineHalfWidth + 1f), onCrest),
+                "off the crest, the flanks are not the spine");
+
+            // The rule the pass applies: on the spine, nothing is painted over the cobble.
+            var spine = new StPetersStarterSplat.GroundSample(
+                onCrest, 0f, Shingle, weatherCoast: false, onBarSpine: true);
+            var flank = new StPetersStarterSplat.GroundSample(
+                onCrest, 0f, Shingle, weatherCoast: false, onBarSpine: false);
+            Assert.Greater(StPetersStarterSplat.RockweedCoverage(flank), 0f,
+                "cobble at crest height is otherwise prime rockweed ground — which is the trap");
+            Assert.IsTrue(spine.OnBarSpine,
+                "GroundSample must carry the spine flag for BuildCoverage to skip the texel");
+        }
+
+        [Test]
+        public void ThePass_IsIdempotent_RunningItTwiceReproducesTheSamePixels()
+        {
+            // ⭐ The acceptance the handoff names, and a real bug this caught: every stroke in the
+            // pass is EXCLUSIVE, and an exclusive stroke lerps its own channel from whatever is
+            // beneath. Painting over a previous pass therefore converges toward the target instead
+            // of reproducing it — run 2 differed from run 1 in three of the four maps until
+            // PaintInto started clearing. A pass that must "re-derive after a seabed re-bake"
+            // cannot blend the new answer into the old one.
+            const int W = 40, H = 28;
+            var worldSize = new Vector2(760f, 520f);
+            var worldMin = new Vector2(-380f, -260f);
+
+            var go = new GameObject("TidalTerrain_IdempotenceTest");
+            try
+            {
+                var terrain = go.AddComponent<TidalTerrain>();
+                StPetersBuilder.ConfigureTidalTerrain(terrain);
+
+                Color[][] Run()
+                {
+                    var layers = new Color[TerrainSplatBrush.TextureCount][];
+                    for (int t = 0; t < layers.Length; t++) layers[t] = new Color[W * H];
+                    StPetersStarterSplat.PaintInto(layers, W, H, worldMin, worldSize, terrain);
+                    return layers;
+                }
+
+                Color[][] first = Run();
+                Color[][] second = Run();
+                for (int t = 0; t < first.Length; t++)
+                    CollectionAssert.AreEqual(first[t], second[t],
+                        $"Splat{TerrainSplatBrush.TextureSuffixes[t]} differs between two clean runs");
+
+                // And re-running INTO the previous result — the way the menu actually re-runs —
+                // must land on the same pixels too, not converge toward them.
+                Color[][] reused = first;
+                StPetersStarterSplat.PaintInto(reused, W, H, worldMin, worldSize, terrain);
+                for (int t = 0; t < reused.Length; t++)
+                    CollectionAssert.AreEqual(second[t], reused[t],
+                        $"Splat{TerrainSplatBrush.TextureSuffixes[t]} accumulated when re-run over " +
+                        "its own output — the pass is not idempotent");
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+            }
+        }
+
+        [Test]
+        public void KitV2Families_ArePaintedInCanonicalOrder_WithNoDuplicates()
+        {
+            var seen = new System.Collections.Generic.HashSet<int>();
+            foreach (var fam in StPetersStarterSplat.KitV2Families)
+            {
+                Assert.IsTrue(seen.Add(fam.Material), $"{fam.Name} listed twice");
+                Assert.AreEqual(fam.Name, TerrainSplatBrush.MaterialNames[fam.Material],
+                    "KitV2Families name disagrees with the canonical material at that index");
+            }
+            Assert.AreEqual(4, seen.Count);
         }
 
         [Test]
