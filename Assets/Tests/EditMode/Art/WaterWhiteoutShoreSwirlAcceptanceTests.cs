@@ -55,7 +55,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// (the cold-cache trap), Null-Device gate FIRST (CI has no GPU and would CRASH, not
     /// fail), all pushed globals cleared in teardown. Every bar below was MEASURED on the
     /// fixed repro (RTX 4060, D3D12, 2026-07-24), then pinned with headroom; the sabotage
-    /// arms re-enable each defect through its legacy dial and prove the same assert goes red.</para>
+    /// arms re-enable each defect through its legacy dial and prove the same assert goes red.
+    ///
+    /// <para><b>⚠️ Bars are measurements, and measurements expire.</b> The white-out bars were
+    /// re-measured 2026-08-01 after #382/#383/#385 legitimately enriched the dusk-storm frame
+    /// and left the 2026-07-24 absolutes so slack that the sabotage arm cleared them (the
+    /// assert had stopped being able to see its own defect). If a sabotage arm ever reports
+    /// NOT DETECTED, that is this failure mode, not a green light — re-measure the pair and
+    /// re-place the bar between them. Prefer bars on the defect's MECHANISM over bars on its
+    /// downstream symptoms: the mechanism holds still while the look keeps improving.</para></para>
     /// </summary>
     public class WaterWhiteoutShoreSwirlAcceptanceTests
     {
@@ -319,13 +327,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         /// <summary>
         /// The dusk-storm repro (the owner's "whole sea becomes white"): the ON-SCREEN frame
-        /// must keep its value structure. Defect state (measured pre-fix): p95−p05 spread
-        /// 0.037 with 99.7% of pixels within ±0.05 of the median — a uniform sheet held at the
-        /// daylight floor. Fixed state (measured): spread 0.076, flat 94.5% (a dark sea is
-        /// legitimately "flat" in ABSOLUTE terms — the SPREAD carries the structure signal;
-        /// the flatness bar only rules out the total collapse). The SABOTAGE arm re-enables
-        /// the defect through the legacy dial (<c>_PaletteFloorKnee</c> = 0 — the exact
-        /// pre-fix curve) and the same bars go red, proving the assert can see this defect.
+        /// must keep its value structure. The SABOTAGE arm re-enables the defect through the
+        /// legacy dial (<c>_PaletteFloorKnee</c> = 0 — the exact pre-fix curve) and the same
+        /// bars go red, proving the assert can see this defect.
+        ///
+        /// <para>Bars re-measured 2026-08-01 (RTX 4060, D3D12) — fixed vs knee-0 sabotage:
+        /// spread 0.288 / 0.173, flat 28.4% / 51.9%, p05 0.029 / 0.148. The ORIGINAL 2026-07-24
+        /// numbers (fixed spread 0.076 / flat 94.5%; defect 0.037 / 99.7%) describe a frame that
+        /// no longer exists: #382's dark knobs, #383's foam and #385's tide pacing gave this sea
+        /// far more crest/trough structure. The look improved; the absolutes went stale, and the
+        /// sabotage arm started sailing over them. See the bar block in the body for the full
+        /// reasoning and for why <b>p05</b> — the mechanism-direct measure (the floor clamps the
+        /// sea's dark end UP) — now carries this pin rather than the downstream spread/flatness.</para>
         /// </summary>
         [Test]
         public void WhiteOut_DuskStorm_KeepsValueStructure_OnScreen()
@@ -342,17 +355,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Debug.Log($"[white-out] dusk_storm FIXED: {fixedStats}");
             DumpPng("whiteout_duskstorm_after", fixedFrame, c.DayNightTint);
 
-            // The white-out signature: a collapsed value spread + total flatness. Bars sit
-            // between the measured fixed (spread 0.076, flat 94.5%) and defect (0.037, 99.7%)
-            // states, nearer the defect so tuning drift can't trip them.
-            Assert.Greater(fixedStats.Spread, 0.06f,
+            // ⚠️ RECALIBRATED 2026-08-01. The bars below were absolute constants measured on the
+            // 2026-07-24 dusk-storm frame (fixed: spread 0.076, flat 94.5%; defect: 0.037, 99.7%).
+            // That frame no longer exists: #382's dark knobs + #383's foam + #385's tide pacing
+            // (amplitude 2.2) gave the dusk-storm sea FAR more crest/trough structure — the same
+            // repro now measures spread 0.288 / flat 28.4%, i.e. ~4x the value range and a third of
+            // the flatness. The shipped look did NOT regress; it improved. But the old absolutes
+            // then sat so far below the new fixed frame that the SABOTAGE arm sailed straight over
+            // them (knee 0 measured spread 0.173 / flat 51.9% — comfortably "healthy" by 2026-07-24
+            // standards), so the assert stopped being able to see the defect it exists to pin.
+            //
+            // Re-measured pair (RTX 4060, D3D12, 2026-08-01), bars placed at the MIDPOINT of each:
+            //                     FIXED        SABOTAGE (knee 0)     bar
+            //   spread (p95-p05)  0.288        0.173                 0.23
+            //   flat fraction     28.4%        51.9%                 40%
+            //   p05               0.029        0.148                 0.08
+            //
+            // ⭐ p05 IS THE NEW BAR, and it is the one that should keep this pin honest. Spread and
+            // flatness are DOWNSTREAM consequences of the white-out, so their absolute values track
+            // however much structure the sea happens to have that month — which is exactly why this
+            // guard rotted twice. p05 measures the defect's MECHANISM directly: the floor pre-
+            // compensation clamps the sea's low values UP to one high floor, so the dark end stops
+            // being dark. That signal separates the two states by 5x (0.029 vs 0.148) where spread
+            // manages only 1.7x, and it stays true no matter how rich the sea gets.
+            Assert.Greater(fixedStats.Spread, 0.23f,
                 $"the dusk-storm sea's on-screen value spread (p95−p05) is {fixedStats.Spread:F3} " +
                 "— the crest/trough/foam structure has collapsed toward the white-out sheet " +
-                "(defect: 0.037; healthy: 0.076).");
-            Assert.Less(fixedStats.FlatFrac, 0.97f,
+                "(knee-0 sabotage: 0.173; healthy: 0.288).");
+            Assert.Less(fixedStats.FlatFrac, 0.40f,
                 $"the dusk-storm sea is {fixedStats.FlatFrac:P1} flat — a near-uniform sheet. " +
-                "The owner's white-out (measured 99.7% flat pre-fix) is back: the palette " +
-                "floor's dusk clamp (or another whole-sea layer) is flattening the value structure.");
+                "The owner's white-out is back (knee-0 sabotage measures 51.9%; healthy 28.4%): the " +
+                "palette floor's dusk clamp (or another whole-sea layer) is flattening the structure.");
+            Assert.Less(fixedStats.P05, 0.08f,
+                $"the dusk-storm sea's DARK end has been lifted to {fixedStats.P05:F3} — the bottom " +
+                "of the value distribution is being clamped to a floor instead of riding down with " +
+                "the scene (knee-0 sabotage: 0.148; healthy: 0.029). This is the white-out's " +
+                "mechanism, not merely its symptom: the ADR 0015 floor pre-compensation is " +
+                "saturating through dusk again.");
 
             // ---- SABOTAGE: the legacy floor curve must trip the SAME bars -----------------
             scene.WaterMat.SetFloat("_PaletteFloorKnee", 0f);   // the pre-fix saturating curve
@@ -360,7 +399,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             FrameStats legacyStats = Stats(legacy, c.DayNightTint);
             Debug.Log($"[white-out] dusk_storm SABOTAGE (knee 0): {legacyStats}");
             DumpPng("whiteout_duskstorm_before", legacy, c.DayNightTint);
-            bool sabotageTripped = legacyStats.Spread <= 0.06f || legacyStats.FlatFrac >= 0.97f;
+            // The SAME three bars the assert above uses, in the same direction — an OR, because the
+            // three Asserts are an AND, so "the assert would have gone red" is "ANY bar trips".
+            // Keep this list in lockstep with the bars above: a bar added there and forgotten here
+            // is a bar whose sabotage arm proves nothing.
+            bool sabotageTripped = legacyStats.Spread <= 0.23f
+                                || legacyStats.FlatFrac >= 0.40f
+                                || legacyStats.P05 >= 0.08f;
             Assert.IsTrue(sabotageTripped,
                 "SABOTAGE NOT DETECTED — with the legacy floor curve (knee 0) the dusk-storm " +
                 $"frame still passed the structure bars ({legacyStats}). The assert cannot see " +
@@ -890,6 +935,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 WaterMat.SetFloat("_DispersionScale", 0f);
                 WaterMat.SetFloat("_RippleSpeed", 0f);
                 WaterMat.SetFloat("_WhitecapCollapseRate", 0f);
+                // ⚠️ …and the ripple band's STRENGTH, not merely its speed — the lesson above, learned twice.
+                // Zeroing _RippleSpeed freezes the ripple's CREST TRAVEL (the `- speed*t` inside its phase) and
+                // nothing else. The very same line carries a SECOND time term the speed knob cannot reach:
+                //     wander = ValueNoise(p * (RIPPLE_WANDER_FREQ / lambda) + t * RIPPLE_WANDER_DRIFT)
+                // RIPPLE_WANDER_DRIFT is a hard-coded #define (0.05), NOT a uniform, so at _RippleSpeed = 0 the
+                // crests stand still while the wander field keeps crawling underneath them and the phase keeps
+                // wobbling. Only the layer's MASTER reaches it: at _RippleStrength = 0 the amplitude is exactly
+                // 0 and the whole block is skipped — the shader's own documented passthrough contract.
+                //
+                // Why this survived #387, and why it broke only ONE of the two shore guards: the band is WIND-
+                // gated (RippleWindGate = smoothstep(_RippleWindOnset 0.05, _RippleWindFull 0.45, _Roughness)),
+                // and #382 shipped _RippleStrength at 0.45 on Water.mat over a shader default of 0. The bands
+                // guard sets _Roughness = 0 to isolate the bands from foam, which slams that gate shut and kills
+                // the crawl as a SIDE EFFECT; the swash guard leaves _Roughness at the reference sea's ~0.9,
+                // which opens the gate fully. Hence one guard went green on the speed-only fix and the other
+                // kept drifting. The drift is small (~200-400 px) only because _RippleBands = 3 POSTERIZES the
+                // band: the crawl is invisible except on pixels sitting exactly astride a quantization step —
+                // which is precisely why it read as "something small still animates" rather than a live layer.
+                //
+                // THE RULE, restated: zero the layer's STRENGTH, not its speed. A speed knob only proves ONE
+                // time term is dead; the strength knob is what the shader guarantees is an exact passthrough.
+                WaterMat.SetFloat("_RippleStrength", 0f);
                 // …and the ADR 0027 #6 advected foam BUFFER, which is a different animal from everything
                 // else here: not a scroll rate but a render target ADVECTED AND ACCUMULATED across frames,
                 // so it cannot be static by construction no matter what speed it runs at. It ships at 0, but
