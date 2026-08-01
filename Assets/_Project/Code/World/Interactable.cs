@@ -58,6 +58,14 @@ namespace HiddenHarbours.World
         /// <summary>The authored dialogue lines for this interactable, or null if it uses the legacy path.</summary>
         public string[] DialogueLines(bool metBefore) => HasNpcData ? _npc.Dialogue.Lines(metBefore) : null;
 
+        /// <summary>
+        /// The authored dialogue lines, with the asset's flag-gated extra beat included when
+        /// <paramref name="flags"/> says its condition is met (see <see cref="DialogueDef.Lines(bool,
+        /// IFlagStore)"/>). Null on the legacy path, as above.
+        /// </summary>
+        public string[] DialogueLines(bool metBefore, IFlagStore flags)
+            => HasNpcData ? _npc.Dialogue.Lines(metBefore, flags) : null;
+
         /// <summary>Wire the legacy (WorldStrings) path in one call (tests / older cove builder).</summary>
         public void Configure(InteractKind kind, string speaker, Sprite portrait,
                               string conversationId, string completionFlag)

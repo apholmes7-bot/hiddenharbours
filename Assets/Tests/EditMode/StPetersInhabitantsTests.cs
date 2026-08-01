@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
+using HiddenHarbours.Economy;             // StallGate — the reach every counter interaction reads
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art.Editor;
 
@@ -322,6 +323,78 @@ namespace HiddenHarbours.Tests.EditMode
                     "interactor's nearest-target pick would be a coin toss and you could not reliably " +
                     "talk to the one you walked up to");
             }
+        }
+
+        // =================================================================================
+        //  THE COUNTER SHE STANDS AT (plan-to-m1 §7.5's placement half)
+        // =================================================================================
+
+        /// <summary>
+        /// A shop and a shopkeeper have to be ONE thing to walk up to. Every stall interaction in the game
+        /// gates on <see cref="StallGate.DefaultRange"/> from the stall's own transform, so if the counter
+        /// drifts further than that from Marguerite, the player ends up standing at the person and being
+        /// told they are too far from the till — the failure
+        /// <c>NineMileCreekPeople.ByHisTruckMetres</c> was written to prevent at the creek.
+        ///
+        /// <para>Note this is the OPPOSITE requirement to
+        /// <see cref="NobodyIsStandingOnAnybodyElse_IncludingTheOpeningCastAndTheProps"/>, which keeps
+        /// people 3 m apart, and the counter is deliberately not in that test's list: two Interactables
+        /// close together make the <c>WorldInteractor</c>'s nearest-target pick a coin toss, but a counter
+        /// is not an Interactable — it is a stall, on a different driver and a different key. Talking to
+        /// her and trading over her counter never compete, so they SHOULD be within arm's reach.</para>
+        /// </summary>
+        [Test]
+        public void TheStoreCounterStandsWithinReachOfItsKeeper_SoTheyAreOneThingToWalkUpTo()
+        {
+            var marguerite = People.First(p => p.AssetName == "MargueriteLeBlanc");
+            Vector2 counter = (Vector2)StPetersBuilder.GeneralStoreCounterPos;
+
+            float d = Vector2.Distance(counter, marguerite.Position);
+            Assert.LessOrEqual(d, StallGate.DefaultRange,
+                $"the counter is {d:0.00} m from the storekeeper, past the {StallGate.DefaultRange:0.0} m " +
+                "stall reach — you could stand at her and be told you are too far from the till");
+        }
+
+        [Test]
+        public void TheStoreCounterIsOutsideTheStoresWalls_AndOnGroundThatNeverFloods()
+        {
+            Vector2 counter = (Vector2)StPetersBuilder.GeneralStoreCounterPos;
+            Vector2 site = (Vector2)StPetersBuilder.GeneralStorePos;
+
+            // Against the CONTRACT's own footprint, like every other clearance on this island.
+            var placement = VillageBuildingCatalog.Find("generalStore");
+            if (placement.IsValid)
+            {
+                float radius = StPetersVillage.FootprintRadiusMetres(placement);
+                Assert.Greater(Vector2.Distance(counter, site), radius,
+                    $"the counter is inside the store's {radius:0.00} m footprint — it would be behind the " +
+                    "wall, and you cannot walk up to a counter you cannot reach");
+            }
+
+            // And against the AUTHORED TERRAIN, not against the constant that placed it (#345's lesson).
+            float ground = _terrain.ElevationAt(counter);
+            Assert.Greater(ground, SpringHighWater,
+                $"the counter sits where the ground is {ground:0.00} m, at or below spring high water " +
+                $"({SpringHighWater:0.00} m) — a shop counter does not go under twice a day");
+        }
+
+        [Test]
+        public void TheCounterIsOnTheGreenSideOfTheStore_OutItsDoorAndPastItsKeeper()
+        {
+            Vector2 site = (Vector2)StPetersBuilder.GeneralStorePos;
+            Vector2 counter = (Vector2)StPetersBuilder.GeneralStoreCounterPos;
+            var marguerite = People.First(p => p.AssetName == "MargueriteLeBlanc");
+
+            // #353 turns every door toward the green, so "out of the door" is "toward the green".
+            Vector2 toGreen = StPetersBuilder.VillageGreen - site;
+            Vector2 toCounter = counter - site;
+            Assert.Greater(Vector2.Dot(toGreen.normalized, toCounter.normalized), 0.99f,
+                "the counter is round the back of the store — it belongs on the side the door is on");
+
+            // …and a stride FURTHER out than she is, so the player meets the counter and then her behind
+            // it, rather than walking through the shopkeeper to reach the till.
+            Assert.Greater(Vector2.Distance(counter, site), Vector2.Distance(marguerite.Position, site),
+                "the storekeeper should stand behind her own counter, not in front of it");
         }
 
         [Test]

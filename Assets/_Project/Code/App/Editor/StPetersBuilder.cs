@@ -59,6 +59,9 @@ namespace HiddenHarbours.App.Editor
         const string DataTraps   = "Assets/_Project/Data/Traps";    // the lobster/crab pots (the trap-haul loop, Build 4)
         const string DataBait    = "Assets/_Project/Data/Bait";     // the trap bait (herring/fish-scrap/mackerel)
         const string DataNpcs    = "Assets/_Project/Data/NPCs";     // the opening cast (Aunt Ginny, Ned's letter)
+        const string DataGear     = "Assets/_Project/Data/Gear";      // the rod on the store's counter (§7.5)
+        const string DataLicenses = "Assets/_Project/Data/Licenses";  // the clam licence the store vends (§7.5)
+        const string DataSupplies = "Assets/_Project/Data/Supplies";  // the ice the store restocks (§7.3/§7.5)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
         const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
@@ -297,6 +300,36 @@ namespace HiddenHarbours.App.Editor
         // and the green: the midpoint of the cottage and the start spawn, which is where the life is.
         public static Vector2 VillageGreen =>
             (new Vector2(CottagePos.x, CottagePos.y) + new Vector2(StartSpawnPos.x, StartSpawnPos.y)) * 0.5f;
+
+        /// <summary>
+        /// How far out past the storekeeper's own doorstep the general store's COUNTER stands, in metres —
+        /// one stride nearer the lane than she is, so you meet the counter and then her behind it.
+        ///
+        /// <para>It has to stay well inside <c>StallGate.DefaultRange</c> (4 m, the reach every stall
+        /// interaction uses) or the shop and the shopkeeper come apart into two things to walk up to —
+        /// the same margin <c>NineMileCreekPeople.ByHisTruckMetres</c> keeps between the buyer and his
+        /// till, for the same reason.</para>
+        /// </summary>
+        public const float StoreCounterStrideMetres = 1.5f;
+
+        /// <summary>
+        /// Where the general store's counter stands: DERIVED from the store's own site, out its door
+        /// toward <see cref="VillageGreen"/> and a stride past the dooryard its keeper stands in. Never
+        /// typed in — move the store and its counter, its keeper and its door all move together (#345's
+        /// standing lesson: a copied coordinate is a coordinate that will stop agreeing).
+        /// </summary>
+        public static Vector3 GeneralStoreCounterPos
+        {
+            get
+            {
+                Vector2 door = StPetersInhabitants.Dooryard(GeneralStorePos);
+                Vector2 outward = VillageGreen - door;
+                Vector2 spot = outward.sqrMagnitude < 1e-6f
+                    ? door
+                    : door + outward.normalized * StoreCounterStrideMetres;
+                return new Vector3(spot.x, spot.y, 0f);
+            }
+        }
 
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
         // ⭐ THE DOCK IS ON THE EAST END, opposite the sandbar (§5.1a, ruled 2026-07-23): you walk out the
@@ -611,6 +644,15 @@ namespace HiddenHarbours.App.Editor
             // live in assets the owner can edit (Data/NPCs + Data/NPCs/Dialogue), never hard-coded here.
             var ginnyNpc = AssetDatabase.LoadAssetAtPath<NpcDef>(DataNpcs + "/AuntGinny.asset");
             var nedNpc   = AssetDatabase.LoadAssetAtPath<NpcDef>(DataNpcs + "/NedLetter.asset");
+
+            // The general store's STOCK, as data (#356 authored every one of these; nobody had stood them
+            // on a counter yet — plan-to-m1 §7.5's "what is left is placement"). Four Defs, four vendors,
+            // one counter below. Null-tolerant: an unimported Def leaves that row off the screen with a
+            // warning, rather than a vendor component that silently sells nothing.
+            var rodOffer    = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
+            var clamLicence = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/ClamLicense.asset");
+            var iceSupply   = AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Ice.asset");
+            var capelinBait = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/Capelin.asset");
 
             // --- PERSISTENT CORE (THE FIX) --------------------------------------------------------------
             // St Peters is the START scene, so it stands up the SAME persistent rig the cove builds — a
@@ -973,6 +1015,94 @@ namespace HiddenHarbours.App.Editor
             // StPetersVillage for why the arc is the only shape the site allows.
             int villageBuildings = StPetersVillage.Place(terrain);
 
+            // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
+            // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a
+            // worse price level than the creek, the clam licence, the counted bait/ice stock — and said so
+            // itself: "what is left is placement, which is the world-content lane's". This is that. The
+            // store BUILDING went up in #353 and the storekeeper stood at its door in #354; until now you
+            // could walk up to both and there was no counter to trade over.
+            //
+            // ⭐ IT GOES IN THE BUILDER, NOT IN THE SCENE. A counter dragged into StPeters.unity by hand is
+            // undone by the next build — the whole scene is authored from this file, every run. Same rule
+            // as the freezer, the wet bucket and the five islanders above.
+            //
+            // ONE GameObject, FOUR VENDORS: BuyCatalog enumerates every vendor component on a stall, so the
+            // rod, a lot of capelin, a bag of ice and the clam licence come up on ONE buy screen with no new
+            // UI (IslandGeneralStoreTests pins that shape). Plus the SELL side — a Market on the
+            // StPetersStore channel behind a FishBuyer — so the first bucket of clams can be sold here, for
+            // deliberately less than Nine Mile Creek pays, which is how "where you sell matters" gets taught
+            // in the first hour instead of explained in a tooltip.
+            var storeCounter = new GameObject("GeneralStoreCounter");
+            storeCounter.transform.position = GeneralStoreCounterPos;
+            var counterSr = storeCounter.AddComponent<SpriteRenderer>();
+            counterSr.sprite = waterSprite;
+            counterSr.color = new Color(0.55f, 0.42f, 0.28f);   // a shop counter in oiled wood, until art lands
+            counterSr.sortingOrder = 3;
+            storeCounter.transform.localScale = new Vector3(1.6f, 0.9f, 1f);
+
+            // The wallet is the persistent services root's (St Peters IS the start scene, so it is in this
+            // scene rather than behind a proxy — the cove's pattern, not the creek's).
+            var storeWallet = core.ServicesRoot;
+
+            var rodShop = storeCounter.AddComponent<GearShop>();
+            SetRef(rodShop, "_offer", rodOffer);
+            SetRef(rodShop, "_walletProvider", storeWallet);
+
+            var baitShop = storeCounter.AddComponent<BaitShop>();
+            SetRef(baitShop, "_bait", capelinBait);
+            SetRef(baitShop, "_walletProvider", storeWallet);
+
+            var iceShop = storeCounter.AddComponent<SupplyShop>();
+            SetRef(iceShop, "_supply", iceSupply);
+            SetRef(iceShop, "_walletProvider", storeWallet);
+
+            // The clam licence — the FIRST licence of the game, and the one Ginny fronts the fee for. The
+            // player still buys it themselves at this counter (§7.5: the transaction stays theirs).
+            var clamVendor = storeCounter.AddComponent<LicenseVendor>();
+            SetRef(clamVendor, "_license", clamLicence);
+            SetRef(clamVendor, "_walletProvider", storeWallet);
+
+            // ⚠️ SAY WHICH MARKET IT IS. Market defaults to MarketId.Cove, and a counter left on the default
+            // quietly quotes the home cove's price level — the exact bug the creek shipped with for a year
+            // (#364's note, and MarketPriceGapTests' last case). The island store is the WORSE outlet or it
+            // is nothing.
+            var storeMarket = storeCounter.AddComponent<Market>();
+            SetRef(storeMarket, "_config", config);
+            SetEnum(storeMarket, "_marketId", MarketId.StPetersStore);
+
+            var storeBuyer = storeCounter.AddComponent<FishBuyer>();
+            SetRef(storeBuyer, "_market", storeMarket);
+
+            var storeSell = storeCounter.AddComponent<WharfSellPoint>();
+            SetRef(storeSell, "_buyer", storeBuyer);
+            // The hold is the hand-carried ClamBucket on the on-foot player — you sell what is in your pail
+            // over this counter, and the boat never comes into it (the store is inland, up the lane).
+            SetRef(storeSell, "_holdProvider", core.Bucket != null ? core.Bucket.gameObject : core.PlayerGo);
+            SetRef(storeSell, "_walletProvider", storeWallet);
+
+            // The walk-up drivers, on the established stall pattern (StallReach finds the on-foot player
+            // itself — no wiring): P browses and buys, B sells. Both refuse unless you are ON FOOT and
+            // within StallGate.DefaultRange of this counter, so neither fires from across the green. These
+            // are the placeholder keys the whole coast already uses; ui-ux owns the real Interact mapping
+            // (§7.6). Adding DevBuyInput here rather than leaving it to BuyPointInstaller's runtime scan
+            // makes the counter self-describing in the saved scene; the installer's own check is
+            // idempotent, so it simply finds one already there.
+            storeCounter.AddComponent<DevSellInput>();   // RequireComponent(WharfSellPoint) — present above
+            storeCounter.AddComponent<DevBuyInput>();
+
+            if (rodOffer == null || clamLicence == null || iceSupply == null || capelinBait == null)
+                Debug.LogWarning(
+                    "[StPetersBuilder] The general store's counter is missing stock — rod=" +
+                    $"{(rodOffer != null)}, clam licence={(clamLicence != null)}, ice={(iceSupply != null)}, " +
+                    $"capelin={(capelinBait != null)}. Those rows won't appear on the buy screen. Re-run " +
+                    "after the Data assets import rather than shipping a counter with an empty shelf.");
+            else
+                Debug.Log(
+                    $"[StPetersBuilder] The general store has a COUNTER at {GeneralStoreCounterPos} — the " +
+                    "rod, capelin by the lot, ice and the CLAM LICENCE on one buy screen (P), and a " +
+                    "StPetersStore-channel buyer that takes your bucket over the same counter (B) for " +
+                    "deliberately less than Nine Mile Creek pays.");
+
             // --- THE OPENING CAST + ONBOARDING (world-content; the buy-and-repair beat, canon §5.8) ------
             // Aunt Ginny + Ned's LETTER, anchored up on the island near the cottage (no routines — that's
             // M2), the self-built dialogue panel, the proximity INTERACT driver, and the light one-line
@@ -998,6 +1128,20 @@ namespace HiddenHarbours.App.Editor
                                   waterSprite, new Color(0.78f, 0.55f, 0.62f));
             var ginnyIt = ginnyGo.AddComponent<Interactable>();
             ConfigureInteractableNpc(ginnyIt, ginnyNpc, LoadSpriteAny(ArtPortraitGinny));
+
+            // ⭐ AND SHE FRONTS THE LICENCE FEE — on her, because it is her beat (§7.5). CatchLicensePolicy
+            // fails CLOSED, so the clam licence gates the only income day one has: "buy the clam licence
+            // with clam money" is a soft-lock, and the ruled fix is a character, not a mechanic. #356 built
+            // the mechanism and left it unplaced; this stands it up. It grants ONCE per game, flag-guarded
+            // through the Core save service (no schema field of its own), and re-granting is a no-op — so
+            // this component landing on a scene that reloads costs nothing.
+            //
+            // Her WORDS about it are not here and must not be: the grant persists the flag
+            // 'ginny_fronted_clam_fee', GinnyOpening.asset gates its ConditionalLines on that same authored
+            // key, and the two never reference each other's code (rule 4). The economy writes no prose; the
+            // dialogue names no component.
+            var frontedFee = ginnyGo.AddComponent<FrontedFeeGrant>();
+            SetRef(frontedFee, "_config", config);
 
             // "Ned's Letter" on the cottage step — the remembered presence (no inherited dory; the boat is
             // bought + mended). Read it to set read_logbook. A small book-sized marker if the art's absent.
@@ -1224,6 +1368,33 @@ namespace HiddenHarbours.App.Editor
             var p = so.FindProperty(field);
             if (p != null && p.propertyType == SerializedPropertyType.String)
             { p.stringValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
+        }
+
+        /// <summary>
+        /// Persist an ENUM field by NAME, not by ordinal — the same helper (and the same reasoning)
+        /// NineMileCreekBuilder carries: <c>SerializedProperty.enumValueIndex</c> indexes
+        /// <c>enumNames</c> rather than the enum's value, so writing <c>(int)someEnum</c> is only right
+        /// while the enum happens to be contiguous from zero. LOUD on a miss, because a market left on
+        /// its default keeps working at another outlet's prices (MarketPriceGapTests' closing case).
+        /// </summary>
+        static void SetEnum<TEnum>(Component c, string field, TEnum value) where TEnum : System.Enum
+        {
+            var so = new SerializedObject(c);
+            var p = so.FindProperty(field);
+            if (p == null || p.propertyType != SerializedPropertyType.Enum)
+            {
+                Debug.LogWarning($"[StPetersBuilder] no enum field '{field}' on {c.GetType().Name}.");
+                return;
+            }
+            int i = System.Array.IndexOf(p.enumNames, value.ToString());
+            if (i < 0)
+            {
+                Debug.LogWarning($"[StPetersBuilder] '{value}' is not a member of '{field}' on " +
+                                 $"{c.GetType().Name} — left at its default.");
+                return;
+            }
+            p.enumValueIndex = i;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static void SetRefArray(Component c, string field, Object[] values)
