@@ -23,11 +23,11 @@ namespace HiddenHarbours.Tools.Editor
     ///     environment sim — so the demo sways out of the box; once the real sim is present, the self-installing
     ///     <see cref="GrassWindBridge"/> drives the SAME global off the deterministic wind (grass + water together).
     ///
-    /// Menu: <b>Hidden Harbours ▸ Build Grass Test</b>.
+    /// Menu: <b>Hidden Harbours ▸ Dev ▸ Build Grass Test</b>.
     /// </summary>
     public static class GrassTestBuilder
     {
-        private const string MenuPath = "Hidden Harbours/Build Grass Test";
+        private const string MenuPath = "Hidden Harbours/Dev/Build Grass Test";
         private const string RootName = "GrassTest";
         // The greybox tuft variants (medium / short / tall) — scattered as a mix for a dense, painterly read.
         private static readonly string[] TuftPaths =
@@ -45,7 +45,7 @@ namespace HiddenHarbours.Tools.Editor
         private const float Spacing = 0.55f;     // metres between tufts
         private const float Jitter = 0.22f;      // metres of random placement scatter
 
-        [MenuItem(MenuPath)]
+        [MenuItem(MenuPath, priority = 40)]
         public static void Build()
         {
             // --- the grass material (prefer the committed asset; fall back to a fresh one off the shader). ---

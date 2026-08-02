@@ -504,7 +504,11 @@ namespace HiddenHarbours.App.Editor
 
         // ============================ THE MENU / BATCH ENTRY ====================================
 
-        [MenuItem("Hidden Harbours/Tools/Paint St Peters Starter Splat", priority = 41)]
+        // Filed under Art/ beside the assets it REGENERATES, not under Tools/ beside the brushes:
+        // this is a destructive one-shot that replaces hand-painting, and sitting at brush priority
+        // made it read like one more brush. The confirm dialog below is unchanged.
+        [MenuItem("Hidden Harbours/Art/Regenerate St Peters Starter Splat (replaces hand-painting)",
+                  priority = 25)]
         public static void PaintMenu()
         {
             // The pass re-derives the maps from scratch every run (that is what makes it

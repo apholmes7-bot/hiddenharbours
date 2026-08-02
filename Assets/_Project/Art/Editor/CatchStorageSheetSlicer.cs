@@ -66,7 +66,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points -------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Catch Storage Sheets")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Catch Storage Sheets", priority = 205)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);

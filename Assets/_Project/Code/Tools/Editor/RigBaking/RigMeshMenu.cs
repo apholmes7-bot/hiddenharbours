@@ -20,7 +20,7 @@ namespace HiddenHarbours.Tools.RigBaking
     public static class RigMeshGate
     {
         const string Pref = "HiddenHarbours.RigMesh.Enabled";
-        public const string MenuRoot = "Hidden Harbours/Art/3D Hulls (ADR 0022, experimental)";
+        public const string MenuRoot = "Hidden Harbours/Dev/3D Hulls (ADR 0022, experimental)";
 
         public static bool Enabled
         {

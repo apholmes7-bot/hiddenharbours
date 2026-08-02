@@ -22,13 +22,13 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public static string OutputFolder => RockIsoBaker.DefaultOutputFolder;
 
-        [MenuItem("Hidden Harbours/Art/Bake Rock Iso Sheets (sandstone × 3 tides = 18)",
-                  priority = 54)]
+        [MenuItem("Hidden Harbours/Dev/Bake Rock Iso Sheets (sandstone × 3 tides = 18)",
+                  priority = 140)]
         public static void BakeSandstone() =>
             Run(new[] { RockIsoBaker.DefaultStone }, "sandstone × 3 tides");
 
-        [MenuItem("Hidden Harbours/Art/Bake Rock Iso Sheets — ALL 4 stones (72 sheets)",
-                  priority = 55)]
+        [MenuItem("Hidden Harbours/Dev/Bake Rock Iso Sheets — ALL 4 stones (72 sheets)",
+                  priority = 141)]
         public static void BakeEveryStone()
         {
             if (!EditorUtility.DisplayDialog(

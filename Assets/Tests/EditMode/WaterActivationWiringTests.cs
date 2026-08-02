@@ -33,7 +33,7 @@ namespace HiddenHarbours.Tests.EditMode
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(GreyboxBuilder.CoveSeabedTex);
             Assert.IsNotNull(tex,
                 $"the cove's seabed bake is missing at {GreyboxBuilder.CoveSeabedTex}. Re-bake it with " +
-                "Hidden Harbours ▸ Art ▸ Bake Cove Seabed (it needs no scene open).");
+                "Hidden Harbours ▸ Dev ▸ Bake Cove Seabed (it needs no scene open).");
             Assert.AreEqual(GreyboxBuilder.CoveSeabedResolution, tex.width,
                 "the committed bake must match the resolution the builder documents its budget against.");
             Assert.AreEqual(GreyboxBuilder.CoveSeabedResolution, tex.height);

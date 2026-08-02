@@ -457,7 +457,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             if (checkedSheets == 0)
                 Assert.Ignore("No v8 sheet is sliced yet — run " +
-                              "Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets in the editor. " +
+                              "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets in the editor. " +
                               "(The art lands in one PR; the slice is an editor step the owner runs.)");
         }
 

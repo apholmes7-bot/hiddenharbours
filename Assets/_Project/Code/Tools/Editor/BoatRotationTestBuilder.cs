@@ -21,11 +21,11 @@ namespace HiddenHarbours.Tools.Editor
     /// or any committed Data asset. The test hull is an in-memory <see cref="BoatHullDef"/> (no asset is
     /// written); delete the spawned "BoatRotationTest" object to fully revert.
     ///
-    /// Menu: <b>Hidden Harbours ▸ Build Boat-Rotation Test</b>.
+    /// Menu: <b>Hidden Harbours ▸ Dev ▸ Build Boat-Rotation Test</b>.
     /// </summary>
     public static class BoatRotationTestBuilder
     {
-        private const string MenuPath = "Hidden Harbours/Build Boat-Rotation Test";
+        private const string MenuPath = "Hidden Harbours/Dev/Build Boat-Rotation Test";
         private const string RootName = "BoatRotationTest";
 
         // The four facing PNGs, in CLOCKWISE order from the zero heading (North): N, E, S, W.
@@ -37,7 +37,7 @@ namespace HiddenHarbours.Tools.Editor
             "Assets/_Project/Art/Boats/FishingBoat_W.png",
         };
 
-        [MenuItem(MenuPath)]
+        [MenuItem(MenuPath, priority = 44)]
         public static void Build()
         {
             // Load the four facings up-front so we fail loudly (with guidance) if the art isn't imported yet.

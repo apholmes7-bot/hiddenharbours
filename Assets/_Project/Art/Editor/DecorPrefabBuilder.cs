@@ -296,7 +296,8 @@ namespace HiddenHarbours.Art.Editor
                 if (sprite == null)
                 {
                     Debug.LogWarning($"[DecorPrefabBuilder] flower sheet '{stem}' has no cell '{stem}_0' — " +
-                                     "skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Slice Foliage Flower Sheets.)");
+                                     "skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Import (after " +
+                                     "a new drop) ▸ Slice Foliage Flower Sheets.)");
                     continue;
                 }
 

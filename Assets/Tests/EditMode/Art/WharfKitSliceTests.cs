@@ -362,7 +362,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var importer = AssetImporter.GetAtPath(AtlasPath) as TextureImporter;
             Assert.IsNotNull(importer, "WharfAtlas.png has no TextureImporter.");
             if (importer.spriteImportMode != SpriteImportMode.Multiple)
-                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets.");
+                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets.");
 
             var slices = SlicesOf(AtlasPath);
             Assert.AreEqual(AtlasCols * AtlasRows, slices.Length, "119 cells");
@@ -384,7 +384,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var importer = AssetImporter.GetAtPath(BreakwatersPath) as TextureImporter;
             Assert.IsNotNull(importer, "WharfBreakwaters.png has no TextureImporter.");
             if (importer.spriteImportMode != SpriteImportMode.Multiple)
-                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets.");
+                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets.");
 
             var slices = SlicesOf(BreakwatersPath);
             Assert.AreEqual(ArmourCols * ArmourRows, slices.Length, "12 armour pieces");
@@ -406,7 +406,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var importer = AssetImporter.GetAtPath(OverlaysPath) as TextureImporter;
             Assert.IsNotNull(importer, "WharfOverlays.png has no TextureImporter.");
             if (importer.spriteImportMode != SpriteImportMode.Multiple)
-                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Slice Wharf Overlay Sprites.");
+                Assert.Ignore("Not sliced yet — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Wharf Overlay Sprites.");
 
             var byName = SlicesOf(OverlaysPath).ToDictionary(s => s.name);
             Assert.AreEqual(Fittings.Length, byName.Count, "fitting count");

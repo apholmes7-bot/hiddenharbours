@@ -332,7 +332,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             if (checkedSheets == 0)
                 Assert.Ignore("No terrain sheet is sliced yet — run " +
-                              "Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets in the editor.");
+                              "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets in the editor.");
         }
 
         [Test]
@@ -344,7 +344,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             if (importer.spriteImportMode != SpriteImportMode.Multiple)
                 Assert.Ignore("The rock sheet is not sliced yet — run " +
-                              "Hidden Harbours ▸ Art ▸ Slice Shoreline Iso Rock Sprites in the editor.");
+                              "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Shoreline Iso Rock Sprites in the editor.");
 
             var byName = SlicesOf(sheet).ToDictionary(s => s.name);
             Assert.AreEqual(RockItems.Length, byName.Count, "rock sprite count");

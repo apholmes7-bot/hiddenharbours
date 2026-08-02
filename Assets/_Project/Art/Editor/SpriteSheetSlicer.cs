@@ -405,7 +405,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points -------------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Environment + VFX Sheets")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Environment + VFX Sheets", priority = 206)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int skipped, out int failed);

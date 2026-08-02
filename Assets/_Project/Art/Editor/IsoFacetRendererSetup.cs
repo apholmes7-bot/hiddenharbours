@@ -18,7 +18,7 @@ namespace HiddenHarbours.Art.Editor
         private const string ResolveShaderPath =
             "Assets/_Project/Art/Shaders/HiddenHarboursIsoFacetResolve.shader";
 
-        [MenuItem("Hidden Harbours/Setup/Install IsoFacet Hull Feature")]
+        [MenuItem("Hidden Harbours/Dev/Install IsoFacet Hull Feature", priority = 102)]
         public static void Install()
         {
             var data = AssetDatabase.LoadAssetAtPath<Renderer2DData>(RendererAssetPath);

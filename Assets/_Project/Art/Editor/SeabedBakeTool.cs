@@ -77,7 +77,7 @@ namespace HiddenHarbours.Art.Editor
 
         private Texture2D _lastBake;
 
-        [MenuItem("Hidden Harbours/Art/Bake Seabed Texture (_SeabedTex)", priority = 24)]
+        [MenuItem("Hidden Harbours/Dev/Bake Seabed Texture (_SeabedTex)", priority = 100)]
         public static void Open()
         {
             var win = GetWindow<SeabedBakeTool>(true, "Bake Seabed Texture", true);

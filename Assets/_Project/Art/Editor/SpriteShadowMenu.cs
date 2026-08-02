@@ -14,7 +14,7 @@ namespace HiddenHarbours.Art.Editor
     /// <item><description><b>Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection</b> — batch-adds the
     /// <see cref="SpriteShadow"/> component to every selected object that has a <see cref="SpriteRenderer"/>
     /// (the player, a boat, trees, buildings). Idempotent (skips ones that already have it).</description></item>
-    /// <item><description><b>Hidden Harbours ▸ Build Shadow Test</b> — a REVERSIBLE demo (mirrors "Build Grass
+    /// <item><description><b>Hidden Harbours ▸ Dev ▸ Build Shadow Test</b> — a REVERSIBLE demo (mirrors "Build Grass
     /// Test"): drops a ground plane + a few casters (a post, a tree, a standing figure) into the current
     /// scene, each already carrying <see cref="SpriteShadow"/>. Press Play, scrub the clock, and watch the
     /// shadows SWING (west → north → east) and LENGTHEN (long at dawn/dusk, short at noon). Delete the spawned
@@ -28,7 +28,7 @@ namespace HiddenHarbours.Art.Editor
     public static class SpriteShadowMenu
     {
         private const string AddMenuPath   = "Hidden Harbours/Lighting/Add Sprite Shadow to Selection";
-        private const string BuildMenuPath = "Hidden Harbours/Build Shadow Test";
+        private const string BuildMenuPath = "Hidden Harbours/Dev/Build Shadow Test";
         private const string RootName      = "ShadowTest";
 
         // ---- batch-add the component to selected SpriteRenderers -----------------------------------------
@@ -77,7 +77,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- the "Build Shadow Test" demo ---------------------------------------------------------------
 
-        [MenuItem(BuildMenuPath, priority = 31)]
+        [MenuItem(BuildMenuPath, priority = 41)]
         public static void BuildShadowTest()
         {
             // Remove a prior rig so re-running is idempotent.

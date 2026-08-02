@@ -333,7 +333,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var def = AssetDatabase.LoadAssetAtPath<BoatVisualDef>($"{Visuals}/LobsterBoatIso.asset");
             Assert.IsNotNull(def,
-                "missing visual def LobsterBoatIso — run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs");
+                "missing visual def LobsterBoatIso — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat Visual Defs");
             return def;
         }
     }

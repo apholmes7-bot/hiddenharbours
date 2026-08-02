@@ -45,7 +45,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points ---------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Village Building Sheets", priority = 60)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Village Building Sheets", priority = 202)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);
@@ -54,7 +54,8 @@ namespace HiddenHarbours.Art.Editor
                                "see the errors above.");
             else
                 Debug.Log($"[VillageBuildingSheetSlicer] Sliced {n} building sheet(s). " +
-                          "Next: Hidden Harbours ▸ Art ▸ Build Village Building Prefabs.");
+                          "Next: Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Village " +
+                          "Building Prefabs.");
         }
 
         /// <summary>Batch entry point for <c>-executeMethod</c> — exits non-zero on any failure so a

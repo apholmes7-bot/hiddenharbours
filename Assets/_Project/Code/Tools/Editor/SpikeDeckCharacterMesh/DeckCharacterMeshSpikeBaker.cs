@@ -35,7 +35,7 @@ namespace HiddenHarbours.SpikeDeckCharacterMesh.Editor
     /// </summary>
     public static class DeckCharacterMeshSpikeBaker
     {
-        public const string MenuRoot = "Hidden Harbours/Spike/Deck Character Mesh (SPIKE)";
+        public const string MenuRoot = "Hidden Harbours/Dev/Deck Character Mesh (SPIKE)";
         public const string AssetPath = "Assets/_Project/Data/Spike/DeckCharacterMeshSpike.asset";
 
         const string Build = "fisher";

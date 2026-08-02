@@ -35,7 +35,7 @@ namespace HiddenHarbours.Tools.Editor
         /// 1 main sample + 4 caustic-curvature taps + 4 foam-convergence taps.</summary>
         private const int ExpectedFragmentCallSites = 9;
 
-        [MenuItem("Hidden Harbours/Water/Wave-field cost report", priority = 400)]
+        [MenuItem("Hidden Harbours/Dev/Wave-field cost report", priority = 80)]
         public static void Run() => Debug.Log(BuildReport());
 
         public static void RunHeadless()

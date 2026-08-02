@@ -10,7 +10,7 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <summary>
     /// Menu entry points for baking the BUILDING rigs — the houses and the wharf's working buildings.
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Bake Buildings (houses + wharf)</c>. Re-runnable; each
+    /// <para>Menu: <c>Hidden Harbours ▸ Dev ▸ Bake Buildings (houses + wharf)</c>. Re-runnable; each
     /// preset overwrites its own sheet and sidecar and touches nothing else.</para>
     ///
     /// <para>The preset lists below are the ONLY hand-written thing here, and they are deliberately a
@@ -47,11 +47,12 @@ namespace HiddenHarbours.Tools.RigBaking
             "shingleCottage", "whiteFarmhouse", "redSaltbox", "gothicRevival", "dormerCape",
         };
 
-        // Priority 39 puts this at the head of the BAKE cluster (40–50: lobster boat, punt, character,
-        // fish, rod, …). It was 23 first, which is the Build-Decor-Prefabs group up at the top of the
-        // Art menu — Unity draws a separator at any priority gap over 10, so the command was rendering
-        // in the wrong section entirely and read as missing.
-        [MenuItem("Hidden Harbours/Art/Bake Buildings (houses + wharf)", priority = 39)]
+        // This is the PACKER-PROOF bake (worst-case crop + texture cap), not the M1 set world-content
+        // ships — so it lives under Dev/ rather than beside the active-pipeline bakes in Art/.
+        // Priority 121 keeps it with the other proof bakes; Unity draws a separator at any priority
+        // gap over 10, so the band matters — a number borrowed from a neighbouring group renders in
+        // the wrong section entirely and reads as missing.
+        [MenuItem("Hidden Harbours/Dev/Bake Buildings (houses + wharf)", priority = 121)]
         public static void BakeAllMenu()
         {
             var log = new StringBuilder();

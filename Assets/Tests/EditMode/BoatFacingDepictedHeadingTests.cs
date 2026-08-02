@@ -507,7 +507,7 @@ namespace HiddenHarbours.Tests.EditMode
         static BoatVisualDef LoadVisual(string name)
         {
             var def = AssetDatabase.LoadAssetAtPath<BoatVisualDef>($"{Visuals}/{name}.asset");
-            Assert.IsNotNull(def, $"missing visual def {name} — run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs");
+            Assert.IsNotNull(def, $"missing visual def {name} — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat Visual Defs");
             Assert.AreEqual(Headings, def.HeadingCount, $"{name} is not an 8-way compass");
             return def;
         }

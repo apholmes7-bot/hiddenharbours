@@ -52,7 +52,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points ---------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Acadian Tree Sheets", priority = 52)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Acadian Tree Sheets", priority = 200)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);

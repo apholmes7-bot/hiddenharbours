@@ -70,7 +70,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points -------------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Foliage Flower Sheets")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Foliage Flower Sheets", priority = 207)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int skipped, out int failed);

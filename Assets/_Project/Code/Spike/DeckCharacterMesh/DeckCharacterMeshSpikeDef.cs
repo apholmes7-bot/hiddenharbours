@@ -18,7 +18,7 @@ namespace HiddenHarbours.SpikeDeckCharacterMesh
     /// spike; continuous pose interpolation is explicitly NOT attempted (it would need a skinned
     /// mesh or morph targets, i.e. new art-source work — see the draft ADR).</para>
     ///
-    /// <para>Produced by the spike baker menu (Hidden Harbours → Spike → Deck Character Mesh) from
+    /// <para>Produced by the spike baker menu (Hidden Harbours → Dev → Deck Character Mesh (SPIKE)) from
     /// <c>docs/art/rigs/characterIsoRig.js</c>, refreshed in place like <c>HullMeshDef</c>. All
     /// facts here are MEASURED or extracted from the rig, never transcribed by hand — including
     /// <see cref="AzimuthCounterClockwise"/>, which comes from <c>CharacterRigAzimuthProbe</c>

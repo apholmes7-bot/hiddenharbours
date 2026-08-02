@@ -121,7 +121,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points -------------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Iso Character Sheets")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Iso Character Sheets", priority = 203)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int skipped, out int failed);

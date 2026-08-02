@@ -132,7 +132,7 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 var imp = ImporterFor(path);
                 Assert.AreEqual(SpriteImportMode.Multiple, imp.spriteImportMode,
-                    $"{stem}: not sliced — run Hidden Harbours ▸ Art ▸ Slice Acadian Tree Sheets.");
+                    $"{stem}: not sliced — run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Acadian Tree Sheets.");
 
                 // ⚠️ These import as spriteMode Multiple; LoadAssetAtPath<Sprite> returns null.
                 var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();

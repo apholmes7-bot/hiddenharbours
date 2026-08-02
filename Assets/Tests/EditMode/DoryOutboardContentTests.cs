@@ -45,7 +45,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var a = AssetDatabase.LoadAssetAtPath<T>(path);
             Assert.IsNotNull(a, $"{path} is missing. Run the cove builder (it authors the hull assets) " +
-                                "and Hidden Harbours ▸ Art ▸ Build Boat Visual Defs.");
+                                "and Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat Visual Defs.");
             return a;
         }
 
@@ -90,7 +90,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(v.HasMotorMesh(),
                 "visual.dory_iso must carry a usable motor FITTING — without it the outboard rung " +
-                "cannot be seen at all. Run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull fittings.");
+                "cannot be seen at all. Run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL hull fittings.");
             Assert.AreEqual(BorrowedFittingId, v.MotorMesh.Id,
                 "she is wearing the PUNT's starter engine on loan, because her own kicker " +
                 "(docs/art/rigs/doryMotorRig.js) is written but has never been baked.\n\n" +

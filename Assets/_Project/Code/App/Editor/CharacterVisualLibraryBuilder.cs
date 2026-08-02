@@ -24,7 +24,7 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static class CharacterVisualLibraryBuilder
     {
-        const string MenuPath = "Hidden Harbours/Art/Build Character Visual Defs";
+        const string MenuPath = "Hidden Harbours/Art/Import (after a new drop)/Build Character Visual Defs";
         const string VisualsFolder = "Assets/_Project/Data/Characters";
         const string ArtIso = "Assets/_Project/Art/Characters/Iso";
 
@@ -98,7 +98,7 @@ namespace HiddenHarbours.App.Editor
             // assets no one reads; they are named in this comment so the next hand knows where they go.
         };
 
-        [MenuItem(MenuPath)]
+        [MenuItem(MenuPath, priority = 231)]
         public static void Build()
         {
             EnsureFolder(VisualsFolder);
@@ -149,7 +149,8 @@ namespace HiddenHarbours.App.Editor
                                  $"'{ArtIso}/{kit.Stem}_idle.png' gave {def.IdleSheet.Length}/" +
                                  $"{Directions * kit.IdleFrames} ordered slices — the skin is EMPTY, so the " +
                                  "character keeps whatever sprite drew it before. Slice the sheet (Hidden " +
-                                 "Harbours ▸ Art ▸ Slice Iso Character Sheets) and re-run.");
+                                 "Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Iso Character " +
+                                 "Sheets) and re-run.");
                 return false;
             }
 

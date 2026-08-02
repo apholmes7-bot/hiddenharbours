@@ -12,7 +12,7 @@ namespace HiddenHarbours.Core
     ///
     /// <para><b>Builder-generated and committed</b>, like the <c>BoatVisualDef</c>s: the owner does
     /// not run anything to get a mesh hull, and re-runs the baker
-    /// (Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake…) only when the art director's rig changes. Phase 3
+    /// (Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake…) only when the art director's rig changes. Phase 3
     /// deliberately did not invent this format ("phase 4 owns turning this into a baked asset") —
     /// this is that format.</para>
     ///

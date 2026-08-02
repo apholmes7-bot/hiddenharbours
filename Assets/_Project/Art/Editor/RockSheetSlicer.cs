@@ -41,7 +41,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points ---------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Rock Iso Sheets", priority = 53)]
+        [MenuItem("Hidden Harbours/Dev/Slice Rock Iso Sheets", priority = 142)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);
@@ -117,7 +117,7 @@ namespace HiddenHarbours.Art.Editor
 
             if (sliced == 0 && failed == 0)
                 Debug.Log($"[RockSheetSlicer] No rock sheets on disk yet — this kit bakes to order " +
-                          "(Hidden Harbours ▸ Art ▸ Bake Rock Iso Sheets).");
+                          "(Hidden Harbours ▸ Dev ▸ Bake Rock Iso Sheets).");
 
             AssetDatabase.SaveAssets();
             return sliced;

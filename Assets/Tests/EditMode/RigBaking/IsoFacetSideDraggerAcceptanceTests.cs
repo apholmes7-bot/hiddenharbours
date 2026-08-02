@@ -104,7 +104,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(HullMeshAssetPath);
             Assert.IsNotNull(def, $"missing {HullMeshAssetPath} — bake it first " +
-                                  "(Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake Side Dragger hull-mesh asset)");
+                                  "(Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake Side Dragger hull-mesh asset)");
             Assert.IsTrue(def.IsUsable(), "the committed def must be usable");
             return def;
         }

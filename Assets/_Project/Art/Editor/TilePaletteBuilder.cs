@@ -15,7 +15,8 @@ namespace HiddenHarbours.Art.Editor
     /// no developer step in between. A Tile Palette is itself a small prefab (a <see cref="Grid"/> with a
     /// child <see cref="Tilemap"/> holding the tiles, plus a <see cref="GridPalette"/> sub-asset); we
     /// create it with the engine's own <see cref="GridPaletteUtility"/> then lay the tiles out in a row.
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Build Tile Palette</c> (re-runnable — rebuilds the palette
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Tile Palette</c>
+    /// (re-runnable — rebuilds the palette
     /// in place). Run <c>Build Terrain Tiles</c> first so the tiles exist. See <c>docs/authoring-scenes.md</c>.</para>
     /// </summary>
     public static class TilePaletteBuilder
@@ -24,7 +25,7 @@ namespace HiddenHarbours.Art.Editor
         const string PaletteName = "HiddenHarboursTerrain";
         static string PalettePath => $"{PaletteDir}/{PaletteName}.prefab";
 
-        [MenuItem("Hidden Harbours/Art/Build Tile Palette", priority = 20)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Tile Palette", priority = 236)]
         public static void Build()
         {
             // 1. Make sure the tiles exist (re-runnable; cheap if already built).

@@ -11,7 +11,8 @@ namespace HiddenHarbours.Art.Editor
     /// selects it, and leaves it ready for the Tile Palette's brush. For a non-developer this removes the
     /// fiddly GameObject ▸ 2D Object ▸ Tilemap menu-hunt. The terrain layer sorts behind sprites/decor
     /// (sortingOrder −20) so painted ground never covers placed trees/buildings.
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Add Paintable Tilemap</c>. Safe to run more than once —
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Add Paintable Tilemap</c>.
+    /// Safe to run more than once —
     /// each call adds a fresh, uniquely-named tilemap (e.g. for a separate "Path" or "Decoration" layer).</para>
     /// </summary>
     public static class PaintableTilemapMenu
@@ -19,7 +20,7 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>Painted ground sits well behind world sprites (player ~10, decor 0..9, water ~−10).</summary>
         const int TerrainSortingOrder = -20;
 
-        [MenuItem("Hidden Harbours/Art/Add Paintable Tilemap", priority = 21)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Add Paintable Tilemap", priority = 238)]
         public static void AddPaintableTilemap()
         {
             // Root Grid — reuse an existing one in the scene if present so multiple layers share it.

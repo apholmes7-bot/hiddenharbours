@@ -463,7 +463,7 @@ namespace HiddenHarbours.Art.Editor
                 Debug.LogError(
                     $"[ShrubCatalog] No contract at '{ContractPath}'. It ships with the kit — if " +
                     "this fired, the branch predates the shrub import. Regenerate it with " +
-                    "Hidden Harbours ▸ Art ▸ Export Shrub Contract; never hand-write it.");
+                    "Hidden Harbours ▸ Dev ▸ Export Shrub Contract; never hand-write it.");
                 return null;
             }
 

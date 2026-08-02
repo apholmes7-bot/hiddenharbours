@@ -74,7 +74,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points -------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Drift Weed Sheets")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Drift Weed Sheets", priority = 210)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);

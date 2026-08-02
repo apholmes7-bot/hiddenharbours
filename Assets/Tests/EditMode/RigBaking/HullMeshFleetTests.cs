@@ -155,7 +155,7 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
                 Assert.IsNotNull(def, $"{hull.Key}: no committed def at {hull.MeshAssetPath}. " +
-                                      "Run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL fleet hull meshes.");
+                                      "Run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL fleet hull meshes.");
                 Assert.IsTrue(def.IsUsable(), $"{hull.Key}: the committed def is not usable.");
                 Assert.IsNotNull(def.Mesh, $"{hull.Key}: the mesh sub-asset is missing.");
 
@@ -190,7 +190,7 @@ namespace HiddenHarbours.Tests.RigBaking
             CollectionAssert.IsEmpty(stale,
                 "Committed hull meshes no longer match their rigs:\n  " + string.Join("\n  ", stale) +
                 "\n\nThis is the repo's most repeated failure — a builder-generated asset went stale " +
-                "and the boat gets debugged in the code. Re-run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ " +
+                "and the boat gets debugged in the code. Re-run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ " +
                 "Bake ALL fleet hull meshes and commit the result.");
         }
 
@@ -356,7 +356,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Assert.IsEmpty(missing,
                 "These committed hulls carry NO interior mask, so the displaced sea has nothing " +
-                "keeping it out of their interiors. Re-bake: Hidden Harbours ▸ Art ▸ 3D Hulls ▸ " +
+                "keeping it out of their interiors. Re-bake: Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ " +
                 "Bake ALL fleet hull meshes. " + string.Join(", ", missing));
 
             Assert.IsEmpty(drifted,
@@ -424,7 +424,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             Assert.IsEmpty(flat,
                 "These committed hulls carry NO one-sided interior codes (every UV0.w is 0 or 1), " +
-                "so their meshes predate the per-side mask — re-bake: Hidden Harbours ▸ Art ▸ 3D " +
+                "so their meshes predate the per-side mask — re-bake: Hidden Harbours ▸ Dev ▸ 3D " +
                 "Hulls ▸ Bake ALL fleet hull meshes. " + string.Join(", ", flat));
         }
 

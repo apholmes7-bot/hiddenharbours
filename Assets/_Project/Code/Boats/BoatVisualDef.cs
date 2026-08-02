@@ -59,7 +59,7 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("The baked mesh-hull def (ADR 0022 phase 4) this visual draws when Variant = Mesh: the " +
                  "rig-extracted mesh, palette ramps, lighting and the measured pose facts, produced by " +
-                 "Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake and committed like every other builder output. " +
+                 "Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake and committed like every other builder output. " +
                  "Ignored while Variant = Sprite. A hull may carry BOTH a full sprite compass and a mesh " +
                  "def — the lobster boat does, which is what makes the dev A/B comparison possible.")]
         public HiddenHarbours.Core.HullMeshDef HullMesh = null;
@@ -127,7 +127,7 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("The baked PORT oar as a mesh fitting (ADR 0022 phase 7), for Variant = Mesh. The " +
                  "sprite sheets above are one cell per facing and a mesh hull turns continuously, so " +
-                 "a mesh dory needs these or she rows with no oars. Produced by Hidden Harbours ▸ Art " +
+                 "a mesh dory needs these or she rows with no oars. Produced by Hidden Harbours ▸ Dev " +
                  "▸ 3D Hulls ▸ Bake ALL hull fittings, which also wires this field. Ignored while " +
                  "Variant = Sprite — a dory may carry both, which is what makes the A/B comparison " +
                  "possible.")]
@@ -172,7 +172,7 @@ namespace HiddenHarbours.Boats
                  "field whatever the fit: a Twin is this SAME def instantiated once per entry of its " +
                  "LateralMountsMeters (±0.34 m), so there is no second engine asset and no " +
                  "draw-the-far-one-first rule — a fitting parented to a mesh hull writes the same " +
-                 "depth buffer. Produced by Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull " +
+                 "depth buffer. Produced by Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL hull " +
                  "fittings, which also wires this field. Ignored while Variant = Sprite, so a hull " +
                  "may carry both this and the sheets above — which is what keeps the owner's V-key " +
                  "A/B covering the whole boat.")]

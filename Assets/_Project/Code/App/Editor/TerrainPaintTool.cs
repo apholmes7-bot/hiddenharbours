@@ -202,7 +202,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Bind each default preset to its resolved generated tile asset (if present). Leaves a preset's tile
         /// EMPTY (height-only) when the tile doesn't exist yet — the UI then surfaces the "run Build
-        /// Scene-Painting Toolkit" hint rather than failing.
+        /// Terrain Tiles" hint rather than failing.
         /// </summary>
         private void ResolveDefaultPresetTiles()
         {
@@ -364,8 +364,8 @@ namespace HiddenHarbours.App.Editor
 
             if (AnyPresetMissingTile())
                 EditorGUILayout.HelpBox("Some terrain types have no tile yet. Run Hidden Harbours ▸ Art ▸ " +
-                    "Build Scene-Painting Toolkit to generate the terrain tiles, then re-open this tool (or " +
-                    "assign tiles in the Terrain Types editor below).", MessageType.Warning);
+                    "Import (after a new drop) ▸ Build Terrain Tiles to generate them, then re-open this " +
+                    "tool (or assign tiles in the Terrain Types editor below).", MessageType.Warning);
         }
 
         // ============================ THE MATERIAL BRUSH (ADR 0028 PR 2 addendum) ============================

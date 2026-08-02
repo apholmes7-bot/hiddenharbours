@@ -16,7 +16,7 @@ namespace HiddenHarbours.Art.Editor
     /// <para><b>⭐ THIS KIT SHIPS NO PIXELS, AND THAT IS THE DESIGN</b> — the same call the Rock Iso
     /// kit makes (<see cref="RockIsoCatalog"/>). 16 species × 2 sheet axes × 3 seasons × 3 growth
     /// stages is a matrix an import has no business choosing from, so the rig is the deliverable and
-    /// sheets bake to order (<c>ShorePlantBaker</c>, menu <i>Hidden Harbours ▸ Art ▸ Bake Shore Plant
+    /// sheets bake to order (<c>ShorePlantBaker</c>, menu <i>Hidden Harbours ▸ Dev ▸ Bake Shore Plant
     /// Sheets</i>). The contract ships anyway because <b>the cell and the pivot are tide-independent
     /// by construction</b> (see <see cref="CellPolicy"/>), so one entry serves all five tide states
     /// of a species and the engine can be wired against it before a single PNG exists.</para>

@@ -51,7 +51,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points ---------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Slice Shore Plant Sheets", priority = 56)]
+        [MenuItem("Hidden Harbours/Dev/Slice Shore Plant Sheets", priority = 145)]
         public static void SliceAllMenu()
         {
             int n = SliceAll(out int failed);
@@ -131,7 +131,7 @@ namespace HiddenHarbours.Art.Editor
 
             if (sliced == 0 && failed == 0)
                 Debug.Log("[ShorePlantSheetSlicer] No plant sheets on disk yet — this kit bakes to " +
-                          "order (Hidden Harbours ▸ Art ▸ Bake Shore Plant Sheets).");
+                          "order (Hidden Harbours ▸ Dev ▸ Bake Shore Plant Sheets).");
 
             AssetDatabase.SaveAssets();
             return sliced;

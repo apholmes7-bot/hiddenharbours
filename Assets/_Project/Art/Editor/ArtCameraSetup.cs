@@ -41,7 +41,8 @@ namespace HiddenHarbours.Art.Editor
             return true;
         }
 
-        [MenuItem("Hidden Harbours/Art/Configure Pixel-Perfect Camera (active scene)")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Configure Pixel-Perfect Camera (active scene)",
+                  priority = 261)]
         static void ConfigureActiveSceneCamera()
         {
             Camera cam = Camera.main;
