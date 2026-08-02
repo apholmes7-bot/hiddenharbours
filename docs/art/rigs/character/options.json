@@ -1,0 +1,828 @@
+{
+  "note": "Hidden Harbours — every customization axis the character rig reads, with its legal values. Colour axes list the ramp dark->light exactly as the rig ships it.",
+  "rig": "characterIsoRig6.js",
+  "head_rig": "headIsoRig3.js",
+  "eye_rig": "eyeIsoRig.js",
+  "cell": {
+    "w": 64,
+    "h": 92,
+    "pivot": {
+      "x": 32,
+      "y": 82
+    },
+    "px_per_m": 32,
+    "dirs": 8,
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "default_elev": 40,
+    "note": "renderAt(px,dir,opts) bakes any density; hat bands are SOLVED at 32 px/m and want re-solving, not rescaling, above it."
+  },
+  "default_build": {
+    "sex": "m",
+    "age": "adult",
+    "garment": "overalls",
+    "skin": "fair",
+    "hair": "blond",
+    "hairStyle": "mop",
+    "beard": "none",
+    "eyes": "sea",
+    "outfit": "teal",
+    "shirt": "white",
+    "hat": "none",
+    "hatCol": "char",
+    "apronCol": "canvas",
+    "face": "dash",
+    "eyeShape": "round",
+    "browShape": "natural",
+    "height": 1,
+    "weight": 1,
+    "headSize": 1
+  },
+  "shape": {
+    "sex": {
+      "values": [
+        "m",
+        "f"
+      ],
+      "table": {
+        "m": {
+          "shoulder": 1.06,
+          "chest": 1.04,
+          "waist": 1.01,
+          "hip": 0.95,
+          "neck": 1.1,
+          "jaw": 1.12,
+          "limbR": 1.05,
+          "height": 1.02,
+          "bust": 0
+        },
+        "f": {
+          "shoulder": 0.91,
+          "chest": 0.95,
+          "waist": 0.84,
+          "hip": 1.11,
+          "neck": 0.89,
+          "jaw": 0.89,
+          "limbR": 0.94,
+          "height": 0.955,
+          "bust": 0.021
+        }
+      },
+      "note": "a skeleton switch — shoulder / chest / waist / hip / neck / jaw / limb radius / height"
+    },
+    "age": {
+      "values": [
+        "child",
+        "youth",
+        "adult",
+        "elder"
+      ],
+      "table": {
+        "child": {
+          "height": 0.72,
+          "head": 0.9,
+          "leg": 0.86,
+          "torso": 1.03,
+          "limbR": 0.86,
+          "shoulder": 0.82,
+          "neckLen": 0.46,
+          "stoop": 0,
+          "weight": 0.9
+        },
+        "youth": {
+          "height": 0.875,
+          "head": 0.97,
+          "leg": 1,
+          "torso": 0.97,
+          "limbR": 0.9,
+          "shoulder": 0.9,
+          "neckLen": 0.88,
+          "stoop": 0,
+          "weight": 0.93
+        },
+        "adult": {
+          "height": 1,
+          "head": 1,
+          "leg": 1,
+          "torso": 1,
+          "limbR": 1,
+          "shoulder": 1,
+          "neckLen": 1,
+          "stoop": 0,
+          "weight": 1
+        },
+        "elder": {
+          "height": 0.955,
+          "head": 1,
+          "leg": 0.97,
+          "torso": 0.98,
+          "limbR": 0.93,
+          "shoulder": 0.95,
+          "neckLen": 0.78,
+          "stoop": 9,
+          "weight": 0.99
+        }
+      },
+      "note": "head-to-body ratio does the work; elder adds a real stoop"
+    },
+    "height": {
+      "type": "float",
+      "range": [
+        0.85,
+        1.15
+      ],
+      "default": 1
+    },
+    "weight": {
+      "type": "float",
+      "range": [
+        0.85,
+        1.15
+      ],
+      "default": 1
+    },
+    "headSize": {
+      "type": "float",
+      "range": [
+        0.9,
+        1.1
+      ],
+      "default": 1
+    }
+  },
+  "wardrobe": {
+    "garment": {
+      "values": [
+        "overalls",
+        "oilskins",
+        "sweater",
+        "workshirt",
+        "apron",
+        "vest",
+        "skirt"
+      ],
+      "table": {
+        "overalls": {
+          "label": "BIB OVERALLS",
+          "short": "OVERALLS",
+          "bibTop": 0.076,
+          "bibArc": 0.5,
+          "wrapTop": -0.1,
+          "straps": 1,
+          "buckles": 1,
+          "sleeve": "short",
+          "collar": "crew",
+          "bootZ": 0.15,
+          "backTop": -0.01
+        },
+        "oilskins": {
+          "label": "OILSKINS",
+          "short": "OILSKINS",
+          "bibTop": 0.124,
+          "bibArc": 0.58,
+          "wrapTop": -0.092,
+          "straps": 1,
+          "buckles": 0,
+          "sleeve": "longOver",
+          "collar": "stand",
+          "bootZ": 0.215,
+          "backTop": 0.03,
+          "cuffOver": 1
+        },
+        "sweater": {
+          "label": "KNIT JUMPER",
+          "short": "JUMPER",
+          "bibTop": null,
+          "wrapTop": -0.078,
+          "sleeve": "longShirtFull",
+          "collar": "roll",
+          "bootZ": 0.13,
+          "waistBand": 1,
+          "cuff": 1
+        },
+        "workshirt": {
+          "label": "WORK SHIRT",
+          "short": "SHIRT",
+          "bibTop": null,
+          "wrapTop": -0.112,
+          "sleeve": "longShirt",
+          "collar": "open",
+          "bootZ": 0.1,
+          "belt": 1,
+          "cuff": 1
+        },
+        "apron": {
+          "label": "GUTTING APRON",
+          "short": "APRON",
+          "bibTop": null,
+          "wrapTop": -0.112,
+          "sleeve": "short",
+          "collar": "crew",
+          "bootZ": 0.17,
+          "belt": 1,
+          "apron": 1
+        },
+        "vest": {
+          "label": "QUILTED VEST",
+          "short": "VEST",
+          "bibTop": null,
+          "wrapTop": -0.112,
+          "sleeve": "longShirt",
+          "collar": "stand",
+          "bootZ": 0.105,
+          "belt": 1,
+          "vest": 1,
+          "cuff": 1
+        },
+        "skirt": {
+          "label": "SKIRT + SHAWL",
+          "short": "SKIRT",
+          "bibTop": null,
+          "wrapTop": null,
+          "sleeve": "longShirtFull",
+          "collar": "crew",
+          "bootZ": 0.075,
+          "skirtHem": 1,
+          "shawl": 1,
+          "waistBand": 1
+        }
+      }
+    },
+    "hat": {
+      "values": [
+        "none",
+        "watchcap",
+        "souwester",
+        "ballcap",
+        "flatcap",
+        "kerchief",
+        "hood"
+      ],
+      "table": {
+        "none": {
+          "label": "BARE HEAD",
+          "parts": []
+        },
+        "watchcap": {
+          "label": "watch cap",
+          "parts": [
+            "crown",
+            "band"
+          ]
+        },
+        "souwester": {
+          "label": "sou'wester",
+          "parts": [
+            "crown",
+            "band",
+            "cape"
+          ]
+        },
+        "ballcap": {
+          "label": "ball cap",
+          "parts": [
+            "crown",
+            "band",
+            "peak"
+          ]
+        },
+        "flatcap": {
+          "label": "flat cap",
+          "parts": [
+            "crown",
+            "band",
+            "peak"
+          ]
+        },
+        "kerchief": {
+          "label": "kerchief",
+          "parts": [
+            "crown",
+            "band",
+            "knot"
+          ]
+        },
+        "hood": {
+          "label": "oilskin hood",
+          "parts": [
+            "crown",
+            "band"
+          ]
+        }
+      },
+      "note": "the hat table lives in headIsoRig3.js; each band is solved in ROWS ABOVE THE EYE, not in metres"
+    },
+    "hairStyle": {
+      "values": [
+        "crop",
+        "mop",
+        "bob",
+        "long",
+        "bun",
+        "ponytail",
+        "buzz",
+        "bald"
+      ],
+      "note": "cut at the hatline when a hat is worn"
+    },
+    "beard": {
+      "values": [
+        "none",
+        "stubble",
+        "moustache",
+        "chinstrap",
+        "goatee",
+        "mutton",
+        "full",
+        "long"
+      ],
+      "note": "forced to none on a child"
+    }
+  },
+  "colour": {
+    "skin": {
+      "porcelain": [
+        "#7a4a3e",
+        "#9a6353",
+        "#b8806c",
+        "#d29e88",
+        "#e6bda9",
+        "#f4dccb"
+      ],
+      "fair": [
+        "#6b4028",
+        "#8a5636",
+        "#a8724a",
+        "#c98d63",
+        "#e0a981",
+        "#f0c9a2"
+      ],
+      "rose": [
+        "#75402f",
+        "#96573f",
+        "#b47254",
+        "#d18f6d",
+        "#e7ae8d",
+        "#f6cfb4"
+      ],
+      "olive": [
+        "#4d3c22",
+        "#68522f",
+        "#85703f",
+        "#a28c55",
+        "#bda872",
+        "#d6c497"
+      ],
+      "tan": [
+        "#59331f",
+        "#754628",
+        "#936036",
+        "#b07d4a",
+        "#cc9a63",
+        "#e2b57e"
+      ],
+      "bronze": [
+        "#4a2a17",
+        "#63391f",
+        "#80502c",
+        "#9d6a3d",
+        "#b98653",
+        "#d1a271"
+      ],
+      "umber": [
+        "#3a2116",
+        "#4f2f1e",
+        "#68422a",
+        "#835838",
+        "#9e7049",
+        "#b98c60"
+      ],
+      "deep": [
+        "#301c12",
+        "#45291a",
+        "#5e3a24",
+        "#7a4f31",
+        "#966843",
+        "#b08055"
+      ],
+      "ebony": [
+        "#221a1a",
+        "#332727",
+        "#473838",
+        "#5d4b48",
+        "#75625c",
+        "#8e7a70"
+      ]
+    },
+    "hair": {
+      "blond": [
+        "#7a5a1c",
+        "#946218",
+        "#b07d1f",
+        "#e0b13a",
+        "#f2cf6a"
+      ],
+      "sand": [
+        "#6b5636",
+        "#877049",
+        "#a68d60",
+        "#c4ab7c",
+        "#ddc79c"
+      ],
+      "black": [
+        "#0e1114",
+        "#171b21",
+        "#232a32",
+        "#333c46",
+        "#4a545f"
+      ],
+      "brown": [
+        "#33271b",
+        "#473627",
+        "#5e4630",
+        "#6b4f35",
+        "#8a6a48"
+      ],
+      "auburn": [
+        "#3d1a14",
+        "#57271c",
+        "#732f21",
+        "#8f4029",
+        "#ab5738"
+      ],
+      "ginger": [
+        "#5e2013",
+        "#7d301c",
+        "#9c4327",
+        "#b85835",
+        "#d07048"
+      ],
+      "salt": [
+        "#2a2f31",
+        "#40474a",
+        "#5c656a",
+        "#7d878b",
+        "#a3adaf"
+      ],
+      "grey": [
+        "#6f7a78",
+        "#878b85",
+        "#a2a7a0",
+        "#bcc2ba",
+        "#cfd4cc"
+      ],
+      "white": [
+        "#8a908c",
+        "#a3a8a3",
+        "#bcc0ba",
+        "#d3d6cf",
+        "#e8eae3"
+      ]
+    },
+    "outfit": {
+      "teal": [
+        "#0d3f3c",
+        "#14554e",
+        "#1c7367",
+        "#2ba39a",
+        "#49b8aa"
+      ],
+      "navy": [
+        "#0e1526",
+        "#172644",
+        "#223764",
+        "#2f4c88",
+        "#4166ac"
+      ],
+      "oil": [
+        "#946218",
+        "#b07d1f",
+        "#cf9d24",
+        "#e0b13a",
+        "#f2cf6a"
+      ],
+      "rust": [
+        "#4a100e",
+        "#7c1a15",
+        "#a8241b",
+        "#cf3626",
+        "#e2573c"
+      ],
+      "slate": [
+        "#1b2429",
+        "#28353c",
+        "#374852",
+        "#485c68",
+        "#5c7280"
+      ],
+      "moss": [
+        "#20291f",
+        "#2e3a2a",
+        "#3e4d37",
+        "#4f6045",
+        "#627457"
+      ]
+    },
+    "shirt": {
+      "white": [
+        "#878b85",
+        "#a2a7a0",
+        "#bcc2ba",
+        "#cfd4cc",
+        "#dfe3dc",
+        "#eef0ea"
+      ],
+      "cream": [
+        "#8c6a45",
+        "#a98352",
+        "#c2a06b",
+        "#d8c290",
+        "#ead9ae",
+        "#f4e8c8"
+      ],
+      "navy": [
+        "#0e1526",
+        "#172644",
+        "#223764",
+        "#2f4c88",
+        "#4166ac",
+        "#5a80c2"
+      ],
+      "red": [
+        "#4a100e",
+        "#7c1a15",
+        "#a8241b",
+        "#cf3626",
+        "#e2573c",
+        "#ee7a55"
+      ],
+      "moss": [
+        "#27312c",
+        "#333f37",
+        "#414e43",
+        "#505e50",
+        "#616f60",
+        "#748172"
+      ],
+      "slate": [
+        "#20282c",
+        "#2d383e",
+        "#3d4a52",
+        "#4e5e68",
+        "#61737e",
+        "#7a8b96"
+      ],
+      "ochre": [
+        "#5e4416",
+        "#7b5a20",
+        "#96712c",
+        "#b18b3d",
+        "#c8a555",
+        "#dcc077"
+      ]
+    },
+    "hatCol": {
+      "oil": [
+        "#946218",
+        "#b07d1f",
+        "#cf9d24",
+        "#e0b13a",
+        "#f2cf6a"
+      ],
+      "navy": [
+        "#0e1526",
+        "#172644",
+        "#223764",
+        "#2f4c88",
+        "#4166ac"
+      ],
+      "rust": [
+        "#4a100e",
+        "#7c1a15",
+        "#a8241b",
+        "#cf3626",
+        "#e2573c"
+      ],
+      "teal": [
+        "#0d3f3c",
+        "#14554e",
+        "#1c7367",
+        "#2ba39a",
+        "#49b8aa"
+      ],
+      "char": [
+        "#14181b",
+        "#1f262a",
+        "#2c353b",
+        "#3d484f",
+        "#505d65"
+      ],
+      "oat": [
+        "#5c5140",
+        "#786a53",
+        "#948468",
+        "#b09e80",
+        "#c9b899"
+      ]
+    },
+    "apronCol": {
+      "canvas": [
+        "#4d4436",
+        "#665b48",
+        "#7f735c",
+        "#988b71",
+        "#b0a488"
+      ],
+      "rubber": [
+        "#2b2f33",
+        "#3b4147",
+        "#4c545b",
+        "#606a72",
+        "#78838c"
+      ],
+      "ochre": [
+        "#6b4d16",
+        "#8a6520",
+        "#a87f2b",
+        "#c39a3f",
+        "#d9b45c"
+      ]
+    },
+    "eyes": {
+      "sea": "#2ba39a",
+      "sky": "#4166ac",
+      "bark": "#6b4f35",
+      "slate": "#8a969b",
+      "amber": "#e0b13a"
+    },
+    "boot": [
+      "#101317",
+      "#1d2127",
+      "#2b323a",
+      "#3d454e",
+      "#525c63"
+    ],
+    "keyline": "#101a19",
+    "note": "ramps run dark -> light. SPAN keeps each material to ~3 steps so cloth does not read as speckle."
+  },
+  "animation": {
+    "anims": {
+      "idle": {
+        "frames": 6,
+        "ms": 170
+      },
+      "walk": {
+        "frames": 8,
+        "ms": 110
+      },
+      "run": {
+        "frames": 6,
+        "ms": 80
+      },
+      "hold": {
+        "frames": 6,
+        "ms": 170
+      },
+      "cast": {
+        "frames": 10,
+        "ms": 70
+      },
+      "dig": {
+        "frames": 10,
+        "ms": 90
+      },
+      "balance": {
+        "frames": 8,
+        "ms": 150
+      },
+      "stagger": {
+        "frames": 10,
+        "ms": 90
+      },
+      "bite": {
+        "frames": 6,
+        "ms": 150
+      },
+      "strike": {
+        "frames": 6,
+        "ms": 80
+      },
+      "reel": {
+        "frames": 12,
+        "ms": 90
+      },
+      "land": {
+        "frames": 12,
+        "ms": 100
+      },
+      "castBack": {
+        "frames": 6,
+        "ms": 90
+      },
+      "castRelease": {
+        "frames": 8,
+        "ms": 70
+      }
+    },
+    "groups": {
+      "base": [
+        "idle",
+        "walk",
+        "run"
+      ],
+      "balance": [
+        "balance",
+        "stagger"
+      ],
+      "fishing": [
+        "hold",
+        "cast",
+        "castBack",
+        "castRelease",
+        "bite",
+        "strike",
+        "reel",
+        "land"
+      ]
+    },
+    "mount": {
+      "idle": "free",
+      "walk": "free",
+      "run": "free",
+      "balance": "free",
+      "stagger": "free",
+      "hold": "rod",
+      "cast": "rod",
+      "castBack": "rod",
+      "castRelease": "rod",
+      "bite": "rod",
+      "strike": "rod",
+      "reel": "rod",
+      "land": "rod",
+      "dig": "shovel"
+    },
+    "carries": {
+      "buckets": {
+        "label": "PAILS",
+        "layer": "BucketIso (tier 1/2)",
+        "pin": "handL + handR",
+        "anims": [
+          "idle",
+          "walk",
+          "run"
+        ]
+      },
+      "tray": {
+        "label": "TRAY",
+        "layer": "BucketIso (tier 3)",
+        "pin": "mid",
+        "anims": [
+          "idle",
+          "walk",
+          "run"
+        ]
+      },
+      "helm": {
+        "label": "HELM",
+        "layer": "wheel / tiller",
+        "pin": "mid + handL/handR",
+        "anims": [
+          "idle",
+          "walk"
+        ]
+      },
+      "oars": {
+        "label": "OARS",
+        "layer": "DoryIso / PuntIso oars",
+        "pin": "handL + handR",
+        "anims": [
+          "idle",
+          "walk"
+        ]
+      }
+    },
+    "carry_order": [
+      "buckets",
+      "tray",
+      "helm",
+      "oars"
+    ]
+  },
+  "afloat": {
+    "opts": [
+      "roll",
+      "pitch",
+      "heave",
+      "counter"
+    ],
+    "note": "roll/pitch in degrees, heave in cell px, fed straight from a hull rig rock(i); counter 0..1 leans the body back against the deck."
+  }
+}
