@@ -32,6 +32,11 @@ The rigs do **not** share one facing convention.
 **CLOCKWISE-CORRECT (2)** — the art director fixed these at source; character sheets pixel-verified:
 `characterIsoRig.js` · `rodIsoRig.js`
 
+> ⚠️ **That verification is pass 1's, and it does not transfer to `characterIsoRig6.js`** (the
+> 2026-08-02 drop — see the character kit section at the foot of this file). Pass 6 is a different
+> renderer with a separate head rig in the projection path. Its clockwise claim is a **prior** until
+> `CharacterRigAzimuthProbe` measures it at bake time; the bake refuses on a mismatch.
+
 **CLAIMED CLOCKWISE, UNVERIFIED (fishing kit, 2026-07-22)** — `fishIsoRig.js` · `fishToteRig.js`.
 Both carry `th = -dir*Math.PI/4` and the kit's contract declares 8 headings at 45° **CW** (fleet order
 N NE E SE S SW W NW). Per the correction above, the sign term is *not* proof — the baker must verify
@@ -181,6 +186,12 @@ browser scripts — each exposes ONE global and depends only on the globals it n
 New files in this folder (the kit's other nine were already here and arrived byte-identical):
 
 ### Character + rod (the cast)
+> ⚠️ **`characterIsoRig.js` is pass 1 and is SUPERSEDED** by the pass-6 kit
+> (`characterIsoRig6.js` + `headIsoRig3.js` + `eyeIsoRig.js`, imported 2026-08-02 — section at the
+> foot of this file). It stays only until the pass-6 re-bake proves the port; the cell moves
+> 64 × 88 → 64 × 92 and the pivot (32,80) → (32,82) with it. Read the new section, not this bullet,
+> for anything you are about to build.
+
 - **characterIsoRig.js** → `CharacterIso` — fishing anims: hold 6f, cast 10f @70 ms (windup f0–3,
   snap f4–5 — the bobber launches at f5, settle f6–9), power-scaled short/long via `CAST_W1`/`CAST_S1`
   sub-ranges (`castBack`/`castRelease`). `anchors(dir,opts)` → handL/handR/head/hip cell px (the
@@ -343,3 +354,134 @@ read), no heading bakes, no mirrored cells.
 
 The kit's demo page (Seaweed Drift Kit.dc.html) lives in the art director's design workspace, **not**
 in this repo.
+
+---
+
+## The character rig kit, pass 6 (imported 2026-08-02)
+
+One procedural person: eight facings, **fourteen** animations, four carry stances, and the axes that
+make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
+the head and the eyes into rigs of their own.
+
+### ⚠️ LOAD ORDER IS A HARD REQUIREMENT
+
+The body delegates skull / hair / beard / hats to the head rig, and the head delegates the eye socket
+to the eye rig. Load them **eye → head → body**, in that order, into the same host:
+
+```
+docs/art/rigs/eyeIsoRig.js         → globalThis.EyeIso                     (1st)
+docs/art/rigs/headIsoRig3.js       → globalThis.HeadIso3 / HeadIso2 / HeadIso   (2nd)
+docs/art/rigs/characterIsoRig6.js  → globalThis.CharacterIso6              (3rd — the body)
+```
+
+Loaded out of order the body still *runs* — `hatList()` quietly falls back to its local `HATS_LOCAL`
+table and the face never stamps — so this fails as **wrong art**, not as an exception.
+`RigCatalog.Install` loads exactly one file, so a character bake must install the two prerequisites
+first (the `catchKit` canvas-shim precedent: whatever the rig needs and does not provide is the
+host's job, never a patch to his file).
+
+The body registers `CharacterIso5` and `CharacterIso` **only if those names are free**, so a page
+that still loads pass 1 keeps pass 1. In-engine the catalog names `CharacterIso6` explicitly rather
+than relying on that fallback.
+
+### The cell contract — and the port that comes with it
+
+| | pass 1 | **pass 6** |
+|---|---|---|
+| Cell | 64 × 88 | **64 × 92** |
+| Pivot (top-left origin) | (32, 80) | **(32, 82)** |
+| Ground inset (`H − pivotY`) | 8 px | **10 px** |
+| Unity pivot (ADR 0026, `(H−pivotY)/H`) | 8/88 ≈ 0.0909 | **10/92 ≈ 0.1087** |
+| Scale | 32 px = 1 m | 32 px = 1 m |
+| Facings | 8, `N NE E SE S SW W NW` | 8, same order *claimed* |
+| Camera / light | 3⁄4, elev 40°, upper-left key | unchanged |
+
+Mounts computed from `anchors()` / `tool()` / `carry()` absorb the two-row shift for free. Anything
+that hard-codes 88 or 80 does not — and the sheet slicer's ground inset is exactly such a constant.
+
+### ⚠️ The azimuth claim is a PRIOR again, not a fact
+
+The kit README states facing order `N NE E SE S SW W NW`, azimuth **clockwise**. The pass-1 body was
+pixel-verified clockwise and is listed as such at the top of this file — **that measurement does not
+transfer**: pass 6 is a different renderer with a new head rig in the projection path, and this lane
+has been CCW-mislabelled twice. `CharacterRigAzimuthProbe` measures it from rendered pixels at bake
+time and the bake refuses on a mismatch, exactly like every sibling. Until that bake has run, treat
+the clockwise claim as a prior.
+
+### Animations — fourteen, and the mount contract is in the rig
+
+Frame counts and `ms` come from `C.ANIMS`; which layer each one drives comes from `C.ANIM_MOUNT`.
+Never restate either in engine code.
+
+| anim | f | ms | mount | | anim | f | ms | mount |
+|---|--:|--:|---|---|---|--:|--:|---|
+| `idle` | 6 | 170 | free | | `bite` | 6 | 150 | rod |
+| `walk` | 8 | 110 | free | | `strike` | 6 | 80 | rod |
+| `run` | 6 | 80 | free | | `reel` | 12 | 90 | rod |
+| `balance` | 8 | 150 | free | | `land` | 12 | 100 | rod |
+| `stagger` | 10 | 90 | free | | `castBack` | 6 | 90 | rod |
+| `hold` | 6 | 170 | rod | | `castRelease` | 8 | 70 | rod |
+| `cast` | 10 | 70 | rod (`power:'short'\|'long'`) | | `dig` | 10 | 90 | **shovel** |
+
+`C.GROUPS` bundles them: `base` = idle/walk/run · `balance` = balance/stagger · `fishing` = the eight
+rod states. The four carry stances (`C.CARRIES`: `buckets` · `tray` · `helm` · `oars`) ride the
+**free** anims only — a tool anim always wins and `carry` is ignored.
+
+### Customization — colour is data, structure is geometry
+
+`character/options.json` carries every axis and every ramp, dark → light, exactly as the rig ships
+them; `character/presets.json` resolves the ten cast builds. The split that matters downstream:
+
+- **Colour (7 axes)** — `skin` 9 · `hair` 9 · `outfit` 6 · `shirt` 7 · `hatCol` 6 · `apronCol` 3 ·
+  `eyes` 5. Ramps, so a colour change is a ramp swap and never a re-bake.
+- **Structure** — `sex` (a skeleton switch, not a costume), `age` (child/youth/adult/elder),
+  `garment` (7), `hat` (6 + bare), `hairStyle` (8), `beard` (8), `height`/`weight` (≈0.85–1.15),
+  `headSize` (0.9–1.1). These move geometry, so they are baked.
+
+The ten presets, in `C.CAST` order — no two share a sex/age/garment triple, which is the cast's
+whole job:
+
+| key | who | sex | age | garment | hat | height |
+|---|---|---|---|---|---|--:|
+| `fisher` | Fisher | m | adult | bib overalls | — | 1.51 m |
+| `ginny` | Ginny | f | adult | bib overalls | oilskin hood | 1.44 m |
+| `skipper` | Skipper | m | elder | oilskins | sou'wester | 1.42 m |
+| `nan` | Nan | f | elder | skirt + shawl | kerchief | 1.35 m |
+| `deckboss` | Deck boss | m | adult | quilted vest | flat cap | 1.51 m |
+| `packer` | Packer | f | adult | gutting apron | kerchief | 1.44 m |
+| `cutter` | Cutter | f | youth | gutting apron | — | 1.28 m |
+| `hand` | Deckhand | m | youth | work shirt | ball cap | 1.34 m |
+| `boy` | Wharf boy | m | child | knit jumper | watch cap | 1.09 m |
+| `girl` | Wharf girl | f | child | work shirt | — | 1.04 m |
+
+`build:{preset:'nan'}` loads one; overrides layer on top of it. Omitted keys fall back to
+`C.DEFAULT_BUILD` (adult man, bib overalls), so a pass-1 build still resolves.
+
+### Afloat, and the other API
+
+`render(dir,opts)` · `renderAt(px,dir,opts)` · `anchors` · `tool` · `carry` · `metrics(build)` ·
+`projectLocal` · `counter(roll,pitch,gain)`. A character rides a hull's swell through four extra
+opts — `roll` / `pitch` / `heave` / `counter` — fed straight from a hull rig's `rock(i)`, with the
+sign flipped for aft stations and `counter` 0 (passenger) … 1 (working crew). The rig still owns no
+`ROCK` block of its own, so `RigCatalog.Install` reporting `rockFrames 0` remains correct.
+
+### The three prop rigs arrived unchanged
+
+`bucketRig.js`, `rodIsoRig.js` and `shovelIsoRig.js` ship in the kit and are **content-identical to
+the copies already here** — the only difference is LF against the repo's checked-out CRLF, which
+`core.autocrlf` invents and git never stored. They were left untouched rather than rewritten. Same
+lesson as `roadPathRig.js` above: an `md5` mismatch on a text file in this repo is not evidence of
+anything. Diff it before believing it.
+
+### Known open (flagged by the kit itself)
+
+- The oilskin hood reads as a cowl at the rear facings.
+- The kerchief's knot is a ball rather than a tie: fine at 32 px/m, not at 48.
+- Resolution above 32 px/m needs the hat bands **re-solved**, not rescaled — they are solved in rows
+  above the eye, not in metres.
+- `headIsoRig3.js`'s header comment says "pass 3" while its API reports `pass: 7`. The filename and
+  the global are what the engine binds to, so this is cosmetic — noted so the next hand does not
+  read it as two different files.
+
+The kit's `harness.html` (standalone viewer + sheet baker) is **not** imported: previews live in the
+art director's design workspace, and in this repo the baker is an editor operation under ADR 0021.
