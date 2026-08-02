@@ -16,10 +16,17 @@ namespace HiddenHarbours.Art
     /// same until something actually moves past something else.</para>
     ///
     /// <para><b>Static vs dynamic (perf, rule 7).</b> Decor doesn't move, so a STATIC sprite computes its order
-    /// ONCE on enable — no per-frame cost no matter how many tufts a clearing holds. A mover (the player) sets
-    /// <see cref="_dynamic"/> so it re-sorts in <c>LateUpdate</c> (after it has moved this frame). In the EDITOR
-    /// (<c>[ExecuteAlways]</c>) it also re-sorts continuously so the Scene view shows the right layering WHILE
-    /// you drag decor around — but that edit-mode work never runs in a build.</para>
+    /// ONCE on enable and then DISABLES itself in play mode — <c>enabled = false</c> stops the engine
+    /// dispatching <c>Update</c>/<c>LateUpdate</c> at all, so a clearing of ~1300 tufts/trees costs literally
+    /// nothing per frame instead of ~1300 empty calls. A mover (the player) sets <see cref="Dynamic"/> so it
+    /// stays enabled and re-sorts in <c>LateUpdate</c> (after it has moved this frame); flipping
+    /// <see cref="Dynamic"/> at runtime re-arms or stops that dispatch. A region toggle's <c>SetActive</c>
+    /// leaves a parked sprite parked (the component is disabled, so <c>OnEnable</c> doesn't fire) — safe,
+    /// because <c>sortingOrder</c> persists on the renderer and static decor never moves in play mode. To
+    /// force a one-shot re-sort (e.g. after teleporting a "static" prop), set <c>enabled = true</c>: it
+    /// re-sorts and stands itself down again.
+    /// In the EDITOR (<c>[ExecuteAlways]</c>) it stays enabled and re-sorts continuously so the Scene view
+    /// shows the right layering WHILE you drag decor around — that edit-mode work never runs in a build.</para>
     ///
     /// <para>Visual-only: it writes only <see cref="SpriteRenderer.sortingOrder"/> — no sim, no save (rule 5).</para>
     /// </summary>
@@ -29,7 +36,8 @@ namespace HiddenHarbours.Art
     public sealed class YSortSprite : MonoBehaviour
     {
         [Tooltip("Tick for things that MOVE (the player) so they re-sort every frame. Leave OFF for static " +
-                 "decor (grass, trees) — those compute their order once and cost nothing per frame.")]
+                 "decor (grass, trees) — those sort once on enable, then disable themselves in play mode so " +
+                 "they cost nothing per frame. Flip at runtime via the Dynamic property, not this field.")]
         [SerializeField] private bool _dynamic;
 
         [Tooltip("Sorting order for a sprite sitting at world Y = 0. The default sits near the on-foot player's " +
@@ -51,15 +59,53 @@ namespace HiddenHarbours.Art
 
         private SpriteRenderer _sr;
 
-        private void Awake() => _sr = GetComponent<SpriteRenderer>();
-        private void OnEnable() { if (_sr == null) _sr = GetComponent<SpriteRenderer>(); Apply(); }
+        /// <summary>
+        /// Whether this sprite re-sorts every frame (a mover) or was sorted once on enable (static decor).
+        /// Static instances disable themselves in play mode to stop Update/LateUpdate dispatch, so a runtime
+        /// flip must come through here: true re-arms the per-frame sort, false sorts once more at the resting
+        /// spot and stands the dispatch down again.
+        /// </summary>
+        public bool Dynamic
+        {
+            get => _dynamic;
+            set
+            {
+                _dynamic = value;
+                if (!Application.isPlaying) return;
+                if (value) enabled = true;  // OnEnable re-sorts (now or on activation); dynamic, so it stays on
+                // Park only a LIVE dispatcher: on an inactive GO the component must stay enabled so its
+                // first OnEnable still runs the one-shot sort (which then parks it itself).
+                else if (isActiveAndEnabled) { Apply(); enabled = false; }
+            }
+        }
 
-        private void OnValidate() { if (_sr == null) _sr = GetComponent<SpriteRenderer>(); Apply(); }
+        private void Awake() => _sr = GetComponent<SpriteRenderer>();
+
+        private void OnEnable()
+        {
+            if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+            Apply();
+            // Static decor is fully sorted now — disable so the engine stops dispatching Update/LateUpdate
+            // to it entirely (rule 7). Edit mode stays enabled for the Scene-view WYSIWYG re-sort below.
+            if (Application.isPlaying && !_dynamic) enabled = false;
+        }
+
+        private void OnValidate()
+        {
+            if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+            Apply();
+#if UNITY_EDITOR
+            // Ticking _dynamic in the inspector DURING play must re-arm the self-disabled dispatch; enabled
+            // can't be toggled inside OnValidate (it would SendMessage), so defer it one editor tick.
+            if (Application.isPlaying && _dynamic && !enabled)
+                UnityEditor.EditorApplication.delayCall += () => { if (this != null && _dynamic) enabled = true; };
+#endif
+        }
 
         // Edit-mode WYSIWYG: keep decor sorted as it's dragged in the Scene view. Never runs in a build.
         private void Update() { if (!Application.isPlaying) Apply(); }
 
-        // Play-mode movers re-sort AFTER they've moved this frame. Static sprites skip this (sorted once on enable).
+        // Play-mode movers re-sort AFTER they've moved this frame. Static sprites never get here (self-disabled).
         private void LateUpdate() { if (Application.isPlaying && _dynamic) Apply(); }
 
         private void Apply()
