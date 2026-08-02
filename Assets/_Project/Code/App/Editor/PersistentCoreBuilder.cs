@@ -60,10 +60,17 @@ namespace HiddenHarbours.App.Editor
         // Heading (deg, 0 = N, CW) the fisher faces at boot: 180 = South = looking toward the camera.
         const float FacingCameraHeadingDegrees = 180f;
 
-        // The iso cell in metres (88 px at PPU 32) and the neck-deep cap as a fraction of it. Both are
-        // measurements of the ART, read off the Fisher sheets — see the wade block below for the derivation.
-        const float IsoCellHeightMeters = 88f / 32f;    // 2.75
-        const float IsoNeckDeepFraction = 0.47f;        // just under the top of the head at uv.y 0.545
+        // The iso cell in metres and the neck-deep cap as a fraction of it. Both are measurements of
+        // the ART, read off the Fisher sheets — see the wade block below for the derivation.
+        //
+        // ⚠️ 92 px, not 88, as of the pass-6 character kit (2026-08-02). This was the one hard-coded
+        // cell constant outside the slicer, and it is a SILENT one: at 88/32 against a 92-tall cell
+        // the submerge shader clips uv.y against the wrong body height, so the waterline sits a few
+        // centimetres off and nothing anywhere errors. CharacterCellConstantTests pins it against
+        // the slicer's cell, which is itself pinned against the live rig.
+        const int IsoCellHeightPx = 92;
+        const float IsoCellHeightMeters = IsoCellHeightPx / 32f;   // 2.875
+        const float IsoNeckDeepFraction = 0.47f;   // MEASURED — see the wade block below
 
         // The owner's PlayerHaul sheet spec: the first HaulFrameCount slices are the animation — 0..5 the
         // hand-over-hand pull cycle, 6 STRAIN, 7 EASE. The sheet keeps the historical 12-cell shape (like
@@ -393,14 +400,27 @@ namespace HiddenHarbours.App.Editor
                                  "if the sheets were re-imported).");
             }
 
-            // --- WADE SUBMERSION, RE-CALIBRATED FOR THE TALLER ISO CELL -----------------------------------
+            // --- WADE SUBMERSION, RE-CALIBRATED FOR THE ISO CELL ------------------------------------------
             // PlayerSubmergeVisual clips the waterline on the SPRITE's uv.y, so its two tunables describe the
-            // CELL, not the character — and the cell just changed shape. The old flat sheet was 32×64 px
-            // (2.0 m at PPU 32) with the fisher filling it; the iso cell is 64×88 px (2.75 m) with the fisher
-            // occupying only its lower half (measured across all three Fisher sheets: opaque pixels span rows
-            // 40..87 of 88, i.e. uv.y 0.01 at the feet to 0.545 at the top of the hat). Left at the old 1.8 m
-            // /0.85 the waterline would have run off the top of the head. Both are serialized tunables, so
-            // the owner can still taste-tune them in the inspector without a code change.
+            // CELL, not the character. The old flat sheet was 32×64 px (2.0 m at PPU 32) with the fisher
+            // filling it; the iso cell is 64×92 px (2.875 m) with the fisher occupying only its lower half.
+            // Left at the old 1.8 m / 0.85 the waterline would have run off the top of the head.
+            //
+            // ⚠️ The fraction is a MEASUREMENT of the art, not a taste knob, and it does not survive a cell
+            // change: it must sit at the NECK, below the TALLEST preset's crown in uv.y. Re-measure with
+            // Hidden Harbours ▸ Dev ▸ Probe Character Rig, which prints the opaque row span and its uv.y for
+            // the tallest and shortest builds — do not scale the old number.
+            //
+            // MEASURED on the pass-6 rig, 2026-08-02 (probe output, all 8 facings × the idle cycle):
+            //   fisher / skipper : rows 42..85 of 92 → uv.y 0.065 at the feet, 0.533 at the crown
+            //   girl (shortest)  : rows 53..85 of 92 → uv.y 0.065 at the feet, 0.413 at the crown
+            // A head is roughly a seventh of the 1.38 m figure (~0.068 in uv), so the chin sits near 0.465
+            // on the tallest build — and 0.47 still lands on the neck, unchanged from the pass-1 number by
+            // coincidence rather than by carrying it over: the figure is drawn at the same scale and only
+            // the empty headroom grew. Note the feet reach BELOW the pivot row (0.065 against the pivot's
+            // 10/92 = 0.109): the near foot projects under ground contact at the 40° camera, the same way a
+            // tree's root flare does. Both are serialized tunables, so the owner can still taste-tune them
+            // in the inspector without a code change.
             if (isoVisual != null && isoVisual.HasAnyArt())
             {
                 var submerge = playerGo.AddComponent<HiddenHarbours.Art.PlayerSubmergeVisual>();

@@ -186,17 +186,27 @@ browser scripts — each exposes ONE global and depends only on the globals it n
 New files in this folder (the kit's other nine were already here and arrived byte-identical):
 
 ### Character + rod (the cast)
-> ⚠️ **`characterIsoRig.js` is pass 1 and is SUPERSEDED** by the pass-6 kit
-> (`characterIsoRig6.js` + `headIsoRig3.js` + `eyeIsoRig.js`, imported 2026-08-02 — section at the
-> foot of this file). It stays only until the pass-6 re-bake proves the port; the cell moves
-> 64 × 88 → 64 × 92 and the pivot (32,80) → (32,82) with it. Read the new section, not this bullet,
-> for anything you are about to build.
+> ⚠️ **`characterIsoRig.js` is PASS 1 and is superseded for every SHEET BAKE** by
+> `characterIsoRig6.js` + `headIsoRig3.js` + `eyeIsoRig.js` (imported 2026-08-02, **section at the
+> foot of this file**). The catalog's `character` entry points at pass 6; the cell is 64 × 92 and
+> the pivot (32,82). **Do not bake a character sheet from this file** — a 64 × 88 sheet no longer
+> slices.
+>
+> **It stays in the folder for exactly one reason**, and it is not sentiment: the ratified
+> deck-character-MESH arc (ADR 0024) pins to it. `DeckCharacterMeshSpikeDef.SourceRigPath` names
+> it and `CharacterPoseMeshSpikeGoldenTests` includes a **byte-identical source check**, so
+> deleting it reds five tests in a live arc. Porting that spike to pass 6 re-baselines its golden
+> numbers and is its own change, with its own eyeball — not a side effect of an art import.
+>
+> The API below is unchanged in pass 6 and still describes it: `anchors(dir,opts)` →
+> handL/handR/head/hip cell px (the motor-mount pattern: every held thing pins to these),
+> `tool(dir,opts)` → rod grip px + pitch/yaw/bend per frame, `carry(dir,opts)` → bucket and tray
+> pins + swing.
 
-- **characterIsoRig.js** → `CharacterIso` — fishing anims: hold 6f, cast 10f @70 ms (windup f0–3,
-  snap f4–5 — the bobber launches at f5, settle f6–9), power-scaled short/long via `CAST_W1`/`CAST_S1`
-  sub-ranges (`castBack`/`castRelease`). `anchors(dir,opts)` → handL/handR/head/hip cell px (the
-  motor-mount pattern: every held thing pins to these). `tool(dir,opts)` → rod grip px + pitch/yaw/bend
-  per frame. `carry(dir,opts)` → bucket/tray pins + swing.
+- **characterIsoRig.js** → `CharacterIso` (pass 1, mesh-spike input only) /
+  **characterIsoRig6.js** → `CharacterIso6` (pass 6, what bakes) — fishing anims: hold 6f, cast
+  10f @70 ms (windup f0–3, snap f4–5 — the bobber launches at f5, settle f6–9), power-scaled
+  short/long via `CAST_W1`/`CAST_S1` sub-ranges (`castBack`/`castRelease`).
 - **rodIsoRig.js** → `RodIso` — 3 tiers (cane / coaster / deepwater), 112×112 bake, pivot = grip,
   pinned to handR. `tip()`/`tipLocal()` anchor the line; `project()` maps character-local 3D points to
   screen px for line/bobber/splash FX. CAST distances × `castMul` per tier. Rest poses: ground ×8 dirs

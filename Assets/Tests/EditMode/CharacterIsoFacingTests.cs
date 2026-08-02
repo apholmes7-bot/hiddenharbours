@@ -43,12 +43,25 @@ namespace HiddenHarbours.Tests.EditMode
         const string IdleSheetPath = "Assets/_Project/Art/Characters/Iso/Fisher_idle.png";
         const string FisherVisualPath = "Assets/_Project/Data/Characters/FisherIso.asset";
 
-        // The sheet's cell, from the art README (the slice tests own guarding it).
-        const int CellW = 64, CellH = 88, Directions = 8, IdleFrames = 6;
+        // The sheet's cell (the slice tests own guarding it). 64 × 92 as of the pass-6 kit, 2026-08-02.
+        const int CellW = 64, CellH = 92, Directions = 8, IdleFrames = 6;
 
-        // The head band within a cell, in pixels from the cell's TOP. The character occupies rows 40..87 of
-        // the 88-tall cell (measured across all three Fisher sheets); the head sits at the top of that.
-        const int HeadTop = 40, HeadBottom = 60;
+        // The FACE band within a cell, in pixels from the cell's TOP — half-open, [HeadTop, HeadBottom).
+        //
+        // ⚠️ MEASURED on the pass-6 art, not converted from the pass-1 band (40..60 of 88). Converting it
+        // would have been wrong twice over, and the second way is a trap worth stating: a per-row skin
+        // census of Fisher_idle.png shows the face occupying rows 48..55, then a HARD ZERO at 56..58, and
+        // then a SECOND skin region from row 59 — the HANDS, hanging at the sides. At the rear-quarter
+        // facings (NE / NW) the hands sit on the OPPOSITE side of the body from the little face that is
+        // still visible, so a band tall enough to include them INVERTS the measured offset on exactly
+        // those two rows and reads as a mirrored bake. It is not one; it is the hands.
+        //
+        // Cross-checked at 48..56, 47..57 and 48..58: rows 1–3 read screen-RIGHT and 5–7 screen-LEFT in
+        // all three, and rows 0/4 (N/S) sit at ±0.15 because they are their own mirrors and cannot
+        // discriminate — which is exactly why the original CCW defect hid for so long. The diagonals are
+        // genuinely weak (SE +0.28, SW −0.25): at 45° off-camera the face is only slightly off-centre.
+        // Widen this band and you are measuring hands.
+        const int HeadTop = 48, HeadBottom = 56;
 
         // The Fisher's SKIN RAMP, read off the art. Three shades: lit, mid and shadowed. A tolerance covers
         // any future re-palette that nudges them; the SkinRamp_IsStillPresentInTheArt test fails loudly if a

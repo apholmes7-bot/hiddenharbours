@@ -1,0 +1,661 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e50558cec2a1d214f8a2251509bf3387, type: 3}
+  m_Name: CharacterRamps
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterRampsDef
+  Id: ramps.character_iso
+  SourceRig: characterIsoRig6.js
+  SourceOptions: docs/art/rigs/character/options.json
+  Axes:
+  - Axis: skin
+    DefaultKey: fair
+    Ramps:
+    - Id: ramp.skin.porcelain
+      Key: porcelain
+      Label: Porcelain
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282272378
+      - serializedVersion: 2
+        rgba: 4283655066
+      - serializedVersion: 2
+        rgba: 4285300920
+      - serializedVersion: 2
+        rgba: 4287143634
+      - serializedVersion: 2
+        rgba: 4289314278
+      - serializedVersion: 2
+        rgba: 4291550452
+    - Id: ramp.skin.fair
+      Key: fair
+      Label: Fair
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280828011
+      - serializedVersion: 2
+        rgba: 4281751178
+      - serializedVersion: 2
+        rgba: 4283069096
+      - serializedVersion: 2
+        rgba: 4284714441
+      - serializedVersion: 2
+        rgba: 4286687712
+      - serializedVersion: 2
+        rgba: 4288858608
+    - Id: ramp.skin.rose
+      Key: rose
+      Label: Rose
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281286773
+      - serializedVersion: 2
+        rgba: 4282341270
+      - serializedVersion: 2
+        rgba: 4283724468
+      - serializedVersion: 2
+        rgba: 4285370321
+      - serializedVersion: 2
+        rgba: 4287475431
+      - serializedVersion: 2
+        rgba: 4290039798
+    - Id: ramp.skin.olive
+      Key: olive
+      Label: Olive
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280433741
+      - serializedVersion: 2
+        rgba: 4281291368
+      - serializedVersion: 2
+        rgba: 4282347653
+      - serializedVersion: 2
+        rgba: 4283796642
+      - serializedVersion: 2
+        rgba: 4285704381
+      - serializedVersion: 2
+        rgba: 4288136406
+    - Id: ramp.skin.tan
+      Key: tan
+      Label: Tan
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280234841
+      - serializedVersion: 2
+        rgba: 4280829557
+      - serializedVersion: 2
+        rgba: 4281753747
+      - serializedVersion: 2
+        rgba: 4283071920
+      - serializedVersion: 2
+        rgba: 4284717772
+      - serializedVersion: 2
+        rgba: 4286494178
+    - Id: ramp.skin.bronze
+      Key: bronze
+      Label: Bronze
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279708234
+      - serializedVersion: 2
+        rgba: 4280236387
+      - serializedVersion: 2
+        rgba: 4281094272
+      - serializedVersion: 2
+        rgba: 4282215069
+      - serializedVersion: 2
+        rgba: 4283664057
+      - serializedVersion: 2
+        rgba: 4285637329
+    - Id: ramp.skin.umber
+      Key: umber
+      Label: Umber
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279640378
+      - serializedVersion: 2
+        rgba: 4280168271
+      - serializedVersion: 2
+        rgba: 4280959592
+      - serializedVersion: 2
+        rgba: 4281882755
+      - serializedVersion: 2
+        rgba: 4283003038
+      - serializedVersion: 2
+        rgba: 4284517561
+    - Id: ramp.skin.deep
+      Key: deep
+      Label: Deep
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279376944
+      - serializedVersion: 2
+        rgba: 4279904581
+      - serializedVersion: 2
+        rgba: 4280564318
+      - serializedVersion: 2
+        rgba: 4281421690
+      - serializedVersion: 2
+        rgba: 4282607766
+      - serializedVersion: 2
+        rgba: 4283793584
+    - Id: ramp.skin.ebony
+      Key: ebony
+      Label: Ebony
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279900706
+      - serializedVersion: 2
+        rgba: 4280756019
+      - serializedVersion: 2
+        rgba: 4281874503
+      - serializedVersion: 2
+        rgba: 4282927965
+      - serializedVersion: 2
+        rgba: 4284244597
+      - serializedVersion: 2
+        rgba: 4285561486
+  - Axis: hair
+    DefaultKey: blond
+    Ramps:
+    - Id: ramp.hair.blond
+      Key: blond
+      Label: Blond
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280048250
+      - serializedVersion: 2
+        rgba: 4279788180
+      - serializedVersion: 2
+        rgba: 4280253872
+      - serializedVersion: 2
+        rgba: 4282036704
+      - serializedVersion: 2
+        rgba: 4285190130
+    - Id: ramp.hair.sand
+      Key: sand
+      Label: Sand
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281751147
+      - serializedVersion: 2
+        rgba: 4283003015
+      - serializedVersion: 2
+        rgba: 4284517798
+      - serializedVersion: 2
+        rgba: 4286360516
+      - serializedVersion: 2
+        rgba: 4288464861
+    - Id: ramp.hair.black
+      Key: black
+      Label: Black
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279505166
+      - serializedVersion: 2
+        rgba: 4280359703
+      - serializedVersion: 2
+        rgba: 4281477667
+      - serializedVersion: 2
+        rgba: 4282793011
+      - serializedVersion: 2
+        rgba: 4284437578
+    - Id: ramp.hair.brown
+      Key: brown
+      Label: Brown
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279969587
+      - serializedVersion: 2
+        rgba: 4280759879
+      - serializedVersion: 2
+        rgba: 4281353822
+      - serializedVersion: 2
+        rgba: 4281683819
+      - serializedVersion: 2
+        rgba: 4282935946
+    - Id: ramp.hair.auburn
+      Key: auburn
+      Label: Auburn
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279507517
+      - serializedVersion: 2
+        rgba: 4280035159
+      - serializedVersion: 2
+        rgba: 4280364915
+      - serializedVersion: 2
+        rgba: 4280893583
+      - serializedVersion: 2
+        rgba: 4281882539
+    - Id: ramp.hair.ginger
+      Key: ginger
+      Label: Ginger
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279443550
+      - serializedVersion: 2
+        rgba: 4280037501
+      - serializedVersion: 2
+        rgba: 4280763292
+      - serializedVersion: 2
+        rgba: 4281686200
+      - serializedVersion: 2
+        rgba: 4282937552
+    - Id: ramp.hair.salt
+      Key: salt
+      Label: Salt
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281413418
+      - serializedVersion: 2
+        rgba: 4283057984
+      - serializedVersion: 2
+        rgba: 4285162844
+      - serializedVersion: 2
+        rgba: 4287334269
+      - serializedVersion: 2
+        rgba: 4289703331
+    - Id: ramp.hair.grey
+      Key: grey
+      Label: Grey
+      Shades:
+      - serializedVersion: 2
+        rgba: 4286085743
+      - serializedVersion: 2
+        rgba: 4286942087
+      - serializedVersion: 2
+        rgba: 4288718754
+      - serializedVersion: 2
+        rgba: 4290429628
+      - serializedVersion: 2
+        rgba: 4291613903
+    - Id: ramp.hair.white
+      Key: white
+      Label: White
+      Shades:
+      - serializedVersion: 2
+        rgba: 4287402122
+      - serializedVersion: 2
+        rgba: 4288915619
+      - serializedVersion: 2
+        rgba: 4290429116
+      - serializedVersion: 2
+        rgba: 4291811027
+      - serializedVersion: 2
+        rgba: 4293126888
+  - Axis: outfit
+    DefaultKey: teal
+    Ramps:
+    - Id: ramp.outfit.teal
+      Key: teal
+      Label: Teal
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282138381
+      - serializedVersion: 2
+        rgba: 4283323668
+      - serializedVersion: 2
+        rgba: 4284969756
+      - serializedVersion: 2
+        rgba: 4288324395
+      - serializedVersion: 2
+        rgba: 4289378377
+    - Id: ramp.outfit.navy
+      Key: navy
+      Label: Navy
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280685838
+      - serializedVersion: 2
+        rgba: 4282656279
+      - serializedVersion: 2
+        rgba: 4284757794
+      - serializedVersion: 2
+        rgba: 4287122479
+      - serializedVersion: 2
+        rgba: 4289488449
+    - Id: ramp.outfit.oil
+      Key: oil
+      Label: Oil
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279788180
+      - serializedVersion: 2
+        rgba: 4280253872
+      - serializedVersion: 2
+        rgba: 4280589775
+      - serializedVersion: 2
+        rgba: 4282036704
+      - serializedVersion: 2
+        rgba: 4285190130
+    - Id: ramp.outfit.rust
+      Key: rust
+      Label: Rust
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279111754
+      - serializedVersion: 2
+        rgba: 4279573116
+      - serializedVersion: 2
+        rgba: 4279968936
+      - serializedVersion: 2
+        rgba: 4280694479
+      - serializedVersion: 2
+        rgba: 4282144738
+    - Id: ramp.outfit.slate
+      Key: slate
+      Label: Slate
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280886299
+      - serializedVersion: 2
+        rgba: 4282135848
+      - serializedVersion: 2
+        rgba: 4283582519
+      - serializedVersion: 2
+        rgba: 4285029448
+      - serializedVersion: 2
+        rgba: 4286607964
+    - Id: ramp.outfit.moss
+      Key: moss
+      Label: Moss
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280232224
+      - serializedVersion: 2
+        rgba: 4280957486
+      - serializedVersion: 2
+        rgba: 4281814334
+      - serializedVersion: 2
+        rgba: 4282736719
+      - serializedVersion: 2
+        rgba: 4283921506
+  - Axis: shirt
+    DefaultKey: white
+    Ramps:
+    - Id: ramp.shirt.white
+      Key: white
+      Label: White
+      Shades:
+      - serializedVersion: 2
+        rgba: 4286942087
+      - serializedVersion: 2
+        rgba: 4288718754
+      - serializedVersion: 2
+        rgba: 4290429628
+      - serializedVersion: 2
+        rgba: 4291613903
+      - serializedVersion: 2
+        rgba: 4292666335
+      - serializedVersion: 2
+        rgba: 4293587182
+    - Id: ramp.shirt.cream
+      Key: cream
+      Label: Cream
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282739340
+      - serializedVersion: 2
+        rgba: 4283597737
+      - serializedVersion: 2
+        rgba: 4285243586
+      - serializedVersion: 2
+        rgba: 4287677144
+      - serializedVersion: 2
+        rgba: 4289649130
+      - serializedVersion: 2
+        rgba: 4291356916
+    - Id: ramp.shirt.navy
+      Key: navy
+      Label: Navy
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280685838
+      - serializedVersion: 2
+        rgba: 4282656279
+      - serializedVersion: 2
+        rgba: 4284757794
+      - serializedVersion: 2
+        rgba: 4287122479
+      - serializedVersion: 2
+        rgba: 4289488449
+      - serializedVersion: 2
+        rgba: 4290936922
+    - Id: ramp.shirt.red
+      Key: red
+      Label: Red
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279111754
+      - serializedVersion: 2
+        rgba: 4279573116
+      - serializedVersion: 2
+        rgba: 4279968936
+      - serializedVersion: 2
+        rgba: 4280694479
+      - serializedVersion: 2
+        rgba: 4282144738
+      - serializedVersion: 2
+        rgba: 4283792110
+    - Id: ramp.shirt.moss
+      Key: moss
+      Label: Moss
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281086247
+      - serializedVersion: 2
+        rgba: 4281810739
+      - serializedVersion: 2
+        rgba: 4282601025
+      - serializedVersion: 2
+        rgba: 4283457104
+      - serializedVersion: 2
+        rgba: 4284510049
+      - serializedVersion: 2
+        rgba: 4285694324
+    - Id: ramp.shirt.slate
+      Key: slate
+      Label: Slate
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281083936
+      - serializedVersion: 2
+        rgba: 4282267693
+      - serializedVersion: 2
+        rgba: 4283583037
+      - serializedVersion: 2
+        rgba: 4285029966
+      - serializedVersion: 2
+        rgba: 4286477153
+      - serializedVersion: 2
+        rgba: 4288056186
+    - Id: ramp.shirt.ochre
+      Key: ochre
+      Label: Ochre
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279649374
+      - serializedVersion: 2
+        rgba: 4280310395
+      - serializedVersion: 2
+        rgba: 4281102742
+      - serializedVersion: 2
+        rgba: 4282223537
+      - serializedVersion: 2
+        rgba: 4283803080
+      - serializedVersion: 2
+        rgba: 4286038236
+  - Axis: hatCol
+    DefaultKey: char
+    Ramps:
+    - Id: ramp.hatCol.oil
+      Key: oil
+      Label: Oil
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279788180
+      - serializedVersion: 2
+        rgba: 4280253872
+      - serializedVersion: 2
+        rgba: 4280589775
+      - serializedVersion: 2
+        rgba: 4282036704
+      - serializedVersion: 2
+        rgba: 4285190130
+    - Id: ramp.hatCol.navy
+      Key: navy
+      Label: Navy
+      Shades:
+      - serializedVersion: 2
+        rgba: 4280685838
+      - serializedVersion: 2
+        rgba: 4282656279
+      - serializedVersion: 2
+        rgba: 4284757794
+      - serializedVersion: 2
+        rgba: 4287122479
+      - serializedVersion: 2
+        rgba: 4289488449
+    - Id: ramp.hatCol.rust
+      Key: rust
+      Label: Rust
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279111754
+      - serializedVersion: 2
+        rgba: 4279573116
+      - serializedVersion: 2
+        rgba: 4279968936
+      - serializedVersion: 2
+        rgba: 4280694479
+      - serializedVersion: 2
+        rgba: 4282144738
+    - Id: ramp.hatCol.teal
+      Key: teal
+      Label: Teal
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282138381
+      - serializedVersion: 2
+        rgba: 4283323668
+      - serializedVersion: 2
+        rgba: 4284969756
+      - serializedVersion: 2
+        rgba: 4288324395
+      - serializedVersion: 2
+        rgba: 4289378377
+    - Id: ramp.hatCol.char
+      Key: char
+      Label: Char
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279965716
+      - serializedVersion: 2
+        rgba: 4280952351
+      - serializedVersion: 2
+        rgba: 4282070316
+      - serializedVersion: 2
+        rgba: 4283385917
+      - serializedVersion: 2
+        rgba: 4284833104
+    - Id: ramp.hatCol.oat
+      Key: oat
+      Label: Oat
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282405212
+      - serializedVersion: 2
+        rgba: 4283656824
+      - serializedVersion: 2
+        rgba: 4285039764
+      - serializedVersion: 2
+        rgba: 4286619312
+      - serializedVersion: 2
+        rgba: 4288264393
+  - Axis: apronCol
+    DefaultKey: canvas
+    Ramps:
+    - Id: ramp.apronCol.canvas
+      Key: canvas
+      Label: Canvas
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281746509
+      - serializedVersion: 2
+        rgba: 4282932070
+      - serializedVersion: 2
+        rgba: 4284248959
+      - serializedVersion: 2
+        rgba: 4285631384
+      - serializedVersion: 2
+        rgba: 4287145136
+    - Id: ramp.apronCol.rubber
+      Key: rubber
+      Label: Rubber
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281544491
+      - serializedVersion: 2
+        rgba: 4282859835
+      - serializedVersion: 2
+        rgba: 4284175436
+      - serializedVersion: 2
+        rgba: 4285688416
+      - serializedVersion: 2
+        rgba: 4287398776
+    - Id: ramp.apronCol.ochre
+      Key: ochre
+      Label: Ochre
+      Shades:
+      - serializedVersion: 2
+        rgba: 4279651691
+      - serializedVersion: 2
+        rgba: 4280313226
+      - serializedVersion: 2
+        rgba: 4281040808
+      - serializedVersion: 2
+        rgba: 4282358467
+      - serializedVersion: 2
+        rgba: 4284265689
+  - Axis: eyes
+    DefaultKey: sea
+    Ramps:
+    - Id: ramp.eyes.sea
+      Key: sea
+      Label: Sea
+      Shades:
+      - serializedVersion: 2
+        rgba: 4288324395
+    - Id: ramp.eyes.sky
+      Key: sky
+      Label: Sky
+      Shades:
+      - serializedVersion: 2
+        rgba: 4289488449
+    - Id: ramp.eyes.bark
+      Key: bark
+      Label: Bark
+      Shades:
+      - serializedVersion: 2
+        rgba: 4281683819
+    - Id: ramp.eyes.slate
+      Key: slate
+      Label: Slate
+      Shades:
+      - serializedVersion: 2
+        rgba: 4288386698
+    - Id: ramp.eyes.amber
+      Key: amber
+      Label: Amber
+      Shades:
+      - serializedVersion: 2
+        rgba: 4282036704

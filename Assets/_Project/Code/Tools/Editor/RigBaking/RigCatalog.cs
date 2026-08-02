@@ -32,11 +32,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public readonly AzimuthConvention DeclaredConvention;
 
-        public RigEntry(string scriptPath, string globalName, AzimuthConvention declared)
+        /// <summary>
+        /// Catalog keys this rig DELEGATES TO — installed into the same host, transitively and in
+        /// order, before this rig's own source runs. Empty for every rig that stands alone, which
+        /// until the pass-6 character kit was all of them.
+        ///
+        /// <para>⚠️ <b>A missing prerequisite does not throw — it renders the wrong art.</b> The
+        /// pass-6 body asks <c>root.HeadIso</c> for the hat table and falls back to its own local one
+        /// when the head rig is absent; the face never stamps. That is the rigs' shared failure mode
+        /// (resolve as <c>opts[k] ?? fallback</c>, never complain), which is why the dependency is
+        /// declared HERE and not left to each caller to remember. Same principle as the canvas shim
+        /// <c>CatchStorageBaker</c> installs: whatever a rig needs and does not provide is the HOST's
+        /// job, never a patch to the art director's file (ADR 0021 §5).</para>
+        /// </summary>
+        public readonly IReadOnlyList<string> Prerequisites;
+
+        public RigEntry(string scriptPath, string globalName, AzimuthConvention declared,
+                        string[] prerequisites = null)
         {
             ScriptPath = scriptPath;
             GlobalName = globalName;
             DeclaredConvention = declared;
+            Prerequisites = prerequisites ?? Array.Empty<string>();
         }
     }
 
@@ -60,13 +77,35 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["lobsterBoat"] = new RigEntry($"{RigFolder}/lobsterBoatIsoRig.js", "LobsterBoatIso",
                                                AzimuthConvention.CounterClockwise),
 
-                // The first non-boat host: fixed CLOCKWISE at source by the art director
-                // (th = −dir·45°), unlike every boat. It exposes no ROCK block — characters RIDE a
-                // deck's rock via opts.roll/pitch/heave rather than owning one — so Install reports
-                // rockFrames 0 and the turntable path does not apply. Baked by CharacterRigBaker
-                // (8 direction rows × ANIMS-declared frames), never by the boat turntable.
-                ["character"] = new RigEntry($"{RigFolder}/characterIsoRig.js", "CharacterIso",
-                                             AzimuthConvention.Clockwise),
+                // ---- the character, pass 6 (drop of 2026-08-02, PR #397) — THREE FILES -----------
+                //
+                // The first rig in the catalog that is not one file. The body delegates skull / hair /
+                // beard / hats to the head rig, which delegates the eye socket to the eye rig, so all
+                // three must be in the host and IN THAT ORDER. Declared as prerequisites rather than
+                // remembered by each caller: load them wrong and nothing throws — the body silently
+                // uses its local HATS_LOCAL table and never stamps a face.
+                //
+                // The eye and head rigs expose no standard W/H/pivot triple, so they install with
+                // InstallModule (the shellfish/catchKit path) and only the body reports geometry.
+                ["characterEye"] = new RigEntry($"{RigFolder}/eyeIsoRig.js", "EyeIso",
+                                                AzimuthConvention.Clockwise),
+
+                ["characterHead"] = new RigEntry($"{RigFolder}/headIsoRig3.js", "HeadIso3",
+                                                 AzimuthConvention.Clockwise,
+                                                 prerequisites: new[] { "characterEye" }),
+
+                // Still the non-boat host it always was: no ROCK block (characters RIDE a deck's rock
+                // via opts.roll/pitch/heave rather than owning one), so Install reports rockFrames 0
+                // and the turntable path does not apply. Baked by CharacterRigBaker (8 direction rows
+                // × ANIMS-declared frames), never by the boat turntable.
+                //
+                // ⚠️ CLOCKWISE here is a PRIOR AGAIN, not the inherited pass-1 measurement. Pass 1 was
+                // pixel-verified clockwise; pass 6 is a different renderer with a new head rig in the
+                // projection path, and this lane has been CCW-mislabelled twice. CharacterRigAzimuthProbe
+                // measures it from rendered pixels at bake time and the bake refuses on a mismatch.
+                ["character"] = new RigEntry($"{RigFolder}/characterIsoRig6.js", "CharacterIso6",
+                                             AzimuthConvention.Clockwise,
+                                             prerequisites: new[] { "characterHead" }),
 
                 // ---- the fishing kit (drop of 2026-07-22, PR #258) — Rod Fishing v2 wave 3 ------
 
@@ -185,6 +224,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static void InstallModule(IRigScriptHost host, in RigEntry entry)
         {
+            InstallPrerequisites(host, entry);
             host.Execute(ReadSource(entry));
             string g = entry.GlobalName;
             if (!host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"))
@@ -193,9 +233,36 @@ namespace HiddenHarbours.Tools.RigBaking
                     "Either the global name in the catalog is wrong or the rig changed shape.");
         }
 
+        /// <summary>
+        /// Runs a rig's declared <see cref="RigEntry.Prerequisites"/> — depth first, in order, each
+        /// through <see cref="InstallModule"/> so its own prerequisites come first and its global is
+        /// asserted. Already-present globals are skipped, so installing the body twice into one host
+        /// (probe then bake) does not re-run the head.
+        ///
+        /// <para>A prerequisite is loaded with InstallModule and never Install: the head and eye rigs
+        /// expose no <c>W/H/pivot</c> triple, and Install would throw on the missing pivot. Papering
+        /// that over with defaults is exactly the silent-wrong-geometry failure the split entry points
+        /// exist to prevent.</para>
+        /// </summary>
+        static void InstallPrerequisites(IRigScriptHost host, in RigEntry entry)
+        {
+            var prereqs = entry.Prerequisites;
+            if (prereqs == null || prereqs.Count == 0) return;
+
+            foreach (string key in prereqs)
+            {
+                var dep = Get(key);
+                // Idempotent: a host that already carries the global has already run the file.
+                if (host.EvaluateBool($"typeof {dep.GlobalName} === 'object' && " +
+                                      $"{dep.GlobalName} !== null")) continue;
+                InstallModule(host, dep);
+            }
+        }
+
         /// <summary>Loads a rig into a fresh host and returns its self-reported geometry.</summary>
         public static RigGeometry Install(IRigScriptHost host, in RigEntry entry)
         {
+            InstallPrerequisites(host, entry);
             host.Execute(ReadSource(entry));
             string g = entry.GlobalName;
 

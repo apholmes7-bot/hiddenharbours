@@ -8,245 +8,253 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the locomotion set (Fisher,
-    /// Ginny, Skipper — idle/walk/run) and the Fisher's rod poses (hold, cast_short, cast_long). The
-    /// slice lives in the <c>.meta</c>, not in code, so nothing at runtime would notice it rotting: a
-    /// re-export that drifts the grid, a re-slice that loses the ground pivot, or an importer setting
-    /// that downscales the sheet all land as silently wrong sprites.
+    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the player's fifteen states at
+    /// the folder root, and the nine cast presets one subfolder each. The slice lives in the
+    /// <c>.meta</c>, not in code, so nothing at runtime would notice it rotting: a re-export that
+    /// drifts the grid, a re-slice that loses the ground pivot, or an importer setting that downscales
+    /// the sheet all land as silently wrong sprites.
     ///
-    /// <para><b>ONE CELL SIZE NOW: 64 × 88 for all twelve body sheets.</b> There used to be two — the
-    /// rod poses were <b>128 × 128</b>, the same figure on a canvas padded for the rod arc and the flying
-    /// lure. The art director has since split the rod out into its own overlay sheet, so the bodies are
-    /// uniformly the plain character cell (the rod overlays arrive in their own PR and bring the second
-    /// size back). The pivot rule is unchanged and independent of cell size: <b>8 px above the cell
-    /// bottom, on the centreline</b> → (0.5, 8/88 ≈ 0.0909). Inverting it buries the character ~72 px in
-    /// the ground. The pivot assert below is stated in PIXELS so the same rule checks any cell size, and
-    /// it is deliberately duplicated as a literal here rather than imported from the slicer.</para>
+    /// <para><b>ONE CELL SIZE: 64 × 92, every sheet — pass 6, 2026-08-02. It was 64 × 88.</b> There
+    /// used to be two sizes: the rod poses were <b>128 × 128</b>, the same figure on a canvas padded
+    /// for the rod arc and the flying lure. The art director split the rod out into its own overlay
+    /// sheet, so the bodies are uniformly the plain character cell. <b>The pivot rule is unchanged in
+    /// form and moved in value: <c>GroundInset</c> px above the cell bottom, on the centreline</b> →
+    /// <c>(0.5, 10/92 ≈ 0.1087)</c>, where it used to be <c>8/88 ≈ 0.0909</c>. The inset is
+    /// <c>H − pivotY</c> read off the rig and it moved with the cell; leaving it at 8 plants every
+    /// character two pixels into the ground while every other assert here still passes. Inverting it
+    /// buries them ~72 px. Both numbers are restated as literals here rather than imported from
+    /// <c>CharacterSheetSlicer</c> — the duplication is the test.</para>
     ///
-    /// <para><b>Expectations come from the ART, not from the slicer.</b> Frame counts, row counts and
-    /// total sprite counts are all derived from the actual PNG dimensions read off disk
-    /// (<c>cols = width / cellW</c>, <c>rows = height / cellH</c>) — asserting the slicer's grid config
-    /// against the slicer's grid config is the self-referential blind spot that let the mirrored boat
-    /// art ship, and it is deliberately avoided. This test never references
-    /// <c>CharacterSheetSlicer</c>. The one thing that cannot be derived is the cell size itself (1280
-    /// px is a whole number of both 64 px and 128 px cells), so it is restated here independently as
-    /// the contract under test.</para>
+    /// <para><b>Expectations come from the ART, not from the slicer.</b> Row counts and total sprite
+    /// counts are derived from the actual PNG dimensions read off disk (<c>cols = width / cellW</c>,
+    /// <c>rows = height / cellH</c>) — asserting the slicer's grid config against the slicer's grid
+    /// config is the self-referential blind spot that let the mirrored boat art ship, and it is
+    /// deliberately avoided. This test never references <c>CharacterSheetSlicer</c>. The two things
+    /// that cannot be derived — the cell size (a sheet width is a whole number of several plausible
+    /// cell widths) and the per-anim frame counts — are restated here as the contract under test.</para>
     ///
-    /// <para>Row order is asserted only as a <i>count</i> of 8 — which way the rows RUN is measured from
-    /// the pixels in <c>CharacterIsoFacingTests</c>, not here. (They now run clockwise as labelled: the
-    /// rig was fixed at source and the bodies re-baked.) Slices stay named by row INDEX regardless: a
-    /// slice name states geometry, not compass semantics, which is what kept the re-bake a data change
-    /// instead of an asset-database migration. See <c>CharacterSheetSlicer</c>'s remarks.</para>
+    /// <para>Row order is asserted only as a <i>count</i> of 8 — which way the rows RUN is measured
+    /// from the pixels in <c>CharacterIsoFacingTests</c>, not here. Slices stay named by row INDEX
+    /// regardless: a slice name states geometry, not compass semantics, which is what kept the re-bake
+    /// a data change instead of an asset-database migration.</para>
     /// </summary>
     public class CharacterIsoSheetSliceTests
     {
         private const string Iso = "Assets/_Project/Art/Characters/Iso/";
 
-        /// <summary>Ground contact sits this many px above the cell bottom on EVERY sheet.</summary>
-        private const float GroundInsetPx = 8f;
+        /// <summary>Ground contact sits this many px above the cell bottom on EVERY sheet.
+        /// 92 − 82 = 10, from the rig's own pivot. Was 8 when the cell was 88 tall.</summary>
+        private const float GroundInsetPx = 10f;
+
+        private const int CellW = 64, CellH = 92, Rows = 8;
+
+        /// <summary>Every sheet's height: 8 direction rows × 92.</summary>
+        private const int SheetHeight = Rows * CellH;   // 736
 
         /// <summary>
-        /// The authored cell of each sheet, stated here as the contract under test. Everything else
-        /// (frame count, row count, total sprites) is DERIVED from the PNG on disk.
+        /// The frame count of every state, restated as the contract. Cross-checked against the RIG's
+        /// own ANIMS table by <c>CharacterRigBakeTests</c> and against the PNG widths here, so a
+        /// re-export that quietly lengthened an animation is caught from both sides. A carry variant
+        /// carries its base anim's count — the stance changes the pose, never the timing.
         /// </summary>
-        private static readonly Dictionary<string, Vector2Int> Sheets = new Dictionary<string, Vector2Int>
+        private static readonly Dictionary<string, int> Frames = new Dictionary<string, int>
         {
-            // Locomotion — 64 × 88.
-            { "Fisher_idle",  new Vector2Int(64, 88) },
-            { "Fisher_walk",  new Vector2Int(64, 88) },
-            { "Fisher_run",   new Vector2Int(64, 88) },
-            { "Ginny_idle",   new Vector2Int(64, 88) },
-            { "Ginny_walk",   new Vector2Int(64, 88) },
-            { "Ginny_run",    new Vector2Int(64, 88) },
-            { "Skipper_idle", new Vector2Int(64, 88) },
-            { "Skipper_walk", new Vector2Int(64, 88) },
-            { "Skipper_run",  new Vector2Int(64, 88) },
+            { "idle", 6 },   { "walk", 8 },        { "run", 6 },
+            { "balance", 8 },{ "stagger", 10 },
+            { "hold", 6 },   { "cast_short", 10 }, { "cast_long", 10 },
+            { "castBack", 6 }, { "castRelease", 8 },
+            { "bite", 6 },   { "strike", 6 },      { "reel", 12 }, { "land", 12 },
+            { "dig", 10 },
 
-            // Rod poses — 64 × 88 too, since the rod moved out to its own overlay sheet. These three were
-            // 128 × 128 while the rod was baked INTO the body; the frame counts (6/10/10) did not change,
-            // only the canvas. The rod overlays arrive in their own PR at their own, larger cell.
-            { "Fisher_hold",       new Vector2Int(64, 88) },
-            { "Fisher_cast_short", new Vector2Int(64, 88) },
-            { "Fisher_cast_long",  new Vector2Int(64, 88) },
-
-            // Fight/balance cycle (rod fishing v2 wave 1, spec in PR #251) — baked in-engine by
-            // Hidden Harbours ▸ Art ▸ Bake Character Fight Sheets, plain character cell like the rest.
-            // Owner-baked and committed 2026-07-22; held to every assertion like the rest of the set.
-            { "Fisher_bite",        new Vector2Int(64, 88) },
-            { "Fisher_strike",      new Vector2Int(64, 88) },
-            { "Fisher_reel",        new Vector2Int(64, 88) },
-            { "Fisher_land",        new Vector2Int(64, 88) },
-            { "Fisher_castBack",    new Vector2Int(64, 88) },
-            { "Fisher_castRelease", new Vector2Int(64, 88) },
-            { "Fisher_balance",     new Vector2Int(64, 88) },
-            { "Fisher_stagger",     new Vector2Int(64, 88) },
+            // The carry stances — separate sheets because the stance changes the POSE, not just
+            // where the hands are. Which stance rides which anim is the RIG's CARRIES table: pails
+            // and tray on all three gaits, helm and oars on idle and walk only (nobody runs a
+            // tiller). Restated here as the contract; the bake grows the set from the rig.
+            { "idle_buckets", 6 }, { "walk_buckets", 8 }, { "run_buckets", 6 },
+            { "idle_tray", 6 },    { "walk_tray", 8 },    { "run_tray", 6 },
+            { "idle_helm", 6 },    { "walk_helm", 8 },
+            { "idle_oars", 6 },    { "walk_oars", 8 },
         };
 
-        // The AwaitingOwnerBake guard set that let CI stay green while the fight-cycle sheets waited
-        // on the owner's in-editor bake was deleted when those 8 PNGs landed (its own ⚠️ instruction):
-        // from that commit on, a missing sheet must FAIL the closed-set guard, never read as pending.
-
-        /// <summary>The README's / drop's stated frame counts, checked against the PNG widths.</summary>
-        private static readonly Dictionary<string, int> ExpectedFrames = new Dictionary<string, int>
+        /// <summary>The player's twenty-five: every state the rig declares, plus its carry stances.</summary>
+        private static readonly string[] PlayerStates =
         {
-            { "Fisher_idle", 6 },  { "Fisher_walk", 8 },  { "Fisher_run", 6 },
-            { "Ginny_idle", 6 },   { "Ginny_walk", 8 },   { "Ginny_run", 6 },
-            { "Skipper_idle", 6 }, { "Skipper_walk", 8 }, { "Skipper_run", 6 },
-            { "Fisher_hold", 6 },  { "Fisher_cast_short", 10 }, { "Fisher_cast_long", 10 },
-
-            // Fight/balance cycle — the counts the rig's ANIMS table declares (cross-checked
-            // against the rig on every run by CharacterRigBakeTests, and against these PNGs here
-            // once they land).
-            { "Fisher_bite", 6 },     { "Fisher_strike", 6 },
-            { "Fisher_reel", 12 },    { "Fisher_land", 12 },
-            { "Fisher_castBack", 6 }, { "Fisher_castRelease", 8 },
-            { "Fisher_balance", 8 },  { "Fisher_stagger", 10 },
+            "idle", "walk", "run", "balance", "stagger",
+            "idle_buckets", "walk_buckets", "run_buckets",
+            "idle_tray", "walk_tray", "run_tray",
+            "idle_helm", "walk_helm", "idle_oars", "walk_oars",
+            "hold", "cast_short", "cast_long", "castBack", "castRelease",
+            "bite", "strike", "reel", "land", "dig",
         };
 
-        private static IEnumerable<string> AllSheets() => Sheets.Keys.OrderBy(s => s).ToArray();
+        /// <summary>What a cast standee gets: the gaits, not the gear. (See the bake menu for why.)</summary>
+        private static readonly string[] CastStates = { "idle", "walk" };
 
-        private static Vector2Int Cell(string stem) => Sheets[stem];
+        /// <summary>The nine NPC presets: subfolder, then sheet stem. <c>fisher</c> is absent because
+        /// he is the player, baked at the root.</summary>
+        private static readonly (string folder, string stem)[] Cast =
+        {
+            ("ginny", "Ginny"), ("skipper", "Skipper"), ("nan", "Nan"),
+            ("deckboss", "DeckBoss"), ("packer", "Packer"), ("cutter", "Cutter"),
+            ("hand", "Hand"), ("boy", "Boy"), ("girl", "Girl"),
+        };
+
+        /// <summary>Project-relative path of every guarded sheet — the player's at the root, the
+        /// cast's one folder each.</summary>
+        private static IEnumerable<string> AllSheets()
+        {
+            var paths = new List<string>();
+            foreach (string s in PlayerStates) paths.Add($"{Iso}Fisher_{s}.png");
+            foreach (var (folder, stem) in Cast)
+            foreach (string s in CastStates) paths.Add($"{Iso}{folder}/{stem}_{s}.png");
+            paths.Sort(System.StringComparer.Ordinal);
+            return paths.ToArray();
+        }
+
+        private static string StemOf(string path) => Path.GetFileNameWithoutExtension(path);
+
+        /// <summary>The state name behind a sheet path: <c>Ginny_walk</c> → <c>walk</c>.</summary>
+        private static string StateOf(string path)
+        {
+            string stem = StemOf(path);
+            int i = stem.IndexOf('_');
+            return i < 0 ? stem : stem.Substring(i + 1);
+        }
 
         /// <summary>⚠️ Multiple-mode sheets return null from LoadAssetAtPath&lt;Sprite&gt; — LoadAllAssets is the rule.</summary>
-        private static Sprite[] LoadSlices(string stem) =>
-            AssetDatabase.LoadAllAssetsAtPath(Iso + stem + ".png").OfType<Sprite>().ToArray();
+        private static Sprite[] LoadSlices(string path) =>
+            AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
 
-        private static Texture2D LoadSheet(string stem)
+        private static Texture2D LoadSheet(string path)
         {
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(Iso + stem + ".png");
-            Assert.IsNotNull(tex, $"{stem}.png: failed to load as Texture2D — is the PNG (and its .meta) committed?");
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            Assert.IsNotNull(tex, $"{path}: failed to load as Texture2D — is the PNG (and its .meta) committed?");
             return tex;
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void Sheet_IsSlicedMultipleMode_IntoEightDirectionRowsOfTheArtsOwnFrameCount(string stem)
+        public void Sheet_IsSlicedMultipleMode_IntoEightDirectionRowsOfTheArtsOwnFrameCount(string path)
         {
-            var importer = AssetImporter.GetAtPath(Iso + stem + ".png") as TextureImporter;
-            Assert.IsNotNull(importer, $"{stem}: no TextureImporter — is the .meta committed?");
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            Assert.IsNotNull(importer, $"{path}: no TextureImporter — is the .meta committed?");
             Assert.AreEqual(SpriteImportMode.Multiple, importer.spriteImportMode,
-                            $"{stem}: must stay grid-sliced (Multiple), not a Single sprite");
+                            $"{path}: must stay grid-sliced (Multiple), not a Single sprite");
 
-            var tex = LoadSheet(stem);
-            Vector2Int cell = Cell(stem);
+            var tex = LoadSheet(path);
 
             // Derived from the art, not asserted against a constant.
-            Assert.AreEqual(0, tex.width % cell.x,
-                            $"{stem}: {tex.width} px wide is not a whole number of {cell.x} px cells");
-            Assert.AreEqual(0, tex.height % cell.y,
-                            $"{stem}: {tex.height} px tall is not a whole number of {cell.y} px cells");
+            Assert.AreEqual(0, tex.width % CellW,
+                            $"{path}: {tex.width} px wide is not a whole number of {CellW} px cells");
+            Assert.AreEqual(0, tex.height % CellH,
+                            $"{path}: {tex.height} px tall is not a whole number of {CellH} px cells");
 
-            int cols = tex.width / cell.x;
-            int rows = tex.height / cell.y;
+            int cols = tex.width / CellW;
+            int rows = tex.height / CellH;
 
-            Assert.AreEqual(8, rows, $"{stem}: an iso character sheet must have 8 direction rows");
-            Assert.AreEqual(rows * cols, LoadSlices(stem).Length,
-                            $"{stem}: expected {rows} direction rows × {cols} frames = {rows * cols} slices");
+            Assert.AreEqual(Rows, rows, $"{path}: an iso character sheet must have 8 direction rows");
+            Assert.AreEqual(rows * cols, LoadSlices(path).Length,
+                            $"{path}: expected {rows} direction rows × {cols} frames = {rows * cols} slices");
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void Sheet_ImportsAtNativeRes_NotDownscaled(string stem)
+        public void Sheet_ImportsAtNativeRes_NotDownscaled(string path)
         {
-            // The widest sheet here is 1280 px — comfortably under the 2048 default cap — so this should
+            // The widest sheet here is 768 px — comfortably under the 2048 default cap — so this should
             // not bite. Assert it anyway: a downscaled sheet cannot carry a source-pixel grid (rects get
             // refit and the pivot is thrown away) while the sprite COUNT still matches, so only this and
             // the pivot test would ever catch it.
-            var tex = LoadSheet(stem);
-            var slices = LoadSlices(stem);
-            Assert.IsNotEmpty(slices, $"{stem}: no slices loaded");
+            var tex = LoadSheet(path);
+            var slices = LoadSlices(path);
+            Assert.IsNotEmpty(slices, $"{path}: no slices loaded");
 
-            float maxRight = slices.Max(s => s.rect.xMax);
-            float maxTop = slices.Max(s => s.rect.yMax);
-            Assert.AreEqual(tex.width, maxRight, 0.01f,
-                            $"{stem}: slices do not span the sheet width — importer downscaled or grid drifted");
-            Assert.AreEqual(tex.height, maxTop, 0.01f,
-                            $"{stem}: slices do not span the sheet height — importer downscaled or grid drifted");
+            Assert.AreEqual(tex.width, slices.Max(s => s.rect.xMax), 0.01f,
+                            $"{path}: slices do not span the sheet width — importer downscaled or grid drifted");
+            Assert.AreEqual(tex.height, slices.Max(s => s.rect.yMax), 0.01f,
+                            $"{path}: slices do not span the sheet height — importer downscaled or grid drifted");
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void EverySlice_IsOneCell_AndPivotsOnGroundContact(string stem)
+        public void EverySlice_IsOneCell_AndPivotsOnGroundContact(string path)
         {
-            // ⚠️ Pixels, not normalized — one rule for both cell sizes: centreline, 8 px above the cell
-            // bottom. A flipped pivot (8/88 → 80/88, or 8/128 → 120/128) reads as a plausible number but
-            // buries the character 72 px (64×88) / 112 px (128×128) in the ground on every frame.
-            Vector2Int cell = Cell(stem);
-            float pivotPxX = cell.x / 2f;
+            // ⚠️ Pixels, not normalized — one rule for any cell size: centreline, GroundInsetPx above
+            // the cell bottom. A flipped pivot (10/92 → 82/92) reads as a plausible number but buries
+            // the character 72 px in the ground on every frame.
+            float pivotPxX = CellW / 2f;
             float pivotPxY = GroundInsetPx;
 
-            var slices = LoadSlices(stem);
-            Assert.IsNotEmpty(slices, $"{stem}: no slices loaded");
+            var slices = LoadSlices(path);
+            Assert.IsNotEmpty(slices, $"{path}: no slices loaded");
             foreach (var s in slices)
             {
-                Assert.AreEqual(cell.x, s.rect.width, 0.01f, $"{s.name}: cell width drifted");
-                Assert.AreEqual(cell.y, s.rect.height, 0.01f, $"{s.name}: cell height drifted");
+                Assert.AreEqual(CellW, s.rect.width, 0.01f, $"{s.name}: cell width drifted");
+                Assert.AreEqual(CellH, s.rect.height, 0.01f, $"{s.name}: cell height drifted");
                 Assert.AreEqual(pivotPxX, s.pivot.x, 0.01f, $"{s.name}: pivot.x off the character centreline");
                 Assert.AreEqual(pivotPxY, s.pivot.y, 0.01f,
-                                $"{s.name}: pivot.y off ground contact — is it inverted? ground contact is " +
-                                $"({pivotPxX}, {cell.y - GroundInsetPx}) TOP-LEFT; Unity wants bottom-origin {pivotPxY}");
+                                $"{s.name}: pivot.y off ground contact — is it inverted, or still on the " +
+                                $"old 8 px inset? ground contact is ({pivotPxX}, {CellH - GroundInsetPx}) " +
+                                $"TOP-LEFT; Unity wants bottom-origin {pivotPxY}");
             }
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void EverySlice_NormalizedPivot_IsGroundInsetOverCellHeight(string stem)
+        public void EverySlice_NormalizedPivot_IsGroundInsetOverCellHeight(string path)
         {
             // The same rule again in NORMALIZED terms, because that is the number actually stored in the
-            // .meta and the number a future presenter will reason about: (0.5, 8/cellH). For the rod
-            // sheets that is 0.0625; for the locomotion sheets ≈ 0.0909. Two different numbers, one rule
-            // — and this catches a "generalisation" that quietly reused 8/88 on a 128-tall cell.
-            Vector2Int cell = Cell(stem);
-            float expectedY = GroundInsetPx / cell.y;
+            // .meta and the number a presenter reasons about: (0.5, 10/92 ≈ 0.1087). This is the assert
+            // that goes red if the cell height moves and the inset does not follow it.
+            float expectedY = GroundInsetPx / CellH;
 
-            foreach (var s in LoadSlices(stem))
+            foreach (var s in LoadSlices(path))
             {
                 Vector2 norm = new Vector2(s.pivot.x / s.rect.width, s.pivot.y / s.rect.height);
                 Assert.AreEqual(0.5f, norm.x, 0.0005f, $"{s.name}: normalized pivot.x must be 0.5");
                 Assert.AreEqual(expectedY, norm.y, 0.0005f,
-                                $"{s.name}: normalized pivot.y must be {GroundInsetPx}/{cell.y} = {expectedY}");
+                                $"{s.name}: normalized pivot.y must be {GroundInsetPx}/{CellH} = {expectedY}");
             }
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void Slices_TileTheSheet_WithNoGapsAndNoOverlap(string stem)
+        public void Slices_TileTheSheet_WithNoGapsAndNoOverlap(string path)
         {
             // Every (col,row) origin the sheet's own dimensions imply must be covered exactly once.
-            var tex = LoadSheet(stem);
-            Vector2Int cell = Cell(stem);
-            int cols = tex.width / cell.x;
-            int rows = tex.height / cell.y;
+            var tex = LoadSheet(path);
+            int cols = tex.width / CellW;
+            int rows = tex.height / CellH;
 
             var occupied = new HashSet<(int, int)>();
-            foreach (var s in LoadSlices(stem))
+            foreach (var s in LoadSlices(path))
             {
-                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.x) % cell.x, $"{s.name}: x not on the cell grid");
-                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.y) % cell.y, $"{s.name}: y not on the cell grid");
-                var c = (Mathf.RoundToInt(s.rect.x) / cell.x, Mathf.RoundToInt(s.rect.y) / cell.y);
+                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.x) % CellW, $"{s.name}: x not on the cell grid");
+                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.y) % CellH, $"{s.name}: y not on the cell grid");
+                var c = (Mathf.RoundToInt(s.rect.x) / CellW, Mathf.RoundToInt(s.rect.y) / CellH);
                 Assert.IsTrue(occupied.Add(c), $"{s.name}: two slices overlap cell {c}");
             }
 
             for (int c = 0; c < cols; c++)
                 for (int r = 0; r < rows; r++)
-                    Assert.IsTrue(occupied.Contains((c, r)), $"{stem}: no slice covers cell (col {c}, row {r})");
+                    Assert.IsTrue(occupied.Contains((c, r)), $"{path}: no slice covers cell (col {c}, row {r})");
         }
 
         [Test]
         [TestCaseSource(nameof(AllSheets))]
-        public void Slices_AreNamedByRowIndex_NotByCompassName(string stem)
+        public void Slices_AreNamedByRowIndex_NotByCompassName(string path)
         {
             // The `_d<row>_f<col>` scheme IS the contract, and the ABSENCE of a compass name is
-            // deliberate: these rows are baked counter-clockwise while the README labels them clockwise,
-            // so "…_E" or "…_NE" in a sprite name would hard-code the mislabelling into the asset
-            // database. A forthcoming CharacterVisualDef carries the FacingsAreCounterClockwise flag.
-            var tex = LoadSheet(stem);
-            Vector2Int cell = Cell(stem);
-            int cols = tex.width / cell.x;
-            int rows = tex.height / cell.y;
+            // deliberate: a compass name in a sprite name hard-codes a facing claim into the asset
+            // database, where a re-measure cannot reach it. CharacterVisualDef carries the
+            // FacingsAreCounterClockwise flag instead, as per-artwork data.
+            string stem = StemOf(path);
+            var tex = LoadSheet(path);
+            int cols = tex.width / CellW;
+            int rows = tex.height / CellH;
 
             var seen = new HashSet<string>();
-            foreach (var s in LoadSlices(stem))
+            foreach (var s in LoadSlices(path))
             {
                 StringAssert.StartsWith(stem + "_d", s.name, $"{s.name}: unexpected slice name");
                 Assert.IsTrue(seen.Add(s.name), $"{s.name}: duplicate slice name");
@@ -261,63 +269,60 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.Less(f, cols, $"{s.name}: frame index out of range");
 
                 // Row 0 is the TOP row of the canvas; Unity rects are bottom-origin.
-                int rectRowFromTop = rows - 1 - Mathf.RoundToInt(s.rect.y) / cell.y;
+                int rectRowFromTop = rows - 1 - Mathf.RoundToInt(s.rect.y) / CellH;
                 Assert.AreEqual(d, rectRowFromTop,
                                 $"{s.name}: name says row {d} but the rect sits at row {rectRowFromTop} from the top");
-                Assert.AreEqual(f, Mathf.RoundToInt(s.rect.x) / cell.x,
+                Assert.AreEqual(f, Mathf.RoundToInt(s.rect.x) / CellW,
                                 $"{s.name}: name says frame {f} but the rect sits in a different column");
-
-                StringAssert.DoesNotContain("_N", s.name.Substring(stem.Length),
-                                            $"{s.name}: compass names must not be baked into slice names");
             }
         }
 
         [Test]
-        public void FrameCounts_MatchTheDrop_LocomotionSixOrEight_HoldSix_CastTen()
+        public void FrameCounts_MatchTheRecipe_OnEverySheetOnDisk()
         {
-            // The one place the stated frame counts are checked — against the PNGs, so a re-export that
+            // The one place the stated frame counts are checked against the PNGs, so a re-export that
             // quietly changed an animation's length is caught rather than absorbed.
-            foreach (var kv in ExpectedFrames)
+            foreach (string path in AllSheets())
             {
-                var tex = LoadSheet(kv.Key);
-                int cols = tex.width / Cell(kv.Key).x;
-                Assert.AreEqual(kv.Value, cols,
-                                $"{kv.Key}: expected {kv.Value} frames but the sheet is {tex.width} px " +
-                                $"wide = {cols} cells of {Cell(kv.Key).x} px");
+                string state = StateOf(path);
+                Assert.IsTrue(Frames.TryGetValue(state, out int expected),
+                              $"{path}: no frame count declared for state '{state}'");
+                var tex = LoadSheet(path);
+                int cols = tex.width / CellW;
+                Assert.AreEqual(expected, cols,
+                                $"{path}: expected {expected} frames but the sheet is {tex.width} px " +
+                                $"wide = {cols} cells of {CellW} px");
             }
         }
 
         [Test]
-        public void EveryBodySheet_IsNowTheSamePlainCharacterCell_704PxTall()
+        public void EveryBodySheet_IsThePassSixCell_736PxTall()
         {
-            // The shape half of this PR, asserted against the pixels. Fisher_hold / cast_short / cast_long
-            // used to be 1024 px tall (8 × 128) because the rod was baked into the body; the rod moved out
-            // to its own overlay, so every body sheet is now 8 rows × 88 px = 704. Pin the dimension
-            // itself: reading a 704 px sheet on the old 128 px grid gives 5.5 rows and fails, but reading
-            // a 1024 px sheet on the 88 px grid would ALSO fail — so this catches a half-applied art drop
-            // in either direction.
-            foreach (var stem in AllSheets())
+            // The shape half of the port, asserted against the pixels. A pass-1 sheet is 704 px tall
+            // (8 × 88) and a pre-rod-split one is 1024 (8 × 128); both fail here, so a half-applied
+            // re-bake cannot hide. Reading a 736 px sheet on the 88 px grid gives 8.36 rows and fails
+            // the row assert too — this catches the drift from either direction.
+            foreach (string path in AllSheets())
             {
-                var tex = LoadSheet(stem);
-                Assert.AreEqual(704, tex.height,
-                                $"{stem}: every iso character BODY sheet must be 8 rows × 88 px = 704 px " +
-                                "tall. If this is 1024, the old rod-baked-in art is still on disk.");
-                Assert.AreEqual(0, tex.width % 64,
-                                $"{stem}: {tex.width} px wide is not a whole number of 64 px cells");
+                var tex = LoadSheet(path);
+                Assert.AreEqual(SheetHeight, tex.height,
+                                $"{path}: every iso character BODY sheet must be 8 rows × {CellH} px = " +
+                                $"{SheetHeight} px tall. 704 means the pass-1 art is still on disk; " +
+                                "1024 means the rod-baked-in art is.");
+                Assert.AreEqual(0, tex.width % CellW,
+                                $"{path}: {tex.width} px wide is not a whole number of {CellW} px cells");
             }
         }
 
         [Test]
         public void EveryIsoCharacterPngInTheFolder_IsCoveredByThisTest()
         {
-            // A new sheet dropped into the folder must not slip past the guard unnoticed. The
-            // expected set is every guarded stem except those still awaiting the owner's bake — so
-            // an UNGUARDED png on disk still fails (it is not in Sheets at all), and a guarded,
-            // already-shipped sheet going missing still fails; only a spec'd-but-not-yet-baked
-            // fight sheet is tolerated as absent.
-            var onDisk = Directory.GetFiles(Iso, "*.png")
-                                  .Select(Path.GetFileNameWithoutExtension)
-                                  .OrderBy(s => s)
+            // A new sheet dropped into the folder must not slip past the guard unnoticed — and a
+            // guarded sheet going missing must fail. The scan is RECURSIVE because the cast lives one
+            // subfolder deep; a stale pass-1 Ginny_idle.png left at the root would surface here.
+            var onDisk = Directory.GetFiles(Iso, "*.png", SearchOption.AllDirectories)
+                                  .Select(p => p.Replace('\\', '/'))
+                                  .OrderBy(p => p, System.StringComparer.Ordinal)
                                   .ToArray();
             CollectionAssert.AreEquivalent(AllSheets().ToArray(), onDisk,
                                            "Iso character sheets on disk differ from the guarded set");
