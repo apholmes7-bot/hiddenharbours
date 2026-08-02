@@ -125,7 +125,7 @@ glow).
 3. **`BoatSpotlight`** — the first concrete light (above).
 4. **`LightMenu`** — `Hidden Harbours ▸ Lighting ▸ Add Light to Selection ▸ {Spotlight | Worklight* | Window
    Glow* | Lightpost*}` (the starred three are radial **stubs** — structured for, not bespoke yet) and `Hidden
-   Harbours ▸ Build Light Test` (a dark ground plane + a boat-spotlight cone + a radial lantern; press Play,
+   Harbours ▸ Dev ▸ Build Light Test` (a dark ground plane + a boat-spotlight cone + a radial lantern; press Play,
    scrub to night, watch the beam cut through).
 5. **`LightMathTests`** — the pure maths: the night-gate ramp (invisible day → full night, monotonic, the
    threshold/fallback), the cone/radial falloff + angle math, the flicker determinism + band, and the boat

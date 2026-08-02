@@ -33,7 +33,7 @@ Two promises the window keeps:
    thing you were looking at is now placeable — usually a prefab to drag into a region scene, or
    sliced sprites a paint/placement tool picks up.
 5. Place it: drag the named prefab into a scene, or use the tool the report names
-   (e.g. `Hidden Harbours ▸ Tools ▸ Place Village Lineup`).
+   (e.g. `Hidden Harbours ▸ Dev ▸ Place Village Lineup`).
 
 ## When the studio says no
 

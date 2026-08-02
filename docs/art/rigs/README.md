@@ -89,7 +89,7 @@ byte-identical golden master was.
   cross-check passed, so the reading is evidence rather than a coin flip. Its listing above is no longer
   a prior. ⚠️ The correction is applied **in the bake**, so the shipped sheets' cell `i` genuinely depicts
   +45°·i — do not re-mirror them.
-- **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Art ▸ Bake Buildings
+- **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Dev ▸ Bake Buildings
   (houses + wharf)* runs and the bake either passes or refuses. Nothing consumes it yet (the shed/barn/
   cannery family is M2).
 
@@ -291,7 +291,8 @@ Each shipped variant is its own seed-locked baked cell — **no mirroring assump
 ### The baked sheets — `Assets/_Project/Art/Sprites/Shore/Drift/*.png`
 One sheet per species: variant columns × **3 ramp rows** (living / golden / bleached, top to bottom).
 Structure is seed-stable — every row is the SAME build recoloured. Sliced by
-`DriftWeedSheetSlicer` (menu: *Hidden Harbours ▸ Art ▸ Slice Drift Weed Sheets*) with each column's
+`DriftWeedSheetSlicer` (menu: *Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Drift Weed
+Sheets*) with each column's
 **buoy as a per-variant Custom pivot** — the sidecar's "register the sprite to the water surface
 here" — which is why these sheets are not `SpriteSheetSlicer` manifest entries (that table is one
 pivot per sheet).

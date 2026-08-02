@@ -21,7 +21,8 @@ change its apparent size — only the camera zoom changes.**
 3. **Let the import lock do its job.** Any texture under `Assets/_Project/Art/` is auto-stamped on first
    import with the locked settings (PPU 32 · Point · Compression None · mips off · sRGB · pivot · wrap)
    by `Editor/ArtImportPipeline.cs`. You normally **don't touch the importer**. To (re)apply to an
-   existing/hand-tuned asset: select it ▸ **Hidden Harbours ▸ Art ▸ Apply Locked Import Settings to Selection**.
+   existing/hand-tuned asset: select it ▸ **Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Apply
+   Locked Import Settings to Selection**.
 4. **Confirm LFS.** New binary types must be covered by `.gitattributes` (png, psd, tga, aseprite, ase,
    wav, ogg… already are). `git check-attr filter <file>` should print `filter: lfs`. Prefer extending a
    packed atlas over a new loose texture once you have many sprites.
@@ -102,7 +103,8 @@ locked spec so there's no sub-pixel shimmer as the follow-cam tracks the boat:
 - Assets PPU **32**, ref resolution **288 × 512** (portrait mobile base → ~16 m of world height, the
   intimate default zoom), **Pixel Snapping** on, Crop Frame **None**.
 
-Apply it to a camera with **Hidden Harbours ▸ Art ▸ Configure Pixel-Perfect Camera (active scene)** or
+Apply it to a camera with **Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Configure
+Pixel-Perfect Camera (active scene)** or
 `ArtCameraSetup.ConfigurePixelPerfect(cameraGo)` (the greybox builder already does this). World-content's
 region scenes should use the same helper.
 
@@ -135,7 +137,8 @@ their shared remote-steer outboard) and [`docs/art/punt-iso-rig/`](../../../docs
 ⚠️ **`Sprites/Buildings/Village/` does NOT pivot on its feet, and the difference is metres.** The five M1
 village buildings (school, general store, 3 clapboard houses) are **baked** from
 [`docs/art/rigs/houseIsoRig.js`](../../../docs/art/rigs/houseIsoRig.js) rather than drawn — *Art ▸ Bake
-Village Buildings (M1 set)* → *▸ Slice Village Building Sheets* → *▸ Build Village Building Prefabs*. Each
+Village Buildings (M1 set)* → *Art ▸ Import (after a new drop) ▸ Slice Village Building Sheets* →
+*▸ Build Village Building Prefabs*. Each
 sheet holds **8 facings** sharing **one cell and one pivot** (that identity is what stops a building
 shifting as it turns), and the pivot is the **ground CENTRE** — the middle of the footprint. Under the ¾
 camera the whole near half of the footprint projects *below* that centre: a measured **104–209 px

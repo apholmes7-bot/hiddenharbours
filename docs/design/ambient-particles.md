@@ -91,7 +91,7 @@ point-filtered, crisp pixel-art — so the effect is self-contained (one shared 
 effect, batched) and depends on no imported PNG that might slice to a single sub-sprite.
 
 ## How the owner sees them
-- **Hidden Harbours ▸ Build Atmosphere Test** (mirrors *Build Grass Test*) drops a small sea backdrop +
+- **Hidden Harbours ▸ Dev ▸ Build Atmosphere Test** (mirrors *Build Grass Test*) drops a small sea backdrop +
   a cottage-with-chimney into the current scene. Press **Play**: the mist, gulls and motes self-install
   and appear; the chimney carries live smoke; a gentle dev test-wind drifts them all even with no sim.
   Delete the spawned `AtmosphereTest` object to fully revert.
