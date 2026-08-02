@@ -1848,7 +1848,7 @@ assigns a bake; the `Water.mat` baseline stays 0.
 
 #### The bake tool
 
-`Hidden Harbours ▸ Art ▸ Bake Seabed Texture (_SeabedTex)` — an explicit region rect (auto-filled from the open
+`Hidden Harbours ▸ Dev ▸ Bake Seabed Texture (_SeabedTex)` — an explicit region rect (auto-filled from the open
 scene's `WaterSurface.HeightWorldRect`), a resolution, and the scene's ground Tilemap as the source. It writes
 an external PNG **next to the painted height map** (`Data/Terrain/<base>_SeabedTex.png` — the `_HeightTex`
 convention) and configures the importer: sRGB **on** (colour, unlike the height map's linear metres), Point,
@@ -1892,7 +1892,7 @@ depth.
 > nothing left to take. A seabed is sand, silt and rock; the blue is the water's job, and the water
 > already does it. Pinned by a test that asserts the bottom is never bluer than it is red.
 
-**The bake is reproducible, not hand-made.** `Hidden Harbours ▸ Art ▸ Bake Cove Seabed` (and
+**The bake is reproducible, not hand-made.** `Hidden Harbours ▸ Dev ▸ Bake Cove Seabed` (and
 `CoveSeabedBakeEntry.Run` for `-executeMethod`) builds the cove's terrain **from the builder's own
 constants** in a throwaway object — no scene opened, so it works from a clean checkout and there is
 nothing that could dirty a committed scene. A committed texture nobody can regenerate is a texture

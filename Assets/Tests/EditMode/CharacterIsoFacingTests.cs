@@ -120,7 +120,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var def = AssetDatabase.LoadAssetAtPath<CharacterVisualDef>(FisherVisualPath);
             Assert.IsNotNull(def, $"No CharacterVisualDef at '{FisherVisualPath}'. Run Hidden Harbours ▸ " +
-                                  "Art ▸ Build Character Visual Defs and commit the asset.");
+                                  "Art ▸ Import (after a new drop) ▸ Build Character Visual Defs " +
+                                  "and commit the asset.");
             return def;
         }
 

@@ -64,7 +64,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// and playtested, and ADR 0021 leaves "re-bake the existing kits" as a later, one-at-a-time
         /// job behind a visual diff. The automated equivalent is PuntGoldenMasterTests.
         /// </summary>
-        [MenuItem("Hidden Harbours/Art/Bake Punt to artifacts (golden-master eyeball)", priority = 41)]
+        [MenuItem("Hidden Harbours/Dev/Bake Punt to artifacts (golden-master eyeball)", priority = 120)]
         public static void BakePuntToScratch()
         {
             RunBake(new BakeRequest("punt", facings: 8, rockFrames: 0,

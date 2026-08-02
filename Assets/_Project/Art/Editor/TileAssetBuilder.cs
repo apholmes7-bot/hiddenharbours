@@ -15,8 +15,8 @@ namespace HiddenHarbours.Art.Editor
     /// sprites by neighbour. These are the tiles the owner picks in the <b>Tile Palette</b>
     /// (Window ▸ 2D ▸ Tile Palette) to paint a scene's Tilemap — see <c>TilePaletteBuilder</c> for the
     /// palette asset and <c>docs/authoring-scenes.md</c> for the non-developer painting workflow.
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Build Terrain Tiles</c> (re-runnable). The legacy
-    /// "Build Coddle Cove Tiles" label still works.</para>
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Terrain Tiles</c>
+    /// (re-runnable).</para>
     /// </summary>
     public static class TileAssetBuilder
     {
@@ -46,7 +46,7 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>Output path of the autotiling shoreline RuleTile.</summary>
         public static string ShorelinePath => $"{OutDir}/Shoreline.asset";
 
-        [MenuItem("Hidden Harbours/Art/Build Terrain Tiles")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Terrain Tiles", priority = 235)]
         public static void Build()
         {
             if (!AssetDatabase.IsValidFolder(OutDir))
@@ -69,13 +69,10 @@ namespace HiddenHarbours.Art.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log($"[TileAssetBuilder] Built {n} terrain Tiles + a Shoreline RuleTile under {OutDir}. " +
-                      "Now run Hidden Harbours ▸ Art ▸ Build Tile Palette, then paint in Window ▸ 2D ▸ Tile Palette " +
+                      "Now run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Tile Palette, then " +
+                      "paint in Window ▸ 2D ▸ Tile Palette " +
                       "(see docs/authoring-scenes.md).");
         }
-
-        // Backward-compatible alias for the original menu path documented in Art/imported-assets.md (VS-24).
-        [MenuItem("Hidden Harbours/Art/Build Coddle Cove Tiles")]
-        public static void BuildLegacyAlias() => Build();
 
         // The shoreline autotiles its edge: where the painted shore tile is ABSENT (open water) on a
         // side, draw the wet edge; two adjacent water sides => outer corner; a single diagonal of water

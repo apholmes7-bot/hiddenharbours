@@ -108,7 +108,7 @@ dir ±2; the wrong sign must lose by ≥4×) and the test
    Palette, ramps, ordered dither, keyline colour and the fixed key light are identical by
    construction (same extraction, same shader). *Condition flagged below.*
 2. **Does a slowly-yawing deck read smooth under a mesh character?** This is the demo
-   (`Hidden Harbours → Spike → Deck Character Mesh` → attach rig; keys **J** mesh↔sprite A/B,
+   (`Hidden Harbours → Dev → Deck Character Mesh (SPIKE)` → attach rig; keys **J** mesh↔sprite A/B,
    **H** idle↔hold, **U** forced weathervane, **O** displaced sea). Rotation smoothness for facet
    meshes vs 8-dir sprites was already measured by ADR 0022 (mesh 3.9–5.7× lower shading
    acceleration than *32*-facing sprites; the character sprite has 8) — the mechanism is

@@ -673,7 +673,8 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/" +
                                  $"{ExpectedPickerRungs} hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
-                                 "Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs and the cove builder " +
+                                 "Run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat " +
+                                 "Visual Defs and the cove builder " +
                                  "(which authors the hull assets), then re-run this builder.");
 
             // The opening cast as DATA (CLAUDE.md rule 2): Aunt Ginny (teaches the buy-and-repair loop) and

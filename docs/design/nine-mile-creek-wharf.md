@@ -225,7 +225,7 @@ town handles money.
 
 1. ~~**Bake the wharf buildings in-engine.**~~ ✅ **DONE** — `BuildingRigBaker` bakes both building
    rigs (houses and wharf buildings), tight-cropping each preset to its drawn pixels and measuring the
-   azimuth convention from the door anchor. Menu: *Hidden Harbours ▸ Art ▸ Bake Buildings*. The owner
+   azimuth convention from the door anchor. Menu: *Hidden Harbours ▸ Dev ▸ Bake Buildings*. The owner
    needs to run it once; the sheets are not committed until then.
 2. **Stand up the wharf rule-tiles** — the 17-piece auto-tile set needs a `RuleTile` (or the paint
    tool) that also honours the back-to-front draw order the 24 px overhanging face requires. Not hard,

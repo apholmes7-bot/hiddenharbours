@@ -202,7 +202,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException(
                     $"[shrub-baker] {ShrubCatalog.ContractPath} is missing or unreadable — it is the " +
                     "oracle this bake is checked against, so there is nothing to bake against. Run " +
-                    "Hidden Harbours ▸ Art ▸ Export Shrub Contract first.");
+                    "Hidden Harbours ▸ Dev ▸ Export Shrub Contract first.");
 
             // Validate the WHOLE recipe against the rig AND the contract before writing anything: a
             // species whose union cell drifted must fail with zero files on disk, not half a set of

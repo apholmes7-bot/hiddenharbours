@@ -561,7 +561,8 @@ on a swap at all (see the swap gap below).
   goes through `BoatHullSkinner.ApplyHull`, which handles **both** directions (install/refresh the compass,
   or tear it down and bring the base renderer back with the new hull's sprite).
 - **Sheet paths are an import concern, not a gameplay one:** `BoatVisualLibraryBuilder`
-  (*Hidden Harbours ▸ Art ▸ Build Boat Visual Defs*) is the only thing that knows where boat art lives on
+  (*Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat Visual Defs*) is the only thing
+  that knows where boat art lives on
   disk; it imports the sliced sheets into the def asset, which is committed. Re-run it only when a sheet is
   **re-sliced** (the sprite sub-asset ids change and the def's refs go stale).
 - **Invariants the rig rests on** (breaking any of these breaks the boat): bow = `transform.up`; heading 0

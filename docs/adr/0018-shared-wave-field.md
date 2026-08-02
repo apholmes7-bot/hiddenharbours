@@ -318,7 +318,7 @@ reasons:
 fragment shader `WAVE_MAX_TRAINS` times per `WaveFieldSample()` call, at up to nine call sites per
 pixel (the main sample, four caustic-curvature taps, four foam-convergence taps) — and the loop is
 `[unroll]`ed with the live count masked *inside*, so **dead slots still cost ALU**. Measured with
-`Hidden Harbours/Water/Wave-field cost report` (compiled D3D11 fragment bytecode, both water passes,
+`Hidden Harbours/Dev/Wave-field cost report` (compiled D3D11 fragment bytecode, both water passes,
 same machine, shader-only difference):
 
 | | N = 4 | N = 8 | Δ |

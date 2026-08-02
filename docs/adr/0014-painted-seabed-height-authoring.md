@@ -56,7 +56,7 @@ terrain TYPE" model (over auto-texture-from-height or two separate brushes), the
   **Sandbar** (1.6, Foam — the closest "wet sand" the generated set has), **Grass/Land** (6, Grass), **Cliff**
   (~8, Rock). Underwater types (no tile / `clearTile`) set height only and CLEAR any land tile so the water
   shows. Presets bind to the closest tile from `TileAssetBuilder.Terrain`; a missing tile leaves the preset
-  EMPTY (height-only) and the UI hints to run "Build Scene-Painting Toolkit".
+  EMPTY (height-only) and the UI hints to run "Build Terrain Tiles".
 - **The height brushes are kept** (Raise / Lower / Set-height / Smooth) for fine-tuning, as are New /
   Export-St-Peters / Adopt / the PaintedHeightMap asset / the WaterSurface preview. **The height map remains
   the single source of truth for water + tide (P1); the tile is authored VISUAL content, not sim.**

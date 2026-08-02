@@ -188,7 +188,8 @@ namespace HiddenHarbours.App.Editor
                 "Coddle Cove baked as a COMMITTED scene (ADR 0011 pilot).\n\nThe scene now contains ONE " +
                 $"'{LogicRootName}' object holding all the gameplay logic. There are no placeholder visuals " +
                 "— that's deliberate: YOU paint the look.\n\nNext:\n" +
-                "1. Hidden Harbours ▸ Art ▸ Add Paintable Tilemap, then paint terrain.\n" +
+                "1. Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Add Paintable Tilemap, then " +
+                "paint terrain.\n" +
                 "2. Drag decor prefabs from Assets/_Project/Prefabs/Decor into the Scene.\n" +
                 "3. Leave the --LOGIC-- object alone.\n" +
                 "4. File ▸ Save (Ctrl+S).\n\nFrom now on, to update the logic WITHOUT losing your painting, " +
@@ -210,7 +211,7 @@ namespace HiddenHarbours.App.Editor
         /// tilemap at all — a tilemap bake there is a fully transparent texture and absorption stays
         /// invisible. Re-bake from the tilemap once the owner has painted a bottom.</para>
         /// </summary>
-        [MenuItem("Hidden Harbours/Art/Bake Cove Seabed", priority = 25)]
+        [MenuItem("Hidden Harbours/Dev/Bake Cove Seabed", priority = 101)]
         public static void BakeCoveSeabed()
         {
             // ⚠️ NOT from the open scene. The committed Greybox.unity carries no --LOGIC-- tree at
@@ -923,7 +924,8 @@ namespace HiddenHarbours.App.Editor
             else
                 Debug.LogWarning($"[GreyboxBuilder] {hullPath}: no BoatVisualDef at {visualPath}, so " +
                                  $"{h.Id} has NO PICTURE (its fallback Sprite is empty — it would sail " +
-                                 "invisible). Run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs, then " +
+                                 "invisible). Run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ " +
+                                 "Build Boat Visual Defs, then " +
                                  "re-run this builder.");
 
             EditorUtility.SetDirty(h);

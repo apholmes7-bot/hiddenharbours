@@ -171,7 +171,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             RequireSheetsOnDisk();
             Assert.IsTrue(VillageBuildingSheetSlicer.VerifyAll(logEachPass: false),
                           "VerifyAll failed — see the logged mismatches. Re-run " +
-                          "Hidden Harbours ▸ Art ▸ Slice Village Building Sheets.");
+                          "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Village Building Sheets.");
         }
 
         [Test]
@@ -513,7 +513,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (string path in VillageBuildingKit.AllSheetPaths(_contract))
                 if (!File.Exists(path))
                     Assert.Ignore($"{path} is not on disk — run Hidden Harbours ▸ Art ▸ Bake Village " +
-                                  "Buildings, then ▸ Slice Village Building Sheets.");
+                                  "Buildings, then ▸ Import (after a new drop) ▸ Slice Village " +
+                                  "Building Sheets.");
         }
 
         static VillageBuildingKit.Entry Clone(VillageBuildingKit.Entry src) =>

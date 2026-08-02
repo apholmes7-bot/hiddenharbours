@@ -335,7 +335,7 @@ namespace HiddenHarbours.Boats
                 // Asked for a mesh it cannot draw — say so once per apply, then let the sprite stand.
                 Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' wants the MESH variant but its " +
                                  "HullMesh def is missing or unusable. Falling back to the sprite compass. " +
-                                 "Re-run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake for this rig.");
+                                 "Re-run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake for this rig.");
                 return false;
             }
             return HullMeshPresentation.Service != null;
@@ -373,7 +373,7 @@ namespace HiddenHarbours.Boats
                 Debug.LogWarning($"[BoatHullSkinner] Visual '{visual.Id}' binds oar/motor SHEETS but is " +
                                  "presented as a MESH hull — sprite overlays are baked per facing cell and " +
                                  "cannot ride a continuously-rotating mesh. They are skipped. Bake that " +
-                                 "fitting as a mesh (Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull " +
+                                 "fitting as a mesh (Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL hull " +
                                  "fittings) and wire it, as the dory's oars are.");
 
             // The facet renderer, through the Core seam. Install is idempotent (a re-skin reconfigures).

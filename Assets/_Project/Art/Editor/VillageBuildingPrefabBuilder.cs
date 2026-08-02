@@ -18,11 +18,12 @@ namespace HiddenHarbours.Art.Editor
     /// <see cref="VillageBuildingCatalog"/>. Re-run after a re-bake and every prefab refreshes IN PLACE,
     /// so scene instances keep their prefab link and nobody re-places a village.</para>
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Build Village Building Prefabs</c>.</para>
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Village Building
+    /// Prefabs</c>.</para>
     /// </summary>
     public static class VillageBuildingPrefabBuilder
     {
-        [MenuItem("Hidden Harbours/Art/Build Village Building Prefabs", priority = 23)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Village Building Prefabs", priority = 233)]
         public static void BuildMenu()
         {
             int built = BuildAll(VillageBuildingCatalog.PrefabRoot);
@@ -41,7 +42,7 @@ namespace HiddenHarbours.Art.Editor
                 $"{VillageBuildingCatalog.PrefabRoot}. {VillageBuildingCatalog.Summary(placements)} " +
                 "Drag one into a scene and it stands on its GROUND LINE, not the bottom of its cell. " +
                 "To turn one, call VillageBuildingCatalog.SetFacing — never rotate the transform, the " +
-                "art is baked at a fixed camera. To see the whole set, Hidden Harbours ▸ Tools ▸ Place " +
+                "art is baked at a fixed camera. To see the whole set, Hidden Harbours ▸ Dev ▸ Place " +
                 "Village Lineup; to check a building does not shift as it turns, ▸ Place Village " +
                 "Building Turntable.");
         }
@@ -81,8 +82,9 @@ namespace HiddenHarbours.Art.Editor
                 {
                     Debug.LogWarning(
                         $"[VillageBuildingPrefabBuilder] '{placement.Stem}' has no facing-{facing} " +
-                        "sprite — skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Slice Village Building " +
-                        "Sheets.) Note the sheets import spriteMode Multiple, so a plain " +
+                        "sprite — skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Import (after a new " +
+                        "drop) ▸ Slice Village Building Sheets.) Note the sheets import spriteMode " +
+                        "Multiple, so a plain " +
                         "LoadAssetAtPath<Sprite> on them returns null.");
                     continue;
                 }
@@ -127,7 +129,7 @@ namespace HiddenHarbours.Art.Editor
         /// houses — and it is re-runnable: run it again after a re-bake and the row rebuilds from the new
         /// prefabs.</para>
         /// </summary>
-        [MenuItem("Hidden Harbours/Tools/Place Village Lineup (M1 building set)", priority = 45)]
+        [MenuItem("Hidden Harbours/Dev/Place Village Lineup (M1 building set)", priority = 61)]
         public static void PlaceLineupMenu()
         {
             int placed = PlaceLineup(SceneViewPivot(), VillageBuildingCatalog.PrefabRoot);
@@ -212,7 +214,7 @@ namespace HiddenHarbours.Art.Editor
         /// jump when re-faced. Eight of them on one ground line, at equal spacing, is what makes a wrong
         /// pivot visible in one glance.</para>
         /// </summary>
-        [MenuItem("Hidden Harbours/Tools/Place Village Building Turntable (8 facings)", priority = 46)]
+        [MenuItem("Hidden Harbours/Dev/Place Village Building Turntable (8 facings)", priority = 62)]
         public static void PlaceTurntableMenu()
         {
             var placements = VillageBuildingCatalog.Scan();

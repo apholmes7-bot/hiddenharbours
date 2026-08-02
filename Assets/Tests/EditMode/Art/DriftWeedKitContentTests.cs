@@ -41,7 +41,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var kit = AssetDatabase.LoadAssetAtPath<DriftWeedKit>(DriftWeedKitBuilder.KitAssetPath);
             Assert.IsNotNull(kit,
                 $"No DriftWeedKit at '{DriftWeedKitBuilder.KitAssetPath}'. Run " +
-                "Hidden Harbours ▸ Art ▸ Build Drift Weed Kit (after Slice Drift Weed Sheets).");
+                "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Drift Weed Kit (after Slice Drift Weed Sheets).");
             return kit;
         }
 
@@ -116,7 +116,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             Assert.AreEqual(m.Groups[1].Value, kit.BuiltFromRigSha256,
                 "The kit was built from a DIFFERENT drift-weed rig than the sidecar on disk. The art " +
-                "was re-dropped without re-running Hidden Harbours ▸ Art ▸ Build Drift Weed Kit, so " +
+                "was re-dropped without re-running Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Drift Weed Kit, so " +
                 "the table's sizes and sprites no longer describe the sheets.");
         }
 

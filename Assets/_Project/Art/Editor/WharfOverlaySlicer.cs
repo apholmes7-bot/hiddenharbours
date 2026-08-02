@@ -44,7 +44,8 @@ namespace HiddenHarbours.Art.Editor
     /// <see cref="WharfKitCatalog"/>, which is where that claim is recorded and where it gets corrected
     /// if it proves wrong.</para>
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Slice Wharf Overlay Sprites</c> (re-runnable; existing
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Wharf Overlay
+    /// Sprites</c> (re-runnable; existing
     /// spriteIDs are re-used so a no-op re-slice writes a byte-identical .meta).</para>
     /// </summary>
     public static class WharfOverlaySlicer
@@ -67,7 +68,7 @@ namespace HiddenHarbours.Art.Editor
             public string note;
         }
 
-        [MenuItem("Hidden Harbours/Art/Slice Wharf Overlay Sprites")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Wharf Overlay Sprites", priority = 209)]
         public static void SliceMenu()
         {
             if (Slice(out int n)) Debug.Log($"[WharfOverlaySlicer] Sliced {n} wharf fitting(s).");

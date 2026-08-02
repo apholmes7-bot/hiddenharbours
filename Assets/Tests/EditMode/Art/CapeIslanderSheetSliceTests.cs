@@ -88,7 +88,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 $"{s.File}: the sheet is {s.Cols * s.CellW}×{s.Rows * s.CellH} but maxTextureSize is " +
                 $"{importer.maxTextureSize} — it needs at least {needed}. Below that Unity DOWNSCALES the " +
                 "texture on import and the grid slice becomes garbage, while the sprite COUNT still looks " +
-                "right. Re-run Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets.");
+                "right. Re-run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets.");
         }
 
         [Test]

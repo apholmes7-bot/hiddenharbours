@@ -64,7 +64,7 @@ namespace HiddenHarbours.Tools.RigStudio
                 ?? throw new InvalidOperationException(
                     $"{ShrubCatalog.ContractPath} is missing or unreadable — it is the oracle every " +
                     "shrub bake is checked against, so there is no parameter space to describe. Run " +
-                    "Hidden Harbours ▸ Art ▸ Export Shrub Contract first.");
+                    "Hidden Harbours ▸ Dev ▸ Export Shrub Contract first.");
             return _contract;
         }
 

@@ -32,7 +32,8 @@ namespace HiddenHarbours.App.Editor
     /// deleting and recreating the asset, so a tilemap already painted with these tiles keeps its references
     /// (a fresh asset would get a fresh GUID and every painted cell would go blank).</para>
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Build Shoreline ISO Tiles</c>.</para>
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Shoreline ISO
+    /// Tiles</c>.</para>
     /// </summary>
     public static class ShoreIso2TileLibrary
     {
@@ -63,7 +64,7 @@ namespace HiddenHarbours.App.Editor
         public static string DuneName(string band, string piece)      => $"Dune_{band}_{piece}";
         public static string ContactName(string piece)                => $"Contact_{piece}";
 
-        [MenuItem("Hidden Harbours/Art/Build Shoreline ISO Tiles", priority = 23)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Shoreline ISO Tiles", priority = 237)]
         public static void BuildDefaultStyle() => Build(DefaultStyle);
 
         /// <summary>

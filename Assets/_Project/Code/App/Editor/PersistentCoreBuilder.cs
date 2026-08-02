@@ -388,8 +388,9 @@ namespace HiddenHarbours.App.Editor
             {
                 Debug.LogWarning($"[PersistentCoreBuilder] No complete iso character skin at " +
                                  $"'{IsoFisherVisual}' — the fisher falls back to the old 4-direction " +
-                                 "FisherSheet. Run Hidden Harbours ▸ Art ▸ Build Character Visual Defs " +
-                                 "(and Slice Iso Character Sheets first if the sheets were re-imported).");
+                                 "FisherSheet. Run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ " +
+                                 "Build Character Visual Defs (and ▸ Slice Iso Character Sheets first " +
+                                 "if the sheets were re-imported).");
             }
 
             // --- WADE SUBMERSION, RE-CALIBRATED FOR THE TALLER ISO CELL -----------------------------------
@@ -595,7 +596,7 @@ namespace HiddenHarbours.App.Editor
                                  "' binds no directional Visual with a full compass — left the plain rotating " +
                                  "dory hull + the legacy oar rig in place. Point the hull asset's Visual at a " +
                                  "BoatVisualDef; if its sheets are unsliced, slice them (Hidden Harbours ▸ Art " +
-                                 "▸ Slice…), re-run Hidden Harbours ▸ Art ▸ Build Boat Visual Defs, then re-run " +
+                                 "▸ Import (after a new drop) ▸ Slice…), re-run ▸ Build Boat Visual Defs, then re-run " +
                                  "the start builder.");
                 return;
             }

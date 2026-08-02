@@ -189,7 +189,7 @@ namespace HiddenHarbours.Tools.RigStudio
                     $"'{build.Label}' is now placeable: drag " +
                     $"{VillageBuildingCatalog.PrefabRoot}/{stem}.prefab into a region scene " +
                     "(it stands on its ground line, door toward the camera), or run " +
-                    "Hidden Harbours ▸ Tools ▸ Place Village Lineup to see the whole set.",
+                    "Hidden Harbours ▸ Dev ▸ Place Village Lineup to see the whole set.",
                 Summary = bakeLog,
             };
         }

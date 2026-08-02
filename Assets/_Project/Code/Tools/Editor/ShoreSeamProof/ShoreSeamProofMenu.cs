@@ -31,7 +31,7 @@ namespace HiddenHarbours.Tools.Editor
         private static string OutDir => Path.Combine(Application.dataPath,
             "_Project/Code/Tools/Editor/ShoreSeamProof/Evidence~");
 
-        [MenuItem("Hidden Harbours/Proofs/Shore Seam (ADR 0023) — run all")]
+        [MenuItem("Hidden Harbours/Dev/Shore Seam (ADR 0023) — run all", priority = 81)]
         public static void RunAll()
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;

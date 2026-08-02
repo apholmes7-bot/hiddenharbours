@@ -23,7 +23,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(AssetPath);
             Assert.IsNotNull(def, $"missing committed hull-mesh asset at {AssetPath} — run " +
-                                  "Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake Lobster Boat hull-mesh asset");
+                                  "Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake Lobster Boat hull-mesh asset");
             return def;
         }
 

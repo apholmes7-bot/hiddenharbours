@@ -103,7 +103,7 @@ scenes with no clock. The shadow **arc** (south-bias / noon-lift / overcast-fade
 from the same `DayNightProfile` the controller uses.
 
 **How to see it / add it (owner):**
-- **`Hidden Harbours ▸ Build Shadow Test`** — drops a ground plane + a post, a tree, and a standing figure
+- **`Hidden Harbours ▸ Dev ▸ Build Shadow Test`** — drops a ground plane + a post, a tree, and a standing figure
   (each already carrying `SpriteShadow`) into the current scene. Press Play, scrub the clock, watch the
   shadows swing + lengthen.
 - **`Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection`** — batch-adds the component to selected
@@ -168,7 +168,7 @@ owner's M2/M3 night-lighting vision.
 
 ### How the owner SEES it / ADDS it
 
-- **`Hidden Harbours ▸ Build Light Test`** — drops a DARK ground plane + a boat-marker carrying a forward CONE
+- **`Hidden Harbours ▸ Dev ▸ Build Light Test`** — drops a DARK ground plane + a boat-marker carrying a forward CONE
   spotlight + a round RADIAL lantern into the current scene. Press Play, **scrub the clock to NIGHT** (Tide
   Scrubber / DevFastTide / raise the clock `TimeScale`), and watch the beam + halo **cut through the dark**.
   Delete the spawned `LightTest` object to fully revert.

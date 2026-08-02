@@ -17,7 +17,7 @@ namespace HiddenHarbours.Art.Editor
     /// placed glows now attach a real <see cref="PreconfiguredLight"/> carrying the matching
     /// <see cref="LightPresets.Kind"/> — the SAME attach-and-forget, self-installing, night-gated light a cottage
     /// / lamp-post prefab carries in-game (not the old empty inline stubs).</description></item>
-    /// <item><description><b>Hidden Harbours ▸ Build Light Test</b> — a REVERSIBLE demo (mirrors "Build Shadow
+    /// <item><description><b>Hidden Harbours ▸ Dev ▸ Build Light Test</b> — a REVERSIBLE demo (mirrors "Build Shadow
     /// Test"): drops a DARK ground plane and a couple of lights — a boat-spotlight-like CONE and a round
     /// RADIAL — into the current scene. Press Play, scrub the clock to NIGHT, and watch the beam CUT THROUGH
     /// the dark. Delete the spawned "LightTest" object to fully revert.</description></item>
@@ -33,7 +33,7 @@ namespace HiddenHarbours.Art.Editor
         private const string AddWorklightPath = "Hidden Harbours/Lighting/Add Light to Selection/Worklight (radial)";
         private const string AddWindowPath    = "Hidden Harbours/Lighting/Add Light to Selection/Window Glow (radial)";
         private const string AddLightpostPath = "Hidden Harbours/Lighting/Add Light to Selection/Lightpost (radial)";
-        private const string BuildMenuPath    = "Hidden Harbours/Build Light Test";
+        private const string BuildMenuPath    = "Hidden Harbours/Dev/Build Light Test";
         private const string RootName         = "LightTest";
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- the "Build Light Test" demo -----------------------------------------------------------------
 
-        [MenuItem(BuildMenuPath, priority = 44)]
+        [MenuItem(BuildMenuPath, priority = 42)]
         public static void BuildLightTest()
         {
             var existing = GameObject.Find(RootName);

@@ -72,7 +72,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- entry points ------------------------------------------------------------------------
 
-        [MenuItem("Hidden Harbours/Art/Build Drift Weed Kit")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Drift Weed Kit", priority = 234)]
         public static void BuildMenu()
         {
             if (Build(out string report)) Debug.Log(report);
@@ -155,7 +155,8 @@ namespace HiddenHarbours.Art.Editor
                 if (byName.Count == 0)
                 {
                     problems.Add($"{name}: '{texPath}' has no sliced sprites — run " +
-                                 "Hidden Harbours ▸ Art ▸ Slice Drift Weed Sheets first.");
+                                 "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Drift " +
+                                 "Weed Sheets first.");
                     continue;
                 }
 

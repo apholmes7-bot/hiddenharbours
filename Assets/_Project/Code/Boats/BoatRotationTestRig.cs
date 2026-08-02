@@ -5,7 +5,7 @@ namespace HiddenHarbours.Boats
 {
     /// <summary>
     /// DEV-ONLY runtime glue for the boat-rotation A/B prototype (paired with <see cref="DirectionalBoatSprite"/>,
-    /// spawned by the "Hidden Harbours/Build Boat-Rotation Test" menu item). It does two owner-facing things,
+    /// spawned by the "Hidden Harbours/Dev/Build Boat-Rotation Test" menu item). It does two owner-facing things,
     /// nothing else:
     ///
     ///   • <b>Live mode toggle</b> — a key (default <c>T</c>) flips the test boat between SnapDirectional

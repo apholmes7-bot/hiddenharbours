@@ -30,7 +30,7 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static class BoatVisualLibraryBuilder
     {
-        const string MenuPath = "Hidden Harbours/Art/Build Boat Visual Defs";
+        const string MenuPath = "Hidden Harbours/Art/Import (after a new drop)/Build Boat Visual Defs";
         const string VisualsFolder = "Assets/_Project/Data/Boats/Visuals";
 
         const string ArtBoats = "Assets/_Project/Art/Boats";
@@ -431,7 +431,7 @@ namespace HiddenHarbours.App.Editor
             return paths;
         }
 
-        [MenuItem(MenuPath)]
+        [MenuItem(MenuPath, priority = 230)]
         public static void Build()
         {
             EnsureFolder(VisualsFolder);
@@ -502,7 +502,8 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning($"[BoatVisualLibraryBuilder] {sheet.AssetName}: '{sheet.HullPath}' gave " +
                                  $"{def.Facings.Length}/{sheet.HeadingCount} ordered slices — the compass is " +
                                  "EMPTY, so any hull pointing here renders its plain rotating Sprite. Slice " +
-                                 "the sheet (Hidden Harbours ▸ Art ▸ Slice…) and re-run.");
+                                 "the sheet (Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ " +
+                                 "Slice…) and re-run.");
                 return false;
             }
 

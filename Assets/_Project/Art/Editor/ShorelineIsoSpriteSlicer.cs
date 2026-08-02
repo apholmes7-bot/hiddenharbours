@@ -34,7 +34,8 @@ namespace HiddenHarbours.Art.Editor
     /// bearings. Naming them by pack order would make every slice meaningless the first time the
     /// packer's order changed.</para>
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Slice Shoreline Iso Rock Sprites</c> (re-runnable, and
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Shoreline Iso Rock
+    /// Sprites</c> (re-runnable, and
     /// idempotent on the .meta — existing spriteIDs are re-used so a no-op re-slice writes no diff).</para>
     /// </summary>
     public static class ShorelineIsoSpriteSlicer
@@ -58,7 +59,7 @@ namespace HiddenHarbours.Art.Editor
             public SidecarItem[] items;
         }
 
-        [MenuItem("Hidden Harbours/Art/Slice Shoreline Iso Rock Sprites")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Shoreline Iso Rock Sprites", priority = 208)]
         public static void SliceMenu()
         {
             if (Slice(out int n)) Debug.Log($"[ShorelineIsoSpriteSlicer] Sliced {n} rock sprite(s).");

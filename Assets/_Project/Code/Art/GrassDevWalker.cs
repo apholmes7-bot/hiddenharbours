@@ -5,7 +5,7 @@ namespace HiddenHarbours.Art
 {
     /// <summary>
     /// DEV/DEMO ONLY — a throwaway WASD/arrow mover so the owner can walk the demo avatar through the grass test
-    /// patch (Hidden Harbours ▸ Build Grass Test) and watch the footstep bend, WITHOUT the real player controller
+    /// patch (Hidden Harbours ▸ Dev ▸ Build Grass Test) and watch the footstep bend, WITHOUT the real player controller
     /// (which lives in the gameplay-systems lane). It moves a plain transform; no physics. Uses the new Input
     /// System (<see cref="Keyboard.current"/>), matching this project's input setting. The real on-foot player
     /// will carry <see cref="GrassFootstep"/> instead; this just stands in for it in the demo.

@@ -52,7 +52,7 @@ The moody-coloured-light *half* of the reference is **shipped** (`lighting-and-d
 | Light bleeding onto surfaces | The boat light **already bleeds its colour into the water shader** (ADR 0016 follow-up 2). |
 
 So *"coloured light + shadows + navigable dark night"* — the whole mood — is already in the game; the
-owner can see it via **`Hidden Harbours ▸ Build Light Test`** (scrub to night).
+owner can see it via **`Hidden Harbours ▸ Dev ▸ Build Light Test`** (scrub to night).
 
 ---
 

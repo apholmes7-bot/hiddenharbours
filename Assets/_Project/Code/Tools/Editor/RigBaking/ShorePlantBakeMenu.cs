@@ -28,14 +28,14 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public static string OutputFolder => ShorePlantBaker.DefaultOutputFolder;
 
-        [MenuItem("Hidden Harbours/Art/Bake Shore Plant Sheets (tide axis, summer, full = 16)",
-                  priority = 57)]
+        [MenuItem("Hidden Harbours/Dev/Bake Shore Plant Sheets (tide axis, summer, full = 16)",
+                  priority = 143)]
         public static void BakeTideAxis() =>
             Run(() => ShorePlantBaker.BakeTideAxis(progress: Progress("tide axis")),
                 "tide axis · summer · full growth · variant 0");
 
-        [MenuItem("Hidden Harbours/Art/Bake Shore Plant Sheets — tide AND variant axes (32)",
-                  priority = 58)]
+        [MenuItem("Hidden Harbours/Dev/Bake Shore Plant Sheets — tide AND variant axes (32)",
+                  priority = 144)]
         public static void BakeBothAxes()
         {
             if (!EditorUtility.DisplayDialog(

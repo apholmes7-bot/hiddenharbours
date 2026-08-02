@@ -299,7 +299,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var def = AssetDatabase.LoadAssetAtPath<HullPropMeshDef>(p.AssetPath);
             Assert.IsNotNull(def, $"{p.AssetPath} did not load — {p.Label} is not committed. " +
-                                  "Run Hidden Harbours ▸ Art ▸ 3D Hulls ▸ Bake ALL hull fittings.");
+                                  "Run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL hull fittings.");
             Assert.IsTrue(def.IsUsable(), $"{p.AssetPath} is not usable.");
             return def;
         }

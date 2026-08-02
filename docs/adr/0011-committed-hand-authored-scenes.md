@@ -230,7 +230,8 @@ git status                      # confirm ONLY the scene (+ .meta) is staged —
 git commit -m "feat(cove): commit the baked Coddle Cove scene (--LOGIC-- root)"
 
 # ===== STEP 3 (Unity) — PAINT =====
-#   Hidden Harbours ▸ Art ▸ Add Paintable Tilemap     → a Grid/TerrainTilemap canvas (OUTSIDE --LOGIC--)
+#   Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Add Paintable Tilemap
+#                                                     → a Grid/TerrainTilemap canvas (OUTSIDE --LOGIC--)
 #   Window ▸ 2D ▸ Tile Palette → choose HiddenHarboursTerrain → paint Sand/Grass/Rock/Shoreline
 #   Drag decor prefabs from Assets/_Project/Prefabs/Decor/{Trees,Buildings,Props}/ into the Scene
 #   Leave the --LOGIC-- object alone (don't move the dock/anchor markers — they're the gameplay).

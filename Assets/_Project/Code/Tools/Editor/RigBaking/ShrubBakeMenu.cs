@@ -34,7 +34,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// way past could never refuse. Run this when the art director ships a new rig — then read the
         /// diff before committing it, because a changed cell or pivot means every placed shrub moved.</para>
         /// </summary>
-        [MenuItem("Hidden Harbours/Art/Export Shrub Contract (from the live rig)", priority = 52)]
+        [MenuItem("Hidden Harbours/Dev/Export Shrub Contract (from the live rig)", priority = 83)]
         public static void ExportShrubContract()
         {
             try
@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// phase caused it, both sheet sizes, headroom under the 2048 cap, and the total MiB. Costs no
         /// disk and writes nothing.
         /// </summary>
-        [MenuItem("Hidden Harbours/Art/Report Shrub Sheet Budget", priority = 53)]
+        [MenuItem("Hidden Harbours/Dev/Report Shrub Sheet Budget", priority = 82)]
         public static void ReportBudget()
         {
             using IRigScriptHost host = RigScriptHostFactory.Create();
@@ -96,8 +96,8 @@ namespace HiddenHarbours.Tools.RigBaking
         // the bake
         // =====================================================================================
 
-        [MenuItem("Hidden Harbours/Art/Bake Shrub Sheets (20 species × 8 phases × 3 channels)",
-                  priority = 55)]
+        [MenuItem("Hidden Harbours/Dev/Bake Shrub Sheets (20 species × 8 phases × 3 channels)",
+                  priority = 146)]
         public static void BakeShrubSheets()
         {
             ShrubBakeResult result;

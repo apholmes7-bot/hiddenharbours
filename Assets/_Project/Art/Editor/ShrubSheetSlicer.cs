@@ -39,7 +39,7 @@ namespace HiddenHarbours.Art.Editor
         // entry points
         // =================================================================================
 
-        [MenuItem("Hidden Harbours/Art/Slice Shrub Sheets", priority = 54)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Slice Shrub Sheets", priority = 201)]
         public static void SliceAllMenu()
         {
             int sliced = SliceAll(out int failed);

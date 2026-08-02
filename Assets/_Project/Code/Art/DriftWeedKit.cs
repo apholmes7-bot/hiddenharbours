@@ -7,7 +7,8 @@ namespace HiddenHarbours.Art
     /// The painted drift-weed art, as data: one flat table of every sliced clump the
     /// <see cref="SeaweedPresenter"/> may draw, each carrying <b>the size the art director actually
     /// drew it at</b>. Built from the kit's own sidecar by <c>DriftWeedKitBuilder</c> (Hidden Harbours
-    /// ▸ Art ▸ Build Drift Weed Kit) — never hand-maintained, so a re-drop of the art cannot drift
+    /// ▸ Art ▸ Import (after a new drop) ▸ Build Drift Weed Kit) — never hand-maintained, so a
+    /// re-drop of the art cannot drift
     /// away from this table.
     ///
     /// <para><b>Why the authored size is the load-bearing field.</b> Before this asset the presenter

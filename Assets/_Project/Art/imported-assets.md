@@ -73,7 +73,7 @@ another lane's job to wire into the game:**
 The rendering layer that drives the imported tiles/sprites. **art-pipeline owns these; world-content
 paints + places.**
 
-- **Tile assets** — run **Hidden Harbours ▸ Art ▸ Build Coddle Cove Tiles**
+- **Tile assets** — run **Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Terrain Tiles**
   (`Art/Editor/TileAssetBuilder.cs`) to generate a plain `Tile` per terrain sprite and an autotiling
   `Shoreline` `RuleTile` (edge/corner-by-neighbour) under `Tilesets/Tiles/`. ***world-content* then paints
   the Coddle Cove tilemap with these.** (The Shoreline rule orientations are a sensible start — refine in
@@ -495,7 +495,8 @@ are flat water-surface clumps, not turntable bakes.
   variant's **buoy** — the buoyancy centre from `Sprites/Shore/Drift/DriftWeed.json`, "register the
   sprite to the water surface here". The buoys genuinely differ column to column, so these sheets are
   sliced by their own `DriftWeedSheetSlicer` (sidecar-driven Custom pivots; menu *Hidden Harbours ▸
-  Art ▸ Slice Drift Weed Sheets*), not by a `SpriteSheetSlicer` manifest entry. The 3 ramp rows of a
+  Art ▸ Import (after a new drop) ▸ Slice Drift Weed Sheets*), not by a `SpriteSheetSlicer` manifest
+  entry. The 3 ramp rows of a
   column share one pivot (structure is seed-stable down a column) — `DriftWeedSheetSliceTests` holds
   the grid, the counts, and every buoy pivot to the kit contract restated as literals.
 - **`Sprites/Shore/Drift/DriftWeed.json`** — the gameplay sidecar: per-cell `buoy` (px) + `snags`
@@ -571,12 +572,14 @@ should be authored against these.
 ### Slicing + naming
 
 - The five uniform sheets and all seven road atlases are **`SpriteSheetSlicer` manifest entries**
-  (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX Sheets*), **Center pivot** — a tilemap places
+  (menu *Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Environment + VFX Sheets*),
+  **Center pivot** — a tilemap places
   by cell, so any other pivot shifts a painted tile off its own cell and a stacked cliff band off its
   neighbour.
 - `ShoreIsoSprites.png` is **packed at seven different sizes with per-item base-centre pivots**, so it
-  gets its own sidecar-driven `ShorelineIsoSpriteSlicer` (menu *Hidden Harbours ▸ Art ▸ Slice
-  Shoreline Iso Rock Sprites*), reading rects and pivots from `ShoreIsoSprites.json`. Every pivot is
+  gets its own sidecar-driven `ShorelineIsoSpriteSlicer` (menu *Hidden Harbours ▸ Art ▸ Import (after
+  a new drop) ▸ Slice Shoreline Iso Rock Sprites*), reading rects and pivots from
+  `ShoreIsoSprites.json`. Every pivot is
   horizontally centred and exactly **1 px above the item's base** — that contact point is what makes a
   sea stack and a boulder of different heights place by the same rule instead of floating.
 - **Slice names state GEOMETRY, not semantics** (`ShoreIsoCliff_7` = the 8th cell, row-major from the
@@ -673,8 +676,9 @@ sRGB stays **ON** (the inverse of the tree kit's data-channel trap). Pinned by
 
 ### Slicing + naming
 
-Ten `SpriteSheetSlicer` manifest entries (menu *Hidden Harbours ▸ Art ▸ Slice Environment + VFX
-Sheets*), **Center pivot**, sliced on import — the sheets ship ready to use. Slice names state
+Ten `SpriteSheetSlicer` manifest entries (menu *Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸
+Slice Environment + VFX Sheets*), **Center pivot**, sliced on import — the sheets ship ready to use.
+Slice names state
 GEOMETRY (`Cliff_7` = the 8th cell, row-major from the top-left) and the meaning is resolved in
 `ShorelineIso2Catalog` against each style's own `ShorelineIso.json`. The compass letters remain the
 kit's **claim, not a measurement** — same standing warning as v7.
@@ -771,7 +775,7 @@ scene references these yet.
 
 Both building rigs (`houseIsoRig` → the clapboard houses, `wharfBuildingRig` → net sheds, storage barns
 and fish plants) are baked **in-engine** under ADR 0021, not hand-exported. Menu:
-**Hidden Harbours ▸ Art ▸ Bake Buildings (houses + wharf)**. Twelve presets — five house, seven wharf.
+**Hidden Harbours ▸ Dev ▸ Bake Buildings (houses + wharf)**. Twelve presets — five house, seven wharf.
 
 ### Why they needed their own baker rather than `RigBaker`
 
@@ -905,7 +909,7 @@ dress (`bare · barnacled · weeded`, the sheet rows).
 ### ⭐ This kit ships NO pixels — it bakes to order
 
 6 species × 4 stones × 3 tides = **72 sheets**, so the drop ships the rig and the sidecar and nothing
-else. `RockIsoBaker` (menu *Hidden Harbours ▸ Art ▸ Bake Rock Iso Sheets*) writes them in-engine from
+else. `RockIsoBaker` (menu *Hidden Harbours ▸ Dev ▸ Bake Rock Iso Sheets*) writes them in-engine from
 `docs/art/rigs/rockIsoRig.js`, running the rig UNMODIFIED in the V8 host (ADR 0021). Two menu items,
 because the **atlas budget is a real decision**: the default bakes `sandstone` × 3 tides = 18 sheets;
 an *ALL 4 stones* item behind a confirm dialog bakes all 72.
@@ -995,7 +999,7 @@ the **painted seabed height plus the deterministic tide** (ADR 0014, rule 5) —
 
 16 species × two sheet axes × 3 seasons × 3 growth stages is a matrix an import has no business
 choosing from, so the drop ships the rig and the contract and nothing else — the same call RockIso
-makes. `ShorePlantBaker` (menu *Hidden Harbours ▸ Art ▸ Bake Shore Plant Sheets*) writes them
+makes. `ShorePlantBaker` (menu *Hidden Harbours ▸ Dev ▸ Bake Shore Plant Sheets*) writes them
 in-engine from `docs/art/rigs/shorePlantRig.js`, running the rig UNMODIFIED in the V8 host
 (ADR 0021). Two menu items, because the **atlas budget is a real decision**:
 

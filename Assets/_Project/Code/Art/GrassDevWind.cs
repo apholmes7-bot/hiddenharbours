@@ -5,7 +5,7 @@ namespace HiddenHarbours.Art
 {
     /// <summary>
     /// DEV/DEMO ONLY — feeds a gentle, slowly-VEERING test wind into the grass shader's global <c>_WindWorld</c>
-    /// so the demo patch (Hidden Harbours ▸ Build Grass Test) sways and the lean WANDERS even though the bare
+    /// so the demo patch (Hidden Harbours ▸ Dev ▸ Build Grass Test) sways and the lean WANDERS even though the bare
     /// demo scene has no environment sim. It only runs while <see cref="GameServices.Environment"/> is null; the
     /// moment the real sim is present (St Peters / Bootstrap), <see cref="GrassWindBridge"/> takes over and this
     /// stands down, so the two never fight over the global. Not for shipping scenes — the builder adds it only

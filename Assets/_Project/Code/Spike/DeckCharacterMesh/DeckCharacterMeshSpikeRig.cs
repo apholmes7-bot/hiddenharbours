@@ -44,7 +44,7 @@ namespace HiddenHarbours.SpikeDeckCharacterMesh
     [DefaultExecutionOrder(-100)]   // after MeshHullDriver (−110), before the facet renderers (0)
     public sealed class DeckCharacterMeshSpikeRig : MonoBehaviour
     {
-        [Tooltip("The baked mesh flipbook (bake it via Hidden Harbours → Spike → Deck Character Mesh).")]
+        [Tooltip("The baked mesh flipbook (bake it via Hidden Harbours → Dev → Deck Character Mesh (SPIKE)).")]
         [SerializeField] private DeckCharacterMeshSpikeDef _def;
 
         [Tooltip("The baked 8-dir sprite skin for the ratcheting half of the A/B (FisherIso).")]

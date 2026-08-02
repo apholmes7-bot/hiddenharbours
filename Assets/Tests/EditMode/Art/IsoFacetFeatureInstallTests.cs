@@ -28,7 +28,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsNotNull(feature,
                 "IsoFacetHullFeature is NOT installed on Renderer2D.asset. Mesh hulls render " +
                 "nothing without it (their overlay quads discard everywhere). Re-install via " +
-                "'Hidden Harbours/Setup/Install IsoFacet Hull Feature'.");
+                "'Hidden Harbours/Dev/Install IsoFacet Hull Feature'.");
             Assert.IsTrue(feature.isActive, "IsoFacetHullFeature is installed but DISABLED.");
 
             var so = new SerializedObject(feature);

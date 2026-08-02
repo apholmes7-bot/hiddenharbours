@@ -122,7 +122,8 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- on-demand (re)application for pre-existing / hand-tuned assets -----------------------
 
-        [MenuItem("Hidden Harbours/Art/Apply Locked Import Settings to Selection")]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Apply Locked Import Settings to Selection",
+                  priority = 260)]
         static void ApplyToSelection()
         {
             var objs = Selection.objects;
@@ -142,7 +143,8 @@ namespace HiddenHarbours.Art.Editor
                 : "[ArtImportPipeline] No textures under Assets/_Project/Art/ were selected.");
         }
 
-        [MenuItem("Hidden Harbours/Art/Apply Locked Import Settings to Selection", isValidateFunction: true)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Apply Locked Import Settings to Selection",
+                  isValidateFunction: true)]
         static bool ApplyToSelectionValidate() => Selection.objects.Length > 0;
     }
 }

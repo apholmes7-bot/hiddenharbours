@@ -18,12 +18,13 @@ namespace HiddenHarbours.Art.Editor
     /// <see cref="AcadianTreeCatalog"/>. Re-run after a re-bake and every prefab refreshes IN PLACE,
     /// so scene instances keep their prefab link and the owner does not re-place a forest.</para>
     ///
-    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Build Acadian Tree Prefabs</c>, and it is also run by
+    /// <para>Menu: <c>Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Acadian Tree
+    /// Prefabs</c>, and it is also run by
     /// <c>Build Decor Prefabs</c> so the one-shot toolkit command covers it.</para>
     /// </summary>
     public static class AcadianTreePrefabBuilder
     {
-        [MenuItem("Hidden Harbours/Art/Build Acadian Tree Prefabs", priority = 23)]
+        [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Build Acadian Tree Prefabs", priority = 232)]
         public static void BuildMenu()
         {
             int built = BuildAll(AcadianTreeCatalog.PrefabRoot);
@@ -31,7 +32,7 @@ namespace HiddenHarbours.Art.Editor
             {
                 Debug.LogWarning(
                     "[AcadianTreePrefabBuilder] Built nothing. Are the sheets baked and sliced? " +
-                    "Hidden Harbours ▸ Art ▸ Bake Acadian Trees, then ▸ Slice Acadian Tree Sheets.");
+                    "Hidden Harbours ▸ Art ▸ Bake Acadian Trees, then ▸ Import (after a new drop) ▸ Slice Acadian Tree Sheets.");
                 return;
             }
 
@@ -42,7 +43,7 @@ namespace HiddenHarbours.Art.Editor
                 "Drag one into a scene and it plants at its TRUNK (not the bottom of its cell) and " +
                 "sways off the same wind as the grass and water. To scatter a stand, use " +
                 "Hidden Harbours ▸ Tools ▸ Tree Paint Tool; to compare all ten side by side, " +
-                "Hidden Harbours ▸ Tools ▸ Place Acadian Tree Lineup.");
+                "Hidden Harbours ▸ Dev ▸ Place Acadian Tree Lineup.");
         }
 
         /// <summary>
@@ -81,7 +82,8 @@ namespace HiddenHarbours.Art.Editor
                 {
                     Debug.LogWarning(
                         $"[AcadianTreePrefabBuilder] '{placement.Stem}' has no variant-0 sprite — " +
-                        "skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Slice Acadian Tree Sheets.) " +
+                        "skipped. Is it sliced? (Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ " +
+                        "Slice Acadian Tree Sheets.) " +
                         "Note the sheets import spriteMode Multiple, so a plain " +
                         "LoadAssetAtPath<Sprite> on them returns null.");
                     continue;
@@ -129,16 +131,16 @@ namespace HiddenHarbours.Art.Editor
         /// is re-runnable: run it again after a re-bake and the row is rebuilt from the new
         /// prefabs.</para>
         ///
-        /// <para>Menu: <c>Hidden Harbours ▸ Tools ▸ Place Acadian Tree Lineup (all 10 species)</c>.</para>
+        /// <para>Menu: <c>Hidden Harbours ▸ Dev ▸ Place Acadian Tree Lineup (all 10 species)</c>.</para>
         /// </summary>
-        [MenuItem("Hidden Harbours/Tools/Place Acadian Tree Lineup (all 10 species)", priority = 44)]
+        [MenuItem("Hidden Harbours/Dev/Place Acadian Tree Lineup (all 10 species)", priority = 60)]
         public static void PlaceLineupMenu()
         {
             int placed = PlaceLineup(SceneViewPivot(), AcadianTreeCatalog.PrefabRoot);
             if (placed == 0)
                 Debug.LogWarning(
                     "[AcadianTreePrefabBuilder] Placed no trees. Bake and slice the sheets first " +
-                    "(Hidden Harbours ▸ Art ▸ Bake Acadian Trees, then ▸ Slice Acadian Tree Sheets).");
+                    "(Hidden Harbours ▸ Art ▸ Bake Acadian Trees, then ▸ Import (after a new drop) ▸ Slice Acadian Tree Sheets).");
             else
                 Debug.Log(
                     $"[AcadianTreePrefabBuilder] Placed {placed} tree(s) in a row under " +

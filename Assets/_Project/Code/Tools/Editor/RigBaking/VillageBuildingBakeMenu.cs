@@ -48,8 +48,8 @@ namespace HiddenHarbours.Tools.RigBaking
                                $"them and the contract covers only what succeeded.\n{report}");
             else
                 Debug.Log($"[village-buildings] Bake complete.\n{report}\n" +
-                          "Next: Hidden Harbours ▸ Art ▸ Slice Village Building Sheets, then " +
-                          "▸ Build Village Building Prefabs.");
+                          "Next: Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Village " +
+                          "Building Sheets, then ▸ Build Village Building Prefabs.");
         }
 
         /// <summary>

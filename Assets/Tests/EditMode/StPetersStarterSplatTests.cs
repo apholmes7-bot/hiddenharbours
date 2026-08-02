@@ -595,8 +595,9 @@ namespace HiddenHarbours.Tests.EditMode
                     $"'{path}' must stay uncompressed — block compression mangles painted weights");
             }
             if (!anyExists)
-                Assert.Ignore("No splat maps committed yet — run Hidden Harbours ▸ Tools ▸ " +
-                              "Paint St Peters Starter Splat (or paint with the Material brush) first.");
+                Assert.Ignore("No splat maps committed yet — run Hidden Harbours ▸ Art ▸ Regenerate " +
+                              "St Peters Starter Splat (replaces hand-painting) — or paint with the " +
+                              "Material brush — first.");
         }
 
         // ============================ THE SPINE EXEMPTION, ENFORCED ============================

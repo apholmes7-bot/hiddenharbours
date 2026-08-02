@@ -20,14 +20,14 @@ namespace HiddenHarbours.Tools.Editor
     /// <c>StPetersBuilder</c> wires at the real cottage). It is ADDITIVE and surgical: it touches no committed
     /// scene/prefab/Data asset; delete the spawned "AtmosphereTest" object to fully revert.</para>
     ///
-    /// Menu: <b>Hidden Harbours ▸ Build Atmosphere Test</b>.
+    /// Menu: <b>Hidden Harbours ▸ Dev ▸ Build Atmosphere Test</b>.
     /// </summary>
     public static class AtmosphereTestBuilder
     {
-        private const string MenuPath = "Hidden Harbours/Build Atmosphere Test";
+        private const string MenuPath = "Hidden Harbours/Dev/Build Atmosphere Test";
         private const string RootName = "AtmosphereTest";
 
-        [MenuItem(MenuPath)]
+        [MenuItem(MenuPath, priority = 43)]
         public static void Build()
         {
             // Remove a prior rig so re-running is idempotent.

@@ -68,7 +68,7 @@ One material, GPU-instanced / dynamic-batched; all sway + bend in-shader; two gl
 throttled tick (wind) / per frame (player) regardless of tuft count; no per-frame allocation. Hundreds
 of tufts stay cheap and the later mobile port stays viable.
 
-## The demo — **Hidden Harbours ▸ Build Grass Test**
+## The demo — **Hidden Harbours ▸ Dev ▸ Build Grass Test**
 `Assets/_Project/Code/Tools/Editor/GrassTestBuilder.cs` (a separate dev builder, like *Build
 Boat-Rotation Test* — it does **not** touch the St Peters scene builder). It drops a patch of tufts (one
 shared material) + a movable red avatar (`GrassDevWalker` WASD/arrows + `GrassFootstep`) into the current
