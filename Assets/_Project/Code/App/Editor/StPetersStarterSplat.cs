@@ -506,7 +506,9 @@ namespace HiddenHarbours.App.Editor
 
         // Filed under Art/ beside the assets it REGENERATES, not under Tools/ beside the brushes:
         // this is a destructive one-shot that replaces hand-painting, and sitting at brush priority
-        // made it read like one more brush. The confirm dialog below is unchanged.
+        // made it read like one more brush. The confirm dialog's TITLE tracks this verb — the
+        // rename only protects him if the dialog it pops says the same word the menu did; its
+        // body text and its fire-only-when-paint-exists condition are unchanged.
         [MenuItem("Hidden Harbours/Art/Regenerate St Peters Starter Splat (replaces hand-painting)",
                   priority = 25)]
         public static void PaintMenu()
@@ -515,7 +517,7 @@ namespace HiddenHarbours.App.Editor
             // idempotent), so it REPLACES hand-painting rather than adding to it. Only ask when
             // there is something to lose — a first run on blank maps needs no ceremony.
             if (TerrainSplatAssets.AllExist() &&
-                !EditorUtility.DisplayDialog("Paint St Peters Starter Splat",
+                !EditorUtility.DisplayDialog("Regenerate St Peters Starter Splat",
                     "This re-derives all four splat maps from the terrain and REPLACES what is in " +
                     "them — including any hand-painting you have done with the Material brush.\n\n" +
                     "Re-run it after re-baking the seabed. Otherwise, cancel and paint by hand.",
