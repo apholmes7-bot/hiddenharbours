@@ -85,8 +85,9 @@ namespace HiddenHarbours.App.Editor
         static readonly Kit[] Kits =
         {
             // THE PLAYER'S FISHER. 8 direction rows per sheet; idle 6 frames, walk 8, run 6 — the counts the
-            // art actually ships (384/512/384 px wide at a 64 px cell). Cell 64×88 at PPU 32, pivot on
-            // GROUND CONTACT, so the frames swap without the feet moving.
+            // art actually ships (384/512/384 px wide at a 64 px cell). Cell 64×92 at PPU 32 as of the
+            // pass-6 kit (it was 64×88), pivot on GROUND CONTACT — which is why the cell growing two rows
+            // moved nothing the player can see: the feet stay planted and only the empty headroom changed.
             new Kit
             {
                 AssetName = "FisherIso", Id = "visual.fisher_iso", Stem = "Fisher",

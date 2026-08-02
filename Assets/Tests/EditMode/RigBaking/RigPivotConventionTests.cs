@@ -223,26 +223,36 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// <c>CharacterRigBakeTests</c> asserts <c>8f / CellH</c> for the character's normalised
-        /// pivot.y. Restated here against the measured convention: the character's pivot (32,80) in
-        /// an 88-tall cell converts to (88 − 80)/88 = 8/88 under the corner reading, so that
-        /// existing assertion is CONSISTENT with the finding, not a second convention.
+        /// <c>CharacterRigBakeTests</c> asserts <c>GroundInset / CellH</c> for the character's
+        /// normalised pivot.y. Restated here against the measured convention: the character's pivot
+        /// (32,82) in a 92-tall cell converts to (92 − 82)/92 = 10/92 under the corner reading, so
+        /// that existing assertion is CONSISTENT with the finding, not a second convention.
         ///
-        /// <para>(It is worth being explicit that the existing assert alone could not settle the
-        /// question — <c>8f/CellH</c> is just the helper's own formula written out, so it agrees
+        /// <para><b>The cell moved in the pass-6 kit (2026-08-02): 64 × 88 pivot (32,80) → 64 × 92
+        /// pivot (32,82), inset 8 → 10.</b> That is the useful thing about this test — the CONVENTION
+        /// is what is under test, not the numbers, and it survived the move unchanged. Note that the
+        /// inset is read from the rig here rather than restated, precisely so the next cell change
+        /// re-derives instead of re-failing.</para>
+        ///
+        /// <para>(It is worth being explicit that the derived assert alone could not settle the
+        /// question — <c>inset/CellH</c> is just the helper's own formula written out, so it agrees
         /// with the helper by construction. The evidence above is what makes it right.)</para>
         /// </summary>
         [Test]
-        public void CharacterPivot_IsTheSameEightRowsTheBakeTestsAlreadyAssert()
+        public void CharacterPivot_IsTheSameGroundInsetTheBakeTestsAlreadyAssert()
         {
             using var host = RigScriptHostFactory.Create();
             var geo = RigCatalog.Install(host, RigCatalog.Get("character"));
 
             Assert.AreEqual(64, geo.Width);
-            Assert.AreEqual(88, geo.Height);
-            Assert.AreEqual(80.0, geo.PivotY, 1e-9);
-            Assert.AreEqual(8f / 88f, geo.UnityNormalisedPivot.y, 1e-6f,
-                "The character's ground contact must stay 8 rows above the cell bottom — the value " +
+            Assert.AreEqual(92, geo.Height,
+                "the pass-6 cell is 92 tall — if this reads 88 the catalog is back on the pass-1 body");
+            Assert.AreEqual(82.0, geo.PivotY, 1e-9);
+
+            double inset = geo.Height - geo.PivotY;
+            Assert.AreEqual(10.0, inset, 1e-9, "ground contact is 10 rows above the cell bottom");
+            Assert.AreEqual((float)(inset / geo.Height), geo.UnityNormalisedPivot.y, 1e-6f,
+                "The character's ground contact must stay (H − pivotY)/H — the value " +
                 "CharacterRigBakeTests and CharacterSheetSlicer both bake in.");
         }
 

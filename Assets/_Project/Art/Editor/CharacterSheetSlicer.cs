@@ -11,8 +11,8 @@ namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
     /// Grid-slicer for the 8-direction ISO CHARACTER sheets under
-    /// <c>Assets/_Project/Art/Characters/Iso/</c> (Fisher, Ginny, Skipper — idle/walk/run, plus the
-    /// Fisher's rod hold/cast poses). Mirrors <see cref="FoliageSheetSlicer"/>:
+    /// <c>Assets/_Project/Art/Characters/Iso/</c> (the player at the root, the cast one subfolder each,
+    /// every anim the rig declares). Mirrors <see cref="FoliageSheetSlicer"/>:
     /// <see cref="ArtImportPipeline"/> stamps the pixel-art import lock (PPU 32, Point, Uncompressed,
     /// Clamp, alphaIsTransparency) on first import and this tool adds the Multiple-mode grid + the
     /// per-slice ground-contact pivot that the postprocessor deliberately does not do.
@@ -23,18 +23,24 @@ namespace HiddenHarbours.Art.Editor
     /// hard-coded per file, so a re-export with a different frame count still slices correctly (and a
     /// width that is not a whole number of cells fails loudly).</para>
     ///
-    /// <para><b>All twelve body sheets are now the SAME cell: 64 × 88.</b> They used to disagree —
-    /// the rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>, <c>Fisher_cast_long</c>) were
-    /// 128 × 128, because the rod and the flying lure were baked INTO the body and needed the headroom.
-    /// The art director has since split the rod out into its own overlay sheet, so the body sheets are
-    /// uniformly the plain character cell. <see cref="CellOverrides"/> is deliberately kept — and is
-    /// simply empty of body sheets today — because the incoming <c>Rod_*</c> overlay sheets need a
-    /// bigger canvas again: the per-sheet capability is the point, not the entries.</para>
+    /// <para><b>Every body sheet is the SAME cell: 64 × 92 as of the pass-6 kit (was 64 × 88).</b> They
+    /// used to disagree — the rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>,
+    /// <c>Fisher_cast_long</c>) were 128 × 128, because the rod and the flying lure were baked INTO the
+    /// body and needed the headroom. The art director has since split the rod out into its own overlay
+    /// sheet, so the body sheets are uniformly the plain character cell. <see cref="CellOverrides"/> is
+    /// deliberately kept — and is simply empty of body sheets today — because the incoming
+    /// <c>Rod_*</c> overlay sheets need a bigger canvas again: the per-sheet capability is the point,
+    /// not the entries.</para>
+    ///
+    /// <para><b>This tool also slices the CAST, one subfolder per preset</b>
+    /// (<c>Iso/ginny/Ginny_idle.png</c>, …). The folder scan is recursive and the grid rule is the
+    /// same for all of them — a preset's body is a different SHAPE, never a different cell.</para>
     ///
     /// <para><b>Pivot = ground contact, one rule for any cell size:
-    /// <c>(cellW/2, cellH − 8)</c> in TOP-LEFT canvas coordinates — i.e. always 8 px above the cell
-    /// bottom, on the centreline.</b> Unity normalizes pivots from the <b>BOTTOM-LEFT</b>, so the Unity
-    /// pivot is <c>(0.5, 8/cellH)</c> = <c>(0.5, 8/88 ≈ 0.0909)</c> on every body sheet.
+    /// <c>(cellW/2, cellH − GroundInsetPx)</c> in TOP-LEFT canvas coordinates — i.e. always
+    /// <see cref="GroundInsetPx"/> above the cell bottom, on the centreline.</b> Unity normalizes
+    /// pivots from the <b>BOTTOM-LEFT</b>, so the Unity pivot is <c>(0.5, GroundInsetPx/cellH)</c> =
+    /// <c>(0.5, 10/92 ≈ 0.1087)</c> on every body sheet today (it was <c>8/88 ≈ 0.0909</c>).
     /// ⚠️ Getting this inverted plants the character ~72 px into the ground;
     /// <c>CharacterIsoSheetSliceTests</c> asserts it in PIXELS, so the one rule still holds for any
     /// future cell size.</para>
@@ -69,18 +75,27 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>The only folder this tool slices. We never touch textures outside it.</summary>
         public const string IsoCharactersRoot = "Assets/_Project/Art/Characters/Iso/";
 
-        /// <summary>Default cell width in source pixels — the locomotion (idle/walk/run) sheets.</summary>
+        /// <summary>Default cell width in source pixels — the character rig's own cell.</summary>
         public const int CellW = 64;
 
-        /// <summary>Default cell height in source pixels — the locomotion (idle/walk/run) sheets.</summary>
-        public const int CellH = 88;
+        /// <summary>
+        /// Default cell height in source pixels. <b>92 as of the pass-6 kit (2026-08-02); it was 88.</b>
+        /// </summary>
+        public const int CellH = 92;
 
         /// <summary>
         /// Ground contact sits this many pixels above the cell bottom, on <b>every</b> sheet regardless
-        /// of cell size. This single constant is what keeps the 64 × 88 and 128 × 128 sheets planted on
+        /// of cell size. This single constant is what keeps sheets of different cell heights planted on
         /// the same ground line.
+        ///
+        /// <para>⚠️ <b>10 as of pass 6; it was 8. It is not a taste knob</b> — it is <c>H − pivotY</c>
+        /// read off the rig, and the rig moved 88 − 80 = 8 to <b>92 − 82 = 10</b> when the cell grew.
+        /// Left at 8 alongside the new cell height, every character would stand two pixels into the
+        /// ground on sheets that slice, import and dimension-test as perfectly valid.
+        /// <c>CharacterSlicerMatchesRigTests</c> cross-checks this pair against the LIVE rig's
+        /// geometry, so it is measured rather than believed — the arrangement ADR 0026 asks for.</para>
         /// </summary>
-        public const int GroundInsetPx = 8;
+        public const int GroundInsetPx = 10;
 
         /// <summary>
         /// Rows are directions, and there are always eight of them. (Which row is which compass heading
@@ -99,7 +114,7 @@ namespace HiddenHarbours.Art.Editor
         ///
         /// <para><b>Empty today, and deliberately still here.</b> It used to carry the three 128 × 128
         /// rod poses; the art director split the rod out of the body, so all twelve BODY sheets are now
-        /// the plain 64 × 88 cell. The incoming <c>Rod_*</c> overlay sheets are the bigger canvas again
+        /// the plain 64 × 92 cell. The incoming <c>Rod_*</c> overlay sheets are the bigger canvas again
         /// and will register here — deleting the mechanism would only mean rebuilding it next PR.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, Vector2Int> CellOverrides =
