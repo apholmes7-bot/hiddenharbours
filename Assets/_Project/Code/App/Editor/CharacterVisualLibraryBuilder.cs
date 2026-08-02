@@ -77,10 +77,30 @@ namespace HiddenHarbours.App.Editor
             public string AssetName;    // file written under VisualsFolder
             public string Id;           // stable def id (append-only)
             public string Stem;         // "Fisher" → Fisher_idle.png / Fisher_walk.png / Fisher_run.png
+            public string Folder;       // null = the Iso root (the player); the cast get one each
             public int IdleFrames;
             public int WalkFrames;
-            public int RunFrames;
+            public int RunFrames;       // 0 = this build has no run sheet, and that is legal
         }
+
+        /// <summary>
+        /// The cast presets and their sheet stems — the nine baked by
+        /// <c>Art ▸ Bake Character Sheets — the cast</c>, one subfolder each. Mirrors
+        /// <c>CharacterRigBakeMenu.Cast</c>; restated here rather than referenced because the two
+        /// assemblies do not meet, and a mismatch surfaces immediately as an EMPTY skin in the log.
+        /// </summary>
+        static readonly (string preset, string stem)[] Cast =
+        {
+            ("ginny", "Ginny"), ("skipper", "Skipper"), ("nan", "Nan"),
+            ("deckboss", "DeckBoss"), ("packer", "Packer"), ("cutter", "Cutter"),
+            ("hand", "Hand"), ("boy", "Boy"), ("girl", "Girl"),
+        };
+
+        /// <summary>The def asset name for a cast preset: <c>GinnyIso</c>.</summary>
+        public static string CastAssetName(string stem) => $"{stem}Iso";
+
+        /// <summary>The def id for a cast preset: <c>visual.ginny_iso</c>. Append-only.</summary>
+        public static string CastVisualId(string preset) => $"visual.{preset}_iso";
 
         static readonly Kit[] Kits =
         {
@@ -90,26 +110,49 @@ namespace HiddenHarbours.App.Editor
             // moved nothing the player can see: the feet stay planted and only the empty headroom changed.
             new Kit
             {
-                AssetName = "FisherIso", Id = "visual.fisher_iso", Stem = "Fisher",
+                AssetName = "FisherIso", Id = "visual.fisher_iso", Stem = "Fisher", Folder = null,
                 IdleFrames = 6, WalkFrames = 8, RunFrames = 6,
             },
 
-            // Ginny and the Skipper ship the same kit shape and are IMPORTED, but nothing wears them yet —
-            // re-skinning the NPCs is its own change, with its own playtest. Adding them here would write
-            // assets no one reads; they are named in this comment so the next hand knows where they go.
+            // THE CAST is appended below, one def per baked preset — the comment that used to sit here
+            // saying "nothing wears them yet" is retired: the region builders wear them now.
         };
+
+        /// <summary>
+        /// The player's kit plus one per cast preset. The cast bake idle + walk only (an M1 standee
+        /// idles; a routine that walks is M2), so their run count is <b>0</b> — which is not a gap to
+        /// paper over: <c>CharacterVisualDef.PlayableGait</c> ladders run → walk → idle, so a preset
+        /// with no run sheet simply never shows one.
+        /// </summary>
+        static IEnumerable<Kit> AllKits()
+        {
+            foreach (var kit in Kits) yield return kit;
+
+            foreach (var (preset, stem) in Cast)
+                yield return new Kit
+                {
+                    AssetName = CastAssetName(stem),
+                    Id = CastVisualId(preset),
+                    Stem = stem,
+                    Folder = preset,
+                    IdleFrames = 6, WalkFrames = 8, RunFrames = 0,
+                };
+        }
 
         [MenuItem(MenuPath, priority = 231)]
         public static void Build()
         {
             EnsureFolder(VisualsFolder);
-            int ok = 0;
-            foreach (var kit in Kits)
+            int ok = 0, total = 0;
+            foreach (var kit in AllKits())
+            {
+                total++;
                 if (BuildOne(kit)) ok++;
+            }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log($"[CharacterVisualLibraryBuilder] Refreshed {ok}/{Kits.Length} character visual def(s) " +
+            Debug.Log($"[CharacterVisualLibraryBuilder] Refreshed {ok}/{total} character visual def(s) " +
                       $"in {VisualsFolder}. Commit them; re-run only when the sheets are re-sliced.");
         }
 
@@ -137,9 +180,10 @@ namespace HiddenHarbours.App.Editor
 
             // All-or-nothing per sheet, mirroring CharacterVisualDef's own gate: a short sheet is dropped
             // whole rather than half-bound, because one missing slice would index a stale cell mid-stride.
-            def.IdleSheet = TakeExactly($"{ArtIso}/{kit.Stem}_idle.png", Directions * kit.IdleFrames);
-            def.WalkSheet = TakeExactly($"{ArtIso}/{kit.Stem}_walk.png", Directions * kit.WalkFrames);
-            def.RunSheet = TakeExactly($"{ArtIso}/{kit.Stem}_run.png", Directions * kit.RunFrames);
+            string folder = string.IsNullOrEmpty(kit.Folder) ? ArtIso : $"{ArtIso}/{kit.Folder}";
+            def.IdleSheet = TakeExactly($"{folder}/{kit.Stem}_idle.png", Directions * kit.IdleFrames);
+            def.WalkSheet = TakeExactly($"{folder}/{kit.Stem}_walk.png", Directions * kit.WalkFrames);
+            def.RunSheet = TakeExactly($"{folder}/{kit.Stem}_run.png", Directions * kit.RunFrames);
 
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
@@ -147,7 +191,7 @@ namespace HiddenHarbours.App.Editor
             if (!def.HasAnyArt())
             {
                 Debug.LogWarning($"[CharacterVisualLibraryBuilder] {kit.AssetName}: " +
-                                 $"'{ArtIso}/{kit.Stem}_idle.png' gave {def.IdleSheet.Length}/" +
+                                 $"'{folder}/{kit.Stem}_idle.png' gave {def.IdleSheet.Length}/" +
                                  $"{Directions * kit.IdleFrames} ordered slices — the skin is EMPTY, so the " +
                                  "character keeps whatever sprite drew it before. Slice the sheet (Hidden " +
                                  "Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Iso Character " +

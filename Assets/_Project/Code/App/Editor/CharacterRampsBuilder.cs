@@ -60,32 +60,8 @@ namespace HiddenHarbours.App.Editor
                       "revises a palette.");
         }
 
-        /// <summary>
-        /// Headless entry for <c>-executeMethod</c>: the two DATA refreshes a character re-bake
-        /// obliges, in the order they depend on each other — the ramps from the contract, then the
-        /// visual defs from the freshly-sliced sheets (a re-slice changes the sprite sub-asset ids,
-        /// so the def's refs are stale until this runs).
-        ///
-        /// <para>⚠️ It deliberately stops short of the SCENE builders. Those must run in a real
-        /// editor — a headless St Peters build is a false green — and they are the owner's step.</para>
-        ///
-        /// <para>⚠️ Never invoke alongside -runTests: -quit races -runTests into a total=0 pass.</para>
-        /// </summary>
-        public static void BuildCharacterDataFromCommandLine()
-        {
-            try
-            {
-                Build();
-                CharacterVisualLibraryBuilder.Build();
-                AssetDatabase.SaveAssets();
-                EditorApplication.Exit(0);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[CharacterRampsBuilder] headless character data build failed: {ex}");
-                EditorApplication.Exit(1);
-            }
-        }
+        // The headless entry that chains ramps → visual defs → builds + mapping lives on
+        // CharacterBuildsBuilder, at the END of the dependency order rather than the start of it.
 
         /// <summary>
         /// Reads the contract and refreshes the asset. Returns null (with the reason in

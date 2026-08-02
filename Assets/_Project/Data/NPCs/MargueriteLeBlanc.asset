@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: ac36a7c6b96c486b83092de70507b97d, type: 2}
   CompletionFlag: met_marguerite
+  Build: {fileID: 11400000, guid: 5e5ff01b97c0c9b4b9c85f3f2e8a6415, type: 2}

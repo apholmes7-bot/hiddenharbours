@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: d934f8a10c2d4958b420922c70a394e3, type: 2}
   CompletionFlag: met_junior
+  Build: {fileID: 11400000, guid: 0b7b08407b6e3e248a7565666848676e, type: 2}

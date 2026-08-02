@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: 96dc0ad4d23648f0ba64ca16cb8f4a9e, type: 2}
   CompletionFlag: met_hector
+  Build: {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}

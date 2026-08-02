@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: 6586cc17886f49028365e0165ae1e248, type: 2}
   CompletionFlag: met_rose
+  Build: {fileID: 11400000, guid: 510dcc541b277c1488956f57098b2547, type: 2}

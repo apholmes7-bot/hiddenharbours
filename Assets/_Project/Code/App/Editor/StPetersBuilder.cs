@@ -1167,7 +1167,8 @@ namespace HiddenHarbours.App.Editor
             // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
             // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).
             var ginnyGo = MakeNpc("AuntGinny", GinnyPos, LoadSpriteAny(ArtGinny),
-                                  waterSprite, new Color(0.78f, 0.55f, 0.62f));
+                                  waterSprite, new Color(0.78f, 0.55f, 0.62f),
+                                  npc: ginnyNpc);
             var ginnyIt = ginnyGo.AddComponent<Interactable>();
             ConfigureInteractableNpc(ginnyIt, ginnyNpc, LoadSpriteAny(ArtPortraitGinny));
 
@@ -1508,12 +1509,28 @@ namespace HiddenHarbours.App.Editor
 
         // A standing world NPC / marker: a SpriteRenderer above the ground (just under the player, which
         // draws at +10), with a tinted-square fallback so the greybox still builds before the art imports.
-        static GameObject MakeNpc(string name, Vector3 pos, Sprite sprite, Sprite fallback, Color fallbackColor)
+        /// <summary>
+        /// A placed person's body. With an <paramref name="npc"/> that carries a baked build this goes
+        /// through <see cref="NpcBodyDresser"/> — the same ladder the island's and the creek's casts
+        /// use, so Ginny is dressed by the same code as the neighbours rather than by a second copy of
+        /// the rule. Without one it is the old two-step: the conventional sprite, else the marker.
+        /// </summary>
+        static GameObject MakeNpc(string name, Vector3 pos, Sprite sprite, Sprite fallback,
+                                  Color fallbackColor, NpcDef npc = null,
+                                  float headingDegrees = 180f)
         {
             var go = new GameObject(name);
             go.transform.position = pos;
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 9;
+
+            if (npc != null && npc.HasBakedBody)
+            {
+                NpcBodyDresser.Dress(go, sr, npc, artStem: null, greyboxSquare: fallback,
+                                     greyboxTint: fallbackColor, headingDegrees: headingDegrees);
+                return go;
+            }
+
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(1f, 2f, 1f); }
             return go;
