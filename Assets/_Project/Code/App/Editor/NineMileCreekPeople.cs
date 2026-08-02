@@ -51,13 +51,20 @@ namespace HiddenHarbours.App.Editor
             public readonly Color GreyboxTint;
             public readonly string Reason;
 
-            public Person(string assetName, string artStem, Vector2 position, Color greyboxTint, string reason)
+            /// <summary>Which way they are turned, degrees (0 = N, CW) — used only when the person has
+            /// a baked body, since a greybox rectangle has no front. 180 (South, toward the camera) is
+            /// the default: a face is how you tell a person from scenery.</summary>
+            public readonly float HeadingDegrees;
+
+            public Person(string assetName, string artStem, Vector2 position, Color greyboxTint,
+                          string reason, float headingDegrees = 180f)
             {
                 AssetName = assetName;
                 ArtStem = artStem;
                 Position = position;
                 GreyboxTint = greyboxTint;
                 Reason = reason;
+                HeadingDegrees = headingDegrees;
             }
         }
 
@@ -138,14 +145,15 @@ namespace HiddenHarbours.App.Editor
                     continue;
                 }
 
-                var go = MakeStandee(person, greyboxSquare);
+                var go = MakeStandee(person, npc, greyboxSquare);
                 go.transform.SetParent(root.transform, worldPositionStays: true);
 
                 var interactable = go.AddComponent<Interactable>();
                 ConfigureNpc(interactable, npc, LoadSprite($"{ArtPortrait}/{person.ArtStem}.png"));
 
                 placed.Add(interactable);
-                report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})");
+                report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})" +
+                           (npc.HasBakedBody ? $" as {npc.Build.Preset}" : " (greybox)"));
             }
 
             Debug.Log(
@@ -157,11 +165,12 @@ namespace HiddenHarbours.App.Editor
 
         // ---- helpers -------------------------------------------------------------------------------
 
-        /// <summary>The person's body. Mirrors the island cast's greybox standee (sorting order 9, a
-        /// 1 × 2 m marker) so the coast reads at one scale, and takes the real sprite the moment one
-        /// exists at the conventional path — the portraits and character sheets are an art ask, and the
-        /// dialogue presenter draws name + text alone when the portrait slot is empty.</summary>
-        static GameObject MakeStandee(Person person, Sprite greyboxSquare)
+        /// <summary>The person's body, through the shared <see cref="NpcBodyDresser"/>: their baked
+        /// build if they have one (an eight-facing iso character breathing through its idle cycle),
+        /// else the conventional static sprite, else the tinted greybox marker. Sorting order 9 either
+        /// way, so the coast reads at one scale — and the island uses the same ladder, from the same
+        /// code, so the two coasts cannot drift apart.</summary>
+        static GameObject MakeStandee(Person person, NpcDef npc, Sprite greyboxSquare)
         {
             var go = new GameObject(person.AssetName);
             go.transform.position = new Vector3(person.Position.x, person.Position.y, 0f);
@@ -169,18 +178,8 @@ namespace HiddenHarbours.App.Editor
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 9;
 
-            var art = LoadSprite($"{ArtChars}/{person.ArtStem}.png");
-            if (art != null)
-            {
-                sr.sprite = art;
-                go.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                sr.sprite = greyboxSquare;
-                sr.color = person.GreyboxTint;
-                go.transform.localScale = new Vector3(1f, 2f, 1f);
-            }
+            NpcBodyDresser.Dress(go, sr, npc, person.ArtStem, greyboxSquare, person.GreyboxTint,
+                                 person.HeadingDegrees);
             return go;
         }
 

@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: ce56c54704d547acb17284794d02613a, type: 2}
   CompletionFlag: met_basil
+  Build: {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}

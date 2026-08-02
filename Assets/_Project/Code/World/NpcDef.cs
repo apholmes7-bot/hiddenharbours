@@ -38,7 +38,23 @@ namespace HiddenHarbours.World
                  "Empty = no flag. Drives the warmer 'met before' variant and the onboarding nudges.")]
         public string CompletionFlag = "";
 
+        [Header("Appearance (optional — append-only, 2026-08-02)")]
+        [Tooltip("Which baked body this person wears. LEAVE IT EMPTY and nothing changes: they keep " +
+                 "the greybox standee (or the static sprite at Art/Characters/<stem>.png) they had " +
+                 "before. Set it and the region builder gives them the preset's animated idle " +
+                 "instead. Written by CharacterBuildsBuilder from the cast mapping; re-pointable in " +
+                 "the inspector.")]
+        public HiddenHarbours.Core.CharacterBuildDef Build;
+
         /// <summary>True when this NPC has dialogue authored to speak.</summary>
         public bool HasDialogue => Dialogue != null;
+
+        /// <summary>
+        /// True when this NPC has a build WITH baked sheets behind it — the only condition under which
+        /// a region builder should reach for the animated body. A build naming a preset that has not
+        /// been baked is deliberately false here: an NPC that keeps their old standee is a visible
+        /// absence, where an empty SpriteRenderer is an invisible person.
+        /// </summary>
+        public bool HasBakedBody => Build != null && Build.HasBakedBody;
     }
 }

@@ -17,3 +17,4 @@ MonoBehaviour:
   Kind: 0
   Dialogue: {fileID: 11400000, guid: 9414f5c6da6e48cdb3b6481653950824, type: 2}
   CompletionFlag: met_wendell
+  Build: {fileID: 11400000, guid: fae300df84b17024b93d2b8f20d77ec5, type: 2}

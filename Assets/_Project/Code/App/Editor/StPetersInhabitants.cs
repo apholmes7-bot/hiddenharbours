@@ -88,8 +88,16 @@ namespace HiddenHarbours.App.Editor
             public readonly Color GreyboxTint;
             public readonly string Reason;
 
+            /// <summary>
+            /// Which way they are turned, in degrees (0 = North, CW) — used only when the person has a
+            /// baked body, since a greybox rectangle has no front. <b>180 (South, toward the camera) is
+            /// the default and the right one for almost everybody:</b> a face is how you tell a person
+            /// from scenery. Turn someone away only when the turning is the point.
+            /// </summary>
+            public readonly float HeadingDegrees;
+
             public Person(string assetName, string artStem, Vector2 position, Footing ground,
-                          Color greyboxTint, string reason)
+                          Color greyboxTint, string reason, float headingDegrees = 180f)
             {
                 AssetName = assetName;
                 ArtStem = artStem;
@@ -97,6 +105,7 @@ namespace HiddenHarbours.App.Editor
                 Ground = ground;
                 GreyboxTint = greyboxTint;
                 Reason = reason;
+                HeadingDegrees = headingDegrees;
             }
         }
 
@@ -154,7 +163,11 @@ namespace HiddenHarbours.App.Editor
                                    StPetersWharf.MaxCellY - 0.5f), Footing.Deck,
                        new Color(0.58f, 0.62f, 0.58f),
                        "up the wharf from the slip head, watching the water — the dock is the east end " +
-                       "(§5.1a), so he is who is there when you come home under power"),
+                       "(§5.1a), so he is who is there when you come home under power",
+                       // The one person NOT turned to the camera: his whole reason for standing there is
+                       // that he is looking out at the water, and a wharf with everyone facing inland
+                       // reads as a stage set.
+                       headingDegrees: 90f),
         };
 
         // =====================================================================================
@@ -225,14 +238,15 @@ namespace HiddenHarbours.App.Editor
                     }
                 }
 
-                var go = MakeStandee(person, greyboxSquare);
+                var go = MakeStandee(person, npc, greyboxSquare);
                 go.transform.SetParent(root.transform, worldPositionStays: true);
 
                 var interactable = go.AddComponent<Interactable>();
                 ConfigureNpc(interactable, npc, LoadSprite($"{ArtPortrait}/{person.ArtStem}.png"));
 
                 placed.Add(interactable);
-                report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})");
+                report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})" +
+                           (npc.HasBakedBody ? $" as {npc.Build.Preset}" : " (greybox)"));
             }
 
             Debug.Log(
@@ -245,11 +259,23 @@ namespace HiddenHarbours.App.Editor
         // ---- helpers -------------------------------------------------------------------------------
 
         /// <summary>
-        /// The person's body in the world. Mirrors the opening cast's greybox standee (sorting order 9, a
-        /// 1 × 2 m marker) so the five read at the same scale as Aunt Ginny beside them, and takes the
-        /// real sprite the moment one exists at the conventional path.
+        /// The person's body in the world, best available first:
+        ///
+        /// <list type="number">
+        ///   <item>a BAKED BODY (their <see cref="NpcDef.Build"/>) — an eight-facing iso character
+        ///   breathing through its idle cycle, driven by <see cref="IsoCharacterSprite"/>, the same
+        ///   component the player uses. They are anchored, so it never measures any motion and simply
+        ///   idles; the day a routine walks them the walk cycle plays with no code change;</item>
+        ///   <item>a static sprite at the conventional <c>Art/Characters/&lt;stem&gt;.png</c>;</item>
+        ///   <item>the tinted greybox rectangle.</item>
+        /// </list>
+        ///
+        /// <para>Sorting order 9 either way, so the five sit in the same layer they always did.
+        /// <b>Scale stays 1 for a real body</b> — the sheets are PPU 32 with the pivot on ground
+        /// contact, so the metre size is already right and the greybox's 1 × 2 stretch would make a
+        /// nine-foot islander.</para>
         /// </summary>
-        static GameObject MakeStandee(Person person, Sprite greyboxSquare)
+        static GameObject MakeStandee(Person person, NpcDef npc, Sprite greyboxSquare)
         {
             var go = new GameObject(person.AssetName);
             go.transform.position = new Vector3(person.Position.x, person.Position.y, 0f);
@@ -257,18 +283,8 @@ namespace HiddenHarbours.App.Editor
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = 9;
 
-            var art = LoadSprite($"{ArtChars}/{person.ArtStem}.png");
-            if (art != null)
-            {
-                sr.sprite = art;
-                go.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                sr.sprite = greyboxSquare;
-                sr.color = person.GreyboxTint;
-                go.transform.localScale = new Vector3(1f, 2f, 1f);
-            }
+            NpcBodyDresser.Dress(go, sr, npc, person.ArtStem, greyboxSquare, person.GreyboxTint,
+                                 person.HeadingDegrees);
             return go;
         }
 
