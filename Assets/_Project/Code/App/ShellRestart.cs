@@ -102,7 +102,7 @@ namespace HiddenHarbours.App
         public static int DestroyPersistentCore()
         {
             PersistentObject[] roots = FindObjectsByType<PersistentObject>(
-                FindObjectsInactive.Include, FindObjectsSortMode.None);
+                FindObjectsInactive.Include);
 
             int destroyed = 0;
             for (int i = 0; i < roots.Length; i++)

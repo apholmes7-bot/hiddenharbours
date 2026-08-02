@@ -386,7 +386,7 @@ namespace HiddenHarbours.Boats
 
             if (_rigs.Count >= _maxBoats) return;
 
-            var boats = FindObjectsByType<BoatController>(FindObjectsSortMode.None);
+            var boats = FindObjectsByType<BoatController>();
             if (boats == null) return;
             foreach (var boat in boats)
             {

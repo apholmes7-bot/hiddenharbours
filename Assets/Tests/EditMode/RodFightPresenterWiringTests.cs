@@ -179,7 +179,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Owner's ruling 2026-07-23: the fight has NO UI. Nothing the core builds may put a fishing
             // canvas on screen — the rod, the line, the sound and the camera are the whole instrument.
             // (Guarding the OUTCOME, not the deleted class: a re-added gauge under any name fails here.)
-            foreach (var canvas in Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+            foreach (var canvas in Object.FindObjectsByType<Canvas>())
             {
                 string name = canvas.transform.root.name;
                 Assert.That(name, Does.Not.Contain("Gauge").IgnoreCase,

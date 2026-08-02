@@ -167,8 +167,6 @@ namespace HiddenHarbours.Player
         // published far end frame to frame, so it is her honest motion, never a decorative loop.
         private Vector2 _deepTravelDir = Vector2.right;
         private float _deepRunning01;      // eased 0..1: is she pulling right now (and so, is there a way to lean)
-        private Vector2 _lastDeepPos;
-        private bool _hasLastDeepPos;
         private SpriteRenderer _bobberSr;
         private SpriteRenderer _fishSr;
         private SpriteRenderer _heldSr;
@@ -309,7 +307,7 @@ namespace HiddenHarbours.Player
             if ((show & RodElements.FishShadow) != 0)
             {
                 entry = angler + new Vector2(_s.FishOffsetX, _s.FishOffsetY);
-                TrackDeepTravel(entry, dt);
+                TrackDeepTravel(dt);
                 RenderShadow(entry);
                 // Her BOIL rides the same renderer the sink rings use — it is idle through a fight, and a
                 // swirl on the water over an unseen fish is the most legible "she's over THERE, running
@@ -323,7 +321,7 @@ namespace HiddenHarbours.Player
                 // She's visible now, but the READ must not change under the player halfway through the
                 // fight: the same swirl keeps marking the same run direction, so the lean is one
                 // continuous skill from the hookup to the net rather than two different games.
-                TrackDeepTravel(far, dt);
+                TrackDeepTravel(dt);
                 if (_showDeepBoil && !ripplesShown) { RenderBoil(far); ripplesShown = true; }
             }
             else
@@ -333,7 +331,7 @@ namespace HiddenHarbours.Player
 
             if (!ripplesShown) _rippleSr.enabled = false;
             bool fishShown = (show & (RodElements.FishShadow | RodElements.FishSurface)) != 0;
-            if (!fishShown) { _hasLastDeepPos = false; _deepRunning01 = 0f; }
+            if (!fishShown) _deepRunning01 = 0f;
 
             if ((show & RodElements.HeldFish) != 0) RenderHeldFish(angler);
             else _heldSr.enabled = false;
@@ -514,7 +512,7 @@ namespace HiddenHarbours.Player
         /// Eased so the shape TURNS rather than snapping, and held through her slack windows: when she
         /// stops pulling the arrow simply stops being drawn, it doesn't spin to a fresh lie.
         /// </summary>
-        private void TrackDeepTravel(Vector2 pos, float dt)
+        private void TrackDeepTravel(float dt)
         {
             var run = new Vector2(_s.FishRunDirX, _s.FishRunDirY);
             float mag = run.magnitude;
@@ -528,8 +526,6 @@ namespace HiddenHarbours.Player
             {
                 _deepRunning01 = Mathf.Lerp(_deepRunning01, 0f, 1f - Mathf.Exp(-8f * Mathf.Max(0f, dt)));
             }
-            _lastDeepPos = pos;
-            _hasLastDeepPos = true;
         }
 
         /// <summary>

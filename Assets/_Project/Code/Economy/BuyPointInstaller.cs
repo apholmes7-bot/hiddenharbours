@@ -36,12 +36,12 @@ namespace HiddenHarbours.Economy
         // after any load also repairs stalls in scenes toggled back on. Ensure() is idempotent.
         private static void Scan()
         {
-            Ensure(Object.FindObjectsByType<Shipwright>(FindObjectsSortMode.None));
-            Ensure(Object.FindObjectsByType<GearShop>(FindObjectsSortMode.None));
-            Ensure(Object.FindObjectsByType<LicenseVendor>(FindObjectsSortMode.None));
-            Ensure(Object.FindObjectsByType<PotShop>(FindObjectsSortMode.None));
-            Ensure(Object.FindObjectsByType<BaitShop>(FindObjectsSortMode.None));
-            Ensure(Object.FindObjectsByType<SupplyShop>(FindObjectsSortMode.None));
+            Ensure(Object.FindObjectsByType<Shipwright>());
+            Ensure(Object.FindObjectsByType<GearShop>());
+            Ensure(Object.FindObjectsByType<LicenseVendor>());
+            Ensure(Object.FindObjectsByType<PotShop>());
+            Ensure(Object.FindObjectsByType<BaitShop>());
+            Ensure(Object.FindObjectsByType<SupplyShop>());
         }
 
         private static void Ensure<T>(T[] vendors) where T : Component

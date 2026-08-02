@@ -93,11 +93,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>
         /// Every string the open page is currently showing. Sorted, because
-        /// <see cref="FindObjectsSortMode.None"/> means exactly that — the traversal order is not
+        /// <c>FindObjectsByType</c> makes no ordering promise — the traversal order is not
         /// guaranteed to repeat, so an order-sensitive comparison would flake on its own.
         /// </summary>
         private static string[] PageText()
-            => Object.FindObjectsByType<Text>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Text>()
                      .Select(t => t.text)
                      .OrderBy(s => s, System.StringComparer.Ordinal)
                      .ToArray();

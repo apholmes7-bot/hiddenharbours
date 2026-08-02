@@ -23,7 +23,7 @@ namespace HiddenHarbours.Art.Editor
         public static void AddPaintableTilemap()
         {
             // Root Grid — reuse an existing one in the scene if present so multiple layers share it.
-            var grid = Object.FindFirstObjectByType<Grid>();
+            var grid = Object.FindAnyObjectByType<Grid>();
             if (grid == null)
             {
                 var gridGo = new GameObject("Grid");

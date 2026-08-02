@@ -125,15 +125,15 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         private static Button FindButton(string name)
-            => Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Button>()
                      .FirstOrDefault(b => b.gameObject.activeInHierarchy && b.name == name);
 
         private static Slider FindSlider(string name)
-            => Object.FindObjectsByType<Slider>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Slider>()
                      .FirstOrDefault(s => s.gameObject.activeInHierarchy && s.name == name);
 
         private static bool ScreenShows(string fragment)
-            => Object.FindObjectsByType<Text>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Text>()
                      .Where(t => t.gameObject.activeInHierarchy)
                      .Any(t => !string.IsNullOrEmpty(t.text) && t.text.Contains(fragment));
 

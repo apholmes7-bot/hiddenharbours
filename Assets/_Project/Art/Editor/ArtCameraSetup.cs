@@ -45,11 +45,7 @@ namespace HiddenHarbours.Art.Editor
         static void ConfigureActiveSceneCamera()
         {
             Camera cam = Camera.main;
-#if UNITY_2023_1_OR_NEWER
-            if (cam == null) cam = UnityEngine.Object.FindFirstObjectByType<Camera>();
-#else
-            if (cam == null) cam = UnityEngine.Object.FindObjectOfType<Camera>();
-#endif
+            if (cam == null) cam = UnityEngine.Object.FindAnyObjectByType<Camera>();
             if (cam == null)
             {
                 Debug.LogWarning("[ArtCameraSetup] No Camera found in the active scene.");

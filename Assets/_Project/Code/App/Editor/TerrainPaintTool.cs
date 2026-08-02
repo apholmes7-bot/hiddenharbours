@@ -510,7 +510,7 @@ namespace HiddenHarbours.App.Editor
         private void RefreshOpenSplatSurfaces()
         {
             if (!SplatLoaded) return;
-            foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
+            foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 if (s == null) continue;
                 s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3]);
@@ -616,7 +616,7 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         private static Tilemap FindGroundTilemap()
         {
-            var all = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var all = Object.FindObjectsByType<Tilemap>();
             if (all == null || all.Length == 0) return null;
             foreach (var tm in all)
                 if (tm != null && tm.gameObject.name.StartsWith("TerrainTilemap", StringComparison.Ordinal))
@@ -909,7 +909,7 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         private float ResolvePreviewWaterLevel()
         {
-            var surfaces = Object.FindObjectsByType<WaterSurface>(FindObjectsSortMode.None);
+            var surfaces = Object.FindObjectsByType<WaterSurface>();
             foreach (var s in surfaces)
             {
                 if (s == null) continue;
@@ -1315,7 +1315,7 @@ namespace HiddenHarbours.App.Editor
         private void RefreshOpenWaterSurfaces()
         {
             if (_map == null || _map.HeightTexture == null) return;
-            foreach (var s in Object.FindObjectsByType<WaterSurface>(FindObjectsSortMode.None))
+            foreach (var s in Object.FindObjectsByType<WaterSurface>())
                 s.ConfigurePaintedHeightMap(_map.HeightTexture, _map.WorldCenter, _map.WorldSize,
                                             _map.MinElevation, _map.MaxElevation);
         }
@@ -1337,7 +1337,7 @@ namespace HiddenHarbours.App.Editor
             // 1) Water render reads it. (F2) Record Undo + SetDirty on each WaterSurface so the render-half
             // swap is undoable in lockstep with the sim half below — Ctrl-Z reverts the WHOLE adoption, not a
             // partial state. (RefreshOpenWaterSurfaces, used by the live brush, deliberately records no Undo.)
-            foreach (var s in Object.FindObjectsByType<WaterSurface>(FindObjectsSortMode.None))
+            foreach (var s in Object.FindObjectsByType<WaterSurface>())
             {
                 Undo.RecordObject(s, "Adopt painted seabed");
                 s.ConfigurePaintedHeightMap(_map.HeightTexture, _map.WorldCenter, _map.WorldSize,
@@ -1349,8 +1349,8 @@ namespace HiddenHarbours.App.Editor
             //    (St Peters) OR the rect-based RectTidalTerrain (the converged cove/Nine Mile Creek, ADR 0012
             //    rec. 4) — and add a PaintedTidalTerrain. Disabling (not deleting) keeps it reversible.
             var analytics = new System.Collections.Generic.List<MonoBehaviour>();
-            analytics.AddRange(Object.FindObjectsByType<TidalTerrain>(FindObjectsSortMode.None));
-            analytics.AddRange(Object.FindObjectsByType<RectTidalTerrain>(FindObjectsSortMode.None));
+            analytics.AddRange(Object.FindObjectsByType<TidalTerrain>());
+            analytics.AddRange(Object.FindObjectsByType<RectTidalTerrain>());
             GameObject host = null;
             foreach (var analytic in analytics)
             {
@@ -1382,7 +1382,7 @@ namespace HiddenHarbours.App.Editor
             var splatB = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(1));
             var splatC = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(2));
             var splatD = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(3));
-            foreach (var surface in Object.FindObjectsByType<TerrainSplatSurface>(FindObjectsSortMode.None))
+            foreach (var surface in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 Undo.RecordObject(surface, "Adopt painted seabed");
                 surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);

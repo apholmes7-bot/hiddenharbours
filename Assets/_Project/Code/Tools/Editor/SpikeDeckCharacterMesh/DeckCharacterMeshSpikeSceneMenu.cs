@@ -37,7 +37,7 @@ namespace HiddenHarbours.SpikeDeckCharacterMesh.Editor
             // A boat = a MeshHullDriver whose renderer is configured. FindObjectsByType because
             // this is a dev menu, not a hot path.
             MeshHullDriver target = null;
-            foreach (var driver in Object.FindObjectsByType<MeshHullDriver>(FindObjectsSortMode.None))
+            foreach (var driver in Object.FindObjectsByType<MeshHullDriver>())
             {
                 var r = driver.GetComponentInChildren<IsoFacetHullRenderer>(true);
                 if (r != null && r.IsConfigured) { target = driver; break; }
@@ -78,7 +78,7 @@ namespace HiddenHarbours.SpikeDeckCharacterMesh.Editor
         {
             int removed = 0;
             foreach (var rig in Object.FindObjectsByType<DeckCharacterMeshSpikeRig>(
-                         FindObjectsInactive.Include, FindObjectsSortMode.None))
+                         FindObjectsInactive.Include))
             {
                 Object.DestroyImmediate(rig.gameObject);
                 removed++;
