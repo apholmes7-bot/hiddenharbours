@@ -1354,7 +1354,7 @@ namespace HiddenHarbours.Art
             if (_landTilemaps != null && _landTilemaps.Length > 0) return _landTilemaps;
             // Auto: every Tilemap in the scene reads as land. Fine when only ground is painted; assign explicitly
             // if water tiles are also painted (else the sea would be mistaken for land).
-            var found = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var found = FindObjectsByType<Tilemap>();
             return found != null && found.Length > 0 ? found : null;
         }
 
@@ -1362,7 +1362,7 @@ namespace HiddenHarbours.Art
         {
             if (_shoreFence != null) return _shoreFence;
             if (_shoreFenceNames == null) return null;
-            var all = FindObjectsByType<EdgeCollider2D>(FindObjectsSortMode.None);
+            var all = FindObjectsByType<EdgeCollider2D>();
             if (all == null) return null;
             foreach (string fenceName in _shoreFenceNames)
             {

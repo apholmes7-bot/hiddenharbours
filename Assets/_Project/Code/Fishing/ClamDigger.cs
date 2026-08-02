@@ -100,7 +100,7 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static ClamDig NearestDiggable(Vector2 playerPos)
         {
-            var holes = Object.FindObjectsByType<ClamDig>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var holes = Object.FindObjectsByType<ClamDig>(FindObjectsInactive.Exclude);
             ClamDig best = null;
             float bestSqr = float.MaxValue;
             foreach (var dig in holes)

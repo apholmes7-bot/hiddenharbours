@@ -985,7 +985,7 @@ namespace HiddenHarbours.App.Editor
         private void CheckLiveTideProfile(RegionDef def)
         {
             if (def == null) return;
-            var env = Object.FindObjectsByType<EnvironmentService>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            var env = Object.FindObjectsByType<EnvironmentService>(FindObjectsInactive.Include)
                             .FirstOrDefault();
             if (env == null) return;   // the tide service arrives with the persistent core — nothing to check here
 
@@ -1115,7 +1115,7 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================
 
         private static List<T> FindInScene<T>(Scene scene) where T : Component
-            => Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            => Object.FindObjectsByType<T>(FindObjectsInactive.Include)
                      .Where(c => c.gameObject.scene == scene)
                      .ToList();
 

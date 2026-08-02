@@ -659,7 +659,7 @@ namespace HiddenHarbours.App.Editor
 
             // Re-feed any open splat surface from the RELOADED assets (Commit reimported them —
             // the old in-memory references are invalid; wire only the fresh loads).
-            foreach (var s in Object.FindObjectsByType<HiddenHarbours.Art.TerrainSplatSurface>(FindObjectsSortMode.None))
+            foreach (var s in Object.FindObjectsByType<HiddenHarbours.Art.TerrainSplatSurface>())
             {
                 s.ConfigureSplat(textures[0], textures[1], textures[2], textures[3]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }   // OnEnable → MPB push

@@ -161,7 +161,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private void OnGameLoaded(GameLoaded e) => _gameLoaded++;
 
         private static string[] ScreenText()
-            => Object.FindObjectsByType<Text>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Text>()
                      .Where(t => t.gameObject.activeInHierarchy)
                      .Select(t => t.text)
                      .ToArray();
@@ -170,7 +170,7 @@ namespace HiddenHarbours.Tests.PlayMode
             => ScreenText().Any(s => !string.IsNullOrEmpty(s) && s.Contains(fragment));
 
         private static Button FindButton(string name)
-            => Object.FindObjectsByType<Button>(FindObjectsSortMode.None)
+            => Object.FindObjectsByType<Button>()
                      .FirstOrDefault(b => b.gameObject.activeInHierarchy && b.name == name);
 
         // ---- boot ---------------------------------------------------------------------------

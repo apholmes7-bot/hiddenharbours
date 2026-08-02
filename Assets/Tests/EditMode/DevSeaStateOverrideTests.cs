@@ -51,7 +51,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void Cleanup()
         {
-            foreach (var go in Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+            foreach (var go in Object.FindObjectsByType<GameObject>())
                 if (go.name == "EnvServiceUnderTest") Object.DestroyImmediate(go);
         }
 

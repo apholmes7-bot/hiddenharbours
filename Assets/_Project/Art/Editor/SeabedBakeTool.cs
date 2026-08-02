@@ -185,7 +185,7 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         private static ITidalTerrain FindTerrain()
         {
-            var all = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+            var all = Object.FindObjectsByType<MonoBehaviour>();
             foreach (var mb in all)
                 if (mb is ITidalTerrain terrain && mb.isActiveAndEnabled) return terrain;
             return null;
@@ -203,7 +203,7 @@ namespace HiddenHarbours.Art.Editor
         /// tilemap in the open scene — the same discovery the Terrain Paint Tool uses.</summary>
         private static Tilemap FindGroundTilemap()
         {
-            var all = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            var all = Object.FindObjectsByType<Tilemap>();
             foreach (var tm in all)
                 if (tm != null && tm.gameObject.name.StartsWith("TerrainTilemap",
                         System.StringComparison.Ordinal))
