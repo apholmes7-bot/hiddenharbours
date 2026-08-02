@@ -57,7 +57,15 @@ namespace HiddenHarbours.Art.Editor
             SaveInPlace(a256, Array256Path);
             SaveInPlace(a512, Array512Path);
             AssetDatabase.SaveAssets();
-            int slices = a256.depth + a512.depth;
+            // ⚠ Read the PERSISTED assets, never the temps: on the REBUILD path SaveInPlace has just
+            // CopySerialized'd the temp into the existing asset and DESTROYED the temp — so `a256.depth`
+            // here was a MissingReferenceException that killed every St Peters build on any machine that
+            // had built the arrays before (first hit: the owner's, 2026-08-02; every agent machine and CI
+            // builds into a fresh worktree, takes the CreateAsset path, and never sees it). Reading back
+            // from the path also proves the save actually landed.
+            var p256 = AssetDatabase.LoadAssetAtPath<Texture2DArray>(Array256Path);
+            var p512 = AssetDatabase.LoadAssetAtPath<Texture2DArray>(Array512Path);
+            int slices = (p256 != null ? p256.depth : 0) + (p512 != null ? p512.depth : 0);
             Debug.Log($"[TerrainTexArrayBuilder] Packed {slices} slices " +
                       $"({Order256.Length} + {Order512.Length} materials x {LadderSteps.Length} steps).");
             return slices;
