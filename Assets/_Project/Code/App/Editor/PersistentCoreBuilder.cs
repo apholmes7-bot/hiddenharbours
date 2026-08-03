@@ -67,8 +67,9 @@ namespace HiddenHarbours.App.Editor
         // cell constant outside the slicer, and it is a SILENT one: at 88/32 against a 92-tall cell
         // the submerge shader clips uv.y against the wrong body height, so the waterline sits a few
         // centimetres off and nothing anywhere errors. CharacterCellConstantTests pins it against
-        // the slicer's cell, which is itself pinned against the live rig.
-        const int IsoCellHeightPx = 92;
+        // the slicer's cell, which is itself pinned against the live rig — public for exactly that
+        // pin, same as the slicer's own constants.
+        public const int IsoCellHeightPx = 92;
         const float IsoCellHeightMeters = IsoCellHeightPx / 32f;   // 2.875
         const float IsoNeckDeepFraction = 0.47f;   // MEASURED — see the wade block below
 
