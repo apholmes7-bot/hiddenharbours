@@ -26,11 +26,12 @@ namespace HiddenHarbours.Tests.EditMode
             _spawned.Clear();
         }
 
-        private HelmConsoleDef Console(ConsoleRigKind rig, bool fishSlot, bool dome, bool flush, bool radar, bool gps)
+        private HelmConsoleDef Console(ConsoleRigKind rig, bool fishSlot, bool dome, bool flush, bool radar,
+                                      bool gps, SounderKind defaultSounder = SounderKind.Depth)
         {
             var c = ScriptableObject.CreateInstance<HelmConsoleDef>();
             c.Rig = rig;
-            c.DefaultSounder = SounderKind.Depth;
+            c.DefaultSounder = defaultSounder;
             c.DefaultCompass = CompassMount.None;
             c.DefaultRadar = false; c.DefaultGps = false;
             c.SupportsFishFinder = fishSlot;
@@ -78,6 +79,90 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(SounderKind.Depth,
                 BoatEquipment.EffectiveFit(cannotFit, Owned(BoatEquipment.FishFinderId)).Sounder,
                 "an unsupported slot ignores the owned upgrade");
+        }
+
+        // ---- the purchasable DEPTH SOUNDER (ADR 0025 S2) -------------------------------------------
+
+        [Test]
+        public void DepthSounder_LightsABareBrow_WhenBought()
+        {
+            var bare = Console(ConsoleRigKind.Console, fishSlot: true, dome: true, flush: false,
+                               radar: false, gps: false, defaultSounder: SounderKind.None);
+
+            Assert.AreEqual(SounderKind.None, BoatEquipment.EffectiveFit(bare, Owned()).Sounder,
+                "a helm that ships without one shows a blank brow until the player buys it");
+            Assert.AreEqual(SounderKind.Depth,
+                BoatEquipment.EffectiveFit(bare, Owned(BoatEquipment.DepthSounderId)).Sounder,
+                "…and buying the sounder fits it");
+        }
+
+        [Test]
+        public void DepthSounder_OnAHullThatAlreadyHasOne_ChangesNothing()
+        {
+            var shipsWithOne = Console(ConsoleRigKind.Novi, fishSlot: true, dome: true, flush: true,
+                                       radar: true, gps: true);
+            Assert.AreEqual(SounderKind.Depth,
+                BoatEquipment.EffectiveFit(shipsWithOne, Owned(BoatEquipment.DepthSounderId)).Sounder,
+                "a working boat already carries one — the purchase is a no-op, not a downgrade");
+        }
+
+        [Test]
+        public void FishFinder_Wins_OverAnOwnedDepthSounder()
+        {
+            // The two share ONE flush cutout (HelmInstruments' own doc). The finder does everything the
+            // sounder does, so owning both must show the finder — never the cheaper unit.
+            var bare = Console(ConsoleRigKind.Console, fishSlot: true, dome: true, flush: false,
+                               radar: false, gps: false, defaultSounder: SounderKind.None);
+            Assert.AreEqual(SounderKind.Fish,
+                BoatEquipment.EffectiveFit(bare,
+                    Owned(BoatEquipment.DepthSounderId, BoatEquipment.FishFinderId)).Sounder,
+                "the higher-tier unit owns the cutout when both are owned");
+
+            // …and on a brow that cannot take the finder, the basic sounder still fits.
+            var noFishSlot = Console(ConsoleRigKind.Console, fishSlot: false, dome: true, flush: false,
+                                     radar: false, gps: false, defaultSounder: SounderKind.None);
+            Assert.AreEqual(SounderKind.Depth,
+                BoatEquipment.EffectiveFit(noFishSlot,
+                    Owned(BoatEquipment.DepthSounderId, BoatEquipment.FishFinderId)).Sounder,
+                "an unsupported finder falls back to the sounder that does fit");
+        }
+
+        [Test]
+        public void DepthSounder_DoesNothingWithoutAConsole_TheDory()
+        {
+            Assert.AreEqual(SounderKind.None,
+                BoatEquipment.EffectiveFit((HelmConsoleDef)null, Owned(BoatEquipment.DepthSounderId)).Sounder,
+                "there is no dash to bolt it into on a rowed dory");
+        }
+
+        [Test]
+        public void TheShippedOffer_SellsExactlyTheIdTheFitResolverLooksFor()
+        {
+            // The one seam a rename would break silently: the chandlery would take the money, write an id
+            // nothing reads, and the dash would stay blank. Assert the two ends against the SHIPPED asset.
+            const string path = "Assets/_Project/Data/Instruments/DepthSounderOffer.asset";
+            var offer = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Economy.InstrumentOffer>(path);
+            Assert.IsNotNull(offer, $"the depth-sounder offer must ship at {path}");
+            Assert.AreEqual(BoatEquipment.DepthSounderId, offer.Id,
+                "the offer sells the id EffectiveFit resolves — a rename on either side is a dead purchase");
+            Assert.GreaterOrEqual(offer.Price, 0, "a price is data, but never negative");
+            Assert.IsNotEmpty(offer.DisplayName);
+        }
+
+        [Test]
+        public void TheInstrumentIds_AreDistinct_AndNamespaced()
+        {
+            // Append-only ids (rule 2): a collision or a rename would silently re-point saved fitments.
+            var ids = new HashSet<string>
+            {
+                BoatEquipment.DepthSounderId, BoatEquipment.FishFinderId, BoatEquipment.RadarId,
+                BoatEquipment.GpsId, BoatEquipment.CompassDomeId, BoatEquipment.CompassFlushId,
+            };
+            Assert.AreEqual(6, ids.Count, "every instrument id is distinct");
+            foreach (string id in ids)
+                StringAssert.StartsWith("instrument.", id, "ids are type.snake_case (rule 2)");
+            Assert.AreEqual("instrument.depth_sounder", BoatEquipment.DepthSounderId,
+                "the shipped id is a contract — saved fitments name it");
         }
 
         [Test]

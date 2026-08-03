@@ -19,7 +19,10 @@ namespace HiddenHarbours.Economy
         Bait,
         /// <summary>A consumable supply purchase (<see cref="SupplyShop"/>.TryBuy) — ice today, §7.3's lids
         /// next; counted, always re-buyable. Appended.</summary>
-        Supply
+        Supply,
+        /// <summary>A helm-instrument purchase (<see cref="InstrumentShop"/>.TryBuy) — fitted to the boat
+        /// you are aboard, so "owned" is PER HULL. Appended.</summary>
+        Instrument
     }
 
     /// <summary>
@@ -76,6 +79,13 @@ namespace HiddenHarbours.Economy
         /// money. Buying more ice when you already have some is the normal case, not a refusal.</summary>
         public static BuyQuote Supply(int price, int money)
             => new BuyQuote(BuyRowKind.Supply, price, owned: false, affordable: money >= price);
+
+        /// <summary>Quote a helm instrument. Unlike gear, "owned" is asked of ONE HULL — the boat the
+        /// player is aboard — so the same unit can be bought again for the next boat. With no boat to fit
+        /// it to the row shows unaffordable rather than owned: there is nothing to buy it FOR, and the
+        /// vendor would refuse anyway.</summary>
+        public static BuyQuote Instrument(int price, int money, bool ownedByThisHull, bool hasHull)
+            => new BuyQuote(BuyRowKind.Instrument, price, ownedByThisHull, hasHull && money >= price);
 
         /// <summary>
         /// Quote a boat offer through its whole life:

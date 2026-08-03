@@ -23,6 +23,10 @@ namespace HiddenHarbours.Boats
     public static class BoatEquipment
     {
         // Stable instrument ids (authored as GearOffer-style priced assets; append-only, rule 2).
+        /// <summary>The basic flush-mount depth sounder (<c>DepthRig</c>) — the entry-level brow
+        /// instrument, ADR 0025 S2. Owning it fits <see cref="SounderKind.Depth"/> on any hull with a
+        /// console; <see cref="FishFinderId"/> supersedes it in the same cutout.</summary>
+        public const string DepthSounderId  = "instrument.depth_sounder";
         public const string FishFinderId   = "instrument.fish_finder";
         public const string RadarId        = "instrument.radar";
         public const string GpsId          = "instrument.gps";
@@ -46,8 +50,21 @@ namespace HiddenHarbours.Boats
 
             if (ownedForHull != null && ownedForHull.Count > 0)
             {
+                // The brow cutout, in tier order. FISH WINS: owning the colour finder on a helm that can
+                // take it upgrades the cutout even when the plain sounder is also owned (it is the same
+                // hole, and the finder does everything the sounder does). Otherwise a bought depth sounder
+                // lights a bare brow.
+                //
+                // ⚠ There is deliberately no `SupportsSounder` flag to gate the basic unit on. A helm
+                // console is BY DEFINITION a dash with a brow, and the depth sounder is the smallest
+                // instrument in the set — the flag would be a knob no authored console would ever set
+                // false (rule 6: don't add a dial that never moves). `SupportsFishFinder` earns its
+                // existence because a small brow genuinely may not take the bigger colour unit. If a
+                // console ever does need to refuse the basic sounder, adding the flag then is additive.
                 if (console.SupportsFishFinder && ownedForHull.Contains(FishFinderId))
                     sounder = SounderKind.Fish;
+                else if (sounder == SounderKind.None && ownedForHull.Contains(DepthSounderId))
+                    sounder = SounderKind.Depth;
 
                 // Flush wins over dome if both are somehow owned (it is the higher-tier fitted unit).
                 if (console.SupportsFlushCompass && ownedForHull.Contains(CompassFlushId))

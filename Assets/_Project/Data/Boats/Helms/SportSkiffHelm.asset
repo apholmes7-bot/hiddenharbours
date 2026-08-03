@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: helm.sport_skiff
   Rig: 2
   Lever: 1
-  DefaultSounder: 1
+  DefaultSounder: 0
   DefaultCompass: 0
   DefaultRadar: 0
   DefaultGps: 0

@@ -49,6 +49,27 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// Raised when the player buys a HELM INSTRUMENT and it is fitted to a specific hull (ADR 0025 S2 —
+    /// the depth sounder is the first). The economy side has already deducted the price and recorded the
+    /// fitment (<see cref="SaveData.HullInstruments"/> via <see cref="InstrumentLocker"/>). Carries BOTH
+    /// ids because an instrument is bolted into one boat: "you bought a sounder" is only half the news.
+    /// </summary>
+    public readonly struct InstrumentPurchased
+    {
+        /// <summary>Stable instrument id bought (e.g. "instrument.depth_sounder").</summary>
+        public readonly string InstrumentId;
+        /// <summary>Stable hull id it was fitted to (e.g. "boat.skiff").</summary>
+        public readonly string HullId;
+        /// <summary>₲ paid.</summary>
+        public readonly int PricePaid;
+
+        public InstrumentPurchased(string instrumentId, string hullId, int pricePaid)
+        {
+            InstrumentId = instrumentId; HullId = hullId; PricePaid = pricePaid;
+        }
+    }
+
+    /// <summary>
     /// Raised when a one-time fee is FRONTED to the player — the mechanism behind the Aunt Ginny beat that
     /// unblocks the clam licence (plan-to-m1 §7.5's chicken-and-egg). The wallet has already been credited
     /// and the one-time flag persisted. world-content subscribes (or calls the grant's own seam from her

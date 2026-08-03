@@ -112,6 +112,86 @@ namespace HiddenHarbours.Core
         /// the §7.3 cold chain (lids, and later fuel cans) lands as new Def assets rather than new save
         /// fields — one schema bump for the shape, none for the content. Added in v7 (plan-to-m1 §7.5).</para></summary>
         public List<SupplyStock> SupplyStock = new();
+
+        /// <summary>Helm instruments the player has BOUGHT for a specific hull — the first PER-HULL
+        /// ownership record (ADR 0030). One flat row per (hull, instrument) pair, read and written only
+        /// through <see cref="InstrumentLocker"/>.
+        ///
+        /// <para><b>Sparse by construction:</b> a hull with no row here simply carries its console's
+        /// AUTHORED default fit. Only the player's <i>deviations</i> are state — the resolved fit is
+        /// recomputed by <c>BoatEquipment.EffectiveFit</c> and never stored (rule 5), exactly as that
+        /// class's own doc demands. Added in v8 (ADR 0025 S2).</para></summary>
+        public List<HullInstrument> HullInstruments = new();
+
+        /// <summary>Per-hull depth-sounder PREFERENCES — the shallow set-point, armed, units and night
+        /// backlight the player last left on that boat's glass. Sparse like
+        /// <see cref="HullInstruments"/> (absent hull = the owner's configured defaults) and read/written
+        /// only through <see cref="InstrumentLocker"/>.
+        ///
+        /// <para>⚠ <b>Preferences, never sim inputs</b> — and emphatically not a cached depth: the
+        /// reading itself is recomputed from the one height map every tick (rule 5). Added in v8.</para></summary>
+        public List<SounderPrefsDto> HullSounderPrefs = new();
+    }
+
+    /// <summary>
+    /// One instrument owned against one hull — the per-hull twin of the presence-only
+    /// <see cref="SaveData.OwnedGear"/> wallet. Kept as a FLAT (hull, instrument) pair rather than a
+    /// nested id list per hull, following the <see cref="PlacedTrapDto"/> flat-scalar precedent: it stays
+    /// JsonUtility-friendly and human-readable in the on-disk JSON, and fitting another instrument to a
+    /// hull is one more row rather than a reshaped record.
+    /// </summary>
+    [Serializable]
+    public struct HullInstrument
+    {
+        /// <summary>Stable hull id the instrument is fitted to (e.g. "boat.skiff"). Instruments are
+        /// physically bolted into ONE boat's dash — only the watch is carried between hulls.</summary>
+        public string HullId;
+
+        /// <summary>Stable instrument id (e.g. "instrument.depth_sounder"). Append-only (rule 2); the
+        /// canonical list is <c>BoatEquipment</c>'s consts.</summary>
+        public string InstrumentId;
+
+        public HullInstrument(string hullId, string instrumentId)
+        {
+            HullId = hullId;
+            InstrumentId = instrumentId;
+        }
+    }
+
+    /// <summary>
+    /// One hull's persisted sounder preferences — the flat, JsonUtility-friendly record of
+    /// <see cref="Core.SounderPrefs"/> keyed by hull id. Flat scalars for the same reason
+    /// <see cref="HeldCatchDto"/> flattens its freshness triple: clean JSON, no nested containers.
+    /// </summary>
+    [Serializable]
+    public struct SounderPrefsDto
+    {
+        /// <summary>Stable hull id these preferences belong to.</summary>
+        public string HullId;
+
+        /// <summary>Shallow set-point in METRES (unit-independent — see <see cref="Core.SounderPrefs"/>).</summary>
+        public float AlarmMetres;
+
+        /// <summary>Is the shallow alarm armed?</summary>
+        public bool Armed;
+
+        /// <summary>Display in feet rather than metres.</summary>
+        public bool Feet;
+
+        /// <summary>Amber night backlight rather than the day panel.</summary>
+        public bool Night;
+
+        public SounderPrefsDto(string hullId, in SounderPrefs prefs)
+        {
+            HullId = hullId;
+            AlarmMetres = prefs.AlarmMetres;
+            Armed = prefs.Armed;
+            Feet = prefs.Feet;
+            Night = prefs.Night;
+        }
+
+        /// <summary>This record as the runtime value.</summary>
+        public SounderPrefs Prefs => new SounderPrefs(AlarmMetres, Armed, Feet, Night);
     }
 
     /// <summary>

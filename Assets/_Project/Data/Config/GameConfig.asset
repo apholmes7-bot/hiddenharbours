@@ -89,6 +89,22 @@ MonoBehaviour:
     MarginY: 16
     GrabRadiusPx: 30
     TillerDragFullDrivePx: 140
+  DepthSounder:
+    ReadIntervalSec: 0.25
+    DefaultAlarmMetres: 3
+    DefaultArmed: 1
+    DefaultFeet: 0
+    AlarmStepMetres: 0.5
+    MinAlarmMetres: 0.5
+    MaxAlarmMetres: 20
+    AlarmBlinkHz: 2
+    PlaceholderWaterTempC: 12
+    CardScale: 1
+    FocusScale: 2
+    MarginX: 24
+    MarginY: 16
+    FocusCenterX01: 0.5
+    FocusCenterY01: 0.5
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7
