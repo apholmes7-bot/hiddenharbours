@@ -3,7 +3,7 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// Which sounder is fitted in a helm's brow — the diegetic depth read. A boat carries the plain
     /// depth sounder OR the colour fish-finder, never both (they share one flush-mount cutout —
-    /// <c>docs/art/rigs/ui/readmes/fish-finder.md</c>), or none at all on a bare helm. Maps to the
+    /// <c>docs/art/rigs/ui/fish-finder/README.md</c>), or none at all on a bare helm. Maps to the
     /// rig <c>finder</c> signal (<c>depth</c>|<c>fish</c>).
     /// </summary>
     public enum SounderKind

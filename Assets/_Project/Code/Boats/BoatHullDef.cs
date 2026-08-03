@@ -122,5 +122,14 @@ namespace HiddenHarbours.Boats
                  "Append-only, mirrors the Visual / DeckContainer pointers above. How the console renders " +
                  "is ADR 0025.")]
         public HelmConsoleDef Helm;
+
+        [Header("Helm throttle detents (0 = use the GameConfig default)")]
+        [Tooltip("Per-hull override for the notched throttle's AHEAD detent count (ADR 0025 S1 — a " +
+                 "small outboard may want coarser travel than a binnacle lever). 0 = the shared " +
+                 "GameConfig.HelmThrottle.AheadNotches. Hull assets serialized before this field " +
+                 "existed deserialize as 0 = config default, so nothing changes untouched.")]
+        [Min(0)] public int HelmAheadNotches = 0;
+        [Tooltip("Per-hull override for the ASTERN detent count. 0 = the shared GameConfig default.")]
+        [Min(0)] public int HelmAsternNotches = 0;
     }
 }

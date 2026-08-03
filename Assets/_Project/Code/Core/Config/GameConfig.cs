@@ -208,6 +208,12 @@ namespace HiddenHarbours.Core
                  "ThrottleDetentModel; owner-tunable, no code (rule 6).")]
         public HelmThrottleSettings HelmThrottle = HelmThrottleSettings.Default;
 
+        [Header("Helm overlay (the diegetic instrument card — ADR 0025 S1)")]
+        [Tooltip("The screen-space card that shows the active hull's control (tiller or binnacle lever) " +
+                 "while piloting a motorised hull: placement, the click-to-focus enlargement, and the " +
+                 "pointer-mapping radii. Presentation only — reposition/rescale freely, no code (rule 6).")]
+        public HelmOverlaySettings HelmOverlay = HelmOverlaySettings.Default;
+
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
                  "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
@@ -420,12 +426,79 @@ namespace HiddenHarbours.Core
                  "per press, the deliberate binnacle feel). > 0 lets a held key walk the throttle open.")]
         [Min(0f)] public float HoldRepeatPerSec;
 
-        /// <summary>Four ahead notches (quarter steps), two astern, edge-only — the reference feel.</summary>
+        [Tooltip("How long a throttle key must be HELD (real seconds) before hold-to-repeat starts " +
+                 "walking detents (the owner's 'auto-repeat after a delay'). The press itself always " +
+                 "steps immediately; this only delays the repeats.")]
+        [Min(0f)] public float HoldRepeatDelaySec;
+
+        [Tooltip("The neutral snap window, in drive units around 0: a mouse-dragged lever RELEASED " +
+                 "inside this window clicks into the neutral detent (a real lever's centre gate); " +
+                 "released anywhere else it holds exactly where it was left.")]
+        [Range(0f, 0.5f)] public float NeutralSnapWindow01;
+
+        /// <summary>Four ahead notches (quarter steps), two astern; press steps at once, repeats walk on
+        /// after 0.35 s at 3/s (the owner's stepped-and-held directive, 2026-08-03); a ±0.08 centre gate.</summary>
         public static HelmThrottleSettings Default => new HelmThrottleSettings
         {
             AheadNotches = 4,
             AsternNotches = 2,
-            HoldRepeatPerSec = 0f,
+            HoldRepeatPerSec = 3f,
+            HoldRepeatDelaySec = 0.35f,
+            NeutralSnapWindow01 = 0.08f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>helm instrument overlay</b> (<see cref="GameConfig.HelmOverlay"/>) — the
+    /// screen-space card that shows the active hull's diegetic control (the tiller or the binnacle
+    /// lever, ADR 0025 S1) while piloting a motorised hull. Placement, the click-to-FOCUS enlargement
+    /// (owner addition 2026-08-03: clicking an instrument brings it to a bigger state where its controls
+    /// are properly clickable; Esc/click-away returns), and the pointer-mapping radii all live here so
+    /// the whole feel is dialled in the Inspector with no code (rule 6). Presentation preferences only —
+    /// never sim state, never saved (rule 5).
+    /// </summary>
+    [System.Serializable]
+    public struct HelmOverlaySettings
+    {
+        [Tooltip("Scale of the small dash-card state (screen pixels per rig pixel). 1 = native rig size.")]
+        [Min(0.1f)] public float SmallScale;
+
+        [Tooltip("Scale of the FOCUSED state (click the instrument to enlarge; Esc/click-away returns). " +
+                 "Bigger = controls easier to hit; the rig's hit geometry scales with it.")]
+        [Min(0.1f)] public float FocusScale;
+
+        [Tooltip("Margin (px) from the screen's right edge to the small card (placeholder bottom-right " +
+                 "placement — reposition freely).")]
+        [Min(0f)] public float MarginX;
+
+        [Tooltip("Margin (px) from the screen's bottom edge to the small card.")]
+        [Min(0f)] public float MarginY;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Range(0f, 1f)] public float FocusCenterX01;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
+        [Range(0f, 1f)] public float FocusCenterY01;
+
+        [Tooltip("How close (rig-space px) a click must land to the lever's grip to START a drag; " +
+                 "clicks further out on the card jump-to-sig along the travel arc instead.")]
+        [Min(1f)] public float GrabRadiusPx;
+
+        [Tooltip("The tiller's throttle drag travel: how many rig-space px of vertical drag sweep the " +
+                 "drive across its FULL range (up = ahead). Smaller = twitchier.")]
+        [Min(1f)] public float TillerDragFullDrivePx;
+
+        /// <summary>Native-size card bottom-right, 2× focus centred just above screen centre.</summary>
+        public static HelmOverlaySettings Default => new HelmOverlaySettings
+        {
+            SmallScale = 1f,
+            FocusScale = 2f,
+            MarginX = 24f,
+            MarginY = 16f,
+            FocusCenterX01 = 0.5f,
+            FocusCenterY01 = 0.5f,
+            GrabRadiusPx = 30f,
+            TillerDragFullDrivePx = 140f,
         };
     }
 

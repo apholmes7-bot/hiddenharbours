@@ -33,6 +33,18 @@ namespace HiddenHarbours.Core
         public static IActiveBoatService ActiveBoat { get; set; }
 
         /// <summary>
+        /// The active boat's piloting-control seam (ADR 0025 S1): which diegetic control the helm
+        /// shows (tiller/lever), the live drive+steer to draw it with, and the input intents the
+        /// overlay may send back (detent steps, drag-to-set). Same lifetime + discipline as
+        /// <see cref="ActiveBoat"/>: OPTIONAL, NOT part of <see cref="Ready"/>, self-registered by
+        /// the Boats-lane producer (<c>HelmControlRelay</c>) and null on foot / in EditMode —
+        /// consumers must null-check (ADR 0007). The drive it reports IS the controller's own
+        /// <c>_throttle</c> (one state, one owner — never a UI-side copy).
+        /// FLAG lead-architect: new Core contract (the ADR 0025 S1 helm-control seam).
+        /// </summary>
+        public static IHelmControl HelmControl { get; set; }
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
@@ -196,6 +208,20 @@ namespace HiddenHarbours.Core
         public static TideTableSettings TideTable =>
             Config != null ? Config.TideTable : TideTableSettings.Default;
 
+        /// <summary>The notched helm throttle's tunables (ADR 0025 — detent counts, hold-to-repeat,
+        /// the neutral snap window). Same contract as <see cref="WaveField"/>, including the
+        /// <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).
+        /// Read by the Boats input layer AND the UI overlay so a detent means the same thing to a
+        /// key, a gamepad button and a mouse drag.</summary>
+        public static HelmThrottleSettings HelmThrottle =>
+            Config != null ? Config.HelmThrottle : HelmThrottleSettings.Default;
+
+        /// <summary>The helm instrument overlay's tunables (ADR 0025 S1 — card placement, the
+        /// click-to-focus enlargement, pointer radii). Same contract as <see cref="WaveField"/>,
+        /// including the <c>Config != null</c> discipline.</summary>
+        public static HelmOverlaySettings HelmOverlay =>
+            Config != null ? Config.HelmOverlay : HelmOverlaySettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
@@ -233,6 +259,7 @@ namespace HiddenHarbours.Core
             Wallet = null;
             Licenses = null;
             ActiveBoat = null;
+            HelmControl = null;
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;

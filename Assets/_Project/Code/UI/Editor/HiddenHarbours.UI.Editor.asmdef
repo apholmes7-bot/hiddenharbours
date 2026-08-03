@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.UI.Editor",
+    "rootNamespace": "HiddenHarbours.UI.Editor",
+    "references": ["HiddenHarbours.Core", "HiddenHarbours.UI"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}

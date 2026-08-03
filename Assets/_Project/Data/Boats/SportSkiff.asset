@@ -37,3 +37,6 @@ MonoBehaviour:
   CameraWorldHeightMeters: 19
   DeckContainer: {fileID: 0}
   DeckContainerOffset: {x: 0.35, y: -0.9}
+  Helm: {fileID: 11400000, guid: 7c2d94e1a3b84f66b09d5c11e8f72a22, type: 2}
+  HelmAheadNotches: 0
+  HelmAsternNotches: 0
