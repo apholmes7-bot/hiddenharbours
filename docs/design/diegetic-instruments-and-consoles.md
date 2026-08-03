@@ -1,6 +1,7 @@
 # Hidden Harbours — Diegetic Instruments & Helm Consoles (the boat's dash is the UI)
 
-> **Status: BUILD HANDOFF — owner-directed, in progress (2026-07-24).** The concrete implementation of the
+> **Status: BUILD HANDOFF — owner-directed, in progress (2026-07-24; part-shipped 2026-08-03).** The
+> concrete implementation of the
 > diegetic-instrument direction for the art director's new UI-rig drop (`docs/art/rigs/ui/`): the analog
 > throttle, the watch-gated clock, and the per-boat helm consoles with upgradable equipment. Subordinate
 > to [`../vision-and-pillars.md`](../vision-and-pillars.md) (CANON) and to
@@ -142,12 +143,23 @@ fitted to *that* Novi. This makes the dash a visible, per-boat capability (P2) a
 **Rig → hull map** (net-new data to author): `ConsoleRig`→`boat.console_skiff`, `SportRig`→`boat.sport_skiff
 (_twin)`, `NoviRig`→`boat.lobster_boat`, `CapeRig`→`boat.cape_islander`, `TillerRig`→any motorised dory.
 
-**What needs a later milestone / owner ruling:**
-- **Save state v4→v5** (its own ADR on the ADR-0020 template): a sparse `List<BoatInstrumentDto{HullId,
-  InstrumentId}>` (absent = default fit). Held throttle and the resolved fit are **never** saved (rule 5).
-- **Equipment purchase** as `GearOffer`-style priced assets (economy) → the owned-id the reader consumes.
-- **Open ruling — the powered `boat.fishing_skiff` has no console rig** in the drop (only the four bigger
-  consoles + the tiller). Minimal tiller-only helm? Share a console? No readout until upgraded? (§7)
+**What has since SHIPPED (2026-08-03 — this section's "later milestone" arrived):**
+- **Save state landed at v8, not v4→v5**, and under its own ADR: [`../adr/0030-per-hull-instrument-ownership.md`](../adr/0030-per-hull-instrument-ownership.md).
+  The shape is two sparse lists — `List<HullInstrument{HullId, InstrumentId}>` (the DTO is named
+  `HullInstrument`, not `BoatInstrumentDto`) plus `List<SounderPrefsDto>` for the per-hull instrument
+  preferences, both read and written only through `InstrumentLocker` (Core). Absent = the console's
+  authored default fit; the resolved fit and the depth reading are never saved (rule 5), as planned.
+- **Equipment purchase** shipped as `InstrumentOffer` assets (`Data/Instruments/`) + `InstrumentShop`,
+  deliberately *not* `GearOffer` — gear is a presence-only wallet you carry between boats, an instrument
+  is bolted into one hull. See `InstrumentOffer`'s own doc-comment for the split.
+- **`boat.fishing_skiff` now shares the console-skiff `HelmConsoleDef`** (its `Helm` pointer resolves to
+  the same asset as `boat.console_skiff`), which answers §7 question 1 in data. ⚠ Awaiting the owner's
+  veto on the mapping — it is implemented, not yet blessed. Note `InstrumentLocker` keys by **hull id**,
+  so sharing a console def does *not* share purchases between the two hulls.
+
+**Still open:** the fish finder, radar, GPS and the second compass tier are not fitted yet — ADR 0030
+records that their *ownership* needs no further schema bump, but a new persisted **preference** field
+(e.g. the finder's range) is a separate question that does.
 
 ---
 
@@ -181,28 +193,40 @@ switches, swing the lever, tap the sounder to swap depth↔fish).
 
 ## 6. Build order (how it lands in M1)
 
-1. **Foundation (done, no Unity):** the throttle model + tunables, the watch mapper + gate, the
+> ⚠ **This order was written 2026-07-24 and has been partly overtaken.** The arc actually shipped as
+> S1 → S1.1 → S2a → S2 (see the ✅ marks). ADR 0025 was proved by the *lever and tiller* first, not by
+> the fish finder, and the depth sounder — not the finder — was the first instrument on the glass.
+
+1. ✅ **Foundation (done, no Unity):** the throttle model + tunables, the watch mapper + gate, the
    console/equipment data model, all unit-tested; the committed rig sources; ADR 0025 + this doc.
-2. **Analog throttle live (your Unity machine):** wire `DevBoatInput` to the model; owner feel-check.
-3. **The watch renders (ADR 0025 accepted):** the first live C# rig (or baked digits) + `gear.watch` asset;
-   still shown always-on in M1 until the St Peters clock-hide task.
-4. **One console end-to-end:** the fish-finder live renderer (the hardest render case — proves ADR 0025),
-   then a full helm (e.g. `ConsoleRig`) as a draggable window with the lever wired to the throttle.
-5. **Equipment + save v5:** the upgrade shop, the per-hull owned-instrument save (its own ADR), the reader
-   gating each readout.
+2. ✅ **Analog throttle live:** shipped as a *stepped-hold* throttle — keys step detents and HOLD, mouse
+   is continuous, and the lever/wheel are mirrors of `BoatController` state (one owner). Owner feel-check
+   outstanding on `docs/art/proofs/lever-csharp-strip-9.png`.
+3. **The watch renders:** not yet built. ADR 0025 is **ACCEPTED** (2026-08-03) — proved instead by the
+   lever/tiller (S1) and the console dash (S2a).
+4. **One console end-to-end:** ✅ *partly* — the skiff console dash (wheel/compass/mounted lever) and the
+   **depth sounder** are live. The fish-finder renderer is **S3, still ahead**; it is the arc's most
+   expensive *continuous* render (an O(width) per-column repaint on a free-running phase), which is what
+   decides any ADR 0025 Option B baking. The draggable/resizable window (§5) is not built.
+5. ✅ **Equipment + save:** shipped at **v8** (not v5) under ADR 0030 — the instrument shop, the per-hull
+   owned-instrument save, and the reader gating the sounder's readout.
 
 ---
 
 ## 7. Open questions / rulings needed
 
-1. **`boat.fishing_skiff` console** — no rig supplied. Tiller-only, shared console, or no readout until
-   upgraded? (§4)
+1. ~~**`boat.fishing_skiff` console** — no rig supplied. Tiller-only, shared console, or no readout until
+   upgraded?~~ **Answered in data (2026-08-03): it shares the console-skiff helm** (§4). ⚠ Still awaiting
+   the owner's veto on that mapping.
 2. **Throttle notch counts** — default 4 ahead / 2 astern; confirm on the feel-check, and whether Up/Down
    should hold-repeat (`HoldRepeatPerSec > 0`) or stay one-detent-per-press.
 3. **Dusk hour** — the watch's night flips at 19:00 by default; the global day-night `sunset` is 20:00. Keep
    them separate (the watch is a physical backlight, not the sky), or unify? A tuning question.
-4. **Render approach (ADR 0025)** — approve live-C#-renderers (owner steer), and decide how much of a console
-   is one live renderer vs. composited baked parts (prototype the fish-finder first).
+4. ~~**Render approach (ADR 0025)** — approve live-C#-renderers (owner steer)~~ **RULED: ADR 0025
+   ACCEPTED (2026-08-03)** — live C# renderers, inside the ADR 0021 no-JS-in-player fence, with numeric
+   goldens standing in until a Canvas2D shim exists. *Still open:* how much of a console is one live
+   renderer vs. composited baked parts — Option B baking only if profiling asks for it, and the fish
+   finder (S3) is the slice whose measured repaint cost decides that.
 5. **Compass as carried vs fitted** — the ruling is "only the watch is carried", so *all* compasses are
    boat-fitted. Confirm there is no hand-compass that reads heading off-boat (some fishing games let you
    carry one); if there is, it joins the watch as carried gear.
