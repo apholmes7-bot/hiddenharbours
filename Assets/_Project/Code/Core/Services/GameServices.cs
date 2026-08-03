@@ -222,6 +222,12 @@ namespace HiddenHarbours.Core
         public static HelmOverlaySettings HelmOverlay =>
             Config != null ? Config.HelmOverlay : HelmOverlaySettings.Default;
 
+        /// <summary>The grabbable steering wheel's spin-feel tunables (ADR 0025 S2a — lock-to-lock
+        /// turns, coast friction, self-centre, rim-grab pad). Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
+        public static HelmWheelSettings HelmWheel =>
+            Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to

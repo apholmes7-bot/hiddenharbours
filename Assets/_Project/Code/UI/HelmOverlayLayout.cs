@@ -30,6 +30,24 @@ namespace HiddenHarbours.UI
         }
 
         /// <summary>
+        /// The COMPOSED DASH's card rect (S2a): same bottom-centre anchoring as
+        /// <see cref="CardRect"/>, but on its own scale dials (<c>DashSmallScale</c>/<c>DashFocusScale</c>
+        /// — a 600×510 dash at lone-instrument scale would swallow the screen) and CLAMPED so the
+        /// card always fits the screen whatever the owner dials in.
+        /// </summary>
+        public static Rect DashCardRect(bool focused, int rigW, int rigH, in HelmOverlaySettings s,
+                                        float screenW, float screenH)
+        {
+            float scale = focused ? s.DashFocusScale : s.DashSmallScale;
+            if (scale <= 0f) scale = 1f;
+            if (rigW > 0 && screenW > 0f) scale = Mathf.Min(scale, screenW / rigW);
+            if (rigH > 0 && screenH > 0f) scale = Mathf.Min(scale, (screenH - s.MarginY) / rigH);
+            float w = rigW * scale, h = rigH * scale;
+            float cx = screenW * (focused ? s.FocusCenterX01 : s.SmallCenterX01);
+            return new Rect(cx - w * 0.5f, s.MarginY, w, h);
+        }
+
+        /// <summary>
         /// The tiller handle's Z rotation (deg, Unity CCW-positive) for a helm steer — the
         /// PHYSICAL tiller sense (owner fix 2026-08-03: "it should match the outboard tiller's
         /// position"): on a real outboard the whole motor pivots about the clamp, so steering to
