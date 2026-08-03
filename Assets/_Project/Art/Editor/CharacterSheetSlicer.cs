@@ -288,8 +288,10 @@ namespace HiddenHarbours.Art.Editor
         /// <c>y = (DirectionRows-1-r) * cell.y</c>.
         ///
         /// <para>Names are <c>&lt;stem&gt;_d&lt;row&gt;_f&lt;col&gt;</c> — row INDEX, never a compass
-        /// name. See the class remarks: the rows are baked counter-clockwise but the README labels them
-        /// clockwise, so any compass name written here would be wrong for six of the eight rows.</para>
+        /// name. The pass-6 rows DO run clockwise (fixed at source — see the class remarks), but the
+        /// names stay row-index anyway: a name that encodes a facing convention breaks the day the
+        /// convention moves, and this lane has re-learned that twice. Row order is the consumer's
+        /// business, read from the def, never from a sprite name.</para>
         ///
         /// <para><paramref name="existingIds"/> maps an already-sliced slice name to the spriteID it
         /// already carries; those are re-used so a re-bake of unchanged art is a no-op on the

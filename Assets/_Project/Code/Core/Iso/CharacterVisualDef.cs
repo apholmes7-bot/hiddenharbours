@@ -31,7 +31,8 @@ namespace HiddenHarbours.Core
     /// <see cref="IdleSheet"/>/<see cref="WalkSheet"/>/<see cref="RunSheet"/> are flat arrays in the
     /// sheets' own row-major slice order, element <c>direction·frameCount + frame</c> — i.e. one ROW per
     /// direction, one COLUMN per frame, exactly as <c>CharacterSheetSlicer</c> cuts them and as the
-    /// <c>&lt;Stem&gt;_d&lt;dir&gt;_f&lt;frame&gt;</c> sub-sprite names say. Cell 64×88 at PPU 32 with the
+    /// <c>&lt;Stem&gt;_d&lt;dir&gt;_f&lt;frame&gt;</c> sub-sprite names say. Cell 64×92 at PPU 32 (the
+    /// slicer's <c>CellW</c>×<c>CellH</c>; 64×88 was the pass-1 cell, retired 2026-08-02) with the
     /// pivot on GROUND CONTACT, so swapping frames never moves the feet — do not add per-frame Y offsets.</para>
     ///
     /// <para><b>All-or-nothing per sheet</b>, mirroring <c>BoatVisualDef</c>: a sheet counts as wired only
