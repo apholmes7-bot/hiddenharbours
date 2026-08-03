@@ -452,7 +452,7 @@
     };
     for (let i=0;i<3;i++){ if (compass==='dome' && i===1) continue; const id=layout[i];
       if (id==='sounder'){ const fish=o.finder==='fish'; drawSounder(slotBox(i, fish), fish); }
-      else if (id==='radar'){ screenMount(ctx, slotBox(i,false), 'RADAR', radar, night, o.phase||0, root.NoviRig && root.NoviRig.paintRadar); }
+      else if (id==='radar'){ const rp=(root.NoviRig && root.NoviRig.paintRadar) || (window.RadarRig && window.RadarRig.paintInto) || null; screenMount(ctx, slotBox(i,true), 'RADAR', radar, night, o.phase||0, rp); }
       else if (id==='gps'){ screenMount(ctx, slotBox(i,false), 'GPS', gps, night, o.phase||0, root.NoviRig && root.NoviRig.paintGps); }
     }
 

@@ -7,6 +7,13 @@
 // SWINGS on an arc about a base hub (baked upright once, rotated crisp at draw
 // time) so it genuinely arcs through 3D rather than just shrinking. Throttle
 // magnitude and gear are both read off that one lever.
+//
+// PAINT PASS: the dash now wears the BOAT'S colourway. consoleIsoRig.js owns the fleet paint —
+// the same OKLCH mixer that derives her hull ramps — so we ask it for the CONSOLE, SHEER and COVE
+// ramps of whatever scheme the boat is painted in and read every painted surface here off those.
+// render({scheme:'bottle-green'}) or render({paint:{hull,trim,cove,console}}) matches the iso
+// sheet by construction; it cannot drift. Bought-in hardware — gauges, wheel rim, switch panel,
+// binnacle, lever — stays graphite on every boat, and that contrast is what makes the paint read.
 (function (root) {
   const W = 600, TOPPAD = 40, H = 470 + TOPPAD;   // TOPPAD = headroom above the dash so a tall instrument can protrude
   const DEG = Math.PI / 180;
@@ -15,9 +22,9 @@
   const GRAPH  = ['#12171b','#1b2228','#28323a','#3a4750','#4f5e68','#6b7c86'];  // casings / panels
   const STEEL  = ['#232a30','#39434b','#556069','#7a8892','#9db0b8'];            // spokes / screws
   const RUBBER = ['#0b0e11','#11161a','#1a2126','#252e35','#333f47'];            // wheel rim / grips
-  const PAINT  = ['#828f90','#9aa8a8','#b7c2bf','#d3dbd4','#e7ece5','#f5f7f1'];  // white console (fleet topsides)
-  const TRIM   = ['#0d3f3c','#14554e','#1c7367','#2ba39a','#49b8aa'];            // teal cove band
-  const GOLD   = '#e0b13a';
+  const PAINT  = ['#5d6a70','#7e8c90','#a3b0b1','#c2cdca','#dde5df','#eef0ea','#f7f8f3'];  // fleet topsides (iso ramp, value for value)
+  const TRIM   = ['#0d3f3c','#14554e','#1c7367','#2ba39a','#49b8aa'];            // teal sheer band
+  const COVE   = ['#7a5a1c','#a8842a','#e0b13a'];                                // gold cove pin
   const TEAL   = '#7fd6c9';
   const FACE   = '#080c0f';                       // gauge glass
   const TICK   = '#c6d0ce', TICKDIM = '#586a6d';
@@ -27,6 +34,42 @@
   const AMBER  = '#e6b53f';
   const LAMPOFF = '#16202a';
   const SPOT_ON = '#eef3ef', DECK_ON = TEAL;
+
+  // ---- fleet paint: every painted surface on the dash comes off the boat's palette ----------
+  // The iso rig is the single source of truth. We only choose WHICH step of her ramps each
+  // surface takes (crown highlight, face, falloff, kick strip) — the ramp shape, chroma ceiling
+  // and hue rotation stay hers, so a free colour choice still can't go off-model.
+  const at  = (r,t)=> r[Math.max(0, Math.min(r.length-1, Math.round((r.length-1)*t)))];
+  const lum = (hex)=>{ const v=(i)=>{ const c=parseInt(hex.slice(i,i+2),16)/255; return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4); };
+    return 0.2126*v(1)+0.7152*v(3)+0.0722*v(5); };
+  const _fp={}; let _fpOrder=[];
+  function facePaint(o){
+    o = o||{};
+    const Iso = (typeof window!=='undefined') && window.ConsoleIso;
+    let cons=PAINT, trim=TRIM, cove=COVE, id='harbour-white', name='Harbour White', note='the fleet scheme';
+    if (Iso){
+      const pal = Iso.palette(o.paint ? {paint:o.paint} : {scheme:o.scheme||Iso.defaultScheme});
+      cons=pal.ramps.console; trim=pal.ramps.trim; cove=pal.ramps.cove;
+      id=pal.id; name=pal.name; note=pal.note||'';
+    }
+    const night = !!o.night;
+    const key = id+'|'+cons.join('')+'|'+trim.join('')+'|'+cove[cove.length-1]+(night?'|n':'|d');
+    if (_fp[key]) return _fp[key];
+    const D = night ? -0.17 : 0;                    // night: the whole panel drops about a step
+    const F = (t)=> at(cons, t+D);
+    const f = { key, id, name, note, night,
+      edge:at(cons,0), dk:F(0.20), sh:F(0.42), mid:F(0.62), body:F(0.78), hi:F(0.92), top:F(1),
+      coveDk:at(trim, night?0.10:0.25), cove:at(trim, night?0.55:0.75), coveHi:at(trim, night?0.80:1),
+      pin:at(cove, night?0.55:1), pinDk:at(cove,0) };
+    f.light  = lum(f.body) > 0.34;
+    f.scuff  = f.light ? f.dk  : f.hi;              // wear shows as undercoat on light paint, as bare primer on dark
+    f.scuff2 = f.light ? f.sh  : f.mid;
+    _fp[key]=f; _fpOrder.push(key);
+    if(_fpOrder.length>16) delete _fp[_fpOrder.shift()];
+    return f;
+  }
+  // chips where boots, buckets and oilskins rub — console-local, deterministic, never random
+  const SCUFFS = [[6,150,2,1,0],[5,167,1,2,1],[563,196,2,1,0],[566,213,1,2,1],[247,384,3,1,0],[318,389,2,1,1],[9,332,1,3,1]];
 
   // ---- 3x5 bitmap font (subset of the watch face) ---------------------------
   const F = {
@@ -127,6 +170,7 @@
 
   // ---- gauges ---------------------------------------------------------------
   function gaugeBezel(ctx, g){
+    circle(ctx, g.cx, g.cy+2, g.r+8, 'rgba(7,11,13,0.24)');          // let INTO the panel: contact shadow on the paint
     circle(ctx, g.cx, g.cy, g.r+6, RUBBER[0]);
     ring(ctx, g.cx, g.cy, g.r+5, g.r+1, GRAPH[3]);
     ctx.save(); ctx.beginPath(); ctx.rect(g.cx-g.r-6, g.cy-g.r-6, (g.r+6)*2, g.r+3); ctx.clip();
@@ -157,6 +201,7 @@
       textC(ctx, String(n), g.cx+d.x*rr, g.cy+d.y*rr-2, 1, n>=5?RED[2]:TICK); }
     textC(ctx, 'X100', g.cx, g.cy-4, 1, TICKDIM);
     textC(ctx, 'RPM', g.cx, g.cy+g.r-18, 2, TEAL);                 // label lowered toward the bottom
+    circle(ctx, g.cx, g.cy+Math.round(g.r*0.42), 3, rpm>0.86 ? RED[2] : LAMPOFF);   // redline tell-tale, mate to the fuel lamp
     const rd=dir(ANG.rpm(rpm)*DEG), len=g.r-13;
     drawNeedle(ctx, g, g.cx, g.cy, g.cx+rd.x*len, g.cy+rd.y*len);
   }
@@ -233,7 +278,7 @@
   }
 
   // ---- switches -------------------------------------------------------------
-  function toggle(ctx, s, on, lampCol){
+  function toggle(ctx, s, on, lampCol, night){
     rrect(ctx, s.x-3, s.y-3, s.w+6, s.h+6, 5, GRAPH[0]);
     rrect(ctx, s.x-3, s.y-3, s.w+6, 2, 2, GRAPH[3]);
     screw(ctx, s.x-1, s.y-1, 2, GRAPH); screw(ctx, s.x+s.w+1, s.y+s.h+1, 2, GRAPH);
@@ -246,6 +291,8 @@
     circle(ctx, cx, midY, 3, GRAPH[5]);
     circle(ctx, s.cx, s.lampY, 3, on ? lampCol : LAMPOFF);
     if (on){ ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.fillRect(s.cx-1, s.lampY-1, 2, 2); }
+    if (on && night){ ctx.save(); ctx.globalAlpha=0.20; circle(ctx, s.cx, s.lampY, 6, lampCol);
+      ctx.globalAlpha=0.09; circle(ctx, s.cx, s.lampY, 10, lampCol); ctx.restore(); }
   }
   function buildKey(){
     const bowW=15, bowH=20, shaft=11, pad=6;
@@ -291,6 +338,7 @@
     const steer = Math.max(-1,Math.min(1, o.steer==null?0:o.steer));
     const deck = !!o.deck, spot = !!o.spot, blink = o.blink?1:0;
     const night = !!o.night;
+    const f = facePaint({ scheme:o.scheme, paint:o.paint, night });
     const lowFuel = fuel < 0.13;
     ctx.clearRect(0,0,W,H);
     ctx.imageSmoothingEnabled = false;
@@ -307,16 +355,31 @@
     circle(ctx, SPOTCAN.x+SPOTCAN.w-4, SPOTCAN.y+SPOTCAN.h/2, 5, spot?SPOT_ON:'#20323a');
     if (spot){ circle(ctx, SPOTCAN.x+SPOTCAN.w-5, SPOTCAN.y+SPOTCAN.h/2-1, 2, '#ffffff'); }
 
-    // ---- console body (white, teal cove, gold pin) ----
-    rrect(ctx, CONSOLE.x, CONSOLE.y, CONSOLE.w, CONSOLE.h, CONSOLE.r, PAINT[0]);
-    rrect(ctx, CONSOLE.x+1, CONSOLE.y+1, CONSOLE.w-2, CONSOLE.h-4, CONSOLE.r, PAINT[1]);
-    rrect(ctx, CONSOLE.x+3, CONSOLE.y+3, CONSOLE.w-6, 10, CONSOLE.r-4, PAINT[3]);
-    rrect(ctx, CONSOLE.x+3, CONSOLE.y+3, CONSOLE.w-6, 4, CONSOLE.r-4, PAINT[4]);
-    rrect(ctx, CONSOLE.x+3, CONSOLE.y+CONSOLE.h-9, CONSOLE.w-6, 6, 4, PAINT[0]);
-    rrect(ctx, CONSOLE.x+8, CONSOLE.y+56, CONSOLE.w-16, 5, 2, TRIM[3]);
-    ctx.fillStyle = GOLD; ctx.fillRect(CONSOLE.x+8, CONSOLE.y+62, CONSOLE.w-16, 1);
-    screw(ctx, CONSOLE.x+11, CONSOLE.y+11, 2); screw(ctx, CONSOLE.x+CONSOLE.w-11, CONSOLE.y+11, 2);
-    screw(ctx, CONSOLE.x+11, CONSOLE.y+CONSOLE.h-11, 2); screw(ctx, CONSOLE.x+CONSOLE.w-11, CONSOLE.y+CONSOLE.h-11, 2);
+    // ---- console body: she wears the boat's paint ----
+    // Face, sheer band and cove pin are steps off the hull palette, so dash and topsides match by
+    // construction. Shading is crisp banding, not a gradient — this is painted plywood, not chrome.
+    const C = CONSOLE;
+    rrect(ctx, C.x-1, C.y+3, C.w+2, C.h+2, C.r+1, 'rgba(6,10,12,0.32)');
+    rrect(ctx, C.x, C.y, C.w, C.h, C.r, f.edge);
+    rrect(ctx, C.x+1, C.y+1, C.w-2, C.h-3, C.r, f.body);
+    ctx.fillStyle=f.mid; ctx.fillRect(C.x+3, C.y+64, C.w-6, C.h-78);           // vertical lower face turns away from the sky
+    rrect(ctx, C.x+2, C.y+2, C.w-4, 10, C.r-3, f.hi);                          // brow lip in the key light
+    rrect(ctx, C.x+2, C.y+2, C.w-4, 4, C.r-3, f.top);
+    rrect(ctx, C.x+4, C.y+13, C.w-8, 3, 2, f.sh);                              // AO where the screen rail overhangs
+    ctx.fillStyle=f.mid; ctx.fillRect(C.x+4, C.y+16, C.w-8, 1);
+    rrect(ctx, C.x+2, C.y+C.h-42, C.w-4, 30, 10, f.sh);                        // she falls off in crisp steps toward the sole
+    rrect(ctx, C.x+3, C.y+C.h-16, C.w-6, 12, 7, f.dk);
+    ctx.fillStyle=f.edge; ctx.fillRect(C.x+4, C.y+C.h-3, C.w-8, 1);
+    { const bandY = C.y+55;                                                    // sheer band + gold cove pin
+      ctx.fillStyle=f.coveDk; ctx.fillRect(C.x+8, bandY-1, C.w-16, 1);
+      rrect(ctx, C.x+8, bandY, C.w-16, 6, 2, f.cove);
+      ctx.fillStyle=f.coveHi; ctx.fillRect(C.x+9, bandY+1, C.w-18, 1);
+      ctx.fillStyle=f.pin;    ctx.fillRect(C.x+8, bandY+8, C.w-16, 1);
+      ctx.fillStyle=f.pinDk;  ctx.fillRect(C.x+8, bandY+9, C.w-16, 1); }
+    screw(ctx, C.x+11, C.y+11, 2); screw(ctx, C.x+C.w-11, C.y+11, 2);
+    screw(ctx, C.x+11, C.y+C.h-11, 2); screw(ctx, C.x+C.w-11, C.y+C.h-11, 2);
+    SCUFFS.forEach(a=>{ ctx.fillStyle = a[4] ? f.scuff2 : f.scuff; ctx.fillRect(C.x+a[0], C.y+a[1], a[2], a[3]); });
+    if (night){ ctx.save(); ctx.globalAlpha=0.055; rrect(ctx, C.x+1, C.y+1, C.w-2, C.h-3, C.r, '#ffb055'); ctx.restore(); }
     if (deck){ ctx.save(); ctx.globalAlpha=0.14; rrect(ctx, CONSOLE.x+10, CONSOLE.y+68, CONSOLE.w-20, 14, 6, DECK_ON);
       ctx.globalAlpha=0.06; rrect(ctx, CONSOLE.x+10, CONSOLE.y+82, CONSOLE.w-20, 30, 6, DECK_ON); ctx.restore(); }
 
@@ -344,27 +407,34 @@
     if (night){ gaugeNight(ctx, RPM); gaugeNight(ctx, FUEL); }
 
     // ---- switch panel (left) ----
+    rrect(ctx, SWPANEL.x-3, SWPANEL.y+1, SWPANEL.w+6, SWPANEL.h+6, SWPANEL.r+2, 'rgba(7,11,13,0.26)');
     rrect(ctx, SWPANEL.x-2, SWPANEL.y-2, SWPANEL.w+4, SWPANEL.h+4, SWPANEL.r+1, RUBBER[0]);
     rrect(ctx, SWPANEL.x, SWPANEL.y, SWPANEL.w, SWPANEL.h, SWPANEL.r, GRAPH[1]);
     rrect(ctx, SWPANEL.x+2, SWPANEL.y+2, SWPANEL.w-4, 6, SWPANEL.r-3, GRAPH[3]);
     screw(ctx, SWPANEL.x+8, SWPANEL.y+8, 2, GRAPH); screw(ctx, SWPANEL.x+SWPANEL.w-8, SWPANEL.y+8, 2, GRAPH);
     drawIgnition(ctx, SW.start, running);
-    toggle(ctx, SW.deck, deck, DECK_ON);
-    toggle(ctx, SW.spot, spot, SPOT_ON);
+    toggle(ctx, SW.deck, deck, DECK_ON, night);
+    toggle(ctx, SW.spot, spot, SPOT_ON, night);
     textC(ctx, 'DECK', SW.deck.cx, SW.deck.lampY+7, 1, TICKDIM);
     textC(ctx, 'SPOT', SW.spot.cx, SW.spot.lampY+7, 1, TICKDIM);
 
     // ---- binnacle casing (right) ----
+    rrect(ctx, BINN.x-3, BINN.y+1, BINN.w+6, BINN.h+6, BINN.r+2, 'rgba(7,11,13,0.26)');
     rrect(ctx, BINN.x-2, BINN.y-2, BINN.w+4, BINN.h+4, BINN.r+1, RUBBER[0]);
     rrect(ctx, BINN.x, BINN.y, BINN.w, BINN.h, BINN.r, GRAPH[1]);
     rrect(ctx, BINN.x+2, BINN.y+2, BINN.w-4, 8, BINN.r-3, GRAPH[3]);
     rrect(ctx, BINN.x+3, BINN.y+BINN.h-8, BINN.w-6, 5, 4, GRAPH[0]);
     screw(ctx, BINN.x+9, BINN.y+10, 2, GRAPH); screw(ctx, BINN.x+BINN.w-9, BINN.y+10, 2, GRAPH);
     screw(ctx, BINN.x+9, BINN.y+BINN.h-10, 2, GRAPH); screw(ctx, BINN.x+BINN.w-9, BINN.y+BINN.h-10, 2, GRAPH);
-    // F / N / R detents engraved on the housing (the lever arcs between them)
-    textC(ctx, 'F', 570, 300, 1, TEAL);
-    textC(ctx, 'N', 570, 318, 1, TICKDIM);
-    textC(ctx, 'R', 570, 336, 1, RED[2]);
+    // F / N / R detents engraved on the housing, each with its own tell-tale
+    { const gz = Math.abs(drive)<0.04 ? 'N' : (drive>0 ? 'F' : 'R');
+      const lamp=(y,on,col)=>{ circle(ctx, 559, y+2, 3, GRAPH[0]); circle(ctx, 559, y+2, 2, on?col:LAMPOFF);
+        if(on){ ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fillRect(558, y+1, 1, 1);
+          if(night){ ctx.save(); ctx.globalAlpha=0.18; circle(ctx, 559, y+2, 6, col); ctx.restore(); } } };
+      lamp(300, gz==='F', TEAL); lamp(318, gz==='N', GREEN[2]); lamp(336, gz==='R', RED[2]);
+      textC(ctx, 'F', 570, 300, 1, gz==='F'?TEAL:TICKDIM);
+      textC(ctx, 'N', 570, 318, 1, gz==='N'?'#cfd9d6':TICKDIM);
+      textC(ctx, 'R', 570, 336, 1, gz==='R'?RED[2]:TICKDIM); }
     // emergency lanyard tab, lower-left
     rrect(ctx, BINN.x+8, BINN.y+BINN.h-30, 15, 12, 3, GRAPH[0]); rrect(ctx, BINN.x+10, BINN.y+BINN.h-28, 11, 4, 2, RED[1]);
 
@@ -376,6 +446,12 @@
     thickLine(ctx, WHEEL.cx-5, WHEEL.cy+10, WHEEL.cx-5, CONSOLE.y+CONSOLE.h-6, 3, GRAPH[4]);
     circle(ctx, WHEEL.cx, WHEEL.cy, 20, GRAPH[1]);
     blit(ctx, _wheel, WHEEL.cx, WHEEL.cy, ANG.wheel(steer));
+    // painted centre cap — the one piece of helm hardware that takes her sheer colour
+    circle(ctx, WHEEL.cx, WHEEL.cy, 8, f.coveDk);
+    circle(ctx, WHEEL.cx, WHEEL.cy, 7, f.cove);
+    circle(ctx, WHEEL.cx-2, WHEEL.cy-3, 3, f.coveHi);
+    circle(ctx, WHEEL.cx, WHEEL.cy, 2, STEEL[1]);
+    ctx.fillStyle=f.coveDk; ctx.fillRect(WHEEL.cx-6, WHEEL.cy+5, 12, 1);
 
     // ---- compass: dome binnacle on the crown (its own rig) ----
     if (compass==='dome' && window.CompassRig){
@@ -398,6 +474,9 @@
     W, H, TOPPAD, DEG, dir, maxSteer:45, wheelTurn:150, ANG,
     driveHandle, driveFromPoint, driveThrottle, driveGear,
     CONSOLE, WHEEL, RPM, FUEL, SWPANEL, SW, BINN, DRIVE, SPOTCAN, COMPASS,
-    paint, render,
+    paint, render, facePaint, PAINT, TRIM, COVE,
+    get schemes(){ const I=(typeof window!=='undefined')&&window.ConsoleIso; return I?I.SCHEMES:null; },
+    get schemeIds(){ const I=(typeof window!=='undefined')&&window.ConsoleIso; return I?I.schemeIds:['harbour-white']; },
+    get defaultScheme(){ const I=(typeof window!=='undefined')&&window.ConsoleIso; return I?I.defaultScheme:'harbour-white'; },
   };
 })(typeof globalThis!=='undefined'?globalThis:window);

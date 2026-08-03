@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/fishRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:920px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Fish Finder</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;SONAR&nbsp;INSTRUMENT&nbsp;&middot;&nbsp;DIEGETIC&nbsp;FISH-FINDER&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">The upgrade sounder &mdash; same flush-mount cutout, but the glass runs a live colour scan: depth &amp; water temp up top, a scrolling bottom contour, and fish marks the game drops anywhere on the column at any size.</div>
+  </div>
+
+  <div style="width:100%;max-width:920px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="480" height="660" style="cursor:crosshair;touch-action:none;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ depthFg }};">{{ depthTag }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ fishFg }};">{{ fishTag }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">click the water to drop a fish &middot; drag a mark to move it &middot; tap the top strip for night &middot; RANGE keys zoom the scale</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:480px;line-height:1.6;">Procedural colour sonar &mdash; no bakes. The <span style="color:#8fe6d8;">depth</span> and <span style="color:#ffd08a;">water temp</span> read from params, the <span style="color:#e0902f;">bottom contour</span> scrolls and sits at the measured depth, and every <span style="color:#e0554a;">fish</span> is an (x, y, size) the game can place freely. Drops into the same dash as the basic <a href="Depth Finder.dc.html">Depth Sounder</a> &mdash; <a href="Console Helm.dc.html">console</a> &amp; <a href="Sport Skiff Helm.dc.html">sport</a> helms.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:300px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">Same rule as the sounder: in-world UI is a real thing screwed to the dash. This is the fitted-out variant &mdash; a boat carries the plain depth read <em>or</em> the sonar, never a floating HUD. Brand wordmark is original.</div>
+      </div>
+
+      <!-- display mode -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Backlight</div></div>
+          <div style="font-size:11px;color:{{ modeFg }};letter-spacing:0.08em;">{{ modeTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ dayBd }};background:{{ dayBg }};color:{{ dayFg }};">DAY</div>
+          <div onClick="{{ setNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">&#9788;&nbsp;NIGHT</div>
+        </div>
+      </div>
+
+      <!-- depth -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Depth</div></div>
+          <div style="font-size:11px;color:#8fe6d8;letter-spacing:0.08em;">{{ depthVal }}</div>
+        </div>
+        <input type="range" min="0.5" max="60" step="0.1" value="{{ depthM }}" onInput="{{ onDepth }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>SHOAL</span><span>DEEP</span></div>
+      </div>
+
+      <!-- water temp -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Water Temp</div></div>
+          <div style="font-size:11px;color:#ffd08a;letter-spacing:0.08em;">{{ tempVal }}</div>
+        </div>
+        <input type="range" min="0" max="30" step="0.1" value="{{ tempC }}" onInput="{{ onTemp }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>0&deg;C</span><span>30&deg;C</span></div>
+      </div>
+
+      <!-- units + fish-id -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#5b93b8;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Units &amp; Marks</div></div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setMetres }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ mBd }};background:{{ mBg }};color:{{ mFg }};">METRES</div>
+          <div onClick="{{ setFeet }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ ftBd }};background:{{ ftBg }};color:{{ ftFg }};">FEET</div>
+          <div onClick="{{ toggleFishID }}" style="flex:1.3;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ idBd }};background:{{ idBg }};color:{{ idFg }};">FISH-ID {{ idState }}</div>
+        </div>
+      </div>
+
+      <!-- range -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#6fc0dc;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Range</div></div>
+          <div style="font-size:11px;color:#6fc0dc;letter-spacing:0.08em;">{{ rangeVal }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ rangeOpts }}" as="r" hint-placeholder-count="4">
+            <div onClick="{{ r.click }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.08em;border:1px solid {{ r.bd }};background:{{ r.bg }};color:{{ r.fg }};">{{ r.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- fish system -->
+      <div style="display:flex;flex-direction:column;gap:8px;border:1px solid #2b3f47;padding:12px;background:#0d161b;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Fish Marks</div></div>
+          <div style="font-size:11px;color:{{ fishFg }};letter-spacing:0.08em;">{{ fishCount }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ addFish }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #7c3a30;background:#22110e;color:#e0776b;">+ FISH</div>
+          <div onClick="{{ school }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #2f6079;background:#0f2730;color:#7fd6c9;">SCHOOL</div>
+          <div onClick="{{ clearFish }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #243137;background:#0f191e;color:#8a969b;">CLEAR</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:3px;">
+          <div style="font-size:10px;color:#8a969b;letter-spacing:0.08em;">{{ sizeLabel }}</div>
+          <div style="font-size:10px;color:{{ selFg }};letter-spacing:0.08em;">{{ selDepth }}</div>
+        </div>
+        <input type="range" min="0.5" max="2.5" step="0.05" value="{{ fishSize }}" onInput="{{ onSize }}" />
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;">
+          <span>SMALL FRY &middot; LUNKER</span>
+          <span onClick="{{ removeSel }}" style="cursor:pointer;color:{{ removeFg }};letter-spacing:0.1em;">{{ removeLabel }}</span>
+        </div>
+        <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:11.5px;color:#6f7e83;line-height:1.5;padding-top:2px;">Click open water to add a mark where you click; drag any mark to reposition it; the slider resizes the {{ sizeScope }}. Each mark's depth is read straight off its place on the column.</div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="6">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; DAY/NIGHT &times; SHOAL/MID/DEEP</div>
+        <a href="Art/fishRig.js" download="fishRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; fishRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 920, &quot;height&quot;: 640 },
+  &quot;depthM&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 13.6, &quot;min&quot;: 0.5, &quot;max&quot;: 60, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; m&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Sonar&quot; },
+  &quot;tempC&quot;:  { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 2.7, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; \u00b0C&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Sonar&quot; },
+  &quot;range&quot;:  { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 20, &quot;min&quot;: 10, &quot;max&quot;: 80, &quot;step&quot;: 5, &quot;unit&quot;: &quot; m&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Sonar&quot; },
+  &quot;ft&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sonar&quot; },
+  &quot;night&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sonar&quot; },
+  &quot;fishID&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sonar&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const R = window.FishRig;
+    const s = this._load();
+    this.state = {
+      depthM: s.depthM ?? (props.depthM ?? 13.6),
+      ft:     s.ft     ?? (props.ft     ?? false),
+      night:  s.night  ?? (props.night  ?? false),
+      tempC:  s.tempC  ?? (props.tempC  ?? 2.7),
+      range:  s.range  ?? (props.range  ?? 20),
+      fishID: s.fishID ?? (props.fishID ?? true),
+      fish:   Array.isArray(s.fish) ? s.fish : (R? R.defaultSchool() : []),
+      sel:    -1,
+      newSize: s.newSize ?? 1.0,
+    };
+    // standalone draw box — MUST match FishRig.paint()'s inset
+    this._box = { X:Math.round(480*0.06), Y:Math.round(660*0.11), WW:480-2*Math.round(480*0.06), HH:Math.round(660*0.78) };
+    this._phase = 0; this._acc = 0;
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.fishFinder')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ const st=this.state; localStorage.setItem('hh.fishFinder', JSON.stringify({depthM:st.depthM,ft:st.ft,night:st.night,tempC:st.tempC,range:st.range,fishID:st.fishID,fish:st.fish,newSize:st.newSize})); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['depthM','ft','night','tempC','range','fishID'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._draw();
+  }
+
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t;
+    this._phase += dt*0.0019; this._acc += dt;
+    if(this._acc>=45){ this._acc=0; this._draw(); } }
+
+  _draw(){
+    const R=window.FishRig, ctx=this._ctx, cv=this._cv; if(!R || !ctx || !cv) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    const st=this.state;
+    ctx.drawImage(R.render({ depth:st.depthM, ft:st.ft, night:st.night, tempC:st.tempC, range:st.range, fish:st.fish, sel:st.sel, fishID:st.fishID, phase:this._phase }), 0, 0);
+  }
+
+  // ---- pointer picking against rig-local hit geometry ----------------------
+  _hitFish(p, L){
+    const st=this.state, R=window.FishRig;
+    for(let i=st.fish.length-1;i>=0;i--){ const gm=R.fishGeom(L, st.fish[i]);
+      const dx=(p.x-gm.cx)/(gm.half+3), dy=(p.y-gm.cy)/(gm.half*0.55+3);
+      if(dx*dx+dy*dy<=1) return i; }
+    return -1;
+  }
+  _norm(p, S){ return { x:Math.min(0.98,Math.max(0.02,(p.x-S.x)/S.w)), y:Math.min(0.97,Math.max(0.03,(p.y-S.y)/S.h)) }; }
+  _inBox(p,b){ return p.x>=b.x && p.x<=b.x+b.w && p.y>=b.y && p.y<=b.y+b.h; }
+
+  _bindPointer(n){
+    const R=window.FishRig;
+    let down=false, moved=false, drag=-1, pend=null;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    n.addEventListener('pointerdown',(e)=>{
+      if(!R) return; const p=local(e); const b=this._box; const L=R.layout(b.X,b.Y,b.WW,b.HH);
+      down=true; moved=false; drag=-1; pend=null;
+      if(this._inBox(p,L.buttons[0])){ this.setState(s=>({fishID:!s.fishID}), this._save); return; }
+      if(this._inBox(p,L.buttons[1])){ this._range(+1); return; }
+      if(this._inBox(p,L.buttons[2])){ this._range(-1); return; }
+      if(this._inBox(p,L.status)){ this.setState(s=>({night:!s.night}), this._save); return; }
+      const hit=this._hitFish(p,L);
+      if(hit>=0){ drag=hit; this.setState({sel:hit}); n.setPointerCapture?.(e.pointerId); n.style.cursor='grabbing'; return; }
+      if(this._inBox(p,L.sonar)){ pend=this._norm(p,L.sonar); }
+    });
+    n.addEventListener('pointermove',(e)=>{ if(!down || !R) return; const p=local(e); if(!moved) moved=true;
+      if(drag>=0){ const L=R.layout(this._box.X,this._box.Y,this._box.WW,this._box.HH); const nn=this._norm(p,L.sonar);
+        this.setState(s=>{ const fish=s.fish.slice(); fish[drag]={...fish[drag], x:nn.x, y:nn.y}; return {fish}; }, this._save); } });
+    const end=(e)=>{ if(!down) return; down=false; n.style.cursor='crosshair';
+      const near = e && Math.hypot; // no-op guard
+      if(drag<0 && pend && !moved){ this._addAt(pend.x, pend.y); }
+      drag=-1; pend=null; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+  }
+
+  _range(dir){
+    const steps=window.FishRig.RANGE_STEPS, cur=this.state.range;
+    let next;
+    if(dir>0) next = steps.find(v=>v>cur) ?? steps[steps.length-1];
+    else { const below=steps.filter(v=>v<cur); next = below.length?below[below.length-1]:steps[0]; }
+    this.setState({range:next}, this._save);
+  }
+  _addAt(x,y){ this.setState(s=>{ const fish=s.fish.concat([{x,y,size:s.newSize}]); return {fish, sel:fish.length-1}; }, this._save); }
+  _school(){
+    const n=4+Math.floor(Math.random()*4), fish=[];
+    for(let i=0;i<n;i++) fish.push({ x:0.12+Math.random()*0.78, y:0.14+Math.random()*0.68, size:0.6+Math.random()*1.5 });
+    this.setState({fish, sel:-1}, this._save);
+  }
+
+  _downloadStates(){
+    const R=window.FishRig; if(!R) return; const st=this.state;
+    const depths=[Math.max(0.8, st.range*0.18), st.range*0.5, st.range*0.9];
+    const cvs=document.createElement('canvas'); cvs.width=R.W*3; cvs.height=R.H*2;
+    const g=cvs.getContext('2d'); g.imageSmoothingEnabled=false;
+    for(let row=0;row<2;row++) for(let c=0;c<3;c++){
+      g.drawImage(R.render({ depth:depths[c], ft:st.ft, night:row===1, tempC:st.tempC, range:st.range, fish:st.fish, fishID:st.fishID, sel:-1, phase:c*3.1+row }), c*R.W, row*R.H);
+    }
+    cvs.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download='FishFinder_States.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+
+  renderVals(){
+    const st=this.state, R=window.FishRig;
+    const fmtD=(m)=> R ? (R.fmtDepth(m, st.ft)+(st.ft?' ft':' m')) : (+m).toFixed(1);
+    const off='#101519', offF='#6c5350';
+    const hasSel = st.sel>=0 && st.sel<st.fish.length;
+    const sizeNow = hasSel ? st.fish[st.sel].size : st.newSize;
+    const selDep = hasSel ? (st.fish[st.sel].y*st.range) : 0;
+    const rangeOpts = (R?R.RANGE_STEPS:[10,20,40,60]).map(v=>{
+      const on = st.range===v;
+      return { label:String(v)+(st.ft?'ft':'m'), bd:on?'#2f6079':'#243137', bg:on?'#0f2730':off, fg:on?'#8fbfe6':offF, click:()=>this.setState({range:v}, this._save) };
+    });
+    return {
+      canvasRef:this.canvasRef,
+      depthM:st.depthM, tempC:st.tempC, fishSize:sizeNow,
+      onDepth:(e)=>this.setState({depthM:+e.target.value}, this._save),
+      onTemp:(e)=>this.setState({tempC:+e.target.value}, this._save),
+      onSize:(e)=>{ const v=+e.target.value; if(hasSel) this.setState(s=>{ const fish=s.fish.slice(); fish[s.sel]={...fish[s.sel], size:v}; return {fish}; }, this._save); else this.setState({newSize:v}, this._save); },
+      setDay:()=>this.setState({night:false}, this._save),
+      setNight:()=>this.setState({night:true}, this._save),
+      setMetres:()=>this.setState({ft:false}, this._save),
+      setFeet:()=>this.setState({ft:true}, this._save),
+      toggleFishID:()=>this.setState(s=>({fishID:!s.fishID}), this._save),
+      addFish:()=>this._addAt(0.2+Math.random()*0.6, 0.18+Math.random()*0.6),
+      school:()=>this._school(),
+      clearFish:()=>this.setState({fish:[], sel:-1}, this._save),
+      removeSel:()=>{ if(hasSel) this.setState(s=>{ const fish=s.fish.slice(); fish.splice(s.sel,1); return {fish, sel:-1}; }, this._save); },
+
+      depthTag:'DEPTH '+fmtD(st.depthM), depthVal:fmtD(st.depthM), depthFg:'#8fe6d8',
+      tempVal: st.tempC.toFixed(1)+'\u00b0C',
+      fishTag: st.fish.length+' MARK'+(st.fish.length===1?'':'S'), fishFg:'#e0776b',
+      fishCount: st.fish.length+' on screen',
+      modeTag: st.night ? '\u25cf NIGHT \u00b7 AMBER' : '\u25cb DAY', modeFg: st.night ? '#ffbe3d' : '#8a969b',
+      rangeVal: (st.ft?Math.round(st.range*R.M2FT):st.range)+(st.ft?' ft':' m')+' scale',
+
+      dayBd:!st.night?'#2f6079':'#243137', dayBg:!st.night?'#0f2730':off, dayFg:!st.night?'#cfd9d6':offF,
+      nightBd:st.night?'#7a5a1c':'#243137', nightBg:st.night?'#2a2008':off, nightFg:st.night?'#ffbe3d':offF,
+      mBd:!st.ft?'#2f6079':'#243137', mBg:!st.ft?'#0f2730':off, mFg:!st.ft?'#8fe6d8':offF,
+      ftBd:st.ft?'#2f6079':'#243137', ftBg:st.ft?'#0f2730':off, ftFg:st.ft?'#8fe6d8':offF,
+      idState: st.fishID?'ON':'OFF', idBd:st.fishID?'#2f6079':'#243137', idBg:st.fishID?'#0f2730':off, idFg:st.fishID?'#8fe6d8':offF,
+
+      rangeOpts,
+      sizeLabel: hasSel ? ('SIZE \u00b7 mark '+(st.sel+1)) : 'SIZE \u00b7 next add',
+      sizeScope: hasSel ? 'selected mark' : 'next mark you add',
+      selDepth: hasSel ? ('at '+fmtD(selDep)) : 'none selected',
+      selFg: hasSel ? '#8fe6d8' : '#5f6e73',
+      removeLabel: hasSel ? 'REMOVE \u2715' : '',
+      removeFg: hasSel ? '#e0776b' : '#0b1216',
+
+      readout:[
+        {k:'DEPTH', v: fmtD(st.depthM), fg:'#c4cdcd', border:'none'},
+        {k:'TEMP',  v: st.tempC.toFixed(1)+'\u00b0C', fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'RANGE', v: (st.ft?Math.round(st.range*R.M2FT)+' ft':st.range+' m')+' scale', fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'UNITS', v: st.ft?'feet':'metres', fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'FISH',  v: st.fish.length+' mark'+(st.fish.length===1?'':'s')+(st.fishID?'  \u00b7  ID on':'  \u00b7  ID off'), fg: st.fish.length?'#e0776b':'#c4cdcd', border:'1px solid #243137'},
+        {k:'LIGHT', v: st.night?'amber backlight':'day (colour)', fg: st.night?'#ffbe3d':'#c4cdcd', border:'1px solid #243137'},
+      ],
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -18,6 +18,7 @@ console-helm/
 ├─ support.js             ← preview runtime (do not edit)
 └─ Art/
    ├─ leverRig.js  depthRig.js  fishRig.js  compassRig.js   ← shared instruments (load first)
+   ├─ consoleIsoRig.js                                       ← the skiff hull (iso reference view)
    └─ consoleRig.js                                          ← this helm (load last)
 ```
 
@@ -59,6 +60,8 @@ ctx.drawImage(lv.c, Math.round(ConsoleRig.DRIVE.px - lv.px),
 - **Compass:** `none` or `dome`. The dome sits on the crown and slides the sounder to port to make room.
 - **Night** backlights the gauges amber and follows the NIGHT PANEL switch.
 - **Finish:** the lever is **graphite** (matte console housing).
+- **The wheel:** this rig draws the dash wheel. The wheel the *player grabs* — with the spin physics,
+  lock-to-lock and per-knob clicks — is its own rig in `../console-wheel/` (`WheelRig`).
 
 ## Export & integration
 

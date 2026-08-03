@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/compassRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#e0776b;text-decoration:none;} a:hover{color:#f0a89c;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:900px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Compass</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;HEADING&nbsp;INSTRUMENT&nbsp;&middot;&nbsp;DIEGETIC&nbsp;COMPASS&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">Its own rig, one parameter: the boat&rsquo;s heading. Two real units &mdash; a black bracket dome that sits on the crown, and a white Ritchie that flush-mounts in the dash. The card stays true to north; you read the heading at the red lubber line. Night floods the bulb red.</div>
+  </div>
+
+  <div style="width:100%;max-width:900px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="380" height="392" style="cursor:pointer;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ hdgFg }};">{{ hdgTag }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ modeFg }};">{{ modeTag }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">tap the glass for night &middot; DOME / FLUSH swaps the unit &middot; heading follows the boat &mdash; swing it here to preview</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:380px;line-height:1.6;">Procedural card &mdash; no bakes. The <span style="color:#c6d2d5;">card</span> holds north while the case and its <span style="color:#e0776b;">red lubber line</span> turn with the hull. Night lights the <span style="color:#e0776b;">red bulb</span> off the helm&rsquo;s NIGHT PANEL. The <a href="Novi Helm.dc.html">Novi</a> fits the dome on the crown; the flush unit drops into the dash.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:300px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">In-world UI is only real things that carry it. Heading isn&rsquo;t a floating HUD number &mdash; it lives on the card of a compass bolted to the boat, so every hull earns one when it fits it. Brand wordmark is original.</div>
+      </div>
+
+      <!-- unit -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Unit</div></div>
+          <div style="font-size:11px;color:#9fb0b4;letter-spacing:0.08em;">{{ formTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDome }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ domeBd }};background:{{ domeBg }};color:{{ domeFg }};">&#9679;&nbsp;DOME BRACKET</div>
+          <div onClick="{{ setFlush }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ flushBd }};background:{{ flushBg }};color:{{ flushFg }};">&#9678;&nbsp;FLUSH RITCHIE</div>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;line-height:1.5;">dome sits on the crown &mdash; it takes a brow cluster&rsquo;s place; flush sinks in the dash so the three glass mounts move up top.</div>
+      </div>
+
+      <!-- light -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Bulb</div></div>
+          <div style="font-size:11px;color:{{ modeFg }};letter-spacing:0.08em;">{{ modeTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ dayBd }};background:{{ dayBg }};color:{{ dayFg }};">DAY</div>
+          <div onClick="{{ setNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">&#9788;&nbsp;NIGHT &middot; RED</div>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;">in game this follows the helm&rsquo;s NIGHT PANEL switch &mdash; not a separate control.</div>
+      </div>
+
+      <!-- heading -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c6d2d5;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Boat Heading</div></div>
+          <div style="font-size:11px;color:{{ hdgFg }};letter-spacing:0.08em;">{{ hdgVal }}</div>
+        </div>
+        <input type="range" min="0" max="359" step="1" value="{{ heading }}" onInput="{{ onHeading }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>000&deg; N</span><span onClick="{{ swing }}" style="cursor:pointer;color:{{ swingFg }};">{{ swingLabel }}</span><span>359&deg;</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+          <sc-for list="{{ points }}" as="p" hint-placeholder-count="8">
+            <div onClick="{{ p.set }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.06em;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="6">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadRose }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #7c3a30;background:#241110;color:#e0776b;text-align:center;cursor:pointer;user-select:none;">&darr; ROSE SET &middot; 8 CANON HEADINGS</div>
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #7c3a30;background:#241110;color:#e0776b;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; DOME/FLUSH &times; DAY/NIGHT</div>
+        <a href="Art/compassRig.js" download="compassRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; compassRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 900, &quot;height&quot;: 560 },
+  &quot;form&quot;:    { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;dome&quot;,&quot;flush&quot;], &quot;default&quot;: &quot;dome&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Compass&quot; },
+  &quot;heading&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 45, &quot;min&quot;: 0, &quot;max&quot;: 359, &quot;step&quot;: 1, &quot;unit&quot;: &quot;\u00b0&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Compass&quot; },
+  &quot;night&quot;:   { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Compass&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s=this._load();
+    this.state={
+      form:    s.form    ?? (props.form    ?? 'dome'),
+      heading: s.heading ?? (props.heading ?? 45),
+      night:   s.night   ?? (props.night   ?? false),
+      swing:   false,
+    };
+    this._hdg = this.state.heading;   // eased display heading (boat settles)
+    this._target = this.state.heading;
+    this.canvasRef=(n)=>{ if(!n||n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.compass')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.compass', JSON.stringify({form:this.state.form, heading:this.state.heading, night:this.state.night})); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['form','heading','night'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(Object.keys(s).length){ if(s.heading!=null) this._target=s.heading; this.setState(s, this._save); }
+    this._draw();
+  }
+
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t; const R=window.CompassRig;
+    if(this.state.swing){ this._target=(this._target + dt*0.012)%360; }   // ~12 deg/s coming about
+    else { this._target=this.state.heading; }
+    // shortest-arc ease toward target
+    let d=((this._target - this._hdg + 540)%360)-180;
+    this._hdg = R ? R.norm(this._hdg + d*Math.min(1,0.12*dt/16.7)) : this._target;
+    if(!this.state.swing && Math.abs(d)<0.15) this._hdg=this._target;
+    this._draw();
+  }
+
+  _draw(){
+    const R=window.CompassRig, ctx=this._ctx, cv=this._cv; if(!R||!ctx||!cv) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createRadialGradient(cv.width/2, cv.height*0.44, 30, cv.width/2, cv.height*0.44, cv.width*0.8);
+    g.addColorStop(0, this.state.night?'#160e0d':'#12202a'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    // contact shadow under the unit
+    ctx.save(); ctx.globalAlpha=0.34; ctx.fillStyle='#04080b';
+    ctx.beginPath(); ctx.ellipse(cv.width/2, cv.height-26, 118, 20, 0, 0, 7); ctx.fill(); ctx.restore();
+    const sp=R.render({ form:this.state.form, heading:this._hdg, night:this.state.night });
+    ctx.drawImage(sp, Math.round((cv.width-R.W)/2), Math.round((cv.height-R.H)/2));
+  }
+
+  _bindPointer(n){
+    let down=false, sx=0, sy=0;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    n.addEventListener('pointerdown',(e)=>{ down=true; const p=local(e); sx=p.x; sy=p.y; });
+    const end=(e)=>{ if(!down) return; down=false; const p=local(e); if(Math.hypot(p.x-sx,p.y-sy)>6) return;
+      this.setState(s=>({night:!s.night}), this._save); };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',()=>{down=false;});
+  }
+
+  _bake(cols, rows, cellFn, name, cw, ch){
+    const R=window.CompassRig, W=cw||R.W, Hh=ch||R.H, c=document.createElement('canvas'); c.width=W*cols; c.height=Hh*rows;
+    const g=c.getContext('2d'); g.imageSmoothingEnabled=false;
+    for(let r=0;r<rows;r++) for(let cc=0;cc<cols;cc++) g.drawImage(cellFn(cc,r), cc*W, r*Hh);
+    c.toBlob((b)=>{ if(!b) return; const u=URL.createObjectURL(b), a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),2000); });
+  }
+  _downloadRose(){ const R=window.CompassRig; if(!R) return; const st=this.state;
+    this._bake(8, 1, (c)=> R.render({ form:st.form, heading:c*45, night:st.night }), 'Compass_'+st.form+'_Rose8.png'); }
+  _downloadStates(){ const R=window.CompassRig; if(!R) return; const hs=[0,90,180,270];
+    // rows: dome-day, dome-night, flush-day, flush-night
+    const rows=[['dome',false],['dome',true],['flush',false],['flush',true]];
+    this._bake(hs.length, rows.length, (c,r)=>{ const [form,night]=rows[r];
+      return R.render({ form, heading:hs[c], night }); }, 'Compass_States.png'); }
+
+  renderVals(){
+    const st=this.state, R=window.CompassRig;
+    const card = R ? R.cardinal8(st.heading) : 'N';
+    const deg = R ? R.fmtDeg(st.heading) : '000';
+    const idx = R ? (Math.round(R.norm(st.heading)/45)%8) : 0;
+    const border='1px solid #243137';
+    const on='#241110', onB='#7c3a30', onF='#e0776b', off='#101519', offF='#6c5350';
+    const tOn='#0f2730', tOnB='#2f6079', tOnF='#8fe6d8';
+    const pt=(i)=>{ const lab=R?R.C8[i]:'N', hd=i*45, sel=idx===i;
+      return { label:lab, set:()=>{ this._target=hd; this.setState({heading:hd, swing:false}, this._save); },
+        bd: sel?tOnB:'#243137', bg: sel?tOn:'#0f191e', fg: sel?tOnF:'#8a969b' }; };
+    return {
+      canvasRef:this.canvasRef,
+      heading:st.heading,
+      onHeading:(e)=>{ const v=+e.target.value; this._target=v; this.setState({heading:v, swing:false}, this._save); },
+      setDome:()=>this.setState({form:'dome'}, this._save),
+      setFlush:()=>this.setState({form:'flush'}, this._save),
+      setDay:()=>this.setState({night:false}, this._save),
+      setNight:()=>this.setState({night:true}, this._save),
+      swing:()=>this.setState(s=>({swing:!s.swing})),
+
+      formTag: st.form==='dome' ? '\u25cf DOME \u00b7 CROWN' : '\u25ce FLUSH \u00b7 DASH',
+      domeBd: st.form==='dome'?tOnB:'#243137', domeBg: st.form==='dome'?tOn:off, domeFg: st.form==='dome'?tOnF:offF,
+      flushBd: st.form==='flush'?tOnB:'#243137', flushBg: st.form==='flush'?tOn:off, flushFg: st.form==='flush'?tOnF:offF,
+
+      modeTag: st.night ? '\u25cf NIGHT \u00b7 RED' : '\u25cb DAY', modeFg: st.night ? '#e0776b' : '#8a969b',
+      dayBd: !st.night?tOnB:'#243137', dayBg: !st.night?tOn:off, dayFg: !st.night?'#cfd9d6':offF,
+      nightBd: st.night?onB:'#243137', nightBg: st.night?on:off, nightFg: st.night?onF:offF,
+
+      hdgTag: 'HDG '+card+' \u00b7 '+deg+'\u00b0', hdgFg: '#e0776b',
+      hdgVal: card+' \u00b7 '+deg+'\u00b0',
+      points: (R?R.C8:['N']).map((_,i)=>pt(i)),
+      swingLabel: st.swing?'\u25a0 SWINGING':'\u25b6 SWING', swingFg: st.swing?'#e0776b':'#809aa4',
+
+      readout:[
+        {k:'HEADING', v: card+'  \u00b7  '+deg+'\u00b0', fg:'#e0776b', border:'none'},
+        {k:'CARDINAL',v: card+'  ('+['north','north-east','east','south-east','south','south-west','west','north-west'][idx]+')', fg:'#c4cdcd', border},
+        {k:'POINT',   v: 'index '+idx+' / 7  \u00b7  45\u00b0 steps', fg:'#c4cdcd', border},
+        {k:'UNIT',    v: st.form==='dome'?'dome bracket \u00b7 crown mount':'flush ritchie \u00b7 dash mount', fg:'#c4cdcd', border},
+        {k:'LUBBER',  v: 'read at 12 o\u2019clock (boat\u2019s bow)', fg:'#c4cdcd', border},
+        {k:'LIGHT',   v: st.night?'red bulb \u00b7 follows night panel':'day (unlit)', fg: st.night?'#e0776b':'#c4cdcd', border},
+      ],
+      downloadRose:()=>this._downloadRose(),
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

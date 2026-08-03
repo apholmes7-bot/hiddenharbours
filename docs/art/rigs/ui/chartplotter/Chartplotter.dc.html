@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/navRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#6fc0dc;text-decoration:none;} a:hover{color:#a7dcee;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1340px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Chartplotter</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;NAVIGATION&nbsp;INSTRUMENT&nbsp;&middot;&nbsp;DIEGETIC&nbsp;GPS&nbsp;CHARTPLOTTER&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:520px;text-align:right;line-height:1.45;">The wide glass on the helm &mdash; a live vector chart of the same water as the paper reckoning: graduated depth shading, land, rocks, buoys, marked waypoints, the boat's own track and a plotted magenta route. Runs a tidy console face; maximise it for the layers, route manager, measure line, tide set and a depth-profile strip.</div>
+  </div>
+
+  <div style="width:100%;max-width:1340px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="760" height="480" style="cursor:crosshair;touch-action:none;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ viewFg }};">{{ viewTag }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ toolFg }};">{{ toolTag }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">{{ hint }}</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:640px;line-height:1.6;">Procedural chart &mdash; no bakes but the depth field. <span style="color:#6fc0dc;">Depth</span> shades from pale shallows to white deeps, <span style="color:#d23ccf;">the route</span> runs magenta with marching legs, the <span style="color:#3f86c0;">track</span> is a breadcrumb, and every <span style="color:#c2417a;">waypoint</span>, <span style="color:#2f9e57;">buoy</span> and reef is a placeable feature. Same water as the <a href="Hidden Harbours Chart.dc.html">paper chart</a>; drops into the <a href="Console Helm.dc.html">console</a> &amp; <a href="Novi Helm.dc.html">Novi</a> helms beside the <a href="Radar.dc.html">radar</a>.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:15px;width:314px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">Same rule as the rest of the fleet: this is a real screen screwed to the helm, not a floating HUD. The console face is what a plotter shows underway; maximised is the skipper leaning in to plan. Brand wordmark is original.</div>
+      </div>
+
+      <!-- view + backlight -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#6fc0dc;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Display</div></div>
+          <div style="font-size:11px;color:{{ modeFg }};letter-spacing:0.08em;">{{ modeTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setConsole }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ cnslBd }};background:{{ cnslBg }};color:{{ cnslFg }};">CONSOLE</div>
+          <div onClick="{{ setMax }}" style="flex:1.2;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ maxBd }};background:{{ maxBg }};color:{{ maxFg }};">&#9974; MAXIMIZE</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ dayBd }};background:{{ dayBg }};color:{{ dayFg }};">DAY</div>
+          <div onClick="{{ setNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">&#9788;&nbsp;NIGHT</div>
+        </div>
+      </div>
+
+      <!-- range + orientation -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#6fc0dc;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Range</div></div>
+          <div style="font-size:11px;color:#6fc0dc;letter-spacing:0.08em;">{{ rangeVal }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;">
+          <sc-for list="{{ rangeOpts }}" as="r" hint-placeholder-count="6">
+            <div onClick="{{ r.click }}" style="text-align:center;padding:7px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.02em;border:1px solid {{ r.bd }};background:{{ r.bg }};color:{{ r.fg }};">{{ r.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:0.08em;color:#5f6e73;"><span>NM across the glass &middot; scroll to zoom</span><span onClick="{{ recenter }}" style="cursor:pointer;color:#6fc0dc;">&#8853; RE-CENTRE</span></div>
+      </div>
+
+      <!-- orientation + heading -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c6d2d5;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Orientation</div></div>
+          <div style="font-size:11px;color:#c6d2d5;letter-spacing:0.08em;">{{ hdgVal }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setNorth }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ northBd }};background:{{ northBg }};color:{{ northFg }};">NORTH-UP</div>
+          <div onClick="{{ setHead }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ headBd }};background:{{ headBg }};color:{{ headFg }};">HEAD-UP</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:44px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">COG</span><input type="range" min="0" max="359" step="1" value="{{ heading }}" onInput="{{ onHeading }}" style="flex:1;" /><span style="width:52px;text-align:right;font-size:10px;color:#c6d2d5;">{{ hdgVal }}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:44px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">SOG</span><input type="range" min="0" max="20" step="0.1" value="{{ sog }}" onInput="{{ onSog }}" style="flex:1;" /><span style="width:52px;text-align:right;font-size:10px;color:#8fe6d8;">{{ sogVal }}</span></div>
+      </div>
+
+      <!-- tool -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#d23ccf;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Pointer tool</div></div>
+          <div style="font-size:11px;color:#d29bce;letter-spacing:0.08em;">{{ toolName }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+          <sc-for list="{{ toolOpts }}" as="t" hint-placeholder-count="4">
+            <div onClick="{{ t.click }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.04em;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ showMarkKinds }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+            <sc-for list="{{ kindOpts }}" as="k" hint-placeholder-count="4">
+              <div onClick="{{ k.click }}" style="text-align:center;padding:7px 0;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.02em;border:1px solid {{ k.bd }};background:{{ k.bg }};color:{{ k.fg }};">{{ k.label }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;line-height:1.5;">{{ toolHelp }}</div>
+      </div>
+
+      <!-- layers -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Chart layers</div></div>
+          <div style="font-size:10px;color:#5f6e73;letter-spacing:0.08em;">{{ layerCount }} on</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
+          <sc-for list="{{ layerOpts }}" as="l" hint-placeholder-count="8">
+            <div onClick="{{ l.click }}" style="text-align:center;padding:7px 0;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.02em;border:1px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};">{{ l.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- waypoints + route -->
+      <div style="display:flex;flex-direction:column;gap:8px;border:1px solid #2b3f47;padding:12px;background:#0d161b;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c2417a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Waypoints &amp; Route</div></div>
+          <div style="font-size:11px;color:#d29bce;letter-spacing:0.08em;">{{ wptCount }}</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;color:{{ selFg }};letter-spacing:0.06em;">
+          <span>{{ selInfo }}</span>
+          <span onClick="{{ removeSel }}" style="cursor:pointer;color:{{ removeFg }};">{{ removeLabel }}</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ addWpt }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.06em;border:1px solid #7c3a5a;background:#22101a;color:#e08ab6;">+ MARK</div>
+          <div onClick="{{ scene }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.06em;border:1px solid #2f6079;background:#0f2730;color:#7fd6c9;">RESET</div>
+          <div onClick="{{ clearWpts }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.06em;border:1px solid #243137;background:#0f191e;color:#8a969b;">CLEAR</div>
+        </div>
+        <div style="height:1px;background:#243137;margin:2px 0;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#8a969b;letter-spacing:0.06em;">
+          <span>ROUTE &middot; {{ routeInfo }}</span>
+          <span style="color:#d29bce;">{{ routeEta }}</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ undoLeg }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.06em;border:1px solid {{ undoBd }};background:{{ undoBg }};color:{{ undoFg }};">&#8630; UNDO LEG</div>
+          <div onClick="{{ clearRoute }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.06em;border:1px solid #243137;background:#0f191e;color:#8a969b;">CLEAR ROUTE</div>
+        </div>
+        <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:11.5px;color:#6f7e83;line-height:1.5;padding-top:2px;">Pick <span style="color:#d29bce;">MARK</span> and tap open water to drop a waypoint; <span style="color:#d29bce;">ROUTE</span> and tap to chain legs from the boat; drag any waypoint to move it. <span style="color:#8fbfe6;">MEASURE</span> two points for range &amp; bearing.</div>
+      </div>
+
+      <!-- tide -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2f6fae;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Tide &amp; Current</div></div>
+          <div style="font-size:11px;color:#8fbfe6;letter-spacing:0.08em;">{{ tideVal }}</div>
+        </div>
+        <input type="range" min="0" max="1" step="0.01" value="{{ tidePhase }}" onInput="{{ onTide }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.1em;color:#5f6e73;"><span>LOW WATER</span><span>{{ tideSet }}</span><span>HIGH WATER</span></div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="8">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#6fc0dc;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; CONSOLE/MAX &times; DAY/NIGHT</div>
+        <a href="Art/navRig.js" download="navRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; navRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1340, &quot;height&quot;: 780 },
+  &quot;view&quot;:    { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;console&quot;,&quot;max&quot;], &quot;default&quot;: &quot;console&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Screen&quot; },
+  &quot;night&quot;:   { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Screen&quot; },
+  &quot;rangeNM&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;2&quot;,&quot;4&quot;,&quot;6&quot;,&quot;10&quot;], &quot;default&quot;: &quot;6&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Screen&quot; },
+  &quot;orient&quot;:  { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;north&quot;,&quot;head&quot;], &quot;default&quot;: &quot;north&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Chart&quot; },
+  &quot;heading&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 46, &quot;min&quot;: 0, &quot;max&quot;: 359, &quot;step&quot;: 1, &quot;unit&quot;: &quot;\u00b0&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Chart&quot; },
+  &quot;sog&quot;:     { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 6.4, &quot;min&quot;: 0, &quot;max&quot;: 20, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; kn&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Chart&quot; },
+  &quot;showDepth&quot;:   { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Chart&quot; },
+  &quot;showTraffic&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Chart&quot; },
+  &quot;tidePhase&quot;:   { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.35, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.01, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Chart&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const R = window.NavRig;
+    const s = this._load();
+    const num=(v,d)=>{ v=+v; return isNaN(v)?d:v; };
+    this.state = {
+      view:    s.view    ?? (props.view==='max'?'max':'console'),
+      night:   s.night   ?? (props.night==null?false:!!props.night),
+      rangeNM: s.rangeNM ?? num(props.rangeNM, 6),
+      orient:  s.orient  ?? (props.orient==='head'?'head':'north'),
+      heading: s.heading ?? num(props.heading, 46),
+      sog:     s.sog     ?? num(props.sog, 6.4),
+      cam:     s.cam     ?? (R? {x:R.OWN.x, y:R.OWN.y} : {x:470,y:336}),
+      tool:    s.tool    ?? 'pan',
+      markKind:s.markKind?? 'mark',
+      layers:  s.layers  ?? { land:true, rocks:true, buoys:true, poi:true, track:true, depth:true, traffic:true, names:true },
+      waypoints: Array.isArray(s.waypoints) ? s.waypoints : (R? R.defaultWaypoints() : []),
+      route:   Array.isArray(s.route) ? s.route : (R? R.defaultRoute() : []),
+      tidePhase: s.tidePhase ?? num(props.tidePhase, 0.35),
+      selWpt:  -1,
+      measure: null,
+      track:   R? R.defaultTrack() : [],
+      traffic: R? R.defaultTraffic() : [],
+    };
+    if (props.showTraffic!=null && !s.layers) this.state.layers.traffic = !!props.showTraffic;
+    if (props.showDepth!=null && !s.layers)   this.state.layers.depth   = !!props.showDepth;
+    this._phase=0; this._acc=0;
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._resize(); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.chartplotter')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ const st=this.state; localStorage.setItem('hh.chartplotter', JSON.stringify({view:st.view,night:st.night,rangeNM:st.rangeNM,orient:st.orient,heading:st.heading,sog:st.sog,cam:st.cam,tool:st.tool,markKind:st.markKind,layers:st.layers,waypoints:st.waypoints,route:st.route,tidePhase:st.tidePhase})); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['view','night','rangeNM','orient','heading','sog','tidePhase'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(s.rangeNM!=null) s.rangeNM=+s.rangeNM;
+    if(s.orient!=null) s.orient = s.orient==='head'?'head':'north';
+    if(s.view!=null) s.view = s.view==='max'?'max':'console';
+    ['showTraffic','showDepth'].forEach(k=>{ const lk=k==='showTraffic'?'traffic':'depth'; if(prev[k]!==this.props[k] && this.props[k]!=null && !!this.props[k]!==this.state.layers[lk]) s.layers={...(s.layers||this.state.layers), [lk]:!!this.props[k]}; });
+    if(Object.keys(s).length) this.setState(s, ()=>{ this._save(); this._resize(); });
+    this._draw();
+  }
+
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t; const R=window.NavRig;
+    this._phase += dt*0.0016;
+    // drift AIS traffic slowly
+    if(R){ const tr=this.state.traffic; let moved=false; tr.forEach(v=>{ const d=R.DEG, k=dt*0.0016*(v.sog||4);
+        v.x += Math.sin((v.cog||0)*d)*k*R.PXNM; v.y += -Math.cos((v.cog||0)*d)*k*R.PXNM; moved=true;
+        if(v.x<60||v.x>R.WORLD_W-60||v.y<60||v.y>R.WORLD_H-60){ v.cog=(v.cog+180)%360; v.x=Math.max(60,Math.min(R.WORLD_W-60,v.x)); v.y=Math.max(60,Math.min(R.WORLD_H-60,v.y)); } });
+    }
+    this._acc += dt; if(this._acc>=45){ this._acc=0; this._draw(); } }
+
+  _opts(){ const st=this.state, R=window.NavRig; return {
+    view:st.view, night:st.night, rangeNM:st.rangeNM, orient:st.orient, heading:st.heading, sog:st.sog,
+    cam:st.cam, phase:this._phase, tool:st.tool, layers:st.layers, waypoints:st.waypoints, route:st.route,
+    track:st.track, traffic:st.traffic, tide:R?R.tideState(st.tidePhase):null, measure:st.measure, selWpt:st.selWpt }; }
+
+  _resize(){ const R=window.NavRig, cv=this._cv; if(!R||!cv) return; const max=this.state.view==='max';
+    const W=max?R.MAX_W:R.CONSOLE_W, H=max?R.MAX_H:R.CONSOLE_H; if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; } }
+
+  _draw(){ const R=window.NavRig, ctx=this._ctx, cv=this._cv; if(!R||!ctx||!cv) return; this._resize();
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,cv.width,cv.height); R.paint(ctx, this._opts()); }
+
+  _geom(){ const R=window.NavRig, st=this.state; const max=st.view==='max';
+    const W=max?R.MAX_W:R.CONSOLE_W, H=max?R.MAX_H:R.CONSOLE_H;
+    const X=Math.round(W*0.02), Y=Math.round(H*0.03), WW=W-2*X, HH=H-Math.round(H*0.06);
+    const L=R.layout(X,Y,WW,HH,max?'max':'console'); const V=R.makeView(this._opts(), L.chart); return {W,H,L,V}; }
+
+  _inBox(p,b){ return b && p.x>=b.x && p.x<=b.x+b.w && p.y>=b.y && p.y<=b.y+b.h; }
+  _hitWpt(p, V){ const R=window.NavRig, ws=this.state.waypoints; for(let i=ws.length-1;i>=0;i--){ const s=R.w2s(V,ws[i].x,ws[i].y); if(Math.hypot(p.x-s.x,p.y-s.y)<=10) return i; } return -1; }
+  _inChart(p, L){ return this._inBox(p, {x:L.chart.x,y:L.chart.y,w:L.chart.w,h:L.chart.h}); }
+
+  _rangeStep(dir){ const R=window.NavRig, steps=R.RANGE_STEPS, cur=this.state.rangeNM; let next;
+    if(dir>0) next=steps.find(v=>v>cur) ?? steps[steps.length-1]; else { const b=steps.filter(v=>v<cur); next=b.length?b[b.length-1]:steps[0]; }
+    this.setState({rangeNM:next}, this._save); }
+
+  _zoomAt(p, factor){ const R=window.NavRig; const {L}=this._geom(); const V=R.makeView(this._opts(), L.chart);
+    const before=R.s2w(V, p.x, p.y);
+    const nr=Math.max(0.5, Math.min(22, this.state.rangeNM*factor));
+    this.setState({rangeNM:+nr.toFixed(2)}, ()=>{ const V2=R.makeView(this._opts(), L.chart); const after=R.w2s(V2, before.x, before.y);
+      const dsx=after.x-p.x, dsy=after.y-p.y, cos=V2.cos, sin=V2.sin, sc=V2.sc;
+      const wdx=(dsx*cos+dsy*sin)/sc, wdy=(-dsx*sin+dsy*cos)/sc;
+      this.setState(s=>({cam:{x:s.cam.x+wdx, y:s.cam.y+wdy}}), this._save); }); }
+
+  _bindPointer(n){
+    const R=window.NavRig;
+    let down=false, moved=false, drag=-1, panning=false, wDown=null, measuring=false;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    n.addEventListener('pointerdown',(e)=>{ if(!R) return; const p=local(e); const {L,V}=this._geom();
+      down=true; moved=false; drag=-1; panning=false; measuring=false;
+      // side keys
+      if(this._inBox(p,L.keys[0])){ this.setState(s=>({view:s.view==='max'?'console':'max'}), ()=>{this._save();this._resize();}); return; }
+      if(this._inBox(p,L.keys[1])){ this.setState({tool:'mrk'}, this._save); return; }
+      if(this._inBox(p,L.keys[2])){ this._zoomAt({x:L.chart.cx,y:L.chart.cy}, 0.6); return; }
+      if(this._inBox(p,L.keys[3])){ this._zoomAt({x:L.chart.cx,y:L.chart.cy}, 1.6); return; }
+      if(this._inBox(p,L.topbar)){ this.setState(s=>({night:!s.night}), this._save); return; }
+      // rail (max)
+      if(L.railBtns){ for(const b of L.railBtns){ if(this._inBox(p,b)){ this._railHit(b); return; } } }
+      if(!this._inChart(p,L)) return;
+      // waypoint drag (any tool)
+      const hit=this._hitWpt(p,V); if(hit>=0){ drag=hit; this.setState({selWpt:hit}); n.setPointerCapture?.(e.pointerId); n.style.cursor='grabbing'; return; }
+      const w=R.s2w(V, p.x, p.y); const tool=this.state.tool;
+      if(tool==='mrk'){ this._addWptAt(w.x, w.y); }
+      else if(tool==='rte'){ this._addLeg(w.x, w.y); }
+      else if(tool==='msr'){ const m=this.state.measure; if(!m||!m.a||m.b){ this.setState({measure:{a:{x:w.x,y:w.y}, b:null}}); } else { this.setState({measure:{a:m.a, b:{x:w.x,y:w.y}}}); } measuring=true; n.setPointerCapture?.(e.pointerId); }
+      else { panning=true; wDown=w; n.setPointerCapture?.(e.pointerId); n.style.cursor='grabbing'; }
+    });
+    n.addEventListener('pointermove',(e)=>{ if(!down||!R) return; const p=local(e); if(!moved) moved=true; const {L,V}=this._geom();
+      if(drag>=0){ const w=R.s2w(V, p.x, p.y); this.setState(s=>{ const ws=s.waypoints.slice(); ws[drag]={...ws[drag], x:w.x, y:w.y}; return {waypoints:ws}; }, this._save); }
+      else if(panning){ const wn=R.s2w(V, p.x, p.y); this.setState(s=>({cam:{x:s.cam.x+(wDown.x-wn.x), y:s.cam.y+(wDown.y-wn.y)}}), this._save); }
+      else if(measuring){ const w=R.s2w(V, p.x, p.y); this.setState(s=>({measure:{a:s.measure.a, b:{x:w.x,y:w.y}}})); }
+    });
+    const end=()=>{ if(!down) return; down=false; drag=-1; panning=false; measuring=false; wDown=null; n.style.cursor='crosshair'; this._save(); };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+    n.addEventListener('wheel',(e)=>{ if(!R) return; e.preventDefault(); const p=local(e); this._zoomAt(p, e.deltaY>0?1.15:0.87); }, {passive:false});
+  }
+
+  _railHit(b){ const id=b.id;
+    if(b.tool){ const map={PAN:'pan',MRK:'mrk',RTE:'rte',MSR:'msr'}; this.setState({tool:map[id]||'pan'}, this._save); return; }
+    const map={LAND:'land',ROCK:'rocks',BUOY:'buoys',POI:'poi',TRK:'track',DPTH:'depth',TRFC:'traffic'}; const k=map[id]; if(!k) return;
+    this.setState(s=>({layers:{...s.layers, [k]:!(s.layers[k]!==false)}}), this._save); }
+
+  _addWptAt(x,y){ const names=['MARK','WPT','POINT','FIX']; this.setState(s=>{ const n=s.waypoints.length+1; const ws=s.waypoints.concat([{name:(s.markKind==='mark'?'WPT':s.markKind.toUpperCase())+' '+n, x, y, kind:s.markKind}]); return {waypoints:ws, selWpt:ws.length-1}; }, this._save); }
+  _addLeg(x,y){ const R=window.NavRig; this.setState(s=>{ let rt=s.route.slice(); if(rt.length===0) rt=[{x:R.OWN.x,y:R.OWN.y},{x,y}]; else rt=rt.concat([{x,y}]); return {route:rt}; }, this._save); }
+
+  _downloadStates(){ const R=window.NavRig; if(!R) return; const o=this._opts();
+    const cells=[ {view:'console',night:false},{view:'console',night:true},{view:'max',night:false},{view:'max',night:true} ];
+    const cw=R.MAX_W, ch=R.MAX_H; const cvs=document.createElement('canvas'); cvs.width=cw*2; cvs.height=ch*2;
+    const g=cvs.getContext('2d'); g.imageSmoothingEnabled=false; g.fillStyle='#0b1216'; g.fillRect(0,0,cvs.width,cvs.height);
+    cells.forEach((c,i)=>{ const col=i%2, row=Math.floor(i/2); const sub=R.render({...o, view:c.view, night:c.night});
+      g.drawImage(sub, col*cw + (cw-sub.width)/2, row*ch + (ch-sub.height)/2); });
+    cvs.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download='Chartplotter_States.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+
+  renderVals(){
+    const st=this.state, R=window.NavRig;
+    const off='#101519', offF='#6c7a70';
+    const max=st.view==='max';
+    const hasSel = st.selWpt>=0 && st.selWpt<st.waypoints.length;
+    const selW = hasSel ? st.waypoints[st.selWpt] : null;
+    const rangeOpts=(R?R.RANGE_STEPS:[1,2,4,6,10,16]).map(v=>{ const on=Math.abs(st.rangeNM-v)<0.01;
+      return { label:(R?R.fmtNM(v):v), bd:on?'#2f6079':'#243137', bg:on?'#0f2730':off, fg:on?'#6fc0dc':offF, click:()=>this.setState({rangeNM:v}, this._save) }; });
+    const tools=[['pan','PAN'],['mrk','MARK'],['rte','ROUTE'],['msr','MEAS']];
+    const toolOpts=tools.map(([k,lbl])=>{ const on=st.tool===k;
+      return { label:lbl, bd:on?'#7c3a5a':'#243137', bg:on?'#22101a':off, fg:on?'#e08ab6':offF, click:()=>this.setState({tool:k}, this._save) }; });
+    const kinds=[['mark','MARK'],['anchor','ANCHOR'],['fuel','FUEL'],['hazard','HAZARD']];
+    const kindOpts=kinds.map(([k,lbl])=>{ const on=st.markKind===k;
+      return { label:lbl, bd:on?'#7c3a5a':'#243137', bg:on?'#22101a':off, fg:on?'#e08ab6':offF, click:()=>this.setState({markKind:k, tool:'mrk'}, this._save) }; });
+    const layerDefs=[['land','LAND'],['rocks','ROCKS'],['buoys','BUOYS'],['poi','POI'],['track','TRACK'],['depth','DEPTH'],['traffic','TRFC'],['names','NAMES']];
+    const layerOpts=layerDefs.map(([k,lbl])=>{ const on=st.layers[k]!==false;
+      return { label:lbl, bd:on?'#2f6b50':'#243137', bg:on?'#0e241a':off, fg:on?'#7fd6c9':offF, click:()=>this.setState(s=>({layers:{...s.layers,[k]:!(s.layers[k]!==false)}}), this._save) }; });
+    const layerCount=layerDefs.filter(([k])=>st.layers[k]!==false).length;
+    const rt=st.route||[], routeLen=R?R.routeLenNM(rt):0, spd=Math.max(0.1,st.sog);
+    const eta=rt.length>1?(routeLen/spd*60):0;
+    const tide=R?R.tideState(st.tidePhase):{height:0,rising:true,set:0,drift:0};
+    const depth=R?R.depthAt(R.OWN.x,R.OWN.y):0;
+    const toolHelpMap={ pan:'drag to pan the chart; scroll to zoom; drag any waypoint to move it.', mrk:'tap open water to drop a '+st.markKind+' waypoint; drag to move.', rte:'tap to chain legs from the boat; UNDO drops the last leg.', msr:'tap a start point, then an end point, for range & bearing.' };
+
+    return {
+      canvasRef:this.canvasRef,
+      heading:st.heading, sog:st.sog, tidePhase:st.tidePhase,
+
+      viewTag: (max?'\u2b1c MAXIMIZED':'\u25a3 CONSOLE')+' \u00b7 '+(R?R.fmtNM(st.rangeNM):st.rangeNM)+' NM', viewFg:'#6fc0dc',
+      toolTag: (st.tool==='pan'?'PAN / ZOOM':st.tool==='mrk'?'DROP WAYPOINT':st.tool==='rte'?'DRAW ROUTE':'MEASURE'), toolFg:'#d29bce',
+      hint: max ? 'tap the rail to toggle layers & tools \u00b7 tap the top strip for night \u00b7 IN/OUT keys zoom' : 'drag to pan \u00b7 scroll to zoom \u00b7 tap MAX key for advanced kit \u00b7 tap top strip for night',
+
+      modeTag: st.night ? '\u25cf NIGHT' : '\u25cb DAY', modeFg: st.night ? '#ffbe3d' : '#8a969b',
+      cnslBd:!max?'#2f6079':'#243137', cnslBg:!max?'#0f2730':off, cnslFg:!max?'#6fc0dc':offF,
+      maxBd:max?'#2f6079':'#243137', maxBg:max?'#0f2730':off, maxFg:max?'#6fc0dc':offF,
+      setConsole:()=>this.setState({view:'console'}, ()=>{this._save();this._resize();}),
+      setMax:()=>this.setState({view:'max'}, ()=>{this._save();this._resize();}),
+      dayBd:!st.night?'#2f6079':'#243137', dayBg:!st.night?'#0f2730':off, dayFg:!st.night?'#cfd9d6':offF,
+      nightBd:st.night?'#7a5a1c':'#243137', nightBg:st.night?'#2a2008':off, nightFg:st.night?'#ffbe3d':offF,
+      setDay:()=>this.setState({night:false}, this._save), setNight:()=>this.setState({night:true}, this._save),
+
+      rangeOpts, rangeVal:(R?R.fmtNM(st.rangeNM):st.rangeNM)+' NM',
+      recenter:()=>this.setState({cam:{x:R.OWN.x,y:R.OWN.y}}, this._save),
+
+      hdgVal:(R?R.fmtDeg(st.heading):st.heading)+'\u00b0 '+(R?R.cardinal8(st.heading):''),
+      sogVal:st.sog.toFixed(1)+' kn',
+      onHeading:(e)=>this.setState({heading:+e.target.value}, this._save),
+      onSog:(e)=>this.setState({sog:+e.target.value}, this._save),
+      northBd:st.orient==='north'?'#2f6b50':'#243137', northBg:st.orient==='north'?'#0e241a':off, northFg:st.orient==='north'?'#6fe0a0':offF,
+      headBd:st.orient==='head'?'#2f6b50':'#243137', headBg:st.orient==='head'?'#0e241a':off, headFg:st.orient==='head'?'#6fe0a0':offF,
+      setNorth:()=>this.setState({orient:'north'}, this._save), setHead:()=>this.setState({orient:'head'}, this._save),
+
+      toolName: st.tool==='pan'?'PAN':st.tool==='mrk'?'MARK':st.tool==='rte'?'ROUTE':'MEASURE',
+      toolOpts, kindOpts, showMarkKinds: st.tool==='mrk', toolHelp: toolHelpMap[st.tool],
+
+      layerOpts, layerCount,
+
+      wptCount: st.waypoints.length+' marks',
+      selInfo: hasSel ? (selW.name+' \u00b7 '+(R?R.fmtDeg(R.bearingWorld(R.OWN,selW)):'')+'\u00b0 \u00b7 '+(R?R.fmtNM(R.distWorldNM(R.OWN,selW)):'')+'NM') : 'no waypoint selected',
+      selFg: hasSel ? '#d29bce' : '#5f6e73',
+      removeLabel: hasSel ? 'REMOVE \u2715' : '', removeFg: hasSel ? '#e08ab6' : '#0b1216',
+      removeSel:()=>{ if(hasSel) this.setState(s=>{ const ws=s.waypoints.slice(); ws.splice(s.selWpt,1); return {waypoints:ws, selWpt:-1}; }, this._save); },
+      addWpt:()=>{ const R2=window.NavRig; this._addWptAt(R2.OWN.x+ (Math.random()*80-40), R2.OWN.y+(Math.random()*80-40)); },
+      scene:()=>this.setState({waypoints:R?R.defaultWaypoints():[], route:R?R.defaultRoute():[], selWpt:-1, measure:null}, this._save),
+      clearWpts:()=>this.setState({waypoints:[], selWpt:-1}, this._save),
+
+      routeInfo: rt.length>1 ? ((rt.length-1)+' legs \u00b7 '+(R?R.fmtNM(routeLen):routeLen)+' NM') : 'none plotted',
+      routeEta: rt.length>1 ? ('TTG '+(R?R.fmtHM(eta):'--:--')) : '',
+      undoBd: rt.length>1?'#7c3a5a':'#243137', undoBg: rt.length>1?'#22101a':off, undoFg: rt.length>1?'#e08ab6':offF,
+      undoLeg:()=>this.setState(s=>{ let r=s.route.slice(); r.pop(); if(r.length<=1) r=[]; return {route:r}; }, this._save),
+      clearRoute:()=>this.setState({route:[]}, this._save),
+
+      tideVal: tide.height.toFixed(1)+'m '+(tide.rising?'\u2191 rising':'\u2193 falling'),
+      tideSet: (R?R.fmtDeg(tide.set):tide.set)+'\u00b0 / '+tide.drift.toFixed(1)+'kn',
+      onTide:(e)=>this.setState({tidePhase:+e.target.value}, this._save),
+
+      readout:[
+        {k:'POS', v:(R?R.fmtPos(R.OWN.x,R.OWN.y):'--'), fg:'#c4cdcd', border:'none'},
+        {k:'SOG/COG', v: st.sog.toFixed(1)+' kn  \u00b7  '+(R?R.fmtDeg(st.heading):st.heading)+'\u00b0 '+(R?R.cardinal8(st.heading):''), fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'DEPTH', v: depth.toFixed(1)+' m under keel', fg: depth<3?'#e0776b':'#c4cdcd', border:'1px solid #243137'},
+        {k:'RANGE', v:(R?R.fmtNM(st.rangeNM):st.rangeNM)+' NM  \u00b7  '+(max?'maximized':'console'), fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'MARKS', v: st.waypoints.length+' waypoint'+(st.waypoints.length===1?'':'s'), fg: st.waypoints.length?'#d29bce':'#c4cdcd', border:'1px solid #243137'},
+        {k:'ROUTE', v: rt.length>1?((rt.length-1)+' legs \u00b7 '+(R?R.fmtNM(routeLen):routeLen)+' NM \u00b7 '+(R?R.fmtHM(eta):'')):'none', fg: rt.length>1?'#d29bce':'#c4cdcd', border:'1px solid #243137'},
+        {k:'TIDE', v: tide.height.toFixed(1)+' m '+(tide.rising?'rising':'falling')+'  \u00b7  set '+(R?R.fmtDeg(tide.set):tide.set)+'\u00b0', fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'LIGHT', v: st.night?'dusk (night chart)':'day chart', fg: st.night?'#ffbe3d':'#c4cdcd', border:'1px solid #243137'},
+      ],
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

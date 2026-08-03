@@ -17,7 +17,9 @@ lever-rig/
 ├─ README.md
 ├─ Lever Rig.dc.html     ← interactive preview + strip exporter
 ├─ support.js            ← preview runtime (do not edit)
-└─ Art/leverRig.js       ← the rig
+└─ Art/
+   ├─ leverRig.js        ← the rig the helms composite (`LeverRig`)
+   └─ leverRig2.js       ← astern-pose pass (`LeverRig2`) — variant study, same contract
 ```
 
 ## Rig API — `window.LeverRig`
@@ -44,6 +46,16 @@ Helpers:
 
 Two finishes: **`graphite`** (matte black console housing — the Console Helm) and **`chrome`**
 (polished stainless — Sport, Novi & Cape). No `render` opts beyond `sig`/`spec`; no persistence.
+
+## `LeverRig2` — the astern-pose pass
+
+v1 centred the swing *toward* the operator, so full ASTERN sat 56° off vertical against a 17° camera and
+the arm collapsed into a blob behind the grip. `leverRig2.js` re-centres the throw so neutral leans
+away and no pose approaches the view axis (apparent length stays ~0.57–0.83 of full at both extremes),
+ends the grip in a real domed cap, and bakes a static binnacle **boss + ground plane** into the rig.
+Same call shape — `LeverRig2.render(sig, variantId, specOrId) → {c, px, py}` — plus `VARIANTS`/`VLIST`
+to compare poses, `boss()`, `gripPt()`, `metrics()` and `bakeStrip(n, vid, spec)`. The preview shows
+both side by side; the helms still composite `LeverRig`.
 
 ## Export & integration
 

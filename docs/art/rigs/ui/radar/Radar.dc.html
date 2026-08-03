@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/radarRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#6fe0a0;text-decoration:none;} a:hover{color:#a7f0c6;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:940px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Radar</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;BROW&nbsp;INSTRUMENT&nbsp;&middot;&nbsp;DIEGETIC&nbsp;PPI&nbsp;RADAR&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:440px;text-align:right;line-height:1.45;">The third brow screen &mdash; same glass mount, sonar's height. A live plan-position scope: a scanning sweep with phosphor persistence, range rings, own-ship at centre, and echo targets the game paints anywhere as coastline, vessels, buoys, rain or bird flocks.</div>
+  </div>
+
+  <div style="width:100%;max-width:940px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="480" height="660" style="cursor:crosshair;touch-action:none;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ rangeFg }};">{{ rangeTag }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ txFg }};">{{ txTag }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">click the scope to drop an echo &middot; drag a target to move it &middot; tap the top strip for night &middot; RANGE keys zoom, MODE flips head/north</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:480px;line-height:1.6;">Procedural PPI &mdash; no bakes. The <span style="color:#6fe0a0;">sweep</span> scans with a fading phosphor trail; every <span style="color:#e0554a;">echo</span> is a (bearing, range, size, kind) the game can place freely. <span style="color:#8fbfe6;">EBL</span> &amp; <span style="color:#ffbe3d;">VRM</span> measure any contact; the <span style="color:#e0776b;">guard zone</span> alarms on intruders. Drops into the same brow mounts as the <a href="Fish Finder.dc.html">sonar</a> &mdash; <a href="Novi Helm.dc.html">Novi</a> &amp; <a href="Cape Islander Helm.dc.html">Cape</a> helms.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:300px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">Same rule as the sounder: in-world UI is a real screen screwed to the brow. A boat only sees radar when one is fitted &mdash; the sweep, the coast, the traffic are all on the glass, never a floating HUD. Brand wordmark is original.</div>
+      </div>
+
+      <!-- backlight -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Backlight</div></div>
+          <div style="font-size:11px;color:{{ modeFg }};letter-spacing:0.08em;">{{ modeTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ dayBd }};background:{{ dayBg }};color:{{ dayFg }};">DAY</div>
+          <div onClick="{{ setNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">&#9788;&nbsp;NIGHT</div>
+        </div>
+      </div>
+
+      <!-- scan -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#6fe0a0;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Scanner</div></div>
+          <div style="font-size:11px;color:{{ txFg }};letter-spacing:0.08em;">{{ txState }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setTx }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ txBd }};background:{{ txBg }};color:{{ txBtnFg }};">&#9673; TRANSMIT</div>
+          <div onClick="{{ setStby }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ stbyBd }};background:{{ stbyBg }};color:{{ stbyFg }};">STANDBY</div>
+        </div>
+        <input type="range" min="0.3" max="2.5" step="0.1" value="{{ scanSpeed }}" onInput="{{ onScan }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>SLOW RPM</span><span onClick="{{ toggleTrails }}" style="cursor:pointer;color:{{ trailsFg }};">{{ trailsLabel }}</span><span>FAST</span></div>
+      </div>
+
+      <!-- range -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#6fc0dc;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Range</div></div>
+          <div style="font-size:11px;color:#6fc0dc;letter-spacing:0.08em;">{{ rangeVal }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+          <sc-for list="{{ rangeOpts }}" as="r" hint-placeholder-count="7">
+            <div onClick="{{ r.click }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.05em;border:1px solid {{ r.bd }};background:{{ r.bg }};color:{{ r.fg }};">{{ r.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;">nautical miles to the outer ring &middot; {{ ringInfo }}</div>
+      </div>
+
+      <!-- orientation + heading -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c6d2d5;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Orientation</div></div>
+          <div style="font-size:11px;color:#c6d2d5;letter-spacing:0.08em;">{{ hdgVal }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setHead }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ headBd }};background:{{ headBg }};color:{{ headFg }};">HEAD-UP</div>
+          <div onClick="{{ setNorth }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ northBd }};background:{{ northBg }};color:{{ northFg }};">NORTH-UP</div>
+        </div>
+        <input type="range" min="0" max="359" step="1" value="{{ heading }}" onInput="{{ onHeading }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>OWN HDG 000&deg;</span><span>359&deg;</span></div>
+      </div>
+
+      <!-- clutter -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#5b93b8;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Tuning</div></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:38px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">GAIN</span><input type="range" min="0" max="1" step="0.01" value="{{ gain }}" onInput="{{ onGain }}" style="flex:1;" /><span style="width:34px;text-align:right;font-size:10px;color:#8fe6d8;">{{ gainVal }}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:38px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">SEA</span><input type="range" min="0" max="1" step="0.01" value="{{ sea }}" onInput="{{ onSea }}" style="flex:1;" /><span style="width:34px;text-align:right;font-size:10px;color:#8fe6d8;">{{ seaVal }}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:38px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">RAIN</span><input type="range" min="0" max="1" step="0.01" value="{{ rain }}" onInput="{{ onRain }}" style="flex:1;" /><span style="width:34px;text-align:right;font-size:10px;color:#8fe6d8;">{{ rainVal }}</span></div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;line-height:1.5;">gain lifts weak echoes; sea &amp; rain fill the scope with clutter the way weather does &mdash; drive them off the game's sea state.</div>
+      </div>
+
+      <!-- EBL / VRM -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fbfe6;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">EBL &amp; VRM</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div onClick="{{ toggleEbl }}" style="cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.08em;padding:5px 10px;border:1px solid {{ eblBd }};background:{{ eblBg }};color:{{ eblFg }};">EBL {{ eblState }}</div>
+          <span style="font-size:11px;color:#8fbfe6;letter-spacing:0.08em;">{{ eblVal }}</span>
+        </div>
+        <input type="range" min="0" max="359" step="1" value="{{ eblBrg }}" onInput="{{ onEbl }}" />
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:2px;">
+          <div onClick="{{ toggleVrm }}" style="cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.08em;padding:5px 10px;border:1px solid {{ vrmBd }};background:{{ vrmBg }};color:{{ vrmFg }};">VRM {{ vrmState }}</div>
+          <span style="font-size:11px;color:#ffbe3d;letter-spacing:0.08em;">{{ vrmVal }}</span>
+        </div>
+        <input type="range" min="0.05" max="1" step="0.01" value="{{ vrmFrac }}" onInput="{{ onVrm }}" />
+      </div>
+
+      <!-- guard zone -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Guard Zone</div></div>
+          <div onClick="{{ toggleGuard }}" style="cursor:pointer;font-size:10px;letter-spacing:0.1em;padding:3px 8px;border:1px solid {{ guardBd }};color:{{ guardFg }};">{{ guardState }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:38px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">FROM</span><input type="range" min="0" max="359" step="1" value="{{ guardFrom }}" onInput="{{ onGuardFrom }}" style="flex:1;" /><span style="width:34px;text-align:right;font-size:10px;color:#e0776b;">{{ guardFromVal }}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="width:38px;font-size:10px;letter-spacing:0.08em;color:#8a969b;">ARC</span><input type="range" min="10" max="200" step="1" value="{{ guardArc }}" onInput="{{ onGuardArc }}" style="flex:1;" /><span style="width:34px;text-align:right;font-size:10px;color:#e0776b;">{{ guardArcVal }}</span></div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ bandOpts }}" as="b" hint-placeholder-count="3">
+            <div onClick="{{ b.click }}" style="flex:1;text-align:center;padding:7px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.08em;border:1px solid {{ b.bd }};background:{{ b.bg }};color:{{ b.fg }};">{{ b.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:{{ guardNoteFg }};">{{ guardNote }}</div>
+      </div>
+
+      <!-- targets -->
+      <div style="display:flex;flex-direction:column;gap:8px;border:1px solid #2b3f47;padding:12px;background:#0d161b;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Echo Targets</div></div>
+          <div style="font-size:11px;color:#e0776b;letter-spacing:0.08em;">{{ tgtCount }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+          <sc-for list="{{ kindOpts }}" as="k" hint-placeholder-count="5">
+            <div onClick="{{ k.click }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.06em;border:1px solid {{ k.bd }};background:{{ k.bg }};color:{{ k.fg }};">{{ k.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:2px;">
+          <div style="font-size:10px;color:#8a969b;letter-spacing:0.08em;">{{ sizeLabel }}</div>
+          <div style="font-size:10px;color:{{ selFg }};letter-spacing:0.08em;">{{ selInfo }}</div>
+        </div>
+        <input type="range" min="0.4" max="2.6" step="0.05" value="{{ tgtSize }}" onInput="{{ onSize }}" />
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ addTgt }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #7c3a30;background:#22110e;color:#e0776b;">+ ECHO</div>
+          <div onClick="{{ scene }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #2f6b50;background:#0e241a;color:#6fe0a0;">SCENE</div>
+          <div onClick="{{ clearTgt }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid #243137;background:#0f191e;color:#8a969b;">CLEAR</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:0.1em;color:#5f6e73;">
+          <span>tap a kind, then click the scope</span>
+          <span onClick="{{ removeSel }}" style="cursor:pointer;color:{{ removeFg }};letter-spacing:0.1em;">{{ removeLabel }}</span>
+        </div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="8">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6b50;background:#0e241a;color:#6fe0a0;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; DAY/NIGHT &times; 3 RANGES</div>
+        <a href="Art/radarRig.js" download="radarRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; radarRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 940, &quot;height&quot;: 720 },
+  &quot;scaleNM&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;0.5&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;6&quot;,&quot;12&quot;,&quot;24&quot;], &quot;default&quot;: &quot;6&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;orient&quot;:  { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;head&quot;,&quot;north&quot;], &quot;default&quot;: &quot;head&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;heading&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 44, &quot;min&quot;: 0, &quot;max&quot;: 359, &quot;step&quot;: 1, &quot;unit&quot;: &quot;\u00b0&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;tx&quot;:      { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;trails&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;night&quot;:   { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scope&quot; },
+  &quot;gain&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.72, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.02, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tuning&quot; },
+  &quot;sea&quot;:     { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.18, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.02, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tuning&quot; },
+  &quot;rain&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.10, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.02, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tuning&quot; },
+  &quot;guard&quot;:   { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Markers&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const R = window.RadarRig;
+    const s = this._load();
+    const num=(v,d)=>{ v=+v; return isNaN(v)?d:v; };
+    this.state = {
+      scaleNM: s.scaleNM ?? num(props.scaleNM, 6),
+      orient:  s.orient  ?? (props.orient==='north'?'north':'head'),
+      heading: s.heading ?? num(props.heading, 44),
+      gain:    s.gain    ?? num(props.gain, 0.72),
+      sea:     s.sea     ?? num(props.sea, 0.18),
+      rain:    s.rain    ?? num(props.rain, 0.10),
+      tx:      s.tx      ?? (props.tx==null?true:!!props.tx),
+      scanSpeed: s.scanSpeed ?? 1.0,
+      trails:  s.trails  ?? (props.trails==null?true:!!props.trails),
+      night:   s.night   ?? (props.night==null?false:!!props.night),
+      ebl:     s.ebl     ?? { on:false, brg:45 },
+      vrm:     s.vrm     ?? { on:false, nm:2 },
+      guard:   s.guard   ?? { on:(props.guard==null?false:!!props.guard), from:20, to:80, near:0.55, far:0.9 },
+      targets: Array.isArray(s.targets) ? s.targets : (R? R.defaultScene() : []),
+      sel:     -1,
+      newKind: s.newKind ?? 'vessel',
+      newSize: s.newSize ?? 1.0,
+    };
+    this._box = { X:Math.round(480*0.06), Y:Math.round(660*0.11), WW:480-2*Math.round(480*0.06), HH:Math.round(660*0.78) };
+    this._sweep = 0; this._phase = 0; this._blink = 0; this._blinkAcc = 0; this._acc = 0;
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.radar')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ const st=this.state; localStorage.setItem('hh.radar', JSON.stringify({scaleNM:st.scaleNM,orient:st.orient,heading:st.heading,gain:st.gain,sea:st.sea,rain:st.rain,tx:st.tx,scanSpeed:st.scanSpeed,trails:st.trails,night:st.night,ebl:st.ebl,vrm:st.vrm,guard:st.guard,targets:st.targets,newKind:st.newKind,newSize:st.newSize})); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['scaleNM','orient','heading','gain','sea','rain','tx','trails','night'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(s.scaleNM!=null) s.scaleNM=+s.scaleNM;
+    if(s.orient!=null) s.orient = s.orient==='north'?'north':'head';
+    if(this.props.guard!=null && !!this.props.guard!==this.state.guard.on) s.guard={...this.state.guard, on:!!this.props.guard};
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._draw();
+  }
+
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t; const st=this.state;
+    this._phase += dt*0.0019;
+    if(st.tx) this._sweep = (this._sweep + dt*0.11*(st.scanSpeed||1)) % 360;
+    const R=window.RadarRig;
+    const alarm = st.guard.on && R && (st.targets||[]).some(tg=>R.inGuard(tg, {scaleNM:st.scaleNM, guard:st.guard}));
+    if(alarm){ this._blinkAcc+=dt; if(this._blinkAcc>=380){ this._blinkAcc=0; this._blink^=1; } } else if(this._blink){ this._blink=0; }
+    this._acc += dt; if(this._acc>=40){ this._acc=0; this._draw(); } }
+
+  _draw(){
+    const R=window.RadarRig, ctx=this._ctx, cv=this._cv; if(!R || !ctx || !cv) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    const st=this.state;
+    ctx.drawImage(R.render({ scaleNM:st.scaleNM, orient:st.orient, heading:st.heading, gain:st.gain, sea:st.sea, rain:st.rain,
+      tx:st.tx, trails:st.trails, night:st.night, sweep:this._sweep, phase:this._phase, blink:this._blink,
+      targets:st.targets, sel:st.sel, ebl:st.ebl, vrm:st.vrm, guard:st.guard }), 0, 0);
+  }
+
+  // ---- pointer picking against rig-local hit geometry ----------------------
+  _oForPick(){ const st=this.state; return { scaleNM:st.scaleNM, orient:st.orient, heading:st.heading }; }
+  _hitTarget(p, sc){
+    const st=this.state, R=window.RadarRig, o=this._oForPick();
+    for(let i=st.targets.length-1;i>=0;i--){ const g=R.blipXY(sc, st.targets[i], o); if(!g.vis) continue;
+      if(Math.hypot(p.x-g.x, p.y-g.y) <= g.half+5) return i; }
+    return -1;
+  }
+  _inBox(p,b){ return b && p.x>=b.x && p.x<=b.x+b.w && p.y>=b.y && p.y<=b.y+b.h; }
+
+  _bindPointer(n){
+    const R=window.RadarRig;
+    let down=false, moved=false, drag=-1, pend=null;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    n.addEventListener('pointerdown',(e)=>{
+      if(!R) return; const p=local(e); const b=this._box; const L=R.layout(b.X,b.Y,b.WW,b.HH);
+      down=true; moved=false; drag=-1; pend=null;
+      if(this._inBox(p,L.buttons[0])){ this.setState(s=>({orient: s.orient==='north'?'head':'north'}), this._save); return; }
+      if(this._inBox(p,L.buttons[1])){ this._range(+1); return; }
+      if(this._inBox(p,L.buttons[2])){ this._range(-1); return; }
+      if(this._inBox(p,L.status)){ this.setState(s=>({night:!s.night}), this._save); return; }
+      const hit=this._hitTarget(p, L.scope);
+      if(hit>=0){ drag=hit; this.setState({sel:hit}); n.setPointerCapture?.(e.pointerId); n.style.cursor='grabbing'; return; }
+      const pk=R.pickAt(L.scope, p.x, p.y, this._oForPick());
+      if(pk.inside) pend=pk;
+    });
+    n.addEventListener('pointermove',(e)=>{ if(!down || !R) return; const p=local(e); if(!moved) moved=true;
+      if(drag>=0){ const L=R.layout(this._box.X,this._box.Y,this._box.WW,this._box.HH); const pk=R.pickAt(L.scope, p.x, p.y, this._oForPick());
+        this.setState(s=>{ const targets=s.targets.slice(); targets[drag]={...targets[drag], brgTrue:pk.brgTrue, rngNM:pk.rngNM}; return {targets}; }, this._save); } });
+    const end=()=>{ if(!down) return; down=false; n.style.cursor='crosshair';
+      if(drag<0 && pend && !moved){ this._addAt(pend.brgTrue, pend.rngNM); }
+      drag=-1; pend=null; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+  }
+
+  _range(d){
+    const steps=window.RadarRig.RANGE_STEPS, cur=this.state.scaleNM;
+    let next;
+    if(d>0) next = steps.find(v=>v>cur) ?? steps[steps.length-1];
+    else { const below=steps.filter(v=>v<cur); next = below.length?below[below.length-1]:steps[0]; }
+    this.setState({scaleNM:next}, this._save);
+  }
+  _addAt(brgTrue, rngNM){ this.setState(s=>{ const t={brgTrue, rngNM, size:s.newSize, kind:s.newKind};
+    if(s.newKind==='vessel'){ t.crs=Math.round(brgTrue+120+Math.random()*120)%360; t.spd=0.6+Math.random()*0.9; }
+    const targets=s.targets.concat([t]); return {targets, sel:targets.length-1}; }, this._save); }
+
+  _downloadStates(){
+    const R=window.RadarRig; if(!R) return; const st=this.state;
+    const ranges=[Math.max(0.5,st.scaleNM/2), st.scaleNM, Math.min(24,st.scaleNM*2)];
+    const cvs=document.createElement('canvas'); cvs.width=R.W*3; cvs.height=R.H*2;
+    const g=cvs.getContext('2d'); g.imageSmoothingEnabled=false;
+    for(let row=0;row<2;row++) for(let c=0;c<3;c++){
+      g.drawImage(R.render({ scaleNM:ranges[c], orient:st.orient, heading:st.heading, gain:st.gain, sea:st.sea, rain:st.rain,
+        tx:true, trails:st.trails, night:row===1, sweep:40+c*90, targets:st.targets, sel:-1, ebl:st.ebl, vrm:st.vrm, guard:st.guard }), c*R.W, row*R.H);
+    }
+    cvs.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download='Radar_States.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+
+  renderVals(){
+    const st=this.state, R=window.RadarRig;
+    const off='#101519', offF='#6c7a70';
+    const grnOn={bd:'#2f6b50',bg:'#0e241a',fg:'#6fe0a0'};
+    const hasSel = st.sel>=0 && st.sel<st.targets.length;
+    const selT = hasSel ? st.targets[st.sel] : null;
+    const sizeNow = hasSel ? selT.size : st.newSize;
+    const ringN = 4, interval = st.scaleNM/ringN;
+    const kindLabels={vessel:'VESSEL',land:'LAND',buoy:'BUOY',rain:'RAIN',flock:'FLOCK'};
+    const rangeOpts=(R?R.RANGE_STEPS:[6]).map(v=>{ const on=st.scaleNM===v;
+      return { label:(R?R.fmtNM(v):v)+(v<1?'':' '), bd:on?'#2f6079':'#243137', bg:on?'#0f2730':off, fg:on?'#8fbfe6':offF, click:()=>this.setState({scaleNM:v}, this._save) }; });
+    const kindOpts=(R?R.KINDS:['vessel']).map(k=>{ const on=st.newKind===k;
+      return { label:kindLabels[k]||k, bd:on?'#7c3a30':'#243137', bg:on?'#22110e':off, fg:on?'#e0776b':offF, click:()=>this.setState({newKind:k}, this._save) }; });
+    const bands=[{k:'near',label:'NEAR',near:0.25,far:0.55},{k:'mid',label:'MID',near:0.45,far:0.75},{k:'far',label:'FAR',near:0.62,far:0.95}];
+    const curBand = bands.find(b=>Math.abs(b.near-st.guard.near)<0.06 && Math.abs(b.far-st.guard.far)<0.06)?.k || null;
+    const bandOpts=bands.map(b=>{ const on=curBand===b.k;
+      return { label:b.label, bd:on?'#7c3a30':'#243137', bg:on?'#22110e':off, fg:on?'#e0776b':offF, click:()=>this.setState(s=>({guard:{...s.guard, near:b.near, far:b.far, on:true}}), this._save) }; });
+    const fmtB=(d)=> (R?R.fmtDeg(d):String(d))+'\u00b0';
+    const guardArc = ((st.guard.to - st.guard.from)%360+360)%360;
+    const anyAlarm = R && st.guard.on && st.targets.some(tg=>R.inGuard(tg, {scaleNM:st.scaleNM, guard:st.guard}));
+    const inRing = hasSel ? (selT.rngNM<=st.scaleNM) : true;
+
+    return {
+      canvasRef:this.canvasRef,
+      heading:st.heading, gain:st.gain, sea:st.sea, rain:st.rain, scanSpeed:st.scanSpeed,
+      eblBrg:st.ebl.brg, vrmFrac:Math.min(1,st.vrm.nm/st.scaleNM), guardFrom:st.guard.from, guardArc, tgtSize:sizeNow,
+
+      rangeTag:'RANGE '+(R?R.fmtNM(st.scaleNM):st.scaleNM)+' NM', rangeFg:'#8fbfe6',
+      txTag: st.tx ? ('\u25c9 '+st.targets.length+' CONTACT'+(st.targets.length===1?'':'S')) : '\u25cb STANDBY',
+      txFg: st.tx ? '#6fe0a0' : '#8a969b',
+
+      modeTag: st.night ? '\u25cf NIGHT \u00b7 AMBER' : '\u25cb DAY', modeFg: st.night ? '#ffbe3d' : '#8a969b',
+      dayBd:!st.night?'#2f6b50':'#243137', dayBg:!st.night?'#0e241a':off, dayFg:!st.night?'#cfe0d6':offF,
+      nightBd:st.night?'#7a5a1c':'#243137', nightBg:st.night?'#2a2008':off, nightFg:st.night?'#ffbe3d':offF,
+      setDay:()=>this.setState({night:false}, this._save), setNight:()=>this.setState({night:true}, this._save),
+
+      txState: st.tx?'TRANSMITTING':'STANDBY',
+      txBd:st.tx?'#2f6b50':'#243137', txBg:st.tx?'#0e241a':off, txBtnFg:st.tx?'#6fe0a0':offF,
+      stbyBd:!st.tx?'#5a3a1c':'#243137', stbyBg:!st.tx?'#241a06':off, stbyFg:!st.tx?'#e6b53f':offF,
+      setTx:()=>this.setState({tx:true}, this._save), setStby:()=>this.setState({tx:false}, this._save),
+      onScan:(e)=>this.setState({scanSpeed:+e.target.value}, this._save),
+      trailsLabel: st.trails?'TRAILS ON':'TRAILS OFF', trailsFg: st.trails?'#6fe0a0':'#5f6e73',
+      toggleTrails:()=>this.setState(s=>({trails:!s.trails}), this._save),
+
+      rangeOpts, rangeVal:(R?R.fmtNM(st.scaleNM):st.scaleNM)+' NM',
+      ringInfo:'rings every '+(R?R.fmtNM(interval):interval.toFixed(1))+' NM',
+
+      hdgVal:(R?R.fmtDeg(st.heading):st.heading)+'\u00b0 '+(R?R.cardinal8(st.heading):''),
+      heading:st.heading, onHeading:(e)=>this.setState({heading:+e.target.value}, this._save),
+      headBd:st.orient==='head'?'#2f6b50':'#243137', headBg:st.orient==='head'?'#0e241a':off, headFg:st.orient==='head'?'#6fe0a0':offF,
+      northBd:st.orient==='north'?'#2f6b50':'#243137', northBg:st.orient==='north'?'#0e241a':off, northFg:st.orient==='north'?'#6fe0a0':offF,
+      setHead:()=>this.setState({orient:'head'}, this._save), setNorth:()=>this.setState({orient:'north'}, this._save),
+
+      onGain:(e)=>this.setState({gain:+e.target.value}, this._save), gainVal:Math.round(st.gain*100)+'%',
+      onSea:(e)=>this.setState({sea:+e.target.value}, this._save), seaVal:Math.round(st.sea*100)+'%',
+      onRain:(e)=>this.setState({rain:+e.target.value}, this._save), rainVal:Math.round(st.rain*100)+'%',
+
+      eblState:st.ebl.on?'ON':'OFF', eblBd:st.ebl.on?'#2f6079':'#243137', eblBg:st.ebl.on?'#0f2730':off, eblFg:st.ebl.on?'#8fbfe6':offF,
+      eblVal: st.ebl.on ? fmtB(st.ebl.brg) : '---',
+      toggleEbl:()=>this.setState(s=>({ebl:{...s.ebl, on:!s.ebl.on}}), this._save),
+      onEbl:(e)=>this.setState(s=>({ebl:{...s.ebl, brg:+e.target.value, on:true}}), this._save),
+      vrmState:st.vrm.on?'ON':'OFF', vrmBd:st.vrm.on?'#7a5a1c':'#243137', vrmBg:st.vrm.on?'#2a2008':off, vrmFg:st.vrm.on?'#ffbe3d':offF,
+      vrmVal: st.vrm.on ? ((R?R.fmtNM(st.vrm.nm):st.vrm.nm)+' NM') : '---',
+      toggleVrm:()=>this.setState(s=>({vrm:{...s.vrm, on:!s.vrm.on}}), this._save),
+      onVrm:(e)=>this.setState(s=>({vrm:{...s.vrm, nm:+(+e.target.value*s.scaleNM).toFixed(2), on:true}}), this._save),
+
+      guardState: st.guard.on?(anyAlarm?'ALARM':'ARMED'):'OFF', guardBd: st.guard.on?(anyAlarm?'#b83b2e':'#7c3a30'):'#243137', guardFg: st.guard.on?(anyAlarm?'#e0554a':'#e0776b'):offF,
+      toggleGuard:()=>this.setState(s=>({guard:{...s.guard, on:!s.guard.on}}), this._save),
+      guardFromVal:fmtB(st.guard.from), guardArcVal:guardArc+'\u00b0',
+      onGuardFrom:(e)=>this.setState(s=>{ const from=+e.target.value; const arc=((s.guard.to-s.guard.from)%360+360)%360; return {guard:{...s.guard, from, to:(from+arc)%360, on:true}}; }, this._save),
+      onGuardArc:(e)=>this.setState(s=>({guard:{...s.guard, to:(s.guard.from+ +e.target.value)%360, on:true}}), this._save),
+      bandOpts,
+      guardNote: st.guard.on ? (anyAlarm?'\u26a0 contact in the guard zone':'watching the arc for intruders') : 'set a sector & range band, then arm',
+      guardNoteFg: anyAlarm?'#e0776b':'#5f6e73',
+
+      tgtCount: st.targets.length+' on scope',
+      kindOpts,
+      sizeLabel: hasSel ? ('SIZE \u00b7 '+(kindLabels[selT.kind]||selT.kind).toLowerCase()+' '+(st.sel+1)) : 'SIZE \u00b7 next '+(kindLabels[st.newKind]||'').toLowerCase(),
+      selInfo: hasSel ? (fmtB(selT.brgTrue)+' \u00b7 '+(R?R.fmtNM(selT.rngNM):selT.rngNM)+'NM'+(inRing?'':' \u00b7 off-scale')) : 'none selected',
+      selFg: hasSel ? (inRing?'#8fe6d8':'#e6b53f') : '#5f6e73',
+      onSize:(e)=>{ const v=+e.target.value; if(hasSel) this.setState(s=>{ const targets=s.targets.slice(); targets[s.sel]={...targets[s.sel], size:v}; return {targets}; }, this._save); else this.setState({newSize:v}, this._save); },
+      addTgt:()=>this._addAt(Math.round(Math.random()*359), +(0.2+Math.random()*0.7).toFixed(2)*st.scaleNM),
+      scene:()=>this.setState({targets:(R?R.defaultScene():[]), sel:-1}, this._save),
+      clearTgt:()=>this.setState({targets:[], sel:-1}, this._save),
+      removeSel:()=>{ if(hasSel) this.setState(s=>{ const targets=s.targets.slice(); targets.splice(s.sel,1); return {targets, sel:-1}; }, this._save); },
+      removeLabel: hasSel ? 'REMOVE \u2715' : '', removeFg: hasSel ? '#e0776b' : '#0b1216',
+
+      readout:[
+        {k:'RANGE', v:(R?R.fmtNM(st.scaleNM):st.scaleNM)+' NM  \u00b7  rings '+(R?R.fmtNM(interval):interval.toFixed(1)), fg:'#c4cdcd', border:'none'},
+        {k:'SCAN', v: st.tx?('transmitting  \u00b7  '+st.scanSpeed.toFixed(1)+'x'):'standby', fg: st.tx?'#6fe0a0':'#8a969b', border:'1px solid #243137'},
+        {k:'MODE', v: (st.orient==='north'?'north-up':'head-up')+'  \u00b7  hdg '+(R?R.fmtDeg(st.heading):st.heading)+'\u00b0', fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'TUNE', v:'gain '+Math.round(st.gain*100)+'  sea '+Math.round(st.sea*100)+'  rain '+Math.round(st.rain*100), fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'EBL/VRM', v:(st.ebl.on?fmtB(st.ebl.brg):'off')+'  /  '+(st.vrm.on?((R?R.fmtNM(st.vrm.nm):st.vrm.nm)+'NM'):'off'), fg:'#c4cdcd', border:'1px solid #243137'},
+        {k:'GUARD', v: st.guard.on?(fmtB(st.guard.from)+'\u2192'+fmtB(st.guard.to)+(anyAlarm?'  \u00b7  ALARM':'  \u00b7  armed')):'off', fg: anyAlarm?'#e0554a':'#c4cdcd', border:'1px solid #243137'},
+        {k:'ECHOES', v: st.targets.length+' target'+(st.targets.length===1?'':'s')+(st.trails?'  \u00b7  trails on':''), fg: st.targets.length?'#e0776b':'#c4cdcd', border:'1px solid #243137'},
+        {k:'LIGHT', v: st.night?'amber (night)':'green (day)', fg: st.night?'#ffbe3d':'#c4cdcd', border:'1px solid #243137'},
+      ],
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

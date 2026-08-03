@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/tillerRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:940px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Outboard Tiller</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;MOTORIZED&nbsp;DORY&nbsp;&middot;&nbsp;DIEGETIC&nbsp;CONTROL&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:400px;text-align:right;line-height:1.45;">The one control a plain dory shows: a real tiller in the fist &mdash; reads straight up dead ahead, swings with the leg, throttle in the grip.</div>
+  </div>
+
+  <div style="width:100%;max-width:940px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="380" height="480" style="cursor:grab;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ runFg }};">{{ runLabel }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ steerFg }};">{{ steerLabel }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;">drag the handle to steer &middot; tap the button to {{ pressVerb }}</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:380px;line-height:1.6;">Local sprite points <span style="color:#7fd6c9;">up</span> at centre and pivots about the clamp &mdash; angle drives 1:1 off the leg. Grip carries the <span style="color:#66d585;">start/stop</span>, the red <span style="color:#e0776b;">FWD / REV</span> shift rocker, the integrated throttle band and the telltales; kill-cord clipped to its switch and coiled down to the collar. Tap the button or the rocker right on the rig.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:320px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">In-world UI is only real things that have it &mdash; clocks, gauges, dials, switches. A bare dory shows nothing; a motor earns this <span style="color:#a9b4b8;">one tiller</span>. Portable kit (GPS, radio) adds its own screens later.</div>
+      </div>
+
+      <!-- start/stop -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Ignition</div></div>
+        <div onClick="{{ toggleRun }}" style="cursor:pointer;user-select:none;border:1px solid {{ runBd }};background:{{ runBg }};color:{{ runBtnFg }};padding:15px 16px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.12em;">
+          <span style="font-size:16px;">{{ runGlyph }}</span>
+          <span style="font-size:14px;">{{ runBtn }}</span>
+          <span style="font-size:10px;opacity:0.7;">{{ runHint }}</span>
+        </div>
+      </div>
+
+      <!-- gear -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c23a2d;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Gear</div></div>
+          <div style="font-size:11px;color:{{ gearFg }};letter-spacing:0.08em;">{{ gearLabel }}</div>
+        </div>
+        <div style="display:flex;border:1px solid #5a241d;">
+          <div onClick="{{ setFwd }}" style="flex:1;text-align:center;padding:11px 0;cursor:pointer;user-select:none;font-size:12px;letter-spacing:0.14em;background:{{ gearFwdBg }};color:{{ gearFwdFg }};">&#9650;&nbsp;&nbsp;FWD</div>
+          <div onClick="{{ setRev }}" style="flex:1;text-align:center;padding:11px 0;cursor:pointer;user-select:none;font-size:12px;letter-spacing:0.14em;background:{{ gearRevBg }};color:{{ gearRevFg }};border-left:1px solid #5a241d;">&#9660;&nbsp;&nbsp;REV</div>
+        </div>
+      </div>
+
+      <!-- steer -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Steer</div></div>
+          <div style="font-size:11px;color:{{ steerFg }};letter-spacing:0.08em;">{{ steerLabel }}</div>
+        </div>
+        <input type="range" min="-1" max="1" step="0.01" value="{{ steer }}" onInput="{{ onSteer }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>&#9664; PORT</span><span onClick="{{ centre }}" style="cursor:pointer;color:#7f8c90;">AHEAD</span><span>STBD &#9654;</span></div>
+      </div>
+
+      <!-- throttle -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Throttle</div></div>
+          <div style="font-size:11px;color:#d7c07a;letter-spacing:0.08em;">{{ throttlePct }}</div>
+        </div>
+        <input type="range" min="0" max="1" step="0.01" value="{{ throttle }}" onInput="{{ onThrottle }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>IDLE</span><span>WOT</span></div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="4">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadArc }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STEER ARC &middot; 9 FRAMES &middot; &minus;45&deg;&rarr;+45&deg;</div>
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; STOP/RUN &times; THROTTLE</div>
+        <a href="Art/tillerRig.js" download="tillerRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; tillerRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 940, &quot;height&quot;: 640 },
+  &quot;running&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Engine&quot; },
+  &quot;gear&quot;:     { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;F&quot;, &quot;options&quot;: [&quot;F&quot;, &quot;R&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Engine&quot; },
+  &quot;throttle&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.15, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Engine&quot; },
+  &quot;steer&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: -1, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Engine&quot; },
+  &quot;warn&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Engine&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s = this._load();
+    this.state = {
+      steer:    s.steer    ?? (props.steer    ?? 0),
+      throttle: s.throttle ?? (props.throttle ?? 0.15),
+      running:  s.running  ?? (props.running  ?? false),
+      warn:     s.warn     ?? (props.warn     ?? false),
+      gear:     s.gear     ?? (props.gear     ?? 'F'),
+      press:    false,
+    };
+    this.GX = 190; this.GY = 398; this.Z = 1.62;
+    this._blink = 0; this._blinkAcc = 0; this._jit = 0;
+    this._sprite = null; this._spriteKey = '';
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.tiller')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.tiller', JSON.stringify({steer:this.state.steer, throttle:this.state.throttle, running:this.state.running, warn:this.state.warn, gear:this.state.gear})); }catch(e){} }
+
+  componentDidMount(){ this._last=performance.now(); this._iv=setInterval(()=>this._tick(), 33); }
+  componentWillUnmount(){ if(this._iv) clearInterval(this._iv); }
+  componentDidUpdate(prev){
+    const s={};
+    ['steer','throttle','running','warn','gear'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._draw();
+  }
+
+  maxRad(){ const R=window.TillerRig; return ((R?R.maxSteer:45))*Math.PI/180; }
+  _sprc(){
+    const R=window.TillerRig; if(!R) return null;
+    const key = Math.round(this.state.throttle*100)+'|'+this.state.running+'|'+this.state.press+'|'+this.state.gear+'|'+(this.state.warn?this._blink:0);
+    if(this._spriteKey!==key || !this._sprite){
+      this._sprite = R.render({throttle:this.state.throttle, running:this.state.running, press:this.state.press, warn:this.state.warn, gear:this.state.gear, blink:this._blink});
+      this._spriteKey = key;
+    }
+    return this._sprite;
+  }
+
+  _tick(){
+    const t=performance.now(), dt=t-this._last; this._last=t;
+    if(this.state.warn){ this._blinkAcc+=dt; if(this._blinkAcc>=420){ this._blinkAcc=0; this._blink^=1; } }
+    else this._blink=0;
+    this._jit = this.state.running ? (Math.random()-0.5)*(0.25+0.75*this.state.throttle)*0.010 : 0;
+    this._draw();
+  }
+
+  _draw(){
+    const R=window.TillerRig, ctx=this._ctx, cv=this._cv; if(!R || !ctx || !cv) return;
+    const W=cv.width, H=cv.height, gx=this.GX, gy=this.GY, z=this.Z;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    // helm quadrant on the transom
+    const max=this.maxRad(), Rr=176;
+    ctx.strokeStyle='rgba(127,214,201,0.16)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(gx,gy,Rr, -Math.PI/2-max, -Math.PI/2+max); ctx.stroke();
+    for(let k=-1;k<=1;k++){ const a=-Math.PI/2+k*max, x1=gx+Math.cos(a)*(Rr-7), y1=gy+Math.sin(a)*(Rr-7), x2=gx+Math.cos(a)*(Rr+5), y2=gy+Math.sin(a)*(Rr+5);
+      ctx.strokeStyle= k===0?'rgba(127,214,201,0.5)':'rgba(127,214,201,0.22)'; ctx.lineWidth= k===0?2:1.5; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+    // current-angle needle marker
+    const th=this.state.steer*max, na=-Math.PI/2+th;
+    ctx.fillStyle='rgba(230,181,63,0.9)'; const nx=gx+Math.cos(na)*(Rr+5), ny=gy+Math.sin(na)*(Rr+5);
+    ctx.beginPath(); ctx.arc(nx,ny,3.2,0,7); ctx.fill();
+
+    // base plate / contact shadow
+    ctx.save(); ctx.globalAlpha=0.34; ctx.fillStyle='#050c10'; ctx.beginPath(); ctx.ellipse(gx,gy+10,54,15,0,0,7); ctx.fill(); ctx.restore();
+
+    // the handle, rotated about its pivot
+    const sp=this._sprc(); if(sp){
+      ctx.save(); ctx.translate(gx,gy); ctx.rotate(th+this._jit); ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(sp, -R.pivot.x*z, -R.pivot.y*z, R.W*z, R.H*z); ctx.restore();
+    }
+  }
+
+  // ---- pointer: drag to steer, tap the button to toggle --------------------
+  _bindPointer(n){
+    let down=false, moved=false, hit=null, sx0=0, sy0=0;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    const toLocal=(p)=>{ const R=window.TillerRig, th=this.state.steer*this.maxRad();
+      const dx=p.x-this.GX, dy=p.y-this.GY, c=Math.cos(-th), s=Math.sin(-th);
+      return { x:(dx*c-dy*s)/this.Z + R.pivot.x, y:(dx*s+dy*c)/this.Z + R.pivot.y }; };
+    const pick=(p)=>{ const R=window.TillerRig; if(!R) return null; const l=toLocal(p), b=R.hit.button, s=R.hit.shift;
+      if(Math.hypot(l.x-b.x, l.y-b.y) < b.r) return 'btn';
+      if(l.x>=s.x-3 && l.x<=s.x+s.w+3 && l.y>=s.y-3 && l.y<=s.y+s.h+3) return 'sw';
+      return null; };
+    const steerTo=(p)=>{ const dx=p.x-this.GX, dy=p.y-this.GY; let a=Math.atan2(dx,-dy); const m=this.maxRad();
+      a=Math.max(-m,Math.min(m,a)); this.setState({steer:+(a/m).toFixed(3)}, this._save); };
+    n.addEventListener('pointerdown',(e)=>{ down=true; moved=false; const p=local(e); sx0=p.x; sy0=p.y; hit=pick(p);
+      if(hit==='btn') this.setState({press:true}); n.setPointerCapture?.(e.pointerId); n.style.cursor= hit?'pointer':'grabbing'; });
+    n.addEventListener('pointermove',(e)=>{ if(!down) return; const p=local(e); if(Math.hypot(p.x-sx0,p.y-sy0)>4) moved=true; if(!hit && moved) steerTo(p); });
+    const end=()=>{ if(!down) return; down=false; n.style.cursor='grab';
+      if(hit && !moved){ if(hit==='btn') this.setState(s=>({running:!s.running, press:false}), this._save);
+        else if(hit==='sw') this.setState(s=>({gear: s.gear==='F'?'R':'F'}), this._save); }
+      else if(hit==='btn') this.setState({press:false});
+      hit=null; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+  }
+
+  _bake(cells, cw, ch, place, name){
+    const cv=document.createElement('canvas'); cv.width=cw*cells.length; cv.height=ch; const g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
+    cells.forEach((fn,i)=>{ g.save(); g.translate(i*cw,0); fn(g); g.restore(); });
+    cv.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+  _downloadArc(){
+    const R=window.TillerRig; if(!R) return; const cw=180, ch=R.H, px=90, py=R.pivot.y, N=9, max=this.maxRad();
+    const sp=R.render({throttle:this.state.throttle, running:this.state.running, gear:this.state.gear});
+    const cells=[]; for(let i=0;i<N;i++){ const th=(-1+i*(2/(N-1)))*max; cells.push((g)=>{ g.save(); g.translate(px,py); g.rotate(th); g.imageSmoothingEnabled=false; g.drawImage(sp,-R.pivot.x,-R.pivot.y); g.restore(); }); }
+    this._bake(cells, cw, ch, null, 'OutboardTiller_SteerArc.png');
+  }
+  _downloadStates(){
+    const R=window.TillerRig; if(!R) return; const ts=[0,0.25,0.5,0.75,1];
+    const cv=document.createElement('canvas'); cv.width=R.W*ts.length; cv.height=R.H*2; const g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
+    [false,true].forEach((run,row)=>ts.forEach((t,col)=>{ g.drawImage(R.render({throttle:t, running:run}), col*R.W, row*R.H); }));
+    cv.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download='OutboardTiller_States.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+
+  renderVals(){
+    const st=this.state, max=window.TillerRig?window.TillerRig.maxSteer:45;
+    const deg=Math.round(st.steer*max), side= deg<-1?'PORT '+Math.abs(deg)+'\u00b0' : deg>1?'STBD '+deg+'\u00b0' : 'AHEAD';
+    const border='1px solid #243137';
+    return {
+      canvasRef:this.canvasRef,
+      steer:st.steer, throttle:st.throttle,
+      onSteer:(e)=>this.setState({steer:+e.target.value}, this._save),
+      onThrottle:(e)=>this.setState({throttle:+e.target.value}, this._save),
+      centre:()=>this.setState({steer:0}, this._save),
+      toggleRun:()=>this.setState(s=>({running:!s.running}), this._save),
+      gear:st.gear,
+      gearLabel: st.gear==='R'?'REVERSE':'FORWARD', gearFg:'#e0776b',
+      setFwd:()=>this.setState({gear:'F'}, this._save),
+      setRev:()=>this.setState({gear:'R'}, this._save),
+      gearFwdBg: st.gear!=='R'?'#3a1712':'#101519', gearFwdFg: st.gear!=='R'?'#f0b9b0':'#6c5350',
+      gearRevBg: st.gear==='R'?'#3a1712':'#101519', gearRevFg: st.gear==='R'?'#f0b9b0':'#6c5350',
+      runLabel: st.running?'\u25cf RUNNING':'\u25cb STOPPED', runFg: st.running?'#66d585':'#8a969b',
+      steerLabel: side, steerFg: deg===0?'#7f8c90':'#e6b53f',
+      runBtn: st.running?'STOP ENGINE':'START ENGINE', runGlyph: st.running?'\u25a0':'\u25b6',
+      runHint: st.running?'RUNNING':'READY', runVerbShort: st.running?'stop':'start', pressVerb: st.running?'stop':'start',
+      runBd: st.running?'#7c2a20':'#1c6a3b', runBg: st.running?'#22110e':'#0f1f14', runBtnFg: st.running?'#e0554a':'#66d585',
+      throttlePct: Math.round(st.throttle*100)+'%',
+      readout:[
+        {k:'ENGINE',    v: st.running?'running':'stopped', fg: st.running?'#66d585':'#c4cdcd', border:'none'},
+        {k:'GEAR',      v: st.gear==='R'?'reverse':'forward', fg: st.gear==='R'?'#e0776b':'#c4cdcd', border},
+        {k:'STEER',     v: side+'  \u00b7  '+deg+'\u00b0',  fg:'#c4cdcd', border},
+        {k:'THROTTLE',  v: Math.round(st.throttle*100)+'%  \u00b7  '+(st.running?'live':'no fuel'), fg:'#c4cdcd', border},
+        {k:'KILL-CORD', v:'clipped \u00b7 armed', fg:'#c4cdcd', border},
+      ],
+      downloadArc:()=>this._downloadArc(),
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

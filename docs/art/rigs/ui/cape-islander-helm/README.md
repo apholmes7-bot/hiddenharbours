@@ -4,8 +4,8 @@ Hidden Harbours · Cape Islander · old-school wheelhouse rig.
 
 The 1982 workboat dash: a **mahogany-framed cork panel**, a chrome destroyer wheel with a wood spinner,
 **cream gauges** under stainless bezels, banks of **red breakers**, and one brushed binnacle lever. The
-brow carries a swappable depth / sonar sounder and **two reserved cutouts — radar & gps** — waiting on
-their own rigs. Same working layout as the Novi, dressed as a boat that's had a life of work and add-ons.
+brow carries a swappable depth / sonar sounder, a **live radar cutout** (`RadarRig`, bundled) and a
+**gps cutout** that takes `NavRig`. Same working layout as the Novi, dressed as a boat that's had a life of work and add-ons.
 
 ## Quick start
 
@@ -18,8 +18,8 @@ cape-islander-helm/
 ├─ Cape Islander Helm.dc.html  ← interactive preview + PNG exports
 ├─ support.js                  ← preview runtime (do not edit)
 └─ Art/
-   ├─ leverRig.js  depthRig.js  fishRig.js  compassRig.js   ← shared instruments (load first)
-   └─ capeRig.js                                             ← this helm (load last)
+   ├─ leverRig.js  depthRig.js  fishRig.js  compassRig.js  radarRig.js   ← shared instruments (load first)
+   └─ capeRig.js                                                          ← this helm (load last)
 ```
 
 ## Rig API — `window.CapeRig`
@@ -33,8 +33,8 @@ Shared signals as in `../README.md`, plus the same **three-slot brow** as the No
 
 | Param | Type | Notes |
 |---|---|---|
-| `radar` | bool | radar cutout fitted (standby screen) vs blanked (cork cover) |
-| `gps` | bool | gps cutout fitted vs blanked |
+| `radar` | bool | radar cutout fitted (live `RadarRig` PPI) vs blanked (cork cover) |
+| `gps` | bool | gps cutout fitted vs blanked (hook `NavRig` in — see below) |
 | `layout` | perm of `['sounder','radar','gps']` | brow slot order, LEFT → CENTRE → RIGHT |
 | `compass` | `none`\|`dome`\|`flush` | dome takes the centre brow cluster; flush sinks in the dash |
 
@@ -53,11 +53,15 @@ ctx.drawImage(lv.c, Math.round(CapeRig.DRIVE.px - lv.px),
 (lever); and per brow slot **`CapeRig.slotBox(i, portrait)`**, resolving `layout[i]` to `finder`/
 `radar`/`gps` as on the Novi. `maxSteer = 45°`, `DEG = π/180`.
 
-### Radar / GPS placeholders
+### Radar & GPS screens
 
-Placeholders until their own rigs ship — fitted shows a standby screen in the cutout, blanked shows the
-cork cover. The mount boxes are exposed as **`CapeRig.RADAR` / `CapeRig.GPS`** with paint hooks so a
-future rig can draw into the exact cutout.
+- **Radar** — `radarRig.js` travels in this folder. Load it **before** `capeRig.js` and the radar cutout
+  picks up `RadarRig.paintInto` automatically. Blanked shows the cork cover.
+- **GPS / plotter** — copy `Art/navRig.js` from `../chartplotter/`, load it, and wire once:
+  `CapeRig.paintGps = window.NavRig.paintInto`.
+
+The cutout boxes stay exposed as **`CapeRig.RADAR` / `CapeRig.GPS`**, and `paintRadar` / `paintGps`
+remain open as overrides.
 
 ## Export & integration
 
