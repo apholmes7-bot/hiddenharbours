@@ -1,13 +1,15 @@
 # ADR 0025 — How the diegetic UI rigs (watch, lever, sounders, compass, helm consoles) render in the game
 
-- **Status: PROPOSED — awaiting owner + lead-architect sign-off.** Records the options and a recommended
+- **Status: ACCEPTED (2026-08-03) — the recommendation as written.** See the addendum at the end of this
+  file: the owner's 2026-08-03 boat-UI directive is the sign-off this ADR was waiting for, relayed by
+  lead-architect, who authorizes the status change. Originally: records the options and a recommended
   direction for turning the art director's UI-rig `.js` drop (`docs/art/rigs/ui/`) into on-screen
   instruments. **The owner's steer (2026-07-24): these are "live rigs" — too many variables to pre-draw
   the whole screen** — which this ADR takes as the starting constraint and reconciles with the one hard
-  line below. Nothing here is built yet; the analog-throttle model, the watch mapper, and the
+  line below. The analog-throttle model, the watch mapper, and the
   console/equipment data model that landed alongside this ADR are render-agnostic and do **not** depend on
   which option wins.
-- **Date:** 2026-07-24
+- **Date:** 2026-07-24 (accepted 2026-08-03)
 - **Decision owner:** lead-architect owns the dependency/fencing and the Core render seam; **art-pipeline**
   owns the look + any editor bake; **ui-ux** owns the console window host; **gameplay-systems** owns the
   instrument→state binding. (`agents/coordination.md` §1.1; CLAUDE.md rule 4.)
@@ -140,3 +142,36 @@ fences that ADR 0021 depends on.
   rasteriser. Prefer the in-V8 polyfill for fidelity.
 - **Does the live C# renderer share code with the boat rig baker at all,** or is it a clean-room UI render
   layer? Likely the latter — different primitives, different lifetime (runtime vs editor).
+
+## Addendum — ACCEPTED, 2026-08-03 (the owner's boat-UI directive)
+
+The art director's thirteen-rig boat-UI drop (2026-08-03) arrived with an owner directive that is the
+sign-off this ADR was waiting for. Relayed via lead-architect with the S1 dispatch (the coordinator
+authorizes this status change):
+
+> Lever controls answer BOTH mouse and keys; keyed throttle on motorized hulls **steps-and-holds per
+> press** (a key can't hold an analog position, so each press bumps a detent and the drive stays
+> there); depth sounders are purchasable and show REAL water depth; fish finders hunt REAL fish and
+> sizes; radar reads REAL gameplay; the chartplotter uses REAL map data with routes and waypoints.
+
+That is the "live rig" instinct this ADR reconciled with the no-JS fence — real continuous game state
+on the instruments' glass, not pre-drawn screens — so the **recommendation stands as written**: live C#
+renderers (Option A) inside the ADR 0021 licence fence, with Option B's editor bake available later as
+a measured optimization for genuinely finite rigs, and Option C (a JS engine in the player build) still
+REJECTED.
+
+Notes recorded with the acceptance:
+
+- **The drop supersedes the "ten rigs" count.** Three rigs postdate this ADR's context section:
+  **RadarRig** (live PPI scope), **NavRig** (chartplotter), and **WheelRig** (the grabbable wheel, the
+  one rig that also owns *physics* via a stateless `step(state, dt)`). A fourth file, **LeverRig2**, is
+  an astern-pose variant study bundled in `lever-rig/` — helms still composite `LeverRig`. All land
+  under `docs/art/rigs/ui/` in the drop's per-instrument folder layout (folder = README + interactive
+  preview + `support.js` + `Art/*.js`), which replaces the previous flat files.
+- **S1 of the build starts with the piloting controls** (lever + tiller + the stepped-hold keyed
+  throttle over the existing `ThrottleDetentModel`); sounder/finder/radar/plotter/helms follow one
+  slice at a time, each binding to REAL sim reads per the directive (rule 5 — recomputed, never saved).
+- The golden-master pixel diff this ADR asks for needs the editor Canvas2D shim we are deliberately not
+  building yet, so the first ports pin **numeric geometry goldens** (values read from the rig source),
+  canvas dims + pivots, and an owner eyeball sheet; the pixel diff arrives with the bake pipeline if
+  Option B parts are ever adopted.

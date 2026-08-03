@@ -78,7 +78,18 @@ MonoBehaviour:
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2
-    HoldRepeatPerSec: 0
+    HoldRepeatPerSec: 3
+    HoldRepeatDelaySec: 0.35
+    NeutralSnapWindow01: 0.08
+  HelmOverlay:
+    SmallScale: 1
+    FocusScale: 2
+    MarginX: 24
+    MarginY: 16
+    FocusCenterX01: 0.5
+    FocusCenterY01: 0.5
+    GrabRadiusPx: 30
+    TillerDragFullDrivePx: 140
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7

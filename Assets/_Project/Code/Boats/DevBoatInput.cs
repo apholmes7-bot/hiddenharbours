@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
@@ -10,31 +11,55 @@ namespace HiddenHarbours.Boats
     ///     W = both ahead · S = both astern · A = port-oar stroke · D = starboard-oar stroke ·
     ///     W+A = port oar only ahead · W+D = stbd only · S+A = port only astern · S+D = stbd only ·
     ///     A or D with no W/S = a stationary pivot (oars opposite) · Space = brace (both oars → brake).
-    ///   • Engine (boats you buy): W/S = throttle ahead/astern, A/D = steer (UNCHANGED helm).
+    ///     UNCHANGED — the stepped throttle below is motorised hulls ONLY (owner directive 2026-08-03).
+    ///   • Engine (boats you buy) — the STEPPED-AND-HELD notched throttle (ADR 0025 S1, owner directive
+    ///     2026-08-03: a key can't hold an analog position, so each press bumps a detent and the drive
+    ///     STAYS there): W/Up press = +1 detent, S/Down press = −1 detent, the drive HOLDS between
+    ///     presses; holding a key auto-repeats after a data-driven delay (GameConfig.HelmThrottle);
+    ///     Z snaps to neutral. A/D = steer (momentary, unchanged). Gamepad rides the SAME actions:
+    ///     D-pad up/down = detents, B (east) = neutral, left stick X = steer.
+    /// The drive value lives in <see cref="BoatController"/> alone (read back through
+    /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
+    /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
     /// To ship, replace this with the control scheme through an InputService (design/ux-and-mobile-
     /// controls.md, owned by ui-ux); a gamepad maps analog oar effort straight to BoatController.SetOarInput.
     ///
-    /// Uses the new Input System (Keyboard.current), matching this project's input setting.
+    /// Uses the new Input System (Keyboard.current/Gamepad.current), matching this project's input setting.
     /// </summary>
     [RequireComponent(typeof(BoatController))]
     public class DevBoatInput : MonoBehaviour
     {
+        [Header("Keys (owner-editable)")]
+        [Tooltip("Snap the notched throttle straight to NEUTRAL (motorised hulls). Z — verified free " +
+                 "of every other binding by a project-wide Key./KeyControl/.inputactions sweep " +
+                 "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
+                 "T trap-drop, G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, " +
+                 "V variant, I icebox, O displaced-water, N tide table, X DUMP SPOILED — " +
+                 "CatchDumpInput listens scene-wide, so X here would dump the catch on every chop " +
+                 "to neutral).")]
+        [SerializeField] private Key _neutralKey = Key.Z;
+
         private BoatController _boat;
+
+        // Auto-repeat timers for the held throttle keys (transient input state — never saved, rule 5).
+        private HeldRepeatState _aheadRepeat;
+        private HeldRepeatState _asternRepeat;
 
         private void Awake() => _boat = GetComponent<BoatController>();
 
         private void Update()
         {
             var kb = Keyboard.current;
-            if (kb == null || _boat == null) return;
+            var gp = Gamepad.current;
+            if ((kb == null && gp == null) || _boat == null) return;
 
             // The propulsion branch is the SAME decision the controller's physics uses (one source of
             // truth in BoatController.UsesEngineHelm) so input + physics can never disagree about a hull:
             // the Punt (Engine) gets the outboard helm, the Dory (Oars) keeps per-oar rowing.
             BoatHullDef hull = _boat.Hull;
             if (hull == null || BoatController.UsesEngineHelm(hull.Propulsion))
-                ReadEngine(kb);
-            else
+                ReadEngine(kb, gp);
+            else if (kb != null)
                 ReadOars(kb);
         }
 
@@ -67,14 +92,43 @@ namespace HiddenHarbours.Boats
             _boat.SetOarInput(left, right, kb.spaceKey.isPressed);   // Space = brace = brake/stop
         }
 
-        // Engine helm — UNCHANGED: W/S = throttle (S/Down = astern), A/D = steer.
-        private void ReadEngine(Keyboard kb)
+        // Engine helm — the STEPPED-AND-HELD notched throttle (owner directive 2026-08-03). Presses
+        // step a detent; the drive HOLDS between presses (read back from the controller — the ONE
+        // owner); held keys walk on after a data-driven delay; X (or gamepad B) chops to neutral.
+        // Steer stays momentary: keys full-lock, gamepad stick analog.
+        private void ReadEngine(Keyboard kb, Gamepad gp)
         {
-            float throttle = ((kb.wKey.isPressed || kb.upArrowKey.isPressed) ? 1f : 0f)
-                           - ((kb.sKey.isPressed || kb.downArrowKey.isPressed) ? 1f : 0f);
-            float steer = ((kb.dKey.isPressed || kb.rightArrowKey.isPressed) ? 1f : 0f)
-                        - ((kb.aKey.isPressed || kb.leftArrowKey.isPressed) ? 1f : 0f);
-            _boat.SetControl(throttle, steer);
+            HelmThrottleSettings cfg = GameServices.HelmThrottle;
+            HelmControlRelay.EffectiveNotches(_boat.Hull, in cfg, out int aheadN, out int asternN);
+
+            bool aheadEdge  = (kb != null && (kb.wKey.wasPressedThisFrame || kb.upArrowKey.wasPressedThisFrame))
+                           || (gp != null && gp.dpad.up.wasPressedThisFrame);
+            bool aheadHeld  = (kb != null && (kb.wKey.isPressed || kb.upArrowKey.isPressed))
+                           || (gp != null && gp.dpad.up.isPressed);
+            bool asternEdge = (kb != null && (kb.sKey.wasPressedThisFrame || kb.downArrowKey.wasPressedThisFrame))
+                           || (gp != null && gp.dpad.down.wasPressedThisFrame);
+            bool asternHeld = (kb != null && (kb.sKey.isPressed || kb.downArrowKey.isPressed))
+                           || (gp != null && gp.dpad.down.isPressed);
+            bool neutral    = (kb != null && kb[_neutralKey].wasPressedThisFrame)
+                           || (gp != null && gp.buttonEast.wasPressedThisFrame);
+
+            float dt = Time.deltaTime;
+            int steps = HelmThrottleStepMath.TickRepeat(ref _aheadRepeat, aheadEdge, aheadHeld,
+                                                        dt, cfg.HoldRepeatDelaySec, cfg.HoldRepeatPerSec)
+                      - HelmThrottleStepMath.TickRepeat(ref _asternRepeat, asternEdge, asternHeld,
+                                                        dt, cfg.HoldRepeatDelaySec, cfg.HoldRepeatPerSec);
+
+            // The drive is read back from the controller — whoever moved it last (these keys, the
+            // gamepad, or the overlay's mouse drag) — then stepped. No second copy, no drift.
+            float drive = _boat.Throttle;
+            if (neutral) drive = 0f;
+            else if (steps != 0) drive = HelmThrottleStepMath.StepMany(drive, steps, aheadN, asternN);
+
+            float steer = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
+                        - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
+            if (gp != null && steer == 0f) steer = gp.leftStick.x.ReadValue();
+
+            _boat.SetControl(drive, steer);
         }
     }
 }

@@ -27,6 +27,11 @@ namespace HiddenHarbours.Boats
                  "carries no baked art (ADR 0025).")]
         public ConsoleRigKind Rig = ConsoleRigKind.Console;
 
+        [Tooltip("The binnacle lever's housing finish on this console (LeverRig.SPECS): graphite = the " +
+                 "matte centre-console housing, chrome = polished stainless (sport/novi/cape). Data, " +
+                 "not code — the S1 lever overlay draws whichever this console says.")]
+        public HelmLeverFinish Lever = HelmLeverFinish.Graphite;
+
         [Header("Default fit — what this hull ships with")]
         [Tooltip("The sounder fitted out of the box (Depth = the basic read; None = bare brow).")]
         public SounderKind DefaultSounder = SounderKind.Depth;

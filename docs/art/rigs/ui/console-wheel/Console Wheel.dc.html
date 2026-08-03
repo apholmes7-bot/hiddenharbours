@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/wheelRig.js"></script>
+<script src="Art/consoleIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;}
+  a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;width:100%;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1000px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Wheel</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;CONSOLE&nbsp;SKIFF&nbsp;&middot;&nbsp;SPIN&nbsp;CONTROL&nbsp;+&nbsp;ISO&nbsp;LAYER</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:410px;text-align:right;line-height:1.45;">The dash lives on the Console Helm sheet. This is the wheel itself: the surface the player grabs, and the eleven-pixel wheel on the boat that answers it at every heading and on every wave.</div>
+  </div>
+
+  <div style="width:100%;max-width:1000px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+
+    <!-- GRAB SURFACE -->
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="300" height="300" style="cursor:grab;touch-action:none;"></canvas>
+        <div style="position:absolute;left:9px;top:8px;font-size:10px;letter-spacing:0.12em;color:{{ steerFg }};background:rgba(11,18,22,0.62);padding:3px 8px;">{{ steerLabel }}</div>
+        <div style="position:absolute;right:9px;bottom:8px;font-size:9px;letter-spacing:0.1em;color:{{ spinFg }};background:rgba(11,18,22,0.55);padding:3px 7px;">{{ spinLabel }}</div>
+      </div>
+      <div style="width:300px;display:flex;flex-direction:column;gap:5px;">
+        <div style="position:relative;height:14px;border:1px solid #243137;background:#0f191e;">
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#2f444c;"></div>
+          <div style="position:absolute;top:2px;bottom:2px;left:{{ barLeft }};width:{{ barWidth }};background:#2ba39a;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:8.5px;letter-spacing:0.1em;color:#5f6e73;"><span>&#9664;&nbsp;PORT</span><span style="color:#8a969b;">{{ turnLabel }}</span><span>STBD&nbsp;&#9654;</span></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;width:300px;">
+        <sc-for list="{{ actions }}" as="a" hint-placeholder-count="4">
+          <div onClick="{{ a.onClick }}" style="padding:6px 9px;font-size:9.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;border:1px solid {{ a.bd }};color:{{ a.fg }};background:{{ a.bg }};">{{ a.label }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:9px;color:#5f6e73;letter-spacing:0.06em;text-align:center;width:300px;line-height:1.6;">drag to spin &middot; flick and let go to coast &middot; scroll to nudge &middot; double-click centres</div>
+    </div>
+
+    <!-- ISO ANSWER -->
+    <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:380px;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ boatRef }}" width="420" height="300"></canvas>
+        <div style="position:absolute;left:10px;top:9px;font-size:10px;letter-spacing:0.12em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ headingLabel }}</div>
+        <div style="position:absolute;right:10px;top:9px;font-size:9.5px;letter-spacing:0.1em;color:rgba(200,168,106,0.9);background:rgba(11,18,22,0.55);padding:3px 8px;">{{ layerLabel }}</div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="8">
+          <div onClick="{{ c.onClick }}" style="min-width:34px;text-align:center;padding:5px 8px;font-size:10px;letter-spacing:0.06em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+        </sc-for>
+        <sc-for list="{{ viewToggles }}" as="t" hint-placeholder-count="3">
+          <div onClick="{{ t.onClick }}" style="padding:5px 9px;font-size:9.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;border:1px solid {{ t.bd }};color:{{ t.fg }};background:{{ t.bg }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;gap:4px;width:132px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+          <input type="range" min="1" max="4" step="1" value="{{ zoom }}" onInput="{{ onZoom }}" />
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;width:132px;">
+          <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>THROTTLE</span><span style="color:#9aa6aa;">{{ throttleRead }}</span></div>
+          <input type="range" min="0" max="1" step="0.05" value="{{ throttle }}" onInput="{{ onThrottle }}" />
+        </div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.04em;line-height:1.65;">The wheel on the boat is not this sprite rotated &mdash; at 0.35 m it is <span style="color:#8a969b;">eleven pixels</span> seen at 40&deg;, so it is built as geometry on the console's aft face and baked into the hull's own cell at the hull's own pivot, like the oar and motor layers. Spin turns the spokes about the column axis in 3D; the same <span style="color:#8a969b;">rock(i)</span> values that move the hull move the wheel, so it never floats off the console. Heading answers only with way on.</div>
+    </div>
+  </div>
+
+  <!-- READOUT + META -->
+  <div style="width:100%;max-width:1000px;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:300px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Reading</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="row" hint-placeholder-count="7">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:{{ row.fg }};border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;padding-top:4px;">
+        <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:4px;width:140px;">
+            <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>{{ s.label }}</span><span style="color:#9aa6aa;">{{ s.read }}</span></div>
+            <input type="range" min="{{ s.min }}" max="{{ s.max }}" step="{{ s.step }}" value="{{ s.value }}" onInput="{{ s.onInput }}" />
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;width:326px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#b49a74;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Rim &amp; handles &middot; grab surface</div></div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <sc-for list="{{ rims }}" as="r" hint-placeholder-count="3">
+            <div onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:9px;padding:6px 8px;cursor:pointer;user-select:none;border:1px solid {{ r.bd }};background:{{ r.bg }};">
+              <div style="display:flex;gap:1px;flex-shrink:0;">
+                <div style="width:11px;height:16px;background:{{ r.c0 }};"></div>
+                <div style="width:11px;height:16px;background:{{ r.c1 }};"></div>
+                <div style="width:7px;height:16px;background:{{ r.c2 }};"></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="font-size:10.5px;color:{{ r.fg }};letter-spacing:0.03em;">{{ r.name }}</div>
+                <div style="font-size:8.5px;color:#5f6e73;letter-spacing:0.02em;">{{ r.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Sheets</div></div>
+        <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+          <sc-for list="{{ meta }}" as="row" hint-placeholder-count="8">
+            <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+            <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadLayer }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; ISO WHEEL LAYER &middot; 8 DIRS &times; 5 STEER</div>
+        <div onClick="{{ downloadSheet }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; GRAB WHEEL &middot; 9 FRAMES</div>
+        <a href="Art/wheelRig.js" download="wheelRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; wheelRig.js</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISO STRIP -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">HOW&nbsp;IT&nbsp;READS&nbsp;&middot;&nbsp;EIGHT&nbsp;HEADINGS&nbsp;&times;&nbsp;THREE&nbsp;WHEEL&nbsp;POSITIONS</div>
+      <div style="font-size:9.5px;color:#5f6e73;">{{ stripNote }}</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ stripRef }}" width="1010" height="420"></canvas>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;line-height:1.65;">Cropped tight on the hub and doubled, so you can judge the honest read. Looking at her stern (<span style="color:#c9a86a;">N</span>) you get the whole ring; broadside she narrows to a sliver, and bow-on (<span style="color:#c9a86a;">S</span>) the console hides her completely &mdash; which is right, and it is why the layer is painted with the hull and masked rather than composited over it. The cue that survives at this size is the <span style="color:#e0b13a;">gold king spoke</span>&rsquo;s clock position, not the spokes.</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1000, &quot;height&quot;: 1240 },
+  &quot;steer&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: -1, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Wheel&quot; },
+  &quot;lockTurns&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1.5, &quot;min&quot;: 0.5, &quot;max&quot;: 4, &quot;step&quot;: 0.25, &quot;unit&quot;: &quot; turns&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Wheel&quot; },
+  &quot;rim&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;rubber&quot;, &quot;options&quot;: [&quot;rubber&quot;,&quot;teak&quot;,&quot;steel&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Wheel&quot; },
+  &quot;friction&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 2.4, &quot;min&quot;: 0.4, &quot;max&quot;: 6, &quot;step&quot;: 0.2, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Feel&quot; },
+  &quot;selfCentre&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 8, &quot;step&quot;: 0.4, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Feel&quot; },
+  &quot;throttle&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.5, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Feel&quot; },
+  &quot;zoom&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 3, &quot;min&quot;: 1, &quot;max&quot;: 4, &quot;step&quot;: 1, &quot;unit&quot;: &quot;×&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Iso&quot; },
+  &quot;rock&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Iso&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.ORDER=['N','NE','E','SE','S','SW','W','NW'];
+    const s=this._load();
+    this.state = {
+      deg:      s.deg      ?? 0,
+      rim:      s.rim      ?? (props.rim ?? 'rubber'),
+      turns:    s.turns    ?? (props.lockTurns ?? 1.5),
+      friction: s.friction ?? (props.friction ?? 2.4),
+      selfCentre: s.selfCentre ?? (props.selfCentre ?? 0),
+      throttle: s.throttle ?? (props.throttle ?? 0.5),
+      dir:      s.dir      ?? 4,
+      zoom:     s.zoom     ?? (props.zoom ?? 3),
+      rock:     s.rock     ?? (props.rock ?? true),
+      layer:    s.layer    ?? true,
+    };
+    this._vel=0; this._hdg=this.state.dir*45; this._grip=false; this._clicks=0; this._flash=0;
+    this._hull={}; this._wheel={}; this._rf=0; this._rockAcc=0;
+    this.canvasRef=(n)=>{ if(!n||n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bind(n); };
+    this.boatRef=(n)=>{ if(!n||n===this._bt) return; this._bt=n; this._btctx=n.getContext('2d'); };
+    this.stripRef=(n)=>{ if(!n||n===this._st) return; this._st=n; this._stctx=n.getContext('2d'); this._drawStrip(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.consoleWheel')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.consoleWheel', JSON.stringify(this.state)); }catch(e){} }
+  _R(){ return (typeof window!=='undefined') && window.WheelRig; }
+  _D(){ const D=(typeof window!=='undefined') && window.ConsoleIso; return (D&&D.renderWheel)?D:null; }
+
+  componentDidMount(){ this._last=performance.now(); this._loop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const map={rim:'rim', lockTurns:'turns', friction:'friction', selfCentre:'selfCentre', throttle:'throttle', zoom:'zoom', rock:'rock'};
+    const s={};
+    Object.keys(map).forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[map[k]]) s[map[k]]=this.props[k]; });
+    if(this.props.steer!=null && prev.steer!==this.props.steer){ const R=this._R(); if(R) s.deg=R.degFromSteer(this.props.steer, this.state.turns); }
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._drawStrip();
+  }
+
+  // ---- cell bakes -----------------------------------------------------------
+  _cell(rgba,D){ const cv=document.createElement('canvas'); cv.width=D.W; cv.height=D.H;
+    cv.getContext('2d').putImageData(new ImageData(rgba,D.W,D.H),0,0); return cv; }
+  _hullCell(dir,rf){
+    const D=this._D(); if(!D) return null;
+    const key=dir+'|'+rf;
+    if(!this._hull[key]) this._hull[key]=this._cell(D.render(dir, Object.assign({elev:40}, rf<0?{}:D.rock(rf))), D);
+    return this._hull[key];
+  }
+  _wheelCell(dir,rf,deg){
+    const D=this._D(); if(!D) return null;
+    const q=Math.round(deg/8)*8, key=dir+'|'+rf+'|'+q;
+    if(!this._wheel[key]){
+      const keys=Object.keys(this._wheel); if(keys.length>140) delete this._wheel[keys[0]];
+      this._wheel[key]=this._cell(D.renderWheel(dir, Object.assign({elev:40, deg:q}, rf<0?{}:D.rock(rf))), D);
+    }
+    return this._wheel[key];
+  }
+
+  _loop(){
+    const R=this._R(), t=performance.now(), dt=Math.min(0.05,(t-(this._last||t))/1000); this._last=t;
+    if(R){
+      if(!this._grip){
+        const st=R.step({deg:this.state.deg, vel:this._vel}, dt, {turns:this.state.turns, friction:this.state.friction, selfCentre:this.state.selfCentre});
+        this._vel=st.vel;
+        if(st.hit) this._flash=1;
+        if(st.deg!==this.state.deg) this.setState({deg:st.deg});
+      }
+      const steer=R.steerFromDeg(this.state.deg, this.state.turns);
+      const rate=steer*30*this.state.throttle;
+      if(Math.abs(rate)>0.01){
+        this._hdg=(this._hdg+rate*dt+360)%360;
+        const d=Math.round(this._hdg/45)%8;
+        if(d!==this.state.dir) this.setState({dir:d});
+      }
+      if(this.state.rock){ this._rockAcc+=dt*1000; if(this._rockAcc>150){ this._rockAcc=0; this._rf=(this._rf+1)%8; } }
+      const c=R.clicks(this.state.deg); if(c!==this._clicks) this._clicks=c;
+      if(this._flash>0) this._flash=Math.max(0,this._flash-dt*3.2);
+      this._draw(); this._drawBoat();
+    }
+    this._raf=requestAnimationFrame(()=>this._loop());
+  }
+
+  _bind(n){
+    if(this._bound) return; this._bound=true;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return { x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height) }; };
+    const ang=(p)=>Math.atan2(p.y-n.height/2, p.x-n.width/2)*180/Math.PI;
+    let down=false, prevA=0, prevT=0;
+    n.addEventListener('pointerdown',(e)=>{
+      down=true; this._grip=true; prevA=ang(local(e)); prevT=performance.now();
+      try{ n.setPointerCapture(e.pointerId); }catch(err){}
+      n.style.cursor='grabbing';
+    });
+    n.addEventListener('pointermove',(e)=>{
+      if(!down) return; const R=this._R(); if(!R) return;
+      const a=ang(local(e)); let d=a-prevA; if(d>180)d-=360; if(d<-180)d+=360;
+      const t=performance.now(), dt=Math.max(0.008,(t-prevT)/1000); prevA=a; prevT=t;
+      const lock=R.lockDeg(this.state.turns);
+      const next=Math.max(-lock,Math.min(lock,this.state.deg+d));
+      if(next!==this.state.deg){ this._vel=d/dt; this.setState({deg:next}); }
+      else { this._vel=0; if(Math.abs(this.state.deg)>=lock) this._flash=1; }
+    });
+    const end=()=>{ if(!down) return; down=false; this._grip=false; n.style.cursor='grab'; this._save(); };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+    n.addEventListener('dblclick',()=>{ this._vel=0; this.setState({deg:0}, this._save); });
+    n.addEventListener('wheel',(e)=>{
+      const R=this._R(); if(!R) return; e.preventDefault();
+      const lock=R.lockDeg(this.state.turns); this._vel=0;
+      this.setState({deg:Math.max(-lock,Math.min(lock,this.state.deg+Math.sign(e.deltaY)*15))}, this._save);
+    },{passive:false});
+    n.tabIndex=0;
+    n.addEventListener('keydown',(e)=>{
+      const R=this._R(); if(!R) return;
+      const lock=R.lockDeg(this.state.turns), st=e.shiftKey?45:12;
+      if(e.key==='ArrowLeft'){ this.setState({deg:Math.max(-lock,this.state.deg-st)}, this._save); e.preventDefault(); }
+      if(e.key==='ArrowRight'){ this.setState({deg:Math.min(lock,this.state.deg+st)}, this._save); e.preventDefault(); }
+      if(e.key===' '){ this._vel=0; this.setState({deg:0}, this._save); e.preventDefault(); }
+    });
+  }
+
+  _draw(){
+    const R=this._R(), ctx=this._ctx; if(!R||!ctx) return;
+    const W=this._cv.width, H=this._cv.height;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#101c22'); g.addColorStop(1,'#0b1216');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    const cx=W/2, cy=H/2+6;
+    ctx.fillStyle=this._flash>0.02?'#e0554a':'#4f6169';
+    for(let i=0;i<6;i++) ctx.fillRect(Math.round(cx-2+i*0.7), 8+i, Math.max(1,5-i*1.6), 1);
+    R.paint(ctx, cx, cy, {deg:this.state.deg, rim:this.state.rim, grip:this._grip});
+  }
+
+  _drawBoat(){
+    const ctx=this._btctx, D=this._D(); if(!ctx||!D) return;
+    const st=this.state, W=this._bt.width, H=this._bt.height, z=st.zoom;
+    const rf = st.rock ? this._rf : -1;
+    const hull=this._hullCell(st.dir, rf); if(!hull) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0b1216');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    const hub=D.wheelHub(st.dir, Object.assign({elev:40}, rf<0?{}:D.rock(rf)));
+    // frame on the wheel hub at high zoom, on the boat origin at low zoom
+    const gx=Math.round(W/2 - (z>=3 ? (hub.x-D.pivot.x)*z : 0));
+    const gy=Math.round(H*0.58 - (z>=3 ? (hub.y-D.pivot.y)*z : 0));
+    ctx.save(); ctx.globalAlpha=0.30; ctx.fillStyle='#050c10';
+    ctx.beginPath(); ctx.ellipse(gx,gy+3,26*z,8*z,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    ctx.drawImage(hull, Math.round(gx-D.pivot.x*z), Math.round(gy-D.pivot.y*z), D.W*z, D.H*z);
+    if(st.layer){
+      const wc=this._wheelCell(st.dir, rf, this.state.deg);
+      if(wc) ctx.drawImage(wc, Math.round(gx-D.pivot.x*z), Math.round(gy-D.pivot.y*z), D.W*z, D.H*z);
+    }
+    if(z>=3){
+      const hx=Math.round(W/2), hy=Math.round(H*0.58);
+      ctx.strokeStyle='rgba(127,214,201,0.35)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.arc(hx,hy,10*z*0.5,0,Math.PI*2); ctx.stroke();
+    }
+  }
+
+  _drawStrip(){
+    const ctx=this._stctx, D=this._D(); if(!ctx||!D) return;
+    const cw=48, ch=42, gap=8, rows=[-1,0,1];
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,this._st.width,this._st.height);
+    ctx.font='10px ui-monospace,monospace';
+    for(let r=0;r<rows.length;r++){
+      const steer=rows[r], deg=steer*this.state.turns*360;
+      for(let d=0;d<8;d++){
+        const x=42+d*(cw*2+gap*3), y=8+r*(ch*2+30);
+        const px=Math.round(x), py=Math.round(y);
+        for(let yy=0;yy<ch;yy+=6) for(let xx=0;xx<cw;xx+=6){
+          ctx.fillStyle=(((xx/6|0)+(yy/6|0))&1)?'#16232b':'#111d23';
+          ctx.fillRect(px+xx*2, py+yy*2, 12, 12);
+        }
+        const hull=this._hullCell(d,-1);
+        const wc=this._wheelCell(d,-1,deg);
+        const hub=D.wheelHub(d,40);
+        const sx=Math.round(hub.x-cw/2), sy=Math.round(hub.y-ch/2);
+        if(hull) ctx.drawImage(hull, sx,sy,cw,ch, px,py, cw*2,ch*2);
+        if(wc)   ctx.drawImage(wc,   sx,sy,cw,ch, px,py, cw*2,ch*2);
+        if(d===this.state.dir){ ctx.strokeStyle='rgba(127,214,201,0.6)'; ctx.lineWidth=1; ctx.strokeRect(px+0.5,py+0.5,cw*2-1,ch*2-1); }
+        if(r===rows.length-1){ ctx.fillStyle=d===this.state.dir?'#cfeee8':'#6f7e83'; ctx.textAlign='center';
+          ctx.fillText(this.ORDER[d], px+cw, py+ch*2+15); }
+      }
+      ctx.textAlign='left'; ctx.fillStyle='#6f7e83';
+      ctx.fillText(steer<0?'PORT':steer>0?'STBD':'MIDS', 4, 8+r*(ch*2+30)+ch+2);
+    }
+  }
+
+  _set(k,v){ this.setState({[k]:v}, ()=>{ this._save(); this._drawStrip(); }); }
+  _hard(sign){ const R=this._R(); if(!R) return; this._vel=0; this.setState({deg:sign*R.lockDeg(this.state.turns)}, this._save); }
+  _dl(cv,name){ cv.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }); }
+  _downloadSheet(){ const R=this._R(); if(!R) return; this._dl(R.sheet(9,{turns:this.state.turns, rim:this.state.rim}), 'WheelGrab_'+this.state.rim+'.png'); }
+  _downloadLayer(){
+    const D=this._D(); if(!D) return;
+    const N=5, cv=document.createElement('canvas'); cv.width=D.W*N; cv.height=D.H*8;
+    const c=cv.getContext('2d');
+    for(let d=0;d<8;d++) for(let i=0;i<N;i++){
+      const steer=-1+2*i/(N-1);
+      c.putImageData(new ImageData(D.renderWheel(d,{elev:40, steer, turns:this.state.turns}), D.W, D.H), i*D.W, d*D.H);
+    }
+    this._dl(cv,'ConsoleIsoWheel_layer.png');
+  }
+
+  renderVals(){
+    const st=this.state, R=this._R(), D=this._D();
+    const lock=R?R.lockDeg(st.turns):540;
+    const steer=R?R.steerFromDeg(st.deg,st.turns):0;
+    const rud=R?R.rudderDeg(steer):0;
+    const on={fg:'#0b1216',bg:'#7fd6c9',bd:'#7fd6c9'}, off={fg:'#aeb9bb',bg:'#141f25',bd:'#2f444c'};
+    const border='1px solid #243137';
+    const atLock=Math.abs(Math.abs(st.deg)-lock)<0.5, spinning=Math.abs(this._vel)>1;
+    const side = rud<-0.5?('PORT '+Math.abs(Math.round(rud))+'\u00b0') : rud>0.5?('STBD '+Math.round(rud)+'\u00b0') : 'AMIDSHIPS';
+    return {
+      canvasRef:this.canvasRef, boatRef:this.boatRef, stripRef:this.stripRef,
+      steerLabel:side, steerFg: Math.abs(rud)<0.5?'#7f8c90':(atLock?'#e0b13a':'#7fd6c9'),
+      spinLabel: atLock?'hard over':(spinning?'coasting '+Math.abs(Math.round(this._vel))+'\u00b0/s':'held'),
+      spinFg: atLock?'#e0b13a':(spinning?'#7fd6c9':'#5f6e73'),
+      turnLabel:(st.deg/360).toFixed(2)+' / '+st.turns.toFixed(2)+' turns',
+      barLeft:(50+Math.min(0,steer)*50).toFixed(2)+'%', barWidth:(Math.abs(steer)*50).toFixed(2)+'%',
+      headingLabel:this.ORDER[st.dir]+'  \u00b7  '+Math.round(this._hdg)+'\u00b0',
+      layerLabel: st.layer ? ('wheel layer \u00b7 '+Math.round(((st.deg%360)+360)%360)+'\u00b0 spoke') : 'layer off \u00b7 hub stub only',
+      actions:[
+        Object.assign({label:'\u25c0 HARD A-PORT', onClick:()=>this._hard(-1)}, off),
+        Object.assign({label:'CENTRE', onClick:()=>{ this._vel=0; this.setState({deg:0}, this._save); }}, Math.abs(st.deg)<0.5?on:off),
+        Object.assign({label:'HARD A-STBD \u25b6', onClick:()=>this._hard(1)}, off),
+      ],
+      chips:this.ORDER.map((name,d)=>Object.assign({label:name, onClick:()=>{ this._hdg=d*45; this.setState({dir:d}, ()=>{ this._save(); this._drawStrip(); }); }}, d===st.dir?on:off)),
+      viewToggles:[
+        Object.assign({label:st.rock?'\u25a0 ROCK':'\u223f ROCK', onClick:()=>this._set('rock',!st.rock)}, st.rock?on:off),
+        Object.assign({label:'WHEEL LAYER', onClick:()=>this._set('layer',!st.layer)}, st.layer?on:off),
+      ],
+      sliders:[
+        {label:'LOCK', read:st.turns.toFixed(2)+' turns', min:0.5, max:4, step:0.25, value:st.turns,
+         onInput:(e)=>{ const v=+e.target.value, l=(R?R.lockDeg(v):540);
+           this.setState({turns:v, deg:Math.max(-l,Math.min(l,st.deg))}, ()=>{ this._save(); this._drawStrip(); }); }},
+        {label:'FRICTION', read:st.friction.toFixed(1), min:0.4, max:6, step:0.2, value:st.friction, onInput:(e)=>this._set('friction',+e.target.value)},
+        {label:'SPRING', read:st.selfCentre>0?st.selfCentre.toFixed(1):'off', min:0, max:8, step:0.4, value:st.selfCentre, onInput:(e)=>this._set('selfCentre',+e.target.value)},
+      ],
+      readout:[
+        {k:'WHEEL',   v:(st.deg>0?'+':'')+Math.round(st.deg)+'\u00b0  \u00b7  '+(st.deg/360).toFixed(2)+' turns', fg:'#c4cdcd', border:'none'},
+        {k:'STEER',   v:(steer>0?'+':'')+steer.toFixed(3)+'  \u00b7  the number the game reads', fg:'#8fe6d8', border},
+        {k:'OUTBOARD',v:side, fg:atLock?'#e0b13a':'#c4cdcd', border},
+        {k:'STATE',   v:atLock?'hard over \u00b7 against the stop':(spinning?'coasting':'held \u00b7 cable helm'), fg:spinning?'#7fd6c9':'#c4cdcd', border},
+        {k:'KNOBS',   v:this._clicks+' passed centre \u00b7 tick per handle', fg:'#c4cdcd', border},
+        {k:'RETURN',  v:st.selfCentre>0?('spring '+st.selfCentre.toFixed(1)+' \u00b7 arcade'):'none \u00b7 holds where you leave it', fg:'#c4cdcd', border},
+        {k:'HEADING', v:this.ORDER[st.dir]+' \u00b7 '+Math.round(this._hdg)+'\u00b0'+(st.throttle<0.03?' \u00b7 no way on':''), fg:'#c4cdcd', border},
+      ],
+      rims: R ? R.rimIds.map(id=>{
+        const m=R.RIMS[id], a=id===st.rim;
+        return { name:m.name, note:m.note, c0:m.rim[1], c1:m.rim[3], c2:R.GOLD[2], onClick:()=>this._set('rim',id),
+                 fg:a?'#0b1216':'#c4cdcd', bg:a?'#7fd6c9':'#0f191e', bd:a?'#7fd6c9':'#243137' };
+      }) : [],
+      meta:[
+        {k:'ISO LAYER', v:D?(D.W+' \u00d7 '+D.H+' \u00b7 hull cell + hull pivot'):'', border:'none'},
+        {k:'WHEEL',   v:D?(Math.round(D.WHEEL_GEO.rad*2*100)+' cm \u00b7 ~'+Math.round(D.WHEEL_GEO.rad*2*32)+' px \u00b7 rake '+D.WHEEL_GEO.rake+'\u00b0'):'', border},
+        {k:'MOUNT',   v:'ConsoleIso.wheelHub(dir, rock) on the console face', border},
+        {k:'ROCK',    v:'shares the hull\u2019s rock(i) \u00b7 8-frame loop', border},
+        {k:'GRAB CELL',v:R?(R.W+' \u00d7 '+R.H+' \u00b7 hub pivot ('+R.pivot.x+', '+R.pivot.y+')'):'', border},
+        {k:'HANDLES', v:(R?R.KNOBS:8)+' turned knobs \u00b7 gold king spoke both scales', border},
+        {k:'LOCK',    v:st.turns.toFixed(2)+' turns each way \u00b7 '+Math.round(lock)+'\u00b0', border},
+        {k:'OUTPUT',  v:'steer \u22121\u20261 \u00b7 outboard \u00b1'+(R?R.maxRudder:32)+'\u00b0', border},
+        {k:'DASH',    v:'full helm panel: Console Helm sheet', border},
+        {k:'SOURCE',  v:'wheelRig.js + consoleIsoRig.js', border},
+      ],
+      stripNote: D?('crop 48\u00d742 px on the hub, 2\u00d7 \u00b7 lock '+st.turns.toFixed(2)+' turns'):'',
+      zoom:st.zoom, onZoom:(e)=>this._set('zoom',+e.target.value),
+      throttle:st.throttle, throttleRead: st.throttle<0.03?'idle':(Math.round(st.throttle*100)+'%'),
+      onThrottle:(e)=>this._set('throttle',+e.target.value),
+      downloadSheet:()=>this._downloadSheet(), downloadLayer:()=>this._downloadLayer(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

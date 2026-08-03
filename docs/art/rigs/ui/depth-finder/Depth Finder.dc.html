@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/depthRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:900px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Depth Sounder</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;DASH&nbsp;INSTRUMENT&nbsp;&middot;&nbsp;DIEGETIC&nbsp;DEPTH&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:420px;text-align:right;line-height:1.45;">One small flush-mount sounder that fits both centre-console dashes. Reads depth off the transducer, flags shallow water, and lights amber for night running &mdash; every digit drawn from a parameter.</div>
+  </div>
+
+  <div style="width:100%;max-width:900px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="480" height="330" style="cursor:pointer;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ depthFg }};">{{ depthTag }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ modeFg }};">{{ modeTag }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">tap the glass for night mode &middot; SET switches metres/feet &middot; the two ALARM keys set the shallow depth</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:480px;line-height:1.6;">Procedural 7-segment LCD &mdash; no bakes. Day is a positive grey-green panel; <span style="color:#e6b53f;">night</span> lights the amber backlight. Drop the depth below the <span style="color:#e0554a;">shallow set-point</span> and the reading flashes SHALLOW. The same rig flush-mounts on the <a href="Console Helm.dc.html">console</a> and <a href="Sport Skiff Helm.dc.html">sport</a> dashes.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:300px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">In-world UI is only real things that carry it. Depth isn&rsquo;t a floating HUD number &mdash; it lives on the glass of a sounder screwed to the dash, so both console boats earn one when they fit it. Brand wordmark is original.</div>
+      </div>
+
+      <!-- display mode -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Display</div></div>
+          <div style="font-size:11px;color:{{ modeFg }};letter-spacing:0.08em;">{{ modeTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ dayBd }};background:{{ dayBg }};color:{{ dayFg }};">DAY</div>
+          <div onClick="{{ setNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">&#9788;&nbsp;NIGHT</div>
+        </div>
+      </div>
+
+      <!-- depth -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Depth</div></div>
+          <div style="font-size:11px;color:{{ depthFg }};letter-spacing:0.08em;">{{ depthVal }}</div>
+        </div>
+        <input type="range" min="0.5" max="60" step="0.1" value="{{ depthM }}" onInput="{{ onDepth }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>SHOAL</span><span>DEEP</span></div>
+      </div>
+
+      <!-- units -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#5b93b8;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Units</div></div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setMetres }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ mBd }};background:{{ mBg }};color:{{ mFg }};">METRES</div>
+          <div onClick="{{ setFeet }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ ftBd }};background:{{ ftBg }};color:{{ ftFg }};">FEET</div>
+        </div>
+      </div>
+
+      <!-- shallow alarm -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Shallow Alarm</div></div>
+          <div onClick="{{ toggleArm }}" style="cursor:pointer;font-size:10px;letter-spacing:0.1em;padding:3px 8px;border:1px solid {{ armBd }};color:{{ armFg }};">{{ armLabel }}</div>
+        </div>
+        <input type="range" min="0.5" max="12" step="0.1" value="{{ alarmM }}" onInput="{{ onAlarm }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>SET&nbsp;{{ alarmVal }}</span><span style="color:{{ shoalFg }};">{{ shoalLabel }}</span></div>
+      </div>
+
+      <!-- water temp -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Water Temp</div></div>
+          <div style="font-size:11px;color:#c9a86a;letter-spacing:0.08em;">{{ tempVal }}</div>
+        </div>
+        <input type="range" min="0" max="30" step="0.1" value="{{ tempC }}" onInput="{{ onTemp }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>0&deg;C</span><span>30&deg;C</span></div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="5">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; DAY/NIGHT &times; DEEP/SET/SHOAL</div>
+        <a href="Art/depthRig.js" download="depthRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; depthRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 900, &quot;height&quot;: 560 },
+  &quot;depthM&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 26.2, &quot;min&quot;: 0.5, &quot;max&quot;: 60, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; m&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Sounder&quot; },
+  &quot;ft&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sounder&quot; },
+  &quot;night&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sounder&quot; },
+  &quot;tempC&quot;:  { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 14.2, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; \u00b0C&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Sounder&quot; },
+  &quot;armed&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Alarm&quot; },
+  &quot;alarmM&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 3.0, &quot;min&quot;: 0.5, &quot;max&quot;: 12, &quot;step&quot;: 0.1, &quot;unit&quot;: &quot; m&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Alarm&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s = this._load();
+    this.state = {
+      depthM: s.depthM ?? (props.depthM ?? 26.2),
+      ft:     s.ft     ?? (props.ft     ?? false),
+      night:  s.night  ?? (props.night  ?? false),
+      armed:  s.armed  ?? (props.armed  ?? true),
+      alarmM: s.alarmM ?? (props.alarmM ?? 3.0),
+      tempC:  s.tempC  ?? (props.tempC  ?? 14.2),
+    };
+    // standalone draw box (must match DepthRig.paint)
+    this._box = { X:Math.round(480*0.06), Y:Math.round(330*0.11), WW:480-2*Math.round(480*0.06), HH:Math.round(330*0.78) };
+    this._blink = 0; this._blinkAcc = 0; this._dirty = true;
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.depthSounder')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.depthSounder', JSON.stringify(this.state)); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['depthM','ft','night','armed','alarmM','tempC'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._dirty=true; this._draw();
+  }
+
+  _triggered(){ return this.state.armed && this.state.depthM <= this.state.alarmM; }
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t;
+    if(this._triggered()){ this._blinkAcc+=dt; if(this._blinkAcc>=380){ this._blinkAcc=0; this._blink^=1; this._dirty=true; } }
+    else if(this._blink){ this._blink=0; this._dirty=true; }
+    this._draw(); }
+
+  _draw(){
+    const R=window.DepthRig, ctx=this._ctx, cv=this._cv; if(!R || !ctx || !cv) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    const st=this.state;
+    ctx.drawImage(R.render({ depth:st.depthM, ft:st.ft, night:st.night, armed:st.armed, alarm:st.alarmM, tempC:st.tempC, blink:this._blink }), 0, 0);
+  }
+
+  _bindPointer(n){
+    const R=window.DepthRig;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    const inBox=(p,b)=> p.x>=b.x && p.x<=b.x+b.w && p.y>=b.y && p.y<=b.y+b.h;
+    n.addEventListener('pointerdown',(e)=>{
+      if(!R) return; const p=local(e); const bx=this._box; const L=R.layout(bx.X,bx.Y,bx.WW,bx.HH);
+      if(inBox(p,L.buttons[0])){ this.setState(s=>({ft:!s.ft}), this._save); this._dirty=true; return; }
+      if(inBox(p,L.buttons[1])){ this.setState(s=>({alarmM:Math.min(12,+(s.alarmM+0.5).toFixed(1)), armed:true}), this._save); this._dirty=true; return; }
+      if(inBox(p,L.buttons[2])){ this.setState(s=>({alarmM:Math.max(0.5,+(s.alarmM-0.5).toFixed(1)), armed:true}), this._save); this._dirty=true; return; }
+      if(inBox(p,L.lcd)){ this.setState(s=>({night:!s.night}), this._save); this._dirty=true; return; }
+    });
+  }
+
+  _downloadStates(){
+    const R=window.DepthRig; if(!R) return; const st=this.state;
+    const depths=[Math.max(st.alarmM+8, 18), st.alarmM, Math.max(0.5, st.alarmM*0.6)];  // deep / at-set / shoal
+    const cvs=document.createElement('canvas'); cvs.width=R.W*3; cvs.height=R.H*2;
+    const g=cvs.getContext('2d'); g.imageSmoothingEnabled=false;
+    for(let row=0;row<2;row++) for(let c=0;c<3;c++){
+      g.drawImage(R.render({ depth:depths[c], ft:st.ft, night:row===1, armed:st.armed, alarm:st.alarmM, tempC:st.tempC, blink:1 }), c*R.W, row*R.H);
+    }
+    cvs.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download='DepthSounder_States.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+
+  renderVals(){
+    const st=this.state, R=window.DepthRig;
+    const fmtD=(m)=> R ? (R.fmtDepth(m, st.ft)+(st.ft?' ft':' m')) : m.toFixed(1);
+    const fmtS=(m)=> R ? (R.fmtSet(m, st.ft)+(st.ft?' ft':' m')) : m.toFixed(1);
+    const trig = this._triggered();
+    const border='1px solid #243137';
+    const segOn='#0f2a24', segOnF='#8fe6d8', off='#101519', offF='#6c5350';
+    return {
+      canvasRef:this.canvasRef,
+      depthM:st.depthM, alarmM:st.alarmM, tempC:st.tempC,
+      onDepth:(e)=>this.setState({depthM:+e.target.value}, this._save),
+      onAlarm:(e)=>this.setState({alarmM:+e.target.value}, this._save),
+      onTemp:(e)=>this.setState({tempC:+e.target.value}, this._save),
+      setDay:()=>this.setState({night:false}, this._save),
+      setNight:()=>this.setState({night:true}, this._save),
+      setMetres:()=>this.setState({ft:false}, this._save),
+      setFeet:()=>this.setState({ft:true}, this._save),
+      toggleArm:()=>this.setState(s=>({armed:!s.armed}), this._save),
+
+      depthTag: 'DEPTH '+fmtD(st.depthM), depthVal: fmtD(st.depthM),
+      depthFg: trig ? '#e0554a' : '#7fd6c9',
+      modeTag: st.night ? '\u25cf NIGHT \u00b7 AMBER' : '\u25cb DAY', modeFg: st.night ? '#e6b53f' : '#8a969b',
+
+      dayBd: !st.night?'#2f6079':'#243137', dayBg: !st.night?'#0f2730':off, dayFg: !st.night?'#cfd9d6':offF,
+      nightBd: st.night?'#7a5a1c':'#243137', nightBg: st.night?'#2a2008':off, nightFg: st.night?'#e6b53f':offF,
+
+      mBd: !st.ft?'#2f6079':'#243137', mBg: !st.ft?'#0f2730':off, mFg: !st.ft?'#8fe6d8':offF,
+      ftBd: st.ft?'#2f6079':'#243137', ftBg: st.ft?'#0f2730':off, ftFg: st.ft?'#8fe6d8':offF,
+
+      alarmVal: fmtS(st.alarmM),
+      armLabel: st.armed?'ARMED':'OFF', armBd: st.armed?'#7c3a30':'#243137', armFg: st.armed?'#e0776b':'#6c5350',
+      shoalLabel: trig ? 'SHALLOW' : (st.armed?'clear':'disarmed'), shoalFg: trig ? '#e0554a' : '#5f6e73',
+
+      tempVal: st.tempC.toFixed(1)+'\u00b0C',
+
+      readout:[
+        {k:'DEPTH', v: fmtD(st.depthM), fg: trig?'#e0554a':'#c4cdcd', border:'none'},
+        {k:'UNITS', v: st.ft?'feet':'metres', fg:'#c4cdcd', border},
+        {k:'ALARM', v: st.armed ? ('set '+fmtS(st.alarmM)+(trig?'  \u00b7  SHALLOW':'  \u00b7  clear')) : 'off', fg: trig?'#e0554a':(st.armed?'#c4cdcd':'#8a969b'), border},
+        {k:'TEMP',  v: st.tempC.toFixed(1)+'\u00b0C', fg:'#c4cdcd', border},
+        {k:'LIGHT', v: st.night?'amber backlight':'day (grey-green)', fg: st.night?'#e6b53f':'#c4cdcd', border},
+      ],
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

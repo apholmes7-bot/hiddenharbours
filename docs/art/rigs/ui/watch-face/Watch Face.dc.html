@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/watchRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:960px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Watch Face</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;START&nbsp;TIME&nbsp;&amp;&nbsp;DATE&nbsp;&middot;&nbsp;DIEGETIC&nbsp;CLOCK&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:410px;text-align:right;line-height:1.45;">A resin digital watch &mdash; the one screen the world hands you at the start. Every digit is drawn from the clock, so one rig covers every hour, day and season.</div>
+  </div>
+
+  <div style="width:100%;max-width:960px;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="470" height="496" style="cursor:pointer;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ phaseFg }};">{{ phaseLabel }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">{{ clockLabel }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;">tap LIGHT for the backlight &middot; tap MODE for 12/24h</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:400px;line-height:1.6;">Procedural 7-segment LCD &mdash; no bakes. Day is a positive grey-green panel; <span style="color:#66d585;">night</span> lights the traditional green backlight. Weekday and market day derive from the absolute day, exactly like <span style="color:#9fb0b4;">GameClock</span>.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:15px;width:330px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">In-world UI is only real things that have it. A watch does &mdash; so time &amp; date live on its glass, not on a floating HUD. Brand wordmark is original, not the reference's.</div>
+      </div>
+
+      <!-- day / night -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#66d585;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Display</div></div>
+          <div style="font-size:11px;color:{{ phaseFg }};letter-spacing:0.08em;">{{ phaseLabel }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ phaseOpts }}" as="p" hint-placeholder-count="3">
+            <div onClick="{{ p.set }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.12em;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+        <div onClick="{{ pressLight }}" style="cursor:pointer;user-select:none;text-align:center;padding:10px 0;font-size:11px;letter-spacing:0.16em;border:1px solid #2f5f3a;background:{{ lightBg }};color:{{ lightFg }};">&#9788;&nbsp;&nbsp;LIGHT&nbsp;&mdash;&nbsp;BACKLIGHT</div>
+      </div>
+
+      <!-- time -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Time</div></div>
+          <div style="display:flex;gap:6px;">
+            <span onClick="{{ toggle24 }}" style="cursor:pointer;font-size:10px;letter-spacing:0.1em;padding:3px 8px;border:1px solid #2f6079;color:{{ fmtFg }};">{{ fmtLabel }}</span>
+            <span onClick="{{ toggleRun }}" style="cursor:pointer;font-size:10px;letter-spacing:0.1em;padding:3px 8px;border:1px solid #2f6079;color:{{ runFg }};">{{ runLabel }}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:26px;">HOUR</span><input type="range" min="0" max="23" step="1" value="{{ hour }}" onInput="{{ onHour }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:22px;text-align:right;">{{ hourStr }}</span></div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:26px;">MIN</span><input type="range" min="0" max="59" step="1" value="{{ minute }}" onInput="{{ onMin }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:22px;text-align:right;">{{ minStr }}</span></div>
+      </div>
+
+      <!-- date -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Date</div></div>
+          <div style="font-size:11px;color:#d7c07a;letter-spacing:0.08em;">{{ dowFull }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ seasonOpts }}" as="s" hint-placeholder-count="4">
+            <div onClick="{{ s.set }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.06em;border:1px solid {{ s.bd }};background:{{ s.bg }};color:{{ s.fg }};">{{ s.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:26px;">DAY</span><input type="range" min="1" max="28" step="1" value="{{ day }}" onInput="{{ onDay }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:52px;text-align:right;">{{ day }} / 28</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:9px;color:#5f6e73;letter-spacing:0.1em;">YEAR</span>
+          <div style="display:flex;align-items:center;gap:2px;">
+            <span onClick="{{ yearDown }}" style="cursor:pointer;padding:2px 10px;border:1px solid #243137;color:#9fb0b4;">&minus;</span>
+            <span style="padding:2px 12px;color:#c4cdcd;">Y{{ year }}</span>
+            <span onClick="{{ yearUp }}" style="cursor:pointer;padding:2px 10px;border:1px solid #243137;color:#9fb0b4;">+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="5">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:9px;color:#586970;letter-spacing:0.04em;line-height:1.65;border-left:2px solid #243137;padding-left:9px;">CANON &middot; 4 seasons &times; 28 days = 112-day year &middot; week MO&ndash;SU, market day tunable &middot; night = hour&nbsp;&lt;&nbsp;6 or &ge;&nbsp;19 &middot; SecondsPerDay 1200 (1 day = 20 real min) &middot; binds to IGameClock.</div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadFace }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; THIS FACE &middot; PNG</div>
+        <a href="Art/watchRig.js" download="watchRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; watchRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 960, &quot;height&quot;: 660 },
+  &quot;hour&quot;:      { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 6, &quot;min&quot;: 0, &quot;max&quot;: 23, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;minute&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 59, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;use24&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;season&quot;:    { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Early Spring&quot;, &quot;options&quot;: [&quot;Early Spring&quot;, &quot;High Summer&quot;, &quot;The Turn&quot;, &quot;Hard Winter&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;day&quot;:       { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 1, &quot;max&quot;: 28, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;year&quot;:      { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 1, &quot;min&quot;: 1, &quot;max&quot;: 99, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;nightMode&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Auto&quot;, &quot;options&quot;: [&quot;Auto&quot;, &quot;Day&quot;, &quot;Night&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Clock&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const R=window.WatchRig, FULL=(R&&R.SEASON_FULL)||['Early Spring','High Summer','The Turn','Hard Winter'];
+    this.FULL=FULL;
+    const s=this._load();
+    const seasonIdx = s.seasonIdx ?? this._seasonToIdx(props.season) ?? 0;
+    this.state={
+      year:    s.year   ?? (props.year   ?? 1),
+      seasonIdx,
+      day:     s.day    ?? (props.day    ?? 1),
+      hour:    s.hour   ?? (props.hour   ?? 6),
+      minute:  s.minute ?? (props.minute ?? 0),
+      second:  s.second ?? 0,
+      use24:   s.use24  ?? (props.use24  ?? false),
+      nightMode: s.nightMode ?? (this._normMode(props.nightMode) || 'auto'),
+      marketDay: s.marketDay ?? 5,   // Saturday (tunable in GameConfig)
+      running: false,
+    };
+    this._light=false; this._lightT=null;
+    this._sprite=null; this._key='';
+    this.OX=34; this.OY=38; this.SC=1.18;
+    this.canvasRef=(n)=>{ if(!n||n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); };
+  }
+  _seasonToIdx(name){ if(name==null) return null; const i=this.FULL.indexOf(name); return i<0?null:i; }
+  _normMode(m){ if(!m) return null; m=(''+m).toLowerCase(); return ['auto','day','night'].includes(m)?m:null; }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.watch')||'{}'); }catch(e){ return {}; } }
+  _save(){ const S=this.state; try{ localStorage.setItem('hh.watch', JSON.stringify({year:S.year,seasonIdx:S.seasonIdx,day:S.day,hour:S.hour,minute:S.minute,second:S.second,use24:S.use24,nightMode:S.nightMode,marketDay:S.marketDay})); }catch(e){} }
+
+  componentDidUpdate(prev){
+    const s={};
+    if(prev.year!==this.props.year && this.props.year!=null) s.year=this.props.year;
+    if(prev.day!==this.props.day && this.props.day!=null) s.day=this.props.day;
+    if(prev.hour!==this.props.hour && this.props.hour!=null) s.hour=this.props.hour;
+    if(prev.minute!==this.props.minute && this.props.minute!=null) s.minute=this.props.minute;
+    if(prev.use24!==this.props.use24 && this.props.use24!=null) s.use24=this.props.use24;
+    if(prev.season!==this.props.season){ const i=this._seasonToIdx(this.props.season); if(i!=null) s.seasonIdx=i; }
+    if(prev.nightMode!==this.props.nightMode){ const m=this._normMode(this.props.nightMode); if(m) s.nightMode=m; }
+    if(Object.keys(s).length) this.setState(s, this._save);
+    this._draw();
+  }
+  componentWillUnmount(){ if(this._iv) clearInterval(this._iv); if(this._lightT) clearTimeout(this._lightT); }
+
+  _dayIndex(S){ S=S||this.state; return (S.year-1)*112 + S.seasonIdx*28 + (S.day-1); }
+  _derived(){
+    const S=this.state, R=window.WatchRig, di=this._dayIndex();
+    const wd=((di%7)+7)%7, market=wd===S.marketDay, hf=S.hour+S.minute/60;
+    const night = S.nightMode==='night' ? true : S.nightMode==='day' ? false : (R?R.isNight(hf):(hf<6||hf>=19));
+    return {di, wd, market, hf, night};
+  }
+
+  _params(){
+    const S=this.state, R=window.WatchRig, d=this._derived();
+    return { h:S.hour, m:S.minute, s:S.second, use24:S.use24,
+      dow:R.WEEKDAYS[d.wd], date:S.day, season:R.SEASON_ABBR[S.seasonIdx], year:S.year,
+      market:d.market, night:d.night, light:this._light };
+  }
+  _sprc(){
+    const R=window.WatchRig; if(!R) return null; const p=this._params();
+    const key=[p.h,p.m,p.s,p.use24,p.dow,p.date,p.season,p.year,p.market,p.night,p.light].join('|');
+    if(this._key!==key || !this._sprite){ this._sprite=R.render(p); this._key=key; }
+    return this._sprite;
+  }
+
+  _draw(){
+    const R=window.WatchRig, ctx=this._ctx, cv=this._cv; if(!R||!ctx||!cv) return;
+    const Wd=cv.width, Hd=cv.height; ctx.imageSmoothingEnabled=false;
+    const g=ctx.createRadialGradient(Wd/2,Hd*0.42,40,Wd/2,Hd*0.42,Wd*0.75);
+    g.addColorStop(0,'#12202a'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,Wd,Hd);
+    // contact shadow
+    ctx.save(); ctx.globalAlpha=0.38; ctx.fillStyle='#04080b';
+    ctx.beginPath(); ctx.ellipse(Wd/2, this.OY+R.H*this.SC-16, 162, 27, 0, 0, 7); ctx.fill(); ctx.restore();
+    const sp=this._sprc(); if(sp){ ctx.imageSmoothingEnabled=false; ctx.drawImage(sp, this.OX, this.OY, R.W*this.SC, R.H*this.SC); }
+  }
+
+  _bindPointer(n){
+    const R=window.WatchRig;
+    let down=false, hit=null, sx=0, sy=0;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    const pick=(p)=>{ if(!R) return null; const lx=(p.x-this.OX)/this.SC, ly=(p.y-this.OY)/this.SC;
+      const inb=(b)=>b&&lx>=b.x&&lx<=b.x+b.w&&ly>=b.y&&ly<=b.y+b.h;
+      if(inb(R.hit.light)) return 'light'; if(inb(R.hit.mode)) return 'mode'; return null; };
+    n.addEventListener('pointerdown',(e)=>{ down=true; const p=local(e); sx=p.x; sy=p.y; hit=pick(p); });
+    const end=(e)=>{ if(!down) return; down=false; const p=local(e); if(Math.hypot(p.x-sx,p.y-sy)>6){ hit=null; return; }
+      if(hit==='light') this._pressLight(); else if(hit==='mode') this.setState(s=>({use24:!s.use24}), this._save); hit=null; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',()=>{down=false;hit=null;});
+  }
+
+  _pressLight(){ this._light=true; this._draw(); if(this._lightT) clearTimeout(this._lightT);
+    this._lightT=setTimeout(()=>{ this._light=false; this._draw(); }, 3500); }
+  _toggleRun(){ const run=!this.state.running; this.setState({running:run});
+    if(this._iv){ clearInterval(this._iv); this._iv=null; }
+    if(run){ this._iv=setInterval(()=>this._tick(), 1000); } }
+  _tick(){ this.setState(s=>{ let {second,minute,hour,day,seasonIdx,year}=s; second++;
+    if(second>=60){second=0;minute++;} if(minute>=60){minute=0;hour++;}
+    if(hour>=24){hour=0;day++;} if(day>28){day=1;seasonIdx++;} if(seasonIdx>3){seasonIdx=0;year++;}
+    return {second,minute,hour,day,seasonIdx,year}; }, this._save); }
+
+  _set(patch){ this.setState(patch, this._save); }
+  _downloadFace(){ const R=window.WatchRig; if(!R) return; const c=R.render(this._params());
+    c.toBlob((b)=>{ if(!b) return; const u=URL.createObjectURL(b), a=document.createElement('a');
+      a.href=u; a.download='WatchFace.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),2000); }); }
+
+  renderVals(){
+    const S=this.state, R=window.WatchRig, d=this._derived();
+    const WD_FULL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const border='1px solid #243137';
+    const h12=(()=>{ let x=S.hour%12; if(x===0)x=12; return x; })();
+    const phase = d.night?'night':'day', litNow = d.night||this._light;
+    const mode=(k,label)=>({ label, set:()=>this._set({nightMode:k}),
+      bd: S.nightMode===k?'#3f6f49':'#243137', bg: S.nightMode===k?'#12241a':'#0f191e', fg: S.nightMode===k?'#8fe0a0':'#8a969b' });
+    return {
+      canvasRef:this.canvasRef,
+      hour:S.hour, minute:S.minute, day:S.day, year:S.year,
+      hourStr:R.pad2(S.hour), minStr:R.pad2(S.minute),
+      onHour:(e)=>this._set({hour:+e.target.value}), onMin:(e)=>this._set({minute:+e.target.value}), onDay:(e)=>this._set({day:+e.target.value}),
+      yearUp:()=>this._set({year:S.year+1}), yearDown:()=>this._set({year:Math.max(1,S.year-1)}),
+      toggle24:()=>this._set({use24:!S.use24}), fmtLabel:S.use24?'24H':'12H', fmtFg:'#9fd0dd',
+      toggleRun:()=>this._toggleRun(), runLabel:S.running?'\u25a0 STOP':'\u25b6 RUN', runFg:S.running?'#e0776b':'#8fe0a0',
+      pressLight:()=>this._pressLight(), lightBg: litNow?'#123322':'#0f191e', lightFg: litNow?'#8fe0a0':'#7f9686',
+      phaseLabel: phase==='night'?'\u263e NIGHT \u00b7 BACKLIT':'\u2600 DAY', phaseFg: phase==='night'?'#8fe0a0':'#d7c07a',
+      clockLabel:(S.use24?R.pad2(S.hour):h12)+':'+R.pad2(S.minute)+(S.use24?'':(S.hour<12?' AM':' PM')),
+      dowFull:WD_FULL[d.wd], dowFullFg:'#d7c07a',
+      phaseOpts:[mode('auto','AUTO'),mode('day','DAY'),mode('night','NIGHT')],
+      seasonOpts:this.FULL.map((name,i)=>({ label:name, set:()=>this._set({seasonIdx:i}),
+        bd: S.seasonIdx===i?'#6b5a24':'#243137', bg: S.seasonIdx===i?'#211b0e':'#0f191e', fg: S.seasonIdx===i?'#e6c96a':'#8a969b' })),
+      readout:[
+        {k:'SEASON',   v:this.FULL[S.seasonIdx], fg:'#c4cdcd', border:'none'},
+        {k:'WEEKDAY',  v:WD_FULL[d.wd]+(d.market?'  \u00b7  market day':''), fg: d.market?'#e6c96a':'#c4cdcd', border},
+        {k:'DAY INDEX',v:'#'+d.di+'  \u00b7  Y'+S.year, fg:'#c4cdcd', border},
+        {k:'HOUR',     v:d.hf.toFixed(2)+'  \u00b7  '+phase, fg:'#c4cdcd', border},
+        {k:'START',    v:'new game \u2192 EarlySpring D1 06:00', fg:'#8a969b', border},
+      ],
+      downloadFace:()=>this._downloadFace(),
+    };
+  }
+}
+</script>
+</body>
+</html>

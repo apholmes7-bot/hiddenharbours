@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/leverRig.js"></script>
+<script src="Art/depthRig.js"></script>
+<script src="Art/fishRig.js"></script>
+<script src="Art/compassRig.js"></script>
+<script src="Art/sportRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#cdd9db;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#cdd9db;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:940px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Sport Helm</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;SPORT&nbsp;CENTRE-CONSOLE&nbsp;&middot;&nbsp;CHROME&nbsp;&amp;&nbsp;WHITE-GAUGE&nbsp;RIG</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c3cdcb;max-width:420px;text-align:right;line-height:1.45;">The console skiff&rsquo;s polished sister &mdash; same dash, upgraded. A chrome destroyer wheel, white gauges under stainless bezels, one brushed binnacle lever for throttle &amp; shift. No radar, no plotter; just what the boat runs on.</div>
+  </div>
+
+  <div style="width:100%;max-width:940px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <!-- STAGE -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ canvasRef }}" width="600" height="510" style="cursor:grab;"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ runFg }};">{{ runLabel }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ steerFg }};">{{ steerLabel }}</div>
+        <div style="position:absolute;left:11px;bottom:10px;font-size:9px;letter-spacing:0.1em;color:#5f6e73;background:rgba(11,18,22,0.55);padding:3px 8px;">drag the wheel to steer &middot; swing the lever up for AHEAD, centre for NEUTRAL, down for ASTERN &middot; turn the key &middot; flip the switches &middot; tap the brow screen to swap depth/sonar</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;text-align:center;max-width:600px;line-height:1.6;">Same rig as the console helm, re-skinned in polished stainless. The <span style="color:#7fd6c9;">chrome wheel</span> turns 1:1 off the helm, the <span style="color:#c8d2cf;">white dials</span> sweep from RPM &amp; fuel state, and the single <span style="color:#66d585;">binnacle lever</span> swings on its arc &mdash; ahead is full speed forward, centre is neutral, aft is reverse. The switch panel carries the <span style="color:#7fd6c9;">deck</span> light, the <span style="color:#eef3ef;">spot</span>light and the ignition key.</div>
+    </div>
+
+    <!-- CONTROL HUD -->
+    <div style="display:flex;flex-direction:column;gap:16px;width:300px;">
+
+      <!-- diegetic rule -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#9fb0b6;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Diegetic only</div></div>
+        <div style="border:1px solid #243137;padding:11px 12px;font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:12.5px;color:#8a969b;line-height:1.55;">In-world UI is only real things that carry it. The sport skiff earns the same dash as the console boat &mdash; <span style="color:#a9b4b8;">gauges, wheel, lever, switches</span> &mdash; but every piece is polished stainless and the dials read white. No screens fitted.</div>
+      </div>
+
+      <!-- ignition -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Ignition Key</div></div>
+        <div onClick="{{ toggleRun }}" style="cursor:pointer;user-select:none;border:1px solid {{ runBd }};background:{{ runBg }};color:{{ runBtnFg }};padding:15px 16px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.12em;">
+          <span style="font-size:16px;">{{ runGlyph }}</span>
+          <span style="font-size:14px;">{{ runBtn }}</span>
+          <span style="font-size:10px;opacity:0.7;">{{ runHint }}</span>
+        </div>
+      </div>
+
+      <!-- drive: single throttle + shift lever -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Throttle &amp; Shift</div></div>
+          <div style="font-size:11px;color:{{ driveFg }};letter-spacing:0.08em;">{{ driveLabel }}</div>
+        </div>
+        <input type="range" min="-1" max="1" step="0.01" value="{{ drive }}" onInput="{{ onDrive }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>&#9660; ASTERN</span><span>NEUTRAL</span><span>AHEAD &#9650;</span></div>
+        <div style="display:flex;border:1px solid #243137;">
+          <div onClick="{{ ahead }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;background:{{ aheadBg }};color:{{ aheadFg }};">AHEAD</div>
+          <div onClick="{{ neutral }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;background:{{ neutBg }};color:{{ neutFg }};border-left:1px solid #243137;border-right:1px solid #243137;">N</div>
+          <div onClick="{{ astern }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;background:{{ astBg }};color:{{ astFg }};">ASTERN</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>RPM {{ rpmPct }}</span><span style="color:{{ redlineFg }};">{{ redlineLabel }}</span></div>
+      </div>
+
+      <!-- steer -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Wheel</div></div>
+          <div style="font-size:11px;color:{{ steerFg }};letter-spacing:0.08em;">{{ steerLabel }}</div>
+        </div>
+        <input type="range" min="-1" max="1" step="0.01" value="{{ steer }}" onInput="{{ onSteer }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>&#9664; PORT</span><span onClick="{{ centre }}" style="cursor:pointer;color:#7f8c90;">AMIDSHIPS</span><span>STBD &#9654;</span></div>
+      </div>
+
+      <!-- fuel -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Fuel</div></div>
+          <div style="font-size:11px;color:{{ fuelFg }};letter-spacing:0.08em;">{{ fuelLabel }}</div>
+        </div>
+        <input type="range" min="0" max="1" step="0.01" value="{{ fuel }}" onInput="{{ onFuel }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>E &middot; EMPTY</span><span>FULL &middot; F</span></div>
+      </div>
+
+      <!-- lights -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#eef3ef;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Lights</div></div>
+        <div onClick="{{ toggleDeck }}" style="cursor:pointer;user-select:none;border:1px solid {{ deckBd }};background:{{ deckBg }};color:{{ deckTxt }};padding:11px 13px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.1em;font-size:12px;">
+          <span>DECK LIGHT</span><span style="font-size:10px;">{{ deckState }}</span>
+        </div>
+        <div onClick="{{ toggleSpot }}" style="cursor:pointer;user-select:none;border:1px solid {{ spotBd }};background:{{ spotBg }};color:{{ spotTxt }};padding:11px 13px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.1em;font-size:12px;">
+          <span>SPOTLIGHT</span><span style="font-size:10px;">{{ spotState }}</span>
+        </div>
+        <div onClick="{{ toggleNight }}" style="cursor:pointer;user-select:none;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightTxt }};padding:11px 13px;display:flex;align-items:center;justify-content:space-between;letter-spacing:0.1em;font-size:12px;">
+          <span>&#9788;&nbsp;NIGHT PANEL</span><span style="font-size:10px;">{{ nightState }}</span>
+        </div>
+      </div>
+
+      <!-- brow instrument -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fbfe6;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Brow Instrument</div></div>
+          <div style="font-size:11px;color:{{ finderFg }};letter-spacing:0.08em;">{{ finderTag }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ setDepthFinder }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ dfBd }};background:{{ dfBg }};color:{{ dfFg }};">DEPTH</div>
+          <div onClick="{{ setFishFinder }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.1em;border:1px solid {{ ffBd }};background:{{ ffBg }};color:{{ ffFg }};">SONAR &middot; FISH</div>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;">swaps the flush-mount in the brow &mdash; or tap the screen on the dash</div>
+      </div>
+
+      <!-- compass -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0554a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Compass</div></div>
+          <div style="font-size:11px;color:{{ compHdgFg }};letter-spacing:0.08em;">{{ compHdgVal }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ compNone }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.08em;border:1px solid {{ noneChip.bd }};background:{{ noneChip.bg }};color:{{ noneChip.fg }};">OFF</div>
+          <div onClick="{{ compDome }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.08em;border:1px solid {{ domeChip.bd }};background:{{ domeChip.bg }};color:{{ domeChip.fg }};">&#9679;&nbsp;DOME</div>
+        </div>
+        <div style="font-size:9px;letter-spacing:0.06em;color:#5f6e73;line-height:1.5;">a bracket dome on the crown &mdash; additional to the sounder, which slides to port to make room. Night glow follows the panel.</div>
+        <input type="range" min="0" max="359" step="1" value="{{ heading }}" onInput="{{ onHeading }}" />
+        <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;"><span>000&deg; N</span><span onClick="{{ swingComp }}" style="cursor:pointer;color:{{ swingFg }};">{{ swingLabel }}</span><span>359&deg;</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+          <sc-for list="{{ compPoints }}" as="p" hint-placeholder-count="8">
+            <div onClick="{{ p.set }}" style="text-align:center;padding:7px 0;cursor:pointer;user-select:none;font-size:11px;letter-spacing:0.05em;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- readout -->
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="6">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:6px 11px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <!-- exports -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ downloadSteer }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STEER SET &middot; 5 FRAMES &middot; PORT&rarr;STBD</div>
+        <div onClick="{{ downloadStates }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; STATE SHEET &middot; STOP/RUN &times; AST/N/AHEAD</div>
+        <a href="Art/sportRig.js" download="sportRig.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; sportRig.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 940, &quot;height&quot;: 640 },
+  &quot;running&quot;:  { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Helm&quot; },
+  &quot;drive&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: -1, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Helm&quot; },
+  &quot;steer&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: -1, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Helm&quot; },
+  &quot;fuel&quot;:     { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.68, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Helm&quot; },
+  &quot;finder&quot;:   { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;depth&quot;,&quot;fish&quot;], &quot;default&quot;: &quot;depth&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Helm&quot; },
+  &quot;deck&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Lights&quot; },
+  &quot;spot&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Lights&quot; },
+  &quot;night&quot;:    { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Lights&quot; },
+  &quot;compass&quot;:  { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;none&quot;,&quot;dome&quot;], &quot;default&quot;: &quot;dome&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Compass&quot; },
+  &quot;heading&quot;:  { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 45, &quot;min&quot;: 0, &quot;max&quot;: 359, &quot;step&quot;: 1, &quot;unit&quot;: &quot;\u00b0&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Compass&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s = this._load();
+    const driveInit = s.drive ?? (s.throttle!=null ? (s.gear==='R'?-1:1)*s.throttle : (props.drive ?? 0));
+    this.state = {
+      steer:   s.steer   ?? (props.steer   ?? 0),
+      drive:   driveInit,
+      fuel:    s.fuel    ?? (props.fuel    ?? 0.68),
+      running: s.running ?? (props.running ?? false),
+      deck:    s.deck    ?? (props.deck    ?? false),
+      spot:    s.spot    ?? (props.spot    ?? false),
+      night:   s.night   ?? (props.night   ?? false),
+      finder:  s.finder  ?? (props.finder  ?? 'depth'),
+      compass: s.compass ?? (props.compass ?? 'dome'),
+      heading: s.heading ?? (props.heading ?? 45),
+      swing:   false,
+    };
+    this._rpm = 0; this._blink = 0; this._blinkAcc = 0; this._phase = 0;
+    this._drive = this.state.drive; this._hdg = this.state.heading; this._htar = this.state.heading; this._dirty = true;
+    this.canvasRef = (n)=>{ if(!n || n===this._cv) return; this._cv=n; this._ctx=n.getContext('2d'); this._bindPointer(n); this._draw(); this._startLoop(); };
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.sportHelm')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.sportHelm', JSON.stringify({steer:this.state.steer, drive:this.state.drive, fuel:this.state.fuel, running:this.state.running, deck:this.state.deck, spot:this.state.spot, night:this.state.night, finder:this.state.finder, compass:this.state.compass, heading:this.state.heading})); }catch(e){} }
+
+  componentDidMount(){ this._startLoop(); }
+  componentWillUnmount(){ if(this._raf) cancelAnimationFrame(this._raf); }
+  componentDidUpdate(prev){
+    const s={};
+    ['steer','drive','fuel','running','deck','spot','night','finder','compass','heading'].forEach(k=>{ if(prev[k]!==this.props[k] && this.props[k]!=null && this.props[k]!==this.state[k]) s[k]=this.props[k]; });
+    if(Object.keys(s).length) this.setState(s, this._save);
+    if(!this._lastStep || performance.now()-this._lastStep>180){ this._drive=this.state.drive; this._rpm=this.state.running?(0.11+0.89*Math.abs(this._drive)):0; }
+    this._dirty=true; this._draw();
+  }
+
+  _startLoop(){ if(this._raf || !this._ctx) return; this._last=performance.now();
+    const loop=(t)=>{ this._raf=requestAnimationFrame(loop); this._step(t); }; this._raf=requestAnimationFrame(loop); }
+  _step(t){ const dt=Math.min(64, t-(this._last||t)); this._last=t; this._lastStep=t; this._phase+=dt*0.0016; const st=this.state;
+    const k1=Math.min(1,0.22*dt/16.7), k2=Math.min(1,0.16*dt/16.7);
+    this._drive += (st.drive - this._drive)*k1; if(Math.abs(this._drive-st.drive)<0.0015) this._drive=st.drive;
+    const target = st.running ? (0.11+0.89*Math.abs(this._drive)) : 0;
+    this._rpm += (target - this._rpm)*k2; if(Math.abs(this._rpm-target)<0.0015) this._rpm=target;
+    const low = st.fuel < 0.13;
+    if(low){ this._blinkAcc+=dt; if(this._blinkAcc>=420){ this._blinkAcc=0; this._blink^=1; this._dirty=true; } } else if(this._blink){ this._blink=0; this._dirty=true; }
+    if(st.swing){ this._htar=((this._htar==null?this._hdg:this._htar)+dt*0.012)%360; } else { this._htar=st.heading||0; }
+    let hd=((this._htar - this._hdg + 540)%360)-180; this._hdg=((this._hdg + hd*Math.min(1,0.14*dt/16.7))%360+360)%360; if(!st.swing && Math.abs(hd)<0.15) this._hdg=this._htar;
+    this._draw(); }
+
+  _draw(){
+    const R=window.SportRig, ctx=this._ctx, cv=this._cv; if(!R || !ctx || !cv) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#0f1a20'); g.addColorStop(1,'#0a1014');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    const st=this.state;
+    const jr = st.running ? (Math.random()-0.5)*0.03*(0.3+Math.abs(this._drive)) : 0;
+    const sp=R.render({ running:st.running, drive:this._drive, steer:st.steer, fuel:st.fuel,
+      deck:st.deck, spot:st.spot, night:st.night, blink:this._blink, rpm:Math.max(0,Math.min(1,this._rpm+jr)),
+      finder:st.finder, phase:this._phase, compass:st.compass, heading:this._hdg });
+    ctx.drawImage(sp, 0, 0);
+    const Lv=window.LeverRig;
+    if(Lv){ const lv=Lv.render(this._drive, 'chrome'); ctx.drawImage(lv.c, Math.round(R.DRIVE.px-lv.px), Math.round(R.DRIVE.pivotY+R.TOPPAD-lv.py)); }
+  }
+
+  // ---- pointer picking against rig-local hit geometry ----------------------
+  _pick(p){
+    const R=window.SportRig; if(!R) return null;
+    const s=R.SW.start; if(Math.hypot(p.x-s.cx, p.y-s.cy) < s.r+9) return 'start';
+    const inBox=(b)=> p.x>=b.x-3 && p.x<=b.x+b.w+3 && p.y>=b.y-3 && p.y<=b.y+b.h+10;
+    if(inBox(R.SW.deck)) return 'deck';
+    if(inBox(R.SW.spot)) return 'spot';
+    { const dm=this.state.compass==='dome', bx0=dm?170:226, bx1=dm?296:374, yt=this.state.finder==='fish'?(dm?-8:-30):56;
+      if(p.x>=bx0 && p.x<=bx1 && p.y>=yt && p.y<=142) return 'brow'; }
+    const h=R.driveHandle(this.state.drive); if(Math.hypot(p.x-h.x, p.y-h.y) < R.DRIVE.hitR) return 'drive';
+    if(Math.hypot(p.x-R.WHEEL.cx, p.y-R.WHEEL.cy) < R.WHEEL.r+8) return 'wheel';
+    return null;
+  }
+  _bindPointer(n){
+    const R=window.SportRig;
+    let down=false, moved=false, hit=null, sx0=0, sy0=0, wa=0;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); const Rc=window.SportRig; return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)-(Rc?Rc.TOPPAD:0)}; };
+    const steerFromWheel=(p)=>{ const a=Math.atan2(p.y-R.WHEEL.cy, p.x-R.WHEEL.cx); let d=a-wa; if(d>Math.PI)d-=2*Math.PI; if(d<-Math.PI)d+=2*Math.PI; wa=a;
+      const st=Math.max(-1,Math.min(1, this.state.steer + (d/R.DEG)/R.wheelTurn)); this.setState({steer:+st.toFixed(3)}, this._save); };
+    const driveFromDrag=(p)=>{ let v=R.driveFromPoint(p.x, p.y); if(Math.abs(v)<0.05) v=0; this.setState({drive:+v.toFixed(3)}, this._save); };
+    n.addEventListener('pointerdown',(e)=>{ down=true; moved=false; const p=local(e); sx0=p.x; sy0=p.y; hit=this._pick(p);
+      if(hit==='wheel') wa=Math.atan2(p.y-R.WHEEL.cy, p.x-R.WHEEL.cx);
+      n.setPointerCapture?.(e.pointerId); n.style.cursor = (hit==='wheel'||hit==='drive')?'grabbing':(hit?'pointer':'grabbing'); });
+    n.addEventListener('pointermove',(e)=>{ if(!down) return; const p=local(e); if(Math.hypot(p.x-sx0,p.y-sy0)>4) moved=true;
+      if(hit==='wheel') steerFromWheel(p); else if(hit==='drive') driveFromDrag(p); });
+    const end=()=>{ if(!down) return; down=false; n.style.cursor='grab';
+      if(hit && !moved){
+        if(hit==='start') this.setState(s=>({running:!s.running}), this._save);
+        else if(hit==='deck') this.setState(s=>({deck:!s.deck}), this._save);
+        else if(hit==='spot') this.setState(s=>({spot:!s.spot}), this._save);
+        else if(hit==='brow') this.setState(s=>({finder: s.finder==='fish'?'depth':'fish'}), this._save);
+      }
+      hit=null; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end); n.addEventListener('pointerleave',end);
+  }
+
+  _bake(cols, rows, cellFn, name){
+    const R=window.SportRig, cv=document.createElement('canvas'); cv.width=R.W*cols; cv.height=R.H*rows;
+    const g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){ g.drawImage(cellFn(c,r), c*R.W, r*R.H); }
+    cv.toBlob((b)=>{ if(!b) return; const url=URL.createObjectURL(b); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); });
+  }
+  _downloadSteer(){
+    const R=window.SportRig; if(!R) return; const st=this.state, N=5;
+    this._bake(N, 1, (c)=>{ const steer=-1+ c*(2/(N-1));
+      return R.render({running:st.running, drive:st.drive, fuel:st.fuel, deck:st.deck, spot:st.spot, steer, compass:st.compass, heading:this._hdg, night:st.night, rpm:st.running?(0.11+0.89*Math.abs(st.drive)):0}); }, 'SportHelm_SteerSet.png');
+  }
+  _downloadStates(){
+    const R=window.SportRig; if(!R) return; const st=this.state, ds=[-1,0,1];
+    this._bake(ds.length, 2, (c,r)=>{ const run=r===1, drive=ds[c];
+      return R.render({running:run, drive, fuel:st.fuel, deck:st.deck, spot:st.spot, steer:st.steer, compass:st.compass, heading:this._hdg, night:st.night, rpm:run?(0.11+0.89*Math.abs(drive)):0}); }, 'SportHelm_States.png');
+  }
+
+  renderVals(){
+    const st=this.state, R=window.SportRig;
+    const maxS = R?R.maxSteer:45, deg=Math.round(st.steer*maxS);
+    const side = deg<-1?'PORT '+Math.abs(deg)+'\u00b0' : deg>1?'STBD '+deg+'\u00b0' : 'AMIDSHIPS';
+    const mag = Math.abs(st.drive), throttlePct = Math.round(mag*100);
+    const zone = mag<0.04 ? 'N' : (st.drive>0 ? 'A' : 'R');
+    const rpmV = st.running ? (0.11 + 0.89*mag) : 0, rpmPct = Math.round(rpmV*100);
+    const redline = rpmV > 0.86, low = st.fuel < 0.13;
+    const border='1px solid #243137';
+    const on='#3a1712', onF='#f0b9b0', off='#101519', offF='#6c5350';
+    const onT='#0f2a24', onTF='#8fe6d8';
+    const R2=window.CompassRig;
+    const cHdg=R2?R2.cardinal8(st.heading):'N', cDeg=R2?R2.fmtDeg(st.heading):'000', cIdx=R2?(Math.round(R2.norm(st.heading)/45)%8):0;
+    const cChip=(k)=>({ bd: st.compass===k?'#2f6079':'#243137', bg: st.compass===k?'#0f2730':'#101519', fg: st.compass===k?'#8fe6d8':'#8a969b' });
+    const cPt=(i)=>{ const lab=R2?R2.C8[i]:'N', hd=i*45, sel=cIdx===i;
+      return { label:lab, set:()=>{ this._htar=hd; this.setState({heading:hd, swing:false}, this._save); }, bd:sel?'#2f6079':'#243137', bg:sel?'#0f2730':'#101519', fg:sel?'#8fe6d8':'#5f6e73' }; };
+    return {
+      canvasRef:this.canvasRef,
+      steer:st.steer, drive:st.drive, fuel:st.fuel,
+      onSteer:(e)=>this.setState({steer:+e.target.value}, this._save),
+      onDrive:(e)=>{ let v=+e.target.value; if(Math.abs(v)<0.05) v=0; this.setState({drive:v}, this._save); },
+      onFuel:(e)=>this.setState({fuel:+e.target.value}, this._save),
+      centre:()=>this.setState({steer:0}, this._save),
+      toggleRun:()=>this.setState(s=>({running:!s.running}), this._save),
+      neutral:()=>this.setState({drive:0}, this._save),
+      ahead:()=>this.setState({drive:1}, this._save),
+      astern:()=>this.setState({drive:-1}, this._save),
+      toggleDeck:()=>this.setState(s=>({deck:!s.deck}), this._save),
+      toggleSpot:()=>this.setState(s=>({spot:!s.spot}), this._save),
+      toggleNight:()=>this.setState(s=>({night:!s.night}), this._save),
+      setDepthFinder:()=>this.setState({finder:'depth'}, this._save),
+      setFishFinder:()=>this.setState({finder:'fish'}, this._save),
+      heading:st.heading,
+      onHeading:(e)=>{ const v=+e.target.value; this._htar=v; this.setState({heading:v, swing:false}, this._save); },
+      compNone:()=>this.setState({compass:'none'}, this._save),
+      compDome:()=>this.setState({compass:'dome'}, this._save),
+      noneChip:cChip('none'), domeChip:cChip('dome'),
+      compHdgVal: cHdg+' \u00b7 '+cDeg+'\u00b0', compHdgFg: st.compass==='none'?'#8a969b':'#e0776b',
+      compPoints:(R2?R2.C8:['N']).map((_,i)=>cPt(i)),
+      swingComp:()=>this.setState(s=>({swing:!s.swing})),
+      swingLabel: st.swing?'\u25a0 SWINGING':'\u25b6 SWING', swingFg: st.swing?'#e0776b':'#7f8c90',
+      finderTag: st.finder==='fish' ? '\u25c9 SONAR' : '\u25c9 DEPTH',
+      finderFg: st.finder==='fish' ? '#8fbfe6' : '#8fe6d8',
+      dfBd:st.finder!=='fish'?'#2f6079':'#243137', dfBg:st.finder!=='fish'?'#0f2730':'#101519', dfFg:st.finder!=='fish'?'#8fe6d8':'#6c5350',
+      ffBd:st.finder==='fish'?'#2f6079':'#243137', ffBg:st.finder==='fish'?'#0f2730':'#101519', ffFg:st.finder==='fish'?'#8fbfe6':'#6c5350',
+
+      driveLabel: zone==='N' ? 'NEUTRAL' : (zone==='A'?'AHEAD ':'ASTERN ')+throttlePct+'%',
+      driveFg: zone==='N' ? '#7f8c90' : (zone==='A'?'#7fd6c9':'#e0776b'),
+      aheadBg: zone==='A'?onT:off, aheadFg: zone==='A'?onTF:offF,
+      neutBg:  zone==='N'?'#26312f':off, neutFg: zone==='N'?'#cfd9d6':offF,
+      astBg:   zone==='R'?on:off, astFg: zone==='R'?onF:offF,
+      rpmPct: st.running? (rpmPct+'%') : 'OFF',
+      redlineFg: redline?'#e0554a':'#5f6e73', redlineLabel: redline?'REDLINE':(st.running?'':'MOTOR OFF'),
+
+      runLabel: st.running?'\u25cf RUNNING':'\u25cb STOPPED', runFg: st.running?'#66d585':'#8a969b',
+      steerLabel: side, steerFg: deg===0?'#7f8c90':'#7fd6c9',
+      runBtn: st.running?'STOP MOTOR':'START MOTOR', runGlyph: st.running?'\u25a0':'\u25b6',
+      runHint: st.running?'KEY \u00b7 RUN':'KEY \u00b7 OFF',
+      runBd: st.running?'#7c2a20':'#1c6a3b', runBg: st.running?'#22110e':'#0f1f14', runBtnFg: st.running?'#e0554a':'#66d585',
+
+      fuelLabel: Math.round(st.fuel*100)+'%'+(low?' \u00b7 LOW':''), fuelFg: low?'#e6b53f':'#c9a86a',
+
+      deckState: st.deck?'ON':'OFF', deckBd: st.deck?'#2f6079':'#243137', deckBg: st.deck?'#0f2730':'#0f191e', deckTxt: st.deck?'#7fd6c9':'#8a969b',
+      spotState: st.spot?'ON':'OFF', spotBd: st.spot?'#5b6a70':'#243137', spotBg: st.spot?'#20272b':'#0f191e', spotTxt: st.spot?'#eef3ef':'#8a969b',
+      nightState: st.night?'ON':'OFF', nightBd: st.night?'#7a5a1c':'#243137', nightBg: st.night?'#241a06':'#0f191e', nightTxt: st.night?'#e6b53f':'#8a969b',
+
+      readout:[
+        {k:'MOTOR', v: st.running?'running':'stopped', fg: st.running?'#66d585':'#c4cdcd', border:'none'},
+        {k:'RPM',   v: st.running? (rpmPct+'%'+(redline?'  \u00b7  redline':'')) : 'off', fg: redline?'#e0554a':'#c4cdcd', border},
+        {k:'DRIVE', v: zone==='N'?'neutral':(zone==='A'?'ahead ':'astern ')+throttlePct+'%', fg: zone==='R'?'#e0776b':(zone==='A'?'#8fe6d8':'#c4cdcd'), border},
+        {k:'WHEEL', v: side+'  \u00b7  '+deg+'\u00b0', fg:'#c4cdcd', border},
+        {k:'FUEL',  v: Math.round(st.fuel*100)+'%'+(low?'  \u00b7  reserve':''), fg: low?'#e6b53f':'#c4cdcd', border},
+        {k:'LIGHTS',v: [st.deck?'deck':null, st.spot?'spot':null].filter(Boolean).join(' + ') || 'off', fg: (st.deck||st.spot)?'#7fd6c9':'#c4cdcd', border},
+        {k:'PANEL', v: st.night?'night \u00b7 amber':'day', fg: st.night?'#e6b53f':'#c4cdcd', border},
+        {k:'BROW',  v: st.finder==='fish'?'sonar \u00b7 fish finder':'depth sounder', fg: st.finder==='fish'?'#8fbfe6':'#c4cdcd', border},
+        {k:'COMPASS',v: st.compass==='dome' ? ('dome \u00b7 crown  \u00b7  '+cHdg+' '+cDeg+'\u00b0') : 'not fitted', fg: st.compass==='dome'?'#e0776b':'#c4cdcd', border},
+      ],
+      downloadSteer:()=>this._downloadSteer(),
+      downloadStates:()=>this._downloadStates(),
+    };
+  }
+}
+</script>
+</body>
+</html>

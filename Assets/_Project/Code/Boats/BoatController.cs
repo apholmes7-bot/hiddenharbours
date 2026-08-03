@@ -97,6 +97,17 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public float Steer => _steer;
 
+        /// <summary>
+        /// Drive state (-1 full astern .. 0 neutral .. +1 full ahead) — the throttle the Engine branch
+        /// runs, as set by <see cref="SetControl"/>. Same PULL contract as <see cref="Steer"/>: the
+        /// diegetic lever/tiller overlay (ADR 0025 S1) draws THIS value each frame rather than being
+        /// pushed a copy, so the picture cannot fall out of step with the physics — one state, one
+        /// owner (the flick-cast lesson: never two computations of one quantity). Read-only:
+        /// presentation never writes back into the sim (rule 5); input intents land in
+        /// <see cref="SetControl"/>.
+        /// </summary>
+        public float Throttle => _throttle;
+
         /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float LeftOar => _leftOar;
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
@@ -110,6 +121,13 @@ namespace HiddenHarbours.Boats
             // only (EditMode tests build BoatControllers freely and must stay presentation-free).
             if (Application.isPlaying && GetComponent<MastheadTelltale>() == null)
                 gameObject.AddComponent<MastheadTelltale>();
+
+            // THE HELM-CONTROL SEAM (ADR 0025 S1): the Core relay the diegetic tiller/lever overlay
+            // reads and steers through. Runtime-spawned like the telltale above, so every already-built
+            // scene grows the seam on load with no builder re-run; play mode only for the same reason
+            // (EditMode tests build BoatControllers freely and must stay presentation-free).
+            if (Application.isPlaying && GetComponent<HelmControlRelay>() == null)
+                gameObject.AddComponent<HelmControlRelay>();
 
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;

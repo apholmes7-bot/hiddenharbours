@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<script src="Art/leverRig.js"></script>
+<script src="Art/leverRig2.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;}
+  a:hover{color:#a8e6dc;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#cdd9db;border:1px solid #0b1216;cursor:pointer;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 70px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1060px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;line-height:1;">The Binnacle Lever</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;ASTERN-POSE&nbsp;PASS&nbsp;&middot;&nbsp;FOUR&nbsp;VARIANTS</div>
+    </div>
+    <div style="font-size:11px;color:{{ zoneFg }};letter-spacing:0.08em;">{{ zoneLabel }}</div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;gap:26px;flex-wrap:wrap;align-items:center;justify-content:space-between;border:1px solid #243137;background:#0e181d;padding:14px 16px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:280px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:12px;color:#e7eceb;letter-spacing:0.06em;">Throttle &amp; shift &mdash; drives all four</div></div>
+      <input type="range" min="-1" max="1" step="0.01" value="{{ sig }}" onInput="{{ onSig }}" />
+      <div style="display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.12em;color:#5f6e73;">
+        <span onClick="{{ toR }}" style="cursor:pointer;">&#9660; ASTERN</span>
+        <span onClick="{{ toN }}" style="cursor:pointer;">NEUTRAL</span>
+        <span onClick="{{ toA }}" style="cursor:pointer;">AHEAD &#9650;</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:12px;color:#e7eceb;letter-spacing:0.06em;">Housing finish</div></div>
+      <div style="display:flex;border:1px solid #243137;">
+        <div onClick="{{ setGraphite }}" style="text-align:center;padding:9px 14px;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.08em;background:{{ gBg }};color:{{ gFg }};">GRAPHITE</div>
+        <div onClick="{{ setChrome }}" style="text-align:center;padding:9px 14px;cursor:pointer;user-select:none;font-size:10.5px;letter-spacing:0.08em;background:{{ cBg }};color:{{ cFg }};border-left:1px solid #243137;">CHROME</div>
+      </div>
+    </div>
+  </div>
+
+  <section style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:18px;">
+
+    <div style="font-size:11px;line-height:1.75;color:#8b989c;max-width:760px;text-wrap:pretty;">
+      <span style="color:#e0776b;">The squish:</span> in v1 the arm reached ASTERN 73&deg; off the view axis and projected to a third of its length, with nothing to read as depth &mdash; the grip tapered to a point, so no cap ever turned toward you, and the hub was a flat decal. All four variants below sit on a higher, more overhead camera, run a shaft 15&percnt; longer than v1's, end the grip in a real domed cap, and pivot out of a solid binnacle boss casting onto the console plane.
+      <br /><br />
+      <span style="color:#e6b53f;">The catch:</span> seen dead-on, a fore/aft lever projects onto a straight vertical line &mdash; so every pixel of downward travel is bought with foreshortening. Pull-down-is-astern and a full-length aft pose are mutually exclusive at yaw&nbsp;0. <a href="#1d">1d</a> and <a href="#1a">1a</a> keep the dead-on console and buy back the aft pose with a shorter throw &mdash; 1d nearer v1, 1a nearer the fix; <a href="#1b">1b</a> and <a href="#1c">1c</a> cant the binnacle so the travel goes diagonal and the arm keeps its length.
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(302px,1fr));gap:18px;align-items:start;">
+
+      <div id="1d" style="display:flex;flex-direction:column;gap:10px;border:1px solid #2f6079;background:#0e181d;padding:12px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:10px;letter-spacing:0.1em;padding:3px 7px;background:#1b3b3a;color:#9fe6d8;">1d</div>
+          <div style="font-size:13px;color:#e7eceb;">v1 throw, 1a dressing</div>
+        </div>
+        <canvas ref="{{ refD }}" width="300" height="384" style="cursor:grab;background:#0a1014;align-self:center;flex:none;"></canvas>
+        <div style="font-size:9.5px;letter-spacing:0.06em;color:#7f8f95;">{{ mD }}</div>
+        <div style="font-size:10px;line-height:1.65;color:#77858a;text-wrap:pretty;">The blend. v1's shallower 26&deg; camera and its full 30&deg; throw, so the grip travels a fifth further north&ndash;south than 1a and pushes 18&deg; forward at AHEAD &mdash; but stopped short of v1's 73&deg; aft reach, and wearing 1a's domed cap, binnacle boss and cast shadow. Half v1's squish, most of its travel.</div>
+        <div onClick="{{ pickD }}" style="font-size:9.5px;letter-spacing:0.1em;padding:7px;text-align:center;cursor:pointer;user-select:none;border:1px solid {{ bD }};background:{{ pD }};color:{{ fD }};">{{ tD }}</div>
+      </div>
+
+      <div id="1a" style="display:flex;flex-direction:column;gap:10px;border:1px solid #243137;background:#0e181d;padding:12px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:10px;letter-spacing:0.1em;padding:3px 7px;background:#1b2b33;color:#7fd6c9;">1a</div>
+          <div style="font-size:13px;color:#e7eceb;">Overhead, dead-on</div>
+        </div>
+        <canvas ref="{{ refA }}" width="300" height="384" style="cursor:grab;background:#0a1014;align-self:center;flex:none;"></canvas>
+        <div style="font-size:9.5px;letter-spacing:0.06em;color:#7f8f95;">{{ mA }}</div>
+        <div style="font-size:10px;line-height:1.65;color:#77858a;text-wrap:pretty;">Drop-in for the four helms &mdash; travel stays pure north&ndash;south. Camera up to 30&deg;, throw shortened to 25&deg; a side so astern lands 64&deg; off axis instead of 73&deg;: two thirds of the arm survives and the cap turns to face you.</div>
+        <div onClick="{{ pickA }}" style="font-size:9.5px;letter-spacing:0.1em;padding:7px;text-align:center;cursor:pointer;user-select:none;border:1px solid {{ bA }};background:{{ pA }};color:{{ fA }};">{{ tA }}</div>
+      </div>
+
+      <div id="1b" style="display:flex;flex-direction:column;gap:10px;border:1px solid #243137;background:#0e181d;padding:12px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:10px;letter-spacing:0.1em;padding:3px 7px;background:#1b2b33;color:#7fd6c9;">1b</div>
+          <div style="font-size:13px;color:#e7eceb;">Overhead, canted binnacle</div>
+        </div>
+        <canvas ref="{{ refB }}" width="300" height="384" style="cursor:grab;background:#0a1014;align-self:center;flex:none;"></canvas>
+        <div style="font-size:9.5px;letter-spacing:0.06em;color:#7f8f95;">{{ mB }}</div>
+        <div style="font-size:10px;line-height:1.65;color:#77858a;text-wrap:pretty;">Camera at 40&deg;, binnacle canted 22&deg; inboard the way a real side-mount is. The grip sweeps a true diagonal &mdash; as far outboard as it travels down &mdash; so the arm holds three quarters of its length all the way aft. Costs a shorter 22&deg; throw to keep down&nbsp;=&nbsp;astern.</div>
+        <div onClick="{{ pickB }}" style="font-size:9.5px;letter-spacing:0.1em;padding:7px;text-align:center;cursor:pointer;user-select:none;border:1px solid {{ bB }};background:{{ pB }};color:{{ fB }};">{{ tB }}</div>
+      </div>
+
+      <div id="1c" style="display:flex;flex-direction:column;gap:10px;border:1px solid #243137;background:#0e181d;padding:12px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:10px;letter-spacing:0.1em;padding:3px 7px;background:#1b2b33;color:#7fd6c9;">1c</div>
+          <div style="font-size:13px;color:#e7eceb;">Canted + dogleg handle</div>
+        </div>
+        <canvas ref="{{ refC }}" width="300" height="384" style="cursor:grab;background:#0a1014;align-self:center;flex:none;"></canvas>
+        <div style="font-size:9.5px;letter-spacing:0.06em;color:#7f8f95;">{{ mC }}</div>
+        <div style="font-size:10px;line-height:1.65;color:#77858a;text-wrap:pretty;">20&deg; cant and a 22&deg; throw on the shortest camera here, with the handle kinked forward off the pivot axis. Biggest near/far size change and the most sculptural silhouette &mdash; and the furthest from what the helms mount today.</div>
+        <div onClick="{{ pickC }}" style="font-size:9.5px;letter-spacing:0.1em;padding:7px;text-align:center;cursor:pointer;user-select:none;border:1px solid {{ bC }};background:{{ pC }};color:{{ fC }};">{{ tC }}</div>
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #1b262b;padding-top:18px;">
+      <div style="display:flex;flex-direction:column;gap:10px;border:1px solid #1b262b;background:#0c1418;padding:12px;">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:10px;letter-spacing:0.1em;padding:3px 7px;background:#241d1c;color:#e0776b;">v1</div>
+          <div style="font-size:13px;color:#9aa6a9;">Current &mdash; shipped rig</div>
+        </div>
+        <canvas ref="{{ refV }}" width="300" height="384" style="cursor:grab;background:#0a1014;opacity:0.9;align-self:center;flex:none;"></canvas>
+        <div style="font-size:9.5px;letter-spacing:0.06em;color:#7f8f95;">{{ mV }}</div>
+      </div>
+
+      <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#9fb0b6;"></div><div style="font-size:12.5px;color:#e7eceb;">Baked strip &middot; 9 frames &middot; {{ pickName }}</div></div>
+          <div style="border:1px solid #243137;background:#0e181d;padding:6px;overflow-x:auto;">
+            <canvas ref="{{ stripRef }}" style="height:150px;"></canvas>
+          </div>
+          <div style="font-size:9px;color:#5f6e73;letter-spacing:0.1em;">ASTERN &rarr; NEUTRAL &rarr; AHEAD &middot; lever only, boss composites underneath</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;max-width:340px;">
+          <div onClick="{{ dl }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; SPRITE STRIP &middot; 9 FRAMES &middot; {{ specUp }}</div>
+          <a href="Art/leverRig2.js" download="leverRig2.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; VARIANT RIG SOURCE &middot; leverRig2.js</a>
+          <div style="font-size:9.5px;line-height:1.7;color:#66757a;text-wrap:pretty;">Four helms composite this lever (console, sport, novi, cape islander). <a href="Art/leverRig.js" download="leverRig.js">leverRig.js</a> is untouched until you pick one &mdash; then it gets folded in and they all inherit the fix.</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1120, &quot;height&quot;: 900 } }">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { sig: 0, spec: 'graphite', pick: 'D', ready: false };
+    this.PX = 150; this.PY = 296;
+    this._n = {}; this._c = {}; this._rf = {};
+    this.stripRef = (n)=>{ if(!n||n===this._st) return; this._st=n; this._sctx=n.getContext('2d'); this._drawStrip(); };
+  }
+  componentDidMount(){ this._wait(); }
+  componentDidUpdate(_, prev){
+    this._all();
+    if(prev && (prev.spec!==this.state.spec || prev.pick!==this.state.pick)) this._drawStrip();
+  }
+  _wait(){
+    if(window.LeverRig2 && window.LeverRig){ this.setState({ready:true}); this._all(); this._drawStrip(); return; }
+    requestAnimationFrame(()=>this._wait());
+  }
+  ref(id){
+    return this._rf[id] || (this._rf[id] = (n)=>{ if(!n||this._n[id]===n) return; this._n[id]=n; this._c[id]=n.getContext('2d'); this._bind(id,n); this._drawOne(id); });
+  }
+  _all(){ for(const id of ['D','A','B','C','V']) this._drawOne(id); }
+
+  // v1 hub, redrawn so the before/after comparison is fair
+  _hubV1(ctx){
+    const C=['#12181c','#2f3a42','#586770','#8ea1a9','#c6d2d5','#f1f7f7'];
+    const G=['#06090b','#11171b','#212b32','#36424b','#586771','#8b9ca4'];
+    const chrome=this.state.spec==='chrome', ramp=chrome?C:G, x=this.PX, y=this.PY, r=26;
+    const circ=(cx,cy,rad,f)=>{ ctx.fillStyle=f; cx=Math.round(cx);cy=Math.round(cy);rad=Math.round(rad); for(let dy=-rad;dy<=rad;dy++){const dx=Math.floor(Math.sqrt(Math.max(0,rad*rad-dy*dy)));ctx.fillRect(cx-dx,cy+dy,2*dx+1,1);} };
+    circ(x,y,r+2,'#04070a'); circ(x,y,r,ramp[1]); circ(x,y,r-2,ramp[2]);
+    ctx.save(); ctx.beginPath(); ctx.rect(x-r,y-r,r*2,r); ctx.clip(); circ(x,y,r-2,ramp[chrome?4:3]); ctx.restore();
+    circ(x-2,y-3,r-7,ramp[chrome?3:2]); circ(x,y,10,ramp[0]);
+    if(chrome){ for(let k=0;k<8;k++){ const a=k*45*Math.PI/180,long=k%2===0,ro=long?9:5; ctx.fillStyle=long?C[5]:C[4]; ctx.fillRect(Math.round(x+Math.sin(a)*ro)-1,Math.round(y-Math.cos(a)*ro)-1,2,2);} }
+    circ(x,y,4,ramp[chrome?5:4]);
+  }
+  _drawOne(id){
+    const ctx=this._c[id], cv=this._n[id]; if(!ctx||!cv) return;
+    const R2=window.LeverRig2, R1=window.LeverRig; if(!R2||!R1) return;
+    ctx.imageSmoothingEnabled=false;
+    const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#111e25'); g.addColorStop(1,'#080d11');
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    // travel arc through the grip centre
+    ctx.strokeStyle=id==='V'?'rgba(224,119,107,0.16)':'rgba(127,214,201,0.13)';
+    ctx.lineWidth=1; ctx.beginPath();
+    for(let i=0;i<=48;i++){ const s=-1+2*i/48; const o = id==='V' ? R1.handleOffset(s) : R2.handleOffset(s,id);
+      const X=this.PX+o.dx, Y=this.PY+o.dy; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); }
+    ctx.stroke();
+    if(id==='V'){
+      this._hubV1(ctx);
+      const sp=R1.render(this.state.sig, this.state.spec);
+      ctx.drawImage(sp.c, this.PX-sp.px, this.PY-sp.py);
+    } else {
+      const b=R2.boss(id, this.state.spec);
+      ctx.drawImage(b.c, this.PX-b.px, this.PY-b.py);
+      const sp=R2.render(this.state.sig, id, this.state.spec);
+      ctx.drawImage(sp.c, this.PX-sp.px, this.PY-sp.py);
+    }
+  }
+  _drawStrip(){
+    const R2=window.LeverRig2, ctx=this._sctx, st=this._st; if(!R2||!ctx) return;
+    const strip=R2.bakeStrip(9, this.state.pick, this.state.spec);
+    st.width=strip.width; st.height=strip.height;
+    ctx.imageSmoothingEnabled=false; ctx.clearRect(0,0,st.width,st.height); ctx.drawImage(strip,0,0);
+  }
+  _bind(id,n){
+    let down=false;
+    const local=(e)=>{ const r=n.getBoundingClientRect(); return {x:(e.clientX-r.left)*(n.width/r.width), y:(e.clientY-r.top)*(n.height/r.height)}; };
+    const set=(p)=>{ const R2=window.LeverRig2, R1=window.LeverRig; if(!R2||!R1) return;
+      const s = id==='V' ? R1.sigFromOffset(p.x-this.PX,p.y-this.PY) : R2.sigFromOffset(p.x-this.PX,p.y-this.PY,id);
+      this.setState({sig:+s.toFixed(3)}); };
+    n.addEventListener('pointerdown',(e)=>{ down=true; n.setPointerCapture&&n.setPointerCapture(e.pointerId); n.style.cursor='grabbing'; set(local(e)); });
+    n.addEventListener('pointermove',(e)=>{ if(down) set(local(e)); });
+    const end=()=>{ down=false; n.style.cursor='grab'; };
+    n.addEventListener('pointerup',end); n.addEventListener('pointercancel',end);
+  }
+  _dl(){
+    const R2=window.LeverRig2; if(!R2) return;
+    const strip=R2.bakeStrip(9, this.state.pick, this.state.spec);
+    strip.toBlob((b)=>{ if(!b) return; const u=URL.createObjectURL(b), a=document.createElement('a');
+      a.href=u; a.download='Lever_'+this.state.pick+'_'+this.state.spec+'_9.png';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); });
+  }
+  _fmt(m){ if(!m) return '';
+    const p=(v)=>Math.round(v*100)+'%';
+    return 'ARM ASTERN '+p(m.astern)+'  \u00b7  NEUTRAL '+p(m.neutral)+'  \u00b7  AHEAD '+p(m.ahead)+'  \u00b7  GRIP \u00d7'+m.gripGrow.toFixed(2); }
+  _v1Metrics(){
+    // v1 constants: pitch 17deg, camd 760, arm 178, neutral +23deg, throw 33deg
+    const D=Math.PI/180, cA=Math.cos(17*D), sA=Math.sin(17*D), CAMD=760, ARM=178;
+    const len=(sig)=>{ const t=(23-sig*33)*D, y=Math.cos(t)*ARM, z=Math.sin(t)*ARM;
+      const yv=y*cA-z*sA, zv=y*sA+z*cA; return (yv*(CAMD/(CAMD-zv)))/ARM; };
+    const k=(sig)=>{ const t=(23-sig*33)*D, y=Math.cos(t)*145, z=Math.sin(t)*145;
+      const zv=y*sA+z*cA; return CAMD/(CAMD-zv); };
+    return { astern:len(-1), neutral:len(0), ahead:len(1), gripGrow:k(-1)/k(1) };
+  }
+  renderVals(){
+    const st=this.state, R2=(typeof window!=='undefined')&&window.LeverRig2;
+    const mag=Math.abs(st.sig), pct=Math.round(mag*100);
+    const zone = mag<0.04?'N':(st.sig>0?'A':'R');
+    const chrome=st.spec==='chrome';
+    const pill=(id)=>({
+      p: st.pick===id?'#122530':'#0f191e',
+      b: st.pick===id?'#2f6079':'#243137',
+      f: st.pick===id?'#7fd6c9':'#7c888c',
+      t: st.pick===id?'\u25cf BAKING THIS ONE':'BAKE THIS ONE',
+    });
+    const a=pill('A'), b=pill('B'), c=pill('C'), d=pill('D');
+    const names={D:'v1 throw, 1a dressing',A:'Overhead, dead-on',B:'Overhead, canted binnacle',C:'Canted + dogleg handle'};
+    return {
+      refD:this.ref('D'), refA:this.ref('A'), refB:this.ref('B'), refC:this.ref('C'), refV:this.ref('V'), stripRef:this.stripRef,
+      sig:st.sig,
+      onSig:(e)=>{ let v=+e.target.value; if(Math.abs(v)<0.05) v=0; this.setState({sig:v}); },
+      toN:()=>this.setState({sig:0}), toA:()=>this.setState({sig:1}), toR:()=>this.setState({sig:-1}),
+      setChrome:()=>this.setState({spec:'chrome'}), setGraphite:()=>this.setState({spec:'graphite'}),
+      pickD:()=>this.setState({pick:'D'}), pickA:()=>this.setState({pick:'A'}), pickB:()=>this.setState({pick:'B'}), pickC:()=>this.setState({pick:'C'}),
+      dl:()=>this._dl(),
+      pickName:names[st.pick], specUp:st.spec.toUpperCase(),
+      mD:R2?this._fmt(R2.metrics('D')):'', mA:R2?this._fmt(R2.metrics('A')):'', mB:R2?this._fmt(R2.metrics('B')):'', mC:R2?this._fmt(R2.metrics('C')):'',
+      mV:this._fmt(this._v1Metrics()),
+      zoneLabel: zone==='N'?'NEUTRAL':(zone==='A'?'AHEAD ':'ASTERN ')+pct+'%',
+      zoneFg: zone==='N'?'#7f8c90':(zone==='A'?'#66d585':'#e0776b'),
+      gBg: chrome?'#0f191e':'#26312f', gFg: chrome?'#8a969b':'#cfd9d6',
+      cBg: chrome?'#122530':'#0f191e', cFg: chrome?'#7fd6c9':'#8a969b',
+      pD:d.p, bD:d.b, fD:d.f, tD:d.t, pA:a.p, bA:a.b, fA:a.f, tA:a.t, pB:b.p, bB:b.b, fB:b.f, tB:b.t, pC:c.p, bC:c.b, fC:c.f, tC:c.t,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

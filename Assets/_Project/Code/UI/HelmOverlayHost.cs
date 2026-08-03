@@ -1,0 +1,303 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using HiddenHarbours.Core;
+
+namespace HiddenHarbours.UI
+{
+    /// <summary>
+    /// The screen-space HELM OVERLAY (ADR 0025 S1): while the player pilots a motorised hull, the
+    /// hull's diegetic control — the outboard TILLER or the binnacle LEVER — draws on a small card
+    /// (placeholder bottom-right; the owner repositions via <see cref="HelmOverlaySettings"/>).
+    /// Clicking the card brings the instrument to a FOCUSED, enlarged state where its controls are
+    /// properly clickable (owner addition 2026-08-03); Esc or a click outside returns to the small
+    /// card. The full per-hull helm composition is S6 — this host is the mechanic every later
+    /// instrument reuses.
+    ///
+    /// <para><b>One state, one owner.</b> The card renders <see cref="IHelmControl.Drive"/> — the
+    /// controller's own throttle — every frame; mouse input goes back as intents
+    /// (<c>DragDrive</c>/<c>EndDrag</c>, detent semantics in Core). The overlay stores NO drive.
+    /// Reads/writes ride <see cref="GameServices.HelmControl"/> only — this assembly references only
+    /// Core, so it structurally cannot reach the Boats module (rule 4).</para>
+    ///
+    /// <para><b>Self-installing</b> (the SaveService/AudioDirector pattern): a
+    /// <see cref="RuntimeInitializeOnLoadMethod"/> spawns one persistent host per play session, so
+    /// every already-built scene shows the helm with no builder re-run. Headless-safe and inert
+    /// without a registered helm service (EditMode/PlayMode tests, on foot, rowing).</para>
+    ///
+    /// <para><b>Perf (rule 7):</b> repaints are change-detected — the lever redraws only when its
+    /// 1/48th-quantised drive (the rig's own cache key) or finish changes; the tiller only when a
+    /// band segment / gear / running flips (steering rotates the RectTransform, no re-raster). One
+    /// reused <see cref="DrawSurface"/> + <see cref="Texture2D"/> per style; zero per-frame
+    /// allocation in the steady state.</para>
+    /// </summary>
+    [DefaultExecutionOrder(-40)]
+    public sealed class HelmOverlayHost : MonoBehaviour
+    {
+        [Header("Canvas")]
+        [Tooltip("Sorting order of the overlay canvas. Above the HUD band so the focused instrument " +
+                 "reads over it; below modal shells.")]
+        [SerializeField] private int _sortingOrder = 60;
+
+        private static HelmOverlayHost _instance;
+
+        private Canvas _canvas;
+        private GameObject _cardGo;          // the card rect (position/size; never rotates)
+        private RectTransform _cardRect;
+        private RawImage _image;             // the instrument picture (tiller rotates about its clamp)
+        private RectTransform _imageRect;
+
+        private DrawSurface _surface;
+        private Texture2D _texture;
+
+        // Change-detection state (what the current texture shows).
+        private HelmControlStyle _shownStyle = HelmControlStyle.None;
+        private int _shownLeverKey = int.MinValue;
+        private HelmLeverFinish _shownFinish = (HelmLeverFinish)(-1);
+        private int _shownBandLit = -1;
+        private bool _shownForward = true;
+
+        // Interaction state.
+        private bool _focused;
+        private bool _dragging;              // a live control drag session (lever grip / tiller band)
+        private float _dragStartDrive;
+        private float _dragStartScreenY;
+        private bool _dragIsTiller;
+
+        /// <summary>Focused state (click-to-focus, owner addition 2026-08-03). Exposed for tests.</summary>
+        public bool Focused => _focused;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (_instance != null) return;
+            var go = new GameObject("HelmOverlayHost");
+            _instance = go.AddComponent<HelmOverlayHost>();
+            DontDestroyOnLoad(go);
+        }
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
+            _instance = this;
+
+            var canvasGo = new GameObject("HelmOverlayCanvas");
+            canvasGo.transform.SetParent(transform, false);
+            _canvas = canvasGo.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _canvas.sortingOrder = _sortingOrder;
+            canvasGo.AddComponent<CanvasScaler>();   // constant pixel size — the rigs are pixel art
+
+            _cardGo = new GameObject("InstrumentCard");
+            _cardGo.transform.SetParent(canvasGo.transform, false);
+            _cardRect = _cardGo.AddComponent<RectTransform>();
+            _cardRect.anchorMin = _cardRect.anchorMax = new Vector2(0f, 0f);
+            _cardRect.pivot = new Vector2(0f, 0f);
+
+            var imageGo = new GameObject("Instrument");
+            imageGo.transform.SetParent(_cardGo.transform, false);
+            _imageRect = imageGo.AddComponent<RectTransform>();
+            _image = imageGo.AddComponent<RawImage>();
+            _image.raycastTarget = false;   // we hit-test ourselves; never block other UI
+
+            _cardGo.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this) _instance = null;
+            if (_texture != null) Destroy(_texture);
+        }
+
+        private void Update()
+        {
+            IHelmControl helm = GameServices.HelmControl;
+            HelmControlStyle style = helm != null && helm.HasHelm ? helm.Style : HelmControlStyle.None;
+
+            if (style == HelmControlStyle.None)
+            {
+                if (_dragging && helm != null) helm.EndDrag();
+                _dragging = false;
+                _focused = false;
+                _shownStyle = HelmControlStyle.None;
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+            if (!_cardGo.activeSelf) _cardGo.SetActive(true);
+
+            HelmOverlaySettings cfg = GameServices.HelmOverlay;
+            int rigW = style == HelmControlStyle.Lever ? LeverRigRender.W : TillerRigRender.W;
+            int rigH = style == HelmControlStyle.Lever ? LeverRigRender.H : TillerRigRender.H;
+
+            Rect card = HelmOverlayLayout.CardRect(_focused, rigW, rigH, in cfg, Screen.width, Screen.height);
+            LayoutCard(style, card, rigW, rigH, helm.Steer);
+            Repaint(style, helm);
+            ReadPointer(style, helm, card, in cfg);
+        }
+
+        // ---- layout -------------------------------------------------------------------------------
+
+        private void LayoutCard(HelmControlStyle style, Rect card, int rigW, int rigH, float steer)
+        {
+            _cardRect.anchoredPosition = new Vector2(card.xMin, card.yMin);
+            _cardRect.sizeDelta = new Vector2(card.width, card.height);
+
+            _imageRect.anchorMin = Vector2.zero;
+            _imageRect.anchorMax = Vector2.one;
+            _imageRect.offsetMin = Vector2.zero;
+            _imageRect.offsetMax = Vector2.zero;
+
+            if (style == HelmControlStyle.Tiller)
+            {
+                // The rig draws the tiller STRAIGHT UP; the caller rotates it about the clamp pivot
+                // (tillerRig.js:37-45). Pivot in UI space: x centred, y measured from the BOTTOM.
+                _imageRect.pivot = new Vector2(TillerRigRender.PivotX / (float)TillerRigRender.W,
+                                               1f - TillerRigRender.PivotY / (float)TillerRigRender.H);
+                // steer +1 = starboard; canvas rotation is clockwise-positive with y down, Unity's is
+                // counter-clockwise-positive with y up → negate to match the preview's sense.
+                _imageRect.localEulerAngles = new Vector3(0f, 0f, -steer * TillerRigRender.MaxSteerDeg);
+            }
+            else
+            {
+                _imageRect.pivot = new Vector2(0.5f, 0.5f);
+                _imageRect.localEulerAngles = Vector3.zero;
+            }
+        }
+
+        // ---- painting (change-detected, rule 7) ----------------------------------------------------
+
+        private void Repaint(HelmControlStyle style, IHelmControl helm)
+        {
+            float drive = helm.Drive;
+            if (style == HelmControlStyle.Lever)
+            {
+                int key = LeverRigGeometry.QuantizeKey(drive);
+                HelmLeverFinish finish = helm.LeverFinish;
+                if (style == _shownStyle && key == _shownLeverKey && finish == _shownFinish) return;
+                EnsureSurface(LeverRigRender.W, LeverRigRender.H);
+                LeverRigRender.Render(_surface, drive, finish);
+                _surface.ToTexture(ref _texture);
+                _image.texture = _texture;
+                _shownStyle = style;
+                _shownLeverKey = key;
+                _shownFinish = finish;
+            }
+            else
+            {
+                // The band lights round(|drive|*10) segments (tillerRig.js:80) — repaint on that,
+                // the gear side, or first show. running is true at a manned helm (no engine start/stop
+                // state exists yet); warn/press/blink stay off in S1.
+                float throttle = Mathf.Abs(drive);
+                int lit = DrawSurface.JsRound(Mathf.Clamp01(throttle) * 10.0);
+                bool forward = drive >= 0f;
+                if (style == _shownStyle && lit == _shownBandLit && forward == _shownForward) return;
+                EnsureSurface(TillerRigRender.W, TillerRigRender.H);
+                TillerRigRender.Render(_surface, throttle, running: true, press: false,
+                                       forward: forward, warn: false, blink: false);
+                _surface.ToTexture(ref _texture);
+                _image.texture = _texture;
+                _shownStyle = style;
+                _shownBandLit = lit;
+                _shownForward = forward;
+            }
+        }
+
+        private void EnsureSurface(int w, int h)
+        {
+            if (_surface == null || _surface.Width != w || _surface.Height != h)
+                _surface = new DrawSurface(w, h);
+        }
+
+        // ---- pointer + keys ------------------------------------------------------------------------
+
+        private void ReadPointer(HelmControlStyle style, IHelmControl helm, Rect card,
+                                 in HelmOverlaySettings cfg)
+        {
+            var kb = Keyboard.current;
+            if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                if (_dragging) { helm.EndDrag(); _dragging = false; }
+                _focused = false;
+                return;
+            }
+
+            var mouse = Mouse.current;
+            if (mouse == null) return;
+            Vector2 pos = mouse.position.ReadValue();
+            bool down = mouse.leftButton.wasPressedThisFrame;
+            bool held = mouse.leftButton.isPressed;
+            bool inCard = card.Contains(pos);
+
+            if (_dragging)
+            {
+                if (held)
+                {
+                    if (_dragIsTiller)
+                    {
+                        float scale = _focused ? cfg.FocusScale : cfg.SmallScale;
+                        helm.DragDrive(HelmOverlayLayout.TillerDragDrive(
+                            _dragStartDrive, pos.y - _dragStartScreenY, scale, cfg.TillerDragFullDrivePx));
+                    }
+                    else
+                    {
+                        // Off-card during a drag still tracks (the JS preview's behaviour: the grip
+                        // follows the pointer's nearest travel point) — ScreenToRig's rigPx stays
+                        // valid outside 0..1, only the containment bool goes false.
+                        HelmOverlayLayout.ScreenToRig(pos, card, LeverRigRender.W, LeverRigRender.H,
+                                                      out Vector2 rigPx);
+                        helm.DragDrive(HelmOverlayLayout.LeverSigAt(rigPx));
+                    }
+                }
+                else
+                {
+                    helm.EndDrag();
+                    _dragging = false;
+                }
+                return;
+            }
+
+            if (!down) return;
+
+            if (!inCard)
+            {
+                // Click-away leaves the focused state (owner addition 2026-08-03).
+                if (_focused) _focused = false;
+                return;
+            }
+
+            if (!_focused)
+            {
+                // SMALL state: the card is a button — click anywhere on it to FOCUS. Controls are
+                // deliberately not draggable at dash size; the focused state is where they are
+                // properly clickable (the owner's ask).
+                _focused = true;
+                return;
+            }
+
+            // FOCUSED: interact with the control.
+            if (style == HelmControlStyle.Lever)
+            {
+                HelmOverlayLayout.ScreenToRig(pos, card, LeverRigRender.W, LeverRigRender.H, out Vector2 rigPx);
+                if (HelmOverlayLayout.IsOnGrip(rigPx, helm.Drive, cfg.GrabRadiusPx))
+                {
+                    _dragging = true;          // drag the grip — continuous drive, live while dragging
+                    _dragIsTiller = false;
+                    helm.DragDrive(HelmOverlayLayout.LeverSigAt(rigPx));
+                }
+                else
+                {
+                    // Click the travel guide: jump-to-sig, then the lever holds (neutral snap applies).
+                    helm.DragDrive(HelmOverlayLayout.LeverSigAt(rigPx));
+                    helm.EndDrag();
+                }
+            }
+            else
+            {
+                _dragging = true;              // tiller: vertical drag over the grip walks the drive
+                _dragIsTiller = true;
+                _dragStartDrive = helm.Drive;
+                _dragStartScreenY = pos.y;
+            }
+        }
+    }
+}
