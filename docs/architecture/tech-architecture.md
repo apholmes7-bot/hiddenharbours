@@ -95,6 +95,23 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   and the future **water depth-gradient shader** read it through Core, never referencing World. **Null =
   open water** (everywhere submerged / no walkable ground) — callers null-check rather than throw. Closes
   ADR 0009's "within-region elevation source" open question; world + gameplay can now build in parallel.
+- **`Core.IFishSchools` + `Core.FishSchool`/`FishMark` + `GameServices.FishSchools`** — the **fish-school**
+  seam (ADR 0025 S3): where "there are fish here" is asked and answered. A `FishSchool` is an *area*
+  (centre + `RadiusMetres`) at a *depth in metres*, for a *while* (`[Start, End)` game seconds), carrying a
+  `MarkCount` and a species-id set. **Gameplay** produces schools and reads `SchoolsAt` to raise the bite
+  rate and weight the species roll; **UI** reads `MarksAt` to draw the sonar — one model, two readers, so
+  the marks on the glass are literally the object that changes the fishing (the owner's honesty invariant).
+  `MarkCount` is that invariant in one field: it is both how many fish the glass draws and the expected
+  bite rate. Both calls fill a caller-owned list and allocate nothing (rule 7); depths cross the seam in
+  **metres** and the presenter divides by the player's RANGE at paint time, so a normalised depth is never
+  stored. Schools are **recomputed, never saved** (rule 5) — no DTO, no save field.
+  **⚠ Unlike every other optional service on `GameServices`, this one is NEVER null**: absent a registered
+  model it is `EmptyFishSchools`, an honest empty sea. That is deliberate — it is what lets the finder's UI
+  and the fish model be built in parallel (the UI host draws an empty sonar with no model in the project,
+  and the model swaps in with a single assignment), and it is the right shipped behaviour in a bare art
+  scene, in EditMode, and in a region with no fish authored yet. Producers **clear the registration on
+  disable** (assign null — the getter turns that back into the empty sea); the getter also checks Unity
+  fake-null, so a destroyed MonoBehaviour producer degrades to the empty sea rather than throwing.
 - **`Core.IStandableSurface` + `Core.StandableSurfaces`** — the **standable-structure** seam: things
   BUILT (a wharf deck today; boat decks and washboards in M2) that a person stands *on*, whose standing
   height is their own rather than the seabed's. `TryGetDeckElevation(worldPos, out deck)` answers "am I

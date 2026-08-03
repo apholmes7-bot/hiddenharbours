@@ -56,6 +56,42 @@ namespace HiddenHarbours.Core
         public static IHelmInstruments HelmInstruments { get; set; }
 
         /// <summary>
+        /// Where the fish are (ADR 0025 S3): the schools the fish finder DRAWS and the fishing path
+        /// FISHES — one model, read by both, so the marks on the glass are the same object that changes
+        /// the bite (the owner's honesty invariant, <see cref="IFishSchools"/>).
+        ///
+        /// <para><b>⚠ Unlike every other optional service on this class, this one is NEVER null — read it
+        /// without a null check.</b> Absent a registered model it is <see cref="EmptyFishSchools"/>, an
+        /// honest empty sea. That is deliberate and is what lets the finder and the fish be built in
+        /// parallel: the UI host draws an empty sonar with no model in the project, and the gameplay lane
+        /// swaps its own in with a single assignment here, changing nothing on the UI side. It is also the
+        /// right SHIPPED behaviour in a bare art scene, in EditMode, and in a region with no fish authored
+        /// yet — an empty sonar is the truth there; a <c>NullReferenceException</c> is not.</para>
+        ///
+        /// <para>Same lifetime as <see cref="ActiveBoat"/>/<see cref="HelmInstruments"/> otherwise: the
+        /// producer self-registers, and <b>must clear this on disable</b> (assign null — the getter turns
+        /// that back into the empty sea) so a torn-down region cannot leave a dead model behind.</para>
+        /// FLAG lead-architect: new Core contract (the ADR 0025 S3 fish-school seam).
+        /// </summary>
+        public static IFishSchools FishSchools
+        {
+            get
+            {
+                IFishSchools model = _fishSchools;
+                // ⚠️ NEVER `_fishSchools ?? EmptyFishSchools.Instance` here. A producer is very likely a
+                // MonoBehaviour, and once its scene unloads the reference is Unity's FAKE-null: `??` and
+                // `?.` bypass UnityEngine.Object's overloaded `==`, so a DESTROYED producer would read as
+                // live and every call through it would throw MissingReferenceException. Compile-clean,
+                // runtime-red. Ask the Unity way first, then fall back.
+                if (model is UnityEngine.Object producer && producer == null) return EmptyFishSchools.Instance;
+                return model != null ? model : EmptyFishSchools.Instance;
+            }
+            set => _fishSchools = value;
+        }
+
+        private static IFishSchools _fishSchools;
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
@@ -242,6 +278,14 @@ namespace HiddenHarbours.Core
         public static DepthSounderSettings DepthSounder =>
             Config != null ? Config.DepthSounder : DepthSounderSettings.Default;
 
+        /// <summary>The fish finder's tunables (ADR 0025 S3 — the sonar upgrade). Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c>
+        /// on a <c>UnityEngine.Object</c>). Read by the UI card that draws the scale AND by the save
+        /// migration's default (through <see cref="FishFinderSettings.Default"/>, which stays asset-free),
+        /// so a fresh finder and a healed old save can never disagree about the range.</summary>
+        public static FishFinderSettings FishFinder =>
+            Config != null ? Config.FishFinder : FishFinderSettings.Default;
+
         /// <summary>The grabbable steering wheel's spin-feel tunables (ADR 0025 S2a — lock-to-lock
         /// turns, coast friction, self-centre, rim-grab pad). Same contract as
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
@@ -287,6 +331,7 @@ namespace HiddenHarbours.Core
             ActiveBoat = null;
             HelmControl = null;
             HelmInstruments = null;
+            FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
