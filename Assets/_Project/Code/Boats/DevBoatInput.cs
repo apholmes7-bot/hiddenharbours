@@ -16,7 +16,7 @@ namespace HiddenHarbours.Boats
     ///     2026-08-03: a key can't hold an analog position, so each press bumps a detent and the drive
     ///     STAYS there): W/Up press = +1 detent, S/Down press = −1 detent, the drive HOLDS between
     ///     presses; holding a key auto-repeats after a data-driven delay (GameConfig.HelmThrottle);
-    ///     X snaps to neutral. A/D = steer (momentary, unchanged). Gamepad rides the SAME actions:
+    ///     Z snaps to neutral. A/D = steer (momentary, unchanged). Gamepad rides the SAME actions:
     ///     D-pad up/down = detents, B (east) = neutral, left stick X = steer.
     /// The drive value lives in <see cref="BoatController"/> alone (read back through
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
@@ -30,10 +30,14 @@ namespace HiddenHarbours.Boats
     public class DevBoatInput : MonoBehaviour
     {
         [Header("Keys (owner-editable)")]
-        [Tooltip("Snap the notched throttle straight to NEUTRAL (motorised hulls). X — free of every " +
-                 "other binding (WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, " +
-                 "B sell, T trap-drop, G grant, H haul, Y auto-yaw, L spotlight, F fleet, V variant).")]
-        [SerializeField] private Key _neutralKey = Key.X;
+        [Tooltip("Snap the notched throttle straight to NEUTRAL (motorised hulls). Z — verified free " +
+                 "of every other binding by a project-wide Key./KeyControl/.inputactions sweep " +
+                 "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
+                 "T trap-drop, G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, " +
+                 "V variant, I icebox, O displaced-water, N tide table, X DUMP SPOILED — " +
+                 "CatchDumpInput listens scene-wide, so X here would dump the catch on every chop " +
+                 "to neutral).")]
+        [SerializeField] private Key _neutralKey = Key.Z;
 
         private BoatController _boat;
 
